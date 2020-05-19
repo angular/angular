@@ -19,6 +19,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
+import {UndecoratedClassesFeatureScanner} from '../../undecorated_classes/src/scanner';
 import {ResourceLoader} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
 
@@ -51,6 +52,8 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
   const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
   const refEmitter = new ReferenceEmitter([]);
   const injectableRegistry = new InjectableClassRegistry(reflectionHost);
+  const undecoratedClassesFeatureScanner = new UndecoratedClassesFeatureScanner(
+      reflectionHost, evaluator, injectableRegistry, metaReader, /* isCore */ false);
   const resourceRegistry = new ResourceRegistry();
   const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeRegistry, metaReader);
 
@@ -78,6 +81,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* depTracker */ null,
       injectableRegistry,
       /* annotateForClosureCompiler */ false,
+      undecoratedClassesFeatureScanner,
   );
   return {reflectionHost, handler};
 }

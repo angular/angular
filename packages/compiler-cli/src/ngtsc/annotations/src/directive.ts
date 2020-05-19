@@ -12,35 +12,22 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
+import {readBaseClass} from '../../inheritance/src/base_class';
 import {ClassPropertyMapping, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
+import {DetectedAngularFeature} from '../../undecorated_classes/src/features';
+import {UndecoratedClassesFeatureScanner} from '../../undecorated_classes/src/scanner';
 
-import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic} from './diagnostics';
+import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
+import {createSourceSpan, findAngularDecorator, getConstructorDependencies, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
-
-/** List of known decorators that indicate that a given class is a directive. */
-const DIRECTIVE_FIELD_DECORATORS = [
-  'Input', 'Output', 'ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren', 'HostBinding',
-  'HostListener'
-];
-/** Set of known lifecycle hooks that indicate that a given class is a directive. */
-const DIRECTIVE_LIFECYCLE_HOOKS = new Set([
-  'ngOnChanges', 'ngOnInit', 'ngDoCheck', 'ngAfterViewInit', 'ngAfterViewChecked',
-  'ngAfterContentInit', 'ngAfterContentChecked'
-]);
-/**
- * Set of known lifecycle hooks that indicate that a given class is using Angular features
- * but it's not guaranteed to be of a directive (i.e. it can also be an injectable).
- */
-const AMBIGUOUS_LIFECYCLE_HOOKS = new Set(['ngOnDestroy']);
 
 export interface DirectiveHandlerData {
   baseClass: Reference<ClassDeclaration>|'dynamic'|null;
@@ -52,16 +39,6 @@ export interface DirectiveHandlerData {
   outputs: ClassPropertyMapping;
   isPoisoned: boolean;
   isStructural: boolean;
-}
-
-export interface DetectedAngularFeature {
-  /**
-   * TypeScript node that indicated the use of an Angular feature. Can be `null` in case
-   * a class members do not necessarily have a corresponding TypeScript node.
-   */
-  trigger: ts.Node|null;
-  /** Kind of Angular feature that has been detected. */
-  kind: 'directive'|'ambiguous';
 }
 
 export interface DirectiveDetectMetadata {
@@ -77,7 +54,8 @@ export class DirectiveDecoratorHandler implements
       private metaReader: MetadataReader, private defaultImportRecorder: DefaultImportRecorder,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
       private annotateForClosureCompiler: boolean,
-      private compileUndecoratedClassesWithAngularFeatures: boolean) {}
+      private compileUndecoratedClassesWithAngularFeatures: boolean,
+      private undecoratedClassesFeatureScanner: UndecoratedClassesFeatureScanner) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = DirectiveDecoratorHandler.name;
@@ -89,7 +67,8 @@ export class DirectiveDecoratorHandler implements
     // to still detect these patterns so that we can report diagnostics, or compile
     // them for backwards compatibility in ngcc.
     if (!decorators) {
-      const detectedAngularFeature = this.detectAngularFeatureInClass(node);
+      const detectedAngularFeature =
+          this.undecoratedClassesFeatureScanner.detectAngularFeatureInClass(node);
       return detectedAngularFeature === null ? undefined : {
         trigger: detectedAngularFeature.trigger,
         decorator: null,
@@ -117,10 +96,9 @@ export class DirectiveDecoratorHandler implements
     // See: https://v9.angular.io/guide/migration-undecorated-classes.
     if (this.compileUndecoratedClassesWithAngularFeatures === false &&
         detectedAngularFeature !== null) {
-      return {
-        diagnostics:
-            [getUndecoratedClassWithAngularFeaturesDiagnostic(node, detectedAngularFeature)]
-      };
+      this.undecoratedClassesFeatureScanner.captureUndecoratedAngularClass(
+          node, detectedAngularFeature);
+      return {};
     }
 
     const directiveResult = extractDirectiveMetadata(
@@ -179,6 +157,8 @@ export class DirectiveDecoratorHandler implements
   resolve(node: ClassDeclaration, analysis: DirectiveHandlerData): ResolveResult<unknown> {
     const diagnostics: ts.Diagnostic[] = [];
 
+    this.undecoratedClassesFeatureScanner.checkDirectiveForInheritedConstructor(node);
+
     if (analysis.providersRequiringFactory !== null &&
         analysis.meta.providers instanceof WrappedNodeExpr) {
       const providerDiagnostics = getProviderDiagnostics(
@@ -229,44 +209,6 @@ export class DirectiveDecoratorHandler implements
         type,
       }
     ];
-  }
-
-  /**
-   * Checks if a given class uses Angular features and returns an object describing
-   * the detected Angular feature if present. Classes are considered using Angular
-   * features if they contain class members that are either decorated with a known
-   * Angular decorator, or if they correspond to a known Angular lifecycle hook.
-   */
-  private detectAngularFeatureInClass(node: ClassDeclaration): DetectedAngularFeature|null {
-    let ambiguousMember: ClassMember|null = null;
-    for (const member of this.reflector.getMembersOfClass(node)) {
-      const isMemberMethod = !member.isStatic && member.kind === ClassMemberKind.Method;
-      // If the class declares any of the known directive lifecycle hooks, we can
-      // immediately exit the loop as the class is guaranteed to be a directive.
-      if (isMemberMethod && DIRECTIVE_LIFECYCLE_HOOKS.has(member.name)) {
-        return {trigger: member.node, kind: 'directive'};
-      }
-      const fieldNgDecorator = member.decorators !== null ?
-          member.decorators.find(
-              decorator => DIRECTIVE_FIELD_DECORATORS.some(
-                  decoratorName => isAngularDecorator(decorator, decoratorName, this.isCore))) :
-          undefined;
-      // If the class declares any member that is decorated with an Angular decorator that is
-      // specified to directives, we exit early as the class is guaranteed to be a directive.
-      if (fieldNgDecorator !== undefined) {
-        const decoratorNode = fieldNgDecorator.node !== null ? fieldNgDecorator.node :
-                                                               fieldNgDecorator.synthesizedFor;
-        return {trigger: decoratorNode, kind: 'directive'};
-      }
-      // If the class declares any of the non-directive lifecycle hooks, we keep track of it
-      // and continue looking for other members that would unveil a more specific kind. i.e.
-      // the class actually being a directive. This cannot be guaranteed if only ambiguous
-      // lifecycle hooks were detected.
-      if (isMemberMethod && AMBIGUOUS_LIFECYCLE_HOOKS.has(member.name)) {
-        ambiguousMember = member;
-      }
-    }
-    return ambiguousMember ? {trigger: ambiguousMember.node, kind: 'ambiguous'} : null;
   }
 }
 

@@ -30,6 +30,7 @@ import {ivySwitchTransform} from '../../switch';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck/api';
+import {UndecoratedClassesFeatureScanner} from '../../undecorated_classes/src/scanner';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
@@ -53,6 +54,7 @@ interface LazyCompilationState {
   refEmitter: ReferenceEmitter;
   templateTypeChecker: TemplateTypeChecker;
   resourceRegistry: ResourceRegistry;
+  undecoratedClassesFeatureScanner: UndecoratedClassesFeatureScanner;
 }
 
 /**
@@ -606,7 +608,10 @@ export class NgCompiler {
   private getNonTemplateDiagnostics(): ts.Diagnostic[] {
     if (this.nonTemplateDiagnostics === null) {
       const compilation = this.ensureAnalyzed();
-      this.nonTemplateDiagnostics = [...compilation.traitCompiler.diagnostics];
+      this.nonTemplateDiagnostics = [
+        ...compilation.traitCompiler.diagnostics,
+        ...compilation.undecoratedClassesFeatureScanner.computeDiagnostics()
+      ];
       if (this.entryPoint !== null && compilation.exportReferenceGraph !== null) {
         this.nonTemplateDiagnostics.push(...checkForPrivateExports(
             this.entryPoint, this.tsProgram.getTypeChecker(), compilation.exportReferenceGraph));
@@ -789,6 +794,9 @@ export class NgCompiler {
 
     const isCore = isAngularCorePackage(this.tsProgram);
 
+    const undecoratedClassesFeatureScanner = new UndecoratedClassesFeatureScanner(
+        reflector, evaluator, injectableRegistry, metaReader, isCore);
+
     const defaultImportTracker = new DefaultImportTracker();
     const resourceRegistry = new ResourceRegistry();
 
@@ -802,7 +810,7 @@ export class NgCompiler {
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
           refEmitter, defaultImportTracker, this.incrementalDriver.depGraph, injectableRegistry,
-          this.closureCompilerEnabled),
+          this.closureCompilerEnabled, undecoratedClassesFeatureScanner),
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
       // clang-format off
@@ -812,7 +820,8 @@ export class NgCompiler {
             // In ngtsc we no longer want to compile undecorated classes with Angular features.
             // Migrations for these patterns ran as part of `ng update` and we want to ensure
             // that projects do not regress. See https://hackmd.io/@alx/ryfYYuvzH for more details.
-            /* compileUndecoratedClassesWithAngularFeatures */ false
+            /* compileUndecoratedClassesWithAngularFeatures */ false,
+            undecoratedClassesFeatureScanner
         ) as Readonly<DecoratorHandler<unknown, unknown, unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
@@ -856,6 +865,7 @@ export class NgCompiler {
       refEmitter,
       templateTypeChecker,
       resourceRegistry,
+      undecoratedClassesFeatureScanner,
     };
   }
 }

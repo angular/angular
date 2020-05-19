@@ -16,6 +16,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
+import {UndecoratedClassesFeatureScanner} from '../../undecorated_classes/src/scanner';
 import {DirectiveDecoratorHandler} from '../src/directive';
 
 runInEachFileSystem(() => {
@@ -166,11 +167,14 @@ runInEachFileSystem(() => {
         metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
         null);
     const injectableRegistry = new InjectableClassRegistry(reflectionHost);
+    const undecoratedClassesFeatureScanner = new UndecoratedClassesFeatureScanner(
+        reflectionHost, evaluator, injectableRegistry, metaReader, /* isCore */ false);
+
     const handler = new DirectiveDecoratorHandler(
         reflectionHost, evaluator, scopeRegistry, scopeRegistry, metaReader,
         NOOP_DEFAULT_IMPORT_RECORDER, injectableRegistry, /*isCore*/ false,
         /*annotateForClosureCompiler*/ false,
-        /*detectUndecoratedClassesWithAngularFeatures*/ false);
+        /*detectUndecoratedClassesWithAngularFeatures*/ false, undecoratedClassesFeatureScanner);
 
     const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);
 

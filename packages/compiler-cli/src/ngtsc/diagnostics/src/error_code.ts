@@ -33,12 +33,6 @@ export enum ErrorCode {
   UNDECORATED_PROVIDER = 2005,
 
   /**
-   * Raised when a Directive inherits its constructor from a base class without an Angular
-   * decorator.
-   */
-  DIRECTIVE_INHERITS_UNDECORATED_CTOR = 2006,
-
-  /**
    * Raised when an undecorated class that is using Angular features
    * has been discovered.
    */

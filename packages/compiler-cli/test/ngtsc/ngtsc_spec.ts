@@ -1011,14 +1011,16 @@ runInEachFileSystem(os => {
 
           export class SomeBaseClass {
             ngOnDestroy() {}
-            
+
             @Input() someMember: any;
           }
         `);
 
            const errors = env.driveDiagnostics();
            expect(errors.length).toBe(1);
-           assertErrorUndecoratedClass(errors[0], '@Directive', 'SomeBaseClass');
+           assertErrorUndecoratedClass(
+               errors[0], '@Directive', 'SomeBaseClass',
+               ['Class member has an Angular decorator applied.']);
          });
 
       // If only the `ngOnDestroy` lifecycle hook is defined, the Angular feature usage
@@ -1036,7 +1038,34 @@ runInEachFileSystem(os => {
 
            const errors = env.driveDiagnostics();
            expect(errors.length).toBe(1);
-           assertErrorUndecoratedClass(errors[0], 'Angular', 'SomeBaseClass');
+           assertErrorUndecoratedClass(
+               errors[0], 'Angular', 'SomeBaseClass',
+               ['Class member corresponds to an Angular lifecycle hook.']);
+         });
+
+      it('should recommend adding `@Directive` if class only uses ngOnDestroy lifecycle hook ' +
+             'but declares DI constructor that is inherited by a directive',
+         () => {
+           env.write('test.ts', `
+            import {Directive, Input, Injector, NgModule} from '@angular/core';
+
+            export class SomeBaseClass {
+              ngOnDestroy() {}
+
+              constructor(injector: Injector) {}
+            }
+
+            @Directive({selector: 'derived'})
+            export class Derived extends SomeBaseClass {}
+           `);
+
+           const errors = env.driveDiagnostics();
+           expect(errors.length).toBe(1);
+           assertErrorUndecoratedClass(errors[0], '@Directive', 'SomeBaseClass', [
+             'Class member corresponds to an Angular lifecycle hook.',
+             'Inherits constructor that uses dependency injection. Either decorate ' +
+                 'SomeBaseClass, or add an explicit constructor to Derived.'
+           ]);
          });
 
       function assertErrorUndecoratedClassWithField(fieldDecoratorName: string) {
@@ -1050,7 +1079,9 @@ runInEachFileSystem(os => {
 
         const errors = env.driveDiagnostics();
         expect(errors.length).toBe(1);
-        assertErrorUndecoratedClass(errors[0], '@Directive', 'SomeBaseClass');
+        assertErrorUndecoratedClass(
+            errors[0], '@Directive', 'SomeBaseClass',
+            ['Class member has an Angular decorator applied.']);
       }
 
       function assertErrorUndecoratedClassWithLifecycleHook(lifecycleName: string) {
@@ -1066,17 +1097,9 @@ runInEachFileSystem(os => {
 
         const errors = env.driveDiagnostics();
         expect(errors.length).toBe(1);
-        assertErrorUndecoratedClass(errors[0], '@Directive', 'SomeBaseClass');
-      }
-
-      function assertErrorUndecoratedClass(
-          error: ts.Diagnostic, expectedDecorator: string, className: string) {
-        expect(trim(error.messageText as string))
-            .toContain('Cannot use Angular features in an undecorated class.');
-        expect(error.relatedInformation).toBeDefined();
-        expect(error.relatedInformation!.length).toBe(1);
-        expect(trim(error.relatedInformation![0].messageText as string))
-            .toBe(`Add an explicit ${expectedDecorator} decorator to ${className}.`);
+        assertErrorUndecoratedClass(
+            errors[0], '@Directive', 'SomeBaseClass',
+            ['Class member corresponds to an Angular lifecycle hook.']);
       }
     });
 
@@ -6960,11 +6983,13 @@ export const Foo = Foo__PRE_R3__;
           export class Cmp extends BasePlainWithConstructorParameters {}
         `);
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toContain('Dir');
-        expect(diags[0].messageText).toContain('BasePlainWithConstructorParameters');
-        expect(diags[1].messageText).toContain('Cmp');
-        expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
+        expect(diags.length).toBe(1);
+        assertErrorUndecoratedClass(diags[0], '@Directive', 'BasePlainWithConstructorParameters', [
+          'Inherits constructor that uses dependency injection. Either decorate ' +
+              'BasePlainWithConstructorParameters, or add an explicit constructor to Dir.',
+          'Inherits constructor that uses dependency injection. Either decorate ' +
+              'BasePlainWithConstructorParameters, or add an explicit constructor to Cmp.'
+        ]);
       });
 
       it('should error when inheriting a constructor from undecorated grand super class', () => {
@@ -6988,11 +7013,13 @@ export const Foo = Foo__PRE_R3__;
         `);
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toContain('Dir');
-        expect(diags[0].messageText).toContain('BasePlainWithConstructorParameters');
-        expect(diags[1].messageText).toContain('Cmp');
-        expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
+        expect(diags.length).toBe(1);
+        assertErrorUndecoratedClass(diags[0], '@Directive', 'BasePlainWithConstructorParameters', [
+          'Inherits constructor that uses dependency injection. Either decorate ' +
+              'BasePlainWithConstructorParameters, or add an explicit constructor to Dir.',
+          'Inherits constructor that uses dependency injection. Either decorate ' +
+              'BasePlainWithConstructorParameters, or add an explicit constructor to Cmp.'
+        ]);
       });
 
       it('should error when inheriting a constructor from undecorated grand grand super class',
@@ -7019,11 +7046,14 @@ export const Foo = Foo__PRE_R3__;
             `);
 
            const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(2);
-           expect(diags[0].messageText).toContain('Dir');
-           expect(diags[0].messageText).toContain('BasePlainWithConstructorParameters');
-           expect(diags[1].messageText).toContain('Cmp');
-           expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
+           expect(diags.length).toBe(1);
+           assertErrorUndecoratedClass(
+               diags[0], '@Directive', 'BasePlainWithConstructorParameters', [
+                 'Inherits constructor that uses dependency injection. Either decorate ' +
+                     'BasePlainWithConstructorParameters, or add an explicit constructor to Dir.',
+                 'Inherits constructor that uses dependency injection. Either decorate ' +
+                     'BasePlainWithConstructorParameters, or add an explicit constructor to Cmp.'
+               ]);
          });
 
       it('should not error when inheriting a constructor from decorated directive or component classes in a .d.ts file',
@@ -7063,8 +7093,11 @@ export const Foo = Foo__PRE_R3__;
             `);
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(1);
-           expect(diags[0].messageText).toContain('Dir');
-           expect(diags[0].messageText).toContain('Base');
+           assertErrorUndecoratedClass(
+               diags[0], '@Directive', 'BasePlainWithConstructorParameters', [
+                 'Inherits constructor that uses dependency injection. Either decorate ' +
+                     'BasePlainWithConstructorParameters, or add an explicit constructor to Dir.',
+               ]);
          });
     });
 
@@ -7757,6 +7790,20 @@ export const Foo = Foo__PRE_R3__;
       });
     });
   });
+
+  function assertErrorUndecoratedClass(
+      error: ts.Diagnostic, expectedDecorator: string, className: string, relatedInfo: string[]) {
+    expect(trim(error.messageText as string))
+        .toContain(
+            `Cannot use Angular features in an undecorated class. ` +
+            `Please add an explicit ${expectedDecorator} decorator.`);
+    expect(error.relatedInformation).toBeDefined();
+    expect(error.relatedInformation!.length).toBe(relatedInfo.length);
+    relatedInfo.forEach(
+        (expectedMessage, index) =>
+            expect(trim(error.relatedInformation![index].messageText as string))
+                .toBe(expectedMessage));
+  }
 
   function expectTokenAtPosition<T extends ts.Node>(
       sf: ts.SourceFile, pos: number, guard: (node: ts.Node) => node is T): T {

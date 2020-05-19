@@ -15,12 +15,14 @@ import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
+import {readBaseClass} from '../../inheritance';
 import {ClassPropertyMapping, ComponentResources, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, Resource, ResourceRegistry} from '../../metadata';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck/api';
+import {UndecoratedClassesFeatureScanner} from '../../undecorated_classes';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
@@ -29,7 +31,7 @@ import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagno
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -95,7 +97,8 @@ export class ComponentDecoratorHandler implements
       private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
       private depTracker: DependencyTracker|null,
       private injectableRegistry: InjectableClassRegistry,
-      private annotateForClosureCompiler: boolean) {}
+      private annotateForClosureCompiler: boolean,
+      private undecoratedClassesFeatureScanner: UndecoratedClassesFeatureScanner) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -559,6 +562,8 @@ export class ComponentDecoratorHandler implements
             node, usedDirectives.map(dir => dir.ref), usedPipes.map(pipe => pipe.ref));
       }
     }
+
+    this.undecoratedClassesFeatureScanner.checkDirectiveForInheritedConstructor(node);
 
     const diagnostics: ts.Diagnostic[] = [];
 

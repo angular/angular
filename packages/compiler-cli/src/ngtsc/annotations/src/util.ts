@@ -415,22 +415,6 @@ export function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<t
   return expr instanceof WrappedNodeExpr;
 }
 
-export function readBaseClass(
-    node: ClassDeclaration, reflector: ReflectionHost,
-    evaluator: PartialEvaluator): Reference<ClassDeclaration>|'dynamic'|null {
-  const baseExpression = reflector.getBaseClassExpression(node);
-  if (baseExpression !== null) {
-    const baseClass = evaluator.evaluate(baseExpression);
-    if (baseClass instanceof Reference && reflector.isClass(baseClass.node)) {
-      return baseClass as Reference<ClassDeclaration>;
-    } else {
-      return 'dynamic';
-    }
-  }
-
-  return null;
-}
-
 const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> =
     (context: ts.TransformationContext) => {
       const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
