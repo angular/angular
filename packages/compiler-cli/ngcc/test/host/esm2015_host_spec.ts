@@ -174,12 +174,13 @@ runInEachFileSystem(() => {
       ];
       return AliasedWrappedClass;
     })();
-    let DecoratedWrappedClass = /** @class */ (() => {
-      let DecoratedWrappedClass = class DecoratedWrappedClass {}
-      // ... add decorations ...
-      return DecoratedWrappedClass;
-    })();
     let usageOfWrappedClass = AliasedWrappedClass_1;
+    let DecoratedWrappedClass = /** @class */ (() => {
+      let DecoratedWrappedClass_1 = class DecoratedWrappedClass {}
+      // ... add decorations ...
+      return DecoratedWrappedClass_1;
+    })();
+    let usageOfDecorated = DecoratedWrappedClass_1;
   `,
       };
 
@@ -1970,7 +1971,7 @@ runInEachFileSystem(() => {
                !isNamedVariableDeclaration(classSymbol.adjacent.valueDeclaration)) {
              return fail('Expected a named variable declaration for the adjacent symbol');
            }
-           expect(classSymbol.adjacent.valueDeclaration.name.text).toBe('DecoratedWrappedClass');
+           expect(classSymbol.adjacent.valueDeclaration.name.text).toBe('DecoratedWrappedClass_1');
          });
 
       it('should return the class symbol for a decorated wrapped class expression (inner class expression)',
@@ -2000,7 +2001,7 @@ runInEachFileSystem(() => {
                !isNamedVariableDeclaration(classSymbol.adjacent.valueDeclaration)) {
              return fail('Expected a named variable declaration for the adjacent symbol');
            }
-           expect(classSymbol.adjacent.valueDeclaration.name.text).toBe('DecoratedWrappedClass');
+           expect(classSymbol.adjacent.valueDeclaration.name.text).toBe('DecoratedWrappedClass_1');
          });
 
       it('should return the same class symbol (of the outer declaration) for decorated wrapped outer and inner declarations',
