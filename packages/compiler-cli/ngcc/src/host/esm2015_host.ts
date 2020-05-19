@@ -132,6 +132,13 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return symbol;
     }
 
+    if (declaration.parent !== undefined && isNamedVariableDeclaration(declaration.parent)) {
+      const variableValue = this.getVariableValue(declaration.parent);
+      if (variableValue !== null) {
+        declaration = variableValue;
+      }
+    }
+
     return this.getClassSymbolFromInnerDeclaration(declaration);
   }
 
@@ -294,8 +301,15 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (superDeclaration.known !== null || superDeclaration.identity !== null) {
       return superDeclaration;
     }
+    let declarationNode: ts.Node = superDeclaration.node;
+    if (isNamedVariableDeclaration(superDeclaration.node) && !isTopLevel(superDeclaration.node)) {
+      const variableValue = this.getVariableValue(superDeclaration.node);
+      if (variableValue !== null && ts.isClassExpression(variableValue)) {
+        declarationNode = getContainingStatement(variableValue);
+      }
+    }
 
-    const outerClassNode = getClassDeclarationFromInnerDeclaration(superDeclaration.node);
+    const outerClassNode = getClassDeclarationFromInnerDeclaration(declarationNode);
     const declaration = outerClassNode !== null ?
         this.getDeclarationOfIdentifier(outerClassNode.name) :
         superDeclaration;
@@ -2525,19 +2539,20 @@ function isTopLevel(node: ts.Node): boolean {
 /**
  * Get the actual (outer) declaration of a class.
  *
- * In ES5, the implementation of a class is a function expression that is hidden inside an IIFE and
+ * Sometimes, the implementation of a class is an expression that is hidden inside an IIFE and
  * returned to be assigned to a variable outside the IIFE, which is what the rest of the program
  * interacts with.
  *
- * Given the inner function declaration, we want to get to the declaration of the outer variable
- * that represents the class.
+ * Given the inner declaration, we want to get to the declaration of the outer variable that
+ * represents the class.
  *
- * @param node a node that could be the function expression inside an ES5 class IIFE.
- * @returns the outer variable declaration or `undefined` if it is not a "class".
+ * @param node a node that could be the inner declaration inside an IIFE.
+ * @returns the outer variable declaration or `null` if it is not a "class".
  */
 export function getClassDeclarationFromInnerDeclaration(node: ts.Node):
     ClassDeclaration<ts.VariableDeclaration>|null {
-  if (ts.isFunctionDeclaration(node) || ts.isClassDeclaration(node)) {
+  if (ts.isFunctionDeclaration(node) || ts.isClassDeclaration(node) ||
+      ts.isVariableStatement(node)) {
     // It might be the function expression inside the IIFE. We need to go 5 levels up...
 
     // - IIFE body.

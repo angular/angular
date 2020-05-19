@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {isNamedClassDeclaration} from '../../../src/ngtsc/reflection';
+import {isNamedClassDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
@@ -41,6 +41,7 @@ runInEachFileSystem(() => {
             export * from './no-providers';
             export * from './module';
             export * from './delegated';
+            export * from './iife-wrapped';
           `
           },
           {
@@ -309,6 +310,25 @@ runInEachFileSystem(() => {
             name: _('/node_modules/some-library/index.d.ts'),
             contents: 'export declare class LibraryModule {}'
           },
+          {
+            name: _('/node_modules/test-package/src/iife-wrapped.js'),
+            contents: `
+            import {NgModule} from './core';
+            let WrappedClass = (() => {
+              var WrappedClass_Alias;
+              let AdjacentWrappedClass = WrappedClass_Alias = class InnerWrappedClass {
+                static forRoot() {
+                  return {
+                    ngModule: WrappedClass_Alias,
+                    providers: []
+                  };
+                }
+              };
+              AdjacentWrappedClass = WrappedClass_Alias = __decorate([], AdjacentWrappedClass);
+              return AdjacentWrappedClass;
+            })();
+            export {WrappedClass};`
+          },
         ];
         const TEST_DTS_PROGRAM: TestFile[] = [
           {
@@ -320,6 +340,7 @@ runInEachFileSystem(() => {
             export * from './no-providers';
             export * from './module';
             export * from './delegated';
+            export * from './iife-wrapped';
           `
           },
           {
@@ -452,6 +473,14 @@ runInEachFileSystem(() => {
           {
             name: _('/node_modules/some-library/index.d.ts'),
             contents: 'export declare class LibraryModule {}'
+          },
+          {
+            name: _('/node_modules/test-package/typings/iife-wrapped.d.ts'),
+            contents: `
+            import {ModuleWithProviders} from './core';
+            export declare class WrappedClass {
+                static forRoot(): ModuleWithProviders<any>;
+            }`
           },
         ];
         loadTestFiles(TEST_PROGRAM);
@@ -613,6 +642,12 @@ runInEachFileSystem(() => {
            ]);
          });
 
+      it('should find declarations that reference an aliased IIFE wrapped class', () => {
+        const analysis = getAnalysisDescription(
+            analyses, _('/node_modules/test-package/typings/iife-wrapped.d.ts'));
+        expect(analysis).toContain(['WrappedClass.forRoot', 'WrappedClass', null]);
+      });
+
       function getAnalysisDescription(
           analyses: ModuleWithProvidersAnalyses, fileName: AbsoluteFsPath) {
         const file = getSourceFileOrError(dtsProgram.program, fileName);
@@ -626,7 +661,9 @@ runInEachFileSystem(() => {
       }
 
       function getName(node: ts.Declaration|null): string {
-        return node && isNamedClassDeclaration(node) ? `${node.name.text}.` : '';
+        return node && (isNamedVariableDeclaration(node) || isNamedClassDeclaration(node)) ?
+            `${node.name.text}.` :
+            '';
       }
     });
   });
