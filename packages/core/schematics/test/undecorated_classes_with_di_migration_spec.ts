@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -1487,14 +1487,14 @@ describe('Undecorated classes with DI migration', () => {
          writeFile('/second.ts', ``);
          writeFile('/test.ts', `
         import {Injectable, NgModule, NgZone} from '@angular/core';
-  
+
         export class BaseClass {
           constructor(zone: NgZone) {}
         }
-  
+
         @Injectable({template: ''})
         export class MyService extends BaseClass {}
-  
+
         @NgModule({providers: [MyService]})
         export class AppModule {}
       `);

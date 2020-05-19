@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,10 +14,10 @@ import {FormControl, Validators} from '@angular/forms';
   selector: 'example-app',
   template: `
      <input [formControl]="control">
-      
+
      <p>Value: {{ control.value }}</p>
      <p>Validation status: {{ control.status }}</p>
-     
+
      <button (click)="setValue()">Set value</button>
   `,
 })

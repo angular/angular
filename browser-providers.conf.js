@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -34,11 +34,11 @@ var CIconfiguration = {
   'Android10': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   // Disable all Safari and iOS tests because of incorrect results
   // ex:
-  // Mobile Safari 13.0.0 (iOS 13.0.0) styling static template only should capture static values in TStylingKey FAILED
-  // Expected $.content = 'dynamic' to equal '"dynamic"'.
-  // Mobile Safari 12.0.0 (iOS 12.0.0) styling should handle values wrapped into SafeValue FAILED
-  // Expected 'url("http://angular-ci.local:9876/1.png")' to contain 'url("/1.png")'.s
-  // Tracking in: https://github.com/angular/angular/issues/36975
+  // Mobile Safari 13.0.0 (iOS 13.0.0) styling static template only should capture static values in
+  // TStylingKey FAILED Expected $.content = 'dynamic' to equal '"dynamic"'. Mobile Safari 12.0.0
+  // (iOS 12.0.0) styling should handle values wrapped into SafeValue FAILED Expected
+  // 'url("http://angular-ci.local:9876/1.png")' to contain 'url("/1.png")'.s Tracking in:
+  // https://github.com/angular/angular/issues/36975
   'Safari12': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Safari13': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'iOS12': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
@@ -152,17 +152,12 @@ var sauceAliases = {
     return customLaunchers[item].base == 'SauceLabs';
   }),
   'DESKTOP': [
-    'SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_EDGE', 'SL_SAFARI12', 'SL_SAFARI13', 'SL_FIREFOXESR'
+    'SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_EDGE', 'SL_SAFARI12',
+    'SL_SAFARI13', 'SL_FIREFOXESR'
   ],
-  'MOBILE': [
-    'SL_ANDROID7', 'SL_ANDROID8', 'SL_ANDROID9', 'SL_ANDROID10', 'SL_IOS12', 'SL_IOS13'
-  ],
-  'ANDROID': [
-    'SL_ANDROID7', 'SL_ANDROID8', 'SL_ANDROID9', 'SL_ANDROID10'
-  ],
-  'FIREFOX': [
-    'SL_FIREFOXESR'
-  ],
+  'MOBILE': ['SL_ANDROID7', 'SL_ANDROID8', 'SL_ANDROID9', 'SL_ANDROID10', 'SL_IOS12', 'SL_IOS13'],
+  'ANDROID': ['SL_ANDROID7', 'SL_ANDROID8', 'SL_ANDROID9', 'SL_ANDROID10'],
+  'FIREFOX': ['SL_FIREFOXESR'],
   'IE': ['SL_IE9', 'SL_IE10', 'SL_IE11'],
   'IOS': ['SL_IOS12', 'SL_IOS13'],
   'SAFARI': ['SL_SAFARI12', 'SL_SAFARI13'],
@@ -177,11 +172,14 @@ var browserstackAliases = {
     return customLaunchers[item].base == 'BrowserStack';
   }),
   'DESKTOP': [
-    'BS_CHROME', 'BS_FIREFOX', 'BS_IE9', 'BS_IE10', 'BS_IE11', 'BS_EDGE',
+    'BS_CHROME',
+    'BS_FIREFOX',
+    'BS_IE9',
+    'BS_IE10',
+    'BS_IE11',
+    'BS_EDGE',
   ],
-  'MOBILE': [
-    'BS_ANDROID7', 'BS_WINDOWSPHONE'
-  ],
+  'MOBILE': ['BS_ANDROID7', 'BS_WINDOWSPHONE'],
   'ANDROID': ['BS_ANDROID7'],
   'IE': ['BS_IE9', 'BS_IE10', 'BS_IE11'],
   'IOS': [],

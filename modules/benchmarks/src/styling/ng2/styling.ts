@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,7 @@ import {BrowserModule} from '@angular/platform-browser';
 @Component({
   selector: 'styling-bindings',
   template: `
-    <ng-template #t0><button [title]="exp"></button></ng-template>  
+    <ng-template #t0><button [title]="exp"></button></ng-template>
     <ng-template #t1><button class="static"></button></ng-template>
     <ng-template #t2><button class="foo {{exp}}"></button></ng-template>
     <ng-template #t3><button [class.bar]="exp ==='bar'"></button></ng-template>
@@ -23,7 +23,7 @@ import {BrowserModule} from '@angular/platform-browser';
     <ng-template #t8><button [style.width.px]="exp ==='bar' ? 10 : 20" [style.color]="exp"></button></ng-template>
     <ng-template #t9><button style="width: 10px" [style.color]="exp"></button></ng-template>
     <ng-template #t10><button [ngStyle]="{'width.px': exp ==='bar' ? 10 : 20, color: exp}"></button></ng-template>
-    
+
     <div>
       <ng-template ngFor [ngForOf]="data" [ngForTemplate]="getTplRef(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10)"></ng-template>
     </div>

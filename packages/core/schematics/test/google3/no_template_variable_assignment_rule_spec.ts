@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -48,7 +48,7 @@ describe('Google3 noTemplateVariableAssignment TSLint rule', () => {
   it('should create failure for detected two-way data binding assignment', () => {
     writeFile('index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({template: '<span *ngFor="let i of options" [(a)]="i"></span>'})
       export class MyComp {}
     `);
@@ -66,7 +66,7 @@ describe('Google3 noTemplateVariableAssignment TSLint rule', () => {
   it('should create failure with correct offsets for external templates', () => {
     writeFile('index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({templateUrl: './my-tmpl.html'})
       export class MyComp {}
     `);
@@ -88,7 +88,7 @@ describe('Google3 noTemplateVariableAssignment TSLint rule', () => {
   it('should create failure for template variable assignment within output', () => {
     writeFile('index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({templateUrl: './my-tmpl.html'})
       export class MyComp {}
     `);

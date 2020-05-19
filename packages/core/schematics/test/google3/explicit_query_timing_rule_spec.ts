@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -59,13 +59,13 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
   it('should properly apply query timing replacements', () => {
     writeFile('index.ts', `
       import {Component, ViewChild} from '@angular/core';
-      
+
       @Component({template: '<span #test></span>'})
       export class MyComp {
         @ViewChild('test') query: any;
         @ViewChild('test') query2: any;
         @ViewChild('test') query3: any;
-        
+
         ngAfterContentInit() {
           this.query.classList.add('test');
         }
@@ -74,7 +74,7 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
 
     writeFile('external.ts', `
       import {MyComp} from './index';
-    
+
       export class Test extends MyComp {
         ngOnInit() {
           this.query3.doSomething();
@@ -92,11 +92,11 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
   it('should report non-explicit static query definitions', () => {
     writeFile('index.ts', `
       import {Component, ViewChild} from '@angular/core';
-      
+
       @Component({template: '<span #test></span>'})
       export class MyComp {
         @ViewChild('test') query: any;
-        
+
         ngAfterContentInit() {
           this.query.classList.add('test');
         }
@@ -113,7 +113,7 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
   it('should report non-explicit dynamic query definitions', () => {
     writeFile('index.ts', `
       import {Component, ContentChild} from '@angular/core';
-      
+
       @Component({template: '<span #test></span>'})
       export class MyComp {
         @ContentChild('test') query: any;
@@ -130,7 +130,7 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
   it('should detect query usage in component template', () => {
     writeFile('index.ts', `
       import {Component, ViewChild} from '@angular/core';
-      
+
       @Component({
         template: \`
           <span #test></span>
