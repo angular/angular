@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -75,12 +75,12 @@ describe('all migrations', () => {
       }));
       writeFile('/index.ts', `
       import {Renderer} from '@angular/core';
-      
+
       const variableDecl: Renderer = null;
-      
+
       export class Test {
         constructor(renderer: Renderer) {}
-      } 
+      }
     `);
 
       let error: any = null;

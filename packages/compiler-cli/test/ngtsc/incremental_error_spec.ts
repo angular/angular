@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -118,7 +118,7 @@ runInEachFileSystem(() => {
 
       env.write('cmp.ts', `
         import {Component} from '@angular/core';
-        
+
         @Component({selector: 'test-cmp', template: '...'})
         export class TestCmp {}
       `);
@@ -144,7 +144,7 @@ runInEachFileSystem(() => {
       env.write('cmp.ts', `
         import {Component} from '@angular/core';
         import {SELECTOR} from './selector';
-        
+
         @Component({selector: SELECTOR, template: '...'})
         export class TestCmp {}
       `);
@@ -165,7 +165,7 @@ runInEachFileSystem(() => {
 
       env.write('cmp.ts', `
         import {Component} from '@angular/core';
-        
+
         @Component({selector: 'test-cmp', template: '...'})
         export class TestCmp {}
       `);
@@ -410,7 +410,7 @@ runInEachFileSystem(() => {
         // Update ACmp to have a different selector, isn't matched in BCmp's template.
         env.write('a.ts', `
           import {Component} from '@angular/core';
-      
+
           @Component({selector: 'not-a-cmp', template: '...'})
           export class ACmp {}
        `);

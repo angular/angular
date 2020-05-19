@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,7 +13,7 @@ import {Observable, Observer} from 'rxjs';
 @Component({
   selector: 'async-promise-pipe',
   template: `<div>
-    <code>promise|async</code>: 
+    <code>promise|async</code>:
     <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button>
     <span>Wait for it... {{ greeting | async }}</span>
   </div>`
