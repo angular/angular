@@ -13,7 +13,7 @@
         <h3 class="subcategory-title">{{subCategory.title}}</h3>
 
         <div *ngFor="let resource of subCategory.resources">
-          <div class="c-resource" *ngIf="resource.rev">
+          <div class="c-resource">
             <a class="l-flex--column resource-row-link" rel="noopener" target="_blank" [href]="resource.url">
               <div>
                 <h4>{{resource.title}}</h4>
