@@ -22,7 +22,9 @@
     "@angular/cdk": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-NG",
     "@angular/common": "0.0.0-NG",
-    "@angular/forms": "0.0.0-NG",
+    "@angular/forms": "0.0.0-NG"
+  },
+  "dependencies": {
     "tslib": "0.0.0-TSLIB"
   },
   "schematics": "./schematics/collection.json",

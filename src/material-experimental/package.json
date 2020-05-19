@@ -14,7 +14,9 @@
   "peerDependencies": {
     "@angular/core": "0.0.0-NG",
     "@angular/material": "0.0.0-PLACEHOLDER",
-    "material-components-web": "0.0.0-MDC",
+    "material-components-web": "0.0.0-MDC"
+  },
+  "dependencies": {
     "tslib": "0.0.0-TSLIB"
   },
   "sideEffects": false,
