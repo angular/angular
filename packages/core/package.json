@@ -4,9 +4,11 @@
   "description": "Angular - the core framework",
   "author": "angular",
   "license": "MIT",
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
   "peerDependencies": {
     "rxjs": "^6.5.3",
-    "tslib": "^1.10.0",
     "zone.js": "~0.10.3"
   },
   "repository": {

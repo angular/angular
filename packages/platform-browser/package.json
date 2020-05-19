@@ -4,11 +4,13 @@
   "description": "Angular - library for using Angular in a web browser",
   "author": "angular",
   "license": "MIT",
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
   "peerDependencies": {
     "@angular/animations": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER",
-    "@angular/common": "0.0.0-PLACEHOLDER",
-    "tslib": "^1.10.0"
+    "@angular/common": "0.0.0-PLACEHOLDER"
   },
   "peerDependenciesMeta": {
     "@angular/animations": {

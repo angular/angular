@@ -45,6 +45,7 @@ ng_module(
         "@npm//@angular/platform-browser",
         "@npm//@angular/router",
         "@npm//@types",
+        "@npm//tslib",
         "@npm//rxjs",
     ],
 )
@@ -146,6 +147,7 @@ ts_library(
         "@npm//@angular/core",
         "@npm//@angular/router",
         "@npm//@types",
+        "@npm//tslib",
     ],
 )
 

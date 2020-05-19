@@ -4,13 +4,15 @@
   "description": "Angular - library for using Angular in a web browser with web workers",
   "author": "angular",
   "license": "MIT",
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
   "peerDependencies": {
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "@angular/platform-webworker": "0.0.0-PLACEHOLDER",
-    "tslib": "^1.10.0"
+    "@angular/platform-webworker": "0.0.0-PLACEHOLDER"
   },
   "repository": {
     "type": "git",

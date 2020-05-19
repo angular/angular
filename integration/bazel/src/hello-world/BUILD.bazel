@@ -21,6 +21,7 @@ ng_module(
     deps = [
         "@npm//@angular/core",
         "@npm//@types",
+        "@npm//tslib",
     ],
 )
 
@@ -41,6 +42,7 @@ ts_library(
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
         "@npm//jasmine",
+        "@npm//tslib",
     ],
 )
 
