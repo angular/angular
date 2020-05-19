@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -185,7 +185,7 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">6</context>
         </context-group>
         <note priority="1" from="description">ph names</note>
-      </trans-unit>            
+      </trans-unit>
       <trans-unit id="empty target" datatype="html">
         <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
         <target/>
