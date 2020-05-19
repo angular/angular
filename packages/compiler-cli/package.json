@@ -22,11 +22,11 @@
     "semver": "^6.3.0",
     "source-map": "^0.6.1",
     "sourcemap-codec": "^1.4.8",
+    "tslib": "^2.0.0",
     "yargs": "15.3.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "tslib": "^1.10.0",
     "typescript": ">=3.9 <4.0"
   },
   "engines": {

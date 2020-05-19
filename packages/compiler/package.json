@@ -4,8 +4,8 @@
   "description": "Angular - the compiler library",
   "author": "angular",
   "license": "MIT",
-  "peerDependencies": {
-    "tslib": "^1.10.0"
+  "dependencies": {
+    "tslib": "^2.0.0"
   },
   "repository": {
     "type": "git",
