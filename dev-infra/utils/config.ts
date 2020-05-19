@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {existsSync} from 'fs';
 import {join} from 'path';
 import {exec} from 'shelljs';
+import {isTsNodeAvailable} from './ts-node';
 
 /**
  * Describes the Github configuration for dev-infra. This configuration is
@@ -41,17 +43,16 @@ const CONFIG_FILE_NAME = '.ng-dev-config';
 let CONFIG: {}|null = null;
 
 /**
- * Get the configuration from the file system, returning the already loaded copy if it
- * is defined.
+ * Get the configuration from the file system, returning the already loaded
+ * copy if it is defined.
  */
 export function getConfig(): NgDevConfig {
   // If the global config is not defined, load it from the file system.
   if (CONFIG === null) {
     // The full path to the configuration file.
     const configPath = join(getRepoBaseDir(), CONFIG_FILE_NAME);
-    // Set the global config object to a clone of the configuration loaded through default exports
-    // from the config file.
-    CONFIG = {...require(configPath)};
+    // Set the global config object.
+    CONFIG = readConfigFile(configPath);
   }
   // Return a clone of the global config to ensure that a new instance of the config is returned
   // each time, preventing unexpected effects of modifications to the config object.
@@ -72,8 +73,26 @@ function validateCommonConfig(config: Partial<NgDevConfig>) {
       errors.push(`"github.owner" is not defined`);
     }
   }
-
+  assertNoErrors(errors);
   return config as NgDevConfig;
+}
+
+/** Resolves and reads the specified configuration file. */
+function readConfigFile(configPath: string): object {
+  // If the the `.ts` extension has not been set up already, and a TypeScript based
+  // version of the given configuration seems to exist, set up `ts-node` if available.
+  if (require.extensions['.ts'] === undefined && existsSync(`${configPath}.ts`) &&
+      isTsNodeAvailable()) {
+    require('ts-node').register({skipProject: true, transpileOnly: true});
+  }
+
+  try {
+    return require(configPath)
+  } catch (e) {
+    console.error('Could not read configuration file.');
+    console.error(e);
+    process.exit(1);
+  }
 }
 
 /**
