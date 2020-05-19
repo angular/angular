@@ -68,9 +68,6 @@ sass_library(
         "@npm//:node_modules/@material/notched-outline/mdc-notched-outline.scss",
         "@npm//:node_modules/@material/ripple/common.scss",
         "@npm//:node_modules/@material/textfield/_functions.scss",
-        "@npm//:node_modules/@material/textfield/character-counter/mdc-text-field-character-counter.scss",
-        "@npm//:node_modules/@material/textfield/helper-text/mdc-text-field-helper-text.scss",
-        "@npm//:node_modules/@material/textfield/icon/mdc-text-field-icon.scss",
         "@npm//:node_modules/@material/textfield/mdc-text-field.scss",
     ],
     deps = [
