@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,7 +22,7 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
       </div>
       <button>Submit</button>
     </form>
-    
+
     <button (click)="addCity()">Add City</button>
     <button (click)="setPreset()">Set preset</button>
   `,

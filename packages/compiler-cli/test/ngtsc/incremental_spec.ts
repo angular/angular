@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -171,13 +171,13 @@ runInEachFileSystem(() => {
       env.write('component1.ts', `
         import {Component} from '@angular/core';
         import {SELECTOR} from './dep';
-  
+
         @Component({selector: SELECTOR, template: 'cmp'})
         export class Cmp1 {}
       `);
       env.write('component2.ts', `
         import {Component} from '@angular/core';
-  
+
         @Component({selector: 'cmp2', template: 'cmp2'})
         export class Cmp2 {}
       `);
@@ -186,13 +186,13 @@ runInEachFileSystem(() => {
       `);
       env.write('directive.ts', `
         import {Directive} from '@angular/core';
-  
+
         @Directive({selector: 'dir'})
         export class Dir {}
       `);
       env.write('pipe.ts', `
         import {Pipe} from '@angular/core';
-  
+
         @Pipe({name: 'myPipe'})
         export class MyPipe {}
       `);
@@ -202,7 +202,7 @@ runInEachFileSystem(() => {
         import {Cmp2} from './component2';
         import {Dir} from './directive';
         import {MyPipe} from './pipe';
-  
+
         @NgModule({declarations: [Cmp1, Cmp2, Dir, MyPipe]})
         export class Mod {}
       `);
@@ -527,7 +527,7 @@ runInEachFileSystem(() => {
         env.write('component.ts', `
           import {Component} from '@angular/core';
           import {SomeType} from './iface';
-          
+
           @Component({
             selector: 'test-cmp',
             template: '{{ doSomething(value.field) }}',
@@ -564,7 +564,7 @@ runInEachFileSystem(() => {
         // test verifies that incremental template type-checking.
         env.write('cmp.ts', `
           import {Component} from '@angular/core';
-  
+
           @Component({
             selector: 'test-cmp',
             template: '<div dir [someInput]="1"></div>',
@@ -575,7 +575,7 @@ runInEachFileSystem(() => {
           import {NgModule} from '@angular/core';
           import {Cmp} from './cmp';
           import {ModuleB} from './module-b';
-  
+
           @NgModule({
             declarations: [Cmp],
             imports: [ModuleB],
@@ -587,7 +587,7 @@ runInEachFileSystem(() => {
         env.write('module-b.ts', `
           import {NgModule} from '@angular/core';
           import {Dir} from './dir';
-  
+
           @NgModule({
             declarations: [Dir],
           })
@@ -595,7 +595,7 @@ runInEachFileSystem(() => {
         `);
         env.write('dir.ts', `
           import {Directive, Input} from '@angular/core';
-  
+
           @Directive({selector: '[dir]'})
           export class Dir {
             @Input() someInput!: any;
@@ -617,7 +617,7 @@ runInEachFileSystem(() => {
         env.write('module-b.ts', `
           import {NgModule} from '@angular/core';
           import {Dir} from './dir';
-  
+
           @NgModule({
             declarations: [Dir],
             exports: [Dir],
@@ -640,7 +640,7 @@ runInEachFileSystem(() => {
           // checking de-optimization).
           env.write('cmp.ts', `
             import {Component} from '@angular/core';
-  
+
             @Component({
               selector: 'test-cmp',
               template: '{{test}}',
@@ -662,7 +662,7 @@ runInEachFileSystem(() => {
           // Now, correct the error by adding the 'test' property to the component.
           env.write('cmp.ts', `
             import {Component} from '@angular/core';
-  
+
             @Component({
               selector: 'test-cmp',
               template: '{{test}}',

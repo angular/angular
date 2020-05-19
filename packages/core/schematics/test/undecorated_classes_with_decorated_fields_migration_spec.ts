@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -86,7 +86,7 @@ describe('Undecorated classes with decorated fields migration', () => {
      async () => {
        writeFile('/index.ts', `
       import { HostBinding } from '@angular/core';
-      
+
       export class Directive {
         // Simulates a scenario where a library defines a class named "Directive".
         // We don't want to generate a conflicting import.
@@ -282,18 +282,18 @@ describe('Undecorated classes with decorated fields migration', () => {
       export class Base {
         @Input() isActive: boolean;
       }
-      
+
       export class DerivedA extends Base {}
       export class DerivedB extends DerivedA {}
       export class DerivedC extends DerivedB {}
-      
+
       @Directive({selector: 'my-comp'})
       export class MyComp extends DerivedC {}
-      
+
       export class MyCompWrapped extends MyComp {}
-      
+
       @NgModule({declarations: [MyComp, MyCompWrapped]})
-      export class AppModule {} 
+      export class AppModule {}
     `);
 
     await runMigration();
@@ -315,18 +315,18 @@ describe('Undecorated classes with decorated fields migration', () => {
       export class Base {
         // ...
       }
-      
+
       export class DerivedA extends Base {}
       export class DerivedB extends DerivedA {}
       export class DerivedC extends DerivedB {}
-      
+
       @Directive({selector: 'my-comp'})
       export class MyComp extends DerivedC {}
-      
+
       export class MyCompWrapped extends MyComp {}
-      
+
       @NgModule({declarations: [MyComp, MyCompWrapped]})
-      export class AppModule {} 
+      export class AppModule {}
     `);
 
     await runMigration();

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -58,10 +58,10 @@ describe('Google3 missing injectable tslint rule', () => {
        () => {
          writeFile('/index.ts', `
           import {Component} from '@angular/core';
-        
+
           export class MyService {}
           export class MySecondService {}
-              
+
           @Component({
             providers: [MyService],
             viewProviders: [MySecondService],
@@ -83,9 +83,9 @@ describe('Google3 missing injectable tslint rule', () => {
     it('should create proper failures for missing injectable providers', () => {
       writeFile('index.ts', `
         import { ${type} } from '@angular/core';
-  
+
         export class A {}
-  
+
         @${type}({${propName}: [A]})
         export class TestClass {}
       `);
@@ -105,16 +105,16 @@ describe('Google3 missing injectable tslint rule', () => {
     it('should update provider classes which need to be migrated in Ivy', () => {
       writeFile('/index.ts', `
         import {Pipe, Directive, Component, NgModule} from '@angular/core';
-      
+
         @Pipe()
         export class WithPipe {}
-        
+
         @Directive()
         export class WithDirective {}
-        
+
         @Component()
         export class WithComponent {}
-        
+
         export class MyServiceA {}
         export class MyServiceB {}
         export class MyServiceC {}
@@ -123,7 +123,7 @@ describe('Google3 missing injectable tslint rule', () => {
         export class MyServiceF {}
         export class MyServiceG {}
         export class MyServiceH {}
-            
+
         @${type}({${propName}: [
           WithPipe,
           [
@@ -164,9 +164,9 @@ describe('Google3 missing injectable tslint rule', () => {
     it(`should migrate provider once if referenced in multiple ${type} definitions`, () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
-      
+
         export class ServiceA {}
-                  
+
         @${type}({${propName}: [ServiceA]})
         export class TestClass {}
       `);
@@ -174,9 +174,9 @@ describe('Google3 missing injectable tslint rule', () => {
       writeFile('/second.ts', `
         import {${type}} from '@angular/core';
         import {ServiceA} from './index';
-        
+
         export class ServiceB {}
-        
+
         @${type}({${propName}: [ServiceA, ServiceB]})
         export class TestClass2 {}
       `);
@@ -193,7 +193,7 @@ describe('Google3 missing injectable tslint rule', () => {
     it('should warn if a referenced provider could not be resolved', () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
-        
+
         @${type}({${propName}: [NotPresent]})
         export class TestClass {}
       `);
@@ -210,7 +210,7 @@ describe('Google3 missing injectable tslint rule', () => {
     it(`should warn if the "${propName}" value could not be resolved`, () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
-        
+
         @${type}({${propName}: NOT_ANALYZABLE)
         export class TestClass {}
       `);
@@ -228,13 +228,13 @@ describe('Google3 missing injectable tslint rule', () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
         import {MyService, MySecondService} from './service';
-                      
+
         @${type}({${propName}: [MyService, MySecondService]})
         export class TestClass {}
       `);
 
       writeFile('/service.ts', `export class MyService {}
-      
+
         export class MySecondService {}
       `);
 
@@ -249,14 +249,14 @@ describe('Google3 missing injectable tslint rule', () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
         import {MyService} from './service';
-               
+
         @${type}({${propName}: [MyService]})
         export class TestClass {}
       `);
 
       writeFile('/service.ts', `
         import {Inject} from '@angular/core';
-      
+
         @Inject()
         export class MyService {}
       `);

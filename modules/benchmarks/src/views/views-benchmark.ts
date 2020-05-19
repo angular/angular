@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -31,14 +31,14 @@ export class ViewManipulationDirective {
 
   <section>
     <button (click)="create(vm)">Create</button>
-    <button (click)="destroy(vm)">Destroy</button>  
+    <button (click)="destroy(vm)">Destroy</button>
     <button (click)="check()">Check</button>
   </section>
 
   <ng-template viewManipulationDirective #vm="vm">
     <div>text</div>
-  </ng-template>  
-  
+  </ng-template>
+
   `
 })
 export class ViewsBenchmark {
