@@ -1,3 +1,14 @@
+<a name="10.0.0-next.9"></a>
+# [10.0.0-next.9](https://github.com/angular/angular/compare/10.0.0-next.8...10.0.0-next.9) (2020-05-19)
+
+
+### Bug Fixes
+
+* **compiler-cli:** ensure LogicalFileSystem maintains case in paths ([#37008](https://github.com/angular/angular/issues/37008)) ([3dfc770](https://github.com/angular/angular/commit/3dfc770)), closes [#36992](https://github.com/angular/angular/issues/36992) [#36993](https://github.com/angular/angular/issues/36993) [#37000](https://github.com/angular/angular/issues/37000)
+* **router:** update type for routerLink to include null and undefined ([#37018](https://github.com/angular/angular/issues/37018)) ([ef9f8df](https://github.com/angular/angular/commit/ef9f8df)), closes [#13380](https://github.com/angular/angular/issues/13380) [#36544](https://github.com/angular/angular/issues/36544)
+
+
+
 <a name="10.0.0-next.8"></a>
 # [10.0.0-next.8](https://github.com/angular/angular/compare/10.0.0-next.7...10.0.0-next.8) (2020-05-18)
 
