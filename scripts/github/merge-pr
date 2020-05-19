@@ -4,6 +4,30 @@
 # https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
 set -u -e -E -o pipefail
 
+# Clippy ascii art copied from https://github.com/gbigwood/Clippo
+echo -e "
+################################################
+/  \        _________________
+|  |       /                 \\
+@  @       | It looks like   |
+|| ||      | you are trying  |
+|| ||   <--| to merge a PR.  |
+|\_/|      \_________________/
+\___/
+
+A new merge script is available using `ng-dev`!
+
+In the future, this script will be removed in
+favor of using ng-dev.
+
+To merge a pr using the new tooling run:
+
+$ yarn -s ng dev pr merge <pr-number>
+
+################################################"
+# Sleep a short time to highlight deprecate notice.
+sleep 2;
+
 BOLD='printf \e[1m'
 RESET_STYLES='printf \e[0m'
 LIGHT_CYAN='printf \e[96m'
