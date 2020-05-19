@@ -1,4 +1,4 @@
-import {ChoiceType, prompt, Separator} from 'inquirer';
+import {ListChoiceOptions, prompt, Separator, SeparatorOptions} from 'inquirer';
 import {createNewVersion, ReleaseType} from '../version-name/create-version';
 import {parseVersionName, Version} from '../version-name/parse-version';
 import {determineAllowedPrereleaseLabels} from './prerelease-labels';
@@ -16,7 +16,7 @@ type VersionPromptAnswers = {
  */
 export async function promptForNewVersion(currentVersion: Version): Promise<Version> {
   const allowedPrereleaseChoices = determineAllowedPrereleaseLabels(currentVersion);
-  const versionChoices: ChoiceType[] = [];
+  const versionChoices: (ListChoiceOptions|SeparatorOptions)[] = [];
   const currentVersionName = currentVersion.format();
 
   if (currentVersion.prereleaseLabel) {
