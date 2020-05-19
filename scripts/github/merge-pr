@@ -22,7 +22,7 @@ favor of using ng-dev.
 
 To merge a pr using the new tooling run:
 
-$ yarn -s ng dev pr merge <pr-number>
+$ yarn -s ng-dev pr merge <pr-number>
 
 ################################################"
 # Sleep a short time to highlight deprecate notice.
