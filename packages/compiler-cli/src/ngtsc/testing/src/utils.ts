@@ -54,7 +54,7 @@ export function getDeclaration<T extends ts.Declaration>(
     program: ts.Program, fileName: AbsoluteFsPath, name: string,
     assert: (value: any) => value is T): T {
   const sf = getSourceFileOrError(program, fileName);
-  const chosenDecl = walkForDeclaration(sf);
+  const chosenDecl = walkForDeclaration(name, sf);
 
   if (chosenDecl === null) {
     throw new Error(`No such symbol: ${name} in ${fileName}`);
@@ -63,37 +63,40 @@ export function getDeclaration<T extends ts.Declaration>(
     throw new Error(`Symbol ${name} from ${fileName} is a ${ts.SyntaxKind[chosenDecl.kind]}`);
   }
   return chosenDecl;
-
-  // We walk the AST tree looking for a declaration that matches
-  function walkForDeclaration(rootNode: ts.Node): ts.Declaration|null {
-    let chosenDecl: ts.Declaration|null = null;
-    rootNode.forEachChild(node => {
-      if (chosenDecl !== null) {
-        return;
-      }
-      if (ts.isVariableStatement(node)) {
-        node.declarationList.declarations.forEach(decl => {
-          if (bindingNameEquals(decl.name, name)) {
-            chosenDecl = decl;
-          }
-        });
-      } else if (
-          ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node) ||
-          ts.isInterfaceDeclaration(node)) {
-        if (node.name !== undefined && node.name.text === name) {
-          chosenDecl = node;
-        }
-      } else if (
-          ts.isImportDeclaration(node) && node.importClause !== undefined &&
-          node.importClause.name !== undefined && node.importClause.name.text === name) {
-        chosenDecl = node.importClause;
-      } else {
-        chosenDecl = walkForDeclaration(node);
-      }
-    });
-    return chosenDecl;
-  }
 }
+
+// We walk the AST tree looking for a declaration that matches
+export function walkForDeclaration(name: string, rootNode: ts.Node): ts.Declaration|null {
+  let chosenDecl: ts.Declaration|null = null;
+  rootNode.forEachChild(node => {
+    if (chosenDecl !== null) {
+      return;
+    }
+    if (ts.isVariableStatement(node)) {
+      node.declarationList.declarations.forEach(decl => {
+        if (bindingNameEquals(decl.name, name)) {
+          chosenDecl = decl;
+        } else {
+          chosenDecl = walkForDeclaration(name, node);
+        }
+      });
+    } else if (
+        ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node) ||
+        ts.isInterfaceDeclaration(node) || ts.isClassExpression(node)) {
+      if (node.name !== undefined && node.name.text === name) {
+        chosenDecl = node;
+      }
+    } else if (
+        ts.isImportDeclaration(node) && node.importClause !== undefined &&
+        node.importClause.name !== undefined && node.importClause.name.text === name) {
+      chosenDecl = node.importClause;
+    } else {
+      chosenDecl = walkForDeclaration(name, node);
+    }
+  });
+  return chosenDecl;
+}
+
 
 function bindingNameEquals(node: ts.BindingName, name: string): boolean {
   if (ts.isIdentifier(node)) {
