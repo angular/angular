@@ -45,8 +45,6 @@ if (browserDetection.supportsCustomElements) {
           .then(done, done.fail);
     });
 
-    afterEach(() => strategy.reset());
-
     afterAll(() => destroyPlatform());
 
     it('should use a default strategy for converting component inputs', () => {
@@ -156,12 +154,6 @@ if (browserDetection.supportsCustomElements) {
 
       setInputValue(propName: string, value: string): void {
         this.inputs.set(propName, value);
-      }
-
-      reset(): void {
-        this.connectedElement = null;
-        this.disconnectCalled = false;
-        this.inputs.clear();
       }
     }
 
