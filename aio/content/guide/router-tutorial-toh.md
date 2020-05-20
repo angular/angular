@@ -579,7 +579,7 @@ The application continues to work just the same, and you can use `AppRoutingModu
 
 {@a why-routing-module}
 
-### Benfits of a routing module
+### Benefits of a routing module
 
 The routing module, often called the `AppRoutingModule`, replaces the routing configuration in the root or feature module.
 
