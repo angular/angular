@@ -22,16 +22,12 @@ type WithFooBar = {
 
 if (browserDetection.supportsCustomElements) {
   describe('createCustomElement', () => {
-    let selectorUid = 0;
-    let testContainer: HTMLDivElement;
     let NgElementCtor: NgElementConstructor<WithFooBar>;
     let strategy: TestStrategy;
     let strategyFactory: TestStrategyFactory;
     let injector: Injector;
 
     beforeAll(done => {
-      testContainer = document.createElement('div');
-      document.body.appendChild(testContainer);
       destroyPlatform();
       platformBrowserDynamic()
           .bootstrapModule(TestModule)
@@ -40,23 +36,18 @@ if (browserDetection.supportsCustomElements) {
             strategyFactory = new TestStrategyFactory();
             strategy = strategyFactory.testStrategy;
 
-            const {selector, ElementCtor} = createTestCustomElement();
-            NgElementCtor = ElementCtor;
+            NgElementCtor = createCustomElement(TestComponent, {injector, strategyFactory});
 
             // The `@webcomponents/custom-elements/src/native-shim.js` polyfill allows us to create
             // new instances of the NgElement which extends HTMLElement, as long as we define it.
-            customElements.define(selector, NgElementCtor);
+            customElements.define('test-element', NgElementCtor);
           })
           .then(done, done.fail);
     });
 
     afterEach(() => strategy.reset());
 
-    afterAll(() => {
-      destroyPlatform();
-      document.body.removeChild(testContainer);
-      (testContainer as any) = null;
-    });
+    afterAll(() => destroyPlatform());
 
     it('should use a default strategy for converting component inputs', () => {
       expect(NgElementCtor.observedAttributes).toEqual(['foo-foo', 'barbar']);
@@ -122,90 +113,7 @@ if (browserDetection.supportsCustomElements) {
          expect(strategy.inputs.get('barBar')).toBe('barBar-value');
        });
 
-    it('should capture properties set before upgrading the element', () => {
-      // Create a regular element and set properties on it.
-      const {selector, ElementCtor} = createTestCustomElement();
-      const element = Object.assign(document.createElement(selector), {
-        fooFoo: 'foo-prop-value',
-        barBar: 'bar-prop-value',
-      });
-      expect(element.fooFoo).toBe('foo-prop-value');
-      expect(element.barBar).toBe('bar-prop-value');
-
-      // Upgrade the element to a Custom Element and insert it into the DOM.
-      customElements.define(selector, ElementCtor);
-      testContainer.appendChild(element);
-      expect(element.fooFoo).toBe('foo-prop-value');
-      expect(element.barBar).toBe('bar-prop-value');
-
-      expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
-      expect(strategy.inputs.get('barBar')).toBe('bar-prop-value');
-    });
-
-    it('should capture properties set after upgrading the element but before inserting it into the DOM',
-       () => {
-         // Create a regular element and set properties on it.
-         const {selector, ElementCtor} = createTestCustomElement();
-         const element = Object.assign(document.createElement(selector), {
-           fooFoo: 'foo-prop-value',
-           barBar: 'bar-prop-value',
-         });
-         expect(element.fooFoo).toBe('foo-prop-value');
-         expect(element.barBar).toBe('bar-prop-value');
-
-         // Upgrade the element to a Custom Element (without inserting it into the DOM) and update a
-         // property.
-         customElements.define(selector, ElementCtor);
-         customElements.upgrade(element);
-         element.barBar = 'bar-prop-value-2';
-         expect(element.fooFoo).toBe('foo-prop-value');
-         expect(element.barBar).toBe('bar-prop-value-2');
-
-         // Insert the element into the DOM.
-         testContainer.appendChild(element);
-         expect(element.fooFoo).toBe('foo-prop-value');
-         expect(element.barBar).toBe('bar-prop-value-2');
-
-         expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
-         expect(strategy.inputs.get('barBar')).toBe('bar-prop-value-2');
-       });
-
-    it('should allow overwriting properties with attributes after upgrading the element but before inserting it into the DOM',
-       () => {
-         // Create a regular element and set properties on it.
-         const {selector, ElementCtor} = createTestCustomElement();
-         const element = Object.assign(document.createElement(selector), {
-           fooFoo: 'foo-prop-value',
-           barBar: 'bar-prop-value',
-         });
-         expect(element.fooFoo).toBe('foo-prop-value');
-         expect(element.barBar).toBe('bar-prop-value');
-
-         // Upgrade the element to a Custom Element (without inserting it into the DOM) and set an
-         // attribute.
-         customElements.define(selector, ElementCtor);
-         customElements.upgrade(element);
-         element.setAttribute('barbar', 'bar-attr-value');
-         expect(element.fooFoo).toBe('foo-prop-value');
-         expect(element.barBar).toBe('bar-attr-value');
-
-         // Insert the element into the DOM.
-         testContainer.appendChild(element);
-         expect(element.fooFoo).toBe('foo-prop-value');
-         expect(element.barBar).toBe('bar-attr-value');
-
-         expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
-         expect(strategy.inputs.get('barBar')).toBe('bar-attr-value');
-       });
-
     // Helpers
-    function createTestCustomElement() {
-      return {
-        selector: `test-element-${++selectorUid}`,
-        ElementCtor: createCustomElement<WithFooBar>(TestComponent, {injector, strategyFactory}),
-      };
-    }
-
     @Component({
       selector: 'test-component',
       template: 'TestComponent|foo({{ fooFoo }})|bar({{ barBar }})',
