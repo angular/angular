@@ -7,6 +7,9 @@
  */
 
 import {prompt} from 'inquirer';
+
+import {error, info} from '../utils/console';
+
 import {runFormatterInParallel} from './run-commands-parallel';
 
 /**
@@ -17,16 +20,16 @@ export async function formatFiles(files: string[]) {
   let failures = await runFormatterInParallel(files, 'format');
 
   if (failures === false) {
-    console.info('No files matched for formatting.');
+    info('No files matched for formatting.');
     process.exit(0);
   }
 
   // The process should exit as a failure if any of the files failed to format.
   if (failures.length !== 0) {
-    console.error(`Formatting failed, see errors above for more information.`);
+    error(`Formatting failed, see errors above for more information.`);
     process.exit(1);
   }
-  console.info(`√  Formatting complete.`);
+  info(`√  Formatting complete.`);
   process.exit(0);
 }
 
@@ -38,18 +41,18 @@ export async function checkFiles(files: string[]) {
   const failures = await runFormatterInParallel(files, 'check');
 
   if (failures === false) {
-    console.info('No files matched for formatting check.');
+    info('No files matched for formatting check.');
     process.exit(0);
   }
 
   if (failures.length) {
     // Provide output expressing which files are failing formatting.
-    console.group('\nThe following files are out of format:');
+    info.group('\nThe following files are out of format:');
     for (const file of failures) {
-      console.info(`  - ${file}`);
+      info(`  - ${file}`);
     }
-    console.groupEnd();
-    console.info();
+    info.groupEnd();
+    info();
 
     // If the command is run in a non-CI environment, prompt to format the files immediately.
     let runFormatter = false;
@@ -67,13 +70,13 @@ export async function checkFiles(files: string[]) {
       process.exit(0);
     } else {
       // Inform user how to format files in the future.
-      console.info();
-      console.info(`To format the failing file run the following command:`);
-      console.info(`  yarn ng-dev format files ${failures.join(' ')}`);
+      info();
+      info(`To format the failing file run the following command:`);
+      info(`  yarn ng-dev format files ${failures.join(' ')}`);
       process.exit(1);
     }
   } else {
-    console.info('√  All files correctly formatted.');
+    info('√  All files correctly formatted.');
     process.exit(0);
   }
 }
