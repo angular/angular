@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {exec} from 'shelljs';
+
+import {info} from '../utils/console';
+
 import {parseCommitMessage, validateCommitMessage, ValidateCommitMessageOptions} from './validate';
 
 // Whether the provided commit is a fixup commit.
@@ -31,7 +34,7 @@ export function validateCommitRange(range: string) {
   // Separate the commits from a single string into individual commits
   const commits = result.split(randomValueSeparator).map(l => l.trim()).filter(line => !!line);
 
-  console.info(`Examining ${commits.length} commit(s) in the provided range: ${range}`);
+  info(`Examining ${commits.length} commit(s) in the provided range: ${range}`);
 
   // Check each commit in the commit range.  Commits are allowed to be fixup commits for other
   // commits in the provided commit range.
@@ -46,7 +49,7 @@ export function validateCommitRange(range: string) {
   });
 
   if (allCommitsInRangeValid) {
-    console.info('√  All commit messages in range valid.');
+    info('√  All commit messages in range valid.');
   } else {
     // Exit with a non-zero exit code if invalid commit messages have
     // been discovered.
