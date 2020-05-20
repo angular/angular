@@ -44,39 +44,39 @@ export enum LOG_LEVELS {
 export const DEFAULT_LOG_LEVEL = LOG_LEVELS.INFO;
 
 /** Write to the console for at INFO logging level */
-export function info(...entries: string[]): void;
-export function info(color: typeof chalk, ...entries: string[]): void;
-export function info(color: typeof chalk|string, ...entries: string[]) {
-  runConsoleCommand(console.info, LOG_LEVELS.INFO, color, ...entries);
+export function info(...text: string[]): void;
+export function info(color: typeof chalk, ...text: string[]): void;
+export function info(color: typeof chalk|string, ...text: string[]) {
+  runConsoleCommand(console.info, LOG_LEVELS.INFO, color, ...text);
 }
 
 /** Write to the console for at ERROR logging level */
-export function error(...entries: string[]): void;
-export function error(color: typeof chalk, ...entries: string[]): void;
-export function error(color: typeof chalk|string, ...entries: string[]) {
-  runConsoleCommand(console.error, LOG_LEVELS.ERROR, color, ...entries);
+export function error(...text: string[]): void;
+export function error(color: typeof chalk, ...text: string[]): void;
+export function error(color: typeof chalk|string, ...text: string[]) {
+  runConsoleCommand(console.error, LOG_LEVELS.ERROR, color, ...text);
 }
 
 /** Write to the console for at DEBUG logging level */
-export function debug(...entries: string[]): void;
-export function debug(color: typeof chalk, ...entries: string[]): void;
-export function debug(color: typeof chalk|string, ...entries: string[]) {
-  runConsoleCommand(console.debug, LOG_LEVELS.DEBUG, color, ...entries);
+export function debug(...text: string[]): void;
+export function debug(color: typeof chalk, ...text: string[]): void;
+export function debug(color: typeof chalk|string, ...text: string[]) {
+  runConsoleCommand(console.debug, LOG_LEVELS.DEBUG, color, ...text);
 }
 
 /** Write to the console for at LOG logging level */
-export function log(...entries: string[]): void;
-export function log(color: typeof chalk, ...entries: string[]): void;
-export function log(color: typeof chalk|string, ...entries: string[]) {
+export function log(...text: string[]): void;
+export function log(color: typeof chalk, ...text: string[]): void;
+export function log(color: typeof chalk|string, ...text: string[]) {
   // tslint:disable-next-line: no-console
-  runConsoleCommand(console.log, LOG_LEVELS.LOG, color, ...entries);
+  runConsoleCommand(console.log, LOG_LEVELS.LOG, color, ...text);
 }
 
 /** Write to the console for at WARN logging level */
-export function warn(...entries: string[]): void;
-export function warn(color: typeof chalk, ...entries: string[]): void;
-export function warn(color: typeof chalk|string, ...entries: string[]) {
-  runConsoleCommand(console.warn, LOG_LEVELS.WARN, color, ...entries);
+export function warn(...text: string[]): void;
+export function warn(color: typeof chalk, ...text: string[]): void;
+export function warn(color: typeof chalk|string, ...text: string[]) {
+  runConsoleCommand(console.warn, LOG_LEVELS.WARN, color, ...text);
 }
 
 /**
