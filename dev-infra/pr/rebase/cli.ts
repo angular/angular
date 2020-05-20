@@ -8,6 +8,8 @@
 
 import {Arguments, Argv} from 'yargs';
 
+import {error} from '../../utils/console';
+
 import {rebasePr} from './index';
 
 /** URL to the Github page where personal access tokens can be generated. */
@@ -25,9 +27,9 @@ export function buildRebaseCommand(yargs: Argv) {
 export async function handleRebaseCommand(args: Arguments) {
   const githubToken = args.githubToken || process.env.GITHUB_TOKEN || process.env.TOKEN;
   if (!githubToken) {
-    console.error('No Github token set. Please set the `GITHUB_TOKEN` environment variable.');
-    console.error('Alternatively, pass the `--github-token` command line flag.');
-    console.error(`You can generate a token here: ${GITHUB_TOKEN_GENERATE_URL}`);
+    error('No Github token set. Please set the `GITHUB_TOKEN` environment variable.');
+    error('Alternatively, pass the `--github-token` command line flag.');
+    error(`You can generate a token here: ${GITHUB_TOKEN_GENERATE_URL}`);
     process.exit(1);
   }
 
