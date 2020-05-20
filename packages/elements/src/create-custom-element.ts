@@ -136,31 +136,35 @@ export function createCustomElement<P>(
     // field externs. So using quoted access to explicitly prevent renaming.
     static readonly['observedAttributes'] = Object.keys(attributeToPropertyInputs);
 
-    constructor(injector?: Injector) {
-      super();
-
-      // Note that some polyfills (e.g. document-register-element) do not call the constructor.
-      // Do not assume this strategy has been created.
+    protected get ngElementStrategy(): NgElementStrategy {
+      // NOTE:
+      // Some polyfills (e.g. `document-register-element`) do not call the constructor, therefore
+      // it is not safe to set `ngElementStrategy` in the constructor and assume it will be
+      // available inside the methods.
+      //
       // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
       // now this is tested using a Google internal test suite.
-      this.ngElementStrategy = strategyFactory.create(injector || config.injector);
+      if (this._ngElementStrategy === null) {
+        this._ngElementStrategy = strategyFactory.create(this.injector);
+      }
+      return this._ngElementStrategy;
+    }
+
+    private readonly injector: Injector;
+    private _ngElementStrategy: NgElementStrategy|null = null;
+
+    constructor(injector?: Injector) {
+      super();
+      this.injector = injector || config.injector;
     }
 
     attributeChangedCallback(
         attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
-      if (!this.ngElementStrategy) {
-        this.ngElementStrategy = strategyFactory.create(config.injector);
-      }
-
       const propName = attributeToPropertyInputs[attrName]!;
       this.ngElementStrategy.setInputValue(propName, newValue);
     }
 
     connectedCallback(): void {
-      if (!this.ngElementStrategy) {
-        this.ngElementStrategy = strategyFactory.create(config.injector);
-      }
-
       this.ngElementStrategy.connect(this);
 
       // Listen for events from the strategy and dispatch them as custom events
@@ -171,8 +175,9 @@ export function createCustomElement<P>(
     }
 
     disconnectedCallback(): void {
-      if (this.ngElementStrategy) {
-        this.ngElementStrategy.disconnect();
+      // Not using `this.ngElementStrategy` to avoid unnecessarily creating the `NgElementStrategy`.
+      if (this._ngElementStrategy) {
+        this._ngElementStrategy.disconnect();
       }
 
       if (this.ngElementEventsSubscription) {
@@ -182,22 +187,18 @@ export function createCustomElement<P>(
     }
   }
 
+  // TypeScript 3.9+ defines getters/setters as configurable but non-enumerable properties (in
+  // compliance with the spec). This breaks emulated inheritance in ES5 on environments that do not
+  // natively support `Object.setPrototypeOf()` (such as IE 9-10).
+  // Update the property descriptor of `NgElementImpl#ngElementStrategy` to make it enumerable.
+  Object.defineProperty(NgElementImpl.prototype, 'ngElementStrategy', {enumerable: true});
+
   // Add getters and setters to the prototype for each property input. If the config does not
   // contain property inputs, use all inputs by default.
   inputs.map(({propName}) => propName).forEach(property => {
     Object.defineProperty(NgElementImpl.prototype, property, {
-      get: function() {
-        if (!this.ngElementStrategy) {
-          this.ngElementStrategy = strategyFactory.create(config.injector);
-        }
-        return this.ngElementStrategy.getInputValue(property);
-      },
-      set: function(newValue: any) {
-        if (!this.ngElementStrategy) {
-          this.ngElementStrategy = strategyFactory.create(config.injector);
-        }
-        this.ngElementStrategy.setInputValue(property, newValue);
-      },
+      get: function() { return this.ngElementStrategy.getInputValue(property); },
+      set: function(newValue: any) { this.ngElementStrategy.setInputValue(property, newValue); },
       configurable: true,
       enumerable: true,
     });
