@@ -9,6 +9,7 @@ import {readFileSync} from 'fs';
 import {resolve} from 'path';
 
 import {getRepoBaseDir} from '../utils/config';
+import {info} from '../utils/console';
 
 import {validateCommitMessage} from './validate';
 
@@ -16,7 +17,7 @@ import {validateCommitMessage} from './validate';
 export function validateFile(filePath: string) {
   const commitMessage = readFileSync(resolve(getRepoBaseDir(), filePath), 'utf8');
   if (validateCommitMessage(commitMessage)) {
-    console.info('√  Valid commit message');
+    info('√  Valid commit message');
     return;
   }
   // If the validation did not return true, exit as a failure.
