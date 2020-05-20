@@ -9,6 +9,8 @@
 import {existsSync} from 'fs';
 import {join} from 'path';
 import {exec} from 'shelljs';
+
+import {error} from './console';
 import {isTsNodeAvailable} from './ts-node';
 
 /**
@@ -87,10 +89,10 @@ function readConfigFile(configPath: string): object {
   }
 
   try {
-    return require(configPath)
+    return require(configPath);
   } catch (e) {
-    console.error('Could not read configuration file.');
-    console.error(e);
+    error('Could not read configuration file.');
+    error(e);
     process.exit(1);
   }
 }
@@ -103,9 +105,9 @@ export function assertNoErrors(errors: string[]) {
   if (errors.length == 0) {
     return;
   }
-  console.error(`Errors discovered while loading configuration file:`);
-  for (const error of errors) {
-    console.error(`  - ${error}`);
+  error(`Errors discovered while loading configuration file:`);
+  for (const err of errors) {
+    error(`  - ${err}`);
   }
   process.exit(1);
 }
