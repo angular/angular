@@ -26,7 +26,7 @@ const DESTROY_DELAY = 10;
 export class ComponentNgElementStrategyFactory implements NgElementStrategyFactory {
   componentFactory: ComponentFactory<any>;
 
-  constructor(component: Type<any>, injector: Injector) {
+  constructor(private component: Type<any>, private injector: Injector) {
     this.componentFactory =
         injector.get(ComponentFactoryResolver).resolveComponentFactory(component);
   }
