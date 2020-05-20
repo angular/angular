@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import chalk from 'chalk';
 
 import {getRepoBaseDir} from '../../utils/config';
-import {promptConfirm} from '../../utils/console';
+import {error, green, info, promptConfirm, red, yellow} from '../../utils/console';
 
 import {loadAndValidateConfig, MergeConfigWithRemote} from './config';
 import {GithubApiRequestError} from './git';
@@ -40,8 +39,8 @@ export async function mergePullRequest(
   if (config === undefined) {
     const {config: _config, errors} = loadAndValidateConfig();
     if (errors) {
-      console.error(chalk.red('Invalid configuration:'));
-      errors.forEach(desc => console.error(chalk.yellow(`  -  ${desc}`)));
+      error(red('Invalid configuration:'));
+      errors.forEach(desc => error(yellow(`  -  ${desc}`)));
       process.exit(1);
     }
     config = _config!;
@@ -65,9 +64,9 @@ export async function mergePullRequest(
       // Catch errors to the Github API for invalid requests. We want to
       // exit the script with a better explanation of the error.
       if (e instanceof GithubApiRequestError && e.status === 401) {
-        console.error(chalk.red('Github API request failed. ' + e.message));
-        console.error(chalk.yellow('Please ensure that your provided token is valid.'));
-        console.error(chalk.yellow(`You can generate a token here: ${GITHUB_TOKEN_GENERATE_URL}`));
+        error(red('Github API request failed. ' + e.message));
+        error(yellow('Please ensure that your provided token is valid.'));
+        error(yellow(`You can generate a token here: ${GITHUB_TOKEN_GENERATE_URL}`));
         process.exit(1);
       }
       throw e;
@@ -99,25 +98,25 @@ export async function mergePullRequest(
 
     switch (status) {
       case MergeStatus.SUCCESS:
-        console.info(chalk.green(`Successfully merged the pull request: ${prNumber}`));
+        info(green(`Successfully merged the pull request: ${prNumber}`));
         return true;
       case MergeStatus.DIRTY_WORKING_DIR:
-        console.error(chalk.red(
-            `Local working repository not clean. Please make sure there are ` +
-            `no uncommitted changes.`));
+        error(
+            red(`Local working repository not clean. Please make sure there are ` +
+                `no uncommitted changes.`));
         return false;
       case MergeStatus.UNKNOWN_GIT_ERROR:
-        console.error(chalk.red(
-            'An unknown Git error has been thrown. Please check the output ' +
-            'above for details.'));
+        error(
+            red('An unknown Git error has been thrown. Please check the output ' +
+                'above for details.'));
         return false;
       case MergeStatus.FAILED:
-        console.error(chalk.yellow(`Could not merge the specified pull request.`));
-        console.error(chalk.red(failure!.message));
+        error(yellow(`Could not merge the specified pull request.`));
+        error(red(failure!.message));
         if (canForciblyMerge && !disableForceMergePrompt) {
-          console.info();
-          console.info(chalk.yellow('The pull request above failed due to non-critical errors.'));
-          console.info(chalk.yellow(`This error can be forcibly ignored if desired.`));
+          info();
+          info(yellow('The pull request above failed due to non-critical errors.'));
+          info(yellow(`This error can be forcibly ignored if desired.`));
           return await promptAndPerformForceMerge();
         }
         return false;
