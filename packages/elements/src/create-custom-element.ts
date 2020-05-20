@@ -187,12 +187,6 @@ export function createCustomElement<P>(
     }
   }
 
-  // TypeScript 3.9+ defines getters/setters as configurable but non-enumerable properties (in
-  // compliance with the spec). This breaks emulated inheritance in ES5 on environments that do not
-  // natively support `Object.setPrototypeOf()` (such as IE 9-10).
-  // Update the property descriptor of `NgElementImpl#ngElementStrategy` to make it enumerable.
-  Object.defineProperty(NgElementImpl.prototype, 'ngElementStrategy', {enumerable: true});
-
   // Add getters and setters to the prototype for each property input. If the config does not
   // contain property inputs, use all inputs by default.
   inputs.map(({propName}) => propName).forEach(property => {
