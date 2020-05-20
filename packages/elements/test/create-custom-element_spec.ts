@@ -94,6 +94,22 @@ if (browserDetection.supportsCustomElements) {
       expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
       expect(strategy.inputs.get('barBar')).toBe('barBar-value');
     });
+
+    it('should properly handle getting/setting properties on the element even if the constructor is not called',
+       () => {
+         // Create a custom element while ensuring that the `NgElementStrategy` is not created
+         // inside the constructor. This is done to emulate the behavior of some polyfills that do
+         // not call the constructor.
+         strategyFactory.create = () => undefined as unknown as NgElementStrategy;
+         const element = new NgElementCtor(injector);
+         strategyFactory.create = TestStrategyFactory.prototype.create;
+
+         element.fooFoo = 'foo-foo-value';
+         element.barBar = 'barBar-value';
+
+         expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
+         expect(strategy.inputs.get('barBar')).toBe('barBar-value');
+       });
   });
 }
 
