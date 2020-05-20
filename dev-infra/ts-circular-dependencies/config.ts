@@ -8,6 +8,8 @@
 
 import {dirname, isAbsolute, resolve} from 'path';
 
+import {error} from '../utils/console';
+
 import {ModuleResolver} from './analyzer';
 
 
@@ -52,8 +54,8 @@ export function loadTestConfig(configPath: string): CircularDependenciesTestConf
     }
     return config;
   } catch (e) {
-    console.error('Could not load test configuration file at: ' + configPath);
-    console.error(`Failed with: ${e.message}`);
+    error('Could not load test configuration file at: ' + configPath);
+    error(`Failed with: ${e.message}`);
     process.exit(1);
   }
 }
