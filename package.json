@@ -32,7 +32,7 @@
     "circleci-win-ve": "bazelisk test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only,-browser:chromium-local //packages/compiler-cli/... //tools/ts-api-guardian/...",
     "circleci-win-ivy": "bazelisk test --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local //packages/compiler-cli/... //tools/ts-api-guardian/...",
     "lint": "yarn -s tslint && yarn -s ng-dev format changed --check",
-    "tslint": "tsc -p tools/tsconfig.json && tslint -c tslint.json \"+(packages|modules|scripts|tools)/**/*.+(js|ts)\"",
+    "tslint": "tsc -p tools/tsconfig.json && tslint -c tslint.json \"+(dev-infra|packages|modules|scripts|tools)/**/*.+(js|ts)\"",
     "public-api:check": "node goldens/public-api/manage.js test",
     "public-api:update": "node goldens/public-api/manage.js accept",
     "ts-circular-deps": "ts-node --transpile-only -- dev-infra/ts-circular-dependencies/index.ts --config ./packages/circular-deps-test.conf.js",
