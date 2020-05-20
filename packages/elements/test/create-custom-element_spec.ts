@@ -73,6 +73,26 @@ if (browserDetection.supportsCustomElements) {
       expect(strategy.getInputValue('barBar')).toBe('value-barbar');
     });
 
+    it('should work even if when the constructor is not called (due to polyfill)', () => {
+      // Some polyfills (e.g. `document-register-element`) do not call the constructor of custom
+      // elements. Currently, all the constructor does is initialize the `injector` property. This
+      // test simulates not having called the constructor by "unsetting" the property.
+      //
+      // NOTE:
+      // If the constructor implementation changes in the future, this test needs to be adjusted
+      // accordingly.
+      const element = new NgElementCtor(injector);
+      delete (element as any).injector;
+
+      element.setAttribute('foo-foo', 'value-foo-foo');
+      element.setAttribute('barbar', 'value-barbar');
+      element.connectedCallback();
+
+      expect(strategy.connectedElement).toBe(element);
+      expect(strategy.getInputValue('fooFoo')).toBe('value-foo-foo');
+      expect(strategy.getInputValue('barBar')).toBe('value-barbar');
+    });
+
     it('should listen to output events after connected', () => {
       const element = new NgElementCtor(injector);
       element.connectedCallback();
@@ -260,7 +280,14 @@ if (browserDetection.supportsCustomElements) {
     class TestStrategyFactory implements NgElementStrategyFactory {
       testStrategy = new TestStrategy();
 
-      create(): NgElementStrategy {
+      create(injector: Injector): NgElementStrategy {
+        // Although not used by the `TestStrategy`, verify that the injector is provided.
+        if (!injector) {
+          throw new Error(
+              'Expected injector to be passed to `TestStrategyFactory#create()`, but received ' +
+              `value of type ${typeof injector}: ${injector}`);
+        }
+
         return this.testStrategy;
       }
     }
