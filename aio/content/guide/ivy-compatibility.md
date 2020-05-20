@@ -11,11 +11,11 @@ That said, some applications will likely need to apply some manual updates.
 In version 9, [a few deprecated APIs have been removed](guide/updating-to-version-9#removals) and there are a [few breaking changes](guide/updating-to-version-9#breaking-changes) unrelated to Ivy.
 If you're seeing errors after updating to version 9, you'll first want to rule those changes out.
 
-To do so, temporarily [turn off Ivy](guide/ivy#opting-out-of-angular-ivy) in your `tsconfig.json` and re-start your app.
+To do so, temporarily [turn off Ivy](guide/ivy#opting-out-of-angular-ivy) in your `tsconfig.base.json` and re-start your app.
 
 If you're still seeing the errors, they are not specific to Ivy. In this case, you may want to consult the [general version 9 guide](guide/updating-to-version-9). If you've opted into any of the stricter type-checking settings that are new with v9, you may also want to check out the [template type-checking guide](guide/template-typecheck).
 
-If the errors are gone, switch back to Ivy by removing the changes to the `tsconfig.json` and review the list of expected changes below.
+If the errors are gone, switch back to Ivy by removing the changes to the `tsconfig.base.json` and review the list of expected changes below.
 
 {@a payload-size-debugging}
 ### Payload size debugging
