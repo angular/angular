@@ -1,3 +1,16 @@
+<a name="9.1.9"></a>
+## [9.1.9](https://github.com/angular/angular/compare/9.1.8...9.1.9) (2020-05-20)
+
+This release contains a re-submit of the following 3 commits with fixes for TS 3.8.
+
+### Bug Fixes
+
+* **elements:** capture input properties set before upgrading the element ([#36114](https://github.com/angular/angular/issues/36114)) ([#37226](https://github.com/angular/angular/issues/37226)) ([a33cb2d](https://github.com/angular/angular/commit/a33cb2d)), closes [#30848](https://github.com/angular/angular/issues/30848) [#31416](https://github.com/angular/angular/issues/31416)
+* **elements:** correctly handle getting/setting properties before connecting the element ([#36114](https://github.com/angular/angular/issues/36114)) ([#37226](https://github.com/angular/angular/issues/37226)) ([6ac0042](https://github.com/angular/angular/commit/6ac0042)), closes [/github.com/angular/angular/pull/31416/files#r300326698](https://github.com//github.com/angular/angular/pull/31416/files/issues/r300326698)
+* **elements:** do not break when the constructor of an Angular Element is not called ([#36114](https://github.com/angular/angular/issues/36114)) ([#37226](https://github.com/angular/angular/issues/37226)) ([1465372](https://github.com/angular/angular/commit/1465372))
+
+
+
 <a name="9.1.8"></a>
 ## [9.1.8](https://github.com/angular/angular/compare/9.1.6...9.1.8) (2020-05-20)
 
