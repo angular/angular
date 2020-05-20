@@ -44,7 +44,7 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
   messageBus.on('enableTimingAPI', enableTimingAPI);
   messageBus.on('disableTimingAPI', disableTimingAPI);
 
-  if (appIsAngularInDevMode() && appIsSupportedAngularVersion()) {
+  if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     setupInspector(messageBus);
     // Often websites have `scroll` event listener which triggers
     // Angular's change detection. We don't want to constantly send
