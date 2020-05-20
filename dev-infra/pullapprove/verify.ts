@@ -10,6 +10,7 @@ import * as path from 'path';
 import {cd, exec, set} from 'shelljs';
 
 import {getRepoBaseDir} from '../utils/config';
+import {info} from '../utils/console';
 
 import {PullApproveGroup} from './group';
 import {logGroup, logHeader} from './logging';
@@ -67,38 +68,39 @@ export function verify(verbose = false) {
    */
   logHeader('Overall Result');
   if (verificationSucceeded) {
-    console.info('PullApprove verification succeeded!');
+    info('PullApprove verification succeeded!');
   } else {
-    console.info(`PullApprove verification failed.\n`);
-    console.info(`Please update '.pullapprove.yml' to ensure that all necessary`);
-    console.info(`files/directories have owners and all patterns that appear in`);
-    console.info(`the file correspond to actual files/directories in the repo.`);
+    info(`PullApprove verification failed.`);
+    info();
+    info(`Please update '.pullapprove.yml' to ensure that all necessary`);
+    info(`files/directories have owners and all patterns that appear in`);
+    info(`the file correspond to actual files/directories in the repo.`);
   }
   /**
    * File by file Summary
    */
   logHeader('PullApprove results by file');
-  console.groupCollapsed(`Matched Files (${matchedFiles.length} files)`);
-  verbose && matchedFiles.forEach(file => console.info(file));
-  console.groupEnd();
-  console.groupCollapsed(`Unmatched Files (${unmatchedFiles.length} files)`);
-  unmatchedFiles.forEach(file => console.info(file));
-  console.groupEnd();
+  info.group(`Matched Files (${matchedFiles.length} files)`);
+  verbose && matchedFiles.forEach(file => info(file));
+  info.groupEnd();
+  info.group(`Unmatched Files (${unmatchedFiles.length} files)`);
+  unmatchedFiles.forEach(file => info(file));
+  info.groupEnd();
   /**
    * Group by group Summary
    */
   logHeader('PullApprove results by group');
-  console.groupCollapsed(`Groups skipped (${groupsSkipped.length} groups)`);
-  verbose && groupsSkipped.forEach(group => console.info(`${group.groupName}`));
-  console.groupEnd();
+  info.group(`Groups skipped (${groupsSkipped.length} groups)`);
+  verbose && groupsSkipped.forEach(group => info(`${group.groupName}`));
+  info.groupEnd();
   const matchedGroups = resultsByGroup.filter(group => !group.unmatchedCount);
-  console.groupCollapsed(`Matched conditions by Group (${matchedGroups.length} groups)`);
+  info.group(`Matched conditions by Group (${matchedGroups.length} groups)`);
   verbose && matchedGroups.forEach(group => logGroup(group));
-  console.groupEnd();
+  info.groupEnd();
   const unmatchedGroups = resultsByGroup.filter(group => group.unmatchedCount);
-  console.groupCollapsed(`Unmatched conditions by Group (${unmatchedGroups.length} groups)`);
+  info.group(`Unmatched conditions by Group (${unmatchedGroups.length} groups)`);
   unmatchedGroups.forEach(group => logGroup(group, false));
-  console.groupEnd();
+  info.groupEnd();
 
   // Provide correct exit code based on verification success.
   process.exit(verificationSucceeded ? 0 : 1);
