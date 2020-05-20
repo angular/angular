@@ -1,7 +1,7 @@
 import {join, relative} from 'path';
 import {readFileSync} from 'fs';
 import chalk from 'chalk';
-import * as ts from 'typescript-3.8'; // TODO(crisbeto): switch back to `typescript` once 3.9 is out
+import * as ts from 'typescript';
 import * as tsutils from 'tsutils';
 
 const projectRoot = process.cwd();

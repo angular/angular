@@ -1,4 +1,4 @@
-import {Octokit} from '@octokit/rest';
+import * as Octokit from '@octokit/rest';
 import * as fetch from 'node-fetch';
 
 const github = new Octokit({auth: process.env.TOKEN});
@@ -9,11 +9,11 @@ async function resync() {
   let hasNext = true;
   while (hasNext) {
     const response = await github.pulls.list({
-      owner: 'angular', 
+      owner: 'angular',
       repo: 'components',
       per_page: 100,
       page
-    }); 
+    });
     pulls.push(...response.data);
     hasNext = !!response.data.length;
     page++;
