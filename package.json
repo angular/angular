@@ -91,7 +91,7 @@
     "ts-node": "~8.10.0",
     "tsickle": "^0.35.0",
     "tslint": "~5.20.0",
-    "typescript": "~3.8.3",
+    "typescript": "~3.9.2",
     "wait-on": "^5.0.0",
     "webpack": "^4.42.1"
   }
