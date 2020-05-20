@@ -277,7 +277,7 @@ searchHeroes(term: string): Observable {
   return this.http.jsonp(heroesUrl, 'callback').pipe(
       catchError(this.handleError('searchHeroes', [])) // then handle the error
     );
-};
+}
 ```
 
 This request passes the `heroesURL` as the first parameter and the callback function name as the second parameter.
