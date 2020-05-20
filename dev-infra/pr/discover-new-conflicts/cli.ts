@@ -1,5 +1,7 @@
 import {Arguments, Argv} from 'yargs';
 
+import {error} from '../../utils/console';
+
 import {discoverNewConflictsForPr} from './index';
 
 /** Builds the discover-new-conflicts pull request command. */
@@ -16,7 +18,7 @@ export function buildDiscoverNewConflictsCommand(yargs: Argv) {
 export async function handleDiscoverNewConflictsCommand({prNumber, date}: Arguments) {
   // If a provided date is not able to be parsed, yargs provides it as NaN.
   if (isNaN(date)) {
-    console.error('Unable to parse the value provided via --date flag');
+    error('Unable to parse the value provided via --date flag');
     process.exit(1);
   }
   await discoverNewConflictsForPr(prNumber, date);
