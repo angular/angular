@@ -24,7 +24,7 @@ const semver = require('semver');
 
 // Ignore commits that have specific patterns in commit message, it's ok for these commits to be
 // present only in one branch. Ignoring them reduced the "noise" in the final output.
-const ignorePatterns = [
+const ignoreCommitPatterns = [
   'release:',
   'docs: release notes',
   // These commits are created to update cli command docs sources with the most recent sha (stored
@@ -32,6 +32,13 @@ const ignorePatterns = [
   // it's purely an infrastructure-related change, we ignore these commits while comparing master
   // and patch diffs to look for delta.
   'build(docs-infra): upgrade cli command docs sources',
+];
+
+// Ignore feature commits that have specific patterns in commit message, it's ok for these commits
+// to be present in patch branch.
+const ignoreFeatureCheckPatterns = [
+  // It is ok and in fact desirable for dev-infra features to be on the patch branch.
+  'feat(dev-infra):'
 ];
 
 // String to be displayed as a version for initial commits in a branch
@@ -59,6 +66,11 @@ function maybeExtractReleaseVersion(commit) {
   return matches ? matches[1] || matches[2] : null;
 }
 
+// Checks whether commit message matches any patterns in ignore list.
+function shouldIgnoreCommit(commitMessage, ignorePatterns) {
+  return ignorePatterns.some(pattern => commitMessage.indexOf(pattern) > -1);
+}
+
 /**
  * @param rawGitCommits
  * @returns {Map<string, [string, string]>} - Map of commit message to [commit info, version]
@@ -67,12 +79,12 @@ function collectCommitsAsMap(rawGitCommits) {
   const commits = toArray(rawGitCommits);
   const commitsMap = new Map();
   let version = initialVersion;
-  commits.reverse().forEach((item) => {
-    const skip = ignorePatterns.some(pattern => item.indexOf(pattern) > -1);
+  commits.reverse().forEach((commit) => {
+    const ignore = shouldIgnoreCommit(commit, ignoreCommitPatterns);
     // Keep track of the current version while going though the list of commits, so that we can use
     // this information in the output (i.e. display a version when a commit was introduced).
-    version = maybeExtractReleaseVersion(item) || version;
-    if (!skip) {
+    version = maybeExtractReleaseVersion(commit) || version;
+    if (!ignore) {
       // Extract original commit description from commit message, so that we can find matching
       // commit in other commit range. For example, for the following commit message:
       //
@@ -80,8 +92,8 @@ function collectCommitsAsMap(rawGitCommits) {
       //
       // we extract only "feat: update the locale files" part and use it as a key, since commit SHA
       // and PR number may be different for the same commit in master and patch branches.
-      const key = item.slice(11).replace(/\(\#\d+\)/g, '').trim();
-      commitsMap.set(key, [item, version]);
+      const key = commit.slice(11).replace(/\(\#\d+\)/g, '').trim();
+      commitsMap.set(key, [commit, version]);
     }
   });
   return commitsMap;
@@ -113,7 +125,7 @@ function diff(mapA, mapB) {
  */
 function listFeatures(commitsMap) {
   return Array.from(commitsMap.keys()).reduce((result, key) => {
-    if (key.startsWith('feat')) {
+    if (key.startsWith('feat') && !shouldIgnoreCommit(key, ignoreFeatureCheckPatterns)) {
       const value = commitsMap.get(key);
       result.push(getCommitInfoAsString(value[1], value[0]));
     }
