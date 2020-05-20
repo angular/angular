@@ -20,7 +20,7 @@ export interface CircularDependenciesTestConfig {
   /** Path to the golden file that is used for checking and approving. */
   goldenFile: string;
   /** Glob that resolves source files which should be checked. */
-  glob: string
+  glob: string;
   /**
    * Optional module resolver function that can be used to resolve modules
    * to absolute file paths.

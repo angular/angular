@@ -17,7 +17,7 @@ export function buildMergeCommand(yargs: Argv) {
   return yargs.help().strict().option('github-token', {
     type: 'string',
     description: 'Github token. If not set, token is retrieved from the environment variables.'
-  })
+  });
 }
 
 /** Handles the merge command. i.e. performs the merge of a specified pull request. */
