@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import chalk from 'chalk';
 import {Arguments, Argv} from 'yargs';
+
+import {error, red, yellow} from '../../utils/console';
+
 import {GITHUB_TOKEN_GENERATE_URL, mergePullRequest} from './index';
 
 /** Builds the options for the merge command. */
@@ -22,10 +24,9 @@ export function buildMergeCommand(yargs: Argv) {
 export async function handleMergeCommand(args: Arguments) {
   const githubToken = args.githubToken || process.env.GITHUB_TOKEN || process.env.TOKEN;
   if (!githubToken) {
-    console.error(
-        chalk.red('No Github token set. Please set the `GITHUB_TOKEN` environment variable.'));
-    console.error(chalk.red('Alternatively, pass the `--github-token` command line flag.'));
-    console.error(chalk.yellow(`You can generate a token here: ${GITHUB_TOKEN_GENERATE_URL}`));
+    error(red('No Github token set. Please set the `GITHUB_TOKEN` environment variable.'));
+    error(red('Alternatively, pass the `--github-token` command line flag.'));
+    error(yellow(`You can generate a token here: ${GITHUB_TOKEN_GENERATE_URL}`));
     process.exit(1);
   }
 
