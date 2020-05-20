@@ -569,7 +569,7 @@ groups:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude('packages/compiler-cli/**'), [
           '**/testing/**',
           'aio/content/guide/testing.md',
           'aio/content/examples/testing/**',
