@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google LLC All Rights Reserved.
+ * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,7 @@ export function buildMergeCommand(yargs: Argv) {
   return yargs.help().strict().option('github-token', {
     type: 'string',
     description: 'Github token. If not set, token is retrieved from the environment variables.'
-  })
+  });
 }
 
 /** Handles the merge command. i.e. performs the merge of a specified pull request. */

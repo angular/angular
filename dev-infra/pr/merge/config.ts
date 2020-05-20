@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google LLC All Rights Reserved.
+ * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -38,7 +38,7 @@ export interface MergeRemote {
   /** Name of the repository. */
   name: string;
   /** Whether SSH should be used for merging pull requests. */
-  useSsh?: boolean
+  useSsh?: boolean;
 }
 
 /**
@@ -87,15 +87,11 @@ export function loadAndValidateConfig(): {config?: MergeConfigWithRemote, errors
   const config: Partial<DevInfraMergeConfig> = getConfig();
 
   if (config.merge === undefined) {
-    return {
-      errors: ['No merge configuration found. Set the `merge` configuration.']
-    }
+    return {errors: ['No merge configuration found. Set the `merge` configuration.']};
   }
 
   if (typeof config.merge !== 'function') {
-    return {
-      errors: ['Expected merge configuration to be defined lazily through a function.']
-    }
+    return {errors: ['Expected merge configuration to be defined lazily through a function.']};
   }
 
   const mergeConfig = config.merge();
