@@ -44,56 +44,54 @@ export enum LOG_LEVELS {
 export const DEFAULT_LOG_LEVEL = LOG_LEVELS.INFO;
 
 /** Write to the console for at INFO logging level */
-export function info(...text: string[]): void;
-export function info(color: typeof chalk, ...text: string[]): void;
-export function info(color: typeof chalk|string, ...text: string[]) {
-  runConsoleCommand(console.info, LOG_LEVELS.INFO, color, ...text);
-}
+export const info = buildLogLevelFunction(() => console.info, LOG_LEVELS.INFO);
 
 /** Write to the console for at ERROR logging level */
-export function error(...text: string[]): void;
-export function error(color: typeof chalk, ...text: string[]): void;
-export function error(color: typeof chalk|string, ...text: string[]) {
-  runConsoleCommand(console.error, LOG_LEVELS.ERROR, color, ...text);
-}
+export const error = buildLogLevelFunction(() => console.error, LOG_LEVELS.ERROR);
 
 /** Write to the console for at DEBUG logging level */
-export function debug(...text: string[]): void;
-export function debug(color: typeof chalk, ...text: string[]): void;
-export function debug(color: typeof chalk|string, ...text: string[]) {
-  runConsoleCommand(console.debug, LOG_LEVELS.DEBUG, color, ...text);
-}
+export const debug = buildLogLevelFunction(() => console.debug, LOG_LEVELS.DEBUG);
 
 /** Write to the console for at LOG logging level */
-export function log(...text: string[]): void;
-export function log(color: typeof chalk, ...text: string[]): void;
-export function log(color: typeof chalk|string, ...text: string[]) {
-  // tslint:disable-next-line: no-console
-  runConsoleCommand(console.log, LOG_LEVELS.LOG, color, ...text);
-}
+// tslint:disable-next-line: no-console
+export const log = buildLogLevelFunction(() => console.log, LOG_LEVELS.LOG);
 
 /** Write to the console for at WARN logging level */
-export function warn(...text: string[]): void;
-export function warn(color: typeof chalk, ...text: string[]): void;
-export function warn(color: typeof chalk|string, ...text: string[]) {
-  runConsoleCommand(console.warn, LOG_LEVELS.WARN, color, ...text);
+export const warn = buildLogLevelFunction(() => console.warn, LOG_LEVELS.WARN);
+
+/** Build an instance of a logging function for the provided level. */
+function buildLogLevelFunction(loadCommand: () => Function, level: LOG_LEVELS) {
+  /** Write to stdout for the LOG_LEVEL. */
+  const loggingFunction = (...text: string[]) => {
+    runConsoleCommand(loadCommand, level, ...text);
+  };
+
+  /** Start a group at the LOG_LEVEL, optionally starting it as collapsed. */
+  loggingFunction.group = (text: string, collapsed = false) => {
+    const command = collapsed ? console.groupCollapsed : console.group;
+    runConsoleCommand(() => command, level, text);
+  };
+
+  /** End the group at the LOG_LEVEL. */
+  loggingFunction.groupEnd = () => {
+    runConsoleCommand(() => console.groupEnd, level);
+  };
+
+  return loggingFunction;
 }
 
 /**
  * Run the console command provided, if the environments logging level greater than the
  * provided logging level.
+ *
+ * The loadCommand takes in a function which is called to retrieve the console.* function
+ * to allow for jasmine spies to still work in testing.  Without this method of retrieval
+ * the console.* function, the function is saved into the closure of the created logging
+ * function before jasmine can spy.
  */
-function runConsoleCommand(
-    command: Function, logLevel: LOG_LEVELS, color: typeof chalk|string, ...text: string[]) {
+function runConsoleCommand(loadCommand: () => Function, logLevel: LOG_LEVELS, ...text: string[]) {
   if (getLogLevel() >= logLevel) {
-    if (typeof color === 'function') {
-      text = text.map(entry => color(entry));
-    } else {
-      text = [color as string, ...text];
-    }
-    for (const textEntry of text) {
-      command(textEntry);
-    }
+    loadCommand()(...text);
   }
 }
 
