@@ -110,59 +110,59 @@ if (browserDetection.supportsCustomElements) {
          expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
          expect(strategy.inputs.get('barBar')).toBe('barBar-value');
        });
+
+    // Helpers
+    @Component({
+      selector: 'test-component',
+      template: 'TestComponent|foo({{ fooFoo }})|bar({{ barBar }})',
+    })
+    class TestComponent {
+      @Input() fooFoo: string = 'foo';
+      // TODO(issue/24571): remove '!'.
+      @Input('barbar') barBar!: string;
+
+      @Output() bazBaz = new EventEmitter<boolean>();
+      @Output('quxqux') quxQux = new EventEmitter<Object>();
+    }
+    @NgModule({
+      imports: [BrowserModule],
+      declarations: [TestComponent],
+      entryComponents: [TestComponent],
+    })
+    class TestModule implements DoBootstrap {
+      ngDoBootstrap() {}
+    }
+
+    class TestStrategy implements NgElementStrategy {
+      connectedElement: HTMLElement|null = null;
+      disconnectCalled = false;
+      inputs = new Map<string, any>();
+
+      events = new Subject<NgElementStrategyEvent>();
+
+      connect(element: HTMLElement): void {
+        this.connectedElement = element;
+      }
+
+      disconnect(): void {
+        this.disconnectCalled = true;
+      }
+
+      getInputValue(propName: string): any {
+        return this.inputs.get(propName);
+      }
+
+      setInputValue(propName: string, value: string): void {
+        this.inputs.set(propName, value);
+      }
+    }
+
+    class TestStrategyFactory implements NgElementStrategyFactory {
+      testStrategy = new TestStrategy();
+
+      create(): NgElementStrategy {
+        return this.testStrategy;
+      }
+    }
   });
-}
-
-// Helpers
-@Component({
-  selector: 'test-component',
-  template: 'TestComponent|foo({{ fooFoo }})|bar({{ barBar }})',
-})
-class TestComponent {
-  @Input() fooFoo: string = 'foo';
-  // TODO(issue/24571): remove '!'.
-  @Input('barbar') barBar!: string;
-
-  @Output() bazBaz = new EventEmitter<boolean>();
-  @Output('quxqux') quxQux = new EventEmitter<Object>();
-}
-@NgModule({
-  imports: [BrowserModule],
-  declarations: [TestComponent],
-  entryComponents: [TestComponent],
-})
-class TestModule implements DoBootstrap {
-  ngDoBootstrap() {}
-}
-
-export class TestStrategy implements NgElementStrategy {
-  connectedElement: HTMLElement|null = null;
-  disconnectCalled = false;
-  inputs = new Map<string, any>();
-
-  events = new Subject<NgElementStrategyEvent>();
-
-  connect(element: HTMLElement): void {
-    this.connectedElement = element;
-  }
-
-  disconnect(): void {
-    this.disconnectCalled = true;
-  }
-
-  getInputValue(propName: string): any {
-    return this.inputs.get(propName);
-  }
-
-  setInputValue(propName: string, value: string): void {
-    this.inputs.set(propName, value);
-  }
-}
-
-export class TestStrategyFactory implements NgElementStrategyFactory {
-  testStrategy = new TestStrategy();
-
-  create(): NgElementStrategy {
-    return this.testStrategy;
-  }
 }
