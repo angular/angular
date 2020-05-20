@@ -36,7 +36,7 @@ exports.config = {
     showColors: true,
     defaultTimeoutInterval: 90000,
     print: function(msg) {
-      console.log(msg);
+      console.info(msg);
     },
   },
   useAllAngular2AppRoots: true

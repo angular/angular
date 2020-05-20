@@ -153,7 +153,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
    * strategy, we cannot start an interactive rebase because we merge using the Github API.
    * The Github API only allows modifications to PR title and body for squash merges.
    */
-  async _promptCommitMessageEdit(pullRequest: PullRequest, mergeOptions: PullsMergeParams) {
+  private async _promptCommitMessageEdit(pullRequest: PullRequest, mergeOptions: PullsMergeParams) {
     const commitMessage = await this._getDefaultSquashCommitMessage(pullRequest);
     const {result} = await prompt<{result: string}>({
       type: 'editor',
