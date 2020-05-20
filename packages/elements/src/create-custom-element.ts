@@ -145,9 +145,32 @@ export function createCustomElement<P>(
       // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
       // now this is tested using a Google internal test suite.
       if (this._ngElementStrategy === null) {
-        this._ngElementStrategy = strategyFactory.create(this.injector);
+        const strategy = this._ngElementStrategy = strategyFactory.create(this.injector);
+
+        // Collect pre-existing values on the element to re-apply through the strategy.
+        const preExistingValues =
+            inputs.filter(({propName}) => this.hasOwnProperty(propName)).map(({propName}): [
+              string, any
+            ] => [propName, (this as any)[propName]]);
+
+        // In some browsers (e.g. IE10), `Object.setPrototypeOf()` (which is required by some Custom
+        // Elements polyfills) is not defined and is thus polyfilled in a way that does not preserve
+        // the prototype chain. In such cases, `this` will not be an instance of `NgElementImpl` and
+        // thus not have the component input getters/setters defined on `NgElementImpl.prototype`.
+        if (!(this instanceof NgElementImpl)) {
+          // Add getters and setters to the instance itself for each property input.
+          defineInputGettersSetters(inputs, this);
+        } else {
+          // Delete the property from the instance, so that it can go through the getters/setters
+          // set on `NgElementImpl.prototype`.
+          preExistingValues.forEach(([propName]) => delete (this as any)[propName]);
+        }
+
+        // Re-apply pre-existing values through the strategy.
+        preExistingValues.forEach(([propName, value]) => strategy.setInputValue(propName, value));
       }
-      return this._ngElementStrategy;
+
+      return this._ngElementStrategy!;
     }
 
     private readonly injector: Injector;
@@ -193,16 +216,26 @@ export function createCustomElement<P>(
   // Update the property descriptor of `NgElementImpl#ngElementStrategy` to make it enumerable.
   Object.defineProperty(NgElementImpl.prototype, 'ngElementStrategy', {enumerable: true});
 
-  // Add getters and setters to the prototype for each property input. If the config does not
-  // contain property inputs, use all inputs by default.
-  inputs.map(({propName}) => propName).forEach(property => {
-    Object.defineProperty(NgElementImpl.prototype, property, {
-      get: function() { return this.ngElementStrategy.getInputValue(property); },
-      set: function(newValue: any) { this.ngElementStrategy.setInputValue(property, newValue); },
+  // Add getters and setters to the prototype for each property input.
+  defineInputGettersSetters(inputs, NgElementImpl.prototype);
+
+  return (NgElementImpl as any) as NgElementConstructor<P>;
+}
+
+// Helpers
+function defineInputGettersSetters(
+    inputs: {propName: string, templateName: string}[], target: object): void {
+  // Add getters and setters for each property input.
+  inputs.forEach(({propName}) => {
+    Object.defineProperty(target, propName, {
+      get(): any {
+        return this.ngElementStrategy.getInputValue(propName);
+      },
+      set(newValue: any): void {
+        this.ngElementStrategy.setInputValue(propName, newValue);
+      },
       configurable: true,
       enumerable: true,
     });
   });
-
-  return (NgElementImpl as any) as NgElementConstructor<P>;
 }
