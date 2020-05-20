@@ -12,7 +12,7 @@
 * **router:** update type for routerLink to include null and undefined ([#37018](https://github.com/angular/angular/issues/37018)) ([7de7871](https://github.com/angular/angular/commit/7de7871)), closes [#13380](https://github.com/angular/angular/issues/13380) [#36544](https://github.com/angular/angular/issues/36544)
 
 
-10.0.0-next.9"></a>
+<a name="10.0.0-next.9"></a>
 # [10.0.0-next.9](https://github.com/angular/angular/compare/10.0.0-next.8...10.0.0-next.9) (2020-05-19)
 
 
