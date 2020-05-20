@@ -1,4 +1,18 @@
-<a name="10.0.0-next.9"></a>
+<a name="9.1.8"></a>
+## [9.1.8](https://github.com/angular/angular/compare/9.1.6...9.1.8) (2020-05-20)
+
+
+### Bug Fixes
+
+* **core:** Host classes should not be fed back into `@Input` ([#35889](https://github.com/angular/angular/issues/35889)) ([f872b69](https://github.com/angular/angular/commit/f872b69)), closes [#35383](https://github.com/angular/angular/issues/35383)
+* **core:** inheritance delegate ctor regex updated to work on minified code ([#36962](https://github.com/angular/angular/issues/36962)) ([e3d3395](https://github.com/angular/angular/commit/e3d3395))
+* **elements:** capture input properties set before upgrading the element ([#36114](https://github.com/angular/angular/issues/36114)) ([1c8f179](https://github.com/angular/angular/commit/1c8f179)), closes [#30848](https://github.com/angular/angular/issues/30848) [#31416](https://github.com/angular/angular/issues/31416)
+* **elements:** correctly handle getting/setting properties before connecting the element ([#36114](https://github.com/angular/angular/issues/36114)) ([363f14c](https://github.com/angular/angular/commit/363f14c)), closes [/github.com/angular/angular/pull/31416/files#r300326698](https://github.com//github.com/angular/angular/pull/31416/files/issues/r300326698)
+* **elements:** do not break when the constructor of an Angular Element is not called ([#36114](https://github.com/angular/angular/issues/36114)) ([87b9f08](https://github.com/angular/angular/commit/87b9f08))
+* **router:** update type for routerLink to include null and undefined ([#37018](https://github.com/angular/angular/issues/37018)) ([7de7871](https://github.com/angular/angular/commit/7de7871)), closes [#13380](https://github.com/angular/angular/issues/13380) [#36544](https://github.com/angular/angular/issues/36544)
+
+
+10.0.0-next.9"></a>
 # [10.0.0-next.9](https://github.com/angular/angular/compare/10.0.0-next.8...10.0.0-next.9) (2020-05-19)
 
 
