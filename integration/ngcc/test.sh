@@ -90,9 +90,13 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   grep "ApplicationModule.ɵmod = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (esm2015)."
 
+# TODO: This assertion is disabled because @angular/core is no longer processed by tsickle which creates the static properties.
+#       We should either remove this assertion or use a syntentic JS file as input.
+#       Discuss with the ngcc folks.
+#
 # Did it place the `setClassMetadata` call correctly?
-  cat node_modules/@angular/core/fesm2015/core.js | awk 'ORS=" "' | grep "ApplicationRef.ctorParameters.*setClassMetadata(ApplicationRef"
-  assertSucceeded "Expected 'ngcc' to place 'setClassMetadata' after static properties like 'ctorParameters' in '@angular/core' (fesm2015)."
+#  cat node_modules/@angular/core/fesm2015/core.js | awk 'ORS=" "' | grep "ApplicationRef.ctorParameters.*setClassMetadata(ApplicationRef"
+#  assertSucceeded "Expected 'ngcc' to place 'setClassMetadata' after static properties like 'ctorParameters' in '@angular/core' (fesm2015)."
 
 
 # Did it transform @angular/core typing files correctly?

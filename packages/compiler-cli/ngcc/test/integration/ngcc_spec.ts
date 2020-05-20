@@ -1188,8 +1188,8 @@ runInEachFileSystem(() => {
           '@angular/common',
           '@angular/common/testing',
           [
-            _('/node_modules/@angular/core'), _('/node_modules/@angular/common'),
-            _('/node_modules/rxjs')
+            _('/node_modules/tslib'), _('/node_modules/@angular/core'),
+            _('/node_modules/@angular/common'), _('/node_modules/rxjs')
           ],
         ]);
       });

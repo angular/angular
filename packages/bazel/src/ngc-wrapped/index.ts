@@ -192,8 +192,13 @@ export function compile({
   }
 
   if (!bazelOpts.es5Mode) {
-    compilerOpts.annotateForClosureCompiler = true;
-    compilerOpts.annotationsAs = 'static fields';
+    if (bazelOpts.workspaceName === 'google3') {
+      compilerOpts.annotateForClosureCompiler = true;
+      compilerOpts.annotationsAs = 'static fields';
+    } else {
+      compilerOpts.annotateForClosureCompiler = false;
+      compilerOpts.annotationsAs = 'decorators';
+    }
   }
 
   // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.

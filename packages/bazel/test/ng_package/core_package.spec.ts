@@ -83,12 +83,6 @@ describe('@angular/core ng_package', () => {
       }
     });
 
-    describe('closure', () => {
-      it('should contain externs', () => {
-        expect(shx.cat('src/testability/testability.externs.js')).toContain('/** @externs */');
-      });
-    });
-
     obsoleteInIvy('metadata files are no longer needed or produced in Ivy')
         .describe('angular metadata', () => {
           it('should have metadata.json files', () => {
