@@ -44,15 +44,6 @@
     "groups": ["Angular"],
     "lead": "juleskremer"
   },
-  "alexeagle": {
-    "name": "Alex Eagle",
-    "picture": "alex-eagle.jpg",
-    "twitter": "jakeherringbone",
-    "website": "http://google.com/+alexeagle",
-    "bio": "Alex works on language tooling for JavaScript and TypeScript. Previously Alex spent five years in Google's developer testing tools. He has developed systems including Google's continuous integration service, capturing build&test failures, and explaining them to developers. Before Google, Alex worked at startups including Opower, and consulted for large government IT. In his 20% time, he created the Error-Prone static analysis tool, which detects common Java programming mistakes and reports them as compile errors.",
-    "groups": ["Collaborators"],
-    "lead": "igorminar"
-  },
   "aikidave": {
     "name": "Dave Shevitz",
     "picture": "daveshevitz.jpg",
@@ -63,7 +54,7 @@
   "kyliau": {
     "name": "Keen Yee Liau",
     "groups": ["Angular"],
-    "lead": "alexeagle",
+    "lead": "igorminar",
     "picture": "kyliau.jpg"
   },
   "clydin": {
@@ -112,14 +103,6 @@
     "bio": "Kara is a software engineer on the Angular team at Google and a co-organizer of the Angular-SF Meetup. Prior to Google, she helped build UI components in Angular for guest management systems at OpenTable.  She enjoys snacking indiscriminately and probably other things too.",
     "groups": ["Angular"],
     "lead": "igorminar"
-  },
-  "vikerman": {
-    "name": "Vikram Subramanian",
-    "picture": "vikram.jpg",
-    "twitter": "vikerman",
-    "bio": "Vikram is a Software Engineer on the Angular team focused on Engineering Productivity. That means he makes sure people on the team can move fast and not break things. Vikram enjoys doing Yoga and going on walks with his daughter.",
-    "groups": ["Angular"],
-    "lead": "alexeagle"
   },
   "pkozlowski-opensource": {
     "name": "Pawel Kozlowski",
@@ -314,7 +297,7 @@
     "website": "http://blog.mgechev.com",
     "bio": "Software engineer who enjoys theoretical computer science and its practical applications. Speaker, author of the book 'Switching to Angular', codelyzer, Guess.js, and the Go linter revive. Working for faster and more reliable software.",
     "groups": ["Angular"],
-    "lead": "alexeagle"
+    "lead": "stephenfluin"
   },
   "urish": {
     "name": "Uri Shaked",
@@ -650,7 +633,7 @@
     "picture": "denny.jpg",
     "bio": "Denny is founder of Expert Support, a professional services firm specializing in technical communication, and leads the Angular technical writing team. His lifelong passion has been to reduce the time and effort required to understand complex technical information. Early on, he was Associate Chairman of the Computer Science Department at Stanford, where he taught introductory courses in programming. He also plays old-timers baseball in local leagues and national tournaments.",
     "groups": ["Angular"],
-    "lead": "juleskremer"
+    "lead": "aikidave"
   },
   "jbogarthyde": {
     "name": "Judy Bogart",
@@ -771,7 +754,7 @@
     "website": "https://github.com/dgp1130",
     "bio": "Doug is an overly-opinionated software developer with a passion for making awesome developer tools. He is motivated primarily by his selfish desire to make his own life easier, but loves to share his tools and workflows with others to make everyone's lives easier.",
     "groups": ["Angular"],
-    "lead": "igorminar"
+    "lead": "kyliau"
   },
   "martinakraus": {
     "name": "Martina Kraus",
@@ -845,7 +828,7 @@
     "name": "Cindy Greene-Kaplan",
     "picture": "cindygreenekaplan.jpg",
     "twitter": "CindyGK2019",
-    "bio": "Cindy is a Program Manager on the Angular team at Google.  She is passionate about improving team processes and overall execution.  She enjoys dance fitness, movies and travel.",
+    "bio": "Cindy is a Program Manager on the Angular team at Google. She is passionate about improving team processes and overall execution. She enjoys dance fitness, movies and travel.",
     "groups": ["Angular"],
     "lead": "juleskremer"
   }
