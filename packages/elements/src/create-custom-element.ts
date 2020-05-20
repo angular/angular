@@ -144,8 +144,9 @@ export function createCustomElement<P>(
       //
       // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
       // now this is tested using a Google internal test suite.
-      if (this._ngElementStrategy === null) {
-        const strategy = this._ngElementStrategy = strategyFactory.create(this.injector);
+      if (!this._ngElementStrategy) {
+        const strategy = this._ngElementStrategy =
+            strategyFactory.create(this.injector || config.injector);
 
         // Collect pre-existing values on the element to re-apply through the strategy.
         const preExistingValues =
@@ -173,12 +174,10 @@ export function createCustomElement<P>(
       return this._ngElementStrategy!;
     }
 
-    private readonly injector: Injector;
-    private _ngElementStrategy: NgElementStrategy|null = null;
+    private _ngElementStrategy?: NgElementStrategy;
 
-    constructor(injector?: Injector) {
+    constructor(private readonly injector?: Injector) {
       super();
-      this.injector = injector || config.injector;
     }
 
     attributeChangedCallback(
