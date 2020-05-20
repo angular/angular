@@ -11,6 +11,7 @@ ts_library(
         "@npm//@octokit/rest",
         "@npm//@types/inquirer",
         "@npm//@types/node",
+        "@npm//@types/semver",
         "@npm//@types/yargs",
         "@npm//chalk",
     ],
