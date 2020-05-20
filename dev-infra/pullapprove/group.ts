@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {error} from '../utils/console';
 import {convertConditionToFunction} from './condition_evaluator';
 import {PullApproveGroupConfig} from './parse-yaml';
 
@@ -58,9 +60,11 @@ export class PullApproveGroup {
             matchedFiles: new Set(),
           });
         } catch (e) {
-          console.error(`Could not parse condition in group: ${this.groupName}`);
-          console.error(` - ${expression}`);
-          console.error(`Error:`, e.message, e.stack);
+          error(`Could not parse condition in group: ${this.groupName}`);
+          error(` - ${expression}`);
+          error(`Error:`);
+          error(e.message);
+          error(e.stack);
           process.exit(1);
         }
       });
@@ -84,7 +88,7 @@ export class PullApproveGroup {
             `From the [${this.groupName}] group:\n` +
             ` - ${expression}` +
             `\n\n${e.message} ${e.stack}\n\n`;
-        console.error(errMessage);
+        error(errMessage);
         process.exit(1);
       }
     });
