@@ -758,7 +758,7 @@
             {
               "url": "guide/schematics-authoring",
               "!title": "Authoring Schematics",
-              "title": "스키매틱 정의하기",
+              "title": "스키매틱 만들기",
               "!tooltip": "Understand the structure of a schematic.",
               "tooltip": "스키매틱을 구성하는 요소에 대해 알아봅시다."
             },
