@@ -105,6 +105,7 @@
     "diff": "^3.5.0",
     "domino": "2.1.2",
     "fs-extra": "4.0.2",
+    "google-closure-compiler": "20200517.0.0",
     "hammerjs": "2.0.8",
     "http-server": "^0.11.1",
     "incremental-dom": "0.4.1",

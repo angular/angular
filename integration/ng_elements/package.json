@@ -3,23 +3,22 @@
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
-    "@angular/animations": "file:../../dist/packages-dist/animations",
     "@angular/common": "file:../../dist/packages-dist/common",
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/elements": "file:../../dist/packages-dist/elements",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
-    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
-    "google-closure-compiler": "20180319.0.0",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
+    "tslib": "file:../../node_modules/tslib",
     "zone.js": "file:../../dist/zone.js-dist/zone.js"
   },
   "devDependencies": {
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
     "concurrently": "3.4.0",
+    "google-closure-compiler": "file:../../node_modules/google-closure-compiler",
     "lite-server": "2.2.2",
     "protractor": "file:../../node_modules/protractor",
     "puppeteer": "file:../../node_modules/puppeteer",
@@ -30,7 +29,7 @@
     "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
   },
   "scripts": {
-    "closure": "java -jar node_modules/google-closure-compiler/compiler.jar --flagfile closure.conf",
+    "closure": "google-closure-compiler --flagfile closure.conf",
     "test": "ngc && yarn run closure && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
     "serve": "lite-server -c e2e/browser.config.json",
     "preprotractor": "tsc -p e2e",

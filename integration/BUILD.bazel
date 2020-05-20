@@ -5,7 +5,7 @@ load(":angular_integration_test.bzl", "angular_integration_test")
 #
 # Where `ng e2e` is used we pass `ng e2e --port 0` which prompts the cli
 # to select a random free port for the the e2e test. The protractor.conf is
-# automaticaly updated to use this port.
+# automatically updated to use this port.
 #
 # Karma automatically finds a free port so no effort is needed there.
 #
