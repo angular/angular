@@ -7,8 +7,9 @@
  */
 
 import {existsSync} from 'fs';
-import {join} from 'path';
+import {dirname, join} from 'path';
 import {exec} from 'shelljs';
+
 import {isTsNodeAvailable} from './ts-node';
 
 /**
@@ -83,7 +84,12 @@ function readConfigFile(configPath: string): object {
   // version of the given configuration seems to exist, set up `ts-node` if available.
   if (require.extensions['.ts'] === undefined && existsSync(`${configPath}.ts`) &&
       isTsNodeAvailable()) {
-    require('ts-node').register({skipProject: true, transpileOnly: true});
+    // Ensure the module target is set to `commonjs`. This is necessary because the
+    // dev-infra tool runs in NodeJS which does not support ES modules by default.
+    // Additionally, set the `dir` option to the directory that contains the configuration
+    // file. This allows for custom compiler options (such as `--strict`).
+    require('ts-node').register(
+        {dir: dirname(configPath), transpileOnly: true, compilerOptions: {module: 'commonjs'}});
   }
 
   try {
