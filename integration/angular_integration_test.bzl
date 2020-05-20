@@ -12,6 +12,7 @@ load("//tools/npm_integration_test:npm_integration_test.bzl", "npm_integration_t
 NPM_PACKAGE_ARCHIVES = [
     "check-side-effects",
     "core-js",
+    "google-closure-compiler",
     "jasmine",
     "typescript",
     "rxjs",

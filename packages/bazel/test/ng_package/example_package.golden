@@ -1444,45 +1444,36 @@ export * from './index';
 --- esm2015/a11y/index.js ---
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/a11y/index.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-export { A11yModule } from './public-api';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9hMTF5L2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7OztBQVFBLDJCQUFjLGNBQWMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9wdWJsaWMtYXBpJztcbiJdfQ==
+export * from './public-api';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9hMTF5L2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7R0FNRztBQUVILGNBQWMsY0FBYyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL3B1YmxpYy1hcGknO1xuIl19
 
 --- esm2015/a11y/public-api.js ---
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/a11y/public-api.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import { __decorate } from "tslib";
 import { NgModule } from '@angular/core';
 let A11yModule = /** @class */ (() => {
-    class A11yModule {
-    }
-    A11yModule.decorators = [
-        { type: NgModule, args: [{},] }
-    ];
+    let A11yModule = class A11yModule {
+    };
+    A11yModule = __decorate([
+        NgModule({})
+    ], A11yModule);
     return A11yModule;
 })();
 export { A11yModule };
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ExMXkvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFRQSxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDO0FBRXZDO0lBQUEsTUFDYSxVQUFVOzs7Z0JBRHRCLFFBQVEsU0FBQyxFQUFFOztJQUVaLGlCQUFDO0tBQUE7U0FEWSxVQUFVIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge05nTW9kdWxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQE5nTW9kdWxlKHt9KVxuZXhwb3J0IGNsYXNzIEExMXlNb2R1bGUge1xufVxuIl19
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ExMXkvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7O0FBRUgsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQztBQUd2QztJQUFBLElBQWEsVUFBVSxHQUF2QixNQUFhLFVBQVU7S0FDdEIsQ0FBQTtJQURZLFVBQVU7UUFEdEIsUUFBUSxDQUFDLEVBQUUsQ0FBQztPQUNBLFVBQVUsQ0FDdEI7SUFBRCxpQkFBQztLQUFBO1NBRFksVUFBVSIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBBMTF5TW9kdWxlIHtcbn1cbiJdfQ==
 
 --- esm2015/example.externs.js ---
 
@@ -1524,27 +1515,18 @@ export { MySecondService as ɵangular_packages_bazel_test_ng_package_example_imp
 --- esm2015/imports/index.js ---
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/imports/index.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-export { MyService } from './public-api';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbXBvcnRzL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7OztBQVFBLDBCQUFjLGNBQWMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9wdWJsaWMtYXBpJztcbiJdfQ==
+export * from './public-api';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbXBvcnRzL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7R0FNRztBQUVILGNBQWMsY0FBYyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL3B1YmxpYy1hcGknO1xuIl19
 
 --- esm2015/imports/public-api.js ---
 
-/**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/imports/public-api.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
+import { __decorate, __metadata } from "tslib";
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -1557,38 +1539,24 @@ import { MySecondService } from './second';
 import * as i0 from "@angular/core";
 import * as i1 from "./second";
 let MyService = /** @class */ (() => {
-    class MyService {
-        /**
-         * @param {?} secondService
-         */
+    let MyService = class MyService {
         constructor(secondService) {
             this.secondService = secondService;
         }
-    }
-    MyService.decorators = [
-        { type: Injectable, args: [{ providedIn: 'root' },] }
-    ];
-    /** @nocollapse */
-    MyService.ctorParameters = () => [
-        { type: MySecondService }
-    ];
-    /** @nocollapse */ MyService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0.ɵɵinject(i1.MySecondService)); }, token: MyService, providedIn: "root" });
+    };
+    MyService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0.ɵɵinject(i1.MySecondService)); }, token: MyService, providedIn: "root" });
+    MyService = __decorate([
+        Injectable({ providedIn: 'root' }),
+        __metadata("design:paramtypes", [MySecondService])
+    ], MyService);
     return MyService;
 })();
 export { MyService };
-if (false) {
-    /** @type {?} */
-    MyService.prototype.secondService;
-}
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFRQSxPQUFPLEVBQUMsVUFBVSxFQUFDLE1BQU0sZUFBZSxDQUFDO0FBQ3pDLE9BQU8sRUFBQyxlQUFlLEVBQUMsTUFBTSxVQUFVLENBQUM7OztBQUV6QztJQUFBLE1BQ2EsU0FBUzs7OztRQUNwQixZQUFtQixhQUE4QjtZQUE5QixrQkFBYSxHQUFiLGFBQWEsQ0FBaUI7UUFBRyxDQUFDOzs7Z0JBRnRELFVBQVUsU0FBQyxFQUFDLFVBQVUsRUFBRSxNQUFNLEVBQUM7Ozs7Z0JBRnhCLGVBQWU7OztvQkFUdkI7S0FjQztTQUZZLFNBQVM7OztJQUNSLGtDQUFxQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtJbmplY3RhYmxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcbmltcG9ydCB7TXlTZWNvbmRTZXJ2aWNlfSBmcm9tICcuL3NlY29uZCc7XG5cbkBJbmplY3RhYmxlKHtwcm92aWRlZEluOiAncm9vdCd9KVxuZXhwb3J0IGNsYXNzIE15U2VydmljZSB7XG4gIGNvbnN0cnVjdG9yKHB1YmxpYyBzZWNvbmRTZXJ2aWNlOiBNeVNlY29uZFNlcnZpY2UpIHt9XG59XG4iXX0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUE7Ozs7OztHQU1HO0FBRUgsT0FBTyxFQUFDLFVBQVUsRUFBQyxNQUFNLGVBQWUsQ0FBQztBQUN6QyxPQUFPLEVBQUMsZUFBZSxFQUFDLE1BQU0sVUFBVSxDQUFDOzs7QUFHekM7SUFBQSxJQUFhLFNBQVMsR0FBdEIsTUFBYSxTQUFTO1FBQ3BCLFlBQW1CLGFBQThCO1lBQTlCLGtCQUFhLEdBQWIsYUFBYSxDQUFpQjtRQUFHLENBQUM7S0FDdEQsQ0FBQTs7SUFGWSxTQUFTO1FBRHJCLFVBQVUsQ0FBQyxFQUFDLFVBQVUsRUFBRSxNQUFNLEVBQUMsQ0FBQzt5Q0FFRyxlQUFlO09BRHRDLFNBQVMsQ0FFckI7b0JBZEQ7S0FjQztTQUZZLFNBQVMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7SW5qZWN0YWJsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5pbXBvcnQge015U2Vjb25kU2VydmljZX0gZnJvbSAnLi9zZWNvbmQnO1xuXG5ASW5qZWN0YWJsZSh7cHJvdmlkZWRJbjogJ3Jvb3QnfSlcbmV4cG9ydCBjbGFzcyBNeVNlcnZpY2Uge1xuICBjb25zdHJ1Y3RvcihwdWJsaWMgc2Vjb25kU2VydmljZTogTXlTZWNvbmRTZXJ2aWNlKSB7fVxufVxuIl19
 
 --- esm2015/imports/second.js ---
 
-/**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/imports/second.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
+import { __decorate } from "tslib";
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -1599,76 +1567,62 @@ if (false) {
 import { Injectable } from '@angular/core';
 import * as i0 from "@angular/core";
 let MySecondService = /** @class */ (() => {
-    class MySecondService {
-    }
-    MySecondService.decorators = [
-        { type: Injectable, args: [{ providedIn: 'root' },] }
-    ];
-    /** @nocollapse */ MySecondService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+    let MySecondService = class MySecondService {
+    };
+    MySecondService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+    MySecondService = __decorate([
+        Injectable({ providedIn: 'root' })
+    ], MySecondService);
     return MySecondService;
 })();
 export { MySecondService };
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvaW1wb3J0cy9zZWNvbmQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7O0FBUUEsT0FBTyxFQUFDLFVBQVUsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7QUFFekM7SUFBQSxNQUNhLGVBQWU7OztnQkFEM0IsVUFBVSxTQUFDLEVBQUMsVUFBVSxFQUFFLE1BQU0sRUFBQzs7OzBCQVZoQztLQVlDO1NBRFksZUFBZSIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtJbmplY3RhYmxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQEluamVjdGFibGUoe3Byb3ZpZGVkSW46ICdyb290J30pXG5leHBvcnQgY2xhc3MgTXlTZWNvbmRTZXJ2aWNlIHtcbn1cbiJdfQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvaW1wb3J0cy9zZWNvbmQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBOzs7Ozs7R0FNRztBQUVILE9BQU8sRUFBQyxVQUFVLEVBQUMsTUFBTSxlQUFlLENBQUM7O0FBR3pDO0lBQUEsSUFBYSxlQUFlLEdBQTVCLE1BQWEsZUFBZTtLQUMzQixDQUFBOztJQURZLGVBQWU7UUFEM0IsVUFBVSxDQUFDLEVBQUMsVUFBVSxFQUFFLE1BQU0sRUFBQyxDQUFDO09BQ3BCLGVBQWUsQ0FDM0I7MEJBWkQ7S0FZQztTQURZLGVBQWUiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7SW5qZWN0YWJsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBJbmplY3RhYmxlKHtwcm92aWRlZEluOiAncm9vdCd9KVxuZXhwb3J0IGNsYXNzIE15U2Vjb25kU2VydmljZSB7XG59XG4iXX0=
 
 --- esm2015/index.js ---
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/index.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-export { MyModule } from './mymodule';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFRQSx5QkFBYyxZQUFZLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vbXltb2R1bGUnOyJdfQ==
+export * from './mymodule';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxjQUFjLFlBQVksQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9teW1vZHVsZSc7Il19
 
 --- esm2015/mymodule.js ---
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/mymodule.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import { __decorate } from "tslib";
 import { NgModule } from '@angular/core';
 let MyModule = /** @class */ (() => {
-    class MyModule {
-    }
-    MyModule.decorators = [
-        { type: NgModule, args: [{},] }
-    ];
+    let MyModule = class MyModule {
+    };
+    MyModule = __decorate([
+        NgModule({})
+    ], MyModule);
     return MyModule;
 })();
 export { MyModule };
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFRQSxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDO0FBR3ZDO0lBQUEsTUFDYSxRQUFROzs7Z0JBRHBCLFFBQVEsU0FBQyxFQUFFOztJQUVaLGVBQUM7S0FBQTtTQURZLFFBQVEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7O0FBRUgsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQztBQUl2QztJQUFBLElBQWEsUUFBUSxHQUFyQixNQUFhLFFBQVE7S0FDcEIsQ0FBQTtJQURZLFFBQVE7UUFEcEIsUUFBUSxDQUFDLEVBQUUsQ0FBQztPQUNBLFFBQVEsQ0FDcEI7SUFBRCxlQUFDO0tBQUE7U0FEWSxRQUFRIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge05nTW9kdWxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcbmltcG9ydCB7YX0gZnJvbSAnLi9zZWNvbmRhcnkvc2Vjb25kYXJ5bW9kdWxlJztcblxuQE5nTW9kdWxlKHt9KVxuZXhwb3J0IGNsYXNzIE15TW9kdWxlIHtcbn0iXX0=
 
 --- esm2015/secondary/index.js ---
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/secondary/index.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-export { SecondaryModule, a } from './secondarymodule';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7O0FBUUEsbUNBQWMsbUJBQW1CLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vc2Vjb25kYXJ5bW9kdWxlJztcbiJdfQ==
+export * from './secondarymodule';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7OztHQU1HO0FBRUgsY0FBYyxtQkFBbUIsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9zZWNvbmRhcnltb2R1bGUnO1xuIl19
 
 --- esm2015/secondary/secondary.externs.js ---
 
@@ -1691,30 +1645,25 @@ export * from './index';
 --- esm2015/secondary/secondarymodule.js ---
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/secondary/secondarymodule.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import { __decorate } from "tslib";
 import { NgModule } from '@angular/core';
 let SecondaryModule = /** @class */ (() => {
-    class SecondaryModule {
-    }
-    SecondaryModule.decorators = [
-        { type: NgModule, args: [{},] }
-    ];
+    let SecondaryModule = class SecondaryModule {
+    };
+    SecondaryModule = __decorate([
+        NgModule({})
+    ], SecondaryModule);
     return SecondaryModule;
 })();
 export { SecondaryModule };
-/** @type {?} */
 export const a = 1;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFRQSxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDO0FBRXZDO0lBQUEsTUFDYSxlQUFlOzs7Z0JBRDNCLFFBQVEsU0FBQyxFQUFFOztJQUVaLHNCQUFDO0tBQUE7U0FEWSxlQUFlOztBQUc1QixNQUFNLE9BQU8sQ0FBQyxHQUFHLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgU2Vjb25kYXJ5TW9kdWxlIHtcbn1cblxuZXhwb3J0IGNvbnN0IGEgPSAxO1xuIl19
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7O0FBRUgsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQztBQUd2QztJQUFBLElBQWEsZUFBZSxHQUE1QixNQUFhLGVBQWU7S0FDM0IsQ0FBQTtJQURZLGVBQWU7UUFEM0IsUUFBUSxDQUFDLEVBQUUsQ0FBQztPQUNBLGVBQWUsQ0FDM0I7SUFBRCxzQkFBQztLQUFBO1NBRFksZUFBZTtBQUc1QixNQUFNLENBQUMsTUFBTSxDQUFDLEdBQUcsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge05nTW9kdWxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQE5nTW9kdWxlKHt9KVxuZXhwb3J0IGNsYXNzIFNlY29uZGFyeU1vZHVsZSB7XG59XG5cbmV4cG9ydCBjb25zdCBhID0gMTtcbiJdfQ==
 
 --- example.d.ts ---
 
@@ -1751,26 +1700,31 @@ export { }
  * License: MIT
  */
 
+import { __decorate } from 'tslib';
 import { NgModule } from '@angular/core';
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/a11y/public-api.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 let A11yModule = /** @class */ (() => {
-    class A11yModule {
-    }
-    A11yModule.decorators = [
-        { type: NgModule, args: [{},] }
-    ];
+    let A11yModule = class A11yModule {
+    };
+    A11yModule = __decorate([
+        NgModule({})
+    ], A11yModule);
     return A11yModule;
 })();
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/a11y/index.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 
 /**
@@ -1789,56 +1743,39 @@ export { A11yModule };
  * License: MIT
  */
 
-import { Injectable, ɵɵdefineInjectable, ɵɵinject } from '@angular/core';
+import { __decorate, __metadata } from 'tslib';
+import { ɵɵdefineInjectable, Injectable, ɵɵinject } from '@angular/core';
 
-/**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/imports/second.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 let MySecondService = /** @class */ (() => {
-    class MySecondService {
-    }
-    MySecondService.decorators = [
-        { type: Injectable, args: [{ providedIn: 'root' },] }
-    ];
-    /** @nocollapse */ MySecondService.ɵprov = ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+    let MySecondService = class MySecondService {
+    };
+    MySecondService.ɵprov = ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+    MySecondService = __decorate([
+        Injectable({ providedIn: 'root' })
+    ], MySecondService);
     return MySecondService;
 })();
 
-/**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/imports/public-api.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 let MyService = /** @class */ (() => {
-    class MyService {
-        /**
-         * @param {?} secondService
-         */
+    let MyService = class MyService {
         constructor(secondService) {
             this.secondService = secondService;
         }
-    }
-    MyService.decorators = [
-        { type: Injectable, args: [{ providedIn: 'root' },] }
-    ];
-    /** @nocollapse */
-    MyService.ctorParameters = () => [
-        { type: MySecondService }
-    ];
-    /** @nocollapse */ MyService.ɵprov = ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
+    };
+    MyService.ɵprov = ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
+    MyService = __decorate([
+        Injectable({ providedIn: 'root' }),
+        __metadata("design:paramtypes", [MySecondService])
+    ], MyService);
     return MyService;
 })();
-if (false) {
-    /** @type {?} */
-    MyService.prototype.secondService;
-}
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/imports/index.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 
 /**
@@ -1857,28 +1794,32 @@ export { MyService, MySecondService as ɵangular_packages_bazel_test_ng_package_
  * License: MIT
  */
 
+import { __decorate } from 'tslib';
 import { NgModule } from '@angular/core';
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/secondary/secondarymodule.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 let SecondaryModule = /** @class */ (() => {
-    class SecondaryModule {
-    }
-    SecondaryModule.decorators = [
-        { type: NgModule, args: [{},] }
-    ];
+    let SecondaryModule = class SecondaryModule {
+    };
+    SecondaryModule = __decorate([
+        NgModule({})
+    ], SecondaryModule);
     return SecondaryModule;
 })();
-/** @type {?} */
 const a = 1;
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/secondary/index.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 
 /**
@@ -1897,26 +1838,31 @@ export { SecondaryModule, a };
  * License: MIT
  */
 
+import { __decorate } from 'tslib';
 import { NgModule } from '@angular/core';
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/mymodule.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 let MyModule = /** @class */ (() => {
-    class MyModule {
-    }
-    MyModule.decorators = [
-        { type: NgModule, args: [{},] }
-    ];
+    let MyModule = class MyModule {
+    };
+    MyModule = __decorate([
+        NgModule({})
+    ], MyModule);
     return MyModule;
 })();
 
 /**
- * @fileoverview added by tsickle
- * Generated from: packages/bazel/test/ng_package/example/index.ts
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 
 /**

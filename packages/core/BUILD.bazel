@@ -25,7 +25,7 @@ ng_module(
 
 ng_package(
     name = "npm_package",
-    srcs = glob(["**/*.externs.js"]) + [
+    srcs = [
         "package.json",
         "//packages/core/testing:package.json",
     ],
