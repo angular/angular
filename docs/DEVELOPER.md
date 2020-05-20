@@ -89,6 +89,7 @@ benefit from Bazel's capability to do incremental builds.
 All the tests are executed on our Continuous Integration infrastructure. PRs can only be
 merged if the code is formatted properly and all tests are passing.
 
+<a name="formatting-your-source-code">
 <a name="clang-format"></a>
 ## Formatting your source code
 
