@@ -8,6 +8,9 @@
 
 import * as Octokit from '@octokit/rest';
 import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
+
+import {info} from '../../utils/console';
+
 import {MergeConfigWithRemote} from './config';
 
 /** Error for failed Github API requests. */
@@ -74,7 +77,7 @@ export class GitClient {
     // To improve the debugging experience in case something fails, we print all executed
     // Git commands. Note that we do not want to print the token if is contained in the
     // command. It's common to share errors with others if the tool failed.
-    console.info('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
+    info('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
 
     const result = spawnSync('git', args, {
       cwd: this._projectRoot,
