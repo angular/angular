@@ -1,5 +1,6 @@
 import {MergeConfig} from '@angular/dev-infra-private/pr/merge/config';
 import {GithubConfig} from '@angular/dev-infra-private/utils/config';
+import {determineMergeBranches} from './scripts/determine-merge-branches';
 
 /**
  * Github configuration for the ng-dev command. This repository is
@@ -15,10 +16,7 @@ const github: GithubConfig = {
  * are respected by the merge script (e.g. the target labels).
  */
 const merge = (): MergeConfig => {
-  const {major, minor} = parseVersion(require('./package').version);
-  const patchBranch = `${major}.${minor}.x`;
-  const minorBranch = `${major}.x`;
-
+  const {minor, patch} = determineMergeBranches(github.owner, github.name);
   return {
     // By default, the merge script merges locally with `git cherry-pick` and autosquash.
     // This has the downside of pull requests showing up as `Closed` instead of `Merged`.
@@ -36,11 +34,11 @@ const merge = (): MergeConfig => {
     labels: [
       {
         pattern: 'target: patch',
-        branches: ['master', patchBranch],
+        branches: ['master', patch],
       },
       {
         pattern: 'target: minor',
-        branches: ['master', minorBranch],
+        branches: ['master', minor],
       },
       {
         pattern: 'target: major',
@@ -60,9 +58,3 @@ module.exports = {
   github,
   merge,
 };
-
-/** Converts a version string into an object. */
-function parseVersion(version: string) {
-  const [major = 0, minor = 0, patch = 0] = version.split('.').map(segment => Number(segment));
-  return {major, minor, patch};
-}

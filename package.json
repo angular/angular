@@ -43,7 +43,7 @@
     "resync-caretaker-app": "ts-node --project scripts/tsconfig.json scripts/caretaking/resync-caretaker-app-prs.ts",
     "ts-circular-deps:check": "yarn -s ts-circular-deps check --config ./src/circular-deps-test.conf.js",
     "ts-circular-deps:approve": "yarn -s ts-circular-deps approve --config ./src/circular-deps-test.conf.js",
-    "ng-dev": "ts-node ./node_modules/@angular/dev-infra-private/cli.js",
+    "ng-dev": "ts-node -O {\\\"module\\\":\\\"commonjs\\\"} ./node_modules/@angular/dev-infra-private/cli.js",
     "merge": "ng-dev pr merge",
     "approve-api": "node ./scripts/approve-api-golden.js"
   },
@@ -71,7 +71,7 @@
     "@angular-devkit/schematics": "^10.0.0-next.5",
     "@angular/bazel": "^10.0.0-next.8",
     "@angular/compiler-cli": "^10.0.0-next.8",
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#f794e4681ce292ee6dd109f33230f28858633bce",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#7f3e1227d199a55943152aac6119d40e1bbb028f",
     "@angular/platform-browser-dynamic": "^10.0.0-next.8",
     "@angular/platform-server": "^10.0.0-next.8",
     "@angular/router": "^10.0.0-next.8",
