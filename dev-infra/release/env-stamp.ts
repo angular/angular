@@ -8,6 +8,8 @@
 
 import {exec as _exec} from 'shelljs';
 
+import {info} from '../utils/console';
+
 /**
  * Log the environment variables expected by bazel for stamping.
  *

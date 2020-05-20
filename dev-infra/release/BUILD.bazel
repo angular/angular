@@ -8,6 +8,7 @@ ts_library(
     module_name = "@angular/dev-infra-private/release",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
+        "//dev-infra/utils",
         "@npm//@types/node",
         "@npm//@types/shelljs",
         "@npm//@types/yargs",
