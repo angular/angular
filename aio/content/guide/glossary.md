@@ -950,6 +950,10 @@ Many code editors and IDEs support TypeScript either natively or with plug-ins.
 TypeScript is the preferred language for Angular development.
 Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org/).
 
+## TypeScript configuration file
+
+A file specifies the root files and the compiler options required to compile a TypeScript project. For more information, see [TypeScript configuration](/guide/typescript-configuration).
+
 
 {@a U}
 
