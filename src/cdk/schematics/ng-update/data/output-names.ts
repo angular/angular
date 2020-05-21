@@ -24,5 +24,17 @@ export interface OutputNameUpgradeData {
 }
 
 export const outputNames: VersionChanges<OutputNameUpgradeData> = {
+  [TargetVersion.V10]: [
+    {
+      pr: 'https://github.com/angular/components/pull/19362',
+      changes: [{
+        replace: 'copied',
+        replaceWith: 'cdkCopyToClipboardCopied',
+        whitelist: {
+          attributes: ['cdkCopyToClipboard']
+        }
+      }]
+    }
+  ],
   [TargetVersion.V6]: [],
 };

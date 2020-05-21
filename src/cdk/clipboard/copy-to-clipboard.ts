@@ -56,14 +56,6 @@ export class CdkCopyToClipboard implements OnDestroy {
    */
   @Output('cdkCopyToClipboardCopied') copied = new EventEmitter<boolean>();
 
-  /**
-   * Emits when some text is copied to the clipboard. The
-   * emitted value indicates whether copying was successful.
-   * @deprecated Use `cdkCopyToClipboardCopied` instead.
-   * @breaking-change 10.0.0
-   */
-  @Output('copied') _deprecatedCopied = this.copied;
-
   /** Copies that are currently being attempted. */
   private _pending = new Set<PendingCopy>();
 
@@ -75,11 +67,7 @@ export class CdkCopyToClipboard implements OnDestroy {
 
   constructor(
     private _clipboard: Clipboard,
-    /**
-     * @deprecated _ngZone parameter to become required.
-     * @breaking-change 10.0.0
-     */
-    private _ngZone?: NgZone,
+    private _ngZone: NgZone,
     @Optional() @Inject(CKD_COPY_TO_CLIPBOARD_CONFIG) config?: CdkCopyToClipboardConfig) {
 
     if (config && config.attempts != null) {
@@ -97,13 +85,8 @@ export class CdkCopyToClipboard implements OnDestroy {
       const attempt = () => {
         const successful = pending.copy();
         if (!successful && --remainingAttempts && !this._destroyed) {
-          // @breaking-change 10.0.0 Remove null check for `_ngZone`.
-          if (this._ngZone) {
-            this._currentTimeout = this._ngZone.runOutsideAngular(() => setTimeout(attempt, 1));
-          } else {
-            // We use 1 for the timeout since it's more predictable when flushing in unit tests.
-            this._currentTimeout = setTimeout(attempt, 1);
-          }
+          // We use 1 for the timeout since it's more predictable when flushing in unit tests.
+          this._currentTimeout = this._ngZone.runOutsideAngular(() => setTimeout(attempt, 1));
         } else {
           this._currentTimeout = null;
           this._pending.delete(pending);
