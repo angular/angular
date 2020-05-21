@@ -3,9 +3,10 @@
  * multiple input files using highlight.js. The output will be HTML files.
  */
 
-import {readFileSync, writeFileSync} from 'fs';
-import {extname, join} from 'path';
+import {readFileSync, writeFileSync, ensureDirSync} from 'fs-extra';
+import {dirname, extname, join, relative} from 'path';
 import {highlightCodeBlock} from './highlight-code-block';
+import {regionParser} from '../region-parser/region-parser';
 
 /**
  * Determines the command line arguments for the current Bazel action. Since this action can
@@ -25,21 +26,48 @@ function getBazelActionArguments() {
   return args;
 }
 
+function detectAndHighlightRegionBlocks(parsed:
+                                          { contents: string, regions: { [p: string]: string } },
+                                        basePath: string,
+                                        outDir: string) {
+  const fileExtension = extname(basePath).substring(1);
+  for (const [regionName, regionSnippet] of Object.entries(parsed.regions)) {
+    // Create files for each found region
+    if (!regionName) {
+      continue;
+    }
+    const highlightedRegion = highlightCodeBlock(regionSnippet, fileExtension);
+    // Convert "my-component-example.ts" into "my-component-example_region-ts.html"
+    const regionBaseOutputPath = basePath.replace(`.${fileExtension}`,
+      `_${regionName}-${fileExtension}.html`);
+    const regionOutputPath = join(outDir, regionBaseOutputPath);
+    ensureDirSync(dirname(regionOutputPath));
+    writeFileSync(regionOutputPath, highlightedRegion);
+  }
+}
+
 if (require.main === module) {
-  // The script expects the bazel-bin path as first argument. All remaining arguments will be
-  // considered as markdown input files that need to be transformed.
-  const [bazelBinPath, ...inputFiles] = getBazelActionArguments();
+    // The script expects the output directory as first argument. Second is the name of the
+    // package where this the highlight target is declared. All remaining arguments will be
+    // considered as markdown input files that need to be transformed.
+    const [outDir, packageName, ...inputFiles] = getBazelActionArguments();
 
-  // Walk through each input file and write transformed markdown output to the specified
-  // Bazel bin directory.
-  inputFiles.forEach(inputPath => {
-    const fileExtension = extname(inputPath).substring(1);
-    // Convert "my-component-example.ts" into "my-component-example-ts.html"
-    const baseOutputPath = inputPath.replace(`.${fileExtension}`, `-${fileExtension}.html`);
-    const outputPath = join(bazelBinPath, baseOutputPath);
-    const htmlOutput = highlightCodeBlock(readFileSync(inputPath, 'utf8'), fileExtension);
+    // Walk through each input file and write transformed markdown output
+    // to the specified output directory.
+    for (const execPath of inputFiles) {
+        // Compute a relative path from the package to the actual input file.
+        // e.g `src/components-examples/cdk/<..>/example.ts` becomes `cdk/<..>/example.ts`.
+        const basePath = relative(packageName, execPath);
+        const fileExtension = extname(basePath).substring(1);
+        const parsed = regionParser(readFileSync(execPath, 'utf8'), fileExtension);
+        detectAndHighlightRegionBlocks(parsed, basePath, outDir);
+        // Convert "my-component-example.ts" into "my-component-example-ts.html"
+        const baseOutputPath = basePath.replace(`.${fileExtension}`, `-${fileExtension}.html`);
+        const outputPath = join(outDir, baseOutputPath);
+        const htmlOutput = highlightCodeBlock(parsed.contents, fileExtension);
 
-    writeFileSync(outputPath, htmlOutput);
-  });
+        ensureDirSync(dirname(outputPath));
+        writeFileSync(outputPath, htmlOutput);
+    }
 
 }
