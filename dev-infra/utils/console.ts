@@ -83,6 +83,11 @@ function buildLogLevelFunction(loadCommand: () => Function, level: LOG_LEVELS) {
 /**
  * Run the console command provided, if the environments logging level greater than the
  * provided logging level.
+ *
+ * The loadCommand takes in a function which is called to retrieve the console.* function
+ * to allow for jasmine spies to still work in testing.  Without this method of retrieval
+ * the console.* function, the function is saved into the closure of the created logging
+ * function before jasmine can spy.
  */
 function runConsoleCommand(loadCommand: () => Function, logLevel: LOG_LEVELS, ...text: string[]) {
   if (getLogLevel() >= logLevel) {
