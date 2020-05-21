@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "outDir": "../../dist/tools/cherry-pick-patch",
-    "lib": ["es2016"],
-    "types": ["node"],
-    "strictNullChecks": true
-  }
-}
