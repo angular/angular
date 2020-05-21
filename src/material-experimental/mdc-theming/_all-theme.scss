@@ -6,7 +6,6 @@
 @import '../mdc-menu/menu-theme';
 @import '../mdc-radio/radio-theme';
 @import '../mdc-slide-toggle/slide-toggle-theme';
-@import '../mdc-slider/slider-theme';
 @import '../mdc-tabs/tabs-theme';
 @import '../mdc-table/table-theme';
 @import '../mdc-progress-bar/progress-bar-theme';
@@ -30,7 +29,6 @@
     @include mat-mdc-table-theme($theme-or-color-config);
     @include mat-mdc-form-field-theme($theme-or-color-config);
     @include mat-mdc-input-theme($theme-or-color-config);
-    @include mat-mdc-slider-theme($theme-or-color-config);
     @include mat-mdc-tabs-theme($theme-or-color-config);
   }
 }
