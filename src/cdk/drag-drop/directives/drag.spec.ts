@@ -4352,6 +4352,29 @@ describe('CdkDrag', () => {
       dispatchMouseEvent(document, 'mouseup');
     }));
 
+    it('should not throw when entering from the top with an intermediate sibling present',
+      fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZonesWithIntermediateSibling);
+
+        // Make sure there's only one item in the first list.
+        fixture.componentInstance.todo = ['things'];
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems;
+        const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+        const item = groups[0][0];
+
+        // Add some initial padding as the target drop zone
+        dropZones[1].style.paddingTop = '10px';
+        const targetRect = dropZones[1].getBoundingClientRect();
+
+        expect(() => {
+          dragElementViaMouse(fixture, item.element.nativeElement, targetRect.left, targetRect.top);
+          flush();
+          fixture.detectChanges();
+        }).not.toThrow();
+      }));
+
     it('should assign a default id on each drop zone', fakeAsync(() => {
       const fixture = createComponent(ConnectedDropZones);
       fixture.detectChanges();
@@ -6069,6 +6092,46 @@ class PlainStandaloneDropList {
 class DraggableInHorizontalFlexDropZoneWithMatchSizePreview {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   items = ['Zero', 'One', 'Two'];
+}
+
+
+@Component({
+  styles: CONNECTED_DROP_ZONES_STYLES,
+  template: `
+    <div
+      cdkDropList
+      #todoZone="cdkDropList"
+      [cdkDropListData]="todo"
+      [cdkDropListConnectedTo]="[doneZone]"
+      (cdkDropListDropped)="droppedSpy($event)"
+      (cdkDropListEntered)="enteredSpy($event)">
+      <div
+        [cdkDragData]="item"
+        (cdkDragEntered)="itemEnteredSpy($event)"
+        *ngFor="let item of todo"
+        cdkDrag>{{item}}</div>
+    </div>
+
+    <div
+      cdkDropList
+      #doneZone="cdkDropList"
+      [cdkDropListData]="done"
+      [cdkDropListConnectedTo]="[todoZone]"
+      (cdkDropListDropped)="droppedSpy($event)"
+      (cdkDropListEntered)="enteredSpy($event)">
+
+      <div>Hello there</div>
+      <div>
+        <div
+          [cdkDragData]="item"
+          (cdkDragEntered)="itemEnteredSpy($event)"
+          *ngFor="let item of done"
+          cdkDrag>{{item}}</div>
+      </div>
+    </div>
+  `
+})
+class ConnectedDropZonesWithIntermediateSibling extends ConnectedDropZones {
 }
 
 
