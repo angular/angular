@@ -94,6 +94,7 @@
     "!/api/testing/**",
     "!/docs/?*",
     "!/docs/*/**",
+    "!/guide/bazel",
     "!/guide/change-log",
     "!/getting-started",
     "!/getting-started.html",
