@@ -72,14 +72,14 @@ export class NgTscPlugin implements TscPlugin {
     return this._compiler;
   }
 
-  constructor(private ngOptions: {}) {
+  constructor(private ngOptions: NgCompilerOptions) {
     setFileSystem(new NodeJSFileSystem());
   }
 
   wrapHost(
       host: ts.CompilerHost&UnifiedModulesHost, inputFiles: readonly string[],
       options: ts.CompilerOptions): PluginCompilerHost {
-    this.options = {...this.ngOptions, ...options} as NgCompilerOptions;
+    this.options = {...this.ngOptions, ...options};
     this.host = NgCompilerHost.wrap(host, inputFiles, this.options, /* oldProgram */ null);
     return this.host;
   }
