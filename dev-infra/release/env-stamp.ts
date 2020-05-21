@@ -21,12 +21,12 @@ import {info} from '../utils/console';
  * in Windows or OSX hosts (https://github.com/docker/for-win/issues/188).
  */
 export function buildEnvStamp() {
-  info(`BUILD_SCM_BRANCH ${getCurrentBranch()}`);
-  info(`BUILD_SCM_COMMIT_SHA ${getCurrentSha()}`);
-  info(`BUILD_SCM_HASH ${getCurrentSha()}`);
-  info(`BUILD_SCM_LOCAL_CHANGES ${hasLocalChanges()}`);
-  info(`BUILD_SCM_USER ${getCurrentGitUser()}`);
-  info(`BUILD_SCM_VERSION ${getSCMVersion()}`);
+  console.info(`BUILD_SCM_BRANCH ${getCurrentBranch()}`);
+  console.info(`BUILD_SCM_COMMIT_SHA ${getCurrentSha()}`);
+  console.info(`BUILD_SCM_HASH ${getCurrentSha()}`);
+  console.info(`BUILD_SCM_LOCAL_CHANGES ${hasLocalChanges()}`);
+  console.info(`BUILD_SCM_USER ${getCurrentGitUser()}`);
+  console.info(`BUILD_SCM_VERSION ${getSCMVersion()}`);
   process.exit(0);
 }
 
