@@ -1187,6 +1187,27 @@ describe('CdkDrag', () => {
       expect(drag.rootElementSelector).toBe('.root');
     }));
 
+    it('should not throw if touches and changedTouches are empty', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      startDraggingViaTouch(fixture, dragElement);
+      continueDraggingViaTouch(fixture, 50, 100);
+
+      const event = createTouchEvent('touchend', 50, 100);
+      Object.defineProperties(event, {
+        touches: {get: () => []},
+        changedTouches: {get: () => []}
+      });
+
+      expect(() => {
+        dispatchEvent(document, event);
+        fixture.detectChanges();
+        tick();
+      }).not.toThrow();
+    }));
+
   });
 
   describe('draggable with a handle', () => {
