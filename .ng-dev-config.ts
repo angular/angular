@@ -84,7 +84,7 @@ const github = {
 // Configuration for the `ng-dev pr merge` command. The command can be used
 // for merging upstream pull requests into branches based on a PR target label.
 const merge = () => {
-  const {patch} = determineMergeBranches(require('./package.json').version, github);
+  const {patch} = determineMergeBranches(require('./package.json').version, '@angular/core');
   const config: MergeConfig = {
     githubApiMerge: false,
     claSignedLabel: 'cla: yes',
