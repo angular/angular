@@ -8,7 +8,7 @@ import {
   getProjectStyleFile,
   getProjectTargetOptions,
 } from '@angular/cdk/schematics';
-import {createTestApp, getFileContent} from '@angular/cdk/schematics/testing';
+import {createTestApp, createTestLibrary, getFileContent} from '@angular/cdk/schematics/testing';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {COLLECTION_PATH} from '../index.spec';
 import {addPackageToPackageJson} from './package-config';
@@ -417,5 +417,35 @@ describe('ng-add schematic', () => {
       const buffer = tree.read(indexPath)!;
       expect(buffer.toString()).toContain('<body class="one two">');
     });
+  });
+});
+
+describe('ng-add schematic - library project', () => {
+  let runner: SchematicTestRunner;
+  let libraryTree: Tree;
+  let errorOutput: string[];
+  let warnOutput: string[];
+
+  beforeEach(async () => {
+    runner = new SchematicTestRunner('schematics', require.resolve('../collection.json'));
+    libraryTree = await createTestLibrary(runner);
+
+    errorOutput = [];
+    warnOutput = [];
+    runner.logger.subscribe(e => {
+      if (e.level === 'error') {
+        errorOutput.push(e.message);
+      } else if (e.level === 'warn') {
+        warnOutput.push(e.message);
+      }
+    });
+  });
+
+  it('should warn if a library project is targeted', async () => {
+    await runner.runSchematicAsync('ng-add-setup-project', {}, libraryTree).toPromise();
+
+    expect(errorOutput.length).toBe(0);
+    expect(warnOutput.length).toBe(1);
+    expect(warnOutput[0]).toMatch(/There is no additional setup required/);
   });
 });

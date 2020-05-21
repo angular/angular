@@ -33,13 +33,26 @@ const noopAnimationsModuleName = 'NoopAnimationsModule';
  *  - Adds Browser Animation to app.module
  */
 export default function(options: Schema): Rule {
-  return chain([
-    addAnimationsModule(options),
-    addThemeToAppStyles(options),
-    addFontsToIndex(options),
-    addMaterialAppStyles(options),
-    addTypographyClass(options),
-  ]);
+  return (host: Tree, context: SchematicContext) => {
+    const workspace = getWorkspace(host);
+    const project = getProjectFromWorkspace(workspace, options.project);
+
+    if (project.projectType === 'application') {
+      return chain([
+        addAnimationsModule(options),
+        addThemeToAppStyles(options),
+        addFontsToIndex(options),
+        addMaterialAppStyles(options),
+        addTypographyClass(options),
+      ]);
+    }
+    context.logger.warn(
+        'Angular Material has been set up in your workspace. There is no additional setup ' +
+        'required for consuming Angular Material in your library project.\n\n' +
+        'If you intended to run the schematic on a different project, pass the `--project` ' +
+        'option.');
+    return host;
+  };
 }
 
 /**
