@@ -1,3 +1,43 @@
+<a name="10.0.0-rc.0"></a>
+# [10.0.0-rc.0](https://github.com/angular/angular/compare/10.0.0-next.9...10.0.0-rc.0) (2020-05-21)
+
+### Bug Fixes
+
+* **core:** disable tsickle pass when producing APF packages ([#37221](https://github.com/angular/angular/issues/37221)) ([a1001f2](https://github.com/angular/angular/commit/a1001f2))
+* **elements:** capture input properties set before upgrading the element ([#36114](https://github.com/angular/angular/issues/36114)) ([2fc5ae5](https://github.com/angular/angular/commit/2fc5ae5)), closes [#30848](https://github.com/angular/angular/issues/30848) [#31416](https://github.com/angular/angular/issues/31416)
+* **elements:** correctly handle getting/setting properties before connecting the element ([#36114](https://github.com/angular/angular/issues/36114)) ([327980b](https://github.com/angular/angular/commit/327980b)), closes [/github.com/angular/angular/pull/31416/files#r300326698](https://github.com//github.com/angular/angular/pull/31416/files/issues/r300326698)
+* **elements:** do not break when the constructor of an Angular Element is not called ([#36114](https://github.com/angular/angular/issues/36114)) ([89b44d1](https://github.com/angular/angular/commit/89b44d1))
+* **ngcc:** identifier ModuleWithProviders functions in IIFE wrapped classes ([#37206](https://github.com/angular/angular/issues/37206)) ([97e1399](https://github.com/angular/angular/commit/97e1399)), closes [#37189](https://github.com/angular/angular/issues/37189)
+
+
+### BREAKING CHANGES
+
+* **core:** Angular npm packages no longer contain jsdoc comments
+to support Closure Compiler's advanced optimizations
+
+The support for Closure Compiler in Angular packages has been
+experimental and broken for quite some time.
+
+As of TS3.9, Closure is unusable with the JavaScript emit. Please follow
+https://github.com/microsoft/TypeScript/issues/38374 for more
+information and updates.
+
+If you used Closure Compiler with Angular in the past, you will likely
+be better off consuming Angular packages built from sources directly 
+rather than consuming the version we publish on npm,
+which is primarily optimized for Webpack/Rollup + Terser build pipeline.
+
+As a temporary workaround, you might consider using your current build
+pipeline with Closure flag `--compilation_level=SIMPLE`. This flag 
+will ensure that your build pipeline produces buildable and
+runnable artifacts, at the cost of increased payload size due to
+advanced optimizations being disabled.
+
+If you were affected by this change, please help us understand your
+needs by leaving a comment on https://github.com/angular/angular/issues/37234.
+
+
+
 <a name="9.1.9"></a>
 ## [9.1.9](https://github.com/angular/angular/compare/9.1.8...9.1.9) (2020-05-20)
 
