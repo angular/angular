@@ -151,9 +151,9 @@ export class MatDialogContainer extends BasePortalOutlet {
   /** Moves focus back into the dialog if it was moved out. */
   _recaptureFocus() {
     if (!this._containsFocus()) {
-      const focusWasTrapped = this._focusTrap.focusInitialElement();
+      const focusContainer = !this._config.autoFocus || !this._focusTrap.focusInitialElement();
 
-      if (!focusWasTrapped) {
+      if (focusContainer) {
         this._elementRef.nativeElement.focus();
       }
     }
