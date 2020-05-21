@@ -119,12 +119,14 @@ export class StickyStyler {
     }
 
     // If positioning the rows to the bottom, reverse their order when evaluating the sticky
-    // position such that the last row stuck will be "bottom: 0px" and so on.
-    const rows = position === 'bottom' ? rowsToStick.reverse() : rowsToStick;
+    // position such that the last row stuck will be "bottom: 0px" and so on. Note that the
+    // sticky states need to be reversed as well.
+    const rows = position === 'bottom' ? rowsToStick.slice().reverse() : rowsToStick;
+    const states = position === 'bottom' ? stickyStates.slice().reverse() : stickyStates;
 
     let stickyHeight = 0;
     for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-      if (!stickyStates[rowIndex]) {
+      if (!states[rowIndex]) {
         continue;
       }
 

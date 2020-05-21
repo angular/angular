@@ -898,6 +898,14 @@ describe('CdkTable', () => {
         expectNoStickyStyles(footerRows);
       });
 
+      it('should stick the correct footer row', () => {
+        component.stickyFooters = ['footer-3'];
+        fixture.detectChanges();
+
+        expectStickyStyles(footerRows[2], '10', {bottom: '0px'});
+        expectNoStickyStyles([footerRows[0], footerRows[1]]);
+      });
+
       it('should stick and unstick left columns', () => {
         component.stickyStartColumns = ['column-1', 'column-3'];
         fixture.detectChanges();
@@ -1010,11 +1018,11 @@ describe('CdkTable', () => {
         });
 
         let footerCells = getFooterCells(footerRows[0]);
-        expectStickyStyles(footerRows[0], '10', {bottom: '0px'});
+        expectStickyStyles(footerRows[2], '10', {bottom: '0px'});
         expectStickyStyles(footerCells[0], '1', {left: '0px'});
         expectStickyStyles(footerCells[5], '1', {right: '0px'});
         expectNoStickyStyles([footerCells[1], footerCells[2], footerCells[3], footerCells[4]]);
-        expectNoStickyStyles([footerRows[1], footerRows[2]]);
+        expectNoStickyStyles([footerRows[0], footerRows[1]]);
 
         component.stickyHeaders = [];
         component.stickyFooters = [];
@@ -1179,7 +1187,7 @@ describe('CdkTable', () => {
           expectNoStickyStyles([cells[1], cells[2], cells[3], cells[4]]);
         });
 
-        const footerCells = getFooterCells(footerRows[0]);
+        const footerCells = getFooterCells(footerRows[2]);
         expectStickyStyles(footerCells[0], '11', {bottom: '0px', left: '0px'});
         expectStickyStyles(footerCells[1], '10', {bottom: '0px'});
         expectStickyStyles(footerCells[2], '10', {bottom: '0px'});
