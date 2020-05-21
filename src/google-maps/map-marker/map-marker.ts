@@ -24,6 +24,7 @@ import {map, take, takeUntil} from 'rxjs/operators';
 
 import {GoogleMap} from '../google-map/google-map';
 import {MapEventManager} from '../map-event-manager';
+import {MapAnchorPoint} from '../map-anchor-point';
 
 /**
  * Default options for the Google Maps marker component. Displays a marker
@@ -44,7 +45,7 @@ export const DEFAULT_MARKER_OPTIONS = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MapMarker implements OnInit, OnDestroy {
+export class MapMarker implements OnInit, OnDestroy, MapAnchorPoint {
   private _eventManager = new MapEventManager(this._ngZone);
   private readonly _options =
       new BehaviorSubject<google.maps.MarkerOptions>(DEFAULT_MARKER_OPTIONS);
@@ -382,6 +383,12 @@ export class MapMarker implements OnInit, OnDestroy {
   getZIndex(): number|null {
     this._assertInitialized();
     return this.marker.getZIndex() || null;
+  }
+
+  /** Gets the anchor point that can be used to attach other Google Maps objects. */
+  getAnchor(): google.maps.MVCObject {
+    this._assertInitialized();
+    return this.marker;
   }
 
   private _combineOptions(): Observable<google.maps.MarkerOptions> {

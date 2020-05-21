@@ -23,7 +23,7 @@ import {map, take, takeUntil} from 'rxjs/operators';
 
 import {GoogleMap} from '../google-map/google-map';
 import {MapEventManager} from '../map-event-manager';
-import {MapMarker} from '../map-marker/map-marker';
+import {MapAnchorPoint} from '../map-anchor-point';
 
 /**
  * Angular component that renders a Google Maps info window via the Google Maps JavaScript API.
@@ -167,14 +167,13 @@ export class MapInfoWindow implements OnInit, OnDestroy {
   }
 
   /**
-   * Opens the MapInfoWindow using the provided MapMarker as the anchor. If the anchor is not set,
+   * Opens the MapInfoWindow using the provided anchor. If the anchor is not set,
    * then the position property of the options input is used instead.
    */
-  open(anchor?: MapMarker) {
+  open(anchor?: MapAnchorPoint) {
     this._assertInitialized();
-    const marker = anchor ? anchor.marker : undefined;
     this._elementRef.nativeElement.style.display = '';
-    this.infoWindow.open(this._googleMap.googleMap, marker);
+    this.infoWindow.open(this._googleMap.googleMap, anchor ? anchor.getAnchor() : undefined);
   }
 
   private _combineOptions(): Observable<google.maps.InfoWindowOptions> {

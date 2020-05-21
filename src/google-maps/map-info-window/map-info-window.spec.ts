@@ -110,7 +110,10 @@ describe('MapInfoWindow', () => {
 
   it('exposes methods that change the configuration of the info window', () => {
     const fakeMarker = {} as unknown as google.maps.Marker;
-    const fakeMarkerComponent = {marker: fakeMarker} as unknown as MapMarker;
+    const fakeMarkerComponent = {
+      marker: fakeMarker,
+      getAnchor: () => fakeMarker
+    } as unknown as MapMarker;
     const infoWindowSpy = createInfoWindowSpy({});
     createInfoWindowConstructorSpy(infoWindowSpy).and.callThrough();
 

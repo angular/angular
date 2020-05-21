@@ -15,3 +15,4 @@ export {MapMarker} from './map-marker/map-marker';
 export {MapPolygon} from './map-polygon/map-polygon';
 export {MapPolyline} from './map-polyline/map-polyline';
 export {MapRectangle} from './map-rectangle/map-rectangle';
+export {MapAnchorPoint} from './map-anchor-point';

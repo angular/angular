@@ -56,6 +56,10 @@ export declare class GoogleMapsModule {
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapGroundOverlay, typeof i4.MapInfoWindow, typeof i5.MapMarker, typeof i6.MapPolygon, typeof i7.MapPolyline, typeof i8.MapRectangle], never, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapGroundOverlay, typeof i4.MapInfoWindow, typeof i5.MapMarker, typeof i6.MapPolygon, typeof i7.MapPolyline, typeof i8.MapRectangle]>;
 }
 
+export interface MapAnchorPoint {
+    getAnchor(): google.maps.MVCObject;
+}
+
 export declare class MapCircle implements OnInit, OnDestroy {
     set center(center: google.maps.LatLng | google.maps.LatLngLiteral);
     centerChanged: Observable<void>;
@@ -121,12 +125,12 @@ export declare class MapInfoWindow implements OnInit, OnDestroy {
     getZIndex(): number;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    open(anchor?: MapMarker): void;
+    open(anchor?: MapAnchorPoint): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapInfoWindow, "map-info-window", never, { "options": "options"; "position": "position"; }, { "closeclick": "closeclick"; "contentChanged": "contentChanged"; "domready": "domready"; "positionChanged": "positionChanged"; "zindexChanged": "zindexChanged"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapInfoWindow, never>;
 }
 
-export declare class MapMarker implements OnInit, OnDestroy {
+export declare class MapMarker implements OnInit, OnDestroy, MapAnchorPoint {
     animationChanged: Observable<void>;
     set clickable(clickable: boolean);
     clickableChanged: Observable<void>;
@@ -155,6 +159,7 @@ export declare class MapMarker implements OnInit, OnDestroy {
     visibleChanged: Observable<void>;
     zindexChanged: Observable<void>;
     constructor(_googleMap: GoogleMap, _ngZone: NgZone);
+    getAnchor(): google.maps.MVCObject;
     getAnimation(): google.maps.Animation | null;
     getClickable(): boolean;
     getCursor(): string | null;
