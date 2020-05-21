@@ -2,7 +2,7 @@ export declare const MAT_SLIDER_VALUE_ACCESSOR: any;
 
 export declare class MatSlider extends _MatSliderMixinBase implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, OnInit, HasTabIndex {
     _animationMode?: string | undefined;
-    protected _document?: Document;
+    protected _document: Document;
     get _invertAxis(): boolean;
     _isActive: boolean;
     get _isMinValue(): boolean;
@@ -46,8 +46,7 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     readonly valueChange: EventEmitter<number | null>;
     get vertical(): boolean;
     set vertical(value: boolean);
-    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, tabIndex: string, _animationMode?: string | undefined, _ngZone?: NgZone | undefined,
-    document?: any);
+    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, tabIndex: string, _ngZone: NgZone, _document: any, _animationMode?: string | undefined);
     _onBlur(): void;
     _onFocus(): void;
     _onKeydown(event: KeyboardEvent): void;
@@ -72,7 +71,7 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     static ngAcceptInputType_value: NumberInput;
     static ngAcceptInputType_vertical: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlider, "mat-slider", ["matSlider"], { "disabled": "disabled"; "color": "color"; "tabIndex": "tabIndex"; "invert": "invert"; "max": "max"; "min": "min"; "step": "step"; "thumbLabel": "thumbLabel"; "tickInterval": "tickInterval"; "value": "value"; "displayWith": "displayWith"; "vertical": "vertical"; }, { "change": "change"; "input": "input"; "valueChange": "valueChange"; }, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSlider, [null, null, null, { optional: true; }, { attribute: "tabindex"; }, { optional: true; }, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSlider, [null, null, null, { optional: true; }, { attribute: "tabindex"; }, null, null, { optional: true; }]>;
 }
 
 export declare class MatSliderChange {

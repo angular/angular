@@ -490,26 +490,21 @@ export class MatSlider extends _MatSliderMixinBase
   private _lastPointerEvent: MouseEvent | TouchEvent | null;
 
   /** Used to subscribe to global move and end events */
-  protected _document?: Document;
+  protected _document: Document;
 
   constructor(elementRef: ElementRef,
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Directionality,
               @Attribute('tabindex') tabIndex: string,
-              // @breaking-change 8.0.0 `_animationMode` parameter to be made required.
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
-              // @breaking-change 9.0.0 `_ngZone` parameter to be made required.
-              private _ngZone?: NgZone,
-              /** @breaking-change 11.0.0 make document required */
-              @Optional() @Inject(DOCUMENT) document?: any) {
+              private _ngZone: NgZone,
+              @Inject(DOCUMENT) _document: any,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(elementRef);
-
-    this._document = document;
-
+    this._document = _document;
     this.tabIndex = parseInt(tabIndex) || 0;
 
-    this._runOutsizeZone(() => {
+    _ngZone.runOutsideAngular(() => {
       const element = elementRef.nativeElement;
       element.addEventListener('mousedown', this._pointerDown, activeEventOptions);
       element.addEventListener('touchstart', this._pointerDown, activeEventOptions);
@@ -629,7 +624,7 @@ export class MatSlider extends _MatSliderMixinBase
       return;
     }
 
-    this._runInsideZone(() => {
+    this._ngZone.run(() => {
       const oldValue = this.value;
       const pointerPosition = getPointerPositionOnPage(event);
       this._isSliding = true;
@@ -700,7 +695,7 @@ export class MatSlider extends _MatSliderMixinBase
 
   /** Use defaultView of injected document if available or fallback to global window reference */
   private _getWindow(): Window {
-    return this._document?.defaultView || window;
+    return this._document.defaultView || window;
   }
 
   /**
@@ -712,17 +707,14 @@ export class MatSlider extends _MatSliderMixinBase
     // Note that we bind the events to the `document`, because it allows us to capture
     // drag cancel events where the user's pointer is outside the browser window.
     const document = this._document;
+    const isTouch = isTouchEvent(triggerEvent);
+    const moveEventName = isTouch ? 'touchmove' : 'mousemove';
+    const endEventName = isTouch ? 'touchend' : 'mouseup';
+    document.addEventListener(moveEventName, this._pointerMove, activeEventOptions);
+    document.addEventListener(endEventName, this._pointerUp, activeEventOptions);
 
-    if (typeof document !== 'undefined' && document) {
-      const isTouch = isTouchEvent(triggerEvent);
-      const moveEventName = isTouch ? 'touchmove' : 'mousemove';
-      const endEventName = isTouch ? 'touchend' : 'mouseup';
-      document.addEventListener(moveEventName, this._pointerMove, activeEventOptions);
-      document.addEventListener(endEventName, this._pointerUp, activeEventOptions);
-
-      if (isTouch) {
-        document.addEventListener('touchcancel', this._pointerUp, activeEventOptions);
-      }
+    if (isTouch) {
+      document.addEventListener('touchcancel', this._pointerUp, activeEventOptions);
     }
 
     const window = this._getWindow();
@@ -735,14 +727,11 @@ export class MatSlider extends _MatSliderMixinBase
   /** Removes any global event listeners that we may have added. */
   private _removeGlobalEvents() {
     const document = this._document;
-
-    if (typeof document !== 'undefined' && document) {
-      document.removeEventListener('mousemove', this._pointerMove, activeEventOptions);
-      document.removeEventListener('mouseup', this._pointerUp, activeEventOptions);
-      document.removeEventListener('touchmove', this._pointerMove, activeEventOptions);
-      document.removeEventListener('touchend', this._pointerUp, activeEventOptions);
-      document.removeEventListener('touchcancel', this._pointerUp, activeEventOptions);
-    }
+    document.removeEventListener('mousemove', this._pointerMove, activeEventOptions);
+    document.removeEventListener('mouseup', this._pointerUp, activeEventOptions);
+    document.removeEventListener('touchmove', this._pointerMove, activeEventOptions);
+    document.removeEventListener('touchend', this._pointerUp, activeEventOptions);
+    document.removeEventListener('touchcancel', this._pointerUp, activeEventOptions);
 
     const window = this._getWindow();
 
@@ -867,18 +856,6 @@ export class MatSlider extends _MatSliderMixinBase
   /** Blurs the native element. */
   private _blurHostElement() {
     this._elementRef.nativeElement.blur();
-  }
-
-  /** Runs a callback inside of the NgZone, if possible. */
-  private _runInsideZone(fn: () => any) {
-    // @breaking-change 9.0.0 Remove this function once `_ngZone` is a required parameter.
-    this._ngZone ? this._ngZone.run(fn) : fn();
-  }
-
-  /** Runs a callback outside of the NgZone, if possible. */
-  private _runOutsizeZone(fn: () => any) {
-    // @breaking-change 9.0.0 Remove this function once `_ngZone` is a required parameter.
-    this._ngZone ? this._ngZone.runOutsideAngular(fn) : fn();
   }
 
   /**
