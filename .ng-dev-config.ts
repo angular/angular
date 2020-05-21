@@ -1,5 +1,4 @@
 import {MergeConfig} from './dev-infra/pr/merge/config';
-import {determineMergeBranches} from './dev-infra/pr/merge/determine-merge-branches';
 
 // The configuration for `ng-dev commit-message` commands.
 const commitMessage = {
@@ -84,7 +83,8 @@ const github = {
 // Configuration for the `ng-dev pr merge` command. The command can be used
 // for merging upstream pull requests into branches based on a PR target label.
 const merge = () => {
-  const {patch} = determineMergeBranches(require('./package.json').version, '@angular/core');
+  // TODO: resume dynamically determining patch branch
+  const patch = '10.0.x';
   const config: MergeConfig = {
     githubApiMerge: false,
     claSignedLabel: 'cla: yes',
