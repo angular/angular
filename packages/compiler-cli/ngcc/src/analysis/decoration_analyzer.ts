@@ -99,13 +99,13 @@ export class DecorationAnalyzer {
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
         this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER, NOOP_DEPENDENCY_TRACKER,
-        this.injectableRegistry, /* annotateForClosureCompiler */ false),
+        this.injectableRegistry, !!this.compilerOptions.annotateForClosureCompiler),
     // See the note in ngtsc about why this cast is needed.
     // clang-format off
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
         this.fullMetaReader, NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore,
-        /* annotateForClosureCompiler */ false,
+        !!this.compilerOptions.annotateForClosureCompiler,
         // In ngcc we want to compile undecorated classes with Angular features. As of
         // version 10, undecorated classes that use Angular features are no longer handled
         // in ngtsc, but we want to ensure compatibility in ngcc for outdated libraries that
@@ -126,7 +126,7 @@ export class DecorationAnalyzer {
         this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
         this.refEmitter,
         /* factoryTracker */ null, NOOP_DEFAULT_IMPORT_RECORDER,
-        /* annotateForClosureCompiler */ false, this.injectableRegistry),
+        !!this.compilerOptions.annotateForClosureCompiler, this.injectableRegistry),
   ];
   compiler = new NgccTraitCompiler(this.handlers, this.reflectionHost);
   migrations: Migration[] = [
