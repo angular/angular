@@ -1541,6 +1541,22 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('with Closure Compiler', () => {
+      it('should give closure annotated output with annotateForClosureCompiler: true', () => {
+        fs.writeFile(
+            _('/tsconfig.json'),
+            JSON.stringify({angularCompilerOptions: {annotateForClosureCompiler: true}}));
+        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
+        const jsContents = fs.readFile(_(`/dist/local-package/index.js`));
+        expect(jsContents).toContain('/** @nocollapse */ \nAppComponent.ɵcmp =');
+      });
+      it('should default to not give closure annotated output', () => {
+        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
+        const jsContents = fs.readFile(_(`/dist/local-package/index.js`));
+        expect(jsContents).not.toContain('/** @nocollapse */');
+      });
+    });
+
     describe('with configuration files', () => {
       it('should process a configured deep-import as an entry-point', () => {
         loadTestFiles([
