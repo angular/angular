@@ -94,7 +94,8 @@ export class Transformer {
     // Transform the source files and source maps.
     const srcFormatter = this.getRenderingFormatter(ngccReflectionHost, bundle);
 
-    const renderer = new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle);
+    const renderer =
+        new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle, this.tsConfig);
     let renderedFiles = renderer.renderProgram(
         decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
 
