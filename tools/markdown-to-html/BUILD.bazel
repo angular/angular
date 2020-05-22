@@ -1,11 +1,16 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "transform-markdown",
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "*.spec.ts",
+        ],
+    ),
     tsconfig = ":tsconfig.json",
     deps = [
         "//tools/highlight-files:sources",
@@ -22,4 +27,27 @@ nodejs_binary(
         "@npm//marked",
     ],
     entry_point = ":transform-markdown.ts",
+)
+
+ts_library(
+    name = "unit_test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    tsconfig = ":tsconfig.json",
+    visibility = ["//visibility:private"],
+    deps = [
+        ":transform-markdown",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//marked",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "unit_tests",
+    srcs = [":unit_test_lib"],
+    visibility = ["//visibility:private"],
 )

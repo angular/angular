@@ -4,8 +4,14 @@
     "module": "commonjs",
     "target": "es5",
     "sourceMap": true,
-    "types": ["node"]
+    "types": [
+      "jasmine",
+      "node"
+    ]
   },
+  "exclude": [
+    "*.spec.ts",
+  ],
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
   }
