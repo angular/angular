@@ -97,6 +97,11 @@
       "Data Libraries": {
         "order": 3,
         "resources": {
+          "formly": {
+            "desc": "Formly is a dynamic (JSON powered) form library, built on top of Angular Reactive Forms.",
+            "title": "Formly",
+            "url": "https://formly.dev"
+          },
           "rx-web": {
             "desc": "RxWeb Reactive Form Validators provides all types of complex, conditional, cross field, and dynamic validation on validator-based reactive forms, model-based reactive forms, and template driven forms.",
             "title": "RxWeb Reactive Form Validators",
