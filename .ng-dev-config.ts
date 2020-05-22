@@ -1,6 +1,6 @@
 import {MergeConfig} from '@angular/dev-infra-private/pr/merge/config';
+import {determineMergeBranches} from '@angular/dev-infra-private/pr/merge/determine-merge-branches';
 import {GithubConfig} from '@angular/dev-infra-private/utils/config';
-import {determineMergeBranches} from './scripts/determine-merge-branches';
 
 /**
  * Github configuration for the ng-dev command. This repository is
@@ -16,7 +16,11 @@ const github: GithubConfig = {
  * are respected by the merge script (e.g. the target labels).
  */
 const merge = (): MergeConfig => {
-  const {minor, patch} = determineMergeBranches(github.owner, github.name);
+  const currentVersion = require('./package.json').version;
+  // We use the `@angular/cdk` as source of truth for the latest published version in NPM.
+  // Any package from the monorepo could technically work and result in the same version.
+  const {minor, patch} = determineMergeBranches(currentVersion, '@angular/cdk');
+
   return {
     // By default, the merge script merges locally with `git cherry-pick` and autosquash.
     // This has the downside of pull requests showing up as `Closed` instead of `Merged`.

@@ -92,9 +92,9 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#7f3e1227d199a55943152aac6119d40e1bbb028f":
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#2ac83eb462cb25c46a761d34dec030e360055016":
   version "0.0.0"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#7f3e1227d199a55943152aac6119d40e1bbb028f"
+  resolved "https://github.com/angular/dev-infra-private-builds.git#2ac83eb462cb25c46a761d34dec030e360055016"
   dependencies:
     "@octokit/graphql" "^4.3.1"
     chalk "^2.3.1"
@@ -103,6 +103,7 @@
     inquirer "^7.1.0"
     minimatch "^3.0.4"
     multimatch "^4.0.0"
+    semver "^6.3.0"
     shelljs "^0.8.3"
     typed-graphqlify "^2.3.0"
     yaml "^1.7.2"
