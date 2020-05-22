@@ -187,8 +187,14 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     return ts.createThrow(stmt.error.visitExpression(this, context.withExpressionMode));
   }
 
-  visitCommentStmt(stmt: CommentStmt, context: Context): never {
-    throw new Error('Method not implemented.');
+  visitCommentStmt(stmt: CommentStmt, context: Context): ts.NotEmittedStatement {
+    const commentStmt = ts.createNotEmittedStatement(ts.createLiteral(''));
+    ts.addSyntheticLeadingComment(
+        commentStmt,
+        stmt.multiline ? ts.SyntaxKind.MultiLineCommentTrivia :
+                         ts.SyntaxKind.SingleLineCommentTrivia,
+        stmt.comment, /** hasTrailingNewLine */ false);
+    return commentStmt;
   }
 
   visitJSDocCommentStmt(stmt: JSDocCommentStmt, context: Context): ts.NotEmittedStatement {
