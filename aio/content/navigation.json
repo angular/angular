@@ -753,21 +753,21 @@
               "!title": "Schematics Overview",
               "title": "스키매틱 소개",
               "!tooltip": "Understand how schematics are used in Angular.",
-              "tooltip": "Angular에서 스키매틱이 어떻게 사용되는지 알아봅시다."
+              "tooltip": "Angular에서 스키매틱을 어떻게 사용하는지 알아봅시다."
             },
             {
               "url": "guide/schematics-authoring",
               "!title": "Authoring Schematics",
               "title": "스키매틱 만들기",
               "!tooltip": "Understand the structure of a schematic.",
-              "tooltip": "스키매틱을 구성하는 요소에 대해 알아봅시다."
+              "tooltip": "스키매틱의 구조에 대해 알아봅시다."
             },
             {
               "url": "guide/schematics-for-libraries",
               "!title": "Schematics for Libraries",
-              "title": "스키매틱을 라이브러리로 사용하기",
+              "title": "라이브러리용 스키매틱",
               "!tooltip": "Use schematics to integrate your library with the Angular CLI.",
-              "tooltip": "Angular CLI를 사용해서 스키매틱을 라이브러리처럼 사용해 보세요."
+              "tooltip": "스키매틱을 사용해서 Angular 라이브러리와 Angular CLI를 통합해 보세요."
             }
           ]
         },
