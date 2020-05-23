@@ -412,7 +412,7 @@ import {FormArray} from '@angular/forms/src/model';
         expect(c.asyncValidator).not.toEqual(null);
         c.setValue('expected');
 
-        c.setAsyncValidators(asyncValidator('other_expected'));
+        c.addAsyncValidators(asyncValidator('other_expected'));
         c.setValue('other_expected');
         tick();
 

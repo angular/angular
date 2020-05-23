@@ -323,8 +323,8 @@ export abstract class AbstractControl {
   }
 
   /**
-   * Add the bew synchronous validators that are active on this control.  Calling
-   * this method will add in existsing sync validators
+   * Add the new synchronous validators that are active on this control.  Calling
+   * this method will be add in existing sync validators
    */
   addValidators(newValidator: ValidatorFn | ValidatorFn[] | null): void {
     this.validator = AbstractControl.engineOfAddValidators<ValidatorFn>(newValidator, this.validator, coerceToValidator);
