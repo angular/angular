@@ -323,11 +323,44 @@ export abstract class AbstractControl {
   }
 
   /**
+   * Add the bew synchronous validators that are active on this control.  Calling
+   * this method will add in existsing sync validators
+   */
+  addValidators(newValidator: ValidatorFn | ValidatorFn[] | null): void {
+    this.validator = AbstractControl.engineOfAddValidators<ValidatorFn>(newValidator, this.validator, coerceToValidator);
+  }
+
+  private static engineOfAddValidators<T>(
+    newValidator: T | T[] | null,
+    validatorExists: T | null,
+    coerceTo: (param?: T | T[] | AbstractControlOptions | null, validatorOrOpts?: T | T[] | AbstractControlOptions | null) => T | null
+  ) {
+    if (validatorExists) {
+      if (newValidator && Array.isArray(newValidator)) {
+        newValidator.push(validatorExists as T)
+        return coerceTo(newValidator);
+      }
+      return coerceTo([validatorExists, newValidator] as T[]);
+    } else {
+      return coerceTo(newValidator as T | T[]);
+    }
+  }
+
+
+  /**
    * Sets the async validators that are active on this control. Calling this
    * overwrites any existing async validators.
    */
   setAsyncValidators(newValidator: AsyncValidatorFn|AsyncValidatorFn[]|null): void {
     this.asyncValidator = coerceToAsyncValidator(newValidator);
+  }
+
+  /**
+   * Add the new async validators that are active on this control. Calling this
+   * add the new validators on existing async validators.
+   */
+  addAsyncValidators(newValidator: AsyncValidatorFn | AsyncValidatorFn[] | null): void {
+    this.asyncValidator = AbstractControl.engineOfAddValidators<AsyncValidatorFn>(newValidator, this.asyncValidator, coerceToAsyncValidator)
   }
 
   /**

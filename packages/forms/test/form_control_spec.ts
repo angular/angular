@@ -251,6 +251,23 @@ import {FormArray} from '@angular/forms/src/model';
         expect(c.valid).toEqual(true);
       });
 
+
+      it('should add multiple validators from array in existing validators', () => {
+        const c = new FormControl('', Validators.minLength(5));
+        expect(c.valid).toEqual(true);
+
+        c.addValidators([Validators.required]);
+
+        c.setValue('');
+        expect(c.valid).toEqual(false);
+
+        c.setValue('abc');
+        expect(c.valid).toEqual(false);
+
+        c.setValue('abcde');
+        expect(c.valid).toEqual(true);
+      });
+
       it('should clear validators', () => {
         const c = new FormControl('', Validators.required);
         expect(c.valid).toEqual(false);
@@ -385,8 +402,22 @@ import {FormArray} from '@angular/forms/src/model';
            c.setValue('expected');
            tick();
 
-           expect(c.valid).toEqual(true);
-         }));
+        expect(c.valid).toEqual(true);
+      }));
+
+      it('should add single async validator without overwrites the existing validators', fakeAsync(() => {
+        const c = new FormControl('value', null !);
+
+        c.setAsyncValidators(asyncValidator('expected'));
+        expect(c.asyncValidator).not.toEqual(null);
+        c.setValue('expected');
+
+        c.setAsyncValidators(asyncValidator('other_expected'));
+        c.setValue('other_expected');
+        tick();
+
+        expect(c.valid).toEqual(true);
+      }));
 
       it('should add async validator from array', fakeAsync(() => {
            const c = new FormControl('value', null !);
