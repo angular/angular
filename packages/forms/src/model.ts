@@ -327,10 +327,10 @@ export abstract class AbstractControl {
    * this method will be add in existing sync validators
    */
   addValidators(newValidator: ValidatorFn | ValidatorFn[] | null): void {
-    this.validator = AbstractControl.engineOfAddValidators<ValidatorFn>(newValidator, this.validator, coerceToValidator);
+    this.validator = AbstractControl._engineOfAddValidators<ValidatorFn>(newValidator, this.validator, coerceToValidator);
   }
 
-  private static engineOfAddValidators<T>(
+  private static _engineOfAddValidators<T>(
     newValidator: T | T[] | null,
     validatorExists: T | null,
     coerceTo: (param?: T | T[] | AbstractControlOptions | null, validatorOrOpts?: T | T[] | AbstractControlOptions | null) => T | null
@@ -360,7 +360,7 @@ export abstract class AbstractControl {
    * add the new validators on existing async validators.
    */
   addAsyncValidators(newValidator: AsyncValidatorFn | AsyncValidatorFn[] | null): void {
-    this.asyncValidator = AbstractControl.engineOfAddValidators<AsyncValidatorFn>(newValidator, this.asyncValidator, coerceToAsyncValidator)
+    this.asyncValidator = AbstractControl._engineOfAddValidators<AsyncValidatorFn>(newValidator, this.asyncValidator, coerceToAsyncValidator)
   }
 
   /**
