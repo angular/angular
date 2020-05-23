@@ -2,31 +2,27 @@
   "name": "@angular/forms",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - directives and services for creating forms",
-  "main": "./bundles/forms.umd.js",
-  "module": "./fesm5/forms.js",
-  "es2015": "./fesm2015/forms.js",
-  "esm5": "./esm5/forms.js",
-  "esm2015": "./esm2015/forms.js",
-  "fesm5": "./fesm5/forms.js",
-  "fesm2015": "./fesm2015/forms.js",
-  "typings": "./forms.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {
-    "tslib": "^1.9.0"
+    "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "rxjs": "^6.0.0",
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
-    "@angular/platform-browser": "0.0.0-PLACEHOLDER"
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER",
+    "rxjs": "^6.5.3"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/angular.git"
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/forms"
   },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
+  }
 }

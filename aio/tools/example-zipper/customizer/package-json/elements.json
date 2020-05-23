@@ -8,7 +8,8 @@
     { "name": "e2e", "command": "ng e2e" }
   ],
   "dependencies": [
-    "@angular/elements"
+    "@angular/elements",
+    "@webcomponents/custom-elements"
   ],
   "devDependencies": [
     "@angular-devkit/build-angular",

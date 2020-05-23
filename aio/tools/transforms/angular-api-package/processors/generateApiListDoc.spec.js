@@ -40,13 +40,11 @@ describe('generateApiListDoc processor', () => {
     const docs = [
       { docType: 'package', id: '@angular/common/index', exports: [], path: 'common' },
       { docType: 'package', id: '@angular/core/index', exports: [], path: 'core' },
-      { docType: 'package', id: '@angular/http/index', exports: [], path: 'http' },
     ];
     processor.$process(docs);
-    expect(docs[3].data).toEqual([
+    expect(docs[2].data).toEqual([
       { name: '@angular/common', title: '@angular/common', items: [], path: 'common' },
       { name: '@angular/core', title: '@angular/core', items: [], path: 'core' },
-      { name: '@angular/http', title: '@angular/http', items: [], path: 'http' },
     ]);
   });
 

@@ -6,18 +6,34 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as crypto from 'crypto';
 import {createPatch} from 'diff';
 import * as fs from 'fs';
 import * as path from 'path';
 
-/** Directory in the Angular repo where package gold tests live. */
-const TEST_DIR = path.resolve(path.join('packages', 'bazel', 'test', 'ng_package'));
-
 type TestPackage = {
-  dir: string; goldPath: string
+  displayName: string; packagePath: string; goldenFilePath: string;
 };
+
 const packagesToTest: TestPackage[] = [
-  {dir: 'example', goldPath: 'example_package.golden'},
+  {
+    displayName: 'Example NPM package',
+    // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
+    // resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
+    // file, which is not necessarily at the root of the "npm_package".
+    packagePath: path.dirname(
+        require.resolve('angular/packages/bazel/test/ng_package/example/npm_package/package.json')),
+    goldenFilePath: require.resolve('./example_package.golden')
+  },
+  {
+    displayName: 'Example with ts_library NPM package',
+    // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
+    // resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
+    // file, which is not necessarily at the root of the "npm_package".
+    packagePath: path.dirname(require.resolve(
+        'angular/packages/bazel/test/ng_package/example-with-ts-library/npm_package/package.json')),
+    goldenFilePath: require.resolve('./example_with_ts_library_package.golden')
+  },
 ];
 
 /**
@@ -31,10 +47,12 @@ const packagesToTest: TestPackage[] = [
 function getIndentedDirectoryStructure(directoryPath: string, depth = 0): string[] {
   const result: string[] = [];
   if (fs.statSync(directoryPath).isDirectory()) {
-    fs.readdirSync(directoryPath).forEach(f => {
+    // We need to sort the directories because on Windows "readdirsync" is not sorted. Since we
+    // compare these in a golden file, the order needs to be consistent across different platforms.
+    fs.readdirSync(directoryPath).sort().forEach(f => {
+      const filePath = path.posix.join(directoryPath, f);
       result.push(
-          '  '.repeat(depth) + path.join(directoryPath, f),
-          ...getIndentedDirectoryStructure(path.join(directoryPath, f), depth + 1));
+          '  '.repeat(depth) + filePath, ...getIndentedDirectoryStructure(filePath, depth + 1));
     });
   }
   return result;
@@ -50,22 +68,28 @@ function getIndentedDirectoryStructure(directoryPath: string, depth = 0): string
 function getDescendantFilesContents(directoryPath: string): string[] {
   const result: string[] = [];
   if (fs.statSync(directoryPath).isDirectory()) {
-    fs.readdirSync(directoryPath).forEach(dir => {
-      result.push(...getDescendantFilesContents(path.join(directoryPath, dir)));
+    // We need to sort the directories because on Windows "readdirsync" is not sorted. Since we
+    // compare these in a golden file, the order needs to be consistent across different platforms.
+    fs.readdirSync(directoryPath).sort().forEach(dir => {
+      result.push(...getDescendantFilesContents(path.posix.join(directoryPath, dir)));
     });
-  } else {
-    result.push(`--- ${directoryPath} ---`, '', fs.readFileSync(directoryPath, 'utf-8'), '');
+  }
+  // Binary files should equal the same as in the srcdir.
+  else if (path.extname(directoryPath) === '.png') {
+    result.push(`--- ${directoryPath} ---`, '', hashFileContents(directoryPath), '');
+  }
+  // Note that we don't want to include ".map" files in the golden file since these are not
+  // consistent across different environments (e.g. path delimiters)
+  else if (path.extname(directoryPath) !== '.map') {
+    result.push(`--- ${directoryPath} ---`, '', readFileContents(directoryPath), '');
   }
   return result;
 }
 
 /** Accepts the current package output by overwriting the gold file in source control. */
 function acceptNewPackageGold(testPackage: TestPackage) {
-  const goldenFile = path.join(TEST_DIR, testPackage.goldPath);
-  process.chdir(path.join(TEST_DIR, `${testPackage.dir}`, 'npm_package'));
-
-  const actual = getCurrentPackageContent();
-  fs.writeFileSync(require.resolve(goldenFile), actual, 'utf-8');
+  process.chdir(testPackage.packagePath);
+  fs.writeFileSync(testPackage.goldenFilePath, getCurrentPackageContent(), 'utf-8');
 }
 
 /** Gets the content of the current package. Depends on the current working directory. */
@@ -77,21 +101,22 @@ function getCurrentPackageContent() {
 
 /** Compares the current package output to the gold file in source control in a jasmine test. */
 function runPackageGoldTest(testPackage: TestPackage) {
-  const goldenFile = path.join(TEST_DIR, testPackage.goldPath);
-  process.chdir(path.join(TEST_DIR, `${testPackage.dir}`, 'npm_package'));
+  const {displayName, packagePath, goldenFilePath} = testPackage;
+
+  process.chdir(packagePath);
 
   // Gold file content from source control. We expect that the output of the package matches this.
-  const expected = fs.readFileSync(goldenFile, 'utf-8');
+  const expected = readFileContents(goldenFilePath);
 
   // Actual file content generated from the rule.
   const actual = getCurrentPackageContent();
 
   // Without the `--accept` flag, compare the actual to the expected in a jasmine test.
-  it(`Package "${testPackage.dir}"`, () => {
+  it(`Package "${displayName}"`, () => {
     if (actual !== expected) {
       // Compute the patch and strip the header
-      let patch =
-          createPatch(goldenFile, expected, actual, 'Golden file', 'Generated file', {context: 5});
+      let patch = createPatch(
+          goldenFilePath, expected, actual, 'Golden file', 'Generated file', {context: 5});
       const endOfHeader = patch.indexOf('\n', patch.indexOf('\n') + 1) + 1;
       patch = patch.substring(endOfHeader);
 
@@ -108,55 +133,32 @@ function runPackageGoldTest(testPackage: TestPackage) {
   });
 }
 
-/** Gets all errors for missing golden files or packages. Typically missing from the bazel rule. */
-function getDependencyErrors(testPackage: TestPackage): string[] {
-  const errors = [];
-
-  const goldenFile = path.join(TEST_DIR, testPackage.goldPath);
-  if (!fs.existsSync(goldenFile)) {
-    errors.push(
-        `The golden file "${testPackage.goldPath}" cannot be found. ` +
-        `Ensure that the file exists and is added to the 'data' attribute of the test rule`);
-  }
-
-  if (!fs.existsSync(path.join(TEST_DIR, `${testPackage.dir}`, 'npm_package'))) {
-    errors.push(
-        `The package output for "${testPackage.dir}" cannot be found. Ensure that ` +
-        `the an ng_package named "npm_package" exists in the "${testPackage.dir }" directory ` +
-        `and that it is added to the "data" attribute of the test rule.`);
-  }
-
-  return errors;
+/**
+ * Reads the contents of the specified file. Additionally it strips all carriage return (CR)
+ * characters from the given content. We do this since the content that will be pulled into the
+ * golden file needs to be consistent across all platforms.
+ */
+function readFileContents(filePath: string): string {
+  return fs.readFileSync(filePath, 'utf8').replace(/\r/g, '');
 }
 
-
-// If there are any dependency errors, emit the errors and set the exit code.
-let hasError = false;
-for (let p of packagesToTest) {
-  const dependencyErrors = getDependencyErrors(p);
-  if (dependencyErrors.length) {
-    console.error(dependencyErrors.join('\n\n'));
-    hasError = true;
-  }
+function hashFileContents(filePath: string): string {
+  return crypto.createHash('md5').update(fs.readFileSync(filePath)).digest('hex');
 }
 
-if (!hasError) {
-  if (require.main === module) {
-    const args = process.argv.slice(2);
-    const acceptingNewGold = (args[0] === '--accept');
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  const acceptingNewGold = (args[0] === '--accept');
 
-    if (acceptingNewGold) {
-      for (let p of packagesToTest) {
-        acceptNewPackageGold(p);
-      }
+  if (acceptingNewGold) {
+    for (let p of packagesToTest) {
+      acceptNewPackageGold(p);
     }
-  } else {
-    describe('Comparing test packages to golds', () => {
-      for (let p of packagesToTest) {
-        runPackageGoldTest(p);
-      }
-    });
   }
+} else {
+  describe('Comparing test packages to golds', () => {
+    for (let p of packagesToTest) {
+      runPackageGoldTest(p);
+    }
+  });
 }
-
-process.exitCode = hasError ? 1 : 0;

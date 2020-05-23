@@ -48,7 +48,7 @@ export class PackageSearchService {
     // TODO: Add error handling
     return this.http.get(searchUrl, options).pipe(
       map((data: any) => {
-        return data.results.map(entry => ({
+        return data.results.map((entry: any) => ({
             name: entry.name[0],
             version: entry.version[0],
             description: entry.description[0]

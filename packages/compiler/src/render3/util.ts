@@ -13,8 +13,15 @@ import {OutputContext} from '../util';
 /**
  * Convert an object map with `Expression` values into a `LiteralMapExpr`.
  */
-export function mapToMapExpression(map: {[key: string]: o.Expression}): o.LiteralMapExpr {
-  const result = Object.keys(map).map(key => ({key, value: map[key], quoted: false}));
+export function mapToMapExpression(map: {[key: string]: o.Expression|undefined}): o.LiteralMapExpr {
+  const result = Object.keys(map).map(
+      key => ({
+        key,
+        // The assertion here is because really TypeScript doesn't allow us to express that if the
+        // key is present, it will have a value, but this is true in reality.
+        value: map[key]!,
+        quoted: false,
+      }));
   return o.literalMap(result);
 }
 
@@ -51,4 +58,47 @@ export function typeWithParameters(type: o.Expression, numParams: number): o.Exp
 export interface R3Reference {
   value: o.Expression;
   type: o.Expression;
+}
+
+const ANIMATE_SYMBOL_PREFIX = '@';
+export function prepareSyntheticPropertyName(name: string) {
+  return `${ANIMATE_SYMBOL_PREFIX}${name}`;
+}
+
+export function prepareSyntheticListenerName(name: string, phase: string) {
+  return `${ANIMATE_SYMBOL_PREFIX}${name}.${phase}`;
+}
+
+export function isSyntheticPropertyOrListener(name: string) {
+  return name.charAt(0) == ANIMATE_SYMBOL_PREFIX;
+}
+
+export function getSyntheticPropertyName(name: string) {
+  // this will strip out listener phase values...
+  // @foo.start => @foo
+  const i = name.indexOf('.');
+  name = i > 0 ? name.substring(0, i) : name;
+  if (name.charAt(0) !== ANIMATE_SYMBOL_PREFIX) {
+    name = ANIMATE_SYMBOL_PREFIX + name;
+  }
+  return name;
+}
+
+export function prepareSyntheticListenerFunctionName(name: string, phase: string) {
+  return `animation_${name}_${phase}`;
+}
+
+export function jitOnlyGuardedExpression(expr: o.Expression): o.Expression {
+  const ngJitMode = new o.ExternalExpr({name: 'ngJitMode', moduleName: null});
+  const jitFlagNotDefined = new o.BinaryOperatorExpr(
+      o.BinaryOperator.Identical, new o.TypeofExpr(ngJitMode), o.literal('undefined'));
+  const jitFlagUndefinedOrTrue = new o.BinaryOperatorExpr(
+      o.BinaryOperator.Or, jitFlagNotDefined, ngJitMode, /* type */ undefined,
+      /* sourceSpan */ undefined, true);
+  return new o.BinaryOperatorExpr(o.BinaryOperator.And, jitFlagUndefinedOrTrue, expr);
+}
+
+export function wrapReference(value: any): R3Reference {
+  const wrapped = new o.WrappedNodeExpr(value);
+  return {value: wrapped, type: wrapped};
 }

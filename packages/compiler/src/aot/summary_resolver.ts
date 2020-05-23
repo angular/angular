@@ -71,7 +71,7 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     let summary = this.summaryCache.get(rootSymbol);
     if (!summary) {
       this._loadSummaryFile(staticSymbol.filePath);
-      summary = this.summaryCache.get(staticSymbol) !;
+      summary = this.summaryCache.get(staticSymbol)!;
     }
     return (rootSymbol === staticSymbol && summary) || null;
   }
@@ -85,7 +85,7 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
 
   getImportAs(staticSymbol: StaticSymbol): StaticSymbol {
     staticSymbol.assertNoMembers();
-    return this.importAs.get(staticSymbol) !;
+    return this.importAs.get(staticSymbol)!;
   }
 
   /**
@@ -95,7 +95,9 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     return this.knownFileNameToModuleNames.get(importedFilePath) || null;
   }
 
-  addSummary(summary: Summary<StaticSymbol>) { this.summaryCache.set(summary.symbol, summary); }
+  addSummary(summary: Summary<StaticSymbol>) {
+    this.summaryCache.set(summary.symbol, summary);
+  }
 
   private _loadSummaryFile(filePath: string): boolean {
     let hasSummary = this.loadedFilePaths.get(filePath);
@@ -121,7 +123,9 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
       if (moduleName) {
         this.knownFileNameToModuleNames.set(filePath, moduleName);
       }
-      importAs.forEach((importAs) => { this.importAs.set(importAs.symbol, importAs.importAs); });
+      importAs.forEach((importAs) => {
+        this.importAs.set(importAs.symbol, importAs.importAs);
+      });
     }
     return hasSummary;
   }

@@ -1,7 +1,7 @@
 // #docplaster
 // #docregion
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 
 import { HeroService } from './hero.service';
 
@@ -10,7 +10,7 @@ import { HeroService } from './hero.service';
 export class HeroArena {
   constructor(
     private heroService: HeroService,
-    private http: Http) {}
+    private http: HttpClient) {}
     // #enddocregion example
     // test harness
     getParticipants() {

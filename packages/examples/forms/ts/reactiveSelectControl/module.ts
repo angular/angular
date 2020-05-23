@@ -18,3 +18,5 @@ import {ReactiveSelectComp} from './reactive_select_control_example';
 })
 export class AppModule {
 }
+
+export {ReactiveSelectComp as AppComponent};

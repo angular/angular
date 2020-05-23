@@ -6,18 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA, ɵivyEnabled as ivyEnabled} from '@angular/core';
-import {ComponentFixture, TestBed, getTestBed} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {ComponentFixture, getTestBed, TestBed} from '@angular/core/testing';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
-import {fixmeIvy} from '@angular/private/testing';
+import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 {
   if (ivyEnabled) {
-    describe('ivy', () => { declareTests(); });
+    describe('ivy', () => {
+      declareTests();
+    });
   } else {
-    describe('jit', () => { declareTests({useJit: true}); });
-    describe('no jit', () => { declareTests({useJit: false}); });
+    describe('jit', () => {
+      declareTests({useJit: true});
+    });
+    describe('no jit', () => {
+      declareTests({useJit: false});
+    });
   }
 }
 
@@ -34,7 +40,6 @@ class OnPrefixDir {
 
 function declareTests(config?: {useJit: boolean}) {
   describe('security integration tests', function() {
-
     beforeEach(() => {
       TestBed.configureCompiler({...config}).configureTestingModule({
         declarations: [
@@ -49,50 +54,83 @@ function declareTests(config?: {useJit: boolean}) {
       originalLog = getDOM().log;
       getDOM().log = (msg) => { /* disable logging */ };
     });
-    afterEach(() => { getDOM().log = originalLog; });
+    afterEach(() => {
+      getDOM().log = originalLog;
+    });
 
     describe('events', () => {
-      it('should disallow binding to attr.on*', () => {
-        const template = `<div [attr.onclick]="ctxProp"></div>`;
-        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+      modifiedInIvy('on-prefixed attributes validation happens at runtime in Ivy')
+          .it('should disallow binding to attr.on*', () => {
+            const template = `<div [attr.onclick]="ctxProp"></div>`;
+            TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
-        expect(() => TestBed.createComponent(SecuredComponent))
-            .toThrowError(
-                /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
-      });
+            expect(() => TestBed.createComponent(SecuredComponent))
+                .toThrowError(
+                    /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
+          });
 
-      it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
-        const template = `<div [onclick]="ctxProp"></div>`;
-        TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
-          schemas: [NO_ERRORS_SCHEMA]
-        });
+      // this test is similar to the previous one, but since on-prefixed attributes validation now
+      // happens at runtime, we need to invoke change detection to trigger elementProperty call
+      onlyInIvy('on-prefixed attributes validation happens at runtime in Ivy')
+          .it('should disallow binding to attr.on*', () => {
+            const template = `<div [attr.onclick]="ctxProp"></div>`;
+            TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
-        expect(() => TestBed.createComponent(SecuredComponent))
-            .toThrowError(
-                /Binding to event property 'onclick' is disallowed for security reasons, please use \(click\)=.../);
-      });
+            expect(() => {
+              const cmp = TestBed.createComponent(SecuredComponent);
+              cmp.detectChanges();
+            })
+                .toThrowError(
+                    /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
+          });
 
-      fixmeIvy(
-          'FW-786: Element properties and directive inputs are not distinguished for sanitisation purposes')
-          .it('should disallow binding to on* unless it is consumed by a directive', () => {
-            const template = `<div [onPrefixedProp]="ctxProp" [onclick]="ctxProp"></div>`;
+      modifiedInIvy('on-prefixed attributes validation happens at runtime in Ivy')
+          .it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
+            const template = `<div [onclick]="ctxProp"></div>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
               schemas: [NO_ERRORS_SCHEMA]
             });
 
-            // should not throw for inputs starting with "on"
-            let cmp: ComponentFixture<SecuredComponent> = undefined !;
-            expect(() => cmp = TestBed.createComponent(SecuredComponent)).not.toThrow();
-
-            // must bind to the directive not to the property of the div
-            const value = cmp.componentInstance.ctxProp = {};
-            cmp.detectChanges();
-            const div = cmp.debugElement.children[0];
-            expect(div.injector.get(OnPrefixDir).onclick).toBe(value);
-            expect(getDOM().getProperty(div.nativeElement, 'onclick')).not.toBe(value);
-            expect(getDOM().hasAttribute(div.nativeElement, 'onclick')).toEqual(false);
+            expect(() => TestBed.createComponent(SecuredComponent))
+                .toThrowError(
+                    /Binding to event property 'onclick' is disallowed for security reasons, please use \(click\)=.../);
           });
 
+      // this test is similar to the previous one, but since on-prefixed attributes validation now
+      // happens at runtime, we need to invoke change detection to trigger elementProperty call
+      onlyInIvy('on-prefixed attributes validation happens at runtime in Ivy')
+          .it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
+            const template = `<div [onclick]="ctxProp"></div>`;
+            TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
+              schemas: [NO_ERRORS_SCHEMA]
+            });
+
+            expect(() => {
+              const cmp = TestBed.createComponent(SecuredComponent);
+              cmp.detectChanges();
+            })
+                .toThrowError(
+                    /Binding to event property 'onclick' is disallowed for security reasons, please use \(click\)=.../);
+          });
+
+      it('should disallow binding to on* unless it is consumed by a directive', () => {
+        const template = `<div [onPrefixedProp]="ctxProp" [onclick]="ctxProp"></div>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
+          schemas: [NO_ERRORS_SCHEMA]
+        });
+
+        // should not throw for inputs starting with "on"
+        let cmp: ComponentFixture<SecuredComponent> = undefined!;
+        expect(() => cmp = TestBed.createComponent(SecuredComponent)).not.toThrow();
+
+        // must bind to the directive not to the property of the div
+        const value = cmp.componentInstance.ctxProp = {};
+        cmp.detectChanges();
+        const div = cmp.debugElement.children[0];
+        expect(div.injector.get(OnPrefixDir).onclick).toBe(value);
+        expect(getDOM().getProperty(div.nativeElement, 'onclick')).not.toBe(value);
+        expect(div.nativeElement.hasAttribute('onclick')).toEqual(false);
+      });
     });
 
     describe('safe HTML values', function() {
@@ -145,13 +183,12 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.detectChanges();
         // In the browser, reading href returns an absolute URL. On the server side,
         // it just echoes back the property.
-        let value =
-            isAttribute ? getDOM().getAttribute(e, 'href') : getDOM().getProperty(e, 'href');
+        let value = isAttribute ? e.getAttribute('href') : getDOM().getProperty(e, 'href');
         expect(value).toMatch(/.*\/?hello$/);
 
         ci.ctxProp = 'javascript:alert(1)';
         fixture.detectChanges();
-        value = isAttribute ? getDOM().getAttribute(e, 'href') : getDOM().getProperty(e, 'href');
+        value = isAttribute ? e.getAttribute('href') : getDOM().getProperty(e, 'href');
         expect(value).toEqual('unsafe:javascript:alert(1)');
       }
 
@@ -171,67 +208,54 @@ function declareTests(config?: {useJit: boolean}) {
         checkEscapeOfHrefProperty(fixture, true);
       });
 
-      fixmeIvy('FW-785: Host bindings are not sanitised')
-          .it('should escape unsafe properties if they are used in host bindings', () => {
-            @Directive({selector: '[dirHref]'})
-            class HrefDirective {
-              // TODO(issue/24571): remove '!'.
-              @HostBinding('href') @Input()
-              dirHref !: string;
-            }
+      it('should escape unsafe properties if they are used in host bindings', () => {
+        @Directive({selector: '[dirHref]'})
+        class HrefDirective {
+          // TODO(issue/24571): remove '!'.
+          @HostBinding('href') @Input() dirHref!: string;
+        }
 
-            const template = `<a [dirHref]="ctxProp">Link Title</a>`;
-            TestBed.configureTestingModule({declarations: [HrefDirective]});
-            TestBed.overrideComponent(SecuredComponent, {set: {template}});
-            const fixture = TestBed.createComponent(SecuredComponent);
-
-            checkEscapeOfHrefProperty(fixture, false);
-          });
-
-      fixmeIvy('FW-785: Host bindings are not sanitised')
-          .it('should escape unsafe attributes if they are used in host bindings', () => {
-            @Directive({selector: '[dirHref]'})
-            class HrefDirective {
-              // TODO(issue/24571): remove '!'.
-              @HostBinding('attr.href') @Input()
-              dirHref !: string;
-            }
-
-            const template = `<a [dirHref]="ctxProp">Link Title</a>`;
-            TestBed.configureTestingModule({declarations: [HrefDirective]});
-            TestBed.overrideComponent(SecuredComponent, {set: {template}});
-            const fixture = TestBed.createComponent(SecuredComponent);
-
-            checkEscapeOfHrefProperty(fixture, true);
-          });
-
-      it('should escape unsafe style values', () => {
-        const template = `<div [style.background]="ctxProp">Text</div>`;
+        const template = `<a [dirHref]="ctxProp">Link Title</a>`;
+        TestBed.configureTestingModule({declarations: [HrefDirective]});
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
 
-        const e = fixture.debugElement.children[0].nativeElement;
-        const ci = fixture.componentInstance;
-        // Make sure binding harmless values works.
-        ci.ctxProp = 'red';
-        fixture.detectChanges();
-        // In some browsers, this will contain the full background specification, not just
-        // the color.
-        expect(getDOM().getStyle(e, 'background')).toMatch(/red.*/);
-
-        ci.ctxProp = 'url(javascript:evil())';
-        fixture.detectChanges();
-        // Updated value gets rejected, no value change.
-        expect(getDOM().getStyle(e, 'background')).not.toContain('javascript');
+        checkEscapeOfHrefProperty(fixture, false);
       });
 
-      fixmeIvy('FW-850: Should throw on unsafe SVG attributes')
+      it('should escape unsafe attributes if they are used in host bindings', () => {
+        @Directive({selector: '[dirHref]'})
+        class HrefDirective {
+          // TODO(issue/24571): remove '!'.
+          @HostBinding('attr.href') @Input() dirHref!: string;
+        }
+
+        const template = `<a [dirHref]="ctxProp">Link Title</a>`;
+        TestBed.configureTestingModule({declarations: [HrefDirective]});
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+        const fixture = TestBed.createComponent(SecuredComponent);
+
+        checkEscapeOfHrefProperty(fixture, true);
+      });
+
+      modifiedInIvy('Unknown property error thrown during update mode, not creation mode')
           .it('should escape unsafe SVG attributes', () => {
             const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
             expect(() => TestBed.createComponent(SecuredComponent))
                 .toThrowError(/Can't bind to 'xlink:href'/);
+          });
+
+      onlyInIvy('Unknown property logs an error message instead of throwing')
+          .it('should escape unsafe SVG attributes', () => {
+            const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
+            TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+            const spy = spyOn(console, 'error');
+            const fixture = TestBed.createComponent(SecuredComponent);
+            fixture.detectChanges();
+            expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'xlink:href'/);
           });
 
       it('should escape unsafe HTML values', () => {
@@ -244,19 +268,19 @@ function declareTests(config?: {useJit: boolean}) {
         // Make sure binding harmless values works.
         ci.ctxProp = 'some <p>text</p>';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('some <p>text</p>');
+        expect(e.innerHTML).toEqual('some <p>text</p>');
 
         ci.ctxProp = 'ha <script>evil()</script>';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('ha ');
+        expect(e.innerHTML).toEqual('ha ');
 
         ci.ctxProp = 'also <img src="x" onerror="evil()"> evil';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('also <img src="x"> evil');
+        expect(e.innerHTML).toEqual('also <img src="x"> evil');
 
         ci.ctxProp = 'also <iframe srcdoc="evil"></iframe> evil';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('also  evil');
+        expect(e.innerHTML).toEqual('also  evil');
       });
     });
   });

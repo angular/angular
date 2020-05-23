@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser} from 'protractor';
 
-describe('http', function() {
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
+describe('http', function() {
   afterEach(verifyNoBrowserErrors);
 
   describe('fetching', function() {
-    const URL = 'all/playground/src/http/index.html';
+    const URL = '/';
 
     it('should fetch and display people', function() {
       browser.get(URL);
@@ -24,6 +24,6 @@ describe('http', function() {
 });
 
 function getComponentText(selector: string, innerSelector: string) {
-  return browser.executeScript(
-      `return document.querySelector("${selector}").querySelector("${innerSelector}").textContent.trim()`);
+  return browser.executeScript(`return document.querySelector("${selector}").querySelector("${
+      innerSelector}").textContent.trim()`);
 }

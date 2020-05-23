@@ -7,11 +7,10 @@
  */
 
 import {ɵAnimationEngine} from '@angular/animations/browser';
-import {PlatformLocation, ViewportScroller, ɵNullViewportScroller as NullViewportScroller, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
+import {DOCUMENT, PlatformLocation, ViewportScroller, ɵgetDOM as getDOM, ɵNullViewportScroller as NullViewportScroller, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
-import {Injectable, InjectionToken, Injector, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, StaticProvider, Testability, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
-import {HttpModule} from '@angular/http';
-import {BrowserModule, DOCUMENT, EVENT_MANAGER_PLUGINS, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {createPlatformFactory, Injector, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, StaticProvider, Testability, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS, ɵsetDocument} from '@angular/core';
+import {BrowserModule, EVENT_MANAGER_PLUGINS, ɵSharedStylesHost as SharedStylesHost} from '@angular/platform-browser';
 import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
 import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
@@ -42,7 +41,9 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
 ];
 
 function initDominoAdapter(injector: Injector) {
-  return () => { DominoAdapter.makeCurrent(); };
+  return () => {
+    DominoAdapter.makeCurrent();
+  };
 }
 
 export function instantiateServerRendererFactory(
@@ -69,7 +70,7 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
  */
 @NgModule({
   exports: [BrowserModule],
-  imports: [HttpModule, HttpClientModule, NoopAnimationsModule],
+  imports: [HttpClientModule, NoopAnimationsModule],
   providers: [
     SERVER_RENDER_PROVIDERS,
     SERVER_HTTP_PROVIDERS,
@@ -82,17 +83,17 @@ export class ServerModule {
 
 function _document(injector: Injector) {
   let config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
-  if (config && config.document) {
-    return parseDocument(config.document, config.url);
-  } else {
-    return getDOM().createHtmlDocument();
-  }
+  const document = config && config.document ? parseDocument(config.document, config.url) :
+                                               getDOM().createHtmlDocument();
+  // Tell ivy about the global document
+  ɵsetDocument(document);
+  return document;
 }
 
 /**
  * @publicApi
  */
-export const platformServer =
+export const platformServer: (extraProviders?: StaticProvider[]|undefined) => PlatformRef =
     createPlatformFactory(platformCore, 'server', INTERNAL_SERVER_PLATFORM_PROVIDERS);
 
 /**

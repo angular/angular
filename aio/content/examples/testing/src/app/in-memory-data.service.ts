@@ -9,7 +9,7 @@ const maxQuotes = Infinity; // 0;
 export class InMemoryDataService implements InMemoryDbService {
   createDb() {
     const heroes = [
-      { id: 11, name: 'Mr. Nice' },
+      { id: 11, name: 'Dr Nice' },
       { id: 12, name: 'Narco' },
       { id: 13, name: 'Bombasto' },
       { id: 14, name: 'Celeritas' },

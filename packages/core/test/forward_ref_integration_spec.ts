@@ -7,22 +7,29 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, ContentChildren, Directive, Inject, NO_ERRORS_SCHEMA, NgModule, QueryList, asNativeElements, forwardRef} from '@angular/core';
+import {asNativeElements, Component, ContentChildren, Directive, forwardRef, Inject, NgModule, NO_ERRORS_SCHEMA, QueryList} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
+
+class Frame {
+  name: string = 'frame';
+}
+
+class ModuleFrame {
+  name: string = 'moduleFram';
+}
 
 describe('forwardRef integration', function() {
-  beforeEach(() => { TestBed.configureTestingModule({imports: [Module], declarations: [App]}); });
+  beforeEach(() => {
+    TestBed.configureTestingModule({imports: [Module], declarations: [App]});
+  });
 
-  fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
-      .it('should instantiate components which are declared using forwardRef', () => {
-        const a =
-            TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
-        a.detectChanges();
-        expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
-        expect(TestBed.get(ModuleFrame)).toBeDefined();
-      });
+  it('should instantiate components which are declared using forwardRef', () => {
+    const a = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
+    a.detectChanges();
+    expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
+    expect(TestBed.inject(ModuleFrame)).toBeDefined();
+  });
 });
 
 @NgModule({
@@ -43,23 +50,17 @@ class App {
 }
 
 @Component({
-  selector: 'lock',
-  template: `{{frame.name}}(<span *ngFor="let  lock of locks">{{lock.name}}</span>)`,
+  selector: 'door',
+  template: `{{frame.name}}(<span *ngFor="let lock of locks">{{lock.name}}</span>)`,
 })
 class Door {
   // TODO(issue/24571): remove '!'.
-  @ContentChildren(forwardRef(() => Lock)) locks !: QueryList<Lock>;
+  @ContentChildren(forwardRef(() => Lock)) locks!: QueryList<Lock>;
   frame: Frame;
 
-  constructor(@Inject(forwardRef(() => Frame)) frame: Frame) { this.frame = frame; }
-}
-
-class Frame {
-  name: string = 'frame';
-}
-
-class ModuleFrame {
-  name: string = 'moduleFram';
+  constructor(@Inject(forwardRef(() => Frame)) frame: Frame) {
+    this.frame = frame;
+  }
 }
 
 @Directive({selector: 'lock'})

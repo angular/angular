@@ -15,33 +15,31 @@
  * Default: InertDocument strategy
  */
 export class InertBodyHelper {
-  private inertBodyElement: HTMLElement;
   private inertDocument: Document;
 
   constructor(private defaultDoc: Document) {
     this.inertDocument = this.defaultDoc.implementation.createHTMLDocument('sanitization-inert');
-    this.inertBodyElement = this.inertDocument.body;
+    let inertBodyElement = this.inertDocument.body;
 
-    if (this.inertBodyElement == null) {
+    if (inertBodyElement == null) {
       // usually there should be only one body element in the document, but IE doesn't have any, so
       // we need to create one.
       const inertHtml = this.inertDocument.createElement('html');
       this.inertDocument.appendChild(inertHtml);
-      this.inertBodyElement = this.inertDocument.createElement('body');
-      inertHtml.appendChild(this.inertBodyElement);
+      inertBodyElement = this.inertDocument.createElement('body');
+      inertHtml.appendChild(inertBodyElement);
     }
 
-    this.inertBodyElement.innerHTML = '<svg><g onload="this.parentNode.remove()"></g></svg>';
-    if (this.inertBodyElement.querySelector && !this.inertBodyElement.querySelector('svg')) {
+    inertBodyElement.innerHTML = '<svg><g onload="this.parentNode.remove()"></g></svg>';
+    if (inertBodyElement.querySelector && !inertBodyElement.querySelector('svg')) {
       // We just hit the Safari 10.1 bug - which allows JS to run inside the SVG G element
       // so use the XHR strategy.
       this.getInertBodyElement = this.getInertBodyElement_XHR;
       return;
     }
 
-    this.inertBodyElement.innerHTML =
-        '<svg><p><style><img src="</style><img src=x onerror=alert(1)//">';
-    if (this.inertBodyElement.querySelector && this.inertBodyElement.querySelector('svg img')) {
+    inertBodyElement.innerHTML = '<svg><p><style><img src="</style><img src=x onerror=alert(1)//">';
+    if (inertBodyElement.querySelector && inertBodyElement.querySelector('svg img')) {
       // We just hit the Firefox bug - which prevents the inner img JS from being sanitized
       // so use the DOMParser strategy, if it is available.
       // If the DOMParser is not available then we are not in Firefox (Server/WebWorker?) so we
@@ -74,7 +72,7 @@ export class InertBodyHelper {
     html = '<body><remove></remove>' + html + '</body>';
     try {
       html = encodeURI(html);
-    } catch (e) {
+    } catch {
       return null;
     }
     const xhr = new XMLHttpRequest();
@@ -82,7 +80,7 @@ export class InertBodyHelper {
     xhr.open('GET', 'data:text/html;charset=utf-8,' + html, false);
     xhr.send(undefined);
     const body: HTMLBodyElement = xhr.response.body;
-    body.removeChild(body.firstChild !);
+    body.removeChild(body.firstChild!);
     return body;
   }
 
@@ -97,13 +95,11 @@ export class InertBodyHelper {
     // `<head>` tag.
     html = '<body><remove></remove>' + html + '</body>';
     try {
-      const body = new (window as any)
-                       .DOMParser()
-                       .parseFromString(html, 'text/html')
-                       .body as HTMLBodyElement;
-      body.removeChild(body.firstChild !);
+      const body = new (window as any).DOMParser().parseFromString(html, 'text/html').body as
+          HTMLBodyElement;
+      body.removeChild(body.firstChild!);
       return body;
-    } catch (e) {
+    } catch {
       return null;
     }
   }
@@ -122,15 +118,23 @@ export class InertBodyHelper {
       return templateEl;
     }
 
-    this.inertBodyElement.innerHTML = html;
+    // Note that previously we used to do something like `this.inertDocument.body.innerHTML = html`
+    // and we returned the inert `body` node. This was changed, because IE seems to treat setting
+    // `innerHTML` on an inserted element differently, compared to one that hasn't been inserted
+    // yet. In particular, IE appears to split some of the text into multiple text nodes rather
+    // than keeping them in a single one which ends up messing with Ivy's i18n parsing further
+    // down the line. This has been worked around by creating a new inert `body` and using it as
+    // the root node in which we insert the HTML.
+    const inertBody = this.inertDocument.createElement('body');
+    inertBody.innerHTML = html;
 
     // Support: IE 9-11 only
     // strip custom-namespaced attributes on IE<=11
     if ((this.defaultDoc as any).documentMode) {
-      this.stripCustomNsAttrs(this.inertBodyElement);
+      this.stripCustomNsAttrs(inertBody);
     }
 
-    return this.inertBodyElement;
+    return inertBody;
   }
 
   /**
@@ -146,7 +150,7 @@ export class InertBodyHelper {
     // loop backwards so that we can support removals.
     for (let i = elAttrs.length - 1; 0 < i; i--) {
       const attrib = elAttrs.item(i);
-      const attrName = attrib !.name;
+      const attrName = attrib!.name;
       if (attrName === 'xmlns:ns1' || attrName.indexOf('ns1:') === 0) {
         el.removeAttribute(attrName);
       }
@@ -169,7 +173,7 @@ export class InertBodyHelper {
 function isDOMParserAvailable() {
   try {
     return !!(window as any).DOMParser;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

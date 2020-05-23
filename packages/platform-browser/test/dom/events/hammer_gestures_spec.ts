@@ -17,7 +17,9 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
     let fakeConsole: any;
     if (isNode) return;
 
-    beforeEach(() => { fakeConsole = {warn: jasmine.createSpy('console.warn')}; });
+    beforeEach(() => {
+      fakeConsole = {warn: jasmine.createSpy('console.warn')};
+    });
 
     describe('with no custom loader', () => {
       beforeEach(() => {
@@ -25,7 +27,7 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
       });
 
       it('should implement addGlobalEventListener', () => {
-        spyOn(plugin, 'addEventListener').and.callFake(() => {});
+        spyOn(plugin, 'addEventListener').and.callFake(() => () => {});
 
         expect(() => {
           plugin.addGlobalEventListener('document', 'swipe', () => {});
@@ -61,7 +63,9 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
       // Inject the NgZone so that we can make it available to the plugin through a fake
       // EventManager.
       let ngZone: NgZone;
-      beforeEach(inject([NgZone], (z: NgZone) => { ngZone = z; }));
+      beforeEach(inject([NgZone], (z: NgZone) => {
+        ngZone = z;
+      }));
 
       beforeEach(() => {
         originalHammerGlobal = (window as any).Hammer;
@@ -84,13 +88,15 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
         plugin = new HammerGesturesPlugin(document, hammerConfig, fakeConsole, loader);
 
         // Use a fake EventManager that has access to the NgZone.
-        plugin.manager = { getZone: () => ngZone } as EventManager;
+        plugin.manager = {getZone: () => ngZone} as EventManager;
 
         someElement = document.createElement('div');
         someListener = () => {};
       });
 
-      afterEach(() => { (window as any).Hammer = originalHammerGlobal; });
+      afterEach(() => {
+        (window as any).Hammer = originalHammerGlobal;
+      });
 
       it('should not log a warning when HammerJS is not loaded', () => {
         plugin.addEventListener(someElement, 'swipe', () => {});

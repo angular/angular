@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {getDOM} from './dom_adapter';
-import {DOCUMENT} from './dom_tokens';
 
 @Injectable()
 export class SharedStylesHost {
@@ -28,7 +27,9 @@ export class SharedStylesHost {
 
   onStylesAdded(additions: Set<string>): void {}
 
-  getAllStyles(): string[] { return Array.from(this._stylesSet); }
+  getAllStyles(): string[] {
+    return Array.from(this._stylesSet);
+  }
 }
 
 @Injectable()
@@ -53,11 +54,15 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     this._hostNodes.add(hostNode);
   }
 
-  removeHost(hostNode: Node): void { this._hostNodes.delete(hostNode); }
+  removeHost(hostNode: Node): void {
+    this._hostNodes.delete(hostNode);
+  }
 
   onStylesAdded(additions: Set<string>): void {
     this._hostNodes.forEach(hostNode => this._addStylesToHost(additions, hostNode));
   }
 
-  ngOnDestroy(): void { this._styleNodes.forEach(styleNode => getDOM().remove(styleNode)); }
+  ngOnDestroy(): void {
+    this._styleNodes.forEach(styleNode => getDOM().remove(styleNode));
+  }
 }

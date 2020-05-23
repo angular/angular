@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "ng-new",
@@ -12,11 +12,9 @@ ts_library(
         "schema.json",
     ],
     deps = [
-        "//packages/bazel/src/schematics/bazel-workspace",
-        "@ngdeps//@angular-devkit/core",
-        "@ngdeps//@angular-devkit/schematics",
-        "@ngdeps//@schematics/angular",
-        "@ngdeps//typescript",
+        "//packages/bazel/src/schematics/ng-add",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
     ],
 )
 
@@ -31,6 +29,6 @@ ts_library(
     ],
     deps = [
         ":ng-new",
-        "@ngdeps//@angular-devkit/schematics",
+        "@npm//@angular-devkit/schematics",
     ],
 )

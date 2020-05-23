@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
 
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "elements",
@@ -10,22 +10,18 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/elements",
     deps = [
         "//packages/core",
         "//packages/platform-browser",
-        "@rxjs",
+        "@npm//rxjs",
     ],
 )
 
 ng_package(
     name = "npm_package",
-    srcs = glob([
-        "**/*.externs.js",
-        "**/package.json",
-    ]),
-    entry_point = "packages/elements/index.js",
-    packages = [
+    srcs = ["package.json"],
+    entry_point = ":index.ts",
+    nested_packages = [
         "//packages/elements/schematics:npm_package",
     ],
     tags = [
@@ -33,8 +29,18 @@ ng_package(
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//visibility:private"],
+    visibility = ["//integration:__pkg__"],
     deps = [
         ":elements",
     ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "elements_api",
+    actualDir = "angular/packages/elements/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/elements",
 )

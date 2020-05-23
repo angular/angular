@@ -8,7 +8,6 @@
 
 'use strict';
 
-
 // THIS CHECK SHOULD BE THE FIRST THING IN THIS FILE
 // This is to ensure that we catch env issues before we error while requiring other dependencies.
 const engines = require('./package.json').engines;
@@ -27,21 +26,10 @@ function loadTask(fileName, taskName) {
   return task(gulp);
 }
 
-gulp.task('format:enforce', loadTask('format', 'enforce'));
-gulp.task('format', loadTask('format', 'format'));
-gulp.task('format:untracked', loadTask('format', 'format-untracked'));
-gulp.task('format:diff', loadTask('format', 'format-diff'));
-gulp.task('format:changed', ['format:untracked', 'format:diff']);
-gulp.task('lint', ['format:enforce', 'validate-commit-messages', 'tslint']);
-gulp.task('tslint', ['tools:build'], loadTask('lint'));
-gulp.task('validate-commit-messages', loadTask('validate-commit-message'));
+
 gulp.task('source-map-test', loadTask('source-map-test'));
-gulp.task('tools:build', loadTask('tools-build'));
-gulp.task('check-cycle', loadTask('check-cycle'));
-gulp.task('serve', loadTask('serve', 'default'));
-gulp.task('serve-examples', loadTask('serve', 'examples'));
 gulp.task('changelog', loadTask('changelog'));
+gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
 gulp.task('check-env', () => {/* this is a noop because the env test ran already above */});
 gulp.task('cldr:extract', loadTask('cldr', 'extract'));
-gulp.task('cldr:download', loadTask('cldr', 'download'));
 gulp.task('cldr:gen-closure-locale', loadTask('cldr', 'closure'));

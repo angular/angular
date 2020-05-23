@@ -4,7 +4,8 @@ import {
   CanActivate, Router,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
-  CanActivateChild
+  CanActivateChild,
+  UrlTree
 }                           from '@angular/router';
 import { AuthService }      from './auth.service';
 
@@ -16,7 +17,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
   canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): boolean {
+    state: RouterStateSnapshot): true|UrlTree {
     let url: string = state.url;
 
     return this.checkLogin(url);
@@ -24,20 +25,19 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
   canActivateChild(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): boolean {
+    state: RouterStateSnapshot): true|UrlTree {
     return this.canActivate(route, state);
   }
 
 // #enddocregion can-activate-child
-  checkLogin(url: string): boolean {
+  checkLogin(url: string): true|UrlTree {
     if (this.authService.isLoggedIn) { return true; }
 
     // Store the attempted URL for redirecting
     this.authService.redirectUrl = url;
 
-    // Navigate to the login page
-    this.router.navigate(['/login']);
-    return false;
+    // Redirect to the login page
+    return this.router.parseUrl('/login');
   }
 // #docregion can-activate-child
 }

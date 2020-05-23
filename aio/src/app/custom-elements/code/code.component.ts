@@ -6,12 +6,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { tap } from 'rxjs/operators';
 
 /**
- * If linenums is not set, this is the default maximum number of lines that
- * an example can display without line numbers.
- */
-const DEFAULT_LINE_NUMS_COUNT = 10;
-
-/**
  * Formatted Code Block
  *
  * Pretty renders a code block, used in the docs and API reference by the code-example and
@@ -69,7 +63,7 @@ export class CodeComponent implements OnChanges {
   @Input() hideCopy: boolean;
 
   /** Language to render the code (e.g. javascript, dart, typescript). */
-  @Input() language: string;
+  @Input() language: string | undefined;
 
   /**
    * Whether to display line numbers:
@@ -77,7 +71,7 @@ export class CodeComponent implements OnChanges {
    *  - If true: show
    *  - If number: show but start at that number
    */
-  @Input() linenums: boolean | number | string;
+  @Input() linenums: boolean | number | string | undefined;
 
   /** Path to the source of the code. */
   @Input() path: string;
@@ -87,17 +81,17 @@ export class CodeComponent implements OnChanges {
 
   /** Optional header to be displayed above the code. */
   @Input()
-  set header(header: string) {
+  set header(header: string | undefined) {
     this._header = header;
     this.ariaLabel = this.header ? `Copy code snippet from ${this.header}` : '';
   }
-  get header(): string { return this._header; }
-  private _header: string;
+  get header(): string|undefined { return this._header; }
+  private _header: string | undefined;
 
   @Output() codeFormatted = new EventEmitter<void>();
 
   /** The element in the template that will display the formatted code. */
-  @ViewChild('codeContainer') codeContainer: ElementRef;
+  @ViewChild('codeContainer', { static: true }) codeContainer: ElementRef;
 
   constructor(
     private snackbar: MatSnackBar,
@@ -119,9 +113,9 @@ export class CodeComponent implements OnChanges {
     this.codeText = this.getCodeText(); // store the unformatted code as text (for copying)
 
     this.pretty
-        .formatCode(leftAlignedCode, this.language, this.getLinenums(leftAlignedCode))
+        .formatCode(leftAlignedCode, this.language, this.getLinenums())
         .pipe(tap(() => this.codeFormatted.emit()))
-        .subscribe(c => this.setCodeHtml(c), err => { /* ignore failure to format */ }
+        .subscribe(c => this.setCodeHtml(c), () => { /* ignore failure to format */ }
     );
   }
 
@@ -162,7 +156,7 @@ export class CodeComponent implements OnChanges {
   }
 
   /** Gets the calculated value of linenums (boolean/number). */
-  getLinenums(code: string) {
+  getLinenums() {
     const linenums =
       typeof this.linenums === 'boolean' ? this.linenums :
       this.linenums === 'true' ? true :
@@ -170,9 +164,7 @@ export class CodeComponent implements OnChanges {
       typeof this.linenums === 'string' ? parseInt(this.linenums, 10) :
       this.linenums;
 
-    // if no linenums, enable line numbers if more than one line
-    return linenums == null || isNaN(linenums as number) ?
-        (code.match(/\n/g) || []).length > DEFAULT_LINE_NUMS_COUNT : linenums;
+    return (linenums != null) && !isNaN(linenums as number) && linenums;
   }
 }
 

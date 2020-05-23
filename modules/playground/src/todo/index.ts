@@ -13,7 +13,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {Store, Todo, TodoFactory} from './app/TodoStore';
 
 @Component({selector: 'todo-app', viewProviders: [Store, TodoFactory], templateUrl: 'todo.html'})
-class TodoApp {
+export class TodoApp {
   todoEdit: Todo = null;
 
   constructor(public todoStore: Store<Todo>, public factory: TodoFactory) {}
@@ -23,7 +23,9 @@ class TodoApp {
     inputElement.value = '';
   }
 
-  editTodo(todo: Todo): void { this.todoEdit = todo; }
+  editTodo(todo: Todo): void {
+    this.todoEdit = todo;
+  }
 
   doneEditing($event: KeyboardEvent, todo: Todo): void {
     const which = $event.which;
@@ -37,24 +39,32 @@ class TodoApp {
     }
   }
 
-  addTodo(newTitle: string): void { this.todoStore.add(this.factory.create(newTitle, false)); }
+  addTodo(newTitle: string): void {
+    this.todoStore.add(this.factory.create(newTitle, false));
+  }
 
-  completeMe(todo: Todo): void { todo.completed = !todo.completed; }
+  completeMe(todo: Todo): void {
+    todo.completed = !todo.completed;
+  }
 
-  deleteMe(todo: Todo): void { this.todoStore.remove(todo); }
+  deleteMe(todo: Todo): void {
+    this.todoStore.remove(todo);
+  }
 
   toggleAll($event: MouseEvent): void {
     const isComplete = ($event.target as HTMLInputElement).checked;
-    this.todoStore.list.forEach((todo: Todo) => { todo.completed = isComplete; });
+    this.todoStore.list.forEach((todo: Todo) => {
+      todo.completed = isComplete;
+    });
   }
 
-  clearCompleted(): void { this.todoStore.removeBy((todo: Todo) => todo.completed); }
+  clearCompleted(): void {
+    this.todoStore.removeBy((todo: Todo) => todo.completed);
+  }
 }
 
 @NgModule({declarations: [TodoApp], bootstrap: [TodoApp], imports: [BrowserModule]})
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

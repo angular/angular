@@ -35,7 +35,9 @@ export class SwUpdate {
    * True if the Service Worker is enabled (supported by the browser and enabled via
    * `ServiceWorkerModule`).
    */
-  get isEnabled(): boolean { return this.sw.isEnabled; }
+  get isEnabled(): boolean {
+    return this.sw.isEnabled;
+  }
 
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {

@@ -1,7 +1,22 @@
+README.md
+a11y
+  a11y/a11y.d.ts
+  a11y/a11y.metadata.json
+  a11y/package.json
+a11y.d.ts
+a11y.metadata.json
 arbitrary-npm-package-main.js
 arbitrary_bin.txt
 arbitrary_genfiles.txt
 bundles
+  bundles/waffels-a11y.umd.js
+  bundles/waffels-a11y.umd.js.map
+  bundles/waffels-a11y.umd.min.js
+  bundles/waffels-a11y.umd.min.js.map
+  bundles/waffels-imports.umd.js
+  bundles/waffels-imports.umd.js.map
+  bundles/waffels-imports.umd.min.js
+  bundles/waffels-imports.umd.min.js.map
   bundles/waffels-secondary.umd.js
   bundles/waffels-secondary.umd.js.map
   bundles/waffels-secondary.umd.min.js
@@ -11,48 +26,113 @@ bundles
   bundles/waffels.umd.min.js
   bundles/waffels.umd.min.js.map
 esm2015
+  esm2015/a11y
+    esm2015/a11y/a11y.externs.js
+    esm2015/a11y/a11y.js
+    esm2015/a11y/index.js
+    esm2015/a11y/public-api.js
   esm2015/example.externs.js
-  esm2015/example_public_index.js
+  esm2015/example.js
+  esm2015/imports
+    esm2015/imports/imports.externs.js
+    esm2015/imports/imports.js
+    esm2015/imports/index.js
+    esm2015/imports/public-api.js
+    esm2015/imports/second.js
   esm2015/index.js
   esm2015/mymodule.js
   esm2015/secondary
     esm2015/secondary/index.js
     esm2015/secondary/secondary.externs.js
-    esm2015/secondary/secondary_public_index.js
+    esm2015/secondary/secondary.js
     esm2015/secondary/secondarymodule.js
-esm5
-  esm5/example_public_index.js
-  esm5/index.js
-  esm5/mymodule.js
-  esm5/secondary
-    esm5/secondary/index.js
-    esm5/secondary/secondary_public_index.js
-    esm5/secondary/secondarymodule.js
-example_public_index.d.ts
-example_public_index.metadata.json
+example.d.ts
+example.metadata.json
 extra-styles.css
 fesm2015
+  fesm2015/a11y.js
+  fesm2015/a11y.js.map
+  fesm2015/imports.js
+  fesm2015/imports.js.map
   fesm2015/secondary.js
   fesm2015/secondary.js.map
   fesm2015/waffels.js
   fesm2015/waffels.js.map
-fesm5
-  fesm5/secondary.js
-  fesm5/secondary.js.map
-  fesm5/waffels.js
-  fesm5/waffels.js.map
-index.d.ts
-mymodule.d.ts
+imports
+  imports/imports.d.ts
+  imports/imports.metadata.json
+  imports/package.json
+imports.d.ts
+imports.metadata.json
+logo.png
 package.json
 secondary
-  secondary/index.d.ts
   secondary/package.json
-  secondary/secondary_public_index.d.ts
-  secondary/secondary_public_index.metadata.json
-  secondary/secondarymodule.d.ts
+  secondary/secondary.d.ts
+  secondary/secondary.metadata.json
 secondary.d.ts
 secondary.metadata.json
 some-file.txt
+--- README.md ---
+
+Angular
+=======
+
+The sources for this package are in the main [Angular](https://github.com/angular/angular) repo. Please file issues and pull requests against that repo.
+
+Usage information and reference details can be found in [Angular documentation](https://angular.io/docs).
+
+License: MIT
+
+
+--- a11y/a11y.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+
+
+export declare class A11yModule {
+}
+
+export { }
+
+
+--- a11y/a11y.metadata.json ---
+
+{"__symbolic":"module","version":4,"metadata":{"A11yModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":10,"character":1},"arguments":[{}]}],"members":{}}},"origins":{"A11yModule":"./a11y"},"importAs":"example/a11y"}
+
+--- a11y/package.json ---
+
+{
+  "name": "example/a11y",
+  "main": "../bundles/example-a11y.umd.js",
+  "fesm2015": "../fesm2015/a11y.js",
+  "esm2015": "../esm2015/a11y/a11y.js",
+  "typings": "./a11y.d.ts",
+  "module": "../fesm2015/a11y.js",
+  "es2015": "../fesm2015/a11y.js"
+}
+
+--- a11y.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+export * from './a11y/a11y';
+
+
+--- a11y.metadata.json ---
+
+{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./a11y/a11y"}],"flatModuleIndexRedirect":true,"importAs":"example/a11y"}
+
+
 --- arbitrary-npm-package-main.js ---
 
 /**
@@ -76,152 +156,1324 @@ World
 Hello
 
 
---- bundles/waffels-secondary.umd.js ---
+--- bundles/waffels-a11y.umd.js ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
 
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
-	typeof define === 'function' && define.amd ? define(['exports', '@angular/core'], factory) :
-	(factory((global.npm_package = {}),global.ng.core));
-}(this, (function (exports,core) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+    typeof define === 'function' && define.amd ? define('example/a11y', ['exports', '@angular/core'], factory) :
+    (global = global || self, factory((global.example = global.example || {}, global.example.a11y = {}), global.ng.core));
+}(this, (function (exports, core) { 'use strict';
 
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-var SecondaryModule = /** @class */ (function () {
-    function SecondaryModule() {
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+
+    function __extends(d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
-    SecondaryModule.decorators = [
-        { type: core.NgModule, args: [{},] }
-    ];
-    /** @nocollapse */
-    SecondaryModule.ctorParameters = function () { return []; };
-    return SecondaryModule;
-}());
-var a = 1;
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
+    function __rest(s, e) {
+        var t = {};
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+            t[p] = s[p];
+        if (s != null && typeof Object.getOwnPropertySymbols === "function")
+            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+                if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                    t[p[i]] = s[p[i]];
+            }
+        return t;
+    }
+
+    function __decorate(decorators, target, key, desc) {
+        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+        return c > 3 && r && Object.defineProperty(target, key, r), r;
+    }
+
+    function __param(paramIndex, decorator) {
+        return function (target, key) { decorator(target, key, paramIndex); }
+    }
+
+    function __metadata(metadataKey, metadataValue) {
+        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+    }
+
+    function __awaiter(thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    }
+
+    function __generator(thisArg, body) {
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        function verb(n) { return function (v) { return step([n, v]); }; }
+        function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_) try {
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
+                switch (op[0]) {
+                    case 0: case 1: t = op; break;
+                    case 4: _.label++; return { value: op[1], done: false };
+                    case 5: _.label++; y = op[1]; op = [0]; continue;
+                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop(); continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        }
+    }
+
+    var __createBinding = Object.create ? (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    }) : (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        o[k2] = m[k];
+    });
+
+    function __exportStar(m, exports) {
+        for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+    }
+
+    function __values(o) {
+        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+        if (m) return m.call(o);
+        if (o && typeof o.length === "number") return {
+            next: function () {
+                if (o && i >= o.length) o = void 0;
+                return { value: o && o[i++], done: !o };
+            }
+        };
+        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+    }
+
+    function __read(o, n) {
+        var m = typeof Symbol === "function" && o[Symbol.iterator];
+        if (!m) return o;
+        var i = m.call(o), r, ar = [], e;
+        try {
+            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+        }
+        catch (error) { e = { error: error }; }
+        finally {
+            try {
+                if (r && !r.done && (m = i["return"])) m.call(i);
+            }
+            finally { if (e) throw e.error; }
+        }
+        return ar;
+    }
+
+    function __spread() {
+        for (var ar = [], i = 0; i < arguments.length; i++)
+            ar = ar.concat(__read(arguments[i]));
+        return ar;
+    }
+
+    function __spreadArrays() {
+        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+        for (var r = Array(s), k = 0, i = 0; i < il; i++)
+            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+        return r;
+    };
+
+    function __await(v) {
+        return this instanceof __await ? (this.v = v, this) : new __await(v);
+    }
+
+    function __asyncGenerator(thisArg, _arguments, generator) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var g = generator.apply(thisArg, _arguments || []), i, q = [];
+        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+        function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+        function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+        function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+        function fulfill(value) { resume("next", value); }
+        function reject(value) { resume("throw", value); }
+        function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+    }
+
+    function __asyncDelegator(o) {
+        var i, p;
+        return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+        function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; } : f; }
+    }
+
+    function __asyncValues(o) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var m = o[Symbol.asyncIterator], i;
+        return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+        function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+        function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+    }
+
+    function __makeTemplateObject(cooked, raw) {
+        if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+        return cooked;
+    };
+
+    var __setModuleDefault = Object.create ? (function(o, v) {
+        Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+        o["default"] = v;
+    };
+
+    function __importStar(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        __setModuleDefault(result, mod);
+        return result;
+    }
+
+    function __importDefault(mod) {
+        return (mod && mod.__esModule) ? mod : { default: mod };
+    }
+
+    function __classPrivateFieldGet(receiver, privateMap) {
+        if (!privateMap.has(receiver)) {
+            throw new TypeError("attempted to get private field on non-instance");
+        }
+        return privateMap.get(receiver);
+    }
+
+    function __classPrivateFieldSet(receiver, privateMap, value) {
+        if (!privateMap.has(receiver)) {
+            throw new TypeError("attempted to set private field on non-instance");
+        }
+        privateMap.set(receiver, value);
+        return value;
+    }
+
+    /**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+    var A11yModule = /** @class */ (function () {
+        function A11yModule() {
+        }
+        A11yModule = __decorate([
+            core.NgModule({})
+        ], A11yModule);
+        return A11yModule;
+    }());
+
+    /**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+
+    /**
+     * Generated bundle index. Do not edit.
+     */
+
+    exports.A11yModule = A11yModule;
+
+    Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+//# sourceMappingURL=waffels-a11y.umd.js.map
+
+
+--- bundles/waffels-a11y.umd.min.js ---
 
 /**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
  */
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/a11y",["exports","@angular/core"],t):t(((e=e||self).example=e.example||{},e.example.a11y={}),e.ng.core)}(this,(function(e,t){"use strict";
+/*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+/**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+var o=function n(e,t,o,r){var f,c=arguments.length,l=c<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,o):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)l=Reflect.decorate(e,t,o,r);else for(var u=e.length-1;u>=0;u--)(f=e[u])&&(l=(c<3?f(l):c>3?f(t,o,l):f(t,o))||l);return c>3&&l&&Object.defineProperty(t,o,l),l}([t.NgModule({})],(function o(){}));
+/**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */e.A11yModule=o,Object.defineProperty(e,"__esModule",{value:!0})}));
+
+--- bundles/waffels-imports.umd.js ---
 
 /**
- * Generated bundle index. Do not edit.
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
  */
 
-exports.SecondaryModule = SecondaryModule;
-exports.a = a;
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+    typeof define === 'function' && define.amd ? define('example/imports', ['exports', '@angular/core'], factory) :
+    (global = global || self, factory((global.example = global.example || {}, global.example.imports = {}), global.ng.core));
+}(this, (function (exports, i0) { 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+
+    function __extends(d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    }
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
+    function __rest(s, e) {
+        var t = {};
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+            t[p] = s[p];
+        if (s != null && typeof Object.getOwnPropertySymbols === "function")
+            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+                if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                    t[p[i]] = s[p[i]];
+            }
+        return t;
+    }
+
+    function __decorate(decorators, target, key, desc) {
+        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+        return c > 3 && r && Object.defineProperty(target, key, r), r;
+    }
+
+    function __param(paramIndex, decorator) {
+        return function (target, key) { decorator(target, key, paramIndex); }
+    }
+
+    function __metadata(metadataKey, metadataValue) {
+        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+    }
+
+    function __awaiter(thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    }
+
+    function __generator(thisArg, body) {
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        function verb(n) { return function (v) { return step([n, v]); }; }
+        function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_) try {
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
+                switch (op[0]) {
+                    case 0: case 1: t = op; break;
+                    case 4: _.label++; return { value: op[1], done: false };
+                    case 5: _.label++; y = op[1]; op = [0]; continue;
+                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop(); continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        }
+    }
+
+    var __createBinding = Object.create ? (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    }) : (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        o[k2] = m[k];
+    });
+
+    function __exportStar(m, exports) {
+        for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+    }
+
+    function __values(o) {
+        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+        if (m) return m.call(o);
+        if (o && typeof o.length === "number") return {
+            next: function () {
+                if (o && i >= o.length) o = void 0;
+                return { value: o && o[i++], done: !o };
+            }
+        };
+        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+    }
+
+    function __read(o, n) {
+        var m = typeof Symbol === "function" && o[Symbol.iterator];
+        if (!m) return o;
+        var i = m.call(o), r, ar = [], e;
+        try {
+            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+        }
+        catch (error) { e = { error: error }; }
+        finally {
+            try {
+                if (r && !r.done && (m = i["return"])) m.call(i);
+            }
+            finally { if (e) throw e.error; }
+        }
+        return ar;
+    }
+
+    function __spread() {
+        for (var ar = [], i = 0; i < arguments.length; i++)
+            ar = ar.concat(__read(arguments[i]));
+        return ar;
+    }
+
+    function __spreadArrays() {
+        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+        for (var r = Array(s), k = 0, i = 0; i < il; i++)
+            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+        return r;
+    };
+
+    function __await(v) {
+        return this instanceof __await ? (this.v = v, this) : new __await(v);
+    }
+
+    function __asyncGenerator(thisArg, _arguments, generator) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var g = generator.apply(thisArg, _arguments || []), i, q = [];
+        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+        function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+        function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+        function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+        function fulfill(value) { resume("next", value); }
+        function reject(value) { resume("throw", value); }
+        function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+    }
+
+    function __asyncDelegator(o) {
+        var i, p;
+        return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+        function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; } : f; }
+    }
+
+    function __asyncValues(o) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var m = o[Symbol.asyncIterator], i;
+        return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+        function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+        function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+    }
+
+    function __makeTemplateObject(cooked, raw) {
+        if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+        return cooked;
+    };
+
+    var __setModuleDefault = Object.create ? (function(o, v) {
+        Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+        o["default"] = v;
+    };
+
+    function __importStar(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        __setModuleDefault(result, mod);
+        return result;
+    }
+
+    function __importDefault(mod) {
+        return (mod && mod.__esModule) ? mod : { default: mod };
+    }
+
+    function __classPrivateFieldGet(receiver, privateMap) {
+        if (!privateMap.has(receiver)) {
+            throw new TypeError("attempted to get private field on non-instance");
+        }
+        return privateMap.get(receiver);
+    }
+
+    function __classPrivateFieldSet(receiver, privateMap, value) {
+        if (!privateMap.has(receiver)) {
+            throw new TypeError("attempted to set private field on non-instance");
+        }
+        privateMap.set(receiver, value);
+        return value;
+    }
+
+    var MySecondService = /** @class */ (function () {
+        function MySecondService() {
+        }
+        MySecondService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+        MySecondService = __decorate([
+            i0.Injectable({ providedIn: 'root' })
+        ], MySecondService);
+        return MySecondService;
+    }());
+
+    var MyService = /** @class */ (function () {
+        function MyService(secondService) {
+            this.secondService = secondService;
+        }
+        MyService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0.ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
+        MyService = __decorate([
+            i0.Injectable({ providedIn: 'root' }),
+            __metadata("design:paramtypes", [MySecondService])
+        ], MyService);
+        return MyService;
+    }());
+
+    /**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+
+    /**
+     * Generated bundle index. Do not edit.
+     */
+
+    exports.MyService = MyService;
+    exports.ɵangular_packages_bazel_test_ng_package_example_imports_imports_a = MySecondService;
+
+    Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+//# sourceMappingURL=waffels-imports.umd.js.map
+
+
+--- bundles/waffels-imports.umd.min.js ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/imports",["exports","@angular/core"],t):t(((e=e||self).example=e.example||{},e.example.imports={}),e.ng.core)}(this,(function(e,t){"use strict";
+/*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */function n(e,t,n,o){var r,c=arguments.length,f=c<3?t:null===o?o=Object.getOwnPropertyDescriptor(t,n):o;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)f=Reflect.decorate(e,t,n,o);else for(var i=e.length-1;i>=0;i--)(r=e[i])&&(f=(c<3?r(f):c>3?r(t,n,f):r(t,n))||f);return c>3&&f&&Object.defineProperty(t,n,f),f}function o(e,t){if("object"==typeof Reflect&&"function"==typeof Reflect.metadata)return Reflect.metadata(e,t)}var r=function(){function e(){}return e.ɵprov=t.ɵɵdefineInjectable({factory:function t(){return new e},token:e,providedIn:"root"}),e=n([t.Injectable({providedIn:"root"})],e)}(),c=function(){function e(e){this.secondService=e}return e.ɵprov=t.ɵɵdefineInjectable({factory:function n(){return new e(t.ɵɵinject(r))},token:e,providedIn:"root"}),e=n([t.Injectable({providedIn:"root"}),o("design:paramtypes",[r])],e)}();
+/**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+e.MyService=c,e.ɵangular_packages_bazel_test_ng_package_example_imports_imports_a=r,Object.defineProperty(e,"__esModule",{value:!0})}));
+
+--- bundles/waffels-secondary.umd.js ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+    typeof define === 'function' && define.amd ? define('example/secondary', ['exports', '@angular/core'], factory) :
+    (global = global || self, factory((global.example = global.example || {}, global.example.secondary = {}), global.ng.core));
+}(this, (function (exports, core) { 'use strict';
+
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+
+    function __extends(d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    }
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
+    function __rest(s, e) {
+        var t = {};
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+            t[p] = s[p];
+        if (s != null && typeof Object.getOwnPropertySymbols === "function")
+            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+                if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                    t[p[i]] = s[p[i]];
+            }
+        return t;
+    }
+
+    function __decorate(decorators, target, key, desc) {
+        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+        return c > 3 && r && Object.defineProperty(target, key, r), r;
+    }
+
+    function __param(paramIndex, decorator) {
+        return function (target, key) { decorator(target, key, paramIndex); }
+    }
+
+    function __metadata(metadataKey, metadataValue) {
+        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+    }
+
+    function __awaiter(thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    }
+
+    function __generator(thisArg, body) {
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        function verb(n) { return function (v) { return step([n, v]); }; }
+        function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_) try {
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
+                switch (op[0]) {
+                    case 0: case 1: t = op; break;
+                    case 4: _.label++; return { value: op[1], done: false };
+                    case 5: _.label++; y = op[1]; op = [0]; continue;
+                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop(); continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        }
+    }
+
+    var __createBinding = Object.create ? (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    }) : (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        o[k2] = m[k];
+    });
+
+    function __exportStar(m, exports) {
+        for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+    }
+
+    function __values(o) {
+        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+        if (m) return m.call(o);
+        if (o && typeof o.length === "number") return {
+            next: function () {
+                if (o && i >= o.length) o = void 0;
+                return { value: o && o[i++], done: !o };
+            }
+        };
+        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+    }
+
+    function __read(o, n) {
+        var m = typeof Symbol === "function" && o[Symbol.iterator];
+        if (!m) return o;
+        var i = m.call(o), r, ar = [], e;
+        try {
+            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+        }
+        catch (error) { e = { error: error }; }
+        finally {
+            try {
+                if (r && !r.done && (m = i["return"])) m.call(i);
+            }
+            finally { if (e) throw e.error; }
+        }
+        return ar;
+    }
+
+    function __spread() {
+        for (var ar = [], i = 0; i < arguments.length; i++)
+            ar = ar.concat(__read(arguments[i]));
+        return ar;
+    }
+
+    function __spreadArrays() {
+        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+        for (var r = Array(s), k = 0, i = 0; i < il; i++)
+            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+        return r;
+    };
+
+    function __await(v) {
+        return this instanceof __await ? (this.v = v, this) : new __await(v);
+    }
+
+    function __asyncGenerator(thisArg, _arguments, generator) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var g = generator.apply(thisArg, _arguments || []), i, q = [];
+        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+        function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+        function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+        function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+        function fulfill(value) { resume("next", value); }
+        function reject(value) { resume("throw", value); }
+        function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+    }
+
+    function __asyncDelegator(o) {
+        var i, p;
+        return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+        function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; } : f; }
+    }
+
+    function __asyncValues(o) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var m = o[Symbol.asyncIterator], i;
+        return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+        function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+        function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+    }
+
+    function __makeTemplateObject(cooked, raw) {
+        if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+        return cooked;
+    };
+
+    var __setModuleDefault = Object.create ? (function(o, v) {
+        Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+        o["default"] = v;
+    };
+
+    function __importStar(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        __setModuleDefault(result, mod);
+        return result;
+    }
+
+    function __importDefault(mod) {
+        return (mod && mod.__esModule) ? mod : { default: mod };
+    }
+
+    function __classPrivateFieldGet(receiver, privateMap) {
+        if (!privateMap.has(receiver)) {
+            throw new TypeError("attempted to get private field on non-instance");
+        }
+        return privateMap.get(receiver);
+    }
+
+    function __classPrivateFieldSet(receiver, privateMap, value) {
+        if (!privateMap.has(receiver)) {
+            throw new TypeError("attempted to set private field on non-instance");
+        }
+        privateMap.set(receiver, value);
+        return value;
+    }
+
+    /**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+    var SecondaryModule = /** @class */ (function () {
+        function SecondaryModule() {
+        }
+        SecondaryModule = __decorate([
+            core.NgModule({})
+        ], SecondaryModule);
+        return SecondaryModule;
+    }());
+    var a = 1;
+
+    /**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+
+    /**
+     * Generated bundle index. Do not edit.
+     */
+
+    exports.SecondaryModule = SecondaryModule;
+    exports.a = a;
+
+    Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 //# sourceMappingURL=waffels-secondary.umd.js.map
 
 
---- bundles/waffels-secondary.umd.js.map ---
-
-{"version":3,"file":"waffels-secondary.umd.js","sources":["../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.esm5/packages/bazel/test/ng_package/example/secondary/secondary_public_index.js"],"sourcesContent":["/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nvar SecondaryModule = /** @class */ (function () {\n    function SecondaryModule() {\n    }\n    SecondaryModule.decorators = [\n        { type: NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    SecondaryModule.ctorParameters = function () { return []; };\n    return SecondaryModule;\n}());\nexport { SecondaryModule };\nexport var a = 1;\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBRXRDLFFBQVEsU0FBQyxFQUFFOzs7OzBCQVZaOztTQVdhLGVBQWU7QUFHNUIsTUFBTSxDQUFDLElBQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=","/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport * from './secondarymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQVFBLGNBQWMsbUJBQW1CLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vc2Vjb25kYXJ5bW9kdWxlJztcbiJdfQ==","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5X3B1YmxpY19pbmRleC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL3NlY29uZGFyeS9zZWNvbmRhcnlfcHVibGljX2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYyxTQUFTLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuIl19"],"names":["NgModule"],"mappings":";;;;;;AAAA;;;;;;;AAOA,AACA,IAAI,eAAe,kBAAkB,YAAY;IAC7C,SAAS,eAAe,GAAG;KAC1B;IACD,eAAe,CAAC,UAAU,GAAG;QACzB,EAAE,IAAI,EAAEA,aAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;KAClC,CAAC;;IAEF,eAAe,CAAC,cAAc,GAAG,YAAY,EAAE,OAAO,EAAE,CAAC,EAAE,CAAC;IAC5D,OAAO,eAAe,CAAC;CAC1B,EAAE,CAAC,CAAC;AACL,AACO,IAAI,CAAC,GAAG,CAAC;;ACnBhB;;;;;;GAMG;;ACNH;;GAEG;;;;;;;;;;;;;"}
-
 --- bundles/waffels-secondary.umd.min.js ---
 
-!function(e,n){"object"==typeof exports&&"undefined"!=typeof module?n(exports,require("@angular/core")):"function"==typeof define&&define.amd?define(["exports","@angular/core"],n):n(e.npm_package={},e.ng.core)}(this,function(e,n){"use strict";
 /**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */var o=function(){function e(){}return e.decorators=[{type:n.NgModule,args:[{}]}],e.ctorParameters=function(){return[]},e}();
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
  */
-e.SecondaryModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/secondary",["exports","@angular/core"],t):t(((e=e||self).example=e.example||{},e.example.secondary={}),e.ng.core)}(this,(function(e,t){"use strict";
+/*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
 
---- bundles/waffels-secondary.umd.min.js.map ---
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
 
-{"version":3,"sources":["packages/bazel/test/ng_package/example/waffels-secondary.umd.js"],"names":["global","factory","exports","module","require","define","amd","npm_package","ng","core","this","SecondaryModule","decorators","type","NgModule","args","ctorParameters","a","Object","defineProperty","value"],"mappings":"CAAC,SAAUA,EAAQC,GACC,iBAAZC,SAA0C,oBAAXC,OAAyBF,EAAQC,QAASE,QAAQ,kBACtE,mBAAXC,QAAyBA,OAAOC,IAAMD,QAAQ,UAAW,iBAAkBJ,GACjFA,EAASD,EAAOO,eAAkBP,EAAOQ,GAAGC,MAH9C,CAIEC,KAAM,SAAWR,EAAQO,GAAQ;;;;;;;GASnC,IAAIE,EAAiC,WACjC,SAASA,KAOT,OALAA,EAAgBC,aACVC,KAAMJ,EAAKK,SAAUC,YAG3BJ,EAAgBK,eAAiB,WAAc,UACxCL,EARyB;;;;;;;;AAwBpCT,EAAQS,gBAAkBA,EAC1BT,EAAQe,EAfA,EAiBRC,OAAOC,eAAejB,EAAS,cAAgBkB,OAAO","sourcesContent":["(function (global, factory) {\n\ttypeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :\n\ttypeof define === 'function' && define.amd ? define(['exports', '@angular/core'], factory) :\n\t(factory((global.npm_package = {}),global.ng.core));\n}(this, (function (exports,core) { 'use strict';\n\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nvar SecondaryModule = /** @class */ (function () {\n    function SecondaryModule() {\n    }\n    SecondaryModule.decorators = [\n        { type: core.NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    SecondaryModule.ctorParameters = function () { return []; };\n    return SecondaryModule;\n}());\nvar a = 1;\n\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\n\n/**\n * Generated bundle index. Do not edit.\n */\n\nexports.SecondaryModule = SecondaryModule;\nexports.a = a;\n\nObject.defineProperty(exports, '__esModule', { value: true });\n\n})));\n//# sourceMappingURL=waffels-secondary.umd.js.map\n"]}
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+/**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+var o=function n(e,t,o,r){var c,f=arguments.length,l=f<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,o):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)l=Reflect.decorate(e,t,o,r);else for(var a=e.length-1;a>=0;a--)(c=e[a])&&(l=(f<3?c(l):f>3?c(t,o,l):c(t,o))||l);return f>3&&l&&Object.defineProperty(t,o,l),l}([t.NgModule({})],(function o(){}));
+/**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+e.SecondaryModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- bundles/waffels.umd.js ---
 
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
-	typeof define === 'function' && define.amd ? define(['exports', '@angular/core'], factory) :
-	(factory((global.npm_package = {}),global.ng.core));
-}(this, (function (exports,core) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+    typeof define === 'function' && define.amd ? define('example', ['exports', '@angular/core'], factory) :
+    (global = global || self, factory(global.example = {}, global.ng.core));
+}(this, (function (exports, core) { 'use strict';
 
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-var MyModule = /** @class */ (function () {
-    function MyModule() {
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+
+    function __extends(d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
-    MyModule.decorators = [
-        { type: core.NgModule, args: [{},] }
-    ];
-    /** @nocollapse */
-    MyModule.ctorParameters = function () { return []; };
-    return MyModule;
-}());
 
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
 
-/**
- * Generated bundle index. Do not edit.
- */
+    function __rest(s, e) {
+        var t = {};
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+            t[p] = s[p];
+        if (s != null && typeof Object.getOwnPropertySymbols === "function")
+            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+                if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                    t[p[i]] = s[p[i]];
+            }
+        return t;
+    }
 
-exports.MyModule = MyModule;
+    function __decorate(decorators, target, key, desc) {
+        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+        return c > 3 && r && Object.defineProperty(target, key, r), r;
+    }
 
-Object.defineProperty(exports, '__esModule', { value: true });
+    function __param(paramIndex, decorator) {
+        return function (target, key) { decorator(target, key, paramIndex); }
+    }
+
+    function __metadata(metadataKey, metadataValue) {
+        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+    }
+
+    function __awaiter(thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    }
+
+    function __generator(thisArg, body) {
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        function verb(n) { return function (v) { return step([n, v]); }; }
+        function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_) try {
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
+                switch (op[0]) {
+                    case 0: case 1: t = op; break;
+                    case 4: _.label++; return { value: op[1], done: false };
+                    case 5: _.label++; y = op[1]; op = [0]; continue;
+                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop(); continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        }
+    }
+
+    var __createBinding = Object.create ? (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    }) : (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        o[k2] = m[k];
+    });
+
+    function __exportStar(m, exports) {
+        for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+    }
+
+    function __values(o) {
+        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+        if (m) return m.call(o);
+        if (o && typeof o.length === "number") return {
+            next: function () {
+                if (o && i >= o.length) o = void 0;
+                return { value: o && o[i++], done: !o };
+            }
+        };
+        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+    }
+
+    function __read(o, n) {
+        var m = typeof Symbol === "function" && o[Symbol.iterator];
+        if (!m) return o;
+        var i = m.call(o), r, ar = [], e;
+        try {
+            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+        }
+        catch (error) { e = { error: error }; }
+        finally {
+            try {
+                if (r && !r.done && (m = i["return"])) m.call(i);
+            }
+            finally { if (e) throw e.error; }
+        }
+        return ar;
+    }
+
+    function __spread() {
+        for (var ar = [], i = 0; i < arguments.length; i++)
+            ar = ar.concat(__read(arguments[i]));
+        return ar;
+    }
+
+    function __spreadArrays() {
+        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+        for (var r = Array(s), k = 0, i = 0; i < il; i++)
+            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+        return r;
+    };
+
+    function __await(v) {
+        return this instanceof __await ? (this.v = v, this) : new __await(v);
+    }
+
+    function __asyncGenerator(thisArg, _arguments, generator) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var g = generator.apply(thisArg, _arguments || []), i, q = [];
+        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+        function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+        function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+        function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+        function fulfill(value) { resume("next", value); }
+        function reject(value) { resume("throw", value); }
+        function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+    }
+
+    function __asyncDelegator(o) {
+        var i, p;
+        return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+        function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; } : f; }
+    }
+
+    function __asyncValues(o) {
+        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+        var m = o[Symbol.asyncIterator], i;
+        return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+        function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+        function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+    }
+
+    function __makeTemplateObject(cooked, raw) {
+        if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+        return cooked;
+    };
+
+    var __setModuleDefault = Object.create ? (function(o, v) {
+        Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+        o["default"] = v;
+    };
+
+    function __importStar(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        __setModuleDefault(result, mod);
+        return result;
+    }
+
+    function __importDefault(mod) {
+        return (mod && mod.__esModule) ? mod : { default: mod };
+    }
+
+    function __classPrivateFieldGet(receiver, privateMap) {
+        if (!privateMap.has(receiver)) {
+            throw new TypeError("attempted to get private field on non-instance");
+        }
+        return privateMap.get(receiver);
+    }
+
+    function __classPrivateFieldSet(receiver, privateMap, value) {
+        if (!privateMap.has(receiver)) {
+            throw new TypeError("attempted to set private field on non-instance");
+        }
+        privateMap.set(receiver, value);
+        return value;
+    }
+
+    /**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+    var MyModule = /** @class */ (function () {
+        function MyModule() {
+        }
+        MyModule = __decorate([
+            core.NgModule({})
+        ], MyModule);
+        return MyModule;
+    }());
+
+    /**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+
+    /**
+     * Generated bundle index. Do not edit.
+     */
+
+    exports.MyModule = MyModule;
+
+    Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 //# sourceMappingURL=waffels.umd.js.map
 
 
---- bundles/waffels.umd.js.map ---
-
-{"version":3,"file":"waffels.umd.js","sources":["../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.esm5/packages/bazel/test/ng_package/example/example_public_index.js"],"sourcesContent":["/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nvar MyModule = /** @class */ (function () {\n    function MyModule() {\n    }\n    MyModule.decorators = [\n        { type: NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    MyModule.ctorParameters = function () { return []; };\n    return MyModule;\n}());\nexport { MyModule };\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBR3RDLFFBQVEsU0FBQyxFQUFFOzs7O21CQVhaOztTQVlhLFFBQVEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==","/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport * from './mymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsY0FBYyxZQUFZLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vbXltb2R1bGUnOyJdfQ==","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZV9wdWJsaWNfaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9leGFtcGxlX3B1YmxpY19pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ=="],"names":["NgModule"],"mappings":";;;;;;AAAA;;;;;;;AAOA,AACA,IAAI,QAAQ,kBAAkB,YAAY;IACtC,SAAS,QAAQ,GAAG;KACnB;IACD,QAAQ,CAAC,UAAU,GAAG;QAClB,EAAE,IAAI,EAAEA,aAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;KAClC,CAAC;;IAEF,QAAQ,CAAC,cAAc,GAAG,YAAY,EAAE,OAAO,EAAE,CAAC,EAAE,CAAC;IACrD,OAAO,QAAQ,CAAC;CACnB,EAAE,CAAC;;ACjBJ;;;;;;GAMG;;ACNH;;GAEG;;;;;;;;;;;;"}
-
 --- bundles/waffels.umd.min.js ---
 
-!function(e,n){"object"==typeof exports&&"undefined"!=typeof module?n(exports,require("@angular/core")):"function"==typeof define&&define.amd?define(["exports","@angular/core"],n):n(e.npm_package={},e.ng.core)}(this,function(e,n){"use strict";
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example",["exports","@angular/core"],t):t((e=e||self).example={},e.ng.core)}(this,(function(e,t){"use strict";
+/*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+/**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+var o=function n(e,t,o,r){var f,c=arguments.length,l=c<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,o):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)l=Reflect.decorate(e,t,o,r);else for(var u=e.length-1;u>=0;u--)(f=e[u])&&(l=(c<3?f(l):c>3?f(t,o,l):f(t,o))||l);return c>3&&l&&Object.defineProperty(t,o,l),l}([t.NgModule({})],(function o(){}));
+/**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */e.MyModule=o,Object.defineProperty(e,"__esModule",{value:!0})}));
+
+--- esm2015/a11y/a11y.externs.js ---
+
+/** @externs */
+/**
+ * @externs
+ * @suppress {duplicate,checkTypes}
+ */
+// NOTE: generated by tsickle, do not edit.
+
+
+--- esm2015/a11y/a11y.js ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYTExeS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ExMXkvYTExeS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ==
+
+--- esm2015/a11y/index.js ---
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
- */var o=function(){function e(){}return e.decorators=[{type:n.NgModule,args:[{}]}],e.ctorParameters=function(){return[]},e}();
+ */
+export * from './public-api';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9hMTF5L2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7R0FNRztBQUVILGNBQWMsY0FBYyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL3B1YmxpYy1hcGknO1xuIl19
+
+--- esm2015/a11y/public-api.js ---
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
- */e.MyModule=o,Object.defineProperty(e,"__esModule",{value:!0})});
-
---- bundles/waffels.umd.min.js.map ---
-
-{"version":3,"sources":["packages/bazel/test/ng_package/example/waffels.umd.js"],"names":["global","factory","exports","module","require","define","amd","npm_package","ng","core","this","MyModule","decorators","type","NgModule","args","ctorParameters","Object","defineProperty","value"],"mappings":"CAAC,SAAUA,EAAQC,GACC,iBAAZC,SAA0C,oBAAXC,OAAyBF,EAAQC,QAASE,QAAQ,kBACtE,mBAAXC,QAAyBA,OAAOC,IAAMD,QAAQ,UAAW,iBAAkBJ,GACjFA,EAASD,EAAOO,eAAkBP,EAAOQ,GAAGC,MAH9C,CAIEC,KAAM,SAAWR,EAAQO,GAAQ;;;;;;;GASnC,IAAIE,EAA0B,WAC1B,SAASA,KAOT,OALAA,EAASC,aACHC,KAAMJ,EAAKK,SAAUC,YAG3BJ,EAASK,eAAiB,WAAc,UACjCL,EARkB;;;;;;;GAuB7BT,EAAQS,SAAWA,EAEnBM,OAAOC,eAAehB,EAAS,cAAgBiB,OAAO","sourcesContent":["(function (global, factory) {\n\ttypeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :\n\ttypeof define === 'function' && define.amd ? define(['exports', '@angular/core'], factory) :\n\t(factory((global.npm_package = {}),global.ng.core));\n}(this, (function (exports,core) { 'use strict';\n\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nvar MyModule = /** @class */ (function () {\n    function MyModule() {\n    }\n    MyModule.decorators = [\n        { type: core.NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    MyModule.ctorParameters = function () { return []; };\n    return MyModule;\n}());\n\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\n\n/**\n * Generated bundle index. Do not edit.\n */\n\nexports.MyModule = MyModule;\n\nObject.defineProperty(exports, '__esModule', { value: true });\n\n})));\n//# sourceMappingURL=waffels.umd.js.map\n"]}
+ */
+import { __decorate } from "tslib";
+import { NgModule } from '@angular/core';
+let A11yModule = /** @class */ (() => {
+    let A11yModule = class A11yModule {
+    };
+    A11yModule = __decorate([
+        NgModule({})
+    ], A11yModule);
+    return A11yModule;
+})();
+export { A11yModule };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ExMXkvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7O0FBRUgsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQztBQUd2QztJQUFBLElBQWEsVUFBVSxHQUF2QixNQUFhLFVBQVU7S0FDdEIsQ0FBQTtJQURZLFVBQVU7UUFEdEIsUUFBUSxDQUFDLEVBQUUsQ0FBQztPQUNBLFVBQVUsQ0FDdEI7SUFBRCxpQkFBQztLQUFBO1NBRFksVUFBVSIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBBMTF5TW9kdWxlIHtcbn1cbiJdfQ==
 
 --- esm2015/example.externs.js ---
 
@@ -233,81 +1485,144 @@ Object.defineProperty(exports, '__esModule', { value: true });
 // NOTE: generated by tsickle, do not edit.
 
 
---- esm2015/example_public_index.js ---
+--- esm2015/example.js ---
 
 /**
  * Generated bundle index. Do not edit.
  */
 export * from './index';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2V4YW1wbGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7O0dBRUc7QUFFSCxjQUFjLFNBQVMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogR2VuZXJhdGVkIGJ1bmRsZSBpbmRleC4gRG8gbm90IGVkaXQuXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9pbmRleCc7XG4iXX0=
 
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZV9wdWJsaWNfaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9leGFtcGxlX3B1YmxpY19pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ==
+--- esm2015/imports/imports.externs.js ---
+
+/** @externs */
+/**
+ * @externs
+ * @suppress {duplicate,checkTypes}
+ */
+// NOTE: generated by tsickle, do not edit.
+
+
+--- esm2015/imports/imports.js ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+export { MySecondService as ɵangular_packages_bazel_test_ng_package_example_imports_imports_a } from './second';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW1wb3J0cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvaW1wb3J0cy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDO0FBRXhCLE9BQU8sRUFBQyxlQUFlLElBQUksaUVBQWlFLEVBQUMsTUFBTSxVQUFVLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuXG5leHBvcnQge015U2Vjb25kU2VydmljZSBhcyDJtWFuZ3VsYXJfcGFja2FnZXNfYmF6ZWxfdGVzdF9uZ19wYWNrYWdlX2V4YW1wbGVfaW1wb3J0c19pbXBvcnRzX2F9IGZyb20gJy4vc2Vjb25kJzsiXX0=
+
+--- esm2015/imports/index.js ---
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+export * from './public-api';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbXBvcnRzL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7R0FNRztBQUVILGNBQWMsY0FBYyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL3B1YmxpYy1hcGknO1xuIl19
+
+--- esm2015/imports/public-api.js ---
+
+import { __decorate, __metadata } from "tslib";
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { Injectable } from '@angular/core';
+import { MySecondService } from './second';
+import * as i0 from "@angular/core";
+import * as i1 from "./second";
+let MyService = /** @class */ (() => {
+    let MyService = class MyService {
+        constructor(secondService) {
+            this.secondService = secondService;
+        }
+    };
+    MyService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0.ɵɵinject(i1.MySecondService)); }, token: MyService, providedIn: "root" });
+    MyService = __decorate([
+        Injectable({ providedIn: 'root' }),
+        __metadata("design:paramtypes", [MySecondService])
+    ], MyService);
+    return MyService;
+})();
+export { MyService };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUE7Ozs7OztHQU1HO0FBRUgsT0FBTyxFQUFDLFVBQVUsRUFBQyxNQUFNLGVBQWUsQ0FBQztBQUN6QyxPQUFPLEVBQUMsZUFBZSxFQUFDLE1BQU0sVUFBVSxDQUFDOzs7QUFHekM7SUFBQSxJQUFhLFNBQVMsR0FBdEIsTUFBYSxTQUFTO1FBQ3BCLFlBQW1CLGFBQThCO1lBQTlCLGtCQUFhLEdBQWIsYUFBYSxDQUFpQjtRQUFHLENBQUM7S0FDdEQsQ0FBQTs7SUFGWSxTQUFTO1FBRHJCLFVBQVUsQ0FBQyxFQUFDLFVBQVUsRUFBRSxNQUFNLEVBQUMsQ0FBQzt5Q0FFRyxlQUFlO09BRHRDLFNBQVMsQ0FFckI7b0JBZEQ7S0FjQztTQUZZLFNBQVMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7SW5qZWN0YWJsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5pbXBvcnQge015U2Vjb25kU2VydmljZX0gZnJvbSAnLi9zZWNvbmQnO1xuXG5ASW5qZWN0YWJsZSh7cHJvdmlkZWRJbjogJ3Jvb3QnfSlcbmV4cG9ydCBjbGFzcyBNeVNlcnZpY2Uge1xuICBjb25zdHJ1Y3RvcihwdWJsaWMgc2Vjb25kU2VydmljZTogTXlTZWNvbmRTZXJ2aWNlKSB7fVxufVxuIl19
+
+--- esm2015/imports/second.js ---
+
+import { __decorate } from "tslib";
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { Injectable } from '@angular/core';
+import * as i0 from "@angular/core";
+let MySecondService = /** @class */ (() => {
+    let MySecondService = class MySecondService {
+    };
+    MySecondService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+    MySecondService = __decorate([
+        Injectable({ providedIn: 'root' })
+    ], MySecondService);
+    return MySecondService;
+})();
+export { MySecondService };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvaW1wb3J0cy9zZWNvbmQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBOzs7Ozs7R0FNRztBQUVILE9BQU8sRUFBQyxVQUFVLEVBQUMsTUFBTSxlQUFlLENBQUM7O0FBR3pDO0lBQUEsSUFBYSxlQUFlLEdBQTVCLE1BQWEsZUFBZTtLQUMzQixDQUFBOztJQURZLGVBQWU7UUFEM0IsVUFBVSxDQUFDLEVBQUMsVUFBVSxFQUFFLE1BQU0sRUFBQyxDQUFDO09BQ3BCLGVBQWUsQ0FDM0I7MEJBWkQ7S0FZQztTQURZLGVBQWUiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7SW5qZWN0YWJsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBJbmplY3RhYmxlKHtwcm92aWRlZEluOiAncm9vdCd9KVxuZXhwb3J0IGNsYXNzIE15U2Vjb25kU2VydmljZSB7XG59XG4iXX0=
 
 --- esm2015/index.js ---
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-export { MyModule } from './mymodule';
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLHlCQUFjLFlBQVksQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9teW1vZHVsZSc7Il19
+export * from './mymodule';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxjQUFjLFlBQVksQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9teW1vZHVsZSc7Il19
 
 --- esm2015/mymodule.js ---
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import { __decorate } from "tslib";
 import { NgModule } from '@angular/core';
-export class MyModule {
-}
-MyModule.decorators = [
-    { type: NgModule, args: [{},] }
-];
-/** @nocollapse */
-MyModule.ctorParameters = () => [];
-function MyModule_tsickle_Closure_declarations() {
-    /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */
-    MyModule.decorators;
-    /**
-     * @nocollapse
-     * @type {function(): !Array<(null|{type: ?, decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>)})>}
-     */
-    MyModule.ctorParameters;
-}
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLE9BQU8sRUFBQyxRQUFRLEVBQUMsTUFBTSxlQUFlLENBQUM7QUFJdkMsTUFBTTs7O1lBREwsUUFBUSxTQUFDLEVBQUUiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==
+let MyModule = /** @class */ (() => {
+    let MyModule = class MyModule {
+    };
+    MyModule = __decorate([
+        NgModule({})
+    ], MyModule);
+    return MyModule;
+})();
+export { MyModule };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7O0FBRUgsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQztBQUl2QztJQUFBLElBQWEsUUFBUSxHQUFyQixNQUFhLFFBQVE7S0FDcEIsQ0FBQTtJQURZLFFBQVE7UUFEcEIsUUFBUSxDQUFDLEVBQUUsQ0FBQztPQUNBLFFBQVEsQ0FDcEI7SUFBRCxlQUFDO0tBQUE7U0FEWSxRQUFRIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge05nTW9kdWxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcbmltcG9ydCB7YX0gZnJvbSAnLi9zZWNvbmRhcnkvc2Vjb25kYXJ5bW9kdWxlJztcblxuQE5nTW9kdWxlKHt9KVxuZXhwb3J0IGNsYXNzIE15TW9kdWxlIHtcbn0iXX0=
 
 --- esm2015/secondary/index.js ---
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-export { SecondaryModule, a } from './secondarymodule';
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7QUFRQSxtQ0FBYyxtQkFBbUIsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9zZWNvbmRhcnltb2R1bGUnO1xuIl19
+export * from './secondarymodule';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7OztHQU1HO0FBRUgsY0FBYyxtQkFBbUIsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9zZWNvbmRhcnltb2R1bGUnO1xuIl19
 
 --- esm2015/secondary/secondary.externs.js ---
 
@@ -319,153 +1634,56 @@ export { SecondaryModule, a } from './secondarymodule';
 // NOTE: generated by tsickle, do not edit.
 
 
---- esm2015/secondary/secondary_public_index.js ---
+--- esm2015/secondary/secondary.js ---
 
 /**
  * Generated bundle index. Do not edit.
  */
 export * from './index';
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5X3B1YmxpY19pbmRleC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL3NlY29uZGFyeS9zZWNvbmRhcnlfcHVibGljX2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYyxTQUFTLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuIl19
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ==
 
 --- esm2015/secondary/secondarymodule.js ---
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import { __decorate } from "tslib";
 import { NgModule } from '@angular/core';
-export class SecondaryModule {
-}
-SecondaryModule.decorators = [
-    { type: NgModule, args: [{},] }
-];
-/** @nocollapse */
-SecondaryModule.ctorParameters = () => [];
-function SecondaryModule_tsickle_Closure_declarations() {
-    /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */
-    SecondaryModule.decorators;
-    /**
-     * @nocollapse
-     * @type {function(): !Array<(null|{type: ?, decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>)})>}
-     */
-    SecondaryModule.ctorParameters;
-}
-export const /** @type {?} */ a = 1;
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLE9BQU8sRUFBQyxRQUFRLEVBQUMsTUFBTSxlQUFlLENBQUM7QUFHdkMsTUFBTTs7O1lBREwsUUFBUSxTQUFDLEVBQUU7Ozs7Ozs7Ozs7Ozs7QUFJWixNQUFNLENBQUMsdUJBQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=
-
---- esm5/example_public_index.js ---
-
-/**
- * Generated bundle index. Do not edit.
- */
-export * from './index';
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZV9wdWJsaWNfaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9leGFtcGxlX3B1YmxpY19pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ==
-
---- esm5/index.js ---
-
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-export * from './mymodule';
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsY0FBYyxZQUFZLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vbXltb2R1bGUnOyJdfQ==
-
---- esm5/mymodule.js ---
-
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-import { NgModule } from '@angular/core';
-var MyModule = /** @class */ (function () {
-    function MyModule() {
-    }
-    MyModule.decorators = [
-        { type: NgModule, args: [{},] }
-    ];
-    /** @nocollapse */
-    MyModule.ctorParameters = function () { return []; };
-    return MyModule;
-}());
-export { MyModule };
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBR3RDLFFBQVEsU0FBQyxFQUFFOzs7O21CQVhaOztTQVlhLFFBQVEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==
-
---- esm5/secondary/index.js ---
-
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-export * from './secondarymodule';
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQVFBLGNBQWMsbUJBQW1CLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vc2Vjb25kYXJ5bW9kdWxlJztcbiJdfQ==
-
---- esm5/secondary/secondary_public_index.js ---
-
-/**
- * Generated bundle index. Do not edit.
- */
-export * from './index';
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5X3B1YmxpY19pbmRleC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL3NlY29uZGFyeS9zZWNvbmRhcnlfcHVibGljX2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYyxTQUFTLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuIl19
-
---- esm5/secondary/secondarymodule.js ---
-
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-import { NgModule } from '@angular/core';
-var SecondaryModule = /** @class */ (function () {
-    function SecondaryModule() {
-    }
-    SecondaryModule.decorators = [
-        { type: NgModule, args: [{},] }
-    ];
-    /** @nocollapse */
-    SecondaryModule.ctorParameters = function () { return []; };
+let SecondaryModule = /** @class */ (() => {
+    let SecondaryModule = class SecondaryModule {
+    };
+    SecondaryModule = __decorate([
+        NgModule({})
+    ], SecondaryModule);
     return SecondaryModule;
-}());
+})();
 export { SecondaryModule };
-export var a = 1;
+export const a = 1;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7O0FBRUgsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQztBQUd2QztJQUFBLElBQWEsZUFBZSxHQUE1QixNQUFhLGVBQWU7S0FDM0IsQ0FBQTtJQURZLGVBQWU7UUFEM0IsUUFBUSxDQUFDLEVBQUUsQ0FBQztPQUNBLGVBQWUsQ0FDM0I7SUFBRCxzQkFBQztLQUFBO1NBRFksZUFBZTtBQUc1QixNQUFNLENBQUMsTUFBTSxDQUFDLEdBQUcsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge05nTW9kdWxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQE5nTW9kdWxlKHt9KVxuZXhwb3J0IGNsYXNzIFNlY29uZGFyeU1vZHVsZSB7XG59XG5cbmV4cG9ydCBjb25zdCBhID0gMTtcbiJdfQ==
 
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBRXRDLFFBQVEsU0FBQyxFQUFFOzs7OzBCQVZaOztTQVdhLGVBQWU7QUFHNUIsTUFBTSxDQUFDLElBQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=
-
---- example_public_index.d.ts ---
+--- example.d.ts ---
 
 /**
- * Generated bundle index. Do not edit.
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
  */
-export * from './index';
 
 
---- example_public_index.metadata.json ---
 
-{"__symbolic":"module","version":4,"metadata":{"MyModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":11,"character":1},"arguments":[{}]}],"members":{}}},"origins":{"MyModule":"./mymodule"},"importAs":"example"}
+export declare class MyModule {
+}
+
+export { }
+
+
+--- example.metadata.json ---
+
+{"__symbolic":"module","version":4,"metadata":{"MyModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":11,"character":1},"arguments":[{}]}],"members":{}}},"origins":{"MyModule":"./example"},"importAs":"example"}
 
 --- extra-styles.css ---
 
@@ -474,14 +1692,17 @@ export * from './index';
 }
 
 
---- fesm2015/secondary.js ---
-
-import { NgModule } from '@angular/core';
+--- fesm2015/a11y.js ---
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
  */
+
+import { __decorate } from 'tslib';
+import { NgModule } from '@angular/core';
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -489,20 +1710,111 @@ import { NgModule } from '@angular/core';
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-class SecondaryModule {
-}
-SecondaryModule.decorators = [
-    { type: NgModule, args: [{},] }
-];
-/** @nocollapse */
-SecondaryModule.ctorParameters = () => [];
+let A11yModule = /** @class */ (() => {
+    let A11yModule = class A11yModule {
+    };
+    A11yModule = __decorate([
+        NgModule({})
+    ], A11yModule);
+    return A11yModule;
+})();
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+export { A11yModule };
+//# sourceMappingURL=a11y.js.map
+
+
+--- fesm2015/imports.js ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+import { __decorate, __metadata } from 'tslib';
+import { ɵɵdefineInjectable, Injectable, ɵɵinject } from '@angular/core';
+
+let MySecondService = /** @class */ (() => {
+    let MySecondService = class MySecondService {
+    };
+    MySecondService.ɵprov = ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+    MySecondService = __decorate([
+        Injectable({ providedIn: 'root' })
+    ], MySecondService);
+    return MySecondService;
+})();
+
+let MyService = /** @class */ (() => {
+    let MyService = class MyService {
+        constructor(secondService) {
+            this.secondService = secondService;
+        }
+    };
+    MyService.ɵprov = ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
+    MyService = __decorate([
+        Injectable({ providedIn: 'root' }),
+        __metadata("design:paramtypes", [MySecondService])
+    ], MyService);
+    return MyService;
+})();
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+export { MyService, MySecondService as ɵangular_packages_bazel_test_ng_package_example_imports_imports_a };
+//# sourceMappingURL=imports.js.map
+
+
+--- fesm2015/secondary.js ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+import { __decorate } from 'tslib';
+import { NgModule } from '@angular/core';
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+let SecondaryModule = /** @class */ (() => {
+    let SecondaryModule = class SecondaryModule {
+    };
+    SecondaryModule = __decorate([
+        NgModule({})
+    ], SecondaryModule);
+    return SecondaryModule;
+})();
 const a = 1;
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
@@ -517,60 +1829,16 @@ const a = 1;
 export { SecondaryModule, a };
 //# sourceMappingURL=secondary.js.map
 
-
---- fesm2015/secondary.js.map ---
-
-{"version":3,"file":"secondary.js","sources":["../../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.es6/packages/bazel/test/ng_package/example/secondary/secondary_public_index.js"],"sourcesContent":["/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nexport class SecondaryModule {\n}\nSecondaryModule.decorators = [\n    { type: NgModule, args: [{},] }\n];\n/** @nocollapse */\nSecondaryModule.ctorParameters = () => [];\nfunction SecondaryModule_tsickle_Closure_declarations() {\n    /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */\n    SecondaryModule.decorators;\n    /**\n     * @nocollapse\n     * @type {function(): !Array<(null|{type: ?, decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>)})>}\n     */\n    SecondaryModule.ctorParameters;\n}\nexport const /** @type {?} */ a = 1;\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLE9BQU8sRUFBQyxRQUFRLEVBQUMsTUFBTSxlQUFlLENBQUM7QUFHdkMsTUFBTTs7O1lBREwsUUFBUSxTQUFDLEVBQUU7Ozs7Ozs7Ozs7Ozs7QUFJWixNQUFNLENBQUMsdUJBQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=","/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport { SecondaryModule, a } from './secondarymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7QUFRQSxtQ0FBYyxtQkFBbUIsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9zZWNvbmRhcnltb2R1bGUnO1xuIl19","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5X3B1YmxpY19pbmRleC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL3NlY29uZGFyeS9zZWNvbmRhcnlfcHVibGljX2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYyxTQUFTLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuIl19"],"names":[],"mappings":";;AAAA;;;;;;;;;;;AAWA,AACO,MAAM,eAAe,CAAC;CAC5B;AACD,eAAe,CAAC,UAAU,GAAG;IACzB,EAAE,IAAI,EAAE,QAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;CAClC,CAAC;;AAEF,eAAe,CAAC,cAAc,GAAG,MAAM,EAAE,CAAC;AAC1C,AASO,MAAuB,CAAC,GAAG,CAAC;;AC5BnC;;;;;;;;;;GAUG;;ACVH;;GAEG;;;;"}
 
 --- fesm2015/waffels.js ---
 
-import { NgModule } from '@angular/core';
-
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-class MyModule {
-}
-MyModule.decorators = [
-    { type: NgModule, args: [{},] }
-];
-/** @nocollapse */
-MyModule.ctorParameters = () => [];
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
  */
 
-/**
- * Generated bundle index. Do not edit.
- */
-
-export { MyModule };
-//# sourceMappingURL=waffels.js.map
-
-
---- fesm2015/waffels.js.map ---
-
-{"version":3,"file":"waffels.js","sources":["../../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.es6/packages/bazel/test/ng_package/example/example_public_index.js"],"sourcesContent":["/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nexport class MyModule {\n}\nMyModule.decorators = [\n    { type: NgModule, args: [{},] }\n];\n/** @nocollapse */\nMyModule.ctorParameters = () => [];\nfunction MyModule_tsickle_Closure_declarations() {\n    /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */\n    MyModule.decorators;\n    /**\n     * @nocollapse\n     * @type {function(): !Array<(null|{type: ?, decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>)})>}\n     */\n    MyModule.ctorParameters;\n}\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLE9BQU8sRUFBQyxRQUFRLEVBQUMsTUFBTSxlQUFlLENBQUM7QUFJdkMsTUFBTTs7O1lBREwsUUFBUSxTQUFDLEVBQUUiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==","/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport { MyModule } from './mymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLHlCQUFjLFlBQVksQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9teW1vZHVsZSc7Il19","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZV9wdWJsaWNfaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9leGFtcGxlX3B1YmxpY19pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ=="],"names":[],"mappings":";;AAAA;;;;;;;;;;;AAWA,AACO,MAAM,QAAQ,CAAC;CACrB;AACD,QAAQ,CAAC,UAAU,GAAG;IAClB,EAAE,IAAI,EAAE,QAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;CAClC,CAAC;;AAEF,QAAQ,CAAC,cAAc,GAAG,MAAM,EAAE,CAAC;;AClBnC;;;;;;;;;;GAUG;;ACVH;;GAEG;;;;"}
-
---- fesm5/secondary.js ---
-
+import { __decorate } from 'tslib';
 import { NgModule } from '@angular/core';
 
 /**
@@ -580,59 +1848,14 @@ import { NgModule } from '@angular/core';
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-var SecondaryModule = /** @class */ (function () {
-    function SecondaryModule() {
-    }
-    SecondaryModule.decorators = [
-        { type: NgModule, args: [{},] }
-    ];
-    /** @nocollapse */
-    SecondaryModule.ctorParameters = function () { return []; };
-    return SecondaryModule;
-}());
-var a = 1;
-
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-
-/**
- * Generated bundle index. Do not edit.
- */
-
-export { SecondaryModule, a };
-//# sourceMappingURL=secondary.js.map
-
-
---- fesm5/secondary.js.map ---
-
-{"version":3,"file":"secondary.js","sources":["../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.esm5/packages/bazel/test/ng_package/example/secondary/secondary_public_index.js"],"sourcesContent":["/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nvar SecondaryModule = /** @class */ (function () {\n    function SecondaryModule() {\n    }\n    SecondaryModule.decorators = [\n        { type: NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    SecondaryModule.ctorParameters = function () { return []; };\n    return SecondaryModule;\n}());\nexport { SecondaryModule };\nexport var a = 1;\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBRXRDLFFBQVEsU0FBQyxFQUFFOzs7OzBCQVZaOztTQVdhLGVBQWU7QUFHNUIsTUFBTSxDQUFDLElBQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=","/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport * from './secondarymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQVFBLGNBQWMsbUJBQW1CLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vc2Vjb25kYXJ5bW9kdWxlJztcbiJdfQ==","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5X3B1YmxpY19pbmRleC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL3NlY29uZGFyeS9zZWNvbmRhcnlfcHVibGljX2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYyxTQUFTLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuIl19"],"names":[],"mappings":";;AAAA;;;;;;;AAOA,AACA,IAAI,eAAe,kBAAkB,YAAY;IAC7C,SAAS,eAAe,GAAG;KAC1B;IACD,eAAe,CAAC,UAAU,GAAG;QACzB,EAAE,IAAI,EAAE,QAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;KAClC,CAAC;;IAEF,eAAe,CAAC,cAAc,GAAG,YAAY,EAAE,OAAO,EAAE,CAAC,EAAE,CAAC;IAC5D,OAAO,eAAe,CAAC;CAC1B,EAAE,CAAC,CAAC;AACL,AACO,IAAI,CAAC,GAAG,CAAC;;ACnBhB;;;;;;GAMG;;ACNH;;GAEG;;;;"}
-
---- fesm5/waffels.js ---
-
-import { NgModule } from '@angular/core';
-
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-var MyModule = /** @class */ (function () {
-    function MyModule() {
-    }
-    MyModule.decorators = [
-        { type: NgModule, args: [{},] }
-    ];
-    /** @nocollapse */
-    MyModule.ctorParameters = function () { return []; };
+let MyModule = /** @class */ (() => {
+    let MyModule = class MyModule {
+    };
+    MyModule = __decorate([
+        NgModule({})
+    ], MyModule);
     return MyModule;
-}());
+})();
 
 /**
  * @license
@@ -650,96 +1873,124 @@ export { MyModule };
 //# sourceMappingURL=waffels.js.map
 
 
---- fesm5/waffels.js.map ---
-
-{"version":3,"file":"waffels.js","sources":["../../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.esm5/packages/bazel/test/ng_package/example/example_public_index.js"],"sourcesContent":["/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nvar MyModule = /** @class */ (function () {\n    function MyModule() {\n    }\n    MyModule.decorators = [\n        { type: NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    MyModule.ctorParameters = function () { return []; };\n    return MyModule;\n}());\nexport { MyModule };\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBR3RDLFFBQVEsU0FBQyxFQUFFOzs7O21CQVhaOztTQVlhLFFBQVEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==","/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport * from './mymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsY0FBYyxZQUFZLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vbXltb2R1bGUnOyJdfQ==","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZV9wdWJsaWNfaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9leGFtcGxlX3B1YmxpY19pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ=="],"names":[],"mappings":";;AAAA;;;;;;;AAOA,AACA,IAAI,QAAQ,kBAAkB,YAAY;IACtC,SAAS,QAAQ,GAAG;KACnB;IACD,QAAQ,CAAC,UAAU,GAAG;QAClB,EAAE,IAAI,EAAE,QAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;KAClC,CAAC;;IAEF,QAAQ,CAAC,cAAc,GAAG,YAAY,EAAE,OAAO,EAAE,CAAC,EAAE,CAAC;IACrD,OAAO,QAAQ,CAAC;CACnB,EAAE,CAAC;;ACjBJ;;;;;;GAMG;;ACNH;;GAEG;;;;"}
-
---- index.d.ts ---
+--- imports/imports.d.ts ---
 
 /**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
  */
-export * from './mymodule';
 
 
---- mymodule.d.ts ---
-
-export declare class MyModule {
+export declare class MyService {
+    secondService: ɵangular_packages_bazel_test_ng_package_example_imports_imports_a;
+    constructor(secondService: ɵangular_packages_bazel_test_ng_package_example_imports_imports_a);
 }
 
+
+export declare class ɵangular_packages_bazel_test_ng_package_example_imports_imports_a {
+}
+
+export { }
+
+
+--- imports/imports.metadata.json ---
+
+{"__symbolic":"module","version":4,"metadata":{"MyService":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"Injectable","line":11,"character":1},"arguments":[{"providedIn":"root"}]}],"members":{"__ctor__":[{"__symbolic":"constructor","parameters":[{"__symbolic":"reference","name":"ɵangular_packages_bazel_test_ng_package_example_imports_imports_a"}]}]},"statics":{"ɵprov":{}}},"ɵangular_packages_bazel_test_ng_package_example_imports_imports_a":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"Injectable","line":10,"character":1},"arguments":[{"providedIn":"root"}]}],"members":{},"statics":{"ɵprov":{}}}},"origins":{"MyService":"./imports","ɵangular_packages_bazel_test_ng_package_example_imports_imports_a":"./imports"},"importAs":"example/imports"}
+
+--- imports/package.json ---
+
+{
+  "name": "example/imports",
+  "main": "../bundles/example-imports.umd.js",
+  "fesm2015": "../fesm2015/imports.js",
+  "esm2015": "../esm2015/imports/imports.js",
+  "typings": "./imports.d.ts",
+  "module": "../fesm2015/imports.js",
+  "es2015": "../fesm2015/imports.js"
+}
+
+--- imports.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+export * from './imports/imports';
+
+
+--- imports.metadata.json ---
+
+{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./imports/imports"}],"flatModuleIndexRedirect":true,"importAs":"example/imports"}
+
+
+--- logo.png ---
+
+9db278d630f5fabd8e7ba16c2e329a3a
 
 --- package.json ---
 
 {
   "name": "example",
+  "version": "0.0.0",
   "main": "./bundles/example.umd.js",
-  "fesm5": "./fesm5/example.js",
   "fesm2015": "./fesm2015/example.js",
-  "esm5": "./esm5/example_public_index.js",
-  "esm2015": "./esm2015/example_public_index.js",
-  "typings": "./example_public_index.d.ts",
-  "module": "./fesm5/example.js",
+  "esm2015": "./esm2015/example.js",
+  "typings": "./example.d.ts",
+  "module": "./fesm2015/example.js",
   "es2015": "./fesm2015/example.js"
 }
-
---- secondary/index.d.ts ---
-
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-export * from './secondarymodule';
-
 
 --- secondary/package.json ---
 
 {
   "name": "example/secondary",
   "main": "../bundles/example-secondary.umd.js",
-  "fesm5": "../fesm5/secondary.js",
   "fesm2015": "../fesm2015/secondary.js",
-  "esm5": "../esm5/secondary/secondary_public_index.js",
-  "esm2015": "../esm2015/secondary/secondary_public_index.js",
-  "typings": "./secondary_public_index.d.ts",
-  "module": "../fesm5/secondary.js",
+  "esm2015": "../esm2015/secondary/secondary.js",
+  "typings": "./secondary.d.ts",
+  "module": "../fesm2015/secondary.js",
   "es2015": "../fesm2015/secondary.js"
 }
 
---- secondary/secondary_public_index.d.ts ---
+--- secondary/secondary.d.ts ---
 
 /**
- * Generated bundle index. Do not edit.
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
  */
-export * from './index';
 
 
---- secondary/secondary_public_index.metadata.json ---
-
-{"__symbolic":"module","version":4,"metadata":{"SecondaryModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":10,"character":1},"arguments":[{}]}],"members":{}},"a":1},"origins":{"SecondaryModule":"./secondarymodule","a":"./secondarymodule"},"importAs":"example/secondary"}
-
---- secondary/secondarymodule.d.ts ---
-
-export declare class SecondaryModule {
-}
 export declare const a = 1;
 
 
+export declare class SecondaryModule {
+}
+
+export { }
+
+
+--- secondary/secondary.metadata.json ---
+
+{"__symbolic":"module","version":4,"metadata":{"SecondaryModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":10,"character":1},"arguments":[{}]}],"members":{}},"a":1},"origins":{"SecondaryModule":"./secondary","a":"./secondary"},"importAs":"example/secondary"}
+
 --- secondary.d.ts ---
 
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
 
-  export * from './secondary/secondary_public_index';
-  
+export * from './secondary/secondary';
+
 
 --- secondary.metadata.json ---
 
-{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./secondary/secondary_public_index"}],"flatModuleIndexRedirect":true}
+{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./secondary/secondary"}],"flatModuleIndexRedirect":true,"importAs":"example/secondary"}
 
 
 --- some-file.txt ---

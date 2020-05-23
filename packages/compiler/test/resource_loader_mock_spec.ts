@@ -13,10 +13,12 @@ import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@ang
   describe('MockResourceLoader', () => {
     let resourceLoader: MockResourceLoader;
 
-    beforeEach(() => { resourceLoader = new MockResourceLoader(); });
+    beforeEach(() => {
+      resourceLoader = new MockResourceLoader();
+    });
 
     function expectResponse(
-        request: Promise<string>, url: string, response: string, done: () => void = null !) {
+        request: Promise<string>, url: string, response: string, done: () => void = null!) {
       function onResponse(text: string): string {
         if (response === null) {
           throw `Unexpected response ${url} -> ${text}`;
@@ -52,7 +54,7 @@ import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@ang
     it('should return an error from the definitions',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const url = '/foo';
-         const response: string = null !;
+         const response: string = null!;
          resourceLoader.when(url, response);
          expectResponse(resourceLoader.get(url), url, response, () => async.done());
          resourceLoader.flush();
@@ -70,7 +72,7 @@ import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@ang
     it('should return an error from the expectations',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const url = '/foo';
-         const response: string = null !;
+         const response: string = null!;
          resourceLoader.expect(url, response);
          expectResponse(resourceLoader.get(url), url, response, () => async.done());
          resourceLoader.flush();
@@ -82,7 +84,9 @@ import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@ang
       resourceLoader.expect(url, response);
       resourceLoader.get(url);
       resourceLoader.get(url);
-      expect(() => { resourceLoader.flush(); }).toThrowError('Unexpected request /foo');
+      expect(() => {
+        resourceLoader.flush();
+      }).toThrowError('Unexpected request /foo');
     });
 
     it('should return expectations before definitions',
@@ -97,18 +101,24 @@ import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@ang
 
     it('should throw when there is no definitions or expectations', () => {
       resourceLoader.get('/foo');
-      expect(() => { resourceLoader.flush(); }).toThrowError('Unexpected request /foo');
+      expect(() => {
+        resourceLoader.flush();
+      }).toThrowError('Unexpected request /foo');
     });
 
     it('should throw when flush is called without any pending requests', () => {
-      expect(() => { resourceLoader.flush(); }).toThrowError('No pending requests to flush');
+      expect(() => {
+        resourceLoader.flush();
+      }).toThrowError('No pending requests to flush');
     });
 
     it('should throw on unsatisfied expectations', () => {
       resourceLoader.expect('/foo', 'bar');
       resourceLoader.when('/bar', 'foo');
       resourceLoader.get('/bar');
-      expect(() => { resourceLoader.flush(); }).toThrowError('Unsatisfied requests: /foo');
+      expect(() => {
+        resourceLoader.flush();
+      }).toThrowError('Unsatisfied requests: /foo');
     });
   });
 }

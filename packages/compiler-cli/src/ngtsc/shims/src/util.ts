@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as path from 'path';
-import * as ts from 'typescript';
+import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
 
-const TS_FILE = /\.tsx?$/;
-const D_TS_FILE = /\.d\.ts$/;
+const TS_EXTENSIONS = /\.tsx?$/i;
 
-export function isNonDeclarationTsFile(file: string): boolean {
-  return TS_FILE.exec(file) !== null && D_TS_FILE.exec(file) === null;
+/**
+ * Replace the .ts or .tsx extension of a file with the shim filename suffix.
+ */
+export function makeShimFileName(fileName: AbsoluteFsPath, suffix: string): AbsoluteFsPath {
+  return absoluteFrom(fileName.replace(TS_EXTENSIONS, suffix));
 }
 
 export function generatedModuleName(

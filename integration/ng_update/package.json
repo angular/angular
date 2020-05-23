@@ -13,7 +13,6 @@
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/forms": "file:../../dist/packages-dist/forms",
-    "@angular/http": "file:../../dist/packages-dist/http",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
@@ -25,6 +24,6 @@
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../node_modules/zone.js"
+    "zone.js": "file:../../dist/zone.js-dist/zone.js"
   }
 }

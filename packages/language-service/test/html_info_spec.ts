@@ -28,11 +28,10 @@ describe('html_info', () => {
     const elements = SchemaInformation.instance.allKnownElements();
     for (const element of elements) {
       for (const prop of SchemaInformation.instance.propertiesOf(element)) {
-        expect(domRegistry.hasProperty(element, prop, []));
+        expect(domRegistry.hasProperty(element, prop, [])).toBeTrue();
       }
     }
   });
-
 });
 
 function uniqueElements<T>(a: T[], b: T[]): T[] {

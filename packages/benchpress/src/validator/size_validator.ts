@@ -22,9 +22,13 @@ export class SizeValidator extends Validator {
     {provide: SizeValidator.SAMPLE_SIZE, useValue: 10}
   ];
 
-  constructor(@Inject(SizeValidator.SAMPLE_SIZE) private _sampleSize: number) { super(); }
+  constructor(@Inject(SizeValidator.SAMPLE_SIZE) private _sampleSize: number) {
+    super();
+  }
 
-  describe(): {[key: string]: any} { return {'sampleSize': this._sampleSize}; }
+  describe(): {[key: string]: any} {
+    return {'sampleSize': this._sampleSize};
+  }
 
   validate(completeSample: MeasureValues[]): MeasureValues[]|null {
     if (completeSample.length >= this._sampleSize) {

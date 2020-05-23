@@ -1,0 +1,1 @@
+Provides infrastructure for testing Angular core functionality.

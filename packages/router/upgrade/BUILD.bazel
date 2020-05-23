@@ -1,8 +1,8 @@
+load("//tools:defaults.bzl", "ng_module")
+
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
-
-load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
     name = "upgrade",
@@ -12,7 +12,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/router/upgrade",
     deps = [
         "//packages/common",
         "//packages/core",

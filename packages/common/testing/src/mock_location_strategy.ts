@@ -25,14 +25,19 @@ export class MockLocationStrategy extends LocationStrategy {
   urlChanges: string[] = [];
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();
-  constructor() { super(); }
+  private stateChanges: any[] = [];
+  constructor() {
+    super();
+  }
 
   simulatePopState(url: string): void {
     this.internalPath = url;
     this._subject.emit(new _MockPopStateEvent(this.path()));
   }
 
-  path(includeHash: boolean = false): string { return this.internalPath; }
+  path(includeHash: boolean = false): string {
+    return this.internalPath;
+  }
 
   prepareExternalUrl(internal: string): string {
     if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
@@ -42,6 +47,9 @@ export class MockLocationStrategy extends LocationStrategy {
   }
 
   pushState(ctx: any, title: string, path: string, query: string): void {
+    // Add state change to changes array
+    this.stateChanges.push(ctx);
+
     this.internalTitle = title;
 
     const url = path + (query.length > 0 ? ('?' + query) : '');
@@ -52,6 +60,9 @@ export class MockLocationStrategy extends LocationStrategy {
   }
 
   replaceState(ctx: any, title: string, path: string, query: string): void {
+    // Reset the last index of stateChanges to the ctx (state) object
+    this.stateChanges[(this.stateChanges.length || 1) - 1] = ctx;
+
     this.internalTitle = title;
 
     const url = path + (query.length > 0 ? ('?' + query) : '');
@@ -61,19 +72,30 @@ export class MockLocationStrategy extends LocationStrategy {
     this.urlChanges.push('replace: ' + externalUrl);
   }
 
-  onPopState(fn: (value: any) => void): void { this._subject.subscribe({next: fn}); }
+  onPopState(fn: (value: any) => void): void {
+    this._subject.subscribe({next: fn});
+  }
 
-  getBaseHref(): string { return this.internalBaseHref; }
+  getBaseHref(): string {
+    return this.internalBaseHref;
+  }
 
   back(): void {
     if (this.urlChanges.length > 0) {
       this.urlChanges.pop();
+      this.stateChanges.pop();
       const nextUrl = this.urlChanges.length > 0 ? this.urlChanges[this.urlChanges.length - 1] : '';
       this.simulatePopState(nextUrl);
     }
   }
 
-  forward(): void { throw 'not implemented'; }
+  forward(): void {
+    throw 'not implemented';
+  }
+
+  getState(): unknown {
+    return this.stateChanges[(this.stateChanges.length || 1) - 1];
+  }
 }
 
 class _MockPopStateEvent {

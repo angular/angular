@@ -14,12 +14,16 @@
 
 import {CssSelector} from './selector';
 
-export interface Inject { token: any; }
+export interface Inject {
+  token: any;
+}
 export const createInject = makeMetadataFactory<Inject>('Inject', (token: any) => ({token}));
 export const createInjectionToken = makeMetadataFactory<object>(
-    'InjectionToken', (desc: string) => ({_desc: desc, ngInjectableDef: undefined}));
+    'InjectionToken', (desc: string) => ({_desc: desc, ɵprov: undefined}));
 
-export interface Attribute { attributeName?: string; }
+export interface Attribute {
+  attributeName?: string;
+}
 export const createAttribute =
     makeMetadataFactory<Attribute>('Attribute', (attributeName?: string) => ({attributeName}));
 
@@ -29,6 +33,7 @@ export interface Query {
   read: any;
   isViewQuery: boolean;
   selector: any;
+  static?: boolean;
 }
 
 export const createContentChildren = makeMetadataFactory<Query>(
@@ -36,14 +41,17 @@ export const createContentChildren = makeMetadataFactory<Query>(
     (selector?: any, data: any = {}) =>
         ({selector, first: false, isViewQuery: false, descendants: false, ...data}));
 export const createContentChild = makeMetadataFactory<Query>(
-    'ContentChild', (selector?: any, data: any = {}) =>
-                        ({selector, first: true, isViewQuery: false, descendants: true, ...data}));
+    'ContentChild',
+    (selector?: any, data: any = {}) =>
+        ({selector, first: true, isViewQuery: false, descendants: true, ...data}));
 export const createViewChildren = makeMetadataFactory<Query>(
-    'ViewChildren', (selector?: any, data: any = {}) =>
-                        ({selector, first: false, isViewQuery: true, descendants: true, ...data}));
+    'ViewChildren',
+    (selector?: any, data: any = {}) =>
+        ({selector, first: false, isViewQuery: true, descendants: true, ...data}));
 export const createViewChild = makeMetadataFactory<Query>(
-    'ViewChild', (selector: any, data: any) =>
-                     ({selector, first: true, isViewQuery: true, descendants: true, ...data}));
+    'ViewChild',
+    (selector: any, data: any) =>
+        ({selector, first: true, isViewQuery: true, descendants: true, ...data}));
 
 export interface Directive {
   selector?: string;
@@ -93,15 +101,21 @@ export interface Pipe {
 }
 export const createPipe = makeMetadataFactory<Pipe>('Pipe', (p: Pipe) => ({pure: true, ...p}));
 
-export interface Input { bindingPropertyName?: string; }
+export interface Input {
+  bindingPropertyName?: string;
+}
 export const createInput =
     makeMetadataFactory<Input>('Input', (bindingPropertyName?: string) => ({bindingPropertyName}));
 
-export interface Output { bindingPropertyName?: string; }
+export interface Output {
+  bindingPropertyName?: string;
+}
 export const createOutput = makeMetadataFactory<Output>(
     'Output', (bindingPropertyName?: string) => ({bindingPropertyName}));
 
-export interface HostBinding { hostPropertyName?: string; }
+export interface HostBinding {
+  hostPropertyName?: string;
+}
 export const createHostBinding = makeMetadataFactory<HostBinding>(
     'HostBinding', (hostPropertyName?: string) => ({hostPropertyName}));
 
@@ -139,7 +153,9 @@ export interface Injectable {
 }
 export const createInjectable =
     makeMetadataFactory('Injectable', (injectable: Injectable = {}) => injectable);
-export interface SchemaMetadata { name: string; }
+export interface SchemaMetadata {
+  name: string;
+}
 
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
   name: 'custom-elements'
@@ -154,7 +170,9 @@ export const createSelf = makeMetadataFactory('Self');
 export const createSkipSelf = makeMetadataFactory('SkipSelf');
 export const createHost = makeMetadataFactory('Host');
 
-export interface Type extends Function { new (...args: any[]): any; }
+export interface Type extends Function {
+  new(...args: any[]): any;
+}
 export const Type = Function;
 
 export enum SecurityContext {
@@ -239,7 +257,10 @@ export const enum InjectFlags {
   Optional = 1 << 3,
 }
 
-export const enum ArgumentType {Inline = 0, Dynamic = 1}
+export const enum ArgumentType {
+  Inline = 0,
+  Dynamic = 1
+}
 
 export const enum BindingFlags {
   TypeElementAttribute = 1 << 0,
@@ -254,7 +275,10 @@ export const enum BindingFlags {
   Types = TypeElementAttribute | TypeElementClass | TypeElementStyle | TypeProperty
 }
 
-export const enum QueryBindingType {First = 0, All = 1}
+export const enum QueryBindingType {
+  First = 0,
+  All = 1
+}
 
 export const enum QueryValueType {
   ElementRef = 0,
@@ -282,16 +306,20 @@ export interface MetadataFactory<T> {
 }
 
 function makeMetadataFactory<T>(name: string, props?: (...args: any[]) => T): MetadataFactory<T> {
-  const factory: any = (...args: any[]) => {
+  // This must be declared as a function, not a fat arrow, so that ES2015 devmode produces code
+  // that works with the static_reflector.ts in the ViewEngine compiler.
+  // In particular, `_registerDecoratorOrConstructor` assumes that the value returned here can be
+  // new'ed.
+  function factory(...args: any[]) {
     const values = props ? props(...args) : {};
     return {
       ngMetadataName: name,
       ...values,
     };
-  };
-  factory.isTypeOf = (obj: any) => obj && obj.ngMetadataName === name;
-  factory.ngMetadataName = name;
-  return factory;
+  }
+  (factory as any).isTypeOf = (obj: any) => obj && obj.ngMetadataName === name;
+  (factory as any).ngMetadataName = name;
+  return factory as any;
 }
 
 export interface Route {
@@ -319,7 +347,7 @@ export const enum SelectorFlags {
 
 // These are a copy the CSS types from core/src/render3/interfaces/projection.ts
 // They are duplicated here as they cannot be directly referenced from core.
-export type R3CssSelector = (string | SelectorFlags)[];
+export type R3CssSelector = (string|SelectorFlags)[];
 export type R3CssSelectorList = R3CssSelector[];
 
 function parserSelectorToSimpleSelector(selector: CssSelector): R3CssSelector {
@@ -358,7 +386,7 @@ function parserSelectorToR3Selector(selector: CssSelector): R3CssSelector {
   return positive.concat(...negative);
 }
 
-export function parseSelectorToR3Selector(selector: string | null): R3CssSelectorList {
+export function parseSelectorToR3Selector(selector: string|null): R3CssSelectorList {
   return selector ? CssSelector.parse(selector).map(parserSelectorToR3Selector) : [];
 }
 
@@ -430,10 +458,77 @@ export const enum AttributeMarker {
   Styles = 2,
 
   /**
-   * This marker indicates that the following attribute names were extracted from bindings (ex.:
-   * [foo]="exp") and / or event handlers (ex. (bar)="doSth()").
-   * Taking the above bindings and outputs as an example an attributes array could look as follows:
-   * ['class', 'fade in', AttributeMarker.SelectOnly, 'foo', 'bar']
+   * Signals that the following attribute names were extracted from input or output bindings.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div moo="car" [foo]="exp" (bar)="doSth()">
+   * ```
+   *
+   * the generated code is:
+   *
+   * ```
+   * var _c1 = ['moo', 'car', AttributeMarker.Bindings, 'foo', 'bar'];
+   * ```
    */
-  SelectOnly = 3,
+  Bindings = 3,
+
+  /**
+   * Signals that the following attribute names were hoisted from an inline-template declaration.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div *ngFor="let value of values; trackBy:trackBy" dirA [dirB]="value">
+   * ```
+   *
+   * the generated code for the `template()` instruction would include:
+   *
+   * ```
+   * ['dirA', '', AttributeMarker.Bindings, 'dirB', AttributeMarker.Template, 'ngFor', 'ngForOf',
+   * 'ngForTrackBy', 'let-value']
+   * ```
+   *
+   * while the generated code for the `element()` instruction inside the template function would
+   * include:
+   *
+   * ```
+   * ['dirA', '', AttributeMarker.Bindings, 'dirB']
+   * ```
+   */
+  Template = 4,
+
+  /**
+   * Signals that the following attribute is `ngProjectAs` and its value is a parsed `CssSelector`.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <h1 attr="value" ngProjectAs="[title]">
+   * ```
+   *
+   * the generated code for the `element()` instruction would include:
+   *
+   * ```
+   * ['attr', 'value', AttributeMarker.ProjectAs, ['', 'title', '']]
+   * ```
+   */
+  ProjectAs = 5,
+
+  /**
+   * Signals that the following attribute will be translated by runtime i18n
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div moo="car" foo="value" i18n-foo [bar]="binding" i18n-bar>
+   * ```
+   *
+   * the generated code is:
+   *
+   * ```
+   * var _c1 = ['moo', 'car', AttributeMarker.I18n, 'foo', 'bar'];
+   */
+  I18n = 6,
 }

@@ -41,13 +41,13 @@ describe('NavigationService', () => {
       navService.navigationViews.subscribe(views => viewsEvents.push(views));
 
       expect(viewsEvents).toEqual([]);
-      httpMock.expectOne({}).flush({ TopBar: [ { url: 'a' }] });
-      expect(viewsEvents).toEqual([{ TopBar: [ { url: 'a' }] }]);
+      httpMock.expectOne({}).flush({ TopBar: [ { title: '', url: 'a' }] });
+      expect(viewsEvents).toEqual([{ TopBar: [ { title: '', url: 'a' }] }]);
     });
 
     it('navigationViews observable should complete', () => {
       let completed = false;
-      navService.navigationViews.subscribe(undefined, undefined, () => completed = true);
+      navService.navigationViews.subscribe({complete: () => completed = true});
 
       httpMock.expectOne({method: 'get', url: navigationPath}).flush({});
       expect(completed).toBe(true, 'observable completed');
@@ -82,7 +82,7 @@ describe('NavigationService', () => {
       { title: 'a', tooltip: 'a tip' },
       { title: 'b' },
       { title: 'c!'},
-      { url: 'foo' }
+      { title: '', url: 'foo' }
     ];
 
     beforeEach(() => {

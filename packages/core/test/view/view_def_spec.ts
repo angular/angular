@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NodeFlags, QueryValueType, ViewDefinition, ViewFlags, anchorDef, directiveDef, elementDef, textDef, viewDef} from '@angular/core/src/view/index';
+import {anchorDef, directiveDef, elementDef, NodeFlags, QueryValueType, textDef, viewDef, ViewDefinition, ViewFlags} from '@angular/core/src/view/index';
 import {filterQueryId} from '@angular/core/src/view/util';
 
 {
   describe('viewDef', () => {
-
     describe('parent', () => {
-      function parents(viewDef: ViewDefinition): (number | null)[] {
+      function parents(viewDef: ViewDefinition): (number|null)[] {
         return viewDef.nodes.map(node => node.parent ? node.parent.nodeIndex : null);
       }
 
@@ -54,7 +53,6 @@ import {filterQueryId} from '@angular/core/src/view/util';
     });
 
     describe('childFlags', () => {
-
       function childFlags(viewDef: ViewDefinition): number[] {
         return viewDef.nodes.map(node => node.childFlags);
       }
@@ -122,7 +120,7 @@ import {filterQueryId} from '@angular/core/src/view/util';
         const vd = viewDef(ViewFlags.None, [
           elementDef(0, NodeFlags.None, null, null, 2, 'span'),
           elementDef(1, NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(2, NodeFlags.AfterContentChecked, null !, 0, AService, []),
+          directiveDef(2, NodeFlags.AfterContentChecked, null!, 0, AService, []),
           elementDef(3, NodeFlags.None, null, null, 2, 'span'),
           directiveDef(4, NodeFlags.AfterContentInit, null, 0, AService, []),
           directiveDef(5, NodeFlags.AfterViewInit, null, 0, AService, []),

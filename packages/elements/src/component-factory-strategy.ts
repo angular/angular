@@ -7,7 +7,7 @@
  */
 
 import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
-import {Observable, merge} from 'rxjs';
+import {merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from './element-strategy';
@@ -26,7 +26,7 @@ const DESTROY_DELAY = 10;
 export class ComponentNgElementStrategyFactory implements NgElementStrategyFactory {
   componentFactory: ComponentFactory<any>;
 
-  constructor(private component: Type<any>, private injector: Injector) {
+  constructor(component: Type<any>, injector: Injector) {
     this.componentFactory =
         injector.get(ComponentFactoryResolver).resolveComponentFactory(component);
   }
@@ -45,11 +45,11 @@ export class ComponentNgElementStrategyFactory implements NgElementStrategyFacto
 export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Merged stream of the component's output events. */
   // TODO(issue/24571): remove '!'.
-  events !: Observable<NgElementStrategyEvent>;
+  events!: Observable<NgElementStrategyEvent>;
 
   /** Reference to the component that was created on connect. */
   // TODO(issue/24571): remove '!'.
-  private componentRef !: ComponentRef<any>| null;
+  private componentRef!: ComponentRef<any>|null;
 
   /** Changes that have been made to the component ref since the last time onChanges was called. */
   private inputChanges: SimpleChanges|null = null;
@@ -66,8 +66,11 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Initial input values that were set before the component was created. */
   private readonly initialInputValues = new Map<string, any>();
 
-  /** Set of inputs that were not initially set when the component was created. */
-  private readonly uninitializedInputs = new Set<string>();
+  /**
+   * Set of component inputs that have not yet changed, i.e. for which `ngOnChanges()` has not
+   * fired. (This is used to determine the value of `fistChange` in `SimpleChange` instances.)
+   */
+  private readonly unchangedInputs = new Set<string>();
 
   constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {}
 
@@ -102,7 +105,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     // moved elsewhere in the DOM
     this.scheduledDestroyFn = scheduler.schedule(() => {
       if (this.componentRef) {
-        this.componentRef !.destroy();
+        this.componentRef!.destroy();
         this.componentRef = null;
       }
     }, DESTROY_DELAY);
@@ -125,12 +128,16 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    * cached and set when the component is created.
    */
   setInputValue(property: string, value: any): void {
-    if (strictEquals(value, this.getInputValue(property))) {
+    if (!this.componentRef) {
+      this.initialInputValues.set(property, value);
       return;
     }
 
-    if (!this.componentRef) {
-      this.initialInputValues.set(property, value);
+    // Ignore the value if it is strictly equal to the current value, except if it is `undefined`
+    // and this is the first change to the value (because an explicit `undefined` _is_ strictly
+    // equal to not having a value set at all, but we still need to record this as a change).
+    if (strictEquals(value, this.getInputValue(property)) &&
+        !((value === undefined) && this.unchangedInputs.has(property))) {
       return;
     }
 
@@ -164,13 +171,16 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Set any stored initial inputs on the component's properties. */
   protected initializeInputs(): void {
     this.componentFactory.inputs.forEach(({propName}) => {
-      const initialValue = this.initialInputValues.get(propName);
-      if (initialValue) {
-        this.setInputValue(propName, initialValue);
-      } else {
-        // Keep track of inputs that were not initialized in case we need to know this for
-        // calling ngOnChanges with SimpleChanges
-        this.uninitializedInputs.add(propName);
+      if (this.implementsOnChanges) {
+        // If the component implements `ngOnChanges()`, keep track of which inputs have never
+        // changed so far.
+        this.unchangedInputs.add(propName);
+      }
+
+      if (this.initialInputValues.has(propName)) {
+        // Call `setInputValue()` now that the component has been instantiated to update its
+        // properties and fire `ngOnChanges()`.
+        this.setInputValue(propName, this.initialInputValues.get(propName));
       }
     });
 
@@ -180,7 +190,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Sets up listeners for the component's outputs so that the events stream emits the events. */
   protected initializeOutputs(): void {
     const eventEmitters = this.componentFactory.outputs.map(({propName, templateName}) => {
-      const emitter = (this.componentRef !.instance as any)[propName] as EventEmitter<any>;
+      const emitter = (this.componentRef!.instance as any)[propName] as EventEmitter<any>;
       return emitter.pipe(map((value: any) => ({name: templateName, value})));
     });
 
@@ -197,7 +207,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     // during ngOnChanges.
     const inputChanges = this.inputChanges;
     this.inputChanges = null;
-    (this.componentRef !.instance as any as OnChanges).ngOnChanges(inputChanges);
+    (this.componentRef!.instance as any as OnChanges).ngOnChanges(inputChanges);
   }
 
   /**
@@ -236,8 +246,8 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
       return;
     }
 
-    const isFirstChange = this.uninitializedInputs.has(property);
-    this.uninitializedInputs.delete(property);
+    const isFirstChange = this.unchangedInputs.has(property);
+    this.unchangedInputs.delete(property);
 
     const previousValue = isFirstChange ? undefined : this.getInputValue(property);
     this.inputChanges[property] = new SimpleChange(previousValue, currentValue, isFirstChange);
@@ -250,6 +260,6 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     }
 
     this.callNgOnChanges();
-    this.componentRef !.changeDetectorRef.detectChanges();
+    this.componentRef!.changeDetectorRef.detectChanges();
   }
 }

@@ -1,0 +1,13 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//packages/examples/upgrade:upgrade_example.bzl", "create_upgrade_example_targets")
+
+create_upgrade_example_targets(
+    name = "lite-multi",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*_spec.ts"],
+    ),
+    e2e_srcs = glob(["e2e_test/*_spec.ts"]),
+    entry_module = "@angular/examples/upgrade/static/ts/lite-multi/module",
+)

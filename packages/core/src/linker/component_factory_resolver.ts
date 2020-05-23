@@ -7,15 +7,15 @@
  */
 
 import {Injector} from '../di/injector';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {Type} from '../interface/type';
+import {stringify} from '../util/stringify';
 
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {NgModuleRef} from './ng_module_factory';
 
 export function noComponentFactoryError(component: Function) {
-  const error = Error(
-      `No component factory found for ${stringify(component)}. Did you add it to @NgModule.entryComponents?`);
+  const error = Error(`No component factory found for ${
+      stringify(component)}. Did you add it to @NgModule.entryComponents?`);
   (error as any)[ERROR_COMPONENT] = component;
   return error;
 }
@@ -28,16 +28,26 @@ export function getComponent(error: Error): Type<any> {
 
 
 class _NullComponentFactoryResolver implements ComponentFactoryResolver {
-  resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
+  resolveComponentFactory<T>(component: {new(...args: any[]): T}): ComponentFactory<T> {
     throw noComponentFactoryError(component);
   }
 }
 
 /**
+ * A simple registry that maps `Components` to generated `ComponentFactory` classes
+ * that can be used to create instances of components.
+ * Use to obtain the factory for a given component type,
+ * then use the factory's `create()` method to create a component of that type.
+ *
+ * @see [Dynamic Components](guide/dynamic-component-loader)
  * @publicApi
  */
 export abstract class ComponentFactoryResolver {
   static NULL: ComponentFactoryResolver = new _NullComponentFactoryResolver();
+  /**
+   * Retrieves the factory object that creates a component of the given type.
+   * @param component The component type.
+   */
   abstract resolveComponentFactory<T>(component: Type<T>): ComponentFactory<T>;
 }
 
@@ -53,7 +63,7 @@ export class CodegenComponentFactoryResolver implements ComponentFactoryResolver
     }
   }
 
-  resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
+  resolveComponentFactory<T>(component: {new(...args: any[]): T}): ComponentFactory<T> {
     let factory = this._factories.get(component);
     if (!factory && this._parent) {
       factory = this._parent.resolveComponentFactory(component);

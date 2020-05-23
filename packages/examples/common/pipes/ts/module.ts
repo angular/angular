@@ -59,19 +59,19 @@ import {TitleCasePipeComponent} from './titlecase_pipe';
     <keyvalue-pipe></keyvalue-pipe>
   `
 })
-export class ExampleAppComponent {
+export class AppComponent {
 }
 
 @NgModule({
   declarations: [
-    AsyncPromisePipeComponent, AsyncObservablePipeComponent, ExampleAppComponent, JsonPipeComponent,
+    AsyncPromisePipeComponent, AsyncObservablePipeComponent, AppComponent, JsonPipeComponent,
     DatePipeComponent, DeprecatedDatePipeComponent, LowerUpperPipeComponent, TitleCasePipeComponent,
-    NumberPipeComponent, PercentPipeComponent, DeprecatedPercentPipeComponent,
-    CurrencyPipeComponent, DeprecatedCurrencyPipeComponent, SlicePipeStringComponent,
-    SlicePipeListComponent, I18nPluralPipeComponent, I18nSelectPipeComponent, KeyValuePipeComponent
+    NumberPipeComponent, DeprecatedNumberPipeComponent, PercentPipeComponent,
+    DeprecatedPercentPipeComponent, CurrencyPipeComponent, DeprecatedCurrencyPipeComponent,
+    SlicePipeStringComponent, SlicePipeListComponent, I18nPluralPipeComponent,
+    I18nSelectPipeComponent, KeyValuePipeComponent
   ],
   imports: [BrowserModule],
-  bootstrap: [ExampleAppComponent]
 })
 export class AppModule {
 }

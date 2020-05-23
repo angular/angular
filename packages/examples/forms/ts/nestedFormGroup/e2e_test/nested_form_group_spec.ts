@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
+import {browser, by, element, ElementFinder} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('nestedFormGroup example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -16,7 +17,7 @@ describe('nestedFormGroup example', () => {
   let button: ElementFinder;
 
   beforeEach(() => {
-    browser.get('/forms/ts/nestedFormGroup/index.html');
+    browser.get('/nestedFormGroup');
     firstInput = element(by.css('[formControlName="first"]'));
     lastInput = element(by.css('[formControlName="last"]'));
     button = element(by.css('button:not([type="submit"])'));
@@ -40,5 +41,4 @@ describe('nestedFormGroup example', () => {
     expect(firstInput.getAttribute('value')).toEqual('Bess');
     expect(lastInput.getAttribute('value')).toEqual('Marvin');
   });
-
 });

@@ -1,0 +1,53 @@
+<h1 id="event-binding">Event Binding</h1>
+
+<div class="group">
+  <h3>Target event</h3>
+  <!-- #docregion event-binding-1 -->
+  <button (click)="onSave($event)">Save</button>
+  <!-- #enddocregion event-binding-1 -->
+
+  <!-- #docregion event-binding-2 -->
+  <button on-click="onSave($event)">on-click Save</button>
+  <!-- #enddocregion event-binding-2 -->
+
+  <!-- #docregion custom-directive -->
+  <h4>myClick is an event on the custom ClickDirective:</h4>
+  <button (myClick)="clickMessage=$event" clickable>click with myClick</button>
+  {{clickMessage}}
+  <!-- #enddocregion custom-directive -->
+
+</div>
+
+<div class="group">
+  <h3>$event and event handling statements</h3>
+  <h4>Result: {{currentItem.name}}</h4>
+
+  <!-- #docregion event-binding-3-->
+  <input [value]="currentItem.name"
+         (input)="currentItem.name=$event.target.value" >
+  without NgModel
+  <!-- #enddocregion event-binding-3-->
+</div>
+
+<div class="group">
+  <h3>Binding to a nested component</h3>
+  <h4>Custom events with EventEmitter</h4>
+  <!-- #docregion event-binding-to-component -->
+  <app-item-detail (deleteRequest)="deleteItem($event)" [item]="currentItem"></app-item-detail>
+    <!-- #enddocregion event-binding-to-component -->
+
+
+  <h4>Click to see event target class:</h4>
+<div class="parent-div" (click)="onClickMe($event)" clickable>Click me (parent)
+  <div class="child-div">Click me too! (child) </div>
+</div>
+
+<h3>Saves only once:</h3>
+<div (click)="onSave()" clickable>
+  <button (click)="onSave($event)">Save, no propagation</button>
+</div>
+
+<h3>Saves twice:</h3>
+<div (click)="onSave()" clickable>
+  <button (click)="onSave()">Save with propagation</button>
+</div>

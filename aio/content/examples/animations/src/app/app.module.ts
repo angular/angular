@@ -19,6 +19,7 @@ import { HeroListAutoCalcPageComponent } from './hero-list-auto-page.component';
 import { HeroListAutoComponent } from './hero-list-auto.component';
 import { HomeComponent } from './home.component';
 import { AboutComponent } from './about.component';
+import { InsertRemoveComponent } from './insert-remove.component';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import { AboutComponent } from './about.component';
       { path: 'hero-groups', component: HeroListGroupPageComponent },
       { path: 'enter-leave', component: HeroListEnterLeavePageComponent },
       { path: 'auto', component: HeroListAutoCalcPageComponent },
+      { path: 'insert-remove', component: InsertRemoveComponent},
       { path: 'home', component: HomeComponent, data: {animation: 'HomePage'} },
       { path: 'about', component: AboutComponent, data: {animation: 'AboutPage'} },
 
@@ -56,6 +58,7 @@ import { AboutComponent } from './about.component';
     HeroListAutoCalcPageComponent,
     HeroListAutoComponent,
     HomeComponent,
+    InsertRemoveComponent,
     AboutComponent
   ],
   bootstrap: [AppComponent]

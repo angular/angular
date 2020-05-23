@@ -1,7 +1,6 @@
 // Imports
 import * as cp from 'child_process';
 import * as fs from 'fs';
-import * as http from 'http';
 import * as path from 'path';
 import * as shell from 'shelljs';
 import {AIO_DOWNLOADS_DIR, HIDDEN_DIR_PREFIX} from '../common/constants';
@@ -94,7 +93,7 @@ class Helper {
     return fs.readFileSync(absFilePath, 'utf8');
   }
 
-  public runCmd(cmd: string, opts: cp.ExecFileOptions = {}): Promise<CmdResult> {
+  public runCmd(cmd: string, opts: cp.ExecOptions = {}): Promise<CmdResult> {
     return new Promise(resolve => {
       const proc = cp.exec(cmd, opts, (err, stdout, stderr) => resolve({success: !err, err, stdout, stderr}));
       this.createCleanUpFn(() => proc.kill());
@@ -102,21 +101,10 @@ class Helper {
   }
 
   public runForAllSupportedSchemes(suiteFactory: TestSuiteFactory): void {
-    Object.keys(this.portPerScheme).forEach(scheme => suiteFactory(scheme, this.portPerScheme[scheme]));
+    Object.entries(this.portPerScheme).forEach(([scheme, port]) => suiteFactory(scheme, port));
   }
 
-  public verifyResponse(status: number | [number, string], regex: string | RegExp = /^/): VerifyCmdResultFn {
-    let statusCode: number;
-    let statusText: string;
-
-    if (Array.isArray(status)) {
-      statusCode = status[0];
-      statusText = status[1];
-    } else {
-      statusCode = status;
-      statusText = http.STATUS_CODES[statusCode] || 'UNKNOWN_STATUS_CODE';
-    }
-
+  public verifyResponse(status: number, regex: string | RegExp = /^/): VerifyCmdResultFn {
     return (result: CmdResult) => {
       const [headers, body] = result.stdout.
         split(/(?:\r?\n){2,}/).
@@ -131,7 +119,7 @@ class Helper {
       }
 
       expect(result.success).toBe(true);
-      expect(headers).toContain(`${statusCode} ${statusText}`);
+      expect(headers).toMatch(new RegExp(`HTTP/(?:1\\.1|2) ${status} `));
       expect(body).toMatch(regex);
     };
   }

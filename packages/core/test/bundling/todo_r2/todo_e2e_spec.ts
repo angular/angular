@@ -21,13 +21,14 @@ describe('functional test for todo', () => {
   BUNDLES.forEach(bundle => {
     describe(bundle, () => {
       it('should place styles on the elements within the component',
-         withBody('<todo-app></todo-app>', async() => {
+         withBody('<todo-app></todo-app>', async () => {
            require(path.join(PACKAGE, bundle));
-           await(window as any).waitForApp;
+           await (window as any).waitForApp;
            const toDoAppComponent = (window as any).toDoAppComponent;
            await whenRendered(toDoAppComponent);
 
-           const styleContent = findStyleTextForSelector('.todo-list\\\[_ngcontent-\\\w+\\\]');
+           const styleContent =
+               findStyleTextForSelector('.todo-list\\\[_ngcontent-[a-z]+-\\\w+\\\]');
            expect(styleContent).toMatch(/font-weight:\s*bold;/);
            expect(styleContent).toMatch(/color:\s*#d9d9d9;/);
          }));

@@ -16,7 +16,7 @@ import {Component} from '@angular/core';
     '(@backgroundAnimation.done)': 'bgStatusChanged($event, "completed")'
   },
   selector: 'animate-app',
-  styleUrls: ['css/animate-app.css'],
+  styleUrls: ['../css/animate-app.css'],
   template: `
     <button (click)="state='start'">Start State</button>
     <button (click)="state='active'">Active State</button>
@@ -87,7 +87,9 @@ export class AnimateApp {
     alert(`backgroundAnimation has ${phase} from ${data['fromState']} to ${data['toState']}`);
   }
 
-  get state() { return this._state; }
+  get state() {
+    return this._state;
+  }
   set state(s) {
     this._state = s;
     if (s == 'void') {

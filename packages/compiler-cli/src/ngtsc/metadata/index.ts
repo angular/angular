@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="node" />
-
-export {TypeScriptReflectionHost, filterToMembersWithDecorator, findMember, reflectObjectLiteral, reflectTypeEntityToDeclaration, typeNodeToValueExpr} from './src/reflector';
-export {AbsoluteReference, EnumValue, ImportMode, Reference, ResolvedReference, ResolvedValue, isDynamicValue, staticallyResolve} from './src/resolver';
+export * from './src/api';
+export {DtsMetadataReader} from './src/dts';
+export {CompoundMetadataRegistry, LocalMetadataRegistry, InjectableClassRegistry} from './src/registry';
+export {extractDirectiveGuards, CompoundMetadataReader} from './src/util';

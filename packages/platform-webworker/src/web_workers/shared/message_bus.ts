@@ -17,6 +17,8 @@ import {EventEmitter, NgZone} from '@angular/core';
  * by the corresponding MessageBusSource.
  *
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export abstract class MessageBus implements MessageBusSource, MessageBusSink {
   /**
@@ -52,6 +54,8 @@ export abstract class MessageBus implements MessageBusSource, MessageBusSink {
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export interface MessageBusSource {
   /**
@@ -78,6 +82,8 @@ export interface MessageBusSource {
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export interface MessageBusSink {
   /**

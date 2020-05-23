@@ -2,18 +2,10 @@
   "name": "@angular/platform-browser-dynamic",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - library for using Angular in a web browser with JIT compilation",
-  "main": "./bundles/platform-browser-dynamic.umd.js",
-  "module": "./fesm5/platform-browser-dynamic.js",
-  "es2015": "./fesm2015/platform-browser-dynamic.js",
-  "esm5": "./esm5/platform-browser-dynamic.js",
-  "esm2015": "./esm2015/platform-browser-dynamic.js",
-  "fesm5": "./fesm5/platform-browser-dynamic.js",
-  "fesm2015": "./fesm2015/platform-browser-dynamic.js",
-  "typings": "./platform-browser-dynamic.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {
-    "tslib": "^1.9.0"
+    "tslib": "^2.0.0"
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
@@ -23,10 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/angular.git"
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/platform-browser-dynamic"
   },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
+  }
 }

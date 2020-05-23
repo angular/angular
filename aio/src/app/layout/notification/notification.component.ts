@@ -20,7 +20,7 @@ const LOCAL_STORAGE_NAMESPACE = 'aio-notification/';
   ]
 })
 export class NotificationComponent implements OnInit {
-  private get localStorage() { return this.window.localStorage; }
+  private storage: Storage;
 
   @Input() dismissOnContentClick: boolean;
   @Input() notificationId: string;
@@ -31,12 +31,27 @@ export class NotificationComponent implements OnInit {
   showNotification: 'show'|'hide';
 
   constructor(
-    @Inject(WindowToken) private window: Window,
+    @Inject(WindowToken) window: Window,
     @Inject(CurrentDateToken) private currentDate: Date
-  ) {}
+  ) {
+    try {
+      this.storage = window.localStorage;
+    } catch {
+      // When cookies are disabled in the browser, even trying to access
+      // `window.localStorage` throws an error. Use a no-op storage.
+      this.storage = {
+        length: 0,
+        clear: () => undefined,
+        getItem: () => null,
+        key: () => null,
+        removeItem: () => undefined,
+        setItem: () => undefined
+      };
+    }
+  }
 
   ngOnInit() {
-    const previouslyHidden = this.localStorage.getItem(LOCAL_STORAGE_NAMESPACE + this.notificationId) === 'hide';
+    const previouslyHidden = this.storage.getItem(LOCAL_STORAGE_NAMESPACE + this.notificationId) === 'hide';
     const expired = this.currentDate > new Date(this.expirationDate);
     this.showNotification = previouslyHidden || expired ? 'hide' : 'show';
   }
@@ -48,7 +63,7 @@ export class NotificationComponent implements OnInit {
   }
 
   dismiss() {
-    this.localStorage.setItem(LOCAL_STORAGE_NAMESPACE + this.notificationId, 'hide');
+    this.storage.setItem(LOCAL_STORAGE_NAMESPACE + this.notificationId, 'hide');
     this.showNotification = 'hide';
     this.dismissed.next();
   }

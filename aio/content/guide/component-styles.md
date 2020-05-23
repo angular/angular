@@ -1,4 +1,4 @@
-# Component Styles
+# Component styles
 
 Angular applications are styled with standard CSS. That means you can apply
 everything you know about CSS stylesheets, selectors, rules, and media queries
@@ -21,8 +21,7 @@ One way to do this is to set the `styles` property in the component metadata.
 The `styles` property takes an array of strings that contain CSS code.
 Usually you give it one string, as in the following example:
 
-<code-example path="component-styles/src/app/hero-app.component.ts" header="src/app/hero-app.component.ts" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-app.component.ts" header="src/app/hero-app.component.ts"></code-example>
 
 ## Style scope
 
@@ -71,8 +70,7 @@ Use the `:host` pseudo-class selector to target styles in the element that *host
 targeting elements *inside* the component's template).
 
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="host" header="src/app/hero-details.component.css" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="host" header="src/app/hero-details.component.css"></code-example>
 
 The `:host` selector is the only way to target the host element. You can't reach
 the host element from inside the component with other selectors because it's not part of the
@@ -83,8 +81,7 @@ including another selector inside parentheses after `:host`.
 
 The next example targets the host element again, but only when it also has the `active` CSS class.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" header="src/app/hero-details.component.css" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" header="src/app/hero-details.component.css"></code-example>
 
 ### :host-context
 
@@ -99,24 +96,22 @@ up to the document root. The `:host-context()` selector is useful when combined 
 The following example applies a `background-color` style to all `<h2>` elements *inside* the component, only
 if some ancestor element has the CSS class `theme-light`.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css"></code-example>
 
 ### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
 
 Component styles normally apply only to the HTML in the component's own template.
 
-Use the `/deep/` shadow-piercing descendant combinator to force a style down through the child
-component tree into all the child component views.
-The `/deep/` combinator works to any depth of nested components, and it applies to both the view
-children and content children of the component.
+Applying the `::ng-deep` pseudo-class to any CSS rule completely disables view-encapsulation for
+that rule. Any style with `::ng-deep` applied becomes a global style. In order to scope the specified style
+to the current component and all its descendants, be sure to include the `:host` selector before
+`::ng-deep`. If the `::ng-deep` combinator is used without the `:host` pseudo-class selector, the style
+can bleed into other components.
 
 The following example targets all `<h3>` elements, from the host element down
 through this component to all of its child elements in the DOM.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="deep" header="src/app/hero-details.component.css" linenums="false">
-
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="deep" header="src/app/hero-details.component.css"></code-example>
 
 The `/deep/` combinator also has the aliases `>>>`, and `::ng-deep`.
 
@@ -294,7 +289,7 @@ Choose from the following modes:
 
 * `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
   (and renaming) the CSS code to effectively scope the CSS to the component's view.
-  For details, see [Appendix 1](guide/component-styles#inspect-generated-css).
+  For details, see [Inspecting generated CSS](guide/component-styles#inspect-generated-css) below.
 
 * `None` means that Angular does no view encapsulation.
   Angular adds the CSS to the global styles.
@@ -303,8 +298,7 @@ Choose from the following modes:
 
 To set the components encapsulation mode, use the `encapsulation` property in the component metadata:
 
-<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" header="src/app/quest-summary.component.ts" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" header="src/app/quest-summary.component.ts"></code-example>
 
 `ShadowDom` view encapsulation only works on browsers that have native support
 for shadow DOM (see [Shadow DOM v1](https://caniuse.com/#feat=shadowdomv1) on the

@@ -28,7 +28,7 @@ describe('setUpLocationSync', () => {
       ],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {
       get: jasmine.createSpy('$injector.get').and.returnValue({'$on': () => undefined})
     };
@@ -79,6 +79,30 @@ describe('setUpLocationSync', () => {
     expect(RouterMock.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
   });
 
+  it('should allow configuration to work with hash-based routing', () => {
+    const url = 'https://google.com';
+    const pathname = '/custom/route';
+    const normalizedPathname = 'foo';
+    const query = '?query=1&query2=3';
+    const hash = '#new/hash';
+    const combinedUrl = url + '#' + pathname + query + hash;
+    const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
+
+    upgradeModule.$injector.get.and.returnValue($rootScope);
+    LocationMock.normalize.and.returnValue(normalizedPathname);
+
+    setUpLocationSync(upgradeModule, 'hash');
+
+    const callback = $rootScope.$on.calls.argsFor(0)[1];
+    callback({}, combinedUrl, '');
+
+    expect(LocationMock.normalize).toHaveBeenCalledTimes(1);
+    expect(LocationMock.normalize).toHaveBeenCalledWith(pathname);
+
+    expect(RouterMock.navigateByUrl).toHaveBeenCalledTimes(1);
+    expect(RouterMock.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
+  });
+
   it('should work correctly on browsers that do not start pathname with `/`', () => {
     const anchorProto = HTMLAnchorElement.prototype;
     const originalDescriptor = Object.getOwnPropertyDescriptor(anchorProto, 'pathname');
@@ -95,7 +119,7 @@ describe('setUpLocationSync', () => {
 
       expect(LocationMock.normalize).toHaveBeenCalledWith('/foo/bar');
     } finally {
-      Object.defineProperty(anchorProto, 'pathname', originalDescriptor !);
+      Object.defineProperty(anchorProto, 'pathname', originalDescriptor!);
     }
   });
 });

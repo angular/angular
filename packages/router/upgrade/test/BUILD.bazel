@@ -1,4 +1,11 @@
-load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
+load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/router/upgrade/index.js",
+    deps = ["//packages/router/upgrade"],
+)
 
 ts_library(
     name = "test_lib",
@@ -14,7 +21,7 @@ ts_library(
     ],
 )
 
-ts_web_test_suite(
+karma_web_test_suite(
     name = "test_web",
     deps = [
         ":test_lib",

@@ -11,7 +11,9 @@ import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/re
 {
   describe('RenderStoreSpec', () => {
     let store: RenderStore;
-    beforeEach(() => { store = new RenderStore(); });
+    beforeEach(() => {
+      store = new RenderStore();
+    });
 
     it('should allocate ids', () => {
       expect(store.allocateId()).toBe(0);
@@ -31,6 +33,5 @@ import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/re
       store.store(obj, id);
       expect(store.deserialize(id)).toBe(obj);
     });
-
   });
 }

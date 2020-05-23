@@ -10,7 +10,7 @@ export function forceReflow() {
 }
 
 export function makeAnimationEvent(
-    startOrEnd: 'start' | 'end', animationName: string, elapsedTime: number, timestamp?: number) {
+    startOrEnd: 'start'|'end', animationName: string, elapsedTime: number, timestamp?: number) {
   const e = new AnimationEvent('animation' + startOrEnd, {animationName, elapsedTime});
   if (timestamp) {
     (e as any)._ngTestManualTimestamp = timestamp;
@@ -23,7 +23,7 @@ export function supportsAnimationEventCreation() {
   try {
     makeAnimationEvent('end', 'test', 0);
     supported = true;
-  } catch (e) {
+  } catch {
   }
   return supported;
 }

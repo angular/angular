@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {wrappedError} from '../error_handler';
-import {ERROR_ORIGINAL_ERROR, getOriginalError} from '../errors';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {Type} from '../interface/type';
+import {ERROR_ORIGINAL_ERROR, wrappedError} from '../util/errors';
+import {stringify} from '../util/stringify';
 
 import {ReflectiveInjector} from './reflective_injector';
 import {ReflectiveKey} from './reflective_key';
@@ -144,7 +143,8 @@ export function instantiationError(
     key: ReflectiveKey): InjectionError {
   return injectionError(injector, key, function(keys: ReflectiveKey[]) {
     const first = stringify(keys[0].token);
-    return `${originalException.message}: Error during instantiation of ${first}!${constructResolvingPath(keys)}.`;
+    return `${originalException.message}: Error during instantiation of ${first}!${
+        constructResolvingPath(keys)}.`;
   }, originalException);
 }
 
@@ -194,7 +194,7 @@ export function invalidProviderError(provider: any) {
  * ```
  *
  */
-export function noAnnotationError(typeOrFunc: Type<any>| Function, params: any[][]): Error {
+export function noAnnotationError(typeOrFunc: Type<any>|Function, params: any[][]): Error {
   const signature: string[] = [];
   for (let i = 0, ii = params.length; i < ii; i++) {
     const parameter = params[i];

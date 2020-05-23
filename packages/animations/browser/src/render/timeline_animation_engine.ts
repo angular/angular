@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationPlayer, ɵStyleData} from '@angular/animations';
+import {AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationPlayer, AUTO_STYLE, ɵStyleData} from '@angular/animations';
 
 import {Ast} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
@@ -34,7 +34,7 @@ export class TimelineAnimationEngine {
     const ast = buildAnimationAst(this._driver, metadata, errors);
     if (errors.length) {
       throw new Error(
-          `Unable to build the animation due to the following errors: ${errors.join("\n")}`);
+          `Unable to build the animation due to the following errors: ${errors.join('\n')}`);
     } else {
       this._animations[id] = ast;
     }
@@ -71,12 +71,13 @@ export class TimelineAnimationEngine {
 
     if (errors.length) {
       throw new Error(
-          `Unable to create the animation due to the following errors: ${errors.join("\n")}`);
+          `Unable to create the animation due to the following errors: ${errors.join('\n')}`);
     }
 
     autoStylesMap.forEach((styles, element) => {
-      Object.keys(styles).forEach(
-          prop => { styles[prop] = this._driver.computeStyle(element, prop, AUTO_STYLE); });
+      Object.keys(styles).forEach(prop => {
+        styles[prop] = this._driver.computeStyle(element, prop, AUTO_STYLE);
+      });
     });
 
     const players = instructions.map(i => {

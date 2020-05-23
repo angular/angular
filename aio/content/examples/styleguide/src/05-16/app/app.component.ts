@@ -4,4 +4,7 @@ import { Component } from '@angular/core';
   selector: 'sg-app',
   templateUrl: './app.component.html'
 })
-export class AppComponent { }
+export class AppComponent {
+
+  onSavedTheDay(event$: any) { }
+}

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /* tslint:disable:no-console  */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
 
 // #docregion mark-for-check
@@ -32,7 +33,9 @@ class AppComponent {
 // #docregion detach
 class DataListProvider {
   // in a real application the returned data will be different every time
-  get data() { return [1, 2, 3, 4, 5]; }
+  get data() {
+    return [1, 2, 3, 4, 5];
+  }
 }
 
 @Component({
@@ -42,9 +45,11 @@ class DataListProvider {
     `,
 })
 class GiantList {
-  constructor(private ref: ChangeDetectorRef, private dataProvider: DataListProvider) {
+  constructor(private ref: ChangeDetectorRef, public dataProvider: DataListProvider) {
     ref.detach();
-    setInterval(() => { this.ref.detectChanges(); }, 5000);
+    setInterval(() => {
+      this.ref.detectChanges();
+    }, 5000);
   }
 }
 
@@ -52,7 +57,7 @@ class GiantList {
   selector: 'app',
   providers: [DataListProvider],
   template: `
-      <giant-list><giant-list>
+      <giant-list></giant-list>
     `,
 })
 class App {
@@ -63,15 +68,18 @@ class App {
 class DataProvider {
   data = 1;
   constructor() {
-    setInterval(() => { this.data = 2; }, 500);
+    setInterval(() => {
+      this.data = 2;
+    }, 500);
   }
 }
 
 
 @Component({selector: 'live-data', inputs: ['live'], template: 'Data: {{dataProvider.data}}'})
 class LiveData {
-  constructor(private ref: ChangeDetectorRef, private dataProvider: DataProvider) {}
+  constructor(private ref: ChangeDetectorRef, public dataProvider: DataProvider) {}
 
+  @Input()
   set live(value: boolean) {
     if (value) {
       this.ref.reattach();
@@ -86,7 +94,7 @@ class LiveData {
   providers: [DataProvider],
   template: `
        Live Update: <input type="checkbox" [(ngModel)]="live">
-       <live-data [live]="live"><live-data>
+       <live-data [live]="live"></live-data>
      `,
 })
 
@@ -94,3 +102,8 @@ class App1 {
   live = true;
 }
 // #enddocregion reattach
+
+
+@NgModule({declarations: [AppComponent, GiantList, App, LiveData, App1], imports: [FormsModule]})
+class CoreExamplesModule {
+}

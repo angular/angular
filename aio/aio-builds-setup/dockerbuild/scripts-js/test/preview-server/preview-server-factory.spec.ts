@@ -1,5 +1,4 @@
 // Imports
-import * as express from 'express';
 import * as http from 'http';
 import * as supertest from 'supertest';
 import {CircleCiApi} from '../../lib/common/circle-ci-api';
@@ -134,7 +133,7 @@ describe('PreviewServerFactory', () => {
       const buildCreator = jasmine.any(BuildCreator);
       expect(usfCreateMiddlewareSpy).toHaveBeenCalledWith(buildRetriever, buildVerifier, buildCreator, defaultConfig);
 
-      const middleware: express.Express = usfCreateMiddlewareSpy.calls.mostRecent().returnValue;
+      const middleware = usfCreateMiddlewareSpy.calls.mostRecent().returnValue;
       expect(httpCreateServerSpy).toHaveBeenCalledWith(middleware);
     });
 
@@ -230,7 +229,7 @@ describe('PreviewServerFactory', () => {
 
       expect(prsAddCommentSpy).toHaveBeenCalledTimes(2);
       expect(prs).toBe(allCalls[1].object);
-      expect(prs).toEqual(jasmine.any(GithubPullRequests));
+      expect(prs).toBeInstanceOf(GithubPullRequests);
       expect(prs.repoSlug).toBe('organisation/repo');
     });
 
@@ -302,9 +301,8 @@ describe('PreviewServerFactory', () => {
       let bvGetSignificantFilesChangedSpy: jasmine.Spy;
 
       beforeEach(() => {
-        bvGetPrIsTrustedSpy = spyOn(buildVerifier, 'getPrIsTrusted').and.returnValue(Promise.resolve(true));
-        bvGetSignificantFilesChangedSpy = spyOn(buildVerifier, 'getSignificantFilesChanged').
-          and.returnValue(Promise.resolve(true));
+        bvGetPrIsTrustedSpy = spyOn(buildVerifier, 'getPrIsTrusted').and.resolveTo(true);
+        bvGetSignificantFilesChangedSpy = spyOn(buildVerifier, 'getSignificantFilesChanged').and.resolveTo(true);
       });
 
 
@@ -331,7 +329,7 @@ describe('PreviewServerFactory', () => {
 
 
       it('should respond appropriately if the PR did not touch any significant files', async () => {
-        bvGetSignificantFilesChangedSpy.and.returnValue(Promise.resolve(false));
+        bvGetSignificantFilesChangedSpy.and.resolveTo(false);
 
         const expectedResponse = {canHavePublicPreview: false, reason: 'No significant files touched.'};
         const expectedLog = `PR:${pr} - Cannot have a public preview, because it did not touch any significant files.`;
@@ -345,7 +343,7 @@ describe('PreviewServerFactory', () => {
 
 
       it('should respond appropriately if the PR is not automatically verifiable as "trusted"', async () => {
-        bvGetPrIsTrustedSpy.and.returnValue(Promise.resolve(false));
+        bvGetPrIsTrustedSpy.and.resolveTo(false);
 
         const expectedResponse = {canHavePublicPreview: false, reason: 'Not automatically verifiable as "trusted".'};
         const expectedLog =
@@ -372,7 +370,7 @@ describe('PreviewServerFactory', () => {
 
 
       it('should respond with error if `getSignificantFilesChanged()` fails', async () => {
-        bvGetSignificantFilesChangedSpy.and.callFake(() => Promise.reject('getSignificantFilesChanged error'));
+        bvGetSignificantFilesChangedSpy.and.rejectWith('getSignificantFilesChanged error');
 
         await agent.get(url).expect(500, 'getSignificantFilesChanged error');
         expect(loggerErrorSpy).toHaveBeenCalledWith('Previewability check error', 'getSignificantFilesChanged error');
@@ -380,11 +378,10 @@ describe('PreviewServerFactory', () => {
 
 
       it('should respond with error if `getPrIsTrusted()` fails', async () => {
-        const error = new Error('getPrIsTrusted error');
-        bvGetPrIsTrustedSpy.and.callFake(() => { throw error; });
+        bvGetPrIsTrustedSpy.and.throwError('getPrIsTrusted error');
 
         await agent.get(url).expect(500, 'getPrIsTrusted error');
-        expect(loggerErrorSpy).toHaveBeenCalledWith('Previewability check error', error);
+        expect(loggerErrorSpy).toHaveBeenCalledWith('Previewability check error', new Error('getPrIsTrusted error'));
       });
 
     });
@@ -497,7 +494,7 @@ describe('PreviewServerFactory', () => {
         // Note it is important to put the `reject` into `and.callFake`;
         // If you just `and.returnValue` the rejected promise
         // then you get an "unhandled rejection" message in the console.
-        getGithubInfoSpy.and.callFake(() => Promise.reject('Test Error'));
+        getGithubInfoSpy.and.rejectWith('Test Error');
         await agent.post(URL).send(BASIC_PAYLOAD).expect(500, 'Test Error');
         expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
         expect(downloadBuildArtifactSpy).not.toHaveBeenCalled();
@@ -518,7 +515,7 @@ describe('PreviewServerFactory', () => {
       });
 
       it('should fail if the artifact fetch request fails', async () => {
-        downloadBuildArtifactSpy.and.callFake(() => Promise.reject('Test Error'));
+        downloadBuildArtifactSpy.and.rejectWith('Test Error');
         await agent.post(URL).send(BASIC_PAYLOAD).expect(500, 'Test Error');
         expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
         expect(downloadBuildArtifactSpy).toHaveBeenCalled();
@@ -527,7 +524,7 @@ describe('PreviewServerFactory', () => {
       });
 
       it('should fail if verifying the PR fails', async () => {
-        getPrIsTrustedSpy.and.callFake(() => Promise.reject('Test Error'));
+        getPrIsTrustedSpy.and.rejectWith('Test Error');
         await agent.post(URL).send(BASIC_PAYLOAD).expect(500, 'Test Error');
         expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
         expect(downloadBuildArtifactSpy).toHaveBeenCalled();
@@ -536,7 +533,7 @@ describe('PreviewServerFactory', () => {
       });
 
       it('should fail if creating the preview build fails', async () => {
-        createBuildSpy.and.callFake(() => Promise.reject('Test Error'));
+        createBuildSpy.and.rejectWith('Test Error');
         await agent.post(URL).send(BASIC_PAYLOAD).expect(500, 'Test Error');
         expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
         expect(downloadBuildArtifactSpy).toHaveBeenCalled();
@@ -605,7 +602,7 @@ describe('PreviewServerFactory', () => {
 
 
       it('should propagate errors from BuildVerifier', async () => {
-        bvGetPrIsTrustedSpy.and.callFake(() => Promise.reject('Test'));
+        bvGetPrIsTrustedSpy.and.rejectWith('Test');
 
         await createRequest(+pr).expect(500, 'Test');
 
@@ -615,7 +612,9 @@ describe('PreviewServerFactory', () => {
 
 
       it('should call \'BuildCreator#updatePrVisibility()\' with the correct arguments', async () => {
-        bvGetPrIsTrustedSpy.and.callFake((pr2: number) => Promise.resolve(pr2 === 42));
+        bvGetPrIsTrustedSpy.
+          withArgs(24).and.resolveTo(false).
+          withArgs(42).and.resolveTo(true);
 
         await createRequest(24);
         expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledWith(24, false);
@@ -626,7 +625,7 @@ describe('PreviewServerFactory', () => {
 
 
       it('should propagate errors from BuildCreator', async () => {
-        bcUpdatePrVisibilitySpy.and.callFake(() => Promise.reject('Test'));
+        bcUpdatePrVisibilitySpy.and.rejectWith('Test');
         await createRequest(+pr).expect(500, 'Test');
       });
 
@@ -634,7 +633,9 @@ describe('PreviewServerFactory', () => {
       describe('on success', () => {
 
         it('should respond with 200 (action: undefined)', async () => {
-          bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
+          bvGetPrIsTrustedSpy.
+            withArgs(2).and.resolveTo(false).
+            withArgs(4).and.resolveTo(true);
 
           const reqs = [4, 2].map(num => createRequest(num).expect(200, http.STATUS_CODES[200]));
           await Promise.all(reqs);
@@ -642,7 +643,9 @@ describe('PreviewServerFactory', () => {
 
 
         it('should respond with 200 (action: labeled)', async () => {
-          bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
+          bvGetPrIsTrustedSpy.
+            withArgs(2).and.resolveTo(false).
+            withArgs(4).and.resolveTo(true);
 
           const reqs = [4, 2].map(num => createRequest(num, 'labeled').expect(200, http.STATUS_CODES[200]));
           await Promise.all(reqs);
@@ -650,7 +653,9 @@ describe('PreviewServerFactory', () => {
 
 
         it('should respond with 200 (action: unlabeled)', async () => {
-          bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
+          bvGetPrIsTrustedSpy.
+            withArgs(2).and.resolveTo(false).
+            withArgs(4).and.resolveTo(true);
 
           const reqs = [4, 2].map(num => createRequest(num, 'unlabeled').expect(200, http.STATUS_CODES[200]));
           await Promise.all(reqs);

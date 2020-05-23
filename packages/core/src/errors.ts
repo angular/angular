@@ -6,13 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER, ERROR_ORIGINAL_ERROR, ERROR_TYPE} from './util/errors';
 import {DebugContext} from './view';
-
-export const ERROR_TYPE = 'ngType';
-export const ERROR_DEBUG_CONTEXT = 'ngDebugContext';
-export const ERROR_ORIGINAL_ERROR = 'ngOriginalError';
-export const ERROR_LOGGER = 'ngErrorLogger';
-
 
 export function getType(error: Error): Function {
   return (error as any)[ERROR_TYPE];

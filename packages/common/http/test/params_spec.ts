@@ -53,6 +53,15 @@ import {HttpParams} from '@angular/common/http/src/params';
         const mutated = body.delete('a', '2').delete('a', '4');
         expect(mutated.getAll('a')).toEqual(['1', '3', '5']);
       });
+
+      it('should not repeat mutations that have already been materialized', () => {
+        const body = new HttpParams({fromString: 'a=b'});
+        const mutated = body.append('a', 'c');
+        expect(mutated.toString()).toEqual('a=b&a=c');
+        const mutated2 = mutated.append('c', 'd');
+        expect(mutated.toString()).toEqual('a=b&a=c');
+        expect(mutated2.toString()).toEqual('a=b&a=c&c=d');
+      });
     });
 
     describe('read operations', () => {
@@ -65,6 +74,21 @@ import {HttpParams} from '@angular/common/http/src/params';
       it('should give an accurate list of keys', () => {
         const body = new HttpParams({fromString: 'a=1&b=2&c=3&d=4'});
         expect(body.keys()).toEqual(['a', 'b', 'c', 'd']);
+      });
+    });
+
+    describe('toString', () => {
+      it('should stringify string params', () => {
+        const body = new HttpParams({fromObject: {a: '', b: '2', c: '3'}});
+        expect(body.toString()).toBe('a=&b=2&c=3');
+      });
+      it('should stringify array params', () => {
+        const body = new HttpParams({fromObject: {a: '', b: ['21', '22'], c: '3'}});
+        expect(body.toString()).toBe('a=&b=21&b=22&c=3');
+      });
+      it('should stringify empty array params', () => {
+        const body = new HttpParams({fromObject: {a: '', b: [], c: '3'}});
+        expect(body.toString()).toBe('a=&c=3');
       });
     });
   });

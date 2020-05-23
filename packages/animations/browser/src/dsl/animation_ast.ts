@@ -74,7 +74,9 @@ export interface StyleAst extends Ast<AnimationMetadataType.Style> {
   isEmptyStep?: boolean;
 }
 
-export interface KeyframesAst extends Ast<AnimationMetadataType.Keyframes> { styles: StyleAst[]; }
+export interface KeyframesAst extends Ast<AnimationMetadataType.Keyframes> {
+  styles: StyleAst[];
+}
 
 export interface ReferenceAst extends Ast<AnimationMetadataType.Reference> {
   animation: Ast<AnimationMetadataType>;

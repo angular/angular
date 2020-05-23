@@ -7,9 +7,9 @@
  */
 
 import {NodeDef, NodeFlags, ViewData} from './types';
-import {RenderNodeAction, getParentRenderElement, visitProjectedRenderNodes} from './util';
+import {getParentRenderElement, RenderNodeAction, visitProjectedRenderNodes} from './util';
 
-export function ngContentDef(ngContentIndex: null | number, index: number): NodeDef {
+export function ngContentDef(ngContentIndex: null|number, index: number): NodeDef {
   return {
     // will bet set by the view definition
     nodeIndex: -1,
@@ -25,7 +25,8 @@ export function ngContentDef(ngContentIndex: null | number, index: number): Node
     childMatchedQueries: 0,
     matchedQueries: {},
     matchedQueryIds: 0,
-    references: {}, ngContentIndex,
+    references: {},
+    ngContentIndex,
     childCount: 0,
     bindings: [],
     bindingFlags: 0,
@@ -44,7 +45,7 @@ export function appendNgContent(view: ViewData, renderHost: any, def: NodeDef) {
     // Nothing to do if there is no parent element.
     return;
   }
-  const ngContentIndex = def.ngContent !.index;
+  const ngContentIndex = def.ngContent!.index;
   visitProjectedRenderNodes(
       view, ngContentIndex, RenderNodeAction.AppendChild, parentEl, null, undefined);
 }

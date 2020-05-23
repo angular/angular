@@ -14,18 +14,21 @@
  * compiler writes imports to this file.
  *
  * Only a subset of such imports are supported - core is not allowed to declare components or pipes.
- * A check in ngtsc's translator.ts validates this condition. The translator is responsible for
- * translating an external name (prefixed with ɵ) to the internal symbol name as exported below.
+ * A check in ngtsc's `R3SymbolsImportRewriter` validates this condition. The rewriter is only used
+ * when compiling @angular/core and is responsible for translating an external name (prefixed with
+ * ɵ) to the internal symbol name as exported below.
  *
  * The below symbols are used for @Injectable and @NgModule compilation.
  */
 
-export {InjectableDef, InjectorDef, defineInjectable, defineInjector} from './di/defs';
-export {inject} from './di/injector_compatibility';
-export {NgModuleDef, NgModuleDefWithMeta} from './metadata/ng_module';
-export {defineNgModule} from './render3/definition';
+export {ɵɵinject} from './di/injector_compatibility';
+export {ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵInjectableDef, ɵɵInjectorDef} from './di/interface/defs';
+export {NgModuleDef, ɵɵNgModuleDefWithMeta} from './metadata/ng_module';
+export {ɵɵdefineNgModule} from './render3/definition';
+export {ɵɵFactoryDef} from './render3/interfaces/definition';
 export {setClassMetadata} from './render3/metadata';
 export {NgModuleFactory} from './render3/ng_module_ref';
+
 
 
 /**

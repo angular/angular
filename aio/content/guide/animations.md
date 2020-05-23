@@ -37,8 +37,7 @@ To get started with adding Angular animations to your project, import the animat
 
 Import `BrowserAnimationsModule`, which introduces the animation capabilities into your Angular root application module.
 
-<code-example path="animations/src/app/app.module.1.ts" header="src/app/app.module.ts" language="typescript" linenums="false">
-</code-example>
+<code-example path="animations/src/app/app.module.1.ts" header="src/app/app.module.ts" language="typescript"></code-example>
 
 <div class="alert is-helpful">
 
@@ -70,9 +69,9 @@ Let's animate a simple transition that changes a single HTML element from one st
 
 In HTML, these attributes are set using ordinary CSS styles such as color and opacity. In Angular, use the `style()` function to specify a set of CSS styles for use with animations. You can collect a set of styles in an animation state, and give the state a name, such as `open` or `closed`.
 
-<figure>
-<img src="generated/images/guide/animations/open-closed.png" alt="open and closed states">
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/animations/open-closed.png" alt="open and closed states">
+</div>
 
 ### Animation state and styles
 
@@ -94,7 +93,7 @@ In the `closed` state, shown below, the button has a height of 100 pixels, an op
 
 In Angular, you can set multiple styles without any animation. However, without further refinement, the button instantly transforms with no fade, no shrinkage, or other visible indicator that a change is occurring.
 
-To make the change less abrupt, we need to define an animation *transition* to specify the changes that occur between one state and another over a period of time. The `transition()` function accepts two arguments: the first argument accepts an expression that defines the direction between two transition states, and the second argument accepts an `animate()` function.
+To make the change less abrupt, we need to define an animation *transition* to specify the changes that occur between one state and another over a period of time. The `transition()` function accepts two arguments: the first argument accepts an expression that defines the direction between two transition states, and the second argument accepts one or a series of `animate()` steps.
 
 
 Use the `animate()` function to define the length, delay, and easing of a transition, and to designate the style function for defining styles while transitions are taking place. You can also use the `animate()` function to define the `keyframes()` function for multi-step animations. These definitions are placed in the second argument of the `animate()` function.
@@ -125,11 +124,11 @@ The third argument, `easing`, controls how the animation [accelerates and decele
 
 * Run for 200ms, with no delay. Use a standard curve to start slow, accelerate in the middle, and then decelerate slowly at the end: `'0.2s ease-in-out'`
 
-* Start immediately, run for 200ms. Use a acceleration curve to start slow and end at full velocity: `'0.2s ease-in'`
+* Start immediately, run for 200ms. Use an acceleration curve to start slow and end at full velocity: `'0.2s ease-in'`
 
 <div class="alert is-helpful">
 
-**Note:** See the Angular Material Design website's topic on [Natural easing curves](https://material.io/design/motion/speed.html#easing) for general information on easing curves.
+**Note:** See the Material Design website's topic on [Natural easing curves](https://material.io/design/motion/speed.html#easing) for general information on easing curves.
 </div>
 
 This example provides a state transition from `open` to `closed` with a one second transition between states.
@@ -167,9 +166,9 @@ The `trigger()` function describes the property name to watch for changes. When 
 
 In this example, we'll name the trigger `openClose`, and attach it to the `button` element. The trigger describes the open and closed states, and the timings for the two transitions.
 
-<figure>
-<img src="generated/images/guide/animations/triggering-the-animation.png" alt="triggering the animation">
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/animations/triggering-the-animation.png" alt="triggering the animation">
+</div>
 
 <div class="alert is-helpful">
 
@@ -180,9 +179,7 @@ In this example, we'll name the trigger `openClose`, and attach it to the `butto
 
 Animations are defined in the metadata of the component that controls the HTML element to be animated. Put the code that defines your animations under the `animations:` property within the `@Component()` decorator.
 
-<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript"
-region="component" linenums="false">
-</code-example>
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript" region="component"></code-example>
 
 When you've defined an animation trigger for a component, you can attach it to an element in that component's template by wrapping the trigger name in brackets and preceding it with an `@` symbol. Then, you can bind the trigger to a template expression using standard Angular property binding syntax as shown below, where `triggerName` is the name of the trigger, and `expression` evaluates to a defined animation state.
 
@@ -263,7 +260,7 @@ What it does
 </tr>
 
 <tr>
-<td><code>state()</code></td>
+<td><code><a href="api/animations/state" class="code-anchor">state()</a></code></td>
 <td>Creates a named set of CSS styles that should be applied on successful transition to a given state. The state can then be referenced by name within other animation functions.</td>
 </tr>
 
@@ -283,7 +280,7 @@ What it does
 </tr>
 
 <tr>
-<td><code>group()</code></td>
+<td><code><a href="api/animations/group" class="code-anchor">group()</a></code></td>
 <td>Specifies a group of animation steps (<em>inner animations</em>) to be run in parallel. Animation continues only after all inner animation steps have completed. Used within <code>sequence()</code> or <code>transition().</code></td>
 </tr>
 

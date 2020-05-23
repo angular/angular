@@ -1,6 +1,6 @@
 # Service worker in production
 
-This page is a reference for deploying and supporting production apps that use the Angular service worker. It explains how the Angular service worker fits into the larger production environment, the service worker's behavior under various conditions, and available recourses and fail-safes.
+This page is a reference for deploying and supporting production apps that use the Angular service worker. It explains how the Angular service worker fits into the larger production environment, the service worker's behavior under various conditions, and available resources and fail-safes.
 
 #### Prerequisites
 
@@ -147,6 +147,15 @@ normally. However, occasionally a bugfix or feature in the Angular
 service worker requires the invalidation of old caches. In this case,
 the app will be refreshed transparently from the network.
 
+### Bypassing the service worker
+
+In some cases, you may want to bypass the service worker entirely and let the browser handle the
+request instead. An example is when you rely on a feature that is currently not supported in service
+workers (e.g.
+[reporting progress on uploaded files](https://github.com/w3c/ServiceWorker/issues/1141)).
+
+To bypass the service worker you can set `ngsw-bypass` as a request header, or as a query parameter.
+(The value of the header or query parameter is ignored and can be empty or omitted.)
 
 ## Debugging the Angular service worker
 
@@ -198,6 +207,9 @@ There are two possible degraded states:
 clean copy of the latest known version of the app. Older cached
 versions are safe to use, so existing tabs continue to run from
 cache, but new loads of the app will be served from the network.
+The service worker will try to recover from this state when a new
+version of the application is detected and installed (that is,
+when a new `ngsw.json` is available).
 
 * `SAFE_MODE`: the service worker cannot guarantee the safety of
 using cached data. Either an unexpected error occurred or all
@@ -207,6 +219,12 @@ network, running as little service worker code as possible.
 In both cases, the parenthetical annotation provides the
 error that caused the service worker to enter the degraded state.
 
+Both states are temporary; they are saved only for the lifetime of the [ServiceWorker
+instance](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope).
+The browser sometimes terminates an idle service worker to conserve memory and
+processor power, and creates a new service worker instance in response to
+network events. The new instance starts in the `NORMAL` mode, regardless of the
+state of the previous instance.
 
 #### Latest manifest hash
 
@@ -301,7 +319,7 @@ an administrator ever needs to deactivate the service worker quickly.
 ### Fail-safe
 
 To deactivate the service worker, remove or rename the
-`ngsw-config.json` file. When the service worker's request
+`ngsw.json` file. When the service worker's request
 for `ngsw.json` returns a `404`, then the service worker
 removes all of its caches and de-registers itself,
 essentially self-destructing.
@@ -325,6 +343,24 @@ old Service Worker URL forever.
 This script can be used both to deactivate `@angular/service-worker`
 as well as any other Service Workers which might have been served in
 the past on your site.
+
+### Changing your app's location
+
+It is important to note that service workers don't work behind redirect. You 
+may have already encountered the error `The script resource is behind a redirect, which is disallowed`.
+
+This can be a problem if you have to change your app's location. If you setup 
+a redirect from the old location (for example `example.com`) to the new 
+location (for example `www.example.com`) the worker will stop working. 
+Also, the redirect won't even trigger for users who are loading the site 
+entirely from Service Worker. The old worker (registered at `example.com`)
+ tries to update and sends requests to the old location `example.com` which 
+ get redirected to the new location `www.example.com` and create the error 
+`The script resource is behind a redirect, which is disallowed`.
+
+To remedy this, you may need to kill the old worker using one of the above
+techniques ([Fail-safe](#fail-safe) or [Safety Worker](#safety-worker)).
+
 
 ## More on Angular service workers
 

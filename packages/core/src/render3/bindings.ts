@@ -7,14 +7,12 @@
  */
 
 import {devModeEqual} from '../change_detection/change_detection_util';
+import {assertDataInRange, assertLessThan, assertNotSame} from '../util/assert';
 
-import {assertDataInRange, assertLessThan, assertNotEqual} from './assert';
-import {throwErrorIfNoChangesMode} from './errors';
-import {BINDING_INDEX, LView} from './interfaces/view';
-import {getCheckNoChangesMode, isCreationMode} from './state';
+import {getExpressionChangedErrorDetails, throwErrorIfNoChangesMode} from './errors';
+import {LView} from './interfaces/view';
+import {getCheckNoChangesMode} from './state';
 import {NO_CHANGE} from './tokens';
-import {isDifferent} from './util';
-
 
 
 // TODO(misko): consider inlining
@@ -26,32 +24,53 @@ export function updateBinding(lView: LView, bindingIndex: number, value: any): a
 
 /** Gets the current binding value. */
 export function getBinding(lView: LView, bindingIndex: number): any {
-  ngDevMode && assertDataInRange(lView, lView[bindingIndex]);
+  ngDevMode && assertDataInRange(lView, bindingIndex);
   ngDevMode &&
-      assertNotEqual(lView[bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
+      assertNotSame(lView[bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
   return lView[bindingIndex];
 }
 
-/** Updates binding if changed, then returns whether it was updated. */
+/**
+ * Updates binding if changed, then returns whether it was updated.
+ *
+ * This function also checks the `CheckNoChangesMode` and throws if changes are made.
+ * Some changes (Objects/iterables) during `CheckNoChangesMode` are exempt to comply with VE
+ * behavior.
+ *
+ * @param lView current `LView`
+ * @param bindingIndex The binding in the `LView` to check
+ * @param value New value to check against `lView[bindingIndex]`
+ * @returns `true` if the bindings has changed. (Throws if binding has changed during
+ *          `CheckNoChangesMode`)
+ */
 export function bindingUpdated(lView: LView, bindingIndex: number, value: any): boolean {
-  ngDevMode && assertNotEqual(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
+  ngDevMode && assertNotSame(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
   ngDevMode &&
       assertLessThan(bindingIndex, lView.length, `Slot should have been initialized to NO_CHANGE`);
+  const oldValue = lView[bindingIndex];
 
-  if (lView[bindingIndex] === NO_CHANGE) {
-    // initial pass
-    lView[bindingIndex] = value;
-  } else if (isDifferent(lView[bindingIndex], value)) {
+  if (Object.is(oldValue, value)) {
+    return false;
+  } else {
     if (ngDevMode && getCheckNoChangesMode()) {
-      if (!devModeEqual(lView[bindingIndex], value)) {
-        throwErrorIfNoChangesMode(isCreationMode(lView), lView[bindingIndex], value);
+      // View engine didn't report undefined values as changed on the first checkNoChanges pass
+      // (before the change detection was run).
+      const oldValueToCompare = oldValue !== NO_CHANGE ? oldValue : undefined;
+      if (!devModeEqual(oldValueToCompare, value)) {
+        const details =
+            getExpressionChangedErrorDetails(lView, bindingIndex, oldValueToCompare, value);
+        throwErrorIfNoChangesMode(
+            oldValue === NO_CHANGE, details.oldValue, details.newValue, details.propName);
       }
+      // There was a change, but the `devModeEqual` decided that the change is exempt from an error.
+      // For this reason we exit as if no change. The early exit is needed to prevent the changed
+      // value to be written into `LView` (If we would write the new value that we would not see it
+      // as change on next CD.)
+      return false;
     }
     lView[bindingIndex] = value;
-  } else {
-    return false;
+    return true;
   }
-  return true;
 }
 
 /** Updates 2 bindings if changed, then returns whether either was updated. */

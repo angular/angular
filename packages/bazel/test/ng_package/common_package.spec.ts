@@ -6,11 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {obsoleteInIvy} from '@angular/private/testing';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as shx from 'shelljs';
 
-shx.cd(path.join(process.env['TEST_SRCDIR'] !, 'angular', 'packages', 'common', 'npm_package'));
+// Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
+// resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
+// file, which is not necessarily at the root of the "npm_package".
+shx.cd(path.dirname(require.resolve('angular/packages/common/npm_package/package.json')));
 
 describe('@angular/common ng_package', () => {
   describe('should have the locales files', () => {
@@ -26,8 +30,9 @@ describe('@angular/common ng_package', () => {
     });
     // regression test for https://github.com/angular/angular/issues/23217
     // Note, we don't have an e2e test that covers this
-    it('doesn\'t pass require in a way that breaks webpack static analysis',
-       () => { expect(shx.cat('locales/fr.js')).not.toContain('factory(require, exports)'); });
+    it('doesn\'t pass require in a way that breaks webpack static analysis', () => {
+      expect(shx.cat('locales/fr.js')).not.toContain('factory(require, exports)');
+    });
   });
 
   it('should have right bundle files', () => {
@@ -44,6 +49,10 @@ describe('@angular/common ng_package', () => {
       'common-testing.umd.js.map',
       'common-testing.umd.min.js',
       'common-testing.umd.min.js.map',
+      'common-upgrade.umd.js',
+      'common-upgrade.umd.js.map',
+      'common-upgrade.umd.min.js',
+      'common-upgrade.umd.min.js.map',
       'common.umd.js',
       'common.umd.js.map',
       'common.umd.min.js',
@@ -51,8 +60,9 @@ describe('@angular/common ng_package', () => {
     ]);
   });
 
-  it('should reference core using global symbol in umd',
-     () => { expect(shx.cat('bundles/common.umd.js')).toContain('global.ng.core'); });
+  it('should reference core using global symbol in umd', () => {
+    expect(shx.cat('bundles/common.umd.js')).toContain('global.ng.core');
+  });
 
   it('should have right fesm files', () => {
     const expected = [
@@ -65,28 +75,31 @@ describe('@angular/common ng_package', () => {
       'http/testing.js.map',
       'testing.js',
       'testing.js.map',
+      'upgrade.js',
+      'upgrade.js.map',
     ];
-    expect(shx.ls('-R', 'fesm5').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
     expect(shx.ls('-R', 'fesm2015').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
   });
 
   it('should have the correct source map paths', () => {
-    expect(shx.grep('sourceMappingURL', 'fesm5/common.js'))
-        .toMatch('//# sourceMappingURL=common.js.map');
     expect(shx.grep('sourceMappingURL', 'fesm2015/common.js'))
         .toMatch('//# sourceMappingURL=common.js.map');
-    expect(shx.grep('sourceMappingURL', 'fesm5/http.js'))
-        .toMatch('//# sourceMappingURL=http.js.map');
     expect(shx.grep('sourceMappingURL', 'fesm2015/http.js'))
         .toMatch('//# sourceMappingURL=http.js.map');
-    expect(shx.grep('sourceMappingURL', 'fesm5/http/testing.js'))
-        .toMatch('//# sourceMappingURL=testing.js.map');
     expect(shx.grep('sourceMappingURL', 'fesm2015/http/testing.js'))
-        .toMatch('//# sourceMappingURL=testing.js.map');
-    expect(shx.grep('sourceMappingURL', 'fesm5/testing.js'))
         .toMatch('//# sourceMappingURL=testing.js.map');
     expect(shx.grep('sourceMappingURL', 'fesm2015/testing.js'))
         .toMatch('//# sourceMappingURL=testing.js.map');
+    expect(shx.grep('sourceMappingURL', 'fesm2015/upgrade.js'))
+        .toMatch('//# sourceMappingURL=upgrade.js.map');
+  });
+
+  describe('secondary entry-point', () => {
+    obsoleteInIvy(
+        `now that we don't need metadata files, we don't need these redirects to help resolve paths to them`)
+        .it('should contain a root type definition re-export', () => {
+          expect(shx.cat('./testing.d.ts')).toContain(`export * from './testing/testing';`);
+        });
   });
 
 
@@ -101,7 +114,7 @@ describe('@angular/common ng_package', () => {
       const actual = JSON.parse(fs.readFileSync('http/package.json', {encoding: 'utf-8'}));
       expect(actual['main']).toEqual('../bundles/common-http.umd.js');
       expect(actual['es2015']).toEqual('../fesm2015/http.js');
-      expect(actual['module']).toEqual('../fesm5/http.js');
+      expect(actual['module']).toEqual('../fesm2015/http.js');
       expect(actual['typings']).toEqual('./http.d.ts');
     });
     // https://github.com/angular/common-builds/blob/master/testing/package.json
@@ -114,8 +127,16 @@ describe('@angular/common ng_package', () => {
       const actual = JSON.parse(fs.readFileSync('http/testing/package.json', {encoding: 'utf-8'}));
       expect(actual['main']).toEqual('../../bundles/common-http-testing.umd.js');
       expect(actual['es2015']).toEqual('../../fesm2015/http/testing.js');
-      expect(actual['module']).toEqual('../../fesm5/http/testing.js');
+      expect(actual['module']).toEqual('../../fesm2015/http/testing.js');
       expect(actual['typings']).toEqual('./testing.d.ts');
+    });
+    // https://github.com/angular/common-builds/blob/master/upgrade/package.json
+    it('/upgrade', () => {
+      const actual = JSON.parse(fs.readFileSync('upgrade/package.json', {encoding: 'utf-8'}));
+      expect(actual['main']).toEqual('../bundles/common-upgrade.umd.js');
+      expect(actual['es2015']).toEqual('../fesm2015/upgrade.js');
+      expect(actual['module']).toEqual('../fesm2015/upgrade.js');
+      expect(actual['typings']).toEqual('./upgrade.d.ts');
     });
   });
 });

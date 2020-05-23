@@ -7,10 +7,10 @@
  */
 
 import {CompilerConfig, ResourceLoader} from '@angular/compiler';
-import {CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, Inject, Injectable, Injector, Input, NgModule, Optional, Pipe, SkipSelf, ɵstringify as stringify} from '@angular/core';
-import {TestBed, async, fakeAsync, getTestBed, inject, tick, withModule} from '@angular/core/testing';
+import {Compiler, Component, ComponentFactoryResolver, CUSTOM_ELEMENTS_SCHEMA, Directive, Inject, Injectable, InjectionToken, Injector, Input, NgModule, Optional, Pipe, SkipSelf, ɵstringify as stringify} from '@angular/core';
+import {async, fakeAsync, getTestBed, inject, TestBed, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, obsoleteInIvy} from '@angular/private/testing';
+import {ivyEnabled, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 // Services, and components for the tests.
 
@@ -18,7 +18,9 @@ import {fixmeIvy, obsoleteInIvy} from '@angular/private/testing';
 @Injectable()
 class ChildComp {
   childBinding: string;
-  constructor() { this.childBinding = 'Child'; }
+  constructor() {
+    this.childBinding = 'Child';
+  }
 }
 
 @Component({selector: 'child-comp', template: `<span>Mock</span>`})
@@ -52,12 +54,16 @@ class ChildChildComp {
 @Injectable()
 class ChildWithChildComp {
   childBinding: string;
-  constructor() { this.childBinding = 'Child'; }
+  constructor() {
+    this.childBinding = 'Child';
+  }
 }
 
 class FancyService {
   value: string = 'real value';
-  getAsyncValue() { return Promise.resolve('async value'); }
+  getAsyncValue() {
+    return Promise.resolve('async value');
+  }
   getTimeoutValue() {
     return new Promise<string>((resolve, reject) => setTimeout(() => resolve('timeout value'), 10));
   }
@@ -88,13 +94,14 @@ class TestViewProvidersComp {
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
 class SomeDirective {
   // TODO(issue/24571): remove '!'.
-  @Input()
-  someDir !: string;
+  @Input() someDir!: string;
 }
 
 @Pipe({name: 'somePipe'})
 class SomePipe {
-  transform(value: string) { return `transformed ${value}`; }
+  transform(value: string) {
+    return `transformed ${value}`;
+  }
 }
 
 @Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
@@ -112,26 +119,38 @@ class SomeLibModule {
 class CompWithUrlTemplate {
 }
 
+const aTok = new InjectionToken<string>('a');
+const bTok = new InjectionToken<string>('b');
+
 {
   describe('public testing API', () => {
     describe('using the async helper with context passing', () => {
-      beforeEach(function() { this.actuallyDone = false; });
+      type TestContext = {actuallyDone: boolean};
 
-      afterEach(function() { expect(this.actuallyDone).toEqual(true); });
+      beforeEach(function(this: TestContext) {
+        this.actuallyDone = false;
+      });
 
-      it('should run normal tests', function() { this.actuallyDone = true; });
+      afterEach(function(this: TestContext) {
+        expect(this.actuallyDone).toEqual(true);
+      });
 
-      it('should run normal async tests', function(done) {
+      it('should run normal tests', function(this: TestContext) {
+        this.actuallyDone = true;
+      });
+
+      it('should run normal async tests', function(this: TestContext, done) {
         setTimeout(() => {
           this.actuallyDone = true;
           done();
         }, 0);
       });
 
-      it('should run async tests with tasks',
-         async(function() { setTimeout(() => this.actuallyDone = true, 0); }));
+      it('should run async tests with tasks', async(function(this: TestContext) {
+           setTimeout(() => this.actuallyDone = true, 0);
+         }));
 
-      it('should run async tests with promises', async(function() {
+      it('should run async tests with promises', async(function(this: TestContext) {
            const p = new Promise((resolve, reject) => setTimeout(resolve, 10));
            p.then(() => this.actuallyDone = true);
          }));
@@ -142,30 +161,43 @@ class CompWithUrlTemplate {
         providers: [FancyService],
       };
 
-      beforeEach(function() { this.contextModified = false; });
+      type TestContext = {contextModified: boolean};
 
-      afterEach(function() { expect(this.contextModified).toEqual(true); });
+      beforeEach(function(this: TestContext) {
+        this.contextModified = false;
+      });
 
-      it('should pass context to inject helper',
-         inject([], function() { this.contextModified = true; }));
+      afterEach(function(this: TestContext) {
+        expect(this.contextModified).toEqual(true);
+      });
 
-      it('should pass context to fakeAsync helper',
-         fakeAsync(function() { this.contextModified = true; }));
-
-      it('should pass context to withModule helper - simple',
-         withModule(moduleConfig, function() { this.contextModified = true; }));
-
-      it('should pass context to withModule helper - advanced',
-         withModule(moduleConfig).inject([FancyService], function(service: FancyService) {
-           expect(service.value).toBe('real value');
+      it('should pass context to inject helper', inject([], function(this: TestContext) {
            this.contextModified = true;
          }));
 
+      it('should pass context to fakeAsync helper', fakeAsync(function(this: TestContext) {
+           this.contextModified = true;
+         }));
+
+      it('should pass context to withModule helper - simple',
+         withModule(moduleConfig, function(this: TestContext) {
+           this.contextModified = true;
+         }));
+
+      it('should pass context to withModule helper - advanced',
+         withModule(moduleConfig)
+             .inject([FancyService], function(this: TestContext, service: FancyService) {
+               expect(service.value).toBe('real value');
+               this.contextModified = true;
+             }));
+
       it('should preserve context when async and inject helpers are combined',
-         async(inject([], function() { setTimeout(() => this.contextModified = true, 0); })));
+         async(inject([], function(this: TestContext) {
+           setTimeout(() => this.contextModified = true, 0);
+         })));
 
       it('should preserve context when fakeAsync and inject helpers are combined',
-         fakeAsync(inject([], function() {
+         fakeAsync(inject([], function(this: TestContext) {
            setTimeout(() => this.contextModified = true, 0);
            tick(1);
          })));
@@ -189,7 +221,7 @@ class CompWithUrlTemplate {
 
           it('should allow the use of fakeAsync',
              fakeAsync(inject([FancyService], (service: FancyService) => {
-               let value: string = undefined !;
+               let value: string = undefined!;
                service.getAsyncValue().then((val) => value = val);
                tick();
                expect(value).toEqual('async value');
@@ -251,14 +283,13 @@ class CompWithUrlTemplate {
           expect(compFixture.componentInstance).toBeAnInstanceOf(CompUsingModuleDirectiveAndPipe);
         });
 
-        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-            .it('should use set up directives and pipes', () => {
-              const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
-              const el = compFixture.debugElement;
+        it('should use set up directives and pipes', () => {
+          const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
+          const el = compFixture.debugElement;
 
-              compFixture.detectChanges();
-              expect(el.children[0].properties['title']).toBe('transformed someValue');
-            });
+          compFixture.detectChanges();
+          expect(el.children[0].properties['title']).toBe('transformed someValue');
+        });
 
         it('should use set up imported modules',
            inject([SomeLibModule], (libModule: SomeLibModule) => {
@@ -289,14 +320,13 @@ class CompWithUrlTemplate {
              expect(service.value).toEqual('real value');
            }));
 
-        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-            .it('should use set up directives and pipes', withModule(moduleConfig, () => {
-                  const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
-                  const el = compFixture.debugElement;
+        it('should use set up directives and pipes', withModule(moduleConfig, () => {
+             const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
+             const el = compFixture.debugElement;
 
-                  compFixture.detectChanges();
-                  expect(el.children[0].properties['title']).toBe('transformed someValue');
-                }));
+             compFixture.detectChanges();
+             expect(el.children[0].properties['title']).toBe('transformed someValue');
+           }));
 
         it('should use set up library modules',
            withModule(moduleConfig).inject([SomeLibModule], (libModule: SomeLibModule) => {
@@ -311,18 +341,19 @@ class CompWithUrlTemplate {
         }));
 
         isBrowser &&
-            fixmeIvy('FW-553: TestBed is unaware of async compilation')
-                .it('should allow to createSync components with templateUrl after explicit async compilation',
-                    () => {
-                      const fixture = TestBed.createComponent(CompWithUrlTemplate);
-                      expect(fixture.nativeElement).toHaveText('from external template');
-                    });
+            it('should allow to createSync components with templateUrl after explicit async compilation',
+               () => {
+                 const fixture = TestBed.createComponent(CompWithUrlTemplate);
+                 expect(fixture.nativeElement).toHaveText('from external template');
+               });
       });
 
       describe('overwriting metadata', () => {
         @Pipe({name: 'undefined'})
         class SomePipe {
-          transform(value: string): string { return `transformed ${value}`; }
+          transform(value: string): string {
+            return `transformed ${value}`;
+          }
         }
 
         @Directive({selector: '[undefined]'})
@@ -372,12 +403,11 @@ class CompWithUrlTemplate {
                 .overrideDirective(
                     SomeDirective, {set: {selector: '[someDir]', host: {'[title]': 'someProp'}}});
           });
-          fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-              .it('should work', () => {
-                const compFixture = TestBed.createComponent(SomeComponent);
-                compFixture.detectChanges();
-                expect(compFixture.debugElement.children[0].properties['title']).toEqual('hello');
-              });
+          it('should work', () => {
+            const compFixture = TestBed.createComponent(SomeComponent);
+            compFixture.detectChanges();
+            expect(compFixture.debugElement.children[0].properties['title']).toEqual('hello');
+          });
         });
 
         describe('pipe', () => {
@@ -412,142 +442,130 @@ class CompWithUrlTemplate {
       });
 
       describe('overriding providers', () => {
+        describe('in core', () => {
+          it('ComponentFactoryResolver', () => {
+            const componentFactoryMock =
+                jasmine.createSpyObj('componentFactory', ['resolveComponentFactory']);
+            TestBed.overrideProvider(ComponentFactoryResolver, {useValue: componentFactoryMock});
+            expect(TestBed.get(ComponentFactoryResolver)).toEqual(componentFactoryMock);
+          });
+        });
+
         describe('in NgModules', () => {
           it('should support useValue', () => {
             TestBed.configureTestingModule({
               providers: [
-                {provide: 'a', useValue: 'aValue'},
+                {provide: aTok, useValue: 'aValue'},
               ]
             });
-            TestBed.overrideProvider('a', {useValue: 'mockValue'});
-            expect(TestBed.get('a')).toBe('mockValue');
+            TestBed.overrideProvider(aTok, {useValue: 'mockValue'});
+            expect(TestBed.inject(aTok)).toBe('mockValue');
           });
 
           it('should support useFactory', () => {
             TestBed.configureTestingModule({
               providers: [
                 {provide: 'dep', useValue: 'depValue'},
-                {provide: 'a', useValue: 'aValue'},
+                {provide: aTok, useValue: 'aValue'},
               ]
             });
             TestBed.overrideProvider(
-                'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: ['dep']});
-            expect(TestBed.get('a')).toBe('mockA: depValue');
+                aTok, {useFactory: (dep: any) => `mockA: ${dep}`, deps: ['dep']});
+            expect(TestBed.inject(aTok)).toBe('mockA: depValue');
           });
 
           it('should support @Optional without matches', () => {
             TestBed.configureTestingModule({
               providers: [
-                {provide: 'a', useValue: 'aValue'},
+                {provide: aTok, useValue: 'aValue'},
               ]
             });
             TestBed.overrideProvider(
-                'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new Optional(), 'dep']]});
-            expect(TestBed.get('a')).toBe('mockA: null');
+                aTok, {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new Optional(), 'dep']]});
+            expect(TestBed.inject(aTok)).toBe('mockA: null');
           });
 
           it('should support Optional with matches', () => {
             TestBed.configureTestingModule({
               providers: [
                 {provide: 'dep', useValue: 'depValue'},
-                {provide: 'a', useValue: 'aValue'},
+                {provide: aTok, useValue: 'aValue'},
               ]
             });
             TestBed.overrideProvider(
-                'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new Optional(), 'dep']]});
-            expect(TestBed.get('a')).toBe('mockA: depValue');
+                aTok, {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new Optional(), 'dep']]});
+            expect(TestBed.inject(aTok)).toBe('mockA: depValue');
           });
 
-          fixmeIvy('FW-855: TestBed.get(Compiler) should return TestBed-specific Compiler instance')
-              .it('should support SkipSelf', () => {
-                @NgModule({
-                  providers: [
-                    {provide: 'a', useValue: 'aValue'},
-                    {provide: 'dep', useValue: 'depValue'},
-                  ]
-                })
-                class MyModule {
-                }
+          it('should support SkipSelf', () => {
+            @NgModule({
+              providers: [
+                {provide: aTok, useValue: 'aValue'},
+                {provide: 'dep', useValue: 'depValue'},
+              ]
+            })
+            class MyModule {
+            }
 
-                TestBed.overrideProvider(
-                    'a',
-                    {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new SkipSelf(), 'dep']]});
-                TestBed.configureTestingModule(
-                    {providers: [{provide: 'dep', useValue: 'parentDepValue'}]});
+            TestBed.overrideProvider(
+                aTok, {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new SkipSelf(), 'dep']]});
+            TestBed.configureTestingModule(
+                {providers: [{provide: 'dep', useValue: 'parentDepValue'}]});
 
-                const compiler = TestBed.get(Compiler) as Compiler;
-                const modFactory = compiler.compileModuleSync(MyModule);
-                expect(modFactory.create(getTestBed()).injector.get('a'))
-                    .toBe('mockA: parentDepValue');
-              });
+            const compiler = TestBed.inject(Compiler);
+            const modFactory = compiler.compileModuleSync(MyModule);
+            expect(modFactory.create(getTestBed()).injector.get(aTok))
+                .toBe('mockA: parentDepValue');
+          });
 
           it('should keep imported NgModules eager', () => {
             let someModule: SomeModule|undefined;
 
             @NgModule()
             class SomeModule {
-              constructor() { someModule = this; }
+              constructor() {
+                someModule = this;
+              }
             }
 
             TestBed.configureTestingModule({
               providers: [
-                {provide: 'a', useValue: 'aValue'},
+                {provide: aTok, useValue: 'aValue'},
               ],
               imports: [SomeModule]
             });
-            TestBed.overrideProvider('a', {useValue: 'mockValue'});
+            TestBed.overrideProvider(aTok, {useValue: 'mockValue'});
 
-            expect(TestBed.get('a')).toBe('mockValue');
+            expect(TestBed.inject(aTok)).toBe('mockValue');
             expect(someModule).toBeAnInstanceOf(SomeModule);
           });
-
-          obsoleteInIvy(`deprecated method, won't be reimplemented for Render3`)
-              .it('should keep imported NgModules lazy with deprecatedOverrideProvider', () => {
-                let someModule: SomeModule|undefined;
-
-                @NgModule()
-                class SomeModule {
-                  constructor() { someModule = this; }
-                }
-
-                TestBed.configureTestingModule({
-                  providers: [
-                    {provide: 'a', useValue: 'aValue'},
-                  ],
-                  imports: [SomeModule]
-                });
-                TestBed.deprecatedOverrideProvider('a', {useValue: 'mockValue'});
-
-                expect(TestBed.get('a')).toBe('mockValue');
-                expect(someModule).toBeUndefined();
-              });
 
           describe('injecting eager providers into an eager overwritten provider', () => {
             @NgModule({
               providers: [
-                {provide: 'a', useFactory: () => 'aValue'},
-                {provide: 'b', useFactory: () => 'bValue'},
+                {provide: aTok, useFactory: () => 'aValue'},
+                {provide: bTok, useFactory: () => 'bValue'},
               ]
             })
             class MyModule {
               // NgModule is eager, which makes all of its deps eager
-              constructor(@Inject('a') a: any, @Inject('b') b: any) {}
+              constructor(@Inject(aTok) a: any, @Inject(bTok) b: any) {}
             }
 
             it('should inject providers that were declared before', () => {
               TestBed.configureTestingModule({imports: [MyModule]});
               TestBed.overrideProvider(
-                  'b', {useFactory: (a: string) => `mockB: ${a}`, deps: ['a']});
+                  bTok, {useFactory: (a: string) => `mockB: ${a}`, deps: [aTok]});
 
-              expect(TestBed.get('b')).toBe('mockB: aValue');
+              expect(TestBed.inject(bTok)).toBe('mockB: aValue');
             });
 
             it('should inject providers that were declared afterwards', () => {
               TestBed.configureTestingModule({imports: [MyModule]});
               TestBed.overrideProvider(
-                  'a', {useFactory: (b: string) => `mockA: ${b}`, deps: ['b']});
+                  aTok, {useFactory: (b: string) => `mockA: ${b}`, deps: [bTok]});
 
-              expect(TestBed.get('a')).toBe('mockA: bValue');
+              expect(TestBed.inject(aTok)).toBe('mockA: bValue');
             });
           });
         });
@@ -557,17 +575,17 @@ class CompWithUrlTemplate {
             @Component({
               template: '',
               providers: [
-                {provide: 'a', useValue: 'aValue'},
+                {provide: aTok, useValue: 'aValue'},
               ]
             })
             class MComp {
             }
 
-            TestBed.overrideProvider('a', {useValue: 'mockValue'});
+            TestBed.overrideProvider(aTok, {useValue: 'mockValue'});
             const ctx =
                 TestBed.configureTestingModule({declarations: [MComp]}).createComponent(MComp);
 
-            expect(ctx.debugElement.injector.get('a')).toBe('mockValue');
+            expect(ctx.debugElement.injector.get(aTok)).toBe('mockValue');
           });
 
           it('should support useFactory', () => {
@@ -575,36 +593,36 @@ class CompWithUrlTemplate {
               template: '',
               providers: [
                 {provide: 'dep', useValue: 'depValue'},
-                {provide: 'a', useValue: 'aValue'},
+                {provide: aTok, useValue: 'aValue'},
               ]
             })
             class MyComp {
             }
 
             TestBed.overrideProvider(
-                'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: ['dep']});
+                aTok, {useFactory: (dep: any) => `mockA: ${dep}`, deps: ['dep']});
             const ctx =
                 TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
 
-            expect(ctx.debugElement.injector.get('a')).toBe('mockA: depValue');
+            expect(ctx.debugElement.injector.get(aTok)).toBe('mockA: depValue');
           });
 
           it('should support @Optional without matches', () => {
             @Component({
               template: '',
               providers: [
-                {provide: 'a', useValue: 'aValue'},
+                {provide: aTok, useValue: 'aValue'},
               ]
             })
             class MyComp {
             }
 
             TestBed.overrideProvider(
-                'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new Optional(), 'dep']]});
+                aTok, {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new Optional(), 'dep']]});
             const ctx =
                 TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
 
-            expect(ctx.debugElement.injector.get('a')).toBe('mockA: null');
+            expect(ctx.debugElement.injector.get(aTok)).toBe('mockA: null');
           });
 
           it('should support Optional with matches', () => {
@@ -612,25 +630,25 @@ class CompWithUrlTemplate {
               template: '',
               providers: [
                 {provide: 'dep', useValue: 'depValue'},
-                {provide: 'a', useValue: 'aValue'},
+                {provide: aTok, useValue: 'aValue'},
               ]
             })
             class MyComp {
             }
 
             TestBed.overrideProvider(
-                'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new Optional(), 'dep']]});
+                aTok, {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new Optional(), 'dep']]});
             const ctx =
                 TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
 
-            expect(ctx.debugElement.injector.get('a')).toBe('mockA: depValue');
+            expect(ctx.debugElement.injector.get(aTok)).toBe('mockA: depValue');
           });
 
           it('should support SkipSelf', () => {
             @Directive({
               selector: '[myDir]',
               providers: [
-                {provide: 'a', useValue: 'aValue'},
+                {provide: aTok, useValue: 'aValue'},
                 {provide: 'dep', useValue: 'depValue'},
               ]
             })
@@ -647,17 +665,17 @@ class CompWithUrlTemplate {
             }
 
             TestBed.overrideProvider(
-                'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new SkipSelf(), 'dep']]});
+                aTok, {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new SkipSelf(), 'dep']]});
             const ctx = TestBed.configureTestingModule({declarations: [MyComp, MyDir]})
                             .createComponent(MyComp);
-            expect(ctx.debugElement.children[0].injector.get('a')).toBe('mockA: parentDepValue');
+            expect(ctx.debugElement.children[0].injector.get(aTok)).toBe('mockA: parentDepValue');
           });
 
           it('should support multiple providers in a template', () => {
             @Directive({
               selector: '[myDir1]',
               providers: [
-                {provide: 'a', useValue: 'aValue1'},
+                {provide: aTok, useValue: 'aValue1'},
               ]
             })
             class MyDir1 {
@@ -666,7 +684,7 @@ class CompWithUrlTemplate {
             @Directive({
               selector: '[myDir2]',
               providers: [
-                {provide: 'a', useValue: 'aValue2'},
+                {provide: aTok, useValue: 'aValue2'},
               ]
             })
             class MyDir2 {
@@ -678,130 +696,135 @@ class CompWithUrlTemplate {
             class MyComp {
             }
 
-            TestBed.overrideProvider('a', {useValue: 'mockA'});
+            TestBed.overrideProvider(aTok, {useValue: 'mockA'});
             const ctx = TestBed.configureTestingModule({declarations: [MyComp, MyDir1, MyDir2]})
                             .createComponent(MyComp);
-            expect(ctx.debugElement.children[0].injector.get('a')).toBe('mockA');
-            expect(ctx.debugElement.children[1].injector.get('a')).toBe('mockA');
+            expect(ctx.debugElement.children[0].injector.get(aTok)).toBe('mockA');
+            expect(ctx.debugElement.children[1].injector.get(aTok)).toBe('mockA');
           });
 
           describe('injecting eager providers into an eager overwritten provider', () => {
             @Component({
               template: '',
               providers: [
-                {provide: 'a', useFactory: () => 'aValue'},
-                {provide: 'b', useFactory: () => 'bValue'},
+                {provide: aTok, useFactory: () => 'aValue'},
+                {provide: bTok, useFactory: () => 'bValue'},
               ]
             })
             class MyComp {
               // Component is eager, which makes all of its deps eager
-              constructor(@Inject('a') a: any, @Inject('b') b: any) {}
+              constructor(@Inject(aTok) a: any, @Inject(bTok) b: any) {}
             }
 
             it('should inject providers that were declared before it', () => {
               TestBed.overrideProvider(
-                  'b', {useFactory: (a: string) => `mockB: ${a}`, deps: ['a']});
+                  bTok, {useFactory: (a: string) => `mockB: ${a}`, deps: [aTok]});
               const ctx =
                   TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
 
-              expect(ctx.debugElement.injector.get('b')).toBe('mockB: aValue');
+              expect(ctx.debugElement.injector.get(bTok)).toBe('mockB: aValue');
             });
 
             it('should inject providers that were declared after it', () => {
               TestBed.overrideProvider(
-                  'a', {useFactory: (b: string) => `mockA: ${b}`, deps: ['b']});
+                  aTok, {useFactory: (b: string) => `mockA: ${b}`, deps: [bTok]});
               const ctx =
                   TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
 
-              expect(ctx.debugElement.injector.get('a')).toBe('mockA: bValue');
+              expect(ctx.debugElement.injector.get(aTok)).toBe('mockA: bValue');
             });
           });
         });
 
         it('should reset overrides when the testing modules is resetted', () => {
-          TestBed.overrideProvider('a', {useValue: 'mockValue'});
+          TestBed.overrideProvider(aTok, {useValue: 'mockValue'});
           TestBed.resetTestingModule();
-          TestBed.configureTestingModule({providers: [{provide: 'a', useValue: 'aValue'}]});
-          expect(TestBed.get('a')).toBe('aValue');
+          TestBed.configureTestingModule({providers: [{provide: aTok, useValue: 'aValue'}]});
+          expect(TestBed.inject(aTok)).toBe('aValue');
         });
       });
 
       describe('overrideTemplateUsingTestingModule', () => {
-        fixmeIvy('FW-851: TestBed.overrideTemplateUsingTestingModule is not implemented')
-            .it('should compile the template in the context of the testing module', () => {
-              @Component({selector: 'comp', template: 'a'})
-              class MyComponent {
-                prop = 'some prop';
-              }
+        it('should compile the template in the context of the testing module', () => {
+          @Component({selector: 'comp', template: 'a'})
+          class MyComponent {
+            prop = 'some prop';
+          }
 
-              let testDir: TestDir|undefined;
+          let testDir: TestDir|undefined;
 
-              @Directive({selector: '[test]'})
-              class TestDir {
-                constructor() { testDir = this; }
+          @Directive({selector: '[test]'})
+          class TestDir {
+            constructor() {
+              testDir = this;
+            }
 
-                // TODO(issue/24571): remove '!'.
-                @Input('test')
-                test !: string;
-              }
+            // TODO(issue/24571): remove '!'.
+            @Input('test') test!: string;
+          }
 
-              TestBed.overrideTemplateUsingTestingModule(
-                  MyComponent, '<div [test]="prop">Hello world!</div>');
+          TestBed.overrideTemplateUsingTestingModule(
+              MyComponent, '<div [test]="prop">Hello world!</div>');
 
-              const fixture = TestBed.configureTestingModule({declarations: [MyComponent, TestDir]})
-                                  .createComponent(MyComponent);
-              fixture.detectChanges();
-              expect(fixture.nativeElement).toHaveText('Hello world!');
-              expect(testDir).toBeAnInstanceOf(TestDir);
-              expect(testDir !.test).toBe('some prop');
-            });
+          const fixture = TestBed.configureTestingModule({declarations: [MyComponent, TestDir]})
+                              .createComponent(MyComponent);
+          fixture.detectChanges();
+          expect(fixture.nativeElement).toHaveText('Hello world!');
+          expect(testDir).toBeAnInstanceOf(TestDir);
+          expect(testDir!.test).toBe('some prop');
+        });
 
-        fixmeIvy('FW-851: TestBed.overrideTemplateUsingTestingModule is not implemented')
-            .it('should throw if the TestBed is already created', () => {
-              @Component({selector: 'comp', template: 'a'})
-              class MyComponent {
-              }
+        it('should throw if the TestBed is already created', () => {
+          @Component({selector: 'comp', template: 'a'})
+          class MyComponent {
+          }
 
-              TestBed.get(Injector);
+          TestBed.inject(Injector);
 
-              expect(() => TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b'))
-                  .toThrowError(
-                      /Cannot override template when the test module has already been instantiated/);
-            });
+          expect(() => TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b'))
+              .toThrowError(
+                  /Cannot override template when the test module has already been instantiated/);
+        });
 
-        fixmeIvy('FW-851: TestBed.overrideTemplateUsingTestingModule is not implemented')
-            .it('should reset overrides when the testing module is resetted', () => {
-              @Component({selector: 'comp', template: 'a'})
-              class MyComponent {
-              }
+        it('should reset overrides when the testing module is resetted', () => {
+          @Component({selector: 'comp', template: 'a'})
+          class MyComponent {
+          }
 
-              TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b');
+          TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b');
 
-              const fixture = TestBed.resetTestingModule()
-                                  .configureTestingModule({declarations: [MyComponent]})
-                                  .createComponent(MyComponent);
-              expect(fixture.nativeElement).toHaveText('a');
-            });
+          const fixture = TestBed.resetTestingModule()
+                              .configureTestingModule({declarations: [MyComponent]})
+                              .createComponent(MyComponent);
+          expect(fixture.nativeElement).toHaveText('a');
+        });
       });
 
       describe('setting up the compiler', () => {
-
         describe('providers', () => {
-          beforeEach(() => {
-            const resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
-                                          .and.returnValue(Promise.resolve('Hello world!'));
-            TestBed.configureTestingModule({declarations: [CompWithUrlTemplate]});
-            TestBed.configureCompiler(
-                {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
-          });
+          it('should use set up providers', fakeAsync(() => {
+               // Keeping this component inside the test is needed to make sure it's not resolved
+               // prior to this test, thus having ɵcmp and a reference in resource
+               // resolution queue. This is done to check external resoution logic in isolation by
+               // configuring TestBed with the necessary ResourceLoader instance.
+               @Component({
+                 selector: 'comp',
+                 templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
+               })
+               class InternalCompWithUrlTemplate {
+               }
 
-          fixmeIvy('FW-553: TestBed is unaware of async compilation')
-              .it('should use set up providers', fakeAsync(() => {
-                    TestBed.compileComponents();
-                    tick();
-                    const compFixture = TestBed.createComponent(CompWithUrlTemplate);
-                    expect(compFixture.nativeElement).toHaveText('Hello world!');
-                  }));
+               const resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
+                                             .and.returnValue(Promise.resolve('Hello world!'));
+               TestBed.configureTestingModule({declarations: [InternalCompWithUrlTemplate]});
+               TestBed.configureCompiler(
+                   {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
+
+               TestBed.compileComponents();
+               tick();
+               const compFixture = TestBed.createComponent(InternalCompWithUrlTemplate);
+               expect(compFixture.nativeElement).toHaveText('Hello world!');
+             }));
         });
 
         describe('useJit true', () => {
@@ -869,8 +892,9 @@ class CompWithUrlTemplate {
         const itPromise = patchJasmineIt();
         const barError = new Error('bar');
 
-        it('throws an async error',
-           async(inject([], () => setTimeout(() => { throw barError; }, 0))));
+        it('throws an async error', async(inject([], () => setTimeout(() => {
+                                                       throw barError;
+                                                     }, 0))));
 
         itPromise.then(() => done.fail('Expected test to fail, but it did not'), (err) => {
           expect(err).toEqual(barError);
@@ -883,7 +907,7 @@ class CompWithUrlTemplate {
         const itPromise = patchJasmineIt();
 
         it('should fail with an error from a promise', async(inject([], () => {
-             let reject: (error: any) => void = undefined !;
+             let reject: (error: any) => void = undefined!;
              const promise = new Promise((_, rej) => reject = rej);
              const p = promise.then(() => expect(1).toEqual(2));
 
@@ -907,27 +931,39 @@ class CompWithUrlTemplate {
               {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
         });
 
-        fixmeIvy('FW-553: TestBed is unaware of async compilation')
-            .it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',
-                () => {
-                  const itPromise = patchJasmineIt();
+        it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',
+           () => {
+             const itPromise = patchJasmineIt();
 
-                  expect(
-                      () => it(
-                          'should fail', withModule(
-                                             {declarations: [CompWithUrlTemplate]},
-                                             () => TestBed.createComponent(CompWithUrlTemplate))))
-                      .toThrowError(
-                          `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
-                          `Please call "TestBed.compileComponents" before your test.`);
+             @Component({
+               selector: 'comp',
+               templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
+             })
+             class InlineCompWithUrlTemplate {
+             }
 
-                  restoreJasmineIt();
-                });
+             expect(
+                 () =>
+                     it('should fail',
+                        withModule(
+                            {declarations: [InlineCompWithUrlTemplate]},
+                            () => TestBed.createComponent(InlineCompWithUrlTemplate))))
+                 .toThrowError(
+                     ivyEnabled ?
+                         `Component 'InlineCompWithUrlTemplate' is not resolved:
+ - templateUrl: /base/angular/packages/platform-browser/test/static_assets/test.html
+Did you run and wait for 'resolveComponentResources()'?` :
+                         `This test module uses the component ${
+                             stringify(
+                                 InlineCompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
+                             `Please call "TestBed.compileComponents" before your test.`);
 
+             restoreJasmineIt();
+           });
       });
 
 
-      fixmeIvy(`FW-721: Bindings to unknown properties are not reported as errors`)
+      modifiedInIvy(`Unknown property error thrown instead of logging a message`)
           .it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
             class ComponentUsingInvalidProperty {
@@ -945,10 +981,23 @@ class CompWithUrlTemplate {
 
             restoreJasmineIt();
           });
+
+      onlyInIvy(`Unknown property error logged instead of throwing`)
+          .it('should error on unknown bound properties on custom elements by default', () => {
+            @Component({template: '<div [someUnknownProp]="true"></div>'})
+            class ComponentUsingInvalidProperty {
+            }
+
+            const spy = spyOn(console, 'error');
+            withModule({declarations: [ComponentUsingInvalidProperty]}, () => {
+              const fixture = TestBed.createComponent(ComponentUsingInvalidProperty);
+              fixture.detectChanges();
+            })();
+            expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'someUnknownProp'/);
+          });
     });
 
     describe('creating components', () => {
-
       beforeEach(() => {
         TestBed.configureTestingModule({
           declarations: [
@@ -984,7 +1033,6 @@ class CompWithUrlTemplate {
            const componentFixture = TestBed.createComponent(ChildComp);
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('Mock');
-
          }));
 
       it('should override a provider', async(() => {
@@ -1018,7 +1066,6 @@ class CompWithUrlTemplate {
       });
 
       it('should override component dependencies', async(() => {
-
            const componentFixture = TestBed.createComponent(ParentComp);
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('Parent(Mock)');

@@ -10,7 +10,7 @@ export interface AttrMap {
  * Attribute map keys are forced lowercase for case-insensitive lookup.
  * @param el The source of the attributes.
  */
-export function getAttrs(el:  HTMLElement | ElementRef): AttrMap {
+export function getAttrs(el: HTMLElement | ElementRef): AttrMap {
   const attrs: NamedNodeMap = el instanceof ElementRef ? el.nativeElement.attributes : el.attributes;
   const attrMap: AttrMap = {};
   for (const attr of attrs as any as Attr[] /* cast due to https://github.com/Microsoft/TypeScript/issues/2695 */) {
@@ -47,7 +47,7 @@ export function boolFromValue(attrValue: string | undefined, def: boolean = fals
  * @param def Default boolean value when attribute is undefined.
  */
 export function getBoolFromAttribute(
-  el:  HTMLElement | ElementRef,
+  el: HTMLElement | ElementRef,
   attr: string | string[],
   def: boolean = false): boolean {
   return boolFromValue(getAttrValue(getAttrs(el), attr), def);

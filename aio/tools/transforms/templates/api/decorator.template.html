@@ -26,7 +26,7 @@
       </tr>
       <tr>
         <td>
-          <code-example language="ts" hideCopy="true" class="no-box api-heading">
+          <code-example language="ts" hideCopy="true" class="no-box api-heading{% if option.deprecated %} deprecated-api-item{% endif %}">
           {$ option.name $}: {$ option.type | escape $}
           </code-example>
         </td>

@@ -20,16 +20,21 @@ export class CompilerConfig {
   public preserveWhitespaces: boolean;
   public strictInjectionParameters: boolean;
 
-  constructor(
-      {defaultEncapsulation = ViewEncapsulation.Emulated, useJit = true, jitDevMode = false,
-       missingTranslation = null, preserveWhitespaces, strictInjectionParameters}: {
-        defaultEncapsulation?: ViewEncapsulation,
-        useJit?: boolean,
-        jitDevMode?: boolean,
-        missingTranslation?: MissingTranslationStrategy|null,
-        preserveWhitespaces?: boolean,
-        strictInjectionParameters?: boolean,
-      } = {}) {
+  constructor({
+    defaultEncapsulation = ViewEncapsulation.Emulated,
+    useJit = true,
+    jitDevMode = false,
+    missingTranslation = null,
+    preserveWhitespaces,
+    strictInjectionParameters
+  }: {
+    defaultEncapsulation?: ViewEncapsulation,
+    useJit?: boolean,
+    jitDevMode?: boolean,
+    missingTranslation?: MissingTranslationStrategy|null,
+    preserveWhitespaces?: boolean,
+    strictInjectionParameters?: boolean,
+  } = {}) {
     this.defaultEncapsulation = defaultEncapsulation;
     this.useJit = !!useJit;
     this.jitDevMode = !!jitDevMode;
@@ -40,6 +45,6 @@ export class CompilerConfig {
 }
 
 export function preserveWhitespacesDefault(
-    preserveWhitespacesOption: boolean | null, defaultSetting = false): boolean {
+    preserveWhitespacesOption: boolean|null, defaultSetting = false): boolean {
   return preserveWhitespacesOption === null ? defaultSetting : preserveWhitespacesOption;
 }

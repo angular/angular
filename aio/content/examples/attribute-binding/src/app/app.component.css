@@ -1,0 +1,22 @@
+.special {
+  background-color: #1976d2;
+  color: #ffffff;
+}
+
+.item {
+  font-weight: bold;
+}
+.clearance {
+  border: 2px solid #d41e2e;
+
+}
+.item-clearance {
+  font-style: italic;
+
+}
+
+.new-class {
+  background-color: #ed1b2f;
+  font-style: italic;
+  color: #fff;
+}

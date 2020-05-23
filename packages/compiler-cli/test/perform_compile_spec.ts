@@ -10,7 +10,7 @@ import * as path from 'path';
 
 import {readConfiguration} from '../src/perform_compile';
 
-import {TestSupport, setup} from './test_support';
+import {setup, TestSupport} from './test_support';
 
 describe('perform_compile', () => {
   let support: TestSupport;
@@ -55,4 +55,26 @@ describe('perform_compile', () => {
     expect(options.skipMetadataEmit).toBe(true);
   });
 
+  it(`should return 'enableIvy: true' when enableIvy is not defined in "angularCompilerOptions"`,
+     () => {
+       writeSomeConfigs();
+       const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+       expect(options.enableIvy).toBe(true);
+     });
+
+  it(`should return 'enableIvy: false' when enableIvy is disabled in "angularCompilerOptions"`,
+     () => {
+       writeSomeConfigs();
+       support.writeFiles({
+         'tsconfig-level-3.json': `{
+          "angularCompilerOptions": {
+            "enableIvy": false
+          }
+        }
+      `,
+       });
+
+       const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+       expect(options.enableIvy).toBe(false);
+     });
 });

@@ -1,10 +1,14 @@
 <!doctype html>
 <html>
+<head>
+  <!-- Prevent the browser from requesting any favicon. -->
+  <link rel="icon" href="data:,">
+</head>
 <body>
   <h2>Params</h2>
   <form>
     Depth:
-    <input type="number" name="depth" placeholder="depth" value="9">
+    <input type="number" name="depth" placeholder="depth" value="10">
     <br>
     <button>Apply</button>
   </form>
@@ -21,6 +25,7 @@
     <tree id="root"></tree>
   </div>
 
-  <script src="../../bootstrap_ng2.js"></script>
+  <!--load location for ts_devserver-->
+  <script src="/app_bundle.js"></script>
 </body>
 </html>

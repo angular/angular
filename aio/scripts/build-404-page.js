@@ -9,7 +9,7 @@ const SRC_DIR = resolve(__dirname, '../src');
 const DIST_DIR = resolve(__dirname, '../dist');
 
 // Run
-_main(process.argv.slice(2));
+_main();
 
 // Functions - Definitions
 function _main() {

@@ -1,0 +1,32 @@
+{
+  "seq": 0,
+  "type": "response",
+  "command": "definitionAndBoundSpan",
+  "request_seq": 2,
+  "success": true,
+  "body": {
+    "definitions": [
+      {
+        "file": "${PWD}/project/app/app.component.ts",
+        "start": {
+          "line": 7,
+          "offset": 30
+        },
+        "end": {
+          "line": 7,
+          "offset": 47
+        }
+      }
+    ],
+    "textSpan": {
+      "start": {
+        "line": 5,
+        "offset": 26
+      },
+      "end": {
+        "line": 5,
+        "offset": 30
+      }
+    }
+  }
+}

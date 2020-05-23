@@ -1,0 +1,14 @@
+{
+  "targets": [
+    {
+      "path": "dist/zone-evergreen.min.js",
+      "checkTarget": true,
+      "limit": 43000
+    },
+    {
+      "path": "dist/zone.min.js",
+      "checkTarget": true,
+      "limit": 45000
+    }
+  ]
+}

@@ -16,10 +16,12 @@ import {createComponent} from './util';
 describe('template codegen output', () => {
   const outDir = 'src';
 
-  it('should lower Decorators without reflect-metadata', () => {
-    const jsOutput = path.join(outDir, 'basic.js');
-    expect(fs.existsSync(jsOutput)).toBeTruthy();
-    expect(fs.readFileSync(jsOutput, {encoding: 'utf-8'})).not.toContain('Reflect.decorate');
+  it('should be able to lower annotations as static fields', () => {
+    const basicFilePath = path.join(outDir, 'basic.js');
+    expect(fs.existsSync(basicFilePath)).toBeTruthy();
+    const fileContent = fs.readFileSync(basicFilePath, 'utf8');
+    expect(fileContent).not.toContain('Reflect.decorate');
+    expect(fileContent).toContain('BasicComp.decorators = [');
   });
 
   it('should produce metadata.json outputs', () => {

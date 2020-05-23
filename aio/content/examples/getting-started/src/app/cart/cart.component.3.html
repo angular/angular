@@ -1,0 +1,19 @@
+<!-- #docplaster -->
+<h3>Cart</h3>
+
+<p>
+  <a routerLink="/shipping">Shipping Prices</a>
+</p>
+
+<div class="cart-item" *ngFor="let item of items">
+  <span>{{ item.name }} </span>
+  <span>{{ item.price | currency }}</span>
+</div>
+
+<!-- #docregion checkout-form-->
+<form [formGroup]="checkoutForm">
+
+  <button class="button" type="submit">Purchase</button>
+
+</form>
+<!-- #enddocregion checkout-form -->

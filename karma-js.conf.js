@@ -12,8 +12,7 @@ const {generateSeed} = require('./tools/jasmine-seed-generator');
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
 module.exports = function(config) {
-  config.set({
-
+  const conf = {
     frameworks: ['jasmine'],
 
     client: {
@@ -37,9 +36,9 @@ module.exports = function(config) {
       {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
       'node_modules/core-js/client/core.js',
-      'node_modules/zone.js/dist/zone.js',
-      'node_modules/zone.js/dist/zone-testing.js',
-      'node_modules/zone.js/dist/task-tracking.js',
+      'dist/bin/packages/zone.js/npm_package/dist/zone.js',
+      'dist/bin/packages/zone.js/npm_package/dist/zone-testing.js',
+      'dist/bin/packages/zone.js/npm_package/dist/task-tracking.js',
 
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'test-events.js',
@@ -65,7 +64,6 @@ module.exports = function(config) {
         included: false,
         watched: false,
       },
-      {pattern: 'packages/common/i18n/**', included: false, watched: false, served: true},
     ],
 
     exclude: [
@@ -81,12 +79,14 @@ module.exports = function(config) {
       'dist/all/@angular/compiler/test/render3/**',
       'dist/all/@angular/core/test/bundling/**',
       'dist/all/@angular/core/test/render3/ivy/**',
+      'dist/all/@angular/core/test/render3/perf/**',
       'dist/all/@angular/elements/schematics/**',
       'dist/all/@angular/examples/**/e2e_test/*',
       'dist/all/@angular/language-service/**',
+      'dist/all/@angular/localize/**/test/**',
+      'dist/all/@angular/localize/schematics/**',
       'dist/all/@angular/router/**/test/**',
       'dist/all/@angular/platform-browser/testing/e2e_util.js',
-      'dist/all/angular1_router.js',
       'dist/examples/**/e2e_test/**',
     ],
 
@@ -112,10 +112,9 @@ module.exports = function(config) {
     // don't need this entire config file.
     proxies: {
       '/base/angular/': '/base/',
-      '/base/ngdeps/': '/base/',
+      '/base/npm/': '/base/',
     },
 
-    reporters: ['dots'],
     sauceLabs: {
       testName: 'Angular2',
       retryLimit: 3,
@@ -135,29 +134,75 @@ module.exports = function(config) {
       pollingTimeout: 10000,
     },
 
-    browsers: ['Chrome'],
+    // Try "websocket" for a faster transmission first. Fallback to "polling" if necessary.
+    transports: ['websocket', 'polling'],
 
     port: 9876,
     captureTimeout: 180000,
     browserDisconnectTimeout: 180000,
     browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 300000,
+  };
+
+  // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1431. The idea is
+  // that we do no not allow `@bazel/karma` to add the `progress` reporter.
+  Object.defineProperty(conf, 'reporters', {
+    enumerable: true,
+    get: () => ['dots'],
+    set: () => {},
   });
 
-  if (process.env.TRAVIS) {
-    var buildId =
-        'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
-    if (process.env.CI_MODE.startsWith('saucelabs')) {
-      config.sauceLabs.build = buildId;
-      config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+  if (process.env['SAUCE_TUNNEL_IDENTIFIER']) {
+    console.log(`SAUCE_TUNNEL_IDENTIFIER: ${process.env.SAUCE_TUNNEL_IDENTIFIER}`);
 
-      // Try "websocket" for a faster transmission first. Fallback to "polling" if necessary.
-      config.transports = ['websocket', 'polling'];
-    }
+    const tunnelIdentifier = process.env['SAUCE_TUNNEL_IDENTIFIER'];
 
-    if (process.env.CI_MODE.startsWith('browserstack')) {
-      config.browserStack.build = buildId;
-      config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
-    }
+    // Setup the Saucelabs plugin so that it can launch browsers using the proper tunnel.
+    conf.sauceLabs.build = tunnelIdentifier;
+    conf.sauceLabs.tunnelIdentifier = tunnelIdentifier;
+
+    // Setup the Browserstack plugin so that it can launch browsers using the proper tunnel.
+    // TODO: This is currently not used because BS doesn't run on the CI. Consider removing.
+    conf.browserStack.build = tunnelIdentifier;
+    conf.browserStack.tunnelIdentifier = tunnelIdentifier;
   }
+
+  // For SauceLabs jobs, we set up a domain which resolves to the machine which launched
+  // the tunnel. We do this because devices are sometimes not able to properly resolve
+  // `localhost` or `127.0.0.1` through the SauceLabs tunnel. Using a domain that does not
+  // resolve to anything on SauceLabs VMs ensures that such requests are always resolved through
+  // the tunnel, and resolve to the actual tunnel host machine (commonly the CircleCI VMs).
+  // More context can be found in: https://github.com/angular/angular/pull/35171.
+  if (process.env.SAUCE_LOCALHOST_ALIAS_DOMAIN) {
+    conf.hostname = process.env.SAUCE_LOCALHOST_ALIAS_DOMAIN;
+  }
+
+  if (process.env.KARMA_WEB_TEST_MODE) {
+    // KARMA_WEB_TEST_MODE is used to setup karma to run in
+    // SauceLabs or Browserstack
+    console.log(`KARMA_WEB_TEST_MODE: ${process.env.KARMA_WEB_TEST_MODE}`);
+
+    switch (process.env.KARMA_WEB_TEST_MODE) {
+      case 'SL_REQUIRED':
+        conf.browsers = browserProvidersConf.sauceAliases.CI_REQUIRED;
+        break;
+      case 'SL_OPTIONAL':
+        conf.browsers = browserProvidersConf.sauceAliases.CI_OPTIONAL;
+        break;
+      case 'BS_REQUIRED':
+        conf.browsers = browserProvidersConf.browserstackAliases.CI_REQUIRED;
+        break;
+      case 'BS_OPTIONAL':
+        conf.browsers = browserProvidersConf.browserstackAliases.CI_OPTIONAL;
+        break;
+      default:
+        throw new Error(
+            `Unrecognized process.env.KARMA_WEB_TEST_MODE: ${process.env.KARMA_WEB_TEST_MODE}`);
+    }
+  } else {
+    // Run the test locally
+    conf.browsers = [process.env['DISPLAY'] ? 'Chrome' : 'ChromeHeadless'];
+  }
+
+  config.set(conf);
 };

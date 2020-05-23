@@ -2,8 +2,13 @@ html, body {
     height: 100%;
 }
 
-body {
-    background-color: $offwhite;
+body,
+.content {
+    background-color: $white;
+}
+
+.github-links + .content h1 {
+  max-width: 90%;
 }
 
 .clearfix {

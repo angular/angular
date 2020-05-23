@@ -6,25 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, ErrorHandler, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, Renderer, Renderer2, SimpleChange, TemplateRef, ViewContainerRef,} from '@angular/core';
+import {ɵgetDOM as getDOM} from '@angular/common';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, ErrorHandler, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChange, TemplateRef, ViewContainerRef,} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
-import {ArgumentType, DepFlags, NodeFlags, Services, anchorDef, asElementData, directiveDef, elementDef, providerDef, textDef} from '@angular/core/src/view/index';
+import {anchorDef, ArgumentType, asElementData, DepFlags, directiveDef, elementDef, NodeFlags, providerDef, Services, textDef} from '@angular/core/src/view/index';
 import {TestBed, withModule} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {ivyEnabled} from '@angular/private/testing';
 
-import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetRootNodes, compViewDef, compViewDefFactory} from './helper';
+import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, compViewDefFactory, createAndGetRootNodes, createRootView} from './helper';
 
 {
   describe(`View Providers`, () => {
-
     describe('create', () => {
       let instance: SomeService;
 
       class SomeService {
-        constructor(public dep: any) { instance = this; }
+        constructor(public dep: any) {
+          instance = this;
+        }
       }
 
-      beforeEach(() => { instance = null !; });
+      beforeEach(() => {
+        instance = null!;
+      });
 
       it('should create providers eagerly', () => {
         createAndGetRootNodes(compViewDef([
@@ -36,9 +40,11 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
       });
 
       it('should create providers lazily', () => {
-        let lazy: LazyService = undefined !;
+        let lazy: LazyService = undefined!;
         class LazyService {
-          constructor() { lazy = this; }
+          constructor() {
+            lazy = this;
+          }
         }
 
         createAndGetRootNodes(compViewDef([
@@ -65,7 +71,9 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
       });
 
       it('should create factory providers', () => {
-        function someFactory() { return 'someValue'; }
+        function someFactory() {
+          return 'someValue';
+        }
 
         createAndGetRootNodes(compViewDef([
           elementDef(0, NodeFlags.None, null, null, 2, 'span'),
@@ -90,7 +98,9 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
 
       it('should add a DebugContext to errors in provider factories', () => {
         class SomeService {
-          constructor() { throw new Error('Test'); }
+          constructor() {
+            throw new Error('Test');
+          }
         }
 
         let err: any;
@@ -102,7 +112,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
                     () => compViewDef([textDef(0, null, ['a'])])),
                 directiveDef(1, NodeFlags.Component, null, 0, SomeService, [])
               ]),
-              TestBed.get(Injector), [], getDOM().createElement('div'));
+              TestBed.inject(Injector), [], getDOM().createElement('div'));
         } catch (e) {
           err = e;
         }
@@ -147,7 +157,10 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
 
           expect(() => createAndGetRootNodes(compViewDef(rootElNodes)))
               .toThrowError(
-                  'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
+                  `${
+                      ivyEnabled ?
+                          'R3InjectorError' :
+                          'StaticInjectorError'}(DynamicTestModule)[SomeService -> Dep]: \n` +
                   '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
                   '    NullInjectorError: No provider for Dep!');
 
@@ -161,7 +174,10 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
 
           expect(() => createAndGetRootNodes(compViewDef(nonRootElNodes)))
               .toThrowError(
-                  'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
+                  `${
+                      ivyEnabled ?
+                          'R3InjectorError' :
+                          'StaticInjectorError'}(DynamicTestModule)[SomeService -> Dep]: \n` +
                   '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
                   '    NullInjectorError: No provider for Dep!');
         });
@@ -186,7 +202,9 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
                    directiveDef(1, NodeFlags.None, null, 0, SomeService, ['nonExistingDep'])
                  ])))
               .toThrowError(
-                  'StaticInjectorError(DynamicTestModule)[nonExistingDep]: \n' +
+                  `${
+                      ivyEnabled ? 'R3InjectorError' :
+                                   'StaticInjectorError'}(DynamicTestModule)[nonExistingDep]: \n` +
                   '  StaticInjectorError(Platform: core)[nonExistingDep]: \n' +
                   '    NullInjectorError: No provider for nonExistingDep!');
         });
@@ -195,8 +213,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
           createAndGetRootNodes(compViewDef([
             elementDef(0, NodeFlags.None, null, null, 1, 'span'),
             directiveDef(
-                1, NodeFlags.None, null, 0, SomeService,
-                [[DepFlags.Optional, 'nonExistingDep']])
+                1, NodeFlags.None, null, 0, SomeService, [[DepFlags.Optional, 'nonExistingDep']])
           ]));
           expect(instance.dep).toBe(null);
         });
@@ -284,17 +301,6 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
             expect(instance.dep._view).toBe(compView);
           });
 
-          it('should inject RendererV1', () => {
-            createAndGetRootNodes(compViewDef([
-              elementDef(
-                  0, NodeFlags.None, null, null, 1, 'span', null, null, null, null,
-                  () => compViewDef([anchorDef(NodeFlags.None, null, null, 0)])),
-              directiveDef(1, NodeFlags.Component, null, 0, SomeService, [Renderer])
-            ]));
-
-            expect(instance.dep.createElement).toBeTruthy();
-          });
-
           it('should inject Renderer2', () => {
             createAndGetRootNodes(compViewDef([
               elementDef(
@@ -305,22 +311,21 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
 
             expect(instance.dep.createElement).toBeTruthy();
           });
-
         });
-
       });
     });
 
     describe('data binding', () => {
-
       ARG_TYPE_VALUES.forEach((inlineDynamic) => {
         it(`should update via strategy ${inlineDynamic}`, () => {
-          let instance: SomeService = undefined !;
+          let instance: SomeService = undefined!;
 
           class SomeService {
             a: any;
             b: any;
-            constructor() { instance = this; }
+            constructor() {
+              instance = this;
+            }
           }
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
@@ -339,9 +344,8 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
           expect(instance.b).toBe('v2');
 
           const el = rootNodes[0];
-          expect(getDOM().getAttribute(el, 'ng-reflect-a')).toBe('v1');
+          expect(el.getAttribute('ng-reflect-a')).toBe('v1');
         });
-
       });
     });
 
@@ -376,7 +380,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
       });
 
       it('should report debug info on event errors', () => {
-        const handleErrorSpy = spyOn(TestBed.get(ErrorHandler), 'handleError');
+        const handleErrorSpy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
         let emitter = new EventEmitter<any>();
 
         class SomeService {
@@ -386,7 +390,9 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
         const {view, rootNodes} = createAndGetRootNodes(compViewDef([
           elementDef(
               0, NodeFlags.None, null, null, 1, 'span', null, null, null,
-              () => { throw new Error('Test'); }),
+              () => {
+                throw new Error('Test');
+              }),
           directiveDef(
               1, NodeFlags.None, null, 0, SomeService, [], null, {emitter: 'someEventName'})
         ]));
@@ -407,18 +413,37 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
         let log: string[] = [];
 
         class SomeService implements OnInit, DoCheck, OnChanges, AfterContentInit,
-            AfterContentChecked, AfterViewInit, AfterViewChecked, OnDestroy {
+                                     AfterContentChecked, AfterViewInit, AfterViewChecked,
+                                     OnDestroy {
           id: number;
           a: any;
-          ngOnInit() { log.push(`${this.id}_ngOnInit`); }
-          ngDoCheck() { log.push(`${this.id}_ngDoCheck`); }
-          ngOnChanges() { log.push(`${this.id}_ngOnChanges`); }
-          ngAfterContentInit() { log.push(`${this.id}_ngAfterContentInit`); }
-          ngAfterContentChecked() { log.push(`${this.id}_ngAfterContentChecked`); }
-          ngAfterViewInit() { log.push(`${this.id}_ngAfterViewInit`); }
-          ngAfterViewChecked() { log.push(`${this.id}_ngAfterViewChecked`); }
-          ngOnDestroy() { log.push(`${this.id}_ngOnDestroy`); }
-          constructor() { this.id = instanceCount++; }
+          ngOnInit() {
+            log.push(`${this.id}_ngOnInit`);
+          }
+          ngDoCheck() {
+            log.push(`${this.id}_ngDoCheck`);
+          }
+          ngOnChanges() {
+            log.push(`${this.id}_ngOnChanges`);
+          }
+          ngAfterContentInit() {
+            log.push(`${this.id}_ngAfterContentInit`);
+          }
+          ngAfterContentChecked() {
+            log.push(`${this.id}_ngAfterContentChecked`);
+          }
+          ngAfterViewInit() {
+            log.push(`${this.id}_ngAfterViewInit`);
+          }
+          ngAfterViewChecked() {
+            log.push(`${this.id}_ngAfterViewChecked`);
+          }
+          ngOnDestroy() {
+            log.push(`${this.id}_ngOnDestroy`);
+          }
+          constructor() {
+            this.id = instanceCount++;
+          }
         }
 
         const allFlags = NodeFlags.OnInit | NodeFlags.DoCheck | NodeFlags.OnChanges |
@@ -489,7 +514,9 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
               directiveDef(
                   1, NodeFlags.OnChanges, null, 0, SomeService, [], {a: [0, 'nonMinifiedA']})
             ],
-            (check, view) => { check(view, 1, ArgumentType.Inline, currValue); }));
+            (check, view) => {
+              check(view, 1, ArgumentType.Inline, currValue);
+            }));
 
         Services.checkAndUpdateView(view);
         expect(changesLog).toEqual([new SimpleChange(undefined, 'v1', true)]);
@@ -502,7 +529,9 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
 
       it('should add a DebugContext to errors in provider afterXXX lifecycles', () => {
         class SomeService implements AfterContentChecked {
-          ngAfterContentChecked() { throw new Error('Test'); }
+          ngAfterContentChecked() {
+            throw new Error('Test');
+          }
         }
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef([
@@ -525,7 +554,9 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
 
       it('should add a DebugContext to errors inServices.destroyView', () => {
         class SomeService implements OnDestroy {
-          ngOnDestroy() { throw new Error('Test'); }
+          ngOnDestroy() {
+            throw new Error('Test');
+          }
         }
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef([

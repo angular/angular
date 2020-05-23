@@ -264,7 +264,7 @@ describe('TocService', () => {
     it('should have "SafeHtml" content which is heading\'s innerHTML ', () => {
       const heading = headings[3];
       const content = lastTocList[3].content;
-      expect((<TestSafeHtml>content).changingThisBreaksApplicationSecurity)
+      expect((content as TestSafeHtml).changingThisBreaksApplicationSecurity)
         .toEqual(heading.innerHTML);
     });
 
@@ -299,13 +299,16 @@ describe('TocService', () => {
     beforeEach(() => {
       docId = 'fizz/buzz/';
 
-      // An almost-actual <h2> ... with extra whitespace
       callGenToc(`
         <h2 id="setup-to-develop-locally">
           Setup to <a href="moo">develop</a> <i>locally</i>.
           <a class="header-link" href="tutorial/toh-pt1#setup-to-develop-locally" aria-hidden="true">
-            <span class="icon icon-link"></span>
+            <span class="icon">icon-link</span>
           </a>
+          <div class="github-links">
+            <a>GitHub</a>
+            <a>links</a>
+          </div>
         </h2>
       `, docId);
 
@@ -320,8 +323,8 @@ describe('TocService', () => {
       expect(tocItem.title).toEqual('Setup to develop locally.');
     });
 
-    it('should have removed anchor link from tocItem html content', () => {
-      expect((<TestSafeHtml>tocItem.content)
+    it('should have removed anchor link and GitHub links from tocItem html content', () => {
+      expect((tocItem.content as TestSafeHtml)
         .changingThisBreaksApplicationSecurity)
         .toEqual('Setup to develop <i>locally</i>.');
     });
@@ -362,7 +365,7 @@ class MockScrollSpyService {
     return this.$$lastInfo;
   }
 
-  spyOn(headings: HTMLHeadingElement[]): ScrollSpyInfo {
+  spyOn(_headings: HTMLHeadingElement[]): ScrollSpyInfo {
     return this.$$lastInfo = {
       active: new Subject<ScrollItem | null>(),
       unspy: jasmine.createSpy('unspy'),

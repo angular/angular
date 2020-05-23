@@ -42,7 +42,13 @@ export abstract class UrlHandlingStrategy {
  * @publicApi
  */
 export class DefaultUrlHandlingStrategy implements UrlHandlingStrategy {
-  shouldProcessUrl(url: UrlTree): boolean { return true; }
-  extract(url: UrlTree): UrlTree { return url; }
-  merge(newUrlPart: UrlTree, wholeUrl: UrlTree): UrlTree { return newUrlPart; }
+  shouldProcessUrl(url: UrlTree): boolean {
+    return true;
+  }
+  extract(url: UrlTree): UrlTree {
+    return url;
+  }
+  merge(newUrlPart: UrlTree, wholeUrl: UrlTree): UrlTree {
+    return newUrlPart;
+  }
 }

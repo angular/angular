@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ImplicitReceiver, MethodCall, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead} from '../../expression_parser/ast';
+import {AST, BindingPipe, ImplicitReceiver, MethodCall, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead} from '../../expression_parser/ast';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {BoundAttribute, BoundEvent, BoundText, Content, Element, Icu, Node, Reference, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, Target, TargetBinder} from './t2_api';
+import {createCssSelector} from './template';
 import {getAttrsForDirectiveMatching} from './util';
+
 
 /**
  * Processes `Target`s with a given set of directives and performs a binding operation, which
@@ -44,9 +46,10 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
         DirectiveBinder.apply(target.template, this.directiveMatcher);
     // Finally, run the TemplateBinder to bind references, variables, and other entities within the
     // template. This extracts all the metadata that doesn't depend on directive matching.
-    const {expressions, symbols, nestingLevel} = TemplateBinder.apply(target.template, scope);
+    const {expressions, symbols, nestingLevel, usedPipes} =
+        TemplateBinder.apply(target.template, scope);
     return new R3BoundTarget(
-        target, directives, bindings, references, expressions, symbols, nestingLevel);
+        target, directives, bindings, references, expressions, symbols, nestingLevel, usedPipes);
   }
 }
 
@@ -149,7 +152,7 @@ class Scope implements Visitor {
   lookup(name: string): Reference|Variable|null {
     if (this.namedEntities.has(name)) {
       // Found in the local scope.
-      return this.namedEntities.get(name) !;
+      return this.namedEntities.get(name)!;
     } else if (this.parentScope !== undefined) {
       // Not in the local scope, but there's a parent scope so check there.
       return this.parentScope.lookup(name);
@@ -214,31 +217,22 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     return {directives, bindings, references};
   }
 
-  private ingest(template: Node[]): void { template.forEach(node => node.visit(this)); }
+  private ingest(template: Node[]): void {
+    template.forEach(node => node.visit(this));
+  }
 
-  visitElement(element: Element): void { this.visitElementOrTemplate(element.name, element); }
+  visitElement(element: Element): void {
+    this.visitElementOrTemplate(element.name, element);
+  }
 
-  visitTemplate(template: Template): void { this.visitElementOrTemplate('ng-template', template); }
+  visitTemplate(template: Template): void {
+    this.visitElementOrTemplate('ng-template', template);
+  }
 
-  visitElementOrTemplate(tag: string, node: Element|Template): void {
+  visitElementOrTemplate(elementName: string, node: Element|Template): void {
     // First, determine the HTML shape of the node for the purpose of directive matching.
     // Do this by building up a `CssSelector` for the node.
-    const cssSelector = new CssSelector();
-    cssSelector.setElement(tag);
-
-    // Add attributes to the CSS selector.
-    const attrs = getAttrsForDirectiveMatching(node);
-    Object.getOwnPropertyNames(attrs).forEach((name) => {
-      const value = attrs[name];
-
-      cssSelector.addAttribute(name, value);
-
-      // Treat the 'class' attribute specially.
-      if (name.toLowerCase() === 'class') {
-        const classes = value.trim().split(/\s+/g);
-        classes.forEach(className => cssSelector.addClassName(className));
-      }
-    });
+    const cssSelector = createCssSelector(elementName, getAttrsForDirectiveMatching(node));
 
     // Next, use the `SelectorMatcher` to get the list of directives on the node.
     const directives: DirectiveT[] = [];
@@ -258,13 +252,16 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
         // This could be a reference to a component if there is one.
         dirTarget = directives.find(dir => dir.isComponent) || null;
       } else {
-        // This is a reference to a directive exported via exportAs. One should exist.
-        dirTarget = directives.find(dir => dir.exportAs === ref.value) || null;
-
-        // Check if a matching directive was found, and error if it wasn't.
+        // This should be a reference to a directive exported via exportAs.
+        dirTarget =
+            directives.find(
+                dir => dir.exportAs !== null && dir.exportAs.some(value => value === ref.value)) ||
+            null;
+        // Check if a matching directive was found.
         if (dirTarget === null) {
-          // TODO(alxhub): Return an error value here that can be used for template validation.
-          throw new Error(`Assertion error: failed to find directive with exportAs: ${ref.value}`);
+          // No matching directive was found - this reference points to an unknown target. Leave it
+          // unmapped.
+          return;
         }
       }
 
@@ -277,27 +274,24 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
       }
     });
 
-    // Associate bindings on the node with directives or with the node itself.
+    // Associate attributes/bindings on the node with directives or with the node itself.
+    type BoundNode = BoundAttribute|BoundEvent|TextAttribute;
+    const setAttributeBinding =
+        (attribute: BoundNode, ioType: keyof Pick<DirectiveMeta, 'inputs'|'outputs'>) => {
+          const dir = directives.find(dir => dir[ioType].hasOwnProperty(attribute.name));
+          const binding = dir !== undefined ? dir : node;
+          this.bindings.set(attribute, binding);
+        };
 
-    // Inputs:
-    [...node.attributes, ...node.inputs].forEach(binding => {
-      let dir = directives.find(dir => dir.inputs.hasOwnProperty(binding.name));
-      if (dir !== undefined) {
-        this.bindings.set(binding, dir);
-      } else {
-        this.bindings.set(binding, node);
-      }
-    });
-
-    // Outputs:
-    node.outputs.forEach(binding => {
-      let dir = directives.find(dir => dir.outputs.hasOwnProperty(binding.name));
-      if (dir !== undefined) {
-        this.bindings.set(binding, dir);
-      } else {
-        this.bindings.set(binding, node);
-      }
-    });
+    // Node inputs (bound attributes) and text attributes can be bound to an
+    // input on a directive.
+    node.inputs.forEach(input => setAttributeBinding(input, 'inputs'));
+    node.attributes.forEach(attr => setAttributeBinding(attr, 'inputs'));
+    if (node instanceof Template) {
+      node.templateAttrs.forEach(attr => setAttributeBinding(attr, 'inputs'));
+    }
+    // Node outputs (bound events) can be bound to an output on a directive.
+    node.outputs.forEach(output => setAttributeBinding(output, 'outputs'));
 
     // Recurse into the node's children.
     node.children.forEach(child => child.visit(this));
@@ -328,15 +322,28 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
 class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   private visitNode: (node: Node) => void;
 
+  private pipesUsed: string[] = [];
+
   private constructor(
       private bindings: Map<AST, Reference|Variable>,
-      private symbols: Map<Reference|Variable, Template>,
+      private symbols: Map<Reference|Variable, Template>, private usedPipes: Set<string>,
       private nestingLevel: Map<Template, number>, private scope: Scope,
       private template: Template|null, private level: number) {
     super();
 
     // Save a bit of processing time by constructing this closure in advance.
     this.visitNode = (node: Node) => node.visit(this);
+  }
+
+  // This method is defined to reconcile the type of TemplateBinder since both
+  // RecursiveAstVisitor and Visitor define the visit() method in their
+  // interfaces.
+  visit(node: AST|Node, context?: any) {
+    if (node instanceof AST) {
+      node.visit(this, context);
+    } else {
+      node.visit(this);
+    }
   }
 
   /**
@@ -355,24 +362,24 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     expressions: Map<AST, Reference|Variable>,
     symbols: Map<Variable|Reference, Template>,
     nestingLevel: Map<Template, number>,
+    usedPipes: Set<string>,
   } {
     const expressions = new Map<AST, Reference|Variable>();
     const symbols = new Map<Variable|Reference, Template>();
     const nestingLevel = new Map<Template, number>();
+    const usedPipes = new Set<string>();
     // The top-level template has nesting level 0.
     const binder = new TemplateBinder(
-        expressions, symbols, nestingLevel, scope, template instanceof Template ? template : null,
-        0);
+        expressions, symbols, usedPipes, nestingLevel, scope,
+        template instanceof Template ? template : null, 0);
     binder.ingest(template);
-    return {expressions, symbols, nestingLevel};
+    return {expressions, symbols, nestingLevel, usedPipes};
   }
 
   private ingest(template: Template|Node[]): void {
     if (template instanceof Template) {
-      // For <ng-template>s, process inputs, outputs, variables, and child nodes. References were
-      // processed in the scope of the containing template.
-      template.inputs.forEach(this.visitNode);
-      template.outputs.forEach(this.visitNode);
+      // For <ng-template>s, process only variables and child nodes. Inputs, outputs, templateAttrs,
+      // and references were all processed in the scope of the containing template.
       template.variables.forEach(this.visitNode);
       template.children.forEach(this.visitNode);
 
@@ -385,16 +392,17 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   }
 
   visitElement(element: Element) {
-    // Vist the inputs, outputs, and children of the element.
+    // Visit the inputs, outputs, and children of the element.
     element.inputs.forEach(this.visitNode);
     element.outputs.forEach(this.visitNode);
     element.children.forEach(this.visitNode);
   }
 
   visitTemplate(template: Template) {
-    // First, visit the inputs, outputs of the template node.
+    // First, visit inputs, outputs and template attributes of the template node.
     template.inputs.forEach(this.visitNode);
     template.outputs.forEach(this.visitNode);
+    template.templateAttrs.forEach(this.visitNode);
 
     // References are also evaluated in the outer context.
     template.references.forEach(this.visitNode);
@@ -402,7 +410,8 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     // Next, recurse into the template using its scope, and bumping the nesting level up by one.
     const childScope = this.scope.getChildScope(template);
     const binder = new TemplateBinder(
-        this.bindings, this.symbols, this.nestingLevel, childScope, template, this.level + 1);
+        this.bindings, this.symbols, this.usedPipes, this.nestingLevel, childScope, template,
+        this.level + 1);
     binder.ingest(template);
   }
 
@@ -429,13 +438,21 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
 
   // The remaining visitors are concerned with processing AST expressions within template bindings
 
-  visitBoundAttribute(attribute: BoundAttribute) { attribute.value.visit(this); }
+  visitBoundAttribute(attribute: BoundAttribute) {
+    attribute.value.visit(this);
+  }
 
-  visitBoundEvent(event: BoundEvent) { event.handler.visit(this); }
+  visitBoundEvent(event: BoundEvent) {
+    event.handler.visit(this);
+  }
 
-  visitBoundText(text: BoundText) { text.value.visit(this); }
-
-
+  visitBoundText(text: BoundText) {
+    text.value.visit(this);
+  }
+  visitPipe(ast: BindingPipe, context: any): any {
+    this.usedPipes.add(ast.name);
+    return super.visitPipe(ast, context);
+  }
 
   // These five types of AST expressions can refer to expression roots, which could be variables
   // or references in the current scope.
@@ -497,7 +514,7 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
               {directive: DirectiveT, node: Element|Template}|Element|Template>,
       private exprTargets: Map<AST, Reference|Variable>,
       private symbols: Map<Reference|Variable, Template>,
-      private nestingLevel: Map<Template, number>) {}
+      private nestingLevel: Map<Template, number>, private usedPipes: Set<string>) {}
 
   getDirectivesOfNode(node: Element|Template): DirectiveT[]|null {
     return this.directives.get(node) || null;
@@ -521,11 +538,17 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
     return this.symbols.get(symbol) || null;
   }
 
-  getNestingLevel(template: Template): number { return this.nestingLevel.get(template) || 0; }
+  getNestingLevel(template: Template): number {
+    return this.nestingLevel.get(template) || 0;
+  }
 
   getUsedDirectives(): DirectiveT[] {
     const set = new Set<DirectiveT>();
     this.directives.forEach(dirs => dirs.forEach(dir => set.add(dir)));
     return Array.from(set.values());
+  }
+
+  getUsedPipes(): string[] {
+    return Array.from(this.usedPipes);
   }
 }

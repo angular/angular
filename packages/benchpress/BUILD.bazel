@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
+load("//tools:defaults.bzl", "pkg_npm", "ts_library")
 
-load("//tools:defaults.bzl", "ts_library")
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "benchpress",
@@ -10,11 +10,26 @@ ts_library(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/benchpress",
     deps = [
         "//packages:types",
         "//packages/core",
-        "@ngdeps//@types/node",
-        "@ngdeps//reflect-metadata",
+        "@npm//@types/node",
+        "@npm//@types/q",
+        "@npm//q",
+        "@npm//reflect-metadata",
+    ],
+)
+
+pkg_npm(
+    name = "npm_package",
+    srcs = [
+        "README.md",
+        "package.json",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//integration:__pkg__"],
+    deps = [
+        ":benchpress",
     ],
 )

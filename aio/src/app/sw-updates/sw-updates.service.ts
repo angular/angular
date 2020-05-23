@@ -59,7 +59,7 @@ export class SwUpdatesService implements OnDestroy {
   }
 
   private log(message: string) {
-    const timestamp = (new Date).toISOString();
+    const timestamp = new Date().toISOString();
     this.logger.log(`[SwUpdates - ${timestamp}]: ${message}`);
   }
 }

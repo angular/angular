@@ -12,8 +12,14 @@
 const u = undefined;
 
 export default [
-  [['Mitternacht', 'morgens', 'vormittags', 'mittags', 'nachmittags', 'abends', 'nachts'], u, u],
-  [['Mitternacht', 'Morgen', 'Vormittag', 'Mittag', 'Nachmittag', 'Abend', 'Nacht'], u, u],
+  [
+    ['Mitternacht', 'morgens', 'vorm.', 'mittags', 'nachm.', 'abends', 'nachts'], u,
+    ['Mitternacht', 'morgens', 'vormittags', 'mittags', 'nachmittags', 'abends', 'nachts']
+  ],
+  [
+    ['Mitternacht', 'Morgen', 'Vorm.', 'Mittag', 'Nachm.', 'Abend', 'Nacht'], u,
+    ['Mitternacht', 'Morgen', 'Vormittag', 'Mittag', 'Nachmittag', 'Abend', 'Nacht']
+  ],
   [
     '00:00', ['05:00', '10:00'], ['10:00', '12:00'], ['12:00', '13:00'], ['13:00', '18:00'],
     ['18:00', '24:00'], ['00:00', '05:00']

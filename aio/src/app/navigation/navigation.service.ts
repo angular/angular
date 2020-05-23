@@ -90,18 +90,21 @@ export class NavigationService {
    * See above for discussion of using `connect`.
    */
   private getCurrentNodes(navigationViews: Observable<NavigationViews>): Observable<CurrentNodes> {
-    const currentNodes = combineLatest(
-      navigationViews.pipe(map(views => this.computeUrlToNavNodesMap(views))),
+    const currentNodes = combineLatest([
+      navigationViews.pipe(
+          map(views => this.computeUrlToNavNodesMap(views))),
       this.location.currentPath,
-
-      (navMap, url) => {
-        const matchSpecialUrls = /^api/.exec(url);
+    ])
+      .pipe(
+        map((result) => ({navMap: result[0] , url: result[1]})),
+        map((result) => {
+        const matchSpecialUrls = /^api/.exec(result.url);
         if (matchSpecialUrls) {
-          url = matchSpecialUrls[0];
+            result.url = matchSpecialUrls[0];
         }
-        return navMap.get(url) || { '' : { view: '', url: url, nodes: [] }};
-      })
-      .pipe(publishReplay(1));
+        return result.navMap.get(result.url) || { '' : { view: '', url: result.url, nodes: [] }};
+        }),
+        publishReplay(1));
     (currentNodes as ConnectableObservable<CurrentNodes>).connect();
     return currentNodes;
   }

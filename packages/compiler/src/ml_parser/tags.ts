@@ -14,20 +14,16 @@ export enum TagContentType {
 
 export interface TagDefinition {
   closedByParent: boolean;
-  requiredParents: {[key: string]: boolean};
-  parentToAdd: string;
   implicitNamespacePrefix: string|null;
   contentType: TagContentType;
   isVoid: boolean;
   ignoreFirstLf: boolean;
   canSelfClose: boolean;
 
-  requireExtraParent(currentParent: string): boolean;
-
   isClosedByChild(name: string): boolean;
 }
 
-export function splitNsName(elementName: string): [string | null, string] {
+export function splitNsName(elementName: string): [string|null, string] {
   if (elementName[0] != ':') {
     return [null, elementName];
   }
@@ -58,7 +54,7 @@ export function isNgTemplate(tagName: string): boolean {
 
 export function getNsPrefix(fullName: string): string;
 export function getNsPrefix(fullName: null): null;
-export function getNsPrefix(fullName: string | null): string|null {
+export function getNsPrefix(fullName: string|null): string|null {
   return fullName === null ? null : splitNsName(fullName)[0];
 }
 

@@ -7,7 +7,7 @@
  */
 
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
-import {ResourceLoaderImpl} from '../../src/resource_loader/resource_loader_impl';
+import {ResourceLoaderImpl} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_impl';
 
 if (isBrowser) {
   describe('ResourceLoaderImpl', () => {
@@ -22,7 +22,9 @@ if (isBrowser) {
     const url200 = '/base/angular/packages/platform-browser/test/browser/static_assets/200.html';
     const url404 = '/bad/path/404.html';
 
-    beforeEach(() => { resourceLoader = new ResourceLoaderImpl(); });
+    beforeEach(() => {
+      resourceLoader = new ResourceLoaderImpl();
+    });
 
     it('should resolve the Promise with the file content on success',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {

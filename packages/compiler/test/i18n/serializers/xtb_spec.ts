@@ -117,7 +117,7 @@ import {Xtb} from '../../../src/i18n/serializers/xtb';
 </translationbundle>`;
 
         // Invalid messages should not cause the parser to throw
-        let i18nNodesByMsgId: {[id: string]: i18n.Node[]} = undefined !;
+        let i18nNodesByMsgId: {[id: string]: i18n.Node[]} = undefined!;
         expect(() => {
           i18nNodesByMsgId = serializer.load(XTB, 'url').i18nNodesByMsgId;
         }).not.toThrow();
@@ -144,7 +144,9 @@ import {Xtb} from '../../../src/i18n/serializers/xtb';
   <translation></translation>
 </translationbundle>`;
 
-        expect(() => { loadAsMap(XTB); }).toThrowError(/<translation> misses the "id" attribute/);
+        expect(() => {
+          loadAsMap(XTB);
+        }).toThrowError(/<translation> misses the "id" attribute/);
       });
 
       it('should throw when a placeholder has no name attribute', () => {
@@ -152,7 +154,9 @@ import {Xtb} from '../../../src/i18n/serializers/xtb';
   <translation id="1186013544048295927"><ph /></translation>
 </translationbundle>`;
 
-        expect(() => { loadAsMap(XTB); }).toThrowError(/<ph> misses the "name" attribute/);
+        expect(() => {
+          loadAsMap(XTB);
+        }).toThrowError(/<ph> misses the "name" attribute/);
       });
 
       it('should throw on unknown xtb tags', () => {
@@ -168,7 +172,9 @@ import {Xtb} from '../../../src/i18n/serializers/xtb';
   <translation id="1186013544048295927"><b>msg should contain only ph tags</b></translation>
 </translationbundle>`;
 
-        expect(() => { loadAsMap(XTB); })
+        expect(() => {
+          loadAsMap(XTB);
+        })
             .toThrowError(
                 new RegExp(escapeRegExp(`[ERROR ->]<b>msg should contain only ph tags</b>`)));
       });
@@ -184,9 +190,11 @@ import {Xtb} from '../../../src/i18n/serializers/xtb';
         }).toThrowError(/Duplicated translations for msg 1186013544048295927/);
       });
 
-      it('should throw when trying to save an xtb file',
-         () => { expect(() => { serializer.write([], null); }).toThrowError(/Unsupported/); });
-
+      it('should throw when trying to save an xtb file', () => {
+        expect(() => {
+          serializer.write([], null);
+        }).toThrowError(/Unsupported/);
+      });
     });
   });
 }

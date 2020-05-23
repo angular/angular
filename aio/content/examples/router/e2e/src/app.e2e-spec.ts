@@ -31,6 +31,7 @@ describe('Router', () => {
       heroDetailTitle: heroDetail.element(by.xpath('*[2]')),
 
       adminHref: hrefEles.get(2),
+      adminPage: element(by.css('app-root > div > app-admin')),
       adminPreloadList: element.all(by.css('app-root > div > app-admin > app-admin-dashboard > ul > li')),
 
       loginHref: hrefEles.get(3),
@@ -136,6 +137,31 @@ describe('Router', () => {
     await page.contactHref.click();
     expect(page.primaryOutlet.count()).toBe(1, 'primary outlet');
     expect(page.secondaryOutlet.count()).toBe(1, 'secondary outlet');
+  });
+
+  it('should redirect with secondary route', async () => {
+    const page = getPageStruct();
+
+    // go to login page and login
+    await browser.get('');
+    await page.loginHref.click();
+    await page.loginButton.click();
+
+    // open secondary outlet
+    await page.contactHref.click();
+
+    // go to login page and logout
+    await page.loginHref.click();
+    await page.loginButton.click();
+
+    // attempt to go to admin page, redirects to login with secondary outlet open
+    await page.adminHref.click();
+
+    // login, get redirected back to admin with outlet still open
+    await page.loginButton.click();
+
+    expect(await page.adminPage.isDisplayed()).toBeTruthy();
+    expect(page.secondaryOutlet.count()).toBeTruthy();
   });
 
   async function crisisCenterEdit(index: number, save: boolean) {

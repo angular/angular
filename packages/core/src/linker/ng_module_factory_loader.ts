@@ -7,61 +7,30 @@
  */
 
 import {NgModuleFactory as R3NgModuleFactory, NgModuleType} from '../render3/ng_module_ref';
-import {Type} from '../type';
-import {stringify} from '../util';
+
 import {NgModuleFactory} from './ng_module_factory';
+import {getRegisteredNgModuleType} from './ng_module_factory_registration';
+
 
 /**
  * Used to load ng module factories.
  *
  * @publicApi
+ * @deprecated the `string` form of `loadChildren` is deprecated, and `NgModuleFactoryLoader` is
+ * part of its implementation. See `LoadChildren` for more details.
  */
 export abstract class NgModuleFactoryLoader {
   abstract load(path: string): Promise<NgModuleFactory<any>>;
 }
 
-/**
- * Map of module-id to the corresponding NgModule.
- * - In pre Ivy we track NgModuleFactory,
- * - In post Ivy we track the NgModuleType
- */
-const modules = new Map<string, NgModuleFactory<any>|NgModuleType>();
-
-/**
- * Registers a loaded module. Should only be called from generated NgModuleFactory code.
- * @publicApi
- */
-export function registerModuleFactory(id: string, factory: NgModuleFactory<any>) {
-  const existing = modules.get(id) as NgModuleFactory<any>;
-  assertNotExisting(id, existing && existing.moduleType);
-  modules.set(id, factory);
-}
-
-function assertNotExisting(id: string, type: Type<any>| null): void {
-  if (type) {
-    throw new Error(
-        `Duplicate module registered for ${id} - ${stringify(type)} vs ${stringify(type.name)}`);
-  }
-}
-
-export function registerNgModuleType(id: string, ngModuleType: NgModuleType) {
-  const existing = modules.get(id) as NgModuleType | null;
-  assertNotExisting(id, existing);
-  modules.set(id, ngModuleType);
-}
-
-export function clearModulesForTest(): void {
-  modules.clear();
-}
-
 export function getModuleFactory__PRE_R3__(id: string): NgModuleFactory<any> {
-  const factory = modules.get(id) as NgModuleFactory<any>| null;
+  const factory = getRegisteredNgModuleType(id) as NgModuleFactory<any>| null;
   if (!factory) throw noModuleError(id);
   return factory;
 }
 
 export function getModuleFactory__POST_R3__(id: string): NgModuleFactory<any> {
-  const type = modules.get(id) as NgModuleType | null;
+  const type = getRegisteredNgModuleType(id) as NgModuleType | null;
   if (!type) throw noModuleError(id);
   return new R3NgModuleFactory(type);
 }
@@ -74,6 +43,8 @@ export function getModuleFactory__POST_R3__(id: string): NgModuleFactory<any> {
  */
 export const getModuleFactory: (id: string) => NgModuleFactory<any> = getModuleFactory__PRE_R3__;
 
-function noModuleError(id: string, ): Error {
+function noModuleError(
+    id: string,
+    ): Error {
   return new Error(`No module with ID ${id} loaded`);
 }

@@ -8,7 +8,7 @@
 
 import {browser, by, element} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
 
 describe('upgrade/static (lite with multiple downgraded modules and shared root module)', () => {
@@ -16,7 +16,7 @@ describe('upgrade/static (lite with multiple downgraded modules and shared root 
   const compB = element(by.css('ng2-b'));
   const compC = element(by.css('ng2-c'));
 
-  beforeEach(() => browser.get('/upgrade/static/ts/lite-multi-shared/'));
+  beforeEach(() => browser.get('/'));
   afterEach(verifyNoBrowserErrors);
 
   it('should share the same injectable instance across downgraded modules A and B', () => {
@@ -24,6 +24,7 @@ describe('upgrade/static (lite with multiple downgraded modules and shared root 
     expect(compB.getText()).toBe('Component B (Service ID: 2)');
   });
 
-  it('should use a different injectable instance on downgraded module C',
-     () => { expect(compC.getText()).toBe('Component C (Service ID: 1)'); });
+  it('should use a different injectable instance on downgraded module C', () => {
+    expect(compC.getText()).toBe('Component C (Service ID: 1)');
+  });
 });

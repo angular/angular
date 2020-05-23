@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../is_dev_mode';
+import {isDevMode} from '../util/is_dev_mode';
 
 /**
  * A pattern that recognizes a commonly useful subset of URLs that are safe.
@@ -15,7 +15,7 @@ import {isDevMode} from '../is_dev_mode';
  * execution if used in URL context within a HTML document. Specifically, this
  * regular expression matches if (comment from here on and regex copied from
  * Soy's EscapingConventions):
- * (1) Either a protocol in a whitelist (http, https, mailto or ftp).
+ * (1) Either an allowed protocol (http, https, mailto or ftp).
  * (2) or no protocol.  A protocol must be followed by a colon. The below
  *     allows that by allowing colons only after one of the characters [/?#].
  *     A colon after a hash (#) must be in the fragment.

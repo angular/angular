@@ -1,25 +1,22 @@
 {
   "angularCompilerOptions": {
-    // For TypeScript 1.8, we have to lay out generated files
-    // in the same source directory with your code.
-    "genDir": "ng",
     "flatModuleId": "flat_module",
     "flatModuleOutFile": "index.js",
-    "skipTemplateCodegen": true
+    "skipTemplateCodegen": true,
+    "enableIvy": false
   },
 
   "compilerOptions": {
-    "target": "es5",
-    "experimentalDecorators": true,
-    "noImplicitAny": true,
-    "moduleResolution": "node",
-    "rootDir": "",
-    "declaration": true,
-    "lib": ["es6", "dom"],
     "baseUrl": ".",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "lib": ["es6", "dom"],
+    "moduleResolution": "node",
+    "noImplicitAny": true,
     "outDir": "../node_modules/flat_module",
-     // Prevent scanning up the directory tree for types
-    "typeRoots": ["node_modules/@types"]
+    "rootDir": "",
+    "target": "es5",
+    "typeRoots": ["../node_modules/@types"]
  },
 
  "files": ["public-api.ts"]

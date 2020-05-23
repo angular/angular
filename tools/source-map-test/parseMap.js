@@ -41,7 +41,9 @@ module.exports = function getMappings(bundlePath) {
           matchData.push({
             genLineIndex,
             sourceLineIndex,
-            sourceFile: sourceMap.sources[sourceFileIndex], genText, sourceText
+            sourceFile: sourceMap.sources[sourceFileIndex],
+            genText,
+            sourceText
           });
         }
 
@@ -59,6 +61,7 @@ function getFile(filePath) {
 }
 
 function decodeLines(sourceMap) {
-  return sourceMap.mappings.split(';').map(
-      line => { return line.split(',').map(seg => vlq.decode(seg)); });
+  return sourceMap.mappings.split(';').map(line => {
+    return line.split(',').map(seg => vlq.decode(seg));
+  });
 }

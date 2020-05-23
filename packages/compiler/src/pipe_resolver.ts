@@ -7,7 +7,7 @@
  */
 
 import {CompileReflector} from './compile_reflector';
-import {Pipe, Type, createPipe} from './core';
+import {createPipe, Pipe, Type} from './core';
 import {findLast} from './directive_resolver';
 import {resolveForwardRef, stringify} from './util';
 

@@ -47,7 +47,7 @@ export interface KeyValue<K, V> {
 export class KeyValuePipe implements PipeTransform {
   constructor(private readonly differs: KeyValueDiffers) {}
 
-  private differ !: KeyValueDiffer<any, any>;
+  private differ!: KeyValueDiffer<any, any>;
   private keyValues: Array<KeyValue<any, any>> = [];
 
   transform<K, V>(input: null, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): null;
@@ -56,11 +56,22 @@ export class KeyValuePipe implements PipeTransform {
       compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number):
       Array<KeyValue<string, V>>;
   transform<V>(
+      input: {[key: string]: V}|Map<string, V>|null,
+      compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number):
+      Array<KeyValue<string, V>>|null;
+  transform<V>(
       input: {[key: number]: V}|Map<number, V>,
       compareFn?: (a: KeyValue<number, V>, b: KeyValue<number, V>) => number):
       Array<KeyValue<number, V>>;
+  transform<V>(
+      input: {[key: number]: V}|Map<number, V>|null,
+      compareFn?: (a: KeyValue<number, V>, b: KeyValue<number, V>) => number):
+      Array<KeyValue<number, V>>|null;
   transform<K, V>(input: Map<K, V>, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number):
       Array<KeyValue<K, V>>;
+  transform<K, V>(
+      input: Map<K, V>|null,
+      compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>|null;
   transform<K, V>(
       input: null|{[key: string]: V, [key: number]: V}|Map<K, V>,
       compareFn: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number = defaultComparator):
@@ -79,7 +90,7 @@ export class KeyValuePipe implements PipeTransform {
     if (differChanges) {
       this.keyValues = [];
       differChanges.forEachItem((r: KeyValueChangeRecord<K, V>) => {
-        this.keyValues.push(makeKeyValuePair(r.key, r.currentValue !));
+        this.keyValues.push(makeKeyValuePair(r.key, r.currentValue!));
       });
       this.keyValues.sort(compareFn);
     }

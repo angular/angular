@@ -12,6 +12,7 @@ export type ManifestHash = string;
 
 export interface Manifest {
   configVersion: number;
+  timestamp: number;
   appData?: {[key: string]: string};
   index: string;
   assetGroups?: AssetGroupConfig[];
@@ -26,6 +27,7 @@ export interface AssetGroupConfig {
   updateMode: 'prefetch'|'lazy';
   urls: string[];
   patterns: string[];
+  cacheQueryOptions?: CacheQueryOptions;
 }
 
 export interface DataGroupConfig {
@@ -37,6 +39,7 @@ export interface DataGroupConfig {
   timeoutMs?: number;
   refreshAheadMs?: number;
   maxAge: number;
+  cacheQueryOptions?: CacheQueryOptions;
 }
 
 export function hashManifest(manifest: Manifest): ManifestHash {

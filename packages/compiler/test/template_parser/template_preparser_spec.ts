@@ -14,7 +14,9 @@ import {PreparsedElement, PreparsedElementType, preparseElement} from '../../src
 {
   describe('preparseElement', () => {
     let htmlParser: HtmlParser;
-    beforeEach(inject([HtmlParser], (_htmlParser: HtmlParser) => { htmlParser = _htmlParser; }));
+    beforeEach(inject([HtmlParser], (_htmlParser: HtmlParser) => {
+      htmlParser = _htmlParser;
+    }));
 
     function preparse(html: string): PreparsedElement {
       return preparseElement(htmlParser.parse(html, 'TestComp').rootNodes[0] as Element);

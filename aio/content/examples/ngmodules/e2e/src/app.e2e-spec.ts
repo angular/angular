@@ -5,8 +5,6 @@ import { browser, element, by } from 'protractor';
 describe('NgModule-example', function () {
 
   // helpers
-  const gold = 'rgba(255, 215, 0, 1)';
-  const powderblue = 'rgba(176, 224, 230, 1)';
   const lightgray = 'rgba(239, 238, 237, 1)';
   const white = 'rgba(0, 0, 0, 0)';
 
@@ -15,7 +13,7 @@ describe('NgModule-example', function () {
 
     return {
       title: element.all(by.tagName('h1')).get(0),
-      subtitle: element.all(by.css('app-title p i')).get(0),
+      subtitle: element.all(by.css('app-root p i')).get(0),
       contactButton: buttons.get(0),
       itemButton: buttons.get(1),
       customersButton: buttons.get(2)
@@ -67,7 +65,7 @@ describe('NgModule-example', function () {
 
       it('should welcome us', function () {
         const commons = getCommonsSectionStruct();
-        expect(commons.subtitle.getText()).toBe('Welcome, ' + (name ||  'Sherlock Holmes'));
+        expect(commons.subtitle.getText()).toBe('Welcome, ' + (name ||  'Miss Marple'));
       });
     };
   }
@@ -76,7 +74,7 @@ describe('NgModule-example', function () {
     return function() {
       it('shows the contact\'s owner', function() {
         const contacts = getContactSectionStruct();
-        expect(contacts.header.getText()).toBe('Contact of ' + (name ||  'Sherlock Holmes'));
+        expect(contacts.header.getText()).toBe((name ||  'Miss Marple') + '\'s Contacts');
       });
 
       it('can cycle between contacts', function () {
@@ -92,21 +90,22 @@ describe('NgModule-example', function () {
         });
       });
 
-      it('can change an existing contact', function () {
-        const contacts = getContactSectionStruct();
-        contacts.input.sendKeys('a');
-        expect(contacts.input.getCssValue('backgroundColor')).toBe(color);
-        expect(contacts.contactNameHeader.getText()).toBe('Awesome Yashaa');
-      });
-
       it('can create a new contact', function () {
         const contacts = getContactSectionStruct();
         const newContactButton = contacts.newContactButton;
+        const nextButton = contacts.nextContactButton;
+        const input = contacts.input;
+        const saveButton = contacts.saveButton;
+
         newContactButton.click().then(function () {
-          expect(contacts.validationError.getText()).toBe('Name is required');
-          contacts.input.sendKeys('John Doe');
-          expect(contacts.contactNameHeader.getText()).toBe('Awesome John Doe');
-          expect(contacts.validationError.getText()).toBe('');
+          input.click();
+          nextButton.click()
+          expect(contacts.validationError.getText()).toBe('Name is required.');
+          input.click();
+          contacts.input.sendKeys('Watson');
+          saveButton.click()
+          expect(contacts.contactNameHeader.getText()).toBe('Awesome Watson');
+
         });
       });
     };

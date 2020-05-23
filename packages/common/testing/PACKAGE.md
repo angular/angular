@@ -1,0 +1,1 @@
+Supplies infrastructure for testing functionality supplied by `@angular/common`.

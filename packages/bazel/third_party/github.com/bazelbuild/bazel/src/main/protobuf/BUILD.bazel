@@ -1,0 +1,11 @@
+# Fetched from https://github.com/bazelbuild/bazel/blob/master/src/main/protobuf/worker_protocol.proto
+licenses(["notice"])
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "package_assets",
+    srcs = glob(["*"]),
+)
+
+exports_files(["worker_protocol.proto"])

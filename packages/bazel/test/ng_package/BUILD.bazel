@@ -13,7 +13,7 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/private/testing",
-        "@ngdeps//@types/shelljs",
+        "@npm//@types/shelljs",
     ],
 )
 
@@ -22,9 +22,13 @@ jasmine_node_test(
     srcs = [":core_spec_lib"],
     data = [
         "//packages/core:npm_package",
-        "@ngdeps//@types/shelljs",
-        "@ngdeps//shelljs",
+        "@npm//@types/shelljs",
+        "@npm//shelljs",
     ],
+    # The "ng_package" rule currently does not properly handle flat module
+    # bundles which the common package tests rely on. We temporarily disable
+    # this test until we fix `ng_package` for Ivy. Tracked with: FW-2144.
+    tags = ["fixme-ivy-aot"],
 )
 
 ts_library(
@@ -33,7 +37,8 @@ ts_library(
     srcs = ["common_package.spec.ts"],
     deps = [
         "//packages:types",
-        "@ngdeps//@types/shelljs",
+        "//packages/private/testing",
+        "@npm//@types/shelljs",
     ],
 )
 
@@ -42,8 +47,12 @@ jasmine_node_test(
     srcs = [":common_spec_lib"],
     data = [
         "//packages/common:npm_package",
-        "@ngdeps//shelljs",
+        "@npm//shelljs",
     ],
+    # The "ng_package" rule currently does not properly handle flat module
+    # bundles which the common package tests rely on. We temporarily disable
+    # this test until we fix `ng_package` for Ivy. Tracked with: FW-2144.
+    tags = ["fixme-ivy-aot"],
 )
 
 ts_library(
@@ -52,7 +61,7 @@ ts_library(
     srcs = ["example_package.spec.ts"],
     deps = [
         "//packages:types",
-        "@ngdeps//@types/diff",
+        "@npm//@types/diff",
     ],
 )
 
@@ -61,12 +70,15 @@ jasmine_node_test(
     srcs = [":example_spec_lib"],
     data = [
         "example_package.golden",
+        "example_with_ts_library_package.golden",
         "//packages/bazel/test/ng_package/example:npm_package",
+        "//packages/bazel/test/ng_package/example-with-ts-library:npm_package",
     ],
-    # TODO(alexeagle): re-enable this test
-    # see https://github.com/angular/angular/pull/22933
-    tags = ["manual"],
-    deps = ["@ngdeps//diff"],
+    # We don't want to run the example_package golden test with Ivy yet. Currently the golden
+    # file is based on non-ivy output and therefore won't work for ngc and Ivy at the same time.
+    # TODO: We should be able to have another golden for ivy-aot as well.
+    tags = ["no-ivy-aot"],
+    deps = ["@npm//diff"],
 )
 
 nodejs_binary(
@@ -74,9 +86,12 @@ nodejs_binary(
     testonly = True,
     data = [
         "example_package.golden",
+        "example_with_ts_library_package.golden",
         ":example_spec_lib",
         "//packages/bazel/test/ng_package/example:npm_package",
+        "//packages/bazel/test/ng_package/example-with-ts-library:npm_package",
+        "@npm//diff",
     ],
-    entry_point = "angular/packages/bazel/test/ng_package/example_package.spec.js",
+    entry_point = ":example_package.spec.ts",
     templated_args = ["--accept"],
 )

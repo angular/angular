@@ -16,9 +16,13 @@ class Todo {
   editing: boolean;
 
   // TODO(issue/24571): remove '!'.
-  private _title !: string;
-  get title() { return this._title; }
-  set title(value: string) { this._title = value.trim(); }
+  private _title!: string;
+  get title() {
+    return this._title;
+  }
+  set title(value: string) {
+    this._title = value.trim();
+  }
 
   constructor(title: string, public completed: boolean = false) {
     this.editing = false;
@@ -40,21 +44,37 @@ class TodoStore {
     return this.todos.filter((todo: Todo) => todo.completed === completed);
   }
 
-  allCompleted() { return this.todos.length === this.getCompleted().length; }
+  allCompleted() {
+    return this.todos.length === this.getCompleted().length;
+  }
 
-  setAllTo(completed: boolean) { this.todos.forEach((t: Todo) => t.completed = completed); }
+  setAllTo(completed: boolean) {
+    this.todos.forEach((t: Todo) => t.completed = completed);
+  }
 
-  removeCompleted() { this.todos = this.getWithCompleted(false); }
+  removeCompleted() {
+    this.todos = this.getWithCompleted(false);
+  }
 
-  getRemaining() { return this.getWithCompleted(false); }
+  getRemaining() {
+    return this.getWithCompleted(false);
+  }
 
-  getCompleted() { return this.getWithCompleted(true); }
+  getCompleted() {
+    return this.getWithCompleted(true);
+  }
 
-  toggleCompletion(todo: Todo) { todo.completed = !todo.completed; }
+  toggleCompletion(todo: Todo) {
+    todo.completed = !todo.completed;
+  }
 
-  remove(todo: Todo) { this.todos.splice(this.todos.indexOf(todo), 1); }
+  remove(todo: Todo) {
+    this.todos.splice(this.todos.indexOf(todo), 1);
+  }
 
-  add(title: string) { this.todos.push(new Todo(title)); }
+  add(title: string) {
+    this.todos.push(new Todo(title));
+  }
 }
 
 @Component({
@@ -120,14 +140,18 @@ class TodoStore {
 class ToDoAppComponent {
   newTodoText = '';
 
-  constructor(public todoStore: TodoStore) { (window as any).toDoAppComponent = this; }
+  constructor(public todoStore: TodoStore) {
+    (window as any).toDoAppComponent = this;
+  }
 
   stopEditing(todo: Todo, editedTitle: string) {
     todo.title = editedTitle;
     todo.editing = false;
   }
 
-  cancelEditingTodo(todo: Todo) { todo.editing = false; }
+  cancelEditingTodo(todo: Todo) {
+    todo.editing = false;
+  }
 
   updateEditingTodo(todo: Todo, editedTitle: string) {
     editedTitle = editedTitle.trim();
@@ -140,13 +164,21 @@ class ToDoAppComponent {
     todo.title = editedTitle;
   }
 
-  editTodo(todo: Todo) { todo.editing = true; }
+  editTodo(todo: Todo) {
+    todo.editing = true;
+  }
 
-  removeCompleted() { this.todoStore.removeCompleted(); }
+  removeCompleted() {
+    this.todoStore.removeCompleted();
+  }
 
-  toggleCompletion(todo: Todo) { this.todoStore.toggleCompletion(todo); }
+  toggleCompletion(todo: Todo) {
+    this.todoStore.toggleCompletion(todo);
+  }
 
-  remove(todo: Todo) { this.todoStore.remove(todo); }
+  remove(todo: Todo) {
+    this.todoStore.remove(todo);
+  }
 
   addTodo() {
     if (this.newTodoText.trim().length) {
@@ -158,7 +190,9 @@ class ToDoAppComponent {
 
 @NgModule({declarations: [ToDoAppComponent], imports: [CommonModule, BrowserModule]})
 class ToDoAppModule {
-  ngDoBootstrap(app: any) { app.bootstrap(ToDoAppComponent); }
+  ngDoBootstrap(app: any) {
+    app.bootstrap(ToDoAppComponent);
+  }
 }
 
 (window as any).waitForApp =

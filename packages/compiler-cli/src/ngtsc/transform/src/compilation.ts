@@ -9,146 +9,124 @@
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {FatalDiagnosticError} from '../../diagnostics';
-import {Decorator, ReflectionHost} from '../../host';
-import {reflectNameOfDeclaration} from '../../metadata/src/reflector';
-import {TypeCheckContext} from '../../typecheck';
+import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {IncrementalBuild} from '../../incremental/api';
+import {IndexingContext} from '../../indexer';
+import {PerfRecorder} from '../../perf';
+import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
+import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck';
+import {getSourceFile, isExported} from '../../util/src/typescript';
 
-import {AnalysisOutput, CompileResult, DecoratorHandler} from './api';
-import {DtsFileTransformer} from './declaration';
+import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
+import {DtsTransformRegistry} from './declaration';
+import {PendingTrait, Trait, TraitState} from './trait';
 
 
 /**
- * Record of an adapter which decided to emit a static field, and the analysis it performed to
- * prepare for that operation.
+ * Records information about a specific class that has matched traits.
  */
-interface EmitFieldOperation<A, M> {
-  adapter: DecoratorHandler<A, M>;
-  analysis: AnalysisOutput<A>;
-  metadata: M;
+export interface ClassRecord {
+  /**
+   * The `ClassDeclaration` of the class which has Angular traits applied.
+   */
+  node: ClassDeclaration;
+
+  /**
+   * All traits which matched on the class.
+   */
+  traits: Trait<unknown, unknown, unknown>[];
+
+  /**
+   * Meta-diagnostics about the class, which are usually related to whether certain combinations of
+   * Angular decorators are not permitted.
+   */
+  metaDiagnostics: ts.Diagnostic[]|null;
+
+  // Subsequent fields are "internal" and used during the matching of `DecoratorHandler`s. This is
+  // mutable state during the `detect`/`analyze` phases of compilation.
+
+  /**
+   * Whether `traits` contains traits matched from `DecoratorHandler`s marked as `WEAK`.
+   */
+  hasWeakHandlers: boolean;
+
+  /**
+   * Whether `traits` contains a trait from a `DecoratorHandler` matched as `PRIMARY`.
+   */
+  hasPrimaryHandler: boolean;
 }
 
 /**
- * Manages a compilation of Ivy decorators into static fields across an entire ts.Program.
+ * The heart of Angular compilation.
  *
- * The compilation is stateful - source files are analyzed and records of the operations that need
- * to be performed during the transform/emit process are maintained internally.
+ * The `TraitCompiler` is responsible for processing all classes in the program. Any time a
+ * `DecoratorHandler` matches a class, a "trait" is created to represent that Angular aspect of the
+ * class (such as the class having a component definition).
+ *
+ * The `TraitCompiler` transitions each trait through the various phases of compilation, culminating
+ * in the production of `CompileResult`s instructing the compiler to apply various mutations to the
+ * class (like adding fields or type declarations).
  */
-export class IvyCompilation {
+export class TraitCompiler implements ProgramTypeCheckAdapter {
   /**
-   * Tracks classes which have been analyzed and found to have an Ivy decorator, and the
-   * information recorded about them for later compilation.
+   * Maps class declarations to their `ClassRecord`, which tracks the Ivy traits being applied to
+   * those classes.
    */
-  private analysis = new Map<ts.Declaration, EmitFieldOperation<any, any>>();
-  private typeCheckMap = new Map<ts.Declaration, DecoratorHandler<any, any>>();
+  private classes = new Map<ClassDeclaration, ClassRecord>();
 
   /**
-   * Tracks factory information which needs to be generated.
+   * Maps source files to any class declaration(s) within them which have been discovered to contain
+   * Ivy traits.
    */
+  protected fileToClasses = new Map<ts.SourceFile, Set<ClassDeclaration>>();
 
-  /**
-   * Tracks the `DtsFileTransformer`s for each TS file that needs .d.ts transformations.
-   */
-  private dtsMap = new Map<string, DtsFileTransformer>();
-  private _diagnostics: ts.Diagnostic[] = [];
+  private reexportMap = new Map<string, Map<string, [string, string]>>();
 
+  private handlersByName = new Map<string, DecoratorHandler<unknown, unknown, unknown>>();
 
-  /**
-   * @param handlers array of `DecoratorHandler`s which will be executed against each class in the
-   * program
-   * @param checker TypeScript `TypeChecker` instance for the program
-   * @param reflector `ReflectionHost` through which all reflection operations will be performed
-   * @param coreImportsFrom a TypeScript `SourceFile` which exports symbols needed for Ivy imports
-   * when compiling @angular/core, or `null` if the current program is not @angular/core. This is
-   * `null` in most cases.
-   */
   constructor(
-      private handlers: DecoratorHandler<any, any>[], private checker: ts.TypeChecker,
-      private reflector: ReflectionHost, private coreImportsFrom: ts.SourceFile|null,
-      private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
+      private handlers: DecoratorHandler<unknown, unknown, unknown>[],
+      private reflector: ReflectionHost, private perf: PerfRecorder,
+      private incrementalBuild: IncrementalBuild<ClassRecord, unknown>,
+      private compileNonExportedClasses: boolean, private dtsTransforms: DtsTransformRegistry) {
+    for (const handler of handlers) {
+      this.handlersByName.set(handler.name, handler);
+    }
+  }
 
+  analyzeSync(sf: ts.SourceFile): void {
+    this.analyze(sf, false);
+  }
 
-  analyzeSync(sf: ts.SourceFile): void { return this.analyze(sf, false); }
+  analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined {
+    return this.analyze(sf, true);
+  }
 
-  analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined { return this.analyze(sf, true); }
-
-  /**
-   * Analyze a source file and produce diagnostics for it (if any).
-   */
-  private analyze(sf: ts.SourceFile, preanalyze: false): undefined;
+  private analyze(sf: ts.SourceFile, preanalyze: false): void;
   private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
   private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
+    // We shouldn't analyze declaration files.
+    if (sf.isDeclarationFile) {
+      return undefined;
+    }
+
+    // analyze() really wants to return `Promise<void>|void`, but TypeScript cannot narrow a return
+    // type of 'void', so `undefined` is used instead.
     const promises: Promise<void>[] = [];
 
-    const analyzeClass = (node: ts.Declaration): void => {
-      // The first step is to reflect the decorators.
-      const classDecorators = this.reflector.getDecoratorsOfDeclaration(node);
+    const priorWork = this.incrementalBuild.priorWorkFor(sf);
+    if (priorWork !== null) {
+      for (const priorRecord of priorWork) {
+        this.adopt(priorRecord);
+      }
 
-      // Look through the DecoratorHandlers to see if any are relevant.
-      this.handlers.forEach(adapter => {
-
-        // An adapter is relevant if it matches one of the decorators on the class.
-        const metadata = adapter.detect(node, classDecorators);
-        if (metadata === undefined) {
-          return;
-        }
-
-        const completeAnalysis = () => {
-          // Check for multiple decorators on the same node. Technically speaking this
-          // could be supported, but right now it's an error.
-          if (this.analysis.has(node)) {
-            throw new Error('TODO.Diagnostic: Class has multiple Angular decorators.');
-          }
-
-          // Run analysis on the metadata. This will produce either diagnostics, an
-          // analysis result, or both.
-          try {
-            const analysis = adapter.analyze(node, metadata);
-            if (analysis.analysis !== undefined) {
-              this.analysis.set(node, {
-                adapter,
-                analysis: analysis.analysis,
-                metadata: metadata,
-              });
-              if (!!analysis.typeCheck) {
-                this.typeCheckMap.set(node, adapter);
-              }
-            }
-
-            if (analysis.diagnostics !== undefined) {
-              this._diagnostics.push(...analysis.diagnostics);
-            }
-
-            if (analysis.factorySymbolName !== undefined && this.sourceToFactorySymbols !== null &&
-                this.sourceToFactorySymbols.has(sf.fileName)) {
-              this.sourceToFactorySymbols.get(sf.fileName) !.add(analysis.factorySymbolName);
-            }
-          } catch (err) {
-            if (err instanceof FatalDiagnosticError) {
-              this._diagnostics.push(err.toDiagnostic());
-            } else {
-              throw err;
-            }
-          }
-        };
-
-        if (preanalyze && adapter.preanalyze !== undefined) {
-          const preanalysis = adapter.preanalyze(node, metadata);
-          if (preanalysis !== undefined) {
-            promises.push(preanalysis.then(() => completeAnalysis()));
-          } else {
-            completeAnalysis();
-          }
-        } else {
-          completeAnalysis();
-        }
-      });
-    };
+      // Skip the rest of analysis, as this file's prior traits are being reused.
+      return;
+    }
 
     const visit = (node: ts.Node): void => {
-      // Process nodes recursively, and look for class declarations with decorators.
-      if (ts.isClassDeclaration(node)) {
-        analyzeClass(node);
+      if (this.reflector.isClass(node)) {
+        this.analyzeClass(node, preanalyze ? promises : null);
       }
       ts.forEachChild(node, visit);
     };
@@ -156,80 +134,413 @@ export class IvyCompilation {
     visit(sf);
 
     if (preanalyze && promises.length > 0) {
-      return Promise.all(promises).then(() => undefined);
+      return Promise.all(promises).then(() => undefined as void);
     } else {
       return undefined;
     }
   }
 
-  typeCheck(context: TypeCheckContext): void {
-    this.typeCheckMap.forEach((handler, node) => {
-      if (handler.typeCheck !== undefined) {
-        handler.typeCheck(context, node, this.analysis.get(node) !.analysis);
+  recordFor(clazz: ClassDeclaration): ClassRecord|null {
+    if (this.classes.has(clazz)) {
+      return this.classes.get(clazz)!;
+    } else {
+      return null;
+    }
+  }
+
+  recordsFor(sf: ts.SourceFile): ClassRecord[]|null {
+    if (!this.fileToClasses.has(sf)) {
+      return null;
+    }
+    const records: ClassRecord[] = [];
+    for (const clazz of this.fileToClasses.get(sf)!) {
+      records.push(this.classes.get(clazz)!);
+    }
+    return records;
+  }
+
+  /**
+   * Import a `ClassRecord` from a previous compilation.
+   *
+   * Traits from the `ClassRecord` have accurate metadata, but the `handler` is from the old program
+   * and needs to be updated (matching is done by name). A new pending trait is created and then
+   * transitioned to analyzed using the previous analysis. If the trait is in the errored state,
+   * instead the errors are copied over.
+   */
+  private adopt(priorRecord: ClassRecord): void {
+    const record: ClassRecord = {
+      hasPrimaryHandler: priorRecord.hasPrimaryHandler,
+      hasWeakHandlers: priorRecord.hasWeakHandlers,
+      metaDiagnostics: priorRecord.metaDiagnostics,
+      node: priorRecord.node,
+      traits: [],
+    };
+
+    for (const priorTrait of priorRecord.traits) {
+      const handler = this.handlersByName.get(priorTrait.handler.name)!;
+      let trait: Trait<unknown, unknown, unknown> = Trait.pending(handler, priorTrait.detected);
+
+      if (priorTrait.state === TraitState.ANALYZED || priorTrait.state === TraitState.RESOLVED) {
+        trait = trait.toAnalyzed(priorTrait.analysis);
+        if (trait.handler.register !== undefined) {
+          trait.handler.register(record.node, trait.analysis);
+        }
+      } else if (priorTrait.state === TraitState.SKIPPED) {
+        trait = trait.toSkipped();
+      } else if (priorTrait.state === TraitState.ERRORED) {
+        trait = trait.toErrored(priorTrait.diagnostics);
       }
-    });
+
+      record.traits.push(trait);
+    }
+
+    this.classes.set(record.node, record);
+    const sf = record.node.getSourceFile();
+    if (!this.fileToClasses.has(sf)) {
+      this.fileToClasses.set(sf, new Set<ClassDeclaration>());
+    }
+    this.fileToClasses.get(sf)!.add(record.node);
+  }
+
+  private scanClassForTraits(clazz: ClassDeclaration):
+      PendingTrait<unknown, unknown, unknown>[]|null {
+    if (!this.compileNonExportedClasses && !isExported(clazz)) {
+      return null;
+    }
+
+    const decorators = this.reflector.getDecoratorsOfDeclaration(clazz);
+
+    return this.detectTraits(clazz, decorators);
+  }
+
+  protected detectTraits(clazz: ClassDeclaration, decorators: Decorator[]|null):
+      PendingTrait<unknown, unknown, unknown>[]|null {
+    let record: ClassRecord|null = this.recordFor(clazz);
+    let foundTraits: PendingTrait<unknown, unknown, unknown>[] = [];
+
+    for (const handler of this.handlers) {
+      const result = handler.detect(clazz, decorators);
+      if (result === undefined) {
+        continue;
+      }
+
+      const isPrimaryHandler = handler.precedence === HandlerPrecedence.PRIMARY;
+      const isWeakHandler = handler.precedence === HandlerPrecedence.WEAK;
+      const trait = Trait.pending(handler, result);
+
+      foundTraits.push(trait);
+
+      if (record === null) {
+        // This is the first handler to match this class. This path is a fast path through which
+        // most classes will flow.
+        record = {
+          node: clazz,
+          traits: [trait],
+          metaDiagnostics: null,
+          hasPrimaryHandler: isPrimaryHandler,
+          hasWeakHandlers: isWeakHandler,
+        };
+
+        this.classes.set(clazz, record);
+        const sf = clazz.getSourceFile();
+        if (!this.fileToClasses.has(sf)) {
+          this.fileToClasses.set(sf, new Set<ClassDeclaration>());
+        }
+        this.fileToClasses.get(sf)!.add(clazz);
+      } else {
+        // This is at least the second handler to match this class. This is a slower path that some
+        // classes will go through, which validates that the set of decorators applied to the class
+        // is valid.
+
+        // Validate according to rules as follows:
+        //
+        // * WEAK handlers are removed if a non-WEAK handler matches.
+        // * Only one PRIMARY handler can match at a time. Any other PRIMARY handler matching a
+        //   class with an existing PRIMARY handler is an error.
+
+        if (!isWeakHandler && record.hasWeakHandlers) {
+          // The current handler is not a WEAK handler, but the class has other WEAK handlers.
+          // Remove them.
+          record.traits =
+              record.traits.filter(field => field.handler.precedence !== HandlerPrecedence.WEAK);
+          record.hasWeakHandlers = false;
+        } else if (isWeakHandler && !record.hasWeakHandlers) {
+          // The current handler is a WEAK handler, but the class has non-WEAK handlers already.
+          // Drop the current one.
+          continue;
+        }
+
+        if (isPrimaryHandler && record.hasPrimaryHandler) {
+          // The class already has a PRIMARY handler, and another one just matched.
+          record.metaDiagnostics = [{
+            category: ts.DiagnosticCategory.Error,
+            code: Number('-99' + ErrorCode.DECORATOR_COLLISION),
+            file: getSourceFile(clazz),
+            start: clazz.getStart(undefined, false),
+            length: clazz.getWidth(),
+            messageText: 'Two incompatible decorators on class',
+          }];
+          record.traits = foundTraits = [];
+          break;
+        }
+
+        // Otherwise, it's safe to accept the multiple decorators here. Update some of the metadata
+        // regarding this class.
+        record.traits.push(trait);
+        record.hasPrimaryHandler = record.hasPrimaryHandler || isPrimaryHandler;
+      }
+    }
+
+    return foundTraits.length > 0 ? foundTraits : null;
+  }
+
+  protected analyzeClass(clazz: ClassDeclaration, preanalyzeQueue: Promise<void>[]|null): void {
+    const traits = this.scanClassForTraits(clazz);
+
+    if (traits === null) {
+      // There are no Ivy traits on the class, so it can safely be skipped.
+      return;
+    }
+
+    for (const trait of traits) {
+      const analyze = () => this.analyzeTrait(clazz, trait);
+
+      let preanalysis: Promise<void>|null = null;
+      if (preanalyzeQueue !== null && trait.handler.preanalyze !== undefined) {
+        // Attempt to run preanalysis. This could fail with a `FatalDiagnosticError`; catch it if it
+        // does.
+        try {
+          preanalysis = trait.handler.preanalyze(clazz, trait.detected.metadata) || null;
+        } catch (err) {
+          if (err instanceof FatalDiagnosticError) {
+            trait.toErrored([err.toDiagnostic()]);
+            return;
+          } else {
+            throw err;
+          }
+        }
+      }
+      if (preanalysis !== null) {
+        preanalyzeQueue!.push(preanalysis.then(analyze));
+      } else {
+        analyze();
+      }
+    }
+  }
+
+  protected analyzeTrait(
+      clazz: ClassDeclaration, trait: Trait<unknown, unknown, unknown>,
+      flags?: HandlerFlags): void {
+    if (trait.state !== TraitState.PENDING) {
+      throw new Error(`Attempt to analyze trait of ${clazz.name.text} in state ${
+          TraitState[trait.state]} (expected DETECTED)`);
+    }
+
+    // Attempt analysis. This could fail with a `FatalDiagnosticError`; catch it if it does.
+    let result: AnalysisOutput<unknown>;
+    try {
+      result = trait.handler.analyze(clazz, trait.detected.metadata, flags);
+    } catch (err) {
+      if (err instanceof FatalDiagnosticError) {
+        trait = trait.toErrored([err.toDiagnostic()]);
+        return;
+      } else {
+        throw err;
+      }
+    }
+
+    if (result.diagnostics !== undefined) {
+      trait = trait.toErrored(result.diagnostics);
+    } else if (result.analysis !== undefined) {
+      // Analysis was successful. Trigger registration.
+      if (trait.handler.register !== undefined) {
+        trait.handler.register(clazz, result.analysis);
+      }
+
+      // Successfully analyzed and registered.
+      trait = trait.toAnalyzed(result.analysis);
+    } else {
+      trait = trait.toSkipped();
+    }
+  }
+
+  resolve(): void {
+    const classes = Array.from(this.classes.keys());
+    for (const clazz of classes) {
+      const record = this.classes.get(clazz)!;
+      for (let trait of record.traits) {
+        const handler = trait.handler;
+        switch (trait.state) {
+          case TraitState.SKIPPED:
+          case TraitState.ERRORED:
+            continue;
+          case TraitState.PENDING:
+            throw new Error(`Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${
+                Object.getPrototypeOf(trait.handler).constructor.name}`);
+          case TraitState.RESOLVED:
+            throw new Error(`Resolving an already resolved trait`);
+        }
+
+        if (handler.resolve === undefined) {
+          // No resolution of this trait needed - it's considered successful by default.
+          trait = trait.toResolved(null);
+          continue;
+        }
+
+        let result: ResolveResult<unknown>;
+        try {
+          result = handler.resolve(clazz, trait.analysis as Readonly<unknown>);
+        } catch (err) {
+          if (err instanceof FatalDiagnosticError) {
+            trait = trait.toErrored([err.toDiagnostic()]);
+            continue;
+          } else {
+            throw err;
+          }
+        }
+
+        if (result.diagnostics !== undefined && result.diagnostics.length > 0) {
+          trait = trait.toErrored(result.diagnostics);
+        } else {
+          if (result.data !== undefined) {
+            trait = trait.toResolved(result.data);
+          } else {
+            trait = trait.toResolved(null);
+          }
+        }
+
+        if (result.reexports !== undefined) {
+          const fileName = clazz.getSourceFile().fileName;
+          if (!this.reexportMap.has(fileName)) {
+            this.reexportMap.set(fileName, new Map<string, [string, string]>());
+          }
+          const fileReexports = this.reexportMap.get(fileName)!;
+          for (const reexport of result.reexports) {
+            fileReexports.set(reexport.asAlias, [reexport.fromModule, reexport.symbolName]);
+          }
+        }
+      }
+    }
   }
 
   /**
-   * Perform a compilation operation on the given class declaration and return instructions to an
-   * AST transformer if any are available.
+   * Generate type-checking code into the `TypeCheckContext` for any components within the given
+   * `ts.SourceFile`.
    */
-  compileIvyFieldFor(node: ts.Declaration, constantPool: ConstantPool): CompileResult[]|undefined {
-    // Look to see whether the original node was analyzed. If not, there's nothing to do.
-    const original = ts.getOriginalNode(node) as ts.Declaration;
-    if (!this.analysis.has(original)) {
-      return undefined;
-    }
-    const op = this.analysis.get(original) !;
-
-    // Run the actual compilation, which generates an Expression for the Ivy field.
-    let res: CompileResult|CompileResult[] = op.adapter.compile(node, op.analysis, constantPool);
-    if (!Array.isArray(res)) {
-      res = [res];
+  typeCheck(sf: ts.SourceFile, ctx: TypeCheckContext): void {
+    if (!this.fileToClasses.has(sf)) {
+      return;
     }
 
-    // Look up the .d.ts transformer for the input file and record that a field was generated,
-    // which will allow the .d.ts to be transformed later.
-    const fileName = original.getSourceFile().fileName;
-    const dtsTransformer = this.getDtsTransformer(fileName);
-    dtsTransformer.recordStaticField(reflectNameOfDeclaration(node) !, res);
-
-    // Return the instruction to the transformer so the field will be added.
-    return res;
+    for (const clazz of this.fileToClasses.get(sf)!) {
+      const record = this.classes.get(clazz)!;
+      for (const trait of record.traits) {
+        if (trait.state !== TraitState.RESOLVED) {
+          continue;
+        } else if (trait.handler.typeCheck === undefined) {
+          continue;
+        }
+        trait.handler.typeCheck(ctx, clazz, trait.analysis, trait.resolution);
+      }
+    }
   }
 
-  /**
-   * Lookup the `ts.Decorator` which triggered transformation of a particular class declaration.
-   */
-  ivyDecoratorFor(node: ts.Declaration): Decorator|undefined {
-    const original = ts.getOriginalNode(node) as ts.Declaration;
-    if (!this.analysis.has(original)) {
-      return undefined;
-    }
+  index(ctx: IndexingContext): void {
+    for (const clazz of this.classes.keys()) {
+      const record = this.classes.get(clazz)!;
+      for (const trait of record.traits) {
+        if (trait.state !== TraitState.RESOLVED) {
+          // Skip traits that haven't been resolved successfully.
+          continue;
+        } else if (trait.handler.index === undefined) {
+          // Skip traits that don't affect indexing.
+          continue;
+        }
 
-    return this.analysis.get(original) !.metadata;
+        trait.handler.index(ctx, clazz, trait.analysis, trait.resolution);
+      }
+    }
   }
 
-  /**
-   * Process a .d.ts source string and return a transformed version that incorporates the changes
-   * made to the source file.
-   */
-  transformedDtsFor(tsFileName: string, dtsOriginalSource: string): string {
-    // No need to transform if no changes have been requested to the input file.
-    if (!this.dtsMap.has(tsFileName)) {
-      return dtsOriginalSource;
+  compile(clazz: ts.Declaration, constantPool: ConstantPool): CompileResult[]|null {
+    const original = ts.getOriginalNode(clazz) as typeof clazz;
+    if (!this.reflector.isClass(clazz) || !this.reflector.isClass(original) ||
+        !this.classes.has(original)) {
+      return null;
     }
 
-    // Return the transformed .d.ts source.
-    return this.dtsMap.get(tsFileName) !.transform(dtsOriginalSource, tsFileName);
+    const record = this.classes.get(original)!;
+
+    let res: CompileResult[] = [];
+
+    for (const trait of record.traits) {
+      if (trait.state !== TraitState.RESOLVED) {
+        continue;
+      }
+
+      const compileSpan = this.perf.start('compileClass', original);
+      const compileMatchRes =
+          trait.handler.compile(clazz, trait.analysis, trait.resolution, constantPool);
+      this.perf.stop(compileSpan);
+      if (Array.isArray(compileMatchRes)) {
+        for (const result of compileMatchRes) {
+          if (!res.some(r => r.name === result.name)) {
+            res.push(result);
+          }
+        }
+      } else if (!res.some(result => result.name === compileMatchRes.name)) {
+        res.push(compileMatchRes);
+      }
+    }
+
+    // Look up the .d.ts transformer for the input file and record that at least one field was
+    // generated, which will allow the .d.ts to be transformed later.
+    this.dtsTransforms.getIvyDeclarationTransform(original.getSourceFile())
+        .addFields(original, res);
+
+    // Return the instruction to the transformer so the fields will be added.
+    return res.length > 0 ? res : null;
   }
 
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return this._diagnostics; }
-
-  private getDtsTransformer(tsFileName: string): DtsFileTransformer {
-    if (!this.dtsMap.has(tsFileName)) {
-      this.dtsMap.set(tsFileName, new DtsFileTransformer(this.coreImportsFrom));
+  decoratorsFor(node: ts.Declaration): ts.Decorator[] {
+    const original = ts.getOriginalNode(node) as typeof node;
+    if (!this.reflector.isClass(original) || !this.classes.has(original)) {
+      return [];
     }
-    return this.dtsMap.get(tsFileName) !;
+
+    const record = this.classes.get(original)!;
+    const decorators: ts.Decorator[] = [];
+
+    for (const trait of record.traits) {
+      if (trait.state !== TraitState.RESOLVED) {
+        continue;
+      }
+
+      if (trait.detected.trigger !== null && ts.isDecorator(trait.detected.trigger)) {
+        decorators.push(trait.detected.trigger);
+      }
+    }
+
+    return decorators;
+  }
+
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+    const diagnostics: ts.Diagnostic[] = [];
+    for (const clazz of this.classes.keys()) {
+      const record = this.classes.get(clazz)!;
+      if (record.metaDiagnostics !== null) {
+        diagnostics.push(...record.metaDiagnostics);
+      }
+      for (const trait of record.traits) {
+        if (trait.state === TraitState.ERRORED) {
+          diagnostics.push(...trait.diagnostics);
+        }
+      }
+    }
+    return diagnostics;
+  }
+
+  get exportStatements(): Map<string, Map<string, [string, string]>> {
+    return this.reexportMap;
   }
 }

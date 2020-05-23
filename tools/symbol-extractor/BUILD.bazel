@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "lib",
@@ -14,7 +14,7 @@ ts_library(
     ),
     deps = [
         "//packages:types",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 
@@ -28,7 +28,7 @@ ts_library(
     deps = [
         ":lib",
         "//packages:types",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 

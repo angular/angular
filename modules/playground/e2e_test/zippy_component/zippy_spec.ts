@@ -6,17 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser, by, element} from 'protractor';
 
-describe('Zippy Component', function() {
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
+describe('Zippy Component', function() {
   afterEach(verifyNoBrowserErrors);
 
   describe('zippy', function() {
-    const URL = 'all/playground/src/zippy_component/index.html';
+    const URL = '/';
 
-    beforeEach(function() { browser.get(URL); });
+    beforeEach(function() {
+      browser.get(URL);
+    });
 
     it('should change the zippy title depending on it\'s state', function() {
       const zippyTitle = element(by.css('.zippy__title'));

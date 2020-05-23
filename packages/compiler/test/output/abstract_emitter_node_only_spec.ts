@@ -18,14 +18,16 @@ import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/s
       const fileB = new ParseSourceFile('b0b1b2b3b4b5b6b7b8b9', 'b.js');
       let ctx: EmitterVisitorContext;
 
-      beforeEach(() => { ctx = EmitterVisitorContext.createRoot(); });
+      beforeEach(() => {
+        ctx = EmitterVisitorContext.createRoot();
+      });
 
       it('should add source files to the source map', () => {
         ctx.print(createSourceSpan(fileA, 0), 'o0');
         ctx.print(createSourceSpan(fileA, 1), 'o1');
         ctx.print(createSourceSpan(fileB, 0), 'o2');
         ctx.print(createSourceSpan(fileB, 1), 'o3');
-        const sm = ctx.toSourceMapGenerator('o.ts').toJSON() !;
+        const sm = ctx.toSourceMapGenerator('o.ts').toJSON()!;
         expect(sm.sources).toEqual([fileA.url, fileB.url]);
         expect(sm.sourcesContent).toEqual([fileA.content, fileB.content]);
       });
@@ -43,7 +45,7 @@ import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/s
       it('should be able to shift the content', () => {
         ctx.print(createSourceSpan(fileA, 0), 'fileA-0');
 
-        const sm = ctx.toSourceMapGenerator('o.ts', 10).toJSON() !;
+        const sm = ctx.toSourceMapGenerator('o.ts', 10).toJSON()!;
         expect(originalPositionFor(sm, {line: 11, column: 0})).toEqual({
           line: 1,
           column: 0,
@@ -111,9 +113,9 @@ import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/s
 // All lines / columns indexes are 0-based
 // Note: source-map line indexes are 1-based, column 0-based
 function expectMap(
-    ctx: EmitterVisitorContext, genLine: number, genCol: number, source: string | null = null,
-    srcLine: number | null = null, srcCol: number | null = null) {
-  const sm = ctx.toSourceMapGenerator('o.ts').toJSON() !;
+    ctx: EmitterVisitorContext, genLine: number, genCol: number, source: string|null = null,
+    srcLine: number|null = null, srcCol: number|null = null) {
+  const sm = ctx.toSourceMapGenerator('o.ts').toJSON()!;
   const genPosition = {line: genLine + 1, column: genCol};
   const origPosition = originalPositionFor(sm, genPosition);
   // TODO: Review use of `any` here (#19904)
@@ -124,7 +126,7 @@ function expectMap(
 
 // returns the number of segments per line
 function nbSegmentsPerLine(ctx: EmitterVisitorContext) {
-  const sm = ctx.toSourceMapGenerator('o.ts').toJSON() !;
+  const sm = ctx.toSourceMapGenerator('o.ts').toJSON()!;
   const lines = sm.mappings.split(';');
   return lines.map(l => {
     const m = l.match(/,/g);

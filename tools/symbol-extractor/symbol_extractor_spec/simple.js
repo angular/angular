@@ -6,4 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-(function() { var Class = function() {}, fn = function() {}; })();
+(function() {
+var Class = function() {}, fn = function() {};
+})();

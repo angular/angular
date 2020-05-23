@@ -6,54 +6,52 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgLocalization} from '@angular/common';
-import {ResourceLoader} from '@angular/compiler';
-import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
 import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
-import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
-import {DebugElement, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {SpyResourceLoader} from '../spies';
+import {configureCompiler, createComponent, HTML, serializeTranslations, validateHtml} from './integration_common';
 
-import {FrLocalization, HTML, I18nComponent, validateHtml} from './integration_common';
-
-{
-  describe('i18n XMB/XTB integration spec', () => {
-
-    beforeEach(async(() => {
-      TestBed.configureCompiler({
-        providers: [
-          SpyResourceLoader.PROVIDE,
-          FrLocalization.PROVIDE,
-          {provide: TRANSLATIONS, useValue: XTB},
-          {provide: TRANSLATIONS_FORMAT, useValue: 'xtb'},
-        ]
-      });
-
-      TestBed.configureTestingModule({declarations: [I18nComponent]});
-    }));
+describe('i18n XMB/XTB integration spec', () => {
+  describe('(with LF line endings)', () => {
+    beforeEach(async(() => configureCompiler(XTB + LF_LINE_ENDING_XTB, 'xtb')));
 
     it('should extract from templates', () => {
-      const catalog = new MessageBundle(new HtmlParser, [], {});
       const serializer = new Xmb();
-      catalog.updateFromTemplate(HTML, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
+      const serializedXmb = serializeTranslations(HTML, serializer);
 
-      expect(catalog.write(serializer)).toContain(XMB);
+      XMB.forEach(x => {
+        expect(serializedXmb).toContain(x);
+      });
+      expect(serializedXmb).toContain(LF_LINE_ENDING_XMB);
     });
 
     it('should translate templates', () => {
-      const tb: ComponentFixture<I18nComponent> =
-          TestBed.overrideTemplate(I18nComponent, HTML).createComponent(I18nComponent);
-      const cmp: I18nComponent = tb.componentInstance;
-      const el: DebugElement = tb.debugElement;
-
+      const {tb, cmp, el} = createComponent(HTML);
       validateHtml(tb, cmp, el);
     });
   });
-}
+
+  describe('(with CRLF line endings', () => {
+    beforeEach(async(() => configureCompiler(XTB + CRLF_LINE_ENDING_XTB, 'xtb')));
+
+    it('should extract from templates (with CRLF line endings)', () => {
+      const serializer = new Xmb();
+      const serializedXmb = serializeTranslations(HTML.replace(/\n/g, '\r\n'), serializer);
+
+      XMB.forEach(x => {
+        expect(serializedXmb).toContain(x);
+      });
+      expect(serializedXmb).toContain(CRLF_LINE_ENDING_XMB);
+    });
+
+    it('should translate templates (with CRLF line endings)', () => {
+      const {tb, cmp, el} = createComponent(HTML.replace(/\n/g, '\r\n'));
+      validateHtml(tb, cmp, el);
+    });
+  });
+});
+
 
 const XTB = `
 <translationbundle>
@@ -83,40 +81,48 @@ const XTB = `
   <translation id="i18n16">avec un ID explicite</translation>
   <translation id="i18n17">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph
   name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>beaucoup<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</translation>
-  <translation id="4085484936881858615">{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {une réponse} other {<ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> réponse} }</translation>
+  <translation id="4085484936881858615">{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {Une réponse} other {<ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> réponses} }</translation>
   <translation id="4035252431381981115">FOO<ph name="START_LINK"><ex>&lt;a&gt;</ex></ph>BAR<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex></ph></translation>
   <translation id="5339604010413301604"><ph name="MAP_NAME"><ex>MAP_NAME</ex></ph></translation>
 </translationbundle>`;
 
-const XMB = `<msg id="615790887472569365"><source>file.ts:3</source>i18n attribute on tags</msg>
-  <msg id="3707494640264351337"><source>file.ts:5</source>nested</msg>
-  <msg id="5539162898278769904" meaning="different meaning"><source>file.ts:7</source>nested</msg>
-  <msg id="3780349238193953556"><source>file.ts:9</source><source>file.ts:10</source><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex>&lt;i&gt;</ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex>&lt;/i&gt;</ph></msg>
-  <msg id="5415448997399451992"><source>file.ts:11</source><ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex>&lt;div&gt;</ph>with <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex>&lt;div&gt;</ph>nested<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex>&lt;/div&gt;</ph> placeholders<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex>&lt;/div&gt;</ph></msg>
-  <msg id="5525133077318024839"><source>file.ts:14</source>on not translatable node</msg>
-  <msg id="2174788525135228764"><source>file.ts:14</source>&lt;b&gt;bold&lt;/b&gt;</msg>
-  <msg id="8670732454866344690"><source>file.ts:15</source>on translatable node</msg>
-  <msg id="4593805537723189714"><source>file.ts:20</source><source>file.ts:37</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph>} }</msg>
-  <msg id="703464324060964421"><source>file.ts:22,24</source>
+const LF_LINE_ENDING_XTB = ``;
+const CRLF_LINE_ENDING_XTB = ``;
+
+const XMB = [
+  `<msg id="615790887472569365"><source>file.ts:3</source>i18n attribute on tags</msg>`,
+  `<msg id="3707494640264351337"><source>file.ts:5</source>nested</msg>`,
+  `<msg id="5539162898278769904" meaning="different meaning"><source>file.ts:7</source>nested</msg>`,
+  `<msg id="3780349238193953556"><source>file.ts:9</source><source>file.ts:10</source><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex>&lt;i&gt;</ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex>&lt;/i&gt;</ph></msg>`,
+  `<msg id="5415448997399451992"><source>file.ts:11</source><ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex>&lt;div&gt;</ph>with <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex>&lt;div&gt;</ph>nested<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex>&lt;/div&gt;</ph> placeholders<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex>&lt;/div&gt;</ph></msg>`,
+  `<msg id="5525133077318024839"><source>file.ts:14</source>on not translatable node</msg>`,
+  `<msg id="2174788525135228764"><source>file.ts:14</source>&lt;b&gt;bold&lt;/b&gt;</msg>`,
+  `<msg id="8670732454866344690"><source>file.ts:15</source>on translatable node</msg>`,
+  `<msg id="4593805537723189714"><source>file.ts:20</source><source>file.ts:37</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph>} }</msg>`,
+  `<msg id="703464324060964421"><source>file.ts:22,24</source>
         <ph name="ICU"><ex>{sex, select, male {...} female {...} other {...}}</ex>{sex, select, male {...} female {...} other {...}}</ph>
-    </msg>
-  <msg id="5430374139308914421"><source>file.ts:23</source>{VAR_SELECT, select, male {m} female {f} other {other} }</msg>
-  <msg id="1300564767229037107"><source>file.ts:25,27</source>
+    </msg>`,
+  `<msg id="5430374139308914421"><source>file.ts:23</source>{VAR_SELECT, select, male {m} female {f} other {other} }</msg>`,
+  `<msg id="1300564767229037107"><source>file.ts:25,27</source>
         <ph name="ICU"><ex>{sexB, select, male {...} female {...}}</ex>{sexB, select, male {...} female {...}}</ph>
-    </msg>
-  <msg id="2500580913783245106"><source>file.ts:26</source>{VAR_SELECT, select, male {m} female {f} }</msg>
-  <msg id="4851788426695310455"><source>file.ts:29</source><ph name="INTERPOLATION"><ex>{{ &quot;count = &quot; + count }}</ex>{{ &quot;count = &quot; + count }}</ph></msg>
-  <msg id="9013357158046221374"><source>file.ts:30</source>sex = <ph name="INTERPOLATION"><ex>{{ sex }}</ex>{{ sex }}</ph></msg>
-  <msg id="8324617391167353662"><source>file.ts:31</source><ph name="CUSTOM_NAME"><ex>{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}</ex>{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}</ph></msg>
-  <msg id="7685649297917455806"><source>file.ts:36</source><source>file.ts:54</source>in a translatable section</msg>
-  <msg id="2329001734457059408"><source>file.ts:34,38</source>
+    </msg>`,
+  `<msg id="2500580913783245106"><source>file.ts:26</source>{VAR_SELECT, select, male {m} female {f} }</msg>`,
+  `<msg id="4851788426695310455"><source>file.ts:29</source><ph name="INTERPOLATION"><ex>{{ &quot;count = &quot; + count }}</ex>{{ &quot;count = &quot; + count }}</ph></msg>`,
+  `<msg id="9013357158046221374"><source>file.ts:30</source>sex = <ph name="INTERPOLATION"><ex>{{ sex }}</ex>{{ sex }}</ph></msg>`,
+  `<msg id="8324617391167353662"><source>file.ts:31</source><ph name="CUSTOM_NAME"><ex>{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}</ex>{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}</ph></msg>`,
+  `<msg id="7685649297917455806"><source>file.ts:36</source><source>file.ts:54</source>in a translatable section</msg>`,
+  `<msg id="2329001734457059408"><source>file.ts:34,38</source>
     <ph name="START_HEADING_LEVEL1"><ex>&lt;h1&gt;</ex>&lt;h1&gt;</ph>Markers in html comments<ph name="CLOSE_HEADING_LEVEL1"><ex>&lt;/h1&gt;</ex>&lt;/h1&gt;</ph>
     <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex>&lt;div&gt;</ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex>&lt;/div&gt;</ph>
     <ph name="START_TAG_DIV_1"><ex>&lt;div&gt;</ex>&lt;div&gt;</ph><ph name="ICU"><ex>{count, plural, =0 {...} =1 {...} =2 {...} other {...}}</ex>{count, plural, =0 {...} =1 {...} =2 {...} other {...}}</ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex>&lt;/div&gt;</ph>
-</msg>
-  <msg id="1491627405349178954"><source>file.ts:40</source>it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph> work</msg>
-  <msg id="i18n16"><source>file.ts:42</source>with an explicit ID</msg>
-  <msg id="i18n17"><source>file.ts:43</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph>} }</msg>
-  <msg id="4085484936881858615" desc="desc"><source>file.ts:46,52</source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>{{response.getItemsList().length}}</ex>{{response.getItemsList().length}}</ph> results} }</msg>
-  <msg id="4035252431381981115"><source>file.ts:54</source>foo<ph name="START_LINK"><ex>&lt;a&gt;</ex>&lt;a&gt;</ph>bar<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex>&lt;/a&gt;</ph></msg>
-  <msg id="5339604010413301604"><source>file.ts:56</source><ph name="MAP_NAME"><ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ph></msg>`;
+</msg>`,
+  `<msg id="1491627405349178954"><source>file.ts:40</source>it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph> work</msg>`,
+  `<msg id="i18n16"><source>file.ts:42</source>with an explicit ID</msg>`,
+  `<msg id="i18n17"><source>file.ts:43</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph>} }</msg>`,
+  `<msg id="4085484936881858615" desc="desc"><source>file.ts:46,52</source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>{{response.getItemsList().length}}</ex>{{response.getItemsList().length}}</ph> results} }</msg>`,
+  `<msg id="4035252431381981115"><source>file.ts:54</source>foo<ph name="START_LINK"><ex>&lt;a&gt;</ex>&lt;a&gt;</ph>bar<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex>&lt;/a&gt;</ph></msg>`,
+  `<msg id="5339604010413301604"><source>file.ts:56</source><ph name="MAP_NAME"><ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ph></msg>`
+];
+
+const LF_LINE_ENDING_XMB = ``;
+const CRLF_LINE_ENDING_XMB = ``;

@@ -23,10 +23,10 @@ export const NG_TRIGGER_SELECTOR = '.ng-trigger';
 export const NG_ANIMATING_CLASSNAME = 'ng-animating';
 export const NG_ANIMATING_SELECTOR = '.ng-animating';
 
-export function resolveTimingValue(value: string | number) {
+export function resolveTimingValue(value: string|number) {
   if (typeof value == 'number') return value;
 
-  const matches = (value as string).match(/^(-?[\.\d]+)(m?s)/);
+  const matches = value.match(/^(-?[\.\d]+)(m?s)/);
   if (!matches || matches.length < 2) return 0;
 
   return _convertTimeValueToMS(parseFloat(matches[1]), matches[2]);
@@ -42,14 +42,14 @@ function _convertTimeValueToMS(value: number, unit: string): number {
 }
 
 export function resolveTiming(
-    timings: string | number | AnimateTimings, errors: any[], allowNegativeValues?: boolean) {
+    timings: string|number|AnimateTimings, errors: any[], allowNegativeValues?: boolean) {
   return timings.hasOwnProperty('duration') ?
       <AnimateTimings>timings :
       parseTimeExpression(<string|number>timings, errors, allowNegativeValues);
 }
 
 function parseTimeExpression(
-    exp: string | number, errors: string[], allowNegativeValues?: boolean): AnimateTimings {
+    exp: string|number, errors: string[], allowNegativeValues?: boolean): AnimateTimings {
   const regex = /^(-?[\.\d]+)(m?s)(?:\s+(-?[\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?$/i;
   let duration: number;
   let delay: number = 0;
@@ -73,7 +73,7 @@ function parseTimeExpression(
       easing = easingVal;
     }
   } else {
-    duration = <number>exp;
+    duration = exp;
   }
 
   if (!allowNegativeValues) {
@@ -97,11 +97,13 @@ function parseTimeExpression(
 
 export function copyObj(
     obj: {[key: string]: any}, destination: {[key: string]: any} = {}): {[key: string]: any} {
-  Object.keys(obj).forEach(prop => { destination[prop] = obj[prop]; });
+  Object.keys(obj).forEach(prop => {
+    destination[prop] = obj[prop];
+  });
   return destination;
 }
 
-export function normalizeStyles(styles: ɵStyleData | ɵStyleData[]): ɵStyleData {
+export function normalizeStyles(styles: ɵStyleData|ɵStyleData[]): ɵStyleData {
   const normalizedStyles: ɵStyleData = {};
   if (Array.isArray(styles)) {
     styles.forEach(data => copyStyles(data, false, normalizedStyles));
@@ -157,10 +159,13 @@ function writeStyleAttribute(element: any) {
   element.setAttribute('style', styleAttrValue);
 }
 
-export function setStyles(element: any, styles: ɵStyleData) {
+export function setStyles(element: any, styles: ɵStyleData, formerStyles?: {[key: string]: any}) {
   if (element['style']) {
     Object.keys(styles).forEach(prop => {
       const camelProp = dashCaseToCamelCase(prop);
+      if (formerStyles && !formerStyles.hasOwnProperty(prop)) {
+        formerStyles[prop] = element.style[camelProp];
+      }
       element.style[camelProp] = styles[prop];
     });
     // On the server set the 'style' attribute since it's not automatically reflected.
@@ -183,8 +188,8 @@ export function eraseStyles(element: any, styles: ɵStyleData) {
   }
 }
 
-export function normalizeAnimationEntry(steps: AnimationMetadata | AnimationMetadata[]):
-    AnimationMetadata {
+export function normalizeAnimationEntry(steps: AnimationMetadata|
+                                        AnimationMetadata[]): AnimationMetadata {
   if (Array.isArray(steps)) {
     if (steps.length == 1) return steps[0];
     return sequence(steps);
@@ -193,7 +198,7 @@ export function normalizeAnimationEntry(steps: AnimationMetadata | AnimationMeta
 }
 
 export function validateStyleParams(
-    value: string | number, options: AnimationOptions, errors: any[]) {
+    value: string|number, options: AnimationOptions, errors: any[]) {
   const params = options.params || {};
   const matches = extractStyleParams(value);
   if (matches.length) {
@@ -208,13 +213,11 @@ export function validateStyleParams(
 
 const PARAM_REGEX =
     new RegExp(`${SUBSTITUTION_EXPR_START}\\s*(.+?)\\s*${SUBSTITUTION_EXPR_END}`, 'g');
-export function extractStyleParams(value: string | number): string[] {
+export function extractStyleParams(value: string|number): string[] {
   let params: string[] = [];
   if (typeof value === 'string') {
-    const val = value.toString();
-
     let match: any;
-    while (match = PARAM_REGEX.exec(val)) {
+    while (match = PARAM_REGEX.exec(value)) {
       params.push(match[1] as string);
     }
     PARAM_REGEX.lastIndex = 0;
@@ -223,7 +226,7 @@ export function extractStyleParams(value: string | number): string[] {
 }
 
 export function interpolateParams(
-    value: string | number, params: {[name: string]: any}, errors: any[]): string|number {
+    value: string|number, params: {[name: string]: any}, errors: any[]): string|number {
   const original = value.toString();
   const str = original.replace(PARAM_REGEX, (_, varName) => {
     let localVal = params[varName];
@@ -296,7 +299,9 @@ export function balancePreviousStylesIntoKeyframes(
       // tslint:disable-next-line
       for (var i = 1; i < keyframes.length; i++) {
         let kf = keyframes[i];
-        missingStyleProps.forEach(function(prop) { kf[prop] = computeStyle(element, prop); });
+        missingStyleProps.forEach(function(prop) {
+          kf[prop] = computeStyle(element, prop);
+        });
       }
     }
   }

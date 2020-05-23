@@ -44,7 +44,7 @@ function main(args) {
     // ngc-wrapped is expecting POSIX paths and the TypeScript Bazel rules by default only pass
     // POSIX paths as well.
     angularCompilerOptions['expectedOut'] = angularCompilerOptions['expectedOut'].map(
-        f => f.replace(/\.closure\.js$/, '.js').replace(binDir, newOutputBase));
+        f => f.replace(/\.mjs$/, '.js').replace(binDir, newOutputBase));
   }
   fs.writeFileSync(output, JSON.stringify(data));
 }

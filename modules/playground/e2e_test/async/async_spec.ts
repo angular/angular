@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {$, browser} from 'protractor';
 import {promise} from 'selenium-webdriver';
 
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
+
 describe('async', () => {
-  const URL = 'all/playground/src/async/index.html';
+  const URL = '/';
 
   beforeEach(() => browser.get(URL));
 

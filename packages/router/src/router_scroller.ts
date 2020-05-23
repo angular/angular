@@ -7,17 +7,18 @@
  */
 
 import {ViewportScroller} from '@angular/common';
-import {OnDestroy} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
 import {NavigationEnd, NavigationStart, Scroll} from './events';
 import {Router} from './router';
 
+@Injectable()
 export class RouterScroller implements OnDestroy {
   // TODO(issue/24571): remove '!'.
-  private routerEventsSubscription !: Unsubscribable;
+  private routerEventsSubscription!: Unsubscribable;
   // TODO(issue/24571): remove '!'.
-  private scrollEventsSubscription !: Unsubscribable;
+  private scrollEventsSubscription!: Unsubscribable;
 
   private lastId = 0;
   private lastSource: 'imperative'|'popstate'|'hashchange'|undefined = 'imperative';
@@ -27,7 +28,7 @@ export class RouterScroller implements OnDestroy {
   constructor(
       private router: Router,
       /** @docsNotRequired */ public readonly viewportScroller: ViewportScroller, private options: {
-        scrollPositionRestoration?: 'disabled' | 'enabled' | 'top',
+        scrollPositionRestoration?: 'disabled'|'enabled'|'top',
         anchorScrolling?: 'disabled'|'enabled'
       } = {}) {
     // Default both options to 'disabled'

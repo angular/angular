@@ -35,17 +35,20 @@ function getResponseUrl(xhr: any): string|null {
  *
  * @publicApi
  */
-export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
+export abstract class XhrFactory {
+  abstract build(): XMLHttpRequest;
+}
 
 /**
- * A factory for @{link HttpXhrBackend} that uses the `XMLHttpRequest` browser API.
- *
+ * A factory for `HttpXhrBackend` that uses the `XMLHttpRequest` browser API.
  *
  */
 @Injectable()
 export class BrowserXhr implements XhrFactory {
   constructor() {}
-  build(): any { return <any>(new XMLHttpRequest()); }
+  build(): any {
+    return <any>(new XMLHttpRequest());
+  }
 }
 
 /**
@@ -59,8 +62,9 @@ interface PartialResponse {
 }
 
 /**
- * An `HttpBackend` which uses the XMLHttpRequest API to send
- * requests to a backend server.
+ * Uses `XMLHttpRequest` to send requests to a backend server.
+ * @see `HttpHandler`
+ * @see `JsonpClientBackend`
  *
  * @publicApi
  */
@@ -69,7 +73,9 @@ export class HttpXhrBackend implements HttpBackend {
   constructor(private xhrFactory: XhrFactory) {}
 
   /**
-   * Process a request and return a stream of response events.
+   * Processes a request and returns a stream of response events.
+   * @param req The request object.
+   * @returns An observable of the response events.
    */
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
     // Quick check to give a better error message when a user attempts to use
@@ -198,7 +204,7 @@ export class HttpXhrBackend implements HttpBackend {
               // Even though the response status was 2xx, this is still an error.
               ok = false;
               // The parse error contains the text of the body that failed to parse.
-              body = { error, text: body } as HttpJsonParseError;
+              body = {error, text: body} as HttpJsonParseError;
             }
           }
         }
@@ -231,7 +237,7 @@ export class HttpXhrBackend implements HttpBackend {
       // The onError callback is called when something goes wrong at the network level.
       // Connection timeout, DNS error, offline, etc. These are actual errors, and are
       // transmitted on the error channel.
-      const onError = (error: ErrorEvent) => {
+      const onError = (error: ProgressEvent) => {
         const {url} = partialFromXhr();
         const res = new HttpErrorResponse({
           error,
@@ -316,7 +322,7 @@ export class HttpXhrBackend implements HttpBackend {
       }
 
       // Fire the request, and notify the event stream that it was fired.
-      xhr.send(reqBody !);
+      xhr.send(reqBody!);
       observer.next({type: HttpEventType.Sent});
 
       // This is the return from the Observable function, which is the

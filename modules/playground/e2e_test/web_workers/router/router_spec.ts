@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser, by, element, protractor} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
 describe('WebWorker Router', () => {
   beforeEach(() => {
@@ -23,7 +24,7 @@ describe('WebWorker Router', () => {
 
   const contentSelector = 'app main h1';
   const navSelector = 'app nav ul';
-  const baseUrl = 'all/playground/src/web_workers/router/index.html';
+  const baseUrl = '/';
 
   it('should route on click', () => {
     browser.get(baseUrl);
@@ -68,7 +69,9 @@ describe('WebWorker Router', () => {
     browser.wait(() => {
       const deferred = protractor.promise.defer();
       const elem = element(by.css(contentSelector));
-      elem.getText().then((text: string) => { return deferred.fulfill(text === expected); });
+      elem.getText().then((text: string) => {
+        return deferred.fulfill(text === expected);
+      });
       return deferred.promise;
     }, 5000);
   }
@@ -76,8 +79,9 @@ describe('WebWorker Router', () => {
   function waitForUrl(regex: RegExp): void {
     browser.wait(() => {
       const deferred = protractor.promise.defer();
-      browser.getCurrentUrl().then(
-          (url: string) => { return deferred.fulfill(url.match(regex) !== null); });
+      browser.getCurrentUrl().then((url: string) => {
+        return deferred.fulfill(url.match(regex) !== null);
+      });
       return deferred.promise;
     }, 5000);
   }

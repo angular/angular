@@ -21,7 +21,9 @@ class SimpleClass {}
   describe('PipeResolver', () => {
     let resolver: PipeResolver;
 
-    beforeEach(() => { resolver = new PipeResolver(new JitReflector()); });
+    beforeEach(() => {
+      resolver = new PipeResolver(new JitReflector());
+    });
 
     it('should read out the metadata from the class', () => {
       const moduleMetadata = resolver.resolve(SomePipe);
@@ -48,6 +50,5 @@ class SimpleClass {}
 
       expect(resolver.resolve(ChildWithDecorator)).toEqual(new Pipe({name: 'c'}));
     });
-
   });
 }

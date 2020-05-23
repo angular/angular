@@ -15,7 +15,7 @@
 #
 # Usage: `setPublicVar <name> <value>`
 function setPublicVar() {
-  setSecretVar $1 $2;
+  setSecretVar $1 "$2";
   echo "$1=$2";
 }
 
@@ -35,4 +35,39 @@ function setSecretVar() {
 
   # Restore original shell options.
   eval "$originalShellOptions";
+}
+
+
+# Create a function to set an environment variable, when called.
+#
+# Use this function for creating setter for public environment variables that require expensive or
+# time-consuming computaions and may not be needed. When needed, you can call this function to set
+# the environment variable (which will be available through `$BASH_ENV` from that point onwards).
+#
+# Arguments:
+# - `<name>`: The name of the environment variable. The generated setter function will be
+#   `setPublicVar_<name>`.
+# - `<code>`: The code to run to compute the value for the variable. Since this code should be
+#   executed lazily, it must be properly escaped. For example:
+#   ```sh
+#   # DO NOT do this:
+#   createPublicVarSetter MY_VAR "$(whoami)";  # `whoami` will be evaluated eagerly
+#
+#   # DO this isntead:
+#   createPublicVarSetter MY_VAR "\$(whoami)";  # `whoami` will NOT be evaluated eagerly
+#   ```
+#
+# Usage: `createPublicVarSetter <name> <code>`
+#
+# Example:
+# ```sh
+# createPublicVarSetter MY_VAR 'echo "FOO"';
+# echo $MY_VAR;  # Not defined
+#
+# setPublicVar_MY_VAR;
+# source $BASH_ENV;
+# echo $MY_VAR;  # FOO
+# ```
+function createPublicVarSetter() {
+  echo "setPublicVar_$1() { setPublicVar $1 \"$2\"; }" >> $BASH_ENV;
 }

@@ -16,7 +16,7 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
     const mapping = {'male': 'Invite him.', 'female': 'Invite her.', 'other': 'Invite them.'};
 
     it('should be marked as pure', () => {
-      expect(new PipeResolver(new JitReflector()).resolve(I18nSelectPipe) !.pure).toEqual(true);
+      expect(new PipeResolver(new JitReflector()).resolve(I18nSelectPipe)!.pure).toEqual(true);
     });
 
     describe('transform', () => {
@@ -30,17 +30,18 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
         expect(val).toEqual('Invite her.');
       });
 
-      it('should return the "other" text if value is neither "male" nor "female"',
-         () => { expect(pipe.transform('Anything else', mapping)).toEqual('Invite them.'); });
+      it('should return the "other" text if value is neither "male" nor "female"', () => {
+        expect(pipe.transform('Anything else', mapping)).toEqual('Invite them.');
+      });
 
       it('should return an empty text if value is null or undefined', () => {
         expect(pipe.transform(null, mapping)).toEqual('');
         expect(pipe.transform(void 0, mapping)).toEqual('');
       });
 
-      it('should throw on bad arguments',
-         () => { expect(() => pipe.transform('male', <any>'hey')).toThrowError(); });
+      it('should throw on bad arguments', () => {
+        expect(() => pipe.transform('male', <any>'hey')).toThrowError();
+      });
     });
-
   });
 }

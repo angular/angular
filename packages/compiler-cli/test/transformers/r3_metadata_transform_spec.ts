@@ -9,12 +9,11 @@
 import {ClassField, ClassMethod, ClassStmt, PartialModule, Statement, StmtModifier} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {MetadataCollector, isClassMetadata} from '../../src/metadata/index';
+import {isClassMetadata, MetadataCollector} from '../../src/metadata/index';
 import {MetadataCache} from '../../src/transformers/metadata_cache';
 import {PartialModuleMetadataTransformer} from '../../src/transformers/r3_metadata_transform';
 
 describe('r3_transform_spec', () => {
-
   it('should add a static method to collected metadata', () => {
     const fileName = '/some/directory/someFileName.ts';
     const className = 'SomeClass';

@@ -9,7 +9,7 @@ import { Component } from '@angular/core';
   `
 })
 export class NameParentComponent {
-  // Displays 'Mr. IQ', '<no name set>', 'Bombasto'
-  names = ['Mr. IQ', '   ', '  Bombasto  '];
+  // Displays 'Dr IQ', '<no name set>', 'Bombasto'
+  names = ['Dr IQ', '   ', '  Bombasto  '];
 }
 // #enddocregion

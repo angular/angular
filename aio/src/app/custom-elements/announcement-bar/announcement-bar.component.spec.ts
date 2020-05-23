@@ -25,8 +25,8 @@ describe('AnnouncementBarComponent', () => {
       providers: [{ provide: Logger, useClass: MockLogger }]
     });
 
-    httpMock = injector.get(HttpTestingController);
-    mockLogger = injector.get(Logger);
+    httpMock = injector.inject(HttpTestingController);
+    mockLogger = injector.inject(Logger) as any;
     fixture = TestBed.createComponent(AnnouncementBarComponent);
     component = fixture.componentInstance;
     element = fixture.nativeElement;
@@ -40,6 +40,7 @@ describe('AnnouncementBarComponent', () => {
     it('should make a single request to the server', () => {
       component.ngOnInit();
       httpMock.expectOne('generated/announcements.json');
+      expect().nothing();  // Prevent jasmine from complaining about no expectations.
     });
 
     it('should set the announcement to the first "live" one in the list loaded from `announcements.json`', () => {
@@ -87,7 +88,7 @@ describe('AnnouncementBarComponent', () => {
   describe('rendering', () => {
     beforeEach(() => {
       component.announcement = {
-        imageUrl: 'link/to/image',
+        imageUrl: 'dummy/image',
         linkUrl: 'link/to/website',
         message: 'this is an <b>important</b> message',
         endDate: '2018-03-01',
@@ -101,7 +102,7 @@ describe('AnnouncementBarComponent', () => {
     });
 
     it('should display an image', () => {
-      expect(element.querySelector('img')!.src).toContain('link/to/image');
+      expect(element.querySelector('img')!.src).toContain('dummy/image');
     });
 
     it('should display a link', () => {

@@ -37,7 +37,9 @@ Please create and share minimal reproduction of the issue starting with this tem
 <!-- ✍️--> https://stackblitz.com/...
 
 <!--
-If StackBlitz is not suitable for reproduction of your issue, please create a minimal GitHub repository with the reproduction of the issue. Share the link to the repo below along with step-by-step instructions to reproduce the problem, as well as expected and actual behavior.
+If StackBlitz is not suitable for reproduction of your issue, please create a minimal GitHub repository with the reproduction of the issue.
+A good way to make a minimal reproduction is to create a new app via `ng new repro-app` and add the minimum possible code to show the problem. 
+Share the link to the repo below along with step-by-step instructions to reproduce the problem, as well as expected and actual behavior.
 
 Issues that don't have enough info and can't be reproduced will be closed.
 

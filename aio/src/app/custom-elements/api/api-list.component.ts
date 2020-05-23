@@ -11,9 +11,10 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { combineLatest, Observable, ReplaySubject } from 'rxjs';
 
 import { LocationService } from 'app/shared/location.service';
-import { ApiSection, ApiService } from './api.service';
+import { ApiItem, ApiSection, ApiService } from './api.service';
 
 import { Option } from 'app/shared/select/select.component';
+import { map } from 'rxjs/operators';
 
 class SearchCriteria {
   query ? = '';
@@ -56,25 +57,29 @@ export class ApiListComponent implements OnInit {
 
   statuses: Option[] = [
     { value: 'all', title: 'All' },
+    { value: 'stable', title: 'Stable'},
     { value: 'deprecated', title: 'Deprecated' },
     { value: 'security-risk', title: 'Security Risk' }
   ];
 
-  @ViewChild('filter') queryEl: ElementRef;
+  @ViewChild('filter', { static: true }) queryEl: ElementRef;
 
   constructor(
     private apiService: ApiService,
     private locationService: LocationService) { }
 
   ngOnInit() {
-    this.filteredSections = combineLatest(
-      this.apiService.sections,
-      this.criteriaSubject,
-      (sections, criteria) => {
-        return sections
-          .map(section => ({ ...section, items: this.filterSection(section, criteria) }));
-      }
-    );
+    this.filteredSections =
+        combineLatest([
+          this.apiService.sections,
+          this.criteriaSubject,
+        ]).pipe(
+          map( results => ({ sections: results[0], criteria: results[1]})),
+          map( results => (
+               results.sections
+                  .map(section => ({ ...section, items: this.filterSection(section, results.criteria) }))
+          ))
+        );
 
     this.initializeSearchCriteria();
   }
@@ -108,28 +113,20 @@ export class ApiListComponent implements OnInit {
   //////// Private //////////
 
   private filterSection(section: ApiSection, { query, status, type }: SearchCriteria) {
-    const items = section.items!.filter(item => {
-      return matchesType() && matchesStatus() && matchesQuery();
+    const sectionNameMatches = !query || section.name.indexOf(query) !== -1;
 
-      function matchesQuery() {
-        return !query ||
-          section.name.indexOf(query) !== -1 ||
-          item.name.indexOf(query) !== -1;
-      }
+    const matchesQuery = (item: ApiItem) =>
+      sectionNameMatches || item.name.indexOf(query!) !== -1;
+    const matchesStatus = (item: ApiItem) =>
+      status === 'all' || status === item.stability || (status === 'security-risk' && item.securityRisk);
+    const matchesType = (item: ApiItem) =>
+      type === 'all' || type === item.docType;
 
-      function matchesStatus() {
-        return status === 'all' ||
-          status === item.stability ||
-          (status === 'security-risk' && item.securityRisk);
-      };
-
-      function matchesType() {
-        return type === 'all' || type === item.docType;
-      }
-    });
+    const items = section.items!.filter(item =>
+      matchesType(item) && matchesStatus(item) && matchesQuery(item));
 
     // If there are no items we still return an empty array if the section name matches and the type is 'package'
-    return items.length ? items : (type === 'package' && (!query || section.name.indexOf(query) !== -1)) ? [] : null;
+    return items.length ? items : (sectionNameMatches && type === 'package') ? [] : null;
   }
 
   // Get initial search criteria from URL search params

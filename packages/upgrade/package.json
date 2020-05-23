@@ -2,18 +2,10 @@
   "name": "@angular/upgrade",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - the library for easing update from v1 to v2",
-  "main": "./bundles/upgrade.umd.js",
-  "module": "./fesm5/upgrade.js",
-  "es2015": "./fesm2015/upgrade.js",
-  "esm5": "./esm5/upgrade.js",
-  "esm2015": "./esm2015/upgrade.js",
-  "fesm5": "./fesm5/upgrade.js",
-  "fesm2015": "./fesm2015/upgrade.js",
-  "typings": "./upgrade.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {
-    "tslib": "^1.9.0"
+    "tslib": "^2.0.0"
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
@@ -23,10 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/angular.git"
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/upgrade"
   },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
+  }
 }

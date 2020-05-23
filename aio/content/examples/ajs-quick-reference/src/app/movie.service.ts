@@ -18,12 +18,12 @@ export class MovieService {
         approvalRating: .97
       },
       {
-        hero: 'Mr. Nice',
+        hero: 'Dr Nice',
         imageurl: 'assets/images/villain.png',
         movieId: 2,
         mpaa: 'pg-13',
         releaseDate: '2015-12-18T00:00:00',
-        title: 'No More Mr. Nice Guy',
+        title: 'No More Dr Nice',
         price: 14.95,
         starRating: 4.6,
         approvalRating: .94

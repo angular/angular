@@ -136,7 +136,7 @@ This code is nearly the same as the TypeScript version with just a couple key di
 * We provide a `SendPort` through DI using the token `RENDER_SEND_PORT`.  Dart applications use the Isolate API, which communicates via
 Dart's Port abstraction. When you call `setupIsolate` from the UI thread, angular starts a new Isolate to run
 your application logic. When Dart starts a new Isolate it passes a `SendPort` to that Isolate so that it
-can communicate with the Isolate that spawned it. You need to provide this `SendPort` through DI 
+can communicate with the Isolate that spawned it. You need to provide this `SendPort` through DI
 so that Angular can communicate with the UI.
 * You need to set up `ReflectionCapabilities` on both the UI and Worker. Just like writing non-concurrent
 Angular2 Dart applications you need to set up the reflector. You should not use Reflection in production,
@@ -149,15 +149,15 @@ to the transformer until that bug is fixed.
 You can do almost everything in a WebWorker component that you can do in a typical Angular Component.
 The main exception is that there is **no** DOM access from a WebWorker component. In Dart this means you can't
 import anything from `dart:html` and in JavaScript it means you can't use `document` or `window`. Instead you
-should use data bindings and if needed you can inject the `Renderer` along with your component's `ElementRef`
-directly into your component and use methods such as `setElementProperty`, `setElementAttribute`,
-`setElementClass`, `setElementStyle`, `invokeElementMethod`, and `setText`. Note that you **cannot** call
+should use data bindings and if needed you can inject `Renderer2` along with your component's `ElementRef`
+directly into your component and use methods such as `setProperty`, `setAttribute`,
+`addClass`, `setStyle`, and `setValue`. Note that you **cannot** call
 `getNativeElementSync`. Doing so will always return `null` when running in a WebWorker.
 If you need DOM access see [Running Code on the UI](#running-code-on-the-ui).
 
 ## WebWorker Design Overview
 When running your application in a WebWorker, the majority of the angular core along with your application logic
-runs on the worker. The two main components that run on the UI are the `Renderer` and the `RenderCompiler`. When
+runs on the worker. The two main components that run on the UI are the `Renderer2` and the `RenderCompiler`. When
 running angular in a WebWorker the bindings for these two components are replaced by the `WebWorkerRenderer` and
 the `WebWorkerRenderCompiler`. When these components are used at runtime, they pass messages through the
 [MessageBroker](#messagebroker) instructing the UI to run the actual method and return the result. The
@@ -329,7 +329,7 @@ if you do this, you don't need to implement zone or channel support yourself. Yo
 `GenericMessageBusSource`. The `MessageBusSink` must override the `sendMessages` method. This method is
 given a list of serialized messages that it is required to send through the sink.
 
-Once you've implemented your custom MessageBus in either TypeScript, you must provide it through DI 
+Once you've implemented your custom MessageBus in either TypeScript, you must provide it through DI
 during bootstrap like so:
 
 In TypeScript:
@@ -346,7 +346,7 @@ import {
 var bus = new MyAwesomeMessageBus();
 platform([WORKER_RENDER_PLATFORM])
 .application([WORKER_RENDER_APPLICATION_COMMON, {provide: MessageBus, useValue: bus},
-  { provide: APP_INITIALIZER, 
+  { provide: APP_INITIALIZER,
     useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
     deps: [Injector],
     multi: true
@@ -473,7 +473,7 @@ The service then calls `registerMethod` to register the method that it wants to 
 four arguments. The first is the name of the method, the second is the Types of that method's parameters, the
 third is the method itself, and the fourth (which is optional) is the return Type of that method.
 The MessageBroker handles serializing / deserializing your parameters and return types using angular's serializer.
-However, at the moment the serializer only knows how to serialize angular classes like those used by the Renderer.
+However, at the moment the serializer only knows how to serialize angular classes like those used by `Renderer2`.
 If you're passing anything other than those types around in your application you can handle serialization yourself
 and then use the `PRIMITIVE` type to tell the MessageBroker to avoid serializing your data.
 

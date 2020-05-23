@@ -7,8 +7,8 @@
  */
 
 import {AST} from '../../expression_parser/ast';
-
 import {BoundAttribute, BoundEvent, Element, Node, Reference, Template, TextAttribute, Variable} from '../r3_ast';
+
 
 /*
  * t2 is the replacement for the `TemplateDefinitionBuilder`. It handles the operations of
@@ -22,7 +22,9 @@ import {BoundAttribute, BoundEvent, Element, Node, Reference, Template, TextAttr
 /**
  * A logical target for analysis, which could contain a template or other types of bindings.
  */
-export interface Target { template?: Node[]; }
+export interface Target {
+  template?: Node[];
+}
 
 /**
  * Metadata regarding a directive that's needed to match it against template elements. This is
@@ -44,7 +46,7 @@ export interface DirectiveMeta {
    *
    * Goes from property names to field names.
    */
-  inputs: {[property: string]: string | [string, string]};
+  inputs: {[property: string]: string|[string, string]};
 
   /**
    * Set of outputs which this directive claims.
@@ -58,7 +60,7 @@ export interface DirectiveMeta {
    *
    * Null otherwise
    */
-  exportAs: string|null;
+  exportAs: string[]|null;
 }
 
 /**
@@ -67,7 +69,9 @@ export interface DirectiveMeta {
  *
  * The returned `BoundTarget` has an API for extracting information about the processed target.
  */
-export interface TargetBinder<D extends DirectiveMeta> { bind(target: Target): BoundTarget<D>; }
+export interface TargetBinder<D extends DirectiveMeta> {
+  bind(target: Target): BoundTarget<D>;
+}
 
 /**
  * Result of performing the binding operation against a `Target`.
@@ -136,4 +140,9 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * Get a list of all the directives used by the target.
    */
   getUsedDirectives(): DirectiveT[];
+
+  /**
+   * Get a list of all the pipes used by the target.
+   */
+  getUsedPipes(): string[];
 }

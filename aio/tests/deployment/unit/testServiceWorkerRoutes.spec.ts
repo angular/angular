@@ -24,7 +24,7 @@ describe('ServiceWorker navigation URLs', () => {
   it('should treat URLs to files with extensions as non-navigation URLs', () => {
     expect(isNavigationUrl('/generated/zips/animations/animations.zip')).toBeFalsy();
     expect(isNavigationUrl('/generated/images/guide/animations/animation_auto.gif')).toBeFalsy();
-    expect(isNavigationUrl('/generated/ie-polyfills.min.js')).toBeFalsy();
+    expect(isNavigationUrl('/generated/ngsw-worker.js')).toBeFalsy();
     expect(isNavigationUrl('/generated/docs/guide/animations.json')).toBeFalsy();
   });
 

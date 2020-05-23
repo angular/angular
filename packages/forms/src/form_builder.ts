@@ -11,8 +11,8 @@ import {Injectable} from '@angular/core';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup, FormHooks} from './model';
 
-function isAbstractControlOptions(options: AbstractControlOptions | {[key: string]: any}):
-    options is AbstractControlOptions {
+function isAbstractControlOptions(options: AbstractControlOptions|
+                                  {[key: string]: any}): options is AbstractControlOptions {
   return (<AbstractControlOptions>options).asyncValidators !== undefined ||
       (<AbstractControlOptions>options).validators !== undefined ||
       (<AbstractControlOptions>options).updateOn !== undefined;
@@ -70,8 +70,8 @@ export class FormBuilder {
         updateOn = options.updateOn != null ? options.updateOn : undefined;
       } else {
         // `options` are legacy form group options
-        validators = options.validator != null ? options.validator : null;
-        asyncValidators = options.asyncValidator != null ? options.asyncValidator : null;
+        validators = options['validator'] != null ? options['validator'] : null;
+        asyncValidators = options['asyncValidator'] != null ? options['asyncValidator'] : null;
       }
     }
 
@@ -98,8 +98,7 @@ export class FormBuilder {
    *
    * The following example returns a control with an initial value in a disabled state.
    *
-   * <code-example path="forms/ts/formBuilder/form_builder_example.ts"
-   *   linenums="false" region="disabled-control">
+   * <code-example path="forms/ts/formBuilder/form_builder_example.ts" region="disabled-control">
    * </code-example>
    */
   control(

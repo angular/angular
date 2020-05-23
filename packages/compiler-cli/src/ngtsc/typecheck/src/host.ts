@@ -7,7 +7,8 @@
  */
 
 import * as ts from 'typescript';
-import {TypeCheckContext} from './context';
+
+import {copyFileShimData, ShimReferenceTagger} from '../../shims';
 
 /**
  * A `ts.CompilerHost` which augments source files with type checking code from a
@@ -16,50 +17,68 @@ import {TypeCheckContext} from './context';
 export class TypeCheckProgramHost implements ts.CompilerHost {
   /**
    * Map of source file names to `ts.SourceFile` instances.
-   *
-   * This is prepopulated with all the old source files, and updated as files are augmented.
    */
-  private sfCache = new Map<string, ts.SourceFile>();
+  private sfMap: Map<string, ts.SourceFile>;
 
   /**
-   * Tracks those files in `sfCache` which have been augmented with type checking information
-   * already.
+   * The `ShimReferenceTagger` responsible for tagging `ts.SourceFile`s loaded via this host.
+   *
+   * The `TypeCheckProgramHost` is used in the creation of a new `ts.Program`. Even though this new
+   * program is based on a prior one, TypeScript will still start from the root files and enumerate
+   * all source files to include in the new program.  This means that just like during the original
+   * program's creation, these source files must be tagged with references to per-file shims in
+   * order for those shims to be loaded, and then cleaned up afterwards. Thus the
+   * `TypeCheckProgramHost` has its own `ShimReferenceTagger` to perform this function.
    */
-  private augmentedSourceFiles = new Set<ts.SourceFile>();
+  private shimTagger = new ShimReferenceTagger(this.shimExtensionPrefixes);
+
+  readonly resolveModuleNames?: ts.CompilerHost['resolveModuleNames'];
 
   constructor(
-      program: ts.Program, private delegate: ts.CompilerHost, private context: TypeCheckContext) {
-    // The `TypeCheckContext` uses object identity for `ts.SourceFile`s to track which files need
-    // type checking code inserted. Additionally, the operation of getting a source file should be
-    // as efficient as possible. To support both of these requirements, all of the program's
-    // source files are loaded into the cache up front.
-    program.getSourceFiles().forEach(file => { this.sfCache.set(file.fileName, file); });
+      sfMap: Map<string, ts.SourceFile>, private delegate: ts.CompilerHost,
+      private shimExtensionPrefixes: string[]) {
+    this.sfMap = sfMap;
+
+    if (delegate.getDirectories !== undefined) {
+      this.getDirectories = (path: string) => delegate.getDirectories!(path);
+    }
+
+    if (delegate.resolveModuleNames !== undefined) {
+      this.resolveModuleNames = delegate.resolveModuleNames;
+    }
   }
 
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: ((message: string) => void)|undefined,
       shouldCreateNewSourceFile?: boolean|undefined): ts.SourceFile|undefined {
-    // Look in the cache for the source file.
-    let sf: ts.SourceFile|undefined = this.sfCache.get(fileName);
-    if (sf === undefined) {
-      // There should be no cache misses, but just in case, delegate getSourceFile in the event of
-      // a cache miss.
-      sf = this.delegate.getSourceFile(
-          fileName, languageVersion, onError, shouldCreateNewSourceFile);
-      sf && this.sfCache.set(fileName, sf);
-    }
-    if (sf !== undefined) {
-      // Maybe augment the file with type checking code via the `TypeCheckContext`.
-      if (!this.augmentedSourceFiles.has(sf)) {
-        sf = this.context.transform(sf);
-        this.sfCache.set(fileName, sf);
-        this.augmentedSourceFiles.add(sf);
-      }
-      return sf;
-    } else {
+    const delegateSf =
+        this.delegate.getSourceFile(fileName, languageVersion, onError, shouldCreateNewSourceFile)!;
+    if (delegateSf === undefined) {
       return undefined;
     }
+
+    // Look for replacements.
+    let sf: ts.SourceFile;
+    if (this.sfMap.has(fileName)) {
+      sf = this.sfMap.get(fileName)!;
+      copyFileShimData(delegateSf, sf);
+    } else {
+      sf = delegateSf;
+    }
+    // TypeScript doesn't allow returning redirect source files. To avoid unforseen errors we
+    // return the original source file instead of the redirect target.
+    const redirectInfo = (sf as any).redirectInfo;
+    if (redirectInfo !== undefined) {
+      sf = redirectInfo.unredirected;
+    }
+
+    this.shimTagger.tag(sf);
+    return sf;
+  }
+
+  postProgramCreationCleanup(): void {
+    this.shimTagger.finalize();
   }
 
   // The rest of the methods simply delegate to the underlying `ts.CompilerHost`.
@@ -71,23 +90,33 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
   writeFile(
       fileName: string, data: string, writeByteOrderMark: boolean,
       onError: ((message: string) => void)|undefined,
-      sourceFiles: ReadonlyArray<ts.SourceFile>): void {
-    return this.delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+      sourceFiles: ReadonlyArray<ts.SourceFile>|undefined): void {
+    throw new Error(`TypeCheckProgramHost should never write files`);
   }
 
-  getCurrentDirectory(): string { return this.delegate.getCurrentDirectory(); }
+  getCurrentDirectory(): string {
+    return this.delegate.getCurrentDirectory();
+  }
 
-  getDirectories(path: string): string[] { return this.delegate.getDirectories(path); }
+  getDirectories?: (path: string) => string[];
 
   getCanonicalFileName(fileName: string): string {
     return this.delegate.getCanonicalFileName(fileName);
   }
 
-  useCaseSensitiveFileNames(): boolean { return this.delegate.useCaseSensitiveFileNames(); }
+  useCaseSensitiveFileNames(): boolean {
+    return this.delegate.useCaseSensitiveFileNames();
+  }
 
-  getNewLine(): string { return this.delegate.getNewLine(); }
+  getNewLine(): string {
+    return this.delegate.getNewLine();
+  }
 
-  fileExists(fileName: string): boolean { return this.delegate.fileExists(fileName); }
+  fileExists(fileName: string): boolean {
+    return this.sfMap.has(fileName) || this.delegate.fileExists(fileName);
+  }
 
-  readFile(fileName: string): string|undefined { return this.delegate.readFile(fileName); }
+  readFile(fileName: string): string|undefined {
+    return this.delegate.readFile(fileName);
+  }
 }

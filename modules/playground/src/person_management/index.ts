@@ -35,9 +35,15 @@ class Person {
     this.personId = _nextId++;
   }
 
-  get age(): number { return 2015 - this.yearOfBirth; }
-  get fullName(): string { return `${this.firstName} ${this.lastName}`; }
-  get friendNames(): string { return this.friends.map(f => f.fullName).join(', '); }
+  get age(): number {
+    return 2015 - this.yearOfBirth;
+  }
+  get fullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+  get friendNames(): string {
+    return this.friends.map(f => f.fullName).join(', ');
+  }
 }
 
 
@@ -45,7 +51,7 @@ class Person {
 // ---- services
 
 @Injectable()
-class DataService {
+export class DataService {
   currentPerson: Person;
   persons: Person[];
 
@@ -85,13 +91,15 @@ class DataService {
       <form>
           <div>
             <label>
-              First: <input [(ngModel)]="person.firstName" type="text" placeholder="First name">
+              First: <input [(ngModel)]="person.firstName" type="text" placeholder="First name"
+                            name="firstName">
             </label>
           </div>
 
           <div>
             <label>
-              Last: <input [(ngModel)]="person.lastName" type="text" placeholder="Last name">
+              Last: <input [(ngModel)]="person.lastName" type="text" placeholder="Last name"
+                           name="lastName">
             </label>
           </div>
 
@@ -102,9 +110,11 @@ class DataService {
     </div>
   `
 })
-class FullNameComponent {
+export class FullNameComponent {
   constructor(private _service: DataService) {}
-  get person(): Person { return this._service.currentPerson; }
+  get person(): Person {
+    return this._service.currentPerson;
+  }
 }
 
 @Component({
@@ -115,29 +125,34 @@ class FullNameComponent {
     <div>
       <form>
         <div>
-					<label>First: <input [(ngModel)]="person.firstName" type="text" placeholder="First name"></label>
+					<label>First: <input [(ngModel)]="person.firstName" type="text" placeholder="First name"
+                               name="firstName"></label>
 				</div>
 
         <div>
-					<label>Last: <input [(ngModel)]="person.lastName" type="text" placeholder="Last name"></label>
+					<label>Last: <input [(ngModel)]="person.lastName" type="text" placeholder="Last name"
+                              name="lastName"></label>
 				</div>
 
         <div>
-					<label>Year of birth: <input [(ngModel)]="person.yearOfBirth" type="number" placeholder="Year of birth"></label>
+					<label>Year of birth: <input [(ngModel)]="person.yearOfBirth" type="number" placeholder="Year of birth"
+                                       name="yearOfBirth"></label>
           Age: {{person.age}}
 				</div>\
 
         <div *ngIf="person.mom != null">
 					<label>Mom:</label>
-          <input [(ngModel)]="person.mom.firstName" type="text" placeholder="Mom's first name">
-          <input [(ngModel)]="person.mom.lastName" type="text" placeholder="Mom's last name">
+          <input [(ngModel)]="person.mom.firstName" type="text" placeholder="Mom's first name" name="momFirstName">
+          <input [(ngModel)]="person.mom.lastName" type="text" placeholder="Mom's last name" name="momLastName">
           {{person.mom.fullName}}
 				</div>
 
         <div *ngIf="person.dad != null">
 					<label>Dad:</label>
-          <input [(ngModel)]="person.dad.firstName" type="text" placeholder="Dad's first name">
-          <input [(ngModel)]="person.dad.lastName" type="text" placeholder="Dad's last name">
+          <input [(ngModel)]="person.dad.firstName" type="text" placeholder="Dad's first name"
+                 name="dasFirstName">
+          <input [(ngModel)]="person.dad.lastName" type="text" placeholder="Dad's last name"
+                 name="dadLastName">
           {{person.dad.fullName}}
 				</div>
 
@@ -149,9 +164,11 @@ class FullNameComponent {
     </div>
   `
 })
-class PersonsDetailComponent {
+export class PersonsDetailComponent {
   constructor(private _service: DataService) {}
-  get person(): Person { return this._service.currentPerson; }
+  get person(): Person {
+    return this._service.currentPerson;
+  }
 }
 
 @Component({
@@ -169,12 +186,16 @@ class PersonsDetailComponent {
     </div>
   `
 })
-class PersonsComponent {
+export class PersonsComponent {
   persons: Person[];
 
-  constructor(private _service: DataService) { this.persons = _service.persons; }
+  constructor(private _service: DataService) {
+    this.persons = _service.persons;
+  }
 
-  select(person: Person): void { this._service.currentPerson = person; }
+  select(person: Person): void {
+    this._service.currentPerson = person;
+  }
 }
 
 
@@ -189,11 +210,15 @@ class PersonsComponent {
     <persons-cmp *ngIf="mode == 'personList'"></persons-cmp>
   `
 })
-class PersonManagementApplication {
+export class PersonManagementApplication {
   mode: string;
 
-  switchToEditName(): void { this.mode = 'editName'; }
-  switchToPersonList(): void { this.mode = 'personList'; }
+  switchToEditName(): void {
+    this.mode = 'editName';
+  }
+  switchToPersonList(): void {
+    this.mode = 'personList';
+  }
 }
 
 @NgModule({
@@ -202,9 +227,7 @@ class PersonManagementApplication {
       [PersonManagementApplication, FullNameComponent, PersonsComponent, PersonsDetailComponent],
   imports: [BrowserModule, FormsModule]
 })
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

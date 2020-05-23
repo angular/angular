@@ -9,7 +9,8 @@
 import {IterableChangeRecord, IterableChanges} from '@angular/core/src/change_detection/differs/iterable_differs';
 import {KeyValueChangeRecord, KeyValueChanges} from '@angular/core/src/change_detection/differs/keyvalue_differs';
 
-import {looseIdentical, stringify} from '../../src/util';
+import {looseIdentical} from '../../src/util/comparison';
+import {stringify} from '../../src/util/stringify';
 
 export function iterableDifferToString<V>(iterableChanges: IterableChanges<V>) {
   const collection: string[] = [];
@@ -46,9 +47,14 @@ function icrAsString<V>(icr: IterableChangeRecord<V>): string {
           stringify(icr.previousIndex) + '->' + stringify(icr.currentIndex) + ']';
 }
 
-export function iterableChangesAsString(
-    {collection = [] as any, previous = [] as any, additions = [] as any, moves = [] as any,
-     removals = [] as any, identityChanges = [] as any}): string {
+export function iterableChangesAsString({
+  collection = [] as any,
+  previous = [] as any,
+  additions = [] as any,
+  moves = [] as any,
+  removals = [] as any,
+  identityChanges = [] as any
+}): string {
   return 'collection: ' + collection.join(', ') + '\n' +
       'previous: ' + previous.join(', ') + '\n' +
       'additions: ' + additions.join(', ') + '\n' +

@@ -16,7 +16,7 @@
       {% for item in items %}
         <tr>
           <td>
-            <code-example language="ts" hideCopy="true" linenums="false" class="no-box">
+            <code-example language="ts" hideCopy="true" class="no-box">
               {$ item | escape $}
             </code-example>
           </td>
@@ -39,7 +39,7 @@
       <tr>
         <td>
           <a href="{$ item.path $}">
-            <code-example language="ts" hideCopy="true" linenums="false" class="no-box{% if item.deprecated !== undefined %} deprecated-api-item{% endif %}">{$ item.name | escape $}</code-example>
+            <code-example language="ts" hideCopy="true" class="no-box{% if item.deprecated !== undefined %} deprecated-api-item{% endif %}">{$ item.name | escape $}</code-example>
           </a>
         </td>
         <td>

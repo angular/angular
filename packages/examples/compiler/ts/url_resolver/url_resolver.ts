@@ -7,11 +7,13 @@
  */
 
 import {UrlResolver} from '@angular/compiler';
-import {NgModule} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-let MyApp: any;
+@Component({selector: 'my-app', template: 'empty'})
+class MyApp {
+}
 
 // #docregion url_resolver
 class MyUrlResolver extends UrlResolver {

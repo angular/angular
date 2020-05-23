@@ -7,7 +7,7 @@
  */
 
 import {ɵisPromise as isPromise} from '@angular/core';
-import {global} from '@angular/core/src/util';
+import {global} from '@angular/core/src/util/global';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {getTestBed, inject} from './test_bed';
@@ -39,6 +39,8 @@ const globalTimeOut = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 const testBed = getTestBed();
 
+export type TestFn = ((done: DoneFn) => any)|(() => any);
+
 /**
  * Mechanism to run `beforeEach()` functions of Angular tests.
  *
@@ -49,20 +51,26 @@ class BeforeEachRunner {
 
   constructor(private _parent: BeforeEachRunner) {}
 
-  beforeEach(fn: Function): void { this._fns.push(fn); }
+  beforeEach(fn: Function): void {
+    this._fns.push(fn);
+  }
 
   run(): void {
     if (this._parent) this._parent.run();
-    this._fns.forEach((fn) => { fn(); });
+    this._fns.forEach((fn) => {
+      fn();
+    });
   }
 }
 
 // Reset the test providers before each test
-jsmBeforeEach(() => { testBed.resetTestingModule(); });
+jsmBeforeEach(() => {
+  testBed.resetTestingModule();
+});
 
 function _describe(jsmFn: Function, ...args: any[]) {
   const parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
-  const runner = new BeforeEachRunner(parentRunner !);
+  const runner = new BeforeEachRunner(parentRunner!);
   runnerStack.push(runner);
   const suite = jsmFn(...args);
   runnerStack.pop();
@@ -112,8 +120,7 @@ export function beforeEachProviders(fn: Function): void {
 }
 
 
-function _it(
-    jsmFn: Function, testName: string, testFn: (done?: DoneFn) => any, testTimeout = 0): void {
+function _it(jsmFn: Function, testName: string, testFn: TestFn, testTimeout = 0): void {
   if (runnerStack.length == 0) {
     // This left here intentionally, as we should never get here, and it aids debugging.
     // tslint:disable-next-line
@@ -135,7 +142,9 @@ function _it(
     runner.run();
 
     if (testFn.length === 0) {
-      const retVal = testFn();
+      // TypeScript doesn't infer the TestFn type without parameters here, so we
+      // need to manually cast it.
+      const retVal = (testFn as () => any)();
       if (isPromise(retVal)) {
         // Asynchronous test function that returns a Promise - wait for completion.
         retVal.then(done, done.fail);
@@ -150,15 +159,15 @@ function _it(
   }, timeout);
 }
 
-export function it(expectation: string, assertion: (done: DoneFn) => any, timeout?: number): void {
+export function it(expectation: string, assertion: TestFn, timeout?: number): void {
   return _it(jsmIt, expectation, assertion, timeout);
 }
 
-export function fit(expectation: string, assertion: (done: DoneFn) => any, timeout?: number): void {
+export function fit(expectation: string, assertion: TestFn, timeout?: number): void {
   return _it(jsmFIt, expectation, assertion, timeout);
 }
 
-export function xit(expectation: string, assertion: (done: DoneFn) => any, timeout?: number): void {
+export function xit(expectation: string, assertion: TestFn, timeout?: number): void {
   return _it(jsmXIt, expectation, assertion, timeout);
 }
 
@@ -169,7 +178,7 @@ export class SpyObject {
         let m: any = null;
         try {
           m = type.prototype[prop];
-        } catch (e) {
+        } catch {
           // As we are creating spys for abstract classes,
           // these classes might have getters that throw when they are accessed.
           // As we are only auto creating spys for methods, this
@@ -189,7 +198,9 @@ export class SpyObject {
     return (this as any)[name];
   }
 
-  prop(name: string, value: any) { (this as any)[name] = value; }
+  prop(name: string, value: any) {
+    (this as any)[name] = value;
+  }
 
   static stub(object: any = null, config: any = null, overrides: any = null) {
     if (!(object instanceof SpyObject)) {
@@ -199,7 +210,9 @@ export class SpyObject {
     }
 
     const m = {...config, ...overrides};
-    Object.keys(m).forEach(key => { object.spy(key).and.returnValue(m[key]); });
+    Object.keys(m).forEach(key => {
+      object.spy(key).and.returnValue(m[key]);
+    });
     return object;
   }
 }

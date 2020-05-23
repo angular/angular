@@ -11,20 +11,16 @@ const nodeUuid = require('node-uuid');
 import * as fs from 'fs-extra';
 
 import {SeleniumWebDriverAdapter, Options, JsonFileReporter, Validator, RegressionSlopeValidator, ConsoleReporter, SizeValidator, MultiReporter, MultiMetric, Runner, StaticProvider} from '@angular/benchpress';
-import {readCommandLine as readE2eCommandLine, openBrowser} from './e2e_util';
+import {openBrowser} from './e2e_util';
 
-let cmdArgs: {'sample-size': number, 'force-gc': boolean, 'dryrun': boolean, 'bundles': boolean};
-let runner: Runner;
+// Note: Keep the `modules/benchmarks/README.md` file in sync with the supported options.
+const globalOptions = {
+  sampleSize: process.env.PERF_SAMPLE_SIZE || 20,
+  forceGc: process.env.PERF_FORCE_GC === 'true',
+  dryRun: process.env.PERF_DRYRUN === 'true',
+};
 
-export function readCommandLine() {
-  cmdArgs = <any>readE2eCommandLine({
-    'sample-size': {describe: 'Used for perf: sample size.', default: 20},
-    'force-gc': {describe: 'Used for perf: force gc.', default: false, type: 'boolean'},
-    'dryrun': {describe: 'If true, only run performance benchmarks once.', default: false},
-    'bundles': {describe: 'Whether to use the angular bundles or not.', default: false}
-  });
-  runner = createBenchpressRunner();
-}
+const runner = createBenchpressRunner();
 
 export function runBenchmark(config: {
   id: string,
@@ -40,15 +36,14 @@ export function runBenchmark(config: {
   if (config.setup) {
     config.setup();
   }
-  if (!cmdArgs) readCommandLine();
-  const description: {[key: string]: any} = {'bundles': cmdArgs.bundles};
-  config.params.forEach((param) => { description[param.name] = param.value; });
+  const description: {[key: string]: any} = {};
+  config.params.forEach((param) => description[param.name] = param.value);
   return runner.sample({
     id: config.id,
     execute: config.work,
     prepare: config.prepare,
     microMetrics: config.microMetrics,
-    providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: description}]
+    providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: {}}]
   });
 }
 
@@ -61,14 +56,14 @@ function createBenchpressRunner(): Runner {
   fs.ensureDirSync(resultsFolder);
   const providers: StaticProvider[] = [
     SeleniumWebDriverAdapter.PROTRACTOR_PROVIDERS,
-    {provide: Options.FORCE_GC, useValue: cmdArgs['force-gc']},
+    {provide: Options.FORCE_GC, useValue: globalOptions.forceGc},
     {provide: Options.DEFAULT_DESCRIPTION, useValue: {'runId': runId}}, JsonFileReporter.PROVIDERS,
     {provide: JsonFileReporter.PATH, useValue: resultsFolder}
   ];
-  if (!cmdArgs['dryrun']) {
+  if (!globalOptions.dryRun) {
     providers.push({provide: Validator, useExisting: RegressionSlopeValidator});
     providers.push(
-        {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: cmdArgs['sample-size']});
+        {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: globalOptions.sampleSize});
     providers.push(MultiReporter.provideWith([ConsoleReporter, JsonFileReporter]));
   } else {
     providers.push({provide: Validator, useExisting: SizeValidator});

@@ -1,6 +1,6 @@
 import { Injector, ReflectiveInjector } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
-import { DOCUMENT } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
 
 import { ScrollService } from 'app/shared/scroll.service';
 import { ScrollItem, ScrollSpiedElement, ScrollSpiedElementGroup, ScrollSpyService } from 'app/shared/scroll-spy.service';
@@ -39,7 +39,7 @@ describe('ScrollSpiedElement', () => {
 describe('ScrollSpiedElementGroup', () => {
   describe('#calibrate()', () => {
     it('should calculate `top` for all spied elements', () => {
-      const spy = spyOn(ScrollSpiedElement.prototype, 'calculateTop').and.returnValue(0);
+      const spy = spyOn(ScrollSpiedElement.prototype, 'calculateTop');
       const elems = [{}, {}, {}] as Element[];
       const group = new ScrollSpiedElementGroup(elems);
 
@@ -68,7 +68,7 @@ describe('ScrollSpiedElementGroup', () => {
       const tops = [50, 150, 100];
 
       spyOn(ScrollSpiedElement.prototype, 'calculateTop').and.callFake(
-        function(this: ScrollSpiedElement, scrollTop: number, topOffset: number) {
+        function(this: ScrollSpiedElement) {
         this.top = tops[this.index];
       });
 

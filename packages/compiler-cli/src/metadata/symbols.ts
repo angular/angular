@@ -12,7 +12,7 @@ import {MetadataSymbolicReferenceExpression, MetadataValue} from './schema';
 
 export class Symbols {
   // TODO(issue/24571): remove '!'.
-  private _symbols !: Map<string, MetadataValue>;
+  private _symbols!: Map<string, MetadataValue>;
   private references = new Map<string, MetadataSymbolicReferenceExpression>();
 
   constructor(private sourceFile: ts.SourceFile) {}
@@ -21,12 +21,16 @@ export class Symbols {
     return (preferReference && this.references.get(name)) || this.symbols.get(name);
   }
 
-  define(name: string, value: MetadataValue) { this.symbols.set(name, value); }
+  define(name: string, value: MetadataValue) {
+    this.symbols.set(name, value);
+  }
   defineReference(name: string, value: MetadataSymbolicReferenceExpression) {
     this.references.set(name, value);
   }
 
-  has(name: string): boolean { return this.symbols.has(name); }
+  has(name: string): boolean {
+    return this.symbols.has(name);
+  }
 
   private get symbols(): Map<string, MetadataValue> {
     let result = this._symbols;

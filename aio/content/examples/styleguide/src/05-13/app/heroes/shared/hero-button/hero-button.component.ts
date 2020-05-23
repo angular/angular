@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class HeroButtonComponent {
   // No aliases
-  @Output() change = new EventEmitter<any>();
+  @Output() heroChange = new EventEmitter<any>();
   @Input() label: string;
 }
 // #enddocregion example

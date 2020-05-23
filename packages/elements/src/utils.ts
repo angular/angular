@@ -7,9 +7,11 @@
  */
 import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
-const elProto = Element.prototype as any;
-const matches = elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
-    elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
+const matches = (() => {
+  const elProto = Element.prototype as any;
+  return elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
+      elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
+})();
 
 /**
  * Provide methods for scheduling the execution of a callback.
@@ -20,8 +22,10 @@ export const scheduler = {
    *
    * Returns a function that when executed will cancel the scheduled function.
    */
-  schedule(taskFn: () => void, delay: number): () =>
-      void{const id = setTimeout(taskFn, delay); return () => clearTimeout(id);},
+  schedule(taskFn: () => void, delay: number): () => void {
+    const id = setTimeout(taskFn, delay);
+    return () => clearTimeout(id);
+  },
 
   /**
    * Schedule a callback to be called before the next render.
@@ -29,7 +33,7 @@ export const scheduler = {
    *
    * Returns a function that when executed will cancel the scheduled function.
    */
-  scheduleBeforeRender(taskFn: () => void): () => void{
+  scheduleBeforeRender(taskFn: () => void): () => void {
     // TODO(gkalpak): Implement a better way of accessing `requestAnimationFrame()`
     //                (e.g. accounting for vendor prefix, SSR-compatibility, etc).
     if (typeof window === 'undefined') {
@@ -74,7 +78,7 @@ export function createCustomEvent(doc: Document, name: string, detail: any): Cus
 /**
  * Check whether the input is an `Element`.
  */
-export function isElement(node: Node | null): node is Element {
+export function isElement(node: Node|null): node is Element {
   return !!node && node.nodeType === Node.ELEMENT_NODE;
 }
 

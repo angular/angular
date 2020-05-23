@@ -7,13 +7,9 @@
  */
 
 import {PlatformRef} from '@angular/core';
-import {ClientMessageBrokerFactory, FnArg, SerializerTypes, UiArguments, bootstrapWorkerUi} from '@angular/platform-webworker';
+import {bootstrapWorkerUi, ClientMessageBrokerFactory, FnArg, SerializerTypes, UiArguments} from '@angular/platform-webworker';
 
 const ECHO_CHANNEL = 'ECHO';
-
-export function main() {
-  bootstrapWorkerUi('loader.js').then(afterBootstrap);
-}
 
 function afterBootstrap(ref: PlatformRef) {
   const brokerFactory: ClientMessageBrokerFactory = ref.injector.get(ClientMessageBrokerFactory);
@@ -32,3 +28,5 @@ function afterBootstrap(ref: PlatformRef) {
     });
   });
 }
+
+bootstrapWorkerUi('loader.js').then(afterBootstrap);

@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineInjectable, inject} from '@angular/core';
+import {ErrorHandler, ɵɵdefineInjectable, ɵɵinject} from '@angular/core';
 
 import {DOCUMENT} from './dom_tokens';
+
+
 
 /**
  * Defines a scroll position manager. Implemented by `BrowserViewportScroller`.
@@ -19,8 +21,11 @@ export abstract class ViewportScroller {
   // De-sugared tree-shakable injection
   // See #23917
   /** @nocollapse */
-  static ngInjectableDef = defineInjectable(
-      {providedIn: 'root', factory: () => new BrowserViewportScroller(inject(DOCUMENT), window)});
+  static ɵprov = ɵɵdefineInjectable({
+    token: ViewportScroller,
+    providedIn: 'root',
+    factory: () => new BrowserViewportScroller(ɵɵinject(DOCUMENT), window, ɵɵinject(ErrorHandler))
+  });
 
   /**
    * Configures the top offset used when scrolling to an anchor.
@@ -62,7 +67,7 @@ export abstract class ViewportScroller {
 export class BrowserViewportScroller implements ViewportScroller {
   private offset: () => [number, number] = () => [0, 0];
 
-  constructor(private document: any, private window: any) {}
+  constructor(private document: any, private window: any, private errorHandler: ErrorHandler) {}
 
   /**
    * Configures the top offset used when scrolling to an anchor.
@@ -106,15 +111,26 @@ export class BrowserViewportScroller implements ViewportScroller {
    */
   scrollToAnchor(anchor: string): void {
     if (this.supportScrollRestoration()) {
-      const elSelectedById = this.document.querySelector(`#${anchor}`);
-      if (elSelectedById) {
-        this.scrollToElement(elSelectedById);
-        return;
+      // Escape anything passed to `querySelector` as it can throw errors and stop the application
+      // from working if invalid values are passed.
+      if (this.window.CSS && this.window.CSS.escape) {
+        anchor = this.window.CSS.escape(anchor);
+      } else {
+        anchor = anchor.replace(/(\"|\'\ |:|\.|\[|\]|,|=)/g, '\\$1');
       }
-      const elSelectedByName = this.document.querySelector(`[name='${anchor}']`);
-      if (elSelectedByName) {
-        this.scrollToElement(elSelectedByName);
-        return;
+      try {
+        const elSelectedById = this.document.querySelector(`#${anchor}`);
+        if (elSelectedById) {
+          this.scrollToElement(elSelectedById);
+          return;
+        }
+        const elSelectedByName = this.document.querySelector(`[name='${anchor}']`);
+        if (elSelectedByName) {
+          this.scrollToElement(elSelectedByName);
+          return;
+        }
+      } catch (e) {
+        this.errorHandler.handleError(e);
       }
     }
   }
@@ -150,7 +166,7 @@ export class BrowserViewportScroller implements ViewportScroller {
   private supportScrollRestoration(): boolean {
     try {
       return !!this.window && !!this.window.scrollTo;
-    } catch (e) {
+    } catch {
       return false;
     }
   }
@@ -170,7 +186,9 @@ export class NullViewportScroller implements ViewportScroller {
   /**
    * Empty implementation
    */
-  getScrollPosition(): [number, number] { return [0, 0]; }
+  getScrollPosition(): [number, number] {
+    return [0, 0];
+  }
 
   /**
    * Empty implementation

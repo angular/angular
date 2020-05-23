@@ -26,7 +26,7 @@ export class ResourceService {
 
     (categories as ConnectableObservable<Category[]>).connect();
     return categories;
-  };
+  }
 }
 
 // Extract sorted Category[] from resource JSON data

@@ -1,0 +1,25 @@
+diff --git a/node_modules/@angular/bazel/src/builders/files/WORKSPACE.template b/node_modules/@angular/bazel/src/builders/files/WORKSPACE.template
+index 9aad043..e767dc6 100755
+--- a/node_modules/@angular/bazel/src/builders/files/WORKSPACE.template
++++ b/node_modules/@angular/bazel/src/builders/files/WORKSPACE.template
+@@ -10,7 +10,7 @@
+ # imports also make sense when referencing the published package.
+ workspace(
+     name = "project",
+-    managed_directories = {"@npm": ["node_modules"]},
++    # managed_directories = {"@npm": ["node_modules"]},
+ )
+ 
+ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+@@ -67,6 +67,11 @@ node_repositories(
+ yarn_install(
+     name = "npm",
+     package_json = "//:package.json",
++    # Turn off symlink_node_modules here as it causes flakiness with missing
++    # files in node_modules.
++    # TODO: track down the root cause of the flakiness; current suspect is that
++    # it is an issue with managed_directories when resources are limited
++    symlink_node_modules = False,
+     yarn_lock = "//:yarn.lock",
+ )
+ 

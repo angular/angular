@@ -25,11 +25,11 @@ describe('SearchService', () => {
 
   describe('initWorker', () => {
     it('should create the worker and load the index after the specified delay', fakeAsync(() => {
-      service.initWorker('some/url', 100);
+      service.initWorker(100);
       expect(WebWorkerClient.create).not.toHaveBeenCalled();
       expect(mockWorker.sendMessage).not.toHaveBeenCalled();
       tick(100);
-      expect(WebWorkerClient.create).toHaveBeenCalledWith('some/url', jasmine.any(NgZone));
+      expect(WebWorkerClient.create).toHaveBeenCalledWith(jasmine.any(Worker), jasmine.any(NgZone));
       expect(mockWorker.sendMessage).toHaveBeenCalledWith('load-index');
     }));
   });
@@ -37,7 +37,7 @@ describe('SearchService', () => {
   describe('search', () => {
     beforeEach(() => {
       // We must initialize the service before calling connectSearches
-      service.initWorker('some/url', 1000);
+      service.initWorker(1000);
       // Simulate the index being ready so that searches get sent to the worker
       (service as any).ready = of(true);
     });

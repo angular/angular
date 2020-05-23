@@ -1,5 +1,9 @@
 <!doctype html>
 <html>
+<head>
+  <!-- Prevent the browser from requesting any favicon. -->
+  <link rel="icon" href="data:,">
+</head>
 <body>
 
   <h2>Params</h2>
@@ -25,6 +29,8 @@
     <largetable id="root"></largetable>
   </div>
 
-  <script src="../../bootstrap_plain.js"></script>
+  <script src="/npm/node_modules/incremental-dom/dist/incremental-dom.js"></script>
+  <!--load location for ts_devserver-->
+  <script src="/app_bundle.js"></script>
 </body>
 </html>

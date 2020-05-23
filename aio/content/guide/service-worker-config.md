@@ -7,16 +7,17 @@ A basic understanding of the following:
 
 <hr />
 
-The `src/ngsw-config.json` configuration file specifies which files and data URLs the Angular
-service worker should cache and how it should update the cached files and data. The
-[Angular CLI](cli) processes the configuration file during `ng build --prod`. Manually, you can process
-it with the `ngsw-config` tool:
+The `ngsw-config.json` configuration file specifies which files and data URLs the Angular service
+worker should cache and how it should update the cached files and data. The [Angular CLI](cli)
+processes the configuration file during `ng build --prod`. Manually, you can process it with the
+`ngsw-config` tool (where `<project-name>` is the name of the project being built):
 
-```sh
-ngsw-config dist src/ngsw-config.json /base/href
-```
+<code-example language="sh">
+./node_modules/.bin/ngsw-config ./dist/&lt;project-name&gt; ./ngsw-config.json [/base/href]
+</code-example>
 
-The configuration file uses the JSON format. All file paths must begin with `/`, which is the deployment directory&mdash;usually `dist` in CLI projects.
+The configuration file uses the JSON format. All file paths must begin with `/`, which corresponds
+to the deployment directory&mdash;usually `dist/<project-name>` in CLI projects.
 
 {@a glob-patterns}
 Unless otherwise noted, patterns use a limited glob format:
@@ -71,9 +72,10 @@ interface AssetGroup {
   updateMode?: 'prefetch' | 'lazy';
   resources: {
     files?: string[];
-    /** @deprecated As of v6 `versionedFiles` and `files` options have the same behavior. Use `files` instead. */
-    versionedFiles?: string[];
     urls?: string[];
+  };
+  cacheQueryOptions?: {
+    ignoreSearch?: boolean;
   };
 }
 ```
@@ -90,6 +92,8 @@ The `installMode` determines how these resources are initially cached. The `inst
 
 * `lazy` does not cache any of the resources up front. Instead, the Angular service worker only caches resources for which it receives requests. This is an on-demand caching mode. Resources that are never requested will not be cached. This is useful for things like images at different resolutions, so the service worker only caches the correct assets for the particular screen and orientation.
 
+Defaults to `prefetch`.
+
 ### `updateMode`
 
 For resources already in the cache, the `updateMode` determines the caching behavior when a new version of the app is discovered. Any resources in the group that have changed since the previous version are updated in accordance with `updateMode`.
@@ -98,16 +102,22 @@ For resources already in the cache, the `updateMode` determines the caching beha
 
 * `lazy` tells the service worker to not cache those resources. Instead, it treats them as unrequested and waits until they're requested again before updating them. An `updateMode` of `lazy` is only valid if the `installMode` is also `lazy`.
 
+Defaults to the value `installMode` is set to.
+
 ### `resources`
 
-This section describes the resources to cache, broken up into three groups.
+This section describes the resources to cache, broken up into the following groups:
 
 * `files` lists patterns that match files in the distribution directory. These can be single files or glob-like patterns that match a number of files.
 
-* `versionedFiles` has been deprecated. As of v6 `versionedFiles` and `files` options have the same behavior. Use `files` instead.
-
 * `urls` includes both URLs and URL patterns that will be matched at runtime. These resources are not fetched directly and do not have content hashes, but they will be cached according to their HTTP headers. This is most useful for CDNs such as the Google Fonts service.<br>
   _(Negative glob patterns are not supported and `?` will be matched literally; i.e. it will not match any character other than `?`.)_
+
+### `cacheQueryOptions`
+
+These options are used to modify the matching behavior of requests. They are passed to the browsers `Cache#match` function. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match) for details. Currently, only the following options are supported:
+
+* `ignoreSearch`: Ignore query parameters. Defaults to `false`.
 
 ## `dataGroups`
 
@@ -126,6 +136,9 @@ export interface DataGroup {
     timeout?: string;
     strategy?: 'freshness' | 'performance';
   };
+  cacheQueryOptions?: {
+    ignoreSearch?: boolean;
+  };
 }
 ```
 
@@ -133,15 +146,16 @@ export interface DataGroup {
 Similar to `assetGroups`, every data group has a `name` which uniquely identifies it.
 
 ### `urls`
-A list of URL patterns. URLs that match these patterns will be cached according to this data group's policy.<br>
-  _(Negative glob patterns are not supported and `?` will be matched literally; i.e. it will not match any character other than `?`.)_
+A list of URL patterns. URLs that match these patterns are cached according to this data group's policy. Only non-mutating requests (GET and HEAD) are cached.
+ * Negative glob patterns are not supported.
+ * `?` is matched literally; that is, it matches *only* the character `?`.
 
 ### `version`
 Occasionally APIs change formats in a way that is not backward-compatible. A new version of the app may not be compatible with the old API format and thus may not be compatible with existing cached resources from that API.
 
 `version` provides a mechanism to indicate that the resources being cached have been updated in a backwards-incompatible way, and that the old cache entries&mdash;those from previous versions&mdash;should be discarded.
 
-`version` is an integer field and defaults to `0`.
+`version` is an integer field and defaults to `1`.
 
 ### `cacheConfig`
 This section defines the policy by which matching requests will be cached.
@@ -175,9 +189,13 @@ For example, the string `5s30u` will translate to five seconds and 30 millisecon
 
 The Angular service worker can use either of two caching strategies for data resources.
 
-* `performance`, the default, optimizes for responses that are as fast as possible. If a resource exists in the cache, the cached version is used. This allows for some staleness, depending on the `maxAge`, in exchange for better performance. This is suitable for resources that don't change often; for example, user avatar images.
+* `performance`, the default, optimizes for responses that are as fast as possible. If a resource exists in the cache, the cached version is used, and no network request is made. This allows for some staleness, depending on the `maxAge`, in exchange for better performance. This is suitable for resources that don't change often; for example, user avatar images.
 
 * `freshness` optimizes for currency of data, preferentially fetching requested data from the network. Only if the network times out, according to `timeout`, does the request fall back to the cache. This is useful for resources that change frequently; for example, account balances.
+
+### `cacheQueryOptions`
+
+See [assetGroups](#assetgroups) for details.
 
 ## `navigationUrls`
 

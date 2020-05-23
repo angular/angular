@@ -15,7 +15,10 @@ describe('utils', () => {
       let clearTimeoutSpy: jasmine.Spy;
 
       beforeEach(() => {
-        setTimeoutSpy = spyOn(window, 'setTimeout').and.returnValue(42);
+        // TODO: @JiaLiPassion, need to wait @types/jasmine to fix the wrong return
+        // type infer issue.
+        // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/43486
+        setTimeoutSpy = spyOn(window, 'setTimeout').and.returnValue(42 as any);
         clearTimeoutSpy = spyOn(window, 'clearTimeout');
       });
 
@@ -81,8 +84,9 @@ describe('utils', () => {
       expect(camelToDashCase('foo1Bar2Baz3Qux4')).toBe('foo1-bar2-baz3-qux4');
     });
 
-    it('should keep existing dashes',
-       () => { expect(camelToDashCase('fooBar-baz-Qux')).toBe('foo-bar-baz--qux'); });
+    it('should keep existing dashes', () => {
+      expect(camelToDashCase('fooBar-baz-Qux')).toBe('foo-bar-baz--qux');
+    });
   });
 
   describe('createCustomEvent()', () => {
@@ -97,7 +101,6 @@ describe('utils', () => {
       expect(event.cancelable).toBe(false);
       expect(event.detail).toEqual(value);
     });
-
   });
 
   describe('isElement()', () => {
@@ -129,7 +132,7 @@ describe('utils', () => {
     it('should return true for functions', () => {
       const obj = {foo: function() {}, bar: () => null, baz() {}};
       const fns = [
-        function(){},
+        function() {},
         () => null,
         obj.foo,
         obj.bar,
@@ -180,7 +183,7 @@ describe('utils', () => {
           </ul>
         </div>
       `;
-      li = div.querySelector('li') !;
+      li = div.querySelector('li')!;
     });
 
     it('should return whether the element matches the selector', () => {
@@ -216,7 +219,9 @@ describe('utils', () => {
       ];
 
       values.forEach((v1, i) => {
-        values.forEach((v2, j) => { expect(strictEquals(v1, v2)).toBe(i === j); });
+        values.forEach((v2, j) => {
+          expect(strictEquals(v1, v2)).toBe(i === j);
+        });
       });
     });
 

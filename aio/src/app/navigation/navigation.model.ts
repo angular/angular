@@ -3,8 +3,13 @@
 // Then re-export them from `navigation.service.ts`
 
 export interface NavigationNode {
+  // NOTE:
+  // A navigation node should always have a title (to display to the user).
+  // It may also have `url` (if it is a leaf node) or `children` (and no `url`), but it should
+  // always have `title`.
+  title: string;
+
   url?: string;
-  title?: string;
   tooltip?: string;
   hidden?: boolean;
   children?: NavigationNode[];

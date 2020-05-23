@@ -8,7 +8,7 @@
 
 import {SecurityContext} from '../core';
 import {AST, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType} from '../expression_parser/ast';
-import {AST as I18nAST} from '../i18n/i18n_ast';
+import {I18nMeta} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
 
 export interface Node {
@@ -18,48 +18,61 @@ export interface Node {
 
 export class Text implements Node {
   constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitText(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitText(this);
+  }
 }
 
 export class BoundText implements Node {
-  constructor(public value: AST, public sourceSpan: ParseSourceSpan, public i18n?: I18nAST) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundText(this); }
+  constructor(public value: AST, public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitBoundText(this);
+  }
 }
 
 export class TextAttribute implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, public i18n?: I18nAST) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitTextAttribute(this); }
+      public valueSpan?: ParseSourceSpan, public i18n?: I18nMeta) {}
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitTextAttribute(this);
+  }
 }
 
 export class BoundAttribute implements Node {
   constructor(
       public name: string, public type: BindingType, public securityContext: SecurityContext,
       public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan,
-      public i18n?: I18nAST) {}
+      public valueSpan?: ParseSourceSpan, public i18n?: I18nMeta) {}
 
-  static fromBoundElementProperty(prop: BoundElementProperty, i18n?: I18nAST) {
+  static fromBoundElementProperty(prop: BoundElementProperty, i18n?: I18nMeta) {
     return new BoundAttribute(
-        prop.name, prop.type, prop.securityContext, prop.value, prop.unit, prop.sourceSpan, i18n);
+        prop.name, prop.type, prop.securityContext, prop.value, prop.unit, prop.sourceSpan,
+        prop.valueSpan, i18n);
   }
 
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundAttribute(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitBoundAttribute(this);
+  }
 }
 
 export class BoundEvent implements Node {
   constructor(
       public name: string, public type: ParsedEventType, public handler: AST,
-      public target: string|null, public phase: string|null, public sourceSpan: ParseSourceSpan) {}
+      public target: string|null, public phase: string|null, public sourceSpan: ParseSourceSpan,
+      public handlerSpan: ParseSourceSpan) {}
 
   static fromParsedEvent(event: ParsedEvent) {
     const target: string|null = event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
     const phase: string|null =
         event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
-    return new BoundEvent(event.name, event.type, event.handler, target, phase, event.sourceSpan);
+    return new BoundEvent(
+        event.name, event.type, event.handler, target, phase, event.sourceSpan, event.handlerSpan);
   }
 
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundEvent(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitBoundEvent(this);
+  }
 }
 
 export class Element implements Node {
@@ -67,43 +80,64 @@ export class Element implements Node {
       public name: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
       public outputs: BoundEvent[], public children: Node[], public references: Reference[],
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
-      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nAST) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitElement(this); }
+      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {
+    // If the element is empty then the source span should include any closing tag
+    if (children.length === 0 && startSourceSpan && endSourceSpan) {
+      this.sourceSpan = new ParseSourceSpan(sourceSpan.start, endSourceSpan.end);
+    }
+  }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitElement(this);
+  }
 }
 
 export class Template implements Node {
   constructor(
       public tagName: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
-      public outputs: BoundEvent[], public children: Node[], public references: Reference[],
-      public variables: Variable[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan|null, public endSourceSpan: ParseSourceSpan|null,
-      public i18n?: I18nAST) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitTemplate(this); }
+      public outputs: BoundEvent[], public templateAttrs: (BoundAttribute|TextAttribute)[],
+      public children: Node[], public references: Reference[], public variables: Variable[],
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
+      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {}
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitTemplate(this);
+  }
 }
 
 export class Content implements Node {
   constructor(
       public selector: string, public attributes: TextAttribute[],
-      public sourceSpan: ParseSourceSpan, public i18n?: I18nAST) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitContent(this); }
+      public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitContent(this);
+  }
 }
 
 export class Variable implements Node {
-  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitVariable(this); }
+  constructor(
+      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
+      public valueSpan?: ParseSourceSpan) {}
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitVariable(this);
+  }
 }
 
 export class Reference implements Node {
-  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitReference(this); }
+  constructor(
+      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
+      public valueSpan?: ParseSourceSpan) {}
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitReference(this);
+  }
 }
 
 export class Icu implements Node {
   constructor(
       public vars: {[name: string]: BoundText},
-      public placeholders: {[name: string]: Text | BoundText}, public sourceSpan: ParseSourceSpan,
-      public i18n?: I18nAST) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitIcu(this); }
+      public placeholders: {[name: string]: Text|BoundText}, public sourceSpan: ParseSourceSpan,
+      public i18n?: I18nMeta) {}
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitIcu(this);
+  }
 }
 
 export interface Visitor<Result = any> {
@@ -182,29 +216,50 @@ export class TransformVisitor implements Visitor<Node> {
     const newAttributes = transformAll(this, template.attributes);
     const newInputs = transformAll(this, template.inputs);
     const newOutputs = transformAll(this, template.outputs);
+    const newTemplateAttrs = transformAll(this, template.templateAttrs);
     const newChildren = transformAll(this, template.children);
     const newReferences = transformAll(this, template.references);
     const newVariables = transformAll(this, template.variables);
     if (newAttributes != template.attributes || newInputs != template.inputs ||
-        newChildren != template.children || newVariables != template.variables ||
-        newReferences != template.references) {
+        newOutputs != template.outputs || newTemplateAttrs != template.templateAttrs ||
+        newChildren != template.children || newReferences != template.references ||
+        newVariables != template.variables) {
       return new Template(
-          template.tagName, newAttributes, newInputs, newOutputs, newChildren, newReferences,
-          newVariables, template.sourceSpan, template.startSourceSpan, template.endSourceSpan);
+          template.tagName, newAttributes, newInputs, newOutputs, newTemplateAttrs, newChildren,
+          newReferences, newVariables, template.sourceSpan, template.startSourceSpan,
+          template.endSourceSpan);
     }
     return template;
   }
 
-  visitContent(content: Content): Node { return content; }
+  visitContent(content: Content): Node {
+    return content;
+  }
 
-  visitVariable(variable: Variable): Node { return variable; }
-  visitReference(reference: Reference): Node { return reference; }
-  visitTextAttribute(attribute: TextAttribute): Node { return attribute; }
-  visitBoundAttribute(attribute: BoundAttribute): Node { return attribute; }
-  visitBoundEvent(attribute: BoundEvent): Node { return attribute; }
-  visitText(text: Text): Node { return text; }
-  visitBoundText(text: BoundText): Node { return text; }
-  visitIcu(icu: Icu): Node { return icu; }
+  visitVariable(variable: Variable): Node {
+    return variable;
+  }
+  visitReference(reference: Reference): Node {
+    return reference;
+  }
+  visitTextAttribute(attribute: TextAttribute): Node {
+    return attribute;
+  }
+  visitBoundAttribute(attribute: BoundAttribute): Node {
+    return attribute;
+  }
+  visitBoundEvent(attribute: BoundEvent): Node {
+    return attribute;
+  }
+  visitText(text: Text): Node {
+    return text;
+  }
+  visitBoundText(text: BoundText): Node {
+    return text;
+  }
+  visitIcu(icu: Icu): Node {
+    return icu;
+  }
 }
 
 export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Result[] {

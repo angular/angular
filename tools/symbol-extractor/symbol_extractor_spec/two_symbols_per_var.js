@@ -12,10 +12,14 @@
   console.log('Hello, Alice in Wonderland');
   var A = function() {
     function A() {}
-    return A.prototype.a = function() { return document.a; }, A;
+    return A.prototype.a = function() {
+      return document.a;
+    }, A;
   }(), B = function() {
     function B() {}
-    return B.prototype.b = function() { return window.b; }, B;
+    return B.prototype.b = function() {
+      return window.b;
+    }, B;
   }();
   var ignore_no_initializer;
   // tslint:disable-next-line:no-console

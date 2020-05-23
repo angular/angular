@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, NgModule, Output, forwardRef} from '@angular/core';
+import {Component, EventEmitter, forwardRef, Input, NgModule, Output} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {UpgradeAdapter} from '@angular/upgrade';
 
@@ -30,7 +30,9 @@ const styles = [`
 const adapter = new UpgradeAdapter(forwardRef(() => Ng2AppModule));
 const ng1module = angular.module('myExample', []);
 
-ng1module.controller('Index', function($scope: any) { $scope.name = 'World'; });
+ng1module.controller('Index', function($scope: any) {
+  $scope.name = 'World';
+});
 
 ng1module.directive('ng1User', function() {
   return {
@@ -50,7 +52,7 @@ ng1module.directive('ng1User', function() {
     </div>`,
   styles: styles
 })
-class Pane {
+export class Pane {
   @Input() title: string;
 }
 
@@ -61,7 +63,7 @@ class Pane {
       <pane title="Title: {{user}}">
         <table cellpadding="3">
           <tr>
-            <td><ng-content></ng-content></td>
+            <td class="projected-content"><ng-content></ng-content></td>
             <td><ng1-user [handle]="user" (reset)="reset.emit()"></ng1-user></td>
           </tr>
         </table>
@@ -69,7 +71,7 @@ class Pane {
     </div>`,
   styles: styles
 })
-class UpgradeApp {
+export class UpgradeApp {
   @Input() user: string;
   @Output() reset = new EventEmitter();
   constructor() {}
@@ -77,14 +79,12 @@ class UpgradeApp {
 
 @NgModule({
   declarations: [Pane, UpgradeApp, adapter.upgradeNg1Component('ng1User')],
-  imports: [BrowserModule]
+  imports: [BrowserModule],
 })
-class Ng2AppModule {
+export class Ng2AppModule {
 }
 
 
 ng1module.directive('upgradeApp', adapter.downgradeNg2Component(UpgradeApp));
 
-export function main() {
-  adapter.bootstrap(document.body, ['myExample']);
-}
+adapter.bootstrap(document.body, ['myExample']);

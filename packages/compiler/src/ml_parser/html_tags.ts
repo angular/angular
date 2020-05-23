@@ -12,56 +12,35 @@ export class HtmlTagDefinition implements TagDefinition {
   private closedByChildren: {[key: string]: boolean} = {};
 
   closedByParent: boolean = false;
-  // TODO(issue/24571): remove '!'.
-  requiredParents !: {[key: string]: boolean};
-  // TODO(issue/24571): remove '!'.
-  parentToAdd !: string;
   implicitNamespacePrefix: string|null;
   contentType: TagContentType;
   isVoid: boolean;
   ignoreFirstLf: boolean;
   canSelfClose: boolean = false;
 
-  constructor(
-      {closedByChildren, requiredParents, implicitNamespacePrefix,
-       contentType = TagContentType.PARSABLE_DATA, closedByParent = false, isVoid = false,
-       ignoreFirstLf = false}: {
-        closedByChildren?: string[],
-        closedByParent?: boolean,
-        requiredParents?: string[],
-        implicitNamespacePrefix?: string,
-        contentType?: TagContentType,
-        isVoid?: boolean,
-        ignoreFirstLf?: boolean
-      } = {}) {
+  constructor({
+    closedByChildren,
+    implicitNamespacePrefix,
+    contentType = TagContentType.PARSABLE_DATA,
+    closedByParent = false,
+    isVoid = false,
+    ignoreFirstLf = false
+  }: {
+    closedByChildren?: string[],
+    closedByParent?: boolean,
+    implicitNamespacePrefix?: string,
+    contentType?: TagContentType,
+    isVoid?: boolean,
+    ignoreFirstLf?: boolean
+  } = {}) {
     if (closedByChildren && closedByChildren.length > 0) {
       closedByChildren.forEach(tagName => this.closedByChildren[tagName] = true);
     }
     this.isVoid = isVoid;
     this.closedByParent = closedByParent || isVoid;
-    if (requiredParents && requiredParents.length > 0) {
-      this.requiredParents = {};
-      // The first parent is the list is automatically when none of the listed parents are present
-      this.parentToAdd = requiredParents[0];
-      requiredParents.forEach(tagName => this.requiredParents[tagName] = true);
-    }
     this.implicitNamespacePrefix = implicitNamespacePrefix || null;
     this.contentType = contentType;
     this.ignoreFirstLf = ignoreFirstLf;
-  }
-
-  requireExtraParent(currentParent: string): boolean {
-    if (!this.requiredParents) {
-      return false;
-    }
-
-    if (!currentParent) {
-      return true;
-    }
-
-    const lcParent = currentParent.toLowerCase();
-    const isParentTemplate = lcParent === 'template' || currentParent === 'ng-template';
-    return !isParentTemplate && this.requiredParents[lcParent] != true;
   }
 
   isClosedByChild(name: string): boolean {
@@ -69,11 +48,11 @@ export class HtmlTagDefinition implements TagDefinition {
   }
 }
 
-let _DEFAULT_TAG_DEFINITION !: HtmlTagDefinition;
+let _DEFAULT_TAG_DEFINITION!: HtmlTagDefinition;
 
 // see http://www.w3.org/TR/html51/syntax.html#optional-tags
 // This implementation does not fully conform to the HTML5 spec.
-let TAG_DEFINITIONS !: {[key: string]: HtmlTagDefinition};
+let TAG_DEFINITIONS!: {[key: string]: HtmlTagDefinition};
 
 export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
   if (!TAG_DEFINITIONS) {
@@ -104,14 +83,10 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
       'thead': new HtmlTagDefinition({closedByChildren: ['tbody', 'tfoot']}),
       'tbody': new HtmlTagDefinition({closedByChildren: ['tbody', 'tfoot'], closedByParent: true}),
       'tfoot': new HtmlTagDefinition({closedByChildren: ['tbody'], closedByParent: true}),
-      'tr': new HtmlTagDefinition({
-        closedByChildren: ['tr'],
-        requiredParents: ['tbody', 'tfoot', 'thead'],
-        closedByParent: true
-      }),
+      'tr': new HtmlTagDefinition({closedByChildren: ['tr'], closedByParent: true}),
       'td': new HtmlTagDefinition({closedByChildren: ['td', 'th'], closedByParent: true}),
       'th': new HtmlTagDefinition({closedByChildren: ['td', 'th'], closedByParent: true}),
-      'col': new HtmlTagDefinition({requiredParents: ['colgroup'], isVoid: true}),
+      'col': new HtmlTagDefinition({isVoid: true}),
       'svg': new HtmlTagDefinition({implicitNamespacePrefix: 'svg'}),
       'math': new HtmlTagDefinition({implicitNamespacePrefix: 'math'}),
       'li': new HtmlTagDefinition({closedByChildren: ['li'], closedByParent: true}),

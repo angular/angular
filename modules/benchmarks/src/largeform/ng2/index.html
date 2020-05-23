@@ -20,10 +20,7 @@
     <app id="root">Loading...</app>
   </div>
 
-  <script>
-    var mainUrl = window.location.search.split(/[?&]main=([^&]+)/)[1]
-      || '../../bootstrap_ng2.js';
-    document.write('<script src="' + mainUrl + '">\u003c/script>');
-  </script>
+  <!--load location for ts_devserver-->
+  <script src="/app_bundle.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CodeComponent } from './code.component';
-import { MatSnackBarModule } from '@angular/material';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { PrettyPrinter } from './pretty-printer.service';
 import { CopierService } from 'app/shared/copier.service';
 

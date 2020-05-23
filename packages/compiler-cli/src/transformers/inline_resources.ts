@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {MetadataObject, MetadataValue, isClassMetadata, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicCallExpression} from '../metadata/index';
+import {isClassMetadata, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicCallExpression, MetadataObject, MetadataValue} from '../metadata/index';
 
 import {MetadataTransformer, ValueTransform} from './metadata_cache';
 
@@ -17,27 +17,29 @@ const PRECONDITIONS_TEXT =
 
 /** A subset of members from AotCompilerHost */
 export type ResourcesHost = {
-  resourceNameToFileName(resourceName: string, containingFileName: string): string | null;
+  resourceNameToFileName(resourceName: string, containingFileName: string): string|null;
   loadResource(path: string): Promise<string>| string;
 };
 
 export type StaticResourceLoader = {
-  get(url: string | MetadataValue): string;
+  get(url: string|MetadataValue): string;
 };
 
 function getResourceLoader(host: ResourcesHost, containingFileName: string): StaticResourceLoader {
   return {
-    get(url: string | MetadataValue): string{
+    get(url: string|MetadataValue): string {
       if (typeof url !== 'string') {
         throw new Error('templateUrl and stylesUrl must be string literals. ' + PRECONDITIONS_TEXT);
-      } const fileName = host.resourceNameToFileName(url, containingFileName);
+      }
+      const fileName = host.resourceNameToFileName(url, containingFileName);
       if (fileName) {
         const content = host.loadResource(fileName);
         if (typeof content !== 'string') {
           throw new Error('Cannot handle async resource. ' + PRECONDITIONS_TEXT);
         }
         return content;
-      } throw new Error(`Failed to resolve ${url} from ${containingFileName}. ${PRECONDITIONS_TEXT}`);
+      }
+      throw new Error(`Failed to resolve ${url} from ${containingFileName}. ${PRECONDITIONS_TEXT}`);
     }
   };
 }
@@ -54,7 +56,10 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
               isMetadataImportedSymbolReferenceExpression(d.expression) &&
               d.expression.module === '@angular/core' && d.expression.name === 'Component' &&
               d.arguments) {
-            d.arguments = d.arguments.map(this.updateDecoratorMetadata.bind(this, loader));
+            // Arguments to an @Component that was compiled successfully are always
+            // MetadataObject(s).
+            d.arguments = (d.arguments as MetadataObject[])
+                              .map(this.updateDecoratorMetadata.bind(this, loader));
           }
         });
       }
@@ -65,7 +70,7 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
   updateDecoratorMetadata(loader: StaticResourceLoader, arg: MetadataObject): MetadataObject {
     if (arg['templateUrl']) {
       arg['template'] = loader.get(arg['templateUrl']);
-      delete arg.templateUrl;
+      delete arg['templateUrl'];
     }
 
     const styles = arg['styles'] || [];
@@ -76,7 +81,7 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
     styles.push(...styleUrls.map(styleUrl => loader.get(styleUrl)));
     if (styles.length > 0) {
       arg['styles'] = styles;
-      delete arg.styleUrls;
+      delete arg['styleUrls'];
     }
 
     return arg;
@@ -95,8 +100,8 @@ export function getInlineResourcesTransformFactory(
 
       // Decorator case - before or without decorator downleveling
       // @Component()
-      const newDecorators = ts.visitNodes(node.decorators, (node: ts.Decorator) => {
-        if (isComponentDecorator(node, program.getTypeChecker())) {
+      const newDecorators = ts.visitNodes(node.decorators, (node: ts.Node) => {
+        if (ts.isDecorator(node) && isComponentDecorator(node, program.getTypeChecker())) {
           return updateDecorator(node, loader);
         }
         return node;
@@ -104,9 +109,13 @@ export function getInlineResourcesTransformFactory(
 
       // Annotation case - after decorator downleveling
       // static decorators: {type: Function, args?: any[]}[]
-      const newMembers = ts.visitNodes(
-          node.members,
-          (node: ts.ClassElement) => updateAnnotations(node, loader, program.getTypeChecker()));
+      const newMembers = ts.visitNodes(node.members, (node: ts.Node) => {
+        if (ts.isClassElement(node)) {
+          return updateAnnotations(node, loader, program.getTypeChecker());
+        } else {
+          return node;
+        }
+      });
 
       // Create a new AST subtree with our modifications
       return ts.updateClassDeclaration(
@@ -242,8 +251,7 @@ function isComponentSymbol(identifier: ts.Node, typeChecker: ts.TypeChecker) {
   const name = (declaration.propertyName || declaration.name).text;
   // We know that parent pointers are set because we created the SourceFile ourselves.
   // The number of parent references here match the recursion depth at this point.
-  const moduleId =
-      (declaration.parent !.parent !.parent !.moduleSpecifier as ts.StringLiteral).text;
+  const moduleId = (declaration.parent!.parent!.parent!.moduleSpecifier as ts.StringLiteral).text;
   return moduleId === '@angular/core' && name === 'Component';
 }
 

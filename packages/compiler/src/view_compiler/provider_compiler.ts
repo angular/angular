@@ -9,7 +9,7 @@
 import {CompileDiDependencyMetadata, CompileEntryComponentMetadata, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {DepFlags, NodeFlags} from '../core';
-import {Identifiers, createTokenForExternalReference} from '../identifiers';
+import {createTokenForExternalReference, Identifiers} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
@@ -45,7 +45,8 @@ export function providerDef(ctx: OutputContext, providerAst: ProviderAst): {
       singleProviderDef(ctx, flags, providerAst.providerType, providerAst.providers[0]);
   return {
     providerExpr,
-    flags: providerFlags, depsExpr,
+    flags: providerFlags,
+    depsExpr,
     tokenExpr: tokenExpr(ctx, providerAst.token),
   };
 }
@@ -96,9 +97,9 @@ function singleProviderDef(
   let providerExpr: o.Expression;
   let deps: CompileDiDependencyMetadata[];
   if (providerType === ProviderAstType.Directive || providerType === ProviderAstType.Component) {
-    providerExpr = ctx.importExpr(providerMeta.useClass !.reference);
+    providerExpr = ctx.importExpr(providerMeta.useClass!.reference);
     flags |= NodeFlags.TypeDirective;
-    deps = providerMeta.deps || providerMeta.useClass !.diDeps;
+    deps = providerMeta.deps || providerMeta.useClass!.diDeps;
   } else {
     if (providerMeta.useClass) {
       providerExpr = ctx.importExpr(providerMeta.useClass.reference);
@@ -130,7 +131,7 @@ function tokenExpr(ctx: OutputContext, tokenMeta: CompileTokenMetadata): o.Expre
 export function depDef(ctx: OutputContext, dep: CompileDiDependencyMetadata): o.Expression {
   // Note: the following fields have already been normalized out by provider_analyzer:
   // - isAttribute, isHost
-  const expr = dep.isValue ? convertValueToOutputAst(ctx, dep.value) : tokenExpr(ctx, dep.token !);
+  const expr = dep.isValue ? convertValueToOutputAst(ctx, dep.value) : tokenExpr(ctx, dep.token!);
   let flags = DepFlags.None;
   if (dep.isSkipSelf) {
     flags |= DepFlags.SkipSelf;

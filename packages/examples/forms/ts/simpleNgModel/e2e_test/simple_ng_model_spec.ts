@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
+import {browser, by, element, ElementArrayFinder, ElementFinder} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('simpleNgModel example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -16,7 +17,7 @@ describe('simpleNgModel example', () => {
   let button: ElementFinder;
 
   beforeEach(() => {
-    browser.get('/forms/ts/simpleNgModel/index.html');
+    browser.get('/simpleNgModel');
     input = element(by.css('input'));
     paragraphs = element.all(by.css('p'));
     button = element(by.css('button'));
@@ -41,5 +42,4 @@ describe('simpleNgModel example', () => {
     button.click();
     expect(input.getAttribute('value')).toEqual('Nancy');
   });
-
 });

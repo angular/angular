@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './reflect_metadata_legacy';
+export const UNUSED = true;

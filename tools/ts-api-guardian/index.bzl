@@ -15,24 +15,31 @@
 """Runs ts_api_guardian
 """
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "nodejs_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
 
-COMMON_MODULE_IDENTIFIERS = ["angular", "jasmine", "protractor"]
+COMMON_MODULE_IDENTIFIERS = ["angular", "jasmine", "protractor", "Symbol"]
 
 def ts_api_guardian_test(
         name,
         golden,
         actual,
         data = [],
-        strip_export_pattern = ["^__", "^ɵ"],
+        strip_export_pattern = ["^__", "^ɵ[^ɵ]"],
         allow_module_identifiers = COMMON_MODULE_IDENTIFIERS,
         use_angular_tag_rules = True,
         **kwargs):
     """Runs ts_api_guardian
     """
     data += [
+        # Locally we need to add the TS build target
+        # But it will replaced to @npm//ts-api-guardian when publishing
         "@angular//tools/ts-api-guardian:lib",
-        "@angular//tools/ts-api-guardian:bin/ts-api-guardian",
+        "@angular//tools/ts-api-guardian:bin",
+        # The below are required during runtime
+        "@npm//chalk",
+        "@npm//diff",
+        "@npm//minimist",
+        "@npm//typescript",
     ]
 
     args = [
@@ -42,7 +49,8 @@ def ts_api_guardian_test(
     ]
 
     for i in strip_export_pattern:
-        args += ["--stripExportPattern", i]
+        # The below replacement is needed because under Windows '^' needs to be escaped twice
+        args += ["--stripExportPattern", i.replace("^", "^^^^")]
 
     for i in allow_module_identifiers:
         args += ["--allowModuleIdentifiers", i]
@@ -53,8 +61,8 @@ def ts_api_guardian_test(
     nodejs_test(
         name = name,
         data = data,
-        node_modules = "@ts-api-guardian_deps//:node_modules",
-        entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
+        entry_point = "@angular//tools/ts-api-guardian:bin/ts-api-guardian",
+        tags = kwargs.pop("tags", []) + ["api_guard"],
         templated_args = args + ["--verify", golden, actual],
         **kwargs
     )
@@ -63,8 +71,68 @@ def ts_api_guardian_test(
         name = name + ".accept",
         testonly = True,
         data = data,
-        node_modules = "@ts-api-guardian_deps//:node_modules",
-        entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
+        entry_point = "@angular//tools/ts-api-guardian:bin/ts-api-guardian",
+        tags = kwargs.pop("tags", []) + ["api_guard"],
         templated_args = args + ["--out", golden, actual],
+        **kwargs
+    )
+
+def ts_api_guardian_test_npm_package(
+        name,
+        goldenDir,
+        actualDir,
+        data = [],
+        strip_export_pattern = ["^__", "^ɵ[^ɵ]"],
+        allow_module_identifiers = COMMON_MODULE_IDENTIFIERS,
+        use_angular_tag_rules = True,
+        **kwargs):
+    """Runs ts_api_guardian
+    """
+    data += [
+        # Locally we need to add the TS build target
+        # But it will replaced to @npm//ts-api-guardian when publishing
+        "@angular//tools/ts-api-guardian:lib",
+        "@angular//tools/ts-api-guardian:bin",
+        # The below are required during runtime
+        "@npm//chalk",
+        "@npm//diff",
+        "@npm//minimist",
+        "@npm//typescript",
+    ]
+
+    args = [
+        # Needed so that node doesn't walk back to the source directory.
+        # From there, the relative imports would point to .ts files.
+        "--node_options=--preserve-symlinks",
+        # We automatically discover the enpoints for our NPM package.
+        "--autoDiscoverEntrypoints",
+    ]
+
+    for i in strip_export_pattern:
+        # The below replacement is needed because under Windows '^' needs to be escaped twice
+        args += ["--stripExportPattern", i.replace("^", "^^^^")]
+
+    for i in allow_module_identifiers:
+        args += ["--allowModuleIdentifiers", i]
+
+    if use_angular_tag_rules:
+        args += ["--useAngularTagRules"]
+
+    nodejs_test(
+        name = name,
+        data = data,
+        entry_point = "@angular//tools/ts-api-guardian:bin/ts-api-guardian",
+        tags = kwargs.pop("tags", []) + ["api_guard"],
+        templated_args = args + ["--autoDiscoverEntrypoints", "--verifyDir", goldenDir, "--rootDir", "$(rlocation %s)" % actualDir],
+        **kwargs
+    )
+
+    nodejs_binary(
+        name = name + ".accept",
+        testonly = True,
+        data = data,
+        entry_point = "@angular//tools/ts-api-guardian:bin/ts-api-guardian",
+        tags = kwargs.pop("tags", []) + ["api_guard"],
+        templated_args = args + ["--autoDiscoverEntrypoints", "--outDir", goldenDir, "--rootDir", "$(rlocation %s)" % actualDir],
         **kwargs
     )

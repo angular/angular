@@ -7,5 +7,6 @@
     "!src/app/crisis-list/*.*",
     "!src/app/hero-list/*.*"
   ],
-  "tags": ["router"]
+  "tags": ["router"],
+  "file": "src/app/app-routing.module.ts"
 }

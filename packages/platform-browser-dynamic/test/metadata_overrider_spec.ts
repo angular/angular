@@ -22,13 +22,16 @@ interface OtherMetadataType extends SomeMetadataType {
 class SomeMetadata implements SomeMetadataType {
   plainProp: string;
   private _getterProp: string;
-  get getterProp(): string { return this._getterProp; }
   arrayProp: any[];
 
   constructor(options: SomeMetadataType) {
-    this.plainProp = options.plainProp !;
-    this._getterProp = options.getterProp !;
-    this.arrayProp = options.arrayProp !;
+    this.plainProp = options.plainProp!;
+    this._getterProp = options.getterProp!;
+    this.arrayProp = options.arrayProp!;
+    Object.defineProperty(this, 'getterProp', {
+      enumerable: true,  // getters are non-enumerable by default in es2015
+      get: () => this._getterProp,
+    });
   }
 }
 
@@ -42,7 +45,7 @@ class OtherMetadata extends SomeMetadata implements OtherMetadataType {
       arrayProp: options.arrayProp
     });
 
-    this.otherPlainProp = options.otherPlainProp !;
+    this.otherPlainProp = options.otherPlainProp!;
   }
 }
 
@@ -50,7 +53,9 @@ class OtherMetadata extends SomeMetadata implements OtherMetadataType {
   describe('metadata overrider', () => {
     let overrider: MetadataOverrider;
 
-    beforeEach(() => { overrider = new MetadataOverrider(); });
+    beforeEach(() => {
+      overrider = new MetadataOverrider();
+    });
 
     it('should return a new instance with the same values', () => {
       const oldInstance = new SomeMetadata({plainProp: 'somePlainProp', getterProp: 'someInput'});
@@ -127,7 +132,6 @@ class OtherMetadata extends SomeMetadata implements OtherMetadataType {
         const instance3 =
             overrider.overrideMetadata(SomeMetadata, instance2, {remove: {arrayProp: [Class3]}});
         expect(instance3).toEqual(new SomeMetadata({arrayProp: [Class2]}));
-
       });
     });
 
@@ -146,7 +150,6 @@ class OtherMetadata extends SomeMetadata implements OtherMetadataType {
           otherPlainProp: 'newOtherProp'
         }));
       });
-
     });
   });
 }

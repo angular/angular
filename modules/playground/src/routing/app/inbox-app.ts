@@ -29,7 +29,8 @@ export class InboxRecord {
     email: string,
     firstName: string,
     lastName: string,
-    date: string, draft?: boolean
+    date: string,
+    draft?: boolean
   } = null) {
     if (data) {
       this.setData(data);
@@ -43,7 +44,8 @@ export class InboxRecord {
     email: string,
     firstName: string,
     lastName: string,
-    date: string, draft?: boolean
+    date: string,
+    draft?: boolean
   }) {
     this.id = record.id;
     this.subject = record.subject;
@@ -84,9 +86,9 @@ export class DbService {
   }
 }
 
-@Component({selector: 'inbox', templateUrl: 'app/inbox.html'})
+@Component({selector: 'inbox', templateUrl: './inbox.html'})
 export class InboxCmp {
-  private items: InboxRecord[] = [];
+  items: InboxRecord[] = [];
   private ready: boolean = false;
 
   constructor(public router: Router, db: DbService, route: ActivatedRoute) {
@@ -107,9 +109,9 @@ export class InboxCmp {
 }
 
 
-@Component({selector: 'drafts', templateUrl: 'app/drafts.html'})
+@Component({selector: 'drafts', templateUrl: './drafts.html'})
 export class DraftsCmp {
-  private items: InboxRecord[] = [];
+  items: InboxRecord[] = [];
   private ready: boolean = false;
 
   constructor(private router: Router, db: DbService) {
@@ -125,6 +127,6 @@ export const ROUTER_CONFIG = [
   {path: 'drafts', component: DraftsCmp}, {path: 'detail', loadChildren: 'app/inbox-detail.js'}
 ];
 
-@Component({selector: 'inbox-app', templateUrl: 'app/inbox-app.html'})
+@Component({selector: 'inbox-app', templateUrl: './inbox-app.html'})
 export class InboxApp {
 }

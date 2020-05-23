@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FormStyle, FormatWidth, NumberSymbol, Time, TranslationWidth, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleTimeFormat} from './locale_data_api';
+import {FormatWidth, FormStyle, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleTimeFormat, NumberSymbol, Time, TranslationWidth} from './locale_data_api';
 
 export const ISO8601_DATE_REGEX =
     /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
@@ -46,22 +46,23 @@ enum TranslationType {
  *
  * Formats a date according to locale rules.
  *
- * Where:
- * - `value` is a Date, a number (milliseconds since UTC epoch) or an ISO string
- *   (https://www.w3.org/TR/NOTE-datetime).
- * - `format` indicates which date/time components to include. See {@link DatePipe} for more
- *   details.
- * - `locale` is a `string` defining the locale to use.
- * - `timezone` to be used for formatting. It understands UTC/GMT and the continental US time zone
- *   abbreviations, but for general use, use a time zone offset (e.g. `'+0430'`).
- *   If not specified, host system settings are used.
+ * @param value The date to format, as a Date, or a number (milliseconds since UTC epoch)
+ * or an [ISO date-time string](https://www.w3.org/TR/NOTE-datetime).
+ * @param format The date-time components to include. See `DatePipe` for details.
+ * @param locale A locale code for the locale format rules to use.
+ * @param timezone The time zone. A time zone offset from GMT (such as `'+0430'`),
+ * or a standard UTC/GMT or continental US time zone abbreviation.
+ * If not specified, uses host system settings.
  *
- * See {@link DatePipe} for more details.
+ * @returns The formatted date string.
+ *
+ * @see `DatePipe`
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
  *
  * @publicApi
  */
 export function formatDate(
-    value: string | number | Date, format: string, locale: string, timezone?: string): string {
+    value: string|number|Date, format: string, locale: string, timezone?: string): string {
   let date = toDate(value);
   const namedFormat = getNamedFormat(locale, format);
   format = namedFormat || format;
@@ -276,26 +277,40 @@ function getDateTranslation(
       if (extended) {
         const rules = getLocaleExtraDayPeriodRules(locale);
         const dayPeriods = getLocaleExtraDayPeriods(locale, form, width);
-        let result;
-        rules.forEach((rule: Time | [Time, Time], index: number) => {
+        const index = rules.findIndex(rule => {
           if (Array.isArray(rule)) {
             // morning, afternoon, evening, night
-            const {hours: hoursFrom, minutes: minutesFrom} = rule[0];
-            const {hours: hoursTo, minutes: minutesTo} = rule[1];
-            if (currentHours >= hoursFrom && currentMinutes >= minutesFrom &&
-                (currentHours < hoursTo ||
-                 (currentHours === hoursTo && currentMinutes < minutesTo))) {
-              result = dayPeriods[index];
+            const [from, to] = rule;
+            const afterFrom = currentHours >= from.hours && currentMinutes >= from.minutes;
+            const beforeTo =
+                (currentHours < to.hours ||
+                 (currentHours === to.hours && currentMinutes < to.minutes));
+            // We must account for normal rules that span a period during the day (e.g. 6am-9am)
+            // where `from` is less (earlier) than `to`. But also rules that span midnight (e.g.
+            // 10pm - 5am) where `from` is greater (later!) than `to`.
+            //
+            // In the first case the current time must be BOTH after `from` AND before `to`
+            // (e.g. 8am is after 6am AND before 10am).
+            //
+            // In the second case the current time must be EITHER after `from` OR before `to`
+            // (e.g. 4am is before 5am but not after 10pm; and 11pm is not before 5am but it is
+            // after 10pm).
+            if (from.hours < to.hours) {
+              if (afterFrom && beforeTo) {
+                return true;
+              }
+            } else if (afterFrom || beforeTo) {
+              return true;
             }
           } else {  // noon or midnight
-            const {hours, minutes} = rule;
-            if (hours === currentHours && minutes === currentMinutes) {
-              result = dayPeriods[index];
+            if (rule.hours === currentHours && rule.minutes === currentMinutes) {
+              return true;
             }
           }
+          return false;
         });
-        if (result) {
-          return result;
+        if (index !== -1) {
+          return dayPeriods[index];
         }
       }
       // if no rules for the day periods, we use am/pm by default
@@ -377,7 +392,7 @@ function weekGetter(size: number, monthBased = false): DateFormatter {
   };
 }
 
-type DateFormatter = (date: Date, locale: string, offset?: number) => string;
+type DateFormatter = (date: Date, locale: string, offset: number) => string;
 
 const DATE_FORMATS: {[format: string]: DateFormatter} = {};
 
@@ -651,7 +666,7 @@ function convertTimezoneToLocal(date: Date, timezone: string, reverse: boolean):
  *
  * Throws if unable to convert to a date.
  */
-export function toDate(value: string | number | Date): Date {
+export function toDate(value: string|number|Date): Date {
   if (isDate(value)) {
     return value;
   }

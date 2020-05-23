@@ -16,13 +16,13 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
            <button class="errorButton" (click)="createError()">create error</button>`
 })
 export class ErrorComponent {
-  createError(): void { throw new Error('Sourcemap test'); }
+  createError(): void {
+    throw new Error('Sourcemap test');
+  }
 }
 
 @NgModule({declarations: [ErrorComponent], bootstrap: [ErrorComponent], imports: [BrowserModule]})
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

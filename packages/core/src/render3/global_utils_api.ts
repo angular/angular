@@ -15,6 +15,5 @@
  * file in the public_api_guard test.
  */
 
-export {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getRootComponents, getViewComponent} from './discovery_utils';
-export {markDirty} from './instructions';
-export {getPlayers} from './players';
+export {applyChanges} from './util/change_detection_utils';
+export {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents, Listener} from './util/discovery_utils';

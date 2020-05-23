@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberFormatStyle, NumberSymbol, getLocaleNumberFormat, getLocaleNumberSymbol, getNumberOfCurrencyDigits} from './locale_data_api';
+import {getLocaleNumberFormat, getLocaleNumberSymbol, getNumberOfCurrencyDigits, NumberFormatStyle, NumberSymbol} from './locale_data_api';
 
 export const NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
 const MAX_DIGITS = 22;
@@ -19,7 +19,7 @@ const CURRENCY_CHAR = '¤';
 const PERCENT_CHAR = '%';
 
 /**
- * Transforms a number to a locale string based on a style and a format
+ * Transforms a number to a locale string based on a style and a format.
  */
 function formatNumberToLocaleString(
     value: number, pattern: ParsedNumberFormat, locale: string, groupSymbol: NumberSymbol,
@@ -128,15 +128,22 @@ function formatNumberToLocaleString(
  *
  * Formats a number as currency using locale rules.
  *
- * Use `currency` to format a number as currency.
+ * @param value The number to format.
+ * @param locale A locale code for the locale format rules to use.
+ * @param currency A string containing the currency symbol or its name,
+ * such as "$" or "Canadian Dollar". Used in output string, but does not affect the operation
+ * of the function.
+ * @param currencyCode The [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)
+ * currency code, such as `USD` for the US dollar and `EUR` for the euro.
+ * Used to determine the number of digits in the decimal part.
+ * @param digitInfo Decimal representation options, specified by a string in the following format:
+ * `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`. See `DecimalPipe` for more details.
  *
- * Where:
- * - `value` is a number.
- * - `locale` is a `string` defining the locale to use.
- * - `currency` is the string that represents the currency, it can be its symbol or its name.
- * - `currencyCode` is the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code, such
- *    as `USD` for the US dollar and `EUR` for the euro.
- * - `digitInfo` See {@link DecimalPipe} for more details.
+ * @returns The formatted currency value.
+ *
+ * @see `formatNumber()`
+ * @see `DecimalPipe`
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
  *
  * @publicApi
  */
@@ -146,7 +153,7 @@ export function formatCurrency(
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Currency);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
 
-  pattern.minFrac = getNumberOfCurrencyDigits(currencyCode !);
+  pattern.minFrac = getNumberOfCurrencyDigits(currencyCode!);
   pattern.maxFrac = pattern.minFrac;
 
   const res = formatNumberToLocaleString(
@@ -154,7 +161,12 @@ export function formatCurrency(
   return res
       .replace(CURRENCY_CHAR, currency)
       // if we have 2 time the currency character, the second one is ignored
-      .replace(CURRENCY_CHAR, '');
+      .replace(CURRENCY_CHAR, '')
+      // If there is a spacing between currency character and the value and
+      // the currency character is supressed by passing an empty string, the
+      // spacing character would remain as part of the string. Then we
+      // should remove it.
+      .trim();
 }
 
 /**
@@ -163,12 +175,18 @@ export function formatCurrency(
  *
  * Formats a number as a percentage according to locale rules.
  *
- * Where:
- * - `value` is a number.
- * - `locale` is a `string` defining the locale to use.
- * - `digitInfo` See {@link DecimalPipe} for more details.
+ * @param value The number to format.
+ * @param locale A locale code for the locale format rules to use.
+ * @param digitInfo Decimal representation options, specified by a string in the following format:
+ * `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`. See `DecimalPipe` for more details.
  *
+ * @returns The formatted percentage value.
+ *
+ * @see `formatNumber()`
+ * @see `DecimalPipe`
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
  * @publicApi
+ *
  */
 export function formatPercent(value: number, locale: string, digitsInfo?: string): string {
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Percent);
@@ -183,13 +201,16 @@ export function formatPercent(value: number, locale: string, digitsInfo?: string
  * @ngModule CommonModule
  * @description
  *
- * Formats a number as text. Group sizing and separator and other locale-specific
- * configurations are based on the locale.
+ * Formats a number as text, with group sizing, separator, and other
+ * parameters based on the locale.
  *
- * Where:
- * - `value` is a number.
- * - `locale` is a `string` defining the locale to use.
- * - `digitInfo` See {@link DecimalPipe} for more details.
+ * @param value The number to format.
+ * @param locale A locale code for the locale format rules to use.
+ * @param digitInfo Decimal representation options, specified by a string in the following format:
+ * `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`. See `DecimalPipe` for more details.
+ *
+ * @returns The formatted text string.
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
  *
  * @publicApi
  */
@@ -371,8 +392,8 @@ function parseNumber(num: number): ParsedNumber {
  */
 function roundNumber(parsedNumber: ParsedNumber, minFrac: number, maxFrac: number) {
   if (minFrac > maxFrac) {
-    throw new Error(
-        `The minimum number of digits after fraction (${minFrac}) is higher than the maximum (${maxFrac}).`);
+    throw new Error(`The minimum number of digits after fraction (${
+        minFrac}) is higher than the maximum (${maxFrac}).`);
   }
 
   let digits = parsedNumber.digits;

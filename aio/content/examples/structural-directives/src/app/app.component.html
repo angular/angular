@@ -152,7 +152,7 @@
 <div [ngSwitch]="hero?.emotion">
   <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="hero"></app-happy-hero>
   <app-sad-hero      *ngSwitchCase="'sad'"      [hero]="hero"></app-sad-hero>
-  <app-confused-hero *ngSwitchCase="'app-confused'" [hero]="hero"></app-confused-hero>
+  <app-confused-hero *ngSwitchCase="'confused'" [hero]="hero"></app-confused-hero>
   <app-unknown-hero  *ngSwitchDefault           [hero]="hero"></app-unknown-hero>
 </div>
 <!-- #enddocregion built-in, ngswitch -->

@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
+load("//tools:defaults.bzl", "ng_module")
 
-load("//tools:defaults.bzl", "ng_module", "ts_library")
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "app",
@@ -10,6 +10,7 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
+    generate_ve_shims = True,
     module_name = "app_built",
     deps = [
         "//packages/compiler-cli/integrationtest/bazel/injectable_def/lib2",
@@ -17,7 +18,7 @@ ng_module(
         "//packages/platform-browser",
         "//packages/platform-server",
         "//packages/router",
-        "@ngdeps//reflect-metadata",
-        "@rxjs",
+        "@npm//reflect-metadata",
+        "@npm//rxjs",
     ],
 )

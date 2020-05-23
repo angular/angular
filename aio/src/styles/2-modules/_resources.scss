@@ -1,5 +1,8 @@
 .showcase {
   width: 80%;
+  @media (max-width: 600px) {
+    width: 100%;
+  }
 }
 
 .c-resource-nav {
@@ -8,6 +11,17 @@
 
 .resources-container {
   position: relative;
+
+  .group-buttons {
+
+    @media (max-width: 480px) {
+      .button {
+        font-size: 1.2rem;
+        padding: 0;
+        margin: 0;
+      }
+    }
+  }
 }
 
 .grid-fixed:after, .grid-fixed:before {
@@ -16,8 +30,8 @@
   display: block;
   overflow: hidden;
   visibility: hidden;
-  font-size: 0;
-  line-height: 0;
+  @include font-size(0);
+  @include line-height(0);
   width: 0;
   height: 0;
 }
@@ -50,18 +64,18 @@
 
 @media handheld and (max-width: 900px), screen and (max-width: 900px) {
   /* line 6, ../scss/_responsive.scss */
-  .grid-fixed{
+  .grid-fixed {
     margin: 0 auto;
     *zoom: 1;
   }
-  .grid-fixed:after, .grid-fixed:before, {
+  .grid-fixed:after, .grid-fixed:before {
     content: '.';
     clear: both;
     display: block;
     overflow: hidden;
     visibility: hidden;
-    font-size: 0;
-    line-height: 0;
+    @include font-size(0);
+    @include line-height(0);
     width: 0;
     height: 0;
   }
@@ -79,8 +93,8 @@
     display: block;
     overflow: hidden;
     visibility: hidden;
-    font-size: 0;
-    line-height: 0;
+    @include font-size(0);
+    @include line-height(0);
     width: 0;
     height: 0;
   }
@@ -101,7 +115,7 @@ aio-resource-list {
   .c-resource {
     h4 {
       margin: 0;
-      line-height: 24px;
+      @include line-height(24);
     }
 
     p {
@@ -131,6 +145,7 @@ aio-resource-list {
         margin: 2px 0;
         padding: 3px 14px;
         font-size: 18px !important;
+        font-size: 1.8rem !important;
 
         &:hover {
           background: #edf0f2;
@@ -163,6 +178,10 @@ aio-resource-list {
   .l-flex--column {
     display: flex;
     flex-direction: column;
+  }
+
+  .align-items-center {
+    align-items: center;
   }
 
   .c-resource-header {
@@ -211,7 +230,7 @@ aio-resource-list {
     transform: translateY(-2px);
   }
 
-  @media(max-width: 900px) {
+  @media (max-width: 900px) {
     .c-resource-nav {
       display: none;
     }

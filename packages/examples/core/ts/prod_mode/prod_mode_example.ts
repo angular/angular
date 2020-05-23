@@ -7,14 +7,17 @@
  */
 
 // #docregion enableProdMode
-import {NgModule, enableProdMode} from '@angular/core';
+import {enableProdMode, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+
 import {MyComponent} from './my_component';
 
 enableProdMode();
-@NgModule({imports: [BrowserModule], bootstrap: [MyComponent]})
-class AppModule {
+
+@NgModule({imports: [BrowserModule], declarations: [MyComponent], bootstrap: [MyComponent]})
+export class AppModule {
 }
+
 platformBrowserDynamic().bootstrapModule(AppModule);
 // #enddocregion

@@ -7,8 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {Declaration} from '../../host';
-import {Reference} from '../../metadata';
+import {Reference} from '../../imports';
 
 /**
  * Implement this interface if you want DecoratorHandlers to register
@@ -17,15 +16,9 @@ import {Reference} from '../../metadata';
 export interface ReferencesRegistry {
   /**
    * Register one or more references in the registry.
-   * Only `ResolveReference` references are stored. Other types are ignored.
    * @param references A collection of references to register.
    */
-  add(...references: Reference<ts.Declaration>[]): void;
-  /**
-   * Create and return a mapping for the registered resolved references.
-   * @returns A map of reference identifiers to reference declarations.
-   */
-  getDeclarationMap(): Map<ts.Identifier, Declaration>;
+  add(source: ts.Declaration, ...references: Reference<ts.Declaration>[]): void;
 }
 
 /**
@@ -34,6 +27,5 @@ export interface ReferencesRegistry {
  * The ngcc tool implements a working version for its purposes.
  */
 export class NoopReferencesRegistry implements ReferencesRegistry {
-  add(...references: Reference<ts.Declaration>[]): void {}
-  getDeclarationMap(): Map<ts.Identifier, Declaration> { return new Map(); }
+  add(source: ts.Declaration, ...references: Reference<ts.Declaration>[]): void {}
 }

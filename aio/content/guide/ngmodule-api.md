@@ -1,15 +1,5 @@
 # NgModule API
 
-#### Prerequisites
-
-A basic understanding of the following concepts:
-* [Bootstrapping](guide/bootstrapping).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-
-<hr />
-
-## Purpose of `@NgModule`
-
 At a high level, NgModules are a way to organize Angular apps
 and they accomplish this through the metadata in the `@NgModule`
 decorator.
@@ -217,7 +207,7 @@ The following table summarizes the `@NgModule` metadata properties.
 
       Angular automatically adds components in the module's `bootstrap` and route definitions into the `entryComponents` list.
 
-      That leaves only components bootstrapped using one of the imperative techniques, such as [`ViewComponentRef.createComponent()`](https://angular.io/api/core/ViewContainerRef#createComponent) as undiscoverable.
+      That leaves only components bootstrapped using one of the imperative techniques, such as [`ViewComponentRef.createComponent()`](api/core/ViewContainerRef#createComponent) as undiscoverable.
 
       Dynamic component loading is not common in most apps beyond the router. If you need to dynamically load components, you must add these components to the `entryComponents` list yourself.
 

@@ -1,11 +1,15 @@
 <!doctype html>
 <html>
+<head>
+  <!-- Prevent the browser from requesting any favicon. -->
+  <link rel="icon" href="data:,">
+</head>
 <body>
 
   <h2>Params</h2>
   <form>
     Depth:
-    <input type="number" name="depth" placeholder="depth" value="9">
+    <input type="number" name="depth" placeholder="depth" value="10">
     <br>
     <button>Apply</button>
   </form>
@@ -22,10 +26,7 @@
     <tree id="root">Loading...</tree>
   </div>
 
-  <script>
-    var mainUrl = window.location.search.split(/[?&]main=([^&]+)/)[1]
-      || '../../bootstrap_plain.js';
-    document.write('<script src="' + mainUrl + '">\u003c/script>');
-  </script>
+  <!--load location for ts_devserver-->
+  <script src="/app_bundle.js"></script>
 </body>
 </html>

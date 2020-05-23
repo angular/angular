@@ -28,7 +28,7 @@ ESM5Info = provider(
 )
 
 def _map_closure_path(file):
-    result = file.short_path[:-len(".closure.js")]
+    result = file.short_path[:-len(".mjs")]
 
     # short_path is meant to be used when accessing runfiles in a binary, where
     # the CWD is inside the current repo. Therefore files in external repo have a
@@ -84,19 +84,26 @@ def _esm5_outputs_aspect(target, ctx):
         ],
     )
 
-    replay_compiler = target.typescript.replay_params.compiler.path.split("/")[-1]
+    replay_compiler_path = target.typescript.replay_params.compiler.short_path
+    replay_compiler_name = replay_compiler_path.split("/")[-1]
 
     # in windows replay_compiler path end with '.exe'
-    if replay_compiler.startswith("tsc_wrapped"):
+    if replay_compiler_name.startswith("tsc_wrapped"):
         compiler = ctx.executable._tsc_wrapped
-    elif replay_compiler.startswith("ngc-wrapped"):
+    elif replay_compiler_name.startswith("ngc-wrapped"):
         compiler = ctx.executable._ngc_wrapped
     else:
         fail("Unknown replay compiler", target.typescript.replay_params.compiler.path)
 
+    inputs = [tsconfig]
+    if (type(target.typescript.replay_params.inputs) == type([])):
+        inputs.extend(target.typescript.replay_params.inputs)
+    else:
+        inputs.extend(target.typescript.replay_params.inputs.to_list())
+
     ctx.actions.run(
         progress_message = "Compiling TypeScript (ES5 with ES Modules) %s" % target.label,
-        inputs = target.typescript.replay_params.inputs + [tsconfig],
+        inputs = inputs,
         outputs = outputs,
         arguments = [tsconfig.path],
         executable = compiler,
@@ -137,10 +144,11 @@ esm5_outputs_aspect = aspect(
             cfg = "host",
         ),
         "_tsc_wrapped": attr.label(
-            default = Label("@build_bazel_rules_typescript//:@bazel/typescript/tsc_wrapped"),
+            default = Label("@npm//@bazel/typescript/bin:tsc_wrapped"),
             executable = True,
             cfg = "host",
         ),
+        # Replaced with "@npm//@angular/bazel/bin:ngc-wrapped" in the published package
         "_ngc_wrapped": attr.label(
             default = Label("//packages/bazel/src/ngc-wrapped"),
             executable = True,

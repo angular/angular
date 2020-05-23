@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './platform_location';
-export * from './location_strategy';
-export * from './hash_location_strategy';
-export * from './path_location_strategy';
-export * from './location';
+export {HashLocationStrategy} from './hash_location_strategy';
+export {Location, PopStateEvent} from './location';
+export {APP_BASE_HREF, LocationStrategy, PathLocationStrategy} from './location_strategy';
+export {LOCATION_INITIALIZED, LocationChangeEvent, LocationChangeListener, PlatformLocation} from './platform_location';

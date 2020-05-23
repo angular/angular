@@ -10,6 +10,8 @@ import {isDevMode} from '@angular/core';
 
 {
   describe('dev mode', () => {
-    it('is enabled in our tests by default', () => { expect(isDevMode()).toBe(true); });
+    it('is enabled in our tests by default', () => {
+      expect(isDevMode()).toBe(true);
+    });
   });
 }

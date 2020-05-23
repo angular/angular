@@ -8,21 +8,25 @@
 
 import {CommonModule, NgLocalization} from '@angular/common';
 import {Component, Injectable} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
   describe('ngPlural', () => {
     let fixture: ComponentFixture<any>;
 
-    function getComponent(): TestComponent { return fixture.componentInstance; }
+    function getComponent(): TestComponent {
+      return fixture.componentInstance;
+    }
 
     function detectChangesAndExpectText<T>(text: string): void {
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText(text);
     }
 
-    afterEach(() => { fixture = null !; });
+    afterEach(() => {
+      fixture = null!;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({

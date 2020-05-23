@@ -9,9 +9,9 @@ This document details the new architecture of the Angular compiler in a post-Ivy
 
 ### The Ivy Compilation Model
 
-Broadly speaking, The Ivy model is that Angular decorators (`@Injectable`, etc) are compiled to static properties on the classes (`ngInjectableDef`). This operation must take place without global program knowledge, and in most cases only with knowledge of that single decorator.
+Broadly speaking, The Ivy model is that Angular decorators (`@Injectable`, etc) are compiled to static properties on the classes (`ɵprov`). This operation must take place without global program knowledge, and in most cases only with knowledge of that single decorator.
 
-The one exception is `@Component`, which requires knowledge of the metadata from the `@NgModule` which declares the component in order to properly generate the `ngComponentDef`. In particular, the selectors which are applicable during compilation of a component template are determined by the module that declares that component, and the transitive closure of the exports of that module's imports.
+The one exception is `@Component`, which requires knowledge of the metadata from the `@NgModule` which declares the component in order to properly generate the component def (`ɵcmp`). In particular, the selectors which are applicable during compilation of a component template are determined by the module that declares that component, and the transitive closure of the exports of that module's imports.
 
 Going forward, this will be the model by which Angular code will be compiled, shipped to NPM, and eventually bundled into applications.
 
@@ -68,7 +68,7 @@ GreetComponent = tslib_1.__decorate([
 ], GreetComponent);
 ```
 
-which translates the decorator into a form that is is executed at runtime. A `.d.ts` file is also emitted that might look something like
+which translates the decorator into a form that is executed at runtime. A `.d.ts` file is also emitted that might look something like
 
 ```ts
 export class GreetComponent {
@@ -81,18 +81,19 @@ In `ngtsc` this is instead emitted as,
 ```js
 const i0 = require("@angular/core");
 class GreetComponent {}
-GreetComponent.ngComponentDef = i0.ɵdefineComponent({
+GreetComponent.ɵcmp = i0.ɵɵdefineComponent({
     type: GreetComponent,
     tag: 'greet',
     factory: () => new GreetComponent(),
     template: function (rf, ctx) {
         if (rf & RenderFlags.Create) {
-            i0.ɵelementStart(0, 'div');
-            i0.ɵtext(1);
-            i0.ɵelementEnd();
+            i0.ɵɵelementStart(0, 'div');
+            i0.ɵɵtext(1);
+            i0.ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-            i0.ɵtextBinding(1, i0.ɵinterpolation1('Hello ', ctx.name, '!'));
+            i0.ɵɵadvance(1);
+            i0.ɵɵtextInterpolate1('Hello ', ctx.name, '!');
         }
     }
 });
@@ -103,16 +104,16 @@ and the `.d.ts` contains:
 ```ts
 import * as i0 from '@angular/core';
 export class GreetComponent {
-  static ngComponentDef: i0.NgComponentDef<
-    GreetComponent, 
-    'greet', 
+  static ɵcmp: i0.NgComponentDef<
+    GreetComponent,
+    'greet',
     {input: 'input'}
   >;
 }
 ```
 
-The information needed by reference inversion and type-checking is included in 
-the type declaration of the `ngComponentDef` in the `.d.ts`.
+The information needed by reference inversion and type-checking is included in
+the type declaration of the `ɵcmp` in the `.d.ts`.
 
 #### TypeScript architecture
 
@@ -127,18 +128,18 @@ The overall architecure of TypeScript is:
     | TypeScript | -parse-> | AST | ->transform-> | AST | ->print-> | JavaScript |
     |   source   |    |     |-----|       |       |-----|           |   source   |
     |------------|    |        |          |                         |------------|
-                      |    type-check     |          
-                      |        |          |         
-                      |        v          |        
-                      |    |--------|     |                        
-                      |--> | errors | <---|                         
+                      |    type-check     |
+                      |        |          |
+                      |        v          |
+                      |    |--------|     |
+                      |--> | errors | <---|
                            |--------|
 
-The parse step is a traditional recursive descent parser, augmented to support incremental parsing, that emits an abstract syntax tree (AST). 
+The parse step is a traditional recursive descent parser, augmented to support incremental parsing, that emits an abstract syntax tree (AST).
 
 The type-checker construct a symbol table and then performs type analysis of every expression in the file, reporting errors it finds. This process not extended or modified by `ngtsc`.
 
-The transform step is a set of AST to AST transformations that perform various tasks such as, removing type declarations, lowering module and class declarations to ES5, converting `async` methods to state-machines, etc. 
+The transform step is a set of AST to AST transformations that perform various tasks such as, removing type declarations, lowering module and class declarations to ES5, converting `async` methods to state-machines, etc.
 
 #### Extension points
 
@@ -146,7 +147,7 @@ TypeScript supports the following extension points to alter its output. You can,
 
 1. Modify the TypeScript source it sees (`CompilerHost.getSourceFile`)
 2. Alter the list of transforms (`CustomTransformers`)
-3. Intercept the the output before it is written (`WriteFileCallback`)
+3. Intercept the output before it is written (`WriteFileCallback`)
 
 It is not recommended to alter the source code as this complicates the managing of source maps, makes it difficult to support incremental parsing, and is not supported by TypeScript's language service plug-in model.
 
@@ -168,9 +169,9 @@ Angular supports the following class decorators:
 
 There are also a list of helper decorators that make the `@Component` and `@Directive` easier to use such as `@Input`, `@Output`, etc.; as well as a set of decorators that help `@Injectable` classes customize the injector such as `@Inject` and `@SkipSelf`.
 
-Each of the class decorators can be thought of as class transformers that take the declared class and transform it, possibly using information from the helper decorators, to produce an Angular class. The JIT compiler performs this transformation at runtime. The AoT compiler performs this transformation at compile time.
+Each of the class decorators can be thought of as class transformers that take the declared class and transform it, possibly using information from the helper decorators, to produce an Angular class. The JIT compiler performs this transformation at runtime. The AOT compiler performs this transformation at compile time.
 
-Each of the class decorators' class transformer creates a corresponding static member on the class that describes to the runtime how to use the class. For example, the `@Component` decorator creates an `ngComponentDef` static member, `@Directive` create an `ngDirectiveDef`, etc. Internally, these class transformers are called a "Compiler". Most of the compilers are straight forward translations of the metadata specified in the decorator to the information provided in the corresponding definition and, therefore, do not require anything outside the source file to perform the conversion. However, the component, during production builds and for type checking a template require the module scope of the component which requires information from other files in the program.
+Each of the class decorators' class transformer creates a corresponding static member on the class that describes to the runtime how to use the class. For example, the `@Component` decorator creates a `ɵcmp` static member, `@Directive` create a `ɵdir`, etc. Internally, these class transformers are called a "Compiler". Most of the compilers are straight forward translations of the metadata specified in the decorator to the information provided in the corresponding definition and, therefore, do not require anything outside the source file to perform the conversion. However, the component, during production builds and for type checking a template require the module scope of the component which requires information from other files in the program.
 
 #### Compiler design
 
@@ -229,7 +230,7 @@ The `ngtsc` metadata evaluator will be built as a partial Typescript interpreter
 
 A template is compiled in `TemplateCompiler` by performing the following:
 
-1. Tokenizes the template 
+1. Tokenizes the template
 2. Parses the tokens into an HTML AST
 3. Converts the HTML AST into an Angular Template AST.
 4. Translates the Angular Template AST to a template function
@@ -244,7 +245,7 @@ As part of this conversion an exhaustive list of selector targets is also produc
 
 The `TemplateCompiler` can produce a template function from a string without additional information. However, correct interpretation of that string requires a selector scope discussed below. The selector scope is built at runtime allowing the runtime to use a function built from just a string as long as it is given a selector scope (e.g. an NgModule) to use during instantiation.
 
-#### The selector problem 
+#### The selector problem
 
 To interpret the content of a template, the runtime needs to know what component and directives to apply to the element and what pipes are referenced by binding expressions. The list of candidate components, directives and pipes are determined by the `NgModule` in which the component is declared. Since the module and component are in separate source files, mapping which components, directives and pipes referenced is left to the runtime. Unfortunately, this leads to a tree-shaking problem. Since there no direct link between the component and types the component references then all components, directives and pipes declared in the module, and any module imported from the module, must be available at runtime or risk the template failing to be interpreted correctly. Including everything can lead to a very large program which contains many components the application doesn't actually use.
 

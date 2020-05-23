@@ -15,8 +15,7 @@ class ChildDirective {
 
 @Directive({selector: 'someDir'})
 class SomeDir implements AfterContentInit {
-  // TODO(issue/24571): remove '!'.
-  @ContentChildren(ChildDirective) contentChildren !: QueryList<ChildDirective>;
+  @ContentChildren(ChildDirective) contentChildren!: QueryList<ChildDirective>;
 
   ngAfterContentInit() {
     // contentChildren is set

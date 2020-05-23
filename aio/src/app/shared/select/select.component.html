@@ -1,6 +1,6 @@
 <div class="form-select-menu">
   <button class="form-select-button" (click)="toggleOptions()" [disabled]="disabled">
-    <strong>{{label}}</strong><span *ngIf="showSymbol" class="symbol {{selected?.value}}"></span>{{selected?.title}}
+    <span><strong>{{label}}</strong></span><span *ngIf="showSymbol" class="symbol {{selected?.value}}"></span><span>{{selected?.title}}</span>
   </button>
   <ul class="form-select-dropdown" *ngIf="showOptions">
     <li *ngFor="let option of options; index as i"
@@ -10,7 +10,7 @@
         (click)="select(option, i)"
         (keydown.enter)="select(option, i)"
         (keydown.space)="select(option, i); $event.preventDefault()">
-      <span *ngIf="showSymbol" class="symbol {{option.value}}"></span>{{option.title}}
+      <span *ngIf="showSymbol" class="symbol {{option.value}}"></span><span>{{option.title}}</span>
     </li>
   </ul>
 </div>

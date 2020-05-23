@@ -13,6 +13,8 @@ import {Serializer, SerializerTypes} from '../shared/serializer';
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 @Injectable()
 export class ServiceMessageBrokerFactory {
@@ -40,6 +42,8 @@ export class ServiceMessageBrokerFactory {
  * If that method returns a promise, the UIMessageBroker returns the result to the worker.
  *
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export class ServiceMessageBroker {
   private _sink: EventEmitter<any>;
@@ -58,10 +62,10 @@ export class ServiceMessageBroker {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       const serializedArgs = message.args;
       const numArgs = signature ? signature.length : 0;
-      const deserializedArgs = new Array(numArgs);
+      const deserializedArgs = [];
       for (let i = 0; i < numArgs; i++) {
         const serializedArg = serializedArgs[i];
-        deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature ![i]);
+        deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature![i]);
       }
 
       const promise = method(...deserializedArgs);
@@ -73,7 +77,7 @@ export class ServiceMessageBroker {
 
   private _handleMessage(message: ReceivedMessage): void {
     if (this._methods.has(message.method)) {
-      this._methods.get(message.method) !(message);
+      this._methods.get(message.method)!(message);
     }
   }
 
@@ -91,6 +95,8 @@ export class ServiceMessageBroker {
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export interface ReceivedMessage {
   method: string;

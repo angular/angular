@@ -7,9 +7,9 @@
  */
 
 import {Injector} from '../di/injector';
+import {Type} from '../interface/type';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
-import {Type} from '../type';
 
 import {initServicesIfNeeded} from './services';
 import {NgModuleDefinition, NgModuleDefinitionFactory, NgModuleProviderDef, ProviderOverride, Services, ViewDefinition} from './types';
@@ -48,7 +48,10 @@ function cloneNgModuleDefinition(def: NgModuleDefinition): NgModuleDefinition {
 
   return {
     factory: def.factory,
-    isRoot: def.isRoot, providers, modules, providersByKey,
+    scope: def.scope,
+    providers,
+    modules,
+    providersByKey,
   };
 }
 

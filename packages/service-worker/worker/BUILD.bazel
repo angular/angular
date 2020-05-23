@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "worker",
@@ -9,22 +9,22 @@ ts_library(
             "*.ts",
             "src/**/*.ts",
         ],
-        exclude = ["main.ts"],
+        exclude = [
+            "main.ts",
+        ],
     ),
-    tsconfig = ":tsconfig.json",
-    deps = ["@ngdeps//@types/node"],
+    deps = ["@npm//@types/node"],
 )
 
 ts_library(
     name = "main",
     srcs = ["main.ts"],
-    tsconfig = ":tsconfig.json",
     deps = [":worker"],
 )
 
 ng_rollup_bundle(
     name = "ngsw_worker",
-    entry_point = "packages/service-worker/worker/main.js",
+    entry_point = ":main.ts",
     deps = [
         ":main",
     ],

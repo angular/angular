@@ -1,6 +1,11 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@angular//:index.bzl", "ng_module")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("@npm//http-server:index.bzl", "http_server")
+load("@npm_angular_bazel//:index.bzl", "ng_module")
+load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
+load("@npm_bazel_terser//:index.bzl", "terser_minified")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 
 # Allow targets under sub-packages to reference the tsconfig.json file
 exports_files(["tsconfig.json"])
@@ -8,57 +13,71 @@ exports_files(["tsconfig.json"])
 ng_module(
     name = "src",
     srcs = glob(["*.ts"]),
+    generate_ve_shims = True,
     deps = [
         "//src/hello-world",
-        "@angular//packages/common/http",
-        "@angular//packages/core",
-        "@angular//packages/platform-browser",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/router",
         "@npm//@types",
+        "@npm//rxjs",
+        "@npm//tslib",
     ],
 )
 
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+filegroup(
+    name = "rxjs_umd_modules",
+    srcs = [
+        # do not sort
+        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+        ":rxjs_shims.js",
+    ],
+)
 
 ts_devserver(
     name = "devserver",
-    additional_root_paths = [
-        "npm/node_modules/tslib",
-        "npm/node_modules/zone.js/dist",
-    ],
     entry_module = "bazel_integration_test/src/main",
+    scripts = [
+        ":rxjs_umd_modules",
+    ],
+    # Use the same bundle serving path as prodserver so that we can share
+    # an index.html file.
     serving_path = "/bundle.min.js",
     static_files = [
-        "@npm//node_modules/tslib:tslib.js",
-        "@npm//node_modules/zone.js:dist/zone.min.js",
         "index.html",
+        "@npm//:node_modules/zone.js/dist/zone.min.js",
     ],
     deps = ["//src"],
 )
-
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "rollup_bundle")
 
 rollup_bundle(
     name = "bundle",
-    entry_point = "src/main",
-    deps = ["//src"],
+    config_file = "rollup.config.js",
+    entry_point = ":main.ts",
+    deps = [
+        "//src",
+        "@npm//rollup-plugin-commonjs",
+        "@npm//rollup-plugin-node-resolve",
+    ],
 )
 
-# Needed because the prodserver only loads static files that appear under this
-# package.
-genrule(
-    name = "zone.js",
-    srcs = ["@npm//node_modules/zone.js:dist/zone.min.js"],
-    outs = ["zone.min.js"],
-    cmd = "cp $< $@",
+terser_minified(
+    name = "bundle.min",
+    src = ":bundle",
 )
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "http_server")
+pkg_web(
+    name = "prodapp",
+    srcs = [
+        "index.html",
+        ":bundle.min",
+        "@npm//:node_modules/zone.js/dist/zone.min.js",
+    ],
+)
 
 http_server(
     name = "prodserver",
-    data = [
-        "index.html",
-        ":bundle",
-        ":zone.js",
-    ],
+    data = [":prodapp"],
+    templated_args = ["src/prodapp"],
 )

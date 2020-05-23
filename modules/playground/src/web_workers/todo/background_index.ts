@@ -14,9 +14,7 @@ import {platformWorkerAppDynamic} from '@angular/platform-webworker-dynamic';
 import {TodoApp} from './index_common';
 
 @NgModule({imports: [WorkerAppModule, FormsModule], bootstrap: [TodoApp], declarations: [TodoApp]})
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformWorkerAppDynamic().bootstrapModule(ExampleModule);
-}
+platformWorkerAppDynamic().bootstrapModule(ExampleModule);

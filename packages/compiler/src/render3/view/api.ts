@@ -12,6 +12,7 @@ import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
+import {R3Reference} from '../util';
 
 
 /**
@@ -26,7 +27,16 @@ export interface R3DirectiveMetadata {
   /**
    * An expression representing a reference to the directive itself.
    */
-  type: o.Expression;
+  type: R3Reference;
+
+  /**
+   * An expression representing a reference to the directive being compiled, intended for use within
+   * a class definition itself.
+   *
+   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside
+   * an IIFE structure that uses a different name internally.
+   */
+  internalType: o.Expression;
 
   /**
    * Number of generic type parameters of the type itself.
@@ -41,7 +51,7 @@ export interface R3DirectiveMetadata {
   /**
    * Dependencies of the directive's constructor.
    */
-  deps: R3DependencyMetadata[]|null;
+  deps: R3DependencyMetadata[]|'invalid'|null;
 
   /**
    * Unparsed selector of the directive, or `null` if there was no selector.
@@ -54,25 +64,15 @@ export interface R3DirectiveMetadata {
   queries: R3QueryMetadata[];
 
   /**
+   * Information about the view queries made by the directive.
+   */
+  viewQueries: R3QueryMetadata[];
+
+  /**
    * Mappings indicating how the directive interacts with its host element (host bindings,
    * listeners, etc).
    */
-  host: {
-    /**
-     * A mapping of attribute binding keys to unparsed expressions.
-     */
-    attributes: {[key: string]: string};
-
-    /**
-     * A mapping of event binding keys to unparsed expressions.
-     */
-    listeners: {[key: string]: string};
-
-    /**
-     * A mapping of property binding keys to unparsed expressions.
-     */
-    properties: {[key: string]: string};
-  };
+  host: R3HostMetadata;
 
   /**
    * Information about usage of specific lifecycle events which require special treatment in the
@@ -88,7 +88,7 @@ export interface R3DirectiveMetadata {
   /**
    * A mapping of input field names to the property names.
    */
-  inputs: {[field: string]: string | [string, string]};
+  inputs: {[field: string]: string|[string, string]};
 
   /**
    * A mapping of output field names to the property names.
@@ -101,10 +101,15 @@ export interface R3DirectiveMetadata {
   usesInheritance: boolean;
 
   /**
+   * Whether or not the component or directive inherits its entire decorator from its base class.
+   */
+  fullInheritance: boolean;
+
+  /**
    * Reference name under which to export the directive's type in a template,
    * if any.
    */
-  exportAs: string|null;
+  exportAs: string[]|null;
 
   /**
    * The list of providers defined in the directive.
@@ -124,12 +129,13 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
      * Parsed nodes of the template.
      */
     nodes: t.Node[];
-  };
 
-  /**
-   * Information about the view queries made by the component.
-   */
-  viewQueries: R3QueryMetadata[];
+    /**
+     * Any ng-content selectors extracted from the template. Contains `null` when an ng-content
+     * element without selector is present.
+     */
+    ngContentSelectors: string[];
+  };
 
   /**
    * A map of pipe names to an expression referencing the pipe type which are in the scope of the
@@ -229,6 +235,21 @@ export interface R3QueryMetadata {
    * for a given node is to be returned.
    */
   read: o.Expression|null;
+
+  /**
+   * Whether or not this query should collect only static results.
+   *
+   * If static is true, the query's results will be set on the component after nodes are created,
+   * but before change detection runs. This means that any results that relied upon change detection
+   * to run (e.g. results inside *ngIf or *ngFor views) will not be collected. Query results are
+   * available in the ngOnInit hook.
+   *
+   * If static is false, the query's results will be set on the component after change detection
+   * runs. This means that the query results can contain nodes inside *ngIf or *ngFor views, but
+   * the results will not be available in the ngOnInit hook (only in the ngAfterContentInit for
+   * content hooks and ngAfterViewInit for view hooks).
+   */
+  static: boolean;
 }
 
 /**
@@ -237,7 +258,6 @@ export interface R3QueryMetadata {
 export interface R3DirectiveDef {
   expression: o.Expression;
   type: o.Type;
-  statements: o.Statement[];
 }
 
 /**
@@ -246,5 +266,27 @@ export interface R3DirectiveDef {
 export interface R3ComponentDef {
   expression: o.Expression;
   type: o.Type;
-  statements: o.Statement[];
+}
+
+/**
+ * Mappings indicating how the class interacts with its
+ * host element (host bindings, listeners, etc).
+ */
+export interface R3HostMetadata {
+  /**
+   * A mapping of attribute binding keys to `o.Expression`s.
+   */
+  attributes: {[key: string]: o.Expression};
+
+  /**
+   * A mapping of event binding keys to unparsed expressions.
+   */
+  listeners: {[key: string]: string};
+
+  /**
+   * A mapping of property binding keys to unparsed expressions.
+   */
+  properties: {[key: string]: string};
+
+  specialAttributes: {styleAttr?: string; classAttr?: string;};
 }

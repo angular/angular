@@ -13,8 +13,8 @@ export class TableCell {
 }
 
 let tableCreateCount: number;
-export let maxRow: number;
-export let maxCol: number;
+let maxRow: number;
+let maxCol: number;
 let numberData: TableCell[][];
 let charData: TableCell[][];
 

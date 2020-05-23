@@ -13,7 +13,7 @@ describe('Component Communication Cookbook Tests', function () {
   describe('Parent-to-child communication', function() {
     // #docregion parent-to-child
     // ...
-    let _heroNames = ['Mr. IQ', 'Magneta', 'Bombasto'];
+    let _heroNames = ['Dr IQ', 'Magneta', 'Bombasto'];
     let _masterName = 'Master';
 
     it('should pass properties to children properly', function () {
@@ -36,7 +36,7 @@ describe('Component Communication Cookbook Tests', function () {
     // ...
     it('should display trimmed, non-empty names', function () {
       let _nonEmptyNameIndex = 0;
-      let _nonEmptyName = '"Mr. IQ"';
+      let _nonEmptyName = '"Dr IQ"';
       let parent = element.all(by.tagName('app-name-parent')).get(0);
       let hero = parent.all(by.tagName('app-name-child')).get(_nonEmptyNameIndex);
 

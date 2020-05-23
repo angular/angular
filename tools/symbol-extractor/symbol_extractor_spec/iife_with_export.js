@@ -16,7 +16,9 @@ var bundle = function(exports) {
   console.log('Hello, Alice in Wonderland');
   var A = function() {
     function A() {}
-    A.prototype.a = function() { return document.a; };
+    A.prototype.a = function() {
+      return document.a;
+    };
     return A;
   }();
   // tslint:disable-next-line:no-console

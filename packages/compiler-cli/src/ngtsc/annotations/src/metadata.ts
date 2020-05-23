@@ -6,10 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExternalExpr, Identifiers, InvokeFunctionExpr, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, literalMap, NONE_TYPE, ReturnStatement, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {CtorParameter, Decorator, ReflectionHost} from '../../host';
+import {DefaultImportRecorder} from '../../imports';
+import {CtorParameter, Decorator, ReflectionHost} from '../../reflection';
+
+import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './util';
+
 
 /**
  * Given a class declaration, generate a call to `setClassMetadata` with the Angular metadata
@@ -19,11 +23,12 @@ import {CtorParameter, Decorator, ReflectionHost} from '../../host';
  * as a `Statement` for inclusion along with the class.
  */
 export function generateSetClassMetadataCall(
-    clazz: ts.Declaration, reflection: ReflectionHost, isCore: boolean): Statement|null {
-  if (!reflection.isClass(clazz) || clazz.name === undefined || !ts.isIdentifier(clazz.name)) {
+    clazz: ts.Declaration, reflection: ReflectionHost, defaultImportRecorder: DefaultImportRecorder,
+    isCore: boolean, annotateForClosureCompiler?: boolean): Statement|null {
+  if (!reflection.isClass(clazz)) {
     return null;
   }
-  const id = ts.updateIdentifier(clazz.name);
+  const id = ts.updateIdentifier(reflection.getAdjacentNameOfClass(clazz));
 
   // Reflect over the class decorators. If none are present, or those that are aren't from
   // Angular, then return null. Otherwise, turn them into metadata.
@@ -32,33 +37,41 @@ export function generateSetClassMetadataCall(
     return null;
   }
   const ngClassDecorators =
-      classDecorators.filter(dec => isAngularDecorator(dec, isCore)).map(decoratorToMetadata);
+      classDecorators.filter(dec => isAngularDecorator(dec, isCore))
+          .map(
+              (decorator: Decorator) => decoratorToMetadata(decorator, annotateForClosureCompiler));
   if (ngClassDecorators.length === 0) {
     return null;
   }
   const metaDecorators = ts.createArrayLiteral(ngClassDecorators);
 
   // Convert the constructor parameters to metadata, passing null if none are present.
-  let metaCtorParameters: ts.Expression = ts.createNull();
+  let metaCtorParameters: Expression = new LiteralExpr(null);
   const classCtorParameters = reflection.getConstructorParameters(clazz);
   if (classCtorParameters !== null) {
-    const ctorParameters = ts.createArrayLiteral(
-        classCtorParameters.map(param => ctorParameterToMetadata(param, isCore)));
-    metaCtorParameters = ts.createFunctionExpression(
-        /* modifiers */ undefined,
-        /* asteriskToken */ undefined,
-        /* name */ undefined,
-        /* typeParameters */ undefined,
-        /* parameters */ undefined,
-        /* type */ undefined, ts.createBlock([ts.createReturn(ctorParameters)]));
+    const ctorParameters = classCtorParameters.map(
+        param => ctorParameterToMetadata(param, defaultImportRecorder, isCore));
+    metaCtorParameters = new FunctionExpr([], [
+      new ReturnStatement(new LiteralArrayExpr(ctorParameters)),
+    ]);
   }
 
   // Do the same for property decorators.
   let metaPropDecorators: ts.Expression = ts.createNull();
+  const classMembers = reflection.getMembersOfClass(clazz).filter(
+      member => !member.isStatic && member.decorators !== null && member.decorators.length > 0);
+  const duplicateDecoratedMemberNames =
+      classMembers.map(member => member.name).filter((name, i, arr) => arr.indexOf(name) < i);
+  if (duplicateDecoratedMemberNames.length > 0) {
+    // This should theoretically never happen, because the only way to have duplicate instance
+    // member names is getter/setter pairs and decorators cannot appear in both a getter and the
+    // corresponding setter.
+    throw new Error(
+        `Duplicate decorated properties found on class '${clazz.name.text}': ` +
+        duplicateDecoratedMemberNames.join(', '));
+  }
   const decoratedMembers =
-      reflection.getMembersOfClass(clazz)
-          .filter(member => !member.isStatic && member.decorators !== null)
-          .map(member => classMemberToMetadata(member.name, member.decorators !, isCore));
+      classMembers.map(member => classMemberToMetadata(member.name, member.decorators!, isCore));
   if (decoratedMembers.length > 0) {
     metaPropDecorators = ts.createObjectLiteral(decoratedMembers);
   }
@@ -71,34 +84,43 @@ export function generateSetClassMetadataCall(
       [
         new WrappedNodeExpr(id),
         new WrappedNodeExpr(metaDecorators),
-        new WrappedNodeExpr(metaCtorParameters),
+        metaCtorParameters,
         new WrappedNodeExpr(metaPropDecorators),
-      ],
+      ]);
+  const iifeFn = new FunctionExpr([], [fnCall.toStmt()], NONE_TYPE);
+  const iife = new InvokeFunctionExpr(
+      /* fn */ iifeFn,
+      /* args */[],
       /* type */ undefined,
       /* sourceSpan */ undefined,
       /* pure */ true);
-  return fnCall.toStmt();
+  return iife.toStmt();
 }
 
 /**
  * Convert a reflected constructor parameter to metadata.
  */
-function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): ts.Expression {
+function ctorParameterToMetadata(
+    param: CtorParameter, defaultImportRecorder: DefaultImportRecorder,
+    isCore: boolean): Expression {
   // Parameters sometimes have a type that can be referenced. If so, then use it, otherwise
   // its type is undefined.
-  const type =
-      param.typeExpression !== null ? param.typeExpression : ts.createIdentifier('undefined');
-  const properties: ts.ObjectLiteralElementLike[] = [
-    ts.createPropertyAssignment('type', type),
+  const type = param.typeValueReference !== null ?
+      valueReferenceToExpression(param.typeValueReference, defaultImportRecorder) :
+      new LiteralExpr(undefined);
+
+  const mapEntries: {key: string, value: Expression, quoted: false}[] = [
+    {key: 'type', value: type, quoted: false},
   ];
 
   // If the parameter has decorators, include the ones from Angular.
   if (param.decorators !== null) {
-    const ngDecorators =
-        param.decorators.filter(dec => isAngularDecorator(dec, isCore)).map(decoratorToMetadata);
-    properties.push(ts.createPropertyAssignment('decorators', ts.createArrayLiteral(ngDecorators)));
+    const ngDecorators = param.decorators.filter(dec => isAngularDecorator(dec, isCore))
+                             .map((decorator: Decorator) => decoratorToMetadata(decorator));
+    const value = new WrappedNodeExpr(ts.createArrayLiteral(ngDecorators));
+    mapEntries.push({key: 'decorators', value, quoted: false});
   }
-  return ts.createObjectLiteral(properties, true);
+  return literalMap(mapEntries);
 }
 
 /**
@@ -106,8 +128,8 @@ function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): ts.Expr
  */
 function classMemberToMetadata(
     name: string, decorators: Decorator[], isCore: boolean): ts.PropertyAssignment {
-  const ngDecorators =
-      decorators.filter(dec => isAngularDecorator(dec, isCore)).map(decoratorToMetadata);
+  const ngDecorators = decorators.filter(dec => isAngularDecorator(dec, isCore))
+                           .map((decorator: Decorator) => decoratorToMetadata(decorator));
   const decoratorMeta = ts.createArrayLiteral(ngDecorators);
   return ts.createPropertyAssignment(name, decoratorMeta);
 }
@@ -115,14 +137,21 @@ function classMemberToMetadata(
 /**
  * Convert a reflected decorator to metadata.
  */
-function decoratorToMetadata(decorator: Decorator): ts.ObjectLiteralExpression {
+function decoratorToMetadata(
+    decorator: Decorator, wrapFunctionsInParens?: boolean): ts.ObjectLiteralExpression {
+  if (decorator.identifier === null) {
+    throw new Error('Illegal state: synthesized decorator cannot be emitted in class metadata.');
+  }
   // Decorators have a type.
   const properties: ts.ObjectLiteralElementLike[] = [
-    ts.createPropertyAssignment('type', ts.updateIdentifier(decorator.identifier)),
+    ts.createPropertyAssignment('type', ts.getMutableClone(decorator.identifier)),
   ];
   // Sometimes they have arguments.
   if (decorator.args !== null && decorator.args.length > 0) {
-    const args = decorator.args.map(arg => ts.getMutableClone(arg));
+    const args = decorator.args.map(arg => {
+      const expr = ts.getMutableClone(arg);
+      return wrapFunctionsInParens ? wrapFunctionExpressionsInParens(expr) : expr;
+    });
     properties.push(ts.createPropertyAssignment('args', ts.createArrayLiteral(args)));
   }
   return ts.createObjectLiteral(properties, true);

@@ -4,23 +4,26 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 
-// #docregion const-routes
+// #docregion const-routes, routes-customers, routes-customers-orders
 const routes: Routes = [
   {
     path: 'customers',
-    loadChildren: './customers/customers.module#CustomersModule'
+    loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule)
+    // #enddocregion routes-customers
   },
   {
     path: 'orders',
-    loadChildren: './orders/orders.module#OrdersModule'
+    loadChildren: () => import('./orders/orders.module').then(m => m.OrdersModule)
+    // #enddocregion routes-customers-orders
   },
   {
     path: '',
     redirectTo: '',
     pathMatch: 'full'
+    // #docregion routes-customers, routes-customers-orders
   }
 ];
-// #enddocregion const-routes
+// #enddocregion const-routes, routes-customers, routes-customers-orders
 
 @NgModule({
   imports: [

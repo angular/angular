@@ -47,12 +47,14 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
     <span *ngIf="errorMessage !== null">{{errorMessage}}</span>
   `
 })
-class ShowError {
+export class ShowError {
   formDir: FormGroupDirective;
   controlPath: string;
   errorTypes: string[];
 
-  constructor(@Host() formDir: FormGroupDirective) { this.formDir = formDir; }
+  constructor(@Host() formDir: FormGroupDirective) {
+    this.formDir = formDir;
+  }
 
   get errorMessage(): string {
     const form: FormGroup = this.formDir.form;
@@ -136,7 +138,7 @@ class ShowError {
     </form>
   `
 })
-class ReactiveForms {
+export class ReactiveForms {
   form: FormGroup;
   countries = ['US', 'Canada'];
 
@@ -164,9 +166,7 @@ class ReactiveForms {
   declarations: [ShowError, ReactiveForms],
   imports: [BrowserModule, ReactiveFormsModule]
 })
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

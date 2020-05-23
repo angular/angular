@@ -2,8 +2,8 @@
 
 This docker container provides everything needed to build and test Angular applications:
 
-**Note**: This docker image will be no longer actively updated. Consider using other Docker 
-images that come with Node installed. Bazel can be installed through the `@bazel/bazel` NPM package.
+**Note**: This docker image will be no longer actively updated. Consider using other Docker
+images that come with Node installed.
 
 - node 10.9.0
 - npm 6.2.0
@@ -46,7 +46,7 @@ $ xvfb-run -a yarn test
 
 Install Docker on your machine in order to build/pull/push this image.
 
-Get the teamangular password from http://valentine and log in:
+Log in to `hub.docker.com` as `teamangular` using the following command:
 
 `$ docker login`
 

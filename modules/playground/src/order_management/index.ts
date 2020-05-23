@@ -23,7 +23,9 @@ class OrderItem {
       public orderItemId: number, public orderId: number, public productName: string,
       public qty: number, public unitPrice: number) {}
 
-  get total(): number { return this.qty * this.unitPrice; }
+  get total(): number {
+    return this.qty * this.unitPrice;
+  }
 }
 
 class Order {
@@ -31,8 +33,12 @@ class Order {
       public orderId: number, public customerName: string, public limit: number,
       private _dataService: DataService) {}
 
-  get items(): OrderItem[] { return this._dataService.itemsFor(this); }
-  get total(): number { return this.items.map(i => i.total).reduce((a, b) => a + b, 0); }
+  get items(): OrderItem[] {
+    return this._dataService.itemsFor(this);
+  }
+  get total(): number {
+    return this.items.map(i => i.total).reduce((a, b) => a + b, 0);
+  }
 }
 
 
@@ -41,7 +47,7 @@ class Order {
 
 let _nextId = 1000;
 @Injectable()
-class DataService {
+export class DataService {
   orderItems: OrderItem[];
   orders: Order[];
   currentOrder: Order = null;
@@ -69,7 +75,9 @@ class DataService {
     this.orderItems.push(new OrderItem(_nextId++, order.orderId, '', 0, 0));
   }
 
-  deleteItem(item: OrderItem): void { this.orderItems.splice(this.orderItems.indexOf(item), 1); }
+  deleteItem(item: OrderItem): void {
+    this.orderItems.splice(this.orderItems.indexOf(item), 1);
+  }
 }
 
 
@@ -104,11 +112,15 @@ class DataService {
   	</div>
   `
 })
-class OrderListComponent {
+export class OrderListComponent {
   orders: Order[];
 
-  constructor(private _service: DataService) { this.orders = _service.orders; }
-  select(order: Order): void { this._service.currentOrder = order; }
+  constructor(private _service: DataService) {
+    this.orders = _service.orders;
+  }
+  select(order: Order): void {
+    this._service.currentOrder = order;
+  }
 }
 
 
@@ -137,11 +149,13 @@ class OrderListComponent {
     </div>
   `
 })
-class OrderItemComponent {
+export class OrderItemComponent {
   @Input() item: OrderItem;
   @Output() delete = new EventEmitter();
 
-  onDelete(): void { this.delete.emit(this.item); }
+  onDelete(): void {
+    this.delete.emit(this.item);
+  }
 }
 
 @Component({
@@ -173,14 +187,20 @@ class OrderItemComponent {
     </div>
   `
 })
-class OrderDetailsComponent {
+export class OrderDetailsComponent {
   constructor(private _service: DataService) {}
 
-  get order(): Order { return this._service.currentOrder; }
+  get order(): Order {
+    return this._service.currentOrder;
+  }
 
-  deleteItem(item: OrderItem): void { this._service.deleteItem(item); }
+  deleteItem(item: OrderItem): void {
+    this._service.deleteItem(item);
+  }
 
-  addItem(): void { this._service.addItemForOrder(this.order); }
+  addItem(): void {
+    this._service.addItemForOrder(this.order);
+  }
 }
 
 @Component({
@@ -191,7 +211,7 @@ class OrderDetailsComponent {
     <order-details-cmp></order-details-cmp>
   `
 })
-class OrderManagementApplication {
+export class OrderManagementApplication {
 }
 
 @NgModule({
@@ -200,9 +220,7 @@ class OrderManagementApplication {
       [OrderManagementApplication, OrderListComponent, OrderDetailsComponent, OrderItemComponent],
   imports: [BrowserModule, FormsModule]
 })
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

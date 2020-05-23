@@ -1,0 +1,10 @@
+{
+  "description": "Getting Started",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[0-9].*"
+  ],
+  "file": "src/app/app.component.ts", 
+  "tags": ["Angular", "getting started", "tutorial"]
+}

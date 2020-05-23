@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isType} from '../type';
-import {global, stringify} from '../util';
+import {isType, Type} from '../interface/type';
+import {newArray} from '../util/array_utils';
 import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
+import {global} from '../util/global';
+import {stringify} from '../util/stringify';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
+
 
 
 /**
@@ -21,24 +24,45 @@ export const DELEGATE_CTOR = /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*arg
 export const INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{/;
 export const INHERITED_CLASS_WITH_CTOR =
     /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(/;
+export const INHERITED_CLASS_WITH_DELEGATE_CTOR =
+    /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(\)\s*{\s*super\(\.\.\.arguments\)/;
+
+/**
+ * Determine whether a stringified type is a class which delegates its constructor
+ * to its parent.
+ *
+ * This is not trivial since compiled code can actually contain a constructor function
+ * even if the original source code did not. For instance, when the child class contains
+ * an initialized instance property.
+ */
+export function isDelegateCtor(typeStr: string): boolean {
+  return DELEGATE_CTOR.test(typeStr) || INHERITED_CLASS_WITH_DELEGATE_CTOR.test(typeStr) ||
+      (INHERITED_CLASS.test(typeStr) && !INHERITED_CLASS_WITH_CTOR.test(typeStr));
+}
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
 
-  constructor(reflect?: any) { this._reflect = reflect || global['Reflect']; }
+  constructor(reflect?: any) {
+    this._reflect = reflect || global['Reflect'];
+  }
 
-  isReflectionEnabled(): boolean { return true; }
+  isReflectionEnabled(): boolean {
+    return true;
+  }
 
-  factory<T>(t: Type<T>): (args: any[]) => T { return (...args: any[]) => new t(...args); }
+  factory<T>(t: Type<T>): (args: any[]) => T {
+    return (...args: any[]) => new t(...args);
+  }
 
   /** @internal */
   _zipTypesAndAnnotations(paramTypes: any[], paramAnnotations: any[]): any[][] {
     let result: any[][];
 
     if (typeof paramTypes === 'undefined') {
-      result = new Array(paramAnnotations.length);
+      result = newArray(paramAnnotations.length);
     } else {
-      result = new Array(paramTypes.length);
+      result = newArray(paramTypes.length);
     }
 
     for (let i = 0; i < result.length; i++) {
@@ -47,7 +71,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       // migration, but this can be revisited.
       if (typeof paramTypes === 'undefined') {
         result[i] = [];
-      } else if (paramTypes[i] != Object) {
+      } else if (paramTypes[i] && paramTypes[i] != Object) {
         result[i] = [paramTypes[i]];
       } else {
         result[i] = [];
@@ -68,8 +92,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // This also helps to work around for https://github.com/Microsoft/TypeScript/issues/12439
     // that sets 'design:paramtypes' to []
     // if a class inherits from another class but has no ctor declared itself.
-    if (DELEGATE_CTOR.exec(typeStr) ||
-        (INHERITED_CLASS.exec(typeStr) && !INHERITED_CLASS_WITH_CTOR.exec(typeStr))) {
+    if (isDelegateCtor(typeStr)) {
       return null;
     }
 
@@ -104,7 +127,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // based on function.length.
     // Note: We know that this is a real constructor as we checked
     // the content of the constructor above.
-    return new Array((<any>type.length)).fill(undefined);
+    return newArray<any[]>(type.length);
   }
 
   parameters(type: Type<any>): any[][] {
@@ -208,13 +231,24 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return propMetadata;
   }
 
+  ownPropMetadata(typeOrFunc: any): {[key: string]: any[]} {
+    if (!isType(typeOrFunc)) {
+      return {};
+    }
+    return this._ownPropMetadata(typeOrFunc, getParentCtor(typeOrFunc)) || {};
+  }
+
   hasLifecycleHook(type: any, lcProperty: string): boolean {
     return type instanceof Type && lcProperty in type.prototype;
   }
 
-  guards(type: any): {[key: string]: any} { return {}; }
+  guards(type: any): {[key: string]: any} {
+    return {};
+  }
 
-  getter(name: string): GetterFn { return <GetterFn>new Function('o', 'return o.' + name + ';'); }
+  getter(name: string): GetterFn {
+    return <GetterFn>new Function('o', 'return o.' + name + ';');
+  }
 
   setter(name: string): SetterFn {
     return <SetterFn>new Function('o', 'v', 'return o.' + name + ' = v;');
@@ -236,12 +270,16 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return `./${stringify(type)}`;
   }
 
-  resourceUri(type: any): string { return `./${stringify(type)}`; }
+  resourceUri(type: any): string {
+    return `./${stringify(type)}`;
+  }
 
   resolveIdentifier(name: string, moduleUrl: string, members: string[], runtime: any): any {
     return runtime;
   }
-  resolveEnum(enumIdentifier: any, name: string): any { return enumIdentifier[name]; }
+  resolveEnum(enumIdentifier: any, name: string): any {
+    return enumIdentifier[name];
+  }
 }
 
 function convertTsickleDecoratorIntoMetadata(decoratorInvocations: any[]): any[] {

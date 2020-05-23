@@ -53,7 +53,7 @@ describe('createSitemap processor', () => {
           { path: 'cde', outputPath: 'cde', docType: 'bad' },
           { path: 'fgh', outputPath: 'fgh', docType: 'good' },
         ];
-        processor.blacklistedDocTypes = ['bad'];
+        processor.ignoredDocTypes = ['bad'];
         processor.$process(docs);
         expect(docs.pop().urls).toEqual(['abc', 'fgh']);
       });
@@ -64,7 +64,7 @@ describe('createSitemap processor', () => {
           { path: 'cde', outputPath: 'cde' },
           { path: 'fgh', outputPath: 'fgh' },
         ];
-        processor.blacklistedPaths = ['cde'];
+        processor.ignoredPaths = ['cde'];
         processor.$process(docs);
         expect(docs.pop().urls).toEqual(['abc', 'fgh']);
       });

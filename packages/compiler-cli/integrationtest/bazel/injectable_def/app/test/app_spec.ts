@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, INJECTOR, Injectable, NgModule} from '@angular/core';
+import {Component, Injectable, INJECTOR, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {renderModuleFactory} from '@angular/platform-server';
-import {fixmeIvy} from '@angular/private/testing';
 import {BasicAppModuleNgFactory} from 'app_built/src/basic.ngfactory';
 import {DepAppModuleNgFactory} from 'app_built/src/dep.ngfactory';
 import {HierarchyAppModuleNgFactory} from 'app_built/src/hierarchy.ngfactory';
@@ -101,11 +100,10 @@ describe('ngInjectableDef Bazel Integration', () => {
     TestBed.configureTestingModule({});
     TestBed.overrideProvider(Service, {useValue: new Service('overridden')});
 
-    expect(TestBed.get(Service).value).toEqual('overridden');
+    expect(TestBed.inject(Service).value).toEqual('overridden');
   });
 
   it('allows provider override in JIT for module-scoped @Injectables', () => {
-
     @NgModule()
     class Module {
     }
@@ -123,17 +121,17 @@ describe('ngInjectableDef Bazel Integration', () => {
     });
     TestBed.overrideProvider(Service, {useValue: new Service('overridden')});
 
-    expect(TestBed.get(Service).value).toEqual('overridden');
+    expect(TestBed.inject(Service).value).toEqual('overridden');
   });
 
-  it('does not override existing ngInjectableDef', () => {
+  it('does not override existing ɵprov', () => {
     @Injectable({
       providedIn: 'root',
       useValue: new Service(false),
     })
     class Service {
       constructor(public value: boolean) {}
-      static ngInjectableDef = {
+      static ɵprov = {
         providedIn: 'root',
         factory: () => new Service(true),
         token: Service,
@@ -141,10 +139,10 @@ describe('ngInjectableDef Bazel Integration', () => {
     }
 
     TestBed.configureTestingModule({});
-    expect(TestBed.get(Service).value).toEqual(true);
+    expect(TestBed.inject(Service).value).toEqual(true);
   });
 
-  it('does not override existing ngInjectableDef in case of inheritance', () => {
+  it('does not override existing ɵprov in case of inheritance', () => {
     @Injectable({
       providedIn: 'root',
       useValue: new ParentService(false),
@@ -158,31 +156,58 @@ describe('ngInjectableDef Bazel Integration', () => {
 
     TestBed.configureTestingModule({});
     // We are asserting that system throws an error, rather than taking the inherited annotation.
-    expect(() => TestBed.get(ChildService).value).toThrowError(/ChildService/);
+    expect(() => TestBed.inject(ChildService).value).toThrowError(/ChildService/);
   });
+
+  it('uses legacy `ngInjectable` property even if it inherits from a class that has `ɵprov` property',
+     () => {
+       @Injectable({
+         providedIn: 'root',
+         useValue: new ParentService('parent'),
+       })
+       class ParentService {
+         constructor(public value: string) {}
+       }
+
+       // ChildServices exteds ParentService but does not have @Injectable
+       class ChildService extends ParentService {
+         constructor(value: string) {
+           super(value);
+         }
+         static ngInjectableDef = {
+           providedIn: 'root',
+           factory: () => new ChildService('child'),
+           token: ChildService,
+         };
+       }
+
+       TestBed.configureTestingModule({});
+       // We are asserting that system throws an error, rather than taking the inherited
+       // annotation.
+       expect(TestBed.inject(ChildService).value).toEqual('child');
+     });
 
   it('NgModule injector understands requests for INJECTABLE', () => {
     TestBed.configureTestingModule({
       providers: [{provide: 'foo', useValue: 'bar'}],
     });
-    expect(TestBed.get(INJECTOR).get('foo')).toEqual('bar');
+    expect(TestBed.inject(INJECTOR).get('foo')).toEqual('bar');
   });
 
-  fixmeIvy('FW-854: NodeInjector does not know how to get itself (INJECTOR)')
-      .it('Component injector understands requests for INJECTABLE', () => {
-        @Component({
-          selector: 'test-cmp',
-          template: 'test',
-          providers: [{provide: 'foo', useValue: 'bar'}],
-        })
-        class TestCmp {
-        }
+  it('Component injector understands requests for INJECTABLE', () => {
+    @Component({
+      selector: 'test-cmp',
+      template: 'test',
+      providers: [{provide: 'foo', useValue: 'bar'}],
+    })
+    class TestCmp {
+    }
 
-        TestBed.configureTestingModule({
-          declarations: [TestCmp],
-        });
+    TestBed.configureTestingModule({
+      declarations: [TestCmp],
+    });
 
-        const fixture = TestBed.createComponent(TestCmp);
-        expect(fixture.componentRef.injector.get(INJECTOR).get('foo')).toEqual('bar');
-      });
+    const fixture = TestBed.createComponent(TestCmp);
+    expect(fixture.componentRef.injector.get(INJECTOR).get('foo')).toEqual('bar');
+  });
 });

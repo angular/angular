@@ -5,34 +5,23 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+/// <reference types="node" />
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import * as ts from 'typescript';
+
 import * as ng from '../index';
+import {NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system';
+import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../test/helpers';
 
-// TEST_TMPDIR is set by bazel.
-const tmpdir = process.env.TEST_TMPDIR || os.tmpdir();
-
-function getNgRootDir() {
-  const moduleFilename = module.filename.replace(/\\/g, '/');
-  const distIndex = moduleFilename.indexOf('/dist/all');
-  return moduleFilename.substr(0, distIndex);
-}
-
-export function writeTempFile(name: string, contents: string): string {
-  const id = (Math.random() * 1000000).toFixed(0);
-  const fn = path.join(tmpdir, `tmp.${id}.${name}`);
-  fs.writeFileSync(fn, contents);
-  return fn;
-}
+// TEST_TMPDIR is always set by Bazel.
+const tmpdir = process.env.TEST_TMPDIR!;
 
 export function makeTempDir(): string {
   let dir: string;
   while (true) {
     const id = (Math.random() * 1000000).toFixed(0);
-    dir = path.join(tmpdir, `tmp.${id}`);
+    dir = path.posix.join(tmpdir, `tmp.${id}`);
     if (!fs.existsSync(dir)) break;
   }
   fs.mkdirSync(dir);
@@ -65,8 +54,10 @@ function createTestSupportFor(basePath: string) {
     'baseUrl': basePath,
     'declaration': true,
     'target': ts.ScriptTarget.ES5,
+    'newLine': ts.NewLineKind.LineFeed,
     'module': ts.ModuleKind.ES2015,
     'moduleResolution': ts.ModuleResolutionKind.NodeJs,
+    'enableIvy': false,
     'lib': Object.freeze([
       path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
     ]) as string[],
@@ -76,20 +67,41 @@ function createTestSupportFor(basePath: string) {
   };
 
 
-  return {basePath, write, writeFiles, createCompilerOptions, shouldExist, shouldNotExist};
+  return {
+    // We normalize the basePath into a posix path, so that multiple assertions which compare
+    // paths don't need to normalize the path separators each time.
+    basePath: normalizeSeparators(basePath),
+    write,
+    writeFiles,
+    createCompilerOptions,
+    shouldExist,
+    shouldNotExist
+  };
+
+  function ensureDirExists(absolutePathToDir: string) {
+    if (fs.existsSync(absolutePathToDir)) {
+      if (!fs.statSync(absolutePathToDir).isDirectory()) {
+        throw new Error(`'${absolutePathToDir}' exists and is not a directory.`);
+      }
+    } else {
+      const parentDir = path.dirname(absolutePathToDir);
+      ensureDirExists(parentDir);
+      fs.mkdirSync(absolutePathToDir);
+    }
+  }
 
   function write(fileName: string, content: string) {
-    const dir = path.dirname(fileName);
-    if (dir != '.') {
-      const newDir = path.resolve(basePath, dir);
-      if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
-    }
-    fs.writeFileSync(path.resolve(basePath, fileName), content, {encoding: 'utf-8'});
+    const absolutePathToFile = path.resolve(basePath, fileName);
+    ensureDirExists(path.dirname(absolutePathToFile));
+    fs.writeFileSync(absolutePathToFile, content);
   }
 
   function writeFiles(...mockDirs: {[fileName: string]: string}[]) {
-    mockDirs.forEach(
-        (dir) => { Object.keys(dir).forEach((fileName) => { write(fileName, dir[fileName]); }); });
+    mockDirs.forEach((dir) => {
+      Object.keys(dir).forEach((fileName) => {
+        write(fileName, dir[fileName]);
+      });
+    });
   }
 
   function createCompilerOptions(overrideOptions: ng.CompilerOptions = {}): ng.CompilerOptions {
@@ -109,70 +121,40 @@ function createTestSupportFor(basePath: string) {
   }
 }
 
-export function setupBazelTo(basePath: string) {
-  if (!process.env.TEST_SRCDIR) {
-    throw new Error('`setupBazelTo()` must only be called from in a Bazel job.');
-  }
-  const sources = process.env.TEST_SRCDIR;
-  const packages = path.join(sources, 'angular/packages');
-  const nodeModulesPath = path.join(basePath, 'node_modules');
+export function setupBazelTo(tmpDirPath: string) {
+  const nodeModulesPath = path.join(tmpDirPath, 'node_modules');
   const angularDirectory = path.join(nodeModulesPath, '@angular');
+
   fs.mkdirSync(nodeModulesPath);
-
-  // Link the built angular packages
   fs.mkdirSync(angularDirectory);
-  const packageNames = fs.readdirSync(packages).filter(
-      name => fs.statSync(path.join(packages, name)).isDirectory() &&
-          fs.existsSync(path.join(packages, name, 'npm_package')));
-  for (const pkg of packageNames) {
-    fs.symlinkSync(path.join(packages, `${pkg}/npm_package`), path.join(angularDirectory, pkg));
-  }
 
-  // Link rxjs
-  const rxjsSource = path.join(sources, 'rxjs');
-  const rxjsDest = path.join(nodeModulesPath, 'rxjs');
-  if (fs.existsSync(rxjsSource)) {
-    fs.symlinkSync(rxjsSource, rxjsDest);
-  }
+  getAngularPackagesFromRunfiles().forEach(({pkgPath, name}) => {
+    fs.symlinkSync(pkgPath, path.join(angularDirectory, name), 'junction');
+  });
 
   // Link typescript
-  const typescriptSource = path.join(sources, 'ngdeps/node_modules/typescript');
+  const typeScriptSource = resolveNpmTreeArtifact('npm/node_modules/typescript');
   const typescriptDest = path.join(nodeModulesPath, 'typescript');
-  if (fs.existsSync(typescriptSource)) {
-    fs.symlinkSync(typescriptSource, typescriptDest);
+  fs.symlinkSync(typeScriptSource, typescriptDest, 'junction');
+
+  // Link "rxjs" if it has been set up as a runfile. "rxjs" is linked optionally because
+  // not all compiler-cli tests need "rxjs" set up.
+  try {
+    const rxjsSource = resolveNpmTreeArtifact('rxjs', 'index.js');
+    const rxjsDest = path.join(nodeModulesPath, 'rxjs');
+    fs.symlinkSync(rxjsSource, rxjsDest, 'junction');
+  } catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') throw e;
   }
-}
-
-function setupBazel(): TestSupport {
-  const basePath = makeTempDir();
-  setupBazelTo(basePath);
-  return createTestSupportFor(basePath);
-}
-
-function setupTestSh(): TestSupport {
-  const basePath = makeTempDir();
-
-  const ngRootDir = getNgRootDir();
-  const nodeModulesPath = path.resolve(basePath, 'node_modules');
-  fs.mkdirSync(nodeModulesPath);
-  fs.symlinkSync(
-      path.resolve(ngRootDir, 'dist', 'all', '@angular'),
-      path.resolve(nodeModulesPath, '@angular'));
-  fs.symlinkSync(
-      path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
-  fs.symlinkSync(
-      path.resolve(ngRootDir, 'node_modules', 'typescript'),
-      path.resolve(nodeModulesPath, 'typescript'));
-
-  return createTestSupportFor(basePath);
-}
-
-export function isInBazel() {
-  return process.env.TEST_SRCDIR != null;
 }
 
 export function setup(): TestSupport {
-  return isInBazel() ? setupBazel() : setupTestSh();
+  // // `TestSupport` provides its own file-system abstraction so we just use
+  // // the native `NodeJSFileSystem` under the hood.
+  setFileSystem(new NodeJSFileSystem());
+  const tmpDirPath = makeTempDir();
+  setupBazelTo(tmpDirPath);
+  return createTestSupportFor(tmpDirPath);
 }
 
 export function expectNoDiagnostics(options: ng.CompilerOptions, diags: ng.Diagnostics) {
@@ -187,4 +169,14 @@ export function expectNoDiagnosticsInProgram(options: ng.CompilerOptions, p: ng.
     ...p.getNgStructuralDiagnostics(), ...p.getTsSemanticDiagnostics(),
     ...p.getNgSemanticDiagnostics()
   ]);
+}
+
+export function normalizeSeparators(path: string): string {
+  return path.replace(/\\/g, '/');
+}
+
+const STRIP_ANSI = /\x1B\x5B\d+m/g;
+
+export function stripAnsi(diags: string): string {
+  return diags.replace(STRIP_ANSI, '');
 }

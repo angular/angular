@@ -59,21 +59,6 @@ The problem is that not all examples have a stackblitz but they could offer a zi
 In those cases, you can create a `zipper.json` file with the same syntax. It will be ignored by the
 stackblitz tool.
 
-## Choosing the zip "type"
-
-In both `stackblitz.json` and `zipper.json` you can use two extra properties for the zipper configuration:
-
-```
-{
-  ...
-  "removeSystemJsConfig": true,
-  "type": "testing"
-}
-```
-
-This would generate a zip for a testing application and it will also remove everything related with
-SystemJS.
-
 ## Executing the zip generation
 
 `generateZips.js` will create a zip for each `stackblitz.json`  or `zipper.json` it finds.

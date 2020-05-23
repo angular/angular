@@ -11,14 +11,17 @@ import {ActivatedRoute, RouterModule} from '@angular/router';
 
 import {DbService, InboxRecord} from './inbox-app';
 
-@Component({selector: 'inbox-detail', templateUrl: 'app/inbox-detail.html'})
+@Component({selector: 'inbox-detail', templateUrl: './inbox-detail.html'})
 export class InboxDetailCmp {
-  private record: InboxRecord = new InboxRecord();
+  record: InboxRecord = new InboxRecord();
   private ready: boolean = false;
 
   constructor(db: DbService, route: ActivatedRoute) {
-    route.paramMap.forEach(
-        p => { db.email(p.get('id')).then((data) => { this.record.setData(data); }); });
+    route.paramMap.forEach(p => {
+      db.email(p.get('id')).then((data) => {
+        this.record.setData(data);
+      });
+    });
   }
 }
 

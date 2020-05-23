@@ -8,7 +8,7 @@
 
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
-import {Type} from '../type';
+import {Type} from '../interface/type';
 
 import {ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
@@ -49,7 +49,7 @@ export abstract class ComponentRef<C> {
   abstract get changeDetectorRef(): ChangeDetectorRef;
 
   /**
-   * The component type.
+   * The type of this component (as created by a `ComponentFactory` class).
    */
   abstract get componentType(): Type<any>;
 
@@ -68,6 +68,12 @@ export abstract class ComponentRef<C> {
 }
 
 /**
+ * Base class for a factory that can create a component dynamically.
+ * Instantiate a factory for a given type of component with `resolveComponentFactory()`.
+ * Use the resulting `ComponentFactory.create()` method to create a component of that type.
+ *
+ * @see [Dynamic Components](guide/dynamic-component-loader)
+ *
  * @publicApi
  */
 export abstract class ComponentFactory<C> {
@@ -76,7 +82,7 @@ export abstract class ComponentFactory<C> {
    */
   abstract get selector(): string;
   /**
-   * The component's type
+   * The type of component the factory will create.
    */
   abstract get componentType(): Type<any>;
   /**

@@ -1,29 +1,45 @@
 # How to run the benchmarks locally
 
 ## Run in the browser
-$ build.sh (only needed 1x to copy over third party resources)
-$ cp -r ./modules/benchmarks ./dist/all/
-$ ./node_modules/.bin/tsc -p modules --emitDecoratorMetadata -w
-$ gulp serve
-$ open http://localhost:8000/all/benchmarks/src/tree/ng2/index.html?bundles=false
+
+```bash
+yarn bazel run modules/benchmarks/src/tree/{name}:devserver
+
+# e.g. "ng2" tree benchmark:
+yarn bazel run modules/benchmarks/src/tree/ng2:devserver
+```
 
 ## Run e2e tests
-$ export NODE_PATH=$(pwd)/dist/all:$(pwd)/dist/tools
-$ ./node_modules/.bin/protractor protractor-e2e.conf.js --specs=dist/all/benchmarks/e2e_test/tree_spec.js
 
-Options for protractor with `protractor-e2e.conf.js`:
-- `--bundles=true`: use prebuilt bundles
-- `--ng-help`: show all available options
+```
+# Run e2e tests of individual applications:
+yarn bazel test modules/benchmarks/src/tree/ng2/...
 
-## Run benchmarks tests
-$ export NODE_PATH=$(pwd)/dist/all:$(pwd)/dist/tools
-$ ./node_modules/.bin/protractor protractor-perf.conf.js --specs=dist/all/benchmarks/e2e_test/tree_perf.js
+# Run all e2e tests:
+yarn bazel test modules/benchmarks/...
+```
 
-Options for protractor with `protractor-perf.conf.js`:
-- `--bundles=true`: use prebuilt bundles
-- `--ng-help`: show all available options
+## Use of *_aot.ts files
 
-## Compile *_aot.ts files
+The `*_aot.ts` files are used as entry-points within Google to run the benchmark
+tests. These are still built as part of the corresponding `ng_module` rule.
 
-These files are compiled as part of the compiler_cli integration tests.
-See `@angular/compile_cli/integrationtest/tsconfig.json`
+## Specifying benchmark options
+
+There are options that can be specified in order to control how a given benchmark target
+runs. The following options can be set through [test environment variables](https://docs.bazel.build/versions/master/command-line-reference.html#flag--test_env):
+
+* `PERF_SAMPLE_SIZE`: Benchpress performs measurements until `scriptTime` predictively no longer
+  decreases. It does this by using a simple linear regression with the amount of samples specified.
+  Defaults to `20` samples.
+* `PERF_FORCE_GC`: If set to `true`, `@angular/benchpress` will run run the garbage collector
+  before and after performing measurements. Benchpress will measure and report the garbage
+  collection time.
+* `PERF_DRYRUN`: If set to `true`, no results are printed and stored in a `json` file. Also
+  benchpress only performs a single measurement (unlike with the simple linear regression).
+  
+Here is an example command that sets the `PERF_DRYRUN` option:
+
+```bash
+yarn bazel test modules/benchmarks/src/tree/baseline:perf --test_env=PERF_DRYRUN=true
+```

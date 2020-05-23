@@ -12,7 +12,7 @@ ts_library(
     deps = [
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
         "//packages/compiler-cli",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 
@@ -32,6 +32,22 @@ jasmine_node_test(
         "//packages/bazel/test/ngc-wrapped/empty:empty_tsconfig.json",
         "//packages/bazel/test/ngc-wrapped/empty:tsconfig.json",
         "//packages/private/testing",
-        "@build_bazel_rules_typescript//third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
+        "@npm_bazel_typescript//third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
     ],
+)
+
+ts_library(
+    name = "flat_module_test_lib",
+    testonly = True,
+    srcs = ["flat_module_test.ts"],
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "flat_module_test",
+    srcs = [":flat_module_test_lib"],
+    data = ["//packages/bazel/test/ngc-wrapped/flat_module"],
 )

@@ -7,47 +7,50 @@
  */
 
 import {Injector} from '@angular/core';
-import {MonoTypeOperatorFunction, Observable, from, of } from 'rxjs';
-import {concatMap, last, map, mergeMap, reduce} from 'rxjs/operators';
+import {EMPTY, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
+import {concatMap, map, mergeMap, takeLast, tap} from 'rxjs/operators';
 
 import {ResolveData} from '../config';
 import {NavigationTransition} from '../router';
-import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from '../router_state';
+import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from '../router_state';
 import {wrapIntoObservable} from '../utils/collection';
-
 import {getToken} from '../utils/preactivation';
 
 export function resolveData(
-    paramsInheritanceStrategy: 'emptyOnly' | 'always',
+    paramsInheritanceStrategy: 'emptyOnly'|'always',
     moduleInjector: Injector): MonoTypeOperatorFunction<NavigationTransition> {
   return function(source: Observable<NavigationTransition>) {
     return source.pipe(mergeMap(t => {
       const {targetSnapshot, guards: {canActivateChecks}} = t;
 
       if (!canActivateChecks.length) {
-        return of (t);
+        return of(t);
       }
-
+      let canActivateChecksResolved = 0;
       return from(canActivateChecks)
           .pipe(
               concatMap(
                   check => runResolve(
-                      check.route, targetSnapshot !, paramsInheritanceStrategy, moduleInjector)),
-              reduce((_: any, __: any) => _), map(_ => t));
+                      check.route, targetSnapshot!, paramsInheritanceStrategy, moduleInjector)),
+              tap(() => canActivateChecksResolved++),
+              takeLast(1),
+              mergeMap(_ => canActivateChecksResolved === canActivateChecks.length ? of(t) : EMPTY),
+          );
     }));
   };
 }
 
 function runResolve(
     futureARS: ActivatedRouteSnapshot, futureRSS: RouterStateSnapshot,
-    paramsInheritanceStrategy: 'emptyOnly' | 'always', moduleInjector: Injector) {
+    paramsInheritanceStrategy: 'emptyOnly'|'always', moduleInjector: Injector) {
   const resolve = futureARS._resolve;
   return resolveNode(resolve, futureARS, futureRSS, moduleInjector)
       .pipe(map((resolvedData: any) => {
         futureARS._resolvedData = resolvedData;
         futureARS.data = {
-            ...futureARS.data,
-            ...inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve};
+          ...futureARS.data,
+          ...inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve
+        };
         return null;
       }));
 }
@@ -57,22 +60,25 @@ function resolveNode(
     moduleInjector: Injector): Observable<any> {
   const keys = Object.keys(resolve);
   if (keys.length === 0) {
-    return of ({});
-  }
-  if (keys.length === 1) {
-    const key = keys[0];
-    return getResolver(resolve[key], futureARS, futureRSS, moduleInjector)
-        .pipe(map((value: any) => { return {[key]: value}; }));
+    return of({});
   }
   const data: {[k: string]: any} = {};
-  const runningResolvers$ = from(keys).pipe(mergeMap((key: string) => {
-    return getResolver(resolve[key], futureARS, futureRSS, moduleInjector)
-        .pipe(map((value: any) => {
-          data[key] = value;
-          return value;
-        }));
-  }));
-  return runningResolvers$.pipe(last(), map(() => data));
+  return from(keys).pipe(
+      mergeMap(
+          (key: string) => getResolver(resolve[key], futureARS, futureRSS, moduleInjector)
+                               .pipe(tap((value: any) => {
+                                 data[key] = value;
+                               }))),
+      takeLast(1),
+      mergeMap(() => {
+        // Ensure all resolvers returned values, otherwise don't emit any "next" and just complete
+        // the chain which will cancel navigation
+        if (Object.keys(data).length === keys.length) {
+          return of(data);
+        }
+        return EMPTY;
+      }),
+  );
 }
 
 function getResolver(

@@ -20,12 +20,12 @@ exports.config = {
 
   // Capabilities to be passed to the webdriver instance.
   capabilities: {
-    'browserName': 'chrome',
-    // For Travis
+    browserName: 'chrome',
     chromeOptions: {
-      binary: process.env.CHROME_BIN,
-      args: ['--no-sandbox']
-    }
+      binary: require('puppeteer').executablePath(),
+      // See /integration/README.md#browser-tests for more info on these args
+      args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio'],
+    },
   },
 
   // Framework to use. Jasmine is recommended.

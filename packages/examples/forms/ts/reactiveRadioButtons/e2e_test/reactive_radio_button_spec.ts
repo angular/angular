@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementArrayFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
+import {browser, by, element, ElementArrayFinder} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('radioButtons example', () => {
   afterEach(verifyNoBrowserErrors);
   let inputs: ElementArrayFinder;
 
   beforeEach(() => {
-    browser.get('/forms/ts/reactiveRadioButtons/index.html');
+    browser.get('/reactiveRadioButtons');
     inputs = element.all(by.css('input'));
   });
 

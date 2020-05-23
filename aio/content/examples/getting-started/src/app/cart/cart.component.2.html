@@ -1,0 +1,15 @@
+<!-- #docplaster -->
+<!-- #docregion prices -->
+<h3>Cart</h3>
+<!-- #enddocregion prices -->
+
+<p>
+  <a routerLink="/shipping">Shipping Prices</a>
+</p>
+<!-- #docregion prices -->
+
+<div class="cart-item" *ngFor="let item of items">
+  <span>{{ item.name }}</span>
+  <span>{{ item.price | currency }}</span>
+</div>
+<!-- #enddocregion prices -->
