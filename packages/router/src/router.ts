@@ -477,8 +477,10 @@ export class Router {
                        const processCurrentUrl =
                            (this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
                            this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl);
+                       const isStateChanged = this.lastSuccessfulNavigation ?
+                           t.extras !== this.lastSuccessfulNavigation.extras : false;
 
-                       if (processCurrentUrl) {
+                       if (processCurrentUrl || isStateChanged) {
                          return of(t).pipe(
                              // Fire NavigationStart event
                              switchMap(t => {
