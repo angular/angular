@@ -1,5 +1,9 @@
+<!--
 # Schematics for libraries
+-->
+# 라이브러리용 스키매틱
 
+<!--
 When you create an Angular library, you can provide and package it with schematics that integrate it with the Angular CLI.
 With your schematics, your users can use  `ng add` to install an initial version of your library,
 `ng generate` to create artifacts defined in your library, and `ng update` to adjust their project for a new version of your library that introduces breaking changes.
@@ -7,9 +11,21 @@ With your schematics, your users can use  `ng add` to install an initial version
 All three types of schematics can be part of a collection that you package with your library.
 
 Download the <live-example downloadOnly>library schematics project</live-example> for a completed example of the steps below.
+-->
+Angular 라이브러리는 Angular CLI와 통합하기 위해 스키매틱을 함께 제공할 수 있습니다.
+이 방법을 활용하면 사용자가 `ng add` 명령을 사용해서 라이브러리를 설치할 수 있고, `ng generate` 명령을 사용해서 라이브러리가 제공하는 Angular 구성요소를 생성할 수 있으며, `ng update`를 사용해서 라이브러리 버전을 업데이트하면서 필요한 수정사항을 자동으로 처리할 수 있습니다.
 
+세 종류의 스키매틱은 컬렉션 하나로 묶어서 라이브러리와 함께 배포할 수 있습니다.
+
+이 문서에서 설명하는 내용은 <live-example downloadOnly>library schematics project</live-example>를 직접 내려받아서 확인해보세요.
+
+
+<!--
 ## Creating a schematics collection
+-->
+## 스키매틱 컬렉션 만들기
 
+<!--
 To start a collection, you need to create the schematic files.
 The following steps show you how to add initial support without modifying any project files.
 
@@ -36,9 +52,41 @@ The following steps show you how to add initial support without modifying any pr
 
 The initial schema that you have created tells the CLI where to find the schematic that supports the `ng add` command.
 Now you are ready to create that schematic.
+-->
+컬렉션을 만들기 전에 먼저 스키매틱 파일을 만들어야 합니다.
+다음 순서대로 진행하면 프로젝트 파일은 건드리지 않으면서 스키매틱을 만들 수 있습니다.
 
+1. 라이브러리 최상위 폴더 아래에 `schematics` 폴더를 생성합니다.
+
+1. `schematics` 폴더에 첫번째 스키매틱으로 사용할 `ng-add` 폴더를 생성합니다.
+
+1. `schematics` 폴더에 `collection.json` 파일을 생성합니다.
+
+1. `collection.json` 파일의 내용을 다음과 같이 작성합니다.
+
+<code-example header="projects/my-lib/schematics/collection.json (스키매틱 컬렉션)" path="schematics-for-libraries/projects/my-lib/schematics/collection.1.json">
+</code-example>
+
+  * `$schema`는 Angular Devkit 컬렉션 스키마를 가리키는 상대주소입니다.
+  * `schematics` 객체에는 컬렉션에 추가할 스키매틱을 지정합니다.
+  * 첫번째로 추가된 스키매틱은 `ng-add` 스키매틱입니다. 이 스키매틱 객체에는 스키매틱에 대한 설명과 스키매틱이 실행될 때 진입점이 될 팩토리 함수를 지정합니다.
+
+1. 라이브러리 프로젝트의 `package.json` 파일에 "schematics"를 추가하고 위에서 작성한 스키마 파일의 경로를 지정합니다.
+   그러면 Angular CLI가 이 스키마 파일의 내용을 바탕으로 확장됩니다.
+
+<code-example header="projects/my-lib/package.json (스키매틱 컬렉션 참조)" path="schematics-for-libraries/projects/my-lib/package.json" region="collection">
+</code-example>
+
+지금까지 작성한 내용은 이 라이브러리가 `ng add` 지원 스키매틱을 제공한다는 것을 Angular CLI에게 알려주기 위한 것입니다.
+이제 스키매틱 로직을 작성해 봅시다.
+
+
+<!--
 ## Providing installation support
+-->
+## 라이브러리 설치 로직 작성하기
 
+<!--
 A schematic for the `ng add` command can enhance the initial installation process for your users.
 The following steps will define this type of schematic.
 
@@ -56,9 +104,32 @@ The task uses the user's preferred package manager to add the library to the pro
 
 In this example, the function receives the current `Tree` and returns it without any modifications.
 If you need to, you can do additional setup when your package is installed, such as generating files, updating configuration, or any other initial setup your library requires.
+-->
+`ng add` 스키매틱을 정의하면 라이브러리 설치 과정을 확장할 수 있습니다.
+다음 순서로 진행해 봅시다.
 
+1. &lt;라이브러리-최상위-폴더&gt;/schematics/ng-add/ 폴더로 이동합니다.
+
+1. 메인 파일 `index.ts`를 만듭니다.
+
+1. `index.ts` 파일을 열고 다음 내용으로 스키매틱 팩토리 함수를 정의합니다.
+
+<code-example header="projects/my-lib/schematics/ng-add/index.ts (ng-add 룰 팩토리)" path="schematics-for-libraries/projects/my-lib/schematics/ng-add/index.ts">
+</code-example>
+
+`ng add` 스키매틱에 필요한 것은 `SchematicContext`를 활용해서 설치 작업을 시작하는 것 뿐입니다.
+그러면 사용자가 설정한 기본 패키지 매니저로 `node_modules` 폴더에 라이브러리를 설치하며, 프로젝트에 있는 `package.json` 설정 파일을 수정합니다.
+
+위에서 작성한 예제 코드는 `Tree` 객체를 받지만 이 객체를 수정하지 않고 그대로 반환합니다.
+필요하다면 라이브러리 패키지를 설치한 이후에 어떤 파일을 생성한다던지, 환경설정 파일을 수정한다던지, 라이브러리 초기화 작업을 실행할 수 있습니다.
+
+
+<!--
 ## Building your schematics
+-->
+## 스키매틱 빌드하기
 
+<!--
 To bundle your schematics together with your library, you must configure the library to build the schematics separately, then add them to the bundle.
 You must build your schematics *after* you build your library, so they are placed in the correct directory.
 
@@ -86,9 +157,42 @@ To tell the library how to build the schematics, add a `tsconfig.schematics.json
   * The `build` script compiles your schematic using the custom `tsconfig.schematics.json` file.
   * The `copy:*` statements copy compiled schematic files into the proper locations in the library output folder in order to preserve the file structure.
   * The `postbuild` script copies the schematic files after the `build` script completes.
+-->
+스키매틱을 라이브러리와 함께 빌드하려면 기존 빌드 설정에 스키매틱 빌드 과정을 추가해야 합니다.
+이 때 스키매틱은 라이브러리를 빌드한 *후에* 빌드해야 원하는 위치에 제대로 생성할 수 있습니다.
 
+* 스키매틱을 라이브러리 안으로 통합하려면 스키매틱을 어떻게 컴파일해야 하는지 지정하는 TypeScript 설정이 필요합니다.
+
+* 라이브러리 `package.json` 파일에 스키매틱을 추가하는 스크립트를 작성해야 합니다.
+
+Angular 워크스페이스에 `my-lib` 라이브러리 프로젝트가 있다고 합시다.
+그러면 스키매틱을 빌드하기 위해 라이브러리 빌드 설정 파일인 `tsconfig.lib.json` 파일과 같은 위치에 `tsconfig.schematics.json` 파일을 추가해야 합니다.
+
+1. `tsconfig.schematics.json` 파일의 내용을 다음과 같이 작성합니다.
+
+<code-example header="projects/my-lib/tsconfig.schematics.json (TypeScript 환경 설정)" path="schematics-for-libraries/projects/my-lib/tsconfig.schematics.json">
+</code-example>
+
+  * 스키매틱에 있는 파일을 모두 컴파일해야 하기 때문에 `rootDir`은 `schematics` 폴더로 지정합니다.
+
+  * `outDir`은 라이브러리가 빌드되는 폴더로 지정합니다. 기본값은 워크스페이스 최상위 폴더를 기준으로 `dist/my-lib`입니다.
+
+1. 그리고 스키매틱 소스 파일을 라이브러리 번들 결과물에 포함하기 위해 라이브러리 프로젝트의 최상위 폴더 `projects/my-lib`에 있는 `package.json` 파일에 다음 스크립트를 추가합니다.
+
+<code-example header="projects/my-lib/package.json (빌드 스크립트)" path="schematics-for-libraries/projects/my-lib/package.json">
+</code-example>
+
+  * `build` 스크립트는 `tsconfig.schematics.json` 파일을 사용해서 스키매틱을 빌드하는 스크립트입니다.
+  * `copy:*` 스크립트는 컴파일된 스키매틱 파일을 라이브러리가 빌드된 폴더로 복사하는 스크립트입니다.
+  * `postbuild` 스크립트는 `build` 스크립트를 실행한 후에 빌드된 스키매틱 파일을 복사하는 스크립트입니다.
+
+
+<!--
 ## Providing generation support
+-->
+## 생성(generation) 기능 제공하기
 
+<!--
 You can add a named schematic to your collection that lets your users use the `ng generate` command to create an artifact that is defined in your library.
 
 We'll assume that your library defines a service, `my-service`, that requires some setup. You want your users to be able to generate it using the following CLI command.
@@ -98,9 +202,25 @@ ng generate my-lib:my-service
 </code-example>
 
 To begin, create a new subfolder, `my-service`, in the `schematics` folder.
+-->
+`ng generate` 스키매틱을 정의하면 라이브러리가 제공하는 컴포넌트나 서비스를 간단하게 생성할 수 있습니다.
 
+라이브러리가 `my-service`라는 서비스를 제공하는데 이 서비스에 필요한 설정이 몇가지 필요하다고 합시다.
+이런 경우에 생성 과정을 간단하게 처리하기 위해 Angular CLI 명령으로 다음과 같이 사용하려고 합니다.
+
+<code-example language="bash">
+ng generate my-lib:my-service
+</code-example>
+
+`schematics` 폴더에 `my-service` 폴더를 만드는 것부터 시작해 봅시다.
+
+
+<!--
 ### Configure the new schematic
+-->
+### 스키매틱 추가하기
 
+<!--
 When you add a schematic to the collection, you have to point to it in the collection's schema, and provide configuration files to define options that a user can pass to the command.
 
 1. Edit the `schematics/collection.json` file to point to the new schematic subfolder, and include a pointer to a schema file that will specify inputs for the new schematic.
@@ -133,6 +253,41 @@ When you add a schematic to the collection, you have to point to it in the colle
   * *name* : The name you want to provide for the created service.
   * *path* : Overrides the path provided to the schematic. The default path value is based on the current working directory.
   * *project* : Provides a specific project to run the schematic on. In the schematic, you can provide a default if the option is not provided by the user.
+-->
+컬렉션에 스키매틱을 추가하고 나면 컬렉션 스키마에 이 스키매틱을 추가해야 합니다.
+그리고나서 사용자가 사용할 수 있는 입력값을 스키마 파일로 정의해야 합니다.
+
+1. `schematics/collection.json` 파일을 열고 새로 만든 스키매틱 폴더를 지정합니다. 이 때 스키매틱 입력값을 정의하는 스키마 파일도 함께 지정합니다.
+
+<code-example header="projects/my-lib/schematics/collection.json (스키매틱 컬렉션)" path="schematics-for-libraries/projects/my-lib/schematics/collection.json">
+</code-example>
+
+1. `<lib-root>/schematics/my-service` 폴더로 이동합니다.
+
+1. `shcema.json` 파일을 열고 스키매틱 입력값을 정의합니다.
+
+<code-example header="projects/my-lib/schematics/my-service/schema.json (스키매틱 JSON 스키마)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/schema.json">
+</code-example>
+
+  * *id* : 콜렉션 안에서 스키마를 구분하는 ID입니다.
+  * *title* : 스키마를 설명하는 문구를 작성합니다.
+  * *type* : 프로퍼티 타입을 지정합니다.
+  * *properties* : 스키매틱 입력값의 형식을 객체 형태로 정의합니다.
+
+  개별 입력값은 각각 `type`, `description`, `alias`(생략 가능)로 구성합니다.
+  이 때 `type`은 입력값의 형식을 의미하며, `description`은 사용자가 스키매틱을 실행할 때 확인하는 문구입니다.
+
+  더 자세한 내용은 워크스페이스 스키마를 참고하세요.
+
+1. `schema.ts` 파일을 만들고 이 파일에 `schema.json`에서 정의한 내용을 인터페이스 형태로 정의합니다.
+
+<code-example header="projects/my-lib/schematics/my-service/schema.ts (스키매틱 인터페이스)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/schema.ts">
+</code-example>
+
+  * *name* : 서비스 이름으로 사용할 문자열
+  * *path* : 서비스를 생성할 위치를 지정할 때 사용합니다. 기본값은 현재 위치한 폴더입니다.
+  * *project* : 스키매틱 실행에 기준이 될 프로젝트를 지정합니다. 사용자가 입력값을 입력하지 않았을 때 기본값을 지정하기 위해 사용합니다.
+
 
 ### Add template files
 

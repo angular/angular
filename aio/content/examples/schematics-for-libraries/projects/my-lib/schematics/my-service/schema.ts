@@ -1,10 +1,10 @@
 export interface Schema {
-  // The name of the service.
+  // 서비스 이름
   name: string;
 
-  // The path to create the service.
+  // 서비스 생성 위치
   path?: string;
 
-  // The name of the project.
+  // 프로젝트 이름
   project?: string;
 }
