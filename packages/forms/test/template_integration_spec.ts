@@ -704,6 +704,26 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              expect(groupValidatorSpy).not.toHaveBeenCalled();
            }));
 
+        it('should not run validation for form with "submit" update strategy on child controls input',
+           fakeAsync(() => {
+             const validatorSpy = jasmine.createSpy('validator');
+
+             const fixture = initTest(NgModelOptionsStandalone);
+             fixture.componentInstance.options = {updateOn: 'change', name: 'two'};
+             fixture.componentInstance.formOptions = {updateOn: 'submit'};
+             fixture.detectChanges();
+             tick();
+
+             const form = fixture.debugElement.children[0].injector.get(NgForm);
+             form.control!.setValidators(validatorSpy);
+
+             const inputTwo = fixture.debugElement.queryAll(By.css('input'))[1].nativeElement;
+             dispatchEvent(inputTwo, 'input');
+             fixture.detectChanges();
+
+             expect(validatorSpy).not.toHaveBeenCalled();
+           }));
+
         it('should not update dirtiness until submit', fakeAsync(() => {
              const fixture = initTest(NgModelForm);
              fixture.componentInstance.name = '';

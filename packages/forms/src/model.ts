@@ -660,7 +660,8 @@ export abstract class AbstractControl {
       (this.statusChanges as EventEmitter<string>).emit(this.status);
     }
 
-    if (this._parent && !opts.onlySelf) {
+    if (this._parent && !opts.onlySelf &&
+        (this._parent.updateOn === 'change' || this._parent.updateOn === this.updateOn)) {
       this._parent.updateValueAndValidity(opts);
     }
   }
