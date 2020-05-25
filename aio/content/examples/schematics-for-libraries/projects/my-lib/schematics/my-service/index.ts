@@ -19,10 +19,10 @@ export function myService(options: MyServiceSchema): Rule {
       throw new SchematicsException('Could not find Angular workspace configuration');
     }
 
-    // convert workspace to string
+    // 워크스페이스 설정 파일을 문자열로 변환합니다.
     const workspaceContent = workspaceConfig.toString();
 
-    // parse workspace string into JSON object
+    // 문자열을 JSON 객체로 파싱합니다.
     const workspace: experimental.workspace.WorkspaceSchema = JSON.parse(workspaceContent);
 // #enddocregion workspace
 // #docregion project-fallback
