@@ -1,0 +1,17 @@
+<!-- #docregion single-projection -->
+<div class="heading">
+    <h1>Welcome to hero Content</h1>
+</div>
+<div class="body">
+    <ng-content></ng-content>
+</div>
+<!-- #enddocregion single-projection -->
+
+<!-- #docregion multiple-projection -->
+<div>
+    <ng-content select="h1"></ng-content>
+</div>
+<div>
+    <ng-content select=".body"></ng-content>
+</div>
+<!-- #enddocregion multiple-projection -->

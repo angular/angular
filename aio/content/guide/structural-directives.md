@@ -709,9 +709,48 @@ Without those braces, JavaScript would only execute the first statement
 when you intend to conditionally execute all of them as a single block.
 The `<ng-container>` satisfies a similar need in Angular templates.
 
+## &lt;ng-content&gt; tag
+
+Sometimes we want the primary structure of the component to remain same
+but we want to change a small portion of the HTML template according to
+the component and place from where we call that component.
+
+`<ng-content>` helps us to do just that, it acts as a place holder in our
+component structure these place holders can be replaced with the desired
+HTML. Let us see some examples for undestanding it better.
+
+First we create a component in which ng-content can act as a place holder for projected content.
+
+<code-example path="structural-directives/src/app/hero-template.component.html" header="src/app/hero-template.component.html" region="single-projection"></code-example>
+
+Now to replace ng-content with HTML content we have to pass any HTML within the opening and closing tags of `<app-hero-template>` compoenent and the content passed within the opening and closing tags of `<app-hero-template>` component is the content which will replace the `<ng-content>` tag.
+
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html" region="single-projection"></code-example>
+
+This is also called Content Projection, as the content is projected from the parent
+component to the child component. This allows us to make highly configrable compoenents, as
+we can change our compoenent's HTML template from the parent component from where we are calling our compoenent.
+
+### Multiple Projections
+
+What if we want to project small HTML snippets instead of all the content inside the
+component tags. For that we can do multiple content projections in a single component using
+the select attribute of ng-content. It takes an element selector to decide which content to
+project inside a particular `<ng-content>`. For example let us declare multiple
+`<ng-content>` tags in a component.
+
+<code-example path="structural-directives/src/app/hero-template.component.html" header="src/app/hero-template.component.html" region="multiple-projection"></code-example>
+
+After that you can call the element as the following.
+
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html" region="multiple-projection"></code-example>
+
+Here the select attribute selects the type of content that will be rendered inside a
+particular `<ng-content>`. We have first select to render header h1 element. If the
+projected content has no h1 element it won’t render anything. Similarly, the second one
+looks for an element with a body class. You can see that it can be used in many different ways to make highly configrable components which don't share a common template but share a basic structure.
 
 {@a unless}
-
 
 
 ## Write a structural directive

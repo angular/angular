@@ -6,13 +6,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent }         from './app.component';
 import { heroSwitchComponents } from './hero-switch.components';
 import { UnlessDirective }    from './unless.directive';
+import { HeroTemplateComponent } from './hero-template.component';
 
 @NgModule({
   imports: [ BrowserModule, FormsModule ],
   declarations: [
     AppComponent,
     heroSwitchComponents,
-    UnlessDirective
+    UnlessDirective,
+    HeroTemplateComponent
   ],
   bootstrap: [ AppComponent ]
 })
