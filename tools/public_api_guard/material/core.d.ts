@@ -96,62 +96,11 @@ export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL =
 
 export declare type FloatLabelType = 'always' | 'never' | 'auto';
 
-export declare class GestureConfig extends HammerGestureConfig {
-    events: string[];
-    constructor(_hammerOptions?: HammerOptions | undefined, _commonModule?: MatCommonModule);
-    buildHammer(element: HTMLElement): HammerInstance;
-    static ɵfac: i0.ɵɵFactoryDef<GestureConfig, [{ optional: true; }, { optional: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDef<GestureConfig>;
-}
-
 export interface GranularSanityChecks {
     doctype: boolean;
     hammer: boolean;
     theme: boolean;
     version: boolean;
-}
-
-export interface HammerInput {
-    center: {
-        x: number;
-        y: number;
-    };
-    deltaX: number;
-    deltaY: number;
-    preventDefault: () => {};
-}
-
-export interface HammerInstance {
-    off(eventName: string, callback: Function): void;
-    on(eventName: string, callback: Function): void;
-}
-
-export interface HammerManager {
-    add(recogniser: Recognizer | Recognizer[]): Recognizer;
-    emit(event: string, data: any): void;
-    off(events: string, handler?: Function): void;
-    on(events: string, handler: Function): void;
-    set(options: any): HammerManager;
-}
-
-export interface HammerOptions {
-    cssProps?: {
-        [key: string]: string;
-    };
-    domEvents?: boolean;
-    enable?: boolean | ((manager: HammerManager) => boolean);
-    inputClass?: HammerInput;
-    inputTarget?: EventTarget;
-    preset?: any[];
-    recognizers?: any[];
-    touchAction?: string;
-}
-
-export interface HammerStatic {
-    Pan: Recognizer;
-    Press: Recognizer;
-    Swipe: Recognizer;
-    new (element: HTMLElement | SVGElement, options?: any): HammerManager;
 }
 
 export interface HasInitialized {
@@ -189,8 +138,6 @@ export declare const MAT_DATE_LOCALE_PROVIDER: {
     provide: InjectionToken<string>;
     useExisting: InjectionToken<string>;
 };
-
-export declare const MAT_HAMMER_OPTIONS: InjectionToken<HammerOptions>;
 
 export declare const MAT_LABEL_GLOBAL_OPTIONS: InjectionToken<LabelOptions>;
 
@@ -394,15 +341,6 @@ export declare class NativeDateModule {
 export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
 
 export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
-
-export interface Recognizer {
-    new (options?: any): Recognizer;
-    recognizeWith(otherRecognizer: Recognizer | string): Recognizer;
-}
-
-export interface RecognizerStatic {
-    new (options?: any): Recognizer;
-}
 
 export interface RippleAnimationConfig {
     enterDuration?: number;

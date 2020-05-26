@@ -11,8 +11,6 @@ export * from './animation/animation';
 export * from './common-behaviors/index';
 export * from './datetime/index';
 export * from './error/error-options';
-export * from './gestures/gesture-annotations';
-export * from './gestures/gesture-config';
 export * from './line/line';
 export * from './option/index';
 export * from './label/label-options';
