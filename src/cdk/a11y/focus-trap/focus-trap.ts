@@ -29,7 +29,7 @@ import {InteractivityChecker} from '../interactivity-checker/interactivity-check
  *
  * This class currently uses a relatively simple approach to focus trapping.
  * It assumes that the tab order is the same as DOM order, which is not necessarily true.
- * Things like `tabIndex > 0`, flex `order`, and shadow roots can cause to two to misalign.
+ * Things like `tabIndex > 0`, flex `order`, and shadow roots can cause the two to misalign.
  *
  * @deprecated Use `ConfigurableFocusTrap` instead.
  * @breaking-change for 11.0.0 Remove this class.
