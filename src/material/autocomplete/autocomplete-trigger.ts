@@ -219,8 +219,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
               @Optional() private _dir: Directionality,
               @Optional() @Inject(MAT_FORM_FIELD) @Host() private _formField: MatFormField,
               @Optional() @Inject(DOCUMENT) private _document: any,
-              // @breaking-change 8.0.0 Make `_viewportRuler` required.
-              private _viewportRuler?: ViewportRuler) {
+              private _viewportRuler: ViewportRuler) {
     this._scrollStrategy = scrollStrategy;
   }
 
@@ -644,13 +643,11 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
         }
       });
 
-      if (this._viewportRuler) {
-        this._viewportSubscription = this._viewportRuler.change().subscribe(() => {
-          if (this.panelOpen && overlayRef) {
-            overlayRef.updateSize({width: this._getPanelWidth()});
-          }
-        });
-      }
+      this._viewportSubscription = this._viewportRuler.change().subscribe(() => {
+        if (this.panelOpen && overlayRef) {
+          overlayRef.updateSize({width: this._getPanelWidth()});
+        }
+      });
     } else {
       // Update the trigger, panel width and direction, in case anything has changed.
       this._positionStrategy.setOrigin(this._getConnectedElement());
