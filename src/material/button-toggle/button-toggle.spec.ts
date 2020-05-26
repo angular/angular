@@ -8,7 +8,6 @@ import {
   MatButtonToggle,
   MatButtonToggleChange,
   MatButtonToggleGroup,
-  MatButtonToggleGroupMultiple,
   MatButtonToggleModule,
 } from './index';
 
@@ -645,10 +644,6 @@ describe('MatButtonToggle without forms', () => {
       expect(() => {
         groupInstance.value = 'not-an-array';
       }).toThrowError(/Value must be an array/);
-    });
-
-    it('should be able to query for the deprecated `MatButtonToggleGroupMultiple`', () => {
-      expect(fixture.debugElement.query(By.directive(MatButtonToggleGroupMultiple))).toBeTruthy();
     });
 
   });

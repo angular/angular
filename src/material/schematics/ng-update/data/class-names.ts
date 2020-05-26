@@ -9,6 +9,14 @@
 import {ClassNameUpgradeData, TargetVersion, VersionChanges} from '@angular/cdk/schematics';
 
 export const classNames: VersionChanges<ClassNameUpgradeData> = {
+  [TargetVersion.V10]: [
+    {
+      pr: 'https://github.com/angular/components/pull/19289',
+      changes: [
+        {replace: 'MatButtonToggleGroupMultiple', replaceWith: 'MatButtonToggleGroup'}
+      ]
+    }
+  ],
   [TargetVersion.V6]: [
     {
       pr: 'https://github.com/angular/components/pull/10291',

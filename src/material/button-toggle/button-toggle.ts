@@ -73,12 +73,6 @@ export const MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR: any = {
   multi: true
 };
 
-/**
- * @deprecated Use `MatButtonToggleGroup` instead.
- * @breaking-change 8.0.0
- */
-export class MatButtonToggleGroupMultiple {}
-
 let _uniqueIdCounter = 0;
 
 /** Change event object emitted by MatButtonToggle. */
@@ -94,10 +88,7 @@ export class MatButtonToggleChange {
 /** Exclusive selection button toggle group that behaves like a radio-button group. */
 @Directive({
   selector: 'mat-button-toggle-group',
-  providers: [
-    MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR,
-    {provide: MatButtonToggleGroupMultiple, useExisting: MatButtonToggleGroup},
-  ],
+  providers: [MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR],
   host: {
     'role': 'group',
     'class': 'mat-button-toggle-group',
@@ -488,7 +479,6 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
               private _changeDetectorRef: ChangeDetectorRef,
               private _elementRef: ElementRef<HTMLElement>,
               private _focusMonitor: FocusMonitor,
-              // @breaking-change 8.0.0 `defaultTabIndex` to be made a required parameter.
               @Attribute('tabindex') defaultTabIndex: string,
               @Optional() @Inject(MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS)
                   defaultOptions?: MatButtonToggleDefaultOptions) {
