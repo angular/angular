@@ -30,6 +30,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/pull/19324',
       changes: ['MatAutocompleteTrigger']
+    },
+    {
+      pr: 'https://github.com/angular/components/pull/19363',
+      changes: ['MatTooltip']
     }
   ],
   [TargetVersion.V9]: [

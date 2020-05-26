@@ -255,13 +255,7 @@ export class MatTooltip implements OnDestroy, OnInit {
     @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() private _dir: Directionality,
     @Optional() @Inject(MAT_TOOLTIP_DEFAULT_OPTIONS)
-      private _defaultOptions: MatTooltipDefaultOptions,
-      /**
-       * @deprecated _hammerLoader parameter to be removed.
-       * @breaking-change 9.0.0
-       */
-      // Note that we need to give Angular something to inject here so it doesn't throw.
-      @Inject(ElementRef) _hammerLoader?: any) {
+      private _defaultOptions: MatTooltipDefaultOptions) {
 
     this._scrollStrategy = scrollStrategy;
 
