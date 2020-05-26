@@ -22,7 +22,6 @@ import {
   OnChanges,
   OnDestroy,
   OnInit,
-  Optional,
   SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
@@ -185,13 +184,8 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
   constructor(
       elementRef: ElementRef<HTMLElement>, private _iconRegistry: MatIconRegistry,
       @Attribute('aria-hidden') ariaHidden: string,
-      /**
-       * @deprecated `location` parameter to be made required.
-       * @breaking-change 8.0.0
-       */
-      @Optional() @Inject(MAT_ICON_LOCATION) private _location?: MatIconLocation,
-      // @breaking-change 9.0.0 _errorHandler parameter to be made required
-      @Optional() private readonly _errorHandler?: ErrorHandler) {
+      @Inject(MAT_ICON_LOCATION) private _location: MatIconLocation,
+      private readonly _errorHandler: ErrorHandler) {
     super(elementRef);
 
     // If the user has not explicitly set aria-hidden, mark the icon as hidden, as this is
@@ -240,12 +234,7 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
             .pipe(take(1))
             .subscribe(svg => this._setSvgElement(svg), (err: Error) => {
               const errorMessage = `Error retrieving icon ${namespace}:${iconName}! ${err.message}`;
-              // @breaking-change 9.0.0 _errorHandler parameter to be made required.
-              if (this._errorHandler) {
-                this._errorHandler.handleError(new Error(errorMessage));
-              } else {
-                console.error(errorMessage);
-              }
+              this._errorHandler.handleError(new Error(errorMessage));
             });
       } else if (svgIconChanges.previousValue) {
         this._clearSvgElement();
@@ -268,7 +257,7 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
   ngAfterViewChecked() {
     const cachedElements = this._elementsWithExternalReferences;
 
-    if (cachedElements && this._location && cachedElements.size) {
+    if (cachedElements && cachedElements.size) {
       const newPath = this._location.getPathname();
 
       // We need to check whether the URL has changed on each change detection since
@@ -310,13 +299,10 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
 
     // Note: we do this fix here, rather than the icon registry, because the
     // references have to point to the URL at the time that the icon was created.
-    if (this._location) {
-      const path = this._location.getPathname();
-      this._previousPath = path;
-      this._cacheChildrenWithExternalReferences(svg);
-      this._prependPathToReferences(path);
-    }
-
+    const path = this._location.getPathname();
+    this._previousPath = path;
+    this._cacheChildrenWithExternalReferences(svg);
+    this._prependPathToReferences(path);
     this._elementRef.nativeElement.appendChild(svg);
   }
 

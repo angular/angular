@@ -8,11 +8,11 @@ export declare function getMatIconNoHttpProviderError(): Error;
 
 export declare const ICON_REGISTRY_PROVIDER: {
     provide: typeof MatIconRegistry;
-    deps: (Optional[] | typeof DomSanitizer)[];
+    deps: (Optional[] | typeof DomSanitizer | typeof ErrorHandler)[];
     useFactory: typeof ICON_REGISTRY_PROVIDER_FACTORY;
 };
 
-export declare function ICON_REGISTRY_PROVIDER_FACTORY(parentRegistry: MatIconRegistry, httpClient: HttpClient, sanitizer: DomSanitizer, document?: any, errorHandler?: ErrorHandler): MatIconRegistry;
+export declare function ICON_REGISTRY_PROVIDER_FACTORY(parentRegistry: MatIconRegistry, httpClient: HttpClient, sanitizer: DomSanitizer, errorHandler: ErrorHandler, document?: any): MatIconRegistry;
 
 export interface IconOptions {
     viewBox?: string;
@@ -31,15 +31,14 @@ export declare class MatIcon extends _MatIconMixinBase implements OnChanges, OnI
     get inline(): boolean;
     set inline(inline: boolean);
     svgIcon: string;
-    constructor(elementRef: ElementRef<HTMLElement>, _iconRegistry: MatIconRegistry, ariaHidden: string,
-    _location?: MatIconLocation | undefined, _errorHandler?: ErrorHandler | undefined);
+    constructor(elementRef: ElementRef<HTMLElement>, _iconRegistry: MatIconRegistry, ariaHidden: string, _location: MatIconLocation, _errorHandler: ErrorHandler);
     ngAfterViewChecked(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ngAcceptInputType_inline: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatIcon, "mat-icon", ["matIcon"], { "color": "color"; "inline": "inline"; "svgIcon": "svgIcon"; "fontSet": "fontSet"; "fontIcon": "fontIcon"; }, {}, never, ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatIcon, [null, null, { attribute: "aria-hidden"; }, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatIcon, [null, null, { attribute: "aria-hidden"; }, null, null]>;
 }
 
 export interface MatIconLocation {
@@ -52,7 +51,7 @@ export declare class MatIconModule {
 }
 
 export declare class MatIconRegistry implements OnDestroy {
-    constructor(_httpClient: HttpClient, _sanitizer: DomSanitizer, document: any, _errorHandler?: ErrorHandler | undefined);
+    constructor(_httpClient: HttpClient, _sanitizer: DomSanitizer, document: any, _errorHandler: ErrorHandler);
     addSvgIcon(iconName: string, url: SafeResourceUrl, options?: IconOptions): this;
     addSvgIconInNamespace(namespace: string, iconName: string, url: SafeResourceUrl, options?: IconOptions): this;
     addSvgIconLiteral(iconName: string, literal: SafeHtml, options?: IconOptions): this;
@@ -68,6 +67,6 @@ export declare class MatIconRegistry implements OnDestroy {
     ngOnDestroy(): void;
     registerFontClassAlias(alias: string, className?: string): this;
     setDefaultFontSetClass(className: string): this;
-    static ɵfac: i0.ɵɵFactoryDef<MatIconRegistry, [{ optional: true; }, null, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatIconRegistry, [{ optional: true; }, null, { optional: true; }, null]>;
     static ɵprov: i0.ɵɵInjectableDef<MatIconRegistry>;
 }
