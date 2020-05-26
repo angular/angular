@@ -93,8 +93,10 @@ the server-rendered app can be properly bootstrapped into a client app.`);
  * `url` is the URL for the current render request.
  * `extraProviders` are the platform level providers for the current render request.
  *
- * Do not use this in a production server environment. Use pre-compiled {@link NgModuleFactory} with
- * {@link renderModuleFactory} instead.
+ * If compiling with the ViewEngine renderer, do not use this in a production server environment.
+ * Use pre-compiled {@link NgModuleFactory} with {@link renderModuleFactory} instead. If
+ * compiling with the Ivy renderer, this method is the recommended rendering method for
+ * platform-server.
  *
  * @publicApi
  */
