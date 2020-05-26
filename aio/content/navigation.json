@@ -580,11 +580,6 @@
           "url": "guide/cli-builder",
           "title": "CLI Builders",
           "tooltip": "Using builders to customize Angular CLI."
-        },
-        {
-          "url": "guide/web-worker",
-          "title": "Web Workers in Angular",
-          "tooltip": "Implement background processing with web workers."
         }
       ]
     },
