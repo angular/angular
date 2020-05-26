@@ -142,12 +142,8 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
               @Optional() public _sort: MatSort,
               @Inject('MAT_SORT_HEADER_COLUMN_DEF') @Optional()
                   public _columnDef: MatSortHeaderColumnDef,
-              /**
-               * @deprecated _focusMonitor and _elementRef to become required parameters.
-               * @breaking-change 10.0.0
-               */
-              private _focusMonitor?: FocusMonitor,
-              private _elementRef?: ElementRef<HTMLElement>) {
+              private _focusMonitor: FocusMonitor,
+              private _elementRef: ElementRef<HTMLElement>) {
     // Note that we use a string token for the `_columnDef`, because the value is provided both by
     // `material/table` and `cdk/table` and we can't have the CDK depending on Material,
     // and we want to avoid having the sort header depending on the CDK table because
@@ -173,12 +169,10 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
           changeDetectorRef.markForCheck();
         });
 
-    if (_focusMonitor && _elementRef) {
-      // We use the focus monitor because we also want to style
-      // things differently based on the focus origin.
-      _focusMonitor.monitor(_elementRef, true)
-          .subscribe(origin => this._setIndicatorHintVisible(!!origin));
-    }
+    // We use the focus monitor because we also want to style
+    // things differently based on the focus origin.
+    _focusMonitor.monitor(_elementRef, true)
+        .subscribe(origin => this._setIndicatorHintVisible(!!origin));
   }
 
   ngOnInit() {
@@ -195,11 +189,7 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
   }
 
   ngOnDestroy() {
-    // @breaking-change 10.0.0 Remove null check for _focusMonitor and _elementRef.
-    if (this._focusMonitor && this._elementRef) {
-      this._focusMonitor.stopMonitoring(this._elementRef);
-    }
-
+    this._focusMonitor.stopMonitoring(this._elementRef);
     this._sort.deregister(this);
     this._rerenderSubscription.unsubscribe();
   }

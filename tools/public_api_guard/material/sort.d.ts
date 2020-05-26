@@ -64,8 +64,7 @@ export declare class MatSortHeader extends _MatSortHeaderMixinBase implements Ca
     set disableClear(v: boolean);
     id: string;
     start: 'asc' | 'desc';
-    constructor(_intl: MatSortHeaderIntl, changeDetectorRef: ChangeDetectorRef, _sort: MatSort, _columnDef: MatSortHeaderColumnDef,
-    _focusMonitor?: FocusMonitor | undefined, _elementRef?: ElementRef<HTMLElement> | undefined);
+    constructor(_intl: MatSortHeaderIntl, changeDetectorRef: ChangeDetectorRef, _sort: MatSort, _columnDef: MatSortHeaderColumnDef, _focusMonitor: FocusMonitor, _elementRef: ElementRef<HTMLElement>);
     _getAriaSortAttribute(): "ascending" | "descending" | null;
     _getArrowDirectionState(): string;
     _getArrowViewState(): string;
