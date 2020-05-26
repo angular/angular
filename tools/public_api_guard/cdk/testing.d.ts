@@ -118,6 +118,7 @@ export interface TestElement {
     hover(): Promise<void>;
     isFocused(): Promise<boolean>;
     matchesSelector(selector: string): Promise<boolean>;
+    mouseAway(): Promise<void>;
     sendKeys(...keys: (string | TestKey)[]): Promise<void>;
     sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
     text(): Promise<string>;

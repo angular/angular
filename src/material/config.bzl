@@ -58,6 +58,7 @@ entryPoints = [
     "tabs/testing",
     "toolbar",
     "tooltip",
+    "tooltip/testing",
     "tree",
     "form-field/testing",
     "form-field/testing/control",

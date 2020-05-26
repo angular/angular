@@ -119,6 +119,12 @@ export class UnitTestElement implements TestElement {
     await this._stabilize();
   }
 
+  async mouseAway(): Promise<void> {
+    await this._stabilize();
+    dispatchMouseEvent(this.element, 'mouseleave');
+    await this._stabilize();
+  }
+
   async sendKeys(...keys: (string | TestKey)[]): Promise<void>;
   async sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
   async sendKeys(...modifiersAndKeys: any[]): Promise<void> {

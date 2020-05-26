@@ -99,6 +99,12 @@ export class ProtractorElement implements TestElement {
         .perform();
   }
 
+  async mouseAway(): Promise<void> {
+    return browser.actions()
+        .mouseMove(await this.element.getWebElement(), {x: -1, y: -1})
+        .perform();
+  }
+
   async sendKeys(...keys: (string | TestKey)[]): Promise<void>;
   async sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
   async sendKeys(...modifiersAndKeys: any[]): Promise<void> {

@@ -338,6 +338,18 @@ describe('TestbedHarnessEnvironment', () => {
       expect(classAttr).toContain('hovering');
     });
 
+    it('should be able to stop hovering', async () => {
+      const host = await harness.host();
+      let classAttr = await host.getAttribute('class');
+      expect(classAttr).not.toContain('hovering');
+      await host.hover();
+      classAttr = await host.getAttribute('class');
+      expect(classAttr).toContain('hovering');
+      await host.mouseAway();
+      classAttr = await host.getAttribute('class');
+      expect(classAttr).not.toContain('hovering');
+    });
+
     it('should be able to getAttribute', async () => {
       const memoStr = `
         This is an example that shows how to use component harness

@@ -24,8 +24,8 @@ import {
   templateUrl: 'test-main-component.html',
   host: {
     '[class.hovering]': '_isHovering',
-    '(mouseenter)': 'onMouseOver()',
-    '(mouseout)': 'onMouseOut()',
+    '(mouseenter)': 'onMouseEnter()',
+    '(mouseleave)': 'onMouseLeave()',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,11 +50,11 @@ export class TestMainComponent implements OnDestroy {
 
   private _fakeOverlayElement: HTMLElement;
 
-  onMouseOver() {
+  onMouseEnter() {
     this._isHovering = true;
   }
 
-  onMouseOut() {
+  onMouseLeave() {
     this._isHovering = false;
   }
 

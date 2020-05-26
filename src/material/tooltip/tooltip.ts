@@ -131,6 +131,9 @@ export function MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY(): MatTooltipDefaultOptions 
 @Directive({
   selector: '[matTooltip]',
   exportAs: 'matTooltip',
+  host: {
+    'class': 'mat-tooltip-trigger'
+  }
 })
 export class MatTooltip implements OnDestroy, OnInit {
   _overlayRef: OverlayRef | null;
@@ -331,7 +334,6 @@ export class MatTooltip implements OnDestroy, OnInit {
     }
 
     const overlayRef = this._createOverlay();
-
     this._detach();
     this._portal = this._portal || new ComponentPortal(TooltipComponent, this._viewContainerRef);
     this._tooltipInstance = overlayRef.attach(this._portal).instance;
