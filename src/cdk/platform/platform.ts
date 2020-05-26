@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, Optional, PLATFORM_ID} from '@angular/core';
+import {Inject, Injectable, PLATFORM_ID} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 
 // Whether the current platform supports the V8 Break Iterator. The V8 check
@@ -75,9 +75,6 @@ export class Platform {
   /** Whether the current browser is Safari. */
   SAFARI: boolean = this.isBrowser && /safari/i.test(navigator.userAgent) && this.WEBKIT;
 
-  /**
-   * @breaking-change 8.0.0 remove optional decorator
-   */
-  constructor(@Optional() @Inject(PLATFORM_ID) private _platformId?: Object) {}
+  constructor(@Inject(PLATFORM_ID) private _platformId: Object) {}
 }
 

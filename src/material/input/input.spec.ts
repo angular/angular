@@ -86,13 +86,12 @@ describe('MatInput without forms', () => {
   }));
 
   it('should not be treated as empty if type is date', fakeAsync(() => {
-    const platform = new Platform();
+    const fixture = createComponent(MatInputDateTestController);
+    const platform = TestBed.inject(Platform);
+    fixture.detectChanges();
 
     if (!(platform.TRIDENT || (platform.SAFARI && !platform.IOS))) {
-      let fixture = createComponent(MatInputDateTestController);
-      fixture.detectChanges();
-
-      let el = fixture.debugElement.query(By.css('label'))!.nativeElement;
+      const el = fixture.debugElement.query(By.css('label'))!.nativeElement;
       expect(el).not.toBeNull();
       expect(el.classList.contains('mat-form-field-empty')).toBe(false);
     }
@@ -100,13 +99,12 @@ describe('MatInput without forms', () => {
 
   // Safari Desktop and IE don't support type="date" and fallback to type="text".
   it('should be treated as empty if type is date in Safari Desktop or IE', fakeAsync(() => {
-    const platform = new Platform();
+    const fixture = createComponent(MatInputDateTestController);
+    const platform = TestBed.inject(Platform);
+    fixture.detectChanges();
 
     if (platform.TRIDENT || (platform.SAFARI && !platform.IOS)) {
-      let fixture = createComponent(MatInputDateTestController);
-      fixture.detectChanges();
-
-      let el = fixture.debugElement.query(By.css('label'))!.nativeElement;
+      const el = fixture.debugElement.query(By.css('label'))!.nativeElement;
       expect(el).not.toBeNull();
       expect(el.classList.contains('mat-form-field-empty')).toBe(true);
     }

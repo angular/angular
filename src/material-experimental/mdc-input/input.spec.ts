@@ -60,11 +60,11 @@ describe('MatMdcInput without forms', () => {
   }));
 
   it('should not be treated as empty if type is date', fakeAsync(() => {
-    const platform = new Platform();
+    const fixture = createComponent(MatInputDateTestController);
+    const platform = TestBed.inject(Platform);
+    fixture.detectChanges();
 
     if (!(platform.TRIDENT || (platform.SAFARI && !platform.IOS))) {
-      const fixture = createComponent(MatInputDateTestController);
-      fixture.detectChanges();
       const formField = fixture.debugElement.query(By.directive(MatFormField))!
         .componentInstance as MatFormField;
       expect(formField).toBeTruthy();
@@ -74,12 +74,11 @@ describe('MatMdcInput without forms', () => {
 
   // Safari Desktop and IE don't support type="date" and fallback to type="text".
   it('should be treated as empty if type is date in Safari Desktop or IE', fakeAsync(() => {
-    const platform = new Platform();
+    const fixture = createComponent(MatInputDateTestController);
+    const platform = TestBed.inject(Platform);
+    fixture.detectChanges();
 
     if (platform.TRIDENT || (platform.SAFARI && !platform.IOS)) {
-      let fixture = createComponent(MatInputDateTestController);
-      fixture.detectChanges();
-
       const formField = fixture.debugElement.query(By.directive(MatFormField))!
         .componentInstance as MatFormField;
       expect(formField).toBeTruthy();

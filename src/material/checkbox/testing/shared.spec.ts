@@ -13,7 +13,7 @@ import {MatCheckboxHarness} from '@angular/material/checkbox/testing/checkbox-ha
  */
 export function runHarnessTests(
     checkboxModule: typeof MatCheckboxModule, checkboxHarness: typeof MatCheckboxHarness) {
-  const platform = new Platform();
+  let platform: Platform;
   let fixture: ComponentFixture<CheckboxHarnessTest>;
   let loader: HarnessLoader;
 
@@ -25,6 +25,7 @@ export function runHarnessTests(
         })
         .compileComponents();
 
+    platform = TestBed.inject(Platform);
     fixture = TestBed.createComponent(CheckboxHarnessTest);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);

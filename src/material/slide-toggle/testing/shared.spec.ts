@@ -11,7 +11,7 @@ import {MatSlideToggleHarness} from '@angular/material/slide-toggle/testing/slid
 export function runHarnessTests(
     slideToggleModule: typeof MatSlideToggleModule,
     slideToggleHarness: typeof MatSlideToggleHarness) {
-  const platform = new Platform();
+  let platform: Platform;
   let fixture: ComponentFixture<SlideToggleHarnessTest>;
   let loader: HarnessLoader;
 
@@ -21,6 +21,7 @@ export function runHarnessTests(
       declarations: [SlideToggleHarnessTest],
     }).compileComponents();
 
+    platform = TestBed.inject(Platform);
     fixture = TestBed.createComponent(SlideToggleHarnessTest);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);

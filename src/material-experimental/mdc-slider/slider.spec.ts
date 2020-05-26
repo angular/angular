@@ -21,14 +21,12 @@ import {
   dispatchMouseEvent,
 } from '@angular/cdk/testing/private';
 import {Component, DebugElement, Type, ViewChild} from '@angular/core';
-import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, flush, TestBed, tick, inject} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {MatSlider, MatSliderModule} from './index';
 
 describe('MDC-based MatSlider', () => {
-  const platform = new Platform();
-
   function createComponent<T>(component: Type<T>): ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [MatSliderModule, ReactiveFormsModule, FormsModule, BidiModule],
@@ -187,14 +185,14 @@ describe('MDC-based MatSlider', () => {
       expect(sliderNativeElement.classList).not.toContain('mat-slider-active');
     });
 
-    it('should disable tabbing to the slider', () => {
+    it('should disable tabbing to the slider', inject([Platform], (platform: Platform) => {
       expect(sliderNativeElement.hasAttribute('tabindex')).toBe(false);
       // The "tabIndex" property returns an incorrect value in Edge 17.
       // See: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4365703/
       if (!platform.EDGE) {
         expect(sliderNativeElement.tabIndex).toBe(-1);
       }
-    });
+    }));
   });
 
   describe('slider with set min and max', () => {

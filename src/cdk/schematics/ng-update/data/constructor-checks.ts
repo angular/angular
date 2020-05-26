@@ -17,6 +17,12 @@ export type ConstructorChecksUpgradeData = string;
  * automatically through type checking.
  */
 export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
+  [TargetVersion.V10]: [
+    {
+      pr: 'https://github.com/angular/components/pull/19347',
+      changes: ['Platform']
+    }
+  ],
   [TargetVersion.V9]: [{
     pr: 'https://github.com/angular/components/pull/17084',
     changes: ['DropListRef']

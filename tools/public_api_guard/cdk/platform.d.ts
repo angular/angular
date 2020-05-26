@@ -18,8 +18,8 @@ export declare class Platform {
     TRIDENT: boolean;
     WEBKIT: boolean;
     isBrowser: boolean;
-    constructor(_platformId?: Object | undefined);
-    static ɵfac: i0.ɵɵFactoryDef<Platform, [{ optional: true; }]>;
+    constructor(_platformId: Object);
+    static ɵfac: i0.ɵɵFactoryDef<Platform, never>;
     static ɵprov: i0.ɵɵInjectableDef<Platform>;
 }
 

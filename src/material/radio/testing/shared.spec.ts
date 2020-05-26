@@ -11,7 +11,7 @@ import {MatRadioButtonHarness, MatRadioGroupHarness} from './radio-harness';
 export function runHarnessTests(radioModule: typeof MatRadioModule,
                                 radioGroupHarness: typeof MatRadioGroupHarness,
                                 radioButtonHarness: typeof MatRadioButtonHarness) {
-  const platform = new Platform();
+  let platform: Platform;
   let fixture: ComponentFixture<MultipleRadioButtonsHarnessTest>;
   let loader: HarnessLoader;
 
@@ -23,6 +23,7 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
         })
         .compileComponents();
 
+    platform = TestBed.inject(Platform);
     fixture = TestBed.createComponent(MultipleRadioButtonsHarnessTest);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);

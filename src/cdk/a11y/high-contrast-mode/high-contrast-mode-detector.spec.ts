@@ -5,14 +5,15 @@ import {
   HighContrastModeDetector, WHITE_ON_BLACK_CSS_CLASS,
 } from './high-contrast-mode-detector';
 import {Platform} from '@angular/cdk/platform';
+import {inject} from '@angular/core/testing';
 
 
 describe('HighContrastModeDetector', () => {
   let fakePlatform: Platform;
 
-  beforeEach(() => {
-    fakePlatform = new Platform();
-  });
+  beforeEach(inject([Platform], (p: Platform) => {
+    fakePlatform = p;
+  }));
 
   it('should detect NONE for non-browser platforms', () => {
     fakePlatform.isBrowser = false;
