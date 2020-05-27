@@ -191,13 +191,12 @@ export function compile({
     fileLoader = new UncachedFileLoader();
   }
 
+  compilerOpts.annotationsAs = 'static fields';
   if (!bazelOpts.es5Mode) {
     if (bazelOpts.workspaceName === 'google3') {
       compilerOpts.annotateForClosureCompiler = true;
-      compilerOpts.annotationsAs = 'static fields';
     } else {
       compilerOpts.annotateForClosureCompiler = false;
-      compilerOpts.annotationsAs = 'decorators';
     }
   }
 
@@ -278,11 +277,13 @@ export function compile({
     };
   }
 
-  // Prevent tsickle adding any types at all if we don't want closure compiler annotations.
   if (compilerOpts.annotateForClosureCompiler) {
     bazelHost.transformTypesToClosure = true;
+  }
+  if (compilerOpts.annotateForClosureCompiler || compilerOpts.annotationsAs === 'static fields') {
     bazelHost.transformDecorators = true;
   }
+
   const origBazelHostFileExist = bazelHost.fileExists;
   bazelHost.fileExists = (fileName: string) => {
     if (NGC_ASSETS.test(fileName)) {
