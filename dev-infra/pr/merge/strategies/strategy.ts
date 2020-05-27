@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {GitClient} from '../../../utils/git';
 import {PullRequestFailure} from '../failures';
-import {GitClient} from '../git';
 import {PullRequest} from '../pull-request';
 
 /**
