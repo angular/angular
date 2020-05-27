@@ -46,7 +46,7 @@
     "merge": "ng-dev pr merge",
     "approve-api": "node ./scripts/approve-api-golden.js"
   },
-  "version": "10.0.0-rc.0",
+  "version": "10.0.0-next.2",
   "dependencies": {
     "@angular/animations": "^10.0.0-rc.0",
     "@angular/common": "^10.0.0-rc.0",
