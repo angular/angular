@@ -9,9 +9,9 @@
 
 import {getRepoBaseDir} from '../../utils/config';
 import {error, green, info, promptConfirm, red, yellow} from '../../utils/console';
+import {GithubApiRequestError} from '../../utils/git';
 
 import {loadAndValidateConfig, MergeConfigWithRemote} from './config';
-import {GithubApiRequestError} from './git';
 import {MergeResult, MergeStatus, PullRequestMergeTask} from './task';
 
 /** URL to the Github page where personal access tokens can be generated. */
