@@ -90,13 +90,9 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   grep "ApplicationModule.ɵmod = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (esm2015)."
 
-# TODO: This assertion is disabled because @angular/core is no longer processed by tsickle which creates the static properties.
-#       We should either remove this assertion or use a syntentic JS file as input.
-#       Discuss with the ngcc folks.
-#
 # Did it place the `setClassMetadata` call correctly?
-#  cat node_modules/@angular/core/fesm2015/core.js | awk 'ORS=" "' | grep "ApplicationRef.ctorParameters.*setClassMetadata(ApplicationRef"
-#  assertSucceeded "Expected 'ngcc' to place 'setClassMetadata' after static properties like 'ctorParameters' in '@angular/core' (fesm2015)."
+  cat node_modules/@angular/core/fesm2015/core.js | awk 'ORS=" "' | grep "ApplicationRef.ctorParameters.*setClassMetadata(ApplicationRef"
+  assertSucceeded "Expected 'ngcc' to place 'setClassMetadata' after static properties like 'ctorParameters' in '@angular/core' (fesm2015)."
 
 
 # Did it transform @angular/core typing files correctly?
@@ -123,13 +119,19 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   assertSucceeded "Expected 'ngcc' to generate an abstract directive definition for 'MatMenuBase' in '@angular/material' (esm5)."
 
 
+# TODO: This assertion is disabled because @angular/common no longer contains __decorate calls.
+#       We should either remove this assertion or use a syntentic JS file as input.
+#       Discuss with the ngcc folks.
 # Did it handle namespace imported decorators in UMD using `__decorate` syntax?
-  grep "type: i0.Injectable" node_modules/@angular/common/bundles/common.umd.js
-  assertSucceeded "Expected 'ngcc' to correctly handle '__decorate' syntax in '@angular/common' (umd)."
+  #grep "type: i0.Injectable" node_modules/@angular/common/bundles/common.umd.js
+  #assertSucceeded "Expected 'ngcc' to correctly handle '__decorate' syntax in '@angular/common' (umd)."
 
+# TODO: This assertion is disabled because @angular/common no longer contains __decorate calls.
+#       We should either remove this assertion or use a syntentic JS file as input.
+#       Discuss with the ngcc folks.
   # (and ensure the @angular/common package is indeed using `__decorate` syntax)
-  grep "JsonPipe = __decorate(" node_modules/@angular/common/bundles/common.umd.js.__ivy_ngcc_bak
-  assertSucceeded "Expected '@angular/common' (umd) to actually use '__decorate' syntax."
+  #grep "JsonPipe = __decorate(" node_modules/@angular/common/bundles/common.umd.js.__ivy_ngcc_bak
+  #assertSucceeded "Expected '@angular/common' (umd) to actually use '__decorate' syntax."
 
 
 # Did it handle namespace imported decorators in UMD using static properties?
