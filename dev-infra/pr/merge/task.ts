@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {GitClient, GitCommandError} from '../../utils/git';
+
 import {MergeConfigWithRemote} from './config';
 import {PullRequestFailure} from './failures';
-import {GitClient, GitCommandError} from './git';
 import {isPullRequest, loadAndValidatePullRequest,} from './pull-request';
 import {GithubApiMergeStrategy} from './strategies/api-merge';
 import {AutosquashMergeStrategy} from './strategies/autosquash-merge';
@@ -40,7 +41,7 @@ export interface MergeResult {
  */
 export class PullRequestMergeTask {
   /** Git client that can be used to execute Git commands. */
-  git = new GitClient(this.projectRoot, this._githubToken, this.config);
+  git = new GitClient(this._githubToken, {github: this.config.remote});
 
   constructor(
       public projectRoot: string, public config: MergeConfigWithRemote,
