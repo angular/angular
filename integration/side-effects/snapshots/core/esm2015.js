@@ -1,7 +1,5 @@
 import "rxjs";
 
-import "tslib";
-
 import "rxjs/operators";
 
 const __globalThis = "undefined" !== typeof globalThis && globalThis;
