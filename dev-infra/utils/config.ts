@@ -13,16 +13,21 @@ import {error} from './console';
 import {exec} from './shelljs';
 import {isTsNodeAvailable} from './ts-node';
 
-/**
- * Describes the Github configuration for dev-infra. This configuration is
- * used for API requests, determining the upstream remote, etc.
- */
-export interface GithubConfig {
+/** Configuration for Git client interactions. */
+export interface GitClientConfig {
   /** Owner name of the repository. */
   owner: string;
   /** Name of the repository. */
   name: string;
+  /** If SSH protocol should be used for git interactions. */
+  useSsh?: boolean;
 }
+
+/**
+ * Describes the Github configuration for dev-infra. This configuration is
+ * used for API requests, determining the upstream remote, etc.
+ */
+export interface GithubConfig extends GitClientConfig {}
 
 /** The common configuration for ng-dev. */
 type CommonConfig = {
