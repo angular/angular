@@ -8,8 +8,9 @@
 
 import * as Octokit from '@octokit/rest';
 
+import {GitClient} from '../../utils/git';
+
 import {PullRequestFailure} from './failures';
-import {GitClient} from './git';
 import {matchesPattern} from './string-pattern';
 import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest} from './target-label';
 import {PullRequestMergeTask} from './task';

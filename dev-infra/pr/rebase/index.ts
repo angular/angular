@@ -11,7 +11,7 @@ import {URL} from 'url';
 
 import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info, promptConfirm} from '../../utils/console';
-import {getCurrentBranch, hasLocalChanges} from '../../utils/git';
+import {GitClient} from '../../utils/git';
 import {getPr} from '../../utils/github';
 import {exec} from '../../utils/shelljs';
 
@@ -42,8 +42,9 @@ const PR_SCHEMA = {
  */
 export async function rebasePr(
     prNumber: number, githubToken: string, config: Pick<NgDevConfig, 'github'> = getConfig()) {
+  const git = new GitClient();
   // TODO: Rely on a common assertNoLocalChanges function.
-  if (hasLocalChanges()) {
+  if (git.hasLocalChanges()) {
     error('Cannot perform rebase of PR with local changes.');
     process.exit(1);
   }
@@ -52,7 +53,7 @@ export async function rebasePr(
    * The branch originally checked out before this method performs any Git
    * operations that may change the working branch.
    */
-  const originalBranch = getCurrentBranch();
+  const originalBranch = git.getCurrentBranch();
   /* Get the PR information from Github. */
   const pr = await getPr(PR_SCHEMA, prNumber, config.github);
 
