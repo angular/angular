@@ -15,8 +15,6 @@ In the beginning of this project, we thought it would make Bazel easier for
 users to adopt if we abstracted the BUILD files management and tooling
 orchestration within Angular CLI. However, we have come to realize that such
 abstraction does not encourage users to use Bazel to its full potential.
-There is currently a [prototype](https://github.com/bazelbuild/rules_nodejs/tree/master/examples/angular_bazel_architect)
-that showcases how multiple architects within CLI could be orchestrated by Bazel.
 
 There are a few other reasons for this deprecation:
 
@@ -24,7 +22,9 @@ There are a few other reasons for this deprecation:
 2. The introduction of the Angular Ivy compiler enables new ways to use Bazel
    in a faster and more efficient manner (see below).
 3. Feature parity with Webpack-based Angular CLI is difficult to achieve without
-   trade-offs that would not be acceptable for many Angular users.
+   trade-offs that would not be acceptable for many Angular users.  
+   There is currently a [prototype](https://github.com/bazelbuild/rules_nodejs/tree/master/examples/angular_bazel_architect)
+   that showcases how multiple architects within CLI could be orchestrated by Bazel.
 
 ## Migrate from `@angular/bazel`
 
