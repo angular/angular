@@ -169,6 +169,14 @@ export function readNgcCommandLineAndConfiguration(args: string[]): NgcParsedCon
   const config = readCommandLineAndConfiguration(
       args, options, ['i18nFile', 'i18nFormat', 'locale', 'missingTranslation', 'watch']);
   const watch = parsedArgs.w || parsedArgs.watch;
+  if (watch) {
+    // Propagate watch flag to compiler options.
+    // This option instructs the Angular compiler to optimize for a incremental compilations in a
+    // watch-like mode, and does not have to be enabled via the CLI. The
+    // `NgcParsedConfiguration#watch` option tells Angular to explicitly start a watch mode, which
+    // affects more than just the compiler.
+    config.options.watch = true;
+  }
   return {...config, watch};
 }
 

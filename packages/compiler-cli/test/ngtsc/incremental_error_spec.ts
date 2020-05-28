@@ -21,7 +21,7 @@ runInEachFileSystem(() => {
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
       env.enableMultipleCompilations();
-      env.tsconfig();
+      env.tsconfig({watch: true});
 
       // This file is part of the program, but not referenced by anything else. It can be used by
       // each test to verify that it isn't re-emitted after incremental builds.

@@ -20,7 +20,7 @@ runInEachFileSystem(() => {
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
       env.enableMultipleCompilations();
-      env.tsconfig();
+      env.tsconfig({watch: true});
     });
 
     it('should not crash if CLI does not provide getModifiedResourceFiles()', () => {
@@ -38,6 +38,26 @@ runInEachFileSystem(() => {
       env.invalidateCachedFile('component1.html');
       env.simulateLegacyCLICompilerHost();
       env.driveMain();
+    });
+
+    it('should not skip unchanged files if incremental compilation is disabled', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'cmp', template: 'cmp'})
+      export class Cmp {
+        constructor() {}
+      }
+    `);
+      env.driveMain();
+      env.flushWrittenFileTracking();
+
+      env.driveMain();
+      const written = env.getFilesWrittenSinceLastFlush();
+
+      // The file should be written again.
+      expect(written).toContain('/test.js');
     });
 
     it('should skip unchanged services', () => {

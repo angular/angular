@@ -143,7 +143,12 @@ export class NgCompiler {
         this.incrementalDriver = IncrementalDriver.fresh(tsProgram);
       }
     }
-    setIncrementalDriver(tsProgram, this.incrementalDriver);
+    if (options.watch) {
+      // Only attach the incremental driver if incremental compilation (watch mode) has been
+      // explicitly been requested. The driver may be large, so we don't want to attach it to a
+      // program not intended for incremental compilation.
+      setIncrementalDriver(tsProgram, this.incrementalDriver);
+    }
 
     this.ignoreForDiagnostics =
         new Set(tsProgram.getSourceFiles().filter(sf => this.host.isShim(sf)));
