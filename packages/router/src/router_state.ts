@@ -284,6 +284,9 @@ export class ActivatedRouteSnapshot {
   // TODO(issue/24571): remove '!'.
   _queryParamMap!: ParamMap;
 
+  /** The URL fragment shared by all the routes */
+  fragment: string;
+
   /** @internal */
   constructor(
       /** The URL segments matched by this route */
@@ -291,9 +294,7 @@ export class ActivatedRouteSnapshot {
       /** The matrix parameters scoped to this route */
       public params: Params,
       /** The query parameters shared by all the routes */
-      public queryParams: Params,
-      /** The URL fragment shared by all the routes */
-      public fragment: string,
+      public queryParams: Params, fragment: string|null|undefined,
       /** The static and resolved data of this route */
       public data: Data,
       /** The outlet name of the route */
@@ -305,6 +306,7 @@ export class ActivatedRouteSnapshot {
     this._urlSegment = urlSegment;
     this._lastPathIndex = lastPathIndex;
     this._resolve = resolve;
+    this.fragment = fragment ?? '';
   }
 
   /** The root of the router state */

@@ -108,6 +108,9 @@ export class UrlTree {
   // TODO(issue/24571): remove '!'.
   _queryParamMap!: ParamMap;
 
+  /** The fragment of the URL */
+  fragment: string|null;
+
   /** @internal */
   constructor(
       /** The root segment group of the URL tree */
@@ -115,7 +118,9 @@ export class UrlTree {
       /** The query params of the URL */
       public queryParams: Params,
       /** The fragment of the URL */
-      public fragment: string|null) {}
+      fragment?: string|null) {
+    this.fragment = fragment ?? null;
+  }
 
   get queryParamMap(): ParamMap {
     if (!this._queryParamMap) {
@@ -301,7 +306,7 @@ export class DefaultUrlSerializer implements UrlSerializer {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
     const fragment =
-        typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment!)}` : '';
+        typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment)}` : '';
 
     return `${segment}${query}${fragment}`;
   }

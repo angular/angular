@@ -79,7 +79,7 @@ class ApplyRedirects {
         this.expandSegmentGroup(this.ngModule, this.config, this.urlTree.root, PRIMARY_OUTLET);
     const urlTrees$ = expanded$.pipe(
         map((rootSegmentGroup: UrlSegmentGroup) => this.createUrlTree(
-                rootSegmentGroup, this.urlTree.queryParams, this.urlTree.fragment!)));
+                rootSegmentGroup, this.urlTree.queryParams, this.urlTree.fragment)));
     return urlTrees$.pipe(catchError((e: any) => {
       if (e instanceof AbsoluteRedirect) {
         // after an absolute redirect we do not apply any more redirects!
@@ -101,7 +101,7 @@ class ApplyRedirects {
         this.expandSegmentGroup(this.ngModule, this.config, tree.root, PRIMARY_OUTLET);
     const mapped$ = expanded$.pipe(
         map((rootSegmentGroup: UrlSegmentGroup) =>
-                this.createUrlTree(rootSegmentGroup, tree.queryParams, tree.fragment!)));
+                this.createUrlTree(rootSegmentGroup, tree.queryParams, tree.fragment)));
     return mapped$.pipe(catchError((e: any): Observable<UrlTree> => {
       if (e instanceof NoMatch) {
         throw this.noMatchError(e);
@@ -115,8 +115,8 @@ class ApplyRedirects {
     return new Error(`Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
   }
 
-  private createUrlTree(rootCandidate: UrlSegmentGroup, queryParams: Params, fragment: string):
-      UrlTree {
+  private createUrlTree(
+      rootCandidate: UrlSegmentGroup, queryParams: Params, fragment?: string|null): UrlTree {
     const root = rootCandidate.segments.length > 0 ?
         new UrlSegmentGroup([], {[PRIMARY_OUTLET]: rootCandidate}) :
         rootCandidate;
