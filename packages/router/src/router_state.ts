@@ -126,7 +126,7 @@ export class ActivatedRoute {
       /** An observable of the query parameters shared by all the routes. */
       public queryParams: Observable<Params>,
       /** An observable of the URL fragment shared by all the routes. */
-      public fragment: Observable<string>,
+      public fragment: Observable<string|null>,
       /** An observable of the static and resolved data of this route. */
       public data: Observable<Data>,
       /** The outlet name of the route, a constant. */
@@ -321,7 +321,7 @@ export class ActivatedRouteSnapshot {
       /** The query parameters shared by all the routes */
       public queryParams: Params,
       /** The URL fragment shared by all the routes */
-      public fragment: string,
+      public fragment: string|null,
       /** The static and resolved data of this route */
       public data: Data,
       /** The outlet name of the route */
