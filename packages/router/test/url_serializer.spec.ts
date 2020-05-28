@@ -186,6 +186,12 @@ describe('url serializer', () => {
     expect(url.serialize(tree)).toEqual('/one#');
   });
 
+  it('should parse no fragment', () => {
+    const tree = url.parse('/one');
+    expect(tree.fragment).toEqual(null);
+    expect(url.serialize(tree)).toEqual('/one');
+  });
+
   describe('encoding/decoding', () => {
     it('should encode/decode path segments and parameters', () => {
       const u = `/${encodeUriSegment('one two')};${encodeUriSegment('p 1')}=${

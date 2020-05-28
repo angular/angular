@@ -382,7 +382,7 @@ export class DefaultUrlSerializer implements UrlSerializer {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
     const fragment =
-        typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment!)}` : '';
+        typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment)}` : '';
 
     return `${segment}${query}${fragment}`;
   }

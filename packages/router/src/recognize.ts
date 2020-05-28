@@ -67,7 +67,7 @@ export class Recognizer {
     // Use Object.freeze to prevent readers of the Router state from modifying it outside of a
     // navigation, resulting in the router being out of sync with the browser.
     const root = new ActivatedRouteSnapshot(
-        [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment!,
+        [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment,
         {}, PRIMARY_OUTLET, this.rootComponentType, null, this.urlTree.root, -1, {});
 
     const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
@@ -160,7 +160,7 @@ export class Recognizer {
     if (route.path === '**') {
       const params = segments.length > 0 ? last(segments)!.parameters : {};
       snapshot = new ActivatedRouteSnapshot(
-          segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment!,
+          segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment,
           getData(route), getOutlet(route), route.component!, route,
           getSourceSegmentGroup(rawSegment), getPathIndexShift(rawSegment) + segments.length,
           getResolve(route));
@@ -174,7 +174,7 @@ export class Recognizer {
 
       snapshot = new ActivatedRouteSnapshot(
           consumedSegments, result.parameters, Object.freeze({...this.urlTree.queryParams}),
-          this.urlTree.fragment!, getData(route), getOutlet(route), route.component!, route,
+          this.urlTree.fragment, getData(route), getOutlet(route), route.component!, route,
           getSourceSegmentGroup(rawSegment),
           getPathIndexShift(rawSegment) + consumedSegments.length, getResolve(route));
     }
