@@ -1,5 +1,5 @@
-import {MergeConfig} from './dev-infra/pr/merge/config';
-import {determineMergeBranches} from './dev-infra/pr/merge/determine-merge-branches';
+import {MergeConfig} from '../dev-infra/pr/merge/config';
+import {determineMergeBranches} from '../dev-infra/pr/merge/determine-merge-branches';
 
 // The configuration for `ng-dev commit-message` commands.
 const commitMessage = {
