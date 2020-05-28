@@ -15,6 +15,8 @@ In the beginning of this project, we thought it would make Bazel easier for
 users to adopt if we abstracted the BUILD files management and tooling
 orchestration within Angular CLI. However, we have come to realize that such
 abstraction does not encourage users to use Bazel to its full potential.
+There is currently a [prototype](https://github.com/bazelbuild/rules_nodejs/tree/master/examples/angular_bazel_architect)
+that showcases how multiple architects within CLI could be orchestrated by Bazel.
 
 There are a few other reasons for this deprecation:
 
@@ -42,6 +44,8 @@ rule.
 This new rule leverages ngtsc plugin supported by `ts_library`, and it is much faster.
 
 For the latest recommendations, please refer to the canonical Angular Bazel [repo](https://github.com/bazelbuild/rules_nodejs/tree/master/examples/angular).
+
+For questions, please ask in the `#angular` channel in http://slack.bazel.build/.
 
 ## Angular CLI
 
