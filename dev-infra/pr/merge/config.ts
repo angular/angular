@@ -7,6 +7,7 @@
  */
 
 import {getConfig, NgDevConfig} from '../../utils/config';
+import {GitClient} from './git';
 
 import {GithubApiMergeStrategyConfig} from './strategies/api-merge';
 
@@ -83,8 +84,8 @@ export interface MergeConfig {
 export type DevInfraMergeConfig = NgDevConfig<{'merge': () => MergeConfig}>;
 
 /** Loads and validates the merge configuration. */
-export function loadAndValidateConfig(): {config?: MergeConfigWithRemote, errors?: string[]} {
-  const config: Partial<DevInfraMergeConfig> = getConfig();
+export function loadAndValidateConfig(isRerun = false): {config?: MergeConfigWithRemote, errors?: string[]} {
+  const config: Partial<DevInfraMergeConfig> = getConfig(true);
 
   if (config.merge === undefined) {
     return {
@@ -109,6 +110,21 @@ export function loadAndValidateConfig(): {config?: MergeConfigWithRemote, errors
     mergeConfig.remote = {...config.github, ...mergeConfig.remote};
   } else {
     mergeConfig.remote = config.github;
+  }
+
+  // Ensure that the currently checked out branch is the latest from upstream/master.
+  const git = new GitClient('', '', mergeConfig as MergeConfigWithRemote);
+  const githubUrl = `https://github.com/${config.github.owner}/${config.github.name}.git`
+  // Fetch the latest SHA from github and compare it to the current SHA of HEAD.
+  git.runGraceful(['fetch', githubUrl]);
+  const upstreamMasterSha = git.runGraceful(['rev-parse', 'FETCH_HEAD']).stdout.trim();
+  const currentSha = git.runGraceful(['rev-parse', 'HEAD']).stdout.trim();
+  if (currentSha !== upstreamMasterSha) {
+    if (isRerun) {
+      return {errors: [`Failed to reload config from ${githubUrl}`]};
+    }
+    git.runGraceful(['checkout', '--detach', 'FETCH_HEAD']);
+    return loadAndValidateConfig(true);
   }
 
   // We always set the `remote` option, so we can safely cast the

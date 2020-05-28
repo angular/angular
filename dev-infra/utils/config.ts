@@ -48,9 +48,9 @@ let CONFIG: {}|null = null;
  * Get the configuration from the file system, returning the already loaded
  * copy if it is defined.
  */
-export function getConfig(): NgDevConfig {
-  // If the global config is not defined, load it from the file system.
-  if (CONFIG === null) {
+export function getConfig(force = false): NgDevConfig {
+  // If the global config is not defined or instructed to force a reload, load it from the file system.
+  if (force || CONFIG === null) {
     // The full path to the configuration file.
     const configPath = join(getRepoBaseDir(), CONFIG_FILE_PATH);
     // Set the global config object.
