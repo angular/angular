@@ -406,7 +406,7 @@ function createRoot(tree: UrlTree, commands: any[], queryParams?: Params, fragme
       new BehaviorSubject(null!), new BehaviorSubject(null!), new BehaviorSubject(null!),
       new BehaviorSubject(null!), new BehaviorSubject(null!), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
-  return createUrlTree(a, tree, commands, queryParams!, fragment!);
+  return createUrlTree(a, tree, commands, queryParams ?? null, fragment ?? null);
 }
 
 function create(
@@ -422,5 +422,5 @@ function create(
       new BehaviorSubject(null!), new BehaviorSubject(null!), new BehaviorSubject(null!),
       new BehaviorSubject(null!), new BehaviorSubject(null!), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
-  return createUrlTree(a, tree, commands, queryParams!, fragment!);
+  return createUrlTree(a, tree, commands, queryParams ?? null, fragment ?? null);
 }

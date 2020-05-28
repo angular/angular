@@ -1142,7 +1142,7 @@ export class Router {
     if (q !== null) {
       q = this.removeEmptyProps(q);
     }
-    return createUrlTree(a, this.currentUrlTree, commands, q!, f!);
+    return createUrlTree(a, this.currentUrlTree, commands, q, f ?? null);
   }
 
   /**

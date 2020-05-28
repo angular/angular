@@ -3,7 +3,7 @@ export declare class ActivatedRoute {
     component: Type<any> | string | null;
     data: Observable<Data>;
     get firstChild(): ActivatedRoute | null;
-    fragment: Observable<string>;
+    fragment: Observable<string | null>;
     outlet: string;
     get paramMap(): Observable<ParamMap>;
     params: Observable<Params>;
@@ -23,7 +23,7 @@ export declare class ActivatedRouteSnapshot {
     component: Type<any> | string | null;
     data: Data;
     get firstChild(): ActivatedRouteSnapshot | null;
-    fragment: string;
+    fragment: string | null;
     outlet: string;
     get paramMap(): ParamMap;
     params: Params;

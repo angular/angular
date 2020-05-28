@@ -1273,6 +1273,20 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('query: 2 fragment: fragment2');
      })));
 
+  it('should handle empty or missing fragments', fakeAsync(inject([Router], (router: Router) => {
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([{path: 'query', component: QueryParamsAndFragmentCmp}]);
+
+       router.navigateByUrl('/query#');
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('query:  fragment: ');
+
+       router.navigateByUrl('/query');
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('query:  fragment: null');
+     })));
+
   it('should ignore null and undefined query params',
      fakeAsync(inject([Router], (router: Router) => {
        const fixture = createRoot(router, RootCmp);
@@ -6058,7 +6072,15 @@ class QueryParamsAndFragmentCmp {
 
   constructor(route: ActivatedRoute) {
     this.name = route.queryParamMap.pipe(map((p: ParamMap) => p.get('name')));
-    this.fragment = route.fragment;
+    this.fragment = route.fragment.pipe(map((p: string|null|undefined) => {
+      if (p === undefined) {
+        return 'undefined';
+      } else if (p === null) {
+        return 'null';
+      } else {
+        return p;
+      }
+    }));
   }
 }
 
