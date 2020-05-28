@@ -448,13 +448,13 @@ When targeting older browsers, [polyfills](guide/browser-support#polyfills) can 
 
 To maximize compatibility, you could ship a single bundle that includes all your compiled code, plus any polyfills that may be needed.
 Users with modern browsers, however, shouldn't have to pay the price of increased bundle size that comes with polyfills they don't need.
-Differential loading, which is supported by default in Angular CLI version 8 and higher, solves this problem.
+Differential loading, which is supported in Angular CLI version 8 and higher, can help solve this problem.
 
-Differential loading is a strategy that allows your web application to support multiple browsers, but only load the necessary code that the browser needs. When differential loading is enabled (which is the default) the CLI builds two separate bundles as part of your deployed application.
+Differential loading is a strategy that allows your web application to support multiple browsers, but only load the necessary code that the browser needs. When differential loading is enabled the CLI builds two separate bundles as part of your deployed application.
 
-* The first bundle contains modern ES2015 syntax, takes advantage of built-in support in modern browsers, ships fewer polyfills, and results in a smaller bundle size.
+* The first bundle contains modern ES2015 syntax. This bundle takes advantage of built-in support in modern browsers, ships fewer polyfills, and results in a smaller bundle size.
 
-* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This results in a larger bundle size, but supports older browsers.
+* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This second bundle is larger, but supports older browsers.
 
 ### Differential builds
 
@@ -463,9 +463,9 @@ The [`ng build` CLI command](cli/build) queries the browser configuration and th
 
 The following configurations determine your requirements.
 
-* Browsers list
+* Browserslist
 
-   The `browserslist` configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports. See the [Browserslist spec](https://github.com/browserslist/browserslist) for complete configuration options.
+   The Browserslist configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports. See the [Browserslist spec](https://github.com/browserslist/browserslist) for complete configuration options.
 
 * TypeScript configuration
 
@@ -509,16 +509,27 @@ Each script tag has a `type="module"` or `nomodule` attribute. Browsers with nat
 
 ### Configuring differential loading
 
-Differential loading is supported by default with version 8 and later of the Angular CLI.
-For each application project in your workspace, you can configure how builds are produced based on the `browserslist` and `tsconfig.json` configuration files in your application project.
+To include differential loading in your application builds, you must configure the Browserslist and TypeScript configuration files in your application project.
 
-For a newly created Angular application, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015.
+The following examples show a `browserlistrc` and `tsconfig.json` file for a newly created Angular application. In this configuration, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015.
 
-<code-example language="none" header="browserslist">
-> 0.5%
-last 2 versions
+<code-example language="none" header="browserslistrc">
+# This file is used by the build system to adjust CSS and JS output to support the specified browsers below.
+# For additional information regarding the format and rule options, please see:
+# https://github.com/browserslist/browserslist#queries
+
+# For the full list of supported browsers by the Angular framework, please see:
+# https://angular.io/guide/browser-support
+
+# You can see what browsers were selected by your queries by running:
+#   npx browserslist
+
+last 1 Chrome version
+last 1 Firefox version
+last 2 Edge major versions
+last 2 Safari major version
+last 2 iOS major versions
 Firefox ESR
-not dead
 not IE 9-11 # For IE 9-11 support, remove 'not'.
 </code-example>
 
@@ -549,35 +560,23 @@ not IE 9-11 # For IE 9-11 support, remove 'not'.
 
 </code-example>
 
-The default configuration creates two builds, with differential loading enabled.
-
 <div class="alert is-important">
 
-   To see which browsers are supported with the default configuration and determine which settings meet to your browser support requirements, see the [Browserslist compatibility page](https://browserl.ist/?q=%3E+0.5%25%2C+last+2+versions%2C+Firefox+ESR%2C+not+dead%2C+not+IE+9-11).
+   To see which browsers are supported and determine which settings meet to your browser support requirements, see the [Browserslist compatibility page](https://browserl.ist/?q=%3E+0.5%25%2C+last+2+versions%2C+Firefox+ESR%2C+not+dead%2C+not+IE+9-11).
 
 </div>
 
-The `browserslist` configuration allows you to ignore browsers without ES2015 support. In this case, a single build is produced.
+The Browserslist configuration allows you to ignore browsers without ES2015 support. In this case, a single build is produced.
 
-If your `browserslist` configuration includes support for any legacy browsers, the build target in the TypeScript configuration determines whether the build will support differential loading.
+If your Browserslist configuration includes support for any legacy browsers, the build target in the TypeScript configuration determines whether the build will support differential loading.
 
 {@a configuration-table }
 
-| browserslist | ES target | Build result |
+| Browserslist | ES target | Build result |
 | -------- | -------- | -------- |
 | ES5 support disabled | es2015  | Single build, ES5 not required |
 | ES5 support enabled  | es5     | Single build w/conditional polyfills for ES5 only |
 | ES5 support enabled  | es2015  | Differential loading (two builds w/conditional polyfills) |
-
-
-### Opting out of differential loading
-
-Differential loading can be explicitly disabled if it causes unexpected issues, or if you need to target ES5 specifically for legacy browser support.
-
-To explicitly disable differential loading and create an ES5 build:
-
-- Enable the `dead` or `IE` browsers in the `browserslist` configuration file by removing the `not` keyword in front of them.
-- To create a single ES5 build, set the target in the `compilerOptions` to `es5`.
 
 {@a test-and-serve}
 
