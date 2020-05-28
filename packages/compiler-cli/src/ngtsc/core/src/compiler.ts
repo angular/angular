@@ -15,7 +15,7 @@ import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {getSourceFileOrError, LogicalFileSystem} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
-import {IncrementalDriver} from '../../incremental';
+import {IncrementalBuildStrategy, IncrementalDriver} from '../../incremental';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader} from '../../metadata';
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
@@ -100,7 +100,8 @@ export class NgCompiler {
       private adapter: NgCompilerAdapter, private options: NgCompilerOptions,
       private tsProgram: ts.Program,
       private typeCheckingProgramStrategy: TypeCheckingProgramStrategy,
-      oldProgram: ts.Program|null = null, private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER) {
+      private incrementalStrategy: IncrementalBuildStrategy, oldProgram: ts.Program|null = null,
+      private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER) {
     this.constructionDiagnostics.push(...this.adapter.constructionDiagnostics);
     const incompatibleTypeCheckOptionsDiagnostic = verifyCompatibleTypeCheckOptions(this.options);
     if (incompatibleTypeCheckOptionsDiagnostic !== null) {
@@ -129,7 +130,7 @@ export class NgCompiler {
     if (oldProgram === null) {
       this.incrementalDriver = IncrementalDriver.fresh(tsProgram);
     } else {
-      const oldDriver = getIncrementalDriver(oldProgram);
+      const oldDriver = this.incrementalStrategy.getIncrementalDriver(oldProgram);
       if (oldDriver !== null) {
         this.incrementalDriver =
             IncrementalDriver.reconcile(oldProgram, oldDriver, tsProgram, modifiedResourceFiles);
@@ -140,7 +141,7 @@ export class NgCompiler {
         this.incrementalDriver = IncrementalDriver.fresh(tsProgram);
       }
     }
-    setIncrementalDriver(tsProgram, this.incrementalDriver);
+    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, tsProgram);
 
     this.ignoreForDiagnostics =
         new Set(tsProgram.getSourceFiles().filter(sf => this.adapter.isShim(sf)));
@@ -506,7 +507,7 @@ export class NgCompiler {
 
     const program = this.typeCheckingProgramStrategy.getProgram();
     this.perfRecorder.stop(typeCheckSpan);
-    setIncrementalDriver(program, this.incrementalDriver);
+    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, program);
     this.nextProgram = program;
 
     return diagnostics;
@@ -791,44 +792,6 @@ export function isAngularCorePackage(program: ts.Program): boolean {
  */
 function getR3SymbolsFile(program: ts.Program): ts.SourceFile|null {
   return program.getSourceFiles().find(file => file.fileName.indexOf('r3_symbols.ts') >= 0) || null;
-}
-
-/**
- * Symbol under which the `IncrementalDriver` is stored on a `ts.Program`.
- *
- * The TS model of incremental compilation is based around reuse of a previous `ts.Program` in the
- * construction of a new one. The `NgCompiler` follows this abstraction - passing in a previous
- * `ts.Program` is sufficient to trigger incremental compilation. This previous `ts.Program` need
- * not be from an Angular compilation (that is, it need not have been created from `NgCompiler`).
- *
- * If it is, though, Angular can benefit from reusing previous analysis work. This reuse is managed
- * by the `IncrementalDriver`, which is inherited from the old program to the new program. To
- * support this behind the API of passing an old `ts.Program`, the `IncrementalDriver` is stored on
- * the `ts.Program` under this symbol.
- */
-const SYM_INCREMENTAL_DRIVER = Symbol('NgIncrementalDriver');
-
-/**
- * Get an `IncrementalDriver` from the given `ts.Program` if one is present.
- *
- * See `SYM_INCREMENTAL_DRIVER` for more details.
- */
-function getIncrementalDriver(program: ts.Program): IncrementalDriver|null {
-  const driver = (program as any)[SYM_INCREMENTAL_DRIVER];
-  if (driver === undefined || !(driver instanceof IncrementalDriver)) {
-    return null;
-  }
-  return driver;
-}
-
-/**
- * Save the given `IncrementalDriver` onto the given `ts.Program`, for retrieval in a subsequent
- * incremental compilation.
- *
- * See `SYM_INCREMENTAL_DRIVER` for more details.
- */
-function setIncrementalDriver(program: ts.Program, driver: IncrementalDriver): void {
-  (program as any)[SYM_INCREMENTAL_DRIVER] = driver;
 }
 
 /**
