@@ -35,6 +35,7 @@ v9 - v12
 
 | Area                          | API or Feature                                                                | May be removed in |
 | ----------------------------- | ---------------------------------------------------------------------------   | ----------------- |
+| `@angular/bazel`              | [`Bazel builder and schematics`](#bazelbuilder)                               | v10 |
 | `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v11 |
 | `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11 |
 | `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v11 |
@@ -160,7 +161,11 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 This section lists all of the currently-deprecated features, which includes template syntax, configuration options, and any other deprecations not listed in the [Deprecated APIs](#deprecated-apis) section above. It also includes deprecated API usage scenarios or API combinations, to augment the information above.
 
+{@a bazelbuilder}
+### Bazel builder and schematics
 
+Bazel builder and schematics were introduced in Angular Labs to let users try out Bazel without having to manage Bazel version and BUILD files.
+This feature has been deprecated. For more information, please refer to the [migration doc](https://github.com/angular/angular/blob/master/packages/bazel/src/schematics/README.md).
 
 {@a wtf}
 ### Web Tracing Framework integration
