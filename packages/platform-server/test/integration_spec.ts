@@ -841,6 +841,58 @@ describe('platform-server integration', () => {
       });
     });
 
+    it('can make relative HttpClient requests no slashes longer url', async () => {
+      const platform = platformDynamicServer([{
+        provide: INITIAL_CONFIG,
+        useValue: {document: '<app></app>', url: 'http://localhost/path/page'}
+      }]);
+      const ref = await platform.bootstrapModule(HttpClientExampleModule);
+      const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+      const http = ref.injector.get(HttpClient);
+      ref.injector.get(NgZone).run(() => {
+        http.get<string>('testing').subscribe((body: string) => {
+          NgZone.assertInAngularZone();
+          expect(body).toEqual('success!');
+        });
+        mock.expectOne('http://localhost/path/testing').flush('success!');
+      });
+    });
+
+    it('can make relative HttpClient requests slashes longer url', async () => {
+      const platform = platformDynamicServer([{
+        provide: INITIAL_CONFIG,
+        useValue: {document: '<app></app>', url: 'http://localhost/path/page'}
+      }]);
+      const ref = await platform.bootstrapModule(HttpClientExampleModule);
+      const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+      const http = ref.injector.get(HttpClient);
+      ref.injector.get(NgZone).run(() => {
+        http.get<string>('/testing').subscribe((body: string) => {
+          NgZone.assertInAngularZone();
+          expect(body).toEqual('success!');
+        });
+        mock.expectOne('http://localhost/testing').flush('success!');
+      });
+    });
+
+    it('can make relative HttpClient requests slashes longer url with base href', async () => {
+      const platform = platformDynamicServer([{
+        provide: INITIAL_CONFIG,
+        useValue:
+            {document: '<base href="http://other"><app></app>', url: 'http://localhost/path/page'}
+      }]);
+      const ref = await platform.bootstrapModule(HttpClientExampleModule);
+      const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+      const http = ref.injector.get(HttpClient);
+      ref.injector.get(NgZone).run(() => {
+        http.get<string>('/testing').subscribe((body: string) => {
+          NgZone.assertInAngularZone();
+          expect(body).toEqual('success!');
+        });
+        mock.expectOne('http://other/testing').flush('success!');
+      });
+    });
+
     it('requests are macrotasks', async(() => {
          const platform = platformDynamicServer(
              [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
