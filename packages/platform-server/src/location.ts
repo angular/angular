@@ -51,6 +51,7 @@ export class ServerPlatformLocation implements PlatformLocation {
       this.pathname = parsedUrl.pathname;
       this.search = parsedUrl.search;
       this.hash = parsedUrl.hash;
+      this.href = _doc.location.href;
     }
   }
 
