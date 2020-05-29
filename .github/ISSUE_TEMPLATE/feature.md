@@ -1,6 +1,6 @@
 ---
 name: Feature
-title: "fr([COMPONENT]): [TITLE]"
+title: "feat(COMPONENT): TITLE"
 about: Propose a new feature for Angular Material or the CDK
 labels: feature, needs triage
 ---

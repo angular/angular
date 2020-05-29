@@ -1,7 +1,7 @@
 ---
 name: Bug Report
-title: "bug([COMPONENT]): [TITLE]"
-about: Report a bug found in Angular Material or the CDK
+title: "bug(COMPONENT): TITLE"
+about: Report a bug in Angular Material or the CDK
 labels: needs triage
 ---
 

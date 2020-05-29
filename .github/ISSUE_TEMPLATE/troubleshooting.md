@@ -1,6 +1,6 @@
 ---
 name: Troubleshooting
-title: "help([COMPONENT]): [TITLE]"
+title: "help(COMPONENT): TITLE"
 about: Request for help on an issue you are facing with Angular Material or the CDK
 labels: troubleshooting, needs triage
 ---
