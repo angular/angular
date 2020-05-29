@@ -9,7 +9,8 @@ test --test_output=errors
 # Bazel doesn't calculate the memory ceiling correctly when running under Docker.
 # Limit Bazel to consuming resources that fit in CircleCI "xlarge" class
 # https://circleci.com/docs/2.0/configuration-reference/#resource_class
-build --local_resources=14336,8.0,1.0
+build --local_ram_resources=14336
+build --local_cpu_resources=8
 
 # Use the Angular Ivy compiler
 # See https://github.com/angular/angular/blob/master/docs/BAZEL.md#various-flags-used-for-tests
