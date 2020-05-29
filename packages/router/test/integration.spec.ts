@@ -159,6 +159,30 @@ describe('Integration', () => {
          expect(navigation.extras.state).toEqual({foo: 'bar'});
        })));
 
+    it('should set history.state if navigation url remain the same but navigation state changed',
+        fakeAsync(inject([Router], (router: Router) => {
+        router.onSameUrlNavigation = 'ignore';
+        router.resetConfig([
+          {path: '', component: SimpleCmp},
+          {path: 'simple', component: SimpleCmp},
+        ]);
+
+        const fixture = createRoot(router, RootCmp);
+        const events: Event[] = [];
+        router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
+
+        router.navigateByUrl('/simple', {state: {foo: 'bar'}});
+        tick();
+
+        router.navigateByUrl('/simple', {state: {resolveFailed: 'bar'}});
+        tick();
+
+        expectEvents(events, [
+          [NavigationStart, '/simple'], [NavigationEnd, '/simple'], [NavigationStart, '/simple'],
+          [NavigationEnd, '/simple']
+        ]);
+      })));
+
     it('should not pollute browser history when replaceUrl is set to true',
        fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
          router.resetConfig([

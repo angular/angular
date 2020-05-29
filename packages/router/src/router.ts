@@ -472,15 +472,15 @@ export class Router {
                        };
                      }),
                      switchMap(t => {
+                       const isStateChanged = this.lastSuccessfulNavigation ?
+                           t.extras.state !== this.lastSuccessfulNavigation.extras.state : false;
                        const urlTransition = !this.navigated ||
-                           t.extractedUrl.toString() !== this.browserUrlTree.toString();
+                           t.extractedUrl.toString() !== this.browserUrlTree.toString() || isStateChanged;
                        const processCurrentUrl =
                            (this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
                            this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl);
-                       const isStateChanged = this.lastSuccessfulNavigation ?
-                           t.extras !== this.lastSuccessfulNavigation.extras : false;
 
-                       if (processCurrentUrl || isStateChanged) {
+                       if (processCurrentUrl) {
                          return of(t).pipe(
                              // Fire NavigationStart event
                              switchMap(t => {
