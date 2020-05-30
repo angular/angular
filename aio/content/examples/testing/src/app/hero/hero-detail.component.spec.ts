@@ -205,7 +205,7 @@ function heroModuleSetup() {
       // simulate user entering a new name into the input box
       nameInput.value = 'quick BROWN  fOx';
 
-      // dispatch a DOM event so that Angular learns of input value change.
+      // Not a type, dispatch a DOM event so that Angular learns of input value change.
       // use newEvent utility function (not provided by Angular) for better browser compatibility
       nameInput.dispatchEvent(newEvent('input'));
 
