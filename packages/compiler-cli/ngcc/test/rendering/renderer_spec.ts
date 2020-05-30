@@ -640,6 +640,24 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
              expect(mapFile.path).toEqual(_('/node_modules/test-package/src/file.js.map'));
              expect(JSON.parse(mapFile.contents)).toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
            });
+
+
+        it('should render an internal source map for files whose original file does not have a source map',
+           () => {
+             const sourceFiles: TestFile[] = [JS_CONTENT];
+             const {
+               decorationAnalyses,
+               renderer,
+               switchMarkerAnalyses,
+               privateDeclarationsAnalyses
+             } = createTestRenderer('test-package', sourceFiles, undefined);
+             const [sourceFile, mapFile] = renderer.renderProgram(
+                 decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+             expect(sourceFile.path).toEqual(_('/node_modules/test-package/src/file.js'));
+             expect(sourceFile.contents)
+                 .toEqual(RENDERED_CONTENTS + '\n' + OUTPUT_PROGRAM_MAP.toComment());
+             expect(mapFile).toBeUndefined();
+           });
       });
 
       describe('@angular/core support', () => {
