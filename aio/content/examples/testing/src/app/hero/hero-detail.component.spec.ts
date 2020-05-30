@@ -107,7 +107,8 @@ function overrideSetup() {
     const newName = 'New Name';
 
     page.nameInput.value = newName;
-    page.nameInput.dispatchEvent(new Event('input')); // tell Angular
+    // newEvent is not a typo, there is a newEvent helper function that's in the live example
+    page.nameInput.dispatchEvent(newEvent('input')); // tell Angular
 
     expect(component.hero.name).toBe(newName, 'component hero has new name');
     expect(hdsSpy.testHero.name).toBe(origName, 'service hero unchanged before save');
@@ -205,7 +206,7 @@ function heroModuleSetup() {
       // simulate user entering a new name into the input box
       nameInput.value = 'quick BROWN  fOx';
 
-      // Not a type, dispatch a DOM event so that Angular learns of input value change.
+      // dispatch a DOM event so that Angular learns of input value change.
       // use newEvent utility function (not provided by Angular) for better browser compatibility
       nameInput.dispatchEvent(newEvent('input'));
 
