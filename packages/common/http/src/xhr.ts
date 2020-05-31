@@ -339,7 +339,9 @@ export class HttpXhrBackend implements HttpBackend {
         }
 
         // Finally, abort the in-flight request.
-        xhr.abort();
+        if (xhr.readyState !== xhr.DONE) {
+          xhr.abort();
+        }
       };
     });
   }

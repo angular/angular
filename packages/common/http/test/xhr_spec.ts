@@ -147,6 +147,17 @@ const XSSI_PREFIX = ')]}\'\n';
       });
       factory.mock.mockErrorEvent(new Error('blah'));
     });
+    it('avoids abort a request when fetch operation is completed', done => {
+      const abort = jasmine.createSpy('abort');
+
+      backend.handle(TEST_POST).toPromise().then(() => {
+        expect(abort).not.toHaveBeenCalled();
+        done();
+      });
+
+      factory.mock.abort = abort;
+      factory.mock.mockFlush(200, 'OK', 'Done');
+    });
     describe('progress events', () => {
       it('are emitted for download progress', done => {
         backend.handle(TEST_POST.clone({reportProgress: true}))
