@@ -43,10 +43,15 @@ export function renderSourceAndMap(
     const rawMergedMap: RawSourceMap = generatedFile.renderFlattenedSourceMap();
     const mergedMap = fromObject(rawMergedMap);
     const firstSource = generatedFile.sources[0];
-    if (firstSource && firstSource.inline &&
-        (firstSource.rawMap !== null || !sourceFile.isDeclarationFile)) {
-      // We render an inline source map if either the input source-map was inline or there was no
-      // input source map and this is not a typings file.
+    if (firstSource && (firstSource.rawMap !== null || !sourceFile.isDeclarationFile) &&
+        firstSource.inline) {
+      // We render an inline source map if one of:
+      // * there was no input source map and this is not a typings file;
+      // * the input source map exists and was inline.
+      //
+      // We do not generate inline source maps for typings files unless there explicitly was one in
+      // the input file because these inline source maps can be very large and it impacts on the
+      // performance of IDEs that need to read them to provide intellisense etc.
       return [
         {path: generatedPath, contents: `${generatedFile.contents}\n${mergedMap.toComment()}`}
       ];

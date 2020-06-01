@@ -644,8 +644,7 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
 
         it('should render an internal source map for files whose original file does not have a source map',
            () => {
-             const sourceFiles: TestFile[] =
-                 [{name: JS_CONTENT.name, contents: JS_CONTENT.contents}];
+             const sourceFiles: TestFile[] = [JS_CONTENT];
              const {
                decorationAnalyses,
                renderer,
