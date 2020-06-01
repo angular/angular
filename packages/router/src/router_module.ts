@@ -71,53 +71,23 @@ export function routerNgProbeToken() {
 }
 
 /**
- * @usageNotes
- *
- * RouterModule can be imported multiple times: once per lazily-loaded bundle.
- * Since the router deals with a global shared resource--location, we cannot have
- * more than one router service active.
- *
- * That is why there are two ways to create the module: `RouterModule.forRoot` and
- * `RouterModule.forChild`.
- *
- * * `forRoot` creates a module that contains all the directives, the given routes, and the router
- *   service itself.
- * * `forChild` creates a module that contains all the directives and the given routes, but does not
- *   include the router service.
- *
- * When registered at the root, the module should be used as follows
- *
- * ```
- * @NgModule({
- *   imports: [RouterModule.forRoot(ROUTES)]
- * })
- * class MyNgModule {}
- * ```
- *
- * For submodules and lazy loaded submodules the module should be used as follows:
- *
- * ```
- * @NgModule({
- *   imports: [RouterModule.forChild(ROUTES)]
- * })
- * class MyNgModule {}
- * ```
- *
  * @description
  *
- * Adds router directives and providers.
+ * Adds directives and providers for in-app navigation among views defined in an application.
+ * Use the Angular `Router` service to declaratively specify application states and manage state
+ * transitions.
  *
- * Managing state transitions is one of the hardest parts of building applications. This is
- * especially true on the web, where you also need to ensure that the state is reflected in the URL.
- * In addition, we often want to split applications into multiple bundles and load them on demand.
- * Doing this transparently is not trivial.
+ * You can import this NgModule multiple times, once for each lazy-loaded bundle.
+ * However, only one `Router` service can be active.
+ * To ensure this, there are two ways to register routes when importing this module:
  *
- * The Angular router service solves these problems. Using the router, you can declaratively specify
- * application states, manage state transitions while taking care of the URL, and load bundles on
- * demand.
+ * * The `forRoot()` method creates an `NgModule` that contains all the directives, the given
+ * routes, and the `Router` service itself.
+ * * The `forChild()` method creates an `NgModule` that contains all the directives and the given
+ * routes, but does not include the `Router` service.
  *
- * @see [Routing and Navigation](guide/router.html) for an
- * overview of how the router service should be used.
+ * @see [Routing and Navigation guide](guide/router) for an
+ * overview of how the `Router` service should be used.
  *
  * @publicApi
  */
@@ -134,9 +104,19 @@ export class RouterModule {
    * Creates and configures a module with all the router providers and directives.
    * Optionally sets up an application listener to perform an initial navigation.
    *
+   * When registering the NgModule at the root, import as follows:
+   *
+   * ```
+   * @NgModule({
+   *   imports: [RouterModule.forRoot(ROUTES)]
+   * })
+   * class MyNgModule {}
+   * ```
+   *
    * @param routes An array of `Route` objects that define the navigation paths for the application.
    * @param config An `ExtraOptions` configuration object that controls how navigation is performed.
-   * @return The new router module.
+   * @return The new `NgModule`.
+   *
    */
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule> {
     return {
@@ -173,7 +153,20 @@ export class RouterModule {
   }
 
   /**
-   * Creates a module with all the router directives and a provider registering routes.
+   * Creates a module with all the router directives and a provider registering routes,
+   * without creating a new Router service.
+   * When registering for submodules and lazy-loaded submodules, create the NgModule as follows:
+   *
+   * ```
+   * @NgModule({
+   *   imports: [RouterModule.forChild(ROUTES)]
+   * })
+   * class MyNgModule {}
+   * ```
+   *
+   * @param routes An array of `Route` objects that define the navigation paths for the submodule.
+   * @return The new NgModule.
+   *
    */
   static forChild(routes: Routes): ModuleWithProviders<RouterModule> {
     return {ngModule: RouterModule, providers: [provideRoutes(routes)]};
@@ -236,13 +229,17 @@ export function provideRoutes(routes: Routes): any {
  * the root component gets created. Use if there is a reason to have
  * more control over when the router starts its initial navigation due to some complex
  * initialization logic.
+ *
+ * The following values have been [deprecated](guide/releases#deprecation-practices) since v4,
+ * and should not be used for new applications.
+ *
  * * 'legacy_enabled'- (Default, for compatibility.) The initial navigation starts after the root
  * component has been created. The bootstrap is not blocked until the initial navigation is
- * complete. @deprecated
+ * complete.
  * * 'legacy_disabled'- The initial navigation is not performed. The location listener is set up
- * after the root component gets created. @deprecated since v4
- * * `true` - same as 'legacy_enabled'. @deprecated since v4
- * * `false` - same as 'legacy_disabled'. @deprecated since v4
+ * after the root component gets created.
+ * * `true` - same as 'legacy_enabled'.
+ * * `false` - same as 'legacy_disabled'.
  *
  * The 'legacy_enabled' and 'legacy_disabled' should not be used for new applications.
  *
@@ -255,6 +252,9 @@ export type InitialNavigation = true|false|'enabled'|'disabled'|'legacy_enabled'
 /**
  * A set of configuration options for a router module, provided in the
  * `forRoot()` method.
+ *
+ * @see `forRoot()`
+ *
  *
  * @publicApi
  */
@@ -295,6 +295,9 @@ export interface ExtraOptions {
 
   /**
    * A custom error handler for failed navigations.
+   * If the handler returns a value, the navigation Promise is resolved with this value.
+   * If the handler throws an exception, the navigation Promise is rejected with the exception.
+   *
    */
   errorHandler?: ErrorHandler;
 

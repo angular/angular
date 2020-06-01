@@ -36,7 +36,14 @@ import {isUrlTree} from './utils/type_guards';
 /**
  * @description
  *
- * Options that modify the navigation strategy.
+ * Options that modify the `Router` navigation strategy.
+ * Supply an object containing any of these properties to a `Router` navigation function to
+ * control how the target URL should be constructed or interpreted.
+ *
+ * @see [Router.navigate() method](api/router/Router#navigate)
+ * @see [Router.navigateByUrl() method](api/router/Router#navigatebyurl)
+ * @see [Router.createUrlTree() method](api/router/Router#createurltree)
+ * @see [Routing and Navigation guide](guide/router)
  *
  * @publicApi
  */
@@ -108,13 +115,24 @@ export interface NavigationExtras {
   /**
    * How to handle query parameters in the router link for the next navigation.
    * One of:
-   * * `merge` : Merge new with current parameters.
    * * `preserve` : Preserve current parameters.
+   * * `merge` : Merge new with current parameters.
    *
+   * The "preserve" option discards any new query params:
    * ```
-   * // from /results?page=1 to /view?page=1&page=2
-   * this.router.navigate(['/view'], { queryParams: { page: 2 },  queryParamsHandling: "merge" });
+   * // from /view1?page=1 to/view2?page=1
+   * this.router.navigate(['/view2'], { queryParams: { page: 2 },  queryParamsHandling: "preserve"
+   * });
    * ```
+   * The "merge" option appends new query params to the params from the current URL:
+   * ```
+   * // from /view1?page=1 to/view2?page=1&otherKey=2
+   * this.router.navigate(['/view2'], { queryParams: { otherKey: 2 },  queryParamsHandling: "merge"
+   * });
+   * ```
+   * In case of a key collision between current parameters and those in the `queryParams` object,
+   * the new value is used.
+   *
    */
   queryParamsHandling?: QueryParamsHandling|null;
   /**
@@ -147,7 +165,8 @@ export interface NavigationExtras {
   /**
    * Developer-defined state that can be passed to any navigation.
    * Access this value through the `Navigation.extras` object
-   * returned from `router.getCurrentNavigation()` while a navigation is executing.
+   * returned from the [Router.getCurrentNavigation()
+   * method](api/router/Router#getcurrentnavigation) while a navigation is executing.
    *
    * After a navigation completes, the router writes an object containing this
    * value together with a `navigationId` to `history.state`.
@@ -156,6 +175,7 @@ export interface NavigationExtras {
    *
    * Note that `history.state` does not pass an object equality test because
    * the router adds the `navigationId` on each navigation.
+   *
    */
   state?: {[k: string]: any};
 }
@@ -163,8 +183,8 @@ export interface NavigationExtras {
 /**
  * Error handler that is invoked when a navigation error occurs.
  *
- * If the handler returns a value, the navigation promise is resolved with this value.
- * If the handler throws an exception, the navigation promise is rejected with
+ * If the handler returns a value, the navigation Promise is resolved with this value.
+ * If the handler throws an exception, the navigation Promise is rejected with
  * the exception.
  *
  * @publicApi
@@ -185,14 +205,32 @@ export type RestoredState = {
 };
 
 /**
- * Information about a navigation operation. Retrieve the most recent
- * navigation object with the `router.getCurrentNavigation()` method.
+ * Information about a navigation operation.
+ * Retrieve the most recent navigation object with the
+ * [Router.getCurrentNavigation() method](api/router/Router#getcurrentnavigation) .
+ *
+ * * *id* : The unique identifier of the current navigation.
+ * * *initialUrl* : The target URL passed into the `Router#navigateByUrl()` call before navigation.
+ * This is the value before the router has parsed or applied redirects to it.
+ * * *extractedUrl* : The initial target URL after being parsed with `UrlSerializer.extract()`.
+ * * *finalUrl* : The extracted URL after redirects have been applied.
+ * This URL may not be available immediately, therefore this property can be `undefined`.
+ * It is guaranteed to be set after the `RoutesRecognized` event fires.
+ * * *trigger* : Identifies how this navigation was triggered.
+ * -- 'imperative'--Triggered by `router.navigateByUrl` or `router.navigate`.
+ * -- 'popstate'--Triggered by a popstate event.
+ * -- 'hashchange'--Triggered by a hashchange event.
+ * * *extras* : A `NavigationExtras` options object that controlled the strategy used for this
+ * navigation.
+ * * *previousNavigation* : The previously successful `Navigation` object. Only one previous
+ * navigation is available, therefore this previous `Navigation` object has a `null` value for its
+ * own `previousNavigation`.
  *
  * @publicApi
  */
 export type Navigation = {
   /**
-   * The ID of the current navigation.
+   * The unique identifier of the current navigation.
    */
   id: number;
   /**
@@ -289,7 +327,7 @@ type LocationChangeInfo = {
 /**
  * @description
  *
- * A service that provides navigation and URL manipulation capabilities.
+ * A service that provides navigation among views and URL manipulation capabilities.
  *
  * @see `Route`.
  * @see [Routing and Navigation Guide](guide/router).
@@ -941,7 +979,7 @@ export class Router {
   }
 
   /**
-   * Resets the configuration used for navigation and generating links.
+   * Resets the route configuration used for navigation and generating links.
    *
    * @param config The route array for the new configuration.
    *
@@ -977,14 +1015,15 @@ export class Router {
   }
 
   /**
-   * Applies an array of commands to the current URL tree and creates a new URL tree.
+   * Appends URL segments to the current URL tree to create a new URL tree.
    *
-   * When given an activated route, applies the given commands starting from the route.
-   * Otherwise, applies the given command starting from the root.
-   *
-   * @param commands An array of commands to apply.
+   * @param commands An array of URL fragments with which to construct the new URL tree.
+   * If the path is static, can be the literal URL string. For a dynamic path, pass an array of path
+   * segments, followed by the parameters for each segment.
+   * The fragments are applied to the current URL tree or the one provided  in the `relativeTo`
+   * property of the options object, if supplied.
    * @param navigationExtras Options that control the navigation strategy. This function
-   * only utilizes properties in `NavigationExtras` that would change the provided URL.
+   * only uses properties in `NavigationExtras` that would change the provided URL.
    * @returns The new URL tree.
    *
    * @usageNotes
@@ -1057,9 +1096,10 @@ export class Router {
   }
 
   /**
-   * Navigate based on the provided URL, which must be absolute.
+   * Navigates to a view using an absolute route path.
    *
-   * @param url An absolute URL. The function does not apply any delta to the current URL.
+   * @param url An absolute path for a defined route. The function does not apply any delta to the
+   *     current URL.
    * @param extras An object containing properties that modify the navigation strategy.
    * The function ignores any properties in the `NavigationExtras` that would change the
    * provided URL.
@@ -1069,12 +1109,16 @@ export class Router {
    *
    * @usageNotes
    *
+   * The following calls request navigation to an absolute path.
+   *
    * ```
    * router.navigateByUrl("/team/33/user/11");
    *
    * // Navigate without updating the URL
    * router.navigateByUrl("/team/33/user/11", { skipLocationChange: true });
    * ```
+   *
+   * @see [Routing and Navigation guide](guide/router)
    *
    */
   navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
@@ -1094,28 +1138,31 @@ export class Router {
    * Navigate based on the provided array of commands and a starting point.
    * If no starting route is provided, the navigation is absolute.
    *
-   * Returns a promise that:
-   * - resolves to 'true' when navigation succeeds,
-   * - resolves to 'false' when navigation fails,
-   * - is rejected when an error happens.
+   * @param commands An array of URL fragments with which to construct the target URL.
+   * If the path is static, can be the literal URL string. For a dynamic path, pass an array of path
+   * segments, followed by the parameters for each segment.
+   * The fragments are applied to the current URL or the one provided  in the `relativeTo` property
+   * of the options object, if supplied.
+   * @param extras An options object that determines how the URL should be constructed or
+   *     interpreted.
+   *
+   * @returns A Promise that resolves to `true` when navigation succeeds, to `false` when navigation
+   *     fails,
+   * or is rejected on error.
    *
    * @usageNotes
+   *
+   * The following calls request navigation to a dynamic route path relative to the current URL.
    *
    * ```
    * router.navigate(['team', 33, 'user', 11], {relativeTo: route});
    *
-   * // Navigate without updating the URL
+   * // Navigate without updating the URL, overriding the default behavior
    * router.navigate(['team', 33, 'user', 11], {relativeTo: route, skipLocationChange: true});
    * ```
    *
-   * The first parameter of `navigate()` is a delta to be applied to the current URL
-   * or the one provided in the `relativeTo` property of the second parameter (the
-   * `NavigationExtras`).
+   * @see [Routing and Navigation guide](guide/router)
    *
-   * In order to affect this browser's `history.state` entry, the `state`
-   * parameter can be passed. This must be an object because the router
-   * will add the `navigationId` property to this object before creating
-   * the new history item.
    */
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
