@@ -288,6 +288,7 @@ groups:
           'aio/content/guide/displaying-data.md',
           'aio/content/examples/displaying-data/**',
           'aio/content/images/guide/displaying-data/**',
+          'aio/content/guide/docs-content-contributions.md',
           'aio/content/guide/dynamic-component-loader.md',
           'aio/content/examples/dynamic-component-loader/**',
           'aio/content/images/guide/dynamic-component-loader/**',
