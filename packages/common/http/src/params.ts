@@ -14,10 +14,32 @@
  * @publicApi
  **/
 export interface HttpParameterCodec {
+  /**
+   * Encodes a key name for a URL parameter or query-string.
+   * @param key The key name.
+   * @returns The encoded key name.
+   */
   encodeKey(key: string): string;
+
+  /**
+   * Encodes the value of a URL parameter or query-string.
+   * @param value The value.
+   * @returns The encoded value.
+   */
   encodeValue(value: string): string;
 
+  /**
+   * Decodes an encoded URL parameter or query-string key.
+   * @param key The encoded key name.
+   * @returns The decoded key name.
+   */
   decodeKey(key: string): string;
+
+  /**
+   * Decodes an encoded URL parameter or query-string value.
+   * @param value The encoded value.
+   * @returns The decoded value.
+   */
   decodeValue(value: string): string;
 }
 
@@ -30,45 +52,59 @@ export interface HttpParameterCodec {
  *
  *
  * @publicApi
+ * @deprecated replaced by `HttpUrlComponentCodec`
  */
 export class HttpUrlEncodingCodec implements HttpParameterCodec {
-  /**
-   * Encodes a key name for a URL parameter or query-string.
-   * @param key The key name.
-   * @returns The encoded key name.
-   */
   encodeKey(key: string): string {
     return standardEncoding(key);
   }
 
-  /**
-   * Encodes the value of a URL parameter or query-string.
-   * @param value The value.
-   * @returns The encoded value.
-   */
   encodeValue(value: string): string {
     return standardEncoding(value);
   }
 
-  /**
-   * Decodes an encoded URL parameter or query-string key.
-   * @param key The encoded key name.
-   * @returns The decoded key name.
-   */
   decodeKey(key: string): string {
     return decodeURIComponent(key);
   }
 
-  /**
-   * Decodes an encoded URL parameter or query-string value.
-   * @param value The encoded value.
-   * @returns The decoded value.
-   */
   decodeValue(value: string) {
     return decodeURIComponent(value);
   }
 }
 
+/**
+ * Provides a canonical encoding and decoding of URL parameter keys and values, using the native
+ * `encodeURIComponent` and `decodeURIComponent` functions within the browser.
+ *
+ * Replaces `HttpUrlEncodingCodec` which
+ *
+ * @publicApi
+ */
+export class HttpUrlComponentCodec implements HttpParameterCodec {
+  encodeKey(key: string): string {
+    return encodeURIComponentWrapped(key);
+  }
+
+  encodeValue(value: string): string {
+    return encodeURIComponentWrapped(value);
+  }
+
+  decodeKey(key: string): string {
+    return decodeURIComponent(key);
+  }
+
+  decodeValue(value: string): string {
+    return decodeURIComponent(value);
+  }
+}
+
+/**
+ * Encodes using `encodeURIComponent`, but replaces '%20' which encodes a space character with
+ * '+'.
+ */
+function encodeURIComponentWrapped(value: string): string {
+  return encodeURIComponent(value).replace(/%20/g, '+');
+}
 
 function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, string[]> {
   const map = new Map<string, string[]>();
@@ -138,8 +174,13 @@ export class HttpParams {
   private updates: Update[]|null = null;
   private cloneFrom: HttpParams|null = null;
 
+  /**
+   * @internal
+   */
+  static defaultCodec: {new(): HttpParameterCodec} = HttpUrlEncodingCodec;
+
   constructor(options: HttpParamsOptions = {} as HttpParamsOptions) {
-    this.encoder = options.encoder || new HttpUrlEncodingCodec();
+    this.encoder = options.encoder || new HttpParams.defaultCodec();
     if (!!options.fromString) {
       if (!!options.fromObject) {
         throw new Error(`Cannot specify both fromString and fromObject.`);
@@ -249,6 +290,10 @@ export class HttpParams {
         // which results in `a=1&&c=1&c=2` instead of `a=1&c=1&c=2` if we don't
         .filter(param => param !== '')
         .join('&');
+  }
+
+  static setDefaultParameterCodec(codec: {new(): HttpParameterCodec}): void {
+    HttpParams.defaultCodec = codec;
   }
 
   private clone(update: Update): HttpParams {

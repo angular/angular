@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpParams} from '@angular/common/http/src/params';
+import {HttpParams, HttpUrlComponentCodec, HttpUrlEncodingCodec} from '@angular/common/http/src/params';
 
 {
   describe('HttpUrlEncodedParams', () => {
@@ -89,6 +89,31 @@ import {HttpParams} from '@angular/common/http/src/params';
       it('should stringify empty array params', () => {
         const body = new HttpParams({fromObject: {a: '', b: [], c: '3'}});
         expect(body.toString()).toBe('a=&c=3');
+      });
+    });
+
+    describe('HttpUrlEncodingCodec', () => {
+      beforeEach(() => {
+        HttpParams.setDefaultParameterCodec(HttpUrlComponentCodec);
+      });
+
+      afterEach(() => {
+        HttpParams.setDefaultParameterCodec(HttpUrlEncodingCodec);
+      });
+
+      it('should encode + characters correctly', () => {
+        const body = new HttpParams({fromObject: {param: '1+2'}});
+        expect(body.toString()).toBe('param=1%2B2');
+      });
+
+      it('should encode = characters correctly', () => {
+        const body = new HttpParams({fromObject: {'a=b': 'c=d'}});
+        expect(body.toString()).toBe('a%3Db=c%3Dd');
+      });
+
+      it('should encode : characters correctly', () => {
+        const body = new HttpParams({fromObject: {param: '1:2'}});
+        expect(body.toString()).toBe('param=1%3A2');
       });
     });
   });

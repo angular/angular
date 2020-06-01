@@ -6,17 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Injector, ModuleWithProviders, NgModule} from '@angular/core';
+import {Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
 import {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptorHandler, NoopInterceptor} from './interceptor';
 import {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp';
+import {HttpParams, HttpUrlComponentCodec as HttpCanonicalParamCodec} from './params';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 import {BrowserXhr, HttpXhrBackend, XhrFactory} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
+
+export const USE_CANONICAL_PARAM_ENCODING =
+    new InjectionToken<boolean>('USE_CANONICAL_PARAM_ENCODING');
 
 /**
  * An injectable `HttpHandler` that applies multiple interceptors
@@ -164,6 +168,25 @@ export class HttpClientXsrfModule {
   ],
 })
 export class HttpClientModule {
+  constructor(@Inject(USE_CANONICAL_PARAM_ENCODING) @Optional() useCanonicalParamEncoding: boolean|
+              null) {
+    if (useCanonicalParamEncoding === true) {
+      HttpParams.setDefaultParameterCodec(HttpCanonicalParamCodec);
+    }
+  }
+
+  static withOptions(options: {useCanonicalParamEncoding?: boolean}):
+      ModuleWithProviders<HttpClientModule> {
+    return {
+      ngModule: HttpClientModule,
+      providers: [
+        {
+          provide: USE_CANONICAL_PARAM_ENCODING,
+          useValue: options.useCanonicalParamEncoding || false,
+        },
+      ],
+    };
+  }
 }
 
 /**

@@ -546,6 +546,16 @@ You can also create HTTP parameters directly from a query string by using the `f
 const params = new HttpParams({fromString: 'name=foo'});
 </code-example>
 
+<div class="alert is-important">
+By default, `HttpParams` are encoded incorrectly (see [Issue #11058](https://github.com/angular/angular/issues/11058) for more details). This bug will be fixed in a future major version of Angular.
+
+To opt in to correct encoding, configure `HttpClientModule` when importing it:
+<code-example hideCopy language="typescript">
+imports: [
+  HttpClientModule.withOptions({useCanonicalParamEncoding: true}),
+]
+</div>
+
 
 {@a intercepting-requests-and-responses}
 ## Intercepting requests and responses
