@@ -1,3 +1,14 @@
+<a name="10.0.0-rc.2"></a>
+# [10.0.0-rc.2](https://github.com/angular/angular/compare/10.0.0-rc.0...10.0.0-rc.2) (2020-06-01)
+
+
+### Bug Fixes
+
+* **core:** reenable decorator downleveling for Angular npm packages ([#37317](https://github.com/angular/angular/issues/37317)) ([d16a7f3](https://github.com/angular/angular/commit/d16a7f3)), closes [#37221](https://github.com/angular/angular/issues/37221) [#37221](https://github.com/angular/angular/issues/37221)
+
+
+Note: the 10.0.0-rc.1 release on npm accidentally glitched-out midway, so we cut 10.0.0-rc.2 instead. oops :-)
+
 <a name="10.0.0-rc.0"></a>
 # [10.0.0-rc.0](https://github.com/angular/angular/compare/10.0.0-next.9...10.0.0-rc.0) (2020-05-21)
 
