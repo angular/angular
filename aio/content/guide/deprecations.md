@@ -472,7 +472,7 @@ Supporting outdated browsers like these increases bundle size, code complexity, 
 For example, fixing issues can be more difficult, as a straightforward fix for modern browsers could break old ones that have quirks due to not receiving updates from vendors.
 
 The final decision was made on three key points:
-* __Vendor support__: Microsoft dropped support of IE 9 and 10 on 1/12/16, meaning they no longer provide security updates or technical support. Additionally, Microsoft dropped support for of Windows 10 Mobile in December 2019.
+* __Vendor support__: Microsoft dropped support of IE 9 and 10 on 1/12/16, meaning they no longer provide security updates or technical support. Additionally, Microsoft dropped support for Windows 10 Mobile in December 2019.
 * __Usage statistics__: We looked at usage trends for IE 9 and 10 (as well as IE Mobile) from various sources and all indicated that usage percentages were extremely small (fractions of 1%).
 * __Feedback from partners__: We also reached out to some of our Angular customers and none expressed concern about dropping IE 9, 10, nor IE Mobile support.
 
