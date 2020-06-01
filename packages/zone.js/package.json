@@ -37,9 +37,6 @@
     "url": "git://github.com/angular/angular.git",
     "directory": "packages/zone.js"
   },
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
-  },
   "author": "Brian Ford",
   "license": "MIT",
   "bugs": {
