@@ -217,8 +217,8 @@ function getOwnDefinition<T>(type: any, def: ɵɵInjectableDef<T>): ɵɵInjectab
  *
  * @param type A type which may have `ɵprov`, via inheritance.
  *
- * @deprecated Will be removed in v10, where an error will occur in the scenario if we find the
- * `ɵprov` on an ancestor only.
+ * @deprecated Will be removed in a future version of Angular, where an error will occur in the
+ *     scenario if we find the `ɵprov` on an ancestor only.
  */
 export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
   // See `jit/injectable.ts#compileInjectable` for context on NG_PROV_DEF_FALLBACK.
@@ -233,7 +233,8 @@ export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|nu
     console.warn(
         `DEPRECATED: DI is instantiating a token "${
             typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
-        `This will become an error in v10. Please add @Injectable() to the "${typeName}" class.`);
+        `This will become an error in a future version of Angular. Please add @Injectable() to the "${
+            typeName}" class.`);
     return def;
   } else {
     return null;

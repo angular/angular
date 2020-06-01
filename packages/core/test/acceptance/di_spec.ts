@@ -1030,7 +1030,7 @@ describe('di', () => {
       if (ivyEnabled) {
         expect(warnSpy).toHaveBeenCalledWith(
             `DEPRECATED: DI is instantiating a token "SubSubClass" that inherits its @Injectable decorator but does not provide one itself.\n` +
-            `This will become an error in v10. Please add @Injectable() to the "SubSubClass" class.`);
+            `This will become an error in a future version of Angular. Please add @Injectable() to the "SubSubClass" class.`);
       }
     });
 
@@ -1061,7 +1061,7 @@ describe('di', () => {
       if (ivyEnabled) {
         expect(warnSpy).toHaveBeenCalledWith(
             `DEPRECATED: DI is instantiating a token "MyRootService" that inherits its @Injectable decorator but does not provide one itself.\n` +
-            `This will become an error in v10. Please add @Injectable() to the "MyRootService" class.`);
+            `This will become an error in a future version of Angular. Please add @Injectable() to the "MyRootService" class.`);
       }
     });
 
