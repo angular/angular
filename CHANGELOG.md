@@ -1,3 +1,9 @@
+# 10.0.0-rc.0 "concrete-cobbler" (2020-06-01)
+
+No library changes from 10.0.0-next.2. Built with Angular 10.0.0-rc.2, which fixes an
+issue where Angular decorators were not downleveled to properties, which caused
+any use of `@Inject()` with `forwardRef` to cause a run-time error.
+
 # 10.0.0-next.2 "wool-wind" (2020-05-26)
 
 ### cdk
