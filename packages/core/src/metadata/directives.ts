@@ -424,8 +424,8 @@ export interface ComponentDecorator {
    *
    * ```html
    * <a>Spaces</a>&ngsp;<a>between</a>&ngsp;<a>links.</a>
-   * <!-->compiled to be equivalent to:</>
-   *  <a>Spaces</a> <a>between</a> <a>links.</a>
+   * <!-- compiled to be equivalent to:
+   *  <a>Spaces</a> <a>between</a> <a>links.</a>  -->
    * ```
    *
    * Note that sequences of `&ngsp;` are still collapsed to just one space character when
@@ -433,8 +433,8 @@ export interface ComponentDecorator {
    *
    * ```html
    * <a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>
-   * <!-->compiled to be equivalent to:</>
-   *  <a>Spaces</a> <a>between</a> <a>links.</a>
+   * <!-- compiled to be equivalent to:
+   *  <a>before</a> <a>after</a> -->
    * ```
    *
    * To preserve sequences of whitespace characters, use the
