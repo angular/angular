@@ -28,8 +28,5 @@
   "sideEffects": false,
   "engines": {
     "node": ">=8.0"
-  },
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
   }
 }
