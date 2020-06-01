@@ -148,7 +148,6 @@ export declare class GuardsCheckStart extends RouterEvent {
     toString(): string;
 }
 
-/** @deprecated */
 export declare type InitialNavigation = true | false | 'enabled' | 'disabled' | 'legacy_enabled' | 'legacy_disabled';
 
 export declare type LoadChildren = LoadChildrenCallback | DeprecatedLoadChildren;
