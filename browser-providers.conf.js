@@ -31,7 +31,16 @@ var CIconfiguration = {
   'Android7': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Android8': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Android9': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Android10': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  // Disable Android 10 tests due to infrastructure failure.
+  // ex:
+  // Chrome Mobile 74.0.3729 (Android 0.0.0) ERROR:
+  //    Error: XHR error loading
+  //    http://angular-ci.local:9876/base/node_modules/rxjs/internal/operators/zip.js
+  //
+  // Error loading http://angular-ci.local:9876/base/node_modules/rxjs/internal/operators/zip.js as
+  // "../internal/operators/zip" from
+  // http://angular-ci.local:9876/base/node_modules/rxjs/operators/index.js
+  'Android10': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   // Disable all Safari and iOS tests because of incorrect results
   // ex:
   // Mobile Safari 13.0.0 (iOS 13.0.0) styling static template only should capture static values in
