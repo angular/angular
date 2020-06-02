@@ -1,4 +1,5 @@
-@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '~@angular/material/theming';
+@include mat-core();
 
 html,
 body {
@@ -6,4 +7,22 @@ body {
   margin: 0;
   max-width: unset !important;
   background: white !important;
+}
+
+// Light theme
+$light-primary: mat-palette($mat-indigo);
+$light-accent: mat-palette($mat-indigo, A200, A100, A400);
+$light-theme: mat-light-theme($light-primary, $light-accent);
+
+// Dark theme
+$dark-primary: mat-palette($mat-pink, 700, 500, 900);
+$dark-accent: mat-palette($mat-blue-grey, A200, A100, A400);
+$dark-theme: mat-dark-theme($dark-primary, $dark-accent);
+
+.color-scheme-dark {
+  @include angular-material-theme($dark-theme);
+}
+
+.color-scheme-light {
+  @include angular-material-theme($light-theme);
 }
