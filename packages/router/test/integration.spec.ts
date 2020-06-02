@@ -2539,6 +2539,161 @@ describe('Integration', () => {
            })));
       });
 
+      describe('should not break the history', () => {
+        @Injectable({providedIn: 'root'})
+        class MyGuard implements CanDeactivate<any> {
+          allow: boolean = true;
+          canDeactivate(): boolean {
+            return this.allow;
+          }
+        }
+
+        @Component({selector: 'parent', template: '<router-outlet></router-outlet>'})
+        class Parent {
+        }
+
+        @Component({selector: 'home', template: 'home'})
+        class Home {
+        }
+
+        @Component({selector: 'child1', template: 'child1'})
+        class Child1 {
+        }
+
+        @Component({selector: 'child2', template: 'child2'})
+        class Child2 {
+        }
+
+        @Component({selector: 'child3', template: 'child3'})
+        class Child3 {
+        }
+
+        @Component({selector: 'child4', template: 'child4'})
+        class Child4 {
+        }
+
+        @Component({selector: 'child5', template: 'child5'})
+        class Child5 {
+        }
+
+        @NgModule({
+          declarations: [Parent, Home, Child1, Child2, Child3, Child4, Child5],
+          entryComponents: [Child1, Child2, Child3, Child4, Child5],
+          imports: [RouterModule]
+        })
+        class TestModule {
+        }
+
+        let fixture: ComponentFixture<unknown>;
+
+        beforeEach(fakeAsync(() => {
+          TestBed.configureTestingModule({imports: [TestModule]});
+          const router = TestBed.get(Router);
+          const location = TestBed.get(Location);
+          fixture = createRoot(router, Parent);
+
+          router.resetConfig([
+            {path: '', component: Home},
+            {path: 'first', component: Child1},
+            {path: 'second', component: Child2},
+            {path: 'third', component: Child3, canDeactivate: [MyGuard]},
+            {path: 'fourth', component: Child4},
+            {path: 'fifth', component: Child5},
+          ]);
+
+          // Create a navigation history of pages 1-5, and go back to 3 so that there is both
+          // back and forward history.
+          router.navigateByUrl('/first');
+          advance(fixture);
+          router.navigateByUrl('/second');
+          advance(fixture);
+          router.navigateByUrl('/third');
+          advance(fixture);
+          router.navigateByUrl('/fourth');
+          advance(fixture);
+          router.navigateByUrl('/fifth');
+          advance(fixture);
+          location.back();
+          advance(fixture);
+          location.back();
+          advance(fixture);
+        }));
+
+        // TODO(https://github.com/angular/angular/issues/13586)
+        // A fix to this requires much more design
+        xit('when navigate back using Back button', fakeAsync(() => {
+              const location = TestBed.get(Location);
+              expect(location.path()).toEqual('/third');
+
+              TestBed.get(MyGuard).allow = false;
+              location.back();
+              advance(fixture);
+              expect(location.path()).toEqual('/third');
+              expect(fixture.nativeElement).toHaveText('child3');
+
+              TestBed.get(MyGuard).allow = true;
+              location.back();
+              advance(fixture);
+              expect(location.path()).toEqual('/second');
+              expect(fixture.nativeElement).toHaveText('child2');
+            }));
+
+        it('when navigate back imperatively', fakeAsync(() => {
+             const router = TestBed.get(Router);
+             const location = TestBed.get(Location);
+             expect(location.path()).toEqual('/third');
+
+             TestBed.get(MyGuard).allow = false;
+             router.navigateByUrl('/second');
+             advance(fixture);
+             expect(location.path()).toEqual('/third');
+             expect(fixture.nativeElement).toHaveText('child3');
+
+             TestBed.get(MyGuard).allow = true;
+             location.back();
+             advance(fixture);
+             expect(location.path()).toEqual('/second');
+             expect(fixture.nativeElement).toHaveText('child2');
+           }));
+
+        // TODO(https://github.com/angular/angular/issues/13586)
+        // A fix to this requires much more design
+        xit('when navigate back using Foward button', fakeAsync(() => {
+              const location = TestBed.get(Location);
+              expect(location.path()).toEqual('/third');
+
+              TestBed.get(MyGuard).allow = false;
+              location.forward();
+              advance(fixture);
+              expect(location.path()).toEqual('/third');
+              expect(fixture.nativeElement).toHaveText('child3');
+
+              TestBed.get(MyGuard).allow = true;
+              location.forward();
+              advance(fixture);
+              expect(location.path()).toEqual('/fourth');
+              expect(fixture.nativeElement).toHaveText('child4');
+            }));
+
+        it('when navigate forward imperatively', fakeAsync(() => {
+             const router = TestBed.get(Router);
+             const location = TestBed.get(Location);
+             expect(location.path()).toEqual('/third');
+
+             TestBed.get(MyGuard).allow = false;
+             router.navigateByUrl('/fourth');
+             advance(fixture);
+             expect(location.path()).toEqual('/third');
+             expect(fixture.nativeElement).toHaveText('child3');
+
+             TestBed.get(MyGuard).allow = true;
+             location.forward();
+             advance(fixture);
+             expect(location.path()).toEqual('/fourth');
+             expect(fixture.nativeElement).toHaveText('child4');
+           }));
+      });
+
       describe('should redirect when guard returns UrlTree', () => {
         beforeEach(() => TestBed.configureTestingModule({
           providers: [
