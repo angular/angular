@@ -4,7 +4,7 @@
   overflow: auto;
 
   .tree-node {
-    color: #111;
+    // color: #111;
     padding-top: 4px;
     padding-bottom: 4px;
     position: relative;
@@ -35,19 +35,23 @@
 
     &:hover {
       background-color: #d4e7ff;
+      color: rgba(0, 0, 0, 0.87);
       cursor: pointer;
     }
 
     &.matched {
       background-color: #b298e4;
+      color: rgba(0, 0, 0, 0.87);
       color: #fff;
 
       &:hover {
         background-color: #8463be;
+        color: rgba(0, 0, 0, 0.87);
       }
 
       &.selected {
         background-color: #6f56bb;
+        color: rgba(0, 0, 0, 0.87);
         color: #fcd736;
       }
 
@@ -63,6 +67,7 @@
     &.selected,
     &.highlighted {
       background-color: #92bdff;
+      color: rgba(0, 0, 0, 0.87);
     }
   }
 }
