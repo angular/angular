@@ -311,7 +311,7 @@ ngOnInit() {
 }
 </code-example>
 
-For more information with a working example, see the [routing tutorial section on preloading](guide/router-tutorial-toh#preloading-background-loading-of-feature-areas).
+For more information with a working example, see the section on [preloading](guide/router-techniques#preloading) in the routing tutorial.
 
 
 <hr>

@@ -289,5 +289,3 @@ After you've set up your app for testing, you may find the following testing  gu
 * [Testing pipes](guide/testing-pipes)&mdash;find out how to test attribute directives.
 * [Debugging tests](guide/testing-attribute-directives)&mdash;uncover common testing bugs.
 * [Testing utility APIs](guide/testing-utility-apis)&mdash;get familiar with Angular testing features.
-
-

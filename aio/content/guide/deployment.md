@@ -320,8 +320,8 @@ You can dramatically reduce launch time by only loading the application modules 
 absolutely must be present when the app starts.
 
 Configure the Angular Router to defer loading of all other modules (and their associated code), either by
-[waiting until the app has launched](guide/router-tutorial-toh#preloading  "Preloading")
-or by [_lazy loading_](guide/router#lazy-loading "Lazy loading")
+[waiting until the app has launched](guide/lazy-loading-ngmodules#preloading  "Preloading")
+or by [_lazy loading_](guide/lazy-loading-ngmodules "Lazy loading")
 them on demand.
 
 <div class="callout is-helpful">
@@ -413,7 +413,7 @@ Here's the output for the _main_ bundle of an example app called `cli-quickstart
 
 ## The `base` tag
 
-The HTML [_&lt;base href="..."/&gt;_](/guide/router)
+The HTML [_&lt;base href="..."/&gt;_](/guide/router#base-href "Setting a base location")
 specifies a base path for resolving relative URLs to assets such as images, scripts, and style sheets.
 For example, given the `<base href="/my/app/">`, the browser resolves a URL such as `some/place/foo.jpg`
 into a server request for `my/app/some/place/foo.jpg`.

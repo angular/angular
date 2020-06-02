@@ -793,9 +793,9 @@
               "tooltip": "A tutorial that covers many patterns associated with Angular routing."
             },
             {
-              "url": "guide/router-tutorial-toh",
-              "title": "Router tutorial: tour of heroes",
-              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
+              "url": "guide/router-techniques",
+              "title": "Routing Techniques",
+              "tooltip": "Extend the example to learn more about complex routes and control access to views."
             }
           ]
         },
