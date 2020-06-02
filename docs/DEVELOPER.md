@@ -91,6 +91,7 @@ merged if the code is formatted properly and all tests are passing.
 
 <a name="formatting-your-source-code">
 <a name="clang-format"></a>
+
 ## Formatting your source code
 
 Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code.
