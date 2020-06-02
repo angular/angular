@@ -1,5 +1,5 @@
-<div class="parent-nodes">
-  <button mat-button class="btn-node" *ngFor="let node of parents" (click)="handleSelect.emit(node)">
+<mat-card>
+  <button mat-stroked-button color="primary" *ngFor="let node of parents" (click)="handleSelect.emit(node)">
     {{ node.original.component?.name || node.original.element }}
   </button>
-</div>
+</mat-card>
