@@ -107,6 +107,7 @@ function overrideSetup() {
     const newName = 'New Name';
 
     page.nameInput.value = newName;
+    // newEvent() is a helper function defined in testing/src/testing/index.ts that creates custom DOM events
     page.nameInput.dispatchEvent(newEvent('input')); // tell Angular
 
     expect(component.hero.name).toBe(newName, 'component hero has new name');
