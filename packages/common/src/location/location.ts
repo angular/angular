@@ -64,6 +64,7 @@ export class Location {
   _platformLocation: PlatformLocation;
   /** @internal */
   _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
+  private _urlChangeSubscription?: SubscriptionLike;
 
   constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation) {
     this._platformStrategy = platformStrategy;
@@ -194,9 +195,12 @@ export class Location {
    */
   onUrlChange(fn: (url: string, state: unknown) => void) {
     this._urlChangeListeners.push(fn);
-    this.subscribe(v => {
-      this._notifyUrlChangeListeners(v.url, v.state);
-    });
+
+    if (!this._urlChangeSubscription) {
+      this._urlChangeSubscription = this.subscribe(v => {
+        this._notifyUrlChangeListeners(v.url, v.state);
+      });
+    }
   }
 
   /** @internal */
