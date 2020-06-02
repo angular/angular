@@ -72,7 +72,7 @@ export class CssKeyframesDriver implements AnimationDriver {
     keyframeStr += `}\n`;
 
     const kfElm = document.createElement('style');
-    kfElm.innerHTML = keyframeStr;
+    kfElm.textContent = keyframeStr;
     return kfElm;
   }
 
