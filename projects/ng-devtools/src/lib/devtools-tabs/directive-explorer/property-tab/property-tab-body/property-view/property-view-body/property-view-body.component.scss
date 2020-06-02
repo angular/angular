@@ -1,13 +1,11 @@
 :host {
   ::ng-deep {
-    .mat-expansion-panel-body {
-      padding: 0;
+    mat-expansion-panel {
+      border-radius: unset !important;
     }
 
-    mat-expansion-panel {
-      &:not([class*='mat-elevation-z']) {
-        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-      }
+    .mat-expansion-panel-body {
+      padding: 0;
     }
 
     .mat-expansion-panel-spacing {
