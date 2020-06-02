@@ -7,60 +7,22 @@
   </mat-tab>
 </mat-tab-group>
 
-<button id="inspect-component" (click)="toggleInspector()">
-  <mat-icon>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-      <path
-        [class.active]="inspectorRunning"
-        d="M8.5,22H3.7l-1.4-1.5V3.8l1.3-1.5h17.2l1,1.5v4.9h-1.3V4.3l-0.4-0.6H4.2L3.6,4.3V20l0.7,0.7h4.2V22z
-          M23,13.9l-4.6,3.6l4.6,4.6l-1.1,1.1l-4.7-4.4l-3.3,4.4l-3.2-12.3L23,13.9z"
-      />
-    </svg>
-  </mat-icon>
-</button>
+<div id="nav-buttons">
+  <button mat-icon-button color="primary" (click)="toggleInspector()">
+    <mat-icon>
+      drag_indicator
+    </mat-icon>
+  </button>
+  <button mat-icon-button color="primary" (click)="refresh()">
+    <mat-icon>
+      refresh
+    </mat-icon>
+  </button>
+  <button mat-icon-button color="primary" [matMenuTriggerFor]="menu">
+    <mat-icon>miscellaneous_services</mat-icon>
+  </button>
+</div>
 
-<button id="refresh-component-tree" (click)="refresh()">
-  <mat-icon>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
-      <g>
-        <path
-          d="M479.971,32.18c-21.72,21.211-42.89,43-64.52,64.301c-1.05,1.23-2.26-0.16-3.09-0.85
-          c-24.511-23.98-54.58-42.281-87.221-52.84c-37.6-12.16-78.449-14.07-117.029-5.59c-68.67,14.67-128.811,64.059-156.44,128.609
-          c0.031,0.014,0.062,0.025,0.093,0.039c-2.3,4.537-3.605,9.666-3.605,15.1c0,18.475,14.977,33.451,33.451,33.451
-          c15.831,0,29.084-11.002,32.555-25.773c19.757-41.979,58.832-74.445,103.967-85.527c52.2-13.17,111.37,1.33,149.4,40.041
-          c-22.03,21.83-44.391,43.34-66.33,65.26c59.52-0.32,119.06-0.141,178.59-0.09C480.291,149.611,479.931,90.891,479.971,32.18z"
-        />
-        <path
-          d="M431.609,297.5c-14.62,0-27.041,9.383-31.591,22.453c-0.009-0.004-0.019-0.008-0.027-0.012
-          c-19.11,42.59-57.57,76.219-102.84,88.18c-52.799,14.311-113.45,0.299-152.179-39.051c21.92-21.76,44.369-43.01,66.189-64.869
-          c-59.7,0.049-119.41,0.029-179.11,0.01c-0.14,58.6-0.159,117.189,0.011,175.789c21.92-21.91,43.75-43.91,65.79-65.699
-          c14.109,13.789,29.76,26.07,46.92,35.869c54.739,31.971,123.399,38.602,183.299,17.891
-          c57.477-19.297,106.073-63.178,131.212-118.318c3.645-5.357,5.776-11.824,5.776-18.793C465.06,312.477,450.083,297.5,431.609,297.5
-          z"
-        />
-      </g>
-    </svg>
-  </mat-icon>
-</button>
-
-<button class="menu" mat-button [matMenuTriggerFor]="menu">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-    aria-hidden="true"
-    focusable="false"
-    width="0.9em"
-    height="1em"
-    style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);"
-    preserveAspectRatio="xMidYMid meet"
-    viewBox="0 0 740 830"
-  >
-    <path
-      d="M722 424q12 9 9 24q-11 46-33 86q-3 7-9 10t-15 1q-22-4-43 2t-39 24t-23 40t-2 46q3 16-10 24q-41 24-82 35q-16 5-26-10q-12-20-32-32t-46-12t-45 12t-34 32q-9 15-25 10q-44-12-82-35q-15-8-11-24q5-23-1-46t-23-40t-39-24t-44-2q-16 4-24-11q-22-42-32-86q-5-15 9-24q17-13 28-33t10.5-42t-9.5-40t-25-31q-12-11-8-24q15-48 40-89q7-12 20-10q20 2 40-5t34-22q29-29 27-69q-1-13 11-20q44-26 94-38q13-3 21 6q13 14 31 22t37 8t37-8t30-22q9-9 22-6q50 12 94 38q11 6 11 20q-2 40 27 69q15 15 34 22t39 5q13-2 21 10q25 41 40 89q3 14-8 24q-16 13-25 31t-9 40.5t11 41.5t27 33zm-351 76q29 0 55-11t44-30t29-44t11-54t-11-55t-29-44t-44-29t-55-11t-54 11t-44 29t-30 44t-11 55t11 54t30 44t44 30t54 11z"
-      fill="#626262"
-    />
-  </svg>
-</button>
 <mat-menu #menu="matMenu" [class]="'test'">
   <mat-slide-toggle (change)="toggleTimingAPI($event)" class="menu-toggle-button" (click)="$event.stopPropagation()">
     Enable timing API (Experimental)
