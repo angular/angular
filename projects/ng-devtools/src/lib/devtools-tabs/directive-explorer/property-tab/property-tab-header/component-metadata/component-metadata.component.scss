@@ -1,22 +1,12 @@
-.view-link {
-  display: block;
-  font-size: 11px;
-  padding: 2px;
-  color: unset;
-  text-decoration: unset;
+.meta-data-container {
+  display: flex;
+  flex-direction: column;
+}
 
-  &:focus {
-    outline: none;
-  }
-
-  &:hover {
-    background-color: #eee;
-    cursor: pointer;
-  }
-
-  &:active {
-    background-color: #bcbcbc;
-  }
+.meta-data-container a {
+  width: 100%;
+  height: 22px;
+  line-height: 22px;
 }
 
 .meta-data {
