@@ -26,6 +26,10 @@
 
 ::ng-deep {
   .property-tab-header {
+    mat-expansion-panel {
+      border-radius: unset !important;
+    }
+
     &.mat-accordion {
       .mat-expansion-panel {
         &:not(.mat-expanded) {
