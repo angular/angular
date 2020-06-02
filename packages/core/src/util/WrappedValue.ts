@@ -26,16 +26,16 @@
  *
  * @publicApi
  */
-export class WrappedValue {
+export class WrappedValue<T = any> {
   /** @deprecated from 5.3, use `unwrap()` instead - will switch to protected */
-  wrapped: any;
+  wrapped: T;
 
-  constructor(value: any) {
+  constructor(value: T) {
     this.wrapped = value;
   }
 
   /** Creates a wrapped value. */
-  static wrap(value: any): WrappedValue {
+  static wrap<T>(value: T): WrappedValue<T> {
     return new WrappedValue(value);
   }
 
@@ -43,7 +43,7 @@ export class WrappedValue {
    * Returns the underlying value of a wrapped value.
    * Returns the given `value` when it is not wrapped.
    **/
-  static unwrap(value: any): any {
+  static unwrap<T>(value: T|WrappedValue<T>): T {
     return WrappedValue.isWrapped(value) ? value.wrapped : value;
   }
 
