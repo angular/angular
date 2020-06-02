@@ -1,7 +1,6 @@
 .filter {
   display: flex;
   padding-left: 4px;
-  border-bottom: 1px solid #dddddd;
 
   .icon-outer {
     vertical-align: middle;
@@ -24,6 +23,7 @@
     color: inherit;
     padding: 5px;
     outline: none;
+    color: rgba(0, 0, 0, 0.87);
   }
 }
 
