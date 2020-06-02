@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
-import {MockPlatformLocation} from '@angular/common/testing';
+import {MockLocationStrategy, MockPlatformLocation} from '@angular/common/testing';
 import {inject, TestBed} from '@angular/core/testing';
 
 const baseUrl = '/base';
@@ -84,7 +84,7 @@ describe('Location Class', () => {
       TestBed.configureTestingModule({
         imports: [CommonModule],
         providers: [
-          {provide: LocationStrategy, useClass: PathLocationStrategy},
+          {provide: LocationStrategy, useClass: MockLocationStrategy},
           {
             provide: PlatformLocation,
             useFactory: () => {
@@ -113,5 +113,30 @@ describe('Location Class', () => {
          expect((location as any)._urlChangeListeners.length).toBe(1);
          expect((location as any)._urlChangeListeners[0]).toEqual(changeListener);
        }));
+
+    it('should only notify listeners once when multiple listeners are registered', () => {
+      const location = TestBed.inject(Location);
+      const locationStrategy = TestBed.inject(LocationStrategy) as MockLocationStrategy;
+      let notificationCount = 0;
+
+      function incrementChangeListener(url: string, state: unknown) {
+        notificationCount += 1;
+
+        return undefined;
+      }
+
+      function noopChangeListener(url: string, state: unknown) {
+        return undefined;
+      }
+
+      location.onUrlChange(incrementChangeListener);
+      location.onUrlChange(noopChangeListener);
+
+      expect(notificationCount).toBe(0);
+
+      locationStrategy.simulatePopState('/test');
+
+      expect(notificationCount).toBe(1);
+    });
   });
 });
