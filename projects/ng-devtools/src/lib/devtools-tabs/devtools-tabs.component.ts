@@ -5,6 +5,7 @@ import { DirectiveExplorerComponent } from './directive-explorer/directive-explo
 import { ApplicationEnvironment } from '../application-environment';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { TabUpdate } from './tab-update';
+import { ThemeService } from '../theme-service';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -18,6 +19,7 @@ export class DevToolsTabsComponent {
 
   constructor(
     public tabUpdate: TabUpdate,
+    public themeService: ThemeService,
     private _messageBus: MessageBus<Events>,
     private _applicationEnvironment: ApplicationEnvironment
   ) {}
