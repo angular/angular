@@ -1128,10 +1128,13 @@ export class Router {
       priorPromise?: {resolve: any, reject: any, promise: Promise<boolean>}): Promise<boolean> {
     const lastNavigation = this.getTransition();
     // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
-    // and that navigation results in 'replaceState' that leads to the same URL,
-    // we should skip those.
+    // and that navigation results in another navigation that leads to the same URL,
+    // we should skip those. Additionally, we compare to `urlAfterRedirects` because
+    // that is the final result of the imperative navigation. If an imperative navigation is
+    // cancelled by a guard and followed by a back/forward button or manual URL change, we should
+    // not skip those navigations so we need to check against `urlAfterRedirects`.
     if (lastNavigation && source !== 'imperative' && lastNavigation.source === 'imperative' &&
-        lastNavigation.rawUrl.toString() === rawUrl.toString()) {
+        lastNavigation.urlAfterRedirects.toString() === rawUrl.toString()) {
       return Promise.resolve(true);  // return value is not used
     }
 
