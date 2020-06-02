@@ -20,9 +20,16 @@ mat-toolbar.mat-toolbar {
   }
 }
 
+.blm-message {
+  text-align: center;
+  justify-content: center;
+  background: #2d2d2d;
+  font-size: 0.75em;
+}
+
 // HOME PAGE OVERRIDE: TOPNAV TOOLBAR
 aio-shell.page-home mat-toolbar.mat-toolbar {
-  background-color: $blue;
+  background-color: $black;
 
   @media (min-width: 481px) {
     &:not(.transitioning) {
