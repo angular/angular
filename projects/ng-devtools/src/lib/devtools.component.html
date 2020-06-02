@@ -1,30 +1,32 @@
-<ng-container *ngIf="angularExists === true; else errorOrLoad">
-  <ng-container *ngIf="supportedVersion; else notSupported">
-    <div class="devtools-wrapper noselect" [@enterAnimation]>
-      <ng-devtools-tabs [angularVersion]="angularVersion"></ng-devtools-tabs>
-    </div>
+<div class="mat-typography mat-app-background" style="height: 100%;">
+  <ng-container *ngIf="angularExists === true; else errorOrLoad">
+    <ng-container *ngIf="supportedVersion; else notSupported">
+      <div class="devtools-wrapper noselect" [@enterAnimation]>
+        <ng-devtools-tabs [angularVersion]="angularVersion"></ng-devtools-tabs>
+      </div>
+    </ng-container>
+    <ng-template #notSupported>
+      <p class="text-message">
+        Angular Devtools only supports Angular versions 9 and above with
+        <a href="https://angular.io/guide/ivy" target="_blank">ivy</a> enabled.
+      </p>
+    </ng-template>
   </ng-container>
-  <ng-template #notSupported>
-    <p class="text-message">
-      Angular Devtools only supports Angular versions 9 and above with
-      <a href="https://angular.io/guide/ivy" target="_blank">ivy</a> enabled.
-    </p>
+  <ng-template #errorOrLoad>
+    <ng-container *ngIf="angularExists === false; else load">
+      <p class="text-message">
+        Angular application not detected.
+        <span
+          class="info-icon"
+          matTooltip="You see this message because the app is still loading, or this is not an Angular application"
+          >i</span
+        >
+      </p>
+    </ng-container>
+    <ng-template #load>
+      <div class="initializing" *ngIf="angularExists === null">
+        <div class="loading"></div>
+      </div>
+    </ng-template>
   </ng-template>
-</ng-container>
-<ng-template #errorOrLoad>
-  <ng-container *ngIf="angularExists === false; else load">
-    <p class="text-message">
-      Angular application not detected.
-      <span
-        class="info-icon"
-        matTooltip="You see this message because the app is still loading, or this is not an Angular application"
-        >i</span
-      >
-    </p>
-  </ng-container>
-  <ng-template #load>
-    <div class="initializing" *ngIf="angularExists === null">
-      <div class="loading"></div>
-    </div>
-  </ng-template>
-</ng-template>
+</div>
