@@ -3,7 +3,7 @@
 <div class="level-profile-wrapper" [class.split-width]="selectedEntry">
   <ngx-flamegraph
     (frameClick)="selectFrame($event)"
-    [data]="profilerBars"
+    [config]="{ data: profilerBars }"
     [width]="availableWidth"
     siblingLayout="equal"
   >
