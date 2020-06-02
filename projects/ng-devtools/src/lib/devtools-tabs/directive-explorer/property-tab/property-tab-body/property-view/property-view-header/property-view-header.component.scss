@@ -1,9 +1,5 @@
-header {
-  background-color: #eee;
+mat-toolbar {
   padding-left: 9px;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  color: hsla(0, 0%, 32%, 1);
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -13,6 +9,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: auto;
 }
 
 ::ng-deep {
