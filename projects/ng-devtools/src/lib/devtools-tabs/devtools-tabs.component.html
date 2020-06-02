@@ -65,6 +65,15 @@
   <mat-slide-toggle (change)="toggleTimingAPI($event)" class="menu-toggle-button" (click)="$event.stopPropagation()">
     Enable timing API (Experimental)
   </mat-slide-toggle>
+  <br />
+  <br />
+  <mat-slide-toggle
+    (change)="themeService.toggleDarkMode($event.checked)"
+    class="menu-toggle-button"
+    (click)="$event.stopPropagation()"
+  >
+    Dark Mode
+  </mat-slide-toggle>
 </mat-menu>
 
 <section *ngIf="angularVersion" id="app-angular-version">
