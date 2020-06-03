@@ -27,6 +27,11 @@ mat-toolbar.mat-toolbar {
   font-size: 0.75em;
 }
 
+.blm-message a {
+  text-transform: none;
+  text-decoration: underline;
+}
+
 // HOME PAGE OVERRIDE: TOPNAV TOOLBAR
 aio-shell.page-home mat-toolbar.mat-toolbar {
   background-color: $black;

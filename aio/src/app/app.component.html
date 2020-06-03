@@ -6,8 +6,8 @@
 
 <mat-toolbar color="primary" class="app-toolbar no-print" [class.transitioning]="isTransitioning">
   <mat-toolbar-row class="notification-container blm-message">
-    <aio-notification notificationId="blm-2020" expirationDate="2022-04-15" [dismissOnContentClick]="true" (dismissed)="notificationDismissed()">
-      #BlackLivesMatter
+    <aio-notification notificationId="blm-2020" expirationDate="2022-04-15" [dismissOnContentClick]="false" (dismissed)="notificationDismissed()">
+      <a href="https://twitter.com/hashtag/BlackLivesMatter">#BlackLivesMatter</a>
     </aio-notification>
   </mat-toolbar-row>
   <mat-toolbar-row>
