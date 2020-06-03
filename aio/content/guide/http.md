@@ -1,6 +1,6 @@
 # Communicating with backend services using HTTP
 
-Most front-end applications need to communicate with a server over the HTTP protocol, in order to download or upload data and accesss other back-end services.
+Most front-end applications need to communicate with a server over the HTTP protocol, in order to download or upload data and access other back-end services.
 Angular provides a simplified client HTTP API for Angular applications, the `HttpClient` service class in `@angular/common/http`.
 
 The HTTP client service offers the following major features.
