@@ -126,7 +126,7 @@
     "node-uuid": "1.4.8",
     "nodejs-websocket": "^1.7.2",
     "protractor": "^5.4.2",
-    "puppeteer": "2.1.1",
+    "puppeteer": "3.3.0",
     "reflect-metadata": "^0.1.3",
     "requirejs": "^2.3.6",
     "rollup": "~1.25.0",
