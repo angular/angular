@@ -1,11 +1,13 @@
-// #docregion
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  title = 'i18n';
+
   minutes = 0;
   gender = 'female';
   fly = true;
@@ -16,5 +18,5 @@ export class AppComponent {
   male() { this.gender = 'male'; }
   female() { this.gender = 'female'; }
   other() { this.gender = 'other'; }
-}
 
+}

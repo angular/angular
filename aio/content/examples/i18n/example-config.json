@@ -1,14 +1,4 @@
 {
-  "projectType": "i18n",
-  "tests": [
-    {
-      "cmd": "yarn",
-      "args": [
-        "e2e",
-        "--protractor-config=e2e/protractor-puppeteer.conf.js",
-        "--no-webdriver-update",
-        "--port={PORT}"
-      ]
-    }
-  ]
+    "useCommonBoilerplate": false,
+    "projectType": "i18n"
 }
