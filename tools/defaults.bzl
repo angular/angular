@@ -248,7 +248,16 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], tags = [], **k
             "@io_bazel_rules_webtesting//browsers:firefox-local",
         ],
         bootstrap = [
-            "@npm//:node_modules/zone.js/dist/zone-testing-bundle.js",
+            # This matches the ZoneJS bundles used in default CLI projects. See:
+            # https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/files/src/polyfills.ts.template#L58
+            # https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/files/src/test.ts.template#L3
+            # Note `zone.js/dist/zone.js` is aliased in the CLI to point to the evergreen
+            # output that does not include legacy patches. See: https://github.com/angular/angular/issues/35157.
+            # TODO: Consider adding the legacy patches when testing Saucelabs/Browserstack with Bazel.
+            # CLI loads the legacy patches conditionally for ES5 legacy browsers. See:
+            # https://github.com/angular/angular-cli/blob/277bad3895cbce6de80aa10a05c349b10d9e09df/packages/angular_devkit/build_angular/src/angular-cli-files/models/webpack-configs/common.ts#L141
+            "@npm//:node_modules/zone.js/dist/zone-evergreen.js",
+            "@npm//:node_modules/zone.js/dist/zone-testing.js",
             "@npm//:node_modules/reflect-metadata/Reflect.js",
         ] + bootstrap,
         tags = ["native"] + tags,
