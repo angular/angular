@@ -1,114 +1,121 @@
 #!/usr/bin/env node
 'use strict';
 
-const {execSync} = require('child_process');
+const {computeDeploymentInfo, computeInputVars, getLatestCommit} = require('./deploy-to-firebase');
 
 
 describe('deploy-to-firebase:', () => {
-  const deployToFirebaseCmd = `"${process.execPath}" "${__dirname}/deploy-to-firebase" --dry-run`;
-
-  // Helpers
-  const deployToFirebaseDryRun =
-      env => execSync(deployToFirebaseCmd, {encoding: 'utf8', env}).toString().trim();
-  const getLatestCommitForBranch =
-      branch => execSync(`git ls-remote origin ${branch}`).slice(0, 40);
-
   it('master - skip deploy - not angular', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'notangular',
-    })).toBe('Skipping deploy because this is not angular/angular.');
+    }))).toEqual({
+      skipped: true,
+      reason: 'Skipping deploy because this is not angular/angular.',
+    });
   });
 
   it('master - skip deploy - angular fork', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'notangular',
       CI_REPO_NAME: 'angular',
-    })).toBe('Skipping deploy because this is not angular/angular.');
+    }))).toEqual({
+      skipped: true,
+      reason: 'Skipping deploy because this is not angular/angular.',
+    });
   });
 
   it('master - skip deploy - pull request', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'true',
-    })).toBe('Skipping deploy because this is a PR build.');
+    }))).toEqual({
+      skipped: true,
+      reason: 'Skipping deploy because this is a PR build.',
+    });
   });
 
   it('master - deploy success', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: 'master',
-      CI_COMMIT: getLatestCommitForBranch('master'),
+      CI_COMMIT: getLatestCommit('master'),
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Git branch        : master\n' +
-        'Build/deploy mode : next\n' +
-        'Firebase project  : next-angular-io\n' +
-        'Deployment URL    : https://next.angular.io/');
+    }))).toEqual({
+      deployEnv: 'next',
+      projectId: 'next-angular-io',
+      deployedUrl: 'https://next.angular.io/',
+    });
   });
 
   it('master - skip deploy - commit not HEAD', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: 'master',
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
-    })).toBe(
-        'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
-        `(${getLatestCommitForBranch('master')}).`);
+    }))).toEqual({
+      skipped: true,
+      reason:
+          'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
+          `(${getLatestCommit('master')}).`,
+    });
   });
 
   it('stable - deploy success', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '4.3.x',
       CI_STABLE_BRANCH: '4.3.x',
-      CI_COMMIT: getLatestCommitForBranch('4.3.x'),
+      CI_COMMIT: getLatestCommit('4.3.x'),
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Git branch        : 4.3.x\n' +
-        'Build/deploy mode : stable\n' +
-        'Firebase project  : v4-angular-io\n' +
-        'Deployment URL    : https://angular.io/');
+    }))).toEqual({
+      deployEnv: 'stable',
+      projectId: 'v4-angular-io',
+      deployedUrl: 'https://angular.io/',
+    });
   });
 
   it('stable - skip deploy - commit not HEAD', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '4.3.x',
       CI_STABLE_BRANCH: '4.3.x',
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
-    })).toBe(
-        'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
-        `(${getLatestCommitForBranch('4.3.x')}).`);
+    }))).toEqual({
+      skipped: true,
+      reason:
+          'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
+          `(${getLatestCommit('4.3.x')}).`,
+    });
   });
 
   it('archive - deploy success', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '2.4.x',
       CI_STABLE_BRANCH: '4.3.x',
-      CI_COMMIT: getLatestCommitForBranch('2.4.x'),
+      CI_COMMIT: getLatestCommit('2.4.x'),
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Git branch        : 2.4.x\n' +
-        'Build/deploy mode : archive\n' +
-        'Firebase project  : v2-angular-io\n' +
-        'Deployment URL    : https://v2.angular.io/');
+    }))).toEqual({
+      deployEnv: 'archive',
+      projectId: 'v2-angular-io',
+      deployedUrl: 'https://v2.angular.io/',
+    });
   });
 
   it('archive - skip deploy - commit not HEAD', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
@@ -116,73 +123,82 @@ describe('deploy-to-firebase:', () => {
       CI_STABLE_BRANCH: '4.3.x',
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
-        `(${getLatestCommitForBranch('2.4.x')}).`);
+    }))).toEqual({
+      skipped: true,
+      reason:
+          'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
+          `(${getLatestCommit('2.4.x')}).`,
+    });
   });
 
   it('archive - skip deploy - major same as stable, minor less than stable', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '2.1.x',
       CI_STABLE_BRANCH: '2.2.x',
-      CI_COMMIT: getLatestCommitForBranch('2.1.x'),
+      CI_COMMIT: getLatestCommit('2.1.x'),
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Skipping deploy of branch "2.1.x" to Firebase.\n' +
-        'There is a more recent branch with the same major version: "2.4.x"');
+    }))).toEqual({
+      skipped: true,
+      reason:
+          'Skipping deploy of branch "2.1.x" to Firebase.\n' +
+          'There is a more recent branch with the same major version: "2.4.x"',
+    });
   });
 
   it('archive - skip deploy - major lower than stable, minor not latest', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '2.1.x',
       CI_STABLE_BRANCH: '4.3.x',
-      CI_COMMIT: getLatestCommitForBranch('2.1.x'),
+      CI_COMMIT: getLatestCommit('2.1.x'),
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Skipping deploy of branch "2.1.x" to Firebase.\n' +
-        'There is a more recent branch with the same major version: "2.4.x"');
+    }))).toEqual({
+      skipped: true,
+      reason:
+          'Skipping deploy of branch "2.1.x" to Firebase.\n' +
+          'There is a more recent branch with the same major version: "2.4.x"',
+    });
   });
 
   it('rc - deploy success - major higher than stable', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '4.4.x',
       CI_STABLE_BRANCH: '2.2.x',
-      CI_COMMIT: getLatestCommitForBranch('4.4.x'),
+      CI_COMMIT: getLatestCommit('4.4.x'),
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Git branch        : 4.4.x\n' +
-        'Build/deploy mode : rc\n' +
-        'Firebase project  : rc-angular-io\n' +
-        'Deployment URL    : https://rc.angular.io/');
+    }))).toEqual({
+      deployEnv: 'rc',
+      projectId: 'rc-angular-io',
+      deployedUrl: 'https://rc.angular.io/',
+    });
   });
 
   it('rc - deploy success - major same as stable, minor higher', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '2.4.x',
       CI_STABLE_BRANCH: '2.2.x',
-      CI_COMMIT: getLatestCommitForBranch('2.4.x'),
+      CI_COMMIT: getLatestCommit('2.4.x'),
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Git branch        : 2.4.x\n' +
-        'Build/deploy mode : rc\n' +
-        'Firebase project  : rc-angular-io\n' +
-        'Deployment URL    : https://rc.angular.io/');
+    }))).toEqual({
+      deployEnv: 'rc',
+      projectId: 'rc-angular-io',
+      deployedUrl: 'https://rc.angular.io/',
+    });
   });
 
   it('rc - skip deploy - commit not HEAD', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
@@ -190,36 +206,45 @@ describe('deploy-to-firebase:', () => {
       CI_STABLE_BRANCH: '2.2.x',
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
-        `(${getLatestCommitForBranch('2.4.x')}).`);
+    }))).toEqual({
+      skipped: true,
+      reason:
+          'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
+          `(${getLatestCommit('2.4.x')}).`,
+    });
   });
 
   it('rc - skip deploy - major same as stable, minor not latest', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '2.1.x',
       CI_STABLE_BRANCH: '2.0.x',
-      CI_COMMIT: getLatestCommitForBranch('2.1.x'),
+      CI_COMMIT: getLatestCommit('2.1.x'),
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Skipping deploy of branch "2.1.x" to Firebase.\n' +
-        'There is a more recent branch with the same major version: "2.4.x"');
+    }))).toEqual({
+      skipped: true,
+      reason:
+          'Skipping deploy of branch "2.1.x" to Firebase.\n' +
+          'There is a more recent branch with the same major version: "2.4.x"',
+    });
   });
 
   it('rc - skip deploy - major higher than stable, minor not latest', () => {
-    expect(deployToFirebaseDryRun({
+    expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '4.3.x',
       CI_STABLE_BRANCH: '2.4.x',
-      CI_COMMIT: getLatestCommitForBranch('4.3.x'),
+      CI_COMMIT: getLatestCommit('4.3.x'),
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Skipping deploy of branch "4.3.x" to Firebase.\n' +
-        'There is a more recent branch with the same major version: "4.4.x"');
+    }))).toEqual({
+      skipped: true,
+      reason:
+          'Skipping deploy of branch "4.3.x" to Firebase.\n' +
+          'There is a more recent branch with the same major version: "4.4.x"',
+    });
   });
 });

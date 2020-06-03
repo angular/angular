@@ -22,8 +22,7 @@ if (require.main === module) {
   if (deploymentInfo.skipped) {
     console.log(deploymentInfo.reason);
   } else {
-    const dryRun = process.argv[2] === '--dry-run';
-    deploy({...inputVars, ...deploymentInfo}, dryRun);
+    deploy({...inputVars, ...deploymentInfo});
   }
 }
 
@@ -140,15 +139,12 @@ function computeInputVars({
 }
 
 function deploy(
-    {currentBranch, currentCommit, deployedUrl, deployEnv, firebaseToken, minPwaScore, projectId},
-    dryRun) {
+    {currentBranch, currentCommit, deployedUrl, deployEnv, firebaseToken, minPwaScore, projectId}) {
   console.log(
       `Git branch        : ${currentBranch}\n` +
       `Build/deploy mode : ${deployEnv}\n` +
       `Firebase project  : ${projectId}\n` +
       `Deployment URL    : ${deployedUrl}\n`);
-
-  if (dryRun) return;
 
   cd(`${__dirname}/..`);
 
