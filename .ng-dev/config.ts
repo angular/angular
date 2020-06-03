@@ -107,8 +107,8 @@ const merge = () => {
     requiredBaseCommits: {
       // PRs that target either `master` or the patch branch, need to be rebased
       // on top of the latest commit message validation fix.
-      'master': '4341743b4a6d7e23c6f944aa9e34166b701369a1',
-      [patch]: '4341743b4a6d7e23c6f944aa9e34166b701369a1'
+      'master': '5aeb9a4124922d8ac08eb73b8f322905a32b0b3a',
+      [patch]: '27b95ba64a5d99757f4042073fd1860e20e3ed24'
     },
   };
   return config;
