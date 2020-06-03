@@ -110,6 +110,10 @@ export async function mergePullRequest(
             red('An unknown Git error has been thrown. Please check the output ' +
                 'above for details.'));
         return false;
+      case MergeStatus.GITHUB_ERROR:
+        error(red('An error related to interacting with Github has been discovered.'));
+        error(failure!.message);
+        return false;
       case MergeStatus.FAILED:
         error(yellow(`Could not merge the specified pull request.`));
         error(red(failure!.message));
