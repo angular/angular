@@ -71,9 +71,9 @@ export class PullRequestFailure {
     return new this(`Pull request could not be found upstream.`);
   }
 
-  static insufficientPermissionsToMerge() {
-    return new this(
-        `Insufficient Github API permissions to merge pull request. Please ` +
-        `ensure that your auth token has write access.`);
+  static insufficientPermissionsToMerge(
+      message = `Insufficient Github API permissions to merge pull request. Please ensure that ` +
+          `your auth token has write access.`) {
+    return new this(message);
   }
 }
