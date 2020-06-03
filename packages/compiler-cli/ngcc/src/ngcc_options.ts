@@ -155,8 +155,7 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
   const fileSystem = getFileSystem();
   const absBasePath = absoluteFrom(options.basePath);
   const projectPath = fileSystem.dirname(absBasePath);
-  const tsConfig =
-      options.tsConfigPath !== null ? readConfiguration(options.tsConfigPath || projectPath) : null;
+  const tsConfig = getTsConfig(options.tsConfigPath || projectPath);
 
   let {
     basePath,
@@ -199,4 +198,25 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
         new NewEntryPointFileWriter(fileSystem, logger, errorOnFailedEntryPoint, pkgJsonUpdater) :
         new InPlaceFileWriter(fileSystem, logger, errorOnFailedEntryPoint),
   };
+}
+
+let tsConfigCache: ParsedConfiguration|null = null;
+let tsConfigPathCache: string|null = null;
+
+/**
+ * Get the parsed configuration object for the given `tsConfigPath`.
+ *
+ * This function will cache the previous parsed configuration object to avoid unnecessary processing
+ * of the tsconfig.json in the case that it is requested repeatedly.
+ *
+ * This makes the assumption, which is true as of writing, that the contents of tsconfig.json and
+ * its dependencies will not change during the life of the process running ngcc.
+ */
+function getTsConfig(tsConfigPath: string): ParsedConfiguration|null {
+  if (tsConfigPath === tsConfigPathCache) {
+    return tsConfigCache;
+  }
+  tsConfigPathCache = tsConfigPath;
+  tsConfigCache = tsConfigPath !== null ? readConfiguration(tsConfigPath) : null;
+  return tsConfigCache;
 }
