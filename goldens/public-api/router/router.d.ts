@@ -153,7 +153,8 @@ export declare type InitialNavigation = true | false | 'enabled' | 'disabled' | 
 
 export declare type LoadChildren = LoadChildrenCallback | DeprecatedLoadChildren;
 
-export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Observable<Type<any>> | Promise<NgModuleFactory<any> | Type<any> | any>;
+export declare type LoadChildrenCallback = () =>
+    Type<any> | NgModuleFactory<any> | Observable<Type<any>> | Promise<NgModuleFactory<any> | any>;
 
 export declare type Navigation = {
     id: number;
