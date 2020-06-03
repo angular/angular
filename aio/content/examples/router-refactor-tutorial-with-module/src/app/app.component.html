@@ -1,0 +1,31 @@
+<!-- #docplaster -->
+<!-- #docregion setup -->
+<h1>Angular Router Sample</h1>
+<!-- #enddocregion setup-->
+<!-- #docregion routeractivelink -->
+<nav>
+  <a class="button" routerLink="/crisis-list" routerLinkActive="activebutton">Crisis Center</a> |
+  <a class="button" routerLink="/heroes-list" routerLinkActive="activebutton">Heroes</a>
+</nav>
+<!-- #enddocregion routeractivelink-->
+<!-- #docregion router-outlet -->
+<router-outlet></router-outlet>
+<!-- #enddocregion router-outlet -->
+
+<div style="display: none;">
+<!-- This HTML represents the initial state for the tutorial. It is not intended to appear in the app. -->
+<!-- #docregion setup, components -->
+<app-crisis-list></app-crisis-list>
+<app-heroes-list></app-heroes-list>
+<!-- #enddocregion setup, components -->
+
+<!-- This HTML snippet is for when the user first adds the routerlink navigation. -->
+<!-- #docregion nav -->
+<nav>
+  <a class="button" routerLink="/crisis-list">Crisis Center</a> |
+  <a class="button" routerLink="/heroes-list">Heroes</a>
+</nav>
+<!-- #enddocregion nav-->
+
+
+</div>

@@ -1,0 +1,9 @@
+{
+  "description": "Router Refactor (Part 2)",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[0-9].*"
+  ],
+  "tags": ["router-refactor-tutorial-with-module"]
+}
