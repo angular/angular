@@ -159,9 +159,9 @@ export class DevAppLayout {
     for (let i = 0; i < this.densityScales.length; i++) {
       const className = `demo-density-${this.densityScales[i]}`;
       if (i === this.currentDensityIndex) {
-        this._element.nativeElement.classList.add(className);
+        document.body.classList.add(className);
       } else {
-        this._element.nativeElement.classList.remove(className);
+        document.body.classList.remove(className);
       }
     }
   }
