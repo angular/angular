@@ -19,10 +19,10 @@ $dark-primary: mat-palette($mat-pink, 700, 500, 900);
 $dark-accent: mat-palette($mat-blue-grey, A200, A100, A400);
 $dark-theme: mat-dark-theme($dark-primary, $dark-accent);
 
-.color-scheme-dark {
+.dark {
   @include angular-material-theme($dark-theme);
 }
 
-.color-scheme-light {
+.light {
   @include angular-material-theme($light-theme);
 }
