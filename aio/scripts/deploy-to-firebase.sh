@@ -33,7 +33,7 @@ else
   readonly majorVersionStable=${CI_STABLE_BRANCH%%.*}
 
   # Do not deploy if the major version is not less than the stable branch major version
-  if [[ !( "$majorVersion" < "$majorVersionStable" ) ]]; then
+  if [[ !( "$majorVersion" -lt "$majorVersionStable" ) ]]; then
     echo "Skipping deploy of branch \"$CI_BRANCH\" to firebase."
     echo "We only deploy archive branches with the major version less than the stable branch: \"$CI_STABLE_BRANCH\""
     exit 0
