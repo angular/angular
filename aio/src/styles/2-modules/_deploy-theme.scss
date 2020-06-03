@@ -48,3 +48,28 @@ aio-shell.mode-next {
     color: #DD0031;
   }
 }
+
+aio-shell.mode-rc {
+
+  .mat-toolbar.mat-primary, footer {
+    background: linear-gradient(145deg,#DDA302,#C3A300);
+  }
+
+  .vertical-menu-item {
+    &.selected, &:hover {
+      color: #DDA300;
+    }
+  }
+
+  .toc-inner ul.toc-list li.active a {
+    color: #DDA300;
+
+    &:before {
+      background-color: #DDA300;
+    }
+  }
+
+  .toc-inner ul.toc-list li:hover a {
+    color: #DDA300;
+  }
+}
