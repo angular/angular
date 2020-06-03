@@ -14,10 +14,13 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import {RouterModule} from '@angular/router';
+import {CdkOverlayExamplesModule} from '@angular/components-examples/cdk/overlay';
+
 import {ConnectedOverlayDemo} from './connected-overlay-demo';
 
 @NgModule({
   imports: [
+    CdkOverlayExamplesModule,
     CommonModule,
     FormsModule,
     MatButtonModule,
@@ -28,5 +31,4 @@ import {ConnectedOverlayDemo} from './connected-overlay-demo';
   ],
   declarations: [ConnectedOverlayDemo],
 })
-export class ConnectedOverlayDemoModule {
-}
+export class ConnectedOverlayDemoModule {}
