@@ -45,7 +45,7 @@ export function createMouseEvent(type: string, clientX = 0, clientY = 0, button 
 
   // IE won't set `defaultPrevented` on synthetic events so we need to do it manually.
   event.preventDefault = function() {
-    Object.defineProperty(event, 'defaultPrevented', { get: () => true });
+    defineReadonlyEventProperty(event, 'defaultPrevented', true);
     return originalPreventDefault();
   };
 
@@ -157,7 +157,7 @@ export function createKeyboardEvent(type: string, keyCode: number = 0, key: stri
 
   // IE won't set `defaultPrevented` on synthetic events so we need to do it manually.
   event.preventDefault = function() {
-    Object.defineProperty(event, 'defaultPrevented', { get: () => true });
+    defineReadonlyEventProperty(event, 'defaultPrevented', true);
     return originalPreventDefault.apply(this, arguments);
   };
 
@@ -172,4 +172,12 @@ export function createFakeEvent(type: string, canBubble = false, cancelable = tr
   const event = document.createEvent('Event');
   event.initEvent(type, canBubble, cancelable);
   return event;
+}
+
+/**
+ * Defines a readonly property on the given event object. Readonly properties on an event object
+ * are always set as configurable as that matches default readonly properties for DOM event objects.
+ */
+function defineReadonlyEventProperty(event: Event, propertyName: string, value: any) {
+  Object.defineProperty(event, propertyName, {get: () => value, configurable: true});
 }

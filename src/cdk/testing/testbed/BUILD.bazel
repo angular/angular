@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "ng_test_library", "ng_web_test_suite", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -20,4 +20,17 @@ ts_library(
 filegroup(
     name = "source-files",
     srcs = glob(["**/*.ts"]),
+)
+
+ng_test_library(
+    name = "unit_test_sources",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":testbed",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    deps = [":unit_test_sources"],
 )
