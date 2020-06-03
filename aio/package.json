@@ -62,7 +62,7 @@
     "redirects-test": "node tests/deployment/unit/test",
     "firebase-utils-test": "node tools/firebase-test-utils/test",
     "tools-lint": "tslint --config \"tools/tslint.json\" --project \"tools/firebase-test-utils\"",
-    "tools-test": "./scripts/deploy-to-firebase.test.sh && yarn docs-test && yarn boilerplate:test && jasmine tools/ng-packages-installer/index.spec.js && yarn firebase-utils-test",
+    "tools-test": "yarn docs-test && yarn boilerplate:test && jasmine tools/ng-packages-installer/index.spec.js && jasmine scripts/deploy-to-firebase.spec.js && yarn firebase-utils-test",
     "preserve-and-sync": "yarn docs",
     "serve-and-sync": "run-p \"start\" \"docs-watch --watch-only\"",
     "boilerplate:add": "node ./tools/examples/example-boilerplate add",

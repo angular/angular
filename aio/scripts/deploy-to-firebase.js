@@ -36,7 +36,7 @@ if (CI_PULL_REQUEST !== 'false') {
 
 // Do not deploy if the current commit is not the latest on its branch.
 const latestCommit = exec(`git ls-remote origin ${CI_BRANCH}`).slice(0, 40);
-if ( CI_COMMIT !== latestCommit) {
+if (CI_COMMIT !== latestCommit) {
   console.log(`Skipping deploy because ${CI_COMMIT} is not the latest commit (${latestCommit}).`);
   process.exit(0);
 }
