@@ -35,6 +35,8 @@ aio-notification {
     background: $darkgray;
     text-transform: none;
     padding: 0;
+    display: block;
+    margin: auto;
 
     > * {
       display: flex;
