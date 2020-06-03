@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set +x -eu -o pipefail
 
-readonly deployToFirebaseDryRun="`dirname $0`/deploy-to-firebase.sh --dry-run"
+readonly deployToFirebaseDryRun="node `dirname $0`/deploy-to-firebase --dry-run"
 
 function check {
   if [[ $1 == $2 ]]; then
@@ -173,7 +173,7 @@ Deployment URL    : https://v2.angular.io/"
     export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     $deployToFirebaseDryRun
   )
-  expected="Skipping deploy of branch \"2.1.x\" to firebase.
+  expected="Skipping deploy of branch \"2.1.x\" to Firebase.
 We only deploy archive branches with the major version less than the stable branch: \"2.2.x\""
   check "$actual" "$expected"
 )
@@ -191,7 +191,7 @@ We only deploy archive branches with the major version less than the stable bran
     export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     $deployToFirebaseDryRun
   )
-  expected="Skipping deploy of branch \"2.4.x\" to firebase.
+  expected="Skipping deploy of branch \"2.4.x\" to Firebase.
 We only deploy archive branches with the major version less than the stable branch: \"2.2.x\""
   check "$actual" "$expected"
 )
@@ -209,7 +209,7 @@ We only deploy archive branches with the major version less than the stable bran
     export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     $deployToFirebaseDryRun
   )
-  expected="Skipping deploy of branch \"2.1.x\" to firebase.
+  expected="Skipping deploy of branch \"2.1.x\" to Firebase.
 There is a more recent branch with the same major version: \"2.4.x\""
   check "$actual" "$expected"
 )

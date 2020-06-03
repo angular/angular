@@ -6,8 +6,8 @@ After the AIO application had been built and before it is deployed all files and
 inside the folder with the same name as the current deployment mode (next, stable, archive)
 will be copied to the `dist` folder.
 
-See the `scripts/deploy-to-firebase.sh` script for more detail.
+See the `scripts/deploy-to-firebase.js` script for more details.
 
 **Note:**
-The `deploy-to-firebase.sh` script always expects there to be a folder for the current deployment
+The `deploy-to-firebase.js` script always expects there to be a folder for the current deployment
 mode (even if it is empty).
