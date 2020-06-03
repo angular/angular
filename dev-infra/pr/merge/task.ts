@@ -13,6 +13,9 @@ import {isPullRequest, loadAndValidatePullRequest,} from './pull-request';
 import {GithubApiMergeStrategy} from './strategies/api-merge';
 import {AutosquashMergeStrategy} from './strategies/autosquash-merge';
 
+/** Github OAuth scopes required for the merge task. */
+const REQUIRED_SCOPES = ['repo'];
+
 /** Describes the status of a pull request merge. */
 export const enum MergeStatus {
   UNKNOWN_GIT_ERROR,
@@ -48,6 +51,9 @@ export class PullRequestMergeTask {
    * @param force Whether non-critical pull request failures should be ignored.
    */
   async merge(prNumber: number, force = false): Promise<MergeResult> {
+    // Assert the authenticated GitClient has access on the required scopes.
+    await this.git.assertOauthScopes(...REQUIRED_SCOPES);
+
     if (this.git.hasUncommittedChanges()) {
       return {status: MergeStatus.DIRTY_WORKING_DIR};
     }

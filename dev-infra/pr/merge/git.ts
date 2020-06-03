@@ -9,7 +9,7 @@
 import * as Octokit from '@octokit/rest';
 import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
 
-import {info} from '../../utils/console';
+import {info, yellow} from '../../utils/console';
 
 import {MergeConfigWithRemote} from './config';
 
@@ -43,6 +43,8 @@ export class GitClient {
   /** Instance of the authenticated Github octokit API. */
   api: Octokit;
 
+  /** The OAuth scopes available for the provided Github token. */
+  private _oauthScopes: Promise<string[]> = Promise.resolve([]);
   /** Regular expression that matches the provided Github token. */
   private _tokenRegex = new RegExp(this._githubToken, 'g');
 
@@ -54,6 +56,13 @@ export class GitClient {
       // Wrap API errors in a known error class. This allows us to
       // expect Github API errors better and in a non-ambiguous way.
       throw new GithubApiRequestError(error.status, error.message);
+    });
+
+    // OAuth scopes are loaded via the /rate_limit endpoint to prevent
+    // usage of a request against that rate_limit for this lookup.
+    this._oauthScopes = this.api.request('/rate_limit').then(response => {
+      const scopes: string = response.headers['x-oauth-scopes'] || '';
+      return scopes.split(',').map(scope => scope.trim());
     });
   }
 
@@ -112,6 +121,28 @@ export class GitClient {
   hasUncommittedChanges(): boolean {
     return this.runGraceful(['diff-index', '--quiet', 'HEAD']).status !== 0;
   }
+
+  /** Whether the provided Github token has permissions for the all of the requested scopes. */
+  async assertOauthScopes(...scopes: string[]) {
+    const missingScopes = [];
+    const availableScopes = await this._oauthScopes;
+    scopes.forEach(scope => {
+      if (!availableScopes.includes(scope)) {
+        missingScopes.push(scope);
+      }
+    });
+
+    if (missingScopes.length !== 0) {
+      const errMessage =
+          `The provided <TOKEN> does not have required permissions due to missing scope(s): ` +
+          `${yellow(missingScopes.join(', '))}\n\n` +
+          `Update the token in use at:\n` +
+          `  https://github.com/settings/tokens\n\n` +
+          `Alternatively, a new token can be created at: https://github.com/settings/tokens/new\n`;
+      throw new GithubApiRequestError(-1, errMessage);
+    }
+  }
+
 
   /** Sanitizes a given message by omitting the provided Github token if present. */
   omitGithubTokenFromMessage(value: string): string {
