@@ -13,6 +13,11 @@ import {info, yellow} from '../../utils/console';
 
 import {MergeConfigWithRemote} from './config';
 
+/** Github response type extended to include the `x-oauth-scopes` headers presence. */
+type RateLimitResponseWithOAuthScopeHeader = Octokit.Response<Octokit.RateLimitGetResponse>&{
+  headers: {'x-oauth-scopes': string};
+};
+
 /** Error for failed Github API requests. */
 export class GithubApiRequestError extends Error {
   constructor(public status: number, message: string) {
@@ -44,7 +49,7 @@ export class GitClient {
   api: Octokit;
 
   /** The OAuth scopes available for the provided Github token. */
-  private _oauthScopes: Promise<string[]> = Promise.resolve([]);
+  private _oauthScopes: Promise<string[]>;
   /** Regular expression that matches the provided Github token. */
   private _tokenRegex = new RegExp(this._githubToken, 'g');
 
@@ -56,13 +61,6 @@ export class GitClient {
       // Wrap API errors in a known error class. This allows us to
       // expect Github API errors better and in a non-ambiguous way.
       throw new GithubApiRequestError(error.status, error.message);
-    });
-
-    // OAuth scopes are loaded via the /rate_limit endpoint to prevent
-    // usage of a request against that rate_limit for this lookup.
-    this._oauthScopes = this.api.request('/rate_limit').then(response => {
-      const scopes: string = response.headers['x-oauth-scopes'] || '';
-      return scopes.split(',').map(scope => scope.trim());
     });
   }
 
@@ -122,30 +120,59 @@ export class GitClient {
     return this.runGraceful(['diff-index', '--quiet', 'HEAD']).status !== 0;
   }
 
-  /** Whether the provided Github token has permissions for the all of the requested scopes. */
-  async assertOauthScopes(...scopes: string[]) {
-    const missingScopes = [];
-    const availableScopes = await this._oauthScopes;
-    scopes.forEach(scope => {
-      if (!availableScopes.includes(scope)) {
-        missingScopes.push(scope);
-      }
-    });
-
-    if (missingScopes.length !== 0) {
-      const errMessage =
-          `The provided <TOKEN> does not have required permissions due to missing scope(s): ` +
-          `${yellow(missingScopes.join(', '))}\n\n` +
-          `Update the token in use at:\n` +
-          `  https://github.com/settings/tokens\n\n` +
-          `Alternatively, a new token can be created at: https://github.com/settings/tokens/new\n`;
-      throw new GithubApiRequestError(-1, errMessage);
-    }
-  }
-
-
   /** Sanitizes a given message by omitting the provided Github token if present. */
   omitGithubTokenFromMessage(value: string): string {
     return value.replace(this._tokenRegex, '<TOKEN>');
+  }
+
+  /**
+   * Assert the GitClient instance is using a token with permissions for the all of the
+   * provided OAuth scopes.
+   */
+  async hasOauthScopes(...requestedScopes: string[]): Promise<true|{error: string}> {
+    const missingScopes: string[] = [];
+    const scopes = await this.getAuthScopes();
+    requestedScopes.forEach(scope => {
+      if (!scopes.includes(scope)) {
+        missingScopes.push(scope);
+      }
+    });
+    // If no missing scopes are found, return true to indicate all OAuth Scopes are available.
+    if (missingScopes.length === 0) {
+      return true;
+    }
+
+    /**
+     * Preconstructed error message to log to the user, providing missing scopes and
+     * remediation instructions.
+     **/
+    const error =
+        `The provided <TOKEN> does not have required permissions due to missing scope(s): ` +
+        `${yellow(missingScopes.join(', '))}\n\n` +
+        `Update the token in use at:\n` +
+        `  https://github.com/settings/tokens\n\n` +
+        `Alternatively, a new token can be created at: https://github.com/settings/tokens/new\n`;
+
+    return {error};
+  }
+
+
+  /**
+   * Retrieves the OAuth scopes for the loaded Github token, returning the already retrived
+   * list of OAuth scopes if available.
+   **/
+  private getAuthScopes() {
+    // If the OAuth scopes have already been loaded, return the Promise containing them.
+    if (this._oauthScopes) {
+      return this._oauthScopes;
+    }
+    // OAuth scopes are loaded via the /rate_limit endpoint to prevent
+    // usage of a request against that rate_limit for this lookup.
+    this._oauthScopes = this.api.rateLimit.get().then(_response => {
+      const response = _response as RateLimitResponseWithOAuthScopeHeader;
+      const scopes: string = response.headers['x-oauth-scopes'] || '';
+      return scopes.split(',').map(scope => scope.trim());
+    });
+    return this._oauthScopes;
   }
 }

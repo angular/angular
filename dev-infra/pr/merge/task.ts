@@ -22,6 +22,7 @@ export const enum MergeStatus {
   DIRTY_WORKING_DIR,
   SUCCESS,
   FAILED,
+  GITHUB_ERROR,
 }
 
 /** Result of a pull request merge. */
@@ -52,7 +53,13 @@ export class PullRequestMergeTask {
    */
   async merge(prNumber: number, force = false): Promise<MergeResult> {
     // Assert the authenticated GitClient has access on the required scopes.
-    await this.git.assertOauthScopes(...REQUIRED_SCOPES);
+    const hasOauthScopes = await this.git.hasOauthScopes(...REQUIRED_SCOPES);
+    if (hasOauthScopes !== true) {
+      return {
+        status: MergeStatus.GITHUB_ERROR,
+        failure: PullRequestFailure.insufficientPermissionsToMerge(hasOauthScopes.error)
+      };
+    }
 
     if (this.git.hasUncommittedChanges()) {
       return {status: MergeStatus.DIRTY_WORKING_DIR};
