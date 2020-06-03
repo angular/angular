@@ -41,7 +41,7 @@ export function createMouseEvent(type: string, clientX = 0, clientY = 0, button 
 
   // `initMouseEvent` doesn't allow us to pass the `buttons` and
   // defaults it to 0 which looks like a fake event.
-  Object.defineProperty(event, 'buttons', {get: () => 1});
+  defineReadonlyEventProperty(event, 'buttons', 1);
 
   // IE won't set `defaultPrevented` on synthetic events so we need to do it manually.
   event.preventDefault = function() {
@@ -89,11 +89,9 @@ export function createTouchEvent(type: string, pageX = 0, pageY = 0) {
 
   // Most of the browsers don't have a "initTouchEvent" method that can be used to define
   // the touch details.
-  Object.defineProperties(event, {
-    touches: {value: [touchDetails]},
-    targetTouches: {value: [touchDetails]},
-    changedTouches: {value: [touchDetails]}
-  });
+  defineReadonlyEventProperty(event, 'touches', [touchDetails]);
+  defineReadonlyEventProperty(event, 'targetTouches', [touchDetails]);
+  defineReadonlyEventProperty(event, 'changedTouches', [touchDetails]);
 
   return event;
 }
@@ -145,15 +143,13 @@ export function createKeyboardEvent(type: string, keyCode: number = 0, key: stri
 
   // Webkit Browsers don't set the keyCode when calling the init function.
   // See related bug https://bugs.webkit.org/show_bug.cgi?id=16735
-  Object.defineProperties(event, {
-    keyCode: { get: () => keyCode },
-    key: { get: () => key },
-    target: { get: () => target },
-    ctrlKey: { get: () => !!modifiers.control },
-    altKey: { get: () => !!modifiers.alt },
-    shiftKey: { get: () => !!modifiers.shift },
-    metaKey: { get: () => !!modifiers.meta }
-  });
+  defineReadonlyEventProperty(event, 'keyCode', keyCode);
+  defineReadonlyEventProperty(event, 'key', key);
+  defineReadonlyEventProperty(event, 'target', target);
+  defineReadonlyEventProperty(event, 'ctrlKey', !!modifiers.control);
+  defineReadonlyEventProperty(event, 'altKey', !!modifiers.alt);
+  defineReadonlyEventProperty(event, 'shiftKey', !!modifiers.shift);
+  defineReadonlyEventProperty(event, 'metaKey', !!modifiers.meta);
 
   // IE won't set `defaultPrevented` on synthetic events so we need to do it manually.
   event.preventDefault = function() {
