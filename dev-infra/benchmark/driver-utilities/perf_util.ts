@@ -22,7 +22,7 @@ const globalOptions = {
 
 const runner = createBenchpressRunner();
 
-export function runBenchmark(config: {
+export async function runBenchmark(config: {
   id: string,
   url: string,
   params: {name: string, value: any}[],
@@ -34,7 +34,7 @@ export function runBenchmark(config: {
 }): Promise<any> {
   openBrowser(config);
   if (config.setup) {
-    config.setup();
+    await config.setup();
   }
   const description: {[key: string]: any} = {};
   config.params.forEach((param) => description[param.name] = param.value);
