@@ -1556,15 +1556,28 @@ describe('Integration', () => {
       }
     }
 
+    @Injectable()
+    class ResolveEmptyAndRedirect implements Resolve<never> {
+      constructor(private router: Router) {}
+
+      resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<never> {
+        this.router.navigate(['/one'], {queryParamsHandling: 'merge'});
+
+        return EMPTY;
+      }
+    }
+
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [
+          ResolveEmptyAndRedirect,
           {provide: 'resolveTwo', useValue: (a: any, b: any) => 2},
           {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
           {provide: 'resolveSix', useClass: ResolveSix},
           {provide: 'resolveError', useValue: (a: any, b: any) => Promise.reject('error')},
           {provide: 'resolveNullError', useValue: (a: any, b: any) => Promise.reject(null)},
           {provide: 'resolveEmpty', useValue: (a: any, b: any) => EMPTY},
+          {provide: 'resolveEmptyAndRedirect', useClass: ResolveEmptyAndRedirect},
           {provide: 'numberOfUrlSegments', useValue: (a: any, b: any) => a.url.length},
         ]
       });
@@ -1815,6 +1828,24 @@ describe('Integration', () => {
 
          const cmp = fixture.debugElement.children[1].componentInstance;
          expect(cmp.route.snapshot.data).toEqual({two: 2});
+       })));
+
+    it('should merge query params from previous url after navigation from a resolver',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {path: 'one', component: SimpleCmp},
+           {path: 'two', component: SimpleCmp, resolve: {two: 'resolveEmptyAndRedirect'}}
+         ]);
+
+         router.navigate(['/one'], {queryParams: {id: 1}, queryParamsHandling: 'merge'});
+         advance(fixture);
+         expect(location.path()).toEqual('/one?id=1');
+
+         router.navigate(['/two'], {queryParams: {id: 2}, queryParamsHandling: 'merge'});
+         advance(fixture);
+         expect(location.path()).toEqual('/one?id=2');
        })));
 
     it('should rerun resolvers when the urls segments of a wildcard route change',

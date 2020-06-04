@@ -577,6 +577,7 @@ export class Router {
                          rawUrl: rawUrlTree,
                          extras: {skipLocationChange, replaceUrl}
                        } = t;
+                       this.currentUrlTree = t.urlAfterRedirects;
                        return this.hooks.beforePreactivation(targetSnapshot!, {
                          navigationId,
                          appliedUrlTree,
@@ -699,7 +700,6 @@ export class Router {
                         URL and the RouterState, as well as updated the browser URL. All this should
                         happen *before* activating. */
                      tap((t: NavigationTransition) => {
-                       this.currentUrlTree = t.urlAfterRedirects;
                        this.rawUrlTree =
                            this.urlHandlingStrategy.merge(this.currentUrlTree, t.rawUrl);
 
