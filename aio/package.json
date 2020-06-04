@@ -161,7 +161,7 @@
     "remark-html": "^8.0.0",
     "rimraf": "^2.6.1",
     "semver": "^5.3.0",
-    "shelljs": "^0.7.7",
+    "shelljs": "^0.8.4",
     "tree-kill": "^1.1.0",
     "ts-node": "^8.4.1",
     "tslint": "~6.1.0",

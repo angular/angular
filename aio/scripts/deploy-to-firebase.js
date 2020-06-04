@@ -1,9 +1,11 @@
 #!/bin/env node
+//
+// WARNING: `CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN` should NOT be printed.
+//
 'use strict';
 
 const {cd, cp, exec: _exec, set} = require('shelljs');
 
-// WARNING: `CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN` should NOT be printed.
 set('-e');
 
 
@@ -172,6 +174,7 @@ function deploy(
 }
 
 function exec(cmd, opts) {
+  // Using `silent: true` to ensure no secret env variables are printed.
   return _exec(cmd, {silent: true, ...opts}).trim();
 }
 
@@ -188,5 +191,6 @@ function skipDeployment(reason) {
 }
 
 function yarn(cmd) {
-  return exec(`yarn ${cmd}`);
+  // Using `--silent` to ensure no secret env variables are printed.
+  return exec(`yarn --silent ${cmd}`);
 }
