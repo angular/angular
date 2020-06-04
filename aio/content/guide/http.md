@@ -1,6 +1,6 @@
 # Communicating with backend services using HTTP
 
-Most front-end applications need to communicate with a server over the HTTP protocol, in order to download or upload data and accesss other back-end services.
+Most front-end applications need to communicate with a server over the HTTP protocol, in order to download or upload data and access other back-end services.
 Angular provides a simplified client HTTP API for Angular applications, the `HttpClient` service class in `@angular/common/http`.
 
 The HTTP client service offers the following major features.
@@ -63,7 +63,7 @@ Look at the `AppModule` _imports_ to see how it is configured.
 ## Requesting data from a server
 
 Use the [`HTTPClient.get()`](api/common/http/HttpClient#get) method to fetch data from a server.
-The aynchronous method sends an HTTP request, and returns an Observable that emits the requested data when the response is received.
+The asynchronous method sends an HTTP request, and returns an Observable that emits the requested data when the response is received.
 The return type varies based on the `observe` and `responseType` values that you pass to the call.
 
 The `get()` method takes two arguments; the endpoint URL from which to fetch, and an *options* object that you can use to configure the request.
@@ -805,16 +805,16 @@ The `CachingInterceptor` in the following example demonstrates this approach.
   header="app/http-interceptors/caching-interceptor.ts)">
 </code-example>
 
-* The `isCachable()` function determines if the request is cachable.
-In this sample, only GET requests to the npm package search api are cachable.
+* The `isCacheable()` function determines if the request is cacheable.
+In this sample, only GET requests to the npm package search api are cacheable.
 
-* If the request is not cachable, the interceptor simply forwards the request
+* If the request is not cacheable, the interceptor simply forwards the request
 to the next handler in the chain.
 
-* If a cachable request is found in the cache, the interceptor returns an `of()` _observable_ with
+* If a cacheable request is found in the cache, the interceptor returns an `of()` _observable_ with
 the cached response, by-passing the `next` handler (and all other interceptors downstream).
 
-* If a cachable request is not in cache, the code calls `sendRequest()`.
+* If a cacheable request is not in cache, the code calls `sendRequest()`.
 This function creates a [request clone](#immutability) without headers, because the npm API forbids them.
 The function then forwards the clone of the request to `next.handle()` which ultimately calls the server and returns the server's response.
 

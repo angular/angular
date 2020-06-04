@@ -107,7 +107,7 @@ Notice that all of the files the browser needs to render this application are ca
 <div class="alert is-helpful">
 Pay attention to two key points:
 
-1. The generated `ngsw-config.json` includes a limited list of cachable fonts and images extentions. In some cases, you might want to modify the glob pattern to suit your needs.
+1. The generated `ngsw-config.json` includes a limited list of cacheable fonts and images extentions. In some cases, you might want to modify the glob pattern to suit your needs.
 
 1. If `resourcesOutputPath` or `assets` paths are modified after the generation of configuration file, you need to change the paths manually in `ngsw-config.json`.
 </div>
