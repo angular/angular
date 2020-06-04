@@ -60,7 +60,7 @@ export class GitClient {
   /** The file path of project's root directory. */
   private _projectRoot = getRepoBaseDir();
   /** The OAuth scopes available for the provided Github token. */
-  private _oauthScopes = Promise.resolve<string[]>([]);
+  private _oauthScopes: Promise<string[]>|null = null;
   /** Regular expression that matches the provided Github token. */
   private _tokenRegex = new RegExp(this._githubToken, 'g');
 
