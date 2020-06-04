@@ -114,10 +114,6 @@ function computeDeploymentInfo(
   throw new Error('Failed to determine deployment info.');
 }
 
-function computeMajorVersion(branchName) {
-  return +branchName.split('.', 1)[0];
-}
-
 function computeInputVars({
   CI_AIO_MIN_PWA_SCORE: minPwaScore,
   CI_BRANCH: currentBranch,
@@ -138,6 +134,10 @@ function computeInputVars({
     repoOwner,
     stableBranch,
   };
+}
+
+function computeMajorVersion(branchName) {
+  return +branchName.split('.', 1)[0];
 }
 
 function deploy(
