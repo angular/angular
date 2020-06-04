@@ -22,10 +22,6 @@ import {MockLogger} from '../helpers/mock_logger';
 runInEachFileSystem(() => {
   describe('ProgramBasedEntryPointFinder', () => {
     let fs: FileSystem;
-    let resolver: DependencyResolver;
-    let logger: MockLogger;
-    let config: NgccConfiguration;
-    let manifest: EntryPointManifest;
     let _Abs: typeof absoluteFrom;
     let projectPath: AbsoluteFsPath;
     let basePath: AbsoluteFsPath;
@@ -37,13 +33,6 @@ runInEachFileSystem(() => {
       projectPath = _Abs('/sub_entry_points');
       basePath = _Abs('/sub_entry_points/node_modules');
       angularNamespacePath = fs.resolve(basePath, '@angular');
-
-      logger = new MockLogger();
-      const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs));
-      const dtsHost = new DtsDependencyHost(fs);
-      config = new NgccConfiguration(fs, projectPath);
-      resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
-      manifest = new EntryPointManifest(fs, config, logger);
     });
 
     describe('findEntryPoints()', () => {
@@ -59,9 +48,7 @@ runInEachFileSystem(() => {
           ...createPackage(
               fs.resolve(angularNamespacePath, 'common'), 'testing', ['@angular/common']),
         ]);
-        const tsConfig = readConfiguration(`${projectPath}/tsconfig.json`);
-        const finder = new ProgramBasedEntryPointFinder(
-            fs, config, logger, resolver, basePath, tsConfig, projectPath);
+        const finder = createFinder();
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['@angular/core', '@angular/core'],
@@ -70,14 +57,39 @@ runInEachFileSystem(() => {
         ]);
       });
 
+      function createFinder(): ProgramBasedEntryPointFinder {
+        const tsConfig = readConfiguration(`${projectPath}/tsconfig.json`);
+        const baseUrl = fs.resolve(projectPath, tsConfig.options.basePath!);
+        const paths = tsConfig.options.paths!;
+
+        const logger = new MockLogger();
+        const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, {baseUrl, paths}));
+        const dtsHost = new DtsDependencyHost(fs);
+        const config = new NgccConfiguration(fs, projectPath);
+        const resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
+        const manifest = new EntryPointManifest(fs, config, logger);
+        return new ProgramBasedEntryPointFinder(
+            fs, config, logger, resolver, basePath, tsConfig, projectPath);
+      }
+
       function createProgram(projectPath: AbsoluteFsPath): TestFile[] {
         return [
+          {
+            name: _Abs(`${projectPath}/package.json`),
+            contents: '',
+          },
           {
             name: _Abs(`${projectPath}/tsconfig.json`),
             contents: `{
               "files": [
                 "src/main.ts"
               ],
+              "compilerOptions": {
+                "baseUrl": ".",
+                "paths": {
+                  "lib/*": ["lib/*"]
+                }
+              }
             }`,
           },
           {
@@ -85,6 +97,7 @@ runInEachFileSystem(() => {
             contents: `
             import {AppComponent} from './app.component';
             import * from './app.module';
+            import * from 'lib/service';
             `,
           },
           {
@@ -99,11 +112,17 @@ runInEachFileSystem(() => {
             contents: `
             import {NgModule} from '@angular/core';
             import * as common from '@angular/common';
-            import * as http from '@angular/common/http';
             import {AppComponent} from './app.component';
             export class AppModule {}
             `,
-          }
+          },
+          {
+            name: _Abs(`${projectPath}/lib/service/index.ts`),
+            contents: `
+            import * as http from '@angular/common/http';
+            export class Service {}
+            `,
+          },
         ];
       }
 

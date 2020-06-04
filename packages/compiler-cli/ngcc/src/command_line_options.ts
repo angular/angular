@@ -123,7 +123,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
   const enableI18nLegacyMessageIdFormat = options['legacy-message-ids'];
   const invalidateEntryPointManifest = options['invalidate-entry-point-manifest'];
   const errorOnFailedEntryPoint = options['error-on-failed-entry-point'];
-  const findEntryPointsFromTsConfigProgram = options['use-tsconfig'];
+  const findEntryPointsFromTsConfigProgram = options['use-program-dependencies'];
   // yargs is not so great at mixed string+boolean types, so we have to test tsconfig against a
   // string "false" to capture the `tsconfig=false` option.
   // And we have to convert the option to a string to handle `no-tsconfig`, which will be `false`.
@@ -143,6 +143,6 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
     invalidateEntryPointManifest,
     errorOnFailedEntryPoint,
     tsConfigPath,
-    findEntryPointsFromTsConfigProgram
+    findEntryPointsFromTsConfigProgram,
   };
 }
