@@ -73,6 +73,10 @@ export class EsmDependencyHost extends DependencyHostBase {
       }
       lastToken = currentToken;
     }
+
+    // Clear the text from the scanner.
+    this.scanner.setText('');
+
     return imports;
   }
 
