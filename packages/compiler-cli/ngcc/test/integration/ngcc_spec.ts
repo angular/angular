@@ -32,6 +32,14 @@ runInEachFileSystem(() => {
     let _: typeof absoluteFrom;
     let fs: FileSystem;
     let pkgJsonUpdater: PackageJsonUpdater;
+    const STANDARD_MARKERS = {
+      main: '0.0.0-PLACEHOLDER',
+      module: '0.0.0-PLACEHOLDER',
+      es2015: '0.0.0-PLACEHOLDER',
+      esm2015: '0.0.0-PLACEHOLDER',
+      fesm2015: '0.0.0-PLACEHOLDER',
+      typings: '0.0.0-PLACEHOLDER',
+    };
 
     beforeEach(() => {
       _ = absoluteFrom;
@@ -644,15 +652,6 @@ runInEachFileSystem(() => {
 
     describe('with targetEntryPointPath', () => {
       it('should only compile the given package entry-point (and its dependencies).', () => {
-        const STANDARD_MARKERS = {
-          main: '0.0.0-PLACEHOLDER',
-          module: '0.0.0-PLACEHOLDER',
-          es2015: '0.0.0-PLACEHOLDER',
-          esm2015: '0.0.0-PLACEHOLDER',
-          fesm2015: '0.0.0-PLACEHOLDER',
-          typings: '0.0.0-PLACEHOLDER',
-        };
-
         mainNgcc({basePath: '/node_modules', targetEntryPointPath: '@angular/common/http/testing'});
         expect(loadPackage('@angular/common/http/testing').__processed_by_ivy_ngcc__)
             .toEqual(STANDARD_MARKERS);
@@ -817,6 +816,27 @@ runInEachFileSystem(() => {
       markAsProcessed(
           pkgJsonUpdater, targetPackage, targetPackageJsonPath, ['typings', ...properties]);
     }
+
+    describe('with findEntryPointsFromTsConfigProgram', () => {
+      it('should only compile the package entry-points (and their dependencies) reachable from the program in tsconfig.json.',
+         () => {
+           mainNgcc({basePath: '/node_modules', findEntryPointsFromTsConfigProgram: true});
+           // * `common/testing` is a dependency of `./y`, so is compiled.
+           expect(loadPackage('@angular/common/testing').__processed_by_ivy_ngcc__)
+               .toEqual(STANDARD_MARKERS);
+           // * `common/http` is a dependency of `./x`, so is compiled.
+           expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__)
+               .toEqual(STANDARD_MARKERS);
+           // * `core` is a dependency of `common/http`, so is compiled.
+           expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual(STANDARD_MARKERS);
+           // * `common` is a private (only in .js not .d.ts) dependency so is compiled.
+           expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__)
+               .toEqual(STANDARD_MARKERS);
+           // * `common/http/testing` is not a dependency of the program so is not compiled.
+           expect(loadPackage('@angular/common/http/testing').__processed_by_ivy_ngcc__)
+               .toBeUndefined();
+         });
+    });
 
     it('should clean up outdated artifacts', () => {
       compileIntoFlatEs2015Package('test-package', {
@@ -2112,6 +2132,17 @@ runInEachFileSystem(() => {
           contents: `export declare class AppComponent {}`
         },
         {name: _('/node_modules/invalid-package/index.metadata.json'), contents: 'DUMMY DATA'},
+      ]);
+
+      // A sample application that imports entry-points
+      loadTestFiles([
+        {name: _('/tsconfig.json'), contents: '{"files": ["src/index.ts"]}'},
+        {name: _('/src/index.ts'), contents: `import {X} from './x';\nimport {Y} from './y';`},
+        {name: _('/src/x.ts'), contents: `import '@angular/common/http';\nexport class X {}`},
+        {
+          name: _('/src/y.ts'),
+          contents: `import * as t from '@angular/common/testing';\n export class Y {}`
+        },
       ]);
     }
   });
