@@ -359,6 +359,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return program;
   }
 
+  getReferencesAtPosition(fileName: string, position: number): tss.ReferenceEntry[]|undefined {
+    return this.tsLS.getReferencesAtPosition(fileName, position);
+  }
+
   /**
    * Return the TemplateSource if `node` is a template node.
    *
