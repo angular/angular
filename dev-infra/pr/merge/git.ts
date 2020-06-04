@@ -49,7 +49,7 @@ export class GitClient {
   api: Octokit;
 
   /** The OAuth scopes available for the provided Github token. */
-  private _oauthScopes: Promise<string[]>;
+  private _oauthScopes = Promise.resolve<string[]>([]);
   /** Regular expression that matches the provided Github token. */
   private _tokenRegex = new RegExp(this._githubToken, 'g');
 
