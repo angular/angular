@@ -180,13 +180,13 @@ runInEachFileSystem(() => {
         {name: _('/no/imports/or/re-exports/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/external/imports/index.js'),
-          contents: `import {X} from 'lib-1';\nimport {Y} from 'lib-1/sub-1';`
+          contents: `import {\n   X\n} from 'lib-1';\nimport {Y, Z} from 'lib-1/sub-1';`
         },
         {name: _('/external/imports/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/external/imports/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/external/re-exports/index.js'),
-          contents: `export {X} from 'lib-1';\nexport {Y} from 'lib-1/sub-1';`
+          contents: `export {X} from 'lib-1';\nexport {\n   Y,\n   Z\n} from 'lib-1/sub-1';`
         },
         {name: _('/external/re-exports/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/external/re-exports/index.metadata.json'), contents: 'MOCK METADATA'},
@@ -288,20 +288,44 @@ runInEachFileSystem(() => {
     describe('hasImportOrReexportStatements', () => {
       it('should return true if there is an import statement', () => {
         expect(hasImportOrReexportStatements('import {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('import {X} from \'some/x\';')).toBe(true);
         expect(hasImportOrReexportStatements('import * as X from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('import * as X from \'some/x\';')).toBe(true);
         expect(hasImportOrReexportStatements('blah blah\n\n  import {X} from "some/x";\nblah blah'))
             .toBe(true);
+        expect(
+            hasImportOrReexportStatements('blah blah\n\n  import {X} from \'some/x\';\nblah blah'))
+            .toBe(true);
         expect(hasImportOrReexportStatements('\t\timport {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('\t\timport {X} from \'some/x\';')).toBe(true);
+        expect(hasImportOrReexportStatements('\t\timport {\n  X,\n  Y\n} from "some/x";'))
+            .toBe(true);
+        expect(hasImportOrReexportStatements('\t\timport {\n  X,\n  Y\n} from \'some/x\';'))
+            .toBe(true);
+        expect(hasImportOrReexportStatements('\t\timport "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('\t\timport \'some/x\';')).toBe(true);
       });
+
       it('should return true if there is a re-export statement', () => {
         expect(hasImportOrReexportStatements('export {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('export {X} from \'some/x\';')).toBe(true);
         expect(hasImportOrReexportStatements('blah blah\n\n  export {X} from "some/x";\nblah blah'))
             .toBe(true);
+        expect(
+            hasImportOrReexportStatements('blah blah\n\n  export {X} from \'some/x\';\nblah blah'))
+            .toBe(true);
         expect(hasImportOrReexportStatements('\t\texport {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('\t\texport {X} from \'some/x\';')).toBe(true);
+        expect(hasImportOrReexportStatements('export {\n  X,\n  Y\n} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('export {\n  X,\n  Y\n} from \'some/x\';')).toBe(true);
         expect(hasImportOrReexportStatements(
-                   'blah blah\n\n  export * from "@angular/core;\nblah blah'))
+                   'blah blah\n\n  export * from "@angular/core";\nblah blah'))
+            .toBe(true);
+        expect(hasImportOrReexportStatements(
+                   'blah blah\n\n  export * from \'@angular/core\';\nblah blah'))
             .toBe(true);
       });
+
       it('should return false if there is no import nor re-export statement', () => {
         expect(hasImportOrReexportStatements('blah blah')).toBe(false);
         expect(hasImportOrReexportStatements('export function moo() {}')).toBe(false);
