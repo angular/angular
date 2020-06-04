@@ -257,6 +257,16 @@ runInEachFileSystem(() => {
                  .toEqual(new ResolvedExternalModule(_('/dist/package-4/secondary-entry-point')));
            });
       });
+
+      describe('with mapped path relative paths', () => {
+        it('should resolve to a relative file if found via a paths mapping', () => {
+          const resolver = new ModuleResolver(
+              getFileSystem(), {baseUrl: '/', paths: {'mapped/*': ['libs/local-package/*']}});
+
+          expect(resolver.resolveModuleImport('mapped/x', _('/libs/local-package/index.js')))
+              .toEqual(new ResolvedRelativeModule(_('/libs/local-package/x.js')));
+        });
+      });
     });
   });
 });

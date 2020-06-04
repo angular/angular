@@ -11,6 +11,7 @@
 import * as os from 'os';
 
 import {AbsoluteFsPath, FileSystem, resolve} from '../../src/ngtsc/file_system';
+import {ParsedConfiguration} from '../../src/perform_compile';
 
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
 import {DependencyResolver} from './dependencies/dependency_resolver';
@@ -20,6 +21,7 @@ import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
 import {EntryPointFinder} from './entry_point_finder/interface';
+import {ProgramBasedEntryPointFinder} from './entry_point_finder/program_based_entry_point_finder';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
 import {getAnalyzeEntryPointsFn} from './execution/analyze_entry_points';
 import {Executor} from './execution/api';
@@ -81,7 +83,8 @@ export function mainNgcc(options: AsyncNgccOptions|SyncNgccOptions): void|Promis
       targetEntryPointPath !== undefined ? resolve(basePath, targetEntryPointPath) : null;
   const finder = getEntryPointFinder(
       fileSystem, logger, dependencyResolver, config, entryPointManifest, absBasePath,
-      absoluteTargetEntryPointPath, pathMappings);
+      absoluteTargetEntryPointPath, pathMappings,
+      options.findEntryPointsFromTsConfigProgram ? tsConfig : null, projectPath);
   if (finder instanceof TargetedEntryPointFinder &&
       !finder.targetNeedsProcessingOrCleaning(supportedPropertiesToConsider, compileAllFormats)) {
     logger.debug('The target entry-point has already been processed');
@@ -195,13 +198,15 @@ function getDependencyResolver(
 function getEntryPointFinder(
     fs: FileSystem, logger: Logger, resolver: DependencyResolver, config: NgccConfiguration,
     entryPointManifest: EntryPointManifest, basePath: AbsoluteFsPath,
-    absoluteTargetEntryPointPath: AbsoluteFsPath|null,
-    pathMappings: PathMappings|undefined): EntryPointFinder {
+    absoluteTargetEntryPointPath: AbsoluteFsPath|null, pathMappings: PathMappings|undefined,
+    tsConfig: ParsedConfiguration|null, projectPath: AbsoluteFsPath): EntryPointFinder {
   if (absoluteTargetEntryPointPath !== null) {
     return new TargetedEntryPointFinder(
-        fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
-  } else {
-    return new DirectoryWalkerEntryPointFinder(
-        fs, config, logger, resolver, entryPointManifest, basePath, pathMappings);
+        fs, config, logger, resolver, basePath, pathMappings, absoluteTargetEntryPointPath);
+  } else if (tsConfig !== null) {
+    return new ProgramBasedEntryPointFinder(
+        fs, config, logger, resolver, basePath, tsConfig, projectPath);
   }
+  return new DirectoryWalkerEntryPointFinder(
+      fs, config, logger, resolver, entryPointManifest, basePath, pathMappings);
 }
