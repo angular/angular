@@ -122,14 +122,14 @@ export class EsmDependencyHost extends DependencyHostBase {
 
     // Check for namespace import clause
     if (kind === ts.SyntaxKind.AsteriskToken) {
-      kind = this.skipStarClause();
+      kind = this.skipNamespacedClause();
       if (kind === null) {
         return null;
       }
     }
     // Check for named imports clause
     else if (kind === ts.SyntaxKind.OpenBraceToken) {
-      kind = this.skipExplicitClause();
+      kind = this.skipNamedClause();
     }
 
     // Expect a `from` clause, if not bail out
@@ -157,12 +157,12 @@ export class EsmDependencyHost extends DependencyHostBase {
     // Skip the `export` keyword
     let token: ts.SyntaxKind|null = this.scanner.scan();
     if (token === ts.SyntaxKind.AsteriskToken) {
-      token = this.skipStarClause();
+      token = this.skipNamespacedClause();
       if (token === null) {
         return null;
       }
     } else if (token === ts.SyntaxKind.OpenBraceToken) {
-      token = this.skipExplicitClause();
+      token = this.skipNamedClause();
     }
     // Expect a `from` clause, if not bail out
     if (token !== ts.SyntaxKind.FromKeyword) {
@@ -171,7 +171,7 @@ export class EsmDependencyHost extends DependencyHostBase {
     return this.tryStringLiteral();
   }
 
-  protected skipStarClause(): ts.SyntaxKind|null {
+  protected skipNamespacedClause(): ts.SyntaxKind|null {
     // Skip past the `*`
     let token = this.scanner.scan();
     // Check for a `* as identifier` alias clause
@@ -188,7 +188,7 @@ export class EsmDependencyHost extends DependencyHostBase {
     return token;
   }
 
-  protected skipExplicitClause(): ts.SyntaxKind {
+  protected skipNamedClause(): ts.SyntaxKind {
     let braceCount = 1;
     // Skip past the initial opening brace `{`
     let token = this.scanner.scan();
