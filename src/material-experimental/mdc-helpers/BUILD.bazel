@@ -58,6 +58,8 @@ sass_library(
         "@npm//:node_modules/@material/circular-progress/_mixins.scss",
         "@npm//:node_modules/@material/circular-progress/_variables.import.scss",
         "@npm//:node_modules/@material/circular-progress/_variables.scss",
+        "@npm//:node_modules/@material/data-table/_data-table.scss",
+        "@npm//:node_modules/@material/data-table/_data-table-theme.scss",
         "@npm//:node_modules/@material/data-table/_index.scss",
         "@npm//:node_modules/@material/data-table/_mixins.import.scss",
         "@npm//:node_modules/@material/data-table/_mixins.scss",

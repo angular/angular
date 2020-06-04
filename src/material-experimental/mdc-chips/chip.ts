@@ -279,6 +279,9 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
           // Make it `display: none` so users can't tab into it.
           this._elementRef.nativeElement.style.display = 'none';
         },
+    // Noop for now since we don't support editable chips yet.
+    notifyEditStart: () => {},
+    notifyEditFinish: () => {},
     getComputedStyleValue:
         propertyName => {
           // This function is run when a chip is removed so it might be
