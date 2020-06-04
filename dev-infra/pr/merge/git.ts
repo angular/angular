@@ -49,7 +49,7 @@ export class GitClient {
   api: Octokit;
 
   /** The OAuth scopes available for the provided Github token. */
-  private _oauthScopes = Promise.resolve<string[]>([]);
+  private _oauthScopes: Promise<string[]>|null = null;
   /** Regular expression that matches the provided Github token. */
   private _tokenRegex = new RegExp(this._githubToken, 'g');
 
@@ -131,7 +131,7 @@ export class GitClient {
    */
   async hasOauthScopes(...requestedScopes: string[]): Promise<true|{error: string}> {
     const missingScopes: string[] = [];
-    const scopes = await this.getAuthScopes();
+    const scopes = await this.getAuthScopesForToken();
     requestedScopes.forEach(scope => {
       if (!scopes.includes(scope)) {
         missingScopes.push(scope);
@@ -158,21 +158,20 @@ export class GitClient {
 
 
   /**
-   * Retrieves the OAuth scopes for the loaded Github token, returning the already retrived
-   * list of OAuth scopes if available.
+   * Retrieves the OAuth scopes for the loaded Github token, returning the already
+   * retrieved list of OAuth scopes if available.
    **/
-  private getAuthScopes() {
+  private async getAuthScopesForToken() {
     // If the OAuth scopes have already been loaded, return the Promise containing them.
-    if (this._oauthScopes) {
+    if (this._oauthScopes !== null) {
       return this._oauthScopes;
     }
     // OAuth scopes are loaded via the /rate_limit endpoint to prevent
     // usage of a request against that rate_limit for this lookup.
-    this._oauthScopes = this.api.rateLimit.get().then(_response => {
+    return this._oauthScopes = this.api.rateLimit.get().then(_response => {
       const response = _response as RateLimitResponseWithOAuthScopeHeader;
       const scopes: string = response.headers['x-oauth-scopes'] || '';
       return scopes.split(',').map(scope => scope.trim());
     });
-    return this._oauthScopes;
   }
 }
