@@ -71,7 +71,7 @@ describe('definitions', () => {
 
     const fileContent = mockHost.readFile(def.fileName);
     expect(fileContent!.substring(def.textSpan.start, def.textSpan.start + def.textSpan.length))
-        .toEqual(`title = 'Some title';`);
+        .toEqual(`title = 'Tour of Heroes';`);
   });
 
   it('should be able to find a method from a call', () => {
