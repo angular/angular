@@ -46,17 +46,6 @@ runInEachFileSystem(() => {
         expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
       });
 
-      it('should resolve all the external dynamic imports of the source file', () => {
-        const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.collectDependencies(
-            _('/external/dynamic/index.js'), {dependencies, missing, deepImports});
-        expect(dependencies.size).toBe(2);
-        expect(missing.size).toBe(0);
-        expect(deepImports.size).toBe(0);
-        expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
-        expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
-      });
-
       it('should resolve all the external re-exports of the source file', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
         host.collectDependencies(
@@ -195,13 +184,6 @@ runInEachFileSystem(() => {
         },
         {name: _('/external/imports/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/external/imports/index.metadata.json'), contents: 'MOCK METADATA'},
-        {
-          name: _('/external/dynamic/index.js'),
-          contents:
-              `async function foo() { await const x = import 'lib-1';\n const promise = import 'lib-1/sub-1'; }`
-        },
-        {name: _('/external/dynamic/package.json'), contents: '{"esm2015": "./index.js"}'},
-        {name: _('/external/dynamic/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/external/re-exports/index.js'),
           contents: `export {X} from 'lib-1';\nexport {\n   Y,\n   Z\n} from 'lib-1/sub-1';`
