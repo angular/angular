@@ -67,9 +67,6 @@ var_10: &only_on_master
 # **NOTE 1**: Pin to exact images using an ID (SHA). See https://circleci.com/docs/2.0/circleci-images/#using-a-docker-image-id-to-pin-an-image-to-a-fixed-version.
 #             (Using the tag in not necessary when pinning by ID, but include it anyway for documentation purposes.)
 # **NOTE 2**: If you change the version of the docker images, also change the `cache_key` suffix.
-# **NOTE 3**: If you change the version of the `*-browsers` docker image, make sure the
-#             `--versions.chrome` arg in `integration/bazel-schematics/test.sh` specifies a
-#             ChromeDriver version that is compatible with the Chrome version in the image.
 executors:
   default-executor:
     parameters:
@@ -120,7 +117,7 @@ commands:
             sudo apt-get update
             # Install GTK+ graphical user interface (libgtk-3-0), advanced linux sound architecture (libasound2)
             # and network security service libraries (libnss3) & X11 Screen Saver extension library (libssx1)
-            # which are dependendies of chrome & needed for karma & protractor headless chrome tests.
+            # which are dependencies of chrome & needed for karma & protractor headless chrome tests.
             # This is a very small install which takes around 7s in comparing to using the full
             # circleci/node:x.x.x-browsers image.
             sudo apt-get -y install libgtk-3-0 libasound2 libnss3 libxss1
@@ -163,7 +160,7 @@ commands:
     description: Sets up a domain that resolves to the local host.
     steps:
       - run:
-          name: Preparing environment for running tests on Saucelabs.
+          name: Preparing environment for running tests on Sauce Labs.
           command: |
             # For SauceLabs jobs, we set up a domain which resolves to the machine which launched
             # the tunnel. We do this because devices are sometimes not able to properly resolve
@@ -175,13 +172,13 @@ commands:
             setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
       - run:
           # Sets up a local domain in the machine's host file that resolves to the local
-          # host. This domain is helpful in Saucelabs tests where devices are not able to
+          # host. This domain is helpful in Sauce Labs tests where devices are not able to
           # properly resolve `localhost` or `127.0.0.1` through the sauce-connect tunnel.
           name: Setting up alias domain for local host.
           command: echo "127.0.0.1 $SAUCE_LOCALHOST_ALIAS_DOMAIN" | sudo tee -a /etc/hosts
 
   # Normally this would be an individual job instead of a command.
-  # But startup and setup time for each invidual windows job are high enough to discourage
+  # But startup and setup time for each individual windows job are high enough to discourage
   # many small jobs, so instead we use a command for setup unless the gain becomes significant.
   setup_win:
     description: Setup windows node environment
@@ -599,8 +596,8 @@ jobs:
       - run:
           name: Decrypt github credentials
           # We need ensure that the same default digest is used for encoding and decoding with
-          # openssl. Openssl versions might have different default digests which can cause
-          # decryption failures based on the installed openssl version. https://stackoverflow.com/a/39641378/4317734
+          # OpenSSL. OpenSSL versions might have different default digests which can cause
+          # decryption failures based on the installed OpenSSL version. https://stackoverflow.com/a/39641378/4317734
           command: 'openssl aes-256-cbc -d -in .circleci/github_token -md md5 -k "${KEY}" -out ~/.git_credentials'
       - run: ./scripts/ci/publish-build-artifacts.sh
 
