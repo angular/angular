@@ -102,7 +102,7 @@ export class TemplateReference {
   /**
    * This is the title of the `TemplateReference` Component.
    */
-  title = 'Some title';
+  title = 'Tour of Heroes';
   hero: Hero = {id: 1, name: 'Windstorm'};
   heroP = Promise.resolve(this.hero);
   heroes: Hero[] = [this.hero];
@@ -121,4 +121,7 @@ export class TemplateReference {
   constNames = [{name: 'name'}] as const;
   private myField = 'My Field';
   strOrNumber: string|number = '';
+  setTitle(newTitle: string) {
+    this.title = newTitle;
+  }
 }

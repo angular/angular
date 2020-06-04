@@ -254,7 +254,7 @@ export interface Diagnostic {
 export type LanguageService = Pick<
     ts.LanguageService,
     'getCompletionsAtPosition'|'getDefinitionAndBoundSpan'|'getQuickInfoAtPosition'|
-    'getSemanticDiagnostics'>;
+    'getSemanticDiagnostics'|'getReferencesAtPosition'>;
 
 /** Information about an Angular template AST. */
 export interface AstResult {
