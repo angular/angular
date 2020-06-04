@@ -27,12 +27,12 @@ runInEachFileSystem(() => {
     });
 
     describe('collectDependencies()', () => {
-      it('should not generate a TS AST if the source does not contain any imports or re-exports',
+      it('should not try to extract import paths if the source does not contain any imports or re-exports',
          () => {
-           spyOn(ts, 'createSourceFile');
+           const extractImportsSpy = spyOn(host as any, 'extractImports');
            host.collectDependencies(
                _('/no/imports/or/re-exports/index.js'), createDependencyInfo());
-           expect(ts.createSourceFile).not.toHaveBeenCalled();
+           expect(extractImportsSpy).not.toHaveBeenCalled();
          });
 
       it('should resolve all the external imports of the source file', () => {
