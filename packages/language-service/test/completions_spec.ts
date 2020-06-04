@@ -15,9 +15,7 @@ import {TypeScriptServiceHost} from '../src/typescript_host';
 import {MockTypescriptHost} from './test_utils';
 
 const APP_COMPONENT = '/app/app.component.ts';
-const PARSING_CASES = '/app/parsing-cases.ts';
 const TEST_TEMPLATE = '/app/test.ng';
-const EXPRESSION_CASES = '/app/expression-cases.ts';
 
 describe('completions', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts']);
@@ -45,12 +43,15 @@ describe('completions', () => {
   });
 
   it('should be able to return component directives', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'empty');
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '<~{cursor}');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
+    expectContain(completions, CompletionKind.DIRECTIVE, [
+      'ng-form',  // from directive NgForm in ng_form.ts
+    ]);
     expectContain(completions, CompletionKind.COMPONENT, [
-      'ng-form',
       'my-app',
-      'ng-component',
+      'my-comp',
       'test-comp',
     ]);
   });
@@ -255,12 +256,22 @@ describe('completions', () => {
     });
 
     it('should be able to return element directives', () => {
-      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'empty');
+      mockHost.override(TEST_TEMPLATE, '<~{cursor}');
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
       const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+      expect(completions?.entries.length).toBe(8);
+      expectContain(completions, CompletionKind.ANGULAR_ELEMENT, [
+        'ng-container',
+        'ng-content',
+        'ng-template',
+      ]);
+      expectContain(completions, CompletionKind.DIRECTIVE, [
+        'ng-form',  // from directive NgForm in ng_form.ts
+        'option',   // from directive NgSelectOption in select_control_value_accessor.ts
+      ]);
       expectContain(completions, CompletionKind.COMPONENT, [
-        'ng-form',
         'my-app',
-        'ng-component',
+        'my-comp',
         'test-comp',
       ]);
     });

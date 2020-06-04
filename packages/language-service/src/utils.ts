@@ -7,7 +7,7 @@
  */
 
 import {AstPath, BoundEventAst, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, identifierName, Identifiers, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, templateVisitAll, visitAll} from '@angular/compiler';
-import {AstResult, DiagnosticTemplateInfo, SelectorInfo, Span, Symbol, SymbolQuery} from './types';
+import {AstResult, DiagnosticTemplateInfo, Span, Symbol, SymbolQuery} from './types';
 
 interface SpanHolder {
   sourceSpan: ParseSourceSpan;
@@ -64,17 +64,23 @@ export function isStructuralDirective(type: CompileTypeMetadata): boolean {
   return false;
 }
 
-export function getSelectors(info: AstResult): SelectorInfo {
-  const map = new Map<CssSelector, CompileDirectiveSummary>();
-  const results: CssSelector[] = [];
-  for (const directive of info.directives) {
+/**
+ * Extract all selectors from the specified `directives`.
+ * @param directives a list of directives (including components)
+ * @param isElementSelector if true, retain element selectors only
+ */
+export function getSelectorMap(directives: CompileDirectiveSummary[], isElementSelector: boolean) {
+  const selectorMap = new Map<CssSelector, CompileDirectiveSummary>();
+  for (const directive of directives) {
     const selectors: CssSelector[] = CssSelector.parse(directive.selector!);
     for (const selector of selectors) {
-      results.push(selector);
-      map.set(selector, directive);
+      if (selector.isElementSelector() !== isElementSelector) {
+        continue;
+      }
+      selectorMap.set(selector, directive);
     }
   }
-  return {selectors: results, map};
+  return selectorMap;
 }
 
 export function diagnosticInfoFromTemplateInfo(info: AstResult): DiagnosticTemplateInfo {

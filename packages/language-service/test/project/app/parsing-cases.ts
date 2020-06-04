@@ -82,6 +82,7 @@ export class TestComponent {
 } /*EndTestComponent*/
 
 @Component({
+  selector: 'my-comp',
   templateUrl: 'test.ng',
 })
 export class TemplateReference {

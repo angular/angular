@@ -181,6 +181,7 @@ export enum CompletionKind {
   ANGULAR_ELEMENT = 'angular element',
   ATTRIBUTE = 'attribute',
   COMPONENT = 'component',
+  DIRECTIVE = 'directive',
   ELEMENT = 'element',
   ENTITY = 'entity',
   HTML_ATTRIBUTE = 'html attribute',
@@ -267,12 +268,6 @@ export interface AstResult {
   expressionParser: Parser;
   template: TemplateSource;
 }
-
-/** Information about a directive's selectors. */
-export type SelectorInfo = {
-  selectors: CssSelector[],
-  map: Map<CssSelector, CompileDirectiveSummary>
-};
 
 export interface SymbolInfo {
   symbol: Symbol;

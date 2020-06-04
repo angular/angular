@@ -15,7 +15,7 @@ import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
 import {InlineTemplate} from './template';
 import * as ng from './types';
-import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, getSelectors, inSpan, isStructuralDirective, spanOf} from './utils';
+import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, getSelectorMap, inSpan, isStructuralDirective, spanOf} from './utils';
 
 const HIDDEN_HTML_ELEMENTS: ReadonlySet<string> =
     new Set(['html', 'script', 'noscript', 'base', 'body', 'title', 'head', 'link']);
@@ -344,13 +344,14 @@ function elementCompletions(info: ng.AstResult): ng.CompletionEntry[] {
 
   // Collect the elements referenced by the selectors
   const components = new Set<string>();
-  for (const selector of getSelectors(info).selectors) {
+  const selectorMap = getSelectorMap(info.directives, true /* isElementSelector */);
+  for (const [selector, {isComponent}] of selectorMap) {
     const name = selector.element;
     if (name && !components.has(name)) {
       components.add(name);
       results.push({
         name,
-        kind: ng.CompletionKind.COMPONENT,
+        kind: isComponent ? ng.CompletionKind.COMPONENT : ng.CompletionKind.DIRECTIVE,
         sortText: name,
       });
     }
@@ -538,8 +539,8 @@ class ExpressionVisitor extends NullTemplateVisitor {
     const key = attr.name.substring(1);  // remove leading asterisk
 
     // Find the selector - eg ngFor, ngIf, etc
-    const selectorInfo = getSelectors(this.info);
-    const selector = selectorInfo.selectors.find(s => {
+    const selectorMap = getSelectorMap(this.info.directives, false /* isElementSelector */);
+    const selector = Array.from(selectorMap.keys()).find(s => {
       // attributes are listed in (attribute, value) pairs
       for (let i = 0; i < s.attrs.length; i += 2) {
         if (s.attrs[i] === key) {
@@ -562,7 +563,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
       if (equalLocation > 0 && valueRelativePosition > equalLocation) {
         // We are after the '=' in a let clause. The valid values here are the members of the
         // template reference's type parameter.
-        const directiveMetadata = selectorInfo.map.get(selector);
+        const directiveMetadata = selectorMap.get(selector);
         if (directiveMetadata) {
           const contextTable =
               this.info.template.query.getTemplateContext(directiveMetadata.type.reference);
@@ -625,17 +626,16 @@ interface AngularAttributes {
  * @param elementName
  */
 function angularAttributes(info: ng.AstResult, elementName: string): AngularAttributes {
-  const {selectors, map: selectorMap} = getSelectors(info);
+  const selectorMap = getSelectorMap(info.directives, false /* isElementSelector */);
   const templateRefs = new Set<string>();
   const inputs = new Set<string>();
   const outputs = new Set<string>();
   const bananas = new Set<string>();
   const others = new Set<string>();
-  for (const selector of selectors) {
-    if (selector.element && selector.element !== elementName) {
+  for (const [selector, summary] of selectorMap) {
+    if (selector.hasElementSelector() && selector.element !== elementName) {
       continue;
     }
-    const summary = selectorMap.get(selector)!;
     const hasTemplateRef = isStructuralDirective(summary.type);
     // attributes are listed in (attribute, value) pairs
     for (let i = 0; i < selector.attrs.length; i += 2) {
