@@ -15,6 +15,7 @@ import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../sr
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
 import {getLockFilePath} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
+import {clearTsConfigCache} from '../../src/ngcc_options';
 import {hasBeenProcessed, markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
 import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
@@ -40,6 +41,10 @@ runInEachFileSystem(() => {
 
       // Force single-process execution in unit tests by mocking available CPUs to 1.
       spyOn(os, 'cpus').and.returnValue([{model: 'Mock CPU'} as any]);
+    });
+
+    afterEach(() => {
+      clearTsConfigCache();
     });
 
     /**

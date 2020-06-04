@@ -155,7 +155,8 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
   const fileSystem = getFileSystem();
   const absBasePath = absoluteFrom(options.basePath);
   const projectPath = fileSystem.dirname(absBasePath);
-  const tsConfig = getTsConfig(options.tsConfigPath || projectPath);
+  const tsConfig =
+      options.tsConfigPath !== null ? getTsConfig(options.tsConfigPath || projectPath) : null;
 
   let {
     basePath,
@@ -213,10 +214,14 @@ let tsConfigPathCache: string|null = null;
  * its dependencies will not change during the life of the process running ngcc.
  */
 function getTsConfig(tsConfigPath: string): ParsedConfiguration|null {
-  if (tsConfigPath === tsConfigPathCache) {
-    return tsConfigCache;
+  if (tsConfigPath !== tsConfigPathCache) {
+    tsConfigPathCache = tsConfigPath;
+    tsConfigCache = readConfiguration(tsConfigPath);
   }
-  tsConfigPathCache = tsConfigPath;
-  tsConfigCache = tsConfigPath !== null ? readConfiguration(tsConfigPath) : null;
   return tsConfigCache;
+}
+
+export function clearTsConfigCache() {
+  tsConfigPathCache = null;
+  tsConfigCache = null;
 }
