@@ -24,4 +24,7 @@ export class AppComponent {
   title = 'Tour of Heroes';
   hero: Hero = {id: 1, name: 'Windstorm'};
   private internal: string = 'internal';
+  setTitle(newTitle: string) {
+    this.title = newTitle;
+  }
 }
