@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {ModuleResolver} from '../../imports';
+import {MinorPhase, PerfRecorder} from '../../perf';
 
 /**
  * A cached graph of imports in the `ts.Program`.
@@ -19,7 +20,7 @@ import {ModuleResolver} from '../../imports';
 export class ImportGraph {
   private map = new Map<ts.SourceFile, Set<ts.SourceFile>>();
 
-  constructor(private resolver: ModuleResolver) {}
+  constructor(private resolver: ModuleResolver, private perf: PerfRecorder) {}
 
   /**
    * List the direct (not transitive) imports of a given `ts.SourceFile`.
@@ -63,6 +64,7 @@ export class ImportGraph {
   }
 
   private scanImports(sf: ts.SourceFile): Set<ts.SourceFile> {
+    this.perf.trackMinorTimeAs(MinorPhase.CycleDetection);
     const imports = new Set<ts.SourceFile>();
     // Look through the source file for import statements.
     sf.statements.forEach(stmt => {
@@ -77,6 +79,7 @@ export class ImportGraph {
         }
       }
     });
+    this.perf.doneTrackingMinorTime();
     return imports;
   }
 }

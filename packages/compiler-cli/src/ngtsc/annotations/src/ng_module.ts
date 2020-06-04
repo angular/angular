@@ -13,6 +13,7 @@ import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue, ResolvedValueArray} from '../../partial_evaluator';
+import {PerfRecorder, Statistic} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
@@ -60,8 +61,10 @@ export class NgModuleDecoratorHandler implements
       private factoryTracker: FactoryTracker|null,
       private defaultImportRecorder: DefaultImportRecorder,
       private annotateForClosureCompiler: boolean,
-      private injectableRegistry: InjectableClassRegistry, private localeId?: string) {}
+      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
+      private localeId?: string) {}
 
+  private perfCounter = this.perf.statistic(Statistic.NgModuleCount);
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = NgModuleDecoratorHandler.name;
 
@@ -83,6 +86,7 @@ export class NgModuleDecoratorHandler implements
 
   analyze(node: ClassDeclaration, decorator: Readonly<Decorator>):
       AnalysisOutput<NgModuleAnalysis> {
+    this.perfCounter.count++;
     const name = node.name.text;
     if (decorator.args === null || decorator.args.length > 1) {
       throw new FatalDiagnosticError(

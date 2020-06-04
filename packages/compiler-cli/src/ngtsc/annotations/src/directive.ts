@@ -14,6 +14,8 @@ import {DefaultImportRecorder, Reference} from '../../imports';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {extractDirectiveGuards} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
+import {PerfRecorder} from '../../perf';
+import {Statistic} from '../../perf/src/api';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
@@ -47,9 +49,11 @@ export class DirectiveDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private metaReader: MetadataReader, private defaultImportRecorder: DefaultImportRecorder,
-      private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
-      private annotateForClosureCompiler: boolean,
+      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
+      private isCore: boolean, private annotateForClosureCompiler: boolean,
       private compileUndecoratedClassesWithAngularFeatures: boolean) {}
+
+  private perfCounter = this.perf.statistic(Statistic.DirectiveCount);
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = DirectiveDecoratorHandler.name;
@@ -72,6 +76,8 @@ export class DirectiveDecoratorHandler implements
 
   analyze(node: ClassDeclaration, decorator: Readonly<Decorator|null>, flags = HandlerFlags.NONE):
       AnalysisOutput<DirectiveHandlerData> {
+    this.perfCounter.count++;
+
     // Skip processing of the class declaration if compilation of undecorated classes
     // with Angular features is disabled. Previously in ngtsc, such classes have always
     // been processed, but we want to enforce a consistent decorator mental model.

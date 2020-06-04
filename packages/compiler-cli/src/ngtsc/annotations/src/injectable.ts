@@ -12,6 +12,8 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder} from '../../imports';
 import {InjectableClassRegistry} from '../../metadata';
+import {PerfRecorder} from '../../perf';
+import {Statistic} from '../../perf/src/api';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
@@ -34,7 +36,7 @@ export class InjectableDecoratorHandler implements
   constructor(
       private reflector: ReflectionHost, private defaultImportRecorder: DefaultImportRecorder,
       private isCore: boolean, private strictCtorDeps: boolean,
-      private injectableRegistry: InjectableClassRegistry,
+      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
       /**
        * What to do if the injectable already contains a ɵprov property.
        *
@@ -42,6 +44,8 @@ export class InjectableDecoratorHandler implements
        * If false then there is no error and a new ɵprov property is not added.
        */
       private errorOnDuplicateProv = true) {}
+
+  private perfCounter = this.perf.statistic(Statistic.InjectableCount);
 
   readonly precedence = HandlerPrecedence.SHARED;
   readonly name = InjectableDecoratorHandler.name;
@@ -64,6 +68,8 @@ export class InjectableDecoratorHandler implements
 
   analyze(node: ClassDeclaration, decorator: Readonly<Decorator>):
       AnalysisOutput<InjectableHandlerData> {
+    this.perfCounter.count++;
+
     const meta = extractInjectableMetadata(node, decorator, this.reflector);
     const decorators = this.reflector.getDecoratorsOfDeclaration(node);
 

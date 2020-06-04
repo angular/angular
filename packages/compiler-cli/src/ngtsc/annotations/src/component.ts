@@ -18,6 +18,8 @@ import {IndexingContext} from '../../indexer';
 import {DirectiveMeta, extractDirectiveGuards, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
+import {PerfRecorder} from '../../perf';
+import {Statistic} from '../../perf/src/api';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
@@ -86,7 +88,7 @@ export class ComponentDecoratorHandler implements
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
       private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
       private depTracker: DependencyTracker|null,
-      private injectableRegistry: InjectableClassRegistry,
+      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
       private annotateForClosureCompiler: boolean) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
@@ -98,6 +100,8 @@ export class ComponentDecoratorHandler implements
    * thrown away, and the parsed template is reused during the analyze phase.
    */
   private preanalyzeTemplateCache = new Map<ts.Declaration, ParsedTemplateWithSource>();
+
+  private perfCounter = this.perf.statistic(Statistic.ComponentCount);
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = ComponentDecoratorHandler.name;
@@ -188,6 +192,8 @@ export class ComponentDecoratorHandler implements
       // that no analysis was produced.
       return {};
     }
+
+    this.perfCounter.count++;
 
     // Next, read the `@Component`-specific fields.
     const {decorator: component, metadata} = directiveResult;

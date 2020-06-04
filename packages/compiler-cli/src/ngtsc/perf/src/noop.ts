@@ -8,15 +8,25 @@
 
 import * as ts from 'typescript';
 
-import {PerfRecorder} from './api';
+import {Counter, MajorPhase, PerfRecorder} from './api';
 
-export const NOOP_PERF_RECORDER: PerfRecorder = {
-  enabled: false,
-  mark: (name: string, node: ts.SourceFile|ts.Declaration, category?: string, detail?: string):
-      void => {},
-  start: (name: string, node: ts.SourceFile|ts.Declaration, category?: string, detail?: string):
-      number => {
-        return 0;
-      },
-  stop: (span: number|false): void => {},
-};
+class NoopPerfRecorder implements PerfRecorder {
+  readonly enabled = false;
+  private noopCounter: Counter = {count: 0};
+
+  trackMajorTimeAs(): MajorPhase {
+    return MajorPhase.Default;
+  }
+
+  doneTrackingMajorTime(): void {}
+
+  trackMinorTimeAs(): void {}
+
+  doneTrackingMinorTime(): void {}
+
+  statistic(): Counter {
+    return this.noopCounter;
+  }
+}
+
+export const NOOP_PERF_RECORDER: PerfRecorder = new NoopPerfRecorder();

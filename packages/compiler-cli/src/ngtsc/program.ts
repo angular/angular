@@ -63,8 +63,9 @@ export class NgtscProgram implements api.Program {
     }
 
     if (options.tracePerformance !== undefined) {
-      this.perfTracker = PerfTracker.zeroedToNow();
+      this.perfTracker = new PerfTracker();
       this.perfRecorder = this.perfTracker;
+      this.options.diagnostics = true;
     }
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
 
@@ -220,7 +221,6 @@ export class NgtscProgram implements api.Program {
       beforeTransforms.push(...customTransforms.beforeTs);
     }
 
-    const emitSpan = this.perfRecorder.start('emit');
     const emitResults: ts.EmitResult[] = [];
 
     for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
@@ -232,7 +232,6 @@ export class NgtscProgram implements api.Program {
         continue;
       }
 
-      const fileEmitSpan = this.perfRecorder.start('emitFile', targetSourceFile);
       emitResults.push(emitCallback({
         targetSourceFile,
         program: this.tsProgram,
@@ -246,12 +245,10 @@ export class NgtscProgram implements api.Program {
           afterDeclarations: afterDeclarationsTransforms,
         } as any,
       }));
-      this.perfRecorder.stop(fileEmitSpan);
     }
-    this.perfRecorder.stop(emitSpan);
 
     if (this.perfTracker !== null && this.options.tracePerformance !== undefined) {
-      this.perfTracker.serializeToFile(this.options.tracePerformance, this.host);
+      this.perfTracker.reportToConsole();
     }
 
     // Run the emit, including a custom transformer that will downlevel the Ivy decorators in code.

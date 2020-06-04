@@ -20,7 +20,7 @@ import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader} from '../../metadata';
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
+import {MajorPhase, NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {AdapterResourceLoader} from '../../resource';
 import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
@@ -118,9 +118,15 @@ export class NgCompiler {
         this.adapter.getCurrentDirectory(),
         fileName => this.adapter.getCanonicalFileName(fileName));
     this.moduleResolver =
+<<<<<<< HEAD
         new ModuleResolver(tsProgram, this.options, this.adapter, moduleResolutionCache);
     this.resourceManager = new AdapterResourceLoader(adapter, this.options);
+    this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver, this.perfRecorder));
+=======
+        new ModuleResolver(tsProgram, this.options, this.host, moduleResolutionCache);
+    this.resourceManager = new HostResourceLoader(host, this.options);
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
+>>>>>>> wip
 
     let modifiedResourceFiles: Set<string>|null = null;
     if (this.adapter.getModifiedResourceFiles !== undefined) {
@@ -218,31 +224,25 @@ export class NgCompiler {
     }
     this.compilation = this.makeCompilation();
 
-    const analyzeSpan = this.perfRecorder.start('analyze');
+    this.perfRecorder.trackMajorTimeAs(MajorPhase.Analyze);
     const promises: Promise<void>[] = [];
     for (const sf of this.tsProgram.getSourceFiles()) {
       if (sf.isDeclarationFile) {
         continue;
       }
 
-      const analyzeFileSpan = this.perfRecorder.start('analyzeFile', sf);
       let analysisPromise = this.compilation.traitCompiler.analyzeAsync(sf);
       this.scanForMwp(sf);
-      if (analysisPromise === undefined) {
-        this.perfRecorder.stop(analyzeFileSpan);
-      } else if (this.perfRecorder.enabled) {
-        analysisPromise = analysisPromise.then(() => this.perfRecorder.stop(analyzeFileSpan));
-      }
       if (analysisPromise !== undefined) {
         promises.push(analysisPromise);
       }
     }
 
     await Promise.all(promises);
-
-    this.perfRecorder.stop(analyzeSpan);
+    this.perfRecorder.trackMajorTimeAs(MajorPhase.Resolve);
 
     this.resolveCompilation(this.compilation.traitCompiler);
+    this.perfRecorder.doneTrackingMajorTime();
   }
 
   /**
@@ -353,20 +353,20 @@ export class NgCompiler {
   }
 
   private analyzeSync(): void {
-    const analyzeSpan = this.perfRecorder.start('analyze');
     this.compilation = this.makeCompilation();
+
+    this.perfRecorder.trackMajorTimeAs(MajorPhase.Analyze);
     for (const sf of this.tsProgram.getSourceFiles()) {
       if (sf.isDeclarationFile) {
         continue;
       }
-      const analyzeFileSpan = this.perfRecorder.start('analyzeFile', sf);
       this.compilation.traitCompiler.analyzeSync(sf);
       this.scanForMwp(sf);
-      this.perfRecorder.stop(analyzeFileSpan);
     }
-    this.perfRecorder.stop(analyzeSpan);
+    this.perfRecorder.trackMajorTimeAs(MajorPhase.Resolve);
 
     this.resolveCompilation(this.compilation.traitCompiler);
+    this.perfRecorder.doneTrackingMajorTime();
   }
 
   private resolveCompilation(traitCompiler: TraitCompiler): void {
@@ -489,13 +489,10 @@ export class NgCompiler {
     const compilation = this.ensureAnalyzed();
 
     // Execute the typeCheck phase of each decorator in the program.
-    const prepSpan = this.perfRecorder.start('typeCheckPrep');
     const results = compilation.templateTypeChecker.refresh();
     this.incrementalDriver.recordSuccessfulTypeCheck(results.perFileData);
-    this.perfRecorder.stop(prepSpan);
 
     // Get the diagnostics.
-    const typeCheckSpan = this.perfRecorder.start('typeCheckDiagnostics');
     const diagnostics: ts.Diagnostic[] = [];
     for (const sf of this.tsProgram.getSourceFiles()) {
       if (sf.isDeclarationFile || this.adapter.isShim(sf)) {
@@ -506,8 +503,7 @@ export class NgCompiler {
     }
 
     const program = this.typeCheckingProgramStrategy.getProgram();
-    this.perfRecorder.stop(typeCheckSpan);
-    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, program);
+    this.incrementalStrategy.setIncrementalDriver(program, this.incrementalDriver);
     this.nextProgram = program;
 
     return diagnostics;
@@ -518,7 +514,6 @@ export class NgCompiler {
    * into the `IncrementalDriver`'s dependency graph.
    */
   private recordNgModuleScopeDependencies() {
-    const recordSpan = this.perfRecorder.start('recordDependencies');
     const depGraph = this.incrementalDriver.depGraph;
 
     for (const scope of this.compilation!.scopeRegistry!.getCompilationScopes()) {
@@ -578,7 +573,6 @@ export class NgCompiler {
         depGraph.addDependency(file, ngModuleFile);
       }
     }
-    this.perfRecorder.stop(recordSpan);
   }
 
   private scanForMwp(sf: ts.SourceFile): void {
@@ -697,13 +691,14 @@ export class NgCompiler {
           this.options.enableI18nLegacyMessageIdFormat !== false,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
           refEmitter, defaultImportTracker, this.incrementalDriver.depGraph, injectableRegistry,
-          this.closureCompilerEnabled),
+          this.perfRecorder, this.closureCompilerEnabled),
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
       // clang-format off
         new DirectiveDecoratorHandler(
             reflector, evaluator, metaRegistry, scopeRegistry, metaReader,
-            defaultImportTracker, injectableRegistry, isCore, this.closureCompilerEnabled,
+            defaultImportTracker, injectableRegistry, this.perfRecorder, isCore,
+            this.closureCompilerEnabled,
             // In ngtsc we no longer want to compile undecorated classes with Angular features.
             // Migrations for these patterns ran as part of `ng update` and we want to ensure
             // that projects do not regress. See https://hackmd.io/@alx/ryfYYuvzH for more details.
@@ -714,14 +709,15 @@ export class NgCompiler {
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(
           reflector, evaluator, metaRegistry, scopeRegistry, defaultImportTracker,
-          injectableRegistry, isCore),
+          injectableRegistry, this.perfRecorder, isCore),
       new InjectableDecoratorHandler(
           reflector, defaultImportTracker, isCore, this.options.strictInjectionParameters || false,
-          injectableRegistry),
+          injectableRegistry, this.perfRecorder),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry, isCore,
           routeAnalyzer, refEmitter, this.adapter.factoryTracker, defaultImportTracker,
-          this.closureCompilerEnabled, injectableRegistry, this.options.i18nInLocale),
+          this.closureCompilerEnabled, injectableRegistry, this.perfRecorder,
+          this.options.i18nInLocale),
     ];
 
     const traitCompiler = new TraitCompiler(

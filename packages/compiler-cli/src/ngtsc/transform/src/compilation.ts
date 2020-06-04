@@ -478,10 +478,8 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
         continue;
       }
 
-      const compileSpan = this.perf.start('compileClass', original);
       const compileMatchRes =
           trait.handler.compile(clazz, trait.analysis, trait.resolution, constantPool);
-      this.perf.stop(compileSpan);
       if (Array.isArray(compileMatchRes)) {
         for (const result of compileMatchRes) {
           if (!res.some(r => r.name === result.name)) {
