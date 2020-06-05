@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {exec} from 'shelljs';
 import {getRepoBaseDir} from './config';
+import {exec} from './shelljs';
 
 /**
  * A list of all files currently in the repo which have been modified since the provided sha.
@@ -33,8 +33,5 @@ export function allFiles() {
 
 
 function gitOutputAsArray(cmd: string) {
-  return exec(cmd, {cwd: getRepoBaseDir(), silent: true})
-      .split('\n')
-      .map(x => x.trim())
-      .filter(x => !!x);
+  return exec(cmd, {cwd: getRepoBaseDir()}).split('\n').map(x => x.trim()).filter(x => !!x);
 }
