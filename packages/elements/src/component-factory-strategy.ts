@@ -48,8 +48,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   events!: Observable<NgElementStrategyEvent>;
 
   /** Reference to the component that was created on connect. */
-  // TODO(issue/24571): remove '!'.
-  private componentRef!: ComponentRef<any>|null;
+  private componentRef: ComponentRef<any>|null = null;
 
   /** Changes that have been made to the component ref since the last time onChanges was called. */
   private inputChanges: SimpleChanges|null = null;
@@ -86,7 +85,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
       return;
     }
 
-    if (!this.componentRef) {
+    if (this.componentRef === null) {
       this.initializeComponent(element);
     }
   }
@@ -97,15 +96,15 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    */
   disconnect() {
     // Return if there is no componentRef or the component is already scheduled for destruction
-    if (!this.componentRef || this.scheduledDestroyFn !== null) {
+    if (this.componentRef === null || this.scheduledDestroyFn !== null) {
       return;
     }
 
     // Schedule the component to be destroyed after a small timeout in case it is being
     // moved elsewhere in the DOM
     this.scheduledDestroyFn = scheduler.schedule(() => {
-      if (this.componentRef) {
-        this.componentRef!.destroy();
+      if (this.componentRef !== null) {
+        this.componentRef.destroy();
         this.componentRef = null;
       }
     }, DESTROY_DELAY);
@@ -116,11 +115,11 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    * retrieved from the cached initialization values.
    */
   getInputValue(property: string): any {
-    if (!this.componentRef) {
+    if (this.componentRef === null) {
       return this.initialInputValues.get(property);
     }
 
-    return (this.componentRef.instance as any)[property];
+    return this.componentRef.instance[property];
   }
 
   /**
@@ -128,7 +127,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    * cached and set when the component is created.
    */
   setInputValue(property: string, value: any): void {
-    if (!this.componentRef) {
+    if (this.componentRef === null) {
       this.initialInputValues.set(property, value);
       return;
     }
@@ -142,7 +141,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     }
 
     this.recordInputChange(property, value);
-    (this.componentRef.instance as any)[property] = value;
+    this.componentRef.instance[property] = value;
     this.scheduleDetectChanges();
   }
 
@@ -156,11 +155,10 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
         extractProjectableNodes(element, this.componentFactory.ngContentSelectors);
     this.componentRef = this.componentFactory.create(childInjector, projectableNodes, element);
 
-    this.implementsOnChanges =
-        isFunction((this.componentRef.instance as any as OnChanges).ngOnChanges);
+    this.implementsOnChanges = isFunction((this.componentRef.instance as OnChanges).ngOnChanges);
 
     this.initializeInputs();
-    this.initializeOutputs();
+    this.initializeOutputs(this.componentRef);
 
     this.detectChanges();
 
@@ -188,17 +186,17 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   }
 
   /** Sets up listeners for the component's outputs so that the events stream emits the events. */
-  protected initializeOutputs(): void {
+  protected initializeOutputs(componentRef: ComponentRef<any>): void {
     const eventEmitters = this.componentFactory.outputs.map(({propName, templateName}) => {
-      const emitter = (this.componentRef!.instance as any)[propName] as EventEmitter<any>;
-      return emitter.pipe(map((value: any) => ({name: templateName, value})));
+      const emitter: EventEmitter<any> = componentRef.instance[propName];
+      return emitter.pipe(map(value => ({name: templateName, value})));
     });
 
     this.events = merge(...eventEmitters);
   }
 
   /** Calls ngOnChanges with all the inputs that have changed since the last call. */
-  protected callNgOnChanges(): void {
+  protected callNgOnChanges(componentRef: ComponentRef<any>): void {
     if (!this.implementsOnChanges || this.inputChanges === null) {
       return;
     }
@@ -207,7 +205,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     // during ngOnChanges.
     const inputChanges = this.inputChanges;
     this.inputChanges = null;
-    (this.componentRef!.instance as any as OnChanges).ngOnChanges(inputChanges);
+    (componentRef.instance as OnChanges).ngOnChanges(inputChanges);
   }
 
   /**
@@ -230,7 +228,8 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    */
   protected recordInputChange(property: string, currentValue: any): void {
     // Do not record the change if the component does not implement `OnChanges`.
-    if (this.componentRef && !this.implementsOnChanges) {
+    // (We can only determine that after the component has been instantiated.)
+    if (this.componentRef !== null && !this.implementsOnChanges) {
       return;
     }
 
@@ -255,11 +254,11 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Runs change detection on the component. */
   protected detectChanges(): void {
-    if (!this.componentRef) {
+    if (this.componentRef === null) {
       return;
     }
 
-    this.callNgOnChanges();
-    this.componentRef!.changeDetectorRef.detectChanges();
+    this.callNgOnChanges(this.componentRef);
+    this.componentRef.changeDetectorRef.detectChanges();
   }
 }
