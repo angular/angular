@@ -41,6 +41,7 @@ export const DEFAULT_MARKER_OPTIONS = {
  */
 @Component({
   selector: 'map-marker',
+  exportAs: 'mapMarker',
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,

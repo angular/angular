@@ -32,6 +32,7 @@ import {MapAnchorPoint} from '../map-anchor-point';
  */
 @Directive({
   selector: 'map-info-window',
+  exportAs: 'mapInfoWindow',
   host: {'style': 'display: none'},
 })
 export class MapInfoWindow implements OnInit, OnDestroy {

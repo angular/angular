@@ -22,6 +22,7 @@ import {MapEventManager} from '../map-event-manager';
  */
 @Directive({
   selector: 'map-circle',
+  exportAs: 'mapCircle',
 })
 export class MapCircle implements OnInit, OnDestroy {
   private _eventManager = new MapEventManager(this._ngZone);

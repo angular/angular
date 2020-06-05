@@ -23,6 +23,7 @@ import {MapEventManager} from '../map-event-manager';
  */
 @Directive({
   selector: 'map-rectangle',
+  exportAs: 'mapRectangle',
 })
 export class MapRectangle implements OnInit, OnDestroy {
   private _eventManager = new MapEventManager(this._ngZone);

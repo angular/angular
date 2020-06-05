@@ -23,6 +23,7 @@ import {MapEventManager} from '../map-event-manager';
  */
 @Directive({
   selector: 'map-ground-overlay',
+  exportAs: 'mapGroundOverlay',
 })
 export class MapGroundOverlay implements OnInit, OnDestroy {
   private _eventManager = new MapEventManager(this._ngZone);

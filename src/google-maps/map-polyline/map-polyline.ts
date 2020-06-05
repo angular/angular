@@ -30,6 +30,7 @@ import {MapEventManager} from '../map-event-manager';
  */
 @Directive({
   selector: 'map-polyline',
+  exportAs: 'mapPolyline',
 })
 export class MapPolyline implements OnInit, OnDestroy {
   private _eventManager = new MapEventManager(this._ngZone);
