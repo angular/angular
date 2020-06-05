@@ -13,13 +13,14 @@ import * as ts from 'typescript';
  * resolver exposed. There are requests upstream in TypeScript to expose
  * that as public API: https://github.com/microsoft/TypeScript/issues/17516..
  */
-type TransformationContextWithResolver = ts.TransformationContext&{
+interface TransformationContextWithResolver extends ts.TransformationContext {
   getEmitResolver: () => EmitResolver;
-};
+}
 
 /** Describes a subset of the TypeScript internal emit resolver. */
-type EmitResolver = {isReferencedAliasDeclaration ? (node: ts.Node, checkChildren?: boolean) :
-                                                    void;};
+interface EmitResolver {
+  isReferencedAliasDeclaration?(node: ts.Node, checkChildren?: boolean): void;
+}
 
 /**
  * Patches the alias declaration reference resolution for a given transformation context

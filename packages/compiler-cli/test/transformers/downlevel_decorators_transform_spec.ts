@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {TypeScriptReflectionHost} from '../../src/ngtsc/reflection/src/typescript';
+import {TypeScriptReflectionHost} from '../../src/ngtsc/reflection';
 import {getDownlevelDecoratorsTransform} from '../../src/transformers/downlevel_decorators_transform';
 import {MockAotContext, MockCompilerHost} from '../mocks';
 

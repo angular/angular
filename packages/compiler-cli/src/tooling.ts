@@ -15,7 +15,7 @@
 
 import * as ts from 'typescript';
 
-import {TypeScriptReflectionHost} from './ngtsc/reflection/src/typescript';
+import {TypeScriptReflectionHost} from './ngtsc/reflection';
 import {getDownlevelDecoratorsTransform} from './transformers/downlevel_decorators_transform';
 
 /**

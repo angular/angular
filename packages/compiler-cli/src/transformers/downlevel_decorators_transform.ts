@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {Decorator, ReflectionHost} from '../ngtsc/reflection/src/host';
+import {Decorator, ReflectionHost} from '../ngtsc/reflection';
 import {isAliasImportDeclaration, patchAliasReferenceResolutionOrDie} from './patch_alias_reference_resolution';
 
 /**

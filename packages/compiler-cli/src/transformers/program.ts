@@ -16,7 +16,7 @@ import {translateDiagnostics} from '../diagnostics/translate_diagnostics';
 import {createBundleIndexHost, MetadataCollector} from '../metadata';
 import {isAngularCorePackage} from '../ngtsc/core/src/compiler';
 import {NgtscProgram} from '../ngtsc/program';
-import {TypeScriptReflectionHost} from '../ngtsc/reflection/src/typescript';
+import {TypeScriptReflectionHost} from '../ngtsc/reflection';
 import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
