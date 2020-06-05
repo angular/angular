@@ -15,7 +15,7 @@ import {
   Optional,
   SkipSelf,
 } from '@angular/core';
-import {OverlayRef} from '../overlay-ref';
+import {OverlayReference} from '../overlay-reference';
 
 
 /**
@@ -27,7 +27,7 @@ import {OverlayRef} from '../overlay-ref';
 export class OverlayKeyboardDispatcher implements OnDestroy {
 
   /** Currently attached overlays in the order they were attached. */
-  _attachedOverlays: OverlayRef[] = [];
+  _attachedOverlays: OverlayReference[] = [];
 
   private _document: Document;
   private _isAttached: boolean;
@@ -41,7 +41,7 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
   }
 
   /** Add a new overlay to the list of attached overlay refs. */
-  add(overlayRef: OverlayRef): void {
+  add(overlayRef: OverlayReference): void {
     // Ensure that we don't get the same overlay multiple times.
     this.remove(overlayRef);
 
@@ -55,7 +55,7 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
   }
 
   /** Remove an overlay from the list of attached overlay refs. */
-  remove(overlayRef: OverlayRef): void {
+  remove(overlayRef: OverlayReference): void {
     const index = this._attachedOverlays.indexOf(overlayRef);
 
     if (index > -1) {

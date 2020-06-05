@@ -8,6 +8,7 @@
 
 import {Portal} from '@angular/cdk/portal';
 import {Direction, Directionality} from '@angular/cdk/bidi';
+import {Subject} from 'rxjs';
 
 /**
  * Basic interface for an overlay. Used to avoid circular type references between
@@ -26,4 +27,5 @@ export interface OverlayReference {
   updatePosition: () => void;
   getDirection: () => Direction;
   setDirection: (dir: Direction | Directionality) => void;
+  _keydownEvents: Subject<KeyboardEvent>;
 }

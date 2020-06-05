@@ -236,11 +236,11 @@ export declare class OverlayContainer implements OnDestroy {
 }
 
 export declare class OverlayKeyboardDispatcher implements OnDestroy {
-    _attachedOverlays: OverlayRef[];
+    _attachedOverlays: OverlayReference[];
     constructor(document: any);
-    add(overlayRef: OverlayRef): void;
+    add(overlayRef: OverlayReference): void;
     ngOnDestroy(): void;
-    remove(overlayRef: OverlayRef): void;
+    remove(overlayRef: OverlayReference): void;
     static ɵfac: i0.ɵɵFactoryDef<OverlayKeyboardDispatcher, never>;
     static ɵprov: i0.ɵɵInjectableDef<OverlayKeyboardDispatcher>;
 }

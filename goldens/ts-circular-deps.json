@@ -25,10 +25,6 @@
     "src/cdk/drag-drop/drop-list-ref.ts"
   ],
   [
-    "src/cdk/overlay/keyboard/overlay-keyboard-dispatcher.ts",
-    "src/cdk/overlay/overlay-ref.ts"
-  ],
-  [
     "src/cdk/schematics/testing/index.ts",
     "src/cdk/schematics/testing/test-case-setup.ts"
   ],
