@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {exec} from '../utils/shelljs';
+import {exec} from './shelljs';
 
 
 /** Whether the repo has any local changes. */

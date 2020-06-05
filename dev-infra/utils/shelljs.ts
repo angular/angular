@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {exec as _exec, ShellString} from 'shelljs';
+import {exec as _exec, ExecOptions, ShellString} from 'shelljs';
 
 /* Run an exec command as silent. */
-export function exec(cmd: string): ShellString {
-  return _exec(cmd, {silent: true});
+export function exec(cmd: string, opts?: ExecOptions&{async?: false}): ShellString {
+  return _exec(cmd, {silent: true, ...opts});
 }
