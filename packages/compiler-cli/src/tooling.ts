@@ -13,7 +13,10 @@
  * Any changes to this file should be discussed with the Angular CLI team.
  */
 
+import * as ts from 'typescript';
 
+import {TypeScriptReflectionHost} from './ngtsc/reflection';
+import {getDownlevelDecoratorsTransform} from './transformers/downlevel_decorators_transform';
 
 /**
  * Known values for global variables in `@angular/core` that Terser should set using
@@ -28,3 +31,19 @@ export const GLOBAL_DEFS_FOR_TERSER_WITH_AOT = {
   ...GLOBAL_DEFS_FOR_TERSER,
   ngJitMode: false,
 };
+
+/**
+ * Transform for downleveling Angular decorators and Angular-decorated class constructor
+ * parameters for dependency injection. This transform can be used by the CLI for JIT-mode
+ * compilation where decorators should be preserved, but downleveled so that apps are not
+ * exposed to the ES2015 temporal dead zone limitation in TypeScript's metadata.
+ * See https://github.com/angular/angular-cli/pull/14473 for more details.
+ */
+export function decoratorDownlevelTransformerFactory(program: ts.Program):
+    ts.TransformerFactory<ts.SourceFile> {
+  const typeChecker = program.getTypeChecker();
+  const reflectionHost = new TypeScriptReflectionHost(typeChecker);
+  return getDownlevelDecoratorsTransform(
+      typeChecker, reflectionHost, [], /* isCore */ false,
+      /* enableClosureCompiler */ false);
+}
