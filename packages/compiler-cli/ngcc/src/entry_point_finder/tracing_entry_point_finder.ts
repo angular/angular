@@ -24,7 +24,7 @@ import {getBasePaths} from './utils';
  * This is faster than searching the entire file-system for all the entry-points,
  * and is used primarily by the CLI integration.
  *
- * There are two concrete implementation of this class.
+ * There are two concrete implementations of this class.
  *
  * * `TargetEntryPointFinder` - is given a single entry-point as the initial entry-point
  * * `ProgramBasedEntryPointFinder` - computes the initial entry-points from program files given by
