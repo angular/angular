@@ -129,3 +129,12 @@ rbe_autoconfig(
     # a specific Linux kernel that comes with "libx11" in order to run headless browser tests.
     repository = "google/rbe-ubuntu16-04-webtest",
 )
+
+# Load pinned rules_webtesting browser versions for tests.
+#
+# TODO(wagnermaciel): deduplicate browsers - this will load another version of chromium in the
+# repository. We probably want to use the chromium version loaded here (from dev-infra) as that
+# one has RBE improvements.
+load("@npm_angular_dev_infra_private//browsers:browser_repositories.bzl", _dev_infra_browser_repositories = "browser_repositories")
+
+_dev_infra_browser_repositories()

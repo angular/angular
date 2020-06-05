@@ -13,7 +13,7 @@
     "yarn": ">= 1.0.0"
   },
   "scripts": {
-    "postinstall": "node tools/postinstall/apply-patches.js && ngcc --properties main --create-ivy-entry-points && node tools/postinstall/update-ngcc-main-fields.js",
+    "postinstall": "node tools/postinstall/apply-patches.js && ngcc --properties module main --create-ivy-entry-points && node tools/postinstall/update-ngcc-main-fields.js",
     "build": "node ./scripts/build-packages-dist.js",
     "bazel:buildifier": "find . -type f \\( -name \"*.bzl\" -or -name WORKSPACE -or -name BUILD -or -name BUILD.bazel \\) ! -path \"*/node_modules/*\" | xargs buildifier -v --warnings=attr-cfg,attr-license,attr-non-empty,attr-output-default,attr-single-file,constant-glob,ctx-args,depset-iteration,depset-union,dict-concatenation,duplicated-name,filetype,git-repository,http-archive,integer-division,load,load-on-top,native-build,native-package,output-group,package-name,package-on-top,redefined-variable,repository-name,same-origin-load,string-iteration,unused-variable,unsorted-dict-items,out-of-order-load",
     "bazel:format-lint": "yarn -s bazel:buildifier --lint=warn --mode=check",
@@ -66,11 +66,13 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
+    "@angular-devkit/build-optimizer": "^0.1000.0-rc.2",
     "@angular-devkit/core": "^10.0.0-rc.2",
     "@angular-devkit/schematics": "^10.0.0-rc.2",
     "@angular/bazel": "^10.0.0-rc.2",
+    "@angular/benchpress": "^0.2.0",
     "@angular/compiler-cli": "^10.0.0-rc.2",
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#2ac83eb462cb25c46a761d34dec030e360055016",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#54a5865a219e89202d6ca128775e6a2489b9dac1",
     "@angular/platform-browser-dynamic": "^10.0.0-rc.2",
     "@angular/platform-server": "^10.0.0-rc.2",
     "@angular/router": "^10.0.0-rc.2",
@@ -80,6 +82,7 @@
     "@bazel/jasmine": "^1.6.0",
     "@bazel/karma": "^1.6.0",
     "@bazel/protractor": "^1.6.0",
+    "@bazel/terser": "^1.4.1",
     "@bazel/typescript": "^1.6.0",
     "@firebase/app-types": "^0.3.2",
     "@octokit/rest": "16.28.7",
