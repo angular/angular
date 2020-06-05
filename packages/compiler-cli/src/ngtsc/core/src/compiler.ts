@@ -752,7 +752,7 @@ export class NgCompiler {
 /**
  * Determine if the given `Program` is @angular/core.
  */
-function isAngularCorePackage(program: ts.Program): boolean {
+export function isAngularCorePackage(program: ts.Program): boolean {
   // Look for its_just_angular.ts somewhere in the program.
   const r3Symbols = getR3SymbolsFile(program);
   if (r3Symbols === null) {
