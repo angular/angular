@@ -480,7 +480,7 @@ In this case, you can configure the backend proxy to redirect calls through your
 npm install --save-dev https-proxy-agent
 </code-example>
 
-When you define an environment variable `http_proxy` or `HTTP_PROXY`, an agent is automatically added to pass calls through your corporate proxy when running `npm start`.
+When you define an environment variable `http_proxy` or `HTTP_PROXY`, an agent is automatically added to pass calls through your corporate proxy when running `npm start  --proxy-config proxy.conf.js`.
 
 Use the following content in the JavaScript configuration file.
 
