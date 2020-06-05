@@ -8,9 +8,9 @@
 
 import {existsSync} from 'fs';
 import {dirname, join} from 'path';
-import {exec} from 'shelljs';
 
 import {error} from './console';
+import {exec} from './shelljs';
 import {isTsNodeAvailable} from './ts-node';
 
 /**
@@ -119,7 +119,7 @@ export function assertNoErrors(errors: string[]) {
 
 /** Gets the path of the directory for the repository base. */
 export function getRepoBaseDir() {
-  const baseRepoDir = exec(`git rev-parse --show-toplevel`, {silent: true});
+  const baseRepoDir = exec(`git rev-parse --show-toplevel`);
   if (baseRepoDir.code) {
     throw Error(
         `Unable to find the path to the base directory of the repository.\n` +

@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {exec} from 'shelljs';
-
 import {info} from '../utils/console';
+import {exec} from '../utils/shelljs';
 
 import {parseCommitMessage, validateCommitMessage, ValidateCommitMessageOptions} from './validate';
 
@@ -26,7 +25,7 @@ export function validateCommitRange(range: string) {
   const gitLogFormat = `%s%n%n%b${randomValueSeparator}`;
 
   // Retrieve the commits in the provided range.
-  const result = exec(`git log --reverse --format=${gitLogFormat} ${range}`, {silent: true});
+  const result = exec(`git log --reverse --format=${gitLogFormat} ${range}`);
   if (result.code) {
     throw new Error(`Failed to get all commits in the range: \n  ${result.stderr}`);
   }
