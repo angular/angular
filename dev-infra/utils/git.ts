@@ -142,7 +142,7 @@ export class GitClient {
 
   /** Whether the repo has any local changes. */
   hasLocalChanges(): boolean {
-    return !!this.runGraceful(['git', 'status', '--porcelain']).stdout.trim();
+    return this.runGraceful(['diff-index', '--quiet', 'HEAD']).status !== 0;
   }
 
   /** Sanitizes a given message by omitting the provided Github token if present. */
