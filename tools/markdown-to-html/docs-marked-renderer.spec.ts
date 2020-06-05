@@ -49,11 +49,9 @@ describe('DocsMarkdownRenderer', () => {
          {
           "example": "exampleName",
           "file": "example-html.html",
-          "region": "some-region",
+          "region": "some-region"
          }
         ) -->`);
-
-    // TODO(annieyw): I think DocsMarkedRenderer#html needs to be fixed for the new API?
     expectEqualIgnoreLeadingWhitespace(result, `<div material-docs-example="
          {
           "example": "exampleName",
