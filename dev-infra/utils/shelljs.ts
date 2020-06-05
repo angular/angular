@@ -8,7 +8,10 @@
 
 import {exec as _exec, ExecOptions, ShellString} from 'shelljs';
 
-/* Run an exec command as silent. */
-export function exec(cmd: string, opts?: ExecOptions&{async?: false}): ShellString {
-  return _exec(cmd, {silent: true, ...opts});
+/**
+ * Runs an given command as child process. By default, child process
+ * output will not be printed.
+ */
+export function exec(cmd: string, opts?: Omit<ExecOptions, 'async'>): ShellString {
+  return _exec(cmd, {silent: true, ...opts, async: false});
 }
