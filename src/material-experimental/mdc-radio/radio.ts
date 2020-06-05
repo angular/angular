@@ -26,7 +26,7 @@ import {
   MAT_RADIO_DEFAULT_OPTIONS,
   _MatRadioButtonBase,
   MatRadioDefaultOptions,
-  MatRadioGroup as BaseMatRadioGroup,
+  _MatRadioGroupBase,
 } from '@angular/material/radio';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
@@ -66,13 +66,12 @@ const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
   host: {
     'role': 'radiogroup',
     'class': 'mat-mdc-radio-group',
-    '[class.mat-radio-group]': 'false',
   },
 })
-export class MatRadioGroup extends BaseMatRadioGroup {
+export class MatRadioGroup extends _MatRadioGroupBase<MatRadioButton> {
   /** Child radio buttons. */
   @ContentChildren(forwardRef(() => MatRadioButton), {descendants: true})
-      _radios: QueryList<_MatRadioButtonBase>;
+      _radios: QueryList<MatRadioButton>;
 }
 
 @Component({

@@ -78,24 +78,19 @@ export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
 export class MatRadioChange {
   constructor(
     /** The MatRadioButton that emits the change event. */
-    public source: MatRadioButton,
+    public source: _MatRadioButtonBase,
     /** The value of the MatRadioButton. */
     public value: any) {}
 }
 
 /**
- * A group of radio buttons. May contain one or more `<mat-radio-button>` elements.
+ * Base class with all of the `MatRadioGroup` functionality.
+ * @docs-private
  */
-@Directive({
-  selector: 'mat-radio-group',
-  exportAs: 'matRadioGroup',
-  providers: [MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR],
-  host: {
-    'role': 'radiogroup',
-    'class': 'mat-radio-group',
-  },
-})
-export class MatRadioGroup implements AfterContentInit, ControlValueAccessor {
+@Directive()
+// tslint:disable-next-line:class-name
+export abstract class _MatRadioGroupBase<T extends _MatRadioButtonBase> implements AfterContentInit,
+  ControlValueAccessor {
   /** Selected value for the radio group. */
   private _value: any = null;
 
@@ -103,7 +98,7 @@ export class MatRadioGroup implements AfterContentInit, ControlValueAccessor {
   private _name: string = `mat-radio-group-${nextUniqueId++}`;
 
   /** The currently selected radio button. Should match value. */
-  private _selected: MatRadioButton | null = null;
+  private _selected: T | null = null;
 
   /** Whether the `value` has been set to its initial value. */
   private _isInitialized: boolean = false;
@@ -134,8 +129,7 @@ export class MatRadioGroup implements AfterContentInit, ControlValueAccessor {
   @Output() readonly change: EventEmitter<MatRadioChange> = new EventEmitter<MatRadioChange>();
 
   /** Child radio buttons. */
-  @ContentChildren(forwardRef(() => MatRadioButton), { descendants: true })
-  _radios: QueryList<MatRadioButton>;
+  abstract _radios: QueryList<T>;
 
   /** Theme color for all of the radio buttons in the group. */
   @Input() color: ThemePalette;
@@ -188,7 +182,7 @@ export class MatRadioGroup implements AfterContentInit, ControlValueAccessor {
    */
   @Input()
   get selected() { return this._selected; }
-  set selected(selected: MatRadioButton | null) {
+  set selected(selected: T | null) {
     this._selected = selected;
     this.value = selected ? selected.value : null;
     this._checkSelectedRadioButton();
@@ -309,6 +303,23 @@ export class MatRadioGroup implements AfterContentInit, ControlValueAccessor {
 
   static ngAcceptInputType_disabled: BooleanInput;
   static ngAcceptInputType_required: BooleanInput;
+}
+
+/**
+ * A group of radio buttons. May contain one or more `<mat-radio-button>` elements.
+ */
+@Directive({
+  selector: 'mat-radio-group',
+  exportAs: 'matRadioGroup',
+  providers: [MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR],
+  host: {
+    'role': 'radiogroup',
+    'class': 'mat-radio-group',
+  },
+})
+export class MatRadioGroup extends _MatRadioGroupBase<MatRadioButton> {
+  @ContentChildren(forwardRef(() => MatRadioButton), {descendants: true})
+  _radios: QueryList<MatRadioButton>;
 }
 
 // Boilerplate for applying mixins to MatRadioButton.
@@ -441,7 +452,7 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
   @Output() readonly change: EventEmitter<MatRadioChange> = new EventEmitter<MatRadioChange>();
 
   /** The parent radio group. May or may not be present. */
-  radioGroup: MatRadioGroup;
+  radioGroup: _MatRadioGroupBase<_MatRadioButtonBase>;
 
   /** ID of the native input element inside `<mat-radio-button>` */
   get inputId(): string { return `${this.id || this._uniqueId}-input`; }
@@ -464,7 +475,7 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
   /** The native `<input type=radio>` element */
   @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
 
-  constructor(@Optional() radioGroup: MatRadioGroup,
+  constructor(@Optional() radioGroup: _MatRadioGroupBase<_MatRadioButtonBase>,
               elementRef: ElementRef,
               protected _changeDetector: ChangeDetectorRef,
               private _focusMonitor: FocusMonitor,
@@ -615,4 +626,15 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatRadioButton extends _MatRadioButtonBase {
+  constructor(@Optional() radioGroup: MatRadioGroup,
+              elementRef: ElementRef,
+              changeDetector: ChangeDetectorRef,
+              focusMonitor: FocusMonitor,
+              radioDispatcher: UniqueSelectionDispatcher,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+                @Optional() @Inject(MAT_RADIO_DEFAULT_OPTIONS)
+                  providerOverride?: MatRadioDefaultOptions) {
+    super(radioGroup, elementRef, changeDetector, focusMonitor, radioDispatcher,
+          animationMode, providerOverride);
+  }
 }
