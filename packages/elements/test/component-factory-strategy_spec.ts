@@ -41,6 +41,33 @@ describe('ComponentFactoryNgElementStrategy', () => {
     expect(strategyFactory.create(injector)).toBeTruthy();
   });
 
+  describe('before connected', () => {
+    it('should allow subscribing to output events', () => {
+      const events: NgElementStrategyEvent[] = [];
+      strategy.events.subscribe(e => events.push(e));
+
+      // No events before connecting (since `componentRef` is not even on the strategy yet).
+      componentRef.instance.output1.next('output-1a');
+      componentRef.instance.output1.next('output-1b');
+      componentRef.instance.output2.next('output-2a');
+      expect(events).toEqual([]);
+
+      // No events upon connecting (since events are not cached/played back).
+      strategy.connect(document.createElement('div'));
+      expect(events).toEqual([]);
+
+      // Events emitted once connected.
+      componentRef.instance.output1.next('output-1c');
+      componentRef.instance.output1.next('output-1d');
+      componentRef.instance.output2.next('output-2b');
+      expect(events).toEqual([
+        {name: 'templateOutput1', value: 'output-1c'},
+        {name: 'templateOutput1', value: 'output-1d'},
+        {name: 'templateOutput2', value: 'output-2b'},
+      ]);
+    });
+  });
+
   describe('after connected', () => {
     beforeEach(() => {
       // Set up an initial value to make sure it is passed to the component
