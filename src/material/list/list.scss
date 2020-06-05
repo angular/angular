@@ -48,9 +48,6 @@ $mat-list-item-inset-divider-offset: 72px;
   width: 100%;
   padding: 0;
 
-  // Required for focus indicator.
-  position: relative;
-
   .mat-list-item-content {
     display: flex;
     flex-direction: row;

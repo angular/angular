@@ -153,7 +153,6 @@ $mat-calendar-range-end-body-cell-size:
 }
 
 .mat-calendar-body-cell-content {
-  position: absolute;
   top: $mat-calendar-body-cell-content-margin;
   left: $mat-calendar-body-cell-content-margin;
   z-index: 1;
@@ -174,6 +173,12 @@ $mat-calendar-range-end-body-cell-size:
 
   // Choosing a value clearly larger than the height ensures we get the correct capsule shape.
   border-radius: $mat-calendar-body-cell-radius;
+
+  // Increase specificity because focus indicator styles are part of the `mat-core` mixin and can
+  // potentially overwrite the absolute position of the container.
+  &.mat-focus-indicator {
+    position: absolute;
+  }
 
   @include cdk-high-contrast(active, off) {
     border: none;

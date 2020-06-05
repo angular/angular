@@ -40,6 +40,11 @@
   .mdc-button__label {
     z-index: 1;
   }
+
+  // The focus indicator should match the bounds of the entire button.
+  .mat-mdc-focus-indicator {
+    @include mat-fill();
+  }
 }
 
 // MDC's disabled buttons define a default cursor with pointer-events none. However, they select

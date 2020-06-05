@@ -45,12 +45,9 @@
     margin: -($border-width + 2px);
   }
 
-  .mat-focus-indicator.mat-stroked-button::before {
+  .mat-focus-indicator.mat-stroked-button::before,
+  .mat-focus-indicator.mat-calendar-body-cell-content::before {
     margin: -($border-width + 3px);
-  }
-
-  .mat-focus-indicator.mat-calendar-body-cell::before {
-    margin: -$border-width;
   }
 
   .mat-focus-indicator.mat-tab-link::before,
@@ -71,8 +68,9 @@
   // is present.
   .mat-focus-indicator.mat-option.mat-active::before,
 
-  // The focus indicator in the calendar is placed on an element inside the cell.
-  .mat-calendar-body-active .mat-focus-indicator::before,
+  // For calendar cells, render the focus indicator when the parent cell is
+  // focused.
+  .mat-calendar-body-cell:focus .mat-focus-indicator::before,
 
   // For all other components, render the focus indicator on focus.
   .mat-focus-indicator:focus::before {
@@ -120,5 +118,14 @@
         @include mat-strong-focus-indicators-color($color);
       }
     }
+  }
+}
+
+// Mixin that ensures focus indicator host elements are positioned so that the focus indicator
+// pseudo element within is positioned relative to the host. Private mixin included within
+// `mat-core`.
+@mixin _mat-strong-focus-indicators-positioning() {
+  .mat-focus-indicator {
+    position: relative;
   }
 }

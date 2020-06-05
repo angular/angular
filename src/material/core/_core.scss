@@ -5,6 +5,7 @@
 // Core styles that can be used to apply material design treatments to any element.
 @import './style/elevation';
 @import './ripple/ripple';
+@import './focus-indicators/focus-indicators';
 @import './option/option-theme';
 @import './option/optgroup-theme';
 @import './selection/pseudo-checkbox/pseudo-checkbox-theme';
@@ -17,6 +18,9 @@
   @include cdk-a11y();
   @include cdk-overlay();
   @include cdk-text-field();
+
+  @include _mat-strong-focus-indicators-positioning();
+  @include _mat-mdc-core();
 }
 
 @mixin mat-core-color($config-or-theme) {
@@ -65,5 +69,19 @@
     @if $color != null {
       @include mat-core-color($color);
     }
+  }
+}
+
+// Mixin that renders all of the core MDC styles. Private mixin included with `mat-core`.
+@mixin _mat-mdc-core() {
+  @include _mat-mdc-strong-focus-indicators-positioning();
+}
+
+// Mixin that ensures focus indicator host elements are positioned so that the focus indicator
+// pseudo element within is positioned relative to the host. Private mixin included within
+// `_mat-mdc-core`.
+@mixin _mat-mdc-strong-focus-indicators-positioning() {
+  .mat-mdc-focus-indicator {
+    position: relative;
   }
 }
