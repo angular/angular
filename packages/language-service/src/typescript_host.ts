@@ -72,8 +72,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     ngModules: [],
   };
 
-  constructor(
-      readonly tsLsHost: tss.LanguageServiceHost, private readonly tsLS: tss.LanguageService) {
+  constructor(readonly tsLsHost: tss.LanguageServiceHost, readonly tsLS: tss.LanguageService) {
     this.summaryResolver = new AotSummaryResolver(
         {
           loadSummary(_filePath: string) {
@@ -357,10 +356,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       throw new Error('No program in language service!');
     }
     return program;
-  }
-
-  getReferencesAtPosition(fileName: string, position: number): tss.ReferenceEntry[]|undefined {
-    return this.tsLS.getReferencesAtPosition(fileName, position);
   }
 
   /**

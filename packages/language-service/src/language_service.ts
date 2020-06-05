@@ -101,7 +101,7 @@ class LanguageServiceImpl implements ng.LanguageService {
 
   getReferencesAtPosition(fileName: string, position: number): tss.ReferenceEntry[]|undefined {
     const defAndSpan = this.getDefinitionAndBoundSpan(fileName, position);
-    if (!defAndSpan || !defAndSpan.definitions) {
+    if (!defAndSpan?.definitions) {
       return;
     }
     const {definitions} = defAndSpan;
@@ -109,6 +109,6 @@ class LanguageServiceImpl implements ng.LanguageService {
     if (!tsDef) {
       return;
     }
-    return this.host.getReferencesAtPosition(tsDef.fileName, tsDef.textSpan.start);
+    return this.host.tsLS.getReferencesAtPosition(tsDef.fileName, tsDef.textSpan.start);
   }
 }

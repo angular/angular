@@ -107,4 +107,7 @@ export class TemplateReference {
   constNames = [{name: 'name'}] as const;
   private myField = 'My Field';
   strOrNumber: string|number = '';
+  setTitle(newTitle: string) {
+    this.title = newTitle;
+  }
 }
