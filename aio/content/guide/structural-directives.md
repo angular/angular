@@ -251,7 +251,7 @@ You enable these features in the string assigned to `ngFor`, which you write in 
 
 Everything _outside_ the `ngFor` string stays with the host element
 (the `<div>`) as it moves inside the `<ng-template>`.
-In this example, the `[ngClass]="odd"` stays on the `<div>`.
+In this example, the `[class.odd]="odd"` stays on the `<div>`.
 
 
 </div>
