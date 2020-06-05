@@ -21,6 +21,22 @@ export class EsmDependencyHost extends DependencyHostBase {
     return !hasImportOrReexportStatements(fileContents);
   }
 
+  /**
+   * Extract any import paths from imports found in the contents of this file.
+   *
+   * This implementation uses the TypeScript scanner, which tokenizes source code,
+   * to process the string. This is halfway between working with the string directly,
+   * which is too difficult due to corner cases, and parsing the string into a full
+   * TypeScript Abstract Syntax Tree (AST), which ends up doing more processing than
+   * is needed.
+   *
+   * The scanning is not trivial because we must hold state between each token since
+   * the context of the token affects how it should be scanned, and the scanner does
+   * not manage this for us.
+   *
+   * Specifically, backticked strings are particularly challenging since it is possible
+   * to recursively nest backticks and TypeScript expressions within each other.
+   */
   protected extractImports(file: AbsoluteFsPath, fileContents: string): Set<string> {
     const imports = new Set<string>();
     const templateStack: ts.SyntaxKind[] = [];
@@ -32,22 +48,36 @@ export class EsmDependencyHost extends DependencyHostBase {
     while ((currentToken = this.scanner.scan()) !== ts.SyntaxKind.EndOfFileToken) {
       switch (currentToken) {
         case ts.SyntaxKind.TemplateHead:
+          // TemplateHead indicates the beginning of a backticked string
+          // Capture this in the `templateStack` to indicate we are currently processing
+          // within the static text part of a backticked string.
           templateStack.push(currentToken);
           break;
         case ts.SyntaxKind.OpenBraceToken:
           if (templateStack.length > 0) {
+            // We are processing a backticked string. This indicates that we are either
+            // entering an interpolation expression or entering an object literal expression.
+            // We add it to the `templateStack` so we can track when we leave the interpolation or
+            // object literal.
             templateStack.push(currentToken);
           }
           break;
         case ts.SyntaxKind.CloseBraceToken:
           if (templateStack.length > 0) {
+            // We are processing a backticked string then this indicates that we are either
+            // leaving an interpolation expression or leaving an object literal expression.
             const templateToken = templateStack[templateStack.length - 1];
             if (templateToken === ts.SyntaxKind.TemplateHead) {
+              // We have hit a nested backticked string so we need to rescan it in that context
               currentToken = this.scanner.reScanTemplateToken(/* isTaggedTemplate */ false);
               if (currentToken === ts.SyntaxKind.TemplateTail) {
+                // We got to the end of the backticked string so pop the token that started it off
+                // the stack.
                 templateStack.pop();
               }
             } else {
+              // We hit the end of an object-literal expression so pop the open-brace that started
+              // it off the stack.
               templateStack.pop();
             }
           }
@@ -55,6 +85,8 @@ export class EsmDependencyHost extends DependencyHostBase {
         case ts.SyntaxKind.SlashToken:
         case ts.SyntaxKind.SlashEqualsToken:
           if (canPrecedeARegex(lastToken)) {
+            // We have hit a slash (`/`) in a context where it could be the start of a regular
+            // expression so rescan it in that context
             currentToken = this.scanner.reScanSlashToken();
           }
           break;
@@ -74,7 +106,8 @@ export class EsmDependencyHost extends DependencyHostBase {
       lastToken = currentToken;
     }
 
-    // Clear the text from the scanner.
+    // Clear the text from the scanner to avoid holding on to potentially large strings of source
+    // content after the scanning has completed.
     this.scanner.setText('');
 
     return imports;
