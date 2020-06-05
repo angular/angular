@@ -88,14 +88,14 @@ function multicastSequenceSubscriber() {
     observers.push(observer);
     // When this is the first subscription, start the sequence
     if (observers.length === 1) {
-      timeoutId = doSequence({
+      doSequence({
         next(val) {
           // Iterate through observers and notify all subscriptions
           observers.forEach(obs => obs.next(val));
         },
         complete() {
           // Notify all complete callbacks
-          observers.slice(0).forEach(obs => obs.complete());
+          observers.forEach(obs => obs.complete());
         }
       }, seq, 0);
     }
@@ -111,19 +111,19 @@ function multicastSequenceSubscriber() {
       }
     };
   };
-}
-
-// Run through an array of numbers, emitting one value
-// per second until it gets to the end of the array.
-function doSequence(observer, arr, idx) {
-  return setTimeout(() => {
-    observer.next(arr[idx]);
-    if (idx === arr.length - 1) {
-      observer.complete();
-    } else {
-      doSequence(observer, arr, ++idx);
-    }
-  }, 1000);
+  
+  // Run through an array of numbers, emitting one value
+  // per second until it gets to the end of the array.
+  function doSequence(observer, arr, idx) {
+    timeoutId = setTimeout(() => {
+      observer.next(arr[idx]);
+      if (idx === arr.length - 1) {
+        observer.complete();
+      } else {
+        doSequence(observer, arr, ++idx);
+      }
+    }, 1000);
+  }
 }
 
 // Create a new Observable that will deliver the above sequence
@@ -148,8 +148,8 @@ setTimeout(() => {
 // (at 2 seconds): 1st subscribe: 2
 // (at 2 seconds): 2nd subscribe: 2
 // (at 3 seconds): 1st subscribe: 3
-// (at 3 seconds): 1st sequence finished
 // (at 3 seconds): 2nd subscribe: 3
+// (at 3 seconds): 1st sequence finished
 // (at 3 seconds): 2nd sequence finished
 
 // #enddocregion multicast_sequence
