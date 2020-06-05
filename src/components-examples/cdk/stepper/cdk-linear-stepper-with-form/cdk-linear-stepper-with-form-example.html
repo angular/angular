@@ -1,0 +1,17 @@
+<example-custom-linear-stepper [linear]="isLinear">
+  <cdk-step [stepControl]="firstFormGroup">
+    <label for="stepOneInput">Step 1 input</label>
+    <form [formGroup]="firstFormGroup">
+      <input placeholder="Input" formControlName="firstControl" id="stepOneInput" required>
+    </form>
+  </cdk-step>
+  <cdk-step [stepControl]="secondFormGroup">
+    <label for="stepTwoInput">Step 2 input</label>
+    <form [formGroup]="secondFormGroup">
+      <input placeholder="Input" formControlName="secondControl" id="stepTwoInput" required>
+    </form>
+  </cdk-step>
+</example-custom-linear-stepper>
+<button class="example-toggle-linear-button" (click)="toggleLinearity()">
+  {{isLinear ? 'Disable linear mode' : 'Enable linear mode'}}
+</button>
