@@ -61,11 +61,21 @@ export class GitClient {
   private _projectRoot = getRepoBaseDir();
   /** The OAuth scopes available for the provided Github token. */
   private _oauthScopes: Promise<string[]>|null = null;
-  /** Regular expression that matches the provided Github token. */
-  private _tokenRegex = new RegExp(this._githubToken, 'g');
+  /**
+   * Regular expression that matches the provided Github token. Used for
+   * sanitizing the token from Git child process output.
+   */
+  private _githubTokenRegex: RegExp|null = null;
 
   constructor(
-      private _githubToken = '', private _config: Pick<NgDevConfig, 'github'> = getConfig()) {
+      private _githubToken?: string, private _config: Pick<NgDevConfig, 'github'> = getConfig()) {
+    // If a token has been specified (and is not empty), pass it to the Octokit API and
+    // also create a regular expression that can be used for sanitizing Git command output
+    // so that it does not print the token accidentally.
+    if (_githubToken != null) {
+      this._githubTokenRegex = new RegExp(_githubToken, 'g');
+    }
+
     this.api = new Octokit({auth: _githubToken});
     this.api.hook.error('request', error => {
       // Wrap API errors in a known error class. This allows us to
@@ -137,7 +147,12 @@ export class GitClient {
 
   /** Sanitizes a given message by omitting the provided Github token if present. */
   omitGithubTokenFromMessage(value: string): string {
-    return value.replace(this._tokenRegex, '<TOKEN>');
+    // If no token has been defined (i.e. no token regex), we just return the
+    // value as is. There is no secret value that needs to be omitted.
+    if (this._githubTokenRegex === null) {
+      return value;
+    }
+    return value.replace(this._githubTokenRegex, '<TOKEN>');
   }
 
   /**
