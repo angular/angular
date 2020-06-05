@@ -1607,6 +1607,14 @@
     argparse "~1.0.9"
     colors "~1.2.1"
 
+"@schematics/angular@10.0.0-rc.2":
+  version "10.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-10.0.0-rc.2.tgz#bb6bc22a05904adb0b3fa6b7bc2901fe53584528"
+  integrity sha512-CPtujhlumJyouVVx0VWghidtzU4cEHx9TIBJqxpNxUUpQxxCNQrG6PTz8zilP2RuqJ7gZ8Y3VF3lMT6RW8kueQ==
+  dependencies:
+    "@angular-devkit/core" "10.0.0-rc.2"
+    "@angular-devkit/schematics" "10.0.0-rc.2"
+
 "@schematics/angular@9.1.0":
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-9.1.0.tgz#fc0ad9099d3c3be3044d6b3f260cac6eb9f3e564"
