@@ -9,6 +9,7 @@
 import {UpdateRecorder} from '@angular-devkit/schematics';
 import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
 import {DynamicValue, PartialEvaluator, ResolvedValue, ResolvedValueMap} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {NOOP_PERF_RECORDER} from '@angular/compiler-cli/src/ngtsc/perf';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import * as ts from 'typescript';
 
@@ -26,7 +27,7 @@ export class ModuleWithProvidersTransform {
   private printer = ts.createPrinter();
   private partialEvaluator: PartialEvaluator = new PartialEvaluator(
       new TypeScriptReflectionHost(this.typeChecker), this.typeChecker,
-      /* dependencyTracker */ null);
+      /* dependencyTracker */ null, NOOP_PERF_RECORDER);
 
   constructor(
       private typeChecker: ts.TypeChecker,

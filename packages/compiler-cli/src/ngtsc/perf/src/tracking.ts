@@ -32,7 +32,8 @@ export class PerfTracker implements PerfRecorder {
     }
     const prevPhase = this.currentMajor.phase;
 
-    console.error(`Stop: ${MajorPhase[this.currentMajor.phase]}`);
+    console.error(
+        `Stop: ${MajorPhase[this.currentMajor.phase]} after ${this.currentMajor.current} us`);
     this.currentMajor.stop();
     this.currentMajor = this.majorTimers.get(phase)!;
     console.error(`Start: ${MajorPhase[this.currentMajor.phase]}`);
@@ -45,16 +46,23 @@ export class PerfTracker implements PerfRecorder {
     this.trackMajorTimeAs(MajorPhase.Default);
   }
 
-  trackMinorTimeAs(phase: MinorPhase): void {
-    if (!this.minorTimers.has(phase)) {
+  trackMinorTimeAs(phase: MinorPhase|null): MinorPhase|null {
+    if (phase !== null && !this.minorTimers.has(phase)) {
       this.minorTimers.set(phase, new Stopwatch(phase));
     }
 
+    let previousPhase: MinorPhase|null = null;
     if (this.currentMinor !== null) {
       this.currentMinor.stop();
+      previousPhase = this.currentMinor.phase;
+      this.currentMinor = null;
     }
-    this.currentMinor = this.minorTimers.get(phase)!;
-    this.currentMinor.start();
+    if (phase !== null) {
+      this.currentMinor = this.minorTimers.get(phase)!;
+      this.currentMinor.start();
+    }
+
+    return previousPhase;
   }
 
   doneTrackingMinorTime(): void {
@@ -86,30 +94,6 @@ export class PerfTracker implements PerfRecorder {
       return 0;
     }
   }
-
-  reportToConsole(): void {
-    const stat = (stat: Statistic) => this.statistic(stat).count;
-    const major = (major: MajorPhase) => Math.round(this.getMajorTimeMicros(major) / 100) / 10;
-    const minor = (minor: MinorPhase) => Math.round(this.getMinorTimeMicros(minor) / 100) / 10;
-
-    console.log('Angular performance:');
-    console.log('  Counters:');
-    console.log(`    Components: ${stat(Statistic.ComponentCount)}`);
-    console.log(`      TemplateNodes:  ${stat(Statistic.TemplateNodeCount)}`);
-    console.log(`    Directives: ${stat(Statistic.DirectiveCount)}`);
-    console.log(`    Injectables: ${stat(Statistic.InjectableCount)}`);
-    console.log(`    NgModules: ${stat(Statistic.NgModuleCount)}`);
-    console.log(`    Pipes: ${stat(Statistic.PipeCount)}`);
-    console.log();
-    console.log('  Timing:');
-    console.log(`    Analyze: ${major(MajorPhase.Analyze)} ms`);
-    console.log(`    Resolve: ${major(MajorPhase.Resolve)} ms`);
-    console.log(`    Template Type-Checking: ${major(MajorPhase.TemplateTypeChecking)} ms`);
-    console.log(`    Compile: ${major(MajorPhase.Compile)} ms`);
-    console.log(`    (unaccounted): ${major(MajorPhase.Default)} ms`);
-    console.log();
-    console.log(`    Cycle Detection: ${minor(MinorPhase.CycleDetection)}`);
-  }
 }
 
 class Stopwatch<T extends MajorPhase|MinorPhase> {
@@ -124,6 +108,10 @@ class Stopwatch<T extends MajorPhase|MinorPhase> {
     } else {
       return this.accumulatedTime;
     }
+  }
+
+  get current(): number {
+    return timeSinceInMicros(this.lastStart!);
   }
 
   start(): void {

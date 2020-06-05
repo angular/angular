@@ -11,6 +11,7 @@ import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit
 import {AotCompiler} from '@angular/compiler';
 import {Diagnostic as NgDiagnostic} from '@angular/compiler-cli';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {NOOP_PERF_RECORDER} from '@angular/compiler-cli/src/ngtsc/perf';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {relative} from 'path';
 import * as ts from 'typescript';
@@ -83,7 +84,8 @@ function runUndecoratedClassesMigration(
   const {program, compiler} = programData;
   const typeChecker = program.getTypeChecker();
   const partialEvaluator = new PartialEvaluator(
-      new TypeScriptReflectionHost(typeChecker), typeChecker, /* dependencyTracker */ null);
+      new TypeScriptReflectionHost(typeChecker), typeChecker, /* dependencyTracker */ null,
+      NOOP_PERF_RECORDER);
   const declarationCollector = new NgDeclarationCollector(typeChecker, partialEvaluator);
   const sourceFiles = program.getSourceFiles().filter(
       s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));

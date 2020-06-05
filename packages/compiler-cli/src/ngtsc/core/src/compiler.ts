@@ -118,15 +118,9 @@ export class NgCompiler {
         this.adapter.getCurrentDirectory(),
         fileName => this.adapter.getCanonicalFileName(fileName));
     this.moduleResolver =
-<<<<<<< HEAD
         new ModuleResolver(tsProgram, this.options, this.adapter, moduleResolutionCache);
     this.resourceManager = new AdapterResourceLoader(adapter, this.options);
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver, this.perfRecorder));
-=======
-        new ModuleResolver(tsProgram, this.options, this.host, moduleResolutionCache);
-    this.resourceManager = new HostResourceLoader(host, this.options);
-    this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
->>>>>>> wip
 
     let modifiedResourceFiles: Set<string>|null = null;
     if (this.adapter.getModifiedResourceFiles !== undefined) {
@@ -308,7 +302,8 @@ export class NgCompiler {
     const before = [
       ivyTransformFactory(
           compilation.traitCompiler, compilation.reflector, importRewriter,
-          compilation.defaultImportTracker, compilation.isCore, this.closureCompilerEnabled),
+          compilation.defaultImportTracker, this.perfRecorder, compilation.isCore,
+          this.closureCompilerEnabled),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       compilation.defaultImportTracker.importPreservingTransformer(),
     ];
@@ -488,6 +483,8 @@ export class NgCompiler {
 
     const compilation = this.ensureAnalyzed();
 
+    this.perfRecorder.trackMajorTimeAs(MajorPhase.TemplateTypeChecking);
+
     // Execute the typeCheck phase of each decorator in the program.
     const results = compilation.templateTypeChecker.refresh();
     this.incrementalDriver.recordSuccessfulTypeCheck(results.perFileData);
@@ -502,8 +499,10 @@ export class NgCompiler {
       diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf));
     }
 
+    this.perfRecorder.doneTrackingMajorTime();
+
     const program = this.typeCheckingProgramStrategy.getProgram();
-    this.incrementalStrategy.setIncrementalDriver(program, this.incrementalDriver);
+    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, program);
     this.nextProgram = program;
 
     return diagnostics;
@@ -646,7 +645,8 @@ export class NgCompiler {
       aliasingHost = new UnifiedModulesAliasingHost(this.adapter.unifiedModulesHost);
     }
 
-    const evaluator = new PartialEvaluator(reflector, checker, this.incrementalDriver.depGraph);
+    const evaluator = new PartialEvaluator(
+        reflector, checker, this.incrementalDriver.depGraph, this.perfRecorder);
     const dtsReader = new DtsMetadataReader(checker, reflector);
     const localMetaRegistry = new LocalMetadataRegistry();
     const localMetaReader: MetadataReader = localMetaRegistry;
@@ -726,7 +726,8 @@ export class NgCompiler {
 
     const templateTypeChecker = new TemplateTypeChecker(
         this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,
-        this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver);
+        this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver,
+        this.perfRecorder);
 
     return {
       isCore,

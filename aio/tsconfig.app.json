@@ -4,6 +4,9 @@
     "outDir": "./out-tsc/app",
     "types": []
   },
+  "angularCompilerOptions": {
+    "tracePerformance": "true"
+  },
   "files": [
     "src/main.ts",
     "src/polyfills.ts"

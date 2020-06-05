@@ -10,6 +10,7 @@ import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder, ImportRewriter} from '../../imports';
+import {MajorPhase, PerfRecorder} from '../../perf';
 import {Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateStatement} from '../../translator';
 import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
@@ -32,13 +33,13 @@ interface FileOverviewMeta {
 
 export function ivyTransformFactory(
     compilation: TraitCompiler, reflector: ReflectionHost, importRewriter: ImportRewriter,
-    defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
+    defaultImportRecorder: DefaultImportRecorder, perf: PerfRecorder, isCore: boolean,
     isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     return (file: ts.SourceFile): ts.SourceFile => {
       return transformIvySourceFile(
           compilation, context, reflector, importRewriter, file, isCore, isClosureCompilerEnabled,
-          defaultImportRecorder);
+          defaultImportRecorder, perf);
     };
   };
 }
@@ -219,8 +220,9 @@ class IvyVisitor extends Visitor {
 function transformIvySourceFile(
     compilation: TraitCompiler, context: ts.TransformationContext, reflector: ReflectionHost,
     importRewriter: ImportRewriter, file: ts.SourceFile, isCore: boolean,
-    isClosureCompilerEnabled: boolean,
-    defaultImportRecorder: DefaultImportRecorder): ts.SourceFile {
+    isClosureCompilerEnabled: boolean, defaultImportRecorder: DefaultImportRecorder,
+    perf: PerfRecorder): ts.SourceFile {
+  const prevPhase = perf.trackMajorTimeAs(MajorPhase.Compile);
   const constantPool = new ConstantPool();
   const importManager = new ImportManager(importRewriter);
 
@@ -246,6 +248,8 @@ function transformIvySourceFile(
   if (fileOverviewMeta !== null) {
     setFileOverviewComment(sf, fileOverviewMeta);
   }
+
+  perf.trackMajorTimeAs(prevPhase);
 
   return sf;
 }

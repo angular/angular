@@ -7,6 +7,7 @@
  */
 
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {NOOP_PERF_RECORDER} from '@angular/compiler-cli/src/ngtsc/perf';
 import {reflectObjectLiteral, TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import * as ts from 'typescript';
 
@@ -68,7 +69,8 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
   private printer = ts.createPrinter();
   private importManager = new ImportManager(this.getUpdateRecorder, this.printer);
   private reflectionHost = new TypeScriptReflectionHost(this.typeChecker);
-  private partialEvaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker, null);
+  private partialEvaluator =
+      new PartialEvaluator(this.reflectionHost, this.typeChecker, null, NOOP_PERF_RECORDER);
 
   constructor(
       private typeChecker: ts.TypeChecker,

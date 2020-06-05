@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {NOOP_PERF_RECORDER} from '@angular/compiler-cli/src/ngtsc/perf';
 import * as ts from 'typescript';
 
 import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
@@ -42,7 +43,7 @@ export type ModuleWithProvidersAnalyses = Map<ts.SourceFile, ModuleWithProviders
 export const ModuleWithProvidersAnalyses = Map;
 
 export class ModuleWithProvidersAnalyzer {
-  private evaluator = new PartialEvaluator(this.host, this.typeChecker, null);
+  private evaluator = new PartialEvaluator(this.host, this.typeChecker, null, NOOP_PERF_RECORDER);
 
   constructor(
       private host: NgccReflectionHost, private typeChecker: ts.TypeChecker,

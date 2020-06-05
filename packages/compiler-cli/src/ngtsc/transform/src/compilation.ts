@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {IncrementalBuild} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
-import {PerfRecorder} from '../../perf';
+import {PerfRecorder, Statistic} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
 import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck';
 import {getSourceFile, isExported} from '../../util/src/typescript';
@@ -83,6 +83,8 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   private reexportMap = new Map<string, Map<string, [string, string]>>();
 
   private handlersByName = new Map<string, DecoratorHandler<unknown, unknown, unknown>>();
+
+  private adoptedRecords = this.perf.statistic(Statistic.ReusedFileAnalysis)
 
   constructor(
       private handlers: DecoratorHandler<unknown, unknown, unknown>[],

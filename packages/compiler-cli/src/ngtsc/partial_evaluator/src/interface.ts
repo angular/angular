@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
+import {MinorPhase, PerfRecorder} from '../../perf';
 import {ReflectionHost} from '../../reflection';
 
 import {StaticInterpreter} from './interpreter';
@@ -22,17 +23,20 @@ export type ForeignFunctionResolver =
 export class PartialEvaluator {
   constructor(
       private host: ReflectionHost, private checker: ts.TypeChecker,
-      private dependencyTracker: DependencyTracker|null) {}
+      private dependencyTracker: DependencyTracker|null, private perf: PerfRecorder) {}
 
   evaluate(expr: ts.Expression, foreignFunctionResolver?: ForeignFunctionResolver): ResolvedValue {
+    const prevPhase = this.perf.trackMinorTimeAs(MinorPhase.CycleDetection);
     const interpreter = new StaticInterpreter(this.host, this.checker, this.dependencyTracker);
     const sourceFile = expr.getSourceFile();
-    return interpreter.visit(expr, {
+    const res = interpreter.visit(expr, {
       originatingFile: sourceFile,
       absoluteModuleName: null,
       resolutionContext: sourceFile.fileName,
       scope: new Map<ts.ParameterDeclaration, ResolvedValue>(),
       foreignFunctionResolver,
     });
+    this.perf.trackMinorTimeAs(prevPhase);
+    return res;
   }
 }

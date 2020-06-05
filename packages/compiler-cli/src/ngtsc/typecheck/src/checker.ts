@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
+import {PerfRecorder, Statistic} from '../../perf';
 import {ReflectionHost} from '../../reflection';
 import {isShim} from '../../shims';
 
@@ -34,13 +35,16 @@ export interface ProgramTypeCheckAdapter {
 export class TemplateTypeChecker {
   private files = new Map<AbsoluteFsPath, FileTypeCheckingData>();
 
+  private reusedTypeCheckCount = this.perf.statistic(Statistic.ReusedTypeCheckFile);
+
   constructor(
       private originalProgram: ts.Program,
       private typeCheckingStrategy: TypeCheckingProgramStrategy,
       private typeCheckAdapter: ProgramTypeCheckAdapter, private config: TypeCheckingConfig,
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
       private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
-      private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>) {}
+      private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>,
+      private perf: PerfRecorder) {}
 
   /**
    * Reset the internal type-checking program by generating type-checking code from the user's
@@ -65,6 +69,7 @@ export class TemplateTypeChecker {
       } else {
         // Previous results were available, and can be adopted into the current build.
         ctx.adoptPriorResults(sf, previousResults);
+        this.reusedTypeCheckCount.count++;
       }
     }
 

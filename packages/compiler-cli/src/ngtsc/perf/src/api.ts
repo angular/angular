@@ -12,7 +12,7 @@ export interface PerfRecorder {
   trackMajorTimeAs(phase: MajorPhase): MajorPhase;
   doneTrackingMajorTime(): void;
 
-  trackMinorTimeAs(phase: MinorPhase): void;
+  trackMinorTimeAs(phase: MinorPhase|null): MinorPhase|null;
   doneTrackingMinorTime(): void;
 
   statistic(stat: Statistic): Counter;
@@ -33,6 +33,7 @@ export enum MajorPhase {
 
 export enum MinorPhase {
   CycleDetection,
+  PartialEvaluation,
 }
 
 export enum Statistic {
@@ -43,4 +44,9 @@ export enum Statistic {
   PipeCount,
 
   TemplateNodeCount,
+
+  FilesEmitted,
+
+  ReusedFileAnalysis,
+  ReusedTypeCheckFile,
 }

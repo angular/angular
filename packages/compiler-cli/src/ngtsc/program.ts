@@ -16,7 +16,8 @@ import {NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions} from './core/api';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
-import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
+import {MajorPhase, NOOP_PERF_RECORDER, PerfRecorder, PerfTracker, Statistic} from './perf';
+import {printPerfDiagnostics} from './perf/src/output';
 import {ReusedProgramStrategy} from './typecheck';
 
 
@@ -69,11 +70,14 @@ export class NgtscProgram implements api.Program {
     }
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
 
+    this.perfRecorder.trackMajorTimeAs(MajorPhase.TypeScript);
     const reuseProgram = oldProgram && oldProgram.reuseTsProgram;
     this.host = NgCompilerHost.wrap(delegateHost, rootNames, options, reuseProgram ?? null);
 
     this.tsProgram = ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram);
     this.reuseTsProgram = this.tsProgram;
+
+    this.perfRecorder.doneTrackingMajorTime();
 
     this.host.postProgramCreationCleanup();
 
@@ -108,14 +112,19 @@ export class NgtscProgram implements api.Program {
         return [];
       }
 
-      return this.tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken);
+      this.perfRecorder.trackMajorTimeAs(MajorPhase.TypeScript);
+      const diags = this.tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken);
+      this.perfRecorder.doneTrackingMajorTime();
+      return diags;
     } else {
       const diagnostics: ts.Diagnostic[] = [];
+      this.perfRecorder.trackMajorTimeAs(MajorPhase.TypeScript);
       for (const sf of this.tsProgram.getSourceFiles()) {
         if (!ignoredFiles.has(sf)) {
           diagnostics.push(...this.tsProgram.getSyntacticDiagnostics(sf, cancellationToken));
         }
       }
+      this.perfRecorder.doneTrackingMajorTime();
       return diagnostics;
     }
   }
@@ -129,14 +138,19 @@ export class NgtscProgram implements api.Program {
         return [];
       }
 
-      return this.tsProgram.getSemanticDiagnostics(sourceFile, cancellationToken);
+      this.perfRecorder.trackMajorTimeAs(MajorPhase.TypeScript);
+      const diags = this.tsProgram.getSemanticDiagnostics(sourceFile, cancellationToken);
+      this.perfRecorder.doneTrackingMajorTime();
+      return diags;
     } else {
       const diagnostics: ts.Diagnostic[] = [];
+      this.perfRecorder.trackMajorTimeAs(MajorPhase.TypeScript);
       for (const sf of this.tsProgram.getSourceFiles()) {
         if (!ignoredFiles.has(sf)) {
           diagnostics.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
         }
       }
+      this.perfRecorder.doneTrackingMajorTime();
       return diagnostics;
     }
   }
@@ -223,6 +237,9 @@ export class NgtscProgram implements api.Program {
 
     const emitResults: ts.EmitResult[] = [];
 
+    this.perfRecorder.trackMajorTimeAs(MajorPhase.TypeScript);
+
+    const emitFilesStat = this.perfRecorder.statistic(Statistic.FilesEmitted);
     for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
       if (targetSourceFile.isDeclarationFile || ignoreFiles.has(targetSourceFile)) {
         continue;
@@ -231,6 +248,8 @@ export class NgtscProgram implements api.Program {
       if (this.compiler.incrementalDriver.safeToSkipEmit(targetSourceFile)) {
         continue;
       }
+
+      emitFilesStat.count++;
 
       emitResults.push(emitCallback({
         targetSourceFile,
@@ -247,8 +266,10 @@ export class NgtscProgram implements api.Program {
       }));
     }
 
+    this.perfRecorder.doneTrackingMajorTime();
+
     if (this.perfTracker !== null && this.options.tracePerformance !== undefined) {
-      this.perfTracker.reportToConsole();
+      printPerfDiagnostics(this.tsProgram, this.perfTracker);
     }
 
     // Run the emit, including a custom transformer that will downlevel the Ivy decorators in code.

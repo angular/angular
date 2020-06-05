@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Counter, MajorPhase, PerfRecorder} from './api';
+import {Counter, MajorPhase, MinorPhase, PerfRecorder} from './api';
 
 class NoopPerfRecorder implements PerfRecorder {
   readonly enabled = false;
@@ -20,7 +20,9 @@ class NoopPerfRecorder implements PerfRecorder {
 
   doneTrackingMajorTime(): void {}
 
-  trackMinorTimeAs(): void {}
+  trackMinorTimeAs(): MinorPhase|null {
+    return null;
+  }
 
   doneTrackingMinorTime(): void {}
 

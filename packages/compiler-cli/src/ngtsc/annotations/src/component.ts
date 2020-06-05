@@ -7,6 +7,7 @@
  */
 
 import {compileComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParseError, ParseSourceFile, parseTemplate, ParseTemplateOptions, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, SchemaMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {TmplAstElement, TmplAstTemplate} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
@@ -102,6 +103,7 @@ export class ComponentDecoratorHandler implements
   private preanalyzeTemplateCache = new Map<ts.Declaration, ParsedTemplateWithSource>();
 
   private perfCounter = this.perf.statistic(Statistic.ComponentCount);
+  private templateNodeCounter = this.perf.statistic(Statistic.TemplateNodeCount);
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = ComponentDecoratorHandler.name;
@@ -263,6 +265,10 @@ export class ComponentDecoratorHandler implements
     if (template.errors !== undefined) {
       throw new Error(
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
+    }
+
+    if (this.perf.enabled) {
+      this.templateNodeCounter.count += countTemplateNodes(template.diagNodes);
     }
 
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
@@ -958,4 +964,19 @@ export interface ParsedTemplate {
 
 export interface ParsedTemplateWithSource extends ParsedTemplate {
   sourceMapping: TemplateSourceMapping;
+}
+
+function countTemplateNodes(nodes: TmplAstNode[]): number {
+  let count = nodes.length;
+  for (const node of nodes) {
+    if (node instanceof TmplAstElement || node instanceof TmplAstTemplate) {
+      count += countTemplateNodes(node.children);
+      count += node.attributes.length + node.inputs.length + node.outputs.length +
+          node.references.length;
+      if (node instanceof TmplAstTemplate) {
+        count + node.templateAttrs.length + node.variables.length;
+      }
+    }
+  }
+  return count;
 }

@@ -87,8 +87,8 @@ export class DecorationAnalyzer {
   scopeRegistry = new LocalModuleScopeRegistry(
       this.metaRegistry, this.dtsModuleScopeResolver, this.refEmitter, this.aliasingHost);
   fullRegistry = new CompoundMetadataRegistry([this.metaRegistry, this.scopeRegistry]);
-  evaluator =
-      new PartialEvaluator(this.reflectionHost, this.typeChecker, /* dependencyTracker */ null);
+  evaluator = new PartialEvaluator(
+      this.reflectionHost, this.typeChecker, /* dependencyTracker */ null, NOOP_PERF_RECORDER);
   importGraph = new ImportGraph(this.moduleResolver, NOOP_PERF_RECORDER);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
   injectableRegistry = new InjectableClassRegistry(this.reflectionHost);
