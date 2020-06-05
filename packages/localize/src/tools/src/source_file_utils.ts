@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {AbsoluteFsPath, relative, resolve} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵisMissingTranslationError, ɵmakeTemplateObject, ɵParsedTranslation, ɵSourceLocation, ɵtranslate} from '@angular/localize';
 import {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';
@@ -347,15 +348,31 @@ export function buildCodeFrameError(path: NodePath, e: BabelParseError): string 
   return `${filename}: ${message}`;
 }
 
-export function getLocation(path: NodePath): ɵSourceLocation|undefined {
-  const location = path.node.loc;
-  const file = path.hub.file.opts.filename;
-
-  if (!location || !file) {
+export function getLocation(startPath: NodePath, endPath?: NodePath): ɵSourceLocation|undefined {
+  const startLocation = startPath.node.loc;
+  const file = getFileFromPath(startPath);
+  if (!startLocation || !file) {
     return undefined;
   }
 
-  // Note we clone the `start` and `end` objects so that their prototype chains,
-  // from Babel, do not leak into our code.
-  return {start: {...location.start}, end: {...location.end}, file};
+  const endLocation =
+      endPath && getFileFromPath(endPath) === file && endPath.node.loc || startLocation;
+
+  return {
+    start: getLineAndColumn(startLocation.start),
+    end: getLineAndColumn(endLocation.end),
+    file
+  };
+}
+
+function getFileFromPath(path: NodePath|undefined): AbsoluteFsPath|null {
+  const opts = path?.hub.file.opts;
+  return opts?.filename ?
+      resolve(opts.generatorOpts.sourceRoot, relative(opts.cwd, opts.filename)) :
+      null;
+}
+
+function getLineAndColumn(loc: {line: number, column: number}): {line: number, column: number} {
+  // Note we want 0-based line numbers but Babel returns 1-based.
+  return {line: loc.line - 1, column: loc.column};
 }

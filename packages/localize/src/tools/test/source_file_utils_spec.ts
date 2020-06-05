@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵmakeTemplateObject} from '@angular/localize';
 import {NodePath, TransformOptions, transformSync} from '@babel/core';
 import generate from '@babel/generator';
@@ -195,23 +197,27 @@ describe('utils', () => {
     });
   });
 
-  describe('getLocation()', () => {
-    it('should return a plain object containing the start, end and file of a NodePath', () => {
-      const taggedTemplate =
-          getTaggedTemplate('const x = $localize ``;', {filename: 'src/test.js'});
-      const location = getLocation(taggedTemplate)!;
-      expect(location).toBeDefined();
-      expect(location.start).toEqual({line: 1, column: 10});
-      expect(location.start.constructor.name).toEqual('Object');
-      expect(location.end).toEqual({line: 1, column: 22});
-      expect(location.end.constructor.name).toEqual('Object');
-      expect(location.file).toContain('src/test.js');
-    });
+  runInEachFileSystem(() => {
+    describe('getLocation()', () => {
+      it('should return a plain object containing the start, end and file of a NodePath', () => {
+        const taggedTemplate = getTaggedTemplate('const x = $localize `message`;', {
+          filename: 'src/test.js',
+          sourceRoot: '/root',
+        });
+        const location = getLocation(taggedTemplate)!;
+        expect(location).toBeDefined();
+        expect(location.start).toEqual({line: 0, column: 10});
+        expect(location.start.constructor.name).toEqual('Object');
+        expect(location.end).toEqual({line: 0, column: 29});
+        expect(location.end?.constructor.name).toEqual('Object');
+        expect(location.file).toEqual(absoluteFrom('/root/src/test.js'));
+      });
 
-    it('should return undefined if the NodePath has no filename', () => {
-      const taggedTemplate = getTaggedTemplate('const x = $localize ``;');
-      const location = getLocation(taggedTemplate)!;
-      expect(location).toBeUndefined();
+      it('should return `undefined` if the NodePath has no filename', () => {
+        const taggedTemplate = getTaggedTemplate('const x = $localize ``;', {sourceRoot: '/root'});
+        const location = getLocation(taggedTemplate);
+        expect(location).toBeUndefined();
+      });
     });
   });
 });

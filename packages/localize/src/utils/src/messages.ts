@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {computeMsgId} from '@angular/compiler';
+import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 
 import {BLOCK_MARKER, ID_SEPARATOR, LEGACY_ID_INDICATOR, MEANING_SEPARATOR} from './constants';
 
@@ -39,12 +40,14 @@ export type TargetMessage = string;
 export type MessageId = string;
 
 /**
- * The location of the message
+ * The location of the message in the source file.
+ *
+ * The `line` and `column` values for the `start` and `end` properties are zero-based.
  */
 export interface SourceLocation {
   start: {line: number, column: number};
   end: {line: number, column: number};
-  file: string;
+  file: AbsoluteFsPath;
 }
 
 /**
