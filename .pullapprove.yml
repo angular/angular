@@ -844,6 +844,32 @@ groups:
 
 
   # =========================================================
+  #  Tooling: Compiler API shared with Angular CLI
+  #
+  #  Changing this API might break Angular CLI, so we require
+  #  the CLI team to approve changes here.
+  # =========================================================
+  tooling-cli-shared-api:
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'packages/compiler-cli/src/tooling.ts'
+        ])
+    reviewers:
+      users:
+        - alan-agius4
+        - clydin
+        - kyliau
+        - IgorMinar
+    reviews:
+      request: -1   # request reviews from everyone
+      required: 2   # require at least 2 approvals
+      reviewed_for: required
+
+
+  # =========================================================
   #  Docs: CLI
   # =========================================================
   docs-cli:
