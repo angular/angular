@@ -80,8 +80,8 @@
 #  Used for approving minor changes, large-scale refactorings, and in emergency situations.
 #
 # IgorMinar
+# jelbourn
 # josephperrott
-# kara
 # mhevery
 #
 # =========================================================
@@ -203,7 +203,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - JoostK
-        - kara
 
 
   # =========================================================
@@ -235,7 +234,6 @@ groups:
         - alxhub
         - crisbeto
         - devversion
-        - kara
 
 
   # =========================================================
@@ -352,7 +350,7 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - kara
+        - ~kara  # do not request reviews from Kara, but allow her to approve PRs
         - mhevery
         - pkozlowski-opensource
 
@@ -579,7 +577,6 @@ groups:
       users:
         - AndrewKushnir
         - IgorMinar
-        - kara
         - pkozlowski-opensource
 
 
@@ -596,7 +593,6 @@ groups:
     reviewers:
       users:
         - IgorMinar
-        - kara
         - pkozlowski-opensource
 
 
@@ -613,7 +609,8 @@ groups:
     reviewers:
       users:
         - IgorMinar
-        - kara
+        - jelbourn
+        - pkozlowski-opensource
 
 
   # =========================================================
@@ -637,6 +634,13 @@ groups:
       users:
         - IgorMinar
         - mhevery
+        - jelbourn
+        - pkozlowski-opensource
+    reviews:
+      request: -1   # request reviews from everyone
+      required: 2   # require at least 2 approvals
+      reviewed_for: required
+
 
   # =========================================================
   #  Bazel
@@ -707,6 +711,7 @@ groups:
     reviewers:
       users:
         - alxhub
+        - josephperrott
 
 
   # =========================================================
@@ -723,7 +728,6 @@ groups:
       users:
         - IgorMinar
         - josephperrott
-        - kara
         - mhevery
 
 
@@ -836,7 +840,7 @@ groups:
     reviewers:
       users:
         - IgorMinar
-        - kara
+        - jelbourn
 
 
   # =========================================================
@@ -1023,8 +1027,14 @@ groups:
           ])
     reviewers:
       users:
+        - alxhub
         - IgorMinar
-        - kara
+        - jelbourn
+        - pkozlowski-opensource
+    reviews:
+      request: -1   # request reviews from everyone
+      required: 3   # require at least 3 approvals
+      reviewed_for: required
 
 
   # ================================================
@@ -1039,8 +1049,14 @@ groups:
           ])
     reviewers:
       users:
+        - alxhub
         - IgorMinar
-        - kara
+        - jelbourn
+        - pkozlowski-opensource
+    reviews:
+      request: -1   # request reviews from everyone
+      required: 2   # require at least 2 approvals
+      reviewed_for: required
 
 
   # ================================================
@@ -1056,8 +1072,9 @@ groups:
     reviewers:
       users:
         - IgorMinar
+        - jelbourn
         - josephperrott
-        - kara
+        - pkozlowski-opensource
 
 
 ####################################################################################
