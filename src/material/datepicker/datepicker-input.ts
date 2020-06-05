@@ -162,12 +162,12 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
   }
 
   /** Gets the input's minimum date. */
-  protected _getMinDate() {
+  _getMinDate() {
     return this._min;
   }
 
   /** Gets the input's maximum date. */
-  protected _getMaxDate() {
+  _getMaxDate() {
     return this._max;
   }
 

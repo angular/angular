@@ -48,6 +48,10 @@ export interface MatDateRangeInputParent<D> {
   min: D | null;
   max: D | null;
   dateFilter: DateFilterFn<D>;
+  rangePicker: {
+    opened: boolean;
+    id: string;
+  };
   _startInput: MatDateRangeInputPartBase<D>;
   _endInput: MatDateRangeInputPartBase<D>;
   _groupDisabled: boolean;
@@ -138,12 +142,12 @@ abstract class MatDateRangeInputPartBase<D>
   }
 
   /** Gets the minimum date from the range input. */
-  protected _getMinDate() {
+  _getMinDate() {
     return this._rangeInput.min;
   }
 
   /** Gets the maximum date from the range input. */
-  protected _getMaxDate() {
+  _getMaxDate() {
     return this._rangeInput.max;
   }
 

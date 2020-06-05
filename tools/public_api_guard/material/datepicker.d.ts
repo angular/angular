@@ -217,8 +217,8 @@ export declare class MatDatepickerInput<D> extends MatDatepickerInputBase<D | nu
     constructor(elementRef: ElementRef<HTMLInputElement>, dateAdapter: DateAdapter<D>, dateFormats: MatDateFormats, _formField: MatFormField);
     protected _assignValueToModel(value: D | null): void;
     protected _getDateFilter(): DateFilterFn<D | null>;
-    protected _getMaxDate(): D | null;
-    protected _getMinDate(): D | null;
+    _getMaxDate(): D | null;
+    _getMinDate(): D | null;
     protected _getValueFromModel(modelValue: D | null): D | null;
     protected _openPopup(): void;
     getConnectedOverlayOrigin(): ElementRef;
