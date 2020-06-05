@@ -50,6 +50,7 @@
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.6",
     "@babel/generator": "^7.8.6",
+    "@babel/preset-env": "^7.10.2",
     "@babel/template": "^7.8.6",
     "@babel/traverse": "^7.8.6",
     "@babel/types": "^7.8.6",
