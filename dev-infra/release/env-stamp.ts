@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {exec as _exec} from 'shelljs';
-
-import {info} from '../utils/console';
+import {exec as _exec} from '../utils/shelljs';
 
 /**
  * Log the environment variables expected by bazel for stamping.
@@ -32,7 +30,7 @@ export function buildEnvStamp() {
 
 /** Run the exec command and return the stdout as a trimmed string. */
 function exec(cmd: string) {
-  return _exec(cmd, {silent: true}).toString().trim();
+  return _exec(cmd).trim();
 }
 
 /** Whether the repo has local changes. */
