@@ -253,10 +253,10 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
     transition: none;
   }
 
-  @include cdk-high-contrast(active, off) {
-    // Note that we change the border style of the checkbox frame to dotted because this
-    // is how IE/Edge similarly treats native checkboxes in high contrast mode.
-    .mat-checkbox.cdk-keyboard-focused & {
+  .mat-checkbox.cdk-keyboard-focused & {
+    @include cdk-high-contrast(active, off) {
+      // Note that we change the border style of the checkbox frame to dotted because this
+      // is how IE/Edge similarly treats native checkboxes in high contrast mode.
       border-style: dotted;
     }
   }
