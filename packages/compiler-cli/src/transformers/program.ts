@@ -535,7 +535,7 @@ class AngularCompilerProgram implements Program {
       // ignore diagnostics that have been collected by the transformer. These are
       // non-significant failures that shouldn't prevent apps from compiling.
       beforeTs.push(getDownlevelDecoratorsTransform(
-          typeChecker, [], reflectionHost, this.isCompilingAngularCore,
+          typeChecker, reflectionHost, [], this.isCompilingAngularCore,
           annotateForClosureCompiler));
     }
 

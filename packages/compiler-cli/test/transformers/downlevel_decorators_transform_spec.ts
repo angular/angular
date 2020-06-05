@@ -57,7 +57,7 @@ describe('downlevel decorator transform', () => {
       before: [
         ...preTransformers,
         getDownlevelDecoratorsTransform(
-            program.getTypeChecker(), diagnostics, reflectionHost,
+            program.getTypeChecker(), reflectionHost, diagnostics,
             /* isCore */ false, isClosureEnabled)
       ]
     };
