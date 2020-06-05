@@ -146,6 +146,9 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
    */
   @Input('aria-labelledby') ariaLabelledby: string | null = null;
 
+  /** The 'aria-describedby' attribute is read after the element's label and field type. */
+  @Input('aria-describedby') ariaDescribedby: string;
+
   private _uniqueId: string = `mat-checkbox-${++nextUniqueId}`;
 
   /** A unique id for the checkbox input. If none is supplied, it will be auto-generated. */

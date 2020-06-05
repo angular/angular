@@ -13,6 +13,7 @@
            [attr.aria-label]="ariaLabel || null"
            [attr.aria-labelledby]="ariaLabelledby"
            [attr.aria-checked]="_getAriaChecked()"
+           [attr.aria-describedby]="ariaDescribedby"
            (change)="_onInteractionEvent($event)"
            (click)="_onInputClick($event)">
     <div matRipple class="mat-checkbox-ripple mat-focus-indicator"

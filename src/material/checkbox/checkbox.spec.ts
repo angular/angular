@@ -784,6 +784,32 @@ describe('MatCheckbox', () => {
     });
   });
 
+  describe('with provided aria-describedby ', () => {
+    let checkboxDebugElement: DebugElement;
+    let checkboxNativeElement: HTMLElement;
+    let inputElement: HTMLInputElement;
+
+    it('should use the provided aria-describedby', () => {
+      fixture = createComponent(CheckboxWithAriaDescribedby);
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
+      checkboxNativeElement = checkboxDebugElement.nativeElement;
+      inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
+
+      fixture.detectChanges();
+      expect(inputElement.getAttribute('aria-describedby')).toBe('some-id');
+    });
+
+    it('should not assign aria-describedby if none is provided', () => {
+      fixture = createComponent(SingleCheckbox);
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
+      checkboxNativeElement = checkboxDebugElement.nativeElement;
+      inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
+
+      fixture.detectChanges();
+      expect(inputElement.getAttribute('aria-describedby')).toBe(null);
+    });
+  });
+
   describe('with provided tabIndex', () => {
     let checkboxDebugElement: DebugElement;
     let checkboxNativeElement: HTMLElement;
@@ -1345,6 +1371,12 @@ class CheckboxWithAriaLabel { }
   template: `<mat-checkbox aria-labelledby="some-id"></mat-checkbox>`
 })
 class CheckboxWithAriaLabelledby {}
+
+/** Simple test component with an aria-describedby set. */
+@Component({
+  template: `<mat-checkbox aria-describedby="some-id"></mat-checkbox>`
+})
+class CheckboxWithAriaDescribedby {}
 
 /** Simple test component with name attribute */
 @Component({

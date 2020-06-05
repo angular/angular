@@ -86,6 +86,9 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   /** The `aria-labelledby` attribute to use for the input element. */
   @Input('aria-labelledby') ariaLabelledby: string|null = null;
 
+  /** The 'aria-describedby' attribute is read after the element's label and field type. */
+  @Input('aria-describedby') ariaDescribedby: string;
+
   /** The color palette  for this checkbox ('primary', 'accent', or 'warn'). */
   @Input() color: ThemePalette = 'accent';
 
