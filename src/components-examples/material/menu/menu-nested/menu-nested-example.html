@@ -1,5 +1,5 @@
 <button mat-button [matMenuTriggerFor]="animals">Animal index</button>
-
+<!-- #docregion sub-menu -->
 <mat-menu #animals="matMenu">
   <button mat-menu-item [matMenuTriggerFor]="vertebrates">Vertebrates</button>
   <button mat-menu-item [matMenuTriggerFor]="invertebrates">Invertebrates</button>
@@ -12,6 +12,7 @@
   <button mat-menu-item>Birds</button>
   <button mat-menu-item>Mammals</button>
 </mat-menu>
+<!-- #enddocregion sub-menu -->
 
 <mat-menu #invertebrates="matMenu">
   <button mat-menu-item>Insects</button>

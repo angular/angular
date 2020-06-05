@@ -1,9 +1,11 @@
 <mat-tab-group>
+<!-- #docregion mat-tab-content -->
   <mat-tab label="First">
     <ng-template matTabContent>
       Content 1 - Loaded: {{getTimeLoaded(1) | date:'medium'}}
     </ng-template>
   </mat-tab>
+<!-- #enddocregion mat-tab-content -->
   <mat-tab label="Second">
     <ng-template matTabContent>
       Content 2 - Loaded: {{getTimeLoaded(2) | date:'medium'}}

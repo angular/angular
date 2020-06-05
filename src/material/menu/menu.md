@@ -4,16 +4,9 @@
 
 By itself, the `<mat-menu>` element does not render anything. The menu is attached to and opened
 via application of the `matMenuTriggerFor` directive:
-```html
-<mat-menu #appMenu="matMenu">
-  <button mat-menu-item>Settings</button>
-  <button mat-menu-item>Help</button>
-</mat-menu>
-
-<button mat-icon-button [matMenuTriggerFor]="appMenu">
-  <mat-icon>more_vert</mat-icon>
-</button>
-```
+<!-- example({"example": "menu-overview",
+              "file": "menu-overview-example.html",
+              "region": "mat-menu-trigger-for"}) -->
 
 ### Toggling the menu programmatically
 The menu exposes an API to open/close programmatically. Please note that in this case, an
@@ -32,23 +25,8 @@ class MyComponent {
 ### Icons
 Menus support displaying `mat-icon` elements before the menu item text.
 
-*my-comp.html*
-```html
-<mat-menu #menu="matMenu">
-  <button mat-menu-item>
-    <mat-icon>dialpad</mat-icon>
-    <span>Redial</span>
-  </button>
-  <button mat-menu-item disabled>
-    <mat-icon>voicemail</mat-icon>
-    <span>Check voicemail</span>
-  </button>
-  <button mat-menu-item>
-    <mat-icon>notifications_off</mat-icon>
-    <span>Disable alerts</span>
-  </button>
-</mat-menu>
-```
+<!-- example({"example": "menu-icons",
+              "file": "menu-icons-example.html"}) -->
 
 ### Customizing menu position
 
@@ -57,18 +35,9 @@ its trigger. The position can be changed using the `xPosition` (`before | after`
 (`above | below`) attributes. The menu can be forced to overlap the trigger using the
 `overlapTrigger` attribute.
 
-```html
-<mat-menu #appMenu="matMenu" yPosition="above">
-  <button mat-menu-item>Settings</button>
-  <button mat-menu-item>Help</button>
-</mat-menu>
-
-<button mat-icon-button [matMenuTriggerFor]="appMenu">
-  <mat-icon>more_vert</mat-icon>
-</button>
-```
-
-<!-- example(menu-position) -->
+<!-- example({"example": "menu-position",
+              "file": "menu-position-example.html",
+              "region": "menu-position"}) -->
 
 ### Nested menu
 
@@ -76,24 +45,9 @@ Material supports the ability for an `mat-menu-item` to open a sub-menu. To do s
 your root menu and sub-menus, in addition to setting the `[matMenuTriggerFor]` on the `mat-menu-item`
 that should trigger the sub-menu:
 
-```html
-<mat-menu #rootMenu="matMenu">
-  <button mat-menu-item [matMenuTriggerFor]="subMenu">Power</button>
-  <button mat-menu-item>System settings</button>
-</mat-menu>
-
-<mat-menu #subMenu="matMenu">
-  <button mat-menu-item>Shut down</button>
-  <button mat-menu-item>Restart</button>
-  <button mat-menu-item>Hibernate</button>
-</mat-menu>
-
-<button mat-icon-button [matMenuTriggerFor]="rootMenu">
-  <mat-icon>more_vert</mat-icon>
-</button>
-```
-
-<!-- example(menu-nested) -->
+<!-- example({"example": "menu-nested",
+              "file": "menu-nested-example.html",
+              "region": "sub-menu"}) -->
 
 ### Lazy rendering
 By default, the menu content will be initialized even when the panel is closed. To defer
