@@ -490,6 +490,15 @@ export class Driver implements Debuggable, UpdateSource {
         table.read<LatestEntry>('latest'),
       ]);
 
+      // Make sure latest manifest is correctly installed. If not (e.g. corrupted data),
+      // it could stay locked in EXISTING_CLIENTS_ONLY or SAFE_MODE state.
+      if (!this.versions.has(latest.latest) && !manifests.hasOwnProperty(latest.latest)) {
+        this.debugger.log(
+            `Missing manifest for latest version hash ${latest.latest}`,
+            'initialize: read from DB');
+        throw new Error(`Missing manifest for latest hash ${latest.latest}`);
+      }
+
       // Successfully loaded from saved state. This implies a manifest exists, so
       // the update check needs to happen in the background.
       this.idle.schedule('init post-load (update, cleanup)', async () => {
