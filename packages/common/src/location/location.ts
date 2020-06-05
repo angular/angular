@@ -64,7 +64,8 @@ export class Location {
   _platformLocation: PlatformLocation;
   /** @internal */
   _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
-  private _urlChangeSubscription?: SubscriptionLike;
+  /** @internal */
+  _urlChangeSubscription?: SubscriptionLike;
 
   constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation) {
     this._platformStrategy = platformStrategy;
