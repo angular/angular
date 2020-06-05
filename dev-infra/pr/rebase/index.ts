@@ -13,13 +13,13 @@ import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info, promptConfirm} from '../../utils/console';
 import {GitClient} from '../../utils/git';
 import {getPr} from '../../utils/github';
-import {exec} from '../../utils/shelljs';
 
 /* GraphQL schema for the response body for each pending PR. */
 const PR_SCHEMA = {
   state: graphQLTypes.string,
   maintainerCanModify: graphQLTypes.boolean,
   viewerDidAuthor: graphQLTypes.boolean,
+  headRefOid: graphQLTypes.string,
   headRef: {
     name: graphQLTypes.string,
     repository: {
@@ -42,7 +42,7 @@ const PR_SCHEMA = {
  */
 export async function rebasePr(
     prNumber: number, githubToken: string, config: Pick<NgDevConfig, 'github'> = getConfig()) {
-  const git = new GitClient();
+  const git = new GitClient(githubToken);
   // TODO: Rely on a common assertNoLocalChanges function.
   if (git.hasLocalChanges()) {
     error('Cannot perform rebase of PR with local changes.');
@@ -57,10 +57,20 @@ export async function rebasePr(
   /* Get the PR information from Github. */
   const pr = await getPr(PR_SCHEMA, prNumber, config.github);
 
-  const fullHeadRef = `${pr.headRef.repository.nameWithOwner}:${pr.headRef.name}`;
-  const fullBaseRef = `${pr.baseRef.repository.nameWithOwner}:${pr.baseRef.name}`;
+  const headRefName = pr.headRef.name;
+  const baseRefName = pr.baseRef.name;
+  const fullHeadRef = `${pr.headRef.repository.nameWithOwner}:${headRefName}`;
+  const fullBaseRef = `${pr.baseRef.repository.nameWithOwner}:${baseRefName}`;
   const headRefUrl = addAuthenticationToUrl(pr.headRef.repository.url, githubToken);
   const baseRefUrl = addAuthenticationToUrl(pr.baseRef.repository.url, githubToken);
+
+  // Note: Since we use a detached head for rebasing the PR and therefore do not have
+  // remote-tracking branches configured, we need to set our expected ref and SHA. This
+  // allows us to use `--force-with-lease` for the detached head while ensuring that we
+  // never accidentally override upstream changes that have been pushed in the meanwhile.
+  // See:
+  // https://git-scm.com/docs/git-push#Documentation/git-push.txt---force-with-leaseltrefnamegtltexpectgt
+  const forceWithLeaseFlag = `--force-with-lease=${headRefName}:${pr.headRefOid}`;
 
   // If the PR does not allow maintainers to modify it, exit as the rebased PR cannot
   // be pushed up.
@@ -74,20 +84,20 @@ export async function rebasePr(
   try {
     // Fetch the branch at the commit of the PR, and check it out in a detached state.
     info(`Checking out PR #${prNumber} from ${fullHeadRef}`);
-    exec(`git fetch ${headRefUrl} ${pr.headRef.name}`);
-    exec(`git checkout --detach FETCH_HEAD`);
+    git.run(['fetch', headRefUrl, headRefName]);
+    git.run(['checkout', '--detach', 'FETCH_HEAD']);
 
     // Fetch the PRs target branch and rebase onto it.
     info(`Fetching ${fullBaseRef} to rebase #${prNumber} on`);
-    exec(`git fetch ${baseRefUrl} ${pr.baseRef.name}`);
+    git.run(['fetch', baseRefUrl, baseRefName]);
     info(`Attempting to rebase PR #${prNumber} on ${fullBaseRef}`);
-    const rebaseResult = exec(`git rebase FETCH_HEAD`);
+    const rebaseResult = git.runGraceful(['rebase', 'FETCH_HEAD']);
 
     // If the rebase was clean, push the rebased PR up to the authors fork.
-    if (rebaseResult.code === 0) {
+    if (rebaseResult.status === 0) {
       info(`Rebase was able to complete automatically without conflicts`);
       info(`Pushing rebased PR #${prNumber} to ${fullHeadRef}`);
-      exec(`git push ${baseRefUrl} HEAD:${pr.baseRef.name} --force-with-lease`);
+      git.run(['push', headRefUrl, `HEAD:${headRefName}`, forceWithLeaseFlag]);
       info(`Rebased and updated PR #${prNumber}`);
       cleanUpGitState();
       process.exit(0);
@@ -107,7 +117,7 @@ export async function rebasePr(
 
   if (continueRebase) {
     info(`After manually completing rebase, run the following command to update PR #${prNumber}:`);
-    info(` $ git push ${pr.baseRef.repository.url} HEAD:${pr.baseRef.name} --force-with-lease`);
+    info(` $ git push ${pr.headRef.repository.url} HEAD:${headRefName} ${forceWithLeaseFlag}`);
     info();
     info(`To abort the rebase and return to the state of the repository before this command`);
     info(`run the following command:`);
@@ -123,11 +133,11 @@ export async function rebasePr(
   /** Reset git back to the original branch. */
   function cleanUpGitState() {
     // Ensure that any outstanding rebases are aborted.
-    exec(`git rebase --abort`);
+    git.runGraceful(['rebase', '--abort'], {stdio: 'ignore'});
     // Ensure that any changes in the current repo state are cleared.
-    exec(`git reset --hard`);
+    git.runGraceful(['reset', '--hard'], {stdio: 'ignore'});
     // Checkout the original branch from before the run began.
-    exec(`git checkout ${originalBranch}`);
+    git.runGraceful(['checkout', originalBranch], {stdio: 'ignore'});
   }
 }
 
