@@ -7,26 +7,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, core, createAotCompiler, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, getParseErrors, isFormattedError, isSyntaxError, MessageBundle, NgAnalyzedFile, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule, Position, Serializer, StaticSymbol, TypeScriptEmitter, Xliff, Xliff2, Xmb} from '@angular/compiler';
+import {AotCompiler, AotCompilerOptions, core, createAotCompiler, FormattedMessageChain, GeneratedFile, getParseErrors, isFormattedError, isSyntaxError, MessageBundle, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule, Serializer, Xliff, Xliff2, Xmb} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {translateDiagnostics, TypeCheckHost} from '../diagnostics/translate_diagnostics';
-import {createBundleIndexHost, MetadataCollector, ModuleMetadata} from '../metadata';
+import {translateDiagnostics} from '../diagnostics/translate_diagnostics';
+import {createBundleIndexHost, MetadataCollector} from '../metadata';
+import {isAngularCorePackage} from '../ngtsc/core/src/compiler';
 import {NgtscProgram} from '../ngtsc/program';
+import {TypeScriptReflectionHost} from '../ngtsc/reflection';
 import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
-import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
+import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
 import {CodeGenerator, getOriginalReferences, TsCompilerAotCompilerTypeCheckHostAdapter} from './compiler_host';
+import {getDownlevelDecoratorsTransform} from './downlevel_decorators_transform';
 import {getInlineResourcesTransformFactory, InlineResourcesMetadataTransformer} from './inline_resources';
 import {getExpressionLoweringTransformFactory, LowerMetadataTransform} from './lower_expressions';
 import {MetadataCache, MetadataTransformer} from './metadata_cache';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
-import {getDecoratorStripTransformerFactory, StripDecoratorsMetadataTransformer} from './r3_strip_decorators';
 import {getAngularClassTransformerFactory} from './r3_transform';
-import {createMessageDiagnostic, DTS, GENERATED_FILES, isInRootDir, ngToTsDiagnostic, StructureIsReused, TS, tsStructureIsReused, userError} from './util';
+import {createMessageDiagnostic, DTS, GENERATED_FILES, isInRootDir, ngToTsDiagnostic, StructureIsReused, TS, tsStructureIsReused} from './util';
 
 
 /**
@@ -45,14 +47,6 @@ const LOWER_FIELDS = ['useValue', 'useFactory', 'data', 'id', 'loadChildren'];
  * Fields to lower within metadata in render3 mode.
  */
 const R3_LOWER_FIELDS = [...LOWER_FIELDS, 'providers', 'imports', 'exports'];
-
-const R3_REIFIED_DECORATORS = [
-  'Component',
-  'Directive',
-  'Injectable',
-  'NgModule',
-  'Pipe',
-];
 
 const emptyModules: NgAnalyzedModules = {
   ngModules: [],
@@ -99,8 +93,7 @@ class AngularCompilerProgram implements Program {
   private _structuralDiagnostics: Diagnostic[]|undefined;
   private _programWithStubs: ts.Program|undefined;
   private _optionsDiagnostics: Diagnostic[] = [];
-  // TODO(issue/24571): remove '!'.
-  private _reifiedDecorators!: Set<StaticSymbol>;
+  private _transformTsDiagnostics: ts.Diagnostic[] = [];
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: CompilerOptions,
@@ -263,72 +256,6 @@ class AngularCompilerProgram implements Program {
     return this._emitRender2(parameters);
   }
 
-  private _emitRender3({
-    emitFlags = EmitFlags.Default,
-    cancellationToken,
-    customTransformers,
-    emitCallback = defaultEmitCallback,
-    mergeEmitResultsCallback = mergeEmitResults,
-  }: {
-    emitFlags?: EmitFlags,
-    cancellationToken?: ts.CancellationToken,
-    customTransformers?: CustomTransformers,
-    emitCallback?: TsEmitCallback,
-    mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
-  } = {}): ts.EmitResult {
-    const emitStart = Date.now();
-    if ((emitFlags & (EmitFlags.JS | EmitFlags.DTS | EmitFlags.Metadata | EmitFlags.Codegen)) ===
-        0) {
-      return {emitSkipped: true, diagnostics: [], emittedFiles: []};
-    }
-
-    // analyzedModules and analyzedInjectables are created together. If one exists, so does the
-    // other.
-    const modules =
-        this.compiler.emitAllPartialModules(this.analyzedModules, this._analyzedInjectables!);
-
-    const writeTsFile: ts.WriteFileCallback =
-        (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
-          this.writeFile(outFileName, outData, writeByteOrderMark, onError, undefined, sourceFiles);
-        };
-
-    const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
-
-    const tsCustomTransformers = this.calculateTransforms(
-        /* genFiles */ undefined, /* partialModules */ modules,
-        /* stripDecorators */ this.reifiedDecorators, customTransformers);
-
-
-    // Restore the original references before we emit so TypeScript doesn't emit
-    // a reference to the .d.ts file.
-    const augmentedReferences = new Map<ts.SourceFile, ReadonlyArray<ts.FileReference>>();
-    for (const sourceFile of this.tsProgram.getSourceFiles()) {
-      const originalReferences = getOriginalReferences(sourceFile);
-      if (originalReferences) {
-        augmentedReferences.set(sourceFile, sourceFile.referencedFiles);
-        sourceFile.referencedFiles = originalReferences;
-      }
-    }
-
-    try {
-      return emitCallback({
-        program: this.tsProgram,
-        host: this.host,
-        options: this.options,
-        writeFile: writeTsFile,
-        emitOnlyDtsFiles,
-        customTransformers: tsCustomTransformers
-      });
-    } finally {
-      // Restore the references back to the augmented value to ensure that the
-      // checks that TypeScript makes for project structure reuse will succeed.
-      for (const [sourceFile, references] of Array.from(augmentedReferences)) {
-        // TODO(chuckj): Remove any cast after updating build to 2.6
-        (sourceFile as any).referencedFiles = references;
-      }
-    }
-  }
-
   private _emitRender2({
     emitFlags = EmitFlags.Default,
     cancellationToken,
@@ -367,6 +294,7 @@ class AngularCompilerProgram implements Program {
     const genFileByFileName = new Map<string, GeneratedFile>();
     genFiles.forEach(genFile => genFileByFileName.set(genFile.genFileUrl, genFile));
     this.emittedLibrarySummaries = [];
+    this._transformTsDiagnostics = [];
     const emittedSourceFiles = [] as ts.SourceFile[];
     const writeTsFile: ts.WriteFileCallback =
         (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
@@ -389,8 +317,8 @@ class AngularCompilerProgram implements Program {
     const modules = this._analyzedInjectables &&
         this.compiler.emitAllPartialModules2(this._analyzedInjectables);
 
-    const tsCustomTransformers = this.calculateTransforms(
-        genFileByFileName, modules, /* stripDecorators */ undefined, customTransformers);
+    const tsCustomTransformers =
+        this.calculateTransforms(genFileByFileName, modules, customTransformers);
     const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
     // Restore the original references before we emit so TypeScript doesn't emit
     // a reference to the .d.ts file.
@@ -548,22 +476,23 @@ class AngularCompilerProgram implements Program {
     return this._tsProgram!;
   }
 
-  private get reifiedDecorators(): Set<StaticSymbol> {
-    if (!this._reifiedDecorators) {
-      const reflector = this.compiler.reflector;
-      this._reifiedDecorators = new Set(
-          R3_REIFIED_DECORATORS.map(name => reflector.findDeclaration('@angular/core', name)));
+  /** Whether the program is compiling the Angular core package. */
+  private get isCompilingAngularCore(): boolean {
+    if (this._isCompilingAngularCore !== null) {
+      return this._isCompilingAngularCore;
     }
-    return this._reifiedDecorators;
+    return this._isCompilingAngularCore = isAngularCorePackage(this.tsProgram);
   }
+  private _isCompilingAngularCore: boolean|null = null;
 
   private calculateTransforms(
       genFiles: Map<string, GeneratedFile>|undefined, partialModules: PartialModule[]|undefined,
-      stripDecorators: Set<StaticSymbol>|undefined,
       customTransformers?: CustomTransformers): ts.CustomTransformers {
     const beforeTs: Array<ts.TransformerFactory<ts.SourceFile>> = [];
     const metadataTransforms: MetadataTransformer[] = [];
     const flatModuleMetadataTransforms: MetadataTransformer[] = [];
+    const annotateForClosureCompiler = this.options.annotateForClosureCompiler || false;
+
     if (this.options.enableResourceInlining) {
       beforeTs.push(getInlineResourcesTransformFactory(this.tsProgram, this.hostAdapter));
       const transformer = new InlineResourcesMetadataTransformer(this.hostAdapter);
@@ -576,7 +505,6 @@ class AngularCompilerProgram implements Program {
           getExpressionLoweringTransformFactory(this.loweringMetadataTransform, this.tsProgram));
       metadataTransforms.push(this.loweringMetadataTransform);
     }
-    const annotateForClosureCompiler = this.options.annotateForClosureCompiler || false;
     if (genFiles) {
       beforeTs.push(getAngularEmitterTransformFactory(
           genFiles, this.getTsProgram(), annotateForClosureCompiler));
@@ -591,18 +519,26 @@ class AngularCompilerProgram implements Program {
       flatModuleMetadataTransforms.push(transformer);
     }
 
-    if (stripDecorators) {
-      beforeTs.push(getDecoratorStripTransformerFactory(
-          stripDecorators, this.compiler.reflector, this.getTsProgram().getTypeChecker()));
-      const transformer =
-          new StripDecoratorsMetadataTransformer(stripDecorators, this.compiler.reflector);
-      metadataTransforms.push(transformer);
-      flatModuleMetadataTransforms.push(transformer);
-    }
-
     if (customTransformers && customTransformers.beforeTs) {
       beforeTs.push(...customTransformers.beforeTs);
     }
+
+    // If decorators should be converted to static fields (enabled by default), we set up
+    // the decorator downlevel transform. Note that we set it up as last transform as that
+    // allows custom transformers to strip Angular decorators without having to deal with
+    // identifying static properties. e.g. it's more difficult handling `<..>.decorators`
+    // or `<..>.ctorParameters` compared to the `ts.Decorator` AST nodes.
+    if (this.options.annotationsAs !== 'decorators') {
+      const typeChecker = this.getTsProgram().getTypeChecker();
+      const reflectionHost = new TypeScriptReflectionHost(typeChecker);
+      // Similarly to how we handled tsickle decorator downleveling in the past, we just
+      // ignore diagnostics that have been collected by the transformer. These are
+      // non-significant failures that shouldn't prevent apps from compiling.
+      beforeTs.push(getDownlevelDecoratorsTransform(
+          typeChecker, reflectionHost, [], this.isCompilingAngularCore,
+          annotateForClosureCompiler));
+    }
+
     if (metadataTransforms.length > 0) {
       this.metadataCache = this.createMetadataCache(metadataTransforms);
     }
