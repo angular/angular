@@ -1,0 +1,71 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import * as ts from 'typescript';
+
+import {UpdateRecorder} from './update_recorder';
+
+
+const RELATIVE_LINK_RESOLUTION = 'relativeLinkResolution';
+
+export class RelativeLinkResolutionTransform {
+  private printer = ts.createPrinter();
+
+  constructor(private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder) {}
+
+  /** Migrate the ExtraOptions#RelativeLinkResolution property assignments. */
+  migrateRouterModuleForRootCalls(calls: ts.CallExpression[]) {
+    calls.forEach(c => {
+      const args = c.arguments;
+      if (args.length === 1) {
+        this._updateCallExpressionWithoutNavigationExtras(c);
+      } else if (args.length === 2 && ts.isObjectLiteralExpression(args[1])) {
+        this._maybeUpdateLiteral(args[1] as ts.ObjectLiteralExpression);
+      }
+    });
+  }
+
+  migrateObjectLiterals(vars: ts.ObjectLiteralExpression[]) {
+    vars.forEach(v => this._maybeUpdateLiteral(v));
+  }
+
+  private _updateCallExpressionWithoutNavigationExtras(callExpression: ts.CallExpression) {
+    const args = callExpression.arguments;
+    if (args.length !== 1) return;
+
+    const emptyLiteral = ts.createObjectLiteral();
+    const newNode = ts.updateCall(
+        callExpression, callExpression.expression, callExpression.typeArguments,
+        [args[0], this._getMigratedLiteralExpression(emptyLiteral)]);
+    this._updateNode(callExpression, newNode);
+  }
+
+  private _getMigratedLiteralExpression(literal: ts.ObjectLiteralExpression) {
+    if (literal.properties.some(
+            prop => ts.isPropertyAssignment(prop) &&
+                prop.name.getText() === RELATIVE_LINK_RESOLUTION)) {
+      // literal already defines a value for relativeLinkResolution. Skip it
+      return literal;
+    }
+    const legacyExpression =
+        ts.createPropertyAssignment(RELATIVE_LINK_RESOLUTION, ts.createStringLiteral('legacy'));
+    return ts.updateObjectLiteral(literal, literal.properties.concat(legacyExpression));
+  }
+
+  private _maybeUpdateLiteral(literal: ts.ObjectLiteralExpression) {
+    const updatedLiteral = this._getMigratedLiteralExpression(literal);
+    if (updatedLiteral !== literal) {
+      this._updateNode(literal, this._getMigratedLiteralExpression(literal));
+    }
+  }
+
+  private _updateNode(node: ts.Node, newNode: ts.Node) {
+    const newText = this.printer.printNode(ts.EmitHint.Unspecified, newNode, node.getSourceFile());
+    const recorder = this.getUpdateRecorder(node.getSourceFile());
+    recorder.updateNode(node, newText);
+  }
+}
