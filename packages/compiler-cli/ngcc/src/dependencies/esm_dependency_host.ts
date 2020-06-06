@@ -35,7 +35,7 @@ export class EsmDependencyHost extends DependencyHostBase {
    * not manage this for us.
    *
    * Specifically, backticked strings are particularly challenging since it is possible
-   * to recursively nest backticks and TypeScript expressions expressions within each other.
+   * to recursively nest backticks and TypeScript expressions within each other.
    */
   protected extractImports(file: AbsoluteFsPath, fileContents: string): Set<string> {
     const imports = new Set<string>();
