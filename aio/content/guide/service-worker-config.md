@@ -193,6 +193,21 @@ The Angular service worker can use either of two caching strategies for data res
 
 * `freshness` optimizes for currency of data, preferentially fetching requested data from the network. Only if the network times out, according to `timeout`, does the request fall back to the cache. This is useful for resources that change frequently; for example, account balances.
 
+
+<div class="alert is-helpful">
+
+You can also emulate a third strategy, [staleWhileRevalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate), which returns cached data (if available), but also fetches fresh data from the network in the background for next time.
+To use this strategy set `strategy` to `freshness` and `timeout` to `0u` in `cacheConfig`.
+
+This will essentially do the following:
+
+1. Try to fetch from the network first.
+2. If the network request does not complete after 0ms (i.e. immediately), fall back to the cache (ignoring cache age).
+3. Once the network request completes, update the cache for future requests.
+4. If the resource does not exist in the cache, wait for the network request anyway.
+
+</div>
+
 ### `cacheQueryOptions`
 
 See [assetGroups](#assetgroups) for details.
