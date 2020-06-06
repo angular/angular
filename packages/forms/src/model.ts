@@ -15,7 +15,7 @@ import {toObservable} from './validators';
 /**
  * @publicApi
  */
-export type FormState<T> = null|T|{
+export type FormControlState<T> = null|T|{
   value: null|T;
   disabled: boolean
 };
@@ -1052,7 +1052,7 @@ export class FormControl<T = any> extends AbstractControl<T> {
    *
    */
   constructor(
-      formState: FormState<T> = null,
+      formState: FormControlState<T> = null,
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(
@@ -1137,8 +1137,8 @@ export class FormControl<T = any> extends AbstractControl<T> {
    * When false, no events are emitted.
    *
    */
-  reset(formState: FormState<T> = null, options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  reset(formState: FormControlState<T> = null, options: {onlySelf?: boolean,
+                                                         emitEvent?: boolean} = {}): void {
     this._applyFormState(formState);
     this.markAsPristine(options);
     this.markAsUntouched(options);
@@ -1970,12 +1970,8 @@ export class FormArray<Item = any> extends AbstractControl<Item[]> {
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
-  reset(
-      value: (Item|{
-        value: Item;
-        disabled: boolean
-      })[] = [],
-      options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  reset(value: FormControlState<Item>[] = [], options: {onlySelf?: boolean,
+                                                        emitEvent?: boolean} = {}): void {
     this._forEachChild((control: AbstractControl, index: number) => {
       control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
     });
