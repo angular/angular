@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileIdentifierMetadata} from './compile_metadata';
 import {MissingTranslationStrategy, ViewEncapsulation} from './core';
-import {Identifiers} from './identifiers';
-import * as o from './output/output_ast';
 import {noUndefined} from './util';
 
 export class CompilerConfig {
