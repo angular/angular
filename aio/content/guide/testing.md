@@ -191,19 +191,12 @@ Your project should start building.
 Step 1: Create a file called `.travis.yml` at the project root, with the following content:
 
 ```
-dist: trusty
-sudo: false
-
 language: node_js
 node_js:
   - "10"
 
 addons:
-  apt:
-    sources:
-      - google-chrome
-    packages:
-      - google-chrome-stable
+  chrome: stable
 
 cache:
   directories:
