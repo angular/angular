@@ -1227,6 +1227,8 @@ export declare interface RendererType2 {
     styles: (string | any[])[];
 }
 
+export declare function resetCompilation(): void;
+
 export declare class ResolvedReflectiveFactory {
     dependencies: ɵangular_packages_core_core_e[];
     factory: Function;

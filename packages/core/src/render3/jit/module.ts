@@ -105,9 +105,15 @@ export function compileNgModuleDefs(
   ngDevMode && assertDefined(ngModule, 'Required value ngModule');
   const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
   let ngModuleDef: any = null;
+  let generation = compilationGeneration;
   Object.defineProperty(moduleType, NG_MOD_DEF, {
     configurable: true,
     get: () => {
+      if (generation !== compilationGeneration) {
+        enqueueModuleForDelayedScoping(moduleType, ngModule);
+        generation = compilationGeneration;
+      }
+
       if (ngModuleDef === null) {
         if (ngDevMode && ngModule.imports && ngModule.imports.indexOf(moduleType) > -1) {
           // We need to assert this immediately, because allowing it to continue will cause it to
@@ -364,6 +370,17 @@ export function resetCompiledComponents(): void {
   moduleQueue.length = 0;
 }
 
+let compilationGeneration = 0;
+
+/**
+ * @publicApi
+ */
+export function resetCompilation(): void {
+  compilationGeneration++;
+
+  resetCompiledComponents();
+}
+
 /**
  * Computes the combined declarations of explicit declarations, as well as declarations inherited by
  * traversing the exports of imported modules.
@@ -468,7 +485,7 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
     };
 
     if (!isNgModule<I>(importedType)) {
-      throw new Error(`Importing ${importedType.name} which does not have a ɵmod property`);
+      return;
     }
 
     // When this module imports another, the imported module's exported directives and pipes are

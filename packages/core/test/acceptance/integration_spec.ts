@@ -1436,7 +1436,7 @@ describe('acceptance integration tests', () => {
       class SomeComponent {
       }
 
-      @NgModule({imports: [SomeComponent]})
+      @NgModule({imports: [SomeComponent], declarations: [SomeComponent]})
       class ModuleWithImportedComponent {
       }
       expect(() => {
