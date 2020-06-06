@@ -45,7 +45,7 @@ export {SelectMultipleControlValueAccessor} from './directives/select_multiple_c
 export {ɵNgSelectMultipleOption} from './directives/select_multiple_control_value_accessor';
 export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 export {FormBuilder, FormControlConfig} from './form_builder';
-export {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup, FormState} from './model';
+export {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormControlState, FormGroup} from './model';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
 export {VERSION} from './version';
 
