@@ -361,12 +361,18 @@ function elementCompletions(info: ng.AstResult): ng.CompletionEntry[] {
 
 function entityCompletions(value: string, position: number): ng.CompletionEntry[] {
   // Look for entity completions
+  // TODO(kyliau): revisit the usefulness of this feature. It provides
+  // autocompletion for HTML entities, which IMO is outside the core functionality
+  // of Angular language service. Besides, we do not have a complete list.
+  // See https://dev.w3.org/html5/html-author/charref
   const re = /&[A-Za-z]*;?(?!\d)/g;
   let found: RegExpExecArray|null;
   let result: ng.CompletionEntry[] = [];
   while (found = re.exec(value)) {
     let len = found[0].length;
-    if (position >= found.index && position < (found.index + len)) {
+    // end position must be inclusive to account for cases like '&|' where
+    // cursor is right behind the ampersand.
+    if (position >= found.index && position <= (found.index + len)) {
       result = Object.keys(NAMED_ENTITIES).map(name => {
         return {
           name: `&${name};`,
