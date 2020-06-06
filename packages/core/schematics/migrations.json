@@ -49,6 +49,11 @@
       "version": "11.0.0-beta",
       "description": "NavigationExtras omissions migration. In version 11, some unsupported properties were omitted from the `extras` parameter of the `Router.navigateByUrl` and `Router.createUrlTree` methods.",
       "factory": "./migrations/navigation-extras-omissions/index"
+    },
+    "migration-v11-router-relative-link-resolution-default": {
+      "version": "11.0.0-beta",
+      "description": "The default value for `relativeLinkResolution` is changing from 'legacy' to 'corrected'.\nThis migration updates `RouterModule` configurations that use the default value to \nnow specifically use 'legacy' to prevent breakages when updating.",
+      "factory": "./migrations/relative-link-resolution/index"
     }
   }
 }

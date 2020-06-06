@@ -15,6 +15,7 @@ pkg_npm(
         "//packages/core/schematics/migrations/module-with-providers",
         "//packages/core/schematics/migrations/move-document",
         "//packages/core/schematics/migrations/navigation-extras-omissions",
+        "//packages/core/schematics/migrations/relative-link-resolution",
         "//packages/core/schematics/migrations/renderer-to-renderer2",
         "//packages/core/schematics/migrations/static-queries",
         "//packages/core/schematics/migrations/template-var-assignment",

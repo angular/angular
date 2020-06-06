@@ -10,6 +10,8 @@ ts_library(
         "//packages/core/schematics/migrations/missing-injectable",
         "//packages/core/schematics/migrations/missing-injectable/google3",
         "//packages/core/schematics/migrations/navigation-extras-omissions",
+        "//packages/core/schematics/migrations/relative-link-resolution",
+        "//packages/core/schematics/migrations/relative-link-resolution/google3",
         "//packages/core/schematics/migrations/renderer-to-renderer2",
         "//packages/core/schematics/migrations/static-queries",
         "//packages/core/schematics/migrations/template-var-assignment",
