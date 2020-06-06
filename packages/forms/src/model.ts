@@ -13,6 +13,14 @@ import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/vali
 import {toObservable} from './validators';
 
 /**
+ * @publicApi
+ */
+export type FormState<T> = null|T|{
+  value: null|T;
+  disabled: boolean
+};
+
+/**
  * Reports that a FormControl is valid, meaning that no errors exist in the input value.
  *
  * @see `status`
@@ -132,7 +140,7 @@ function isOptionsObj(validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractContro
  *
  * @publicApi
  */
-export abstract class AbstractControl {
+export abstract class AbstractControl<T = any> {
   /** @internal */
   // TODO(issue/24571): remove '!'.
   _pendingDirty!: boolean;
@@ -163,7 +171,7 @@ export abstract class AbstractControl {
    * * For a `FormArray`, the values of enabled controls as an array.
    *
    */
-  public readonly value: any;
+  public readonly value: T|null = null;
 
   /**
    * Initialize the AbstractControl instance.
@@ -311,7 +319,7 @@ export abstract class AbstractControl {
    * without passing along {emitEvent: false} as a function argument.
    */
   // TODO(issue/24571): remove '!'.
-  public readonly valueChanges!: Observable<any>;
+  public readonly valueChanges!: Observable<T|null>;
 
   /**
    * A multicasting observable that emits an event every time the validation `status` of the control
@@ -546,7 +554,7 @@ export abstract class AbstractControl {
     this._updateValue();
 
     if (opts.emitEvent !== false) {
-      (this.valueChanges as EventEmitter<any>).emit(this.value);
+      (this.valueChanges as EventEmitter<T|null>).emit(this.value);
       (this.statusChanges as EventEmitter<string>).emit(this.status);
     }
 
@@ -649,7 +657,7 @@ export abstract class AbstractControl {
     }
 
     if (opts.emitEvent !== false) {
-      (this.valueChanges as EventEmitter<any>).emit(this.value);
+      (this.valueChanges as EventEmitter<T|null>).emit(this.value);
       (this.statusChanges as EventEmitter<string>).emit(this.status);
     }
 
@@ -732,7 +740,7 @@ export abstract class AbstractControl {
    *
    * * `this.form.get(['person', 'name']);`
    */
-  get(path: Array<string|number>|string): AbstractControl|null {
+  get(path: Array<string|number>|string): AbstractControl<any>|null {
     return _find(this, path, '.');
   }
 
@@ -1020,7 +1028,7 @@ export abstract class AbstractControl {
  *
  * @publicApi
  */
-export class FormControl extends AbstractControl {
+export class FormControl<T = any> extends AbstractControl<T> {
   /** @internal */
   _onChange: Function[] = [];
 
@@ -1044,7 +1052,7 @@ export class FormControl extends AbstractControl {
    *
    */
   constructor(
-      formState: any = null,
+      formState: FormState<T> = null,
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(
@@ -1079,7 +1087,7 @@ export class FormControl extends AbstractControl {
    * event to update the model.
    *
    */
-  setValue(value: any, options: {
+  setValue(value: null|T, options: {
     onlySelf?: boolean,
     emitEvent?: boolean,
     emitModelToViewChange?: boolean,
@@ -1102,7 +1110,7 @@ export class FormControl extends AbstractControl {
    *
    * @see `setValue` for options
    */
-  patchValue(value: any, options: {
+  patchValue(value: null|T, options: {
     onlySelf?: boolean,
     emitEvent?: boolean,
     emitModelToViewChange?: boolean,
@@ -1129,7 +1137,8 @@ export class FormControl extends AbstractControl {
    * When false, no events are emitted.
    *
    */
-  reset(formState: any = null, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  reset(formState: FormState<T> = null, options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     this._applyFormState(formState);
     this.markAsPristine(options);
     this.markAsUntouched(options);
@@ -1284,7 +1293,22 @@ export class FormControl extends AbstractControl {
  *
  * @publicApi
  */
-export class FormGroup extends AbstractControl {
+export class FormGroup<T extends object = any> extends AbstractControl<T> {
+  /**
+   * The current value of the control.
+   *
+   * * For an enabled `FormGroup`, the values of enabled controls as an object
+   * with a key-value pair for each member of the group.
+   * * For a disabled `FormGroup`, the values of all controls as an object
+   * with a key-value pair for each member of the group.
+   */
+  public readonly value: T|null = null;
+  /**
+   * A multicasting observable that emits an event every time the value of the control changes, in
+   * the UI or programmatically. It also emits an event each time you call enable() or disable()
+   * without passing along {emitEvent: false} as a function argument.
+   */
+  public readonly valueChanges!: Observable<T>;
   /**
    * Creates a new `FormGroup` instance.
    *
@@ -1299,7 +1323,7 @@ export class FormGroup extends AbstractControl {
    *
    */
   constructor(
-      public controls: {[key: string]: AbstractControl},
+      public controls: {[key in keyof T]: AbstractControl<T[key]>},
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(
@@ -1320,7 +1344,7 @@ export class FormGroup extends AbstractControl {
    * @param name The control name to register in the collection
    * @param control Provides the control for the given name
    */
-  registerControl(name: string, control: AbstractControl): AbstractControl {
+  registerControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): AbstractControl {
     if (this.controls[name]) return this.controls[name];
     this.controls[name] = control;
     control.setParent(this);
@@ -1336,7 +1360,7 @@ export class FormGroup extends AbstractControl {
    * @param name The control name to add to the collection
    * @param control Provides the control for the given name
    */
-  addControl(name: string, control: AbstractControl): void {
+  addControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): void {
     this.registerControl(name, control);
     this.updateValueAndValidity();
     this._onCollectionChange();
@@ -1347,7 +1371,7 @@ export class FormGroup extends AbstractControl {
    *
    * @param name The control name to remove from the collection
    */
-  removeControl(name: string): void {
+  removeControl(name: keyof T): void {
     if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
     delete (this.controls[name]);
     this.updateValueAndValidity();
@@ -1360,7 +1384,7 @@ export class FormGroup extends AbstractControl {
    * @param name The control name to replace in the collection
    * @param control Provides the control for the given name
    */
-  setControl(name: string, control: AbstractControl): void {
+  setControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): void {
     if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
     delete (this.controls[name]);
     if (control) this.registerControl(name, control);
@@ -1378,7 +1402,7 @@ export class FormGroup extends AbstractControl {
    *
    * @returns false for disabled controls, true otherwise.
    */
-  contains(controlName: string): boolean {
+  contains(controlName: keyof T): boolean {
     return this.controls.hasOwnProperty(controlName) && this.controls[controlName].enabled;
   }
 
@@ -1417,10 +1441,10 @@ export class FormGroup extends AbstractControl {
    * observables emit events with the latest status and value when the control value is updated.
    * When false, no events are emitted.
    */
-  setValue(value: {[key: string]: any}, options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+  setValue<K extends keyof T>(value: T, options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
       void {
     this._checkAllValuesPresent(value);
-    Object.keys(value).forEach(name => {
+    (Object.keys(value) as K[]).forEach((name) => {
       this._throwIfControlMissing(name);
       this.controls[name].setValue(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
@@ -1460,9 +1484,9 @@ export class FormGroup extends AbstractControl {
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
-  patchValue(value: {[key: string]: any}, options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
-    Object.keys(value).forEach(name => {
+  patchValue<K extends keyof T>(
+      value: Partial<T>, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    (Object.keys(value) as K[]).forEach(name => {
       if (this.controls[name]) {
         this.controls[name].patchValue(value[name], {onlySelf: true, emitEvent: options.emitEvent});
       }
@@ -1527,8 +1551,8 @@ export class FormGroup extends AbstractControl {
    * console.log(this.form.get('first').status);  // 'DISABLED'
    * ```
    */
-  reset(value: any = {}, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    this._forEachChild((control: AbstractControl, name: string) => {
+  reset(value: T = {} as T, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    this._forEachChild((control: AbstractControl<T>, name: keyof T) => {
       control.reset(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
     this._updatePristine(options);
@@ -1543,9 +1567,9 @@ export class FormGroup extends AbstractControl {
    * The `value` property is the best way to get the value of the group, because
    * it excludes disabled controls in the `FormGroup`.
    */
-  getRawValue(): any {
+  getRawValue(): T {
     return this._reduceChildren(
-        {}, (acc: {[k: string]: AbstractControl}, control: AbstractControl, name: string) => {
+        {}, (acc: {[k: string]: AbstractControl<T>}, control: AbstractControl<T>, name: string) => {
           acc[name] = control instanceof FormControl ? control.value : (<any>control).getRawValue();
           return acc;
         });
@@ -1561,7 +1585,7 @@ export class FormGroup extends AbstractControl {
   }
 
   /** @internal */
-  _throwIfControlMissing(name: string): void {
+  _throwIfControlMissing(name: keyof T): void {
     if (!Object.keys(this.controls).length) {
       throw new Error(`
         There are no form controls registered with this group yet.  If you're using ngModel,
@@ -1574,8 +1598,8 @@ export class FormGroup extends AbstractControl {
   }
 
   /** @internal */
-  _forEachChild(cb: (v: any, k: string) => void): void {
-    Object.keys(this.controls).forEach(k => cb(this.controls[k], k));
+  _forEachChild(cb: (v: any, k: keyof T) => void): void {
+    (Object.keys(this.controls) as (keyof T)[]).forEach(k => cb(this.controls[k], k));
   }
 
   /** @internal */
@@ -1594,7 +1618,7 @@ export class FormGroup extends AbstractControl {
   /** @internal */
   _anyControls(condition: Function): boolean {
     let res = false;
-    this._forEachChild((control: AbstractControl, name: string) => {
+    this._forEachChild((control: AbstractControl<T>, name: keyof T) => {
       res = res || (this.contains(name) && condition(control));
     });
     return res;
@@ -1614,7 +1638,7 @@ export class FormGroup extends AbstractControl {
   /** @internal */
   _reduceChildren(initValue: any, fn: Function) {
     let res = initValue;
-    this._forEachChild((control: AbstractControl, name: string) => {
+    this._forEachChild((control: AbstractControl<T>, name: keyof T) => {
       res = fn(res, control, name);
     });
     return res;
@@ -1622,7 +1646,7 @@ export class FormGroup extends AbstractControl {
 
   /** @internal */
   _allControlsDisabled(): boolean {
-    for (const controlName of Object.keys(this.controls)) {
+    for (const controlName of Object.keys(this.controls) as (keyof T)[]) {
       if (this.controls[controlName].enabled) {
         return false;
       }
@@ -1632,7 +1656,7 @@ export class FormGroup extends AbstractControl {
 
   /** @internal */
   _checkAllValuesPresent(value: any): void {
-    this._forEachChild((control: AbstractControl, name: string) => {
+    this._forEachChild((control: AbstractControl<T>, name: keyof T) => {
       if (value[name] === undefined) {
         throw new Error(`Must supply a value for form control with name: '${name}'.`);
       }
@@ -1704,7 +1728,18 @@ export class FormGroup extends AbstractControl {
  *
  * @publicApi
  */
-export class FormArray extends AbstractControl {
+export class FormArray<Item = any> extends AbstractControl<Item[]> {
+  /**
+   * The current value of enabled controls.
+   */
+  public readonly value: Item[]|null = null;
+  /**
+   * A multicasting observable that emits an event every time the value of the control changes, in
+   * the UI or programmatically. It also emits an event each time you call enable() or disable()
+   * without passing along {emitEvent: false} as a function argument.
+   */
+  // TODO(issue/24571): remove '!'.
+  public readonly valueChanges!: Observable<Item[]>;
   /**
    * Creates a new `FormArray` instance.
    *
@@ -1719,7 +1754,7 @@ export class FormArray extends AbstractControl {
    *
    */
   constructor(
-      public controls: AbstractControl[],
+      public controls: AbstractControl<Item>[],
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(
@@ -1736,7 +1771,7 @@ export class FormArray extends AbstractControl {
    *
    * @param index Index in the array to retrieve the control
    */
-  at(index: number): AbstractControl {
+  at(index: number): AbstractControl<Item> {
     return this.controls[index];
   }
 
@@ -1745,7 +1780,7 @@ export class FormArray extends AbstractControl {
    *
    * @param control Form control to be inserted
    */
-  push(control: AbstractControl): void {
+  push(control: AbstractControl<Item>): void {
     this.controls.push(control);
     this._registerControl(control);
     this.updateValueAndValidity();
@@ -1758,7 +1793,7 @@ export class FormArray extends AbstractControl {
    * @param index Index in the array to insert the control
    * @param control Form control to be inserted
    */
-  insert(index: number, control: AbstractControl): void {
+  insert(index: number, control: AbstractControl<Item>): void {
     this.controls.splice(index, 0, control);
 
     this._registerControl(control);
@@ -1782,7 +1817,7 @@ export class FormArray extends AbstractControl {
    * @param index Index in the array to replace the control
    * @param control The `AbstractControl` control to replace the existing control
    */
-  setControl(index: number, control: AbstractControl): void {
+  setControl(index: number, control: AbstractControl<Item>): void {
     if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
     this.controls.splice(index, 1);
 
@@ -1837,7 +1872,7 @@ export class FormArray extends AbstractControl {
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
-  setValue(value: any[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  setValue(value: Item[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._checkAllValuesPresent(value);
     value.forEach((newValue: any, index: number) => {
       this._throwIfControlMissing(index);
@@ -1880,7 +1915,7 @@ export class FormArray extends AbstractControl {
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
-  patchValue(value: any[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  patchValue(value: Item[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     value.forEach((newValue: any, index: number) => {
       if (this.at(index)) {
         this.at(index).patchValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
@@ -1935,7 +1970,8 @@ export class FormArray extends AbstractControl {
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
-  reset(value: any = [], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  reset(value: FormState<Item>[] = [], options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     this._forEachChild((control: AbstractControl, index: number) => {
       control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
     });
@@ -1950,8 +1986,8 @@ export class FormArray extends AbstractControl {
    * Reports all values regardless of disabled status.
    * For enabled controls only, the `value` property is the best way to get the value of the array.
    */
-  getRawValue(): any[] {
-    return this.controls.map((control: AbstractControl) => {
+  getRawValue(): Item[] {
+    return this.controls.map((control: AbstractControl<Item>) => {
       return control instanceof FormControl ? control.value : (<any>control).getRawValue();
     });
   }
@@ -1988,14 +2024,15 @@ export class FormArray extends AbstractControl {
    */
   clear(): void {
     if (this.controls.length < 1) return;
-    this._forEachChild((control: AbstractControl) => control._registerOnCollectionChange(() => {}));
+    this._forEachChild(
+        (control: AbstractControl<Item>) => control._registerOnCollectionChange(() => {}));
     this.controls.splice(0);
     this.updateValueAndValidity();
   }
 
   /** @internal */
   _syncPendingControls(): boolean {
-    let subtreeUpdated = this.controls.reduce((updated: boolean, child: AbstractControl) => {
+    let subtreeUpdated = this.controls.reduce((updated: boolean, child: AbstractControl<Item>) => {
       return child._syncPendingControls() ? true : updated;
     }, false);
     if (subtreeUpdated) this.updateValueAndValidity({onlySelf: true});
@@ -2017,7 +2054,7 @@ export class FormArray extends AbstractControl {
 
   /** @internal */
   _forEachChild(cb: Function): void {
-    this.controls.forEach((control: AbstractControl, index: number) => {
+    this.controls.forEach((control: AbstractControl<Item>, index: number) => {
       cb(control, index);
     });
   }
@@ -2031,17 +2068,18 @@ export class FormArray extends AbstractControl {
 
   /** @internal */
   _anyControls(condition: Function): boolean {
-    return this.controls.some((control: AbstractControl) => control.enabled && condition(control));
+    return this.controls.some(
+        (control: AbstractControl<Item>) => control.enabled && condition(control));
   }
 
   /** @internal */
   _setUpControls(): void {
-    this._forEachChild((control: AbstractControl) => this._registerControl(control));
+    this._forEachChild((control: AbstractControl<Item>) => this._registerControl(control));
   }
 
   /** @internal */
   _checkAllValuesPresent(value: any): void {
-    this._forEachChild((control: AbstractControl, i: number) => {
+    this._forEachChild((control: AbstractControl<Item>, i: number) => {
       if (value[i] === undefined) {
         throw new Error(`Must supply a value for form control at index: ${i}.`);
       }

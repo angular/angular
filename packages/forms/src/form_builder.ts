@@ -9,7 +9,7 @@
 import {Injectable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
-import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup, FormHooks} from './model';
+import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup, FormHooks, FormState} from './model';
 
 function isAbstractControlOptions(options: AbstractControlOptions|
                                   {[key: string]: any}): options is AbstractControlOptions {
@@ -17,6 +17,18 @@ function isAbstractControlOptions(options: AbstractControlOptions|
       (<AbstractControlOptions>options).validators !== undefined ||
       (<AbstractControlOptions>options).updateOn !== undefined;
 }
+
+/**
+ * @publicApi
+ */
+export type FormControlConfig<T> =
+  | AbstractControl<T>
+  | FormState<T>
+  | [
+      FormState<T>,
+      (ValidatorFn | ValidatorFn[] | AbstractControlOptions)?,
+      (AsyncValidatorFn | AsyncValidatorFn[])?
+    ];
 
 /**
  * @description
@@ -53,8 +65,8 @@ export class FormBuilder {
    * * `asyncValidator`: A single async validator or array of async validator functions
    *
    */
-  group(
-      controlsConfig: {[key: string]: any},
+  group<T extends object = any>(
+      controlsConfig: {[key in keyof T]: FormControlConfig<T[key]>},
       options: AbstractControlOptions|{[key: string]: any}|null = null): FormGroup {
     const controls = this._reduceControls(controlsConfig);
 
@@ -101,8 +113,9 @@ export class FormBuilder {
    * <code-example path="forms/ts/formBuilder/form_builder_example.ts" region="disabled-control">
    * </code-example>
    */
-  control(
-      formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+  control<T = any>(
+      formState: FormState<T>,
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl {
     return new FormControl(formState, validatorOrOpts, asyncValidator);
   }
@@ -121,12 +134,12 @@ export class FormBuilder {
    * @param asyncValidator A single async validator or array of async validator
    * functions.
    */
-  array(
-      controlsConfig: any[],
+  array<Item = any>(
+      controlsConfig: FormControlConfig<Item>[],
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray {
     const controls = controlsConfig.map(c => this._createControl(c));
-    return new FormArray(controls, validatorOrOpts, asyncValidator);
+    return new FormArray<Item>(controls, validatorOrOpts, asyncValidator);
   }
 
   /** @internal */
