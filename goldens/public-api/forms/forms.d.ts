@@ -29,7 +29,7 @@ export declare abstract class AbstractControl<T = any> {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
-    get(path: Array<string | number> | string): AbstractControl<any> | null;
+    get<T = any>(path: Array<string | number> | string): AbstractControl<T> | null;
     getError(errorCode: string, path?: Array<string | number> | string): any;
     hasError(errorCode: string, path?: Array<string | number> | string): boolean;
     markAllAsTouched(): void;
@@ -168,7 +168,7 @@ export declare interface Form {
 export declare class FormArray<Item = any> extends AbstractControl<Item[]> {
     controls: AbstractControl<Item>[];
     get length(): number;
-    readonly value: Item[] | null;
+    readonly value: Item[];
     readonly valueChanges: Observable<Item[]>;
     constructor(controls: AbstractControl<Item>[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     at(index: number): AbstractControl<Item>;
@@ -181,7 +181,10 @@ export declare class FormArray<Item = any> extends AbstractControl<Item[]> {
     }): void;
     push(control: AbstractControl<Item>): void;
     removeAt(index: number): void;
-    reset(value?: FormState<Item>[], options?: {
+    reset(value?: (Item | {
+        value: Item;
+        disabled: boolean;
+    })[], options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
@@ -273,7 +276,7 @@ export declare class FormGroup<T extends object = any> extends AbstractControl<T
     controls: {
         [key in keyof T]: AbstractControl<T[key]>;
     };
-    readonly value: T | null;
+    readonly value: T;
     readonly valueChanges: Observable<T>;
     constructor(controls: {
         [key in keyof T]: AbstractControl<T[key]>;
