@@ -850,7 +850,7 @@ export abstract class AbstractControl<T = any> {
    *
    * * `this.form.get(['items', 0, 'price']);`
    */
-  get(path: Array<string|number>|string): AbstractControl<any>|null {
+  get<T = any>(path: Array<string|number>|string): AbstractControl<T>|null {
     return _find(this, path, '.');
   }
 
@@ -1424,7 +1424,7 @@ export class FormGroup<T extends object = any> extends AbstractControl<T> {
    * * For a disabled `FormGroup`, the values of all controls as an object
    * with a key-value pair for each member of the group.
    */
-  public readonly value: T|null = null;
+  public readonly value: T = {} as T;
   /**
    * A multicasting observable that emits an event every time the value of the control changes, in
    * the UI or programmatically. It also emits an event each time you call enable() or disable()
@@ -1703,7 +1703,7 @@ export class FormGroup<T extends object = any> extends AbstractControl<T> {
    * ```
    */
   reset(value: T = {} as T, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    this._forEachChild((control: AbstractControl<T>, name: keyof T) => {
+    this._forEachChild(<K extends keyof T>(control: AbstractControl<T[K]>, name: K) => {
       control.reset(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
     this._updatePristine(options);
@@ -1889,7 +1889,7 @@ export class FormArray<Item = any> extends AbstractControl<Item[]> {
   /**
    * The current value of enabled controls.
    */
-  public readonly value: Item[]|null = null;
+  public readonly value: Item[] = [];
   /**
    * A multicasting observable that emits an event every time the value of the control changes, in
    * the UI or programmatically. It also emits an event each time you call enable() or disable()
@@ -2157,8 +2157,12 @@ export class FormArray<Item = any> extends AbstractControl<Item[]> {
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
-  reset(value: FormState<Item>[] = [], options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  reset(
+      value: (Item|{
+        value: Item;
+        disabled: boolean
+      })[] = [],
+      options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._forEachChild((control: AbstractControl, index: number) => {
       control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
     });

@@ -5,7 +5,7 @@ export declare abstract class AbstractControl<T = any> {
   get enabled(): boolean;
   readonly errors: ValidationErrors|null;
   get invalid(): boolean;
-  get parent(): FormGroup|FormArray|null;
+  get parent(): FormGroup|FormArray;
   get pending(): boolean;
   readonly pristine: boolean;
   get root(): AbstractControl;
@@ -23,7 +23,7 @@ export declare abstract class AbstractControl<T = any> {
   clearValidators(): void;
   disable(opts?: {onlySelf?: boolean; emitEvent?: boolean;}): void;
   enable(opts?: {onlySelf?: boolean; emitEvent?: boolean;}): void;
-  get(path: Array<string|number>|string): AbstractControl<any>|null;
+  get<T = any>(path: Array<string|number>|string): AbstractControl<T>|null;
   getError(errorCode: string, path?: Array<string|number>|string): any;
   hasError(errorCode: string, path?: Array<string|number>|string): boolean;
   markAllAsTouched(): void;
@@ -149,7 +149,7 @@ export declare interface Form {
 export declare class FormArray<Item = any> extends AbstractControl<Item[]> {
   controls: AbstractControl<Item>[];
   get length(): number;
-  readonly value: Item[]|null;
+  readonly value: Item[];
   readonly valueChanges: Observable<Item[]>;
   constructor(
       controls: AbstractControl<Item>[],
@@ -162,7 +162,12 @@ export declare class FormArray<Item = any> extends AbstractControl<Item[]> {
   patchValue(value: Item[], options?: {onlySelf?: boolean; emitEvent?: boolean;}): void;
   push(control: AbstractControl<Item>): void;
   removeAt(index: number): void;
-  reset(value?: FormState<Item>[], options?: {onlySelf?: boolean; emitEvent?: boolean;}): void;
+  reset(
+      value?: (Item|{
+        value: Item;
+        disabled: boolean;
+      })[],
+      options?: {onlySelf?: boolean; emitEvent?: boolean;}): void;
   setControl(index: number, control: AbstractControl<Item>): void;
   setValue(value: Item[], options?: {onlySelf?: boolean; emitEvent?: boolean;}): void;
 }
@@ -255,7 +260,7 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
 
 export declare class FormGroup<T extends object = any> extends AbstractControl<T> {
   controls: {[key in keyof T]: AbstractControl<T[key]>;};
-  readonly value: T|null;
+  readonly value: T;
   readonly valueChanges: Observable<T>;
   constructor(
       controls: {[key in keyof T]: AbstractControl<T[key]>;},
@@ -273,8 +278,7 @@ export declare class FormGroup<T extends object = any> extends AbstractControl<T
   setValue<K extends keyof T>(value: T, options?: {onlySelf?: boolean; emitEvent?: boolean;}): void;
 }
 
-export declare class FormGroupDirective extends ControlContainer implements Form, OnChanges,
-                                                                            OnDestroy {
+export declare class FormGroupDirective extends ControlContainer implements Form, OnChanges {
   get control(): FormGroup;
   directives: FormControlName[];
   form: FormGroup;
@@ -282,8 +286,7 @@ export declare class FormGroupDirective extends ControlContainer implements Form
   ngSubmit: EventEmitter<any>;
   get path(): string[];
   readonly submitted: boolean;
-  constructor(
-      validators: (Validator|ValidatorFn)[], asyncValidators: (AsyncValidator|AsyncValidatorFn)[]);
+  constructor(_validators: any[], _asyncValidators: any[]);
   addControl(dir: FormControlName): FormControl;
   addFormArray(dir: FormArrayName): void;
   addFormGroup(dir: FormGroupName): void;
@@ -291,7 +294,6 @@ export declare class FormGroupDirective extends ControlContainer implements Form
   getFormArray(dir: FormArrayName): FormArray;
   getFormGroup(dir: FormGroupName): FormGroup;
   ngOnChanges(changes: SimpleChanges): void;
-  ngOnDestroy(): void;
   onReset(): void;
   onSubmit($event: Event): boolean;
   removeControl(dir: FormControlName): void;
