@@ -137,6 +137,7 @@ describe('config', () => {
 
     it('should throw when pathMatch is invalid', () => {
       expect(() => {
+        // @ts-expect-error
         validateConfig([{path: 'a', pathMatch: 'invalid', component: ComponentB}]);
       })
           .toThrowError(
