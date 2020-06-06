@@ -60,7 +60,7 @@ describe('FormControl', () => {
     });
 
     it('should not treat objects as boxed values if they have more than two props', () => {
-      const c = new FormControl({value: '', disabled: true, test: 'test'}, null!, null!);
+      const c = new FormControl({value: '', disabled: true, test: 'test'} as any, null!, null!);
       expect(c.value).toEqual({value: '', disabled: true, test: 'test'});
       expect(c.disabled).toBe(false);
     });
@@ -176,7 +176,7 @@ describe('FormControl', () => {
     });
 
     it('should support single validator from options obj', () => {
-      const c = new FormControl(null, {validators: Validators.required});
+      const c = new FormControl<string>(null, {validators: Validators.required});
       expect(c.valid).toEqual(false);
       expect(c.errors).toEqual({required: true});
 
@@ -185,7 +185,8 @@ describe('FormControl', () => {
     });
 
     it('should support multiple validators from options obj', () => {
-      const c = new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]});
+      const c = new FormControl<string>(
+          null, {validators: [Validators.required, Validators.minLength(3)]});
       expect(c.valid).toEqual(false);
       expect(c.errors).toEqual({required: true});
 
@@ -213,7 +214,7 @@ describe('FormControl', () => {
     });
 
     it('should set single validator', () => {
-      const c = new FormControl(null);
+      const c = new FormControl<string>(null);
       expect(c.valid).toEqual(true);
 
       c.setValidators(Validators.required);
@@ -1056,7 +1057,7 @@ describe('FormControl', () => {
     it('should update the parent group value when child control status changes', () => {
       const c = new FormControl('one');
       const c2 = new FormControl('two');
-      const g = new FormGroup({'one': c, 'two': c2});
+      const g = new FormGroup<{one?: string, two?: string}>({'one': c, 'two': c2});
       expect(g.value).toEqual({'one': 'one', 'two': 'two'});
 
       c.disable();
@@ -1148,7 +1149,7 @@ describe('FormControl', () => {
     it('should ignore disabled controls when serializing value in a group', () => {
       const c = new FormControl('one');
       const c2 = new FormControl('two');
-      const g = new FormGroup({one: c, two: c2});
+      const g = new FormGroup<{one?: string, two?: string}>({one: c, two: c2});
       expect(g.value).toEqual({one: 'one', two: 'two'});
 
       c.disable();

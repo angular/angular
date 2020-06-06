@@ -70,7 +70,7 @@ describe('FormGroup', () => {
       const formGroup: FormGroup = new FormGroup({
         'c1': new FormControl('v1'),
         'group': new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
-        'array': new FormArray([
+        'array': new FormArray<string|{c4: string}>([
           new FormControl('v4'), new FormControl('v5'), new FormGroup({'c4': new FormControl('v4')})
         ])
       });
@@ -133,7 +133,7 @@ describe('FormGroup', () => {
     });
 
     it('should update value and validity when control is added', () => {
-      const g = new FormGroup({'one': new FormControl('1')});
+      const g = new FormGroup<{one?: string, two?: string}>({'one': new FormControl('1')});
       expect(g.value).toEqual({'one': '1'});
       expect(g.valid).toBe(true);
 
@@ -144,7 +144,7 @@ describe('FormGroup', () => {
     });
 
     it('should update value and validity when control is removed', () => {
-      const g = new FormGroup(
+      const g = new FormGroup<{one?: string, two?: string}>(
           {'one': new FormControl('1'), 'two': new FormControl('2', Validators.minLength(10))});
       expect(g.value).toEqual({'one': '1', 'two': '2'});
       expect(g.valid).toBe(false);
@@ -926,7 +926,7 @@ describe('FormGroup', () => {
     }
 
     it('should run a single validator when the value changes', () => {
-      const c = new FormControl(null);
+      const c = new FormControl<string>(null);
       const g = new FormGroup({'one': c}, simpleValidator);
 
       c.setValue('correct');
@@ -1633,7 +1633,7 @@ describe('FormGroup', () => {
     });
 
     it('should ignore disabled controls when serializing value', () => {
-      const g = new FormGroup(
+      const g = new FormGroup<{nested?: {one: string}, two?: string}>(
           {nested: new FormGroup({one: new FormControl('one')}), two: new FormControl('two')});
       expect(g.value).toEqual({'nested': {'one': 'one'}, 'two': 'two'});
 
@@ -1645,7 +1645,7 @@ describe('FormGroup', () => {
     });
 
     it('should update its value when disabled with disabled children', () => {
-      const g = new FormGroup(
+      const g = new FormGroup<{nested?: {one: string, two?: string}}>(
           {nested: new FormGroup({one: new FormControl('one'), two: new FormControl('two')})});
 
       g.get('nested.two')!.disable();
@@ -1659,7 +1659,7 @@ describe('FormGroup', () => {
     });
 
     it('should update its value when enabled with disabled children', () => {
-      const g = new FormGroup(
+      const g = new FormGroup<{nested?: {one: string, two?: string}}>(
           {nested: new FormGroup({one: new FormControl('one'), two: new FormControl('two')})});
 
       g.get('nested.two')!.disable();
@@ -1751,7 +1751,8 @@ describe('FormGroup', () => {
       });
 
       it('should re-populate group errors when enabled from a child', () => {
-        const g = new FormGroup({'one': new FormControl()}, () => ({'expected': true}));
+        const g = new FormGroup<{one: string, two?: string}>(
+            {'one': new FormControl()}, () => ({'expected': true}));
         g.disable();
         expect(g.errors).toEqual(null);
 
@@ -1773,7 +1774,8 @@ describe('FormGroup', () => {
          }));
 
       it('should re-populate async group errors when enabled from a child', fakeAsync(() => {
-           const g = new FormGroup({'one': new FormControl()}, null!, asyncValidator('expected'));
+           const g = new FormGroup<{one: string, two?: string}>(
+               {'one': new FormControl()}, null!, asyncValidator('expected'));
            tick();
            expect(g.errors).toEqual({'async': true});
 
