@@ -473,7 +473,7 @@ export class Router {
                      }),
                      switchMap(t => {
                        const isStateChanged = this.lastSuccessfulNavigation ?
-                           t.extras.state !== this.lastSuccessfulNavigation.extras.state : false;
+                           JSON.stringify(t.extras.state) !== JSON.stringify(this.lastSuccessfulNavigation.extras.state) : false;
                        const urlTransition = !this.navigated ||
                            t.extractedUrl.toString() !== this.browserUrlTree.toString() || isStateChanged;
                        const processCurrentUrl =
