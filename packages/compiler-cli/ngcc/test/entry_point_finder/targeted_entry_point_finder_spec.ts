@@ -14,7 +14,7 @@ import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {TargetedEntryPointFinder} from '../../src/entry_point_finder/targeted_entry_point_finder';
 import {NGCC_VERSION} from '../../src/packages/build_marker';
-import {NgccConfiguration} from '../../src/packages/configuration';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {PathMappings} from '../../src/path_mappings';
 import {MockLogger} from '../helpers/mock_logger';
@@ -116,12 +116,13 @@ runInEachFileSystem(() => {
             fs, config, logger, resolver, basePath, undefined, targetPath);
 
         loadTestFiles(createPackage(basePath, 'some-package'));
-        spyOn(config, 'getPackageConfig').and.returnValue({
-          versionRange: '*',
-          entryPoints: {
-            [_Abs('/project/node_modules/some-package')]: {ignore: true},
-          },
-        });
+        spyOn(config, 'getPackageConfig')
+            .and.returnValue(
+                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                  entryPoints: {
+                    '.': {ignore: true},
+                  },
+                }));
 
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
@@ -416,12 +417,13 @@ runInEachFileSystem(() => {
             fs, config, logger, resolver, basePath, undefined, targetPath);
 
         loadTestFiles(createPackage(basePath, 'some-package'));
-        spyOn(config, 'getPackageConfig').and.returnValue({
-          versionRange: '*',
-          entryPoints: {
-            [_Abs('/project/node_modules/some-package')]: {ignore: true},
-          },
-        });
+        spyOn(config, 'getPackageConfig')
+            .and.returnValue(
+                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                  entryPoints: {
+                    '.': {ignore: true},
+                  },
+                }));
 
         expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
       });

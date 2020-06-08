@@ -12,7 +12,7 @@ import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {EntryPointWithDependencies} from '../../src/dependencies/dependency_host';
 import {NGCC_VERSION} from '../../src/packages/build_marker';
-import {NgccConfiguration} from '../../src/packages/configuration';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
 import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {MockLogger} from '../helpers/mock_logger';
 
@@ -223,12 +223,13 @@ runInEachFileSystem(() => {
         fs.writeFile(
             _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
 
-        spyOn(config, 'getPackageConfig').and.returnValue({
-          versionRange: '*',
-          entryPoints: {
-            [_Abs('/project/node_modules/some_package/ignored_entry_point')]: {ignore: true},
-          },
-        });
+        spyOn(config, 'getPackageConfig')
+            .and.returnValue(
+                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some_package'), {
+                  entryPoints: {
+                    './ignored_entry_point': {ignore: true},
+                  },
+                }));
 
         const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
         expect(entryPoints).toEqual(null);
