@@ -5,18 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, join, PathSegment, relative, relativeFrom} from '../../../src/ngtsc/file_system';
-import {EntryPointWithDependencies} from '../dependencies/dependency_host';
+import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
 import {hasBeenProcessed} from '../packages/build_marker';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../packages/entry_point';
+import {EntryPointJsonProperty} from '../packages/entry_point';
 import {PathMappings} from '../path_mappings';
 
-import {EntryPointFinder} from './interface';
 import {TracingEntryPointFinder} from './tracing_entry_point_finder';
-import {getBasePaths} from './utils';
 
 /**
  * An EntryPointFinder that starts from a target entry-point and only finds

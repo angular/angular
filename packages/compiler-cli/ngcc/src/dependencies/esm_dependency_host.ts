@@ -263,7 +263,7 @@ export class EsmDependencyHost extends DependencyHostBase {
  * in this file, true otherwise.
  */
 export function hasImportOrReexportStatements(source: string): boolean {
-  return /(?:import|export)[\s\S]+?(["'])(?:(?:\\\1|.)*?)\1/.test(source);
+  return /(?:import|export)[\s\S]+?(["'])(?:\\\1|.)+?\1/.test(source);
 }
 
 
