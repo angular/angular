@@ -29,7 +29,7 @@ import {isNavigationCancelingError, navigationCancelingError, Params} from './sh
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, createEmptyUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
-import {isUrlTree} from './utils/type_guards';
+import {isString, isUrlTree} from './utils/type_guards';
 
 
 
@@ -249,7 +249,7 @@ export type NavigationTransition = {
   currentRouterState: RouterState,
   targetRouterState: RouterState|null,
   guards: Checks,
-  guardsResult: boolean|UrlTree|null,
+  guardsResult: boolean|UrlTree|string|null,
 };
 
 /**
@@ -602,9 +602,11 @@ export class Router {
 
                      checkGuards(this.ngModule.injector, (evt: Event) => this.triggerEvent(evt)),
                      tap(t => {
-                       if (isUrlTree(t.guardsResult)) {
-                         const error: Error&{url?: UrlTree} = navigationCancelingError(
-                             `Redirecting to "${this.serializeUrl(t.guardsResult)}"`);
+                       if (isUrlTree(t.guardsResult) || isString(t.guardsResult)) {
+                         const url = isUrlTree(t.guardsResult) ? this.serializeUrl(t.guardsResult) :
+                                                                 t.guardsResult;
+                         const error: Error&{url?: UrlTree | string} =
+                             navigationCancelingError(`Redirecting to "${url}"`);
                          error.url = t.guardsResult;
                          throw error;
                        }
@@ -760,7 +762,7 @@ export class Router {
                        /* This error type is issued during Redirect, and is handled as a
                         * cancellation rather than an error. */
                        if (isNavigationCancelingError(e)) {
-                         const redirecting = isUrlTree(e.url);
+                         const redirecting = isUrlTree(e.url) || isString(e.url);
                          if (!redirecting) {
                            // Set property only if we're not redirecting. If we landed on a page and
                            // redirect to `/` route, the new navigation is going to see the `/`
@@ -784,8 +786,9 @@ export class Router {
                            // processing, there can be multiple navigations to the same
                            // URL.
                            setTimeout(() => {
+                             const urlTree = isUrlTree(e.url) ? e.url : this.parseUrl(e.url);
                              const mergedTree =
-                                 this.urlHandlingStrategy.merge(e.url, this.rawUrlTree);
+                                 this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
                              const extras = {
                                skipLocationChange: t.extras.skipLocationChange,
                                replaceUrl: this.urlUpdateStrategy === 'eager'

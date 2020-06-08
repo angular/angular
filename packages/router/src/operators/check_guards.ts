@@ -53,7 +53,7 @@ function runCanDeactivateChecks(
               runCanDeactivate(check.component, check.route, currRSS, futureRSS, moduleInjector)),
       first(result => {
         return result !== true;
-      }, true as boolean | UrlTree));
+      }, true as boolean | UrlTree | string));
 }
 
 function runCanActivateChecks(
@@ -69,11 +69,11 @@ function runCanActivateChecks(
                ])
             .pipe(concatAll(), first(result => {
                     return result !== true;
-                  }, true as boolean | UrlTree));
+                  }, true as boolean | UrlTree | string));
       }),
       first(result => {
         return result !== true;
-      }, true as boolean | UrlTree));
+      }, true as boolean | UrlTree | string));
 }
 
 /**
@@ -112,7 +112,7 @@ function fireChildActivationStart(
 
 function runCanActivate(
     futureRSS: RouterStateSnapshot, futureARS: ActivatedRouteSnapshot,
-    moduleInjector: Injector): Observable<boolean|UrlTree> {
+    moduleInjector: Injector): Observable<boolean|UrlTree|string> {
   const canActivate = futureARS.routeConfig ? futureARS.routeConfig.canActivate : null;
   if (!canActivate || canActivate.length === 0) return of(true);
 
@@ -135,7 +135,7 @@ function runCanActivate(
 
 function runCanActivateChild(
     futureRSS: RouterStateSnapshot, path: ActivatedRouteSnapshot[],
-    moduleInjector: Injector): Observable<boolean|UrlTree> {
+    moduleInjector: Injector): Observable<boolean|UrlTree|string> {
   const futureARS = path[path.length - 1];
 
   const canActivateChildGuards = path.slice(0, path.length - 1)
@@ -165,7 +165,7 @@ function runCanActivateChild(
 
 function runCanDeactivate(
     component: Object|null, currARS: ActivatedRouteSnapshot, currRSS: RouterStateSnapshot,
-    futureRSS: RouterStateSnapshot, moduleInjector: Injector): Observable<boolean|UrlTree> {
+    futureRSS: RouterStateSnapshot, moduleInjector: Injector): Observable<boolean|UrlTree|string> {
   const canDeactivate = currARS && currARS.routeConfig ? currARS.routeConfig.canDeactivate : null;
   if (!canDeactivate || canDeactivate.length === 0) return of(true);
   const canDeactivateObservables = canDeactivate.map((c: any) => {

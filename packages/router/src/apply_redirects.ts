@@ -16,7 +16,7 @@ import {RouterConfigLoader} from './router_config_loader';
 import {defaultUrlMatcher, navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {forEach, waitForMap, wrapIntoObservable} from './utils/collection';
-import {isCanLoad, isFunction, isUrlTree} from './utils/type_guards';
+import {isCanLoad, isFunction, isString, isUrlTree} from './utils/type_guards';
 
 class NoMatch {
   public segmentGroup: UrlSegmentGroup|null;
@@ -336,11 +336,12 @@ class ApplyRedirects {
 
     return obs.pipe(
         concatAll(),
-        tap((result: UrlTree|boolean) => {
-          if (!isUrlTree(result)) return;
+        tap((result: UrlTree|boolean|string) => {
+          if (!isUrlTree(result) && !isString(result)) return;
 
-          const error: Error&{url?: UrlTree} =
-              navigationCancelingError(`Redirecting to "${this.urlSerializer.serialize(result)}"`);
+          const url = isUrlTree(result) ? this.urlSerializer.serialize(result) : result;
+          const error: Error&{url?: UrlTree | string} =
+              navigationCancelingError(`Redirecting to "${url}"`);
           error.url = result;
           throw error;
         }),

@@ -30,6 +30,10 @@ export function isBoolean(v: any): v is boolean {
   return typeof v === 'boolean';
 }
 
+export function isString(v: any): v is string {
+  return typeof v === 'string';
+}
+
 export function isUrlTree(v: any): v is UrlTree {
   return v instanceof UrlTree;
 }

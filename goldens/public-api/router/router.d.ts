@@ -52,19 +52,19 @@ export declare class ActivationStart {
 }
 
 export declare interface CanActivate {
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree | string> | Promise<boolean | UrlTree | string> | boolean | UrlTree | string;
 }
 
 export declare interface CanActivateChild {
-    canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+    canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree | string> | Promise<boolean | UrlTree | string> | boolean | UrlTree | string;
 }
 
 export declare interface CanDeactivate<T> {
-    canDeactivate(component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+    canDeactivate(component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot): Observable<boolean | UrlTree | string> | Promise<boolean | UrlTree | string> | boolean | UrlTree | string;
 }
 
 export declare interface CanLoad {
-    canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+    canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree | string> | Promise<boolean | UrlTree | string> | boolean | UrlTree | string;
 }
 
 export declare class ChildActivationEnd {

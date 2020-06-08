@@ -715,7 +715,7 @@ function checkResolveData(
 
 function checkGuards(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any,
-    check: (result: boolean|UrlTree) => void): void {
+    check: (result: boolean|UrlTree|string) => void): void {
   // Since we only test the guards, we don't need to provide a full navigation
   // transition object with all properties set.
   of({guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts())} as

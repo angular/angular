@@ -10,13 +10,13 @@ import {combineLatest, Observable, OperatorFunction} from 'rxjs';
 import {filter, map, scan, startWith, switchMap, take} from 'rxjs/operators';
 
 import {UrlTree} from '../url_tree';
-import {isUrlTree} from '../utils/type_guards';
+import {isString, isUrlTree} from '../utils/type_guards';
 
 const INITIAL_VALUE = Symbol('INITIAL_VALUE');
-declare type INTERIM_VALUES = typeof INITIAL_VALUE | boolean | UrlTree;
+declare type INTERIM_VALUES = typeof INITIAL_VALUE | boolean | UrlTree | string;
 
 export function prioritizedGuardValue():
-    OperatorFunction<Observable<boolean|UrlTree>[], boolean|UrlTree> {
+    OperatorFunction<Observable<boolean|UrlTree|string>[], boolean|UrlTree|string> {
   return switchMap(obs => {
     return combineLatest(
                ...obs.map(o => o.pipe(take(1), startWith(INITIAL_VALUE as INTERIM_VALUES))))
@@ -39,7 +39,7 @@ export function prioritizedGuardValue():
                              // cancel navigation
                              if (val === false) return val;
 
-                             if (i === list.length - 1 || isUrlTree(val)) {
+                             if (i === list.length - 1 || isUrlTree(val) || isString(val)) {
                                return val;
                              }
                            }
@@ -49,7 +49,7 @@ export function prioritizedGuardValue():
                        },
                        INITIAL_VALUE),
                    filter(item => item !== INITIAL_VALUE),
-                   map(item => isUrlTree(item) ? item : item === true),  //
-                   take(1)) as Observable<boolean|UrlTree>;
+                   map(item => isUrlTree(item) || isString(item) ? item : item === true),
+                   take(1)) as Observable<boolean|UrlTree|string>;
   });
 }
