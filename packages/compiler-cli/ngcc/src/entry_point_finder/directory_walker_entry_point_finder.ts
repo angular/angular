@@ -10,7 +10,7 @@ import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
 import {NgccConfiguration} from '../packages/configuration';
-import {getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../packages/entry_point';
+import {getEntryPointInfo, IGNORED_ENTRY_POINT, INCOMPATIBLE_ENTRY_POINT, isEntryPoint, NO_ENTRY_POINT} from '../packages/entry_point';
 import {EntryPointManifest} from '../packages/entry_point_manifest';
 import {PathMappings} from '../path_mappings';
 import {NGCC_DIRECTORY} from '../writing/new_entry_point_file_writer';
@@ -79,7 +79,9 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
 
     const entryPoints: EntryPointWithDependencies[] = [];
     if (primaryEntryPoint !== NO_ENTRY_POINT) {
-      entryPoints.push(this.resolver.getEntryPointWithDependencies(primaryEntryPoint));
+      if (primaryEntryPoint !== IGNORED_ENTRY_POINT) {
+        entryPoints.push(this.resolver.getEntryPointWithDependencies(primaryEntryPoint));
+      }
       this.collectSecondaryEntryPoints(
           entryPoints, sourceDirectory, sourceDirectory, this.fs.readdir(sourceDirectory));
 
@@ -148,14 +150,12 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
       }
 
       // If the path is a JS file then strip its extension and see if we can match an
-      // entry-point.
+      // entry-point (even if it is an ignored one).
       const possibleEntryPointPath = isDirectory ? absolutePath : stripJsExtension(absolutePath);
-      let isEntryPoint = false;
       const subEntryPoint =
           getEntryPointInfo(this.fs, this.config, this.logger, packagePath, possibleEntryPointPath);
-      if (subEntryPoint !== NO_ENTRY_POINT && subEntryPoint !== INCOMPATIBLE_ENTRY_POINT) {
+      if (isEntryPoint(subEntryPoint)) {
         entryPoints.push(this.resolver.getEntryPointWithDependencies(subEntryPoint));
-        isEntryPoint = true;
       }
 
       if (!isDirectory) {
@@ -163,9 +163,11 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
         continue;
       }
 
-      // This directory may contain entry-points of its own.
+      // If not an entry-point itself, this directory may contain entry-points of its own.
+      const canContainEntryPoints =
+          subEntryPoint === NO_ENTRY_POINT || subEntryPoint === INCOMPATIBLE_ENTRY_POINT;
       const childPaths = this.fs.readdir(absolutePath);
-      if (!isEntryPoint &&
+      if (canContainEntryPoints &&
           childPaths.some(
               childPath => childPath.endsWith('.js') &&
                   this.fs.stat(this.fs.resolve(absolutePath, childPath)).isFile())) {

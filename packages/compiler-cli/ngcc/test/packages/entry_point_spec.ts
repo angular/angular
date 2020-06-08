@@ -10,7 +10,7 @@ import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat, getEntryPointInfo, IGNORED_ENTRY_POINT, INCOMPATIBLE_ENTRY_POINT, isEntryPoint, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
@@ -55,7 +55,7 @@ runInEachFileSystem(() => {
          });
        });
 
-    it('should return `NO_ENTRY_POINT` if configured to ignore the specified entry-point', () => {
+    it('should return `IGNORED_ENTRY_POINT` if configured to ignore the specified entry-point', () => {
       loadTestFiles([
         {
           name: _('/project/node_modules/some_package/valid_entry_point/package.json'),
@@ -74,7 +74,7 @@ runInEachFileSystem(() => {
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
-      expect(entryPoint).toBe(NO_ENTRY_POINT);
+      expect(entryPoint).toBe(IGNORED_ENTRY_POINT);
     });
 
     it('should override the properties on package.json if the entry-point is configured', () => {
@@ -381,7 +381,7 @@ runInEachFileSystem(() => {
     });
   });
 
-  describe('getEntryPointFormat', () => {
+  describe('getEntryPointFormat()', () => {
     let SOME_PACKAGE: AbsoluteFsPath;
     let _: typeof absoluteFrom;
     let fs: FileSystem;
@@ -399,10 +399,10 @@ runInEachFileSystem(() => {
       const result = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
-      if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
+      if (!isEntryPoint(result)) {
         return fail(`Expected an entry point but got ${result}`);
       }
-      entryPoint = result as any;
+      entryPoint = result;
     });
 
     it('should return `esm2015` format for `fesm2015` property', () => {

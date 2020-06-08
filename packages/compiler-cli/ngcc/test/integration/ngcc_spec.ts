@@ -1615,21 +1615,28 @@ runInEachFileSystem(() => {
         loadTestFiles([
           {
             name: _('/ngcc.config.js'),
-            contents: `module.exports = { packages: {
-            '@angular/core': {
-              entryPoints: {
-                './testing': {ignore: true}
-              },
-            },
-            '@angular/common': {
-              entryPoints: {
-                '.': {ignore: true}
-              },
-            }
-          }};`,
+            contents: `
+              module.exports = {
+                packages: {
+                  '@angular/core': {
+                    entryPoints: {
+                      './testing': {ignore: true},
+                    },
+                  },
+                  '@angular/common': {
+                    entryPoints: {
+                      '.': {ignore: true},
+                      './http': {override: {fesm2015: undefined}},
+                    },
+                  },
+                },
+              };
+            `,
           },
         ]);
+
         mainNgcc({basePath: '/node_modules', propertiesToConsider: ['es2015']});
+
         // We process core but not core/testing.
         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
           module: '0.0.0-PLACEHOLDER',
@@ -1638,12 +1645,14 @@ runInEachFileSystem(() => {
           typings: '0.0.0-PLACEHOLDER',
         });
         expect(loadPackage('@angular/core/testing').__processed_by_ivy_ngcc__).toBeUndefined();
+
         // We do not compile common but we do compile its sub-entry-points.
         expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toBeUndefined();
         expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__).toEqual({
+          // `fesm2015` is not processed, because the ngcc config removes it.
+          // fesm2015: '0.0.0-PLACEHOLDER',
           module: '0.0.0-PLACEHOLDER',
           es2015: '0.0.0-PLACEHOLDER',
-          fesm2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
       });

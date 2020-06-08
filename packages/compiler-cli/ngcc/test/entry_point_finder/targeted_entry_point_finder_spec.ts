@@ -109,6 +109,24 @@ runInEachFileSystem(() => {
         expect(entryPoints).toEqual([]);
       });
 
+      it('should return an empty array if the target path is an ignored entry-point', () => {
+        const basePath = _Abs('/project/node_modules');
+        const targetPath = _Abs('/project/node_modules/some-package');
+        const finder = new TargetedEntryPointFinder(
+            fs, config, logger, resolver, basePath, undefined, targetPath);
+
+        loadTestFiles(createPackage(basePath, 'some-package'));
+        spyOn(config, 'getPackageConfig').and.returnValue({
+          versionRange: '*',
+          entryPoints: {
+            [_Abs('/project/node_modules/some-package')]: {ignore: true},
+          },
+        });
+
+        const {entryPoints} = finder.findEntryPoints();
+        expect(entryPoints).toEqual([]);
+      });
+
       it('should return an empty array if the target path is not an Angular entry-point', () => {
         const targetPath = _Abs('/no_valid_entry_points/node_modules/some_package');
         loadTestFiles([
@@ -387,6 +405,23 @@ runInEachFileSystem(() => {
         const finder = new TargetedEntryPointFinder(
             fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'), undefined,
             targetPath);
+        expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
+      });
+
+      it('should return false if the target path is ignored by the config', () => {
+        const basePath = _Abs('/project/node_modules');
+        const targetPath = _Abs('/project/node_modules/some-package');
+        const finder = new TargetedEntryPointFinder(
+            fs, config, logger, resolver, basePath, undefined, targetPath);
+
+        loadTestFiles(createPackage(basePath, 'some-package'));
+        spyOn(config, 'getPackageConfig').and.returnValue({
+          versionRange: '*',
+          entryPoints: {
+            [_Abs('/project/node_modules/some-package')]: {ignore: true},
+          },
+        });
+
         expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
       });
 
