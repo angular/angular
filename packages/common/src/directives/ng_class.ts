@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, IterableDiffers, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Renderer2, ɵisListLikeIterable as isListLikeIterable, ɵstringify as stringify} from '@angular/core';
+import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, IterableDiffers, KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Renderer2, ɵisListLikeIterable as isListLikeIterable, ɵstringify as stringify} from '@angular/core';
 
 type NgClassSupportedTypes = string[]|Set<string>|{[klass: string]: any}|null|undefined;
 
@@ -90,27 +90,43 @@ export class NgClass implements DoCheck {
     }
   }
 
-  private _applyKeyValueChanges(changes: KeyValueChanges<string, any>): void {
-    changes.forEachAddedItem((record) => this._toggleClass(record.key, record.currentValue));
-    changes.forEachChangedItem((record) => this._toggleClass(record.key, record.currentValue));
+  private _applyKeyValueChanges(changes: KeyValueChanges<string, unknown>): void {
+    const added: string[] = [];
+    const removed: string[] = [];
+    const partitionClasses = (record: KeyValueChangeRecord<string, unknown>) => {
+      if (record.currentValue) {
+        added.push(record.key);
+      } else {
+        removed.push(record.key);
+      }
+    };
+
+    changes.forEachAddedItem(partitionClasses);
+    changes.forEachChangedItem(partitionClasses);
     changes.forEachRemovedItem((record) => {
       if (record.previousValue) {
-        this._toggleClass(record.key, false);
+        removed.push(record.key);
       }
     });
+
+    this._togglePartitionedClasses(added, removed);
   }
 
   private _applyIterableChanges(changes: IterableChanges<string>): void {
+    const added: string[] = [];
     changes.forEachAddedItem((record) => {
       if (typeof record.item === 'string') {
-        this._toggleClass(record.item, true);
+        added.push(record.item);
       } else {
         throw new Error(`NgClass can only toggle CSS classes expressed as strings, got ${
             stringify(record.item)}`);
       }
     });
 
-    changes.forEachRemovedItem((record) => this._toggleClass(record.item, false));
+    const removed: string[] = [];
+    changes.forEachRemovedItem((record) => removed.push(record.item));
+
+    this._togglePartitionedClasses(added, removed);
   }
 
   /**
@@ -123,10 +139,22 @@ export class NgClass implements DoCheck {
    */
   private _applyClasses(rawClassVal: NgClassSupportedTypes) {
     if (rawClassVal) {
-      if (Array.isArray(rawClassVal) || rawClassVal instanceof Set) {
-        (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, true));
+      if (Array.isArray(rawClassVal)) {
+        this._toggleClass(rawClassVal, true);
+      } else if (rawClassVal instanceof Set) {
+        this._toggleClass([...rawClassVal], true);
       } else {
-        Object.keys(rawClassVal).forEach(klass => this._toggleClass(klass, !!rawClassVal[klass]));
+        const added: string[] = [];
+        const removed: string[] = [];
+        for (const [klass, enabled] of Object.entries(rawClassVal)) {
+          if (enabled) {
+            added.push(klass);
+          } else {
+            removed.push(klass);
+          }
+        }
+
+        this._togglePartitionedClasses(added, removed);
       }
     }
   }
@@ -137,24 +165,38 @@ export class NgClass implements DoCheck {
    */
   private _removeClasses(rawClassVal: NgClassSupportedTypes) {
     if (rawClassVal) {
-      if (Array.isArray(rawClassVal) || rawClassVal instanceof Set) {
-        (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, false));
+      let classes: string[];
+      if (Array.isArray(rawClassVal)) {
+        classes = rawClassVal;
+      } else if (rawClassVal instanceof Set) {
+        classes = [...rawClassVal];
       } else {
-        Object.keys(rawClassVal).forEach(klass => this._toggleClass(klass, false));
+        classes = Object.keys(rawClassVal);
+      }
+
+      this._toggleClass(classes, false);
+    }
+  }
+
+  private _toggleClass(klass: string|string[], enabled: boolean): void {
+    let classes = typeof klass === 'string' ? klass : klass.join(' ');
+    classes = classes.trim();
+    if (classes) {
+      const splitClasses = classes.split(/\s+/g);
+      if (enabled) {
+        this._renderer.addClass(this._ngEl.nativeElement, splitClasses);
+      } else {
+        this._renderer.removeClass(this._ngEl.nativeElement, splitClasses);
       }
     }
   }
 
-  private _toggleClass(klass: string, enabled: boolean): void {
-    klass = klass.trim();
-    if (klass) {
-      klass.split(/\s+/g).forEach(klass => {
-        if (enabled) {
-          this._renderer.addClass(this._ngEl.nativeElement, klass);
-        } else {
-          this._renderer.removeClass(this._ngEl.nativeElement, klass);
-        }
-      });
+  private _togglePartitionedClasses(added: string[], removed: string[]): void {
+    if (added.length) {
+      this._toggleClass(added, true);
+    }
+    if (removed.length) {
+      this._toggleClass(removed, false);
     }
   }
 }
