@@ -34,7 +34,7 @@ function setup(file: TestFile) {
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
   const switchMarkerAnalyses =
-      new SwitchMarkerAnalyzer(host, bundle.entryPoint.package).analyzeProgram(src.program);
+      new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath).analyzeProgram(src.program);
   const renderer = new UmdRenderingFormatter(host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), 'i');
   return {

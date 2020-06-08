@@ -318,7 +318,7 @@ runInEachFileSystem(() => {
            const entryPoint = entryPoints[0];
            expect(entryPoint.name).toEqual('secondary');
            expect(entryPoint.path).toEqual(_Abs('/path_mapped/dist/primary/secondary'));
-           expect(entryPoint.package).toEqual(_Abs('/path_mapped/dist/primary'));
+           expect(entryPoint.packagePath).toEqual(_Abs('/path_mapped/dist/primary'));
          });
 
       it('should correctly compute an entry-point whose path starts with the same string as another entry-point, via pathMappings',
@@ -381,7 +381,8 @@ runInEachFileSystem(() => {
 
       function dumpEntryPointPaths(
           basePath: AbsoluteFsPath, entryPoints: EntryPoint[]): [string, string][] {
-        return entryPoints.map(x => [relative(basePath, x.package), relative(basePath, x.path)]);
+        return entryPoints.map(
+            x => [relative(basePath, x.packagePath), relative(basePath, x.path)]);
       }
     });
 

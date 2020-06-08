@@ -156,7 +156,7 @@ exports.D = D;
       const referencesRegistry = new NgccReferencesRegistry(host);
       const decorationAnalyses =
           new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-      const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package)
+      const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath)
                                        .analyzeProgram(bundle.src.program);
       const renderer = new CommonJsRenderingFormatter(host, false);
       const importManager = new ImportManager(new NoopImportRewriter(), 'i');
