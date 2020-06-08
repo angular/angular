@@ -280,7 +280,7 @@ runInEachFileSystem(() => {
 
       it('should not log a warning for ignored deep imports', () => {
         spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
-          [_('/project/node_modules/test-package/index.js')]: {
+          [_('/project/node_modules/test-package/test-entry-point/index.js')]: {
             resolved: [],
             missing: [],
             deepImports: [
@@ -290,7 +290,10 @@ runInEachFileSystem(() => {
           },
         }));
         spyOn(dtsHost, 'collectDependencies').and.callFake(createFakeComputeDependencies({
-          [_('/project/node_modules/test-package/index.d.ts')]: {resolved: [], missing: []},
+          [_('/project/node_modules/test-package/test-entry-point/index.d.ts')]: {
+            resolved: [],
+            missing: [],
+          },
         }));
         // Setup the configuration to ignore deep imports that contain either "deep/" or "two".
         fs.ensureDir(_('/project'));
@@ -300,12 +303,12 @@ runInEachFileSystem(() => {
         config = new NgccConfiguration(fs, _('/project'));
         resolver = new DependencyResolver(fs, logger, config, {esm5: host, esm2015: host}, dtsHost);
         const testEntryPoint = {
-          name: 'test-package',
-          path: _('/project/node_modules/test-package'),
+          name: 'test-package/test-entry-point',
+          path: _('/project/node_modules/test-package/test-entry-point'),
           packageName: 'test-package',
           packagePath: _('/project/node_modules/test-package'),
           packageJson: {esm5: './index.js'},
-          typings: _('/project/node_modules/test-package/index.d.ts'),
+          typings: _('/project/node_modules/test-package/test-entry-point/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
         } as EntryPoint;
@@ -314,7 +317,7 @@ runInEachFileSystem(() => {
             getEntryPointsWithDeps(resolver, [testEntryPoint]));
         expect(result.entryPoints).toEqual([testEntryPoint]);
         expect(logger.logs.warn).toEqual([[
-          `Entry point 'test-package' contains deep imports into '${
+          `Entry point 'test-package/test-entry-point' contains deep imports into '${
               _('/project/node_modules/deeper/one')}'. This is probably not a problem, but may cause the compilation of entry points to be out of order.`
         ]]);
       });
