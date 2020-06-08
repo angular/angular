@@ -60,6 +60,7 @@ runInEachFileSystem(() => {
         first = {
           name: 'first',
           path: _('/first'),
+          packageName: 'first',
           packagePath: _('/first'),
           packageJson: {esm5: './index.js'},
           typings: _('/first/index.d.ts'),
@@ -67,7 +68,9 @@ runInEachFileSystem(() => {
           ignoreMissingDependencies: false,
         } as EntryPoint;
         second = {
+          name: 'second',
           path: _('/second'),
+          packageName: 'second',
           packagePath: _('/second'),
           packageJson: {esm2015: './sub/index.js'},
           typings: _('/second/sub/index.d.ts'),
@@ -75,7 +78,9 @@ runInEachFileSystem(() => {
           ignoreMissingDependencies: false,
         } as EntryPoint;
         third = {
+          name: 'third',
           path: _('/third'),
+          packageName: 'third',
           packagePath: _('/third'),
           packageJson: {fesm5: './index.js'},
           typings: _('/third/index.d.ts'),
@@ -83,7 +88,9 @@ runInEachFileSystem(() => {
           ignoreMissingDependencies: false,
         } as EntryPoint;
         fourth = {
+          name: 'fourth',
           path: _('/fourth'),
+          packageName: 'fourth',
           packagePath: _('/fourth'),
           packageJson: {fesm2015: './sub2/index.js'},
           typings: _('/fourth/sub2/index.d.ts'),
@@ -91,7 +98,9 @@ runInEachFileSystem(() => {
           ignoreMissingDependencies: false,
         } as EntryPoint;
         fifth = {
+          name: 'fifth',
           path: _('/fifth'),
+          packageName: 'fifth',
           packagePath: _('/fifth'),
           packageJson: {module: './index.js'},
           typings: _('/fifth/index.d.ts'),
@@ -100,7 +109,9 @@ runInEachFileSystem(() => {
         } as EntryPoint;
 
         sixthIgnoreMissing = {
+          name: 'sixth',
           path: _('/sixth'),
+          packageName: 'sixth',
           packagePath: _('/sixth'),
           packageJson: {module: './index.js'},
           typings: _('/sixth/index.d.ts'),
@@ -291,6 +302,7 @@ runInEachFileSystem(() => {
         const testEntryPoint = {
           name: 'test-package',
           path: _('/project/node_modules/test-package'),
+          packageName: 'test-package',
           packagePath: _('/project/node_modules/test-package'),
           packageJson: {esm5: './index.js'},
           typings: _('/project/node_modules/test-package/index.d.ts'),
