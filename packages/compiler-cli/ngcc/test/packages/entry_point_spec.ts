@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
@@ -75,6 +75,92 @@ runInEachFileSystem(() => {
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
       expect(entryPoint).toBe(IGNORED_ENTRY_POINT);
+    });
+
+    it('should retrieve the entry-point\'s version from the package\'s `package.json`', () => {
+      const entryPointPath = join(SOME_PACKAGE, 'valid_entry_point');
+
+      loadTestFiles([
+        {
+          name: _('/project/ngcc.config.js'),
+          contents: `
+            module.exports = {
+              packages: {
+                'some_package@3': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '3'}}},
+                },
+                'some_package@2': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '2'}}},
+                },
+                'some_package@1': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '1'}}},
+                },
+              },
+            };
+          `,
+        },
+        {
+          name: join(SOME_PACKAGE, 'package.json'),
+          contents: createPackageJson('', {version: '1.0.0'}),
+        },
+        {
+          name: join(entryPointPath, 'package.json'),
+          contents: createPackageJson('valid_entry_point', {version: '2.0.0'}),
+        },
+        {
+          name: join(entryPointPath, 'valid_entry_point.metadata.json'),
+          contents: 'some meta data',
+        },
+      ]);
+
+      const config = new NgccConfiguration(fs, _('/project'));
+      const info: EntryPoint =
+          getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath) as any;
+
+      expect(info.packageJson).toEqual(jasmine.objectContaining({packageVersion: '1'}));
+    });
+
+    it('should use `null` for version if it cannot be retrieved from a `package.json`', () => {
+      const entryPointPath = join(SOME_PACKAGE, 'valid_entry_point');
+
+      loadTestFiles([
+        {
+          name: _('/project/ngcc.config.js'),
+          contents: `
+            module.exports = {
+              packages: {
+                'some_package@3': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '3'}}},
+                },
+                'some_package@2': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '2'}}},
+                },
+                'some_package@1': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '1'}}},
+                },
+              },
+            };
+          `,
+        },
+        {
+          name: join(SOME_PACKAGE, 'package.json'),
+          contents: createPackageJson(''),
+        },
+        {
+          name: join(entryPointPath, 'package.json'),
+          contents: createPackageJson('valid_entry_point'),
+        },
+        {
+          name: join(entryPointPath, 'valid_entry_point.metadata.json'),
+          contents: 'some meta data',
+        },
+      ]);
+
+      const config = new NgccConfiguration(fs, _('/project'));
+      const info: EntryPoint =
+          getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath) as any;
+
+      expect(info.packageJson).toEqual(jasmine.objectContaining({packageVersion: '3'}));
     });
 
     it('should override the properties on package.json if the entry-point is configured', () => {
@@ -514,19 +600,23 @@ runInEachFileSystem(() => {
 });
 
 export function createPackageJson(
-    packageName: string,
-    {excludes, typingsProp = 'typings', typingsIsArray}:
-        {excludes?: string[], typingsProp?: string, typingsIsArray?: boolean} = {}): string {
+    entryPointName: string, {excludes, typingsProp = 'typings', typingsIsArray, version}: {
+      excludes?: string[],
+      typingsProp?: string,
+      typingsIsArray?: boolean,
+      version?: string
+    } = {}): string {
   const packageJson: any = {
-    name: `some_package/${packageName}`,
-    [typingsProp]: typingsIsArray ? [`./${packageName}.d.ts`] : `./${packageName}.d.ts`,
-    fesm2015: `./fesm2015/${packageName}.js`,
-    esm2015: `./esm2015/${packageName}.js`,
-    es2015: `./es2015/${packageName}.js`,
-    fesm5: `./fesm5/${packageName}.js`,
-    esm5: `./esm5/${packageName}.js`,
-    main: `./bundles/${packageName}/index.js`,
-    browser: `./bundles/${packageName}/index.js`,
+    name: (entryPointName === '') ? 'some_package' : `some_package/${entryPointName}`,
+    version,
+    [typingsProp]: typingsIsArray ? [`./${entryPointName}.d.ts`] : `./${entryPointName}.d.ts`,
+    fesm2015: `./fesm2015/${entryPointName}.js`,
+    esm2015: `./esm2015/${entryPointName}.js`,
+    es2015: `./es2015/${entryPointName}.js`,
+    fesm5: `./fesm5/${entryPointName}.js`,
+    esm5: `./esm5/${entryPointName}.js`,
+    main: `./bundles/${entryPointName}/index.js`,
+    browser: `./bundles/${entryPointName}/index.js`,
     module: './index.js',
   };
   if (excludes) {
