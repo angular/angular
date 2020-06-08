@@ -37,7 +37,7 @@ export function loadStandardTestFiles(
     loadFakeCore(tmpFs, basePath);
   } else {
     getAngularPackagesFromRunfiles().forEach(({name, pkgPath}) => {
-      loadTestDirectory(tmpFs, pkgPath, tmpFs.resolve('/node_modules/@angular', name));
+      loadTestDirectory(tmpFs, pkgPath, tmpFs.resolve(basePath, 'node_modules/@angular', name));
     });
   }
 

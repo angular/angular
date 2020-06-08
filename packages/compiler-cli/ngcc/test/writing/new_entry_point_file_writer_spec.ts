@@ -9,7 +9,7 @@ import {absoluteFrom, FileSystem, getFileSystem, join} from '../../../src/ngtsc/
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo, isEntryPoint} from '../../src/packages/entry_point';
 import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {FileWriter} from '../../src/writing/file_writer';
 import {NewEntryPointFileWriter} from '../../src/writing/new_entry_point_file_writer';
@@ -106,7 +106,7 @@ runInEachFileSystem(() => {
         const config = new NgccConfiguration(fs, _('/'));
         const result = getEntryPointInfo(
             fs, config, logger, _('/node_modules/test'), _('/node_modules/test'))!;
-        if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
+        if (!isEntryPoint(result)) {
           return fail(`Expected an entry point but got ${result}`);
         }
         entryPoint = result;
@@ -246,7 +246,7 @@ runInEachFileSystem(() => {
         const config = new NgccConfiguration(fs, _('/'));
         const result = getEntryPointInfo(
             fs, config, logger, _('/node_modules/test'), _('/node_modules/test/a'))!;
-        if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
+        if (!isEntryPoint(result)) {
           return fail(`Expected an entry point but got ${result}`);
         }
         entryPoint = result;
@@ -375,7 +375,7 @@ runInEachFileSystem(() => {
         const config = new NgccConfiguration(fs, _('/'));
         const result = getEntryPointInfo(
             fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b'))!;
-        if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
+        if (!isEntryPoint(result)) {
           return fail(`Expected an entry point but got ${result}`);
         }
         entryPoint = result;
@@ -501,7 +501,7 @@ runInEachFileSystem(() => {
         const config = new NgccConfiguration(fs, _('/'));
         const result = getEntryPointInfo(
             fs, config, logger, _('/node_modules/test'), _('/node_modules/test'))!;
-        if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
+        if (!isEntryPoint(result)) {
           return fail(`Expected an entry point but got ${result}`);
         }
         entryPoint = result;
