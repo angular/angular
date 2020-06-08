@@ -21,9 +21,9 @@ export function makeTestEntryPoint(
     entryPointName: string, packageName: string = entryPointName, config?: TestConfig): EntryPoint {
   return {
     name: entryPointName,
-    packageJson: {name: entryPointName},
-    package: absoluteFrom(`/node_modules/${packageName}`),
     path: absoluteFrom(`/node_modules/${entryPointName}`),
+    packagePath: absoluteFrom(`/node_modules/${packageName}`),
+    packageJson: {name: entryPointName},
     typings: absoluteFrom(`/node_modules/${entryPointName}/index.d.ts`),
     compiledByAngular: true,
     ignoreMissingDependencies: false,
@@ -43,8 +43,9 @@ export function makeTestEntryPointBundle(
     enableI18nLegacyMessageIdFormat = false): EntryPointBundle {
   const entryPoint = makeTestEntryPoint(packageName, packageName, config);
   const src = makeTestBundleProgram(srcRootNames[0], isCore);
-  const dts =
-      dtsRootNames ? makeTestDtsBundleProgram(dtsRootNames[0], entryPoint.package, isCore) : null;
+  const dts = dtsRootNames ?
+      makeTestDtsBundleProgram(dtsRootNames[0], entryPoint.packagePath, isCore) :
+      null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
   return {
     entryPoint,

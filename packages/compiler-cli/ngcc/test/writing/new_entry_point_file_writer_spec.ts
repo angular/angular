@@ -577,7 +577,7 @@ runInEachFileSystem(() => {
 
       it('should revert changes to `package.json`', () => {
         const entryPoint = esm5bundle.entryPoint;
-        const packageJsonPath = join(entryPoint.package, 'package.json');
+        const packageJsonPath = join(entryPoint.packagePath, 'package.json');
 
         fileWriter.writeBundle(
             esm5bundle,

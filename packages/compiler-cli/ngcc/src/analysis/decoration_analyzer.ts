@@ -58,7 +58,7 @@ export class DecorationAnalyzer {
   private host = this.bundle.src.host;
   private typeChecker = this.bundle.src.program.getTypeChecker();
   private rootDirs = this.bundle.rootDirs;
-  private packagePath = this.bundle.entryPoint.package;
+  private packagePath = this.bundle.entryPoint.packagePath;
   private isCore = this.bundle.isCore;
   private compilerOptions = this.tsConfig !== null ? this.tsConfig.options : {};
 

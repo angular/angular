@@ -24,14 +24,14 @@ export type EntryPointFormat = 'esm5'|'esm2015'|'umd'|'commonjs';
  * to each of the possible entry-point formats.
  */
 export interface EntryPoint extends JsonObject {
-  /** The name of the package (e.g. `@angular/core`). */
+  /** The name of the entry-point (e.g. `@angular/core` or `@angular/common/http`). */
   name: string;
-  /** The parsed package.json file for this entry-point. */
-  packageJson: EntryPointPackageJson;
-  /** The path to the package that contains this entry-point. */
-  package: AbsoluteFsPath;
   /** The path to this entry point. */
   path: AbsoluteFsPath;
+  /** The path to the package that contains this entry-point. */
+  packagePath: AbsoluteFsPath;
+  /** The parsed package.json file for this entry-point. */
+  packageJson: EntryPointPackageJson;
   /** The path to a typings (.d.ts) file for this entry-point. */
   typings: AbsoluteFsPath;
   /** Is this EntryPoint compiled with the Angular View Engine compiler? */
@@ -166,9 +166,9 @@ export function getEntryPointInfo(
 
   const entryPointInfo: EntryPoint = {
     name: entryPointPackageJson.name,
-    packageJson: entryPointPackageJson,
-    package: packagePath,
     path: entryPointPath,
+    packagePath,
+    packageJson: entryPointPackageJson,
     typings: resolve(entryPointPath, typings),
     compiledByAngular,
     ignoreMissingDependencies:

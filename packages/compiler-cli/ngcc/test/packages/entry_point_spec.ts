@@ -44,11 +44,11 @@ runInEachFileSystem(() => {
              _('/project/node_modules/some_package/valid_entry_point'));
          expect(entryPoint).toEqual({
            name: 'some_package/valid_entry_point',
-           package: SOME_PACKAGE,
            path: _('/project/node_modules/some_package/valid_entry_point'),
+           packagePath: SOME_PACKAGE,
+           packageJson: loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
            typings:
                _(`/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts`),
-           packageJson: loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
            compiledByAngular: true,
            ignoreMissingDependencies: false,
            generateDeepReexports: false,
@@ -107,10 +107,10 @@ runInEachFileSystem(() => {
       };
       expect(entryPoint).toEqual({
         name: 'some_package/valid_entry_point',
-        package: SOME_PACKAGE,
         path: _('/project/node_modules/some_package/valid_entry_point'),
-        typings: _('/project/node_modules/some_package/valid_entry_point/some_other.d.ts'),
+        packagePath: SOME_PACKAGE,
         packageJson: overriddenPackageJson,
+        typings: _('/project/node_modules/some_package/valid_entry_point/some_other.d.ts'),
         compiledByAngular: true,
         ignoreMissingDependencies: false,
         generateDeepReexports: false,
@@ -155,11 +155,11 @@ runInEachFileSystem(() => {
              _('/project/node_modules/some_package/missing_package_json'));
          expect(entryPoint).toEqual({
            name: 'some_package/missing_package_json',
-           package: SOME_PACKAGE,
            path: _('/project/node_modules/some_package/missing_package_json'),
+           packagePath: SOME_PACKAGE,
+           packageJson: {name: 'some_package/missing_package_json', ...override},
            typings: _(
                '/project/node_modules/some_package/missing_package_json/missing_package_json.d.ts'),
-           packageJson: {name: 'some_package/missing_package_json', ...override},
            compiledByAngular: true,
            ignoreMissingDependencies: false,
            generateDeepReexports: false,
@@ -236,10 +236,10 @@ runInEachFileSystem(() => {
                _('/project/node_modules/some_package/missing_typings'));
            expect(entryPoint).toEqual({
              name: 'some_package/missing_typings',
-             package: SOME_PACKAGE,
              path: _('/project/node_modules/some_package/missing_typings'),
-             typings: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
+             packagePath: SOME_PACKAGE,
              packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_typings'),
+             typings: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
              compiledByAngular: true,
              ignoreMissingDependencies: false,
              generateDeepReexports: false,
@@ -261,10 +261,10 @@ runInEachFileSystem(() => {
              _('/project/node_modules/some_package/missing_metadata'));
          expect(entryPoint).toEqual({
            name: 'some_package/missing_metadata',
-           package: SOME_PACKAGE,
            path: _('/project/node_modules/some_package/missing_metadata'),
-           typings: _(`/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts`),
+           packagePath: SOME_PACKAGE,
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
+           typings: _(`/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts`),
            compiledByAngular: false,
            ignoreMissingDependencies: false,
            generateDeepReexports: false,
@@ -290,10 +290,10 @@ runInEachFileSystem(() => {
              _('/project/node_modules/some_package/missing_metadata'));
          expect(entryPoint).toEqual({
            name: 'some_package/missing_metadata',
-           package: SOME_PACKAGE,
            path: _('/project/node_modules/some_package/missing_metadata'),
-           typings: _('/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts'),
+           packagePath: SOME_PACKAGE,
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
+           typings: _('/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts'),
            compiledByAngular: true,
            ignoreMissingDependencies: false,
            generateDeepReexports: false,
@@ -318,12 +318,12 @@ runInEachFileSystem(() => {
           _('/project/node_modules/some_package/types_rather_than_typings'));
       expect(entryPoint).toEqual({
         name: 'some_package/types_rather_than_typings',
-        package: SOME_PACKAGE,
         path: _('/project/node_modules/some_package/types_rather_than_typings'),
-        typings: _(
-            `/project/node_modules/some_package/types_rather_than_typings/types_rather_than_typings.d.ts`),
+        packagePath: SOME_PACKAGE,
         packageJson:
             loadPackageJson(fs, '/project/node_modules/some_package/types_rather_than_typings'),
+        typings: _(
+            `/project/node_modules/some_package/types_rather_than_typings/types_rather_than_typings.d.ts`),
         compiledByAngular: true,
         ignoreMissingDependencies: false,
         generateDeepReexports: false,
@@ -353,10 +353,10 @@ runInEachFileSystem(() => {
           _('/project/node_modules/some_package/material_style'));
       expect(entryPoint).toEqual({
         name: 'some_package/material_style',
-        package: SOME_PACKAGE,
         path: _('/project/node_modules/some_package/material_style'),
-        typings: _(`/project/node_modules/some_package/material_style/material_style.d.ts`),
+        packagePath: SOME_PACKAGE,
         packageJson: loadPackageJson(fs, '/project/node_modules/some_package/material_style'),
+        typings: _(`/project/node_modules/some_package/material_style/material_style.d.ts`),
         compiledByAngular: true,
         ignoreMissingDependencies: false,
         generateDeepReexports: false,

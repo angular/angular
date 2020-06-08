@@ -60,52 +60,52 @@ runInEachFileSystem(() => {
         first = {
           name: 'first',
           path: _('/first'),
-          package: _('/first'),
+          packagePath: _('/first'),
           packageJson: {esm5: './index.js'},
+          typings: _('/first/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/first/index.d.ts'),
         } as EntryPoint;
         second = {
           path: _('/second'),
-          package: _('/second'),
+          packagePath: _('/second'),
           packageJson: {esm2015: './sub/index.js'},
+          typings: _('/second/sub/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/second/sub/index.d.ts'),
         } as EntryPoint;
         third = {
           path: _('/third'),
-          package: _('/third'),
+          packagePath: _('/third'),
           packageJson: {fesm5: './index.js'},
+          typings: _('/third/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/third/index.d.ts'),
         } as EntryPoint;
         fourth = {
           path: _('/fourth'),
-          package: _('/fourth'),
+          packagePath: _('/fourth'),
           packageJson: {fesm2015: './sub2/index.js'},
+          typings: _('/fourth/sub2/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/fourth/sub2/index.d.ts'),
         } as EntryPoint;
         fifth = {
           path: _('/fifth'),
-          package: _('/fifth'),
+          packagePath: _('/fifth'),
           packageJson: {module: './index.js'},
+          typings: _('/fifth/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/fifth/index.d.ts'),
         } as EntryPoint;
 
         sixthIgnoreMissing = {
           path: _('/sixth'),
-          package: _('/sixth'),
+          packagePath: _('/sixth'),
           packageJson: {module: './index.js'},
+          typings: _('/sixth/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: true,
-          typings: _('/sixth/index.d.ts'),
         } as EntryPoint;
 
         dependencies = {
@@ -291,11 +291,11 @@ runInEachFileSystem(() => {
         const testEntryPoint = {
           name: 'test-package',
           path: _('/project/node_modules/test-package'),
-          package: _('/project/node_modules/test-package'),
+          packagePath: _('/project/node_modules/test-package'),
           packageJson: {esm5: './index.js'},
+          typings: _('/project/node_modules/test-package/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/project/node_modules/test-package/index.d.ts'),
         } as EntryPoint;
 
         const result = resolver.sortEntryPointsByDependency(
