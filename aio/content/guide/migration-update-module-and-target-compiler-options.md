@@ -15,7 +15,7 @@ For the karma builder (`ng test` for applications), `module` is changed to `es20
 For the server builder (universal builds), `module` is removed if originally `commonjs`.
 `target` is also changed to `es2016` regardless of the previous value.
 
-For the protractor builder (`ng e2e` for applications), `module` is changed to `es2018` from `es5`.
+For the protractor builder (`ng e2e` for applications), `target` is changed to `es2018` from `es5`.
 
 ## Why is this migration necessary?
 
