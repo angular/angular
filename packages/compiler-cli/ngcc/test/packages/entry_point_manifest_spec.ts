@@ -148,9 +148,9 @@ runInEachFileSystem(() => {
         expect(entryPoints).toEqual([{
           entryPoint: {
             name: 'some_package/valid_entry_point',
-            packageJson: jasmine.any(Object),
-            package: _Abs('/project/node_modules/some_package'),
             path: _Abs('/project/node_modules/some_package/valid_entry_point'),
+            packagePath: _Abs('/project/node_modules/some_package'),
+            packageJson: jasmine.any(Object),
             typings:
                 _Abs('/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts'),
             compiledByAngular: true,
@@ -298,8 +298,8 @@ runInEachFileSystem(() => {
         fs.writeFile(_Abs('/project/package-lock.json'), 'LOCK FILE CONTENTS');
         const entryPoint1: EntryPointWithDependencies = {
           entryPoint: {
-            package: _Abs('/project/node_modules/package-1/'),
             path: _Abs('/project/node_modules/package-1/'),
+            packagePath: _Abs('/project/node_modules/package-1/'),
           } as any,
           depInfo: {
             dependencies: new Set([
@@ -312,8 +312,8 @@ runInEachFileSystem(() => {
         };
         const entryPoint2: EntryPointWithDependencies = {
           entryPoint: {
-            package: _Abs('/project/node_modules/package-2/'),
             path: _Abs('/project/node_modules/package-2/entry-point'),
+            packagePath: _Abs('/project/node_modules/package-2/'),
           } as any,
           depInfo: {
             dependencies: new Set(),

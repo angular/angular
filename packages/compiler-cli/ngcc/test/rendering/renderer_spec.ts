@@ -90,8 +90,8 @@ function createTestRenderer(
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-  const switchMarkerAnalyses =
-      new SwitchMarkerAnalyzer(host, bundle.entryPoint.package).analyzeProgram(bundle.src.program);
+  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath)
+                                   .analyzeProgram(bundle.src.program);
   const privateDeclarationsAnalyses =
       new PrivateDeclarationsAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
   const testFormatter = new TestRenderingFormatter();

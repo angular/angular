@@ -47,7 +47,7 @@ export function makeEntryPointBundle(
     mirrorDtsFromSrc: boolean = false,
     enableI18nLegacyMessageIdFormat: boolean = true): EntryPointBundle {
   // Create the TS program and necessary helpers.
-  const rootDir = entryPoint.package;
+  const rootDir = entryPoint.packagePath;
   const options: ts
       .CompilerOptions = {allowJs: true, maxNodeModuleJsDepth: Infinity, rootDir, ...pathMappings};
   const srcHost = new NgccSourcesCompilerHost(fs, options, entryPoint.path);
@@ -57,12 +57,12 @@ export function makeEntryPointBundle(
   const absFormatPath = fs.resolve(entryPoint.path, formatPath);
   const typingsPath = fs.resolve(entryPoint.path, entryPoint.typings);
   const src = makeBundleProgram(
-      fs, isCore, entryPoint.package, absFormatPath, 'r3_symbols.js', options, srcHost);
+      fs, isCore, entryPoint.packagePath, absFormatPath, 'r3_symbols.js', options, srcHost);
   const additionalDtsFiles = transformDts && mirrorDtsFromSrc ?
       computePotentialDtsFilesFromJsFiles(fs, src.program, absFormatPath, typingsPath) :
       [];
   const dts = transformDts ? makeBundleProgram(
-                                 fs, isCore, entryPoint.package, typingsPath, 'r3_symbols.d.ts',
+                                 fs, isCore, entryPoint.packagePath, typingsPath, 'r3_symbols.d.ts',
                                  options, dtsHost, additionalDtsFiles) :
                              null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
