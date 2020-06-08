@@ -69,6 +69,7 @@ export type PackageJsonFormatProperties = keyof PackageJsonFormatPropertiesMap;
  */
 export interface EntryPointPackageJson extends JsonObject, PackageJsonFormatPropertiesMap {
   name: string;
+  version?: string;
   scripts?: Record<string, string>;
   __processed_by_ivy_ngcc__?: Record<string, string>;
 }
@@ -125,30 +126,31 @@ export function getEntryPointInfo(
     fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
     entryPointPath: AbsoluteFsPath): GetEntryPointResult {
   const packageJsonPath = resolve(entryPointPath, 'package.json');
-  const packageVersion = getPackageVersion(fs, packageJsonPath);
+  const loadedEntryPointPackageJson = loadPackageJson(fs, packageJsonPath);
+  const packageVersion = getPackageVersion(loadedEntryPointPackageJson);
   const entryPointConfig =
       config.getPackageConfig(packagePath, packageVersion).entryPoints[entryPointPath];
-  const hasConfig = entryPointConfig !== undefined;
+  let entryPointPackageJson: EntryPointPackageJson;
 
-  if (!hasConfig && !fs.exists(packageJsonPath)) {
-    // No package.json and no config
-    return NO_ENTRY_POINT;
-  }
+  if (entryPointConfig === undefined) {
+    if (!fs.exists(packageJsonPath)) {
+      // No `package.json` and no config.
+      return NO_ENTRY_POINT;
+    } else if (loadedEntryPointPackageJson === null) {
+      // `package.json` exists but could not be parsed and there is no redeeming config.
+      logger.warn(
+          `Failed to read entry point info from invalid 'package.json' file: ${packageJsonPath}`);
 
-  if (hasConfig && entryPointConfig.ignore === true) {
-    // Explicitly ignored
+      return INCOMPATIBLE_ENTRY_POINT;
+    } else {
+      entryPointPackageJson = loadedEntryPointPackageJson;
+    }
+  } else if (entryPointConfig.ignore === true) {
+    // Explicitly ignored entry-point.
     return IGNORED_ENTRY_POINT;
-  }
-
-  const loadedEntryPointPackageJson = loadEntryPointPackage(fs, logger, packageJsonPath, hasConfig);
-  const entryPointPackageJson = hasConfig ?
-      mergeConfigAndPackageJson(
-          loadedEntryPointPackageJson, entryPointConfig, packagePath, entryPointPath) :
-      loadedEntryPointPackageJson;
-
-  if (entryPointPackageJson === null) {
-    // package.json exists but could not be parsed and there was no redeeming config
-    return INCOMPATIBLE_ENTRY_POINT;
+  } else {
+    entryPointPackageJson = mergeConfigAndPackageJson(
+        loadedEntryPointPackageJson, entryPointConfig, packagePath, entryPointPath);
   }
 
   const typings = entryPointPackageJson.typings || entryPointPackageJson.types ||
@@ -234,20 +236,15 @@ export function getEntryPointFormat(
 }
 
 /**
- * Parses the JSON from a package.json file.
- * @param packageJsonPath the absolute path to the package.json file.
- * @returns JSON from the package.json file if it is valid, `null` otherwise.
+ * Parse the JSON from a `package.json` file.
+ * @param packageJsonPath the absolute path to the `package.json` file.
+ * @returns JSON from the `package.json` file if it is valid, `null` otherwise.
  */
-function loadEntryPointPackage(
-    fs: FileSystem, logger: Logger, packageJsonPath: AbsoluteFsPath,
-    hasConfig: boolean): EntryPointPackageJson|null {
+function loadPackageJson(fs: FileSystem, packageJsonPath: AbsoluteFsPath): EntryPointPackageJson|
+    null {
   try {
     return JSON.parse(fs.readFile(packageJsonPath));
-  } catch (e) {
-    if (!hasConfig) {
-      // We may have run into a package.json with unexpected symbols
-      logger.warn(`Failed to read entry point info from ${packageJsonPath} with error ${e}.`);
-    }
+  } catch {
     return null;
   }
 }
@@ -305,16 +302,14 @@ function guessTypingsFromPackageJson(
 /**
  * Find the version of the package at `packageJsonPath`.
  *
- * @returns the version string or `null` if the package.json does not exist or is invalid.
+ * The version is read off of the `version` property of `packageJson`. It is assumed that even if
+ * `packageJson` corresponds to a secondary entry-point (e.g. `@angular/common/http`) it will still
+ * contain the same version as the main package (e.g. `@angular/common`).
+ *
+ * @param packageJson the parsed `package.json` of the package or one of its entry-points (if
+ *     available).
+ * @returns the version string or `null` if the `package.json` is not available.
  */
-function getPackageVersion(fs: FileSystem, packageJsonPath: AbsoluteFsPath): string|null {
-  try {
-    if (fs.exists(packageJsonPath)) {
-      const packageJson = JSON.parse(fs.readFile(packageJsonPath));
-      return packageJson['version'] || null;
-    }
-  } catch {
-    // Do nothing
-  }
-  return null;
+function getPackageVersion(packageJson: EntryPointPackageJson|null): string|null {
+  return packageJson?.version ?? null;
 }
