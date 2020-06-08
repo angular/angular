@@ -675,6 +675,11 @@
           "url": "guide/browser-support",
           "title": "Browser Support",
           "tooltip": "Browser support and polyfills guide."
+        },
+        {
+          "url": "guide/strict-mode",
+          "title": "Strict mode",
+          "tooltip": "Reference documentation for Angular's strict mode."
         }
       ]
     },

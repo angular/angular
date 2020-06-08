@@ -79,6 +79,10 @@ The initial `tsconfig.base.json` for an Angular workspace typically looks like t
 }
 </code-example>
 
+### Strict mode
+
+When you create new workspaces and projects, you have the option to use Angular's strict mode, which can help you write better, more maintainable code.
+For more information, see [Strict mode](/guide/strict-mode).
 
 {@a noImplicitAny}
 
