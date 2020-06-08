@@ -1185,7 +1185,7 @@ export declare abstract class Renderer2 {
         [key: string]: any;
     };
     destroyNode: ((node: any) => void) | null;
-    abstract addClass(el: any, name: string): void;
+    abstract addClass(el: any, name: string | string[]): void;
     abstract appendChild(parent: any, newChild: any): void;
     abstract createComment(value: string): any;
     abstract createElement(name: string, namespace?: string | null): any;
@@ -1197,7 +1197,7 @@ export declare abstract class Renderer2 {
     abstract parentNode(node: any): any;
     abstract removeAttribute(el: any, name: string, namespace?: string | null): void;
     abstract removeChild(parent: any, oldChild: any, isHostElement?: boolean): void;
-    abstract removeClass(el: any, name: string): void;
+    abstract removeClass(el: any, name: string | string[]): void;
     abstract removeStyle(el: any, style: string, flags?: RendererStyleFlags2): void;
     abstract selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): any;
     abstract setAttribute(el: any, name: string, value: string, namespace?: string | null): void;

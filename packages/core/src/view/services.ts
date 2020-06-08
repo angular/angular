@@ -799,18 +799,30 @@ export class DebugRenderer2 implements Renderer2 {
     this.delegate.removeAttribute(el, name, namespace);
   }
 
-  addClass(el: any, name: string): void {
+  addClass(el: any, name: string|string[]): void {
     const debugEl = getDebugNode(el);
     if (debugEl && debugEl instanceof DebugElement__PRE_R3__) {
-      debugEl.classes[name] = true;
+      if (typeof name === 'string') {
+        debugEl.classes[name] = true;
+      } else {
+        for (const klass of name) {
+          debugEl.classes[klass] = true;
+        }
+      }
     }
     this.delegate.addClass(el, name);
   }
 
-  removeClass(el: any, name: string): void {
+  removeClass(el: any, name: string|string[]): void {
     const debugEl = getDebugNode(el);
     if (debugEl && debugEl instanceof DebugElement__PRE_R3__) {
-      debugEl.classes[name] = false;
+      if (typeof name === 'string') {
+        debugEl.classes[name] = false;
+      } else {
+        for (const klass of name) {
+          debugEl.classes[klass] = false;
+        }
+      }
     }
     this.delegate.removeClass(el, name);
   }

@@ -215,18 +215,18 @@ export abstract class Renderer2 {
    */
   abstract removeAttribute(el: any, name: string, namespace?: string|null): void;
   /**
-   * Implement this callback to add a class to an element in the DOM.
+   * Implement this callback to add one or more classes to an element in the DOM.
    * @param el The element.
    * @param name The class name.
    */
-  abstract addClass(el: any, name: string): void;
+  abstract addClass(el: any, name: string|string[]): void;
 
   /**
-   * Implement this callback to remove a class from an element in the DOM.
+   * Implement this callback to remove one or more classes from an element in the DOM.
    * @param el The element.
    * @param name The class name.
    */
-  abstract removeClass(el: any, name: string): void;
+  abstract removeClass(el: any, name: string|string[]): void;
 
   /**
    * Implement this callback to set a CSS style for an element in the DOM.
