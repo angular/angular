@@ -28,6 +28,11 @@ export interface EntryPoint extends JsonObject {
   name: string;
   /** The path to this entry point. */
   path: AbsoluteFsPath;
+  /**
+   * The name of the package that contains this entry-point (e.g. `@angular/core` or
+   * `@angular/common`).
+   */
+  packageName: string;
   /** The path to the package that contains this entry-point. */
   packagePath: AbsoluteFsPath;
   /** The parsed package.json file for this entry-point. */
@@ -131,7 +136,8 @@ export function getEntryPointInfo(
   const loadedEntryPointPackageJson = (packagePackageJsonPath === entryPointPackageJsonPath) ?
       loadedPackagePackageJson :
       loadPackageJson(fs, entryPointPackageJsonPath);
-  const packageVersion = getPackageVersion(loadedPackagePackageJson);
+  const {packageName, packageVersion} = getPackageNameAndVersion(
+      fs, packagePath, loadedPackagePackageJson, loadedEntryPointPackageJson);
   const entryPointConfig =
       config.getPackageConfig(packagePath, packageVersion).entryPoints[entryPointPath];
   let entryPointPackageJson: EntryPointPackageJson;
@@ -173,6 +179,7 @@ export function getEntryPointInfo(
   const entryPointInfo: EntryPoint = {
     name: entryPointPackageJson.name,
     path: entryPointPath,
+    packageName,
     packagePath,
     packageJson: entryPointPackageJson,
     typings: resolve(entryPointPath, typings),
@@ -304,15 +311,44 @@ function guessTypingsFromPackageJson(
 }
 
 /**
- * Find the version of the package at `packageJsonPath`.
+ * Find or infer the name and version of a package.
  *
- * The version is read off of the `version` property of the package's `package.json` file (if
- * available).
+ * - The name is computed based on the `name` property of the package's or the entry-point's
+ *   `package.json` file (if available) or inferred from the package's path.
+ * - The version is read off of the `version` property of the package's `package.json` file (if
+ *   available).
  *
- * @param packageJson the parsed `package.json` of the package (if available).
- * @returns the version string or `null` if the `pckage.json` file is missing or doesn't contain a
- *     version.
+ * @param fs The `FileSystem` instance to use for parsing `packagePath` (if needed).
+ * @param packagePath the absolute path to the package.
+ * @param packagePackageJson the parsed `package.json` of the package (if available).
+ * @param entryPointPackageJson the parsed `package.json` of an entry-point (if available).
+ * @returns the computed name and version of the package.
  */
-function getPackageVersion(packageJson: EntryPointPackageJson|null): string|null {
-  return packageJson?.version ?? null;
+function getPackageNameAndVersion(
+    fs: FileSystem, packagePath: AbsoluteFsPath, packagePackageJson: EntryPointPackageJson|null,
+    entryPointPackageJson: EntryPointPackageJson|
+    null): {packageName: string, packageVersion: string|null} {
+  let packageName: string;
+
+  if (packagePackageJson !== null) {
+    // We have a valid `package.json` for the package: Get the package name from that.
+    packageName = packagePackageJson.name;
+  } else if (entryPointPackageJson !== null) {
+    // We have a valid `package.json` for the entry-point: Get the package name from that.
+    // This might be a secondary entry-point, so make sure we only keep the main package's name
+    // (e.g. only keep `@angular/common` from `@angular/common/http`).
+    packageName = /^(?:@[^/]+\/)?[^/]*/.exec(entryPointPackageJson.name)![0];
+  } else {
+    // We don't have a valid `package.json`: Infer the package name from the package's path.
+    const lastSegment = fs.basename(packagePath);
+    const secondLastSegment = fs.basename(fs.dirname(packagePath));
+
+    packageName =
+        secondLastSegment.startsWith('@') ? `${secondLastSegment}/${lastSegment}` : lastSegment;
+  }
+
+  return {
+    packageName,
+    packageVersion: packagePackageJson?.version ?? null,
+  };
 }

@@ -45,6 +45,7 @@ runInEachFileSystem(() => {
          expect(entryPoint).toEqual({
            name: 'some_package/valid_entry_point',
            path: _('/project/node_modules/some_package/valid_entry_point'),
+           packageName: 'some_package',
            packagePath: SOME_PACKAGE,
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
            typings:
@@ -194,6 +195,7 @@ runInEachFileSystem(() => {
       expect(entryPoint).toEqual({
         name: 'some_package/valid_entry_point',
         path: _('/project/node_modules/some_package/valid_entry_point'),
+        packageName: 'some_package',
         packagePath: SOME_PACKAGE,
         packageJson: overriddenPackageJson,
         typings: _('/project/node_modules/some_package/valid_entry_point/some_other.d.ts'),
@@ -242,6 +244,7 @@ runInEachFileSystem(() => {
          expect(entryPoint).toEqual({
            name: 'some_package/missing_package_json',
            path: _('/project/node_modules/some_package/missing_package_json'),
+           packageName: 'some_package',
            packagePath: SOME_PACKAGE,
            packageJson: {name: 'some_package/missing_package_json', ...override},
            typings: _(
@@ -252,6 +255,137 @@ runInEachFileSystem(() => {
          });
        });
 
+    it('should correctly compute the containing package\'s name', () => {
+      const logger = new MockLogger();
+      const config = new NgccConfiguration(fs, _('/project'));
+      const getPackageConfigSpy = spyOn(config, 'getPackageConfig').and.callThrough();
+
+      // Helpers
+      const setUpAndComputePackageName =
+          (packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath,
+           entryPointName?: string) => {
+            const entryPointPackageJsonPath = fs.join(entryPointPath, 'package.json');
+
+            if (entryPointName !== undefined) {
+              // Ensure a `package.json` exists for the entry-point (containing `entryPointName`).
+              loadTestFiles([
+                {
+                  name: entryPointPackageJsonPath,
+                  contents: JSON.stringify({name: entryPointName, typings: './index.d.ts'}),
+                },
+              ]);
+            } else {
+              // Ensure the entry-point `package.json` does not exist (e.g. from a previous test).
+              if (fs.exists(entryPointPackageJsonPath)) {
+                fs.removeFile(entryPointPackageJsonPath);
+              }
+
+              // Ensure there is an ngcc config for the entry-point.
+              getPackageConfigSpy.withArgs(packagePath, null).and.returnValue({
+                entryPoints: {
+                  [entryPointPath]: {
+                    // Include a `typings` field when there is no `package.json` to avoid returning
+                    // `INCOMPATIBLE_ENTRY_POINT`.
+                    override: {typings: './index.d.ts'},
+                  },
+                },
+              });
+            }
+
+            const entryPoint = getEntryPointInfo(fs, config, logger, packagePath, entryPointPath);
+
+            if (!isEntryPoint(entryPoint)) {
+              return fail(`Expected an entry point but got ${entryPoint}`);
+            }
+
+            return entryPoint.packageName;
+          };
+
+      [false, true].forEach(isScoped => {
+        const nameWithScope = (baseName: string) => `${isScoped ? '@some-scope/' : ''}${baseName}`;
+
+        // Primary entry-point with `package.json`.
+        expect(setUpAndComputePackageName(
+                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
+                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
+                   nameWithScope('package-json-package-name'),
+                   ))
+            .toBe(nameWithScope('package-json-package-name'));
+
+        // Primary entry-point without `package.json`.
+        expect(setUpAndComputePackageName(
+                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
+                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
+                   ))
+            .toBe(nameWithScope('on-disk-package-name'));
+
+        // Secondary entry-point with `package.json`.
+        expect(setUpAndComputePackageName(
+                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
+                   _(`/project/node_modules/${
+                       nameWithScope('on-disk-package-name')}/some-entry-point`),
+                   nameWithScope('package-json-package-name/some-entry-point'),
+                   ))
+            .toBe(nameWithScope('package-json-package-name'));
+
+        // Secondary entry-point without `package.json`.
+        expect(setUpAndComputePackageName(
+                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
+                   _(`/project/node_modules/${
+                       nameWithScope('on-disk-package-name')}/some-entry-point`),
+                   ))
+            .toBe(nameWithScope('on-disk-package-name'));
+
+
+        // Primary entry-point without `package.json` in nested `node_modules/`.
+        expect(setUpAndComputePackageName(
+                   _(`/project/node_modules/other-package/node_modules/${
+                       nameWithScope('on-disk-package-name')}`),
+                   _(`/project/node_modules/other-package/node_modules/${
+                       nameWithScope('on-disk-package-name')}`),
+                   ))
+            .toBe(nameWithScope('on-disk-package-name'));
+
+        // Secondary entry-point without `package.json` in nested `node_modules/`.
+        expect(setUpAndComputePackageName(
+                   _(`/project/node_modules/other-package/node_modules/${
+                       nameWithScope('on-disk-package-name')}`),
+                   _(`/project/node_modules/other-package/node_modules/${
+                       nameWithScope('on-disk-package-name')}/some-entry-point`),
+                   ))
+            .toBe(nameWithScope('on-disk-package-name'));
+
+        // Primary entry-point with `package.json` outside `node_modules/`.
+        expect(setUpAndComputePackageName(
+                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
+                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
+                   nameWithScope('package-json-package-name'),
+                   ))
+            .toBe(nameWithScope('package-json-package-name'));
+
+        // Primary entry-point without `package.json` outside `node_modules/`.
+        expect(setUpAndComputePackageName(
+                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
+                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
+                   ))
+            .toBe(nameWithScope('on-disk-package-name'));
+
+        // Secondary entry-point with `package.json` outside `node_modules/`.
+        expect(setUpAndComputePackageName(
+                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
+                   _(`/project/libs/${nameWithScope('on-disk-package-name')}/some-entry-point`),
+                   nameWithScope('package-json-package-name'),
+                   ))
+            .toBe(nameWithScope('package-json-package-name'));
+
+        // Secondary entry-point without `package.json` outside `node_modules/`.
+        expect(setUpAndComputePackageName(
+                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
+                   _(`/project/libs/${nameWithScope('on-disk-package-name')}/some-entry-point`),
+                   ))
+            .toBe(nameWithScope('on-disk-package-name'));
+      });
+    });
 
     it('should return `INCOMPATIBLE_ENTRY_POINT` if there is no typings or types field in the package.json',
        () => {
@@ -323,6 +457,7 @@ runInEachFileSystem(() => {
            expect(entryPoint).toEqual({
              name: 'some_package/missing_typings',
              path: _('/project/node_modules/some_package/missing_typings'),
+             packageName: 'some_package',
              packagePath: SOME_PACKAGE,
              packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_typings'),
              typings: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
@@ -348,6 +483,7 @@ runInEachFileSystem(() => {
          expect(entryPoint).toEqual({
            name: 'some_package/missing_metadata',
            path: _('/project/node_modules/some_package/missing_metadata'),
+           packageName: 'some_package',
            packagePath: SOME_PACKAGE,
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
            typings: _(`/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts`),
@@ -377,6 +513,7 @@ runInEachFileSystem(() => {
          expect(entryPoint).toEqual({
            name: 'some_package/missing_metadata',
            path: _('/project/node_modules/some_package/missing_metadata'),
+           packageName: 'some_package',
            packagePath: SOME_PACKAGE,
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
            typings: _('/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts'),
@@ -405,6 +542,7 @@ runInEachFileSystem(() => {
       expect(entryPoint).toEqual({
         name: 'some_package/types_rather_than_typings',
         path: _('/project/node_modules/some_package/types_rather_than_typings'),
+        packageName: 'some_package',
         packagePath: SOME_PACKAGE,
         packageJson:
             loadPackageJson(fs, '/project/node_modules/some_package/types_rather_than_typings'),
@@ -440,6 +578,7 @@ runInEachFileSystem(() => {
       expect(entryPoint).toEqual({
         name: 'some_package/material_style',
         path: _('/project/node_modules/some_package/material_style'),
+        packageName: 'some_package',
         packagePath: SOME_PACKAGE,
         packageJson: loadPackageJson(fs, '/project/node_modules/some_package/material_style'),
         typings: _(`/project/node_modules/some_package/material_style/material_style.d.ts`),
