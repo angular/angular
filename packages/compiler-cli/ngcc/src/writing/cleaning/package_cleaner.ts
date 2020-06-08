@@ -63,7 +63,7 @@ export function cleanOutdatedPackages(fileSystem: FileSystem, entryPoints: Entry
   const packagesToClean = new Set<AbsoluteFsPath>();
   for (const entryPoint of entryPoints) {
     if (needsCleaning(entryPoint.packageJson)) {
-      packagesToClean.add(entryPoint.package);
+      packagesToClean.add(entryPoint.packagePath);
     }
   }
 

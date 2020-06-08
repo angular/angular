@@ -451,7 +451,8 @@ runInEachFileSystem(() => {
 
       function dumpEntryPointPaths(
           basePath: AbsoluteFsPath, entryPoints: EntryPoint[]): [string, string][] {
-        return entryPoints.map(x => [relative(basePath, x.package), relative(basePath, x.path)]);
+        return entryPoints.map(
+            x => [relative(basePath, x.packagePath), relative(basePath, x.path)]);
       }
     });
   });
