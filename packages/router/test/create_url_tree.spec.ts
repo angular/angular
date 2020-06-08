@@ -11,7 +11,7 @@ import {BehaviorSubject} from 'rxjs';
 import {createUrlTree} from '../src/create_url_tree';
 import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 
 describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
@@ -240,6 +240,29 @@ describe('createUrlTree', () => {
     const t = createRoot(p, [], {}, 'fragment');
     expect(t.fragment).toEqual('fragment');
   });
+
+  it('should support pathless route', () => {
+    const p = serializer.parse('/a');
+    const t = create(p.root.children[PRIMARY_OUTLET], -1, p, ['b']);
+    expect(serializer.serialize(t)).toEqual('/b');
+  });
+
+  it('should support pathless route with ../ at root', () => {
+    const p = serializer.parse('/a');
+    const t = create(p.root.children[PRIMARY_OUTLET], -1, p, ['../b']);
+    expect(serializer.serialize(t)).toEqual('/b');
+  });
+
+  it('should support pathless child of pathless root', () => {
+    // i.e. routes = {path: '', loadChildren: () => import('child')...}
+    // forChild: {path: '', component: Comp}
+    const p = serializer.parse('');
+    const empty = new UrlSegmentGroup([], {});
+    p.root.children[PRIMARY_OUTLET] = empty;
+    empty.parent = p.root;
+    const t = create(empty, -1, p, ['lazy']);
+    expect(serializer.serialize(t)).toEqual('/lazy');
+  });
 });
 
 function createRoot(tree: UrlTree, commands: any[], queryParams?: Params, fragment?: string) {
@@ -260,8 +283,8 @@ function create(
     expect(segment).toBeDefined();
   }
   const s = new (ActivatedRouteSnapshot as any)(
-      [], <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null, <any>segment,
-      startIndex, <any>null);
+      segment.segments, <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null,
+      <any>segment, startIndex, <any>null);
   const a = new (ActivatedRoute as any)(
       new BehaviorSubject(null!), new BehaviorSubject(null!), new BehaviorSubject(null!),
       new BehaviorSubject(null!), new BehaviorSubject(null!), PRIMARY_OUTLET, 'someComponent', s);
