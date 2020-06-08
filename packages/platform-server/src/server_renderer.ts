@@ -150,12 +150,20 @@ class DefaultServerRenderer2 implements Renderer2 {
     }
   }
 
-  addClass(el: any, name: string): void {
-    el.classList.add(name);
+  addClass(el: any, name: string|string[]): void {
+    if (typeof name === 'string') {
+      el.classList.add(name);
+    } else {
+      el.classList.add(...name);
+    }
   }
 
-  removeClass(el: any, name: string): void {
-    el.classList.remove(name);
+  removeClass(el: any, name: string|string[]): void {
+    if (typeof name === 'string') {
+      el.classList.remove(name);
+    } else {
+      el.classList.remove(...name);
+    }
   }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
