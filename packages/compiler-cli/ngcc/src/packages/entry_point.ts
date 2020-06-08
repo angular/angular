@@ -138,8 +138,9 @@ export function getEntryPointInfo(
       loadPackageJson(fs, entryPointPackageJsonPath);
   const {packageName, packageVersion} = getPackageNameAndVersion(
       fs, packagePath, loadedPackagePackageJson, loadedEntryPointPackageJson);
-  const entryPointConfig =
-      config.getPackageConfig(packagePath, packageVersion).entryPoints[entryPointPath];
+
+  const packageConfig = config.getPackageConfig(packageName, packagePath, packageVersion);
+  const entryPointConfig = packageConfig.entryPoints.get(entryPointPath);
   let entryPointPackageJson: EntryPointPackageJson;
 
   if (entryPointConfig === undefined) {
