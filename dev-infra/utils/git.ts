@@ -69,11 +69,11 @@ export class GitClient {
 
   constructor(
       private _githubToken?: string, private _config: Pick<NgDevConfig, 'github'> = getConfig()) {
-    // If a token has been specified, pass it to the Octokit API and also create
-    // a regular expression that can be used for sanitizing Git command output
+    // If a token has been specified (and is not empty), pass it to the Octokit API and
+    // also create a regular expression that can be used for sanitizing Git command output
     // so that it does not print the token accidentally.
-    if (this._githubToken != null) {
-      this._githubTokenRegex = new RegExp(this._githubToken, 'g')
+    if (_githubToken != null) {
+      this._githubTokenRegex = new RegExp(_githubToken, 'g')
     }
 
     this.api = new Octokit({auth: _githubToken});
