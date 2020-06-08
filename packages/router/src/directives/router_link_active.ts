@@ -126,13 +126,11 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
       const hasActiveLinks = this.hasActiveLinks();
       if (this.isActive !== hasActiveLinks) {
         (this as any).isActive = hasActiveLinks;
-        this.classes.forEach((c) => {
-          if (hasActiveLinks) {
-            this.renderer.addClass(this.element.nativeElement, c);
-          } else {
-            this.renderer.removeClass(this.element.nativeElement, c);
-          }
-        });
+        if (hasActiveLinks) {
+          this.renderer.addClass(this.element.nativeElement, this.classes);
+        } else {
+          this.renderer.removeClass(this.element.nativeElement, this.classes);
+        }
       }
     });
   }
