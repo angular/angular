@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join, relative} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
@@ -45,6 +45,7 @@ runInEachFileSystem(() => {
          expect(entryPoint).toEqual({
            name: 'some_package/valid_entry_point',
            path: _('/project/node_modules/some_package/valid_entry_point'),
+           packageName: 'some_package',
            packagePath: SOME_PACKAGE,
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
            typings:
@@ -194,6 +195,7 @@ runInEachFileSystem(() => {
       expect(entryPoint).toEqual({
         name: 'some_package/valid_entry_point',
         path: _('/project/node_modules/some_package/valid_entry_point'),
+        packageName: 'some_package',
         packagePath: SOME_PACKAGE,
         packageJson: overriddenPackageJson,
         typings: _('/project/node_modules/some_package/valid_entry_point/some_other.d.ts'),
@@ -242,6 +244,7 @@ runInEachFileSystem(() => {
          expect(entryPoint).toEqual({
            name: 'some_package/missing_package_json',
            path: _('/project/node_modules/some_package/missing_package_json'),
+           packageName: 'some_package',
            packagePath: SOME_PACKAGE,
            packageJson: {name: 'some_package/missing_package_json', ...override},
            typings: _(
@@ -252,6 +255,154 @@ runInEachFileSystem(() => {
          });
        });
 
+    [false, true].forEach(isScoped => {
+      const nameWithScope = (baseName: string) => `${isScoped ? '@some-scope/' : ''}${baseName}`;
+      const getPackageName = (packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath) => {
+        const config = new NgccConfiguration(fs, _('/project'));
+        const logger = new MockLogger();
+        const entryPoint = getEntryPointInfo(fs, config, logger, packagePath, entryPointPath);
+
+        if (!isEntryPoint(entryPoint)) {
+          return fail(`Expected an entry point but got ${entryPoint}`);
+        }
+
+        return entryPoint.packageName;
+      };
+      const setUpPackageWithEntryPointPackageJson =
+          (entryPointName: string, entryPointPath: AbsoluteFsPath) => {
+            // Ensure a `package.json` exists for the entry-point (containing `entryPointName`).
+            loadTestFiles([
+              {
+                name: join(entryPointPath, 'package.json'),
+                contents: JSON.stringify({name: entryPointName, typings: './index.d.ts'}),
+              },
+            ]);
+          };
+      const setUpPackageWithoutEntryPointPackageJson =
+          (packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath) => {
+            // Ensure there is an ngcc config for the entry-point providing a `typings` field  to
+            // avoid returning `INCOMPATIBLE_ENTRY_POINT` (since there is no `package.json`).
+            loadTestFiles([
+              {
+                name: join(packagePath, 'ngcc.config.js'),
+                contents: `
+                  module.exports = {
+                    entryPoints: {
+                      '${relative(packagePath, entryPointPath)}': {
+                        override: {typings: './index.d.ts'},
+                      },
+                    },
+                  };
+                `,
+              },
+            ]);
+          };
+
+      describe(`should compute the containing ${isScoped ? 'scoped ' : ''}package's name`, () => {
+        it('for a primary entry-point with a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('package-json-package-name');
+
+          setUpPackageWithEntryPointPackageJson(expectedPackageName, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a primary entry-point without a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point with a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('package-json-package-name');
+
+          setUpPackageWithEntryPointPackageJson(
+              `${expectedPackageName}/some-entry-point`, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point without a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a primary entry-point without a `package.json` in nested `node_modules/`', () => {
+          const packagePath = _(`/project/node_modules/other-package/node_modules/${
+              nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point without a `package.json` in nested `node_modules/`', () => {
+          const packagePath = _(`/project/node_modules/other-package/node_modules/${
+              nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a primary entry-point with a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('package-json-package-name');
+
+          setUpPackageWithEntryPointPackageJson(expectedPackageName, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a primary entry-point without a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point with a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('package-json-package-name');
+
+          setUpPackageWithEntryPointPackageJson(expectedPackageName, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point without a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+      });
+    });
 
     it('should return `INCOMPATIBLE_ENTRY_POINT` if there is no typings or types field in the package.json',
        () => {
@@ -323,6 +474,7 @@ runInEachFileSystem(() => {
            expect(entryPoint).toEqual({
              name: 'some_package/missing_typings',
              path: _('/project/node_modules/some_package/missing_typings'),
+             packageName: 'some_package',
              packagePath: SOME_PACKAGE,
              packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_typings'),
              typings: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
@@ -348,6 +500,7 @@ runInEachFileSystem(() => {
          expect(entryPoint).toEqual({
            name: 'some_package/missing_metadata',
            path: _('/project/node_modules/some_package/missing_metadata'),
+           packageName: 'some_package',
            packagePath: SOME_PACKAGE,
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
            typings: _(`/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts`),
@@ -377,6 +530,7 @@ runInEachFileSystem(() => {
          expect(entryPoint).toEqual({
            name: 'some_package/missing_metadata',
            path: _('/project/node_modules/some_package/missing_metadata'),
+           packageName: 'some_package',
            packagePath: SOME_PACKAGE,
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
            typings: _('/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts'),
@@ -405,6 +559,7 @@ runInEachFileSystem(() => {
       expect(entryPoint).toEqual({
         name: 'some_package/types_rather_than_typings',
         path: _('/project/node_modules/some_package/types_rather_than_typings'),
+        packageName: 'some_package',
         packagePath: SOME_PACKAGE,
         packageJson:
             loadPackageJson(fs, '/project/node_modules/some_package/types_rather_than_typings'),
@@ -440,6 +595,7 @@ runInEachFileSystem(() => {
       expect(entryPoint).toEqual({
         name: 'some_package/material_style',
         path: _('/project/node_modules/some_package/material_style'),
+        packageName: 'some_package',
         packagePath: SOME_PACKAGE,
         packageJson: loadPackageJson(fs, '/project/node_modules/some_package/material_style'),
         typings: _(`/project/node_modules/some_package/material_style/material_style.d.ts`),
