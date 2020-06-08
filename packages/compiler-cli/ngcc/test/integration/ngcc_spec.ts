@@ -1572,7 +1572,7 @@ runInEachFileSystem(() => {
           },
           {
             name: _('/node_modules/deep_import/package.json'),
-            contents: '{"name": "deep-import", "es2015": "./index.js", "typings": "./index.d.ts"}',
+            contents: '{"name": "deep_import", "es2015": "./index.js", "typings": "./index.d.ts"}',
           },
           {
             name: _('/node_modules/deep_import/entry_point.js'),

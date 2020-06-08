@@ -149,6 +149,7 @@ runInEachFileSystem(() => {
           entryPoint: {
             name: 'some_package/valid_entry_point',
             path: _Abs('/project/node_modules/some_package/valid_entry_point'),
+            packageName: 'some_package',
             packagePath: _Abs('/project/node_modules/some_package'),
             packageJson: jasmine.any(Object),
             typings:

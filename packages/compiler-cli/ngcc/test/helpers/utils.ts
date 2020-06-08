@@ -22,6 +22,7 @@ export function makeTestEntryPoint(
   return {
     name: entryPointName,
     path: absoluteFrom(`/node_modules/${entryPointName}`),
+    packageName,
     packagePath: absoluteFrom(`/node_modules/${packageName}`),
     packageJson: {name: entryPointName},
     typings: absoluteFrom(`/node_modules/${entryPointName}/index.d.ts`),
