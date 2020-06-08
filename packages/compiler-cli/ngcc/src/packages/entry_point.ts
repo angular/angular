@@ -80,11 +80,15 @@ export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
 
 
 /**
- * The path does not represent an entry-point:
- * * there is no package.json at the path and there is no config to force an entry-point
- * * or the entrypoint is `ignored` by a config.
+ * The path does not represent an entry-point, i.e. there is no package.json at the path and there
+ * is no config to force an entry-point.
  */
 export const NO_ENTRY_POINT = 'no-entry-point';
+
+/**
+ * The path represents an entry-point that is `ignored` by an ngcc config.
+ */
+export const IGNORED_ENTRY_POINT = 'ignored-entry-point';
 
 /**
  * The path has a package.json, but it is not a valid entry-point for ngcc processing.
@@ -100,7 +104,8 @@ export const INCOMPATIBLE_ENTRY_POINT = 'incompatible-entry-point';
  * * INCOMPATIBLE_ENTRY_POINT - the path was a non-processable entry-point that should be searched
  * for sub-entry-points
  */
-export type GetEntryPointResult = EntryPoint|typeof INCOMPATIBLE_ENTRY_POINT|typeof NO_ENTRY_POINT;
+export type GetEntryPointResult =
+    EntryPoint|typeof IGNORED_ENTRY_POINT|typeof INCOMPATIBLE_ENTRY_POINT|typeof NO_ENTRY_POINT;
 
 
 /**
@@ -109,11 +114,12 @@ export type GetEntryPointResult = EntryPoint|typeof INCOMPATIBLE_ENTRY_POINT|typ
  * @param packagePath the absolute path to the containing npm package
  * @param entryPointPath the absolute path to the potential entry-point.
  * @returns
- * - An entry-point if it is valid.
+ * - An entry-point if it is valid and not ignored.
  * - `NO_ENTRY_POINT` when there is no package.json at the path and there is no config to force an
- * entry-point or the entrypoint is `ignored`.
- * - `INCOMPATIBLE_ENTRY_POINT` there is a package.json but it is not a valid Angular compiled
- * entry-point.
+ *   entry-point,
+ * - `IGNORED_ENTRY_POINT` when the entry-point is ignored by an ngcc config.
+ * - `INCOMPATIBLE_ENTRY_POINT` when there is a package.json but it is not a valid Angular compiled
+ *   entry-point.
  */
 export function getEntryPointInfo(
     fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
@@ -131,7 +137,7 @@ export function getEntryPointInfo(
 
   if (hasConfig && entryPointConfig.ignore === true) {
     // Explicitly ignored
-    return NO_ENTRY_POINT;
+    return IGNORED_ENTRY_POINT;
   }
 
   const loadedEntryPointPackageJson = loadEntryPointPackage(fs, logger, packageJsonPath, hasConfig);
@@ -172,6 +178,11 @@ export function getEntryPointInfo(
   };
 
   return entryPointInfo;
+}
+
+export function isEntryPoint(result: GetEntryPointResult): result is EntryPoint {
+  return result !== NO_ENTRY_POINT && result !== INCOMPATIBLE_ENTRY_POINT &&
+      result !== IGNORED_ENTRY_POINT;
 }
 
 /**

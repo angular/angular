@@ -11,7 +11,7 @@ import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../packages/entry_point';
+import {EntryPoint, getEntryPointInfo, isEntryPoint} from '../packages/entry_point';
 import {PathMappings} from '../path_mappings';
 
 import {EntryPointFinder} from './interface';
@@ -61,10 +61,8 @@ export abstract class TracingEntryPointFinder implements EntryPointFinder {
     const packagePath = this.computePackagePath(entryPointPath);
     const entryPoint =
         getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
-    if (entryPoint === NO_ENTRY_POINT || entryPoint === INCOMPATIBLE_ENTRY_POINT) {
-      return null;
-    }
-    return entryPoint;
+
+    return isEntryPoint(entryPoint) ? entryPoint : null;
   }
 
   private processNextPath(): void {

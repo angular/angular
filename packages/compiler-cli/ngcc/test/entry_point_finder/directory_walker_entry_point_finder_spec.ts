@@ -103,6 +103,48 @@ runInEachFileSystem(() => {
         expect(entryPoints).toEqual([]);
       });
 
+      it('should not include ignored entry-points', () => {
+        const basePath = _Abs('/project/node_modules');
+        const finder = new DirectoryWalkerEntryPointFinder(
+            fs, config, logger, resolver, manifest, basePath, undefined);
+
+        loadTestFiles(createPackage(basePath, 'some-package'));
+        spyOn(config, 'getPackageConfig').and.returnValue({
+          versionRange: '*',
+          entryPoints: {
+            [_Abs('/project/node_modules/some-package')]: {ignore: true},
+          },
+        });
+
+        const {entryPoints} = finder.findEntryPoints();
+        expect(entryPoints).toEqual([]);
+      });
+
+      it('should look for sub-entry-points even if a containing entry-point is ignored', () => {
+        const basePath = _Abs('/project/node_modules');
+        const finder = new DirectoryWalkerEntryPointFinder(
+            fs, config, logger, resolver, manifest, basePath, undefined);
+
+        loadTestFiles([
+          ...createPackage(basePath, 'some-package'),
+          ...createPackage(fs.resolve(basePath, 'some-package'), 'sub-entry-point-1'),
+          ...createPackage(
+              fs.resolve(basePath, 'some-package/sub-entry-point-1'), 'sub-entry-point-2'),
+        ]);
+        spyOn(config, 'getPackageConfig').and.returnValue({
+          versionRange: '*',
+          entryPoints: {
+            [_Abs('/project/node_modules/some-package/sub-entry-point-1')]: {ignore: true},
+          },
+        });
+
+        const {entryPoints} = finder.findEntryPoints();
+        expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
+          ['some-package', 'some-package'],
+          ['some-package', 'some-package/sub-entry-point-1/sub-entry-point-2'],
+        ]);
+      });
+
       it('should write an entry-point manifest file if none was found and basePath is `node_modules`',
          () => {
            const basePath = _Abs('/sub_entry_points/node_modules');
