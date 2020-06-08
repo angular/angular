@@ -1,3 +1,36 @@
+# 10.0.0-rc.1 "paper-person" (2020-06-08)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **testing/testbed:** set defined event properties as configurable ([94571c5](https://github.com/angular/components/commit/94571c5)) |
+| bug fix |  **testing/testbed:** synthetic DOM events cannot be prevented multiple times ([bde3af8](https://github.com/angular/components/commit/bde3af8)), closes [#19440](https://github.com/angular/components/issues/19440) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **checkbox:** high contrast focus indication not working ([#19488](https://github.com/angular/components/issues/19488)) ([a95da92](https://github.com/angular/components/commit/a95da92)), closes [#19443](https://github.com/angular/components/issues/19443) |
+| bug fix |  **checkbox:** pass aria-describedby through to input ([#19495](https://github.com/angular/components/issues/19495)) ([e1d85d2](https://github.com/angular/components/commit/e1d85d2)), closes [#19477](https://github.com/angular/components/issues/19477) |
+| bug fix |  **datepicker:** compilation errors with ViewEngine ([#19516](https://github.com/angular/components/issues/19516)) ([00e2171](https://github.com/angular/components/commit/00e2171)) |
+| bug fix |  Focus indicators are now positioned ([#19345](https://github.com/angular/components/issues/19345)) ([c05a07e](https://github.com/angular/components/commit/c05a07e)) |
+| bug fix |  **slider:** focus ring not matching theme color ([#19519](https://github.com/angular/components/issues/19519)) ([2a6a63c](https://github.com/angular/components/commit/2a6a63c)), closes [#19507](https://github.com/angular/components/issues/19507) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  add exportAs to all directives ([#19522](https://github.com/angular/components/issues/19522)) ([6544de8](https://github.com/angular/components/commit/6544de8)), closes [#19462](https://github.com/angular/components/issues/19462) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-chips:** removing chip on any key press ([#19425](https://github.com/angular/components/issues/19425)) ([ee63f63](https://github.com/angular/components/commit/ee63f63)) |
+| bug fix |  **mdc-radio:** avoid hard references to base material components ([#19403](https://github.com/angular/components/issues/19403)) ([fb9174a](https://github.com/angular/components/commit/fb9174a)) |
+
+
 # 10.0.0-rc.0 "concrete-cobbler" (2020-06-01)
 
 No library changes from 10.0.0-next.2. Built with Angular 10.0.0-rc.2, which fixes an
