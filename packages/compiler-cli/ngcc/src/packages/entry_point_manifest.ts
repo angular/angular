@@ -126,7 +126,7 @@ export class EntryPointManifest {
       lockFileHash: lockFileHash,
       entryPointPaths: entryPoints.map(e => {
         const entryPointPaths: EntryPointPaths = [
-          this.fs.relative(basePath, e.entryPoint.package),
+          this.fs.relative(basePath, e.entryPoint.packagePath),
           this.fs.relative(basePath, e.entryPoint.path),
         ];
         // Only add depInfo arrays if needed.
