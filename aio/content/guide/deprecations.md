@@ -62,8 +62,7 @@ v9 - v12
 | template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
 | browser support               | [`IE 9 and 10, IE mobile`](#ie-9-10-and-mobile)                               | <!--v10--> v11 |
 
-
-
+For information about Angular CDK and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/master/CHANGELOG.md).
 
 ## Deprecated APIs
 
