@@ -13,7 +13,7 @@ import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {DirectoryWalkerEntryPointFinder} from '../../src/entry_point_finder/directory_walker_entry_point_finder';
-import {NgccConfiguration} from '../../src/packages/configuration';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {PathMappings} from '../../src/path_mappings';
@@ -109,12 +109,13 @@ runInEachFileSystem(() => {
             fs, config, logger, resolver, manifest, basePath, undefined);
 
         loadTestFiles(createPackage(basePath, 'some-package'));
-        spyOn(config, 'getPackageConfig').and.returnValue({
-          versionRange: '*',
-          entryPoints: {
-            [_Abs('/project/node_modules/some-package')]: {ignore: true},
-          },
-        });
+        spyOn(config, 'getPackageConfig')
+            .and.returnValue(
+                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                  entryPoints: {
+                    '.': {ignore: true},
+                  },
+                }));
 
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
@@ -131,12 +132,13 @@ runInEachFileSystem(() => {
           ...createPackage(
               fs.resolve(basePath, 'some-package/sub-entry-point-1'), 'sub-entry-point-2'),
         ]);
-        spyOn(config, 'getPackageConfig').and.returnValue({
-          versionRange: '*',
-          entryPoints: {
-            [_Abs('/project/node_modules/some-package/sub-entry-point-1')]: {ignore: true},
-          },
-        });
+        spyOn(config, 'getPackageConfig')
+            .and.returnValue(
+                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                  entryPoints: {
+                    './sub-entry-point-1': {ignore: true},
+                  },
+                }));
 
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([

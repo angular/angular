@@ -9,7 +9,7 @@
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join, relative} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
-import {NgccConfiguration} from '../../src/packages/configuration';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
 import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat, getEntryPointInfo, IGNORED_ENTRY_POINT, INCOMPATIBLE_ENTRY_POINT, isEntryPoint, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
 
@@ -69,9 +69,10 @@ runInEachFileSystem(() => {
         },
       ]);
       const config = new NgccConfiguration(fs, _('/project'));
-      spyOn(config, 'getPackageConfig').and.returnValue({
-        entryPoints: {[_('/project/node_modules/some_package/valid_entry_point')]: {ignore: true}}
-      } as any);
+      spyOn(config, 'getPackageConfig')
+          .and.returnValue(new ProcessedNgccPackageConfig(
+              _('/project/node_modules/some_package'),
+              {entryPoints: {'./valid_entry_point': {ignore: true}}}));
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
@@ -181,10 +182,10 @@ runInEachFileSystem(() => {
         typings: './some_other.d.ts',
         esm2015: './some_other.js',
       };
-      spyOn(config, 'getPackageConfig').and.returnValue({
-        entryPoints: {[_('/project/node_modules/some_package/valid_entry_point')]: {override}},
-        versionRange: '*'
-      });
+      spyOn(config, 'getPackageConfig')
+          .and.returnValue(new ProcessedNgccPackageConfig(
+              _('/project/node_modules/some_package'),
+              {entryPoints: {'./valid_entry_point': {override}}}));
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
@@ -233,11 +234,10 @@ runInEachFileSystem(() => {
          const config = new NgccConfiguration(fs, _('/project'));
          const override =
              JSON.parse(createPackageJson('missing_package_json', {excludes: ['name']}));
-         spyOn(config, 'getPackageConfig').and.returnValue({
-           entryPoints:
-               {[_('/project/node_modules/some_package/missing_package_json')]: {override}},
-           versionRange: '*'
-         });
+         spyOn(config, 'getPackageConfig')
+             .and.returnValue(new ProcessedNgccPackageConfig(
+                 _('/project/node_modules/some_package/'),
+                 {entryPoints: {'./missing_package_json': {override}}}));
          const entryPoint = getEntryPointInfo(
              fs, config, new MockLogger(), SOME_PACKAGE,
              _('/project/node_modules/some_package/missing_package_json'));
@@ -520,10 +520,10 @@ runInEachFileSystem(() => {
            // no metadata.json!
          ]);
          const config = new NgccConfiguration(fs, _('/project'));
-         spyOn(config, 'getPackageConfig').and.returnValue({
-           entryPoints: {[_('/project/node_modules/some_package/missing_metadata')]: {}},
-           versionRange: '*'
-         });
+         spyOn(config, 'getPackageConfig')
+             .and.returnValue(new ProcessedNgccPackageConfig(
+                 _('/project/node_modules/some_package'),
+                 {entryPoints: {'./missing_metadata': {}}}));
          const entryPoint = getEntryPointInfo(
              fs, config, new MockLogger(), SOME_PACKAGE,
              _('/project/node_modules/some_package/missing_metadata'));
