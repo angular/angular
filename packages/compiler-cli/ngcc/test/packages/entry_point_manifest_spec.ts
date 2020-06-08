@@ -185,6 +185,53 @@ runInEachFileSystem(() => {
         const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
         expect(entryPoints).toEqual(null);
       });
+
+      it('should return null if any of the entry-points are ignored by a config', () => {
+        fs.ensureDir(_Abs('/project/node_modules'));
+        fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
+        loadTestFiles([
+          {
+            name: _Abs('/project/node_modules/some_package/valid_entry_point/package.json'),
+            contents: createPackageJson('valid_entry_point'),
+          },
+          {
+            name: _Abs(
+                '/project/node_modules/some_package/valid_entry_point/valid_entry_point.metadata.json'),
+            contents: 'some meta data',
+          },
+          {
+            name: _Abs('/project/node_modules/some_package/ignored_entry_point/package.json'),
+            contents: createPackageJson('ignored_entry_point'),
+          },
+          {
+            name: _Abs(
+                '/project/node_modules/some_package/ignored_entry_point/ignored_entry_point.metadata.json'),
+            contents: 'some meta data',
+          },
+        ]);
+        manifestFile.entryPointPaths.push(
+            [
+              _Abs('/project/node_modules/some_package'),
+              _Abs('/project/node_modules/some_package/valid_entry_point'), [], [], []
+            ],
+            [
+              _Abs('/project/node_modules/some_package'),
+              _Abs('/project/node_modules/some_package/ignored_entry_point'), [], [], []
+            ],
+        );
+        fs.writeFile(
+            _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
+
+        spyOn(config, 'getPackageConfig').and.returnValue({
+          versionRange: '*',
+          entryPoints: {
+            [_Abs('/project/node_modules/some_package/ignored_entry_point')]: {ignore: true},
+          },
+        });
+
+        const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
+        expect(entryPoints).toEqual(null);
+      });
     });
 
     describe('writeEntryPointManifest()', () => {
