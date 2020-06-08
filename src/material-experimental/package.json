@@ -19,5 +19,8 @@
   "dependencies": {
     "tslib": "0.0.0-TSLIB"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
+  }
 }

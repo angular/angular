@@ -36,5 +36,9 @@
       "@angular/material-moment-adapter"
     ]
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
+  }
 }
+
