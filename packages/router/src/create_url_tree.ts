@@ -148,7 +148,12 @@ function findStartingPosition(nav: Navigation, tree: UrlTree, route: ActivatedRo
   }
 
   if (route.snapshot._lastPathIndex === -1) {
-    return new Position(route.snapshot._urlSegment, true, 0);
+    const segmentGroup = route.snapshot._urlSegment;
+    // Pathless ActivatedRoute has _lastPathIndex === -1 but should not process children
+    // see issue #26224, #13011, #35687
+    // However, if the ActivatedRoute is the root we should process children like above.
+    const processChildren = segmentGroup === tree.root;
+    return new Position(segmentGroup, processChildren, 0);
   }
 
   const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
