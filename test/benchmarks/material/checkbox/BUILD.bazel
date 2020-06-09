@@ -15,7 +15,6 @@ component_benchmark(
         "@npm//@angular/core",
         "@npm//@angular/platform-browser",
         "//src/material/checkbox",
-        "//src/cdk/a11y",
     ],
     ng_srcs = [":app.module.ts"],
     prefix = "",

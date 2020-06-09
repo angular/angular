@@ -1,18 +1,15 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {A11yModule} from '@angular/cdk/a11y';
+
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 
-/**
- * @title Checkbox benchmark component.
- */
 @Component({
   selector: 'app-root',
   template: `
@@ -46,7 +43,6 @@ export class CheckboxBenchmarkApp {
 @NgModule({
   declarations: [CheckboxBenchmarkApp],
   imports: [
-    A11yModule,
     BrowserModule,
     MatCheckboxModule,
   ],
