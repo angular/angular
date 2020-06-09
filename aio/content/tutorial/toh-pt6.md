@@ -79,7 +79,8 @@ Replace the default contents of `in-memory-data.service.ts` with the following:
 
 <code-example path="toh-pt6/src/app/in-memory-data.service.ts" region="init" header="src/app/in-memory-data.service.ts"></code-example>
 
-The `in-memory-data.service.ts` file replaces `mock-heroes.ts`, which is now safe to delete.
+The `in-memory-data.service.ts` file will take over the function of `mock-heroes.ts`.
+However, don't delete `mock-heroes.ts` yet, as you still need it for a few more steps of this tutorial.
 
 When the server is ready, you'll detach the In-memory Web API, and the app's requests will go through to the server.
 
