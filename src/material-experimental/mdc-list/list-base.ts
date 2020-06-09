@@ -46,6 +46,7 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
 
   rippleConfig: RippleConfig = {};
 
+  // TODO(mmalerba): Add @Input for disabling ripple.
   rippleDisabled: boolean;
 
   private _subscriptions = new Subscription();

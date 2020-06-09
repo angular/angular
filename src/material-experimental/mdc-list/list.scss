@@ -108,3 +108,11 @@
   right: 0;
   opacity: 0;
 }
+
+// Normally the `.mdc-list-item__meta` class would be applied to the icon or checkbox directly.
+// However, we need to group multiple potential `ng-content` blocks inside the meta section, so we
+// add them as children instead. These styles ensure that they are properly aligned.
+.mat-mdc-list-option .mdc-list-item__meta .mdc-list-item__graphic {
+  margin-right: 0;
+  vertical-align: middle;
+}

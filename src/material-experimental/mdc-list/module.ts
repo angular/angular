@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MatLineModule, MatRippleModule} from '@angular/material/core';
+import {MatLineModule, MatPseudoCheckboxModule, MatRippleModule} from '@angular/material/core';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatActionList} from './action-list';
 import {
@@ -26,6 +26,7 @@ import {MatListOption, MatSelectionList} from './selection-list';
     CommonModule,
     MatLineModule,
     MatRippleModule,
+    MatPseudoCheckboxModule,
   ],
   exports: [
     MatList,

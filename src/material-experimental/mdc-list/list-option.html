@@ -1,1 +1,25 @@
-TODO: Implement.
+<!-- Save icons and unclassified content to be placed later. -->
+<ng-template #icons>
+  <ng-content select="[mat-list-avatar],[matListAvatar],[mat-list-icon],[matListIcon]"></ng-content>
+</ng-template>
+<ng-template #unsortedContent>
+  <ng-content></ng-content>
+</ng-template>
+
+<!-- Prefix -->
+<span class="mdc-list-item__graphic" *ngIf="checkboxPosition !== 'after' else icons">
+  <mat-pseudo-checkbox></mat-pseudo-checkbox>
+</span>
+<!-- Text -->
+<span class="mdc-list-item__text">
+  <ng-content *ngIf="lines.length else unsortedContent" select="[mat-line],[matLine]"></ng-content>
+</span>
+<!-- Suffix -->
+<span class="mdc-list-item__meta">
+  <span class="mdc-list-item__graphic" *ngIf="checkboxPosition === 'after' else icons">
+    <mat-pseudo-checkbox></mat-pseudo-checkbox>
+  </span>
+  <ng-container *ngIf="lines.length" [ngTemplateOutlet]="unsortedContent"></ng-container>
+</span>
+<!-- Divider -->
+<ng-content select="mat-divider"></ng-content>

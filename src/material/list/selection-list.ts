@@ -32,6 +32,7 @@ import {
   forwardRef,
   Inject,
   Input,
+  isDevMode,
   OnChanges,
   OnDestroy,
   OnInit,
@@ -40,7 +41,6 @@ import {
   SimpleChanges,
   ViewChild,
   ViewEncapsulation,
-  isDevMode,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -51,19 +51,14 @@ import {
   setLines,
   ThemePalette,
 } from '@angular/material/core';
-
 import {Subject} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
-
 import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list';
 
-
-/** @docs-private */
 class MatSelectionListBase {}
 const _MatSelectionListMixinBase: CanDisableRippleCtor & typeof MatSelectionListBase =
     mixinDisableRipple(MatSelectionListBase);
 
-/** @docs-private */
 class MatListOptionBase {}
 const _MatListOptionMixinBase: CanDisableRippleCtor & typeof MatListOptionBase =
     mixinDisableRipple(MatListOptionBase);

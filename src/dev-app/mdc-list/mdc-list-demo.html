@@ -116,6 +116,68 @@
   <div>
     <h2>Selection list</h2>
 
-    TODO: Implement MDC-based selection list.
+    <mat-selection-list #groceries [ngModel]="selectedOptions"
+                        (ngModelChange)="onSelectedOptionsChange($event)"
+                        (change)="changeEventCount = changeEventCount + 1"
+                        [disabled]="selectionListDisabled"
+                        [disableRipple]="selectionListRippleDisabled"
+                        color="primary">
+      <div mat-subheader>Groceries</div>
+
+      <mat-list-option value="bananas" checkboxPosition="before">Bananas</mat-list-option>
+      <mat-list-option selected value="oranges">Oranges</mat-list-option>
+      <mat-list-option value="apples" color="accent">Apples</mat-list-option>
+      <mat-list-option value="strawberries" color="warn">Strawberries</mat-list-option>
+    </mat-selection-list>
+
+    <mat-selection-list [disableRipple]="selectionListRippleDisabled">
+      <div mat-subheader>Dogs</div>
+
+      <mat-list-option checkboxPosition="before">
+        <img matListAvatar src="https://material.angular.io/assets/img/examples/shiba1.jpg">
+        <span matLine>Shiba Inu</span>
+      </mat-list-option>
+
+      <mat-list-option checkboxPosition="after">
+        <img matListAvatar src="https://material.angular.io/assets/img/examples/shiba2.jpg">
+        <span matLine>Other Shiba Inu</span>
+      </mat-list-option>
+    </mat-selection-list>
+
+    <p>Selected: {{selectedOptions | json}}</p>
+    <p>Change Event Count {{changeEventCount}}</p>
+    <p>Model Change Event Count {{modelChangeEventCount}}</p>
+    <p>
+      <mat-checkbox [(ngModel)]="selectionListDisabled">
+        Disable Selection List
+      </mat-checkbox>
+    </p>
+    <p>
+      <mat-checkbox [(ngModel)]="selectionListRippleDisabled">
+        Disable Selection List ripples
+      </mat-checkbox>
+    </p>
+    <p>
+      <button mat-raised-button (click)="groceries.selectAll()">Select all</button>
+      <button mat-raised-button (click)="groceries.deselectAll()">Deselect all</button>
+    </p>
+  </div>
+
+  <div>
+    <h2>Single Selection list</h2>
+
+    <mat-selection-list #favorite
+                        [(ngModel)]="favoriteOptions"
+                        [multiple]="false"
+                        color="primary">
+      <div mat-subheader>Favorite Grocery</div>
+
+      <mat-list-option value="bananas">Bananas</mat-list-option>
+      <mat-list-option selected value="oranges">Oranges</mat-list-option>
+      <mat-list-option value="apples">Apples</mat-list-option>
+      <mat-list-option value="strawberries" color="warn">Strawberries</mat-list-option>
+    </mat-selection-list>
+
+    <p>Selected: {{favoriteOptions | json}}</p>
   </div>
 </div>
