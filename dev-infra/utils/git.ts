@@ -73,7 +73,7 @@ export class GitClient {
     // also create a regular expression that can be used for sanitizing Git command output
     // so that it does not print the token accidentally.
     if (_githubToken != null) {
-      this._githubTokenRegex = new RegExp(_githubToken, 'g')
+      this._githubTokenRegex = new RegExp(_githubToken, 'g');
     }
 
     this.api = new Octokit({auth: _githubToken});
