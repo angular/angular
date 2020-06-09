@@ -7,6 +7,7 @@
 
 load(
     ":external.bzl",
+    "BuildSettingInfo",
     "COMMON_ATTRIBUTES",
     "COMMON_OUTPUTS",
     "DEFAULT_API_EXTRACTOR",
@@ -35,6 +36,15 @@ def is_ivy_enabled(ctx):
     Returns:
       Boolean, Whether the ivy compiler should be used.
     """
+
+    # Check the renderer flag to see if Ivy is enabled.
+    # This is intended to support a transition use case for google3 migration.
+    # The `_renderer` attribute will never be set externally, but will always be
+    # set internally as a `string_flag()` with the allowed values of:
+    # "view_engine" or "ivy".
+    if ((hasattr(ctx.attr, "_renderer") and
+         ctx.attr._renderer[BuildSettingInfo].value == "ivy")):
+        return True
 
     # TODO(josephperott): Remove after ~Feb 2020, to allow local script migrations
     if "compile" in ctx.var and ctx.workspace_name == "angular":
