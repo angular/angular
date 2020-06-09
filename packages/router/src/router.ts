@@ -1137,8 +1137,10 @@ export class Router {
     //   navigation.
     // Note that imperative navs might only trigger a popstate in tests because the
     // SpyLocation triggers it on replaceState. Real browsers don't; see #27059.
-    if (lastNavigation && source !== 'imperative' && lastNavigation.source === 'imperative' &&
-        lastNavigation.urlAfterRedirects.toString() === rawUrl.toString()) {
+    const navigationToSameUrl = lastNavigation.urlAfterRedirects.toString() === rawUrl.toString();
+    const browserNavPrecededByRouterNav =
+        lastNavigation && source !== 'imperative' && lastNavigation.source === 'imperative';
+    if (browserNavPrecededByRouterNav && navigationToSameUrl) {
       return Promise.resolve(true);  // return value is not used
     }
 
