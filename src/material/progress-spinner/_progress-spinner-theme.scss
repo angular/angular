@@ -23,13 +23,9 @@
   }
 }
 
-@mixin mat-progress-spinner-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
- }
+@mixin mat-progress-spinner-typography($config-or-theme) {}
 
-@mixin _mat-progress-spinner-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-}
+@mixin _mat-progress-spinner-density($config-or-theme) {}
 
 @mixin mat-progress-spinner-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);

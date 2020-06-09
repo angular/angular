@@ -80,9 +80,7 @@
   }
 }
 
-@mixin _mat-slide-toggle-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-}
+@mixin _mat-slide-toggle-density($config-or-theme) {}
 
 @mixin mat-slide-toggle-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);

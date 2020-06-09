@@ -97,13 +97,9 @@
   }
 }
 
-@mixin mat-column-resize-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
-}
+@mixin mat-column-resize-typography($config-or-theme) {}
 
-@mixin mat-column-resize-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-}
+@mixin mat-column-resize-density($config-or-theme) {}
 
 @mixin mat-column-resize-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);

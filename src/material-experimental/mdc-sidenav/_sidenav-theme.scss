@@ -1,18 +1,8 @@
 @import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-mdc-sidenav-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  @include mat-using-mdc-theme($config) {
-    // TODO: implement MDC-based sidenav.
-  }
-}
+@mixin mat-mdc-sidenav-color($config-or-theme) {}
 
-@mixin mat-mdc-sidenav-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
-  @include mat-using-mdc-typography($config) {
-    // TODO: implement MDC-based sidenav.
-  }
-}
+@mixin mat-mdc-sidenav-typography($config-or-theme) {}
 
 @mixin mat-mdc-sidenav-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);

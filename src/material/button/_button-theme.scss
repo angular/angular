@@ -173,9 +173,7 @@ $_mat-button-ripple-opacity: 0.1;
   }
 }
 
-@mixin _mat-button-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-}
+@mixin _mat-button-density($config-or-theme) {}
 
 @mixin mat-button-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);

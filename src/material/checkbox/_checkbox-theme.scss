@@ -108,9 +108,7 @@
   }
 }
 
-@mixin _mat-checkbox-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-}
+@mixin _mat-checkbox-density($config-or-theme) {}
 
 @mixin mat-checkbox-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);

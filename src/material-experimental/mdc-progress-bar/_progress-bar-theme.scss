@@ -29,14 +29,9 @@
   }
 }
 
-@mixin mat-mdc-progress-bar-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme)
-  // No typography for this component.
-}
+@mixin mat-mdc-progress-bar-typography($config-or-theme) {}
 
-@mixin mat-mdc-progress-bar-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-}
+@mixin mat-mdc-progress-bar-density($config-or-theme) {}
 
 @mixin mat-mdc-progress-bar-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);

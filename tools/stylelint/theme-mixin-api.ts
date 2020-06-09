@@ -21,7 +21,7 @@ const themeMixinRegex =
  *      consistently check for duplicative theme styles so that we can warn consumers. The
  *      plugin ensures that style-generating statements are nested inside the duplication check.
  */
-const plugin = (isEnabled: boolean, options: never, context: {fix: boolean}) => {
+const plugin = (isEnabled: boolean, _options: never, context: {fix: boolean}) => {
   return (root: Root, result: Result) => {
     if (!isEnabled) {
       return;
@@ -142,10 +142,23 @@ const plugin = (isEnabled: boolean, options: never, context: {fix: boolean}) => 
 
       const expectedProperty = type === 'density' ? '$density-scale' : '$config';
       const expectedValue = `mat-get-${type}-config($config-or-theme)`;
-      const configExtractionNode = !!node.nodes &&
-          node.nodes.find((n): n is Declaration => n.type === 'decl' && n.value === expectedValue);
+      let configExtractionNode: Declaration|null = null;
+      let nonCommentNodeCount = 0;
 
-      if (!configExtractionNode) {
+      if (node.nodes) {
+        for (const currentNode of node.nodes) {
+          if (currentNode.type !== 'comment') {
+            nonCommentNodeCount++;
+          }
+
+          if (currentNode.type === 'decl' && currentNode.value === expectedValue) {
+            configExtractionNode = currentNode;
+            break;
+          }
+        }
+      }
+
+      if (!configExtractionNode && nonCommentNodeCount > 0) {
         if (context.fix) {
           node.insertBefore(0, {prop: expectedProperty, value: expectedValue});
         } else {
@@ -154,7 +167,7 @@ const plugin = (isEnabled: boolean, options: never, context: {fix: boolean}) => 
               `Config is not extracted. Consumers could pass a theme object. ` +
                   `Extract the configuration by using: ${expectedProperty}: ${expectedValue}`);
         }
-      } else if (configExtractionNode.prop !== expectedProperty) {
+      } else if (configExtractionNode && configExtractionNode.prop !== expectedProperty) {
         reportError(
             configExtractionNode,
             `For consistency, variable for configuration should ` +
