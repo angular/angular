@@ -169,6 +169,27 @@ jobs:
       # the "build_release_packages" and "publish_snapshots" jobs.
       - run: bazel build src/... --build_tag_filters=-docs-package,-release-package
 
+  # -----------------------------------
+  # Job which ensures that all non-test Bazel targets build properly
+  # in View Engine configuration.
+  # -----------------------------------
+  view_engine_build:
+    <<: *job_defaults
+    resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *setup_bazel_ci_config
+      - *setup_bazel_remote_execution
+      - *yarn_install
+      - *setup_bazel_binary
+
+      # Exclude release and docs packages here as those will be built within
+      # the "build_release_packages" and "publish_snapshots" jobs.
+      - run: bazel build src/... --build_tag_filters=-docs-package,-release-package --config=view-engine
+
   # --------------------------------------------------------------------------------------------
   # Job that runs ts-api-guardian against our API goldens in "tools/public_api_guard".
   # This job fails whenever an API has been updated but not explicitly approved through goldens.
@@ -553,6 +574,8 @@ workflows:
   default_workflow:
     jobs:
       - bazel_build:
+          filters: *ignore_presubmit_branch_filter
+      - view_engine_build:
           filters: *ignore_presubmit_branch_filter
       - view_engine_test:
           filters: *ignore_presubmit_branch_filter
