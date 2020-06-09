@@ -63,4 +63,4 @@ This allows each file to be treated appropriately based on its tsconfig.
 IDE features such as error/warning reporting and auto-suggestion will
 operate more effectively as well.
 
-The TypeScript 3.9 release [blog post](https://devblogs.microsoft.com/typescript/announcing-typescript-3-9-rc/#solution-style-tsconfig) also contains some additional information regarding this new feature.
+The TypeScript 3.9 release [blog post](https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig) also contains some additional information regarding this new feature.
