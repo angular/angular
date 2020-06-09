@@ -16,7 +16,8 @@ import {ModuleResolver} from './module_resolver';
 export class DtsDependencyHost extends EsmDependencyHost {
   constructor(fs: FileSystem, pathMappings?: PathMappings) {
     super(
-        fs, new ModuleResolver(fs, pathMappings, ['', '.d.ts', '/index.d.ts', '.js', '/index.js']));
+        fs, new ModuleResolver(fs, pathMappings, ['', '.d.ts', '/index.d.ts', '.js', '/index.js']),
+        false);
   }
 
   /**
