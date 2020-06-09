@@ -21,5 +21,8 @@
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
   "sideEffects": false,
-  "schematics": "./schematics/collection.json"
+  "schematics": "./schematics/collection.json",
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
+  }
 }
