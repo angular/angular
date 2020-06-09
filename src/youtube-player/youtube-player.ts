@@ -55,6 +55,7 @@ import {
   takeUntil,
   withLatestFrom,
   switchMap,
+  tap,
 } from 'rxjs/operators';
 
 declare global {
@@ -109,7 +110,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   private _player: Player | undefined;
   private _existingApiReadyCallback: (() => void) | undefined;
   private _pendingPlayerState: PendingPlayerState | undefined;
-  private _playerChanges = new BehaviorSubject<Player | undefined>(undefined);
+  private _playerChanges = new BehaviorSubject<UninitializedPlayer | undefined>(undefined);
 
   /** YouTube Video ID to view */
   @Input()
@@ -225,7 +226,11 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
         this._width,
         this._height,
         this._ngZone
-      ).pipe(waitUntilReady(player => {
+      ).pipe(tap(player => {
+        // Emit this before the `waitUntilReady` call so that we can bind to
+        // events that happen as the player is being initialized (e.g. `onReady`).
+        this._playerChanges.next(player);
+      }), waitUntilReady(player => {
         // Destroy the player if loading was aborted so that we don't end up leaking memory.
         if (!playerIsReady(player)) {
           player.destroy();
@@ -235,7 +240,6 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     // Set up side effects to bind inputs to the player.
     playerObs.subscribe(player => {
       this._player = player;
-      this._playerChanges.next(player);
 
       if (player && this._pendingPlayerState) {
         this._initializePlayer(player, this._pendingPlayerState);
@@ -518,7 +522,9 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
           // expose whether the player has been destroyed so we have to wrap it in a try/catch to
           // prevent the entire stream from erroring out.
           try {
-            player.removeEventListener(name, listener);
+            if ((player as Player).removeEventListener!) {
+              (player as Player).removeEventListener(name, listener);
+            }
           } catch {}
         }) : observableOf<T>();
       }),
