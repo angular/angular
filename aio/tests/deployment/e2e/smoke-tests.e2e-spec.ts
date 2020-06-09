@@ -18,8 +18,8 @@ describe(browser.baseUrl, () => {
       page.goTo('');
       const text = page.getDocViewerText();
 
-      expect(text).toContain('one framework');
-      expect(text).toContain('mobile & desktop');
+      expect(text).toContain('modern web');
+      expect(text).toContain('developer\'s platform');
     });
 
     describe('(marketing pages)', () => {
