@@ -67,8 +67,8 @@ version: 3
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
 meta:
-  1: &can-be-global-approved "\"global-approvers\" not in groups.approved"
-  2: &can-be-global-docs-approved "\"global-docs-approvers\" not in groups.approved"
+  can-be-global-approved: &can-be-global-approved "\"global-approvers\" not in groups.approved"
+  can-be-global-docs-approved: &can-be-global-docs-approved "\"global-docs-approvers\" not in groups.approved"
   defaults: &defaults
     reviews:
       # Authors provide their approval implicitly, this approval allows for a reviewer
