@@ -12,7 +12,7 @@ const fs = require('fs');
  * Version of the post install patch. Needs to be incremented when
  * existing patches or edits have been modified.
  */
-const PATCH_VERSION = 5;
+const PATCH_VERSION = 6;
 
 /** Path to the project directory. */
 const projectDir = path.join(__dirname, '../..');
@@ -72,13 +72,13 @@ searchAndReplace(
     `$1#\n$2results = depset(dep.angular.metadata, transitive = [results])`,
     'node_modules/@angular/bazel/src/ng_module.bzl');
 searchAndReplace(
-    /^((\s*)results = depset\(target.angular.summaries if hasattr\(target, "angular"\) else \[]\))$/m,
-    `$1#\n$2results = depset(target.angular.metadata if hasattr(target, "angular") else [], transitive = [results])`,
+    /^((\s*)results = depset\(target.angular\.summaries if _has_target_angular_summaries\(target\) else \[]\))$/m,
+    `$1#\n$2results = depset(target.angular.metadata if _has_target_angular_summaries(target) else [], transitive = [results])`,
     'node_modules/@angular/bazel/src/ng_module.bzl');
 // Ensure that "metadata" of transitive dependencies can be collected.
 searchAndReplace(
-    /("metadata": outs.metadata),/,
-    `$1 + [m for dep in ctx.attr.deps if hasattr(dep, "angular") for m in dep.angular.metadata],`,
+    /providers\["angular"]\["metadata"] = outs\.metadata/,
+    `$& + [m for dep in ctx.attr.deps if (hasattr(dep, "angular") and hasattr(dep.angular, "metadata")) for m in dep.angular.metadata]`,
     'node_modules/@angular/bazel/src/ng_module.bzl');
 
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1208.
@@ -89,7 +89,15 @@ try {
   // Can be removed once @angular/bazel is updated here to include this patch.
   // try/catch needed for this the material CI tests to work in angular/repo
   applyPatch(path.join(__dirname, './@angular_bazel_ng_module.patch'));
-} catch (_) {}
+} catch {}
+
+try {
+  // Temporary patch pre-req for https://github.com/angular/angular/pull/36971.
+  // Can be removed once @angular/bazel is updated here to include this patch.
+  // try/catch needed for this as the framework repo has this patch already applied,
+  // and re-applying again causes an error.
+  applyPatch(path.join(__dirname, './@angular_bazel_ivy_flat_module.patch'));
+} catch {}
 
 // Workaround for https://github.com/angular/angular/issues/33452:
 searchAndReplace(/angular_compiler_options = {/, `$&
@@ -177,7 +185,8 @@ function searchAndReplace(search, replacement, relativeFilePath) {
   fileEdits.push(originalContent => {
     const newFileContent = originalContent.replace(search, replacement);
     if (originalContent === newFileContent) {
-      throw Error(`Could not perform replacement in: ${filePath}.`);
+      throw Error(`Could not perform replacement in: ${filePath}.\n` +
+          `Searched for pattern: ${search}`);
     }
     return newFileContent;
   });
