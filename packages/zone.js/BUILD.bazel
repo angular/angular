@@ -82,6 +82,7 @@ pkg_npm(
         ":LICENSE_copy",
         ":zone_externs",
         "//packages/zone.js/dist:dist_bundle_group",
+        "//packages/zone.js/plugins:plugin_bundle_group",
     ] + [
         "//packages/zone.js/bundles:" + b + "-es5.dist"
         for b in BUNDLES_ENTRY_POINTS.keys()
