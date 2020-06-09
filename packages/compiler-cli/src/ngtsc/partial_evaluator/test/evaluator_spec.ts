@@ -200,6 +200,58 @@ runInEachFileSystem(() => {
       expect(evaluate('const a = null;', 'a')).toEqual(null);
     });
 
+    it('supports destructuring array variable declarations', () => {
+      const code = `
+        const [a, b, c, d] = [0, 1, 2, 3];
+        const e = c;
+      `;
+
+      expect(evaluate(code, 'a')).toBe(0);
+      expect(evaluate(code, 'b')).toBe(1);
+      expect(evaluate(code, 'c')).toBe(2);
+      expect(evaluate(code, 'd')).toBe(3);
+      expect(evaluate(code, 'e')).toBe(2);
+    });
+
+    it('supports destructuring object variable declaration', () => {
+      const code = `
+        const {a, b, c, d} = {a: 0, b: 1, c: 2, d: 3};
+        const e = c;
+      `;
+
+      expect(evaluate(code, 'a')).toBe(0);
+      expect(evaluate(code, 'b')).toBe(1);
+      expect(evaluate(code, 'c')).toBe(2);
+      expect(evaluate(code, 'd')).toBe(3);
+      expect(evaluate(code, 'e')).toBe(2);
+    });
+
+    it('supports destructuring object variable declaration with an alias', () => {
+      expect(evaluate(`const {a: value} = {a: 5}; const e = value;`, 'e')).toBe(5);
+    });
+
+    it('supports nested destructuring object variable declarations', () => {
+      expect(evaluate(`const {a: {b: {c}}} = {a: {b: {c: 0}}};`, 'c')).toBe(0);
+    });
+
+    it('supports nested destructuring array variable declarations', () => {
+      expect(evaluate(`const [[[a]]] = [[[1]]];`, 'a')).toBe(1);
+    });
+
+    it('supports nested destructuring variable declarations mixing arrays and objects', () => {
+      expect(evaluate(`const {a: {b: [[c]]}} = {a: {b: [[1337]]}};`, 'c')).toBe(1337);
+    });
+
+    it('resolves unknown values in a destructured variable declaration as dynamic values', () => {
+      const value = evaluate(
+          `const {a: {body}} = {a: window};`, 'body',
+          [{name: _('/window.ts'), contents: `declare const window: any;`}]);
+      if (!(value instanceof DynamicValue)) {
+        return fail(`Should have resolved to a DynamicValue`);
+      }
+      expect(value.node.getText()).toBe('body');
+    });
+
     it('resolves unknown binary operators as dynamic value', () => {
       const value = evaluate('declare const window: any;', '"location" in window');
       if (!(value instanceof DynamicValue)) {
