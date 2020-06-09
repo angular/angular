@@ -359,10 +359,29 @@ export function getDownlevelDecoratorsTransform(
       }
       const decl = symbol.declarations[0];
       // If the given entity name has been resolved to an alias import declaration,
-      // ensure that the alias declaration is not elided by TypeScript.
+      // ensure that the alias declaration is not elided by TypeScript, and use its
+      // name identifier to reference it at runtime.
       if (isAliasImportDeclaration(decl)) {
         referencedParameterTypes.add(decl);
+
+        // If the entity name resolves to an alias import declaration, we reference the
+        // entity based on the alias import name. This ensures that TypeScript properly
+        // resolves the link to the import. Cloning the original entity name identifier
+        // could lead to an incorrect resolution at local scope. e.g. Consider the following
+        // snippet: `constructor(Dep: Dep) {}`. In such a case, the local `Dep` identifier
+        // would resolve to the actual parameter name, and not to the desired import.
+        // This happens because the entity name identifier symbol is internally considered
+        // as type-only and therefore TypeScript tries to resolve it as value manually.
+        // We can help TypeScript and avoid this non-reliable resolution by using an identifier
+        // that is not type-only and is directly linked to the import alias declaration.
+        if (decl.name !== undefined) {
+          return ts.getMutableClone(decl.name);
+        }
       }
+
+      // Clone the original entity name identifier so that it can be used to reference
+      // its value at runtime. This is used when the identifier is resolving to a file
+      // local declaration (otherwise it would resolve to an alias import declaration).
       return ts.getMutableClone(name);
     }
 

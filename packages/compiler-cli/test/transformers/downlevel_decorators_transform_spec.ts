@@ -468,6 +468,39 @@ describe('downlevel decorator transform', () => {
        expect(output).not.toContain('ErrorHandler');
      });
 
+  it('should not generate invalid reference due to conflicting parameter name', () => {
+    context.writeFile('/external.ts', `
+      export class Dep {
+        greet() {}
+      }
+    `);
+    const {output} = transform(
+        `
+      import {Directive} from '@angular/core';
+      import {Dep} from './external';
+
+      @Directive()
+      export class MyDir {
+        constructor(Dep: Dep) {
+          Dep.greet();
+        }
+      }
+    `,
+        {emitDecoratorMetadata: false});
+
+    expect(diagnostics.length).toBe(0);
+    expect(output).not.toContain('tslib');
+    expect(output).toContain(`external_1 = require("./external");`);
+    expect(output).toContain(dedent`
+      MyDir.decorators = [
+        { type: core_1.Directive }
+      ];
+      MyDir.ctorParameters = () => [
+        { type: external_1.Dep }
+      ];
+    `);
+  });
+
   it('should be able to serialize circular constructor parameter type', () => {
     const {output} = transform(`
       import {Directive, Optional, Inject, SkipSelf} from '@angular/core';
