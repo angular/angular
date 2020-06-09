@@ -6,13 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {DependencyHostBase} from './dependency_host';
+import {ModuleResolver} from './module_resolver';
 
 /**
  * Helper functions for computing dependencies.
  */
 export class EsmDependencyHost extends DependencyHostBase {
+  constructor(
+      fs: FileSystem, moduleResolver: ModuleResolver, private scanImportExpressions = true) {
+    super(fs, moduleResolver);
+  }
   // By skipping trivia here we don't have to account for it in the processing below
   // It has no relevance to capturing imports.
   private scanner = ts.createScanner(ts.ScriptTarget.Latest, /* skipTrivia */ true);
@@ -144,7 +149,7 @@ export class EsmDependencyHost extends DependencyHostBase {
 
     // Check for dynamic import expression
     if (kind === ts.SyntaxKind.OpenParenToken) {
-      return this.tryStringLiteral();
+      return this.scanImportExpressions ? this.tryStringLiteral() : null;
     }
 
     // Check for defaultBinding
