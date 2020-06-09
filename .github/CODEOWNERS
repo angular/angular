@@ -315,6 +315,7 @@
 
 # Misc
 /*                                                 @angular/dev-infra-components @jelbourn
+/.ng-dev/**                                        @angular/dev-infra-components
 /.github/**                                        @angular/dev-infra-components @jelbourn
 /.vscode/**                                        @angular/dev-infra-components @mmalerba
 /src/*                                             @jelbourn
