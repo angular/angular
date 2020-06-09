@@ -75,6 +75,7 @@ import {
   ErrorStateMatcher,
   HasTabIndex,
   HasTabIndexCtor,
+  MAT_OPTGROUP,
   MAT_OPTION_PARENT_COMPONENT,
   MatOptgroup,
   MatOption,
@@ -364,8 +365,9 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** All of the defined select options. */
   @ContentChildren(MatOption, {descendants: true}) options: QueryList<MatOption>;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** All of the defined groups of options. */
-  @ContentChildren(MatOptgroup, {descendants: true}) optionGroups: QueryList<MatOptgroup>;
+  @ContentChildren(MAT_OPTGROUP as any, {descendants: true}) optionGroups: QueryList<MatOptgroup>;
 
   /** Classes to be passed to the select panel. Supports the same syntax as `ngClass`. */
   @Input() panelClass: string|string[]|Set<string>|{[key: string]: any};

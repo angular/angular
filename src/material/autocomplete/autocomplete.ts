@@ -29,6 +29,7 @@ import {
 import {
   CanDisableRipple,
   CanDisableRippleCtor,
+  MAT_OPTGROUP,
   MAT_OPTION_PARENT_COMPONENT,
   MatOptgroup,
   MatOption,
@@ -127,8 +128,9 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
   /** @docs-private */
   @ContentChildren(MatOption, {descendants: true}) options: QueryList<MatOption>;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** @docs-private */
-  @ContentChildren(MatOptgroup, {descendants: true}) optionGroups: QueryList<MatOptgroup>;
+  @ContentChildren(MAT_OPTGROUP as any, {descendants: true}) optionGroups: QueryList<MatOptgroup>;
 
   /** Function that maps an option's control value to its display value in the trigger. */
   @Input() displayWith: ((value: any) => string) | null = null;

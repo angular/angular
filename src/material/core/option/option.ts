@@ -26,7 +26,7 @@ import {
 } from '@angular/core';
 import {FocusOptions, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
 import {Subject} from 'rxjs';
-import {MatOptgroup} from './optgroup';
+import {MAT_OPTGROUP, MatOptgroup} from './optgroup';
 
 /**
  * Option IDs need to be unique across components, so this counter exists outside of
@@ -121,7 +121,7 @@ export class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
     private _element: ElementRef<HTMLElement>,
     private _changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(MAT_OPTION_PARENT_COMPONENT) private _parent: MatOptionParentComponent,
-    @Optional() readonly group: MatOptgroup) {}
+    @Optional() @Inject(MAT_OPTGROUP) readonly group: MatOptgroup) {}
 
   /**
    * Whether or not the option is currently active and ready to be selected.

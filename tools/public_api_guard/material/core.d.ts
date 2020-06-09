@@ -143,6 +143,8 @@ export declare const MAT_LABEL_GLOBAL_OPTIONS: InjectionToken<LabelOptions>;
 
 export declare const MAT_NATIVE_DATE_FORMATS: MatDateFormats;
 
+export declare const MAT_OPTGROUP: InjectionToken<MatOptgroup>;
+
 export declare const MAT_OPTION_PARENT_COMPONENT: InjectionToken<MatOptionParentComponent>;
 
 export declare const MAT_RIPPLE_GLOBAL_OPTIONS: InjectionToken<RippleGlobalOptions>;
