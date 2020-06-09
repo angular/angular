@@ -1127,12 +1127,16 @@ export class Router {
       extras: NavigationExtras,
       priorPromise?: {resolve: any, reject: any, promise: Promise<boolean>}): Promise<boolean> {
     const lastNavigation = this.getTransition();
-    // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
-    // and that navigation results in another navigation that leads to the same URL,
-    // we should skip those. Additionally, we compare to `urlAfterRedirects` because
-    // that is the final result of the imperative navigation. If an imperative navigation is
-    // cancelled by a guard and followed by a back/forward button or manual URL change, we should
-    // not skip those navigations so we need to check against `urlAfterRedirects`.
+    // * Imperative navigations (router.navigate) might trigger additional navigations to the same
+    //   URL via a popstate event and the locationChangeListener. We should skip these duplicate
+    //   navs.
+    // * Imperative navigations can be cancelled by router guards, meaning the URL won't change. If
+    //   the user follows that with a navigation using the back/forward button or manual URL change,
+    //   the destination may be the same as the previous imperative attempt. We should not skip
+    //   these navigations because it's a separate case from the one above -- it's not a duplicate
+    //   navigation.
+    // Note that imperative navs might only trigger a popstate in tests because the
+    // SpyLocation triggers it on replaceState. Real browsers don't; see #27059.
     if (lastNavigation && source !== 'imperative' && lastNavigation.source === 'imperative' &&
         lastNavigation.urlAfterRedirects.toString() === rawUrl.toString()) {
       return Promise.resolve(true);  // return value is not used
