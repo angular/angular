@@ -35,6 +35,11 @@ compile_ts = _compile_ts
 DEPS_ASPECTS = _DEPS_ASPECTS
 ts_providers_dict_to_struct = _ts_providers_dict_to_struct
 
+# Should be defined as `BuildSettingInfo` from Skylib, but a dependency on
+# Skylib is not necessary here because this is only used in google3 where Skylib
+# is loaded differently anyways where this file is overridden.
+BuildSettingInfo = provider(doc = "Not used outside google3.")
+
 DEFAULT_API_EXTRACTOR = "@npm//@angular/bazel/bin:api-extractor"
 DEFAULT_NG_COMPILER = "@npm//@angular/bazel/bin:ngc-wrapped"
 DEFAULT_NG_XI18N = "@npm//@angular/bazel/bin:xi18n"
