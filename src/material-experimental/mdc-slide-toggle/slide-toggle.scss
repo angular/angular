@@ -28,6 +28,14 @@
     }
   }
 
+  // The thumb-underlay element has `mat-mdc-focus-indicator` which sets
+  // a relative position. This element must have absolute positioning. This
+  // has increased specificity than the style set in MDC to guarantee that
+  // it will be absolutely positioned.
+  .mdc-switch__thumb-underlay {
+    position: absolute;
+  }
+
   // The MDC switch styles related to the hover state are intertwined with the MDC ripple styles.
   // We currently don't use the MDC ripple due to size concerns, therefore we need to add some
   // additional styles to restore the hover state.
