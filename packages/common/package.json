@@ -23,5 +23,8 @@
   "sideEffects": [
     "**/global/*.js",
     "**/closure-locale.*"
-  ]
+  ],
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
+  }
 }
