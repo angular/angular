@@ -832,6 +832,15 @@ describe('completions', () => {
     // should resolve to transform(value: number, prefix: number): number
     expectContain(c2, CompletionKind.METHOD, ['toFixed', 'toExponential']);
   });
+
+  it('should work in the conditional operator', () => {
+    mockHost.override(TEST_TEMPLATE, '{{ title ? title.~{cursor} }}');
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+    expectContain(completions, CompletionKind.METHOD, [
+      'trim',
+    ]);
+  });
 });
 
 function expectContain(
