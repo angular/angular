@@ -266,6 +266,8 @@ export class StaticInterpreter {
       return this.visitEnumDeclaration(node, context);
     } else if (ts.isSourceFile(node)) {
       return this.visitSourceFile(node, context);
+    } else if (ts.isBindingElement(node)) {
+      return this.visitBindingElement(node, context);
     } else {
       return this.getReference(node, context);
     }
@@ -347,9 +349,8 @@ export class StaticInterpreter {
     });
   }
 
-  private accessHelper(
-      node: ts.Expression, lhs: ResolvedValue, rhs: string|number,
-      context: Context): ResolvedValue {
+  private accessHelper(node: ts.Node, lhs: ResolvedValue, rhs: string|number, context: Context):
+      ResolvedValue {
     const strIndex = `${rhs}`;
     if (lhs instanceof Map) {
       if (lhs.has(strIndex)) {
@@ -596,6 +597,47 @@ export class StaticInterpreter {
     } else {
       return spread;
     }
+  }
+
+  private visitBindingElement(node: ts.BindingElement, context: Context): ResolvedValue {
+    const path: ts.BindingElement[] = [];
+    let closestDeclaration: ts.Node = node;
+
+    while (ts.isBindingElement(closestDeclaration) ||
+           ts.isArrayBindingPattern(closestDeclaration) ||
+           ts.isObjectBindingPattern(closestDeclaration)) {
+      if (ts.isBindingElement(closestDeclaration)) {
+        path.unshift(closestDeclaration);
+      }
+
+      closestDeclaration = closestDeclaration.parent;
+    }
+
+    if (!ts.isVariableDeclaration(closestDeclaration) ||
+        closestDeclaration.initializer === undefined) {
+      return DynamicValue.fromUnknown(node);
+    }
+
+    let value = this.visit(closestDeclaration.initializer, context);
+    for (const element of path) {
+      let key: number|string;
+      if (ts.isArrayBindingPattern(element.parent)) {
+        key = element.parent.elements.indexOf(element);
+      } else {
+        const name = element.propertyName || element.name;
+        if (ts.isIdentifier(name)) {
+          key = name.text;
+        } else {
+          return DynamicValue.fromUnknown(element);
+        }
+      }
+      value = this.accessHelper(element, value, key, context);
+      if (value instanceof DynamicValue) {
+        return value;
+      }
+    }
+
+    return value;
   }
 
   private stringNameFromPropertyName(node: ts.PropertyName, context: Context): string|undefined {
