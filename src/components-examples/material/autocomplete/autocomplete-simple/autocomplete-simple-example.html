@@ -1,15 +1,19 @@
 <form class="example-form">
   <mat-form-field class="example-full-width">
+<!-- #docregion input -->
     <input type="text"
            placeholder="Pick one"
            aria-label="Number"
            matInput
            [formControl]="myControl"
            [matAutocomplete]="auto">
+<!-- #enddocregion input -->
+<!-- #docregion mat-autocomplete -->
     <mat-autocomplete #auto="matAutocomplete">
       <mat-option *ngFor="let option of options" [value]="option">
         {{option}}
       </mat-option>
     </mat-autocomplete>
+<!-- #enddocregion mat-autocomplete -->
   </mat-form-field>
 </form>

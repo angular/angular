@@ -2,8 +2,17 @@ The autocomplete is a normal text input enhanced by a panel of suggested options
 
 ### Simple autocomplete
 
-Start by adding a regular `matInput` to your template. Let's assume you're using the `formControl`
-directive from `ReactiveFormsModule` to track the value of the input.
+Start by creating the autocomplete panel and the options displayed inside it. Each option should be
+defined by a `mat-option` tag. Set each option's value property to whatever you'd like the value
+of the text input to be when that option is selected.
+
+<!-- example({"example":"autocomplete-simple",
+              "file":"autocomplete-simple-example.html", 
+              "region":"mat-autocomplete"}) -->
+
+Next, create the input and set the `matAutocomplete` input to refer to the template reference we assigned 
+to the autocomplete. Let's assume you're using the `formControl` directive from `ReactiveFormsModule` to 
+track the value of the input.
 
 > Note: It is possible to use template-driven forms instead, if you prefer. We use reactive forms
 in this example because it makes subscribing to changes in the input's value easy. For this
@@ -11,42 +20,13 @@ example, be sure to import `ReactiveFormsModule` from `@angular/forms` into your
 If you are unfamiliar with using reactive forms, you can read more about the subject in the
 [Angular documentation](https://angular.io/guide/reactive-forms).
 
-*my-comp.html*
-```html
-<mat-form-field>
-  <input type="text" matInput [formControl]="myControl">
-</mat-form-field>
-```
-
-Next, create the autocomplete panel and the options displayed inside it. Each option should be
-defined by a `mat-option` tag. Set each option's value property to whatever you'd like the value
-of the text input to be upon that option's selection.
-
-*my-comp.html*
-```html
-<mat-autocomplete>
-  <mat-option *ngFor="let option of options" [value]="option">
-    {{ option }}
-  </mat-option>
-</mat-autocomplete>
-```
-
 Now we'll need to link the text input to its panel. We can do this by exporting the autocomplete
 panel instance into a local template variable (here we called it "auto"), and binding that variable
 to the input's `matAutocomplete` property.
 
-*my-comp.html*
-```html
-<mat-form-field>
-  <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
-</mat-form-field>
-
-<mat-autocomplete #auto="matAutocomplete">
-  <mat-option *ngFor="let option of options" [value]="option">{{option}}</mat-option>
-</mat-autocomplete>
-```
-
-<!-- example(autocomplete-simple) -->
+<!-- example({"example":"autocomplete-simple",
+              "file":"autocomplete-simple-example.html", 
+              "region":"input"}) -->
 
 ### Adding a custom filter
 
@@ -127,18 +107,9 @@ autocomplete is attached to using the `matAutocompleteOrigin` directive together
 
 ### Option groups
 `mat-option` can be collected into groups using the `mat-optgroup` element:
-<!-- example(autocomplete-optgroup) -->
-
-
-```html
-<mat-autocomplete #auto="matAutocomplete">
-  <mat-optgroup *ngFor="let group of filteredGroups | async" [label]="group.name">
-    <mat-option *ngFor="let option of group.options" [value]="option">
-      {{option.name}}
-    </mat-option>
-  </mat-optgroup>
-</mat-autocomplete>
-```
+<!-- example({"example":"autocomplete-optgroup",
+              "file":"autocomplete-optgroup-example.html", 
+              "region":"mat-autocomplete"}) -->
 
 ### Accessibility
 The input for an autocomplete without text or labels should be given a meaningful label via

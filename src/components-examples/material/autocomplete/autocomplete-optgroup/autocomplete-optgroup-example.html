@@ -6,6 +6,7 @@
            formControlName="stateGroup"
            required
            [matAutocomplete]="autoGroup">
+<!-- #docregion mat-autocomplete -->
       <mat-autocomplete #autoGroup="matAutocomplete">
         <mat-optgroup *ngFor="let group of stateGroupOptions | async" [label]="group.letter">
           <mat-option *ngFor="let name of group.names" [value]="name">
@@ -13,5 +14,6 @@
           </mat-option>
       </mat-optgroup>
     </mat-autocomplete>
+<!-- #enddocregion mat-autocomplete -->
   </mat-form-field>
 </form>

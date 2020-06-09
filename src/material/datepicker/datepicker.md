@@ -8,29 +8,17 @@ the calendar. It is made up of several components and directives that work toget
 A datepicker is composed of a text input and a calendar pop-up, connected via the `matDatepicker`
 property on the text input.
 
-```html
-<input [matDatepicker]="myDatepicker">
-<mat-datepicker #myDatepicker></mat-datepicker>
-```
+There is also an optional datepicker toggle button that gives the user an easy way to open the datepicker pop-up.
 
-An optional datepicker toggle button is available. A toggle can be added to the example above:
-
-```html
-<input [matDatepicker]="myDatepicker">
-<mat-datepicker-toggle [for]="myDatepicker"></mat-datepicker-toggle>
-<mat-datepicker #myDatepicker></mat-datepicker>
-```
+<!-- example({"example":"datepicker-overview",
+              "file":"datepicker-overview-example.html", 
+              "region":"toggle"}) -->
 
 This works exactly the same with an input that is part of an `<mat-form-field>` and the toggle
 can easily be used as a prefix or suffix on the Material input:
 
-```html
-<mat-form-field>
-  <input matInput [matDatepicker]="myDatepicker">
-  <mat-datepicker-toggle matSuffix [for]="myDatepicker"></mat-datepicker-toggle>
-  <mat-datepicker #myDatepicker></mat-datepicker>
-</mat-form-field>
-```
+<!-- example({"example":"datepicker-overview",
+              "file":"datepicker-overview-example.html"}) -->
 
 If you want to customize the icon that is rendered inside the `mat-datepicker-toggle`, you can do so
 by using the `matDatepickerToggleIcon` directive:
