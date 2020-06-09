@@ -27,13 +27,6 @@ describe('completions', () => {
     mockHost.reset();
   });
 
-  it('should be able to get entity completions', () => {
-    mockHost.overrideInlineTemplate(APP_COMPONENT, '&~{cursor}');
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
-    const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
-    expectContain(completions, CompletionKind.ENTITY, ['&amp;', '&gt;', '&lt;', '&iota;']);
-  });
-
   it('should be able to return html elements', () => {
     mockHost.overrideInlineTemplate(APP_COMPONENT, '<~{cursor}');
     const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
@@ -241,13 +234,6 @@ describe('completions', () => {
   });
 
   describe('in external template', () => {
-    it('should be able to get entity completions in external template', () => {
-      mockHost.override(TEST_TEMPLATE, '&~{cursor}');
-      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
-      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
-      expectContain(completions, CompletionKind.ENTITY, ['&amp;', '&gt;', '&lt;', '&iota;']);
-    });
-
     it('should not return html elements', () => {
       mockHost.override(TEST_TEMPLATE, '<~{cursor}');
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
