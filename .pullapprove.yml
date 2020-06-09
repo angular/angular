@@ -961,6 +961,7 @@ groups:
           'aio/content/guide/strict-mode.md',
           'aio/content/guide/web-worker.md',
           'aio/content/guide/workspace-config.md',
+          'aio/content/guide/migration-solution-style-tsconfig.md',
           ])
     reviewers:
       users:
