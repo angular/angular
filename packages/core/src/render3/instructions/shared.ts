@@ -1381,8 +1381,9 @@ function findDirectiveDefMatches(
           ngDevMode &&
               assertNodeOfPossibleTypes(
                   tNode, [TNodeType.Element],
-                  `Element with "${tNode.tagName}" tag name is not a valid host ` +
-                      `for ${stringify(def.type)} component.`);
+                  `"${tNode.tagName}" tags cannot be used as component hosts. ` +
+                      `Please use a different tag to activate the ${
+                          stringify(def.type)} component.`);
           if (tNode.flags & TNodeFlags.isComponentHost) throwMultipleComponentError(tNode);
           markAsComponentHost(tView, tNode);
           // The component is always stored first with directives after.

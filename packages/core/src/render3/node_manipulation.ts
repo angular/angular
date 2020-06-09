@@ -780,7 +780,7 @@ function applyNodes(
     ngDevMode && assertTNodeForLView(tNode, lView);
     ngDevMode && assertNodeOfPossibleTypes(tNode, [
       TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer, TNodeType.Projection,
-      TNodeType.Projection, TNodeType.IcuContainer
+      TNodeType.IcuContainer
     ]);
     const rawSlotValue = lView[tNode.index];
     const tNodeType = tNode.type;

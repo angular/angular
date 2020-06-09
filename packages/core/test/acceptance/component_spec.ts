@@ -279,7 +279,7 @@ describe('component', () => {
           TestBed.configureTestingModule({declarations: [App, Comp]});
           expect(() => TestBed.createComponent(App))
               .toThrowError(
-                  /Element with "ng-container" tag name is not a valid host for Comp component/);
+                  /"ng-container" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
         });
 
         it('should throw when <ng-template> is used as a host element for a Component', () => {
@@ -300,7 +300,7 @@ describe('component', () => {
           TestBed.configureTestingModule({declarations: [App, Comp]});
           expect(() => TestBed.createComponent(App))
               .toThrowError(
-                  /Element with "ng-template" tag name is not a valid host for Comp component/);
+                  /"ng-template" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
         });
       });
 
