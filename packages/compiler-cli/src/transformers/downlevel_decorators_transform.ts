@@ -341,6 +341,15 @@ export function getDownlevelDecoratorsTransform(
      * and then converts the path into a property access that can be used as expression.
      */
     function entityNameToExpression(name: ts.EntityName): ts.Expression|undefined {
+      const symbol = typeChecker.getSymbolAtLocation(name);
+      // Check if the entity name references a symbol that is an actual value. If it is not, it
+      // cannot be referenced by an expression, so return undefined.
+      if (!symbol || !symbolIsValue(typeChecker, symbol) || !symbol.declarations ||
+          symbol.declarations.length === 0) {
+        return undefined;
+      }
+      // If we deal with a qualified name, build up a property access expression
+      // that could be used in the JavaScript output.
       if (ts.isQualifiedName(name)) {
         const containerExpr = entityNameToExpression(name.left);
         if (containerExpr === undefined) {
@@ -348,22 +357,12 @@ export function getDownlevelDecoratorsTransform(
         }
         return ts.createPropertyAccess(containerExpr, name.right);
       }
-      const symbol = typeChecker.getSymbolAtLocation(name);
-      // Check if the entity name references a symbol that is an actual value. If it is not, it
-      // cannot be referenced by an expression, so return undefined.
-      if (!symbol || !symbolIsValue(typeChecker, symbol)) {
-        return undefined;
-      }
-      if (symbol.declarations.length === 0) {
-        return undefined;
-      }
       const decl = symbol.declarations[0];
       // If the given entity name has been resolved to an alias import declaration,
       // ensure that the alias declaration is not elided by TypeScript, and use its
       // name identifier to reference it at runtime.
       if (isAliasImportDeclaration(decl)) {
         referencedParameterTypes.add(decl);
-
         // If the entity name resolves to an alias import declaration, we reference the
         // entity based on the alias import name. This ensures that TypeScript properly
         // resolves the link to the import. Cloning the original entity name identifier
@@ -378,7 +377,6 @@ export function getDownlevelDecoratorsTransform(
           return ts.getMutableClone(decl.name);
         }
       }
-
       // Clone the original entity name identifier so that it can be used to reference
       // its value at runtime. This is used when the identifier is resolving to a file
       // local declaration (otherwise it would resolve to an alias import declaration).

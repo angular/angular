@@ -537,6 +537,42 @@ describe('downlevel decorator transform', () => {
         .toBe(`Cannot process decorators for class element with non-analyzable name.`);
   });
 
+  it('should not capture constructor parameter types when not resolving to a value', () => {
+    context.writeFile('/external.ts', `
+      export interface IState {}
+      export type IOverlay = {hello: true}&IState;
+      export default interface {
+        hello: false;
+      }
+    `);
+    const {output} = transform(`
+      import {Directive, Inject} from '@angular/core';
+      import * as angular from './external';
+      import {IOverlay} from './external';
+      import TypeFromDefaultImport from './external';
+
+      @Directive()
+      export class MyDir {
+        constructor(@Inject('$state') param: angular.IState,
+                    @Inject('$overlay') other: IOverlay,
+                    @Inject('$default') default: TypeFromDefaultImport) {}
+      }
+    `);
+
+    expect(diagnostics.length).toBe(0);
+    expect(output).not.toContain('external');
+    expect(output).toContain(dedent`
+      MyDir.decorators = [
+        { type: core_1.Directive }
+      ];
+      MyDir.ctorParameters = () => [
+        { type: undefined, decorators: [{ type: core_1.Inject, args: ['$state',] }] },
+        { type: undefined, decorators: [{ type: core_1.Inject, args: ['$overlay',] }] },
+        { type: undefined, decorators: [{ type: core_1.Inject, args: ['$default',] }] }
+      ];
+    `);
+  });
+
   it('should allow preceding custom transformers to strip decorators', () => {
     const stripAllDecoratorsTransform: ts.TransformerFactory<ts.SourceFile> = context => {
       return (sourceFile: ts.SourceFile) => {
