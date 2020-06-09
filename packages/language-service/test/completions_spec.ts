@@ -841,6 +841,13 @@ describe('completions', () => {
       'trim',
     ]);
   });
+
+  it('should not return any results for unknown symbol', () => {
+    mockHost.override(TEST_TEMPLATE, '{{ doesnotexist.~{cursor} }}');
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+    expect(completions).toBeUndefined();
+  });
 });
 
 function expectContain(
