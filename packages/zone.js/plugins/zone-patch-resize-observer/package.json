@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/zone-patch-resize-observer",
+  "main": "../../bundles/zone-patch-resize-observer.umd.js",
+  "fesm2015": "../../fesm2015/zone-patch-resize-observer.js",
+  "es2015": "../../fesm2015/zone-patch-resize-observer.js",
+  "module": "../../fesm2015/zone-patch-resize-observer.js"
+}

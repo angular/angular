@@ -103,6 +103,87 @@ describe('Zone.js npm_package', () => {
       });
     });
 
+
+    describe('plugins folder check', () => {
+      it('should contain all plugin folders in ./plugins', () => {
+        const expected = [
+          'async-test',
+          'async-test.min',
+          'fake-async-test',
+          'fake-async-test.min',
+          'jasmine-patch',
+          'jasmine-patch.min',
+          'long-stack-trace-zone',
+          'long-stack-trace-zone.min',
+          'mocha-patch',
+          'mocha-patch.min',
+          'proxy',
+          'proxy.min',
+          'sync-test',
+          'sync-test.min',
+          'task-tracking',
+          'task-tracking.min',
+          'webapis-media-query',
+          'webapis-media-query.min',
+          'webapis-notification',
+          'webapis-notification.min',
+          'webapis-rtc-peer-connection',
+          'webapis-rtc-peer-connection.min',
+          'webapis-shadydom',
+          'webapis-shadydom.min',
+          'wtf',
+          'wtf.min',
+          'zone-bluebird',
+          'zone-bluebird.min',
+          'zone-error',
+          'zone-error.min',
+          'zone-legacy',
+          'zone-legacy.min',
+          'zone-patch-canvas',
+          'zone-patch-canvas.min',
+          'zone-patch-cordova',
+          'zone-patch-cordova.min',
+          'zone-patch-electron',
+          'zone-patch-electron.min',
+          'zone-patch-fetch',
+          'zone-patch-fetch.min',
+          'zone-patch-jsonp',
+          'zone-patch-jsonp.min',
+          'zone-patch-message-port',
+          'zone-patch-message-port.min',
+          'zone-patch-promise-test',
+          'zone-patch-promise-test.min',
+          'zone-patch-resize-observer',
+          'zone-patch-resize-observer.min',
+          'zone-patch-rxjs-fake-async',
+          'zone-patch-rxjs-fake-async.min',
+          'zone-patch-rxjs',
+          'zone-patch-rxjs.min',
+          'zone-patch-socket-io',
+          'zone-patch-socket-io.min',
+          'zone-patch-user-media',
+          'zone-patch-user-media.min',
+        ].sort();
+
+        checkInSubFolder('./plugins', () => {
+          const list = shx.ls('./').stdout.split('\n').sort().slice(1);
+          expect(list.length).toBe(expected.length);
+          for (let i = 0; i < list.length; i++) {
+            expect(list[i]).toEqual(expected[i]);
+            const packageJson = shx.cat(`${list[i]}/package.json`);
+            const umdMinName = list[i].indexOf('.min') === -1 ?
+                `${list[i]}.umd` :
+                `${list[i].substring(0, list[i].indexOf('.min'))}.umd.min`;
+            expect(packageJson).toContain(`"name": "zone.js/${list[i]}"`);
+            expect(packageJson).toContain(`"main": "../../bundles/${umdMinName}.js"`);
+            expect(packageJson).toContain(`"fesm2015": "../../fesm2015/${list[i]}.js"`);
+            expect(packageJson).toContain(`"es2015": "../../fesm2015/${list[i]}.js"`);
+            expect(packageJson).toContain(`"module": "../../fesm2015/${list[i]}.js"`);
+          }
+        });
+      });
+    });
+
     describe('dist file list', () => {
       it('should contain all files', () => {
         const expected = [
