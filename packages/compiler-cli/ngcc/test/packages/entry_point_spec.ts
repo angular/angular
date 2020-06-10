@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join, relative} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
@@ -255,135 +255,152 @@ runInEachFileSystem(() => {
          });
        });
 
-    it('should correctly compute the containing package\'s name', () => {
-      const logger = new MockLogger();
-      const config = new NgccConfiguration(fs, _('/project'));
-      const getPackageConfigSpy = spyOn(config, 'getPackageConfig').and.callThrough();
+    [false, true].forEach(isScoped => {
+      const nameWithScope = (baseName: string) => `${isScoped ? '@some-scope/' : ''}${baseName}`;
+      const getPackageName = (packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath) => {
+        const config = new NgccConfiguration(fs, _('/project'));
+        const logger = new MockLogger();
+        const entryPoint = getEntryPointInfo(fs, config, logger, packagePath, entryPointPath);
 
-      // Helpers
-      const setUpAndComputePackageName =
-          (packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath,
-           entryPointName?: string) => {
-            const entryPointPackageJsonPath = fs.join(entryPointPath, 'package.json');
+        if (!isEntryPoint(entryPoint)) {
+          return fail(`Expected an entry point but got ${entryPoint}`);
+        }
 
-            if (entryPointName !== undefined) {
-              // Ensure a `package.json` exists for the entry-point (containing `entryPointName`).
-              loadTestFiles([
-                {
-                  name: entryPointPackageJsonPath,
-                  contents: JSON.stringify({name: entryPointName, typings: './index.d.ts'}),
-                },
-              ]);
-            } else {
-              // Ensure the entry-point `package.json` does not exist (e.g. from a previous test).
-              if (fs.exists(entryPointPackageJsonPath)) {
-                fs.removeFile(entryPointPackageJsonPath);
-              }
-
-              // Ensure there is an ngcc config for the entry-point.
-              getPackageConfigSpy.withArgs(packagePath, null).and.returnValue({
-                entryPoints: {
-                  [entryPointPath]: {
-                    // Include a `typings` field when there is no `package.json` to avoid returning
-                    // `INCOMPATIBLE_ENTRY_POINT`.
-                    override: {typings: './index.d.ts'},
-                  },
-                },
-              });
-            }
-
-            const entryPoint = getEntryPointInfo(fs, config, logger, packagePath, entryPointPath);
-
-            if (!isEntryPoint(entryPoint)) {
-              return fail(`Expected an entry point but got ${entryPoint}`);
-            }
-
-            return entryPoint.packageName;
+        return entryPoint.packageName;
+      };
+      const setUpPackageWithEntryPointPackageJson =
+          (entryPointName: string, entryPointPath: AbsoluteFsPath) => {
+            // Ensure a `package.json` exists for the entry-point (containing `entryPointName`).
+            loadTestFiles([
+              {
+                name: join(entryPointPath, 'package.json'),
+                contents: JSON.stringify({name: entryPointName, typings: './index.d.ts'}),
+              },
+            ]);
+          };
+      const setUpPackageWithoutEntryPointPackageJson =
+          (packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath) => {
+            // Ensure there is an ngcc config for the entry-point providing a `typings` field  to
+            // avoid returning `INCOMPATIBLE_ENTRY_POINT` (since there is no `package.json`).
+            loadTestFiles([
+              {
+                name: join(packagePath, 'ngcc.config.js'),
+                contents: `
+                  module.exports = {
+                    entryPoints: {
+                      '${relative(packagePath, entryPointPath)}': {
+                        override: {typings: './index.d.ts'},
+                      },
+                    },
+                  };
+                `,
+              },
+            ]);
           };
 
-      [false, true].forEach(isScoped => {
-        const nameWithScope = (baseName: string) => `${isScoped ? '@some-scope/' : ''}${baseName}`;
+      describe(`should compute the containing ${isScoped ? 'scoped ' : ''}package's name`, () => {
+        it('for a primary entry-point with a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('package-json-package-name');
 
-        // Primary entry-point with `package.json`.
-        expect(setUpAndComputePackageName(
-                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
-                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
-                   nameWithScope('package-json-package-name'),
-                   ))
-            .toBe(nameWithScope('package-json-package-name'));
+          setUpPackageWithEntryPointPackageJson(expectedPackageName, entryPointPath);
 
-        // Primary entry-point without `package.json`.
-        expect(setUpAndComputePackageName(
-                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
-                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
-                   ))
-            .toBe(nameWithScope('on-disk-package-name'));
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
 
-        // Secondary entry-point with `package.json`.
-        expect(setUpAndComputePackageName(
-                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
-                   _(`/project/node_modules/${
-                       nameWithScope('on-disk-package-name')}/some-entry-point`),
-                   nameWithScope('package-json-package-name/some-entry-point'),
-                   ))
-            .toBe(nameWithScope('package-json-package-name'));
+        it('for a primary entry-point without a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('on-disk-package-name');
 
-        // Secondary entry-point without `package.json`.
-        expect(setUpAndComputePackageName(
-                   _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`),
-                   _(`/project/node_modules/${
-                       nameWithScope('on-disk-package-name')}/some-entry-point`),
-                   ))
-            .toBe(nameWithScope('on-disk-package-name'));
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
 
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
 
-        // Primary entry-point without `package.json` in nested `node_modules/`.
-        expect(setUpAndComputePackageName(
-                   _(`/project/node_modules/other-package/node_modules/${
-                       nameWithScope('on-disk-package-name')}`),
-                   _(`/project/node_modules/other-package/node_modules/${
-                       nameWithScope('on-disk-package-name')}`),
-                   ))
-            .toBe(nameWithScope('on-disk-package-name'));
+        it('for a secondary entry-point with a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('package-json-package-name');
 
-        // Secondary entry-point without `package.json` in nested `node_modules/`.
-        expect(setUpAndComputePackageName(
-                   _(`/project/node_modules/other-package/node_modules/${
-                       nameWithScope('on-disk-package-name')}`),
-                   _(`/project/node_modules/other-package/node_modules/${
-                       nameWithScope('on-disk-package-name')}/some-entry-point`),
-                   ))
-            .toBe(nameWithScope('on-disk-package-name'));
+          setUpPackageWithEntryPointPackageJson(
+              `${expectedPackageName}/some-entry-point`, entryPointPath);
 
-        // Primary entry-point with `package.json` outside `node_modules/`.
-        expect(setUpAndComputePackageName(
-                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
-                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
-                   nameWithScope('package-json-package-name'),
-                   ))
-            .toBe(nameWithScope('package-json-package-name'));
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
 
-        // Primary entry-point without `package.json` outside `node_modules/`.
-        expect(setUpAndComputePackageName(
-                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
-                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
-                   ))
-            .toBe(nameWithScope('on-disk-package-name'));
+        it('for a secondary entry-point without a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('on-disk-package-name');
 
-        // Secondary entry-point with `package.json` outside `node_modules/`.
-        expect(setUpAndComputePackageName(
-                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
-                   _(`/project/libs/${nameWithScope('on-disk-package-name')}/some-entry-point`),
-                   nameWithScope('package-json-package-name'),
-                   ))
-            .toBe(nameWithScope('package-json-package-name'));
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
 
-        // Secondary entry-point without `package.json` outside `node_modules/`.
-        expect(setUpAndComputePackageName(
-                   _(`/project/libs/${nameWithScope('on-disk-package-name')}`),
-                   _(`/project/libs/${nameWithScope('on-disk-package-name')}/some-entry-point`),
-                   ))
-            .toBe(nameWithScope('on-disk-package-name'));
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a primary entry-point without a `package.json` in nested `node_modules/`', () => {
+          const packagePath = _(`/project/node_modules/other-package/node_modules/${
+              nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point without a `package.json` in nested `node_modules/`', () => {
+          const packagePath = _(`/project/node_modules/other-package/node_modules/${
+              nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a primary entry-point with a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('package-json-package-name');
+
+          setUpPackageWithEntryPointPackageJson(expectedPackageName, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a primary entry-point without a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point with a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('package-json-package-name');
+
+          setUpPackageWithEntryPointPackageJson(expectedPackageName, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point without a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
       });
     });
 
