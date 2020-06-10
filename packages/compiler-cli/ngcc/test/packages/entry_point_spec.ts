@@ -78,64 +78,115 @@ runInEachFileSystem(() => {
     });
 
     it('should retrieve the entry-point\'s version from the package\'s `package.json`', () => {
-      const packagePath = _('/project/node_modules/some_package');
-      const entryPointPath = join(packagePath, 'valid_entry_point');
-      const config = new NgccConfiguration(fs, _('/project'));
-      const getPackageConfigSpy = spyOn(config, 'getPackageConfig').and.callThrough();
+      const entryPointPath = join(SOME_PACKAGE, 'valid_entry_point');
 
       loadTestFiles([
         {
-          name: join(packagePath, 'package.json'),
-          contents: createPackageJson('', {version: '1.0'}),
+          name: _('/project/ngcc.config.js'),
+          contents: `
+            module.exports = {
+              packages: {
+                'some_package@3': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '3'}}},
+                },
+                'some_package@2': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '2'}}},
+                },
+                'some_package@1': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '1'}}},
+                },
+              },
+            };
+          `,
+        },
+        {
+          name: join(SOME_PACKAGE, 'package.json'),
+          contents: createPackageJson('', {version: '1.0.0'}),
         },
         {
           name: join(entryPointPath, 'package.json'),
-          contents: createPackageJson('valid_entry_point', {version: '2.0'}),
+          contents: createPackageJson('valid_entry_point', {version: '2.0.0'}),
         },
         {
           name: join(entryPointPath, 'valid_entry_point.metadata.json'),
           contents: 'some meta data',
         },
       ]);
-      getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath);
 
-      expect(getPackageConfigSpy).toHaveBeenCalledWith(packagePath, '1.0');
+      const config = new NgccConfiguration(fs, _('/project'));
+      const info: EntryPoint =
+          getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath) as any;
+
+      expect(info.packageJson).toEqual(jasmine.objectContaining({packageVersion: '1'}));
     });
 
     it('should retrieve the entry-point\'s version from the entry-point\'s `package.json`', () => {
-      const packagePath = _('/project/node_modules/some_package');
-      const entryPointPath = join(packagePath, 'valid_entry_point');
-      const config = new NgccConfiguration(fs, _('/project'));
-      const getPackageConfigSpy = spyOn(config, 'getPackageConfig').and.callThrough();
+      const entryPointPath = join(SOME_PACKAGE, 'valid_entry_point');
 
       loadTestFiles([
         {
-          name: join(packagePath, 'package.json'),
+          name: _('/project/ngcc.config.js'),
+          contents: `
+            module.exports = {
+              packages: {
+                'some_package@3': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '3'}}},
+                },
+                'some_package@2': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '2'}}},
+                },
+                'some_package@1': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '1'}}},
+                },
+              },
+            };
+          `,
+        },
+        {
+          name: join(SOME_PACKAGE, 'package.json'),
           contents: createPackageJson(''),
         },
         {
           name: join(entryPointPath, 'package.json'),
-          contents: createPackageJson('valid_entry_point', {version: '2.0'}),
+          contents: createPackageJson('valid_entry_point', {version: '2.0.0'}),
         },
         {
           name: join(entryPointPath, 'valid_entry_point.metadata.json'),
           contents: 'some meta data',
         },
       ]);
-      getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath);
 
-      expect(getPackageConfigSpy).toHaveBeenCalledWith(packagePath, '2.0');
+      const config = new NgccConfiguration(fs, _('/project'));
+      const info: EntryPoint =
+          getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath) as any;
+
+      expect(info.packageJson).toEqual(jasmine.objectContaining({packageVersion: '2'}));
     });
 
     it('should use `null` for version if it cannot be retrieved from a `package.json`', () => {
-      const packagePath = _('/project/node_modules/some_package');
-      const entryPointPath = join(packagePath, 'valid_entry_point');
-      const config = new NgccConfiguration(fs, _('/project'));
-      const getPackageConfigSpy = spyOn(config, 'getPackageConfig').and.callThrough();
+      const entryPointPath = join(SOME_PACKAGE, 'valid_entry_point');
 
       loadTestFiles([
         {
-          name: join(packagePath, 'package.json'),
+          name: _('/project/ngcc.config.js'),
+          contents: `
+            module.exports = {
+              packages: {
+                'some_package@3': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '3'}}},
+                },
+                'some_package@2': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '2'}}},
+                },
+                'some_package@1': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '1'}}},
+                },
+              },
+            };
+          `,
+        },
+        {
+          name: join(SOME_PACKAGE, 'package.json'),
           contents: createPackageJson(''),
         },
         {
@@ -147,9 +198,12 @@ runInEachFileSystem(() => {
           contents: 'some meta data',
         },
       ]);
-      getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath);
 
-      expect(getPackageConfigSpy).toHaveBeenCalledWith(packagePath, null);
+      const config = new NgccConfiguration(fs, _('/project'));
+      const info: EntryPoint =
+          getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath) as any;
+
+      expect(info.packageJson).toEqual(jasmine.objectContaining({packageVersion: '3'}));
     });
 
     it('should override the properties on package.json if the entry-point is configured', () => {
