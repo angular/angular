@@ -193,6 +193,11 @@ code {
   }
 }
 
+// The following css rule adds an icon to external links in the docs area.
+// The following `folder-*` classes are applied to the `doc-viewer`component when it is displaying docs for these areas of the documentation.
+// We add the icon to all external links which are identified as absolute links (those that start with `http` or https`).
+// For more info see PR #36601
+
 .folder-api,
 .folder-cli,
 .folder-docs,
@@ -213,6 +218,8 @@ code {
       }
     }
 
+    // The docs-viewer also contain links to GitHub (e.g. the edit this page icon) identified with `.github-links` class.
+    // We don't want to add the external link icon to these links, so we hide them.
     .github-links a {
       &[href^="http:"]::after,
       &[href^="https:"]::after {
