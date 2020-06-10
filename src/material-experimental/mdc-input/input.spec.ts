@@ -315,48 +315,41 @@ describe('MatMdcInput without forms', () => {
   }));
 
   it('supports label required star', fakeAsync(() => {
-    let fixture = createComponent(MatInputLabelRequiredTestComponent);
+    const fixture = createComponent(MatInputLabelRequiredTestComponent);
     fixture.detectChanges();
 
-    let el = fixture.debugElement.query(By.css('label'))!;
-    expect(el).not.toBeNull();
-    expect(el.nativeElement.textContent).toBe('hello *');
+    const label = fixture.debugElement.query(By.css('label'))!;
+    expect(label).not.toBeNull();
+    expect(label.nativeElement.textContent).toBe('hello');
+    expect(label.nativeElement.classList).toContain('mdc-floating-label--required');
   }));
 
-  it('should hide the required star if input is disabled', () => {
+  it('should not hide the required star if input is disabled', () => {
     const fixture = createComponent(MatInputLabelRequiredTestComponent);
 
     fixture.componentInstance.disabled = true;
     fixture.detectChanges();
 
-    const el = fixture.debugElement.query(By.css('label'))!;
-
-    expect(el).not.toBeNull();
-    expect(el.nativeElement.textContent).toBe('hello');
+    const label = fixture.debugElement.query(By.css('label'))!;
+    expect(label).not.toBeNull();
+    expect(label.nativeElement.textContent).toBe('hello');
+    expect(label.nativeElement.classList).toContain('mdc-floating-label--required');
   });
 
-  it('should hide the required star from screen readers', fakeAsync(() => {
-    let fixture = createComponent(MatInputLabelRequiredTestComponent);
-    fixture.detectChanges();
-
-    let el = fixture.debugElement
-        .query(By.css('.mat-mdc-form-field-required-marker'))!.nativeElement;
-
-    expect(el.getAttribute('aria-hidden')).toBe('true');
-  }));
-
   it('hide label required star when set to hide the required marker', fakeAsync(() => {
-    let fixture = createComponent(MatInputLabelRequiredTestComponent);
+    const fixture = createComponent(MatInputLabelRequiredTestComponent);
     fixture.detectChanges();
 
-    let el = fixture.debugElement.query(By.css('label'))!;
-    expect(el).not.toBeNull();
-    expect(el.nativeElement.textContent).toBe('hello *');
+    const label = fixture.debugElement.query(By.css('label'))!;
+    expect(label).not.toBeNull();
+    expect(label.nativeElement.classList).toContain('mdc-floating-label--required');
+    expect(label.nativeElement.textContent).toBe('hello');
 
     fixture.componentInstance.hideRequiredMarker = true;
     fixture.detectChanges();
 
-    expect(el.nativeElement.textContent).toBe('hello');
+    expect(label.nativeElement.classList).not.toContain('mdc-floating-label--required');
+    expect(label.nativeElement.textContent).toBe('hello');
   }));
 
   it('supports the disabled attribute as binding', fakeAsync(() => {

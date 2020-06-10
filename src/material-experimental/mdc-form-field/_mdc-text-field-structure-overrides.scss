@@ -6,16 +6,6 @@
 // styles to fit our needs. See individual comments for context on why
 // certain MDC styles need to be modified.
 @mixin _mat-mdc-text-field-structure-overrides() {
-  // Always hide the asterisk displayed by MDC. This is necessary because MDC can only display
-  // the asterisk if the label is directly preceded by the input. MDC does this because it
-  // relies on CSS to figure out if the input/textarea is required. This does not apply for us
-  // because it's not guaranteed that the form control is an input/textarea. The required state
-  // is handled as part of the registered form-field control instance. The asterisk will be
-  // rendered conditionally through the floating label.
-  .mat-mdc-form-field .mdc-floating-label::after {
-    display: none;
-  }
-
   // Unset the border set by MDC. We move the border (which serves as the Material Design
   // text-field bottom line) into its own element. This is necessary because we want the
   // bottom-line to span across the whole form-field (including prefixes and suffixes). Also

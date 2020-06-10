@@ -24,7 +24,6 @@ ng_module(
         "//src/material/core",
         "//src/material/form-field",
         "@npm//@angular/forms",
-        "@npm//@material/floating-label",
         "@npm//@material/line-ripple",
         "@npm//@material/textfield",
         "@npm//rxjs",

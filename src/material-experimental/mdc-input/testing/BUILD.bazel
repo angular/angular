@@ -39,7 +39,7 @@ ng_web_test_suite(
         "@npm//:node_modules/@material/textfield/dist/mdc.textfield.js",
         "@npm//:node_modules/@material/line-ripple/dist/mdc.lineRipple.js",
         "@npm//:node_modules/@material/notched-outline/dist/mdc.notchedOutline.js",
-        "@npm//:node_modules/@material/floating-label/dist/mdc.floatingLabel.js",
+        "@npm//:node_modules/@material/dom/dist/mdc.dom.js",
     ],
     deps = [
         ":unit_tests_lib",
