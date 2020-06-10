@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,14 +9,14 @@
 import {$, browser} from 'protractor';
 import {runBenchmark} from '@angular/dev-infra-private/benchmark/driver-utilities';
 
-describe('checkbox overview performance benchmarks', () => {
+describe('checkbox performance benchmarks', () => {
   beforeAll(() => {
     browser.rootEl = '#root';
   });
 
   it('renders a checked checkbox', async() => {
     await runBenchmark({
-      id: 'checkbox-overview-render-checked',
+      id: 'checkbox-render-checked',
       url: '',
       ignoreBrowserSynchronization: true,
       params: [],
@@ -35,7 +35,7 @@ describe('checkbox overview performance benchmarks', () => {
 
   it('renders an unchecked checkbox', async() => {
     await runBenchmark({
-      id: 'checkbox-overview-render-unchecked',
+      id: 'checkbox-render-unchecked',
       url: '',
       ignoreBrowserSynchronization: true,
       params: [],
@@ -51,7 +51,7 @@ describe('checkbox overview performance benchmarks', () => {
 
   it('renders an indeterminate checkbox', async() => {
     await runBenchmark({
-      id: 'checkbox-overview-render-indeterminate',
+      id: 'checkbox-render-indeterminate',
       url: '',
       ignoreBrowserSynchronization: true,
       params: [],
@@ -70,7 +70,7 @@ describe('checkbox overview performance benchmarks', () => {
 
   it('updates from unchecked to checked', async() => {
     await runBenchmark({
-      id: 'checkbox-overview-click-unchecked-to-checked',
+      id: 'checkbox-click-unchecked-to-checked',
       url: '',
       ignoreBrowserSynchronization: true,
       params: [],
@@ -89,7 +89,7 @@ describe('checkbox overview performance benchmarks', () => {
 
   it('updates from checked to unchecked', async() => {
     await runBenchmark({
-      id: 'checkbox-overview-click-checked-to-unchecked',
+      id: 'checkbox-click-checked-to-unchecked',
       url: '',
       ignoreBrowserSynchronization: true,
       params: [],
