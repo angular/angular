@@ -187,13 +187,13 @@ export function createCustomElement<P>(
     }
 
     connectedCallback(): void {
+      this.ngElementStrategy.connect(this);
+
       // Listen for events from the strategy and dispatch them as custom events
       this.ngElementEventsSubscription = this.ngElementStrategy.events.subscribe(e => {
         const customEvent = createCustomEvent(this.ownerDocument!, e.name, e.value);
         this.dispatchEvent(customEvent);
       });
-
-      this.ngElementStrategy.connect(this);
     }
 
     disconnectedCallback(): void {
