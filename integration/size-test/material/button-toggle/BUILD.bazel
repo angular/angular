@@ -1,0 +1,7 @@
+load("//integration/size-test:index.bzl", "size_test")
+
+size_test(
+    name = "standalone",
+    file = "standalone.ts",
+    deps = ["//src/material/button-toggle"],
+)
