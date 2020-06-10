@@ -1,3 +1,11 @@
+<a name="9.1.11"></a>
+## [9.1.11](https://github.com/angular/angular/compare/9.1.10...9.1.11) (2020-06-10)
+
+### Reverts
+
+* **elements:** fire custom element output events during component initialization ([dc9da17](https://github.com/angular/angular/commit/dc9da17))
+
+
 <a name="9.1.10"></a>
 ## [9.1.10](https://github.com/angular/angular/compare/9.1.9...9.1.10) (2020-06-09)
 
