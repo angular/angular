@@ -34,7 +34,7 @@
      [class.mdc-text-field--disabled]="_control.disabled"
      [class.mdc-text-field--invalid]="_control.errorState"
      (click)="_control.onContainerClick && _control.onContainerClick($event)">
-  <div class="mat-mdc-form-field-focus-overlay" *ngIf="!_hasOutline()"></div>
+  <div class="mat-mdc-form-field-focus-overlay" *ngIf="!_hasOutline() && !_control.disabled"></div>
   <div class="mat-mdc-form-field-flex">
     <div *ngIf="_hasOutline()" matFormFieldNotchedOutline
          [matFormFieldNotchedOutlineOpen]="_shouldLabelFloat()"
