@@ -131,7 +131,7 @@ export function getEntryPointInfo(
   const loadedEntryPointPackageJson = (packagePackageJsonPath === entryPointPackageJsonPath) ?
       loadedPackagePackageJson :
       loadPackageJson(fs, entryPointPackageJsonPath);
-  const packageVersion = getPackageVersion(loadedPackagePackageJson, loadedEntryPointPackageJson);
+  const packageVersion = getPackageVersion(loadedPackagePackageJson);
   const entryPointConfig =
       config.getPackageConfig(packagePath, packageVersion).entryPoints[entryPointPath];
   let entryPointPackageJson: EntryPointPackageJson;
@@ -306,16 +306,13 @@ function guessTypingsFromPackageJson(
 /**
  * Find the version of the package at `packageJsonPath`.
  *
- * The version is read off of the `version` property of the package's or the entry-point's
- * `package.json` file (if available).
+ * The version is read off of the `version` property of the package's `package.json` file (if
+ * available).
  *
- * @param packagePackageJson the parsed `package.json` of the package (if available).
- * @param entryPointPackageJson the parsed `package.json` of an entry-point (if available).
- * @returns the version string or `null` if the `pckage.json` files are missing or don't contain a
+ * @param packageJson the parsed `package.json` of the package (if available).
+ * @returns the version string or `null` if the `pckage.json` file is missing or doesn't contain a
  *     version.
  */
-function getPackageVersion(
-    packagePackageJson: EntryPointPackageJson|null,
-    entryPointPackageJson: EntryPointPackageJson|null): string|null {
-  return packagePackageJson?.version ?? entryPointPackageJson?.version ?? null;
+function getPackageVersion(packageJson: EntryPointPackageJson|null): string|null {
+  return packageJson?.version ?? null;
 }
