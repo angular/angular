@@ -481,7 +481,7 @@ function optionsReducer<T extends Object>(dst: any, objs: T|T[]): T {
  * ```
  * constructor(appRef: ApplicationRef) {
  *   appRef.isStable.pipe(
- *      filter(stable => stable)
+ *      first(stable => stable)
  *   ).subscribe(() => console.log('App is stable now');
  *   interval(1000).subscribe(counter => console.log(counter));
  * }
