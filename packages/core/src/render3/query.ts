@@ -9,6 +9,7 @@
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 
+import {InjectionToken} from '../di/injection_token';
 import {Type} from '../interface/type';
 import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
@@ -89,8 +90,8 @@ class LQueries_ implements LQueries {
 
 class TQueryMetadata_ implements TQueryMetadata {
   constructor(
-      public predicate: Type<any>|string[], public descendants: boolean, public isStatic: boolean,
-      public read: any = null) {}
+      public predicate: Type<any>|InjectionToken<unknown>|string[], public descendants: boolean,
+      public isStatic: boolean, public read: any = null) {}
 }
 
 class TQueries_ implements TQueries {
@@ -454,7 +455,7 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
  * @codeGenApi
  */
 export function ɵɵstaticViewQuery<T>(
-    predicate: Type<any>|string[], descend: boolean, read?: any): void {
+    predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean, read?: any): void {
   viewQueryInternal(getTView(), getLView(), predicate, descend, read, true);
 }
 
@@ -467,13 +468,14 @@ export function ɵɵstaticViewQuery<T>(
  *
  * @codeGenApi
  */
-export function ɵɵviewQuery<T>(predicate: Type<any>|string[], descend: boolean, read?: any): void {
+export function ɵɵviewQuery<T>(
+    predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean, read?: any): void {
   viewQueryInternal(getTView(), getLView(), predicate, descend, read, false);
 }
 
 function viewQueryInternal<T>(
-    tView: TView, lView: LView, predicate: Type<any>|string[], descend: boolean, read: any,
-    isStatic: boolean): void {
+    tView: TView, lView: LView, predicate: Type<any>|InjectionToken<unknown>|string[],
+    descend: boolean, read: any, isStatic: boolean): void {
   if (tView.firstCreatePass) {
     createTQuery(tView, new TQueryMetadata_(predicate, descend, isStatic, read), -1);
     if (isStatic) {
@@ -496,7 +498,8 @@ function viewQueryInternal<T>(
  * @codeGenApi
  */
 export function ɵɵcontentQuery<T>(
-    directiveIndex: number, predicate: Type<any>|string[], descend: boolean, read?: any): void {
+    directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean,
+    read?: any): void {
   contentQueryInternal(
       getTView(), getLView(), predicate, descend, read, false, getPreviousOrParentTNode(),
       directiveIndex);
@@ -515,15 +518,16 @@ export function ɵɵcontentQuery<T>(
  * @codeGenApi
  */
 export function ɵɵstaticContentQuery<T>(
-    directiveIndex: number, predicate: Type<any>|string[], descend: boolean, read?: any): void {
+    directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean,
+    read?: any): void {
   contentQueryInternal(
       getTView(), getLView(), predicate, descend, read, true, getPreviousOrParentTNode(),
       directiveIndex);
 }
 
 function contentQueryInternal<T>(
-    tView: TView, lView: LView, predicate: Type<any>|string[], descend: boolean, read: any,
-    isStatic: boolean, tNode: TNode, directiveIndex: number): void {
+    tView: TView, lView: LView, predicate: Type<any>|InjectionToken<unknown>|string[],
+    descend: boolean, read: any, isStatic: boolean, tNode: TNode, directiveIndex: number): void {
   if (tView.firstCreatePass) {
     createTQuery(tView, new TQueryMetadata_(predicate, descend, isStatic, read), tNode.index);
     saveContentQueryAndDirectiveIndex(tView, directiveIndex);

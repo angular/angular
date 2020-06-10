@@ -163,11 +163,11 @@ export declare interface ConstructorSansProvider {
 export declare type ContentChild = Query;
 
 export declare interface ContentChildDecorator {
-    (selector: Type<any> | Function | string, opts?: {
+    (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         read?: any;
         static?: boolean;
     }): any;
-    new (selector: Type<any> | Function | string, opts?: {
+    new (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         read?: any;
         static?: boolean;
     }): ContentChild;
@@ -176,11 +176,11 @@ export declare interface ContentChildDecorator {
 export declare type ContentChildren = Query;
 
 export declare interface ContentChildrenDecorator {
-    (selector: Type<any> | Function | string, opts?: {
+    (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
         read?: any;
     }): any;
-    new (selector: Type<any> | Function | string, opts?: {
+    new (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
         read?: any;
     }): Query;
@@ -725,7 +725,7 @@ export declare type ɵɵComponentDefWithMeta<T, Selector extends String, ExportA
 
 export declare function ɵɵcomponentHostSyntheticListener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): typeof ɵɵcomponentHostSyntheticListener;
 
-export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read?: any): void;
+export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: Type<any> | InjectionToken<unknown> | string[], descend: boolean, read?: any): void;
 
 export declare function ɵɵCopyDefinitionFeature(definition: ɵDirectiveDef<any> | ɵComponentDef<any>): void;
 
@@ -1008,9 +1008,9 @@ export declare function ɵɵsetNgModuleScope(type: any, scope: {
     exports?: Type<any>[] | (() => Type<any>[]);
 }): void;
 
-export declare function ɵɵstaticContentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read?: any): void;
+export declare function ɵɵstaticContentQuery<T>(directiveIndex: number, predicate: Type<any> | InjectionToken<unknown> | string[], descend: boolean, read?: any): void;
 
-export declare function ɵɵstaticViewQuery<T>(predicate: Type<any> | string[], descend: boolean, read?: any): void;
+export declare function ɵɵstaticViewQuery<T>(predicate: Type<any> | InjectionToken<unknown> | string[], descend: boolean, read?: any): void;
 
 export declare function ɵɵstyleMap(styles: {
     [styleName: string]: any;
@@ -1082,7 +1082,7 @@ export declare function ɵɵtextInterpolateV(values: any[]): typeof ɵɵtextInte
 
 export declare function ɵɵupdateSyntheticHostBinding<T>(propName: string, value: T | ɵNO_CHANGE, sanitizer?: SanitizerFn | null): typeof ɵɵupdateSyntheticHostBinding;
 
-export declare function ɵɵviewQuery<T>(predicate: Type<any> | string[], descend: boolean, read?: any): void;
+export declare function ɵɵviewQuery<T>(predicate: Type<any> | InjectionToken<unknown> | string[], descend: boolean, read?: any): void;
 
 export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
 
@@ -1385,11 +1385,11 @@ export declare const VERSION: Version;
 export declare type ViewChild = Query;
 
 export declare interface ViewChildDecorator {
-    (selector: Type<any> | Function | string, opts?: {
+    (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         read?: any;
         static?: boolean;
     }): any;
-    new (selector: Type<any> | Function | string, opts?: {
+    new (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         read?: any;
         static?: boolean;
     }): ViewChild;
@@ -1398,10 +1398,10 @@ export declare interface ViewChildDecorator {
 export declare type ViewChildren = Query;
 
 export declare interface ViewChildrenDecorator {
-    (selector: Type<any> | Function | string, opts?: {
+    (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         read?: any;
     }): any;
-    new (selector: Type<any> | Function | string, opts?: {
+    new (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         read?: any;
     }): ViewChildren;
 }
