@@ -64,7 +64,13 @@ export interface MatButtonToggleDefaultOptions {
 export const MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS =
     new InjectionToken<MatButtonToggleDefaultOptions>('MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS');
 
-
+/**
+ * Injection token that can be used to reference instances of `MatButtonToggleGroup`.
+ * It serves as alternative token to the actual `MatButtonToggleGroup` class which
+ * could cause unnecessary retention of the class and its component metadata.
+ */
+export const MAT_BUTTON_TOGGLE_GROUP =
+    new InjectionToken<MatButtonToggleGroup>('MatButtonToggleGroup');
 
 /**
  * Provider Expression that allows mat-button-toggle-group to register as a ControlValueAccessor.
@@ -92,7 +98,10 @@ export class MatButtonToggleChange {
 /** Exclusive selection button toggle group that behaves like a radio-button group. */
 @Directive({
   selector: 'mat-button-toggle-group',
-  providers: [MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR],
+  providers: [
+    MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR,
+    {provide: MAT_BUTTON_TOGGLE_GROUP, useExisting: MatButtonToggleGroup},
+  ],
   host: {
     'role': 'group',
     'class': 'mat-button-toggle-group',
@@ -476,7 +485,7 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   @Output() readonly change: EventEmitter<MatButtonToggleChange> =
       new EventEmitter<MatButtonToggleChange>();
 
-  constructor(@Optional() toggleGroup: MatButtonToggleGroup,
+  constructor(@Optional() @Inject(MAT_BUTTON_TOGGLE_GROUP) toggleGroup: MatButtonToggleGroup,
               private _changeDetectorRef: ChangeDetectorRef,
               private _elementRef: ElementRef<HTMLElement>,
               private _focusMonitor: FocusMonitor,
