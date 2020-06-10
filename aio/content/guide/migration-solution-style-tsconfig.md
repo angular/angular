@@ -2,15 +2,15 @@
 
 ## What does this migration do?
 
-This migration adds support for TypeScript's new "solution-style" tsconfig support.
+This migration adds support to existing projects for TypeScript's new ["solution-style" tsconfig feature](https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig).
 
 Support is added by making two changes:
 1. Renaming the workspace-level `tsconfig.json` to `tsconfig.base.json`.
-All project tsconfigs will extend from this base which contains the common options used
+All project TypeScript configuration files will extend from this base which contains the common options used
 throughout the workspace.
 
 2. Adding the solution `tsconfig.json` file at the root of the workspace.
-This `tsconfig.json` file will only contain references to project-level tsconfigs and is only used by editors/IDEs.
+This `tsconfig.json` file will only contain references to project-level TypeScript configuration files and is only used by editors/IDEs.
 
 As an example, the solution `tsconfig.json` for a new project is as follows:
 ```json
@@ -36,8 +36,8 @@ As an example, the solution `tsconfig.json` for a new project is as follows:
 
 Solution-style `tsconfig.json` files provide an improved editing experience and fix several long-standing
 defects when editing files in an IDE.
-IDE's that leverage the TypeScript language service (for example, vscode), will only use
-tsconfigs that are named `tsconfig.json`.
+IDE's that leverage the TypeScript language service (for example, [Visual Studio Code](https://code.visualstudio.com)), will only use
+TypeScript configuration files that are named `tsconfig.json`.
 In complex projects, there may be more than one compilation unit and each of these units may
 have different settings and options.
 
