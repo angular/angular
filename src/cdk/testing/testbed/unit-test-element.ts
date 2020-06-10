@@ -159,6 +159,11 @@ export class UnitTestElement implements TestElement {
     return (this.element as any)[name];
   }
 
+  async setInputValue(value: string): Promise<void> {
+    await this._stabilize();
+    (this.element as any).value = value;
+  }
+
   async matchesSelector(selector: string): Promise<boolean> {
     await this._stabilize();
     const elementPrototype = Element.prototype as any;

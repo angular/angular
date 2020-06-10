@@ -33,5 +33,6 @@ export declare class UnitTestElement implements TestElement {
     mouseAway(): Promise<void>;
     sendKeys(...keys: (string | TestKey)[]): Promise<void>;
     sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
+    setInputValue(value: string): Promise<void>;
     text(): Promise<string>;
 }

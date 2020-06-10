@@ -153,6 +153,10 @@ export class ProtractorElement implements TestElement {
     return browser.executeScript(`return arguments[0][arguments[1]]`, this.element, name);
   }
 
+  async setInputValue(value: string): Promise<void> {
+    return browser.executeScript(`arguments[0].value = arguments[1]`, this.element, value);
+  }
+
   async matchesSelector(selector: string): Promise<boolean> {
       return browser.executeScript(`
           return (Element.prototype.matches ||

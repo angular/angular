@@ -4,6 +4,7 @@ import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
+import {getSupportedInputTypes} from '@angular/cdk/platform';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatInputHarness} from './input-harness';
 
@@ -28,7 +29,7 @@ export function runHarnessTests(
 
   it('should load all input harnesses', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness);
-    expect(inputs.length).toBe(5);
+    expect(inputs.length).toBe(6);
   });
 
   it('should load input with specific id', async () => {
@@ -49,7 +50,7 @@ export function runHarnessTests(
 
   it('should be able to get id of input', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness);
-    expect(inputs.length).toBe(5);
+    expect(inputs.length).toBe(6);
     expect(await inputs[0].getId()).toMatch(/mat-input-\d+/);
     expect(await inputs[1].getId()).toMatch(/mat-input-\d+/);
     expect(await inputs[2].getId()).toBe('myTextarea');
@@ -59,7 +60,7 @@ export function runHarnessTests(
 
   it('should be able to get name of input', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness);
-    expect(inputs.length).toBe(5);
+    expect(inputs.length).toBe(6);
     expect(await inputs[0].getName()).toBe('favorite-food');
     expect(await inputs[1].getName()).toBe('');
     expect(await inputs[2].getName()).toBe('');
@@ -69,7 +70,7 @@ export function runHarnessTests(
 
   it('should be able to get value of input', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness);
-    expect(inputs.length).toBe(5);
+    expect(inputs.length).toBe(6);
     expect(await inputs[0].getValue()).toBe('Sushi');
     expect(await inputs[1].getValue()).toBe('');
     expect(await inputs[2].getValue()).toBe('');
@@ -79,7 +80,7 @@ export function runHarnessTests(
 
   it('should be able to set value of input', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness);
-    expect(inputs.length).toBe(5);
+    expect(inputs.length).toBe(6);
     expect(await inputs[0].getValue()).toBe('Sushi');
     expect(await inputs[1].getValue()).toBe('');
     expect(await inputs[3].getValue()).toBe('');
@@ -98,7 +99,7 @@ export function runHarnessTests(
 
   it('should be able to get disabled state', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness);
-    expect(inputs.length).toBe(5);
+    expect(inputs.length).toBe(6);
 
     expect(await inputs[0].isDisabled()).toBe(false);
     expect(await inputs[1].isDisabled()).toBe(false);
@@ -113,7 +114,7 @@ export function runHarnessTests(
 
   it('should be able to get readonly state', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness);
-    expect(inputs.length).toBe(5);
+    expect(inputs.length).toBe(6);
 
     expect(await inputs[0].isReadonly()).toBe(false);
     expect(await inputs[1].isReadonly()).toBe(false);
@@ -128,7 +129,7 @@ export function runHarnessTests(
 
   it('should be able to get required state', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness);
-    expect(inputs.length).toBe(5);
+    expect(inputs.length).toBe(6);
 
     expect(await inputs[0].isRequired()).toBe(false);
     expect(await inputs[1].isRequired()).toBe(false);
@@ -143,7 +144,7 @@ export function runHarnessTests(
 
   it('should be able to get placeholder of input', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness);
-    expect(inputs.length).toBe(5);
+    expect(inputs.length).toBe(6);
     expect(await inputs[0].getPlaceholder()).toBe('Favorite food');
     expect(await inputs[1].getPlaceholder()).toBe('');
     expect(await inputs[2].getPlaceholder()).toBe('Leave a comment');
@@ -153,7 +154,7 @@ export function runHarnessTests(
 
   it('should be able to get type of input', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness);
-    expect(inputs.length).toBe(5);
+    expect(inputs.length).toBe(6);
     expect(await inputs[0].getType()).toBe('text');
     expect(await inputs[1].getType()).toBe('number');
     expect(await inputs[2].getType()).toBe('textarea');
@@ -179,6 +180,18 @@ export function runHarnessTests(
     expect(getActiveElementTagName()).toBe('input');
     await input.blur();
     expect(getActiveElementTagName()).not.toBe('input');
+  });
+
+  it('should be able to set the value of a control that cannot be typed in', async () => {
+    // We can't test this against browsers that don't support color inputs.
+    if (!getSupportedInputTypes().has('color')) {
+      return;
+    }
+
+    const input = await loader.getHarness(inputHarness.with({selector: '#colorControl'}));
+    expect(await input.getValue()).toBe('#000000'); // Color inputs default to black.
+    await input.setValue('#00ff00');
+    expect((await input.getValue()).toLowerCase()).toBe('#00ff00');
   });
 }
 
@@ -219,6 +232,10 @@ function getActiveElementTagName() {
       <select matNativeControl>
         <option value="first">First</option>
       </select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matNativeControl placeholder="Color control" id="colorControl" type="color">
     </mat-form-field>
   `
 })

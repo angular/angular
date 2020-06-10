@@ -283,6 +283,14 @@ describe('ProtractorHarnessEnvironment', () => {
       expect(await input.getProperty('value')).toBe('Hello');
     });
 
+    it('should be able to set the value of an input', async () => {
+      const input = await harness.input();
+
+        // @breaking-change 11.0.0 Remove non-null assertion once `setInputValue` is required.
+      await input.setInputValue!('hello');
+      expect(await input.getProperty('value')).toBe('hello');
+    });
+
     it('should check if selector matches', async () => {
       const button = await harness.button();
       expect(await button.matchesSelector('button:not(.fake-class)')).toBe(true);
