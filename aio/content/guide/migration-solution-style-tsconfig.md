@@ -6,7 +6,7 @@ This migration adds support to existing projects for TypeScript's new ["solution
 
 Support is added by making two changes:
 1. Renaming the workspace-level `tsconfig.json` to `tsconfig.base.json`.
-All project TypeScript configuration files will extend from this base which contains the common options used throughout the workspace.
+All project [TypeScript configuration files](guide/typescript-configuration) will extend from this base which contains the common options used throughout the workspace.
 
 2. Adding the solution `tsconfig.json` file at the root of the workspace.
 This `tsconfig.json` file will only contain references to project-level TypeScript configuration files and is only used by editors/IDEs.
