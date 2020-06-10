@@ -30,6 +30,7 @@ import {
   ViewEncapsulation,
   InjectionToken,
   Inject,
+  AfterViewInit,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -394,7 +395,7 @@ const _MatButtonToggleMixinBase: CanDisableRippleCtor & typeof MatButtonToggleBa
     '(focus)': 'focus()',
   }
 })
-export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit,
+export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit, AfterViewInit,
   CanDisableRipple, OnDestroy {
 
   private _isSingleSelector = false;
@@ -512,7 +513,9 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
         group._syncButtonToggle(this, this._checked);
       }
     }
+  }
 
+  ngAfterViewInit() {
     this._focusMonitor.monitor(this._elementRef, true);
   }
 

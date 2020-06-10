@@ -35,10 +35,10 @@ import {
   Input,
   NgZone,
   OnDestroy,
-  OnInit,
   Optional,
   ViewContainerRef,
   ViewEncapsulation,
+  AfterViewInit,
 } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
@@ -135,7 +135,7 @@ export function MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY(): MatTooltipDefaultOptions 
     'class': 'mat-tooltip-trigger'
   }
 })
-export class MatTooltip implements OnDestroy, OnInit {
+export class MatTooltip implements OnDestroy, AfterViewInit {
   _overlayRef: OverlayRef | null;
   _tooltipInstance: TooltipComponent | null;
 
@@ -269,28 +269,25 @@ export class MatTooltip implements OnDestroy, OnInit {
       }
     }
 
-    _focusMonitor.monitor(_elementRef)
-      .pipe(takeUntil(this._destroyed))
-      .subscribe(origin => {
-        // Note that the focus monitor runs outside the Angular zone.
-        if (!origin) {
-          _ngZone.run(() => this.hide(0));
-        } else if (origin === 'keyboard') {
-          _ngZone.run(() => this.show());
-        }
-    });
-
     _ngZone.runOutsideAngular(() => {
       _elementRef.nativeElement.addEventListener('keydown', this._handleKeydown);
     });
   }
 
-  /**
-   * Setup styling-specific things
-   */
-  ngOnInit() {
-    // This needs to happen in `ngOnInit` so the initial values for all inputs have been set.
+  ngAfterViewInit() {
+    // This needs to happen after view init so the initial values for all inputs have been set.
     this._setupPointerEvents();
+
+    this._focusMonitor.monitor(this._elementRef)
+      .pipe(takeUntil(this._destroyed))
+      .subscribe(origin => {
+        // Note that the focus monitor runs outside the Angular zone.
+        if (!origin) {
+          this._ngZone.run(() => this.hide(0));
+        } else if (origin === 'keyboard') {
+          this._ngZone.run(() => this.show());
+        }
+    });
   }
 
   /**

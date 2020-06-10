@@ -24,7 +24,7 @@ export declare class MatStep extends CdkStep implements ErrorStateMatcher {
     static ɵfac: i0.ɵɵFactoryDef<MatStep, [null, { skipSelf: true; }, { optional: true; }]>;
 }
 
-export declare class MatStepHeader extends CdkStepHeader implements OnDestroy {
+export declare class MatStepHeader extends CdkStepHeader implements AfterViewInit, OnDestroy {
     _intl: MatStepperIntl;
     active: boolean;
     disableRipple: boolean;
@@ -44,6 +44,7 @@ export declare class MatStepHeader extends CdkStepHeader implements OnDestroy {
     _stringLabel(): string | null;
     _templateLabel(): MatStepLabel | null;
     focus(): void;
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatStepHeader, "mat-step-header", never, { "state": "state"; "label": "label"; "errorMessage": "errorMessage"; "iconOverrides": "iconOverrides"; "index": "index"; "selected": "selected"; "active": "active"; "optional": "optional"; "disableRipple": "disableRipple"; }, {}, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatStepHeader, never>;

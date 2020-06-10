@@ -95,7 +95,7 @@ export declare class MatExpansionPanelDescription {
     static ɵfac: i0.ɵɵFactoryDef<MatExpansionPanelDescription, never>;
 }
 
-export declare class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
+export declare class MatExpansionPanelHeader implements AfterViewInit, OnDestroy, FocusableOption {
     _animationMode?: string | undefined;
     collapsedHeight: string;
     get disabled(): any;
@@ -111,6 +111,7 @@ export declare class MatExpansionPanelHeader implements OnDestroy, FocusableOpti
     _showToggle(): boolean;
     _toggle(): void;
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatExpansionPanelHeader, "mat-expansion-panel-header", never, { "expandedHeight": "expandedHeight"; "collapsedHeight": "collapsedHeight"; }, {}, never, ["mat-panel-title", "mat-panel-description", "*"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatExpansionPanelHeader, [{ host: true; }, null, null, null, { optional: true; }, { optional: true; }]>;

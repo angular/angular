@@ -221,7 +221,12 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
 
     this.tabIndex = parseInt(tabIndex) || 0;
 
-    this._focusMonitor.monitor(elementRef, true).subscribe(focusOrigin => {
+    // TODO: Remove this after the `_clickAction` parameter is removed as an injection parameter.
+    this._clickAction = this._clickAction || this._options.clickAction;
+  }
+
+  ngAfterViewInit() {
+    this._focusMonitor.monitor(this._elementRef, true).subscribe(focusOrigin => {
       if (!focusOrigin) {
         // When a focused element becomes disabled, the browser *immediately* fires a blur event.
         // Angular does not expect events to be raised during change detection, so any state change
@@ -230,16 +235,11 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
         // telling the form control it has been touched until the next tick.
         Promise.resolve().then(() => {
           this._onTouched();
-          _changeDetectorRef.markForCheck();
+          this._changeDetectorRef.markForCheck();
         });
       }
     });
 
-    // TODO: Remove this after the `_clickAction` parameter is removed as an injection parameter.
-    this._clickAction = this._clickAction || this._options.clickAction;
-  }
-
-  ngAfterViewInit() {
     this._syncIndeterminate(this._indeterminate);
   }
 

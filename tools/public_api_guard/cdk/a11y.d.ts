@@ -33,9 +33,10 @@ export declare class CdkAriaLive implements OnDestroy {
     static ɵfac: i0.ɵɵFactoryDef<CdkAriaLive, never>;
 }
 
-export declare class CdkMonitorFocus implements OnDestroy {
+export declare class CdkMonitorFocus implements AfterViewInit, OnDestroy {
     cdkFocusChange: EventEmitter<FocusOrigin>;
     constructor(_elementRef: ElementRef<HTMLElement>, _focusMonitor: FocusMonitor);
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkMonitorFocus, "[cdkMonitorElementFocus], [cdkMonitorSubtreeFocus]", never, {}, { "cdkFocusChange": "cdkFocusChange"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkMonitorFocus, never>;

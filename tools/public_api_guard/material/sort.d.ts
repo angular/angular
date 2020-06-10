@@ -51,7 +51,7 @@ export declare const matSortAnimations: {
     readonly allowChildren: AnimationTriggerMetadata;
 };
 
-export declare class MatSortHeader extends _MatSortHeaderMixinBase implements CanDisable, MatSortable, OnDestroy, OnInit {
+export declare class MatSortHeader extends _MatSortHeaderMixinBase implements CanDisable, MatSortable, OnDestroy, OnInit, AfterViewInit {
     _arrowDirection: SortDirection;
     _columnDef: MatSortHeaderColumnDef;
     _disableViewStateAnimation: boolean;
@@ -75,6 +75,7 @@ export declare class MatSortHeader extends _MatSortHeaderMixinBase implements Ca
     _setAnimationTransitionState(viewState: ArrowViewStateTransition): void;
     _setIndicatorHintVisible(visible: boolean): void;
     _updateArrowDirection(): void;
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ngAcceptInputType_disableClear: BooleanInput;

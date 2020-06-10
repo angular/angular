@@ -16,6 +16,7 @@ import {
   OnDestroy,
   ViewEncapsulation,
   TemplateRef,
+  AfterViewInit,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 import {MatStepLabel} from './step-label';
@@ -35,7 +36,7 @@ import {CdkStepHeader, StepState} from '@angular/cdk/stepper';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatStepHeader extends CdkStepHeader implements OnDestroy {
+export class MatStepHeader extends CdkStepHeader implements AfterViewInit, OnDestroy {
   private _intlSubscription: Subscription;
 
   /** State of the given step. */
@@ -71,8 +72,11 @@ export class MatStepHeader extends CdkStepHeader implements OnDestroy {
     _elementRef: ElementRef<HTMLElement>,
     changeDetectorRef: ChangeDetectorRef) {
     super(_elementRef);
-    _focusMonitor.monitor(_elementRef, true);
     this._intlSubscription = _intl.changes.subscribe(() => changeDetectorRef.markForCheck());
+  }
+
+  ngAfterViewInit() {
+    this._focusMonitor.monitor(this._elementRef, true);
   }
 
   ngOnDestroy() {

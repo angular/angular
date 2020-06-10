@@ -1,6 +1,6 @@
 export declare const MAT_SLIDER_VALUE_ACCESSOR: any;
 
-export declare class MatSlider extends _MatSliderMixinBase implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, OnInit, HasTabIndex {
+export declare class MatSlider extends _MatSliderMixinBase implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, AfterViewInit, HasTabIndex {
     _animationMode?: string | undefined;
     protected _document: Document;
     get _invertAxis(): boolean;
@@ -55,8 +55,8 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     _shouldInvertMouseCoords(): boolean;
     blur(): void;
     focus(options?: FocusOptions): void;
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
-    ngOnInit(): void;
     registerOnChange(fn: (value: any) => void): void;
     registerOnTouched(fn: any): void;
     setDisabledState(isDisabled: boolean): void;

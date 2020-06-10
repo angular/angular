@@ -27,6 +27,7 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
+  AfterViewInit,
 } from '@angular/core';
 import {
   CanDisable, CanDisableCtor,
@@ -192,8 +193,8 @@ const _MatTabLinkMixinBase:
 /** Base class with all of the `MatTabLink` functionality. */
 @Directive()
 // tslint:disable-next-line:class-name
-export class _MatTabLinkBase extends _MatTabLinkMixinBase implements OnDestroy, CanDisable,
-  CanDisableRipple, HasTabIndex, RippleTarget, FocusableOption {
+export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewInit, OnDestroy,
+  CanDisable, CanDisableRipple, HasTabIndex, RippleTarget, FocusableOption {
 
   /** Whether the tab link is active or not. */
   protected _isActive: boolean = false;
@@ -238,12 +239,14 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements OnDestroy, 
     if (animationMode === 'NoopAnimations') {
       this.rippleConfig.animation = {enterDuration: 0, exitDuration: 0};
     }
-
-    _focusMonitor.monitor(elementRef);
   }
 
   focus() {
     this.elementRef.nativeElement.focus();
+  }
+
+  ngAfterViewInit() {
+    this._focusMonitor.monitor(this.elementRef);
   }
 
   ngOnDestroy() {

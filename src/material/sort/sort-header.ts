@@ -18,6 +18,7 @@ import {
   ViewEncapsulation,
   Inject,
   ElementRef,
+  AfterViewInit,
 } from '@angular/core';
 import {CanDisable, CanDisableCtor, mixinDisabled} from '@angular/material/core';
 import {FocusMonitor} from '@angular/cdk/a11y';
@@ -95,7 +96,7 @@ interface MatSortHeaderColumnDef {
   ]
 })
 export class MatSortHeader extends _MatSortHeaderMixinBase
-    implements CanDisable, MatSortable, OnDestroy, OnInit {
+    implements CanDisable, MatSortable, OnDestroy, OnInit, AfterViewInit {
   private _rerenderSubscription: Subscription;
 
   /**
@@ -168,11 +169,6 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
 
           changeDetectorRef.markForCheck();
         });
-
-    // We use the focus monitor because we also want to style
-    // things differently based on the focus origin.
-    _focusMonitor.monitor(_elementRef, true)
-        .subscribe(origin => this._setIndicatorHintVisible(!!origin));
   }
 
   ngOnInit() {
@@ -186,6 +182,13 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
         {toState: this._isSorted() ? 'active' : this._arrowDirection});
 
     this._sort.register(this);
+  }
+
+  ngAfterViewInit() {
+    // We use the focus monitor because we also want to style
+    // things differently based on the focus origin.
+    this._focusMonitor.monitor(this._elementRef, true)
+        .subscribe(origin => this._setIndicatorHintVisible(!!origin));
   }
 
   ngOnDestroy() {

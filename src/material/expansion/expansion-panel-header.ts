@@ -20,6 +20,7 @@ import {
   ViewEncapsulation,
   Optional,
   Inject,
+  AfterViewInit,
 } from '@angular/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {merge, Subscription, EMPTY} from 'rxjs';
@@ -64,7 +65,7 @@ import {MatAccordionTogglePosition} from './accordion-base';
     '(keydown)': '_keydown($event)',
   },
 })
-export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
+export class MatExpansionPanelHeader implements AfterViewInit, OnDestroy, FocusableOption {
   private _parentChangeSubscription = Subscription.EMPTY;
 
   constructor(
@@ -98,12 +99,6 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
     panel.closed
       .pipe(filter(() => panel._containsFocus()))
       .subscribe(() => _focusMonitor.focusVia(_element, 'program'));
-
-    _focusMonitor.monitor(_element).subscribe(origin => {
-      if (origin && panel.accordion) {
-        panel.accordion._handleHeaderFocus(this);
-      }
-    });
 
     if (defaultOptions) {
       this.expandedHeight = defaultOptions.expandedHeight;
@@ -199,6 +194,14 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
    */
   focus(origin: FocusOrigin = 'program', options?: FocusOptions) {
     this._focusMonitor.focusVia(this._element, origin, options);
+  }
+
+  ngAfterViewInit() {
+    this._focusMonitor.monitor(this._element).subscribe(origin => {
+      if (origin && this.panel.accordion) {
+        this.panel.accordion._handleHeaderFocus(this);
+      }
+    });
   }
 
   ngOnDestroy() {

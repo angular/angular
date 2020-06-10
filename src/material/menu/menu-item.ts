@@ -18,6 +18,7 @@ import {
   Optional,
   Input,
   HostListener,
+  AfterViewInit,
 } from '@angular/core';
 import {
   CanDisable, CanDisableCtor,
@@ -57,7 +58,7 @@ const _MatMenuItemMixinBase: CanDisableRippleCtor & CanDisableCtor & typeof MatM
   templateUrl: 'menu-item.html',
 })
 export class MatMenuItem extends _MatMenuItemMixinBase
-    implements FocusableOption, CanDisable, CanDisableRipple, OnDestroy {
+    implements FocusableOption, CanDisable, CanDisableRipple, AfterViewInit, OnDestroy {
 
   /** ARIA role for the menu item. */
   @Input() role: 'menuitem' | 'menuitemradio' | 'menuitemcheckbox' = 'menuitem';
@@ -85,13 +86,6 @@ export class MatMenuItem extends _MatMenuItemMixinBase
     // @breaking-change 8.0.0 make `_focusMonitor` and `document` required params.
     super();
 
-    if (_focusMonitor) {
-      // Start monitoring the element so it gets the appropriate focused classes. We want
-      // to show the focus style for menu items only when the focus was not caused by a
-      // mouse or touch interaction.
-      _focusMonitor.monitor(this._elementRef, false);
-    }
-
     if (_parentMenu && _parentMenu.addItem) {
       _parentMenu.addItem(this);
     }
@@ -108,6 +102,15 @@ export class MatMenuItem extends _MatMenuItemMixinBase
     }
 
     this._focused.next(this);
+  }
+
+  ngAfterViewInit() {
+    if (this._focusMonitor) {
+      // Start monitoring the element so it gets the appropriate focused classes. We want
+      // to show the focus style for menu items only when the focus was not caused by a
+      // mouse or touch interaction.
+      this._focusMonitor.monitor(this._elementRef, false);
+    }
   }
 
   ngOnDestroy() {

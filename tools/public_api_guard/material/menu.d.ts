@@ -98,7 +98,7 @@ export interface MatMenuDefaultOptions {
     yPosition: MenuPositionY;
 }
 
-export declare class MatMenuItem extends _MatMenuItemMixinBase implements FocusableOption, CanDisable, CanDisableRipple, OnDestroy {
+export declare class MatMenuItem extends _MatMenuItemMixinBase implements FocusableOption, CanDisable, CanDisableRipple, AfterViewInit, OnDestroy {
     readonly _focused: Subject<MatMenuItem>;
     _highlighted: boolean;
     readonly _hovered: Subject<MatMenuItem>;
@@ -112,6 +112,7 @@ export declare class MatMenuItem extends _MatMenuItemMixinBase implements Focusa
     _handleMouseEnter(): void;
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
     getLabel(): string;
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;

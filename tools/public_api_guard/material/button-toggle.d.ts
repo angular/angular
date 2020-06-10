@@ -2,7 +2,7 @@ export declare const MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS: InjectionToken<MatButton
 
 export declare const MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR: any;
 
-export declare class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit, CanDisableRipple, OnDestroy {
+export declare class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit, AfterViewInit, CanDisableRipple, OnDestroy {
     _buttonElement: ElementRef<HTMLButtonElement>;
     _type: ToggleType;
     get appearance(): MatButtonToggleAppearance;
@@ -24,6 +24,7 @@ export declare class MatButtonToggle extends _MatButtonToggleMixinBase implement
     _markForCheck(): void;
     _onButtonClick(): void;
     focus(options?: FocusOptions): void;
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ngAcceptInputType_checked: BooleanInput;

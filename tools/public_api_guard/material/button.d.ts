@@ -6,7 +6,7 @@ export declare class MatAnchor extends MatButton {
     static ɵfac: i0.ɵɵFactoryDef<MatAnchor, [null, null, { optional: true; }]>;
 }
 
-export declare class MatButton extends _MatButtonMixinBase implements OnDestroy, CanDisable, CanColor, CanDisableRipple, FocusableOption {
+export declare class MatButton extends _MatButtonMixinBase implements AfterViewInit, OnDestroy, CanDisable, CanColor, CanDisableRipple, FocusableOption {
     _animationMode: string;
     readonly isIconButton: boolean;
     readonly isRoundButton: boolean;
@@ -16,6 +16,7 @@ export declare class MatButton extends _MatButtonMixinBase implements OnDestroy,
     _hasHostAttributes(...attributes: string[]): boolean;
     _isRippleDisabled(): boolean;
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;

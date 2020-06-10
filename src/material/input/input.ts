@@ -18,10 +18,10 @@ import {
   NgZone,
   OnChanges,
   OnDestroy,
-  OnInit,
   Optional,
   Self,
   HostListener,
+  AfterViewInit,
 } from '@angular/core';
 import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {
@@ -88,7 +88,7 @@ const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
   providers: [{provide: MatFormFieldControl, useExisting: MatInput}],
 })
 export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<any>, OnChanges,
-    OnDestroy, OnInit, DoCheck, CanUpdateErrorState {
+    OnDestroy, AfterViewInit, DoCheck, CanUpdateErrorState {
   protected _uid = `mat-input-${nextUniqueId++}`;
   protected _previousNativeValue: any;
   private _inputValueAccessor: {value: any};
@@ -277,7 +277,7 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     }
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     if (this._platform.isBrowser) {
       this._autofillMonitor.monitor(this._elementRef.nativeElement).subscribe(event => {
         this.autofilled = event.isAutofilled;

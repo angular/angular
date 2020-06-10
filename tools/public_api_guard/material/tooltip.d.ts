@@ -14,7 +14,7 @@ export declare const MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER: {
     useFactory: typeof MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY;
 };
 
-export declare class MatTooltip implements OnDestroy, OnInit {
+export declare class MatTooltip implements OnDestroy, AfterViewInit {
     _overlayRef: OverlayRef | null;
     _tooltipInstance: TooltipComponent | null;
     get disabled(): boolean;
@@ -43,8 +43,8 @@ export declare class MatTooltip implements OnDestroy, OnInit {
     };
     _isTooltipVisible(): boolean;
     hide(delay?: number): void;
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
-    ngOnInit(): void;
     show(delay?: number): void;
     toggle(): void;
     static ngAcceptInputType_disabled: BooleanInput;

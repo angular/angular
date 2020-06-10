@@ -36,12 +36,12 @@ import {
   Inject,
   Input,
   OnDestroy,
-  OnInit,
   Optional,
   Output,
   ViewChild,
   ViewEncapsulation,
   NgZone,
+  AfterViewInit,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -156,7 +156,7 @@ const _MatSliderMixinBase:
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatSlider extends _MatSliderMixinBase
-    implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, OnInit, HasTabIndex {
+    implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, AfterViewInit, HasTabIndex {
   /** Whether the slider is inverted. */
   @Input()
   get invert(): boolean { return this._invert; }
@@ -511,7 +511,7 @@ export class MatSlider extends _MatSliderMixinBase
     });
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this._focusMonitor
         .monitor(this._elementRef, true)
         .subscribe((origin: FocusOrigin) => {

@@ -18,6 +18,7 @@ import {
   OnDestroy,
   Optional,
   Output,
+  AfterViewInit,
 } from '@angular/core';
 import {Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {coerceElement} from '@angular/cdk/coercion';
@@ -562,19 +563,24 @@ function getTarget(event: Event): HTMLElement|null {
 @Directive({
   selector: '[cdkMonitorElementFocus], [cdkMonitorSubtreeFocus]',
 })
-export class CdkMonitorFocus implements OnDestroy {
+export class CdkMonitorFocus implements AfterViewInit, OnDestroy {
   private _monitorSubscription: Subscription;
   @Output() cdkFocusChange = new EventEmitter<FocusOrigin>();
 
-  constructor(private _elementRef: ElementRef<HTMLElement>, private _focusMonitor: FocusMonitor) {
+  constructor(private _elementRef: ElementRef<HTMLElement>, private _focusMonitor: FocusMonitor) {}
+
+  ngAfterViewInit() {
     this._monitorSubscription = this._focusMonitor.monitor(
-        this._elementRef,
-        this._elementRef.nativeElement.hasAttribute('cdkMonitorSubtreeFocus'))
-        .subscribe(origin => this.cdkFocusChange.emit(origin));
+      this._elementRef,
+      this._elementRef.nativeElement.hasAttribute('cdkMonitorSubtreeFocus'))
+      .subscribe(origin => this.cdkFocusChange.emit(origin));
   }
 
   ngOnDestroy() {
     this._focusMonitor.stopMonitoring(this._elementRef);
-    this._monitorSubscription.unsubscribe();
+
+    if (this._monitorSubscription) {
+      this._monitorSubscription.unsubscribe();
+    }
   }
 }

@@ -18,6 +18,7 @@ import {
   Optional,
   Inject,
   Input,
+  AfterViewInit,
 } from '@angular/core';
 import {
   CanColor,
@@ -79,7 +80,7 @@ const _MatButtonMixinBase: CanDisableRippleCtor & CanDisableCtor & CanColorCtor 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatButton extends _MatButtonMixinBase
-    implements OnDestroy, CanDisable, CanColor, CanDisableRipple, FocusableOption {
+    implements AfterViewInit, OnDestroy, CanDisable, CanColor, CanDisableRipple, FocusableOption {
 
   /** Whether the button is round. */
   readonly isRoundButton: boolean = this._hasHostAttributes('mat-fab', 'mat-mini-fab');
@@ -108,11 +109,13 @@ export class MatButton extends _MatButtonMixinBase
     // the class is applied to derived classes.
     elementRef.nativeElement.classList.add('mat-button-base');
 
-    this._focusMonitor.monitor(this._elementRef, true);
-
     if (this.isRoundButton) {
       this.color = DEFAULT_ROUND_BUTTON_COLOR;
     }
+  }
+
+  ngAfterViewInit() {
+    this._focusMonitor.monitor(this._elementRef, true);
   }
 
   ngOnDestroy() {
