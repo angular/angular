@@ -7,8 +7,8 @@
  */
 
 import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
-import {merge, Observable, ReplaySubject} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators';
+import {merge, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from './element-strategy';
 import {extractProjectableNodes} from './extract-projectable-nodes';
@@ -43,11 +43,9 @@ export class ComponentNgElementStrategyFactory implements NgElementStrategyFacto
  * @publicApi
  */
 export class ComponentNgElementStrategy implements NgElementStrategy {
-  // Subject of `NgElementStrategyEvent` observables corresponding to the component's outputs.
-  private eventEmitters = new ReplaySubject<Observable<NgElementStrategyEvent>[]>(1);
-
   /** Merged stream of the component's output events. */
-  readonly events = this.eventEmitters.pipe(switchMap(emitters => merge(...emitters)));
+  // TODO(issue/24571): remove '!'.
+  events!: Observable<NgElementStrategyEvent>;
 
   /** Reference to the component that was created on connect. */
   private componentRef: ComponentRef<any>|null = null;
@@ -189,13 +187,12 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Sets up listeners for the component's outputs so that the events stream emits the events. */
   protected initializeOutputs(componentRef: ComponentRef<any>): void {
-    const eventEmitters: Observable<NgElementStrategyEvent>[] =
-        this.componentFactory.outputs.map(({propName, templateName}) => {
-          const emitter: EventEmitter<any> = componentRef.instance[propName];
-          return emitter.pipe(map(value => ({name: templateName, value})));
-        });
+    const eventEmitters = this.componentFactory.outputs.map(({propName, templateName}) => {
+      const emitter: EventEmitter<any> = componentRef.instance[propName];
+      return emitter.pipe(map(value => ({name: templateName, value})));
+    });
 
-    this.eventEmitters.next(eventEmitters);
+    this.events = merge(...eventEmitters);
   }
 
   /** Calls ngOnChanges with all the inputs that have changed since the last call. */

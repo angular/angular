@@ -117,16 +117,6 @@ if (browserDetection.supportsCustomElements) {
       expect(eventValue).toEqual(null);
     });
 
-    it('should listen to output events during initialization', () => {
-      const events: string[] = [];
-
-      const element = new NgElementCtor(injector);
-      element.addEventListener('strategy-event', evt => events.push((evt as CustomEvent).detail));
-      element.connectedCallback();
-
-      expect(events).toEqual(['connect']);
-    });
-
     it('should properly set getters/setters on the element', () => {
       const element = new NgElementCtor(injector);
       element.fooFoo = 'foo-foo-value';
@@ -265,7 +255,6 @@ if (browserDetection.supportsCustomElements) {
       events = new Subject<NgElementStrategyEvent>();
 
       connect(element: HTMLElement): void {
-        this.events.next({name: 'strategy-event', value: 'connect'});
         this.connectedElement = element;
       }
 
