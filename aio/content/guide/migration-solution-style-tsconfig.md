@@ -1,4 +1,4 @@
-# Solution-Style tsconfig Migration
+# Solution-style `tsconfig.json` migration
 
 ## What does this migration do?
 
@@ -9,8 +9,8 @@ Support is added by making two changes:
 All project tsconfigs will extend from this base which contains the common options used
 throughout the workspace.
 
-2. Adding a solution `tsconfig.json` at the root of the workspace.
-This tsconfig will only contain references to project-level tsconfigs and is only used by editors/IDEs.
+2. Adding the solution `tsconfig.json` file at the root of the workspace.
+This `tsconfig.json` file will only contain references to project-level tsconfigs and is only used by editors/IDEs.
 
 As an example, the solution `tsconfig.json` for a new project is as follows:
 ```json
@@ -34,7 +34,7 @@ As an example, the solution `tsconfig.json` for a new project is as follows:
 
 ## Why is this migration necessary?
 
-Solution-style tsconfigs provide an improved editing experience and fix several long-standing
+Solution-style `tsconfig.json` files provide an improved editing experience and fix several long-standing
 defects when editing files in an IDE.
 IDE's that leverage the TypeScript language service (for example, vscode), will only use
 tsconfigs that are named `tsconfig.json`.
@@ -46,15 +46,15 @@ a browser.
 It will also have unit tests that should not be included within the built application
 and that also need additional type information present (`jasmine` in this case).
 Both parts of the project also share some but not all of the code within the project.
-As a result, two separate tsconfigs (`tsconfig.app.json` and `tsconfig.spec.json`) are
+As a result, two separate TypeScript configuration files (`tsconfig.app.json` and `tsconfig.spec.json`) are
 needed to ensure that each part of the application is configured properly and that the
 right types are used for each part.
 Also if web workers are used within a project, an additional tsconfig (`tsconfig.worker.json`) is needed.
 Web workers use similar but incompatible types to the main browser application.
-This requires the additional tsconfig to ensure that the web worker files use the appropriate types
+This requires the additional configuration file to ensure that the web worker files use the appropriate types
 and will build successfully.
 
-While the Angular build system knows about these tsconfigs, an IDE using TypeScript's language service does not.
+While the Angular build system knows about all of these TypeScript configuration files, an IDE using TypeScript's language service does not.
 Because of this, an IDE will not be able to properly analyze the code from each part of the project
 and may generate false errors or make suggestions that are incorrect for certain files.
 By leveraging the new solution-style tsconfig, the IDE can now be aware of the configuration of
