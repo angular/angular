@@ -1,5 +1,5 @@
 import {Directionality} from '@angular/cdk/bidi';
-import {BACKSPACE, DELETE} from '@angular/cdk/keycodes';
+import {BACKSPACE, DELETE, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {
   createKeyboardEvent,
   createFakeEvent,
@@ -9,7 +9,7 @@ import {Component, DebugElement, ViewChild} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
-import {MatChipEvent, MatChipGrid, MatChipRow, MatChipsModule} from './index';
+import {MatChipEvent, MatChipGrid, MatChipRemove, MatChipRow, MatChipsModule} from './index';
 
 
 describe('MDC-based Row Chips', () => {
@@ -17,6 +17,7 @@ describe('MDC-based Row Chips', () => {
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;
   let chipInstance: MatChipRow;
+  let removeIconInstance: MatChipRemove;
 
   let dir = 'ltr';
 
@@ -46,6 +47,9 @@ describe('MDC-based Row Chips', () => {
       chipNativeElement = chipDebugElement.nativeElement;
       chipInstance = chipDebugElement.injector.get<MatChipRow>(MatChipRow);
       testComponent = fixture.debugElement.componentInstance;
+
+      const removeIconDebugElement = fixture.debugElement.query(By.directive(MatChipRemove))!;
+      removeIconInstance = removeIconDebugElement.injector.get<MatChipRemove>(MatChipRemove);
     });
 
     describe('basic behaviors', () => {
@@ -135,6 +139,21 @@ describe('MDC-based Row Chips', () => {
 
           expect(testComponent.chipRemove).toHaveBeenCalled();
         });
+
+        it('arrow key navigation does not emit the (removed) event', () => {
+          const ARROW_KEY_EVENT = createKeyboardEvent('keydown', RIGHT_ARROW) as KeyboardEvent;
+
+          spyOn(testComponent, 'chipRemove');
+
+          removeIconInstance.interaction.next(ARROW_KEY_EVENT);
+          fixture.detectChanges();
+
+          const fakeEvent = createFakeEvent('transitionend');
+          (fakeEvent as any).propertyName = 'width';
+          chipNativeElement.dispatchEvent(fakeEvent);
+
+          expect(testComponent.chipRemove).not.toHaveBeenCalled();
+        });
       });
 
       describe('when removable is false', () => {
@@ -219,6 +238,7 @@ describe('MDC-based Row Chips', () => {
                  (focus)="chipFocus($event)" (destroyed)="chipDestroy($event)"
                  (removed)="chipRemove($event)">
           {{name}}
+          <button matChipRemove>x</button>
         </mat-chip-row>
         <input matInput [matChipInputFor]="chipGrid">
       </div>

@@ -17,7 +17,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {MatChip} from './chip';
-import {GridKeyManagerRow, NAVIGATION_KEYS} from './grid-key-manager';
+import {GridKeyManagerRow} from './grid-key-manager';
 
 
 /**
@@ -60,9 +60,6 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
 
   /** The focusable grid cells for this row. Implemented as part of GridKeyManagerRow. */
   cells!: HTMLElement[];
-
-  /** Key codes for which this component has a custom handler. */
-  HANDLED_KEYS: Set<number> = new Set([...NAVIGATION_KEYS, BACKSPACE, DELETE]);
 
   ngAfterContentInit() {
     super.ngAfterContentInit();
