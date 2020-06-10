@@ -1,3 +1,26 @@
+<a name="10.0.0-rc.4"></a>
+# [10.0.0-rc.4](https://github.com/angular/angular/compare/10.0.0-rc.3...10.0.0-rc.4) (2020-06-10)
+
+
+### Bug Fixes
+
+* **common:** prevent duplicate URL change notifications ([#37459](https://github.com/angular/angular/issues/37459)) ([0864726](https://github.com/angular/angular/commit/0864726))
+* **compiler-cli:** downlevel angular decorators to static properties ([#37382](https://github.com/angular/angular/issues/37382)) ([323651b](https://github.com/angular/angular/commit/323651b)), closes [#30586](https://github.com/angular/angular/issues/30586) [#30106](https://github.com/angular/angular/issues/30106) [#30586](https://github.com/angular/angular/issues/30586) [#30141](https://github.com/angular/angular/issues/30141)
+* **language-service:** Improve signature selection by finding exact match ([#37494](https://github.com/angular/angular/issues/37494)) ([e97a2d4](https://github.com/angular/angular/commit/e97a2d4))
+* **platform-server:** correctly handle absolute relative URLs ([#37341](https://github.com/angular/angular/issues/37341)) ([420d1c3](https://github.com/angular/angular/commit/420d1c3)), closes [#37314](https://github.com/angular/angular/issues/37314)
+* **router:** Fix relative link generation from empty path components ([#37446](https://github.com/angular/angular/issues/37446)) ([585e3f6](https://github.com/angular/angular/commit/585e3f6)), closes [#26243](https://github.com/angular/angular/issues/26243) [#13011](https://github.com/angular/angular/issues/13011) [#35687](https://github.com/angular/angular/issues/35687)
+
+
+### Features
+
+* **language-service:** TS references from template items ([#37437](https://github.com/angular/angular/issues/37437)) ([bf2cb6f](https://github.com/angular/angular/commit/bf2cb6f))
+
+
+### Performance Improvements
+
+* **core:** avoid pulling in jit-specific code in aot bundles ([#37372](https://github.com/angular/angular/issues/37372)) ([#37514](https://github.com/angular/angular/issues/37514)) ([6114cd2](https://github.com/angular/angular/commit/6114cd2)), closes [#29083](https://github.com/angular/angular/issues/29083)
+
+
 <a name="9.1.11"></a>
 ## [9.1.11](https://github.com/angular/angular/compare/9.1.10...9.1.11) (2020-06-10)
 
