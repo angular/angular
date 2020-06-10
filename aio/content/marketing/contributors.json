@@ -204,7 +204,7 @@
     "name": "Alyssa Nicoll",
     "picture": "alyssa.jpg",
     "twitter": "alyssanicoll",
-    "website": "alyssa.io",
+    "website": "http://alyssa.io",
     "bio": "Alyssa is an Angular Developer Advocate for KUI and a GDE. Her two degrees (Web Design & Development and Psychology) feed her speaking career. She has spoken at over 35 conferences internationally. She is a weekly panelist on Adventures in Angular and Angular Air, which have a combined following of over 16,000 listeners. She enjoys gaming, scuba diving, and has a newborn that fondly goes by 'Mr. Milks'.",
     "groups": ["GDE"]
   },
@@ -228,7 +228,7 @@
     "name": "Christoffer Noring",
     "picture": "chrisnoring.jpg",
     "twitter": "chris_noring",
-    "website": "softchris.github.io",
+    "website": "https://softchris.github.io",
     "bio": "Chris is a Full Stack Developer at McKinsey. A Google Developer Expert in Web Technologies and Angular. He is also a Nativescript Developer Expert. He is one of the organizers of the Angular conference ngVikings and an author of the book RxJS 5 Ultimate",
     "groups": ["GDE"]
   },
