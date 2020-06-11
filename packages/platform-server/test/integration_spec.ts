@@ -793,104 +793,149 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('can make relative HttpClient requests', async () => {
-      const platform = platformDynamicServer([
-        {provide: INITIAL_CONFIG, useValue: {document: '<app></app>', url: 'http://localhost'}}
-      ]);
-      const ref = await platform.bootstrapModule(HttpClientExampleModule);
-      const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
-      const http = ref.injector.get(HttpClient);
-      ref.injector.get(NgZone).run(() => {
-        http.get<string>('/testing').subscribe((body: string) => {
-          NgZone.assertInAngularZone();
-          expect(body).toEqual('success!');
+    describe('relative requests', () => {
+      it('correctly maps to absolute URL request with base config', async () => {
+        const platform = platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://localhost', useAbsoluteUrl: true}
+        }]);
+        const ref = await platform.bootstrapModule(HttpClientExampleModule);
+        const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+        const http = ref.injector.get(HttpClient);
+        ref.injector.get(NgZone).run(() => {
+          http.get<string>('/testing').subscribe((body: string) => {
+            NgZone.assertInAngularZone();
+            expect(body).toEqual('success!');
+          });
+          mock.expectOne('http://localhost/testing').flush('success!');
         });
-        mock.expectOne('http://localhost/testing').flush('success!');
       });
-    });
 
-    it('can make relative HttpClient requests two slashes', async () => {
-      const platform = platformDynamicServer([
-        {provide: INITIAL_CONFIG, useValue: {document: '<app></app>', url: 'http://localhost/'}}
-      ]);
-      const ref = await platform.bootstrapModule(HttpClientExampleModule);
-      const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
-      const http = ref.injector.get(HttpClient);
-      ref.injector.get(NgZone).run(() => {
-        http.get<string>('/testing').subscribe((body: string) => {
-          NgZone.assertInAngularZone();
-          expect(body).toEqual('success!');
+      it('uses default URL behavior when not enabled', async () => {
+        const platform = platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://localhost', useAbsoluteUrl: false}
+        }]);
+        const ref = await platform.bootstrapModule(HttpClientExampleModule);
+        const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+        const http = ref.injector.get(HttpClient);
+        ref.injector.get(NgZone).run(() => {
+          http.get<string>('/testing').subscribe(() => {}, (body: string) => {
+            NgZone.assertInAngularZone();
+            expect(body).toEqual('error');
+          });
+          mock.expectOne('/testing').flush('error');
         });
-        mock.expectOne('http://localhost/testing').flush('success!');
       });
-    });
 
-    it('can make relative HttpClient requests no slashes', async () => {
-      const platform = platformDynamicServer([
-        {provide: INITIAL_CONFIG, useValue: {document: '<app></app>', url: 'http://localhost'}}
-      ]);
-      const ref = await platform.bootstrapModule(HttpClientExampleModule);
-      const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
-      const http = ref.injector.get(HttpClient);
-      ref.injector.get(NgZone).run(() => {
-        http.get<string>('testing').subscribe((body: string) => {
-          NgZone.assertInAngularZone();
-          expect(body).toEqual('success!');
+      it('correctly maps to absolute URL request with port', async () => {
+        const platform = platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://localhost:5000', useAbsoluteUrl: true}
+        }]);
+        const ref = await platform.bootstrapModule(HttpClientExampleModule);
+        const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+        const http = ref.injector.get(HttpClient);
+        ref.injector.get(NgZone).run(() => {
+          http.get<string>('/testing').subscribe((body: string) => {
+            NgZone.assertInAngularZone();
+            expect(body).toEqual('success!');
+          });
+          mock.expectOne('http://localhost:5000/testing').flush('success!');
         });
-        mock.expectOne('http://localhost/testing').flush('success!');
       });
-    });
 
-    it('can make relative HttpClient requests no slashes longer url', async () => {
-      const platform = platformDynamicServer([{
-        provide: INITIAL_CONFIG,
-        useValue: {document: '<app></app>', url: 'http://localhost/path/page'}
-      }]);
-      const ref = await platform.bootstrapModule(HttpClientExampleModule);
-      const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
-      const http = ref.injector.get(HttpClient);
-      ref.injector.get(NgZone).run(() => {
-        http.get<string>('testing').subscribe((body: string) => {
-          NgZone.assertInAngularZone();
-          expect(body).toEqual('success!');
+      it('correctly maps to absolute URL request with two slashes', async () => {
+        const platform = platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://localhost/', useAbsoluteUrl: true}
+        }]);
+        const ref = await platform.bootstrapModule(HttpClientExampleModule);
+        const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+        const http = ref.injector.get(HttpClient);
+        ref.injector.get(NgZone).run(() => {
+          http.get<string>('/testing').subscribe((body: string) => {
+            NgZone.assertInAngularZone();
+            expect(body).toEqual('success!');
+          });
+          mock.expectOne('http://localhost/testing').flush('success!');
         });
-        mock.expectOne('http://localhost/path/testing').flush('success!');
       });
-    });
 
-    it('can make relative HttpClient requests slashes longer url', async () => {
-      const platform = platformDynamicServer([{
-        provide: INITIAL_CONFIG,
-        useValue: {document: '<app></app>', url: 'http://localhost/path/page'}
-      }]);
-      const ref = await platform.bootstrapModule(HttpClientExampleModule);
-      const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
-      const http = ref.injector.get(HttpClient);
-      ref.injector.get(NgZone).run(() => {
-        http.get<string>('/testing').subscribe((body: string) => {
-          NgZone.assertInAngularZone();
-          expect(body).toEqual('success!');
+      it('correctly maps to absolute URL request with no slashes', async () => {
+        const platform = platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://localhost', useAbsoluteUrl: true}
+        }]);
+        const ref = await platform.bootstrapModule(HttpClientExampleModule);
+        const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+        const http = ref.injector.get(HttpClient);
+        ref.injector.get(NgZone).run(() => {
+          http.get<string>('testing').subscribe((body: string) => {
+            NgZone.assertInAngularZone();
+            expect(body).toEqual('success!');
+          });
+          mock.expectOne('http://localhost/testing').flush('success!');
         });
-        mock.expectOne('http://localhost/testing').flush('success!');
       });
-    });
 
-    it('can make relative HttpClient requests slashes longer url with base href', async () => {
-      const platform = platformDynamicServer([{
-        provide: INITIAL_CONFIG,
-        useValue:
-            {document: '<base href="http://other"><app></app>', url: 'http://localhost/path/page'}
-      }]);
-      const ref = await platform.bootstrapModule(HttpClientExampleModule);
-      const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
-      const http = ref.injector.get(HttpClient);
-      ref.injector.get(NgZone).run(() => {
-        http.get<string>('/testing').subscribe((body: string) => {
-          NgZone.assertInAngularZone();
-          expect(body).toEqual('success!');
+      it('correctly maps to absolute URL request with longer url and no slashes', async () => {
+        const platform = platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue:
+              {document: '<app></app>', url: 'http://localhost/path/page', useAbsoluteUrl: true}
+        }]);
+        const ref = await platform.bootstrapModule(HttpClientExampleModule);
+        const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+        const http = ref.injector.get(HttpClient);
+        ref.injector.get(NgZone).run(() => {
+          http.get<string>('testing').subscribe((body: string) => {
+            NgZone.assertInAngularZone();
+            expect(body).toEqual('success!');
+          });
+          mock.expectOne('http://localhost/path/testing').flush('success!');
         });
-        mock.expectOne('http://other/testing').flush('success!');
       });
+
+      it('correctly maps to absolute URL request with longer url and slashes', async () => {
+        const platform = platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue:
+              {document: '<app></app>', url: 'http://localhost/path/page', useAbsoluteUrl: true}
+        }]);
+        const ref = await platform.bootstrapModule(HttpClientExampleModule);
+        const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+        const http = ref.injector.get(HttpClient);
+        ref.injector.get(NgZone).run(() => {
+          http.get<string>('/testing').subscribe((body: string) => {
+            NgZone.assertInAngularZone();
+            expect(body).toEqual('success!');
+          });
+          mock.expectOne('http://localhost/testing').flush('success!');
+        });
+      });
+
+      it('correctly maps to absolute URL request with longer url, slashes, and base href',
+         async () => {
+           const platform = platformDynamicServer([{
+             provide: INITIAL_CONFIG,
+             useValue: {
+               document: '<base href="http://other"><app></app>',
+               url: 'http://localhost/path/page',
+               useAbsoluteUrl: true
+             }
+           }]);
+           const ref = await platform.bootstrapModule(HttpClientExampleModule);
+           const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+           const http = ref.injector.get(HttpClient);
+           ref.injector.get(NgZone).run(() => {
+             http.get<string>('/testing').subscribe((body: string) => {
+               NgZone.assertInAngularZone();
+               expect(body).toEqual('success!');
+             });
+             mock.expectOne('http://other/testing').flush('success!');
+           });
+         });
     });
 
     it('requests are macrotasks', async(() => {

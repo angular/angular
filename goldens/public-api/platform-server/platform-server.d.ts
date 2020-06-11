@@ -5,6 +5,7 @@ export declare const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 export declare interface PlatformConfig {
     document?: string;
     url?: string;
+    useAbsoluteUrl?: boolean;
 }
 
 export declare const platformDynamicServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
