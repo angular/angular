@@ -73,8 +73,8 @@ const prop = typeof Fooish; // typeof는 메타데이터에 사용할 수 없습
   ...
 ```
 
-`typeof` 연산자나 대괄호 참조는 일반 애플리케이션에서 사용할 수 있는 코드입니다.
-Angular 메타데이터와 관련된 표현식에서 이 표현을 사용할 수 없습니다.
+애플리케이션 코드에는 `typeof` 연산자나 대괄호 참조를 사용할 수 있습니다.
+하지만 이런 코드는 Angular 메타데이터 표현식에 사용할 수 없습니다.
 
 이 에러를 해결하려면 Angular 메타데이터에 사용할 수 있는 [제한된 표현식 문법](guide/aot-compiler#expression-syntax)으로만 코드를 작성해야 합니다.
 사용하려는 TypeScript 기능을 지원하는지 확인해 보세요.
@@ -167,7 +167,7 @@ Prefixing the declaration with `export` merely produces a new error, "[`Only ini
 -->
 외부로 공개(export)되지 않은 심볼이 사용되었거나 이 변수가 초기화되지 않았을 때 발생합니다.
 
-아래 코드에서 `provider`를 처리할 때 발생합니다.
+아래 코드에서는 `provider`를 처리할 때 발생합니다.
 
 ```ts
 // 에러
@@ -184,7 +184,7 @@ export class MyComponent {}
 ```
 
 컴파일러는 다른 모듈에 있는 프로바이더를 참조하는 `useValue` 코드를 만났을 때 컴포넌트 팩토리를 생성합니다.
-이 때 현재 모듈에서 사용하는 심볼 `foo`는 모듈 외부로 공개되지 않았기 때문에 다른 모듈에서 현재 소스 코드에 접근할 수 없습니다.
+이 때 현재 모듈에서 사용하는 심볼 `foo`는 모듈 외부로 공개되지 않았기 때문에 외부 모듈이 현재 소스 코드에 접근할 수 없습니다.
 
 먼저 `foo`를 초기화하지 않은 문제부터 해결해 봅시다.
 
@@ -216,12 +216,12 @@ export let foo: number; // export로 지정됨
 export class MyComponent {}
 ```
 
-`export`를 지정하는 방식은 `providers`나 `animations`에 사용하는 변수에 지정하면 이 에러를 해결할 수 있습니다.
+`export`를 지정하는 방식은 `providers`나 `animations`에 사용하는 변수에 활용하면 이 에러를 해결할 수 있습니다.
 컴파일러는 이런 표현식을 처리할 때 변수를 _참조_ 하는 코드만 생성하기 때문입니다.
 이 시점에는 변수에 어떤 값이 있느냐는 중요하지 않습니다.
 
 하지만 컴파일러 처리 단계에서 _실제로 값이 필요한 경우_ 에는 사용할 수 없습니다.
-아래 코드에서 `template` 프로퍼티는 동작하지 않습니다.
+아래 코드에서는 `template` 프로퍼티를 처리할 때 문제가 발생합니다.
 
 
 ```ts
@@ -333,8 +333,8 @@ import { someTemplate } from './config';
 export class MyComponent {}
 ```
 
-템플릿 정보를 처리하는 시점은 실행시점까지 미뤄둘 수 없습니다.
-컴포넌트 팩토리 코드를 생성하려면 `someTemplate` 변수의 실제 값이 반드시 지정되어 있어야 합니다.
+템플릿 정보는 컴파일 시점에 처리되어야 합니다.
+컴포넌트 팩토리 코드를 생성하려면 `someTemplate` 변수의 실제 값이 반드시 할당되어 있어야 하기 때문입니다.
 그래야 템플릿 안에 사용된 다른 엘리먼트를 확인할 수 있습니다.
 
 이 에러를 해결하려면 변수의 초기값을 할당하면 됩니다.
@@ -506,10 +506,14 @@ export function myStrategy() { ... }
 
 <div class="alert is-helpful">
 
+<!--
 _Function calls are not supported. Consider replacing the function or lambda with a reference to an exported function._
+-->
+_메타데이터 안에서는 함수를 실행할 수 없습니다. 익명 함수나 람다 함수 대신 이름이 있는 함수에 `export`를 지정해서 사용하세요._
 
 </div>
 
+<!--
 The compiler does not currently support [function expressions or lambda functions](guide/aot-compiler#function-expression).
 For example, you cannot set a provider's `useFactory` to an anonymous function or arrow function like this.
 
@@ -554,6 +558,52 @@ export function someValueFactory() {
   ]
   ...
 ```
+-->
+AOT 컴파일러는 [함수 표현식이나 람다 함수](guide/aot-compiler#function-expression)를 지원하지 않습니다.
+그래서 `providers` 배열에 `useFactory`를 사용할 때 다음과 같이 익명 함수를 사용하면 에러가 발생합니다.
+
+```ts
+// 에러
+  ...
+  providers: [
+    { provide: MyStrategy, useFactory: function() { ... } },
+    { provide: OtherStrategy, useFactory: () => { ... } }
+  ]
+  ...
+```
+그리고 다음과 같이 `providers` 배열에 `useValue`를 사용하면서 함수를 실행해도 이 에러가 발생합니다.
+
+```ts
+// 에러
+import { calculateValue } from './utilities';
+
+  ...
+  providers: [
+    { provide: SomeValue, useValue: calculateValue() }
+  ]
+  ...
+```
+
+이 에러를 해결하려면 함수에 이름을 지정하고 `export`로 지정한 후에 `providers`에 `useFactory`로 등록하면 됩니다.
+
+```ts
+// 정상 코드
+import { calculateValue } from './utilities';
+
+export function myStrategy() { ... }
+export function otherStrategy() { ... }
+export function someValueFactory() {
+  return calculateValue();
+}
+  ...
+  providers: [
+    { provide: MyStrategy, useFactory: myStrategy },
+    { provide: OtherStrategy, useFactory: otherStrategy },
+    { provide: SomeValue, useFactory: someValueFactory }
+  ]
+  ...
+```
+
 
 <hr>
 
@@ -562,10 +612,14 @@ export function someValueFactory() {
 
 <div class="alert is-helpful">
 
+<!--
 _Referencing an exported destructured variable or constant is not supported by the template compiler. Consider simplifying this to avoid destructuring._
+-->
+_비구조화 할당으로 초기화한 변수를 참조했습니다. AOT 컴파일러는 비구조화 할당을 지원하지 않습니다._
 
 </div>
 
+<!--
 The compiler does not support references to variables assigned by [destructuring](https://www.typescriptlang.org/docs/handbook/variable-declarations.html#destructuring).
 
 For example, you cannot write something like this:
@@ -596,6 +650,37 @@ import { configuration } from './configuration';
   ]
   ...
 ```
+-->
+AOT 컴파일러는 [비구조화 할당(destructuring)](https://www.typescriptlang.org/docs/handbook/variable-declarations.html#destructuring) 으로 초기화한 변수를 지원하지 않습니다.
+
+그래서 다음과 같이 작성하면 에러가 발생합니다:
+
+```ts
+// 에러
+import { configuration } from './configuration';
+
+// foo, bar는 비구조화 할당으로 초기화했습니다.
+const {foo, bar} = configuration;
+  ...
+  providers: [
+    {provide: Foo, useValue: foo},
+    {provide: Bar, useValue: bar},
+  ]
+  ...
+```
+
+이 에러를 수정하려면 비구조화 할당 문법을 사용하지 않으면 됩니다.
+
+```ts
+// 정상 코드
+import { configuration } from './configuration';
+  ...
+  providers: [
+    {provide: Foo, useValue: configuration.foo},
+    {provide: Bar, useValue: configuration.bar},
+  ]
+  ...
+```
 
 <hr>
 
@@ -604,10 +689,14 @@ import { configuration } from './configuration';
 
 <div class="alert is-helpful">
 
+<!--
 *The compiler encountered a type and can't determine which module exports that type.*
+-->
+*알 수 없는 타입이 사용되었습니다.*
 
 </div>
 
+<!--
 This can happen if you refer to an ambient type.
 For example, the `Window` type is an ambient type declared in the global `.d.ts` file.
 
@@ -670,6 +759,73 @@ export class MyComponent {
   constructor (@Inject(DOCUMENT) private doc: Document) { ... }
 }
 ```
+-->
+이 에러는 묵시적으로 사용하는 타입을 사용한 경우에 발생할 수 있습니다.
+전역 `.d.ts` 파일에 `Window` 타입이 정의되어 있다고 합시다.
+
+이 타입을 컴포넌트 생성자에 사용하면 에러가 발생합니다.
+컴파일러는 모든 타입을 정적으로 확인할 수 있어야 합니다.
+
+```ts
+// 에러
+@Component({ })
+export class MyComponent {
+  constructor (private win: Window) { ... }
+}
+```
+
+묵시적인 타입은 TypeScript가 자동으로 인식할 수 있기 때문에 이 타입을 로드하지 않아도 코드를 작성할 수 있습니다.
+하지만 Angular 컴파일러는 출처가 정확하게 확인된 타입만 사용합니다.
+
+그래서 위와 같이 코드를 작성하면 `Window` 토큰와 연결된 의존성 객체를 어떻게 찾아야 하는지 Angular가 알 수 없습니다.
+
+메타데이터 표현식에는 암묵적인(ambient) 타입을 사용하면 안됩니다.
+
+다만, 묵시적인 타입의 인스턴스를 꼭 사용해야 한다면 다음 단계를 거쳐 사용할 수 있습니다:
+
+1. 묵시적인 타입으로 의존성 주입 토큰을 생성합니다.
+1. 인스턴스를 반환하는 팩토리 함수를 정의합니다.
+1. 프로바이더에 `useFactory`를 사용해서 팩토리 함수를 등록합니다.
+1. `@Inject`를 사용해서 인스턴스를 의존성으로 주입합니다.
+
+코드로 살펴보면 이렇습니다.
+
+```ts
+// 정상 코드
+import { Inject } from '@angular/core';
+
+export const WINDOW = new InjectionToken('Window');
+export function _window() { return window; }
+
+@Component({
+  ...
+  providers: [
+    { provide: WINDOW, useFactory: _window }
+  ]
+})
+export class MyComponent {
+  constructor (@Inject(WINDOW) private win: Window) { ... }
+}
+```
+
+이렇게 작성하면 생성자에 의존성으로 주입하기 위해 사용된 `Window` 타입은 더이상 문제가 되지 않습니다.
+`@Inject(WINDOW)`를 사용해서 타입을 정확하게 지정했기 때문입니다.
+
+이 방식은 브라우저의 `document` 객체를 의존성으로 주입할 때도 사용할 수 있습니다.
+플랫폼마다 사용방법이 조금씩 다를 수 있지만, `DOCUMENT` 토큰을 아래 코드처럼 사용하면 됩니다.
+
+
+```ts
+import { Inject }   from '@angular/core';
+import { DOCUMENT } from '@angular/platform-browser';
+
+@Component({ ... })
+export class MyComponent {
+  constructor (@Inject(DOCUMENT) private doc: Document) { ... }
+}
+```
+
+
 <hr>
 
 {@a name-expected}
@@ -677,10 +833,14 @@ export class MyComponent {
 
 <div class="alert is-helpful">
 
+<!--
 *The compiler expected a name in an expression it was evaluating.*
+-->
+*표현식을 평가할 때 이름이 필요합니다.*
 
 </div>
 
+<!--
 This can happen if you use a number as a property name as in the following example.
 
 ```ts
@@ -694,6 +854,20 @@ Change the name of the property to something non-numeric.
 // CORRECTED
 provider: [{ provide: Foo, useValue: { '0': 'test' } }]
 ```
+-->
+이 에러는 객체의 프로퍼티명으로 숫자를 사용할 때 발생할 수 있습니다.
+
+```ts
+// 에러
+provider: [{ provide: Foo, useValue: { 0: 'test' } }]
+```
+
+이 에러를 해결하려면 숫자가 아닌 형태로 프로퍼티 이름을 선언하면 됩니다.
+
+```ts
+// 정상 코드
+provider: [{ provide: Foo, useValue: { '0': 'test' } }]
+```
 
 <hr>
 
@@ -702,10 +876,14 @@ provider: [{ provide: Foo, useValue: { '0': 'test' } }]
 
 <div class="alert is-helpful">
 
+<!--
 *Angular couldn't determine the value of the [enum member](https://www.typescriptlang.org/docs/handbook/enums.html) that you referenced in metadata.*
+-->
+*메타데이터에 사용한 [enum 멤버](https://www.typescriptlang.org/docs/handbook/enums.html)의 값을 확인할 수 없습니다.*
 
 </div>
 
+<!--
 The compiler can understand simple enum values but not complex values such as those derived from computed properties.
 
 ```ts
@@ -726,6 +904,27 @@ enum Colors {
 ```
 
 Avoid referring to enums with complicated initializers or computed properties.
+-->
+AOT 컴파일러는 간단한 enum 값을 참조할 수 있지만 추가 연산이 필요한 값은 참조할 수 없습니다.
+
+```ts
+// 에러
+enum Colors {
+  Red = 1,
+  White,
+  Blue = "Blue".length // computed
+}
+
+  ...
+  providers: [
+    { provide: BaseColor,   useValue: Colors.White } // ok
+    { provide: DangerColor, useValue: Colors.Red }   // ok
+    { provide: StrongColor, useValue: Colors.Blue }  // bad
+  ]
+  ...
+```
+
+별도 초기화 로직이 있거나 추가 연산으로 프로퍼티 이름을 지정하는 방식은 사용하지 마세요.
 
 <hr>
 
@@ -734,10 +933,14 @@ Avoid referring to enums with complicated initializers or computed properties.
 
 <div class="alert is-helpful">
 
+<!--
 _Tagged template expressions are not supported in metadata._
+-->
+_태그 템플릿 표현식은 지원하지 않습니다._
 
 </div>
 
+<!--
 The compiler encountered a JavaScript ES2015 [tagged template expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals) such as the following.
 
 ```ts
@@ -765,6 +968,40 @@ The AOT compiler does not support tagged template expressions; avoid them in met
 </div>
 
 This error can occur if you use an expression in the `extends` clause of a class.
+-->
+이 에러는 JavaScript ES2015 [태그 템플릿 표현식](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals)을 사용했을 때 발생합니다.
+
+```ts
+// 에러
+const expression = 'funky';
+const raw = String.raw`A tagged template ${expression} string`;
+ ...
+ template: '<div>' + raw + '</div>'
+ ...
+```
+
+[`String.raw()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/raw)는 JavaScript ES2015부터 제공하는 _태그 함수_ 입니다.
+
+하지만 AOT 컴파일러는 이 표현식을 지원하지 않습니다.
+
+<hr>
+
+{@a symbol-reference-expected}
+## Symbol reference expected
+
+<div class="alert is-helpful">
+
+<!--
+*The compiler expected a reference to a symbol at the location specified in the error message.*
+-->
+*에러 메시지에 표시된 심볼을 제대로 참조하고 있는지 확인하세요.*
+
+</div>
+
+<!--
+This error can occur if you use an expression in the `extends` clause of a class.
+-->
+이 에러는 표현식 안에서 `extends`를 사용했을 때 발생합니다.
 
 <!--
 
