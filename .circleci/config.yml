@@ -535,8 +535,8 @@ jobs:
       - *setup_bazel_remote_execution
       - *yarn_install
       - *setup_bazel_binary
-      # Integration tests run with --config=view-engine because we release with View Engine.
-      - run: bazel test integration/... --build_tests_only --config=view-engine
+      - run: yarn integration-tests
+      - run: yarn integration-tests:view-engine
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against material-components-web@canary

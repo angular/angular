@@ -40,7 +40,9 @@ typescript_version_packages = [
         ],
         entry_point = "test.js",
         tags = [
-            "integration",
+            # These tests run in view engine only as the release packages are
+            # built with View Engine and we want to reproduce this here.
+            "view-engine-only",
         ],
     )
     for ts_pkg_name in typescript_version_packages

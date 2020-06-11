@@ -320,3 +320,5 @@
 /.vscode/**                                        @angular/dev-infra-components @mmalerba
 /src/*                                             @jelbourn
 /goldens/ts-circular-deps.json                     @angular/dev-infra-components
+/goldens/size-test.json                            @jelbourn @mmalerba @crisbeto
+/goldens/*                                         @angular/dev-infra-components

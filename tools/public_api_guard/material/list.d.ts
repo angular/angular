@@ -1,3 +1,7 @@
+export declare const MAT_LIST: InjectionToken<MatList>;
+
+export declare const MAT_NAV_LIST: InjectionToken<MatNavList>;
+
 export declare const MAT_SELECTION_LIST_VALUE_ACCESSOR: any;
 
 export declare class MatList extends _MatListMixinBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {

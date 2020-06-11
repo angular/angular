@@ -1,0 +1,7 @@
+load("//integration/size-test:index.bzl", "size_test")
+
+size_test(
+    name = "list",
+    file = "list.ts",
+    deps = ["//src/material/list"],
+)

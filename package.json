@@ -44,7 +44,9 @@
     "ts-circular-deps:check": "yarn -s ts-circular-deps check --config ./src/circular-deps-test.conf.js",
     "ts-circular-deps:approve": "yarn -s ts-circular-deps approve --config ./src/circular-deps-test.conf.js",
     "merge": "ng-dev pr merge",
-    "approve-api": "node ./scripts/approve-api-golden.js"
+    "approve-api": "node ./scripts/approve-api-golden.js",
+    "integration-tests": "bazel test //integration/... --test_tag_filters=-view-engine-only --build_tests_only",
+    "integration-tests:view-engine": "bazel test //integration/... --test_tag_filters=view-engine-only --build_tests_only --config=view-engine"
   },
   "version": "10.0.0-rc.1",
   "dependencies": {
@@ -79,11 +81,12 @@
     "@bazel/bazelisk": "^1.4.0",
     "@bazel/buildifier": "^2.2.1",
     "@bazel/ibazel": "^0.13.0",
-    "@bazel/jasmine": "^1.6.0",
-    "@bazel/karma": "^1.6.0",
-    "@bazel/protractor": "^1.6.0",
-    "@bazel/terser": "^1.4.1",
-    "@bazel/typescript": "^1.6.0",
+    "@bazel/jasmine": "^1.7.0",
+    "@bazel/karma": "^1.7.0",
+    "@bazel/protractor": "^1.7.0",
+    "@bazel/rollup": "^1.7.0",
+    "@bazel/terser": "^1.7.0",
+    "@bazel/typescript": "^1.7.0",
     "@firebase/app-types": "^0.3.2",
     "@octokit/rest": "16.28.7",
     "@schematics/angular": "^10.0.0-rc.2",

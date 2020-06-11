@@ -1,0 +1,16 @@
+{
+  "output": {
+    "ecma": "es2015",
+    "comments": false
+  },
+  "compress": {
+    "global_defs": {
+      "ngDevMode": false,
+      "ngI18nClosureMode": false,
+      "ngJitMode": false
+    },
+    "passes": 3,
+    "pure_getters": true
+  },
+  "mangle": true
+}

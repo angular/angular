@@ -22,6 +22,8 @@ import {
   OnDestroy,
   ChangeDetectorRef,
   Input,
+  InjectionToken,
+  Inject,
 } from '@angular/core';
 import {
   CanDisable,
@@ -48,6 +50,20 @@ class MatListItemBase {}
 const _MatListItemMixinBase: CanDisableRippleCtor & typeof MatListItemBase =
     mixinDisableRipple(MatListItemBase);
 
+/**
+ * Injection token that can be used to inject instances of `MatList`. It serves as
+ * alternative token to the actual `MatList` class which could cause unnecessary
+ * retention of the class and its component metadata.
+ */
+export const MAT_LIST = new InjectionToken<MatList>('MatList');
+
+/**
+ * Injection token that can be used to inject instances of `MatNavList`. It serves as
+ * alternative token to the actual `MatNavList` class which could cause unnecessary
+ * retention of the class and its component metadata.
+ */
+export const MAT_NAV_LIST = new InjectionToken<MatNavList>('MatNavList');
+
 @Component({
   selector: 'mat-nav-list',
   exportAs: 'matNavList',
@@ -60,6 +76,7 @@ const _MatListItemMixinBase: CanDisableRippleCtor & typeof MatListItemBase =
   inputs: ['disableRipple', 'disabled'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{provide: MAT_NAV_LIST, useExisting: MatNavList}],
 })
 export class MatNavList extends _MatListMixinBase implements CanDisable, CanDisableRipple,
   OnChanges, OnDestroy {
@@ -89,6 +106,7 @@ export class MatNavList extends _MatListMixinBase implements CanDisable, CanDisa
   inputs: ['disableRipple', 'disabled'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{provide: MAT_LIST, useExisting: MatList}],
 })
 export class MatList extends _MatListMixinBase implements CanDisable, CanDisableRipple, OnChanges,
   OnDestroy {
@@ -187,8 +205,8 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
 
   constructor(private _element: ElementRef<HTMLElement>,
               _changeDetectorRef: ChangeDetectorRef,
-              @Optional() navList?: MatNavList,
-              @Optional() list?: MatList) {
+              @Optional() @Inject(MAT_NAV_LIST) navList?: MatNavList,
+              @Optional() @Inject(MAT_LIST) list?: MatList) {
     super();
     this._isInteractiveList = !!(navList || (list && list._getListType() === 'action-list'));
     this._list = navList || list;
