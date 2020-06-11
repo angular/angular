@@ -3,7 +3,6 @@
     "name": "ngVikings",
     "location": "Oslo, Norway",
     "linkUrl": "https://ngvikings.org/",
-    "tooltip": "ngVikings",
     "date": {
       "start": "2020-05-25",
       "end": "2020-05-26"
@@ -17,7 +16,6 @@
     "name": "ng-conf",
     "location": "Salt Lake City, Utah",
     "linkUrl": "https://ng-conf.org/",
-    "tooltip": "ng-conf",
     "date": {
       "start": "2020-04-01",
       "end": "2020-04-03"
@@ -27,7 +25,6 @@
     "name": "ngIndia",
     "location": "Delhi, India",
     "linkUrl": "https://www.ng-ind.com/",
-    "tooltip": "ngIndia",
     "date": {
       "start": "2020-02-29",
       "end": "2020-02-29"
@@ -37,7 +34,6 @@
     "name": "ReactiveConf",
     "location": "Prague, Czech Republic",
     "linkUrl": "https://reactiveconf.com/",
-    "tooltip": "ReactiveConf",
     "date": {
       "start": "2019-10-30",
       "end": "2019-11-01"
@@ -61,7 +57,6 @@
     "name": "AngularConnect",
     "location": "London, UK",
     "linkUrl": "https://www.angularconnect.com/?utm_source=angular.io&utm_medium=referral",
-    "tooltip": "AngularConnect",
     "date": {
       "start": "2019-09-19",
       "end": "2019-09-20"
@@ -71,7 +66,6 @@
     "name": "NG-DE",
     "location": "Berlin, Germany",
     "linkUrl": "https://ng-de.org/",
-    "tooltip": "NG-DE",
     "date": {
       "start": "2019-08-30",
       "end": "2019-08-31"
@@ -85,7 +79,6 @@
     "name": "ng-japan",
     "location": "Tokyo, Japan",
     "linkUrl": "https://ngjapan.org/",
-    "tooltip": "ng-japan",
     "date": {
       "start": "2019-07-13",
       "end": "2019-07-13"
@@ -95,7 +88,6 @@
     "name": "ngVikings",
     "location": "Copenhagen, Denmark",
     "linkUrl": "https://ngvikings.org/",
-    "tooltip": "ngVikings",
     "date": {
       "start": "2019-05-27",
       "end": "2019-05-28"
@@ -109,7 +101,6 @@
     "name": "ng-conf",
     "location": "Salt Lake City, Utah",
     "linkUrl": "https://ng-conf.org/",
-    "tooltip": "ng-conf",
     "date": {
       "start": "2019-05-01",
       "end": "2019-05-03"
@@ -119,7 +110,6 @@
     "name": "ng-India",
     "location": "Gurgaon, India",
     "linkUrl": "https://www.ng-ind.com/",
-    "tooltip": "ng-India",
     "date": {
       "start": "2019-02-23",
       "end": "2019-02-23"
@@ -129,7 +119,6 @@
     "name": "ngAtlanta",
     "location": "Atlanta, Georgia",
     "linkUrl": "https://ng-atl.org/",
-    "tooltip": "ngAtlanta",
     "date": {
       "start": "2019-01-09",
       "end": "2019-01-12"
@@ -139,7 +128,6 @@
     "name": "AngularConnect",
     "location": "London, United Kingdom",
     "linkUrl": "https://past.angularconnect.com/2018",
-    "tooltip": "AngularConnect",
     "date": {
       "start": "2018-11-05",
       "end": "2018-11-07"
@@ -149,7 +137,6 @@
     "name": "ReactiveConf",
     "location": "Prague, Czech Republic",
     "linkUrl": "https://reactiveconf.com/",
-    "tooltip": "ReactiveConf",
     "date": {
       "start": "2018-10-29",
       "end": "2018-10-31"
@@ -159,7 +146,6 @@
     "name": "AngularMix",
     "location": "Orlando, Florida",
     "linkUrl": "https://angularmix.com/",
-    "tooltip": "AngularMix",
     "date": {
       "start": "2018-10-10",
       "end": "2018-10-12"
@@ -169,7 +155,6 @@
     "name": "Angular Conf Australia",
     "location": "Melbourne, Australia",
     "linkUrl": "https://www.angularconf.com.au/",
-    "tooltip": "Angular Conf Australia",
     "date": {
       "start": "2018-06-22",
       "end": "2018-06-22"
@@ -179,7 +164,6 @@
     "name": "ng-japan",
     "location": "Tokyo, Japan",
     "linkUrl": "https://ngjapan.org/en.html",
-    "tooltip": "ng-japan",
     "date": {
       "start": "2018-06-16",
       "end": "2018-06-16"
@@ -199,7 +183,6 @@
     "name": "ng-conf",
     "location": "Salt Lake City, Utah",
     "linkUrl": "https://ng-conf.org/",
-    "tooltip": "ng-conf",
     "date": {
       "start": "2018-04-18",
       "end": "2018-04-20"
@@ -209,7 +192,6 @@
     "name": "ngVikings",
     "location": "Helsinki, Finland",
     "linkUrl": "https://ngvikings.org/",
-    "tooltip": "ngVikings",
     "date": {
       "start": "2018-03-01",
       "end": "2018-03-02"
@@ -219,7 +201,6 @@
     "name": "ngAtlanta",
     "location": "Atlanta, Georgia",
     "linkUrl": "https://ng-atl.org/",
-    "tooltip": "ngAtlanta",
     "date": {
       "start": "2018-01-30",
       "end": "2018-01-30"
