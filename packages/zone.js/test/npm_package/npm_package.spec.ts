@@ -158,6 +158,8 @@ describe('Zone.js npm_package', () => {
           'zone-patch-socket-io.min.js',
           'zone-patch-user-media.js',
           'zone-patch-user-media.min.js',
+          'zone-patch-web-ext.js',
+          'zone-patch-web-ext.min.js',
           'zone-testing-bundle.js',
           'zone-testing-bundle.min.js',
           'zone-testing-node-bundle.js',
