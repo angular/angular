@@ -82,6 +82,11 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
         include: CONTENTS_PATH + '/marketing/resources.json',
         fileReader: 'jsonFileReader'
       },
+      {
+        basePath: CONTENTS_PATH,
+        include: CONTENTS_PATH + '/marketing/events.json',
+        fileReader: 'jsonFileReader'
+      },
     ]);
 
     collectExamples.exampleFolders.push('examples');
@@ -110,7 +115,8 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
       {docTypes: ['navigation-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
       {docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
       {docTypes: ['announcements-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
-      {docTypes: ['resources-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
+      {docTypes: ['resources-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
+      {docTypes: ['events-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
     ]);
   })
 
