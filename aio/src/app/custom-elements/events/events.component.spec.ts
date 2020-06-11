@@ -1,22 +1,20 @@
-import { EventsComponent } from './events.component';
+import { Duration, Event, EventsComponent } from './events.component';
 import { EventsService } from './events.service';
-import { Event } from './events.component';
 import { ReflectiveInjector } from '@angular/core';
 import { Subject } from 'rxjs';
 
 describe('EventsComponent', () => {
   let component: EventsComponent;
   let injector: ReflectiveInjector;
-  let eventsService: TestEventService;
+  let eventsService: TestEventsService;
 
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
       EventsComponent,
-      {provide: EventsService, useClass: TestEventService },
+      { provide: EventsService, useClass: TestEventsService },
     ]);
     eventsService = injector.get(EventsService) as any;
     component = injector.get(EventsComponent);
-    component.ngOnInit();
   });
 
   it('should have no pastEvents when first created', () => {
@@ -27,269 +25,205 @@ describe('EventsComponent', () => {
     expect(component.upcomingEvents).toBeUndefined();
   });
 
-  describe('ngOnInit', () => {
-    it('should have 2 upcoming events', () => {
-      eventsService.events.next([{
-        'location': 'Oslo, Norway',
-        'tooltip': 'ngVikings',
-        'linkUrl': 'https://ngvikings.org/',
-        'name': 'ngVikings',
-        'date': {
-          'start': '2099-07-25',
-          'end': '2099-07-26'
-        },
-        'workshopsDate': {
-          'start': '2099-07-27',
-          'end': '2099-07-27'
-        }
-      },
-      {
-        'location': 'Salt Lake City, Utah',
-        'tooltip': 'ng-conf',
-        'linkUrl': 'https://ng-conf.org/',
-        'name': 'ng-conf  ',
-        'date': {
-          'start': '2099-06-20',
-          'end': '2099-06-20'
-        }
-      },
-      {
-        'location': 'Delhi, India',
-        'tooltip': 'ngIndia',
-        'linkUrl': 'https://www.ng-ind.com/',
-        'name': 'ngIndia',
-        'date': {
-          'start': '2020-02-29',
-          'end': '2020-02-29'
-        }
-      }]);
-      expect(component.upcomingEvents.length).toEqual(2);
+  describe('ngOnInit()', () => {
+    beforeEach(() => {
+      jasmine.clock().install();
+      jasmine.clock().mockDate(new Date(2020, 5, 15, 23, 59, 59));
+      component.ngOnInit();
     });
 
-    it('should have 4 past events', () => {
+    afterEach(() => jasmine.clock().uninstall());
+
+    it('should separate past and upcoming events', () => {
       eventsService.events.next([
-      {
-        'location': 'Salt Lake City, Utah',
-        'tooltip': 'ng-conf',
-        'linkUrl': 'https://ng-conf.org/',
-        'name': 'ng-conf  ',
-        'date': {
-          'start': '2099-06-20',
-          'end': '2099-06-20'
-        }
-      },
-      {
-        'location': 'Rome, Italy',
-        'tooltip': 'NG Rome MMXIX - The Italian Angular Conference',
-        'linkUrl': 'https://ngrome.io',
-        'name': 'NG Rome MMXIX',
-        'date': {
-          'start': '2019-10-07',
-          'end': '2019-10-07'
-        },
-        'workshopsDate': {
-          'start': '2019-10-06',
-          'end': '2019-10-06'
-        }
-      },
-      {
-        'location': 'London, UK',
-        'tooltip': 'AngularConnect',
-        'linkUrl': 'https://www.angularconnect.com/?utm_source=angular.io&utm_medium=referral',
-        'name': 'AngularConnect',
-        'date': {
-          'start': '2019-09-19',
-          'end': '2019-09-20'
-        }
-      },
-      {
-        'location': 'Berlin, Germany',
-        'tooltip': 'NG-DE',
-        'linkUrl': 'https://ng-de.org/',
-        'name': 'NG-DE',
-        'date': {
-          'start': '2019-08-30',
-          'end': '2019-08-31'
-        },
-        'workshopsDate': {
-          'start': '2019-08-29',
-          'end': '2019-08-29'
-        }
-      },
-      {
-        'location': 'Oslo, Norway',
-        'tooltip': 'ngVikings',
-        'linkUrl': 'https://ngvikings.org/',
-        'name': 'ngVikings',
-        'date': {
-          'start': '2018-07-26',
-          'end': '2018-07-26'
-        },
-        'workshopsDate': {
-          'start': '2018-07-27',
-          'end': '2018-07-27'
-        }
-      }]);
-      expect(component.pastEvents.length).toEqual(4);
+        createMockEvent(
+            'Upcoming event 1',
+            {start: '2020-06-16', end: '2020-06-17'},
+            {start: '2020-06-18', end: '2020-06-18'}),
+        createMockEvent(
+            'Upcoming event 3',
+            {start: '2222-01-01', end: '2222-01-02'}),
+        createMockEvent(
+            'Past event 2',
+            {start: '2020-06-13', end: '2020-06-14'}),
+        createMockEvent(
+            'Upcoming event 2',
+            {start: '2020-06-17', end: '2020-06-18'},
+            {start: '2020-06-16', end: '2020-06-16'}),
+        createMockEvent(
+            'Past event 1',
+            {start: '2020-05-30', end: '2020-05-31'}),
+        createMockEvent(
+            'Past event 3',
+            {start: '2020-06-14', end: '2020-06-14'},
+            {start: '2020-06-16', end: '2020-06-17'}),
+      ]);
+
+      expect(component.pastEvents.map(evt => evt.name)).toEqual(jasmine.arrayWithExactContents(
+          ['Past event 1', 'Past event 2', 'Past event 3']));
+
+      expect(component.upcomingEvents.map(evt => evt.name)).toEqual(jasmine.arrayWithExactContents(
+          ['Upcoming event 1', 'Upcoming event 2', 'Upcoming event 3']));
+    });
+
+    it('should order past events in reverse chronological order (ignoring workshops dates)', () => {
+      eventsService.events.next([
+        createMockEvent(
+            'Past event 2',
+            {start: '1999-12-13', end: '1999-12-14'},
+            {start: '1999-12-11', end: '1999-12-11'}),
+        createMockEvent(
+            'Past event 4',
+            {start: '2020-01-16', end: '2020-01-17'},
+            {start: '2020-01-14', end: '2020-01-15'}),
+        createMockEvent(
+            'Past event 3',
+            {start: '2020-01-15', end: '2020-01-16'},
+            {start: '2020-01-17', end: '2020-01-18'}),
+        createMockEvent(
+            'Past event 1',
+            {start: '1999-12-12', end: '1999-12-15'}),
+      ]);
+
+      expect(component.pastEvents.map(evt => evt.name)).toEqual(
+          ['Past event 4', 'Past event 3', 'Past event 2', 'Past event 1']);
+    });
+
+    it('should order upcoming events in chronological order (ignoring workshops dates)', () => {
+      eventsService.events.next([
+        createMockEvent(
+            'Upcoming event 2',
+            {start: '2020-12-13', end: '2020-12-14'},
+            {start: '2020-12-11', end: '2020-12-11'}),
+        createMockEvent(
+            'Upcoming event 4',
+            {start: '2021-01-16', end: '2021-01-17'},
+            {start: '2021-01-14', end: '2021-01-15'}),
+        createMockEvent(
+            'Upcoming event 3',
+            {start: '2021-01-15', end: '2021-01-16'},
+            {start: '2021-01-17', end: '2021-01-18'}),
+        createMockEvent(
+            'Upcoming event 1',
+            {start: '2020-12-12', end: '2020-12-15'}),
+      ]);
+
+      expect(component.upcomingEvents.map(evt => evt.name)).toEqual(
+          ['Upcoming event 1', 'Upcoming event 2', 'Upcoming event 3', 'Upcoming event 4']);
+    });
+
+    it('should treat ongoing events as upcoming', () => {
+      eventsService.events.next([
+        createMockEvent(
+            'Ongoing event 1',
+            {start: '2020-06-14', end: '2020-06-16'}),
+        createMockEvent(
+            'Ongoing event 2',
+            {start: '2020-06-14', end: '2020-06-15'},
+            {start: '2020-06-13', end: '2020-06-13'}),
+      ]);
+
+      expect(component.pastEvents).toEqual([]);
+      expect(component.upcomingEvents.map(evt => evt.name)).toEqual(jasmine.arrayWithExactContents(
+          ['Ongoing event 1', 'Ongoing event 2']));
     });
   });
 
-  describe('Getting event dates if no workshop date', () => {
-    it('should return only conference date', () => {
-      const datestring = component.getEventDates({
-            'location': 'Salt Lake City, Utah',
-            'tooltip': 'ng-conf',
-            'linkUrl': 'https://ng-conf.org/',
-            'name': 'ng-conf  ',
-            'date': {
-              'start': '2020-06-20',
-              'end': '2020-06-20'
-            }
-          });
-      expect(datestring).toEqual('June 20, 2020');
+  describe('getEventDates()', () => {
+    describe('(without workshops)', () => {
+      it('should correctly format the main event date', () => {
+        const testEvent = createMockEvent('Test', {start: '2020-06-20', end: '2020-06-20'});
+        expect(component.getEventDates(testEvent)).toBe('June 20, 2020');
+      });
+
+      it('should correctly format the main event date spanning mupliple days', () => {
+        const testEvent = createMockEvent('Test', {start: '2019-09-19', end: '2019-09-21'});
+        expect(component.getEventDates(testEvent)).toBe('September 19-21, 2019');
+      });
+
+      it('should correctly format the main event date spanning mupliple months', () => {
+        const testEvent = createMockEvent('Test', {start: '2019-10-30', end: '2019-11-01'});
+        expect(component.getEventDates(testEvent)).toBe('October 30 - November 1, 2019');
+      });
     });
 
-    it('should return only conference date with changing months if date is in two diffrent months', () => {
-      const datestring = component.getEventDates({
-        'location': 'Prague, Czech Republic',
-        'tooltip': 'ReactiveConf',
-        'linkUrl': 'https://reactiveconf.com/',
-        'name': 'ReactiveConf',
-        'date': {
-          'start': '2019-10-30',
-          'end': '2019-11-01'
-        }
-      });
-      expect(datestring).toEqual('October 30 - November 1, 2019');
-    });
+    describe('(with workshops)', () => {
+      it('should correctly format event dates with workshops after main event', () => {
+        const testEvent = createMockEvent(
+            'Test',
+            {start: '2020-07-25', end: '2020-07-26'},
+            {start: '2020-07-27', end: '2020-07-27'});
 
-    it('should return only conference date with "- lastdate" if conference over multiple days', () => {
-      const datestring = component.getEventDates({
-        'location': 'London, UK',
-        'tooltip': 'AngularConnect',
-        'linkUrl': 'https://www.angularconnect.com/?utm_source=angular.io&utm_medium=referral',
-        'name': 'AngularConnect',
-        'date': {
-          'start': '2019-09-19',
-          'end': '2019-09-20'
-        }
+        expect(component.getEventDates(testEvent))
+            .toBe('July 25-26 (conference), July 27 (workshops), 2020');
       });
-      expect(datestring).toEqual('September 19-20, 2019');
+
+      it('should correctly format event dates with workshops before main event', () => {
+        const testEvent = createMockEvent(
+            'Test',
+            {start: '2019-10-07', end: '2019-10-07'},
+            {start: '2019-10-06', end: '2019-10-06'});
+
+        expect(component.getEventDates(testEvent))
+            .toBe('October 6 (workshops), October 7 (conference), 2019');
+      });
+
+      it('should correctly format event dates spanning multiple days', () => {
+        const testEvent = createMockEvent(
+            'Test',
+            {start: '2019-08-30', end: '2019-08-31'},
+            {start: '2019-08-28', end: '2019-08-29'});
+
+        expect(component.getEventDates(testEvent))
+            .toBe('August 28-29 (workshops), August 30-31 (conference), 2019');
+      });
+
+      it('should correctly format event dates with workshops on different month before the main event',
+        () => {
+          const testEvent = createMockEvent(
+              'Test',
+              {start: '2020-08-01', end: '2020-08-02'},
+              {start: '2020-07-30', end: '2020-07-31'});
+
+          expect(component.getEventDates(testEvent))
+              .toBe('July 30-31 (workshops), August 1-2 (conference), 2020');
+        });
+
+      it('should correctly format event dates with workshops on different month after the main event',
+        () => {
+          const testEvent = createMockEvent(
+              'Test',
+              {start: '2020-07-30', end: '2020-07-31'},
+              {start: '2020-08-01', end: '2020-08-02'});
+
+          expect(component.getEventDates(testEvent))
+              .toBe('July 30-31 (conference), August 1-2 (workshops), 2020');
+        });
+
+      it('should correctly format event dates spanning multiple months', () => {
+        const testEvent = createMockEvent(
+            'Test',
+            {start: '2020-07-31', end: '2020-08-01'},
+            {start: '2020-07-30', end: '2020-08-01'});
+
+        expect(component.getEventDates(testEvent))
+            .toBe('July 30 - August 1 (workshops), July 31 - August 1 (conference), 2020');
+      });
     });
   });
 
-  describe('Getting event dates if workshop date', () => {
-    it('should return conference date with different days, workshopdate', () => {
-      const datestring = component.getEventDates({
-            'location': 'Oslo, Norway',
-            'tooltip': 'ngVikings',
-            'linkUrl': 'https://ngvikings.org/',
-            'name': 'ngVikings',
-            'date': {
-              'start': '2020-07-25',
-              'end': '2020-07-26'
-            },
-            'workshopsDate': {
-              'start': '2020-07-27',
-              'end': '2020-07-27'
-            }
-          });
-      expect(datestring).toEqual('July 25-26 (conference), July 27 (workshops), 2020');
-    });
+  // Helpers
+  class TestEventsService {
+    events = new Subject<Event[]>();
+  }
 
-    it('should return workshop date, conference date if workshop before conf date', () => {
-      const datestring = component.getEventDates({
-        'location': 'Rome, Italy',
-        'tooltip': 'NG Rome MMXIX - The Italian Angular Conference',
-        'linkUrl': 'https://ngrome.io',
-        'name': 'NG Rome MMXIX',
-        'date': {
-          'start': '2019-10-07',
-          'end': '2019-10-07'
-        },
-        'workshopsDate': {
-          'start': '2019-10-06',
-          'end': '2019-10-06'
-        }
-      });
-      expect(datestring).toEqual('October 6 (workshops), October 7 (conference), 2019');
-    });
-
-    it('should return workshop date, conference date if workshop before conference date', () => {
-      const datestring = component.getEventDates({
-        'location': 'Berlin, Germany',
-        'tooltip': 'NG-DE',
-        'linkUrl': 'https://ng-de.org/',
-        'name': 'NG-DE',
-        'date': {
-          'start': '2019-08-30',
-          'end': '2019-08-31'
-        },
-        'workshopsDate': {
-          'start': '2019-08-29',
-          'end': '2019-08-29'
-        }
-      });
-      expect(datestring).toEqual('August 29 (workshops), August 30-31 (conference), 2019');
-    });
-
-    it('should return only conference date, wokshop date if workshop after conference', () => {
-      const datestring = component.getEventDates({
-        'location': 'Oslo, Norway',
-        'tooltip': 'ngVikings',
-        'linkUrl': 'https://ngvikings.org/',
-        'name': 'ngVikings',
-        'date': {
-          'start': '2018-07-26',
-          'end': '2018-07-26'
-        },
-        'workshopsDate': {
-          'start': '2018-07-27',
-          'end': '2018-07-27'
-        }
-      });
-      expect(datestring).toEqual('July 26 (conference), July 27 (workshops), 2018');
-    });
-
-    it('should return conference date and workshop date with different days and months, starting with confrence date', () => {
-      const datestring = component.getEventDates({
-            'location': 'Oslo, Norway',
-            'tooltip': 'ngVikings',
-            'linkUrl': 'https://ngvikings.org/',
-            'name': 'ngVikings',
-            'date': {
-              'start': '2020-07-30',
-              'end': '2020-07-31'
-            },
-            'workshopsDate': {
-              'start': '2020-08-01',
-              'end': '2020-08-02'
-            }
-          });
-      expect(datestring).toEqual('July 30-31 (conference), August 1-2 (workshops), 2020');
-    });
-
-    it('should return conference date and workshop date with different days and months, starting with workshopdate', () => {
-      const datestring = component.getEventDates({
-            'location': 'Oslo, Norway',
-            'tooltip': 'ngVikings',
-            'linkUrl': 'https://ngvikings.org/',
-            'name': 'ngVikings',
-            'date': {
-              'start': '2020-08-01',
-              'end': '2020-08-02'
-            },
-            'workshopsDate': {
-              'start': '2020-07-30',
-              'end': '2020-07-31'
-            }
-          });
-      expect(datestring).toEqual('July 30-31 (workshops), August 1-2 (conference), 2020');
-    });
-
-  });
+  function createMockEvent(name: string, date: Duration, workshopsDate?: Duration): Event {
+    return {
+      name,
+      location: '',
+      linkUrl: '',
+      date,
+      workshopsDate,
+    };
+  }
 });
-
-class TestEventService {
-  events = new Subject<Event[]>();
-}
