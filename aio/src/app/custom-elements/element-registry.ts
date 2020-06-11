@@ -40,6 +40,10 @@ export const ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES = [
   {
     selector: 'live-example',
     loadChildren: () => import('./live-example/live-example.module').then(m => m.LiveExampleModule)
+  },
+  {
+    selector: 'aio-events',
+    loadChildren: () => import('./events/events.module').then(m => m.EventsModule)
   }
 ];
 
