@@ -327,10 +327,17 @@ interface ParameterDecorationInfo {
  * @param diagnostics List which will be populated with diagnostics if any.
  * @param isCore Whether the current TypeScript program is for the `@angular/core` package.
  * @param isClosureCompilerEnabled Whether closure annotations need to be added where needed.
+ * @param skipClassDecorators Whether class decorators should be skipped from downleveling.
+ *   This is useful for JIT mode where class decorators should be preserved as they could rely
+ *   on immediate execution. e.g. downleveling `@Injectable` means that the injectable factory
+ *   is not created, and injecting the token will not work. If this decorator would not be
+ *   downleveled, the `Injectable` decorator will execute immediately on file load, and
+ *   Angular will generate the corresponding injectable factory.
  */
 export function getDownlevelDecoratorsTransform(
     typeChecker: ts.TypeChecker, host: ReflectionHost, diagnostics: ts.Diagnostic[],
-    isCore: boolean, isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
+    isCore: boolean, isClosureCompilerEnabled: boolean,
+    skipClassDecorators: boolean): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext) => {
     let referencedParameterTypes = new Set<ts.Declaration>();
 
@@ -517,13 +524,22 @@ export function getDownlevelDecoratorsTransform(
       }
       const decorators = host.getDecoratorsOfDeclaration(classDecl) || [];
 
+      let hasAngularDecorator = false;
       const decoratorsToLower = [];
       const decoratorsToKeep: ts.Decorator[] = [];
       for (const decorator of decorators) {
         // We only deal with concrete nodes in TypeScript sources, so we don't
         // need to handle synthetically created decorators.
         const decoratorNode = decorator.node! as ts.Decorator;
-        if (isAngularDecorator(decorator, isCore)) {
+        const isNgDecorator = isAngularDecorator(decorator, isCore);
+
+        // Keep track if we come across an Angular class decorator. This is used
+        // for to determine whether constructor parameters should be captured or not.
+        if (isNgDecorator) {
+          hasAngularDecorator = true;
+        }
+
+        if (isNgDecorator && !skipClassDecorators) {
           decoratorsToLower.push(extractMetadataFromSingleDecorator(decoratorNode, diagnostics));
         } else {
           decoratorsToKeep.push(decoratorNode);
@@ -536,9 +552,9 @@ export function getDownlevelDecoratorsTransform(
         newMembers.push(createDecoratorClassProperty(decoratorsToLower));
       }
       if (classParameters) {
-        if ((decoratorsToLower.length) || classParameters.some(p => !!p.decorators.length)) {
-          // emit ctorParameters if the class was decoratored at all, or if any of its ctors
-          // were classParameters
+        if (hasAngularDecorator || classParameters.some(p => !!p.decorators.length)) {
+          // Capture constructor parameters if the class has Angular decorator applied,
+          // or if any of the parameters has decorators applied directly.
           newMembers.push(createCtorParametersClassProperty(
               diagnostics, entityNameToExpression, classParameters, isClosureCompilerEnabled));
         }
