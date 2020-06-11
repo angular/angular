@@ -1,3 +1,19 @@
+<a name="10.0.0-rc.5"></a>
+# [10.0.0-rc.5](https://github.com/angular/angular/compare/10.0.0-rc.4...10.0.0-rc.5) (2020-06-11)
+
+
+### Bug Fixes
+
+* **ngcc:** do not scan import expressions in d.ts files ([#37503](https://github.com/angular/angular/issues/37503)) ([8248307](https://github.com/angular/angular/commit/8248307))
+* **ngcc:** use annotateForClosureCompiler option ([#36652](https://github.com/angular/angular/issues/36652)) ([eca8d11](https://github.com/angular/angular/commit/eca8d11)), closes [#36618](https://github.com/angular/angular/issues/36618)
+
+
+### Features
+
+* **language-service:** Remove HTML entities autocompletion ([#37515](https://github.com/angular/angular/issues/37515)) ([67bd88b](https://github.com/angular/angular/commit/67bd88b))
+
+
+
 <a name="10.0.0-rc.4"></a>
 # [10.0.0-rc.4](https://github.com/angular/angular/compare/10.0.0-rc.3...10.0.0-rc.4) (2020-06-10)
 
