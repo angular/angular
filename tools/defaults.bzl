@@ -159,16 +159,6 @@ def karma_web_test_suite(name, **kwargs):
     kwargs["srcs"] = ["@npm//:node_modules/tslib/tslib.js"] + getAngularUmdTargets() + kwargs.get("srcs", [])
     kwargs["deps"] = ["//tools/rxjs:rxjs_umd_modules"] + kwargs.get("deps", [])
 
-    # Set up default browsers if no explicit `browsers` have been specified.
-    if not hasattr(kwargs, "browsers"):
-        kwargs["tags"] = ["native"] + kwargs.get("tags", [])
-        kwargs["browsers"] = [
-            # Note: when changing the browser names here, also update the "yarn test"
-            # script to reflect the new browser names.
-            "@npm_angular_dev_infra_private//browsers:chromium",
-            "@io_bazel_rules_webtesting//browsers:firefox-local",
-        ]
-
     for opt_name in kwargs.keys():
         # Filter out options which are specific to "karma_web_test" targets. We cannot
         # pass options like "browsers" to the local web test target.
@@ -204,11 +194,10 @@ def karma_web_test_suite(name, **kwargs):
 def protractor_web_test_suite(flaky = True, **kwargs):
     _protractor_web_test_suite(
         flaky = flaky,
-        browsers = ["@npm_angular_dev_infra_private//browsers:chromium"],
         **kwargs
     )
 
-def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
+def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], tags = [], **kwargs):
     # Always include a prebuilt theme in the test suite because otherwise tests, which depend on CSS
     # that is needed for measuring, will unexpectedly fail. Also always adding a prebuilt theme
     # reduces the amount of setup that is needed to create a test suite Bazel target. Note that the
@@ -252,6 +241,12 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
         deps = [
             "//test:angular_test_init",
         ] + deps,
+        browsers = [
+            # Note: when changing the browser names here, also update the "yarn test"
+            # script to reflect the new browser names.
+            "@io_bazel_rules_webtesting//browsers:chromium-local",
+            "@io_bazel_rules_webtesting//browsers:firefox-local",
+        ],
         bootstrap = [
             # This matches the ZoneJS bundles used in default CLI projects. See:
             # https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/files/src/polyfills.ts.template#L58
@@ -265,5 +260,6 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
             "@npm//:node_modules/zone.js/dist/zone-testing.js",
             "@npm//:node_modules/reflect-metadata/Reflect.js",
         ] + bootstrap,
+        tags = ["native"] + tags,
         **kwargs
     )
