@@ -21,6 +21,7 @@ describe('downlevel decorator transform', () => {
   let context: MockAotContext;
   let diagnostics: ts.Diagnostic[];
   let isClosureEnabled: boolean;
+  let skipClassDecorators: boolean;
 
   beforeEach(() => {
     diagnostics = [];
@@ -32,6 +33,7 @@ describe('downlevel decorator transform', () => {
     });
     host = new MockCompilerHost(context);
     isClosureEnabled = false;
+    skipClassDecorators = false;
   });
 
   function transform(
@@ -58,7 +60,7 @@ describe('downlevel decorator transform', () => {
         ...preTransformers,
         getDownlevelDecoratorsTransform(
             program.getTypeChecker(), reflectionHost, diagnostics,
-            /* isCore */ false, isClosureEnabled)
+            /* isCore */ false, isClosureEnabled, skipClassDecorators)
       ]
     };
     let output: string|null = null;
@@ -605,6 +607,97 @@ describe('downlevel decorator transform', () => {
     expect(output).not.toContain('MyDir.decorators');
     expect(output).not.toContain('MyDir.ctorParameters');
     expect(output).not.toContain('tslib');
+  });
+
+  describe('class decorators skipped', () => {
+    beforeEach(() => skipClassDecorators = true);
+
+    it('should not downlevel Angular class decorators', () => {
+      const {output} = transform(`
+        import {Injectable} from '@angular/core';
+  
+        @Injectable()
+        export class MyService {}
+      `);
+
+      expect(diagnostics.length).toBe(0);
+      expect(output).not.toContain('MyService.decorators');
+      expect(output).toContain(dedent`
+        MyService = tslib_1.__decorate([
+          core_1.Injectable()
+        ], MyService);
+      `);
+    });
+
+    it('should downlevel constructor parameters', () => {
+      const {output} = transform(`
+        import {Injectable} from '@angular/core';
+ 
+        @Injectable()
+        export class InjectClass {}
+ 
+        @Injectable()
+        export class MyService {
+          constructor(dep: InjectClass) {}
+        }
+      `);
+
+      expect(diagnostics.length).toBe(0);
+      expect(output).not.toContain('MyService.decorators');
+      expect(output).toContain('MyService.ctorParameters');
+      expect(output).toContain(dedent`
+        MyService.ctorParameters = () => [
+          { type: InjectClass }
+        ];
+        MyService = tslib_1.__decorate([
+          core_1.Injectable()
+        ], MyService);
+      `);
+    });
+
+    it('should downlevel constructor parameter decorators', () => {
+      const {output} = transform(`
+        import {Injectable, Inject} from '@angular/core';
+ 
+        @Injectable()
+        export class InjectClass {}
+ 
+        @Injectable()
+        export class MyService {
+          constructor(@Inject('test') dep: InjectClass) {}
+        }
+      `);
+
+      expect(diagnostics.length).toBe(0);
+      expect(output).not.toContain('MyService.decorators');
+      expect(output).toContain('MyService.ctorParameters');
+      expect(output).toContain(dedent`
+        MyService.ctorParameters = () => [
+          { type: InjectClass, decorators: [{ type: core_1.Inject, args: ['test',] }] }
+        ];
+        MyService = tslib_1.__decorate([
+          core_1.Injectable()
+        ], MyService);
+      `);
+    });
+
+    it('should downlevel class member Angular decorators', () => {
+      const {output} = transform(`
+        import {Injectable, Input} from '@angular/core';
+ 
+        export class MyService {
+          @Input() disabled: boolean;
+        }
+      `);
+
+      expect(diagnostics.length).toBe(0);
+      expect(output).not.toContain('tslib');
+      expect(output).toContain(dedent`
+        MyService.propDecorators = {
+          disabled: [{ type: core_1.Input }]
+        };
+      `);
+    });
   });
 });
 
