@@ -14,8 +14,25 @@ import {InjectionToken} from '@angular/core';
  * @publicApi
  */
 export interface PlatformConfig {
+  /**
+   * The initial DOM to use to bootstrap the server application.
+   * @default create a new DOM using Domino
+   */
   document?: string;
+  /**
+   * The URL for the current application state. This is
+   * used for initializing the platform's location and
+   * for setting absolute URL resolution for HTTP requests.
+   * @default none
+   */
   url?: string;
+  /**
+   * Whether to append the absolute URL to any relative HTTP
+   * requests. If set to true, this logic executes prior to
+   * any HTTP interceptors that may run later on in the request.
+   * @default false
+   */
+  useAbsoluteUrl?: boolean;
 }
 
 /**
