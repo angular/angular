@@ -18,8 +18,8 @@ const MONTHS = [
   'December',
 ];
 
-type date = string; // of the format `YYYY-MM-DD`.
-interface Duration {
+export type date = string; // of the format `YYYY-MM-DD`.
+export interface Duration {
   start: date;
   end: date;
 }
