@@ -36,6 +36,7 @@ export interface MatMenuPanel<T = any> {
   setElevation?(depth: number): void;
   lazyContent?: MatMenuContent;
   backdropClass?: string;
+  overlayPanelClass?: string|string[];
   hasBackdrop?: boolean;
   readonly panelId?: string;
 

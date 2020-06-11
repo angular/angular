@@ -245,6 +245,41 @@ describe('MatMenu', () => {
     expect(backdrop.classList).toContain('custom-backdrop');
   }));
 
+  it('should be able to set a custom class on the overlay panel', fakeAsync(() => {
+    const optionsProvider =  {
+      provide: MAT_MENU_DEFAULT_OPTIONS,
+      useValue: {overlayPanelClass: 'custom-panel-class'}
+    };
+    const fixture = createComponent(SimpleMenu, [optionsProvider], [FakeIcon]);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    const overlayPane = <HTMLElement>overlayContainerElement.querySelector('.cdk-overlay-pane');
+
+    expect(overlayPane.classList).toContain('custom-panel-class');
+  }));
+
+  it('should be able to set a custom classes on the overlay panel', fakeAsync(() => {
+    const optionsProvider =  {
+      provide: MAT_MENU_DEFAULT_OPTIONS,
+      useValue: {overlayPanelClass: ['custom-panel-class-1', 'custom-panel-class-2']}
+    };
+    const fixture = createComponent(SimpleMenu, [optionsProvider], [FakeIcon]);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    const overlayPane = <HTMLElement>overlayContainerElement.querySelector('.cdk-overlay-pane');
+
+    expect(overlayPane.classList).toContain('custom-panel-class-1');
+    expect(overlayPane.classList).toContain('custom-panel-class-2');
+  }));
+
   it('should restore focus to the root trigger when the menu was opened by mouse', fakeAsync(() => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
     fixture.detectChanges();

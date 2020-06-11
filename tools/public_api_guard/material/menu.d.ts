@@ -27,6 +27,7 @@ export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatM
     lazyContent: MatMenuContent;
     get overlapTrigger(): boolean;
     set overlapTrigger(value: boolean);
+    overlayPanelClass: string | string[];
     set panelClass(classes: string);
     readonly panelId: string;
     parentMenu: MatMenuPanel | undefined;
@@ -94,6 +95,7 @@ export interface MatMenuDefaultOptions {
     backdropClass: string;
     hasBackdrop?: boolean;
     overlapTrigger: boolean;
+    overlayPanelClass?: string | string[];
     xPosition: MenuPositionX;
     yPosition: MenuPositionY;
 }
@@ -134,6 +136,7 @@ export interface MatMenuPanel<T = any> {
     hasBackdrop?: boolean;
     lazyContent?: MatMenuContent;
     overlapTrigger: boolean;
+    overlayPanelClass?: string | string[];
     readonly panelId?: string;
     parentMenu?: MatMenuPanel | undefined;
     removeItem?: (item: T) => void;

@@ -405,6 +405,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
           .withLockedPosition()
           .withTransformOriginOn('.mat-menu-panel, .mat-mdc-menu-panel'),
       backdropClass: this.menu.backdropClass || 'cdk-overlay-transparent-backdrop',
+      panelClass: this.menu.overlayPanelClass,
       scrollStrategy: this._scrollStrategy(),
       direction: this._dir
     });

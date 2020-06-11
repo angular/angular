@@ -64,6 +64,9 @@ export interface MatMenuDefaultOptions {
   /** Class to be applied to the menu's backdrop. */
   backdropClass: string;
 
+  /** Class or list of classes to be applied to the menu's overlay panel. */
+  overlayPanelClass?: string | string[];
+
   /** Whether the menu has a backdrop. */
   hasBackdrop?: boolean;
 }
@@ -128,6 +131,9 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
 
   /** Layout direction of the menu. */
   direction: Direction;
+
+  /** Class or list of classes to be added to the overlay panel. */
+  overlayPanelClass: string|string[] = this._defaultOptions.overlayPanelClass || '';
 
   /** Class to be added to the backdrop element. */
   @Input() backdropClass: string = this._defaultOptions.backdropClass;
