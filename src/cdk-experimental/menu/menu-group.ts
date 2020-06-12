@@ -7,7 +7,7 @@
  */
 
 import {Directive, Output, EventEmitter} from '@angular/core';
-import {CdkMenuItem} from './menu-item';
+import {MenuItem} from './menu-item-interface';
 
 /**
  * Directive which acts as a grouping container for `CdkMenuItem` instances with
@@ -22,5 +22,5 @@ import {CdkMenuItem} from './menu-item';
 })
 export class CdkMenuGroup {
   /** Emits the element when checkbox or radiobutton state changed  */
-  @Output() change: EventEmitter<CdkMenuItem> = new EventEmitter();
+  @Output() change: EventEmitter<MenuItem> = new EventEmitter();
 }

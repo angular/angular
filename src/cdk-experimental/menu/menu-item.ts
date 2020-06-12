@@ -10,6 +10,7 @@ import {Directive, Output, Input, AfterContentInit, EventEmitter} from '@angular
 import {coerceBooleanProperty, BooleanInput} from '@angular/cdk/coercion';
 import {CdkMenuPanel} from './menu-panel';
 import {CdkMenuGroup} from './menu-group';
+import {MenuItem} from './menu-item-interface';
 
 /**
  * Directive which provides behavior for an element which when clicked:
@@ -35,7 +36,7 @@ import {CdkMenuGroup} from './menu-group';
     '[attr.aria-disabled]': 'disabled || null',
   },
 })
-export class CdkMenuItem implements AfterContentInit {
+export class CdkMenuItem implements AfterContentInit, MenuItem {
   /** Template reference variable to the menu this trigger opens */
   @Input('cdkMenuTriggerFor') _menuPanel?: CdkMenuPanel;
 
