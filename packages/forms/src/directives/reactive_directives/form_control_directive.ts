@@ -108,8 +108,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
 
   /**
    * @description
-   * Instance property used to allow enabling  ngModel warning has been sent out for this
-   * particular `FormControlDirective` instance. Used to support warning config of "always".
+   * Instance property used to allow enabling the control once it is disabled on initialization.
    *
    * @internal
    */
@@ -122,13 +121,13 @@ export class FormControlDirective extends NgControl implements OnChanges {
       @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[],
       @Optional() @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING) private _ngModelWarningConfig: string|
       null,
-      @Optional() @Inject(ALLOW_ENABLE_FORM_CONTROL) _allowEnableFormControlConfig:
+      @Optional() @Inject(ALLOW_ENABLE_FORM_CONTROL) allowEnableFormControlConfig:
           boolean|null) {
     super();
     this._rawValidators = validators || [];
     this._rawAsyncValidators = asyncValidators || [];
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
-    this._allowEnableFormControl = _allowEnableFormControlConfig;
+    this._allowEnableFormControl = allowEnableFormControlConfig;
   }
 
   /**
