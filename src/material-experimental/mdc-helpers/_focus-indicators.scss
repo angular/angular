@@ -57,6 +57,13 @@
     margin: 5px;
   }
 
+  // These components have to set `border-radius: 50%` in order to support density scaling
+  // which will clip a square focus indicator so we have to turn it into a circle.
+  .mat-mdc-checkbox-ripple.mat-mdc-focus-indicator::before,
+  .mat-radio-ripple.mat-mdc-focus-indicator::before {
+    border-radius: 50%;
+  }
+
   // Render the focus indicator on focus. Defining a pseudo element's
   // content will cause it to render.
 
