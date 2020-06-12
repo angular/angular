@@ -9,7 +9,7 @@
 import {compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue, ResolvedValueArray} from '../../partial_evaluator';
@@ -133,10 +133,8 @@ export class NgModuleDecoratorHandler implements
               `Cannot declare '${
                   ref.node.name
                       .text}' in an NgModule as it's not a part of the current compilation.`,
-              [{
-                node: ref.node.name,
-                messageText: `'${ref.node.name.text}' is declared here.`,
-              }]));
+              [makeRelatedInformation(
+                  ref.node.name, `'${ref.node.name.text}' is declared here.`)]));
         }
       }
     }
