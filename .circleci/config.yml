@@ -141,7 +141,7 @@ var_20: &only_on_pull_requests_filter
 # -----------------------------
 # Container version of CircleCI
 # -----------------------------
-version: 2
+version: 2.1
 
 # -----------------------------------------------------------------------------------------
 # Job definitions. Jobs which are defined just here, will not run automatically. Each job
@@ -309,7 +309,7 @@ jobs:
             bazel build //:entry_points_manifest
             yarn check-entry-point-setup $(bazel info bazel-bin)/entry_points_manifest.json
 
-      - run: ./scripts/circleci/lint-bazel-files.sh
+      - run: yarn ng-dev format changed --check << pipeline.git.base_revision >>
       - run: yarn ownerslint
       - run: yarn stylelint
       - run: yarn tslint
