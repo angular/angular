@@ -1,0 +1,23 @@
+<ul cdkMenuBar class="example-menu-bar">
+  <li role="none"><button id="file_button" [cdkMenuTriggerFor]="file">File</button></li>
+  <li role="none"><button id="edit_button" [cdkMenuTriggerFor]="edit">Edit</button></li>
+</ul>
+
+<ng-template cdkMenuPanel #file="cdkMenuPanel">
+  <ul cdkMenu id="file_menu">
+    <li role="none"><button id="share_button" cdkMenuItem>Share</button></li>
+    <li role="none"><button id="open_button" cdkMenuItem>Open</button></li>
+    <li role="none"><button id="rename_button" cdkMenuItem>Rename</button></li>
+    <li role="none"><button id="print_button" cdkMenuItem>Print</button></li>
+  </ul>
+</ng-template>
+
+<ng-template cdkMenuPanel #edit="cdkMenuPanel">
+  <ul cdkMenu id="edit_menu">
+    <li role="none"><button id="undo_button" cdkMenuItem>Undo</button></li>
+    <li role="none"><button id="redo_button" cdkMenuItem>Redo</button></li>
+    <li role="none"><button id="cut_button" cdkMenuItem>Cut</button></li>
+    <li role="none"><button id="copy_button" cdkMenuItem>Copy</button></li>
+    <li role="none"><button id="paste_button" cdkMenuItem>Paste</button></li>
+  </ul>
+</ng-template>

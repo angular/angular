@@ -1,0 +1,5 @@
+.example-menu-bar {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+}

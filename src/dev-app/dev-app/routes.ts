@@ -28,6 +28,10 @@ export const DEV_APP_ROUTES: Routes = [
     loadChildren: 'button-toggle/button-toggle-demo-module#ButtonToggleDemoModule'
   },
   {path: 'card', loadChildren: 'card/card-demo-module#CardDemoModule'},
+  {
+    path: 'cdk-experimental-menu',
+    loadChildren: 'cdk-experimental-menu/cdk-menu-demo-module#CdkMenuDemoModule'
+  },
   {path: 'checkbox', loadChildren: 'checkbox/checkbox-demo-module#CheckboxDemoModule'},
   {path: 'chips', loadChildren: 'chips/chips-demo-module#ChipsDemoModule'},
   {path: 'clipboard', loadChildren: 'clipboard/clipboard-demo-module#ClipboardDemoModule'},
