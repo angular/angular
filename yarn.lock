@@ -6055,7 +6055,7 @@ http-proxy-middleware@0.19.1:
     lodash "^4.17.11"
     micromatch "^3.1.10"
 
-http-proxy@^1.17.0, http-proxy@^1.18.0:
+http-proxy@^1.17.0, http-proxy@^1.18.1:
   version "1.18.1"
   resolved "https://registry.yarnpkg.com/http-proxy/-/http-proxy-1.18.1.tgz#401541f0534884bbf95260334e72f88ee3976549"
   integrity sha512-7mz/721AbnJwIVbnaSv1Cz3Am0ZLT/UBwkC92VlxhXv/k/BBQfM2fXElQNC27BVGr0uwUpplYPQM9LnaBMR5NQ==
@@ -7003,10 +7003,10 @@ karma-source-map-support@1.4.0:
   dependencies:
     source-map-support "^0.5.5"
 
-karma@~5.0.0:
-  version "5.0.8"
-  resolved "https://registry.yarnpkg.com/karma/-/karma-5.0.8.tgz#be9cec113c1b36e47e5fa03a370c76984a1a65ee"
-  integrity sha512-n0iQ66to2YivGTw202ReC5I33F7/BaiQRBEP6MNRex//3ckblNcEDV5T5CL+2W/wdjPc479IxDkMtBoOZ/4PnA==
+karma@~5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/karma/-/karma-5.1.0.tgz#deaa5f3939f75d7d78ded33283fa5f9bb67e9a05"
+  integrity sha512-I3aPbkuIbwuBo6wSog97P5WnnhCgUTsWTu/bEw1vZVQFbXmKO3PK+cfFhZioOgVtJAuQxoyauGNjnwXNHMCxbw==
   dependencies:
     body-parser "^1.19.0"
     braces "^3.0.2"
@@ -7018,7 +7018,7 @@ karma@~5.0.0:
     flatted "^2.0.2"
     glob "^7.1.6"
     graceful-fs "^4.2.4"
-    http-proxy "^1.18.0"
+    http-proxy "^1.18.1"
     isbinaryfile "^4.0.6"
     lodash "^4.17.15"
     log4js "^6.2.1"
