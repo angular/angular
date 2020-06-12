@@ -169,7 +169,8 @@
     }, "src/!(e2e-app|components-examples|universal-app|dev-app)/**/!(*.spec).ts"],
     "require-license-banner": [
       true,
-      "src/!(e2e-app|components-examples|universal-app)/**/!(*.spec).ts"
+      "src/!(e2e-app|components-examples|universal-app)/**/!(*.spec).ts",
+      "test/benchmarks/**/*.ts"
     ],
     "no-cross-entry-point-relative-imports": [
       true,
