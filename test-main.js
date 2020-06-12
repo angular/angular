@@ -28,6 +28,7 @@ System.config({
     'url': 'dist/all/@angular/empty.js',
     'xhr2': 'dist/all/@angular/empty.js',
     '@angular/platform-server/src/domino_adapter': 'dist/all/empty.js',
+    'angular-in-memory-web-api': 'dist/all/@angular/misc/angular-in-memory-web-api',
     'rxjs': 'node_modules/rxjs',
   },
   packages: {
@@ -45,6 +46,7 @@ System.config({
     '@angular/common/http': {main: 'index.js', defaultExtension: 'js'},
     '@angular/common': {main: 'index.js', defaultExtension: 'js'},
     '@angular/forms': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/misc/angular-in-memory-web-api': {main: 'index.js', defaultExtension: 'js'},
     // remove after all tests imports are fixed
     '@angular/facade': {main: 'index.js', defaultExtension: 'js'},
     '@angular/router/testing': {main: 'index.js', defaultExtension: 'js'},

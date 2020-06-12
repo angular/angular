@@ -2204,6 +2204,11 @@
     "@types/through" "*"
     rxjs "^6.4.0"
 
+"@types/jasmine-ajax@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@types/jasmine-ajax/-/jasmine-ajax-3.3.1.tgz#69bc09babecc600cd80ba7e23f61937b0eea735c"
+  integrity sha512-pU+naJ9ULvwdWB1rAzAwoKFfjSvrpI1ScKjN5WkEJgJSoUNv1KqpO6rEuX/r4s3u+E9KgntfpoQsIdFq1tLfiw==
+
 "@types/jasmine@*", "@types/jasmine@3.5.10":
   version "3.5.10"
   resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-3.5.10.tgz#a1a41012012b5da9d4b205ba9eba58f6cce2ab7b"
@@ -8871,6 +8876,11 @@ istanbul-reports@^1.3.0:
   integrity sha512-+cfoZ0UXzWjhAdzosCPP3AN8vvef8XDkWtTfgaN+7L3YTpNYITnCaEkceo5SEYy644VkHka/P1FvkWvrG/rrJw==
   dependencies:
     handlebars "^4.0.3"
+
+jasmine-ajax@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/jasmine-ajax/-/jasmine-ajax-4.0.0.tgz#7d8ba7e47e3f7e780e155fe9aa563faafa7e1a26"
+  integrity sha512-htTxNw38BSHxxmd8RRMejocdPqLalGHU6n3HWFbzp/S8AuTQd1MYjkSH3dYDsbZ7EV1Xqx/b94m3tKaVSVBV2A==
 
 jasmine-core@^3.3, jasmine-core@^3.5.0, jasmine-core@~3.5.0:
   version "3.5.0"
