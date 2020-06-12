@@ -67,7 +67,7 @@ export class CdkMenuItem implements AfterContentInit {
 
   constructor(
     /** reference a parent CdkMenuGroup component */
-    private _menuGroup: CdkMenuGroup
+    private readonly _menuGroup: CdkMenuGroup
   ) {}
 
   /** Configure event subscriptions */
