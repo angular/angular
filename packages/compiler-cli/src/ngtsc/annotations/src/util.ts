@@ -9,7 +9,7 @@
 import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, ReadPropExpr, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {DefaultImportRecorder, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, CtorParameter, Decorator, Import, isNamedClassDeclaration, ReflectionHost, TypeValueReference} from '../../reflection';
@@ -408,7 +408,7 @@ export function wrapFunctionExpressionsInParens(expression: ts.Expression): ts.E
  */
 export function makeDuplicateDeclarationError(
     node: ClassDeclaration, data: DeclarationData[], kind: string): ts.Diagnostic {
-  const context: {node: ts.Node; messageText: string;}[] = [];
+  const context: ts.DiagnosticRelatedInformation[] = [];
   for (const decl of data) {
     if (decl.rawDeclarations === null) {
       continue;
@@ -416,11 +416,10 @@ export function makeDuplicateDeclarationError(
     // Try to find the reference to the declaration within the declarations array, to hang the
     // error there. If it can't be found, fall back on using the NgModule's name.
     const contextNode = decl.ref.getOriginForDiagnostics(decl.rawDeclarations, decl.ngModule.name);
-    context.push({
-      node: contextNode,
-      messageText: `'${node.name.text}' is listed in the declarations of the NgModule '${
-          decl.ngModule.name.text}'.`,
-    });
+    context.push(makeRelatedInformation(
+        contextNode,
+        `'${node.name.text}' is listed in the declarations of the NgModule '${
+            decl.ngModule.name.text}'.`));
   }
 
   // Finally, produce the diagnostic.

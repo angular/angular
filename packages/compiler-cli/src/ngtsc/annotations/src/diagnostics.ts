@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ErrorCode, makeDiagnostic} from '../../diagnostics';
+import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {InjectableClassRegistry, MetadataReader} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
@@ -44,7 +44,7 @@ Either add the @Injectable() decorator to '${
             provider.node.name
                 .text}', or configure a different provider (such as a provider with 'useFactory').
 `,
-        [{node: provider.node, messageText: `'${provider.node.name.text}' is declared here.`}]));
+        [makeRelatedInformation(provider.node, `'${provider.node.name.text}' is declared here.`)]));
   }
 
   return diagnostics;
