@@ -7,11 +7,20 @@ import { FormsModule } from '@angular/forms';
 import { ProfilerComponent } from './profiler.component';
 import { TimelineModule } from './recording/timeline/timeline.module';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { ProfilerImportDialogComponent } from './profiler-import-dialog/profiler-import-dialog.component';
 
 @NgModule({
   declarations: [ProfilerComponent, ProfilerImportDialogComponent],
-  imports: [CommonModule, MatDialogModule, MatSelectModule, FormsModule, TimelineModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatSelectModule,
+    FormsModule,
+    TimelineModule,
+    MatButtonModule,
+    MatCardModule,
+  ],
   exports: [ProfilerComponent],
   entryComponents: [ProfilerImportDialogComponent],
 })

@@ -7,12 +7,19 @@ describe('DevtoolsTabsComponent', () => {
   let messageBusMock: MessageBus<Events>;
   let applicationEnvironmentMock: ApplicationEnvironment;
   let comp: DevToolsTabsComponent;
+  let mockThemeService: any;
 
   beforeEach(() => {
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     applicationEnvironmentMock = jasmine.createSpyObj('applicationEnvironment', ['environment']);
+    mockThemeService = {};
 
-    comp = new DevToolsTabsComponent(new TabUpdate(), messageBusMock, applicationEnvironmentMock);
+    comp = new DevToolsTabsComponent(
+      new TabUpdate(),
+      mockThemeService as any,
+      messageBusMock,
+      applicationEnvironmentMock
+    );
   });
 
   it('should create instance from class', () => {

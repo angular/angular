@@ -1,12 +1,11 @@
 .bar-graph-container {
   padding: 2px;
-  background-color: #f3f3f3;
   height: 54px;
   display: flex;
   align-items: flex-end;
-  border-top: 1px solid #d0d0d0;
-  border-bottom: 1px solid #d0d0d0;
-  margin-bottom: 4px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
 
   .txt-frames {
     font-weight: 500;

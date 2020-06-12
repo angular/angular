@@ -14,25 +14,25 @@
 }
 
 .selected-entry {
-  background-color: #fff;
+  padding: 0px;
   width: 250px;
-  border-left: 1px solid #ccc;
   height: 100%;
   position: absolute;
   right: 0;
   top: 0;
 
-  header {
-    background-color: #eee;
+  mat-toolbar {
     padding-left: 9px;
-    border-bottom: 1px solid #ccc;
-    color: hsla(0, 0%, 32%, 1);
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     line-height: 25px;
     font-size: 12px;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: auto;
   }
 
   section {
@@ -94,6 +94,6 @@
 
 .show-change-detection {
   position: absolute;
-  top: 35px;
-  left: 347px;
+  top: 46px;
+  left: 360px;
 }

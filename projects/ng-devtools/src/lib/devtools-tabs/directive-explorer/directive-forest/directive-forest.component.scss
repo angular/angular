@@ -4,15 +4,14 @@
   overflow: auto;
 
   .tree-node {
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
     position: relative;
 
     cursor: default;
     font-family: Menlo, monospace;
     font-size: 11px;
 
-    border-radius: 8px;
     white-space: nowrap;
     text-overflow: ellipsis;
 

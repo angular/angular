@@ -46,12 +46,13 @@ menu .recording-button {
   left: 3px;
 }
 
-menu {
-  background-color: #f3f3f3;
-  border-bottom: 1px solid #d0d0d0;
+mat-card {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   height: 23px;
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0;
 }
 
 #profiler-content-wrapper {

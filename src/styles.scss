@@ -21,6 +21,19 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent);
 
 .dark {
   @include angular-material-theme($dark-theme);
+  .webtreemap-node {
+    background: #424242;
+  }
+  .webtreemap-node:hover {
+    background: #303030;
+  }
+  .webtreemap-caption {
+    color: #ffffff;
+  }
+  .filter-input {
+    background-color: #424242;
+    color: #ffffff;
+  }
 }
 
 .light {
