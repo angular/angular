@@ -37,7 +37,7 @@ import {CdkMenuGroup} from './menu-group';
 })
 export class CdkMenuItem implements AfterContentInit {
   /** Template reference variable to the menu this trigger opens */
-  @Input('cdkMenuTriggerFor') _menuPanel: CdkMenuPanel;
+  @Input('cdkMenuTriggerFor') _menuPanel?: CdkMenuPanel;
 
   /** ARIA role for the menu item. */
   @Input() role: 'menuitem' | 'menuitemradio' | 'menuitemcheckbox' = 'menuitem';
