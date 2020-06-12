@@ -217,7 +217,7 @@ describe('issue-report-selector', () => {
 
   it('should switch to bug report template', async () => {
     expect(fixture.debugElement.query('bug-report-form')).toBeNull();
-    const select = await loader.getHarness(MatSelect);
+    const select = await loader.getHarness(MatSelectHarness);
     await select.open();
     const bugOption = await select.getOption({text: 'Bug'});
     await bugOption.click();
