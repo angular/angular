@@ -131,7 +131,6 @@ describe('Menu', () => {
 });
 
 @Component({
-  selector: 'menu-as-radio-group',
   template: `
     <ul cdkMenu>
       <li role="none">
@@ -150,7 +149,6 @@ describe('Menu', () => {
 class MenuRadioGroup {}
 
 @Component({
-  selector: 'menu-as-checkbox-group',
   template: `
     <ul cdkMenu>
       <li role="none">

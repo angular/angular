@@ -150,7 +150,6 @@ describe('MenuGroup', () => {
 });
 
 @Component({
-  selector: 'menu-with-groups',
   template: `
     <ul cdkMenu>
       <!-- Checkbox group -->
