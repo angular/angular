@@ -36,6 +36,7 @@ module.exports = function(config) {
       {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
       'node_modules/core-js/client/core.js',
+      'node_modules/jasmine-ajax/lib/mock-ajax.js',
       'dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js',
       'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
       'dist/bin/packages/zone.js/npm_package/bundles/task-tracking.umd.js',
