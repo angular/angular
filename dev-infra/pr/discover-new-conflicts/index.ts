@@ -141,7 +141,7 @@ export async function discoverNewConflictsForPr(
   // Inform about discovered conflicts, exit with failure.
   error.group(`${conflicts.length} PR(s) which conflict(s) after #${newPrNumber} merges:`);
   for (const pr of conflicts) {
-    error(`  - ${pr.number}: ${pr.title}`);
+    error(`  - #${pr.number}: ${pr.title}`);
   }
   error.groupEnd();
   process.exit(1);
