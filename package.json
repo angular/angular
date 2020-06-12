@@ -11,6 +11,11 @@
     "node": ">=10.9.0 <13.0.0",
     "yarn": ">=1.22.4 <2"
   },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
