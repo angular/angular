@@ -138,6 +138,13 @@ var_20: &only_on_pull_requests_filter
       only:
         - /pull\/\d+/
 
+# Anchor for a step that notifies Slack when preceding steps failed.
+var_21: &slack_notify_on_failure
+  run:
+    name: "Notifying team about job failure"
+    when: on_fail
+    command: ./scripts/notify-slack-job-failure.sh
+
 # -----------------------------
 # Container version of CircleCI
 # -----------------------------
@@ -168,6 +175,7 @@ jobs:
       # Exclude release and docs packages here as those will be built within
       # the "build_release_packages" and "publish_snapshots" jobs.
       - run: bazel build src/... --build_tag_filters=-docs-package,-release-package
+      - *slack_notify_on_failure
 
   # -----------------------------------
   # Job which ensures that all non-test Bazel targets build properly
@@ -189,6 +197,7 @@ jobs:
       # Exclude release and docs packages here as those will be built within
       # the "build_release_packages" and "publish_snapshots" jobs.
       - run: bazel build src/... --build_tag_filters=-docs-package,-release-package --config=view-engine
+      - *slack_notify_on_failure
 
   # --------------------------------------------------------------------------------------------
   # Job that runs ts-api-guardian against our API goldens in "tools/public_api_guard".
@@ -208,6 +217,7 @@ jobs:
     - *setup_bazel_binary
 
     - run: bazel test tools/public_api_guard/...
+    - *slack_notify_on_failure
 
   # -----------------------------------------------------------------
   # Job that runs the e2e tests with Protractor and Chromium headless
@@ -226,6 +236,7 @@ jobs:
       - *setup_bazel_binary
 
       - run: bazel test src/... --build_tag_filters=e2e --test_tag_filters=e2e --build_tests_only
+      - *slack_notify_on_failure
 
   # ------------------------------------------------------------------------------------------
   # Job that runs the unit tests on locally installed browsers (Chrome and Firefox headless).
@@ -245,6 +256,7 @@ jobs:
       - *setup_bazel_binary
 
       - run: bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e --build_tests_only
+      - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
   # Job that runs the unit tests on Browserstack. The browsers that will be used
@@ -263,6 +275,7 @@ jobs:
       - *yarn_install
 
       - run: ./scripts/circleci/run-browserstack-tests.sh
+      - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
   # Job that runs the unit tests on Saucelabs. The browsers that will be used
@@ -284,6 +297,7 @@ jobs:
     - *yarn_install
 
     - run: ./scripts/circleci/run-saucelabs-tests.sh
+    - *slack_notify_on_failure
 
   # ----------------------------------
   # Lint job.
@@ -315,6 +329,7 @@ jobs:
       - run: yarn tslint
       - run: yarn -s ts-circular-deps:check
 
+      - *slack_notify_on_failure
       - *save_cache
 
   # -------------------------------------------------------------------------------------------
@@ -369,6 +384,7 @@ jobs:
       - store_artifacts:
           path: /tmp/cdk-umd-minified-bundles
           destination: /angular_material/cdk_release_output/
+      - *slack_notify_on_failure
 
   upload_release_packages:
     <<: *job_defaults
@@ -411,8 +427,8 @@ jobs:
       # as part of this job to the docs-content repository. It's not contained in the
       # attached release output, so we need to build it here.
       - run: bazel build src/components-examples:npm_package --config=release
-
       - run: ./scripts/circleci/publish-snapshots.sh
+      - *slack_notify_on_failure
 
   # -----------------------------------------------------------------
   # Job that ensures that the release output is compatible with ngcc.
@@ -435,6 +451,7 @@ jobs:
       # tsconfig parsing as that causes the release packages to be incorrectly resolved
       # to the sources due to path mapping.
       - run: yarn ngcc --error-on-failed-entry-point --no-tsconfig
+      - *slack_notify_on_failure
 
   # -----------------------------------------------------------------
   # Job that ensures that the release output is compatible with the
@@ -459,6 +476,7 @@ jobs:
       # tsconfig parsing as that causes the release packages to be incorrectly resolved
       # to the sources due to path mapping.
       - run: yarn ngcc --error-on-failed-entry-point --no-tsconfig
+      - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
   # Job that runs the local browser tests against the Angular Github snapshots
@@ -479,6 +497,7 @@ jobs:
     - *setup_bazel_binary
 
     - run: bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e --build_tests_only
+    - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against View Engine with the current Angular version
@@ -499,6 +518,7 @@ jobs:
 
       # Run project tests with NGC and View Engine.
       - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine --build_tests_only
+      - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against View Engine from angular/angular#master.
@@ -519,6 +539,7 @@ jobs:
 
       # Run project tests with NGC and View Engine.
       - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine --build_tests_only
+      - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel integration tests.
@@ -537,6 +558,7 @@ jobs:
       - *setup_bazel_binary
       - run: yarn integration-tests
       - run: yarn integration-tests:view-engine
+      - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against material-components-web@canary
@@ -560,6 +582,7 @@ jobs:
       # Setup the components repository to use the MDC snapshot builds.
       # Run project tests with the MDC canary builds.
       - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --build_tests_only
+      - *slack_notify_on_failure
 
 # ----------------------------------------------------------------------------------------
 # Workflow definitions. A workflow usually groups multiple jobs together. This is useful if
