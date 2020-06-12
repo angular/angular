@@ -143,7 +143,7 @@ var_21: &slack_notify_on_failure
   run:
     name: "Notifying team about job failure"
     when: on_fail
-    command: ./scripts/notify-slack-job-failure.sh
+    command: ./scripts/circleci/notify-slack-job-failure.sh
 
 # -----------------------------
 # Container version of CircleCI
