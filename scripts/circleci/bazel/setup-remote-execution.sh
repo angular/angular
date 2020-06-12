@@ -20,10 +20,3 @@ echo "export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.gcp_credentials" >> $BASH_ENV
 
 # Update the CircleCI Bazel configuration to always use remote execution.
 echo "build --config=remote" >> .circleci/bazel.rc
-
-# Only upload locally built results to the cache if we are running already commited code.
-if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
-  echo "build --remote_upload_local_results=false" >> .circleci/bazel.rc
-else
-  echo "build --remote_upload_local_results=true" >> .circleci/bazel.rc
-fi
