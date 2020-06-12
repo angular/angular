@@ -10,13 +10,10 @@
 const xhr2: any = require('xhr2');
 
 import {Injectable, Injector, Provider} from '@angular/core';
-import {DOCUMENT} from '@angular/common';
-import {HttpEvent, HttpRequest, HttpHandler, HttpBackend, XhrFactory, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
-import {Observable, Observer, Subscription} from 'rxjs';
 
-// @see https://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01#URI-syntax
-const isAbsoluteUrl = /^[a-zA-Z\-\+.]+:\/\//;
-const FORWARD_SLASH = '/';
+import {HttpEvent, HttpRequest, HttpHandler, HttpBackend, XhrFactory, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
+
+import {Observable, Observer, Subscription} from 'rxjs';
 
 @Injectable()
 export class ServerXhr implements XhrFactory {
@@ -105,21 +102,11 @@ export abstract class ZoneMacroTaskWrapper<S, R> {
 
 export class ZoneClientBackend extends
     ZoneMacroTaskWrapper<HttpRequest<any>, HttpEvent<any>> implements HttpBackend {
-  constructor(private backend: HttpBackend, private doc: Document) {
+  constructor(private backend: HttpBackend) {
     super();
   }
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
-    const href = this.doc.location.href;
-    if (!isAbsoluteUrl.test(request.url) && href) {
-      const urlParts = Array.from(request.url);
-      if (request.url[0] === FORWARD_SLASH && href[href.length - 1] === FORWARD_SLASH) {
-        urlParts.shift();
-      } else if (request.url[0] !== FORWARD_SLASH && href[href.length - 1] !== FORWARD_SLASH) {
-        urlParts.splice(0, 0, FORWARD_SLASH);
-      }
-      return this.wrap(request.clone({url: href + urlParts.join('')}));
-    }
     return this.wrap(request);
   }
 
@@ -128,16 +115,12 @@ export class ZoneClientBackend extends
   }
 }
 
-export function zoneWrappedInterceptingHandler(
-    backend: HttpBackend, injector: Injector, doc: Document) {
+export function zoneWrappedInterceptingHandler(backend: HttpBackend, injector: Injector) {
   const realBackend: HttpBackend = new HttpInterceptingHandler(backend, injector);
-  return new ZoneClientBackend(realBackend, doc);
+  return new ZoneClientBackend(realBackend);
 }
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
-  {provide: XhrFactory, useClass: ServerXhr}, {
-    provide: HttpHandler,
-    useFactory: zoneWrappedInterceptingHandler,
-    deps: [HttpBackend, Injector, DOCUMENT]
-  }
+  {provide: XhrFactory, useClass: ServerXhr},
+  {provide: HttpHandler, useFactory: zoneWrappedInterceptingHandler, deps: [HttpBackend, Injector]}
 ];
