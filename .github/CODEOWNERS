@@ -316,11 +316,12 @@
 /tools/public_api_guard/youtube-player/youtube-player.d.ts      @jelbourn @nathantate
 
 # Misc
-/*                                                 @angular/dev-infra-components @jelbourn
-/.ng-dev/**                                        @angular/dev-infra-components
-/.github/**                                        @angular/dev-infra-components @jelbourn
+/.github/**                                        @angular/dev-infra-components
+/.github/CODEOWNERS                                @angular/dev-infra-components @jelbourn
+/.github/ISSUE_TEMPLATE/**                         @andrewseguin @jelbourn
 /.vscode/**                                        @angular/dev-infra-components @mmalerba
-/src/*                                             @jelbourn
-/goldens/ts-circular-deps.json                     @angular/dev-infra-components
+/.ng-dev/**                                        @angular/dev-infra-components
 /goldens/size-test.json                            @jelbourn @mmalerba @crisbeto
-/goldens/*                                         @angular/dev-infra-components
+/goldens/**                                        @angular/dev-infra-components
+/src/*                                             @angular/dev-infra-components
+/*                                                 @angular/dev-infra-components
