@@ -696,6 +696,21 @@ groups:
         - JiaLiPassion
         - mhevery
 
+  # =========================================================
+  #  in-memory-web-api
+  # =========================================================
+  in-memory-web-api:
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'packages/misc/angular-in-memory-web-api/**',
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - crisbeto
 
   # =========================================================
   #  Benchpress
