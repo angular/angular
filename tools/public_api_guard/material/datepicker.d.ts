@@ -308,7 +308,7 @@ export declare class MatDateRangeInput<D> implements MatFormFieldControl<DateRan
     get min(): D | null;
     set min(value: D | null);
     ngControl: NgControl | null;
-    placeholder: string;
+    get placeholder(): string;
     get rangePicker(): MatDateRangePicker<D>;
     set rangePicker(rangePicker: MatDateRangePicker<D>);
     get required(): boolean;
@@ -322,6 +322,7 @@ export declare class MatDateRangeInput<D> implements MatFormFieldControl<DateRan
     _handleChildValueChange(): void;
     _openDatepicker(): void;
     _shouldHidePlaceholders(): boolean;
+    _shouldHideSeparator(): boolean;
     getConnectedOverlayOrigin(): ElementRef;
     getStartValue(): D | null;
     getThemePalette(): ThemePalette;

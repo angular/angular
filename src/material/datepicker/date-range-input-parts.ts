@@ -125,6 +125,11 @@ abstract class MatDateRangeInputPartBase<D>
     return this._elementRef.nativeElement.value.length === 0;
   }
 
+  /** Gets the placeholder of the input. */
+  _getPlaceholder() {
+    return this._elementRef.nativeElement.placeholder;
+  }
+
   /** Focuses the input. */
   focus(): void {
     this._elementRef.nativeElement.focus();

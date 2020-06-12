@@ -11,7 +11,7 @@ property on the text input.
 There is also an optional datepicker toggle button that gives the user an easy way to open the datepicker pop-up.
 
 <!-- example({"example":"datepicker-overview",
-              "file":"datepicker-overview-example.html", 
+              "file":"datepicker-overview-example.html",
               "region":"toggle"}) -->
 
 This works exactly the same with an input that is part of an `<mat-form-field>` and the toggle
@@ -36,8 +36,8 @@ respectively:
 
 ```html
 <mat-date-range-input>
-  <input matStartDate matInput placeholder="Start date">
-  <input matEndDate matInput placeholder="End date">
+  <input matStartDate placeholder="Start date">
+  <input matEndDate placeholder="End date">
 </mat-date-range-input>
 ```
 
@@ -52,8 +52,8 @@ Connect the range picker and range input using the `rangePicker` property:
 
 ```html
 <mat-date-range-input [rangePicker]="picker">
-  <input matStartDate matInput placeholder="Start date">
-  <input matEndDate matInput placeholder="End date">
+  <input matStartDate placeholder="Start date">
+  <input matEndDate placeholder="End date">
 </mat-date-range-input>
 
 <mat-date-range-picker #picker></mat-date-range-picker>

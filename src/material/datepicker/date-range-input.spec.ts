@@ -503,6 +503,12 @@ describe('MatDateRangeInput', () => {
     expect(start.nativeElement.focus).not.toHaveBeenCalled();
   });
 
+  it('should be able to get the input placeholder', () => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.rangeInput.placeholder).toBe('Start date – End date');
+  });
+
 });
 
 @Component({

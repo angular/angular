@@ -22,14 +22,14 @@ $mat-date-range-input-placeholder-transition:
 .mat-date-range-input-separator {
   margin: 0 $mat-date-range-input-separator-spacing;
   transition: $mat-date-range-input-placeholder-transition;
+}
 
-  .mat-form-field-hide-placeholder & {
-    // Disable text selection, because the user can click
-    // through the main label when the input is disabled.
-    @include user-select(none);
-    color: transparent;
-    transition: none;
-  }
+.mat-date-range-input-separator-hidden {
+  // Disable text selection, because the user can click
+  // through the main label when the input is disabled.
+  @include user-select(none);
+  color: transparent;
+  transition: none;
 }
 
 // Underlying input inside the range input.

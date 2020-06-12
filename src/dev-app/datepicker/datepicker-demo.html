@@ -173,8 +173,7 @@
 <h2>Range picker</h2>
 
 <div class="demo-range-group">
-  <mat-form-field>
-    <mat-label>Enter a date range</mat-label>
+  <mat-form-field appearance="legacy">
     <mat-date-range-input
       [formGroup]="range1"
       [rangePicker]="range1Picker"
@@ -184,8 +183,8 @@
       [comparisonStart]="comparisonStart"
       [comparisonEnd]="comparisonEnd"
       [dateFilter]="filterOdd ? dateFilter : undefined">
-      <input matStartDate formControlName="start" placeholder="Start date"/>
-      <input matEndDate formControlName="end" placeholder="End date"/>
+      <input matStartDate formControlName="start"/>
+      <input matEndDate formControlName="end"/>
     </mat-date-range-input>
     <mat-datepicker-toggle [for]="range1Picker" matSuffix></mat-datepicker-toggle>
     <mat-date-range-picker

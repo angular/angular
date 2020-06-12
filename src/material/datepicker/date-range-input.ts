@@ -80,11 +80,15 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   controlType = 'mat-date-range-input';
 
   /**
-   * Implemented as a part of `MatFormFieldControl`, but not used.
+   * Implemented as a part of `MatFormFieldControl`.
    * Set the placeholder attribute on `matStartDate` and `matEndDate`.
    * @docs-private
    */
-  placeholder: string;
+  get placeholder() {
+    const start = this._startInput?._getPlaceholder() || '';
+    const end = this._endInput?._getPlaceholder() || '';
+    return (start || end) ? `${start} ${this.separator} ${end}` : '';
+  }
 
   /** The range picker that this input is associated with. */
   @Input()
@@ -295,6 +299,11 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
     if (this._rangePicker) {
       this._rangePicker.open();
     }
+  }
+
+  /** Whether the separate text should be hidden. */
+  _shouldHideSeparator() {
+    return (!this._formField || this._formField._hideControlPlaceholder()) && this.empty;
   }
 
   /**
