@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, Output, EventEmitter} from '@angular/core';
+import {Directive, Input, Output, ContentChildren, QueryList, EventEmitter} from '@angular/core';
 import {CdkMenuItem} from './menu-item';
+import {CdkMenuGroup} from './menu-group';
 
 /**
  * Directive which configures the element as a Menu which should contain child elements marked as
@@ -20,11 +21,12 @@ import {CdkMenuItem} from './menu-item';
   selector: '[cdkMenu]',
   exportAs: 'cdkMenu',
   host: {
-    'role': 'menubar',
+    'role': 'menu',
     '[attr.aria-orientation]': 'orientation',
   },
+  providers: [{provide: CdkMenuGroup, useExisting: CdkMenu}],
 })
-export class CdkMenu {
+export class CdkMenu extends CdkMenuGroup {
   /**
    * Sets the aria-orientation attribute and determines where sub-menus will be opened.
    * Does not affect styling/layout.
@@ -34,6 +36,7 @@ export class CdkMenu {
   /** Event emitted when the menu is closed. */
   @Output() readonly closed: EventEmitter<void | 'click' | 'tab' | 'escape'> = new EventEmitter();
 
-  /** Emits the activated element when checkbox or radiobutton state changed  */
-  @Output() change: EventEmitter<CdkMenuItem>;
+  /** All the child MenuItem components which this directive wraps including descendants */
+  @ContentChildren(CdkMenuItem, {descendants: true})
+  readonly _allItems: QueryList<CdkMenuItem>;
 }

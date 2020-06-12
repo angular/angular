@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Output, Input, EventEmitter} from '@angular/core';
-import {CdkMenuPanel} from './menu-panel';
+import {Directive, Output, Input, AfterContentInit, EventEmitter} from '@angular/core';
 import {coerceBooleanProperty, BooleanInput} from '@angular/cdk/coercion';
+import {CdkMenuPanel} from './menu-panel';
+import {CdkMenuGroup} from './menu-group';
 
 /**
  * Directive which provides behavior for an element which when clicked:
@@ -31,9 +32,10 @@ import {coerceBooleanProperty, BooleanInput} from '@angular/cdk/coercion';
     'type': 'button',
     '[attr.role]': 'role',
     '[attr.aria-checked]': '_getAriaChecked()',
+    '[attr.aria-disabled]': 'disabled || null',
   },
 })
-export class CdkMenuItem {
+export class CdkMenuItem implements AfterContentInit {
   /** Template reference variable to the menu this trigger opens */
   @Input('cdkMenuTriggerFor') _menuPanel: CdkMenuPanel;
 
@@ -50,8 +52,51 @@ export class CdkMenuItem {
   }
   private _checked = false;
 
+  /**  Whether the CdkMenuItem is disabled - defaults to false */
+  @Input()
+  get disabled(): boolean {
+    return this._disabled;
+  }
+  set disabled(value: boolean) {
+    this._disabled = coerceBooleanProperty(value);
+  }
+  private _disabled = false;
+
   /** Emits when the attached submenu is opened */
   @Output() opened: EventEmitter<void> = new EventEmitter();
+
+  constructor(
+    /** reference a parent CdkMenuGroup component */
+    private _menuGroup: CdkMenuGroup
+  ) {}
+
+  /** Configure event subscriptions */
+  ngAfterContentInit() {
+    if (this.role !== 'menuitem') {
+      this._menuGroup.change.subscribe((button: CdkMenuItem) => this._toggleCheckedState(button));
+    }
+  }
+
+  /**
+   * If the role is menuitemcheckbox or menuitemradio and not disabled, emits a change event
+   * on the enclosing parent MenuGroup.
+   */
+  trigger() {
+    if (this.disabled) {
+      return;
+    }
+
+    if (this.hasSubmenu()) {
+      // TODO(andy): open the menu
+    } else if (this.role !== 'menuitem') {
+      this._menuGroup.change.next(this);
+    }
+  }
+
+  /** Whether the menu item opens a menu */
+  hasSubmenu() {
+    return !!this._menuPanel;
+  }
 
   /** get the aria-checked value only if element is `menuitemradio` or `menuitemcheckbox` */
   _getAriaChecked(): boolean | null {
@@ -61,10 +106,17 @@ export class CdkMenuItem {
     return this.checked;
   }
 
-  /** Whether the menu item opens a menu */
-  hasSubmenu() {
-    return !!this._menuPanel;
+  /**
+   * Toggle the checked state of the menuitemradio or menuitemcheckbox component
+   */
+  private _toggleCheckedState(selected: CdkMenuItem) {
+    if (this.role === 'menuitemradio') {
+      this.checked = selected === this;
+    } else if (this.role === 'menuitemcheckbox' && selected === this) {
+      this.checked = !this.checked;
+    }
   }
 
   static ngAcceptInputType_checked: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
 }
