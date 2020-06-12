@@ -1,9 +1,9 @@
 <div class="profiler-wrapper">
-  <menu>
+  <mat-card>
     <span *ngIf="state === 'idle'" (click)="startRecording()" class="start-recording-button"></span>
     <span *ngIf="state === 'recording'" (click)="stopRecording()" class="recording-button"></span>
     <span *ngIf="state === 'visualizing'" (click)="discardRecording()" class="discard-button">&#10060;</span>
-  </menu>
+  </mat-card>
   <div id="profiler-content-wrapper">
     <p class="instructions" [class.hidden]="state !== 'idle'">
       <span

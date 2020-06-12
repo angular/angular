@@ -2,8 +2,8 @@
   <ng-bar-chart (pick)="selectNode($event)" [color]="barColor" [data]="profileRecords"> </ng-bar-chart>
 </div>
 
-<div class="selected-entry" *ngIf="selectedEntry">
-  <header>{{ selectedEntry.label }} details</header>
+<mat-card class="selected-entry" *ngIf="selectedEntry">
+  <mat-toolbar color="primary">{{ selectedEntry.label }} details</mat-toolbar>
   <section class="entry-statistics">
     <div class="txt-total-time"><label>Total time spent:</label> {{ selectedEntry.value | number }}ms</div>
     <div *ngIf="selectedEntry.value > 0">
@@ -18,4 +18,4 @@
       </ul>
     </div>
   </section>
-</div>
+</mat-card>

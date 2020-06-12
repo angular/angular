@@ -15,7 +15,7 @@ export class ThemeService {
     this.toggleDarkMode(false);
   }
 
-  toggleDarkMode(isDark: boolean) {
+  toggleDarkMode(isDark: boolean): void {
     const removeClass = isDark ? 'light' : 'dark';
     const addClass = !isDark ? 'light' : 'dark';
     this.renderer.removeClass(document.body, removeClass);

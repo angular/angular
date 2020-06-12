@@ -7,6 +7,7 @@ import { DirectiveForestComponent } from './directive-forest/directive-forest.co
 import { FilterComponent } from './directive-forest/filter/filter.component';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { PropertyTabModule } from './property-tab/property-tab.module';
 import { DirectiveForestModule } from './directive-forest/directive-forest.module';
@@ -18,6 +19,7 @@ import { AngularSplitModule } from '../../vendor/angular-split/lib/module';
   exports: [DirectiveExplorerComponent],
   imports: [
     MatTreeModule,
+    MatCardModule,
     ScrollingModule,
     MatIconModule,
     CommonModule,

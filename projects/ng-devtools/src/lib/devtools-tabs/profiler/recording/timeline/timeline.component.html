@@ -4,31 +4,33 @@
   There's no information to show.
 </p>
 
-<ng-timeline-controls
-  [class.hidden]="!hasFrames"
-  [record]="frame"
-  [empty]="!hasFrames"
-  [frameColor]="getColorByFrameRate(estimateFrameRate(frame?.duration))"
-  [estimatedFrameRate]="estimateFrameRate(frame?.duration)"
-  [visualizationMode]="visualizationMode"
-  (changeVisualizationMode)="visualizationMode = $event"
-  (exportProfile)="exportProfile.emit($event)"
-></ng-timeline-controls>
+<div style="margin: 10px; height: 100%;">
+  <ng-timeline-controls
+    [class.hidden]="!hasFrames"
+    [record]="frame"
+    [empty]="!hasFrames"
+    [frameColor]="getColorByFrameRate(estimateFrameRate(frame?.duration))"
+    [estimatedFrameRate]="estimateFrameRate(frame?.duration)"
+    [visualizationMode]="visualizationMode"
+    (changeVisualizationMode)="visualizationMode = $event"
+    (exportProfile)="exportProfile.emit($event)"
+  ></ng-timeline-controls>
 
-<ng-frame-selector
-  [class.hidden]="!hasFrames"
-  (move)="move($event)"
-  (selectFrame)="selectFrame($event)"
-  [graphData$]="graphData$"
-  [currentFrame]="currentFrameIndex"
-></ng-frame-selector>
+  <ng-frame-selector
+    [class.hidden]="!hasFrames"
+    (move)="move($event)"
+    (selectFrame)="selectFrame($event)"
+    [graphData$]="graphData$"
+    [currentFrame]="currentFrameIndex"
+  ></ng-frame-selector>
 
-<p class="info" *ngIf="hasFrames && currentFrameIndex < 0">
-  Select a bar to preview a particular change detection cycle.
-</p>
+  <p class="info" *ngIf="hasFrames && currentFrameIndex < 0">
+    Select a bar to preview a particular change detection cycle.
+  </p>
 
-<ng-timeline-visualizer
-  *ngIf="hasFrames && currentFrameIndex >= 0"
-  [visualizationMode]="visualizationMode"
-  [frame]="frame"
-></ng-timeline-visualizer>
+  <ng-timeline-visualizer
+    *ngIf="hasFrames && currentFrameIndex >= 0"
+    [visualizationMode]="visualizationMode"
+    [frame]="frame"
+  ></ng-timeline-visualizer>
+</div>

@@ -10,8 +10,8 @@
   </ngx-flamegraph>
 </div>
 
-<div class="selected-entry" *ngIf="selectedEntry">
-  <header>{{ selectedEntry.label }} details</header>
+<mat-card class="selected-entry" *ngIf="selectedEntry">
+  <mat-toolbar color="primary">{{ selectedEntry.label }} details</mat-toolbar>
   <section class="entry-statistics">
     <div class="txt-total-time" *ngIf="selectedEntry.changeDetected">
       <label>Total time spent:</label> {{ selectedEntry.value | number }}ms
@@ -23,4 +23,4 @@
       <ng-execution-details [data]="graphData"></ng-execution-details>
     </div>
   </section>
-</div>
+</mat-card>
