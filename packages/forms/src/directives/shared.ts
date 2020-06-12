@@ -46,19 +46,26 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   setUpBlurPipeline(control, dir);
 
   if (dir.valueAccessor!.setDisabledState) {
-    control.registerOnDisabledChange((isDisabled: boolean) => {
-      dir.valueAccessor!.setDisabledState!(isDisabled);
-    });
+    const onDisabledChange = (isDisabled: boolean) =>
+        dir.valueAccessor!.setDisabledState!(isDisabled);
+    control.registerOnDisabledChange(onDisabledChange);
+    dir._cleanupFns.push(() => control._unregisterOnDisabledChange(onDisabledChange));
   }
 }
 
-export function cleanUpControl(control: FormControl|null, dir: NgControl) {
-  dir.valueAccessor!.registerOnChange(() => _noControlError(dir));
-  dir.valueAccessor!.registerOnTouched(() => _noControlError(dir));
+// TODO: add inline docs to this function and describe the `throwNoControlError` argument.
+export function cleanUpControl(
+    control: FormControl|null, dir: NgControl, throwNoControlError: boolean = true) {
+  dir.valueAccessor!.registerOnChange(() => throwNoControlError && _noControlError(dir));
+  dir.valueAccessor!.registerOnTouched(() => throwNoControlError && _noControlError(dir));
 
   cleanUpValidators(control, dir, /* handleOnValidatorChange */ true);
 
-  if (control) control._clearChangeFns();
+  // TODO: describe why we check for both control and `dir._cleanupFns`.
+  if (control && dir._cleanupFns.length > 0) {
+    dir._cleanupFns.forEach((fn: Function) => fn());
+    dir._cleanupFns = [];
+  }
 }
 
 function registerOnValidatorChange<V>(validators: (V|Validator)[], onChange: () => void): void {
@@ -163,13 +170,15 @@ function updateControl(control: FormControl, dir: NgControl): void {
 }
 
 function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
-  control.registerOnChange((newValue: any, emitModelEvent: boolean) => {
+  const onChange = (newValue: any, emitModelEvent: boolean) => {
     // control -> view
     dir.valueAccessor!.writeValue(newValue);
 
     // control -> ngModel
     if (emitModelEvent) dir.viewToModelUpdate(newValue);
-  });
+  };
+  control.registerOnChange(onChange);
+  dir._cleanupFns.push(() => control._unregisterOnChange(onChange));
 }
 
 export function setUpFormContainer(
@@ -262,7 +271,7 @@ export function selectValueAccessor(
   return null;
 }
 
-export function removeDir<T>(list: T[], el: T): void {
+export function removeListItem<T>(list: T[], el: T): void {
   const index = list.indexOf(el);
   if (index > -1) list.splice(index, 1);
 }

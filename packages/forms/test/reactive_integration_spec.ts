@@ -9,7 +9,7 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, forwardRef, Input, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
 import {merge, timer} from 'rxjs';
@@ -2512,6 +2512,129 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         expect(asyncValidatorSpy).toHaveBeenCalledWith(newControl);
         expect(asyncValidatorSpy).toHaveBeenCalledTimes(1);
       });
+
+      // TODO: add comments
+      // TODO: add more scenarios
+      // TODO: add tests for `ngModel` and other directives where `NG_VALIDATORS` is used in
+      // constructor (for each of them, test their behavior with *ngIf)
+      it('cleans up when FormControlDirective is destroyed', () => {
+        const fixture = initTest(
+            FormControlNgIfWrapper, MyCustomValidator, MyCustomAsyncValidator, MyValueAccessor);
+        const control = fixture.componentInstance.control;
+        const valueAccessorSpy = spyOn(DefaultValueAccessor.prototype, 'writeValue');
+        const myValueAccessorSpy = spyOn(MyValueAccessor.prototype, 'writeValue');
+        const validatorSpy = spyOn(MyCustomValidator.prototype, 'validate');
+        const asyncValidatorSpy =
+            spyOn(MyCustomAsyncValidator.prototype, 'validate').and.callThrough();
+        const controlValueChangesListener = jasmine.createSpy('controlValueChangesListener');
+        const controlValidator = jasmine.createSpy('validator').and.returnValue(null);
+        const controlAsyncValidator =
+            jasmine.createSpy('asyncValidator').and.returnValue(Promise.resolve(null));
+        control.valueChanges.subscribe(controlValueChangesListener);
+        control.setValidators(controlValidator);
+        control.setAsyncValidators(controlAsyncValidator);
+
+        fixture.componentInstance.control = control;
+        fixture.detectChanges();
+
+        valueAccessorSpy.calls.reset();
+        myValueAccessorSpy.calls.reset();
+        validatorSpy.calls.reset();
+        asyncValidatorSpy.calls.reset();
+        controlValueChangesListener.calls.reset();
+        controlValidator.calls.reset();
+        controlAsyncValidator.calls.reset();
+
+        control.setValue('My first value');
+        expect(valueAccessorSpy).toHaveBeenCalledWith('My first value');
+        expect(myValueAccessorSpy).toHaveBeenCalledWith('My first value');
+        expect(validatorSpy).toHaveBeenCalledWith(control);
+        expect(asyncValidatorSpy).toHaveBeenCalledWith(control);
+        expect(controlValueChangesListener).toHaveBeenCalledWith('My first value');
+        expect(controlValidator).toHaveBeenCalledWith(control);
+        expect(controlAsyncValidator).toHaveBeenCalledWith(control);
+
+        fixture.componentInstance.visible = false;
+        fixture.detectChanges();
+
+        valueAccessorSpy.calls.reset();
+        myValueAccessorSpy.calls.reset();
+        validatorSpy.calls.reset();
+        asyncValidatorSpy.calls.reset();
+        controlValueChangesListener.calls.reset();
+        controlValidator.calls.reset();
+        controlAsyncValidator.calls.reset();
+        control.setValue('My Value');
+
+        // FormControlDirective have been destroyed and connection to value
+        // accessor and validators should be destroyed together with it.
+        expect(valueAccessorSpy).not.toHaveBeenCalled();
+        expect(myValueAccessorSpy).toHaveBeenCalledWith('My Value');
+        expect(validatorSpy).not.toHaveBeenCalled();
+        expect(asyncValidatorSpy).not.toHaveBeenCalled();
+        expect(controlValueChangesListener).toHaveBeenCalledWith('My Value');
+        expect(controlValidator).toHaveBeenCalledWith(control);
+        expect(controlAsyncValidator).toHaveBeenCalledWith(control);
+      });
+
+      it('cleans up when FormControlName is destroyed', () => {
+        const fixture = initTest(
+            FormControlNameNgIfWrapper, MyCustomValidator, MyCustomAsyncValidator, MyValueAccessor);
+        const control = fixture.componentInstance.group.get('control')!;
+        const valueAccessorSpy = spyOn(DefaultValueAccessor.prototype, 'writeValue');
+        const myValueAccessorSpy = spyOn(MyValueAccessor.prototype, 'writeValue');
+        const validatorSpy = spyOn(MyCustomValidator.prototype, 'validate');
+        const asyncValidatorSpy =
+            spyOn(MyCustomAsyncValidator.prototype, 'validate').and.callThrough();
+        const controlValueChangesListener = jasmine.createSpy('controlValueChangesListener');
+        const controlValidator = jasmine.createSpy('validator').and.returnValue(null);
+        const controlAsyncValidator =
+            jasmine.createSpy('asyncValidator').and.returnValue(Promise.resolve(null));
+        control.valueChanges.subscribe(controlValueChangesListener);
+        control.setValidators(controlValidator);
+        control.setAsyncValidators(controlAsyncValidator);
+
+        fixture.detectChanges();
+
+        valueAccessorSpy.calls.reset();
+        myValueAccessorSpy.calls.reset();
+        validatorSpy.calls.reset();
+        asyncValidatorSpy.calls.reset();
+        controlValueChangesListener.calls.reset();
+        controlValidator.calls.reset();
+        controlAsyncValidator.calls.reset();
+
+        control.setValue('My first value');
+        expect(valueAccessorSpy).toHaveBeenCalledWith('My first value');
+        expect(myValueAccessorSpy).toHaveBeenCalledWith('My first value');
+        expect(validatorSpy).toHaveBeenCalledWith(control);
+        expect(asyncValidatorSpy).toHaveBeenCalledWith(control);
+        expect(controlValueChangesListener).toHaveBeenCalledWith('My first value');
+        expect(controlValidator).toHaveBeenCalledWith(control);
+        expect(controlAsyncValidator).toHaveBeenCalledWith(control);
+
+        fixture.componentInstance.visible = false;
+        fixture.detectChanges();
+
+        valueAccessorSpy.calls.reset();
+        myValueAccessorSpy.calls.reset();
+        validatorSpy.calls.reset();
+        asyncValidatorSpy.calls.reset();
+        controlValueChangesListener.calls.reset();
+        controlValidator.calls.reset();
+        controlAsyncValidator.calls.reset();
+        control.setValue('My Value');
+
+        // FormControlDirective have been destroyed and connection to value
+        // accessor and validators should be destroyed together with it.
+        expect(valueAccessorSpy).not.toHaveBeenCalled();
+        expect(myValueAccessorSpy).toHaveBeenCalledWith('My Value');
+        expect(validatorSpy).not.toHaveBeenCalled();
+        expect(asyncValidatorSpy).not.toHaveBeenCalled();
+        expect(controlValueChangesListener).toHaveBeenCalledWith('My Value');
+        expect(controlValidator).toHaveBeenCalledWith(control);
+        expect(controlAsyncValidator).toHaveBeenCalledWith(control);
+      });
     });
   });
 }
@@ -2796,4 +2919,41 @@ class MyCustomAsyncValidator implements AsyncValidator {
   validate(control: AbstractControl) {
     return Promise.resolve(null);
   }
+}
+
+@Component({
+  selector: 'form-control-ng-if-wrapper',
+  template: `
+    <input [formControl]="control" my-value-accessor>
+    <input *ngIf="visible" type="text" [formControl]="control" my-custom-validator my-custom-async-validator>
+  `
+})
+class FormControlNgIfWrapper {
+  visible = true;
+  control = new FormControl();
+}
+
+@Component({
+  selector: 'form-control-name-ng-if-wrapper',
+  template: `
+    <div [formGroup]="group">
+      <input formControlName="control" my-value-accessor>
+      <input *ngIf="visible" type="text" formControlName="control" my-custom-validator my-custom-async-validator>
+    </div>
+  `
+})
+class FormControlNameNgIfWrapper {
+  visible = true;
+  group = new FormGroup({control: new FormControl()});
+}
+
+@Directive({
+  selector: '[my-value-accessor]',
+  providers:
+      [{provide: NG_VALUE_ACCESSOR, multi: true, useExisting: forwardRef(() => MyValueAccessor)}]
+})
+class MyValueAccessor implements ControlValueAccessor {
+  writeValue(value: any) {}
+  registerOnChange(fn: (value: any) => void) {}
+  registerOnTouched(fn: any) {}
 }

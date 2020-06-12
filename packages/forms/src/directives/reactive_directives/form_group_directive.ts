@@ -13,7 +13,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {ReactiveErrors} from '../reactive_errors';
-import {cleanUpControl, cleanUpValidators, removeDir, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
+import {cleanUpControl, cleanUpValidators, removeListItem, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
@@ -165,7 +165,8 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @param dir The `FormControlName` directive instance.
    */
   removeControl(dir: FormControlName): void {
-    removeDir<FormControlName>(this.directives, dir);
+    cleanUpControl(dir.control || null, dir, false);
+    removeListItem<FormControlName>(this.directives, dir);
   }
 
   /**
@@ -273,10 +274,15 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   _updateDomValue() {
     this.directives.forEach(dir => {
       const newCtrl: any = this.form.get(dir.path);
-      if (dir.control !== newCtrl) {
-        // Note: the value of the `dir.control` may not be defined, for example when it's a first
-        // `FormControl` that is added to a `FormGroup` instance (via `addControl` call).
-        cleanUpControl(dir.control || null, dir);
+      // Note: the value of the `dir.control` may not be defined, for example when it's a first
+      // `FormControl` that is added to a `FormGroup` instance (via `addControl` call).
+      const oldCtrl: FormControl|null = dir.control || null;
+      if (oldCtrl !== newCtrl) {
+        cleanUpControl(oldCtrl, dir);
+        if (oldCtrl !== null) {
+          // TODO: add description on this action
+          oldCtrl._registerOnCollectionChange(() => {});
+        }
         if (newCtrl) setUpControl(newCtrl, dir);
         (dir as {control: FormControl}).control = newCtrl;
       }

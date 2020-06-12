@@ -41,6 +41,15 @@ export abstract class NgControl extends AbstractControlDirective {
 
   /**
    * @description
+   * The set of functions to be called when a given control is being destroyed
+   *
+   * @internal
+   */
+  // TODO: move to AbstractControlDirective!
+  _cleanupFns: Array<Function> = [];
+
+  /**
+   * @description
    * The callback method to update the model from the view when requested
    *
    * @param newValue The new value for the view

@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 import {Observable} from 'rxjs';
-
+import {removeListItem} from './directives/shared';
 import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/validators';
 import {composeAsyncValidators, composeValidators} from './utils/validators';
 import {toObservable} from './validators';
@@ -1266,6 +1266,13 @@ export class FormControl extends AbstractControl {
   /**
    * @internal
    */
+  _unregisterOnChange(fn: Function): void {
+    removeListItem(this._onChange, fn);
+  }
+
+  /**
+   * @internal
+   */
   _clearChangeFns(): void {
     this._onChange = [];
     this._onDisabledChange = [];
@@ -1279,6 +1286,13 @@ export class FormControl extends AbstractControl {
    */
   registerOnDisabledChange(fn: (isDisabled: boolean) => void): void {
     this._onDisabledChange.push(fn);
+  }
+
+  /**
+   * @internal
+   */
+  _unregisterOnDisabledChange(fn: (isDisabled: boolean) => void): void {
+    removeListItem(this._onDisabledChange, fn);
   }
 
   /**
