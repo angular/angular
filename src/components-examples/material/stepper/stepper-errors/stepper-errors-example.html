@@ -1,4 +1,4 @@
-<mat-horizontal-stepper linear #stepper>
+<mat-horizontal-stepper #stepper>
   <mat-step [stepControl]="firstFormGroup" errorMessage="Name is required.">
     <form [formGroup]="firstFormGroup">
       <ng-template matStepLabel>Fill out your name</ng-template>
@@ -7,6 +7,7 @@
         <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
       </mat-form-field>
       <div>
+        <p>Go to a different step to see the error state</p>
         <button mat-button matStepperNext>Next</button>
       </div>
     </form>
@@ -20,6 +21,7 @@
                required>
       </mat-form-field>
       <div>
+        <p>Go to a different step to see the error state</p>
         <button mat-button matStepperPrevious>Back</button>
         <button mat-button matStepperNext>Next</button>
       </div>
