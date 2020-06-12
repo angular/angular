@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
-import {_ngModelWarning, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
+import {_ngModelWarning, cleanUpControl, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 
@@ -51,7 +51,7 @@ export const formControlBinding: any = {
  * @publicApi
  */
 @Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
-export class FormControlDirective extends NgControl implements OnChanges {
+export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
   /**
    * Internal reference to the view model value.
    * @nodoc
@@ -118,6 +118,10 @@ export class FormControlDirective extends NgControl implements OnChanges {
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
     if (this._isControlChanged(changes)) {
+      const previousForm = changes['form'].previousValue;
+      if (previousForm) {
+        cleanUpControl(previousForm, this, /* validateControlPresenceOnChange */ false);
+      }
       setUpControl(this.form, this);
       if (this.control.disabled && this.valueAccessor!.setDisabledState) {
         this.valueAccessor!.setDisabledState!(true);
@@ -130,6 +134,13 @@ export class FormControlDirective extends NgControl implements OnChanges {
       }
       this.form.setValue(this.model);
       this.viewModel = this.model;
+    }
+  }
+
+  /** @nodoc */
+  ngOnDestroy() {
+    if (this.form) {
+      cleanUpControl(this.form, this, /* validateControlPresenceOnChange */ false);
     }
   }
 

@@ -237,7 +237,7 @@ export declare class FormControl extends AbstractControl {
     }): void;
 }
 
-export declare class FormControlDirective extends NgControl implements OnChanges {
+export declare class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
     get control(): FormControl;
     form: FormControl;
     set isDisabled(isDisabled: boolean);
@@ -247,6 +247,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     viewModel: any;
     constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
     ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
 }
 
@@ -295,7 +296,7 @@ export declare class FormGroup extends AbstractControl {
     }): void;
 }
 
-export declare class FormGroupDirective extends ControlContainer implements Form, OnChanges {
+export declare class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
     get control(): FormGroup;
     directives: FormControlName[];
     form: FormGroup;
@@ -311,6 +312,7 @@ export declare class FormGroupDirective extends ControlContainer implements Form
     getFormArray(dir: FormArrayName): FormArray;
     getFormGroup(dir: FormGroupName): FormGroup;
     ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
     onReset(): void;
     onSubmit($event: Event): boolean;
     removeControl(dir: FormControlName): void;

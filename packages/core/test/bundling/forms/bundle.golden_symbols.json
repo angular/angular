@@ -771,6 +771,9 @@
     "name": "classIndexOf"
   },
   {
+    "name": "cleanUpControl"
+  },
+  {
     "name": "cleanUpValidators"
   },
   {

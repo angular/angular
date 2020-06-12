@@ -30,6 +30,13 @@ export function controlPath(name: string|null, parent: ControlContainer): string
   return [...parent.path!, name!];
 }
 
+/**
+ * Links a Form control and a Form directive by setting up callbacks (such as `onChange`) on both
+ * instances. This function is typically invoked when form directive is being initialized.
+ *
+ * @param control Form control instance that should be linked.
+ * @param dir Directive that should be linked with a given control.
+ */
 export function setUpControl(control: FormControl, dir: NgControl): void {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     if (!control) _throwError(dir, 'Cannot find control with');
@@ -48,9 +55,22 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   setUpDisabledChangeHandler(control, dir);
 }
 
-export function cleanUpControl(control: FormControl|null, dir: NgControl) {
+/**
+ * Reverts configuration performed by the `setUpControl` control function.
+ * Effectively disconnects form control with a given form directive.
+ * This function is typically invoked when corresponding form directive is being destroyed.
+ *
+ * @param control Form control which should be cleaned up.
+ * @param dir Directive that should be disconnected from a given control.
+ * @param validateControlPresenceOnChange Flag that indicates whether onChange handler should
+ *     contain asserts to verify that it's not called once directive is destroyed. We need this flag
+ *     to avoid potentially breaking changes caused by better control cleanup introduced in #39235.
+ */
+export function cleanUpControl(
+    control: FormControl|null, dir: NgControl,
+    validateControlPresenceOnChange: boolean = true): void {
   const noop = () => {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (validateControlPresenceOnChange && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       _noControlError(dir);
     }
   };
@@ -146,16 +166,22 @@ export function setUpValidators(
  * @param dir Directive instance that contains validators to be removed.
  * @param handleOnValidatorChange Flag that determines whether directive validators should also be
  *     cleaned up to stop handling validator input change (if previously configured to do so).
+ * @returns true if a control was updated as a result of this action.
  */
 export function cleanUpValidators(
     control: AbstractControl|null, dir: AbstractControlDirective,
-    handleOnValidatorChange: boolean): void {
+    handleOnValidatorChange: boolean): boolean {
+  let isControlUpdated = false;
   if (control !== null) {
     if (dir.validator !== null) {
       const validators = getControlValidators(control);
       if (Array.isArray(validators) && validators.length > 0) {
         // Filter out directive validator function.
-        control.setValidators(validators.filter(validator => validator !== dir.validator));
+        const updatedValidators = validators.filter(validator => validator !== dir.validator);
+        if (updatedValidators.length !== validators.length) {
+          isControlUpdated = true;
+          control.setValidators(updatedValidators);
+        }
       }
     }
 
@@ -163,8 +189,12 @@ export function cleanUpValidators(
       const asyncValidators = getControlAsyncValidators(control);
       if (Array.isArray(asyncValidators) && asyncValidators.length > 0) {
         // Filter out directive async validator function.
-        control.setAsyncValidators(
-            asyncValidators.filter(asyncValidator => asyncValidator !== dir.asyncValidator));
+        const updatedAsyncValidators =
+            asyncValidators.filter(asyncValidator => asyncValidator !== dir.asyncValidator);
+        if (updatedAsyncValidators.length !== asyncValidators.length) {
+          isControlUpdated = true;
+          control.setAsyncValidators(updatedAsyncValidators);
+        }
       }
     }
   }
@@ -175,6 +205,8 @@ export function cleanUpValidators(
     registerOnValidatorChange<ValidatorFn>(dir._rawValidators, noop);
     registerOnValidatorChange<AsyncValidatorFn>(dir._rawAsyncValidators, noop);
   }
+
+  return isControlUpdated;
 }
 
 function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
@@ -220,11 +252,30 @@ function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
   });
 }
 
+/**
+ * Links a FormGroup or FormArray instance and corresponding Form directive by setting up validators
+ * present in the view.
+ *
+ * @param control FormGroup or FormArray instance that should be linked.
+ * @param dir Directive that provides view validators.
+ */
 export function setUpFormContainer(
     control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName) {
   if (control == null && (typeof ngDevMode === 'undefined' || ngDevMode))
     _throwError(dir, 'Cannot find control with');
   setUpValidators(control, dir, /* handleOnValidatorChange */ false);
+}
+
+/**
+ * Reverts the setup performed by the `setUpFormContainer` function.
+ *
+ * @param control FormGroup or FormArray instance that should be cleaned up.
+ * @param dir Directive that provided view validators.
+ * @returns true if a control was updated as a result of this action.
+ */
+export function cleanUpFormContainer(
+    control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName): boolean {
+  return cleanUpValidators(control, dir, /* handleOnValidatorChange */ false);
 }
 
 function _noControlError(dir: NgControl) {
