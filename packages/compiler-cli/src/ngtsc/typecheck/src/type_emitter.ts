@@ -67,26 +67,24 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
  * For example, consider the following code:
  *
  * ```
- * import {NgIterable} from '@angular/core';
- *
- * class NgForOf<T, U extends NgIterable<T>> {}
+ * class NgForOf<T, U extends Iterable<T>> {}
  * ```
  *
  * Here, the generic type parameters `T` and `U` can be emitted into a different context, as the
- * type reference to `NgIterable` originates from an absolute module import so that it can be
+ * type reference to `Iterable` originates from an absolute module import so that it can be
  * emitted anywhere, using that same module import. The process of emitting translates the
- * `NgIterable` type reference to a type reference that is valid in the context in which it is
+ * `Iterable` type reference to a type reference that is valid in the context in which it is
  * emitted, for example:
  *
  * ```
  * import * as i0 from '@angular/core';
  * import * as i1 from '@angular/common';
  *
- * const _ctor1: <T, U extends i0.NgIterable<T>>(o: Pick<i1.NgForOf<T, U>, 'ngForOf'>):
+ * const _ctor1: <T, U extends Iterable<T>>(o: Pick<i1.NgForOf<T, U>, 'ngForOf'>):
  * i1.NgForOf<T, U>;
  * ```
  *
- * Notice how the type reference for `NgIterable` has been translated into a qualified name,
+ * Notice how the type reference for `Iterable` has been translated into a qualified name,
  * referring to the namespace import that was created.
  */
 export class TypeEmitter {

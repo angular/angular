@@ -9,7 +9,7 @@
 import {stringify} from '../../util/stringify';
 import {isListLikeIterable, iterateListLike} from '../change_detection_util';
 
-import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
+import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, TrackByFunction} from './iterable_differs';
 
 
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
@@ -149,7 +149,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     }
   }
 
-  diff(collection: NgIterable<V>|null|undefined): DefaultIterableDiffer<V>|null {
+  diff(collection: Iterable<V>|null|undefined): DefaultIterableDiffer<V>|null {
     if (collection == null) collection = [];
     if (!isListLikeIterable(collection)) {
       throw new Error(
@@ -165,7 +165,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 
   onDestroy() {}
 
-  check(collection: NgIterable<V>): boolean {
+  check(collection: Iterable<V>): boolean {
     this._reset();
 
     let record: IterableChangeRecord_<V>|null = this._itHead;

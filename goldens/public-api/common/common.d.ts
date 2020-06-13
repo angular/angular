@@ -215,17 +215,17 @@ export declare class NgComponentOutlet implements OnChanges, OnDestroy {
     ngOnDestroy(): void;
 }
 
-export declare class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
-    set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null);
+export declare class NgForOf<T, U extends Iterable<T> = Iterable<T>> implements DoCheck {
+    set ngForOf(ngForOf: (U & Iterable<T>) | undefined | null);
     set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>);
     set ngForTrackBy(fn: TrackByFunction<T>);
     get ngForTrackBy(): TrackByFunction<T>;
     constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
     ngDoCheck(): void;
-    static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;
+    static ngTemplateContextGuard<T, U extends Iterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;
 }
 
-export declare class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
+export declare class NgForOfContext<T, U extends Iterable<T> = Iterable<T>> {
     $implicit: T;
     count: number;
     get even(): boolean;

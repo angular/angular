@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, EmbeddedViewRef, Input, isDevMode, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef} from '@angular/core';
+import {Directive, DoCheck, EmbeddedViewRef, Input, isDevMode, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, TemplateRef, TrackByFunction, ViewContainerRef} from '@angular/core';
 
 /**
  * @publicApi
  */
-export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
+export class NgForOfContext<T, U extends Iterable<T> = Iterable<T>> {
   constructor(public $implicit: T, public ngForOf: U, public index: number, public count: number) {}
 
   get first(): boolean {
@@ -89,7 +89,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * The following exported values can be aliased to local variables:
  *
  * - `$implicit: T`: The value of the individual items in the iterable (`ngForOf`).
- * - `ngForOf: NgIterable<T>`: The value of the iterable expression. Useful when the expression is
+ * - `ngForOf: Iterable<T>`: The value of the iterable expression. Useful when the expression is
  * more complex then a property access, for example when using the async pipe (`userStreams |
  * async`).
  * - `index: number`: The index of the current item in the iterable.
@@ -130,13 +130,13 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * @publicApi
  */
 @Directive({selector: '[ngFor][ngForOf]'})
-export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
+export class NgForOf<T, U extends Iterable<T> = Iterable<T>> implements DoCheck {
   /**
    * The value of the iterable expression, which can be used as a
    * [template input variable](guide/structural-directives#template-input-variable).
    */
   @Input()
-  set ngForOf(ngForOf: U&NgIterable<T>|undefined|null) {
+  set ngForOf(ngForOf: U&Iterable<T>|undefined|null) {
     this._ngForOf = ngForOf;
     this._ngForOfDirty = true;
   }
@@ -275,13 +275,13 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    * The presence of this method is a signal to the Ivy template type-check compiler that the
    * `NgForOf` structural directive renders its template with a specific context type.
    */
-  static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any):
+  static ngTemplateContextGuard<T, U extends Iterable<T>>(dir: NgForOf<T, U>, ctx: any):
       ctx is NgForOfContext<T, U> {
     return true;
   }
 }
 
-class RecordViewTuple<T, U extends NgIterable<T>> {
+class RecordViewTuple<T, U extends Iterable<T>> {
   constructor(public record: any, public view: EmbeddedViewRef<NgForOfContext<T, U>>) {}
 }
 

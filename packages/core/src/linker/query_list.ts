@@ -159,6 +159,6 @@ export class QueryList<T> implements Iterable<T> {
   // tree-shaking issues with `QueryList. So instead, it's added in the constructor (see comments
   // there) and this declaration is left here to ensure that TypeScript considers QueryList to
   // implement the Iterable interface. This is required for template type-checking of NgFor loops
-  // over QueryLists to work correctly, since QueryList must be assignable to NgIterable.
+  // over QueryLists to work correctly, since QueryList must be assignable to Iterable.
   [Symbol.iterator]!: () => Iterator<T>;
 }

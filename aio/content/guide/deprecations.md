@@ -61,8 +61,9 @@ v9 - v12
 | `@angular/router`             | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
 | template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
 | browser support               | [`IE 9 and 10, IE mobile`](#ie-9-10-and-mobile)                               | <!--v10--> v11 |
-
+| `@angular/core`               | [`NgIterable`](api/core/NgIterable)                        | unspecified |
 For information about Angular CDK and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/master/CHANGELOG.md).
+
 
 ## Deprecated APIs
 
@@ -97,6 +98,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
 | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
 | [`WrappedValue`](api/core/WrappedValue) | none | v10 | See [removing `WrappedValue`](#wrapped-value) |
+| [`NgIterable`](api/core/NgIterable) | Iterabe | unspecified | Use the default Iterable type instead of NgIterable |
 
 
 

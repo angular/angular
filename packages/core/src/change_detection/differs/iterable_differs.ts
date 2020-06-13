@@ -15,10 +15,11 @@ import {DefaultIterableDifferFactory} from '../differs/default_iterable_differ';
 
 /**
  * A type describing supported iterable types.
- *
+ * @deprecated Use `Iterable` from the standard TypeScript library instead of `NgIterable`. The two
+ *     are equivalent.
  * @publicApi
  */
-export type NgIterable<T> = Array<T>|Iterable<T>;
+export type NgIterable<T> = Iterable<T>;
 
 /**
  * A strategy for tracking changes over time to an iterable. Used by {@link NgForOf} to
@@ -34,7 +35,7 @@ export interface IterableDiffer<V> {
    * @returns an object describing the difference. The return value is only valid until the next
    * `diff()` invocation.
    */
-  diff(object: NgIterable<V>|undefined|null): IterableChanges<V>|null;
+  diff(object: Iterable<V>|undefined|null): IterableChanges<V>|null;
 }
 
 /**
