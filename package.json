@@ -103,6 +103,7 @@
     "@types/semver": "^6.2.0",
     "@types/send": "^0.14.5",
     "@types/stylelint": "^9.10.1",
+    "@types/yaml": "^1.9.7",
     "autoprefixer": "^6.7.6",
     "axe-webdriverjs": "^1.1.1",
     "browser-sync": "^2.26.7",
@@ -167,7 +168,7 @@
     "typescript-3.7": "npm:typescript@~3.7.0",
     "typescript-3.8": "npm:typescript@~3.8.0",
     "vrsource-tslint-rules": "5.1.1",
-    "yaml": "^1.7.2",
+    "yaml": "^1.10.0",
     "yargs": "15.3.0"
   },
   "resolutions": {

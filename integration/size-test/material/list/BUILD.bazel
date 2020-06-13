@@ -1,7 +1,7 @@
 load("//integration/size-test:index.bzl", "size_test")
 
 size_test(
-    name = "list",
-    file = "list.ts",
+    name = "nav-list",
+    file = "nav-list.ts",
     deps = ["//src/material/list"],
 )

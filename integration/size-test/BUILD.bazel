@@ -12,6 +12,8 @@ ts_library(
     srcs = ["check-size.ts"],
     deps = [
         "@npm//@types/node",
+        "@npm//@types/yaml",
         "@npm//chalk",
+        "@npm//yaml",
     ],
 )

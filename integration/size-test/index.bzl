@@ -53,7 +53,7 @@ def size_test(name, file, deps):
     nodejs_test(
         name = name,
         data = [
-            "//goldens:size-test.json",
+            "//goldens:size-test.yaml",
             "//integration/size-test:check-size",
             ":%s_bundle_min" % name,
         ],
@@ -65,7 +65,7 @@ def size_test(name, file, deps):
         name = "%s.approve" % name,
         testonly = True,
         data = [
-            "//goldens:size-test.json",
+            "//goldens:size-test.yaml",
             "//integration/size-test:check-size",
             ":%s_bundle_min" % name,
         ],

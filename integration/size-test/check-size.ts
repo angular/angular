@@ -6,6 +6,7 @@
 
 import chalk from 'chalk';
 import {readFileSync, statSync, writeFileSync} from 'fs';
+import {parse, stringify} from 'yaml';
 
 /**
  * Absolute byte deviation from the expected value that is allowed. If the
@@ -27,16 +28,16 @@ const PERCENTAGE_DEVIATION_THRESHOLD = 1;
  */
 const [testId, testFileRootpath, isApprove] = process.argv.slice(2);
 const testFilePath = require.resolve(`angular_material/${testFileRootpath}`);
-const goldenFilePath = require.resolve('../../goldens/size-test.json');
+const goldenFilePath = require.resolve('../../goldens/size-test.yaml');
 
-const golden = JSON.parse(readFileSync(goldenFilePath, 'utf8'));
+const golden = parse(readFileSync(goldenFilePath, 'utf8')) || {};
 const fileStat = statSync(testFilePath);
 const actualSize = fileStat.size;
 
 // If in approve mode, update the golden to reflect the new size.
 if (isApprove) {
   golden[testId] = actualSize;
-  writeFileSync(goldenFilePath, JSON.stringify(golden, null, 2));
+  writeFileSync(goldenFilePath, stringify(golden));
   console.info(chalk.green(`Approved golden size for "${testId}"`));
   process.exit(0);
 }

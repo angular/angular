@@ -321,7 +321,7 @@
 /.github/ISSUE_TEMPLATE/**                         @andrewseguin @jelbourn
 /.vscode/**                                        @angular/dev-infra-components @mmalerba
 /.ng-dev/**                                        @angular/dev-infra-components
-/goldens/size-test.json                            @jelbourn @mmalerba @crisbeto
+/goldens/size-test.yml                             @jelbourn @mmalerba @crisbeto
 /goldens/**                                        @angular/dev-infra-components
 /src/*                                             @angular/dev-infra-components
 /*                                                 @angular/dev-infra-components
