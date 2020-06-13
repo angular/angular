@@ -9,7 +9,7 @@
   </thead>
   <tbody >
     <tr *ngFor="let event of upcomingEvents">
-      <td><a href="{{event.linkUrl}}" title="{{event.tooltip}}">{{event.name}}</a></td>
+      <th><a href="{{event.linkUrl}}" title="{{event.tooltip}}">{{event.name}}</a></th>
       <td>{{event.location}}</td>
       <td>
         <div>
@@ -31,7 +31,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let event of pastEvents">
-      <td><a href="{{event.linkUrl}}" title="{{event.tooltip}}">{{event.name}}</a></td>
+      <th><a href="{{event.linkUrl}}" title="{{event.tooltip}}">{{event.name}}</a></th>
       <td>{{event.location}}</td>
       <td>
         <div>
