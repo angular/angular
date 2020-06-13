@@ -36,72 +36,6 @@ describe('MenuBar', () => {
     });
   });
 
-  describe('as checkbox group', () => {
-    let fixture: ComponentFixture<MenuBarCheckboxGroup>;
-    let menuBar: CdkMenuBar;
-    let menuItems: Array<CdkMenuItem>;
-
-    beforeEach(async(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [MenuBarCheckboxGroup],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MenuBarCheckboxGroup);
-
-      menuBar = fixture.debugElement.query(By.directive(CdkMenuBar)).injector.get(CdkMenuBar);
-      fixture.detectChanges();
-
-      menuItems = menuBar._allItems.toArray();
-    }));
-
-    it('should toggle menuitemcheckbox', () => {
-      expect(menuItems[0].checked).toBeTrue();
-      expect(menuItems[1].checked).toBeFalse();
-
-      menuItems[1].trigger();
-      expect(menuItems[0].checked).toBeTrue(); // checkbox should not change
-
-      menuItems[0].trigger();
-
-      expect(menuItems[0].checked).toBeFalse();
-      expect(menuItems[1].checked).toBeTrue();
-    });
-  });
-
-  describe('checkbox change events', () => {
-    let fixture: ComponentFixture<MenuBarCheckboxGroup>;
-    let menu: CdkMenuBar;
-    let menuItems: Array<CdkMenuItem>;
-
-    beforeEach(async(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [MenuBarCheckboxGroup],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MenuBarCheckboxGroup);
-
-      menu = fixture.debugElement.query(By.directive(CdkMenuBar)).injector.get(CdkMenuBar);
-      fixture.detectChanges();
-
-      menuItems = menu._allItems.toArray();
-    }));
-
-    it('should emit on click', () => {
-      const spy = jasmine.createSpy('cdkMenu change spy');
-      fixture.debugElement
-        .query(By.directive(CdkMenuBar))
-        .injector.get(CdkMenuBar)
-        .change.subscribe(spy);
-
-      menuItems[0].trigger();
-
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(menuItems[0]);
-    });
-  });
-
   describe('radiogroup change events', () => {
     let fixture: ComponentFixture<MenuBarRadioGroup>;
     let menu: CdkMenuBar;
@@ -153,21 +87,3 @@ describe('MenuBar', () => {
   `,
 })
 class MenuBarRadioGroup {}
-
-@Component({
-  template: `
-    <ul cdkMenuBar>
-      <li role="none">
-        <button checked="true" role="menuitemcheckbox" cdkMenuItem>
-          first
-        </button>
-      </li>
-      <li role="none">
-        <button role="menuitemcheckbox" cdkMenuItem>
-          second
-        </button>
-      </li>
-    </ul>
-  `,
-})
-class MenuBarCheckboxGroup {}
