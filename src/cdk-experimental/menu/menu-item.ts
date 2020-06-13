@@ -89,9 +89,8 @@ export class CdkMenuItem implements AfterContentInit, MenuItem {
 
     if (this.hasSubmenu()) {
       // TODO(andy): open the menu
-    } else if (this.role !== 'menuitem') {
-      this._menuGroup.change.next(this);
     }
+    this._menuGroup._registerTriggeredItem(this);
   }
 
   /** Whether the menu item opens a menu */

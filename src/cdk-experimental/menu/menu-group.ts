@@ -23,4 +23,14 @@ import {MenuItem} from './menu-item-interface';
 export class CdkMenuGroup {
   /** Emits the element when checkbox or radiobutton state changed  */
   @Output() change: EventEmitter<MenuItem> = new EventEmitter();
+
+  /**
+   * Emits events for the clicked MenuItem
+   * @param menuItem The clicked MenuItem to handle
+   */
+  _registerTriggeredItem(menuItem: MenuItem) {
+    if (menuItem.role !== 'menuitem') {
+      this.change.emit(menuItem);
+    }
+  }
 }
