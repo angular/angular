@@ -42,10 +42,8 @@ This method returns a `Promise` which indicates that the update check has comple
 
 <div class="alert is-important">
 
-In order to avoid negatively affecting the initial rendering, `ServiceWorkerModule` will by default
-wait for the app to stabilize, before registering the ServiceWorker script. Constantly polling for
-updates, e.g. with `interval()`, will prevent the app from stabilizing and the ServiceWorker
-script will never be registered with the browser.
+In order to avoid negatively affecting the initial rendering of the page, `ServiceWorkerModule` will by default wait for up to 30 seconds for the app to stabilize, before registering the ServiceWorker script.
+Constantly polling for updates, e.g. with [setInterval()](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval) or RxJS' [interval()](https://rxjs.dev/api/index/function/interval), will prevent the app from stabilizing and the ServiceWorker script will not be registered with the browser until the 30 seconds upper limit is reached.
 
 You can avoid that by waiting for the app to stabilize first, before starting to poll for updates
 (as shown in the example above).
