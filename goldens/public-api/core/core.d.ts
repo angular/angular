@@ -570,6 +570,9 @@ export declare interface ModuleWithProviders<T> {
     providers?: Provider[];
 }
 
+/** @deprecated */
+export declare type NgIterable<T> = Iterable<T>;
+
 export declare interface NgModule {
     bootstrap?: Array<Type<any> | any[]>;
     declarations?: Array<Type<any> | any[]>;
