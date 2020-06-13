@@ -39,6 +39,39 @@ function asyncValidator(expected: string, timeouts = {}) {
   };
 }
 
+function simpleAsyncValidator({
+  timeout = 0,
+  shouldFail,
+  customError =
+  {
+    async: true
+  }
+}: {timeout?: number, shouldFail: boolean, customError?: any}) {
+  return (c: AbstractControl) => {
+    const res = shouldFail ? customError : null;
+
+    if (timeout === 0) {
+      return of(res);
+    }
+
+    let resolve: (result: any) => void = undefined!;
+    const promise = new Promise<ValidationErrors|null>(res => {
+      resolve = res;
+    });
+
+    setTimeout(() => {
+      resolve(res);
+    }, timeout);
+
+    return promise;
+  };
+}
+
+function currentStateOf(controls: AbstractControl[]):
+    {errors: any; pending: boolean; status: string;}[] {
+  return controls.map(c => ({errors: c.errors, pending: c.pending, status: c.status}));
+}
+
 function asyncValidatorReturningObservable(c: AbstractControl) {
   const e = new EventEmitter();
   Promise.resolve(null).then(() => {
@@ -980,6 +1013,538 @@ describe('FormGroup', () => {
 
          expect(g.errors).toEqual({'async': true});
          expect(g.get('one')!.errors).toEqual({'async': true});
+       }));
+
+    it('should handle successful async FormGroup resolving synchronously before a successful async child validator',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 1, shouldFail: false}));
+         const g = new FormGroup(
+             {'one': c}, null!, simpleAsyncValidator({timeout: 0, shouldFail: false}));
+
+         // Initially, the form control validation is pending, and the form group own validation has
+         // synchronously resolved. Still, the form is in pending state due to its child
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: true, status: 'PENDING'},  // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, the form control validation has resolved
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: false, status: 'VALID'},  // Group
+           {errors: null, pending: false, status: 'VALID'},  // Control
+         ]);
+       }));
+
+    it('should handle successful async FormGroup resolving after a synchronously and successfully resolving child validator',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 0, shouldFail: false}));
+         const g = new FormGroup(
+             {'one': c}, null!, simpleAsyncValidator({timeout: 1, shouldFail: false}));
+
+         // Initially, form control validator has synchronously resolved. However, g has its own
+         // pending validation
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: false, status: 'VALID'},   // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, the form group validation has resolved
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: false, status: 'VALID'},  // Group
+           {errors: null, pending: false, status: 'VALID'},  // Control
+         ]);
+       }));
+
+    it('should handle successful async FormGroup and child control validators resolving synchronously',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 0, shouldFail: false}));
+         const g = new FormGroup(
+             {'one': c}, null!, simpleAsyncValidator({timeout: 0, shouldFail: false}));
+
+         // Both form control and form group successful async validators have resolved synchronously
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: false, status: 'VALID'},  // Group
+           {errors: null, pending: false, status: 'VALID'},  // Control
+         ]);
+       }));
+
+    it('should handle failing async FormGroup and failing child control validators resolving synchronously',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 0, shouldFail: true}));
+         const g =
+             new FormGroup({'one': c}, null!, simpleAsyncValidator({timeout: 0, shouldFail: true}));
+
+         // FormControl async validator has executed and failed synchronously with the default error
+         // `{async: true}`. Next, the form group status is calculated. Since one of its children is
+         // failing, the form group itself is marked `INVALID`. And its asynchronous validation is
+         // not even triggered. Therefore, we end up with form group that is `INVALID` but whose
+         // errors are null (child errors do not propagate and own async validation not event
+         // triggered).
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: false, status: 'INVALID'},           // Group
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // Control
+         ]);
+       }));
+
+    it('should handle failing async FormGroup and successful child control validators resolving synchronously',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 0, shouldFail: false}));
+         const g =
+             new FormGroup({'one': c}, null!, simpleAsyncValidator({timeout: 0, shouldFail: true}));
+
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // Group
+           {errors: null, pending: false, status: 'VALID'},             // Control
+         ]);
+       }));
+
+    it('should handle failing async FormArray and successful children validators resolving synchronously',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 0, shouldFail: false}));
+         const g = new FormGroup(
+             {'one': c}, null!, simpleAsyncValidator({timeout: 0, shouldFail: false}));
+
+         const c2 =
+             new FormControl('fcVal', null!, simpleAsyncValidator({timeout: 0, shouldFail: false}));
+
+         const a =
+             new FormArray([g, c2], null!, simpleAsyncValidator({timeout: 0, shouldFail: true}));
+
+         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // Array
+           {errors: null, pending: false, status: 'VALID'},             // Group p
+           {errors: null, pending: false, status: 'VALID'},             // Control c2
+         ]);
+       }));
+
+    it('should handle failing FormGroup validator resolving after successful child validator',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 1, shouldFail: false}));
+         const g =
+             new FormGroup({'one': c}, null!, simpleAsyncValidator({timeout: 2, shouldFail: true}));
+
+         // Initially, the form group and nested control are in pending state
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: true, status: 'PENDING'},  // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, only form control validation has resolved
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: false, status: 'VALID'},   // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, the form group validation fails
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // Group
+           {errors: null, pending: false, status: 'VALID'},             // Control
+         ]);
+       }));
+
+    it('should handle failing FormArray validator resolving after successful child validator',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 1, shouldFail: false}));
+         const a = new FormArray([c], null!, simpleAsyncValidator({timeout: 2, shouldFail: true}));
+
+         // Initially, the form array and nested control are in pending state
+         expect(currentStateOf([a, a.at(0)!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // FormArray
+           {errors: null, pending: true, status: 'PENDING'},  // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, only form control validation has resolved
+         expect(currentStateOf([a, a.at(0)!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // FormArray
+           {errors: null, pending: false, status: 'VALID'},   // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, the form array validation fails
+         expect(currentStateOf([a, a.at(0)!])).toEqual([
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // FormArray
+           {errors: null, pending: false, status: 'VALID'},             // Control
+         ]);
+       }));
+
+    it('should handle successful FormGroup validator resolving after successful child validator',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 1, shouldFail: false}));
+         const g = new FormGroup(
+             {'one': c}, null!, simpleAsyncValidator({timeout: 2, shouldFail: false}));
+
+         // Initially, the form group and nested control are in pending state
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: true, status: 'PENDING'},  // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, only form control validation has resolved
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: false, status: 'VALID'},   // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, the form group validation resolves
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: false, status: 'VALID'},  // Group
+           {errors: null, pending: false, status: 'VALID'},  // Control
+         ]);
+       }));
+
+    it('should handle successful FormArray validator resolving after successful child validators',
+       fakeAsync(() => {
+         const c1 = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 1, shouldFail: false}));
+         const g = new FormGroup(
+             {'one': c1}, null!, simpleAsyncValidator({timeout: 2, shouldFail: false}));
+         const c2 =
+             new FormControl('fcVal', null!, simpleAsyncValidator({timeout: 3, shouldFail: false}));
+
+         const a =
+             new FormArray([g, c2], null!, simpleAsyncValidator({timeout: 4, shouldFail: false}));
+
+         // Initially, the form array and the tested form group and form control c2 are in pending
+         // state
+         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // FormArray
+           {errors: null, pending: true, status: 'PENDING'},  // g
+           {errors: null, pending: true, status: 'PENDING'},  // c2
+         ]);
+
+         tick(2);
+
+         // After 2ms, g validation has resolved
+         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // FormArray
+           {errors: null, pending: false, status: 'VALID'},   // g
+           {errors: null, pending: true, status: 'PENDING'},  // c2
+         ]);
+
+         tick(1);
+
+         // After 1ms, c2 validation has resolved
+         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // FormArray
+           {errors: null, pending: false, status: 'VALID'},   // g
+           {errors: null, pending: false, status: 'VALID'},   // c2
+         ]);
+
+         tick(1);
+
+         // After 1ms, FormArray own validation has resolved
+         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
+           {errors: null, pending: false, status: 'VALID'},  // FormArray
+           {errors: null, pending: false, status: 'VALID'},  // g
+           {errors: null, pending: false, status: 'VALID'},  // c2
+         ]);
+       }));
+
+    it('should handle failing FormArray validator resolving after successful child validators',
+       fakeAsync(() => {
+         const c1 = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 1, shouldFail: false}));
+         const g = new FormGroup(
+             {'one': c1}, null!, simpleAsyncValidator({timeout: 2, shouldFail: false}));
+         const c2 =
+             new FormControl('fcVal', null!, simpleAsyncValidator({timeout: 3, shouldFail: false}));
+
+         const a =
+             new FormArray([g, c2], null!, simpleAsyncValidator({timeout: 4, shouldFail: true}));
+
+         // Initially, the form array and the tested form group and form control c2 are in pending
+         // state
+         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // FormArray
+           {errors: null, pending: true, status: 'PENDING'},  // g
+           {errors: null, pending: true, status: 'PENDING'},  // c2
+         ]);
+
+         tick(2);
+
+         // After 2ms, g validation has resolved
+         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // FormArray
+           {errors: null, pending: false, status: 'VALID'},   // g
+           {errors: null, pending: true, status: 'PENDING'},  // c2
+         ]);
+
+         tick(1);
+
+         // After 1ms, c2 validation has resolved
+         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // FormArray
+           {errors: null, pending: false, status: 'VALID'},   // g
+           {errors: null, pending: false, status: 'VALID'},   // c2
+         ]);
+
+         tick(1);
+
+         // After 1ms, FormArray own validation has failed
+         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // FormArray
+           {errors: null, pending: false, status: 'VALID'},             // g
+           {errors: null, pending: false, status: 'VALID'},             // c2
+         ]);
+       }));
+
+    it('should handle multiple successful FormGroup validators resolving after successful child validator',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 1, shouldFail: false}));
+         const g = new FormGroup({'one': c}, null!, [
+           simpleAsyncValidator({timeout: 2, shouldFail: false}),
+           simpleAsyncValidator({timeout: 3, shouldFail: false})
+         ]);
+
+         // Initially, the form group and nested control are in pending state
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: true, status: 'PENDING'},  // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, only form control validation has resolved
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: false, status: 'VALID'},   // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, one form async validator has resolved but not the second
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: false, status: 'VALID'},   // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, the form group validation resolves
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: false, status: 'VALID'},  // Group
+           {errors: null, pending: false, status: 'VALID'},  // Control
+         ]);
+       }));
+
+    it('should handle multiple FormGroup validators (success then failure) resolving after successful child validator',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 1, shouldFail: false}));
+         const g = new FormGroup({'one': c}, null!, [
+           simpleAsyncValidator({timeout: 2, shouldFail: false}),
+           simpleAsyncValidator({timeout: 3, shouldFail: true})
+         ]);
+
+         // Initially, the form group and nested control are in pending state
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: true, status: 'PENDING'},  // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, only form control validation has resolved
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: false, status: 'VALID'},   // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, one form async validator has resolved but not the second
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: false, status: 'VALID'},   // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, the form group validation fails
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // Group
+           {errors: null, pending: false, status: 'VALID'},             // Control
+         ]);
+       }));
+
+
+    it('should handle multiple FormGroup validators (failure then success) resolving after successful child validator',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 1, shouldFail: false}));
+         const g = new FormGroup({'one': c}, null!, [
+           simpleAsyncValidator({timeout: 2, shouldFail: true}),
+           simpleAsyncValidator({timeout: 3, shouldFail: false})
+         ]);
+
+         // Initially, the form group and nested control are in pending state
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: true, status: 'PENDING'},  // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, only form control validation has resolved
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: false, status: 'VALID'},   // Control
+         ]);
+
+
+         tick(1);
+
+         // All async validators are composed into one function. So, after 2ms, the FormGroup g is
+         // still in pending state without errors
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: false, status: 'VALID'},   // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, the form group validation fails
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // Group
+           {errors: null, pending: false, status: 'VALID'},             // Control
+         ]);
+       }));
+
+
+    it('should handle async validators in nested form groups / arrays', fakeAsync(() => {
+         const c1 = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 1, shouldFail: false}));
+
+         const g1 = new FormGroup(
+             {'one': c1}, null!, simpleAsyncValidator({timeout: 2, shouldFail: true}));
+
+         const c2 =
+             new FormControl('fcVal', null!, simpleAsyncValidator({timeout: 3, shouldFail: false}));
+
+         const g2 =
+             new FormArray([c2], null!, simpleAsyncValidator({timeout: 4, shouldFail: false}));
+
+         const g = new FormGroup(
+             {'g1': g1, 'g2': g2}, null!, simpleAsyncValidator({timeout: 5, shouldFail: false}));
+
+         // Initially, the form group and nested control are in pending state
+         expect(currentStateOf([g, g.get('g1')!, g.get('g2')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group g
+           {errors: null, pending: true, status: 'PENDING'},  // Group g1
+           {errors: null, pending: true, status: 'PENDING'},  // Group g2
+         ]);
+
+         tick(2);
+
+         // After 2ms, g1 validation fails
+         expect(currentStateOf([g, g.get('g1')!, g.get('g2')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},            // Group g
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // Group g1
+           {errors: null, pending: true, status: 'PENDING'},            // Group g2
+         ]);
+
+         tick(2);
+
+         // After 2ms, g2 validation resolves
+         expect(currentStateOf([g, g.get('g1')!, g.get('g2')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},            // Group g
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // Group g1
+           {errors: null, pending: false, status: 'VALID'},             // Group g2
+         ]);
+
+         tick(1);
+
+         // After 1ms, g validation fails because g1 is invalid, but since errors do not cascade, so
+         // we still have null errors for g
+         expect(currentStateOf([g, g.get('g1')!, g.get('g2')!])).toEqual([
+           {errors: null, pending: false, status: 'INVALID'},           // Group g
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // Group g1
+           {errors: null, pending: false, status: 'VALID'},             // Group g2
+         ]);
+       }));
+
+    it('should handle failing FormGroup validator resolving before successful child validator',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 2, shouldFail: false}));
+         const g =
+             new FormGroup({'one': c}, null!, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+
+         // Initially, the form group and nested control are in pending state
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // Group
+           {errors: null, pending: true, status: 'PENDING'},  // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, form group validation fails
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // Group
+           {errors: null, pending: true, status: 'PENDING'},            // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, child validation resolves
+         expect(currentStateOf([g, g.get('one')!])).toEqual([
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // Group
+           {errors: null, pending: false, status: 'VALID'},             // Control
+         ]);
+       }));
+
+    it('should handle failing FormArray validator resolving before successful child validator',
+       fakeAsync(() => {
+         const c = new FormControl(
+             'fcValue', null!, simpleAsyncValidator({timeout: 2, shouldFail: false}));
+         const a = new FormArray([c], null!, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+
+         // Initially, the form array and nested control are in pending state
+         expect(currentStateOf([a, a.at(0)!])).toEqual([
+           {errors: null, pending: true, status: 'PENDING'},  // FormArray
+           {errors: null, pending: true, status: 'PENDING'},  // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, form array validation fails
+         expect(currentStateOf([a, a.at(0)!])).toEqual([
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // FormArray
+           {errors: null, pending: true, status: 'PENDING'},            // Control
+         ]);
+
+         tick(1);
+
+         // After 1ms, child validation resolves
+         expect(currentStateOf([a, a.at(0)!])).toEqual([
+           {errors: {async: true}, pending: false, status: 'INVALID'},  // FormArray
+           {errors: null, pending: false, status: 'VALID'},             // Control
+         ]);
        }));
   });
 

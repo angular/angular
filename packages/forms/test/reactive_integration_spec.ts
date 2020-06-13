@@ -2074,6 +2074,72 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            expect(control.valid).toEqual(false);
          }));
 
+      it('should handle async validation changes in parent and child controls', fakeAsync(() => {
+           const fixture = initTest(FormGroupComp);
+           const control = new FormControl(
+               '', Validators.required, asyncValidator(c => !!c.value && c.value.length > 3, 100));
+           const form = new FormGroup(
+               {'login': control}, null,
+               asyncValidator(c => c.get('login')!.value.includes('angular'), 200));
+           fixture.componentInstance.form = form;
+           fixture.detectChanges();
+           tick();
+
+           // Initially, the form is invalid because the nested mandatory control is empty
+           expect(control.hasError('required')).toEqual(true);
+           expect(form.value).toEqual({'login': ''});
+           expect(form.invalid).toEqual(true);
+
+           // Setting a value in the form control that will trigger the registered asynchronous
+           // validation
+           const input = fixture.debugElement.query(By.css('input'));
+           input.nativeElement.value = 'angul';
+           dispatchEvent(input.nativeElement, 'input');
+
+           // The form control asynchronous validation is in progress (for 100 ms)
+           expect(control.pending).toEqual(true);
+
+           tick(100);
+
+           // Now the asynchronous validation has resolved, and since the form control value
+           // (`angul`) has a length > 3, the validation is successful
+           expect(control.invalid).toEqual(false);
+
+           // Even if the child control is valid, the form control is pending because it is still
+           // waiting for its own validation
+           expect(form.pending).toEqual(true);
+
+           tick(100);
+
+           // Login form control is valid. However, the form control is invalid because `angul` does
+           // not include `angular`
+           expect(control.invalid).toEqual(false);
+           expect(form.pending).toEqual(false);
+           expect(form.invalid).toEqual(true);
+
+           // Setting a value that would be trigger "VALID" form state
+           input.nativeElement.value = 'angular!';
+           dispatchEvent(input.nativeElement, 'input');
+
+           // Since the form control value changed, its asynchronous validation runs for 100ms
+           expect(control.pending).toEqual(true);
+
+           tick(100);
+
+           // Even if the child control is valid, the form control is pending because it is still
+           // waiting for its own validation
+           expect(control.invalid).toEqual(false);
+           expect(form.pending).toEqual(true);
+
+           tick(100);
+
+           // Now, the form is valid because its own asynchronous validation has resolved
+           // successfully, because the form control value `angular` includes the `angular` string
+           expect(control.invalid).toEqual(false);
+           expect(form.pending).toEqual(false);
+           expect(form.invalid).toEqual(false);
+         }));
+
       it('should cancel observable properly between validation runs', fakeAsync(() => {
            const fixture = initTest(FormControlComp);
            const resultArr: number[] = [];
@@ -2383,16 +2449,34 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
   });
 }
 
-function uniqLoginAsyncValidator(expectedValue: string, timeout: number = 0) {
+/**
+ * Creates an async validator using a checker function, a timeout and the error to emit in case of
+ * validation failure
+ *
+ * @param checker A function to decide whether the validator will resolve with success or failure
+ * @param timeout When the validation will resolve
+ * @param error The error message to be emitted in case of validation failure
+ *
+ * @returns An async validator created using a checker function, a timeout and the error to emit in
+ * case of validation failure
+ */
+function asyncValidator(
+    checker: (c: AbstractControl) => boolean, timeout: number = 0, error: any = {
+      'async': true
+    }) {
   return (c: AbstractControl) => {
     let resolve: (result: any) => void;
     const promise = new Promise<any>(res => {
       resolve = res;
     });
-    const res = (c.value == expectedValue) ? null : {'uniqLogin': true};
+    const res = checker(c) ? null : error;
     setTimeout(() => resolve(res), timeout);
     return promise;
   };
+}
+
+function uniqLoginAsyncValidator(expectedValue: string, timeout: number = 0) {
+  return asyncValidator(c => c.value === expectedValue, timeout, {'uniqLogin': true});
 }
 
 function observableValidator(resultArr: number[]): AsyncValidatorFn {
