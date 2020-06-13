@@ -32,7 +32,7 @@ You can use these events to notify the user of a pending update or to refresh th
 ### Checking for updates
 
 It's possible to ask the service worker to check if any updates have been deployed to the server.
-The service worker checks for updates during initialization and on each navigation request (i.e. when the user navigates from a different address to your app).
+The service worker checks for updates during initialization and on each navigation request&mdash;that is, when the user navigates from a different address to your app.
 However, you might choose to manually check for updates if you have a site that changes frequently or want updates to happen on a schedule.
 
 Do this with the `checkForUpdate()` method:
@@ -43,13 +43,13 @@ This method returns a `Promise` which indicates that the update check has comple
 
 <div class="alert is-important">
 
-In order to avoid negatively affecting the initial rendering of the page, `ServiceWorkerModule` will by default wait for up to 30 seconds for the app to stabilize, before registering the ServiceWorker script.
-Constantly polling for updates, e.g. with [setInterval()](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval) or RxJS' [interval()](https://rxjs.dev/api/index/function/interval), will prevent the app from stabilizing and the ServiceWorker script will not be registered with the browser until the 30 seconds upper limit is reached.
+In order to avoid negatively affecting the initial rendering of the page, `ServiceWorkerModule` waits for up to 30 seconds by default for the app to stabilize, before registering the ServiceWorker script.
+Constantly polling for updates, for example, with [setInterval()](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval) or RxJS' [interval()](https://rxjs.dev/api/index/function/interval), will prevent the app from stabilizing and the ServiceWorker script will not be registered with the browser until the 30 seconds upper limit is reached.
 
 Note that this is true for any kind of polling done by your application.
 Check the {@link ApplicationRef#isStable isStable} documentation for more information.
 
-You can avoid that delay by waiting for the app to stabilize first, before starting to poll for updates (as shown in the example above).
+You can avoid that delay by waiting for the app to stabilize first, before starting to poll for updates, as shown in the example above.
 Alternatively, you might want to define a different {@link SwRegistrationOptions#registrationStrategy registration strategy} for the ServiceWorker.
 
 </div>
