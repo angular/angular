@@ -137,6 +137,13 @@ export abstract class AbstractControl {
   // TODO(issue/24571): remove '!'.
   _pendingDirty!: boolean;
 
+  /**
+   * Indicates that a control has its own pending asynchronous validation in progress.
+   *
+   * @internal
+   */
+  _hasOwnPendingAsyncValidator = false;
+
   /** @internal */
   // TODO(issue/24571): remove '!'.
   _pendingTouched!: boolean;
@@ -675,15 +682,22 @@ export abstract class AbstractControl {
   private _runAsyncValidator(emitEvent?: boolean): void {
     if (this.asyncValidator) {
       (this as {status: string}).status = PENDING;
+      this._hasOwnPendingAsyncValidator = true;
       const obs = toObservable(this.asyncValidator(this));
-      this._asyncValidationSubscription =
-          obs.subscribe((errors: ValidationErrors|null) => this.setErrors(errors, {emitEvent}));
+      this._asyncValidationSubscription = obs.subscribe((errors: ValidationErrors|null) => {
+        this._hasOwnPendingAsyncValidator = false;
+        // This will trigger the recalculation of the validation status, which depends on
+        // the state of the asynchronous validation (whether it is in progress or not). So, it is
+        // necessary that we have updated the `_hasOwnPendingAsyncValidator` boolean flag first.
+        this.setErrors(errors, {emitEvent});
+      });
     }
   }
 
   private _cancelExistingSubscription(): void {
     if (this._asyncValidationSubscription) {
       this._asyncValidationSubscription.unsubscribe();
+      this._hasOwnPendingAsyncValidator = false;
     }
   }
 
@@ -838,7 +852,7 @@ export abstract class AbstractControl {
   private _calculateStatus(): string {
     if (this._allControlsDisabled()) return DISABLED;
     if (this.errors) return INVALID;
-    if (this._anyControlsHaveStatus(PENDING)) return PENDING;
+    if (this._hasOwnPendingAsyncValidator || this._anyControlsHaveStatus(PENDING)) return PENDING;
     if (this._anyControlsHaveStatus(INVALID)) return INVALID;
     return VALID;
   }
