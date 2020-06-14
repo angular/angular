@@ -13,6 +13,8 @@ import {Logger} from '../../logging';
 import {RawSourceMap} from './raw_source_map';
 import {SourceFile} from './source_file';
 
+const SCHEME_MATCHER = /^([a-z][a-z0-9.-]*):\/\//i;
+
 /**
  * This class can be used to load a source file, its associated source map and any upstream sources.
  *
@@ -25,7 +27,10 @@ import {SourceFile} from './source_file';
 export class SourceFileLoader {
   private currentPaths: AbsoluteFsPath[] = [];
 
-  constructor(private fs: FileSystem, private logger: Logger) {}
+  constructor(
+      private fs: FileSystem, private logger: Logger,
+      /** A map of URL schemes to base paths. The scheme name should be lowercase. */
+      private schemeMap: Record<string, AbsoluteFsPath>) {}
 
   /**
    * Load a source file, compute its source map, and recursively load any referenced source files.
@@ -128,9 +133,10 @@ export class SourceFileLoader {
    * source file and its associated source map.
    */
   private processSources(basePath: AbsoluteFsPath, map: RawSourceMap): (SourceFile|null)[] {
-    const sourceRoot = this.fs.resolve(this.fs.dirname(basePath), map.sourceRoot || '');
+    const sourceRoot = this.fs.resolve(
+        this.fs.dirname(basePath), this.replaceSchemeWithPath(map.sourceRoot || ''));
     return map.sources.map((source, index) => {
-      const path = this.fs.resolve(sourceRoot, source);
+      const path = this.fs.resolve(sourceRoot, this.replaceSchemeWithPath(source));
       const content = map.sourcesContent && map.sourcesContent[index] || null;
       return this.loadSourceFile(path, content, null);
     });
@@ -167,6 +173,19 @@ export class SourceFileLoader {
           `Circular source file mapping dependency: ${this.currentPaths.join(' -> ')} -> ${path}`);
     }
     this.currentPaths.push(path);
+  }
+
+  /**
+   * Replace any matched URL schemes with their corresponding path held in the schemeMap.
+   *
+   * Some build tools replace real file paths with scheme prefixed paths - e.g. `webpack://`.
+   * We use the `schemeMap` passed to this class to convert such paths to "real" file paths.
+   * In some cases, this is not possible, since the file was actually synthesized by the build tool.
+   * But the end result is better than prefixing the sourceRoot in front of the scheme.
+   */
+  private replaceSchemeWithPath(path: string): string {
+    return path.replace(
+        SCHEME_MATCHER, (_: string, scheme: string) => this.schemeMap[scheme.toLowerCase()] || '');
   }
 }
 
