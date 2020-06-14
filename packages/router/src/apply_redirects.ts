@@ -11,12 +11,13 @@ import {EmptyError, from, Observable, Observer, of} from 'rxjs';
 import {catchError, concatAll, every, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
-import {CanLoadFn} from './interfaces';
+import {CanLoadChildFn, CanLoadFn} from './interfaces';
+import {prioritizedGuardValue} from './operators/prioritized_guard_value';
 import {RouterConfigLoader} from './router_config_loader';
 import {defaultUrlMatcher, navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {forEach, waitForMap, wrapIntoObservable} from './utils/collection';
-import {isCanLoad, isFunction, isUrlTree} from './utils/type_guards';
+import {isCanLoad, isCanLoadChild, isFunction, isUrlTree} from './utils/type_guards';
 
 class NoMatch {
   public segmentGroup: UrlSegmentGroup|null;
@@ -145,12 +146,13 @@ class ApplyRedirects {
 
   private expandSegment(
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[],
-      segments: UrlSegment[], outlet: string,
-      allowRedirects: boolean): Observable<UrlSegmentGroup> {
+      segments: UrlSegment[], outlet: string, allowRedirects: boolean,
+      canLoadChildGuards?: any[]): Observable<UrlSegmentGroup> {
     return of(...routes).pipe(
         map((r: any) => {
           const expanded$ = this.expandSegmentAgainstRoute(
-              ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
+              ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects,
+              canLoadChildGuards);
           return expanded$.pipe(catchError((e: any) => {
             if (e instanceof NoMatch) {
               // TODO(i): this return type doesn't match the declared Observable<UrlSegmentGroup> -
@@ -178,13 +180,15 @@ class ApplyRedirects {
 
   private expandSegmentAgainstRoute(
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
-      paths: UrlSegment[], outlet: string, allowRedirects: boolean): Observable<UrlSegmentGroup> {
+      paths: UrlSegment[], outlet: string, allowRedirects: boolean,
+      canLoadChildGuards?: any[]): Observable<UrlSegmentGroup> {
     if (getOutlet(route) !== outlet) {
       return noMatch(segmentGroup);
     }
 
     if (route.redirectTo === undefined) {
-      return this.matchSegmentAgainstRoute(ngModule, segmentGroup, route, paths);
+      return this.matchSegmentAgainstRoute(
+          ngModule, segmentGroup, route, paths, canLoadChildGuards);
     }
 
     if (allowRedirects && this.allowRedirects) {
@@ -243,7 +247,7 @@ class ApplyRedirects {
 
   private matchSegmentAgainstRoute(
       ngModule: NgModuleRef<any>, rawSegmentGroup: UrlSegmentGroup, route: Route,
-      segments: UrlSegment[]): Observable<UrlSegmentGroup> {
+      segments: UrlSegment[], canLoadChildGuards: any[] = []): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       if (route.loadChildren) {
         return this.configLoader.load(ngModule.injector, route)
@@ -260,7 +264,7 @@ class ApplyRedirects {
     if (!matched) return noMatch(rawSegmentGroup);
 
     const rawSlicedSegments = segments.slice(lastChild);
-    const childConfig$ = this.getChildConfig(ngModule, route, segments);
+    const childConfig$ = this.getChildConfig(ngModule, route, segments, canLoadChildGuards);
 
     return childConfig$.pipe(mergeMap((routerConfig: LoadedRouterConfig) => {
       const childModule = routerConfig.module;
@@ -280,15 +284,17 @@ class ApplyRedirects {
       }
 
       const expanded$ = this.expandSegment(
-          childModule, segmentGroup, childConfig, slicedSegments, PRIMARY_OUTLET, true);
+          childModule, segmentGroup, childConfig, slicedSegments, PRIMARY_OUTLET, true,
+          [...canLoadChildGuards, ...(route.canLoadChild || [])]);
       return expanded$.pipe(
           map((cs: UrlSegmentGroup) =>
                   new UrlSegmentGroup(consumedSegments.concat(cs.segments), cs.children)));
     }));
   }
 
-  private getChildConfig(ngModule: NgModuleRef<any>, route: Route, segments: UrlSegment[]):
-      Observable<LoadedRouterConfig> {
+  private getChildConfig(
+      ngModule: NgModuleRef<any>, route: Route, segments: UrlSegment[],
+      canLoadChildGuards: any[]): Observable<LoadedRouterConfig> {
     if (route.children) {
       // The children belong to the same module
       return of(new LoadedRouterConfig(route.children, ngModule));
@@ -300,28 +306,46 @@ class ApplyRedirects {
         return of(route._loadedConfig);
       }
 
-      return this.runCanLoadGuards(ngModule.injector, route, segments)
-          .pipe(mergeMap((shouldLoadResult: boolean) => {
-            if (shouldLoadResult) {
-              return this.configLoader.load(ngModule.injector, route)
-                  .pipe(map((cfg: LoadedRouterConfig) => {
-                    route._loadedConfig = cfg;
-                    return cfg;
-                  }));
-            }
-            return canLoadFails(route);
-          }));
+      return from([
+               this.runCanLoadChildGuards(ngModule.injector, route, segments, canLoadChildGuards),
+               this.runCanLoadGuards(ngModule.injector, route, segments)
+             ])
+          .pipe(
+              concatAll(),
+              first(
+                  result => {
+                    return result !== true;
+                  },
+                  true as boolean | UrlTree),
+              tap((result: UrlTree|boolean) => {
+                if (!isUrlTree(result)) return;
+
+                const error: Error&{url?: UrlTree} = navigationCancelingError(
+                    `Redirecting to "${this.urlSerializer.serialize(result)}"`);
+                error.url = result;
+                throw error;
+              }),
+              every(result => result === true), mergeMap((shouldLoadResult: boolean) => {
+                if (shouldLoadResult) {
+                  return this.configLoader.load(ngModule.injector, route)
+                      .pipe(map((cfg: LoadedRouterConfig) => {
+                        route._loadedConfig = cfg;
+                        return cfg;
+                      }));
+                }
+                return canLoadFails(route);
+              }));
     }
 
     return of(new LoadedRouterConfig([], ngModule));
   }
 
   private runCanLoadGuards(moduleInjector: Injector, route: Route, segments: UrlSegment[]):
-      Observable<boolean> {
+      Observable<boolean|UrlTree> {
     const canLoad = route.canLoad;
     if (!canLoad || canLoad.length === 0) return of(true);
 
-    const obs = from(canLoad).pipe(map((injectionToken: any) => {
+    const canLoadChildObservables = canLoad.map((injectionToken: any) => {
       const guard = moduleInjector.get(injectionToken);
       let guardVal;
       if (isCanLoad(guard)) {
@@ -332,20 +356,30 @@ class ApplyRedirects {
         throw new Error('Invalid CanLoad guard');
       }
       return wrapIntoObservable(guardVal);
-    }));
+    });
 
-    return obs.pipe(
-        concatAll(),
-        tap((result: UrlTree|boolean) => {
-          if (!isUrlTree(result)) return;
+    return of(canLoadChildObservables).pipe(prioritizedGuardValue());
+  }
 
-          const error: Error&{url?: UrlTree} =
-              navigationCancelingError(`Redirecting to "${this.urlSerializer.serialize(result)}"`);
-          error.url = result;
-          throw error;
-        }),
-        every(result => result === true),
-    );
+  private runCanLoadChildGuards(
+      moduleInjector: Injector, route: Route, segments: UrlSegment[],
+      canLoadChildGuards: any[]): Observable<boolean|UrlTree> {
+    if (!canLoadChildGuards || canLoadChildGuards.length === 0) return of(true);
+
+    const canLoadChildObservables = canLoadChildGuards.map((injectionToken: any) => {
+      const guard = moduleInjector.get(injectionToken);
+      let guardVal;
+      if (isCanLoadChild(guard)) {
+        guardVal = guard.canLoadChild(route, segments);
+      } else if (isFunction<CanLoadChildFn>(guard)) {
+        guardVal = guard(route, segments);
+      } else {
+        throw new Error('Invalid CanLoadChild guard');
+      }
+      return wrapIntoObservable(guardVal);
+    });
+
+    return of(canLoadChildObservables).pipe(prioritizedGuardValue());
   }
 
   private lineralizeSegments(route: Route, urlTree: UrlTree): Observable<UrlSegment[]> {

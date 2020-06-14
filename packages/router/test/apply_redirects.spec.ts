@@ -235,6 +235,26 @@ describe('applyRedirects', () => {
       });
     });
 
+    it('should load when all canLoadChild guards return true', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+
+      const guard = () => true;
+      const injector = {
+        get: (token: any) => token === 'guard1' || token === 'guard2' ? guard : {injector}
+      };
+
+      const config = [{
+        path: '',
+        canLoadChild: ['guard1', 'guard2'],
+        children: [{path: 'a', component: ComponentA, loadChildren: 'children'}]
+      }];
+
+      applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config).forEach(r => {
+        expectTreeToBe(r, '/a/b');
+      });
+    });
+
     it('should not load when any canLoad guards return false', () => {
       const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
@@ -257,6 +277,42 @@ describe('applyRedirects', () => {
       const config = [
         {path: 'a', component: ComponentA, canLoad: ['guard1', 'guard2'], loadChildren: 'children'}
       ];
+
+      applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
+          .subscribe(
+              () => {
+                throw 'Should not reach';
+              },
+              (e) => {
+                expect(e.message).toEqual(
+                    `NavigationCancelingError: Cannot load children because the guard of the route "path: 'a'" returned false`);
+              });
+    });
+
+    it('should not load when any canLoadChild guards return false', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+
+      const trueGuard = () => true;
+      const falseGuard = () => false;
+      const injector = {
+        get: (token: any) => {
+          switch (token) {
+            case 'guard1':
+              return trueGuard;
+            case 'guard2':
+              return falseGuard;
+            case NgModuleRef:
+              return {injector};
+          }
+        }
+      };
+
+      const config = [{
+        path: '',
+        canLoadChild: ['guard1', 'guard2'],
+        children: [{path: 'a', component: ComponentA, loadChildren: 'children'}]
+      }];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
           .subscribe(
@@ -302,6 +358,41 @@ describe('applyRedirects', () => {
               });
     });
 
+    it('should not load when any canLoadChild guards is rejected (promises)', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+
+      const trueGuard = () => Promise.resolve(true);
+      const falseGuard = () => Promise.reject('someError');
+      const injector = {
+        get: (token: any) => {
+          switch (token) {
+            case 'guard1':
+              return trueGuard;
+            case 'guard2':
+              return falseGuard;
+            case NgModuleRef:
+              return {injector};
+          }
+        }
+      };
+
+      const config = [{
+        path: '',
+        canLoadChild: ['guard1', 'guard2'],
+        children: [{path: 'a', component: ComponentA, loadChildren: 'children'}]
+      }];
+
+      applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
+          .subscribe(
+              () => {
+                throw 'Should not reach';
+              },
+              (e) => {
+                expect(e).toEqual('someError');
+              });
+    });
+
     it('should work with objects implementing the CanLoad interface', () => {
       const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
@@ -311,6 +402,29 @@ describe('applyRedirects', () => {
 
       const config =
           [{path: 'a', component: ComponentA, canLoad: ['guard'], loadChildren: 'children'}];
+
+      applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
+          .subscribe(
+              (r) => {
+                expectTreeToBe(r, '/a/b');
+              },
+              (e) => {
+                throw 'Should not reach';
+              });
+    });
+
+    it('should work with objects implementing the CanLoadChild interface', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+
+      const guard = {canLoadChild: () => Promise.resolve(true)};
+      const injector = {get: (token: any) => token === 'guard' ? guard : {injector}};
+
+      const config = [{
+        path: '',
+        canLoadChild: ['guard'],
+        children: [{path: 'a', component: ComponentA, loadChildren: 'children'}]
+      }];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
           .subscribe(
@@ -350,6 +464,37 @@ describe('applyRedirects', () => {
               });
     });
 
+    it('should pass UrlSegments to functions implementing the canLoadChild guard interface', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+
+      let passedUrlSegments: UrlSegment[];
+
+      const guard = (route: Route, urlSegments: UrlSegment[]) => {
+        passedUrlSegments = urlSegments;
+        return true;
+      };
+      const injector = {get: (token: any) => token === 'guard' ? guard : {injector}};
+
+      const config = [{
+        path: '',
+        canLoadChild: ['guard'],
+        children: [{path: 'a', component: ComponentA, loadChildren: 'children'}]
+      }];
+
+      applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
+          .subscribe(
+              (r) => {
+                expectTreeToBe(r, '/a/b');
+                expect(passedUrlSegments.length).toBe(2);
+                expect(passedUrlSegments[0].path).toBe('a');
+                expect(passedUrlSegments[1].path).toBe('b');
+              },
+              (e) => {
+                throw 'Should not reach';
+              });
+    });
+
     it('should pass UrlSegments to objects implementing the canLoad guard interface', () => {
       const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
@@ -366,6 +511,39 @@ describe('applyRedirects', () => {
 
       const config =
           [{path: 'a', component: ComponentA, canLoad: ['guard'], loadChildren: 'children'}];
+
+      applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
+          .subscribe(
+              (r) => {
+                expectTreeToBe(r, '/a/b');
+                expect(passedUrlSegments.length).toBe(2);
+                expect(passedUrlSegments[0].path).toBe('a');
+                expect(passedUrlSegments[1].path).toBe('b');
+              },
+              (e) => {
+                throw 'Should not reach';
+              });
+    });
+
+    it('should pass UrlSegments to objects implementing the canLoadChild guard interface', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+
+      let passedUrlSegments: UrlSegment[];
+
+      const guard = {
+        canLoadChild: (route: Route, urlSegments: UrlSegment[]) => {
+          passedUrlSegments = urlSegments;
+          return true;
+        }
+      };
+      const injector = {get: (token: any) => token === 'guard' ? guard : {injector}};
+
+      const config = [{
+        path: '',
+        canLoadChild: ['guard'],
+        children: [{path: 'a', component: ComponentA, loadChildren: 'children'}]
+      }];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
           .subscribe(

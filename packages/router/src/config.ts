@@ -456,6 +456,12 @@ export interface Route {
    */
   canLoad?: any[];
   /**
+   * An array of DI tokens used to look up `CanLoadChild()` handlers,
+   * in order to determine if the current user is allowed to load
+   * a child of the component. By default, any user can load a child.
+   */
+  canLoadChild?: any[];
+  /**
    * Additional developer-defined data provided to the component via
    * `ActivatedRoute`. By default, no additional data is passed.
    */

@@ -295,6 +295,7 @@ export declare interface Route {
     canActivateChild?: any[];
     canDeactivate?: any[];
     canLoad?: any[];
+    canLoadChild?: any[];
     children?: Routes;
     component?: Type<any>;
     data?: Data;

@@ -410,3 +410,91 @@ export interface CanLoad {
 
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
     Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
+
+
+/**
+ * @description
+ *
+ * Interface that a class can implement to be a guard deciding if children can be loaded.
+ * If all guards return `true`, navigation will continue. If any guard returns `false`,
+ * navigation will be cancelled. If any guard returns a `UrlTree`, current navigation will
+ * be cancelled and a new navigation will be kicked off to the `UrlTree` returned from the
+ * guard.
+ *
+ * ```
+ * class UserToken {}
+ * class Permissions {
+ *   canLoadChildren(user: UserToken, id: string, segments: UrlSegment[]): boolean {
+ *     return true;
+ *   }
+ * }
+ *
+ * @Injectable()
+ * class CanLoadTeamSection implements CanLoadChild {
+ *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *
+ *   canLoadChild(childRoute: Route, childSegments: UrlSegment[]):
+ * Observable<boolean>|Promise<boolean>|boolean { return
+ * this.permissions.canLoadChildren(this.currentUser, childRoute, childSegments);
+ *   }
+ * }
+ *
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: '',
+ *         canLoadChild: [CanLoadTeamSection],
+ *         children: [
+ *           {
+ *             path: 'team/:id',
+ *             component: TeamComponent,
+ *             loadChildren: 'team.js'
+ *           }
+ *         ]
+ *       }
+ *     ])
+ *   ],
+ *   providers: [CanLoadTeamSection, UserToken, Permissions]
+ * })
+ * class AppModule {}
+ * ```
+ *
+ * You can alternatively provide a function with the `canLoadChild` signature:
+ *
+ * ```
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: '',
+ *         canLoadChild: ['canLoadTeamSection'],
+ *         children: [
+ *           {
+ *             path: 'team/:id',
+ *             component: TeamComponent,
+ *             loadChildren: 'team.js'
+ *           }
+ *         ]
+ *       }
+ *     ])
+ *   ],
+ *   providers: [
+ *     {
+ *       provide: 'canLoadTeamSection',
+ *       useValue: (childRoute: Route, childSegments: UrlSegment[]) => true
+ *     }
+ *   ]
+ * })
+ * class AppModule {}
+ * ```
+ *
+ * @publicApi
+ */
+export interface CanLoadChild {
+  canLoadChild(childRoute: Route, childSegments: UrlSegment[]):
+      Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
+}
+
+export type CanLoadChildFn = (childRoute: Route, childSegments: UrlSegment[]) =>
+    Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
