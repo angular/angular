@@ -156,3 +156,23 @@ export function defaultUrlMatcher(
 
   return {consumed: segments.slice(0, parts.length), posParams};
 }
+
+/**
+ * Takes two values and returns true only if they are the same value or are
+ * objects with the same properties whose values are also equal
+ * @param params two objects or string to deep compare.
+ * @returns true or false
+ */
+export function deepEqual(a: any, b: any) {
+  if (a === undefined || b === undefined) {
+    if (a === b) {
+      return true;
+    }
+    return false;
+  }
+
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  return aKeys.length === bKeys.length &&
+      aKeys.every(k => b.hasOwnProperty(k) && Object.is(a[k], b[k]));
+}

@@ -160,28 +160,51 @@ describe('Integration', () => {
        })));
 
     it('should set history.state if navigation url remain the same but navigation state changed',
-        fakeAsync(inject([Router], (router: Router) => {
-        router.onSameUrlNavigation = 'ignore';
-        router.resetConfig([
-          {path: '', component: SimpleCmp},
-          {path: 'simple', component: SimpleCmp},
-        ]);
+       fakeAsync(inject([Router], (router: Router) => {
+         router.onSameUrlNavigation = 'ignore';
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'simple', component: SimpleCmp},
+         ]);
 
-        const fixture = createRoot(router, RootCmp);
-        const events: Event[] = [];
-        router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
+         const fixture = createRoot(router, RootCmp);
+         const events: Event[] = [];
+         router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
 
-        router.navigateByUrl('/simple', {state: {foo: 'bar'}});
-        tick();
+         router.navigateByUrl('/simple', {state: {foo: 'bar'}});
+         tick();
 
-        router.navigateByUrl('/simple', {state: {resolveFailed: 'bar'}});
-        tick();
+         router.navigateByUrl('/simple', {state: {resolveFailed: 'bar'}});
+         tick();
 
-        expectEvents(events, [
-          [NavigationStart, '/simple'], [NavigationEnd, '/simple'], [NavigationStart, '/simple'],
-          [NavigationEnd, '/simple']
-        ]);
-      })));
+         expectEvents(events, [
+           [NavigationStart, '/simple'], [NavigationEnd, '/simple'], [NavigationStart, '/simple'],
+           [NavigationEnd, '/simple']
+         ]);
+       })));
+
+    it('should not set history.state if navigation url and navigation state remain the same',
+       fakeAsync(inject([Router], (router: Router) => {
+         router.onSameUrlNavigation = 'ignore';
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'simple', component: SimpleCmp},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         const events: Event[] = [];
+         router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
+
+         router.navigateByUrl('/simple', {state: {foo: 'bar'}});
+         tick();
+
+         router.navigateByUrl('/simple', {state: {foo: 'bar'}});
+         tick();
+
+         expectEvents(events, [
+          [NavigationStart, '/simple'], [NavigationEnd, '/simple']
+         ]);
+       })));
 
     it('should not pollute browser history when replaceUrl is set to true',
        fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
