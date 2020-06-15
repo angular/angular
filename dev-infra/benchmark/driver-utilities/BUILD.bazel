@@ -9,12 +9,12 @@ ts_library(
     tsconfig = "//dev-infra/benchmark/component_benchmark:tsconfig-e2e.json",
     deps = [
         "//packages/benchpress",
-        "@npm//@types/fs-extra",
         "@npm//@types/node",
         "@npm//@types/selenium-webdriver",
-        "@npm//fs-extra",
+        "@npm//@types/shelljs",
         "@npm//node-uuid",
         "@npm//protractor",
         "@npm//selenium-webdriver",
+        "@npm//shelljs",
     ],
 )
