@@ -82,7 +82,7 @@
 @mixin mat-mdc-checkbox-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   .mat-mdc-checkbox .mdc-checkbox {
-    @include mdc-checkbox-density($density-scale);
+    @include mdc-checkbox-density($density-scale, $query: $mat-base-styles-query);
   }
 }
 

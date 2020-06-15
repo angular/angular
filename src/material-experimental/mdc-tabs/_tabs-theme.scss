@@ -104,7 +104,7 @@
 @mixin mat-mdc-tabs-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   .mat-mdc-tab-header {
-    @include mdc-tab-bar-density($density-scale);
+    @include mdc-tab-bar-density($density-scale, $query: $mat-base-styles-query);
   }
 }
 

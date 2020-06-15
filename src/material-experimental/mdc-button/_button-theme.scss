@@ -178,7 +178,7 @@ $mat-button-state-target: '.mdc-button__ripple';
   .mat-mdc-raised-button,
   .mat-mdc-unelevated-button,
   .mat-mdc-outlined-button {
-    @include mdc-button-density($density-scale);
+    @include mdc-button-density($density-scale, $query: $mat-base-styles-query);
   }
 }
 
@@ -334,7 +334,7 @@ $mat-button-state-target: '.mdc-button__ripple';
 @mixin mat-mdc-icon-button-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   .mat-mdc-icon-button {
-    @include mdc-icon-button-density($density-scale);
+    @include mdc-icon-button-density($density-scale, $query: $mat-base-styles-query);
   }
 }
 

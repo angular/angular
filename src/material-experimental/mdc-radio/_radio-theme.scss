@@ -49,7 +49,7 @@
 @mixin mat-mdc-radio-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   .mat-mdc-radio-button .mdc-radio {
-    @include mdc-radio-density($density-scale);
+    @include mdc-radio-density($density-scale, $query: $mat-base-styles-query);
   }
 }
 

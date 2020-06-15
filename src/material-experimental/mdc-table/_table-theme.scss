@@ -52,7 +52,7 @@
 @mixin mat-mdc-table-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   .mat-mdc-table {
-    @include mdc-data-table-density($density-scale);
+    @include mdc-data-table-density($density-scale, $query: $mat-base-styles-query);
   }
 }
 

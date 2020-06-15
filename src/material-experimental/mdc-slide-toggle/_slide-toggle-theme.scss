@@ -89,7 +89,7 @@
 @mixin mat-mdc-slide-toggle-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   .mat-mdc-slide-toggle .mdc-switch {
-    @include mdc-switch-density($density-scale);
+    @include mdc-switch-density($density-scale, $query: $mat-base-styles-query);
   }
 }
 
