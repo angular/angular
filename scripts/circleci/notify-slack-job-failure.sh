@@ -3,7 +3,7 @@
 # Script that notifies Slack about the currently failing job. This script
 # will be a noop when running for forked builds (i.e. PRs).
 
-if [[ -z "${CIRCLE_PR_NUMBER}" ]]; then
+if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
   echo "Skipping notification for pull request."
   exit 0
 fi
