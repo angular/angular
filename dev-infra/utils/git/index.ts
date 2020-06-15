@@ -9,21 +9,17 @@
 import * as Octokit from '@octokit/rest';
 import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
 
-import {getConfig, getRepoBaseDir, NgDevConfig} from './config';
-import {info, yellow} from './console';
+import {getConfig, getRepoBaseDir, NgDevConfig} from '../config';
+import {info, yellow} from '../console';
+import {_GithubClient} from './_github';
 
+// Re-export GithubApiRequestError
+export {GithubApiRequestError} from './_github';
 
 /** Github response type extended to include the `x-oauth-scopes` headers presence. */
 type RateLimitResponseWithOAuthScopeHeader = Octokit.Response<Octokit.RateLimitGetResponse>&{
   headers: {'x-oauth-scopes': string};
 };
-
-/** Error for failed Github API requests. */
-export class GithubApiRequestError extends Error {
-  constructor(public status: number, message: string) {
-    super(message);
-  }
-}
 
 /** Error for failed Git commands. */
 export class GitCommandError extends Error {
@@ -55,7 +51,7 @@ export class GitClient {
       `https://${this._githubToken}@github.com/${this.remoteConfig.owner}/${
           this.remoteConfig.name}.git`;
   /** Instance of the authenticated Github octokit API. */
-  api: Octokit;
+  github = new _GithubClient(this._githubToken);
 
   /** The file path of project's root directory. */
   private _projectRoot = getRepoBaseDir();
@@ -75,13 +71,6 @@ export class GitClient {
     if (_githubToken != null) {
       this._githubTokenRegex = new RegExp(_githubToken, 'g');
     }
-
-    this.api = new Octokit({auth: _githubToken});
-    this.api.hook.error('request', error => {
-      // Wrap API errors in a known error class. This allows us to
-      // expect Github API errors better and in a non-ambiguous way.
-      throw new GithubApiRequestError(error.status, error.message);
-    });
   }
 
   /** Executes the given git command. Throws if the command fails. */
@@ -186,10 +175,8 @@ export class GitClient {
     return {error};
   }
 
-
   /**
-   * Retrieves the OAuth scopes for the loaded Github token, returning the already
-   * retrieved list of OAuth scopes if available.
+   * Retrieve the OAuth scopes for the loaded Github token.
    **/
   private async getAuthScopesForToken() {
     // If the OAuth scopes have already been loaded, return the Promise containing them.
@@ -198,7 +185,7 @@ export class GitClient {
     }
     // OAuth scopes are loaded via the /rate_limit endpoint to prevent
     // usage of a request against that rate_limit for this lookup.
-    return this._oauthScopes = this.api.rateLimit.get().then(_response => {
+    return this._oauthScopes = this.github.rateLimit.get().then(_response => {
       const response = _response as RateLimitResponseWithOAuthScopeHeader;
       const scopes: string = response.headers['x-oauth-scopes'] || '';
       return scopes.split(',').map(scope => scope.trim());
