@@ -9,7 +9,9 @@
     "ts-circular-deps": "./ts-circular-dependencies/index.js"
   },
   "dependencies": {
+    "@angular/benchpress": "0.2.0",
     "@octokit/graphql": "<from-root>",
+    "brotli": "<from-root>",
     "chalk": "<from-root>",
     "cli-progress": "<from-root>",
     "glob": "<from-root>",
@@ -19,35 +21,32 @@
     "node-uuid": "<from-root>",
     "semver": "<from-root>",
     "shelljs": "<from-root>",
+    "tslib": "<from-root>",
     "typed-graphqlify": "<from-root>",
     "yaml": "<from-root>",
     "yargs": "<from-root>"
   },
   "peerDependencies": {
-    "@angular/bazel": "^9.0.0",
-    "@angular/core": "^9.0.0",
-    "@angular/platform-browser": "^9.0.0",
-    "@angular/benchpress": "^0.1.0",
-    "@angular-devkit/build-optimizer": "<from-root>",
     "@bazel/buildifier": "<from-root>",
-    "@bazel/protractor": "<from-root>",
-    "@bazel/terser": "<from-root>",
-    "@bazel/typescript": "<from-root>",
-    "brotli": "<from-root>",
     "clang-format": "<from-root>",
-    "json5": "^1.0.1",
     "protractor": "<from-root>",
-    "rollup": "<from-root>",
-    "rollup-plugin-commonjs": "<from-root>",
-    "rollup-plugin-node-resolve": "<from-root>",
-    "rollup-plugin-sourcemaps": "<from-root>",
     "selenium-webdriver": "<from-root>",
     "ts-node": "<from-root>",
-    "tslib": "<from-root>",
-    "typescript": "<from-root>",
-    "zone.js": "^0.10.3"
+    "typescript": "<from-root>"
   },
   "peerDependenciesMeta": {
+    "@bazel/buildifier": {
+      "optional": true
+    },
+    "clang-format": {
+      "optional": true
+    },
+    "protractor": {
+      "optional": true
+    },
+    "selenium-webdriver": {
+      "optional": true
+    },
     "ts-node": {
       "optional": true
     }
