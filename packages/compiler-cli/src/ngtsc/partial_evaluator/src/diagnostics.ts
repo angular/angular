@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 
 import {makeRelatedInformation} from '../../diagnostics';
 import {Reference} from '../../imports';
+import {FunctionDefinition} from '../../reflection';
 import {DynamicValue, DynamicValueVisitor} from './dynamic';
 import {EnumValue, KnownFn, ResolvedModule, ResolvedValue} from './result';
 
@@ -102,6 +103,16 @@ class TraceDynamicValueVisitor implements DynamicValueVisitor<ts.DiagnosticRelat
         value.node,
         `A value for ${
             description} cannot be determined statically, as it is an external declaration.`)];
+  }
+
+  visitComplexFunctionCall(value: DynamicValue<FunctionDefinition>):
+      ts.DiagnosticRelatedInformation[] {
+    return [
+      makeRelatedInformation(
+          value.node,
+          'Unable to evaluate function call of complex function. A function must have exactly one return statement.'),
+      makeRelatedInformation(value.reason.node, 'Function is declared here.')
+    ];
   }
 
   visitInvalidExpressionType(value: DynamicValue): ts.DiagnosticRelatedInformation[] {

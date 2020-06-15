@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
+import {FunctionDefinition} from '../../reflection';
 
 /**
  * The reason why a value cannot be determined statically.
@@ -56,6 +57,11 @@ export const enum DynamicValueReason {
   INVALID_EXPRESSION_TYPE,
 
   /**
+   * A function call could not be evaluated as the function's body is not a single return statement.
+   */
+  COMPLEX_FUNCTION_CALL,
+
+  /**
    * A value could not be determined statically for any reason other the above.
    */
   UNKNOWN,
@@ -93,6 +99,11 @@ export class DynamicValue<R = unknown> {
     return new DynamicValue(node, value, DynamicValueReason.INVALID_EXPRESSION_TYPE);
   }
 
+  static fromComplexFunctionCall(node: ts.Node, fn: FunctionDefinition):
+      DynamicValue<FunctionDefinition> {
+    return new DynamicValue(node, fn, DynamicValueReason.COMPLEX_FUNCTION_CALL);
+  }
+
   static fromUnknown(node: ts.Node): DynamicValue {
     return new DynamicValue(node, undefined, DynamicValueReason.UNKNOWN);
   }
@@ -121,6 +132,10 @@ export class DynamicValue<R = unknown> {
     return this.code === DynamicValueReason.INVALID_EXPRESSION_TYPE;
   }
 
+  isFromComplexFunctionCall(this: DynamicValue<R>): this is DynamicValue<FunctionDefinition> {
+    return this.code === DynamicValueReason.COMPLEX_FUNCTION_CALL;
+  }
+
   isFromUnknown(this: DynamicValue<R>): this is DynamicValue {
     return this.code === DynamicValueReason.UNKNOWN;
   }
@@ -140,6 +155,9 @@ export class DynamicValue<R = unknown> {
         return visitor.visitUnknownIdentifier(this);
       case DynamicValueReason.INVALID_EXPRESSION_TYPE:
         return visitor.visitInvalidExpressionType(this);
+      case DynamicValueReason.COMPLEX_FUNCTION_CALL:
+        return visitor.visitComplexFunctionCall(
+            this as unknown as DynamicValue<FunctionDefinition>);
       case DynamicValueReason.UNKNOWN:
         return visitor.visitUnknown(this);
     }
@@ -153,5 +171,6 @@ export interface DynamicValueVisitor<R> {
   visitUnsupportedSyntax(value: DynamicValue): R;
   visitUnknownIdentifier(value: DynamicValue): R;
   visitInvalidExpressionType(value: DynamicValue): R;
+  visitComplexFunctionCall(value: DynamicValue<FunctionDefinition>): R;
   visitUnknown(value: DynamicValue): R;
 }
