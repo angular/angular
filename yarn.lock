@@ -1955,6 +1955,13 @@
   dependencies:
     "@types/node" ">= 8"
 
+"@octokit/types@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@octokit/types/-/types-5.0.1.tgz#5459e9a5e9df8565dcc62c17a34491904d71971e"
+  integrity sha512-GorvORVwp244fGKEt3cgt/P+M0MGy4xEDbckw+K5ojEezxyMDgCaYPKVct+/eWQfZXOT7uq0xRpmrl/+hliabA==
+  dependencies:
+    "@types/node" ">= 8"
+
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
