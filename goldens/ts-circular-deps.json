@@ -4,11 +4,6 @@
     "src/cdk-experimental/dialog/dialog-container.ts"
   ],
   [
-    "src/cdk-experimental/menu/menu-item.ts",
-    "src/cdk-experimental/menu/menu-panel.ts",
-    "src/cdk-experimental/menu/menu.ts"
-  ],
-  [
     "src/cdk-experimental/popover-edit/edit-event-dispatcher.ts",
     "src/cdk-experimental/popover-edit/edit-ref.ts"
   ],
