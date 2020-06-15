@@ -97,6 +97,7 @@
     "jsdoc-format": [true, "check-multiline-start"],
     "no-duplicate-imports": true,
     "await-promise": true,
+    "array-type": [true, "array"],
 
     // Codelyzer
     "template-banana-in-box": true,

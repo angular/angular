@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Type, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Type, ViewChild, Provider} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {patchElementFocus} from '@angular/cdk/testing/private';
 import {
@@ -58,8 +58,8 @@ describe('EventListenerFocusTrapInertStrategy', () => {
 
 });
 
-function createComponent<T>(componentType: Type<T>, providers: Array<Object> = []
-  ): ComponentFixture<T> {
+function createComponent<T>(componentType: Type<T>, providers: Provider[] = []):
+  ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [A11yModule],
       declarations: [componentType],

@@ -204,7 +204,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
   set value(value: any) {
     this._value = value;
   }
-  protected _value: Array<any> = [];
+  protected _value: any[] = [];
 
   /** An object used to control when error messages are shown. */
   @Input() errorStateMatcher: ErrorStateMatcher;

@@ -3,7 +3,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     boundsChanged: Observable<void>;
     set center(center: google.maps.LatLngLiteral | google.maps.LatLng);
     centerChanged: Observable<void>;
-    get controls(): Array<google.maps.MVCArray<Node>>;
+    get controls(): google.maps.MVCArray<Node>[];
     get data(): google.maps.Data;
     googleMap?: google.maps.Map;
     headingChanged: Observable<void>;

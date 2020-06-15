@@ -274,7 +274,7 @@ export class EditEventDispatcher {
   }
 }
 
-function computeHoverContentState([firstRow, lastRow, activeRow, hoverRow]: Array<Element|null>):
+function computeHoverContentState([firstRow, lastRow, activeRow, hoverRow]: (Element|null)[]):
      Map<Element, HoverContentState> {
   const hoverContentState = new Map<Element, HoverContentState>();
 

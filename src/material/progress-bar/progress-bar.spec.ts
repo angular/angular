@@ -10,7 +10,7 @@ describe('MatProgressBar', () => {
   let fakePath: string;
 
   function createComponent<T>(componentType: Type<T>,
-                              imports?: Array<Type<{}>>): ComponentFixture<T> {
+                              imports?: Type<{}>[]): ComponentFixture<T> {
     fakePath = '/fake-path';
 
     TestBed.configureTestingModule({

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Type, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Type, ViewChild, Provider} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   A11yModule,
@@ -11,7 +11,7 @@ import {
 import {FocusTrapManager} from './focus-trap-manager';
 
 describe('ConfigurableFocusTrap', () => {
-    let providers: Array<Object>;
+    let providers: Provider[];
 
     describe('with FocusTrapInertStrategy', () => {
       let mockInertStrategy: FocusTrapInertStrategy;
@@ -88,8 +88,8 @@ describe('ConfigurableFocusTrap', () => {
     });
 });
 
-function createComponent<T>(componentType: Type<T>, providers: Array<Object> = []
-  ): ComponentFixture<T> {
+function createComponent<T>(componentType: Type<T>, providers: Provider[] = []):
+  ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [A11yModule],
       declarations: [componentType],

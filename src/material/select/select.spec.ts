@@ -941,7 +941,7 @@ describe('MatSelect', () => {
       describe('for options', () => {
         let fixture: ComponentFixture<BasicSelect>;
         let trigger: HTMLElement;
-        let options: Array<HTMLElement>;
+        let options: HTMLElement[];
 
         beforeEach(fakeAsync(() => {
           fixture = TestBed.createComponent(BasicSelect);

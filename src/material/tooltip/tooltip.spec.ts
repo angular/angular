@@ -1168,7 +1168,7 @@ class OnPushTooltipDemo {
     </button>`,
 })
 class DynamicTooltipsDemo {
-  tooltips: Array<string> = [];
+  tooltips: string[] = [];
 }
 
 @Component({
