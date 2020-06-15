@@ -1,3 +1,43 @@
+# 10.0.0-rc.2 "ferrous-photon" (2020-06-15)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** placeholder not behaving correctly in legacy form field ([#19595](https://github.com/angular/components/issues/19595)) ([ec7219d](https://github.com/angular/components/commit/ec7219d)) |
+| bug fix |  focus monitor-based styles not working in some cases inside shadow dom ([#19422](https://github.com/angular/components/issues/19422)) ([df981ee](https://github.com/angular/components/commit/df981ee)), closes [#19414](https://github.com/angular/components/issues/19414) |
+| feature |  **mdc-list:** add list-option template ([#19327](https://github.com/angular/components/issues/19327)) ([c865136](https://github.com/angular/components/commit/c865136)) |
+| feature |  **menu:** add input to add overlay pane classes ([#19547](https://github.com/angular/components/issues/19547)) ([5244a9f](https://github.com/angular/components/commit/5244a9f)) |
+
+### youtube-player
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  binding some event listeners too late ([#19429](https://github.com/angular/components/issues/19429)) ([d85732c](https://github.com/angular/components/commit/d85732c)), closes [#19408](https://github.com/angular/components/issues/19408) |
+
+### cdk-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  **menu:** Add menu skeleton and build scripts ([#19583](https://github.com/angular/components/issues/19583)) ([c7cadc3](https://github.com/angular/components/commit/c7cadc3)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  strong focus indicator clipped in checkbox and radio button ([#19423](https://github.com/angular/components/issues/19423)) ([45492b6](https://github.com/angular/components/commit/45492b6)) |
+| bug fix |  **mdc-form-field:** do not show focus overlay when disabled ([6bf7f24](https://github.com/angular/components/commit/6bf7f24)) |
+| bug fix |  **mdc-form-field:** show required asterisk for disabled fields ([e3413ba](https://github.com/angular/components/commit/e3413ba)), closes [#19410](https://github.com/angular/components/issues/19410) |
+| bug fix |  **mdc-menu:** missing padding after latest canary release ([#19548](https://github.com/angular/components/issues/19548)) ([b618a96](https://github.com/angular/components/commit/b618a96)) |
+| bug fix |  **slide-toggle:** fix focus indicator position ([#19551](https://github.com/angular/components/issues/19551)) ([6c212b7](https://github.com/angular/components/commit/6c212b7)) |
+
+### input
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **testing:** unable to set the value of inputs that don't respond to typing ([#18812](https://github.com/angular/components/issues/18812)) ([7e5802a](https://github.com/angular/components/commit/7e5802a)), closes [#18790](https://github.com/angular/components/issues/18790) |
+
+
 # 10.0.0-rc.1 "paper-person" (2020-06-08)
 
 ### cdk
