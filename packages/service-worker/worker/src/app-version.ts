@@ -52,6 +52,8 @@ export class AppVersion implements UpdateSource {
    */
   private navigationUrls: {include: RegExp[], exclude: RegExp[]};
 
+  private indexPath = this.adapter.getConfigUrl(this.manifest.index);
+
   /**
    * Tracks whether the manifest has encountered any inconsistencies.
    */
@@ -67,7 +69,7 @@ export class AppVersion implements UpdateSource {
       readonly manifestHash: string) {
     // The hashTable within the manifest is an Object - convert it to a Map for easier lookups.
     Object.keys(this.manifest.hashTable).forEach(url => {
-      this.hashTable.set(url, this.manifest.hashTable[url]);
+      this.hashTable.set(adapter.getConfigUrl(url), this.manifest.hashTable[url]);
     });
 
     // Process each `AssetGroup` declared in the manifest. Each declared group gets an `AssetGroup`
@@ -179,10 +181,10 @@ export class AppVersion implements UpdateSource {
 
     // Next, check if this is a navigation request for a route. Detect circular
     // navigations by checking if the request URL is the same as the index URL.
-    if (req.url !== this.manifest.index && this.isNavigationRequest(req)) {
+    if (this.adapter.getConfigUrl(req.url) !== this.indexPath && this.isNavigationRequest(req)) {
       // This was a navigation request. Re-enter `handleFetch` with a request for
       // the URL.
-      return this.handleFetch(this.adapter.newRequest(this.manifest.index), context);
+      return this.handleFetch(this.adapter.newRequest(this.indexPath), context);
     }
 
     return null;

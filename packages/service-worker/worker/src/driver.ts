@@ -99,6 +99,8 @@ export class Driver implements Debuggable, UpdateSource {
    */
   private loggedInvalidOnlyIfCachedRequest: boolean = false;
 
+  private ngswStatePath = this.adapter.parseUrl('ngsw/state', this.scope.registration.scope).path;
+
   /**
    * A scheduler which manages a queue of tasks that need to be executed when the SW is
    * not doing any other work (not processing any other requests).
@@ -184,7 +186,7 @@ export class Driver implements Debuggable, UpdateSource {
     }
 
     // The only thing that is served unconditionally is the debug page.
-    if (requestUrlObj.path === '/ngsw/state') {
+    if (requestUrlObj.path === this.ngswStatePath) {
       // Allow the debugger to handle the request, but don't affect SW state in any other way.
       event.respondWith(this.debugger.handleFetch(req));
       return;
