@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Output, Input, AfterContentInit, EventEmitter} from '@angular/core';
+import {Directive, Output, Input, AfterContentInit, EventEmitter, OnDestroy} from '@angular/core';
 import {coerceBooleanProperty, BooleanInput} from '@angular/cdk/coercion';
 import {CdkMenuPanel} from './menu-panel';
 import {CdkMenuGroup} from './menu-group';
 import {MenuItem} from './menu-item-interface';
+import {takeUntil} from 'rxjs/operators';
 
 /**
  * Directive which provides behavior for an element which when clicked:
@@ -36,7 +37,7 @@ import {MenuItem} from './menu-item-interface';
     '[attr.aria-disabled]': 'disabled || null',
   },
 })
-export class CdkMenuItem implements AfterContentInit, MenuItem {
+export class CdkMenuItem implements AfterContentInit, MenuItem, OnDestroy {
   /** Template reference variable to the menu this trigger opens */
   @Input('cdkMenuTriggerFor') _menuPanel?: CdkMenuPanel;
 
@@ -66,6 +67,9 @@ export class CdkMenuItem implements AfterContentInit, MenuItem {
   /** Emits when the attached submenu is opened */
   @Output() opened: EventEmitter<void> = new EventEmitter();
 
+  /** Emits when the component gets destroyed */
+  private readonly _destroyed: EventEmitter<void> = new EventEmitter();
+
   constructor(
     /** reference a parent CdkMenuGroup component */
     private readonly _menuGroup: CdkMenuGroup
@@ -74,7 +78,9 @@ export class CdkMenuItem implements AfterContentInit, MenuItem {
   /** Configure event subscriptions */
   ngAfterContentInit() {
     if (this.role !== 'menuitem') {
-      this._menuGroup.change.subscribe((button: CdkMenuItem) => this._toggleCheckedState(button));
+      this._menuGroup.change
+        .pipe(takeUntil(this._destroyed))
+        .subscribe((button: MenuItem) => this._toggleCheckedState(button));
     }
   }
 
@@ -109,12 +115,17 @@ export class CdkMenuItem implements AfterContentInit, MenuItem {
   /**
    * Toggle the checked state of the menuitemradio or menuitemcheckbox component
    */
-  private _toggleCheckedState(selected: CdkMenuItem) {
+  private _toggleCheckedState(selected: MenuItem) {
     if (this.role === 'menuitemradio') {
       this.checked = selected === this;
     } else if (this.role === 'menuitemcheckbox' && selected === this) {
       this.checked = !this.checked;
     }
+  }
+
+  ngOnDestroy() {
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
   static ngAcceptInputType_checked: BooleanInput;
