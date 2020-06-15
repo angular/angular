@@ -91,6 +91,7 @@ export class NgTscPlugin implements TscPlugin {
     if (this.host === null || this.options === null) {
       throw new Error('Lifecycle error: setupCompilation() before wrapHost().');
     }
+    this.host.postProgramCreationCleanup();
     const typeCheckStrategy = new ReusedProgramStrategy(
         program, this.host, this.options, this.host.shimExtensionPrefixes);
     this._compiler = new NgCompiler(

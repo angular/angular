@@ -6,19 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CustomTransformers, defaultGatherDiagnostics, Program} from '@angular/compiler-cli';
+import {CustomTransformers, defaultGatherDiagnostics, NgTscPlugin, Program, readConfiguration} from '@angular/compiler-cli';
 import * as api from '@angular/compiler-cli/src/transformers/api';
 import * as ts from 'typescript';
 
 import {createCompilerHost, createProgram} from '../../index';
 import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, NgtscCompilerHost} from '../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, NgtscCompilerHost, setFileSystem} from '../../src/ngtsc/file_system';
 import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
 import {IndexedComponent} from '../../src/ngtsc/indexer';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {LazyRoute} from '../../src/ngtsc/routing';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 
+let wrapHost!: (host: ts.CompilerHost) => ts.CompilerHost;
 
 /**
  * Manages a temporary testing directory structure and environment for testing ngtsc by feeding it
@@ -27,6 +28,7 @@ import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 export class NgtscTestEnvironment {
   private multiCompileHostExt: MultiCompileHostExt|null = null;
   private oldProgram: Program|null = null;
+  private oldPluginProgram: ts.Program|null = null;
   private changedResources: Set<string>|null = null;
 
   private constructor(
@@ -43,7 +45,8 @@ export class NgtscTestEnvironment {
     }
 
     const host = new AugmentedCompilerHost(fs);
-    setWrapHostForTest(makeWrapHost(host));
+    wrapHost = makeWrapHost(host);
+    setWrapHostForTest(wrapHost);
 
     const env = new NgtscTestEnvironment(fs, fs.resolve('/built'), workingDir);
     fs.chdir(workingDir);
@@ -101,7 +104,8 @@ export class NgtscTestEnvironment {
   enableMultipleCompilations(): void {
     this.changedResources = new Set();
     this.multiCompileHostExt = new MultiCompileHostExt(this.fs);
-    setWrapHostForTest(makeWrapHost(this.multiCompileHostExt));
+    wrapHost = makeWrapHost(this.multiCompileHostExt);
+    setWrapHostForTest(wrapHost);
   }
 
   /**
@@ -208,6 +212,63 @@ export class NgtscTestEnvironment {
     if (this.multiCompileHostExt !== null) {
       this.oldProgram = reuseProgram!.program!;
     }
+  }
+
+  drivePluginDiagnostics(): ts.Diagnostic[] {
+    const oldProgram = this.oldPluginProgram ?? undefined;
+
+    const config = readConfiguration(this.basePath);
+    const options = config.options;
+
+    // Creating the NgTscPlugin installs a real NodeJSFileSystem. Save the current testing fs and
+    // restore it after creation.
+    const fs = getFileSystem();
+    const plugin = new NgTscPlugin(options);
+    setFileSystem(fs);
+
+    const nativeHost = wrapHost(ts.createCompilerHost(options));
+    const host = plugin.wrapHost(nativeHost as any, config.rootNames, options);
+    const program = ts.createProgram({
+      host,
+      options,
+      rootNames: config.rootNames,
+      oldProgram,
+    });
+    const {ignoreForDiagnostics, ignoreForEmit} = plugin.setupCompilation(program, oldProgram);
+
+    const diagnostics: ts.Diagnostic[] = [
+      ...program.getOptionsDiagnostics(),
+      ...program.getGlobalDiagnostics(),
+      ...plugin.getOptionDiagnostics(),
+    ];
+    if (diagnostics.length > 0) {
+      return diagnostics;
+    }
+
+    for (const sf of program.getSourceFiles()) {
+      if (sf.isDeclarationFile || ignoreForDiagnostics.has(sf)) {
+        continue;
+      }
+
+      diagnostics.push(...program.getSyntacticDiagnostics(sf));
+      diagnostics.push(...program.getSemanticDiagnostics(sf));
+      diagnostics.push(...plugin.getDiagnostics(sf));
+    }
+
+    if (diagnostics.length > 0) {
+      return diagnostics;
+    }
+
+    const transformers = plugin.createTransformers();
+    for (const sf of program.getSourceFiles()) {
+      if (sf.isDeclarationFile || ignoreForEmit.has(sf)) {
+        continue;
+      }
+      program.emit(sf, undefined, undefined, undefined, transformers);
+    }
+
+    this.oldPluginProgram = plugin.getNextProgram();
+    return [];
   }
 
   /**
