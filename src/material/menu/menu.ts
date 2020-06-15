@@ -43,7 +43,7 @@ import {
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, switchMap, take} from 'rxjs/operators';
 import {matMenuAnimations} from './menu-animations';
-import {MatMenuContent} from './menu-content';
+import {MAT_MENU_CONTENT, MatMenuContent} from './menu-content';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 import {throwMatMenuInvalidPositionX, throwMatMenuInvalidPositionY} from './menu-errors';
 import {MatMenuItem} from './menu-item';
@@ -179,11 +179,12 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    */
   @ContentChildren(MatMenuItem, {descendants: false}) items: QueryList<MatMenuItem>;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /**
    * Menu content that will be rendered lazily.
    * @docs-private
    */
-  @ContentChild(MatMenuContent) lazyContent: MatMenuContent;
+  @ContentChild(MAT_MENU_CONTENT as any) lazyContent: MatMenuContent;
 
   /** Whether the menu should overlap its trigger. */
   @Input()
