@@ -6,13 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {graphql} from '@octokit/graphql';
 import * as Octokit from '@octokit/rest';
 import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
+import {query, types} from 'typed-graphqlify';
 
 import {getConfig, getRepoBaseDir, NgDevConfig} from './config';
 import {info, yellow} from './console';
 
-
+/**
+ * An object representation of a GraphQL Query to be used as a response type and to generate
+ * a GraphQL query string.
+ */
+type GraphQLQueryObject = Parameters<typeof query>[1];
+/** Parameters for a GraphQL request. */
+type RequestParameters = Parameters<typeof graphql>[1];
 /** Github response type extended to include the `x-oauth-scopes` headers presence. */
 type RateLimitResponseWithOAuthScopeHeader = Octokit.Response<Octokit.RateLimitGetResponse>&{
   headers: {'x-oauth-scopes': string};
@@ -55,12 +63,10 @@ export class GitClient {
       `https://${this._githubToken}@github.com/${this.remoteConfig.owner}/${
           this.remoteConfig.name}.git`;
   /** Instance of the authenticated Github octokit API. */
-  api: Octokit;
+  github: GithubClient;
 
   /** The file path of project's root directory. */
   private _projectRoot = getRepoBaseDir();
-  /** The OAuth scopes available for the provided Github token. */
-  private _oauthScopes: Promise<string[]>|null = null;
   /**
    * Regular expression that matches the provided Github token. Used for
    * sanitizing the token from Git child process output.
@@ -76,12 +82,7 @@ export class GitClient {
       this._githubTokenRegex = new RegExp(_githubToken, 'g');
     }
 
-    this.api = new Octokit({auth: _githubToken});
-    this.api.hook.error('request', error => {
-      // Wrap API errors in a known error class. This allows us to
-      // expect Github API errors better and in a non-ambiguous way.
-      throw new GithubApiRequestError(error.status, error.message);
-    });
+    this.github = new GithubClient(_githubToken);
   }
 
   /** Executes the given git command. Throws if the command fails. */
@@ -186,22 +187,138 @@ export class GitClient {
     return {error};
   }
 
-
   /**
-   * Retrieves the OAuth scopes for the loaded Github token, returning the already
-   * retrieved list of OAuth scopes if available.
+   * Retrieve the OAuth scopes for the loaded Github token.
    **/
+  @memoize()
   private async getAuthScopesForToken() {
-    // If the OAuth scopes have already been loaded, return the Promise containing them.
-    if (this._oauthScopes !== null) {
-      return this._oauthScopes;
-    }
     // OAuth scopes are loaded via the /rate_limit endpoint to prevent
     // usage of a request against that rate_limit for this lookup.
-    return this._oauthScopes = this.api.rateLimit.get().then(_response => {
+    return this.github.rateLimit.get().then(_response => {
       const response = _response as RateLimitResponseWithOAuthScopeHeader;
       const scopes: string = response.headers['x-oauth-scopes'] || '';
       return scopes.split(',').map(scope => scope.trim());
     });
   }
+}
+
+
+/**
+ * A Github client for interacting with the Github APIs.
+ *
+ * Additionally, provides convienience methods for actions which require multiple requests, or
+ * would provide value from memoized style responses.
+ **/
+class GithubClient extends Octokit {
+  /** The Github GraphQL (v4) API. */
+  graqhql: GithubGraphqlClient;
+
+  constructor(token?: string) {
+    // Pass in authentication token to base Octokit class.
+    super({token});
+
+    this.hook.error('request', error => {
+      // Wrap API errors in a known error class. This allows us to
+      // expect Github API errors better and in a non-ambiguous way.
+      throw new GithubApiRequestError(error.status, error.message);
+    });
+
+    // Create authenticated graphql client.
+    this.graqhql = new GithubGraphqlClient(token);
+  }
+
+  /** Retrieve the login of the current user from Github. */
+  @memoize()
+  async getCurrentUser() {
+    return this.graqhql.query({
+      viewer: {
+        login: types.string,
+      }
+    });
+  }
+}
+
+
+/** A client for interacting with Github's GraphQL API. */
+class GithubGraphqlClient {
+  /** The Github GraphQL (v4) API. */
+  private graqhql: typeof graphql;
+
+  constructor(token?: string) {
+    // Set the default headers to include authorization with the provided token for all
+    // graphQL calls.
+    this.graqhql = graphql.defaults({headers: {authorization: `token ${token}`}});
+  }
+
+
+  /** Perform a query using Github's GraphQL API. */
+  async query<T extends GraphQLQueryObject>(queryObject: T, params: RequestParameters = {}) {
+    const queryString = query(queryObject);
+    return (await this.graqhql(queryString, params)) as typeof queryObject;
+  }
+
+  /**
+   * Perform multiple queries using Github's GraphQL API to retrieve multiple pages of queried
+   * information.
+   **/
+  async multiPageQuery<T extends GraphQLQueryObject, O extends {} = T>(
+      queryObject: T, params: RequestParameters,
+      processPage:
+          (result: T,
+           currentResult: O) => {nextCursor: string, mergedResult: O, checkNextPage: boolean}) {
+    /**
+     * The object to be returned after queries are completed, initially empty, to be merged into on
+     * each iteration through pages.
+     */
+    let output: O = <O>{};
+    /** Whether another page should be requested. */
+    let hasNextPage = true;
+    /** The cursor of the last object in the query, used as marker for the next page. */
+    let cursor: string|null = null;
+    while (hasNextPage) {
+      /** The page of results starting at the provided cursor. */
+      const results = await this.query(queryObject, {...params, cursor});
+      /** The new result to be output, and the cursor of the last item in the page. */
+      const {mergedResult, nextCursor, checkNextPage} = processPage(results, output);
+      output = mergedResult;
+      cursor = nextCursor;
+      hasNextPage = checkNextPage;
+    }
+    return output;
+  }
+}
+
+
+/**
+ * Simple memoize decorator to returning the cached result when available on each call of decorated
+ * methods.
+ *
+ * This is intentionally not exported as it is written for extremely simple use cases within the
+ * scope the GithubClient and GitClient classes.  It is limited to only memoizing methods with no
+ * parameters and makes assumptions related to this limitation.
+ */
+function memoize() {
+  return (target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) => {
+    /** The original decorated method, to be called directly in the closure function. */
+    const originalMethod = descriptor.value;
+    if (originalMethod.length >= 1) {
+      // Only allow the decorator to be added on methods with no arguements as the decorator
+      // does not track the parameters provided to the method to ensure the same call parameters
+      // and scope occurs.
+      throw Error(
+          `The memoize decorator being used can only be used on methods with no arguments, it\n` +
+          `was used to decorate a method with formal arguements and may cause incorrect values\n` +
+          `to be returned by the method on subsequent calls.`);
+    }
+    /** The symbol being used to store the result in between calls. */
+    let result: any;
+    /**
+     * The new method to be called, in place of the original, calling the original if no result
+     * value is defined.
+     */
+    descriptor.value = function() {
+      return result = result || originalMethod.apply(this, arguments);
+    };
+    return descriptor;
+  };
 }

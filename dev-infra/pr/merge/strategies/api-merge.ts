@@ -94,7 +94,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
 
     try {
       // Merge the pull request using the Github API into the selected base branch.
-      const result = await this.git.api.pulls.merge(mergeOptions);
+      const result = await this.git.github.pulls.merge(mergeOptions);
 
       mergeStatusCode = result.status;
       targetSha = result.data.sha;
@@ -189,9 +189,9 @@ export class GithubApiMergeStrategy extends MergeStrategy {
 
   /** Gets all commit messages of commits in the pull request. */
   private async _getPullRequestCommitMessages({prNumber}: PullRequest) {
-    const request = this.git.api.pulls.listCommits.endpoint.merge(
+    const request = this.git.github.pulls.listCommits.endpoint.merge(
         {...this.git.remoteParams, pull_number: prNumber});
-    const allCommits: PullsListCommitsResponse = await this.git.api.paginate(request);
+    const allCommits: PullsListCommitsResponse = await this.git.github.paginate(request);
     return allCommits.map(({commit}) => commit.message);
   }
 
