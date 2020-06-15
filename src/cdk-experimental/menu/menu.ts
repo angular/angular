@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, Output, ContentChildren, QueryList, EventEmitter} from '@angular/core';
-import {CdkMenuItem} from './menu-item';
+import {Directive, Input, Output, EventEmitter} from '@angular/core';
 import {CdkMenuGroup} from './menu-group';
 
 /**
@@ -35,8 +34,4 @@ export class CdkMenu extends CdkMenuGroup {
 
   /** Event emitted when the menu is closed. */
   @Output() readonly closed: EventEmitter<void | 'click' | 'tab' | 'escape'> = new EventEmitter();
-
-  /** All the child MenuItem components which this directive wraps including descendants */
-  @ContentChildren(CdkMenuItem, {descendants: true})
-  readonly _allItems: QueryList<CdkMenuItem>;
 }

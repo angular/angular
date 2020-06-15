@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, ContentChildren, QueryList} from '@angular/core';
+import {Directive, Input} from '@angular/core';
 import {CdkMenuGroup} from './menu-group';
-import {CdkMenuItem} from './menu-item';
 
 /**
  * Directive applied to an element which configures it as a MenuBar by setting the appropriate
@@ -31,8 +30,4 @@ export class CdkMenuBar extends CdkMenuGroup {
    * Does not affect styling/layout.
    */
   @Input('cdkMenuBarOrientation') orientation: 'horizontal' | 'vertical' = 'horizontal';
-
-  /** All the child MenuItem components which this directive wraps including descendants */
-  @ContentChildren(CdkMenuItem, {descendants: true})
-  readonly _allItems: QueryList<CdkMenuItem>;
 }
