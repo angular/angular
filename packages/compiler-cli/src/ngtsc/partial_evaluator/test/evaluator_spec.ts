@@ -622,15 +622,18 @@ runInEachFileSystem(() => {
       expect(id.text).toEqual('Target');
     });
 
-    it('should resolve functions with more than one statement to an unknown value', () => {
+    it('should resolve functions with more than one statement to a complex function call', () => {
       const value = evaluate(`function foo(bar) { const b = bar; return b; }`, 'foo("test")');
 
       if (!(value instanceof DynamicValue)) {
         return fail(`Should have resolved to a DynamicValue`);
       }
-
-      expect(value.isFromUnknown()).toBe(true);
+      if (!value.isFromComplexFunctionCall()) {
+        return fail('Expected DynamicValue to be from complex function call');
+      }
       expect((value.node as ts.CallExpression).expression.getText()).toBe('foo');
+      expect((value.reason.node as ts.FunctionDeclaration).getText())
+          .toContain('const b = bar; return b;');
     });
 
     describe('(with imported TypeScript helpers)', () => {
