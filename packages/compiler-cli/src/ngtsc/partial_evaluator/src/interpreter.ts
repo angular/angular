@@ -490,8 +490,10 @@ export class StaticInterpreter {
 
   private visitFunctionBody(node: ts.CallExpression, fn: FunctionDefinition, context: Context):
       ResolvedValue {
-    if (fn.body === null || fn.body.length !== 1 || !ts.isReturnStatement(fn.body[0])) {
+    if (fn.body === null) {
       return DynamicValue.fromUnknown(node);
+    } else if (fn.body.length !== 1 || !ts.isReturnStatement(fn.body[0])) {
+      return DynamicValue.fromComplexFunctionCall(node, fn);
     }
     const ret = fn.body[0] as ts.ReturnStatement;
 
