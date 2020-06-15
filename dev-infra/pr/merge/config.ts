@@ -53,6 +53,8 @@ export interface MergeConfig {
   claSignedLabel: string|RegExp;
   /** Pattern that matches labels which imply a merge ready pull request. */
   mergeReadyLabel: string|RegExp;
+  /** Label that is applied when special attention from the caretaker is required. */
+  caretakerNoteLabel?: string|RegExp;
   /** Label which can be applied to fixup commit messages in the merge script. */
   commitMessageFixupLabel: string|RegExp;
   /**
