@@ -22,7 +22,7 @@ describe('MenuGroup', () => {
 
       menuItems = fixture.debugElement
         .queryAll(By.directive(CdkMenuItem))
-        .map((element) => element.injector.get(CdkMenuItem));
+        .map(e => e.injector.get(CdkMenuItem));
     }));
 
     it('should not change state of sibling menuitemcheckbox', () => {
@@ -73,14 +73,14 @@ describe('MenuGroup', () => {
 
       menuItems = fixture.debugElement
         .queryAll(By.directive(CdkMenuItem))
-        .map((element) => element.injector.get(CdkMenuItem));
+        .map(element => element.injector.get(CdkMenuItem));
     }));
 
     it('should not emit from root menu with nested groups', () => {
       const spy = jasmine.createSpy('changeSpy for root menu');
       menu.change.subscribe(spy);
 
-      menuItems.forEach((menuItem) => menuItem.trigger());
+      menuItems.forEach(menuItem => menuItem.trigger());
 
       expect(spy).toHaveBeenCalledTimes(0);
     });
@@ -145,7 +145,7 @@ describe('MenuGroup', () => {
 
       menuItems[7].trigger();
 
-      spies.forEach((spy) => expect(spy).toHaveBeenCalledTimes(0));
+      spies.forEach(spy => expect(spy).toHaveBeenCalledTimes(0));
     });
   });
 });
