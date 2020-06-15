@@ -2,12 +2,16 @@ load("@npm_bazel_typescript//:index.bzl", "ts_library")
 
 ts_library(
     name = "utils",
-    srcs = glob(["*.ts"]),
+    srcs = glob([
+        "*.ts",
+        "git/*.ts",
+    ]),
     module_name = "@angular/dev-infra-private/utils",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "@npm//@octokit/graphql",
         "@npm//@octokit/rest",
+        "@npm//@octokit/types",
         "@npm//@types/inquirer",
         "@npm//@types/node",
         "@npm//@types/shelljs",

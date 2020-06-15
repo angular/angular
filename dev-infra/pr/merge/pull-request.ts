@@ -67,7 +67,7 @@ export async function loadAndValidatePullRequest(
   }
 
   const {data: {state}} =
-      await git.api.repos.getCombinedStatusForRef({...git.remoteParams, ref: prData.head.sha});
+      await git.github.repos.getCombinedStatusForRef({...git.remoteParams, ref: prData.head.sha});
 
   if (state === 'failure' && !ignoreNonFatalFailures) {
     return PullRequestFailure.failingCiJobs();
@@ -102,7 +102,7 @@ export async function loadAndValidatePullRequest(
 async function fetchPullRequestFromGithub(
     git: GitClient, prNumber: number): Promise<Octokit.PullsGetResponse|null> {
   try {
-    const result = await git.api.pulls.get({...git.remoteParams, pull_number: prNumber});
+    const result = await git.github.pulls.get({...git.remoteParams, pull_number: prNumber});
     return result.data;
   } catch (e) {
     // If the pull request could not be found, we want to return `null` so
