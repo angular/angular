@@ -1,0 +1,7 @@
+load("//integration/size-test:index.bzl", "size_test")
+
+size_test(
+    name = "without-group",
+    file = "without-group.ts",
+    deps = ["//src/material/radio"],
+)
