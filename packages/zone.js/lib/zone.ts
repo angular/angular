@@ -223,9 +223,9 @@ interface Zone {
    * @param task to run
    * @param applyThis
    * @param applyArgs
-   * @returns {*}
+   * @returns {any} Value from the `task.callback` function.
    */
-  runTask(task: Task, applyThis?: any, applyArgs?: any): any;
+  runTask<T>(task: Task, applyThis?: any, applyArgs?: any): T;
 
   /**
    * Schedule a MicroTask.
