@@ -259,6 +259,66 @@ const manifestUpdate: Manifest = {
   hashTable: tmpHashTableForFs(distUpdate),
 };
 
+const manifestBaseHref: Manifest = {
+  configVersion: 1,
+  timestamp: 1234567890123,
+  appData: {
+    version: 'original',
+  },
+  index: 'http://localhost/foo.txt',
+  assetGroups: [
+    {
+      name: 'assets',
+      installMode: 'prefetch',
+      updateMode: 'prefetch',
+      urls: [
+        'http://localhost/foo.txt',
+        'http://localhost/bar.txt',
+        'http://localhost/redirected.txt',
+      ],
+      patterns: [
+        '/unhashed/.*',
+      ],
+    },
+    {
+      name: 'other',
+      installMode: 'lazy',
+      updateMode: 'lazy',
+      urls: [
+        'http://localhost/baz.txt',
+        'http://localhost/qux.txt',
+      ],
+      patterns: [],
+    },
+    {
+      name: 'lazy_prefetch',
+      installMode: 'lazy',
+      updateMode: 'prefetch',
+      urls: [
+        'http://localhost/quux.txt',
+        'http://localhost/quuux.txt',
+        'http://localhost/lazy/unchanged1.txt',
+        'http://localhost/lazy/unchanged2.txt',
+      ],
+      patterns: [],
+    }
+  ],
+  dataGroups: [
+    {
+      name: 'api',
+      version: 42,
+      maxAge: 3600000,
+      maxSize: 100,
+      strategy: 'performance',
+      patterns: [
+        '/api/.*',
+      ],
+    },
+  ],
+  navigationUrls: processNavigationUrls('http://localhost/'),
+  hashTable: tmpHashTableForFs(dist),
+};
+
 const serverBuilderBase =
     new MockServerStateBuilder()
         .withStaticFiles(dist)
@@ -283,6 +343,8 @@ const brokenServer =
 const brokenLazyServer =
     new MockServerStateBuilder().withStaticFiles(brokenFs).withManifest(brokenLazyManifest).build();
 
+const serverBaseHref = serverBuilderBase.withManifest(manifestBaseHref).build();
+
 const server404 = new MockServerStateBuilder().withStaticFiles(dist).build();
 
 const manifestHash = sha1(JSON.stringify(manifest));
@@ -298,6 +360,7 @@ describe('Driver', () => {
     serverUpdate.reset();
     server404.reset();
     brokenServer.reset();
+    serverBaseHref.reset();
 
     scope = new SwTestHarnessBuilder().withServerState(server).build();
     driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
@@ -455,6 +518,20 @@ describe('Driver', () => {
     expect(await makeRequest(scope, '/qux.txt')).toEqual('this is qux');
     server.assertSawRequestFor('/qux.txt');
     server.assertNoOtherRequests();
+  });
+
+  it('works with base href', async () => {
+    expect(await makeRequest(scope, 'http://localhost/foo.txt')).toEqual('this is foo');
+    await driver.initialized;
+    serverBaseHref.clearRequests();
+    expect(await makeRequest(scope, 'http://localhost/baz.txt')).toEqual('this is baz');
+    serverBaseHref.assertSawRequestFor('http://localhost/baz.txt');
+    serverBaseHref.assertNoOtherRequests();
+    expect(await makeRequest(scope, 'http://localhost/baz.txt')).toEqual('this is baz');
+    serverBaseHref.assertNoOtherRequests();
+    expect(await makeRequest(scope, 'http://localhost/qux.txt')).toEqual('this is qux');
+    serverBaseHref.assertSawRequestFor('http://localhost/qux.txt');
+    serverBaseHref.assertNoOtherRequests();
   });
 
   it('updates to new content when requested', async () => {
