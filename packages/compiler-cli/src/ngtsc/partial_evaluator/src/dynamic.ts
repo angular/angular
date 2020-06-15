@@ -124,4 +124,34 @@ export class DynamicValue<R = unknown> {
   isFromUnknown(this: DynamicValue<R>): this is DynamicValue {
     return this.code === DynamicValueReason.UNKNOWN;
   }
+
+  accept<R>(visitor: DynamicValueVisitor<R>): R {
+    switch (this.code) {
+      case DynamicValueReason.DYNAMIC_INPUT:
+        return visitor.visitDynamicInput(this as unknown as DynamicValue<DynamicValue>);
+      case DynamicValueReason.DYNAMIC_STRING:
+        return visitor.visitDynamicString(this);
+      case DynamicValueReason.EXTERNAL_REFERENCE:
+        return visitor.visitExternalReference(
+            this as unknown as DynamicValue<Reference<ts.Declaration>>);
+      case DynamicValueReason.UNSUPPORTED_SYNTAX:
+        return visitor.visitUnsupportedSyntax(this);
+      case DynamicValueReason.UNKNOWN_IDENTIFIER:
+        return visitor.visitUnknownIdentifier(this);
+      case DynamicValueReason.INVALID_EXPRESSION_TYPE:
+        return visitor.visitInvalidExpressionType(this);
+      case DynamicValueReason.UNKNOWN:
+        return visitor.visitUnknown(this);
+    }
+  }
+}
+
+export interface DynamicValueVisitor<R> {
+  visitDynamicInput(value: DynamicValue<DynamicValue>): R;
+  visitDynamicString(value: DynamicValue): R;
+  visitExternalReference(value: DynamicValue<Reference<ts.Declaration>>): R;
+  visitUnsupportedSyntax(value: DynamicValue): R;
+  visitUnknownIdentifier(value: DynamicValue): R;
+  visitInvalidExpressionType(value: DynamicValue): R;
+  visitUnknown(value: DynamicValue): R;
 }

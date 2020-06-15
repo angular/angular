@@ -8,14 +8,56 @@
 
 import * as ts from 'typescript';
 
-import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {InjectableClassRegistry, MetadataReader} from '../../metadata';
-import {PartialEvaluator} from '../../partial_evaluator';
+import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../partial_evaluator';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
+import {identifierOfNode} from '../../util/src/typescript';
 
 import {makeDuplicateDeclarationError, readBaseClass} from './util';
+
+/**
+ * Creates a `FatalDiagnosticError` for a node that did not evaluate to the expected type. The
+ * diagnostic that is created will include details on why the value is incorrect, i.e. it includes
+ * a representation of the actual type that was unsupported, or in the case of a dynamic value the
+ * trace to the node where the dynamic value originated.
+ *
+ * @param node The node for which the diagnostic should be produced.
+ * @param value The evaluated value that has the wrong type.
+ * @param messageText The message text of the error.
+ */
+export function createValueHasWrongTypeError(
+    node: ts.Node, value: ResolvedValue, messageText: string): FatalDiagnosticError {
+  let chainedMessage: string;
+  let relatedInformation: ts.DiagnosticRelatedInformation[]|undefined;
+  if (value instanceof DynamicValue) {
+    chainedMessage = 'Value could not be determined statically.';
+    relatedInformation = traceDynamicValue(node, value);
+  } else if (value instanceof Reference) {
+    const target = value.debugName !== null ? `'${value.debugName}'` : 'an anonymous declaration';
+    chainedMessage = `Value is a reference to ${target}.`;
+
+    const referenceNode = identifierOfNode(value.node) ?? value.node;
+    relatedInformation = [makeRelatedInformation(referenceNode, 'Reference is declared here.')];
+  } else {
+    chainedMessage = `Value is of type '${describeResolvedType(value)}'.`;
+  }
+
+  const chain: ts.DiagnosticMessageChain = {
+    messageText,
+    category: ts.DiagnosticCategory.Error,
+    code: 0,
+    next: [{
+      messageText: chainedMessage,
+      category: ts.DiagnosticCategory.Message,
+      code: 0,
+    }]
+  };
+
+  return new FatalDiagnosticError(ErrorCode.VALUE_HAS_WRONG_TYPE, node, chain, relatedInformation);
+}
 
 /**
  * Gets the diagnostics for a set of provider classes.

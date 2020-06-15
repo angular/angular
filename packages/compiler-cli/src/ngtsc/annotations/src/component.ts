@@ -26,7 +26,7 @@ import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
 import {ResourceLoader} from './api';
-import {getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
+import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
@@ -243,8 +243,8 @@ export class ComponentDecoratorHandler implements
         const templateUrlExpr = component.get('templateUrl')!;
         const templateUrl = this.evaluator.evaluate(templateUrlExpr);
         if (typeof templateUrl !== 'string') {
-          throw new FatalDiagnosticError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
+          throw createValueHasWrongTypeError(
+              templateUrlExpr, templateUrl, 'templateUrl must be a string');
         }
         const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
         template = this._extractExternalTemplate(node, component, templateUrlExpr, resourceUrl);
@@ -617,9 +617,8 @@ export class ComponentDecoratorHandler implements
       if (value instanceof EnumValue && isAngularCoreReference(value.enumRef, enumSymbolName)) {
         resolved = value.resolved as number;
       } else {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `${field} must be a member of ${enumSymbolName} enum from @angular/core`);
+        throw createValueHasWrongTypeError(
+            expr, value, `${field} must be a member of ${enumSymbolName} enum from @angular/core`);
       }
     }
     return resolved;
@@ -634,8 +633,8 @@ export class ComponentDecoratorHandler implements
     const styleUrlsExpr = component.get('styleUrls')!;
     const styleUrls = this.evaluator.evaluate(styleUrlsExpr);
     if (!Array.isArray(styleUrls) || !styleUrls.every(url => typeof url === 'string')) {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, styleUrlsExpr, 'styleUrls must be an array of strings');
+      throw createValueHasWrongTypeError(
+          styleUrlsExpr, styleUrls, 'styleUrls must be an array of strings');
     }
     styleUrls.push(...extraUrls);
     return styleUrls as string[];
@@ -649,8 +648,8 @@ export class ComponentDecoratorHandler implements
       const templateUrlExpr = component.get('templateUrl')!;
       const templateUrl = this.evaluator.evaluate(templateUrlExpr);
       if (typeof templateUrl !== 'string') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
+        throw createValueHasWrongTypeError(
+            templateUrlExpr, templateUrl, 'templateUrl must be a string');
       }
       const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
       const templatePromise = this.resourceLoader.preload(resourceUrl);
@@ -729,8 +728,8 @@ export class ComponentDecoratorHandler implements
     } else {
       const resolvedTemplate = this.evaluator.evaluate(templateExpr);
       if (typeof resolvedTemplate !== 'string') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, templateExpr, 'template must be a string');
+        throw createValueHasWrongTypeError(
+            templateExpr, resolvedTemplate, 'template must be a string');
       }
       templateStr = resolvedTemplate;
       sourceMapping = {
@@ -755,8 +754,7 @@ export class ComponentDecoratorHandler implements
       const expr = component.get('preserveWhitespaces')!;
       const value = this.evaluator.evaluate(expr);
       if (typeof value !== 'boolean') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, 'preserveWhitespaces must be a boolean');
+        throw createValueHasWrongTypeError(expr, value, 'preserveWhitespaces must be a boolean');
       }
       preserveWhitespaces = value;
     }
@@ -767,9 +765,8 @@ export class ComponentDecoratorHandler implements
       const value = this.evaluator.evaluate(expr);
       if (!Array.isArray(value) || value.length !== 2 ||
           !value.every(element => typeof element === 'string')) {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            'interpolation must be an array with 2 elements of string type');
+        throw createValueHasWrongTypeError(
+            expr, value, 'interpolation must be an array with 2 elements of string type');
       }
       interpolation = InterpolationConfig.fromArray(value as [string, string]);
     }
