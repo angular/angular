@@ -9,7 +9,6 @@ import {By} from '@angular/platform-browser';
 describe('MenuGroup', () => {
   describe('MenuItem', () => {
     let fixture: ComponentFixture<MenuGroups>;
-    let menu: CdkMenu;
     let menuItems: Array<CdkMenuItem>;
 
     beforeEach(async(() => {
@@ -21,9 +20,9 @@ describe('MenuGroup', () => {
       fixture = TestBed.createComponent(MenuGroups);
       fixture.detectChanges();
 
-      menu = fixture.debugElement.query(By.directive(CdkMenu)).injector.get(CdkMenu);
-
-      menuItems = menu._allItems.toArray();
+      menuItems = fixture.debugElement
+        .queryAll(By.directive(CdkMenuItem))
+        .map((element) => element.injector.get(CdkMenuItem));
     }));
 
     it('should not change state of sibling menuitemcheckbox', () => {
@@ -72,7 +71,9 @@ describe('MenuGroup', () => {
 
       menu = fixture.debugElement.query(By.directive(CdkMenu)).injector.get(CdkMenu);
 
-      menuItems = menu._allItems.toArray();
+      menuItems = fixture.debugElement
+        .queryAll(By.directive(CdkMenuItem))
+        .map((element) => element.injector.get(CdkMenuItem));
     }));
 
     it('should not emit from root menu with nested groups', () => {

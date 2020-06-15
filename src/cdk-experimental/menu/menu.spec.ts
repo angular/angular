@@ -8,7 +8,6 @@ import {By} from '@angular/platform-browser';
 describe('Menu', () => {
   describe('as checkbox group', () => {
     let fixture: ComponentFixture<MenuCheckboxGroup>;
-    let menu: CdkMenu;
     let menuItems: Array<CdkMenuItem>;
 
     beforeEach(async(() => {
@@ -19,10 +18,11 @@ describe('Menu', () => {
 
       fixture = TestBed.createComponent(MenuCheckboxGroup);
 
-      menu = fixture.debugElement.query(By.directive(CdkMenu)).injector.get(CdkMenu);
       fixture.detectChanges();
 
-      menuItems = menu._allItems.toArray();
+      menuItems = fixture.debugElement
+        .queryAll(By.directive(CdkMenuItem))
+        .map((element) => element.injector.get(CdkMenuItem));
     }));
 
     it('should toggle menuitemcheckbox', () => {
@@ -41,7 +41,6 @@ describe('Menu', () => {
 
   describe('checkbox change events', () => {
     let fixture: ComponentFixture<MenuCheckboxGroup>;
-    let menu: CdkMenu;
     let menuItems: Array<CdkMenuItem>;
 
     beforeEach(async(() => {
@@ -52,10 +51,11 @@ describe('Menu', () => {
 
       fixture = TestBed.createComponent(MenuCheckboxGroup);
 
-      menu = fixture.debugElement.query(By.directive(CdkMenu)).injector.get(CdkMenu);
       fixture.detectChanges();
 
-      menuItems = menu._allItems.toArray();
+      menuItems = fixture.debugElement
+        .queryAll(By.directive(CdkMenuItem))
+        .map((element) => element.injector.get(CdkMenuItem));
     }));
 
     it('should emit on click', () => {
