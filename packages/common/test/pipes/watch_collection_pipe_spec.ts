@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@ import {WatchCollectionPipe} from '@angular/common';
 import {Component, Input, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-fdescribe('WatchCollectionPipe', () => {
+describe('WatchCollectionPipe', () => {
   describe('using arrays', () => {
     @Component({selector: 'inner-comp', template: '...'})
     class InnerComp {

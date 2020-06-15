@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,7 +11,7 @@ import {WatchCollectionPipe} from '@angular/common/src/pipes/watch_collection_pi
 
 import {BenchmarkSuite} from './benchmark_suite';
 import {createFakeNgFor} from './fake_ng_for';
-import {makeNumberArray, makeObjectArray, ObjectEntry, printHeading, trackByObjects, untilLessBusy} from './util';
+import {makeNumberArray, makeObjectArray, ObjectEntry, printHeading, trackByObjects} from './util';
 
 /**
  * Creates a new benchmarking suite with three test scenarios:

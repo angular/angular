@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {ArrayHarness, DefaultValueHarness, MapHarness} from '@angular/common/src/pipes/value_harness';
 
-fdescribe('ValueHarness', () => {
+describe('ValueHarness', () => {
   describe('ArrayHarness', () => {
     it('should produce a new array whenever the contents differ', () => {
       const a = [1, 2, 3];

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -52,6 +52,7 @@ export function printBenchmarkResultsTable(
     rows.push(row);
   }
 
+  // tslint:disable-next-line
   console.table(rows);
 }
 
@@ -141,20 +142,10 @@ function formatToDecimalPlaces(value: number, decimalPlaces: number): string {
 }
 
 export function printHeading(name: string) {
+  // tslint:disable-next-line
   console.log(
       '-----------------------------------------------\n' + name + '\n' +
       '-----------------------------------------------');
-}
-
-/**
- * Returns and resolves a promise once the program is less busy.
- *
- * See `setImmediate`
- */
-export function untilLessBusy() {
-  return new Promise(r => {
-    setImmediate(() => r());
-  });
 }
 
 /**
