@@ -199,10 +199,16 @@ runInEachFileSystem(() => {
           }`,
             'complex()');
 
-        expect(trace.length).toBe(1);
-        expect(trace[0].messageText).toBe('Unable to evaluate statically.');
+        expect(trace.length).toBe(2);
+        expect(trace[0].messageText)
+            .toBe(
+                'Unable to evaluate function call of complex function. A function must have exactly one return statement.');
         expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('complex()');
+
+        expect(trace[1].messageText).toBe('Function is declared here.');
+        expect(trace[1].file!.fileName).toBe(_('/entry.ts'));
+        expect(getSourceCode(trace[1])).toContain(`console.log('test');`);
       });
 
       it('should trace object destructuring of external reference', () => {
