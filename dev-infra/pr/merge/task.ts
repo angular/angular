@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {promptConfirm} from '../../utils/console';
 import {GitClient, GitCommandError} from '../../utils/git';
 
 import {MergeConfigWithRemote} from './config';
 import {PullRequestFailure} from './failures';
+import {getCaretakerNotePromptMessage} from './messages';
 import {isPullRequest, loadAndValidatePullRequest,} from './pull-request';
 import {GithubApiMergeStrategy} from './strategies/api-merge';
 import {AutosquashMergeStrategy} from './strategies/autosquash-merge';
@@ -23,6 +25,7 @@ export const enum MergeStatus {
   DIRTY_WORKING_DIR,
   SUCCESS,
   FAILED,
+  USER_ABORTED,
   GITHUB_ERROR,
 }
 
@@ -70,6 +73,14 @@ export class PullRequestMergeTask {
 
     if (!isPullRequest(pullRequest)) {
       return {status: MergeStatus.FAILED, failure: pullRequest};
+    }
+
+    // If the pull request has a caretaker note applied, raise awareness by prompting
+    // the caretaker. The caretaker can then decide to proceed or abort the merge.
+    if (pullRequest.hasCaretakerNote &&
+        !await promptConfirm(
+            getCaretakerNotePromptMessage(pullRequest) + `\nDo you want to proceed merging?`)) {
+      return {status: MergeStatus.USER_ABORTED};
     }
 
     const strategy = this.config.githubApiMerge ?
