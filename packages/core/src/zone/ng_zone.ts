@@ -177,7 +177,7 @@ export class NgZone {
    * If a synchronous error happens it will be rethrown and not reported via `onError`.
    */
   run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
-    return (this as any as NgZonePrivate)._inner.run(fn, applyThis, applyArgs) as T;
+    return (this as any as NgZonePrivate)._inner.run(fn, applyThis, applyArgs);
   }
 
   /**
@@ -196,7 +196,7 @@ export class NgZone {
     const zone = (this as any as NgZonePrivate)._inner;
     const task = zone.scheduleEventTask('NgZoneEvent: ' + name, fn, EMPTY_PAYLOAD, noop, noop);
     try {
-      return zone.runTask(task, applyThis, applyArgs) as T;
+      return zone.runTask(task, applyThis, applyArgs);
     } finally {
       zone.cancelTask(task);
     }
@@ -207,7 +207,7 @@ export class NgZone {
    * rethrown.
    */
   runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
-    return (this as any as NgZonePrivate)._inner.runGuarded(fn, applyThis, applyArgs) as T;
+    return (this as any as NgZonePrivate)._inner.runGuarded(fn, applyThis, applyArgs);
   }
 
   /**
@@ -224,7 +224,7 @@ export class NgZone {
    * Use {@link #run} to reenter the Angular zone and do work that updates the application model.
    */
   runOutsideAngular<T>(fn: (...args: any[]) => T): T {
-    return (this as any as NgZonePrivate)._outer.run(fn) as T;
+    return (this as any as NgZonePrivate)._outer.run(fn);
   }
 }
 
@@ -388,19 +388,19 @@ export class NoopNgZone implements NgZone {
   readonly onStable: EventEmitter<any> = new EventEmitter();
   readonly onError: EventEmitter<any> = new EventEmitter();
 
-  run(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): any {
+  run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any): T {
     return fn.apply(applyThis, applyArgs);
   }
 
-  runGuarded(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): any {
+  runGuarded<T>(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): T {
     return fn.apply(applyThis, applyArgs);
   }
 
-  runOutsideAngular(fn: (...args: any[]) => any): any {
+  runOutsideAngular<T>(fn: (...args: any[]) => T): T {
     return fn();
   }
 
-  runTask(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any, name?: string): any {
+  runTask<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any, name?: string): T {
     return fn.apply(applyThis, applyArgs);
   }
 }
