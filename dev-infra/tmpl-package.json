@@ -35,7 +35,6 @@
     "@bazel/typescript": "<from-root>",
     "brotli": "<from-root>",
     "clang-format": "<from-root>",
-    "fs-extra": "<from-root>",
     "json5": "^1.0.1",
     "protractor": "<from-root>",
     "rollup": "<from-root>",

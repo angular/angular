@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {mkdir} from 'shelljs';
+
 export {verifyNoBrowserErrors} from './e2e_util';
 
 const nodeUuid = require('node-uuid');
-import * as fs from 'fs-extra';
 
 import {SeleniumWebDriverAdapter, Options, JsonFileReporter, Validator, RegressionSlopeValidator, ConsoleReporter, SizeValidator, MultiReporter, MultiMetric, Runner, StaticProvider} from '@angular/benchpress';
 import {openBrowser} from './e2e_util';
@@ -53,7 +54,7 @@ function createBenchpressRunner(): Runner {
     runId = process.env.GIT_SHA + ' ' + runId;
   }
   const resultsFolder = './dist/benchmark_results';
-  fs.ensureDirSync(resultsFolder);
+  mkdir('-p', resultsFolder);
   const providers: StaticProvider[] = [
     SeleniumWebDriverAdapter.PROTRACTOR_PROVIDERS,
     {provide: Options.FORCE_GC, useValue: globalOptions.forceGc},
