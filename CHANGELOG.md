@@ -1,3 +1,24 @@
+<a name="10.0.0-rc.6"></a>
+# [10.0.0-rc.6](https://github.com/angular/angular/compare/10.0.0-rc.5...10.0.0-rc.6) (2020-06-15)
+
+
+### Bug Fixes
+
+* **compiler:** unable to resolve destructuring variable declarations ([#37497](https://github.com/angular/angular/issues/37497)) ([df10597](https://github.com/angular/angular/commit/df10597)), closes [#36917](https://github.com/angular/angular/issues/36917)
+* **core:** should fake a top event task when coalescing events to prevent draining microTaskQueue too early. ([#36841](https://github.com/angular/angular/issues/36841)) ([9b8eb42](https://github.com/angular/angular/commit/9b8eb42)), closes [#36839](https://github.com/angular/angular/issues/36839)
+* **language-service:** wrong completions in conditional operator ([#37505](https://github.com/angular/angular/issues/37505)) ([32020f9](https://github.com/angular/angular/commit/32020f9))
+* **ngcc:** correctly get config for packages in nested `node_modules/` ([#37040](https://github.com/angular/angular/issues/37040)) ([9ade1c3](https://github.com/angular/angular/commit/9ade1c3))
+* **ngcc:** correctly get config for sub-entry-points when primary entry-point is ignored ([#37040](https://github.com/angular/angular/issues/37040)) ([bf57776](https://github.com/angular/angular/commit/bf57776))
+* **ngcc:** correctly retrieve a package's version from its `package.json` ([#37040](https://github.com/angular/angular/issues/37040)) ([11c0402](https://github.com/angular/angular/commit/11c0402))
+* **router:** fix navigation ignoring logic to compare to the browser url ([#37408](https://github.com/angular/angular/issues/37408)) ([5db2e79](https://github.com/angular/angular/commit/5db2e79)), closes [#16710](https://github.com/angular/angular/issues/16710) [/github.com/angular/angular/issues/16710#issuecomment-634869739](https://github.com//github.com/angular/angular/issues/16710/issues/issuecomment-634869739) [#13586](https://github.com/angular/angular/issues/13586)
+
+
+### Features
+
+* **bazel:** expose explicit mapping from closure to devmode files ([#36262](https://github.com/angular/angular/issues/36262)) ([ba796bb](https://github.com/angular/angular/commit/ba796bb))
+
+
+
 <a name="10.0.0-rc.5"></a>
 # [10.0.0-rc.5](https://github.com/angular/angular/compare/10.0.0-rc.4...10.0.0-rc.5) (2020-06-11)
 
