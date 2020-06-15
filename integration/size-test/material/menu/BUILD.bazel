@@ -1,0 +1,7 @@
+load("//integration/size-test:index.bzl", "size_test")
+
+size_test(
+    name = "without-lazy-content",
+    file = "without-lazy-content.ts",
+    deps = ["//src/material/menu"],
+)
