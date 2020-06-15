@@ -18,8 +18,9 @@ import {
   ChangeDetectorRef,
   Self,
   ElementRef,
+  Inject,
 } from '@angular/core';
-import {MatFormFieldControl, MatFormField} from '@angular/material/form-field';
+import {MatFormFieldControl, MatFormField, MAT_FORM_FIELD} from '@angular/material/form-field';
 import {ThemePalette, DateAdapter} from '@angular/material/core';
 import {NgControl, ControlContainer} from '@angular/forms';
 import {Subject, merge} from 'rxjs';
@@ -206,7 +207,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
     private _elementRef: ElementRef<HTMLElement>,
     @Optional() @Self() control: ControlContainer,
     @Optional() private _dateAdapter: DateAdapter<D>,
-    @Optional() private _formField?: MatFormField) {
+    @Optional() @Inject(MAT_FORM_FIELD) private _formField?: MatFormField) {
 
     if (!_dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
