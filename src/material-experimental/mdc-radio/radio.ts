@@ -16,6 +16,7 @@ import {
   ElementRef,
   forwardRef,
   Inject,
+  InjectionToken,
   OnDestroy,
   Optional,
   QueryList,
@@ -50,6 +51,14 @@ export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
   multi: true
 };
 
+/**
+ * Injection token that can be used to inject instances of `MatRadioGroup`. It serves as
+ * alternative token to the actual `MatRadioGroup` class which could cause unnecessary
+ * retention of the class and its component metadata.
+ */
+export const MAT_RADIO_GROUP =
+  new InjectionToken<_MatRadioGroupBase<_MatRadioButtonBase>>('MatRadioGroup');
+
 /** Configuration for the ripple animation. */
 const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
   enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
@@ -62,7 +71,10 @@ const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
 @Directive({
   selector: 'mat-radio-group',
   exportAs: 'matRadioGroup',
-  providers: [MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR],
+  providers: [
+    MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR,
+    {provide: MAT_RADIO_GROUP, useExisting: MatRadioGroup},
+  ],
   host: {
     'role': 'radiogroup',
     'class': 'mat-mdc-radio-group',
@@ -117,7 +129,7 @@ export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit
   _radioFoundation = new MDCRadioFoundation(this._radioAdapter);
   _classes: {[key: string]: boolean} = {};
 
-  constructor(@Optional() radioGroup: MatRadioGroup,
+  constructor(@Optional() @Inject(MAT_RADIO_GROUP) radioGroup: MatRadioGroup,
               elementRef: ElementRef,
               _changeDetector: ChangeDetectorRef,
               _focusMonitor: FocusMonitor,

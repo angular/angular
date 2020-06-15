@@ -37,7 +37,7 @@ export declare abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBa
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_required: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatRadioButtonBase, never, never, { "id": "id"; "name": "name"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "ariaDescribedby": "aria-describedby"; "checked": "checked"; "value": "value"; "labelPosition": "labelPosition"; "disabled": "disabled"; "required": "required"; "color": "color"; }, { "change": "change"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<_MatRadioButtonBase, [{ optional: true; }, null, null, null, null, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<_MatRadioButtonBase, never>;
 }
 
 export declare abstract class _MatRadioGroupBase<T extends _MatRadioButtonBase> implements AfterContentInit, ControlValueAccessor {
@@ -77,6 +77,8 @@ export declare abstract class _MatRadioGroupBase<T extends _MatRadioButtonBase> 
 export declare const MAT_RADIO_DEFAULT_OPTIONS: InjectionToken<MatRadioDefaultOptions>;
 
 export declare function MAT_RADIO_DEFAULT_OPTIONS_FACTORY(): MatRadioDefaultOptions;
+
+export declare const MAT_RADIO_GROUP: InjectionToken<_MatRadioGroupBase<_MatRadioButtonBase>>;
 
 export declare const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any;
 

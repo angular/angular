@@ -84,6 +84,14 @@ export class MatRadioChange {
 }
 
 /**
+ * Injection token that can be used to inject instances of `MatRadioGroup`. It serves as
+ * alternative token to the actual `MatRadioGroup` class which could cause unnecessary
+ * retention of the class and its component metadata.
+ */
+export const MAT_RADIO_GROUP =
+    new InjectionToken<_MatRadioGroupBase<_MatRadioButtonBase>>('MatRadioGroup');
+
+/**
  * Base class with all of the `MatRadioGroup` functionality.
  * @docs-private
  */
@@ -311,7 +319,10 @@ export abstract class _MatRadioGroupBase<T extends _MatRadioButtonBase> implemen
 @Directive({
   selector: 'mat-radio-group',
   exportAs: 'matRadioGroup',
-  providers: [MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR],
+  providers: [
+    MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR,
+    {provide: MAT_RADIO_GROUP, useExisting: MatRadioGroup},
+  ],
   host: {
     'role': 'radiogroup',
     'class': 'mat-radio-group',
@@ -475,14 +486,13 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
   /** The native `<input type=radio>` element */
   @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
 
-  constructor(@Optional() radioGroup: _MatRadioGroupBase<_MatRadioButtonBase>,
+  constructor(radioGroup: _MatRadioGroupBase<_MatRadioButtonBase>,
               elementRef: ElementRef,
               protected _changeDetector: ChangeDetectorRef,
               private _focusMonitor: FocusMonitor,
               private _radioDispatcher: UniqueSelectionDispatcher,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
-                @Optional() @Inject(MAT_RADIO_DEFAULT_OPTIONS)
-                private _providerOverride?: MatRadioDefaultOptions) {
+              public _animationMode?: string,
+              private _providerOverride?: MatRadioDefaultOptions) {
     super(elementRef);
 
     // Assertions. Ideally these should be stripped out by the compiler.
@@ -626,7 +636,7 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatRadioButton extends _MatRadioButtonBase {
-  constructor(@Optional() radioGroup: MatRadioGroup,
+  constructor(@Optional() @Inject(MAT_RADIO_GROUP) radioGroup: MatRadioGroup,
               elementRef: ElementRef,
               changeDetector: ChangeDetectorRef,
               focusMonitor: FocusMonitor,
