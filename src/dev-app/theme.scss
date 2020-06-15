@@ -9,6 +9,7 @@
 @import '../material-experimental/mdc-theming/all-theme';
 @import '../material-experimental/mdc-typography/all-typography';
 @import '../material-experimental/mdc-density/all-density';
+@import '../material-experimental/mdc-slider/slider-theme';
 @import '../material-experimental/popover-edit/popover-edit';
 
 // Plus imports for other components in your app.
@@ -42,6 +43,9 @@ $candy-app-theme: mat-light-theme((
 @include mat-column-resize-theme($candy-app-theme);
 @include mat-popover-edit-theme($candy-app-theme);
 
+// We add this in manually for now, because it isn't included in `angular-material-mdc-theme`.
+@include mat-mdc-slider-theme($candy-app-theme);
+
 // Define an alternate dark theme.
 $dark-primary: mat-palette($mat-blue-grey);
 $dark-accent: mat-palette($mat-amber, A200, A100, A400);
@@ -69,6 +73,7 @@ $dark-theme: mat-dark-theme((
   @include angular-material-mdc-color($dark-theme);
   @include mat-column-resize-color($dark-theme);
   @include mat-popover-edit-color($dark-theme);
+  @include mat-mdc-slider-color($dark-theme);
 }
 
 // Include the dark theme for focus indicators.
