@@ -20,7 +20,8 @@ export interface ObjectEntry {
  * -----------------------------------------------------------------------------------
  * ...values...
  */
-export function printBenchmarkResultsTable(scenarios: string[], benchmarks: string[], entries: number[][]): void {
+export function printBenchmarkResultsTable(
+    scenarios: string[], benchmarks: string[], entries: number[][]): void {
   const rowTpl: {[scenario: string]: any} = {benchmark: ''};
   for (let i = 0; i < scenarios.length; i++) {
     const scenario = scenarios[i];
@@ -69,7 +70,8 @@ const TIME_DECIMAL_PLACES = 2;
 const DIFF_DECIMAL_PLACES = 2;
 
 /**
- * Formats the provided number into millisecond form (using scientific notation to help reduce characters).
+ * Formats the provided number into millisecond form (using scientific notation to help reduce
+ * characters).
  *
  * Example:
  * ```ts
@@ -94,9 +96,7 @@ function formatTime(value: number): string {
     displayValue = 'n/a';
   } else {
     displayValue = value.toFixed(TIME_DECIMAL_PLACES);
-    displayValue = exponentValue === 0
-      ? displayValue
-      : `${displayValue} * 10^-${exponentValue}`;
+    displayValue = exponentValue === 0 ? displayValue : `${displayValue} * 10^-${exponentValue}`;
   }
 
   return displayValue;
@@ -124,23 +124,20 @@ function formatDiff(value: number) {
     slower = true;
   }
 
-  const displayValue = value < 1
-    ? formatToDecimalPlaces(value, DIFF_DECIMAL_PLACES)
-    : value.toString();
+  const displayValue =
+      value < 1 ? formatToDecimalPlaces(value, DIFF_DECIMAL_PLACES) : value.toString();
 
-  return displayValue === '0'
-    ? 'no difference'
-    : `${displayValue}x ${slower ? 'slower' : 'faster'}`;
+  return displayValue === '0' ? 'no difference' :
+                                `${displayValue}x ${slower ? 'slower' : 'faster'}`;
 }
 
 /**
- * Formats the value nicely to the given decimal places amount, but returns `0` when the value is beyond the provided decimal places
+ * Formats the value nicely to the given decimal places amount, but returns `0` when the value is
+ * beyond the provided decimal places
  */
 function formatToDecimalPlaces(value: number, decimalPlaces: number): string {
-  const maxNumber = Math.pow(10,-decimalPlaces);
-  return value < maxNumber
-    ? '0'
-    : value.toFixed(decimalPlaces);
+  const maxNumber = Math.pow(10, -decimalPlaces);
+  return value < maxNumber ? '0' : value.toFixed(decimalPlaces);
 }
 
 export function printHeading(name: string) {

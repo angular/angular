@@ -33,7 +33,7 @@ export function createTripleNgForBenchmarkSuite() {
  * 2. NgFor without deep watching
  * 3. NgFor without deep watching and using WatchCollection
  */
-export async function run(
+export function run(
     suite: BenchmarkSuite, benchmarkName: string, fn: BenchmarkRunFn, flags: SuiteOptions = 0) {
   const benchmarkIndex = suite.registerBenchmark(benchmarkName);
   printHeading(`Benchmark #${benchmarkIndex}: ${suite.benchmarks[benchmarkIndex]}`);
@@ -41,13 +41,11 @@ export async function run(
   // Test for ngFor as it currently is in master
   if (!optionIsSet(flags, SuiteOptions.SkipScenario1)) {
     fn(suite, benchmarkIndex, 0, BenchmarkFeatures.UseStandardNgFor);
-    await untilLessBusy();
   }
 
   // Test for ngFor without any deep watching behavior (ngForPatched allows for this)
   if (!optionIsSet(flags, SuiteOptions.SkipScenario2)) {
     fn(suite, benchmarkIndex, 1, BenchmarkFeatures.UsePatchedNgFor);
-    await untilLessBusy();
   }
 
   // Test for ngFor without any deep watching behavior (ngForPatched)
@@ -55,7 +53,6 @@ export async function run(
   // behavior
   if (!optionIsSet(flags, SuiteOptions.SkipScenario3)) {
     fn(suite, benchmarkIndex, 2, BenchmarkFeatures.UseWatchCollection);
-    await untilLessBusy();
   }
 }
 
@@ -72,9 +69,9 @@ export enum SuiteOptions {
  * Feature flags used for instruct what structures to load for benchmark tests
  */
 enum BenchmarkFeatures {
-  UseStandardNgFor    = 0b000,
-  UsePatchedNgFor     = 0b01,
-  UseWatchCollection  = 0b10,
+  UseStandardNgFor = 0b000,
+  UsePatchedNgFor = 0b01,
+  UseWatchCollection = 0b10,
 }
 
 /**
@@ -93,7 +90,10 @@ export function numberListNoChanges(
     options: BenchmarkFeatures) {
   const ngFor = createFakeNgFor<number>(options & BenchmarkFeatures.UsePatchedNgFor, null);
   const array = makeNumberArray();
-  const wc = (options & BenchmarkFeatures.UseWatchCollection) === BenchmarkFeatures.UseWatchCollection ? new WatchCollectionPipe() : null;
+  const wc =
+      (options & BenchmarkFeatures.UseWatchCollection) === BenchmarkFeatures.UseWatchCollection ?
+      new WatchCollectionPipe() :
+      null;
 
   function testSetup() {
     updateNgForValue(ngFor, wc, array);
