@@ -13,6 +13,9 @@ import {getConfig, getRepoBaseDir, NgDevConfig} from '../config';
 import {info, yellow} from '../console';
 import {_GithubClient} from './_github';
 
+// Re-export GithubApiRequestError
+export {GithubApiRequestError} from './_github';
+
 /** Github response type extended to include the `x-oauth-scopes` headers presence. */
 type RateLimitResponseWithOAuthScopeHeader = Octokit.Response<Octokit.RateLimitGetResponse>&{
   headers: {'x-oauth-scopes': string};
