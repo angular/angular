@@ -125,7 +125,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   _onTouched = () => {};
   _validatorOnChange = () => {};
 
-  private _cvaOnChange: (value: any) => void = () => {};
+  protected _cvaOnChange: (value: any) => void = () => {};
   private _valueChangesSubscription = Subscription.EMPTY;
   private _localeSubscription = Subscription.EMPTY;
 

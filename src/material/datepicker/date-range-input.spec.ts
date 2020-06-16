@@ -475,6 +475,24 @@ describe('MatDateRangeInput', () => {
     expect(fixture.componentInstance.end).toBe(end);
   }));
 
+  it('should preserve the values when assigning both together through ngModel', fakeAsync(() => {
+    const assignAndAssert = (start: Date, end: Date) => {
+      fixture.componentInstance.start = start;
+      fixture.componentInstance.end = end;
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.start).toBe(start);
+      expect(fixture.componentInstance.end).toBe(end);
+    };
+
+    const fixture = createComponent(RangePickerNgModel);
+    fixture.detectChanges();
+
+    assignAndAssert(new Date(2020, 1, 2), new Date(2020, 1, 5));
+    assignAndAssert(new Date(2020, 2, 2), new Date(2020, 2, 5));
+  }));
+
   it('should move focus to the start input when pressing backspace on an empty end input', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();

@@ -40,7 +40,7 @@ import {
 import {BooleanInput} from '@angular/cdk/coercion';
 import {BACKSPACE} from '@angular/cdk/keycodes';
 import {MatDatepickerInputBase, DateFilterFn} from './datepicker-input-base';
-import {DateRange, MatDateSelectionModel} from './date-selection-model';
+import {DateRange} from './date-selection-model';
 
 /** Parent component that should be wrapped around `MatStartDate` and `MatEndDate`. */
 export interface MatDateRangeInputParent<D> {
@@ -170,15 +170,6 @@ abstract class MatDateRangeInputPartBase<D>
   protected _parentDisabled() {
     return this._rangeInput._groupDisabled;
   }
-
-  _registerModel(model: MatDateSelectionModel<DateRange<D>, D>) {
-    // The very first time the range inputs write their values, they don't know about the value
-    // of the opposite input. When this is combined with the fact that `NgModel` defers writing
-    // its value with a `Promise.resolve`, we can get into a situation where the first input
-    // resets the value of the second. We work around it by deferring the registration of
-    // the model, allowing the input enough time to assign the initial value.
-    Promise.resolve().then(() => super._registerModel(model));
-  }
 }
 
 const _MatDateRangeInputBase:
@@ -247,6 +238,7 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpd
     if (this._model) {
       const range = new DateRange(value, this._model.selection.end);
       this._model.updateSelection(range, this);
+      this._cvaOnChange(value);
     }
   }
 
@@ -328,11 +320,12 @@ export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdat
     if (this._model) {
       const range = new DateRange(this._model.selection.start, value);
       this._model.updateSelection(range, this);
+      this._cvaOnChange(value);
     }
   }
 
   _onKeydown(event: KeyboardEvent) {
-    // If the user is pressing backspace on an empty end input, focus focus back to the start.
+    // If the user is pressing backspace on an empty end input, move focus back to the start.
     if (event.keyCode === BACKSPACE && !this._elementRef.nativeElement.value) {
       this._rangeInput._startInput.focus();
     }
