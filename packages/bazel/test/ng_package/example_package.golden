@@ -180,11 +180,11 @@ Hello
     var A11yModule = /** @class */ (function () {
         function A11yModule() {
         }
-        A11yModule.decorators = [
-            { type: core.NgModule, args: [{},] }
-        ];
         return A11yModule;
     }());
+    A11yModule.decorators = [
+        { type: core.NgModule, args: [{},] }
+    ];
 
     /**
      * @license
@@ -220,14 +220,15 @@ Hello
      *
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
-     */var n=function(){function e(){}return e.decorators=[{type:o.NgModule,args:[{}]}],e}();
+     */var t;(t=function t(){}).decorators=[{type:o.NgModule,args:[{}]}],
 /**
      * @license
      * Copyright Google LLC All Rights Reserved.
      *
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
-     */e.A11yModule=n,Object.defineProperty(e,"__esModule",{value:!0})}));
+     */
+e.A11yModule=t,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- bundles/waffels-imports.umd.js ---
 
@@ -253,12 +254,12 @@ Hello
     var MySecondService = /** @class */ (function () {
         function MySecondService() {
         }
-        MySecondService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
-        MySecondService.decorators = [
-            { type: i0.Injectable, args: [{ providedIn: 'root' },] }
-        ];
         return MySecondService;
     }());
+    MySecondService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+    MySecondService.decorators = [
+        { type: i0.Injectable, args: [{ providedIn: 'root' },] }
+    ];
 
     /**
      * @license
@@ -271,15 +272,15 @@ Hello
         function MyService(secondService) {
             this.secondService = secondService;
         }
-        MyService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0.ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
-        MyService.decorators = [
-            { type: i0.Injectable, args: [{ providedIn: 'root' },] }
-        ];
-        MyService.ctorParameters = function () { return [
-            { type: MySecondService }
-        ]; };
         return MyService;
     }());
+    MyService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0.ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
+    MyService.decorators = [
+        { type: i0.Injectable, args: [{ providedIn: 'root' },] }
+    ];
+    MyService.ctorParameters = function () { return [
+        { type: MySecondService }
+    ]; };
 
     /**
      * @license
@@ -316,7 +317,7 @@ Hello
      *
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
-     */var n=function(){function e(){}return e.ɵprov=t.ɵɵdefineInjectable({factory:function t(){return new e},token:e,providedIn:"root"}),e.decorators=[{type:t.Injectable,args:[{providedIn:"root"}]}],e}(),r=function(){function e(e){this.secondService=e}return e.ɵprov=t.ɵɵdefineInjectable({factory:function r(){return new e(t.ɵɵinject(n))},token:e,providedIn:"root"}),e.decorators=[{type:t.Injectable,args:[{providedIn:"root"}]}],e.ctorParameters=function(){return[{type:n}]},e}();
+     */var o,r;(o=function o(){}).ɵprov=t.ɵɵdefineInjectable({factory:function e(){return new o},token:o,providedIn:"root"}),o.decorators=[{type:t.Injectable,args:[{providedIn:"root"}]}],(r=function r(e){this.secondService=e}).ɵprov=t.ɵɵdefineInjectable({factory:function e(){return new r(t.ɵɵinject(o))},token:r,providedIn:"root"}),r.decorators=[{type:t.Injectable,args:[{providedIn:"root"}]}],r.ctorParameters=function(){return[{type:o}]},
 /**
      * @license
      * Copyright Google LLC All Rights Reserved.
@@ -324,14 +325,7 @@ Hello
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-e.MyService=r,e.ɵangular_packages_bazel_test_ng_package_example_imports_imports_a=n,Object.defineProperty(e,"__esModule",{value:!0})}));
+e.MyService=r,e.ɵangular_packages_bazel_test_ng_package_example_imports_imports_a=o,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- bundles/waffels-secondary.umd.js ---
 
@@ -357,11 +351,11 @@ e.MyService=r,e.ɵangular_packages_bazel_test_ng_package_example_imports_imports
     var SecondaryModule = /** @class */ (function () {
         function SecondaryModule() {
         }
-        SecondaryModule.decorators = [
-            { type: core.NgModule, args: [{},] }
-        ];
         return SecondaryModule;
     }());
+    SecondaryModule.decorators = [
+        { type: core.NgModule, args: [{},] }
+    ];
     var a = 1;
 
     /**
@@ -399,7 +393,7 @@ e.MyService=r,e.ɵangular_packages_bazel_test_ng_package_example_imports_imports
      *
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
-     */var n=function(){function e(){}return e.decorators=[{type:o.NgModule,args:[{}]}],e}();
+     */var n;(n=function n(){}).decorators=[{type:o.NgModule,args:[{}]}],
 /**
      * @license
      * Copyright Google LLC All Rights Reserved.
@@ -433,11 +427,11 @@ e.SecondaryModule=n,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
     var MyModule = /** @class */ (function () {
         function MyModule() {
         }
-        MyModule.decorators = [
-            { type: core.NgModule, args: [{},] }
-        ];
         return MyModule;
     }());
+    MyModule.decorators = [
+        { type: core.NgModule, args: [{},] }
+    ];
 
     /**
      * @license
@@ -473,14 +467,15 @@ e.SecondaryModule=n,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
      *
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
-     */var n=function(){function e(){}return e.decorators=[{type:o.NgModule,args:[{}]}],e}();
+     */var t;(t=function t(){}).decorators=[{type:o.NgModule,args:[{}]}],
 /**
      * @license
      * Copyright Google LLC All Rights Reserved.
      *
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
-     */e.MyModule=n,Object.defineProperty(e,"__esModule",{value:!0})}));
+     */
+e.MyModule=t,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- esm2015/a11y/a11y.externs.js ---
 

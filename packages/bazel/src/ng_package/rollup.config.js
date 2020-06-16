@@ -14,6 +14,7 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
 const fs = require('fs');
+const ts = require('typescript');
 
 function log_verbose(...m) {
   // This is a template file so we use __filename to output the actual filename
@@ -25,6 +26,7 @@ const rootDir = 'TMPL_root_dir';
 const bannerFile = TMPL_banner_file;
 const stampData = TMPL_stamp_data;
 const moduleMappings = TMPL_module_mappings;
+const downlevelToEs5 = TMPL_downlevel_to_es5;
 const nodeModulesRoot = 'TMPL_node_modules_root';
 
 log_verbose(`running with
@@ -144,6 +146,27 @@ if (bannerFile) {
   }
 }
 
+const downlevelToEs5Plugin = {
+  name: 'downlevel-to-es5',
+  transform: (code, filePath) => {
+    const compilerOptions = {
+      target: ts.ScriptTarget.ES5,
+      module: ts.ModuleKind.ES2015,
+      allowJs: true,
+      sourceMap: true,
+      downlevelIteration: true,
+      importHelpers: true,
+      mapRoot: path.dirname(filePath),
+    };
+
+    const {outputText, sourceMapText} = ts.transpileModule(code, {compilerOptions});
+    return {
+      code: outputText,
+      map: JSON.parse(sourceMapText),
+    };
+  },
+};
+
 const plugins = [
   {
     name: 'resolveBazel',
@@ -157,6 +180,10 @@ const plugins = [
   commonjs({ignoreGlobal: true}),
   sourcemaps(),
 ];
+
+if (downlevelToEs5) {
+  plugins.push(downlevelToEs5Plugin);
+}
 
 const config = {
   plugins,
