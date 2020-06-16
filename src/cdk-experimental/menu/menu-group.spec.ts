@@ -9,7 +9,7 @@ import {By} from '@angular/platform-browser';
 describe('MenuGroup', () => {
   describe('with MenuItems as checkbox', () => {
     let fixture: ComponentFixture<CheckboxMenu>;
-    let menuItems: Array<CdkMenuItem>;
+    let menuItems: CdkMenuItem[];
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
@@ -34,7 +34,7 @@ describe('MenuGroup', () => {
 
   describe('with MenuItems as radio button', () => {
     let fixture: ComponentFixture<MenuWithMultipleRadioGroups>;
-    let menuItems: Array<CdkMenuItem>;
+    let menuItems: CdkMenuItem[];
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
@@ -77,7 +77,7 @@ describe('MenuGroup', () => {
   describe('change events', () => {
     let fixture: ComponentFixture<MenuWithMenuItemsAndRadioGroups>;
     let menu: CdkMenu;
-    let menuItems: Array<CdkMenuItem>;
+    let menuItems: CdkMenuItem[];
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
@@ -105,7 +105,7 @@ describe('MenuGroup', () => {
     });
 
     it('should emit from enclosing radio group only', () => {
-      const spies: Array<jasmine.Spy> = [];
+      const spies: jasmine.Spy[] = [];
 
       fixture.debugElement.queryAll(By.directive(CdkMenuGroup)).forEach((group, index) => {
         const spy = jasmine.createSpy(`cdkMenuGroup ${index} change spy`);
@@ -136,7 +136,7 @@ describe('MenuGroup', () => {
     });
 
     it('should not emit on menuitem click', () => {
-      const spies: Array<jasmine.Spy> = [];
+      const spies: jasmine.Spy[] = [];
 
       fixture.debugElement.queryAll(By.directive(CdkMenuGroup)).forEach((group, index) => {
         const spy = jasmine.createSpy(`cdkMenuGroup ${index} change spy`);

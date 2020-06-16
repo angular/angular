@@ -8,7 +8,7 @@ import {By} from '@angular/platform-browser';
 describe('Menu', () => {
   describe('as checkbox group', () => {
     let fixture: ComponentFixture<MenuCheckboxGroup>;
-    let menuItems: Array<CdkMenuItem>;
+    let menuItems: CdkMenuItem[];
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
@@ -22,7 +22,7 @@ describe('Menu', () => {
 
       menuItems = fixture.debugElement
         .queryAll(By.directive(CdkMenuItem))
-        .map((element) => element.injector.get(CdkMenuItem));
+        .map(element => element.injector.get(CdkMenuItem));
     }));
 
     it('should toggle menuitemcheckbox', () => {
@@ -41,7 +41,7 @@ describe('Menu', () => {
 
   describe('checkbox change events', () => {
     let fixture: ComponentFixture<MenuCheckboxGroup>;
-    let menuItems: Array<CdkMenuItem>;
+    let menuItems: CdkMenuItem[];
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
@@ -55,7 +55,7 @@ describe('Menu', () => {
 
       menuItems = fixture.debugElement
         .queryAll(By.directive(CdkMenuItem))
-        .map((element) => element.injector.get(CdkMenuItem));
+        .map(element => element.injector.get(CdkMenuItem));
     }));
 
     it('should emit on click', () => {

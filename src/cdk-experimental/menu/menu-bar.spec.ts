@@ -8,7 +8,7 @@ import {By} from '@angular/platform-browser';
 describe('MenuBar', () => {
   describe('as radio group', () => {
     let fixture: ComponentFixture<MenuBarRadioGroup>;
-    let menuItems: Array<CdkMenuItem>;
+    let menuItems: CdkMenuItem[];
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
@@ -21,7 +21,7 @@ describe('MenuBar', () => {
 
       menuItems = fixture.debugElement
         .queryAll(By.directive(CdkMenuItem))
-        .map((element) => element.injector.get(CdkMenuItem));
+        .map(element => element.injector.get(CdkMenuItem));
     }));
 
     it('should toggle menuitemradio items', () => {
@@ -37,7 +37,7 @@ describe('MenuBar', () => {
 
   describe('radiogroup change events', () => {
     let fixture: ComponentFixture<MenuBarRadioGroup>;
-    let menuItems: Array<CdkMenuItem>;
+    let menuItems: CdkMenuItem[];
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
@@ -51,7 +51,7 @@ describe('MenuBar', () => {
 
       menuItems = fixture.debugElement
         .queryAll(By.directive(CdkMenuItem))
-        .map((element) => element.injector.get(CdkMenuItem));
+        .map(element => element.injector.get(CdkMenuItem));
     }));
 
     it('should emit on click', () => {
