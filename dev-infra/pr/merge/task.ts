@@ -25,7 +25,7 @@ export const enum MergeStatus {
   DIRTY_WORKING_DIR,
   SUCCESS,
   FAILED,
-  ABORTED,
+  USER_ABORTED,
   GITHUB_ERROR,
 }
 
@@ -80,7 +80,7 @@ export class PullRequestMergeTask {
     if (pullRequest.hasCaretakerNote &&
         !await promptConfirm(
             getCaretakerNotePromptMessage(pullRequest) + `\nDo you want to proceed merging?`)) {
-      return {status: MergeStatus.ABORTED};
+      return {status: MergeStatus.USER_ABORTED};
     }
 
     const strategy = this.config.githubApiMerge ?

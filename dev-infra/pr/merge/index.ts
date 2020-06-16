@@ -114,8 +114,8 @@ export async function mergePullRequest(
         error(red('An error related to interacting with Github has been discovered.'));
         error(failure!.message);
         return false;
-      case MergeStatus.ABORTED:
-        info(`Merge of pull request aborted: #${prNumber}`);
+      case MergeStatus.USER_ABORTED:
+        info(`Merge of pull request has been aborted manually: #${prNumber}`);
         return true;
       case MergeStatus.FAILED:
         error(yellow(`Could not merge the specified pull request.`));
