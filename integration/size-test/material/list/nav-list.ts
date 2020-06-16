@@ -24,5 +24,3 @@ export class TestComponent {}
   bootstrap: [TestComponent],
 })
 export class AppModule {}
-
-platformBrowser().bootstrapModule(AppModule);
