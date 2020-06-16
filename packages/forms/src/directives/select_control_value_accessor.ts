@@ -115,16 +115,12 @@ export class SelectControlValueAccessor extends BuiltInControlValueAccessor impl
   private _compareWith: (o1: any, o2: any) => boolean = Object.is;
 
   /**
-   * Sets the "value" property on the input element. The "selectedIndex"
-   * property is also set if an ID is provided on the option element.
+   * Sets the "value" property on the select element.
    * @nodoc
    */
   writeValue(value: any): void {
     this.value = value;
     const id: string|null = this._getOptionId(value);
-    if (id == null) {
-      this.setProperty('selectedIndex', -1);
-    }
     const valueString = _buildValueString(id, value);
     this.setProperty('value', valueString);
   }
