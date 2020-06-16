@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
+import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -188,6 +188,76 @@ describe('component', () => {
               'Expected component onDestroy method to be called when its parent view is destroyed');
     });
   });
+
+  it('should clear the contents of dynamically created component when it\'s attached to ApplicationRef',
+     () => {
+       let wasOnDestroyCalled = false;
+       @Component({
+         selector: '[comp]',
+         template: 'comp content',
+       })
+       class DynamicComponent {
+         ngOnDestroy() {
+           wasOnDestroyCalled = true;
+         }
+       }
+
+       @NgModule({
+         declarations: [DynamicComponent],
+         entryComponents: [DynamicComponent],  // needed only for ViewEngine
+       })
+       class TestModule {
+       }
+
+       @Component({
+         selector: 'button',
+         template: `
+           <div class="wrapper"></div>
+           <div id="app-root"></div>
+           <div class="wrapper"></div>
+         `,
+       })
+       class App {
+         componentRef!: ComponentRef<DynamicComponent>;
+
+         constructor(
+             private cfr: ComponentFactoryResolver, private injector: Injector,
+             private appRef: ApplicationRef) {}
+
+         create() {
+           const factory = this.cfr.resolveComponentFactory(DynamicComponent);
+           // Component to be bootstrapped into an element with the `app-root` id.
+           this.componentRef = factory.create(this.injector, undefined, '#app-root');
+           this.appRef.attachView(this.componentRef.hostView);
+         }
+
+         destroy() {
+           this.componentRef.destroy();
+         }
+       }
+
+       TestBed.configureTestingModule({imports: [TestModule], declarations: [App]});
+       const fixture = TestBed.createComponent(App);
+       fixture.detectChanges();
+
+       let appRootEl = fixture.nativeElement.querySelector('#app-root');
+       expect(appRootEl).toBeDefined();
+       expect(appRootEl.innerHTML).toBe('');  // app container content is empty
+
+       fixture.componentInstance.create();
+
+       appRootEl = fixture.nativeElement.querySelector('#app-root');
+       expect(appRootEl).toBeDefined();
+       expect(appRootEl.innerHTML).toBe('comp content');
+
+       fixture.componentInstance.destroy();
+       fixture.detectChanges();
+
+       appRootEl = fixture.nativeElement.querySelector('#app-root');
+       expect(appRootEl).toBeFalsy();  // host element is removed
+       const wrapperEls = fixture.nativeElement.querySelectorAll('.wrapper');
+       expect(wrapperEls.length).toBe(2);  // other elements are preserved
+     });
 
   it('should use a new ngcontent attribute for child elements created w/ Renderer2', () => {
     @Component({
