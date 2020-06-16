@@ -22,7 +22,7 @@ StackBlitz projects are public by default, allowing you to share your Angular ap
 
 To build your application locally or for production, download the source code from your StackBlitz project by clicking the `Download Project` icon in the left menu across from `Project` to download your files.
 
-Once you have the source code downloaded and unzipped, use the [Angular Console](https://angularconsole.com "Angular Console web site") to serve the application, or install `Node.js` and serve your app with the Angular CLI.
+Once you have the source code downloaded and unzipped, install `Node.js` and serve your app with the Angular CLI.
 
 From the terminal, install the Angular CLI globally with:
 
