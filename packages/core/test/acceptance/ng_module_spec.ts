@@ -7,10 +7,12 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, CUSTOM_ELEMENTS_SCHEMA, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
+import {modifiedInIvy, onlyInIvy, withBody} from '@angular/private/testing';
 
 describe('NgModule', () => {
   @Component({template: 'hello'})
@@ -98,6 +100,44 @@ describe('NgModule', () => {
 
     TestBed.configureTestingModule({imports: [AppModule]});
     expect(TestBed.inject(Service).initializations).toEqual(['RoutesModule', 'AppModule']);
+  });
+
+  describe('destroy', () => {
+    beforeEach(destroyPlatform);
+    afterEach(destroyPlatform);
+
+    it('should clear bootstrapped component contents',
+       withBody('<div>before</div><button></button><div>after</div>', async () => {
+         let wasOnDestroyCalled = false;
+         @Component({
+           selector: 'button',
+           template: 'button content',
+         })
+         class App {
+           ngOnDestroy() {
+             wasOnDestroyCalled = true;
+           }
+         }
+
+         @NgModule({
+           imports: [BrowserModule],
+           declarations: [App],
+           bootstrap: [App],
+         })
+         class AppModule {
+         }
+         const ngModuleRef = await platformBrowserDynamic().bootstrapModule(AppModule);
+
+         const button = document.body.querySelector('button')!;
+         expect(button.textContent).toEqual('button content');
+         expect(document.body.childNodes.length).toEqual(3);
+
+         ngModuleRef.destroy();
+
+         expect(wasOnDestroyCalled).toEqual(true);
+         expect(document.body.querySelector('button')).toBeFalsy();  // host element is removed
+         expect(document.body.childNodes.length).toEqual(2);         // other elements are preserved
+       }));
   });
 
   describe('schemas', () => {

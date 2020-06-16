@@ -155,14 +155,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
-
-    // Check whether this Component needs to be isolated from other components, i.e. whether it
-    // should be placed into its own (empty) root context or existing root context should be used.
-    // Note: this is internal-only convention and might change in the future, so it should not be
-    // relied upon externally.
-    const isIsolated = typeof rootSelectorOrNode === 'string' &&
-        /^#root-ng-internal-isolated-\d+/.test(rootSelectorOrNode);
-
     const rootContext = createRootContext();
 
     // Create the root view. Uses empty TView and ContentTemplate.
@@ -232,12 +224,10 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         this.componentType, component,
         createElementRef(viewEngine_ElementRef, tElementNode, rootLView), rootLView, tElementNode);
 
-    if (!rootSelectorOrNode || isIsolated) {
-      // The host element of the internal or isolated root view is attached to the component's host
-      // view node.
-      ngDevMode && assertNodeOfPossibleTypes(rootTView.node, TNodeType.View);
-      rootTView.node!.child = tElementNode;
-    }
+    // The host element of the internal root view is attached to the component's host view node.
+    ngDevMode && assertNodeOfPossibleTypes(rootTView.node, TNodeType.View);
+    rootTView.node!.child = tElementNode;
+
     return componentRef;
   }
 }
