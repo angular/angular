@@ -157,7 +157,7 @@
     "send": "^0.17.1",
     "shelljs": "^0.8.3",
     "stylelint": "^13.3.1",
-    "terser": "^4.3.9",
+    "terser": "^4.8.0",
     "ts-api-guardian": "^0.5.0",
     "ts-node": "^8.10.1",
     "tsickle": "0.38.1",

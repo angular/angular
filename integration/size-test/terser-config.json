@@ -12,5 +12,6 @@
     "passes": 3,
     "pure_getters": true
   },
+  "toplevel": true,
   "mangle": true
 }
