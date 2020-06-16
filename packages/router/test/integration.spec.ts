@@ -201,9 +201,7 @@ describe('Integration', () => {
          router.navigateByUrl('/simple', {state: {foo: 'bar'}});
          tick();
 
-         expectEvents(events, [
-          [NavigationStart, '/simple'], [NavigationEnd, '/simple']
-         ]);
+         expectEvents(events, [[NavigationStart, '/simple'], [NavigationEnd, '/simple']]);
        })));
 
     it('should not pollute browser history when replaceUrl is set to true',

@@ -161,7 +161,7 @@ export function defaultUrlMatcher(
  * Takes two values and returns true only if they are the same value or are
  * objects with the same properties whose values are also equal.
  */
-export function shallowEqual(a: any, b: any) {
+export function depthOneEqual(a: any, b: any) {
   if (a === undefined || b === undefined) {
     if (a === b) {
       return true;
