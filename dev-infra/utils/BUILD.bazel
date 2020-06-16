@@ -11,6 +11,7 @@ ts_library(
     deps = [
         "@npm//@octokit/graphql",
         "@npm//@octokit/rest",
+        "@npm//@octokit/types",
         "@npm//@types/inquirer",
         "@npm//@types/node",
         "@npm//@types/shelljs",

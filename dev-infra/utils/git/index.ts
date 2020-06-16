@@ -51,7 +51,7 @@ export class GitClient {
       `https://${this._githubToken}@github.com/${this.remoteConfig.owner}/${
           this.remoteConfig.name}.git`;
   /** Instance of the authenticated Github octokit API. */
-  github: _GithubClient;
+  github = new _GithubClient(this._githubToken);
 
   /** The file path of project's root directory. */
   private _projectRoot = getRepoBaseDir();
@@ -71,8 +71,6 @@ export class GitClient {
     if (_githubToken != null) {
       this._githubTokenRegex = new RegExp(_githubToken, 'g');
     }
-
-    this.github = new _GithubClient(_githubToken);
   }
 
   /** Executes the given git command. Throws if the command fails. */

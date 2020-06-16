@@ -15,6 +15,7 @@
 
 import {graphql} from '@octokit/graphql';
 import * as Octokit from '@octokit/rest';
+import {RequestParameters} from '@octokit/types';
 import {query, types} from 'typed-graphqlify';
 
 /** Error for failed Github API requests. */
@@ -39,7 +40,7 @@ export class _GithubClient extends Octokit {
 
   constructor(token?: string) {
     // Pass in authentication token to base Octokit class.
-    super({token});
+    super({auth: token});
 
     this.hook.error('request', error => {
       // Wrap API errors in a known error class. This allows us to
@@ -71,8 +72,6 @@ export class _GithubClient extends Octokit {
  * a GraphQL query string.
  */
 type GraphQLQueryObject = Parameters<typeof query>[1];
-/** Parameters for a GraphQL request. */
-type RequestParameters = Parameters<typeof graphql>[1];
 
 /**
  * A client for interacting with Github's GraphQL API.
@@ -82,18 +81,20 @@ type RequestParameters = Parameters<typeof graphql>[1];
  */
 class GithubGraphqlClient {
   /** The Github GraphQL (v4) API. */
-  private graqhql: typeof graphql;
+  private graqhql = graphql;
 
   constructor(token?: string) {
     // Set the default headers to include authorization with the provided token for all
     // graphQL calls.
-    this.graqhql = graphql.defaults({headers: {authorization: `token ${token}`}});
+    if (token) {
+      this.graqhql.defaults({headers: {authorization: `token ${token}`}});
+    }
   }
 
 
   /** Perform a query using Github's GraphQL API. */
   async query<T extends GraphQLQueryObject>(queryObject: T, params: RequestParameters = {}) {
     const queryString = query(queryObject);
-    return (await this.graqhql(queryString, params)) as typeof queryObject;
+    return (await this.graqhql(queryString, params)) as T;
   }
 }
