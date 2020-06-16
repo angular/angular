@@ -25,7 +25,7 @@ import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strat
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
-import {deepEqual, isNavigationCancelingError, navigationCancelingError, Params} from './shared';
+import {shallowEqual, isNavigationCancelingError, navigationCancelingError, Params} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, createEmptyUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
@@ -472,9 +472,7 @@ export class Router {
                        };
                      }),
                      switchMap(t => {
-                       const isStateChanged = this.lastSuccessfulNavigation ?
-                           !deepEqual(t.extras.state, this.lastSuccessfulNavigation.extras.state) :
-                           false;
+                       const isStateChanged = !shallowEqual(t?.extras?.state, this.lastSuccessfulNavigation?.extras?.state);
                        const urlTransition = !this.navigated ||
                            t.extractedUrl.toString() !== this.browserUrlTree.toString() ||
                            isStateChanged;
