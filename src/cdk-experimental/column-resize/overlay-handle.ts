@@ -11,7 +11,7 @@ import {coerceCssPixelValue} from '@angular/cdk/coercion';
 import {Directionality} from '@angular/cdk/bidi';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {CdkColumnDef} from '@angular/cdk/table';
-import {fromEvent, ReplaySubject} from 'rxjs';
+import {fromEvent, Subject} from 'rxjs';
 import {
   distinctUntilChanged,
   filter,
@@ -37,7 +37,7 @@ import {ResizeRef} from './resize-ref';
  */
 @Directive()
 export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
-  protected readonly destroyed = new ReplaySubject<void>();
+  protected readonly destroyed = new Subject<void>();
 
   protected abstract readonly columnDef: CdkColumnDef;
   protected abstract readonly document: Document;

@@ -21,7 +21,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {ComponentPortal, PortalInjector} from '@angular/cdk/portal';
 import {Overlay, OverlayRef} from '@angular/cdk/overlay';
 import {CdkColumnDef} from '@angular/cdk/table';
-import {merge, ReplaySubject} from 'rxjs';
+import {merge, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 
 import {_closest} from '@angular/cdk-experimental/popover-edit';
@@ -48,7 +48,7 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
 
   protected inlineHandle?: HTMLElement;
   protected overlayRef?: OverlayRef;
-  protected readonly destroyed = new ReplaySubject<void>();
+  protected readonly destroyed = new Subject<void>();
 
   protected abstract readonly columnDef: CdkColumnDef;
   protected abstract readonly columnResize: ColumnResize;

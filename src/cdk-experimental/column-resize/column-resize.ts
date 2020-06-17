@@ -7,7 +7,7 @@
  */
 
 import {AfterViewInit, Directive, ElementRef, NgZone, OnDestroy} from '@angular/core';
-import {fromEvent, merge, ReplaySubject} from 'rxjs';
+import {fromEvent, merge, Subject} from 'rxjs';
 import {filter, map, mapTo, pairwise, startWith, take, takeUntil} from 'rxjs/operators';
 
 import {_closest, _matches} from '@angular/cdk-experimental/popover-edit';
@@ -27,7 +27,7 @@ let nextId = 0;
  */
 @Directive()
 export abstract class ColumnResize implements AfterViewInit, OnDestroy {
-  protected readonly destroyed = new ReplaySubject<void>();
+  protected readonly destroyed = new Subject<void>();
 
   /* Publicly accessible interface for triggering and being notified of resizes. */
   abstract readonly columnResizeNotifier: ColumnResizeNotifier;
