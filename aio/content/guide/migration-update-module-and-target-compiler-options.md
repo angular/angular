@@ -1,10 +1,11 @@
-# Update Module and Target Compiler Options Migration
+# Update module and target compiler options migration
 
 ## What does this migration do?
 
 This migration will adjust the `target` and `module` settings within the [TypeScript configuration files](guide/typescript-configuration) for the workspace.
 The changes to each option vary based on the builder/command that uses the TypeScript configuration file.
-Unless otherwise noted, changes are only made if the existing value matches an expected value.
+Unless otherwise noted, changes are only made if the existing value was not changed from the value previously used by a new project.
+This ensures that intentional changes to the options are kept in place.
 
 For the browser builder (`ng build` for applications), `module` is changed to `es2020` from `esnext`.
 
@@ -23,7 +24,7 @@ This provides improvements to supportability and the long-term sustainment of pr
 
 For the functionality that executes on Node.js, such as universal and protractor, the new settings
 provide performance and debug/troubleshooting benefits as well.
-The minimum Node.js version for the Angular CLI (v10.13), supports features present up to ES2018.
+The minimum Node.js version for the Angular CLI (v10.13) supports features present up to ES2018.
 By targetting later ES versions, less code is transformed which allows newer features to be used directly.
 Since zone.js does not support native async/await, the universal builds must still target ES2016.
 
