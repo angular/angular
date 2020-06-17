@@ -194,11 +194,14 @@ export class CdkEditClose<FormValue> {
   // can move this back into `host`.
   // tslint:disable:no-host-decorator-in-concrete
   @HostListener('click')
-  @HostListener('keyup.enter')
-  @HostListener('keyup.space')
+  @HostListener('keydown.enter')
+  @HostListener('keydown.space')
   closeEdit(): void {
     // Note that we use `click` here, rather than a keyboard event, because some screen readers
-    // will emit a fake click event instead of an enter keyboard event on buttons.
+    // will emit a fake click event instead of an enter keyboard event on buttons. For the keyboard
+    // events we use `keydown`, rather than `keyup`, because we use `keydown` to open the overlay
+    // as well. If we were to use `keyup`, the user could end up opening and closing within
+    // the same event sequence if focus was moved quickly.
     this.editRef.close();
   }
 }
