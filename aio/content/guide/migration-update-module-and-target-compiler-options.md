@@ -2,8 +2,8 @@
 
 ## What does this migration do?
 
-This migration will adjust the `target` and `module` within the `tsconfig` files for the workspace.
-The changes to each option vary based on the builder/command that uses the tsconfig.
+This migration will adjust the `target` and `module` settings within the [TypeScript configuration files](guide/typescript-configuration) for the workspace.
+The changes to each option vary based on the builder/command that uses the TypeScript configuration file.
 Unless otherwise noted, changes are only made if the existing value matches an expected value.
 
 For the browser builder (`ng build` for applications), `module` is changed to `es2020` from `esnext`.
@@ -19,7 +19,6 @@ For the protractor builder (`ng e2e` for applications), `target` is changed to `
 
 ## Why is this migration necessary?
 
-These changes synchronize the values of these options with new projects.
 This provides improvements to supportability and the long-term sustainment of projects.
 
 For the functionality that executes on Node.js, such as universal and protractor, the new settings
@@ -28,9 +27,8 @@ The minimum Node.js version for the Angular CLI (v10.13), supports features pres
 By targetting later ES versions, less code is transformed which allows newer features to be used directly.
 Since zone.js does not support native async/await, the universal builds must still target ES2016.
 
-## Can `esnext` still be used instead of `es2020`?
+## Why `"es2020"` instead of `"esnext"`?
 
-Both `esnext` and `es2020` values provide support for dynamic imports which are used for lazy routing.
-However, `es2020` has a fixed set of included features and behavior.
-By instead using `esnext`, updates to the TypeScript compiler could cause changes in behavior or include
-unsupported features during compilation.  This could result in either build-time or run-time errors.
+In TypeScript 3.9 the behavior of the TypeScript compiler controlled by the [`module`](https://www.typescriptlang.org/v2/en/tsconfig#module) is the same with both `"esnext"` and `"es2020"` values.
+This can however change in the future where the `"esnext"` option could evolve in a backwards incompatible ways resulting in build-time or run-time errors during TypeScript update.
+This could result in undesirable instability which can be avoided by using the `"es2020"` option whose behavior is not going to change any more.
