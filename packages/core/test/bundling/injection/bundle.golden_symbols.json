@@ -18,9 +18,6 @@
     "name": "InjectFlags"
   },
   {
-    "name": "InjectionToken"
-  },
-  {
     "name": "NEW_LINE"
   },
   {
@@ -42,34 +39,13 @@
     "name": "NG_PROV_DEF_FALLBACK"
   },
   {
-    "name": "NG_TEMP_TOKEN_PATH"
-  },
-  {
-    "name": "NG_TOKEN_PATH"
-  },
-  {
     "name": "NOT_YET"
-  },
-  {
-    "name": "NO_NEW_LINE"
   },
   {
     "name": "NULL_INJECTOR"
   },
   {
-    "name": "NullInjector"
-  },
-  {
     "name": "Optional"
-  },
-  {
-    "name": "PARAMETERS"
-  },
-  {
-    "name": "R3Injector"
-  },
-  {
-    "name": "SOURCE"
   },
   {
     "name": "ScopedService"
@@ -90,31 +66,10 @@
     "name": "__forward_ref__"
   },
   {
-    "name": "__read"
-  },
-  {
-    "name": "__spread"
-  },
-  {
     "name": "_currentInjector"
   },
   {
-    "name": "catchInjectorError"
-  },
-  {
-    "name": "couldBeInjectableType"
-  },
-  {
-    "name": "createInjector"
-  },
-  {
-    "name": "createInjectorWithoutInjectorInstances"
-  },
-  {
     "name": "deepForEach"
-  },
-  {
-    "name": "formatError"
   },
   {
     "name": "forwardRef"
@@ -124,9 +79,6 @@
   },
   {
     "name": "getFactoryDef"
-  },
-  {
-    "name": "getInheritedInjectableDef"
   },
   {
     "name": "getInjectableDef"
@@ -141,37 +93,10 @@
     "name": "getOwnDefinition"
   },
   {
-    "name": "getTypeName"
-  },
-  {
-    "name": "getUndecoratedInjectableFactory"
-  },
-  {
-    "name": "hasDeps"
-  },
-  {
-    "name": "hasOnDestroy"
-  },
-  {
     "name": "injectArgs"
   },
   {
-    "name": "injectInjectorOnly"
-  },
-  {
-    "name": "injectRootLimpMode"
-  },
-  {
     "name": "injectableDefOrInjectorDefFactory"
-  },
-  {
-    "name": "isExistingProvider"
-  },
-  {
-    "name": "isFactoryProvider"
-  },
-  {
-    "name": "isForwardRef"
   },
   {
     "name": "isTypeProvider"
@@ -180,25 +105,10 @@
     "name": "isValueProvider"
   },
   {
-    "name": "makeMetadataCtor"
-  },
-  {
     "name": "makeParamDecorator"
   },
   {
     "name": "makeRecord"
-  },
-  {
-    "name": "newArray"
-  },
-  {
-    "name": "noSideEffects"
-  },
-  {
-    "name": "providerToFactory"
-  },
-  {
-    "name": "providerToRecord"
   },
   {
     "name": "resolveForwardRef"
@@ -210,19 +120,10 @@
     "name": "stringify"
   },
   {
-    "name": "throwCyclicDependencyError"
-  },
-  {
-    "name": "throwInvalidProviderError"
-  },
-  {
     "name": "throwMixedMultiProviderError"
   },
   {
     "name": "ɵɵdefineInjectable"
-  },
-  {
-    "name": "ɵɵdefineInjector"
   },
   {
     "name": "ɵɵinject"
