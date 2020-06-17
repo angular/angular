@@ -100,6 +100,19 @@ input.mat-mdc-chip-input {
   flex: 1 0 $mat-chip-input-width;
 }
 
+// The margin value is set in MDC.
+$mat-mdc-chip-margin: 4px;
+
+// Don't let the chip margin increase the mat-form-field height.
+.mat-mdc-chip-grid {
+  margin: -$mat-mdc-chip-margin;
+
+  // Keep the mat-chip-grid height the same even when there are no chips.
+  input.mat-input-element {
+    margin: $mat-mdc-chip-margin;
+  }
+}
+
 .mdc-chip__checkmark-path {
   ._mat-animation-noopable & {
     transition: none;
