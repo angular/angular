@@ -132,7 +132,7 @@ def component_benchmark(
         bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
         port = 4200,
         static_files = assets + styles,
-        deps = [":" + app_main + ".min_debug.es2015.js"],
+        deps = [":" + app_main + ".min_debug.js"],
         additional_root_paths = ["//dev-infra/benchmark/component_benchmark/defaults"],
         serving_path = "/app_bundle.js",
     )
