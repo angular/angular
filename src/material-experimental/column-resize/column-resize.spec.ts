@@ -1,5 +1,12 @@
-import {Component, Directive, ElementRef, Type, ViewChild} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, /*flush,*/ inject} from '@angular/core/testing';
+import {
+  Component,
+  Directive,
+  ElementRef,
+  Type,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import {ComponentFixture, TestBed, fakeAsync, inject} from '@angular/core/testing';
 import {BidiModule} from '@angular/cdk/bidi';
 import {DataSource} from '@angular/cdk/collections';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
@@ -247,6 +254,9 @@ class MatResizeTest extends BaseTestComponent {
   @ViewChild(MatColumnResize, {static: true}) columnResize: AbstractMatColumnResize;
 }
 
+@Component({template: getTableTemplate(false), changeDetection: ChangeDetectionStrategy.OnPush})
+class MatResizeOnPushTest extends MatResizeTest {}
+
 @Component({template: getTableTemplate(true)})
 class MatResizeDefaultTest extends BaseTestComponent {
   @ViewChild(MatDefaultEnabledColumnResize, {static: true}) columnResize: AbstractMatColumnResize;
@@ -311,6 +321,7 @@ const approximateMatcher = {
 
 const testCases: ReadonlyArray<[Type<object>, Type<BaseTestComponent>, string]> = [
   [MatColumnResizeModule, MatResizeTest, 'opt-in table-based mat-table'],
+  [MatColumnResizeModule, MatResizeOnPushTest, 'inside OnPush component'],
   [MatColumnResizeModule, MatResizeFlexTest, 'opt-in flex-based mat-table'],
   [
     MatDefaultEnabledColumnResizeModule, MatResizeDefaultTest,

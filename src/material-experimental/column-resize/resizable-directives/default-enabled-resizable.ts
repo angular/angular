@@ -13,6 +13,7 @@ import {
   Injector,
   NgZone,
   ViewContainerRef,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {Directionality} from '@angular/cdk/bidi';
@@ -51,7 +52,8 @@ export class MatDefaultResizable extends AbstractMatResizable {
       protected readonly overlay: Overlay,
       protected readonly resizeNotifier: ColumnResizeNotifierSource,
       protected readonly resizeStrategy: ResizeStrategy,
-      protected readonly viewContainerRef: ViewContainerRef) {
+      protected readonly viewContainerRef: ViewContainerRef,
+      protected readonly changeDetectorRef: ChangeDetectorRef) {
     super();
     this.document = document;
   }

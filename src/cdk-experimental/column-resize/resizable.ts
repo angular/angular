@@ -15,6 +15,7 @@ import {
   OnDestroy,
   Type,
   ViewContainerRef,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {ComponentPortal, PortalInjector} from '@angular/cdk/portal';
@@ -61,6 +62,7 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
   protected abstract readonly resizeNotifier: ColumnResizeNotifierSource;
   protected abstract readonly resizeStrategy: ResizeStrategy;
   protected abstract readonly viewContainerRef: ViewContainerRef;
+  protected abstract readonly changeDetectorRef: ChangeDetectorRef;
 
   /** The minimum width to allow the column to be sized to. */
   get minWidthPx(): number {
@@ -222,6 +224,9 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
   private _showHandleOverlay(): void {
     this._updateOverlayHandleHeight();
     this.overlayRef!.attach(this._createHandlePortal());
+
+    // Needed to ensure that all of the lifecycle hooks inside the overlay run immediately.
+    this.changeDetectorRef.markForCheck();
   }
 
   private _updateOverlayHandleHeight() {
