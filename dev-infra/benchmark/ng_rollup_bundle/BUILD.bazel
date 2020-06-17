@@ -3,7 +3,7 @@ package(default_visibility = ["//visibility:public"])
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 exports_files([
-    "rollup.config.js",
+    "rollup.config-tmpl.js",
     "terser_config.json",
 ])
 

@@ -28,8 +28,8 @@ ng_rollup_bundle(
 ts_devserver(
     name = "prodserver",
     static_files = [
-        ":bundle.min_debug.es2015.js",
-        ":bundle.min.es2015.js",
+        ":bundle.min_debug.js",
+        ":bundle.min.js",
         "//packages/zone.js/bundles:zone.umd.js",
         "index.html",
     ],
