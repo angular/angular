@@ -7,11 +7,18 @@
  */
 
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Directive, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
+import {Directive, InjectionToken, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {Subject} from 'rxjs';
 
 /** Used to generate unique ID for each accordion. */
 let nextId = 0;
+
+/**
+ * Injection token that can be used to reference instances of `CdkAccordion`. It serves
+ * as alternative token to the actual `CdkAccordion` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const CDK_ACCORDION = new InjectionToken<CdkAccordion>('CdkAccordion');
 
 /**
  * Directive whose purpose is to manage the expanded state of CdkAccordionItem children.
@@ -19,6 +26,7 @@ let nextId = 0;
 @Directive({
   selector: 'cdk-accordion, [cdkAccordion]',
   exportAs: 'cdkAccordion',
+  providers: [{provide: CDK_ACCORDION, useExisting: CdkAccordion}],
 })
 export class CdkAccordion implements OnDestroy, OnChanges {
   /** Emits when the state of the accordion changes */

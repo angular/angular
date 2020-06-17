@@ -15,9 +15,10 @@ import {
   Optional,
   ChangeDetectorRef,
   SkipSelf,
+  Inject,
 } from '@angular/core';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
-import {CdkAccordion} from './accordion';
+import {CDK_ACCORDION, CdkAccordion} from './accordion';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Subscription} from 'rxjs';
 
@@ -32,9 +33,9 @@ let nextId = 0;
   selector: 'cdk-accordion-item, [cdkAccordionItem]',
   exportAs: 'cdkAccordionItem',
   providers: [
-    // Provide CdkAccordion as undefined to prevent nested accordion items from registering
-    // to the same accordion.
-    {provide: CdkAccordion, useValue: undefined},
+    // Provide `CDK_ACCORDION` as undefined to prevent nested accordion items from
+    // registering to the same accordion.
+    {provide: CDK_ACCORDION, useValue: undefined},
   ],
 })
 export class CdkAccordionItem implements OnDestroy {
@@ -96,7 +97,7 @@ export class CdkAccordionItem implements OnDestroy {
   /** Unregister function for _expansionDispatcher. */
   private _removeUniqueSelectionListener: () => void = () => {};
 
-  constructor(@Optional() @SkipSelf() public accordion: CdkAccordion,
+  constructor(@Optional() @Inject(CDK_ACCORDION) @SkipSelf() public accordion: CdkAccordion,
               private _changeDetectorRef: ChangeDetectorRef,
               protected _expansionDispatcher: UniqueSelectionDispatcher) {
     this._removeUniqueSelectionListener =
