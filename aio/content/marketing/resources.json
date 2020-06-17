@@ -30,10 +30,10 @@
             "url": "https://dev.to/t/angular",
             "title": "DEV Community"
           },
-          "angular-in-depth": {
-            "desc": "The place where advanced Angular concepts are explained",
-            "url": "https://blog.angularindepth.com",
-            "title": "Angular In Depth"
+          "indepth-dev": {
+            "desc": "Peer-reviewed Angular articles and tutorials.",
+            "url": "https://indepth.dev/angular/",
+            "title": "Angular inDepth"
           }
         }
       },
@@ -63,6 +63,12 @@
             "logo": "",
             "title": "NgRuAir",
             "url": "https://github.com/ngRuAir/ngruair"
+          },
+          "the-deep-dive": {
+            "desc": "The advanced web development podcast about Angular, RxJS, TypeScript and other technologies. English, audio only.",
+            "logo": "https://i.imgur.com/mmE5Feq.jpg",
+            "title": "The Deep Dive",
+            "url": "https://thedeepdive.simplecast.com"
           }
         }
       }
