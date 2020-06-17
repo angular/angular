@@ -1,0 +1,13 @@
+load("//integration/size-test:index.bzl", "size_test")
+
+size_test(
+    name = "basic",
+    file = "basic.ts",
+    deps = ["//src/cdk/drag-drop"],
+)
+
+size_test(
+    name = "all-directives",
+    file = "all-directives.ts",
+    deps = ["//src/cdk/drag-drop"],
+)
