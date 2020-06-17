@@ -156,7 +156,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   registerOnChange(fn: (value: any) => any): void {
     this.onChange = (_: any) => {
       const selected: Array<any> = [];
-      if (_.hasOwnProperty('selectedOptions')) {
+      if (_.selectedOptions !== undefined) {
         const options: HTMLCollection = _.selectedOptions;
         for (let i = 0; i < options.length; i++) {
           const opt: any = options.item(i);
