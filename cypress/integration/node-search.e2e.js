@@ -3,7 +3,7 @@ function checkSearchedNodesLength(type, length) {
 }
 
 function inputSearchText(text) {
-  cy.get('.filter-input').type(text);
+  cy.get('.filter-input').type(text, { force: true });
 }
 
 function checkComponentName(name) {
@@ -72,13 +72,13 @@ describe('Search items in component tree', () => {
     checkSearchedNodesLength('.selected', 1);
 
     // should show correct buttons in breadcrumbs
-    cy.get('.parent-nodes').find('button').its('length').should('eq', 7);
+    cy.get('ng-breadcrumbs').find('button').its('length').should('eq', 7);
 
     // should display correct text in explorer panel
     checkComponentName('app-todos');
 
     // should display correct title for properties panel
-    cy.get('header span').should('have.text', ' Properties of app-todos ');
+    cy.get('ng-property-view-header').should('have.text', 'Properties of app-todos ');
 
     // should show correct component properties
     cy.get('ng-property-view').find('mat-tree-node');
