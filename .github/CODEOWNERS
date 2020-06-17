@@ -128,6 +128,7 @@
 /src/cdk-experimental/menu/**                      @jelbourn @andy9775
 /src/cdk-experimental/popover-edit/**              @kseamon @andrewseguin
 /src/cdk-experimental/scrolling/**                 @mmalerba
+/src/cdk-experimental/listbox/**                   @nielsr98 @jelbourn
 
 # Docs examples & guides
 /guides/**                                         @jelbourn

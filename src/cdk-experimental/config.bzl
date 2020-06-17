@@ -3,6 +3,7 @@ CDK_EXPERIMENTAL_ENTRYPOINTS = [
     "column-resize",
     "dialog",
     "menu",
+    "listbox",
     "popover-edit",
     "scrolling",
 ]
