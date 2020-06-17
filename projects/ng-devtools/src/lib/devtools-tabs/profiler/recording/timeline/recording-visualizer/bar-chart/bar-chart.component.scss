@@ -1,7 +1,8 @@
 .bar {
-  height: 20px;
   width: 0%;
   margin-bottom: 7px;
+  align-items: center;
+  display: flex;
   padding-top: 3px;
   padding-bottom: 3px;
   opacity: 0.8;
@@ -16,7 +17,6 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  padding-top: 3px;
 }
 
 .bar:hover {
