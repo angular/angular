@@ -10,15 +10,15 @@ import {NgModule} from '@angular/core';
 import {MatTableModule} from '@angular/material/table';
 import {MatDefaultEnabledColumnResizeModule} from '@angular/material-experimental/column-resize';
 
-import {DefaultEnabledColumnResizeDemo} from './default-enabled-column-resize-demo';
+import {DefaultEnabledColumnResizeFlexExample} from './default-enabled-column-resize-flex-example';
 
 @NgModule({
   imports: [
     MatDefaultEnabledColumnResizeModule,
     MatTableModule,
   ],
-  declarations: [DefaultEnabledColumnResizeDemo],
-  exports: [DefaultEnabledColumnResizeDemo],
+  declarations: [DefaultEnabledColumnResizeFlexExample],
+  exports: [DefaultEnabledColumnResizeFlexExample],
 })
-export class DefaultEnabledColumnResizeDemoModule {
+export class DefaultEnabledColumnResizeFlexExampleModule {
 }

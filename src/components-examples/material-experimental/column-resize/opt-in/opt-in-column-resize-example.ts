@@ -39,14 +39,14 @@ const ELEMENT_DATA: PeriodicElement[] = [
 ];
 
 /**
- * @title Default-enabled column resize with a flex-based mat-table.
+ * @title Opt-in column resize with a table-based mat-table.
  */
 @Component({
-  selector: 'default-enabled-column-resize-flex-demo',
-  templateUrl: 'default-enabled-column-resize-flex-demo.html',
-  styleUrls: ['default-enabled-column-resize-flex-demo.css'],
+  selector: 'opt-in-column-resize-example',
+  templateUrl: 'opt-in-column-resize-example.html',
+  styleUrls: ['opt-in-column-resize-example.css'],
 })
-export class DefaultEnabledColumnResizeFlexDemo {
+export class OptInColumnResizeExample {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = ELEMENT_DATA;
 }

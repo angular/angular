@@ -10,15 +10,15 @@ import {NgModule} from '@angular/core';
 import {MatTableModule} from '@angular/material/table';
 import {MatColumnResizeModule} from '@angular/material-experimental/column-resize';
 
-import {OptInColumnResizeDemo} from './opt-in-column-resize-demo';
+import {OptInColumnResizeExample} from './opt-in-column-resize-example';
 
 @NgModule({
   imports: [
     MatColumnResizeModule,
     MatTableModule,
   ],
-  declarations: [OptInColumnResizeDemo],
-  exports: [OptInColumnResizeDemo],
+  declarations: [OptInColumnResizeExample],
+  exports: [OptInColumnResizeExample],
 })
-export class OptInColumnResizeDemoModule {
+export class OptInColumnResizeExampleModule {
 }

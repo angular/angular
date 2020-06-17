@@ -1,20 +1,40 @@
-export {
-  DefaultEnabledColumnResizeDemo
-} from './default-enabled/default-enabled-column-resize-demo';
-export {
-  DefaultEnabledColumnResizeDemoModule
-} from './default-enabled/default-enabled-column-resize-demo-module';
+import {NgModule} from '@angular/core';
+import {OptInColumnResizeExampleModule} from './opt-in/opt-in-column-resize-example-module';
+import {
+  DefaultEnabledColumnResizeExampleModule,
+} from './default-enabled/default-enabled-column-resize-example-module';
+import {
+  DefaultEnabledColumnResizeFlexExampleModule,
+} from './default-enabled-flex/default-enabled-column-resize-flex-example-module';
 
 export {
-  DefaultEnabledColumnResizeFlexDemo
-} from './default-enabled-flex/default-enabled-column-resize-flex-demo';
+  DefaultEnabledColumnResizeExample
+} from './default-enabled/default-enabled-column-resize-example';
 export {
-  DefaultEnabledColumnResizeFlexDemoModule
-} from './default-enabled-flex/default-enabled-column-resize-flex-demo-module';
+  DefaultEnabledColumnResizeExampleModule
+} from './default-enabled/default-enabled-column-resize-example-module';
 
 export {
-  OptInColumnResizeDemo
-} from './opt-in/opt-in-column-resize-demo';
+  DefaultEnabledColumnResizeFlexExample
+} from './default-enabled-flex/default-enabled-column-resize-flex-example';
 export {
-  OptInColumnResizeDemoModule
-} from './opt-in/opt-in-column-resize-demo-module';
+  DefaultEnabledColumnResizeFlexExampleModule
+} from './default-enabled-flex/default-enabled-column-resize-flex-example-module';
+
+export {
+  OptInColumnResizeExample
+} from './opt-in/opt-in-column-resize-example';
+export {
+  OptInColumnResizeExampleModule
+} from './opt-in/opt-in-column-resize-example-module';
+
+
+@NgModule({
+  exports: [
+    DefaultEnabledColumnResizeExampleModule,
+    DefaultEnabledColumnResizeFlexExampleModule,
+    OptInColumnResizeExampleModule,
+  ],
+})
+export class ColumnResizeExamplesModule {
+}

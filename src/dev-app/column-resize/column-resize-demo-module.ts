@@ -12,17 +12,23 @@ import {MatExpansionModule} from '@angular/material/expansion';
 
 import {ColumnResizeHome} from './column-resize-home';
 import {
-  DefaultEnabledColumnResizeDemoModule,
-  DefaultEnabledColumnResizeFlexDemoModule,
-  OptInColumnResizeDemoModule,
+  DefaultEnabledColumnResizeExampleModule,
+  DefaultEnabledColumnResizeFlexExampleModule,
+  OptInColumnResizeExampleModule,
 } from '@angular/components-examples/material-experimental/column-resize';
 
 @NgModule({
   imports: [
     MatExpansionModule,
-    DefaultEnabledColumnResizeDemoModule,
-    DefaultEnabledColumnResizeFlexDemoModule,
-    OptInColumnResizeDemoModule,
+
+    // TODO(crisbeto): currently the column resize is set up so that users import different
+    // modules depending on whether they want resizing to be enabled by default. This forces us
+    // to keep each example in its own module and import it separately, otherwise the default
+    // enabled module will override the opt-in one. Once we refactor it so we only have one
+    // set of directives, we should consolidate this into a single module.
+    DefaultEnabledColumnResizeExampleModule,
+    DefaultEnabledColumnResizeFlexExampleModule,
+    OptInColumnResizeExampleModule,
     RouterModule.forChild([{path: '', component: ColumnResizeHome}]),
   ],
   declarations: [ColumnResizeHome],
