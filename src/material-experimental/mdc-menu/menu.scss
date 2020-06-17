@@ -38,6 +38,8 @@
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
   @include mdc-list-item-base_;
+  @include mdc-list-list-item-padding-variant(
+    $mdc-list-textual-variant-config, $query: $mat-base-styles-query);
 
   // MDC's menu items are `<li>` nodes which don't need resets, however ours
   // can be anything, including buttons, so we need to do the reset ourselves.
