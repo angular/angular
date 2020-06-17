@@ -1,0 +1,7 @@
+load("//integration/size-test:index.bzl", "size_test")
+
+size_test(
+    name = "without-accordion",
+    file = "without-accordion.ts",
+    deps = ["//src/material/expansion"],
+)
