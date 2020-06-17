@@ -499,6 +499,20 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           }
         };
 
+        if (HTMLSelectElement.prototype.hasOwnProperty('selectedOptions')) {
+          it('verify that native `selectedOptions` field is used while detecting the list of selected options',
+             fakeAsync(() => {
+               if (isNode) return;
+               const spy = spyOnProperty(HTMLSelectElement.prototype, 'selectedOptions', 'get')
+                               .and.callThrough();
+               setSelectedCities([]);
+
+               selectOptionViaUI('1: Object');
+               assertOptionElementSelectedState([false, true, false]);
+               expect(spy.calls.count()).toBe(1);
+             }));
+        }
+
         it('should reflect state of model after option selected and new options subsequently added',
            fakeAsync(() => {
              if (isNode) return;

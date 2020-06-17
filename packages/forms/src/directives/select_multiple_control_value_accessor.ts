@@ -92,6 +92,8 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   _optionMap: Map<string, ɵNgSelectMultipleOption> = new Map<string, ɵNgSelectMultipleOption>();
   /** @internal */
   _idCounter: number = 0;
+  /** @internal */
+  _hasNativeSelectedOptionsSupport = HTMLSelectElement.prototype.hasOwnProperty('selectedOptions');
 
   /**
    * @description
@@ -156,7 +158,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   registerOnChange(fn: (value: any) => any): void {
     this.onChange = (_: any) => {
       const selected: Array<any> = [];
-      if (_.hasOwnProperty('selectedOptions')) {
+      if (this._hasNativeSelectedOptionsSupport) {
         const options: HTMLCollection = _.selectedOptions;
         for (let i = 0; i < options.length; i++) {
           const opt: any = options.item(i);
