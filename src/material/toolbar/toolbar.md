@@ -7,11 +7,9 @@
 In the most situations, a toolbar will be placed at the top of your application and will only 
 have a single row that includes the title of your application.
 
-```html
-<mat-toolbar>
-  <span>My Application</span>
-</mat-toolbar>
-```
+<!-- example({"example":"toolbar-overview",
+              "file":"toolbar-overview-example.html", 
+              "region":"toolbar-simple"}) -->
 
 ### Multiple rows
 
@@ -19,17 +17,9 @@ The Material Design specifications describe that toolbars can also have multiple
 toolbars with multiple rows in Angular Material can be done by placing `<mat-toolbar-row>` elements
 inside of a `<mat-toolbar>`.
 
-```html
-<mat-toolbar>  
-  <mat-toolbar-row>
-    <span>First Row</span>
-  </mat-toolbar-row>
-  
-  <mat-toolbar-row>
-    <span>Second Row</span>
-  </mat-toolbar-row>
-</mat-toolbar>
-```
+<!-- example({"example":"toolbar-multirow",
+              "file":"toolbar-multirow-example.html", 
+              "region":"toolbar-row"}) -->
 
 **Note**: Placing content outside of a `<mat-toolbar-row>` when multiple rows are specified is not
 supported.
@@ -40,23 +30,14 @@ position the content as it suits their application.
 
 A common pattern is to position a title on the left with some actions on the right. This can be
 easily accomplished with `display: flex`:
-```html
-<mat-toolbar color="primary">
-  <span>Application Title</span>
-  
-  <!-- This fills the remaining space of the current row -->
-  <span class="example-fill-remaining-space"></span>
-  
-  <span>Right Aligned Text</span>
-</mat-toolbar>
-```
-```scss
-.example-fill-remaining-space {
-  /* This fills the remaining space, by using flexbox. 
-     Every toolbar row uses a flexbox row layout. */
-  flex: 1 1 auto;
-}
-```
+
+<!-- example({"example":"toolbar-multirow",
+              "file":"toolbar-multirow-example.html", 
+              "region":"toolbar-position-content"}) -->
+              
+<!-- example({"example":"toolbar-multirow",
+              "file":"toolbar-multirow-example.css", 
+              "region":"toolbar-position-content-style"}) -->
 
 ### Theming
 The color of a `<mat-toolbar>` can be changed by using the `color` property. By default, toolbars
