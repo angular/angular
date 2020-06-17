@@ -1,4 +1,4 @@
-<mat-form-field>
+<mat-form-field appearance="fill">
   <mat-label>Input & change events</mat-label>
   <input matInput [matDatepicker]="picker"
          (dateInput)="addEvent('input', $event)" (dateChange)="addEvent('change', $event)">
