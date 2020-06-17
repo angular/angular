@@ -56,8 +56,6 @@ const format = {
       // TODO: burn down format failures and remove aio and integration exceptions.
       '!aio/**',
       '!integration/**',
-      // TODO: remove this exclusion as part of IE deprecation.
-      '!shims_for_IE.js',
       // Both third_party and .yarn are directories containing copied code which should
       // not be modified.
       '!third_party/**',
