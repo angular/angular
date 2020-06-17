@@ -34,6 +34,20 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent);
     background-color: #424242;
     color: #ffffff;
   }
+  .bar {
+    color: #424242 !important;
+  }
+  .label {
+    color: #424242 !important;
+  }
+  .property-list {
+    .name {
+      color: #ffffff !important;
+    }
+    .value {
+      color: #ffffff40 !important;
+    }
+  }
 }
 
 .light {
