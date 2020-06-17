@@ -6,8 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, OnDestroy, Input} from '@angular/core';
+import {Directive, OnDestroy, Input, InjectionToken} from '@angular/core';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
+
+/**
+ * Injection token that can be used to reference instances of `CdkDropListGroup`. It serves as
+ * alternative token to the actual `CdkDropListGroup` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const CDK_DROP_LIST_GROUP =
+    new InjectionToken<CdkDropListGroup<unknown>>('CdkDropListGroup');
 
 /**
  * Declaratively connects sibling `cdkDropList` instances together. All of the `cdkDropList`
@@ -18,6 +26,7 @@ import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 @Directive({
   selector: '[cdkDropListGroup]',
   exportAs: 'cdkDropListGroup',
+  providers: [{provide: CDK_DROP_LIST_GROUP, useExisting: CdkDropListGroup}],
 })
 export class CdkDropListGroup<T> implements OnDestroy {
   /** Drop lists registered inside the group. */

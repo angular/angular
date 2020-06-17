@@ -5,5 +5,5 @@ material/datepicker/range-picker/without-form-field: 330101
 material/button-toggle/standalone: 119400
 material/autocomplete/without-optgroup: 208091
 material/select/without-optgroup: 256564
-cdk/drag-drop/all-directives: 152732
-cdk/drag-drop/basic: 151593
+cdk/drag-drop/all-directives: 153063
+cdk/drag-drop/basic: 150321

@@ -18,12 +18,13 @@ import {
   ChangeDetectorRef,
   SkipSelf,
   Inject,
+  InjectionToken,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
-import {CdkDrag, CDK_DROP_LIST} from './drag';
+import {CdkDrag} from './drag';
 import {CdkDragDrop, CdkDragEnter, CdkDragExit, CdkDragSortEvent} from '../drag-events';
-import {CdkDropListGroup} from './drop-list-group';
+import {CDK_DROP_LIST_GROUP, CdkDropListGroup} from './drop-list-group';
 import {DropListRef} from '../drop-list-ref';
 import {DragRef} from '../drag-ref';
 import {DragDrop} from '../drag-drop';
@@ -41,13 +42,20 @@ let _uniqueIdCounter = 0;
  */
 export interface CdkDropListInternal extends CdkDropList {}
 
+/**
+ * Injection token that can be used to reference instances of `CdkDropList`. It serves as
+ * alternative token to the actual `CdkDropList` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const CDK_DROP_LIST = new InjectionToken<CdkDropList>('CdkDropList');
+
 /** Container that wraps a set of draggable items. */
 @Directive({
   selector: '[cdkDropList], cdk-drop-list',
   exportAs: 'cdkDropList',
   providers: [
     // Prevent child drop lists from picking up the same group as their parent.
-    {provide: CdkDropListGroup, useValue: undefined},
+    {provide: CDK_DROP_LIST_GROUP, useValue: undefined},
     {provide: CDK_DROP_LIST, useExisting: CdkDropList},
   ],
   host: {
@@ -157,7 +165,8 @@ export class CdkDropList<T = any> implements OnDestroy {
       /** Element that the drop list is attached to. */
       public element: ElementRef<HTMLElement>, dragDrop: DragDrop,
       private _changeDetectorRef: ChangeDetectorRef, @Optional() private _dir?: Directionality,
-      @Optional() @SkipSelf() private _group?: CdkDropListGroup<CdkDropList>,
+      @Optional() @Inject(CDK_DROP_LIST_GROUP) @SkipSelf()
+      private _group?: CdkDropListGroup<CdkDropList>,
 
       /**
        * @deprecated _scrollDispatcher parameter to become required.

@@ -16,7 +16,6 @@ import {
   ElementRef,
   EventEmitter,
   Inject,
-  InjectionToken,
   Input,
   NgZone,
   OnDestroy,
@@ -47,20 +46,14 @@ import {
   CdkDragStart,
   CdkDragRelease,
 } from '../drag-events';
-import {CdkDragHandle} from './drag-handle';
-import {CdkDragPlaceholder} from './drag-placeholder';
-import {CdkDragPreview} from './drag-preview';
+import {CDK_DRAG_HANDLE, CdkDragHandle} from './drag-handle';
+import {CDK_DRAG_PLACEHOLDER, CdkDragPlaceholder} from './drag-placeholder';
+import {CDK_DRAG_PREVIEW, CdkDragPreview} from './drag-preview';
 import {CDK_DRAG_PARENT} from '../drag-parent';
 import {DragRef, Point} from '../drag-ref';
-import {CdkDropListInternal as CdkDropList} from './drop-list';
+import {CDK_DROP_LIST, CdkDropListInternal as CdkDropList} from './drop-list';
 import {DragDrop} from '../drag-drop';
 import {CDK_DRAG_CONFIG, DragDropConfig, DragStartDelay, DragAxis} from './config';
-
-/**
- * Injection token that is used to provide a CdkDropList instance to CdkDrag.
- * Used for avoiding circular imports.
- */
-export const CDK_DROP_LIST = new InjectionToken<CdkDropList>('CDK_DROP_LIST');
 
 /** Element that can be moved inside a CdkDropList container. */
 @Directive({
@@ -79,14 +72,17 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   /** Reference to the underlying drag instance. */
   _dragRef: DragRef<CdkDrag<T>>;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** Elements that can be used to drag the draggable item. */
-  @ContentChildren(CdkDragHandle, {descendants: true}) _handles: QueryList<CdkDragHandle>;
+  @ContentChildren(CDK_DRAG_HANDLE as any, {descendants: true}) _handles: QueryList<CdkDragHandle>;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** Element that will be used as a template to create the draggable item's preview. */
-  @ContentChild(CdkDragPreview) _previewTemplate: CdkDragPreview;
+  @ContentChild(CDK_DRAG_PREVIEW as any) _previewTemplate: CdkDragPreview;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** Template for placeholder element rendered to show where a draggable would be dropped. */
-  @ContentChild(CdkDragPlaceholder) _placeholderTemplate: CdkDragPlaceholder;
+  @ContentChild(CDK_DRAG_PLACEHOLDER as any) _placeholderTemplate: CdkDragPlaceholder;
 
   /** Arbitrary data to attach to this drag instance. */
   @Input('cdkDragData') data: T;
