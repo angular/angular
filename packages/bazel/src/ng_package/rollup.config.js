@@ -146,6 +146,8 @@ if (bannerFile) {
   }
 }
 
+// Transform that is enabled for UMD bundle processing. It transforms existing ES2015
+// prodmode output to ESM5 so that the resulting UMD bundles are using ES5 format.
 const downlevelToEs5Plugin = {
   name: 'downlevel-to-es5',
   transform: (code, filePath) => {
@@ -158,7 +160,6 @@ const downlevelToEs5Plugin = {
       importHelpers: true,
       mapRoot: path.dirname(filePath),
     };
-
     const {outputText, sourceMapText} = ts.transpileModule(code, {compilerOptions});
     return {
       code: outputText,
@@ -181,6 +182,7 @@ const plugins = [
   sourcemaps(),
 ];
 
+// If downleveling to ES5 is enabled, set up the downlevel rollup plugin.
 if (downlevelToEs5) {
   plugins.push(downlevelToEs5Plugin);
 }
