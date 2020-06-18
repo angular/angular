@@ -7,6 +7,7 @@
  */
 import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
+import {ParseSourceSpan} from '../../../parse_util';
 
 import {serializeIcuNode} from './icu_serializer';
 import {formatI18nPlaceholderName} from './util';
@@ -14,13 +15,13 @@ import {formatI18nPlaceholderName} from './util';
 export function createLocalizeStatements(
     variable: o.ReadVarExpr, message: i18n.Message,
     params: {[name: string]: o.Expression}): o.Statement[] {
-  const statements = [];
-
   const {messageParts, placeHolders} = serializeI18nMessageForLocalize(message);
-  statements.push(new o.ExpressionStatement(variable.set(
-      o.localizedString(message, messageParts, placeHolders, placeHolders.map(ph => params[ph])))));
-
-  return statements;
+  const sourceSpan = getSourceSpan(message);
+  const expressions = placeHolders.map(ph => params[ph]);
+  const localizedString =
+      o.localizedString(message, messageParts, placeHolders, expressions, sourceSpan);
+  const variableInitialization = variable.set(localizedString);
+  return [new o.ExpressionStatement(variableInitialization)];
 }
 
 class MessagePiece {
@@ -88,6 +89,13 @@ export function serializeI18nMessageForLocalize(message: i18n.Message):
   const pieces: MessagePiece[] = [];
   message.nodes.forEach(node => node.visit(serializerVisitor, pieces));
   return processMessagePieces(pieces);
+}
+
+function getSourceSpan(message: i18n.Message): ParseSourceSpan {
+  const startNode = message.nodes[0];
+  const endNode = message.nodes[message.nodes.length - 1];
+  return new ParseSourceSpan(
+      startNode.sourceSpan.start, endNode.sourceSpan.end, startNode.sourceSpan.details);
 }
 
 /**
