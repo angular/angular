@@ -1094,6 +1094,23 @@ describe('MatMdcInput with forms', () => {
     expect(formField._control.empty).toBe(false);
   }));
 
+  it('should update notch size after changing appearance to outline', fakeAsync(() => {
+    const fixture = createComponent(MatInputWithAppearance);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.mdc-notched-outline__notch')).toBe(null);
+
+    fixture.componentInstance.appearance = 'outline';
+    fixture.detectChanges();
+
+    let notch = fixture.nativeElement.querySelector('.mdc-notched-outline__notch')! as HTMLElement;
+    expect(notch.style.width).toBeFalsy();
+
+    fixture.nativeElement.querySelector('input')!.focus();
+    fixture.detectChanges();
+
+    expect(notch.style.width).toBeTruthy();
+  }));
 });
 
 describe('MatFormField default options', () => {
@@ -1498,6 +1515,7 @@ class MatInputWithLabel {}
 @Component({
   template: `
     <mat-form-field [appearance]="appearance">
+      <mat-label>My Label</mat-label>
       <input matInput placeholder="Placeholder">
     </mat-form-field>
   `

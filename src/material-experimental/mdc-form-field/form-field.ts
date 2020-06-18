@@ -172,10 +172,12 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
   set appearance(value: MatFormFieldAppearance) {
     const oldValue = this._appearance;
     this._appearance = value || (this._defaults && this._defaults.appearance) || DEFAULT_APPEARANCE;
-    // If the appearance has been switched to `outline`, the label offset needs to be updated.
-    // The update can happen once the view has been re-checked, but not immediately because
-    // the view has not been updated and the notched-outline floating label is not present.
     if (this._appearance === 'outline' && this._appearance !== oldValue) {
+      this._refreshOutlineNotchWidth();
+
+      // If the appearance has been switched to `outline`, the label offset needs to be updated.
+      // The update can happen once the view has been re-checked, but not immediately because
+      // the view has not been updated and the notched-outline floating label is not present.
       this._needsOutlineLabelOffsetUpdateOnStable = true;
     }
   }

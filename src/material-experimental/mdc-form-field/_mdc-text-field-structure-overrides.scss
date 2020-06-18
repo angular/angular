@@ -56,8 +56,8 @@
   // we do not want to overwrite. *Note*: We need to have increased specificity for this
   // override because the `right` property will be set with higher specificity in RTL mode.
   .mat-mdc-text-field-wrapper .mat-mdc-form-field-infix .mdc-floating-label {
-    left: 0;
-    right: 0;
+    left: auto;
+    right: auto;
   }
 
   // MDC sets the input elements in outline appearance to "display: flex". There seems to
