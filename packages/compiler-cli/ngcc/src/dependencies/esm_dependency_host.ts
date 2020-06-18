@@ -47,10 +47,14 @@ export class EsmDependencyHost extends DependencyHostBase {
     const templateStack: ts.SyntaxKind[] = [];
     let lastToken: ts.SyntaxKind = ts.SyntaxKind.Unknown;
     let currentToken: ts.SyntaxKind = ts.SyntaxKind.Unknown;
+    const stopAtIndex = findLastPossibleImportOrReexport(fileContents);
 
     this.scanner.setText(fileContents);
 
     while ((currentToken = this.scanner.scan()) !== ts.SyntaxKind.EndOfFileToken) {
+      if (this.scanner.getTokenPos() > stopAtIndex) {
+        break;
+      }
       switch (currentToken) {
         case ts.SyntaxKind.TemplateHead:
           // TemplateHead indicates the beginning of a backticked string
@@ -266,6 +270,9 @@ export function hasImportOrReexportStatements(source: string): boolean {
   return /(?:import|export)[\s\S]+?(["'])(?:\\\1|.)+?\1/.test(source);
 }
 
+function findLastPossibleImportOrReexport(source: string): number {
+  return Math.max(source.lastIndexOf('import'), source.lastIndexOf(' from '));
+}
 
 /**
  * Check whether the given statement is an import with a string literal module specifier.
