@@ -71,6 +71,20 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
     describe('transform', () => {
       it('should use "mediumDate" as the default format',
          () => expect(pipe.transform('2017-01-11T10:14:39+0000')).toEqual('Jan 11, 2017'));
+
+      it('should return first week if some dates fall in previous year but belong to next year according to ISO 8601 format',
+         () => {
+           expect(pipe.transform('2019-12-28T00:00:00', 'w')).toEqual('52');
+           expect(pipe.transform('2019-12-29T00:00:00', 'w')).toEqual('1');
+           expect(pipe.transform('2019-12-30T00:00:00', 'w')).toEqual('1');
+         });
+
+      it('should return first week if some dates fall in previous leap year but belong to next year according to ISO 8601 format',
+         () => {
+           expect(pipe.transform('2012-12-29T00:00:00', 'w')).toEqual('52');
+           expect(pipe.transform('2012-12-30T00:00:00', 'w')).toEqual('1');
+           expect(pipe.transform('2012-12-31T00:00:00', 'w')).toEqual('1');
+         });
     });
   });
 }
