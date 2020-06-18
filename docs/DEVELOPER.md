@@ -76,7 +76,7 @@ node ./scripts/build/build-packages-dist.js
 
 ## Running Tests Locally
 
-Bazel is used as the primary tool for building and testing Angular. Building and testing is
+Bazel is used as the primary tool for building and testing Angular. Building and testing are
 incremental with Bazel, and it's possible to only run tests for an individual package instead
 of for all packages. Read more about this in the [BAZEL.md](./BAZEL.md) document.
 
@@ -190,7 +190,7 @@ a. Any transitive dependencies of the copied packages will not be automatically 
 b. The packages need to be copied over every time `npm/yarn install` is run.
 c. Some package managers (such as `pnpm` or `yarn pnp`) might not work correctly.
 
-### Publishing to GitHub repos
+### Publishing to GitHub Repos
 You can also manually publish `*-builds` snapshots just like our CircleCI build does for upstream
 builds. Before being able to publish the packages, you need to build them locally by running the
 `./scripts/build/build-packages-dist.js` script.
