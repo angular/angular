@@ -97,6 +97,42 @@ pullapprove_conditions:
 
 groups:
   # =========================================================
+  #  Global Approvers
+  #
+  # All reviews performed for global approvals require using
+  # the `Reviewed-for:` specifier to set the approval
+  # specificity as documented at:
+  # https://docs.pullapprove.com/reviewed-for/
+  # =========================================================
+  global-approvers:
+    type: optional
+    reviewers:
+      teams:
+        - framework-global-approvers
+    reviews:
+      request: 0
+      required: 1
+      reviewed_for: required
+
+  # =========================================================
+  #  Global Approvers For Docs
+  #
+  # All reviews performed for global docs approvals require
+  # using the `Reviewed-for:` specifier to set the approval
+  # specificity as documented at:
+  # https://docs.pullapprove.com/reviewed-for/
+  # =========================================================
+  global-docs-approvers:
+    type: optional
+    reviewers:
+      teams:
+        - framework-global-approvers-for-docs-only-changes
+    reviews:
+      request: 0
+      required: 1
+      reviewed_for: required
+
+  # =========================================================
   # Require review on all PRs
   #
   # All PRs require at least one review.  This rule will not
@@ -104,6 +140,9 @@ groups:
   # one review is provided before the group is satisfied.
   # =========================================================
   required-minimum-review:
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
     reviews:
       request: 0 # Do not request any reviews from the reviewer group
       required: 1 # Require that all PRs have approval from at least one of the users in the group
@@ -144,42 +183,6 @@ groups:
          - pkozlowski-opensource   # Pawel Kozlowski
          - Splaktar                # Michael Prentice
          - StephenFluin            # Stephen Fluin
-
-  # =========================================================
-  #  Global Approvers
-  #
-  # All reviews performed for global approvals require using
-  # the `Reviewed-for:` specifier to set the approval
-  # specificity as documented at:
-  # https://docs.pullapprove.com/reviewed-for/
-  # =========================================================
-  global-approvers:
-    type: optional
-    reviewers:
-      teams:
-        - framework-global-approvers
-    reviews:
-      request: 0
-      required: 1
-      reviewed_for: required
-
-  # =========================================================
-  #  Global Approvers For Docs
-  #
-  # All reviews performed for global docs approvals require
-  # using the `Reviewed-for:` specifier to set the approval
-  # specificity as documented at:
-  # https://docs.pullapprove.com/reviewed-for/
-  # =========================================================
-  global-docs-approvers:
-    type: optional
-    reviewers:
-      teams:
-        - framework-global-approvers-for-docs-only-changes
-    reviews:
-      request: 0
-      required: 1
-      reviewed_for: required
 
   # =========================================================
   #  Framework: Animations
