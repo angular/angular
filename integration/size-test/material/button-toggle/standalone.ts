@@ -1,5 +1,4 @@
 import {Component, NgModule} from '@angular/core';
-import {platformBrowser} from '@angular/platform-browser';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 /**
@@ -19,5 +18,3 @@ export class TestComponent {}
   bootstrap: [TestComponent],
 })
 export class AppModule {}
-
-platformBrowser().bootstrapModule(AppModule);

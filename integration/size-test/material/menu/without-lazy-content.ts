@@ -1,6 +1,5 @@
 import {Component, NgModule} from '@angular/core';
 import {MatMenuModule} from '@angular/material/menu';
-import {platformBrowser} from '@angular/platform-browser';
 
 /**
  * Basic component using `MatMenu` and `MatMenuTrigger`. No lazy `MatMenuContent` is
@@ -20,5 +19,3 @@ export class TestComponent {}
   bootstrap: [TestComponent],
 })
 export class AppModule {}
-
-platformBrowser().bootstrapModule(AppModule);

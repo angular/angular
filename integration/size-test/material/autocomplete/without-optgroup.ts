@@ -1,5 +1,4 @@
 import {Component, NgModule} from '@angular/core';
-import {platformBrowser} from '@angular/platform-browser';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 /**
@@ -22,5 +21,3 @@ export class TestComponent {}
   bootstrap: [TestComponent],
 })
 export class AppModule {}
-
-platformBrowser().bootstrapModule(AppModule);

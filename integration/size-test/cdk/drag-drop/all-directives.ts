@@ -1,7 +1,6 @@
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {Component, NgModule} from '@angular/core';
 
-
 /** Component using all parts of the drag-drop module. All directives should be preserved. */
 @Component({
   template: `

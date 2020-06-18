@@ -1,6 +1,5 @@
 import {Component, NgModule} from '@angular/core';
 import {MatRadioModule} from '@angular/material/radio';
-import {platformBrowser} from '@angular/platform-browser';
 
 /**
  * Basic component using `MatRadioButton`. Doesn't use a `MatRadioGroup`, so the class
@@ -19,5 +18,3 @@ export class TestComponent {}
   bootstrap: [TestComponent],
 })
 export class AppModule {}
-
-platformBrowser().bootstrapModule(AppModule);
