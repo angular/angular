@@ -63,6 +63,44 @@ runInEachFileSystem(() => {
         expect(sourceFile.rawMap).toEqual(sourceMap);
       });
 
+      it('should only read source-map comments from the last line of a file', () => {
+        fs.ensureDir(_('/foo/src'));
+        const sourceMap = createRawSourceMap({file: 'index.js'});
+        fs.writeFile(_('/foo/src/external.js.map'), JSON.stringify(sourceMap));
+        const sourceFile = registry.loadSourceFile(_('/foo/src/index.js'), [
+          'some content',
+          '//# sourceMappingURL=bad.js.map',
+          'some more content',
+          '//# sourceMappingURL=external.js.map',
+        ].join('\n'));
+        if (sourceFile === null) {
+          return fail('Expected source file to be defined');
+        }
+        expect(sourceFile.rawMap).toEqual(sourceMap);
+      });
+
+      for (const eolMarker of ['\n', '\r\n']) {
+        it(`should only read source-map comments from the last non-blank line of a file [EOL marker: ${
+               eolMarker === '\n' ? '\\n' : '\\r\\n'}]`,
+           () => {
+             fs.ensureDir(_('/foo/src'));
+             const sourceMap = createRawSourceMap({file: 'index.js'});
+             fs.writeFile(_('/foo/src/external.js.map'), JSON.stringify(sourceMap));
+             const sourceFile = registry.loadSourceFile(_('/foo/src/index.js'), [
+               'some content',
+               '//# sourceMappingURL=bad.js.map',
+               'some more content',
+               '//# sourceMappingURL=external.js.map',
+               '',
+               '',
+             ].join(eolMarker));
+             if (sourceFile === null) {
+               return fail('Expected source file to be defined');
+             }
+             expect(sourceFile.rawMap).toEqual(sourceMap);
+           });
+      }
+
       it('should handle a missing external source map', () => {
         fs.ensureDir(_('/foo/src'));
         const sourceFile = registry.loadSourceFile(

@@ -102,12 +102,16 @@ export class SourceFileLoader {
    * whose path is indicated in a comment or implied from the name of the source file itself.
    */
   private loadSourceMap(sourcePath: AbsoluteFsPath, contents: string): MapAndPath|null {
-    const inline = commentRegex.exec(contents);
+    // Only consider a source-map comment from the last non-empty line of the file, in case there
+    // are embedded source-map comments elsewhere in the file (as can be the case with bundlers like
+    // webpack).
+    const lastLine = this.getLastNonEmptyLine(contents);
+    const inline = commentRegex.exec(lastLine);
     if (inline !== null) {
       return {map: fromComment(inline.pop()!).sourcemap, mapPath: null};
     }
 
-    const external = mapFileCommentRegex.exec(contents);
+    const external = mapFileCommentRegex.exec(lastLine);
     if (external) {
       try {
         const fileName = external[1] || external[2];
@@ -173,6 +177,20 @@ export class SourceFileLoader {
           `Circular source file mapping dependency: ${this.currentPaths.join(' -> ')} -> ${path}`);
     }
     this.currentPaths.push(path);
+  }
+
+  private getLastNonEmptyLine(contents: string): string {
+    let trailingWhitespaceIndex = contents.length - 1;
+    while (trailingWhitespaceIndex > 0 &&
+           (contents[trailingWhitespaceIndex] === '\n' ||
+            contents[trailingWhitespaceIndex] === '\r')) {
+      trailingWhitespaceIndex--;
+    }
+    let lastRealLineIndex = contents.lastIndexOf('\n', trailingWhitespaceIndex - 1);
+    if (lastRealLineIndex === -1) {
+      lastRealLineIndex = 0;
+    }
+    return contents.substr(lastRealLineIndex + 1);
   }
 
   /**
