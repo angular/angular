@@ -2,7 +2,7 @@
 
 ## What does this migration do?
 
-This migration will adjust the `target` and `module` settings within the [TypeScript configuration files](guide/typescript-configuration) for the workspace.
+This migration will adjust the [`target`](https://www.typescriptlang.org/v2/en/tsconfig#target) and [`module`](https://www.typescriptlang.org/v2/en/tsconfig#module) settings within the [TypeScript configuration files](guide/typescript-configuration) for the workspace.
 The changes to each option vary based on the builder/command that uses the TypeScript configuration file.
 Unless otherwise noted, changes are only made if the existing value was not changed from the value previously used by a new project.
 This ensures that intentional changes to the options are kept in place.
@@ -30,6 +30,6 @@ Since zone.js does not support native async/await, the universal builds must sti
 
 ## Why `"es2020"` instead of `"esnext"`?
 
-In TypeScript 3.9 the behavior of the TypeScript compiler controlled by the [`module`](https://www.typescriptlang.org/v2/en/tsconfig#module) is the same with both `"esnext"` and `"es2020"` values.
+In TypeScript 3.9 the behavior of the TypeScript compiler controlled by `module` is the same with both `"esnext"` and `"es2020"` values.
 This can however change in the future where the `"esnext"` option could evolve in a backwards incompatible ways resulting in build-time or run-time errors during TypeScript update.
 This could result in undesirable instability which can be avoided by using the `"es2020"` option whose behavior is not going to change any more.
