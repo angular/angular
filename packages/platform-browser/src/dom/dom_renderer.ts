@@ -219,6 +219,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     if (typeof name === 'string') {
       el.classList.add(name);
     } else {
+      // The below requires the polyfill for IE 11
       el.classList.add(...name);
     }
   }
@@ -227,6 +228,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     if (typeof name === 'string') {
       el.classList.remove(name);
     } else {
+      // The below requires the polyfill for IE 11
       el.classList.remove(...name);
     }
   }
