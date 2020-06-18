@@ -1222,13 +1222,17 @@ groups:
     # `global-approvers` can still approve PRs that match this `fallback` rule,
     # but that should be an exception and not an expectation.
     conditions:
-      - *can-be-global-approved
-      # The following groups have no conditions and will be `active` on all PRs
+      # The following groups have no file based conditions and will be initially `active` on all PRs
       # - `global-approvers`
       # - `global-docs-approvers`
+      # - `required-minimum-review`
       #
-      # Since this means the minimum number of active groups a PR can have is 2, this
-      # `fallback` group should be matched anytime the number of active groups is at or
-      # below this minimum.  This work as a protection to ensure that pullapprove does
-      # not incidently mark a PR as passing without meeting the review criteria.
-      - len(groups.active) <= 2
+      # By checking the number of active groups when these are excluded, we can determine
+      # if any other groups are matched.
+      - len(groups.active.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+      # When any of the `global-*` groups is approved, they cause other groups to deactivate.
+      # In those cases, the condition above would evaluate to `true` while in reality, only a global
+      # approval has been provided. To ensure we don't activate the fallback group in such cases,
+      # ensure that no explicit global approval has been provided.
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
