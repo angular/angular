@@ -85,8 +85,8 @@ export class SitePage {
   }
 
   getApiSearchResults() {
-    const results = element.all(by.css('aio-api-list article .api-list .api-item'));
-    browser.wait(ExpectedConditions.presenceOf(results.first()), 500);
-    return results.map(link => link && link.getText());
+    const results = element.all(by.css('aio-api-list .api-item'));
+    browser.wait(ExpectedConditions.presenceOf(results.first()), 2000);
+    return results.map(elem => elem && elem.getText());
   }
 }
