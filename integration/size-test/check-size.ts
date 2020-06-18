@@ -19,6 +19,9 @@ const ABSOLUTE_BYTE_THRESHOLD = 500;
  */
 const PERCENTAGE_DEVIATION_THRESHOLD = 1;
 
+/** Type that represents the parsed size-test golden. */
+type Golden = {[testId: string]: number};
+
 /**
  * Extracted command line arguments specified by the Bazel NodeJS binaries:
  *  - `testId`: Unique id for the given test file that is used as key in the golden.
@@ -30,14 +33,14 @@ const [testId, testFileRootpath, isApprove] = process.argv.slice(2);
 const testFilePath = require.resolve(`angular_material/${testFileRootpath}`);
 const goldenFilePath = require.resolve('../../goldens/size-test.yaml');
 
-const golden = parse(readFileSync(goldenFilePath, 'utf8')) || {};
+const golden: Golden = parse(readFileSync(goldenFilePath, 'utf8')) || {};
 const fileStat = statSync(testFilePath);
 const actualSize = fileStat.size;
 
 // If in approve mode, update the golden to reflect the new size.
 if (isApprove) {
   golden[testId] = actualSize;
-  writeFileSync(goldenFilePath, stringify(golden));
+  writeFileSync(goldenFilePath, stringify(getSortedGolden()));
   console.info(chalk.green(`Approved golden size for "${testId}"`));
   process.exit(0);
 }
@@ -73,4 +76,11 @@ if (deviatedByPercentage) {
 function printApproveCommand() {
   console.info(chalk.yellow('You can approve the golden by running the following command:'));
   console.info(chalk.yellow(`  bazel run ${process.env.BAZEL_TARGET}.approve`));
+}
+
+/** Gets the lexicographically sorted size-test golden. */
+function getSortedGolden(): Golden {
+  return Object.keys(golden).sort().reduce((result: Golden, key: string) => {
+    return {...result, [key]: golden[key]};
+  }, {} as Golden);
 }
