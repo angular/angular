@@ -382,8 +382,11 @@ function weekGetter(size: number, monthBased = false): DateFormatter {
       const today = date.getDate();
       result = 1 + Math.floor((today + nbDaysBefore1stDayOfMonth) / 7);
     } else {
-      const firstThurs = getFirstThursdayOfYear(date.getFullYear());
+      let firstThurs = getFirstThursdayOfYear(date.getFullYear());
       const thisThurs = getThursdayThisWeek(date);
+      if (thisThurs.getFullYear() !== firstThurs.getFullYear()) {
+        firstThurs = getFirstThursdayOfYear(date.getFullYear() + 1);
+      }
       const diff = thisThurs.getTime() - firstThurs.getTime();
       result = 1 + Math.round(diff / 6.048e8);  // 6.048e8 ms per week
     }
