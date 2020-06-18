@@ -379,7 +379,7 @@ export function extractQueryMetadata(
   } else if (isStringArrayOrDie(arg, `@${name} predicate`, node)) {
     predicate = arg;
   } else {
-    throw createValueHasWrongTypeError(node, predicate, `@${name} predicate cannot be interpreted`);
+    throw createValueHasWrongTypeError(node, arg, `@${name} predicate cannot be interpreted`);
   }
 
   // Extract the read and descendants options.
