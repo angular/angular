@@ -7,16 +7,15 @@ The changes to each option vary based on the builder/command that uses the TypeS
 Unless otherwise noted, changes are only made if the existing value was not changed from the value previously used by a new project.
 This ensures that intentional changes to the options are kept in place.
 
-For the browser builder (`ng build` for applications), `module` is changed to `es2020` from `esnext`.
-
-For the ng-packgr builder (`ng build` for libraries), `module` is changed to `es2020` from `esnext`.
-
-For the karma builder (`ng test` for applications), `module` is changed to `es2020` from `esnext`.
-
-For the server builder (universal builds), `module` is removed if originally `commonjs`.
-`target` is also changed to `es2016` regardless of the previous value.
-
-For the protractor builder (`ng e2e` for applications), `target` is changed to `es2018` from `es5`.
+TypeScript Configuration File(s) | Changed Property | Existing Value | New Value
+------------- | ------------- | ------------- | ------------- | -------------
+Workspace base [`tsconfig.base.json`] | `"module"` | `"esnext"` | `"es2020"`
+Used in `browser` builder options (`ng build` for applications) | `"module"` | `"esnext"` | `"es2020"`
+Used in `ng-packgr` builder options (`ng build` for libraries) | `"module"` | `"esnext"` | `"es2020"`
+Used in `karma` builder options (`ng test` for applications) | `"module"` | `"esnext"` | `"es2020"`
+Used in `server` builder options (universal) | `"module"` | `"commonjs"` | _removed_
+&nbsp; | `"target"` | _any_ | `"es2016"`
+Used in `protractor` builder options (`ng e2e` for applications) | `"target"` | `"es5"` | `"es2018"`
 
 ## Why is this migration necessary?
 
