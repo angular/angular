@@ -91,8 +91,11 @@ export class NgClass implements DoCheck {
   }
 
   private _applyKeyValueChanges(changes: KeyValueChanges<string, unknown>): void {
+    // Collect all of the added and removed CSS classes so that we can
+    // toggle them with a single call to the underlying `classList` API.
     const added: string[] = [];
     const removed: string[] = [];
+
     const partitionClasses = (record: KeyValueChangeRecord<string, unknown>) => {
       if (record.currentValue) {
         added.push(record.key);
@@ -113,6 +116,8 @@ export class NgClass implements DoCheck {
   }
 
   private _applyIterableChanges(changes: IterableChanges<string>): void {
+    // Collect all of the added and removed CSS classes so that we can
+    // toggle them with a single call to the underlying `classList` API.
     const added: string[] = [];
     changes.forEachAddedItem((record) => {
       if (typeof record.item === 'string') {
@@ -178,10 +183,18 @@ export class NgClass implements DoCheck {
     }
   }
 
-  private _toggleClass(klass: string|string[], enabled: boolean): void {
-    let classes = typeof klass === 'string' ? klass : klass.join(' ');
+  /**
+   * Toggle one or more classes on an Element.
+   * 
+   * When updating multiple classes pass an array or classes instead of calling this method multiple times.
+   * As this will leverage the classList API and update multiple classes with a single operation.
+   * This drastically improves the rendering during SSR.
+   */
+  private _toggleClass(classNames: string|string[], enabled: boolean): void {
+    let classes = typeof classNames === 'string' ? classNames : classNames.join(' ');
     classes = classes.trim();
     if (classes) {
+      // A string can contain a series of classes ex: "klass1  klass2 klass3"
       const splitClasses = classes.split(/\s+/g);
       if (enabled) {
         this._renderer.addClass(this._ngEl.nativeElement, splitClasses);
