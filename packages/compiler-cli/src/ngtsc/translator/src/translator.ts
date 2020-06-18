@@ -274,9 +274,11 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitLocalizedString(ast: LocalizedString, context: Context): ts.Expression {
-    return this.scriptTarget >= ts.ScriptTarget.ES2015 ?
+    const localizedString = this.scriptTarget >= ts.ScriptTarget.ES2015 ?
         createLocalizedStringTaggedTemplate(ast, context, this) :
         createLocalizedStringFunctionCall(ast, context, this, this.imports);
+    this.setSourceMapRange(localizedString, ast);
+    return localizedString;
   }
 
   visitExternalExpr(ast: ExternalExpr, context: Context): ts.PropertyAccessExpression
