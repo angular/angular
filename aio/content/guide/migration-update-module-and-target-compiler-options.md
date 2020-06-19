@@ -4,7 +4,7 @@
 
 This migration adjusts the [`target`](https://www.typescriptlang.org/v2/en/tsconfig#target) and [`module`](https://www.typescriptlang.org/v2/en/tsconfig#module) settings within the [TypeScript configuration files](guide/typescript-configuration) for the workspace.
 The changes to each option vary based on the builder or command that uses the TypeScript configuration file.
-Unless otherwise noted, changes are only made if the existing value was not changed from the value previously used by a new project.
+Unless otherwise noted, the migration will only make a change if the value for an option was not modified from the previous default value for a new project as shown in the "Existing Value" column.
 This process helps ensure that intentional changes to the options are kept in place.
 
 TypeScript Configuration File(s) | Changed Property | Existing Value | New Value
@@ -19,10 +19,9 @@ Used in `protractor` builder options (`ng e2e` for applications) | `"target"` | 
 
 ## Why is this migration necessary?
 
-This provides improvements to supportability and the long-term sustainment of projects.
+This migration provides improvements to the long-term supportability of projects by updating the projects to use recommended best practice compilation options.
 
-For the functionality that executes on Node.js, such as universal and protractor, the new settings
-provide performance and debug/troubleshooting benefits as well.
+For the functionality that executes on Node.js, such as Universal and Protractor, the new settings provide performance and troubleshooting benefits as well.
 The minimum Node.js version for the Angular CLI (v10.13) supports features in ES2018 and earlier.
 By targeting later ES versions, the compiler transforms less code and can use newer features directly.
 Since zone.js does not support native async/await, the universal builds must still target ES2016.
