@@ -11,6 +11,7 @@ ng_module(
     module_name = "@angular/cdk-experimental/menu",
     deps = [
         "//src/cdk/coercion",
+        "//src/cdk/collections",
         "@npm//@angular/core",
         "@npm//rxjs",
     ],
@@ -24,6 +25,7 @@ ng_test_library(
     ),
     deps = [
         ":menu",
+        "//src/cdk/collections",
         "@npm//@angular/platform-browser",
     ],
 )

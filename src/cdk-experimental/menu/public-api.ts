@@ -10,5 +10,8 @@ export * from './menu-module';
 export * from './menu-bar';
 export * from './menu';
 export * from './menu-item';
+export * from './menu-item-checkbox';
+export * from './menu-item-radio';
+export * from './menu-item-trigger';
 export * from './menu-panel';
 export * from './menu-group';

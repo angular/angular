@@ -1,14 +1,14 @@
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {Component} from '@angular/core';
+import {By} from '@angular/platform-browser';
 import {CdkMenuBar} from './menu-bar';
 import {CdkMenuModule} from './menu-module';
-import {CdkMenuItem} from './menu-item';
-import {By} from '@angular/platform-browser';
+import {CdkMenuItemRadio} from './menu-item-radio';
 
 describe('MenuBar', () => {
   describe('as radio group', () => {
     let fixture: ComponentFixture<MenuBarRadioGroup>;
-    let menuItems: CdkMenuItem[];
+    let menuItems: CdkMenuItemRadio[];
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
@@ -20,8 +20,8 @@ describe('MenuBar', () => {
       fixture.detectChanges();
 
       menuItems = fixture.debugElement
-        .queryAll(By.directive(CdkMenuItem))
-        .map(element => element.injector.get(CdkMenuItem));
+        .queryAll(By.directive(CdkMenuItemRadio))
+        .map(element => element.injector.get(CdkMenuItemRadio));
     }));
 
     it('should toggle menuitemradio items', () => {
@@ -37,7 +37,7 @@ describe('MenuBar', () => {
 
   describe('radiogroup change events', () => {
     let fixture: ComponentFixture<MenuBarRadioGroup>;
-    let menuItems: CdkMenuItem[];
+    let menuItems: CdkMenuItemRadio[];
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
@@ -50,8 +50,8 @@ describe('MenuBar', () => {
       fixture.detectChanges();
 
       menuItems = fixture.debugElement
-        .queryAll(By.directive(CdkMenuItem))
-        .map(element => element.injector.get(CdkMenuItem));
+        .queryAll(By.directive(CdkMenuItemRadio))
+        .map(element => element.injector.get(CdkMenuItemRadio));
     }));
 
     it('should emit on click', () => {
@@ -73,12 +73,12 @@ describe('MenuBar', () => {
   template: `
     <ul cdkMenuBar>
       <li role="none">
-        <button checked="true" role="menuitemradio" cdkMenuItem>
+        <button checked="true" cdkMenuItemRadio>
           first
         </button>
       </li>
       <li role="none">
-        <button role="menuitemradio" cdkMenuItem>
+        <button cdkMenuItemRadio>
           second
         </button>
       </li>

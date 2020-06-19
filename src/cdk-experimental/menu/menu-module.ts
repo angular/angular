@@ -12,8 +12,20 @@ import {CdkMenuBar} from './menu-bar';
 import {CdkMenuPanel} from './menu-panel';
 import {CdkMenuItem} from './menu-item';
 import {CdkMenuGroup} from './menu-group';
+import {CdkMenuItemRadio} from './menu-item-radio';
+import {CdkMenuItemCheckbox} from './menu-item-checkbox';
+import {CdkMenuItemTrigger} from './menu-item-trigger';
 
-const EXPORTED_DECLARATIONS = [CdkMenuBar, CdkMenu, CdkMenuPanel, CdkMenuItem, CdkMenuGroup];
+const EXPORTED_DECLARATIONS = [
+  CdkMenuBar,
+  CdkMenu,
+  CdkMenuPanel,
+  CdkMenuItem,
+  CdkMenuItemRadio,
+  CdkMenuItemCheckbox,
+  CdkMenuItemTrigger,
+  CdkMenuGroup,
+];
 @NgModule({
   exports: EXPORTED_DECLARATIONS,
   declarations: EXPORTED_DECLARATIONS,
