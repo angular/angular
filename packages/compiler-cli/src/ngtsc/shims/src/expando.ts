@@ -21,7 +21,16 @@ export const NgExtension = Symbol('NgExtension');
 export interface NgExtensionData {
   isTopLevelShim: boolean;
   fileShim: NgFileShimData|null;
+
+  /**
+   * The contents of the `referencedFiles` array, before modification by a `ShimReferenceTagger`.
+   */
   originalReferencedFiles: ReadonlyArray<ts.FileReference>|null;
+
+  /**
+   * The contents of the `referencedFiles` array, after modification by a `ShimReferenceTagger`.
+   */
+  taggedReferenceFiles: ReadonlyArray<ts.FileReference>|null;
 }
 
 /**
@@ -65,6 +74,7 @@ export function sfExtensionData(sf: ts.SourceFile): NgExtensionData {
     isTopLevelShim: false,
     fileShim: null,
     originalReferencedFiles: null,
+    taggedReferenceFiles: null,
   };
   extSf[NgExtension] = extension;
   return extension;
@@ -109,4 +119,54 @@ export function copyFileShimData(from: ts.SourceFile, to: ts.SourceFile): void {
     return;
   }
   sfExtensionData(to).fileShim = sfExtensionData(from).fileShim;
+}
+
+/**
+ * For those `ts.SourceFile`s in the `program` which have previously been tagged by a
+ * `ShimReferenceTagger`, restore the original `referencedFiles` array that does not have shim tags.
+ */
+export function untagAllTsFiles(program: ts.Program): void {
+  for (const sf of program.getSourceFiles()) {
+    untagTsFile(sf);
+  }
+}
+
+/**
+ * For those `ts.SourceFile`s in the `program` which have previously been tagged by a
+ * `ShimReferenceTagger`, re-apply the effects of tagging by updating the `referencedFiles` array to
+ * the tagged version produced previously.
+ */
+export function retagAllTsFiles(program: ts.Program): void {
+  for (const sf of program.getSourceFiles()) {
+    retagTsFile(sf);
+  }
+}
+
+/**
+ * Restore the original `referencedFiles` for the given `ts.SourceFile`.
+ */
+export function untagTsFile(sf: ts.SourceFile): void {
+  if (sf.isDeclarationFile || !isExtended(sf)) {
+    return;
+  }
+
+  const ext = sfExtensionData(sf);
+  if (ext.originalReferencedFiles !== null) {
+    sf.referencedFiles = ext.originalReferencedFiles as Array<ts.FileReference>;
+  }
+}
+
+/**
+ * Apply the previously tagged `referencedFiles` to the given `ts.SourceFile`, if it was previously
+ * tagged.
+ */
+export function retagTsFile(sf: ts.SourceFile): void {
+  if (sf.isDeclarationFile || !isExtended(sf)) {
+    return;
+  }
+
+  const ext = sfExtensionData(sf);
+  if (ext.taggedReferenceFiles !== null) {
+    sf.referencedFiles = ext.taggedReferenceFiles as Array<ts.FileReference>;
+  }
 }

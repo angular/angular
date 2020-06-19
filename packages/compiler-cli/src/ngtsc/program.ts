@@ -17,6 +17,7 @@ import {NgCompilerOptions} from './core/api';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
+import {retagAllTsFiles, untagAllTsFiles} from './shims';
 import {ReusedProgramStrategy} from './typecheck';
 
 
@@ -68,13 +69,25 @@ export class NgtscProgram implements api.Program {
     }
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
 
-    const reuseProgram = oldProgram && oldProgram.reuseTsProgram;
+    const reuseProgram = oldProgram?.reuseTsProgram;
     this.host = NgCompilerHost.wrap(delegateHost, rootNames, options, reuseProgram ?? null);
+
+    if (reuseProgram !== undefined) {
+      // Prior to reusing the old program, restore shim tagging for all its `ts.SourceFile`s.
+      // TypeScript checks the `referencedFiles` of `ts.SourceFile`s for changes when evaluating
+      // incremental reuse of data from the old program, so it's important that these match in order
+      // to get the most benefit out of reuse.
+      retagAllTsFiles(reuseProgram);
+    }
 
     this.tsProgram = ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram);
     this.reuseTsProgram = this.tsProgram;
 
     this.host.postProgramCreationCleanup();
+
+    // Shim tagging has served its purpose, and tags can now be removed from all `ts.SourceFile`s in
+    // the program.
+    untagAllTsFiles(this.tsProgram);
 
     const reusedProgramStrategy = new ReusedProgramStrategy(
         this.tsProgram, this.host, this.options, this.host.shimExtensionPrefixes);
@@ -91,6 +104,10 @@ export class NgtscProgram implements api.Program {
 
   getTsProgram(): ts.Program {
     return this.tsProgram;
+  }
+
+  getReuseTsProgram(): ts.Program {
+    return this.reuseTsProgram;
   }
 
   getTsOptionDiagnostics(cancellationToken?: ts.CancellationToken|
@@ -248,6 +265,7 @@ export class NgtscProgram implements api.Program {
       }));
       this.perfRecorder.stop(fileEmitSpan);
     }
+
     this.perfRecorder.stop(emitSpan);
 
     if (this.perfTracker !== null && this.options.tracePerformance !== undefined) {
