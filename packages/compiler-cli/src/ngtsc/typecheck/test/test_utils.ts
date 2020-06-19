@@ -235,10 +235,18 @@ export function tcb(
   return res.replace(/\s+/g, ' ');
 }
 
-export function typecheck(
-    template: string, source: string, declarations: TestDeclaration[] = [],
-    additionalSources: {name: AbsoluteFsPath; contents: string}[] = [],
-    config: Partial<TypeCheckingConfig> = {}, opts: ts.CompilerOptions = {}): ts.Diagnostic[] {
+export interface TemplateTestEnvironment {
+  sf: ts.SourceFile;
+  program: ts.Program;
+  templateTypeChecker: TemplateTypeChecker;
+  programStrategy: ReusedProgramStrategy;
+}
+
+function setupTemplateTypeChecking(
+    source: string, additionalSources: {name: AbsoluteFsPath; contents: string}[],
+    config: Partial<TypeCheckingConfig>, opts: ts.CompilerOptions,
+    makeTypeCheckAdapterFn: (program: ts.Program, sf: ts.SourceFile) =>
+        ProgramTypeCheckAdapter): TemplateTestEnvironment {
   const typeCheckFilePath = absoluteFrom('/main.ngtypecheck.ts');
   const files = [
     typescriptLibDts(),
@@ -266,46 +274,63 @@ export function typecheck(
   ]);
   const fullConfig = {...ALL_ENABLED_CONFIG, ...config};
 
-  const templateUrl = 'synthetic.html';
-  const templateFile = new ParseSourceFile(template, templateUrl);
-  const {nodes, errors} = parseTemplate(template, templateUrl);
-  if (errors !== undefined) {
-    throw new Error('Template parse errors: \n' + errors.join('\n'));
-  }
-
-  const {matcher, pipes} = prepareDeclarations(declarations, decl => {
-    let declFile = sf;
-    if (decl.file !== undefined) {
-      declFile = program.getSourceFile(decl.file)!;
-      if (declFile === undefined) {
-        throw new Error(`Unable to locate ${decl.file} for ${decl.type} ${decl.name}`);
-      }
-    }
-    return getClass(declFile, decl.name);
-  });
-  const binder = new R3TargetBinder(matcher);
-  const boundTarget = binder.bind({template: nodes});
-  const clazz = new Reference(getClass(sf, 'TestComponent'));
-
-  const sourceMapping: TemplateSourceMapping = {
-    type: 'external',
-    template,
-    templateUrl,
-    componentClass: clazz.node,
-    // Use the class's name for error mappings.
-    node: clazz.node.name,
-  };
-
-  const checkAdapter = createTypeCheckAdapter((ctx: TypeCheckContext) => {
-    ctx.addTemplate(clazz, boundTarget, pipes, [], sourceMapping, templateFile);
-  });
-
+  const checkAdapter = makeTypeCheckAdapterFn(program, sf);
   const programStrategy = new ReusedProgramStrategy(program, host, options, []);
   const templateTypeChecker = new TemplateTypeChecker(
       program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
       NOOP_INCREMENTAL_BUILD);
+
+  return {program, sf, templateTypeChecker, programStrategy};
+}
+
+export function typecheck(
+    template: string, source: string, declarations: TestDeclaration[] = [],
+    additionalSources: {name: AbsoluteFsPath; contents: string}[] = [],
+    config: Partial<TypeCheckingConfig> = {}, opts: ts.CompilerOptions = {}): ts.Diagnostic[] {
+  const {sf, templateTypeChecker} =
+      setupTemplateTypeChecking(source, additionalSources, config, opts, (program, sf) => {
+        const templateUrl = 'synthetic.html';
+        const templateFile = new ParseSourceFile(template, templateUrl);
+        const {nodes, errors} = parseTemplate(template, templateUrl);
+        if (errors !== undefined) {
+          throw new Error('Template parse errors: \n' + errors.join('\n'));
+        }
+
+        const {matcher, pipes} = prepareDeclarations(declarations, decl => {
+          let declFile = sf;
+          if (decl.file !== undefined) {
+            declFile = program.getSourceFile(decl.file)!;
+            if (declFile === undefined) {
+              throw new Error(`Unable to locate ${decl.file} for ${decl.type} ${decl.name}`);
+            }
+          }
+          return getClass(declFile, decl.name);
+        });
+        const binder = new R3TargetBinder(matcher);
+        const boundTarget = binder.bind({template: nodes});
+        const clazz = new Reference(getClass(sf, 'TestComponent'));
+
+        const sourceMapping: TemplateSourceMapping = {
+          type: 'external',
+          template,
+          templateUrl,
+          componentClass: clazz.node,
+          // Use the class's name for error mappings.
+          node: clazz.node.name,
+        };
+
+        return createTypeCheckAdapter((ctx: TypeCheckContext) => {
+          ctx.addTemplate(clazz, boundTarget, pipes, [], sourceMapping, templateFile);
+        });
+      });
+
   templateTypeChecker.refresh();
   return templateTypeChecker.getDiagnosticsForFile(sf);
+}
+
+export function createProgramWithNoTemplates(): TemplateTestEnvironment {
+  return setupTemplateTypeChecking(
+      'export const NOT_A_COMPONENT = true;', [], {}, {}, () => createTypeCheckAdapter(() => {}));
 }
 
 function createTypeCheckAdapter(fn: (ctx: TypeCheckContext) => void): ProgramTypeCheckAdapter {
