@@ -80,7 +80,7 @@ export class ReactiveErrors {
     It looks like you're using ngModel on the same form field as ${directiveName}.
     Support for using the ngModel input property and ngModelChange event with
     reactive form directives has been deprecated in Angular v6 and will be removed
-    in Angular v7.
+    in a future version of Angular.
 
     For more information on this, see our API docs here:
     https://angular.io/api/forms/${
