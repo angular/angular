@@ -97,6 +97,23 @@ export function walkForDeclaration(name: string, rootNode: ts.Node): ts.Declarat
   return chosenDecl;
 }
 
+const COMPLETE_REUSE_FAILURE_MESSAGE =
+    'The original program was not reused completely, even though no changes should have been made to its structure';
+
+/**
+ * Extracted from TypeScript's internal enum `StructureIsReused`.
+ */
+enum TsStructureIsReused {
+  Not = 0,
+  SafeModules = 1,
+  Completely = 2,
+}
+
+export function expectCompleteReuse(oldProgram: ts.Program): void {
+  // Assert complete reuse using TypeScript's private API.
+  expect((oldProgram as any).structureIsReused)
+      .toBe(TsStructureIsReused.Completely, COMPLETE_REUSE_FAILURE_MESSAGE);
+}
 
 function bindingNameEquals(node: ts.BindingName, name: string): boolean {
   if (ts.isIdentifier(node)) {

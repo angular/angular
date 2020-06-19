@@ -9,8 +9,9 @@
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
-import {absoluteFrom as _, getFileSystem} from '../../src/ngtsc/file_system';
+import {absoluteFrom as _, getFileSystem, getSourceFileOrError} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
+import {expectCompleteReuse} from '../../src/ngtsc/testing';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
 import {NgtscTestEnvironment} from './env';
@@ -1862,18 +1863,26 @@ export declare class AnimationEvent {
         expect(env.driveDiagnostics()).toEqual([]);
       });
 
-      it('should not leave references to shims after execution', () => {
-        // This test verifies that proper cleanup is performed for the technique being used to
-        // include shim files in the ts.Program, and that none are left in the referencedFiles of
-        // any ts.SourceFile after compilation.
+      it('should not leave referencedFiles in a tagged state', () => {
         env.enableMultipleCompilations();
 
         env.driveMain();
-        for (const sf of env.getTsProgram().getSourceFiles()) {
-          for (const ref of sf.referencedFiles) {
-            expect(ref.fileName).not.toContain('.ngtypecheck.ts');
-          }
-        }
+        const sf = getSourceFileOrError(env.getTsProgram(), _('/test.ts'));
+        expect(sf.referencedFiles.map(ref => ref.fileName)).toEqual([]);
+      });
+
+      it('should allow for complete program reuse during incremental compilations', () => {
+        env.enableMultipleCompilations();
+
+        env.write('other.ts', `export const VERSION = 1;`);
+
+        env.driveMain();
+        const firstProgram = env.getReuseTsProgram();
+
+        env.write('other.ts', `export const VERSION = 2;`);
+        env.driveMain();
+
+        expectCompleteReuse(firstProgram);
       });
     });
   });

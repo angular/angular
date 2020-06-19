@@ -12,7 +12,7 @@ import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '../../file_s
 import {isDtsPath} from '../../util/src/typescript';
 import {PerFileShimGenerator, TopLevelShimGenerator} from '../api';
 
-import {isFileShimSourceFile, isShim, NgExtension, sfExtensionData} from './expando';
+import {isFileShimSourceFile, isShim, sfExtensionData} from './expando';
 import {makeShimFileName} from './util';
 
 interface ShimGeneratorData {

@@ -128,6 +128,13 @@ export class NgtscTestEnvironment {
     return this.oldProgram.getTsProgram();
   }
 
+  getReuseTsProgram(): ts.Program {
+    if (this.oldProgram === null) {
+      throw new Error('No ts.Program has been created yet.');
+    }
+    return (this.oldProgram as NgtscProgram).getReuseTsProgram();
+  }
+
   /**
    * Older versions of the CLI do not provide the `CompilerHost.getModifiedResourceFiles()` method.
    * This results in the `changedResources` set being `null`.

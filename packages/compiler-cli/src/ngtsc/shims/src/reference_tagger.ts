@@ -8,10 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom, absoluteFromSourceFile} from '../../file_system';
+import {absoluteFromSourceFile} from '../../file_system';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
-import {isExtended as isExtendedSf, isShim, NgExtension, sfExtensionData} from './expando';
+import {isShim, sfExtensionData} from './expando';
 import {makeShimFileName} from './util';
 
 /**
@@ -48,8 +48,16 @@ export class ShimReferenceTagger {
       return;
     }
 
-    sfExtensionData(sf).originalReferencedFiles = sf.referencedFiles;
-    const referencedFiles = [...sf.referencedFiles];
+    const ext = sfExtensionData(sf);
+
+    // If this file has never been tagged before, capture its `referencedFiles` in the extension
+    // data.
+    if (ext.originalReferencedFiles === null) {
+      ext.originalReferencedFiles = sf.referencedFiles;
+    }
+
+    const referencedFiles = [...ext.originalReferencedFiles];
+
 
     const sfPath = absoluteFromSourceFile(sf);
     for (const suffix of this.suffixes) {
@@ -60,26 +68,16 @@ export class ShimReferenceTagger {
       });
     }
 
+    ext.taggedReferenceFiles = referencedFiles;
     sf.referencedFiles = referencedFiles;
     this.tagged.add(sf);
   }
 
   /**
-   * Restore the original `referencedFiles` values of all tagged `ts.SourceFile`s and disable the
-   * `ShimReferenceTagger`.
+   * Disable the `ShimReferenceTagger` and free memory associated with tracking tagged files.
    */
   finalize(): void {
     this.enabled = false;
-    for (const sf of this.tagged) {
-      if (!isExtendedSf(sf)) {
-        continue;
-      }
-
-      const extensionData = sfExtensionData(sf);
-      if (extensionData.originalReferencedFiles !== null) {
-        sf.referencedFiles = extensionData.originalReferencedFiles! as ts.FileReference[];
-      }
-    }
     this.tagged.clear();
   }
 }
