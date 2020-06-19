@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
-import {MatListBase} from './list-base';
+import {MatInteractiveListBase, MatListBase} from './list-base';
 
 @Component({
   selector: 'mat-action-list',
@@ -23,4 +23,4 @@ import {MatListBase} from './list-base';
     {provide: MatListBase, useExisting: MatActionList},
   ]
 })
-export class MatActionList extends MatListBase {}
+export class MatActionList extends MatInteractiveListBase {}

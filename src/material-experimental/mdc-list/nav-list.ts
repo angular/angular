@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 import {MatList} from './list';
-import {MatListBase} from './list-base';
+import {MatInteractiveListBase, MatListBase} from './list-base';
 
 @Component({
   selector: 'mat-nav-list',
@@ -33,4 +33,4 @@ import {MatListBase} from './list-base';
     {provide: MatList, useExisting: MatNavList},
   ]
 })
-export class MatNavList extends MatListBase {}
+export class MatNavList extends MatInteractiveListBase {}

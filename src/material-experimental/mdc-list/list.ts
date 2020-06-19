@@ -66,9 +66,7 @@ export class MatListSubheaderCssMatStyler {}
     {provide: MatListBase, useExisting: MatList},
   ]
 })
-export class MatList extends MatListBase {
-  _isNonInteractive = true;
-}
+export class MatList extends MatListBase {}
 
 @Component({
   selector: 'mat-list-item, a[mat-list-item], button[mat-list-item]',
@@ -79,6 +77,9 @@ export class MatList extends MatListBase {
   templateUrl: 'list-item.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {provide: MatListItemBase, useExisting: MatListItem},
+  ]
 })
 export class MatListItem extends MatListItemBase {
   @ContentChildren(MatLine, {read: ElementRef, descendants: true}) lines:

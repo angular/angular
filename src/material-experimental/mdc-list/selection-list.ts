@@ -95,6 +95,9 @@ export class MatSelectionList extends MatListBase implements ControlValueAccesso
   templateUrl: 'list-option.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {provide: MatListItemBase, useExisting: MatListOption},
+  ]
 })
 export class MatListOption extends MatListItemBase {
   static ngAcceptInputType_disabled: BooleanInput;
