@@ -12,6 +12,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/indexer",
         "//packages/compiler-cli/src/ngtsc/routing",
+        "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/util",
         "//packages/compiler-cli/test:test_utils",
         "//packages/compiler-cli/test/helpers",
