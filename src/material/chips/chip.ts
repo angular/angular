@@ -6,25 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
 import {FocusableOption} from '@angular/cdk/a11y';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {BACKSPACE, DELETE, SPACE} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
+import {DOCUMENT} from '@angular/common';
 import {
+  Attribute,
+  ChangeDetectorRef,
   ContentChild,
   Directive,
   ElementRef,
   EventEmitter,
-  forwardRef,
   Inject,
+  InjectionToken,
   Input,
   NgZone,
   OnDestroy,
   Optional,
   Output,
-  ChangeDetectorRef,
-  Attribute,
 } from '@angular/core';
 import {
   CanColor,
@@ -33,18 +33,18 @@ import {
   CanDisableRippleCtor,
   HasTabIndex,
   HasTabIndexCtor,
-  mixinTabIndex,
   MAT_RIPPLE_GLOBAL_OPTIONS,
   mixinColor,
   mixinDisableRipple,
+  mixinTabIndex,
   RippleConfig,
   RippleGlobalOptions,
   RippleRenderer,
   RippleTarget,
 } from '@angular/material/core';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';
 import {take} from 'rxjs/operators';
-import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
 /** Represents an event fired on an individual `mat-chip`. */
@@ -64,6 +64,27 @@ export class MatChipSelectionChange {
     public isUserInput = false) { }
 }
 
+/**
+ * Injection token that can be used to reference instances of `MatChipRemove`. It serves as
+ * alternative token to the actual `MatChipRemove` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_CHIP_REMOVE = new InjectionToken<MatChipRemove>('MatChipRemove');
+
+/**
+ * Injection token that can be used to reference instances of `MatChipAvatar`. It serves as
+ * alternative token to the actual `MatChipAvatar` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_CHIP_AVATAR = new InjectionToken<MatChipAvatar>('MatChipAvatar');
+
+/**
+ * Injection token that can be used to reference instances of `MatChipTrailingIcon`. It serves as
+ * alternative token to the actual `MatChipTrailingIcon` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_CHIP_TRAILING_ICON =
+    new InjectionToken<MatChipTrailingIcon>('MatChipTrailingIcon');
 
 // Boilerplate for applying mixins to MatChip.
 /** @docs-private */
@@ -82,7 +103,8 @@ const _MatChipMixinBase: CanColorCtor & CanDisableRippleCtor &
  */
 @Directive({
   selector: 'mat-chip-avatar, [matChipAvatar]',
-  host: {'class': 'mat-chip-avatar'}
+  host: {'class': 'mat-chip-avatar'},
+  providers: [{provide: MAT_CHIP_AVATAR, useExisting: MatChipAvatar}]
 })
 export class MatChipAvatar {}
 
@@ -92,9 +114,11 @@ export class MatChipAvatar {}
  */
 @Directive({
   selector: 'mat-chip-trailing-icon, [matChipTrailingIcon]',
-  host: {'class': 'mat-chip-trailing-icon'}
+  host: {'class': 'mat-chip-trailing-icon'},
+  providers: [{provide: MAT_CHIP_TRAILING_ICON, useExisting: MatChipTrailingIcon}],
 })
 export class MatChipTrailingIcon {}
+
 
 /**
  * Material design styled Chip component. Used inside the MatChipList component.
@@ -165,14 +189,17 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   /** Whether the chip list as a whole is disabled. */
   _chipListDisabled: boolean = false;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip avatar */
-  @ContentChild(MatChipAvatar) avatar: MatChipAvatar;
+  @ContentChild(MAT_CHIP_AVATAR as any) avatar: MatChipAvatar;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip's trailing icon. */
-  @ContentChild(MatChipTrailingIcon) trailingIcon: MatChipTrailingIcon;
+  @ContentChild(MAT_CHIP_TRAILING_ICON as any) trailingIcon: MatChipTrailingIcon;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip's remove toggler. */
-  @ContentChild(forwardRef(() => MatChipRemove)) removeIcon: MatChipRemove;
+  @ContentChild(MAT_CHIP_REMOVE as any) removeIcon: MatChipRemove;
 
   /** Whether the chip is selected. */
   @Input()
@@ -429,7 +456,6 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
-
 /**
  * Applies proper (click) support and adds styling for use with the Material Design "cancel" icon
  * available at https://material.io/icons/#ic_cancel.
@@ -448,7 +474,8 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   host: {
     'class': 'mat-chip-remove mat-chip-trailing-icon',
     '(click)': '_handleClick($event)',
-  }
+  },
+  providers: [{provide: MAT_CHIP_REMOVE, useExisting: MatChipRemove}],
 })
 export class MatChipRemove {
   constructor(

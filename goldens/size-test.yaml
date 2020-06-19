@@ -1,7 +1,9 @@
 cdk/drag-drop/all-directives: 153063
 cdk/drag-drop/basic: 150321
+material-experimental/mdc-chips/basic: 147613
 material/autocomplete/without-optgroup: 208091
 material/button-toggle/standalone: 119400
+material/chips/basic: 162733
 material/datepicker/range-picker/without-form-field: 330101
 material/expansion/without-accordion: 130562
 material/list/nav-list: 130473

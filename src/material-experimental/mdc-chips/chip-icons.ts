@@ -7,7 +7,7 @@
  */
 
 import {BooleanInput} from '@angular/cdk/coercion';
-import {ChangeDetectorRef, Directive, ElementRef, OnDestroy} from '@angular/core';
+import {ChangeDetectorRef, Directive, ElementRef, InjectionToken, OnDestroy} from '@angular/core';
 import {
   CanDisable,
   CanDisableCtor,
@@ -21,6 +21,13 @@ import {Subject} from 'rxjs';
 
 
 /**
+ * Injection token that can be used to reference instances of `MatChipAvatar`. It serves as
+ * alternative token to the actual `MatChipAvatar` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_CHIP_AVATAR = new InjectionToken<MatChipAvatar>('MatChipAvatar');
+
+/**
  * Directive to add CSS classes to chip leading icon.
  * @docs-private
  */
@@ -29,7 +36,8 @@ import {Subject} from 'rxjs';
   host: {
     'class': 'mat-mdc-chip-avatar mdc-chip__icon mdc-chip__icon--leading',
     'role': 'img'
-  }
+  },
+  providers: [{provide: MAT_CHIP_AVATAR, useExisting: MatChipAvatar}],
 })
 export class MatChipAvatar {
   constructor(private _changeDetectorRef: ChangeDetectorRef,
@@ -43,6 +51,14 @@ export class MatChipAvatar {
 }
 
 /**
+ * Injection token that can be used to reference instances of `MatChipTrailingIcon`. It serves as
+ * alternative token to the actual `MatChipTrailingIcon` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_CHIP_TRAILING_ICON =
+  new InjectionToken<MatChipTrailingIcon>('MatChipTrailingIcon');
+
+/**
  * Directive to add CSS classes to and configure attributes for chip trailing icon.
  * @docs-private
  */
@@ -53,7 +69,8 @@ export class MatChipAvatar {
         'mat-mdc-chip-trailing-icon mdc-chip__icon mdc-chip__icon--trailing',
     'tabindex': '-1',
     'aria-hidden': 'true',
-  }
+  },
+  providers: [{provide: MAT_CHIP_TRAILING_ICON, useExisting: MatChipTrailingIcon}],
 })
 export class MatChipTrailingIcon implements OnDestroy {
   private _foundation: MDCChipTrailingActionFoundation;
@@ -111,6 +128,13 @@ export class MatChipTrailingIcon implements OnDestroy {
 }
 
 /**
+ * Injection token that can be used to reference instances of `MatChipRemove`. It serves as
+ * alternative token to the actual `MatChipRemove` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_CHIP_REMOVE = new InjectionToken<MatChipRemove>('MatChipRemove');
+
+/**
  * Boilerplate for applying mixins to MatChipRemove.
  * @docs-private
  */
@@ -154,7 +178,8 @@ const _MatChipRemoveMixinBase:
 
     // We need to remove this explicitly, because it gets inherited from MatChipTrailingIcon.
     '[attr.aria-hidden]': 'null',
-  }
+  },
+  providers: [{provide: MAT_CHIP_REMOVE, useExisting: MatChipRemove}],
 })
 export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable, HasTabIndex {
   /**

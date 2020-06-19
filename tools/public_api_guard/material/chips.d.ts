@@ -1,3 +1,9 @@
+export declare const MAT_CHIP_AVATAR: InjectionToken<MatChipAvatar>;
+
+export declare const MAT_CHIP_REMOVE: InjectionToken<MatChipRemove>;
+
+export declare const MAT_CHIP_TRAILING_ICON: InjectionToken<MatChipTrailingIcon>;
+
 export declare const MAT_CHIPS_DEFAULT_OPTIONS: InjectionToken<MatChipsDefaultOptions>;
 
 export declare class MatChip extends _MatChipMixinBase implements FocusableOption, OnDestroy, CanColor, CanDisableRipple, RippleTarget, HasTabIndex {

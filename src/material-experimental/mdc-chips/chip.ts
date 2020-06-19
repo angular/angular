@@ -47,7 +47,13 @@ import {numbers} from '@material/ripple';
 import {SPACE, ENTER, hasModifierKey} from '@angular/cdk/keycodes';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {MatChipAvatar, MatChipTrailingIcon, MatChipRemove} from './chip-icons';
+import {
+  MatChipAvatar,
+  MatChipTrailingIcon,
+  MatChipRemove,
+  MAT_CHIP_AVATAR,
+  MAT_CHIP_TRAILING_ICON, MAT_CHIP_REMOVE
+} from './chip-icons';
 
 
 let uid = 0;
@@ -226,14 +232,17 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   /** Subject that emits when the component has been destroyed. */
   protected _destroyed = new Subject<void>();
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip's leading icon. */
-  @ContentChild(MatChipAvatar) leadingIcon: MatChipAvatar;
+  @ContentChild(MAT_CHIP_AVATAR as any) leadingIcon: MatChipAvatar;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip's trailing icon. */
-  @ContentChild(MatChipTrailingIcon) trailingIcon: MatChipTrailingIcon;
+  @ContentChild(MAT_CHIP_TRAILING_ICON as any) trailingIcon: MatChipTrailingIcon;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip's trailing remove icon. */
-  @ContentChild(MatChipRemove) removeIcon: MatChipRemove;
+  @ContentChild(MAT_CHIP_REMOVE as any) removeIcon: MatChipRemove;
 
   /** Reference to the MatRipple instance of the chip. */
   @ViewChild(MatRipple) ripple: MatRipple;
