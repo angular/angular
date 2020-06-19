@@ -829,9 +829,9 @@
            {
             "url": "guide/template-typecheck",
             "!title": "Template Type-checking",
-            "title": "템플릿 타입 체크",
+            "title": "템플릿 타입 검사",
             "!tooltip": "Template type-checking in Angular.",
-            "tooltip": "Angular는 템플릿 타입 체크 기능을 제공합니다."
+            "tooltip": "Angular는 템플릿 타입 검사 기능을 제공합니다."
          }
         ]
       },
