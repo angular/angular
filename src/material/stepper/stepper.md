@@ -1,7 +1,5 @@
 Angular Material's stepper provides a wizard-like workflow by dividing content into logical steps.
 
-<!-- example(stepper-overview) -->
-
 Material stepper builds on the foundation of the CDK stepper that is responsible for the logic
 that drives a stepped workflow. Material stepper extends the CDK stepper and has Material Design
 styling.
@@ -9,6 +7,8 @@ styling.
 ### Stepper variants
 There are two stepper components: `mat-horizontal-stepper` and `mat-vertical-stepper`. They
 can be used the same way. The only difference is the orientation of stepper.
+
+<!-- example(stepper-overview) -->
 
 <!-- example(stepper-vertical) -->
 
@@ -18,49 +18,31 @@ placed inside either one of the two stepper components.
 
 ### Labels
 If a step's label is only text, then the `label` attribute can be used.
-```html
-<mat-vertical-stepper>
-  <mat-step label="Step 1">
-    Content 1
-  </mat-step>
-  <mat-step label="Step 1">
-    Content 2
-  </mat-step>
-</mat-vertical-stepper>
-```
+<!-- example({"example": "stepper-overview",
+              "file": "stepper-overview-example.html", 
+              "region": "label"}) -->
 
 For more complex labels, add a template with the `matStepLabel` directive inside the
 `mat-step`.
-```html
-<mat-vertical-stepper>
-  <mat-step>
-    <ng-template matStepLabel>...</ng-template>
-    ...
-  </mat-step>
-</mat-vertical-stepper>
-```
+<!-- example({"example": "stepper-editable",
+              "file": "stepper-editable-example.html", 
+              "region": "ng-template"}) -->
 
 #### Label position
 For `mat-horizontal-stepper` it's possible to define the position of the label. `end` is the
 default value, while `bottom` will place it under the step icon instead of at its side.
 This behaviour is controlled by `labelPosition` property.
 
-<!-- example(stepper-label-position-bottom) -->
+<!-- example({"example": "stepper-label-position",
+              "file": "stepper-label-position-example.html", 
+              "region": "label-position"}) -->
 
 ### Stepper buttons
 There are two button directives to support navigation between different steps:
 `matStepperPrevious` and `matStepperNext`.
-```html
-<mat-horizontal-stepper>
-  <mat-step>
-    ...
-    <div>
-      <button mat-button matStepperPrevious>Back</button>
-      <button mat-button matStepperNext>Next</button>
-    </div>
-  </mat-step>
-</mat-horizontal-stepper>
-```
+<!-- example({"example": "stepper-label-position",
+              "file": "stepper-label-position-example.html", 
+              "region": "mat-stepper"}) -->
 
 ### Linear stepper
 The `linear` attribute can be set on `mat-horizontal-stepper` and `mat-vertical-stepper` to create
@@ -122,14 +104,18 @@ are completed.
 If completion of a step in linear stepper is not required, then the `optional` attribute can be set
 on `mat-step`.
 
-<!-- example(stepper-optional) -->
+<!-- example({"example": "stepper-optional",
+              "file": "stepper-optional-example.html", 
+              "region": "optional"}) -->
 
 
 #### Editable step
 By default, steps are editable, which means users can return to previously completed steps and
 edit their responses. `editable="false"` can be set on `mat-step` to change the default.
 
-<!-- example(stepper-editable) -->
+<!-- example({"example": "stepper-editable",
+              "file": "stepper-editable-example.html", 
+              "region": "editable"}) -->
 
 #### Completed step
 By default, the `completed` attribute of a step returns `true` if the step is valid (in case of
@@ -142,24 +128,9 @@ set via `<mat-icon>` elements. If you want to provide a different set of icons, 
 by placing a `matStepperIcon` for each of the icons that you want to override. The `index`,
 `active`, and `optional` values of the individual steps are available through template variables:
 
-```html
-<mat-vertical-stepper>
-  <ng-template matStepperIcon="edit">
-    <mat-icon>insert_drive_file</mat-icon>
-  </ng-template>
-
-  <ng-template matStepperIcon="done">
-    <mat-icon>done_all</mat-icon>
-  </ng-template>
-
-  <!-- Custom icon with a context variable. -->
-  <ng-template matStepperIcon="number" let-index="index">
-    {{index + 10}}
-  </ng-template>
-
-  <!-- Stepper steps go here -->
-</mat-vertical-stepper>
-```
+<!-- example({"example": "stepper-states",
+              "file": "stepper-states-example.html", 
+              "region": "override-icons"}) -->
 
 Note that you aren't limited to using the `mat-icon` component when providing custom icons.
 
@@ -167,34 +138,9 @@ Note that you aren't limited to using the `mat-icon` component when providing cu
 You can set the state of a step to whatever you want. The given state by default maps to an icon.
 However, it can be overridden the same way as mentioned above.
 
-```html
-<mat-horizontal-stepper>
-  <mat-step label="Step 1" state="phone">
-    <p>Put down your phones.</p>
-    <div>
-      <button mat-button matStepperNext>Next</button>
-    </div>
-  </mat-step>
-  <mat-step label="Step 2" state="chat">
-    <p>Socialize with each other.</p>
-    <div>
-      <button mat-button matStepperPrevious>Back</button>
-      <button mat-button matStepperNext>Next</button>
-    </div>
-  </mat-step>
-  <mat-step label="Step 3">
-    <p>You're welcome.</p>
-  </mat-step>
-
-  <!-- Icon overrides. -->
-  <ng-template matStepperIcon="phone">
-    <mat-icon>call_end</mat-icon>
-  </ng-template>
-  <ng-template matStepperIcon="chat">
-    <mat-icon>forum</mat-icon>
-  </ng-template>
-</mat-horizontal-stepper>
-```
+<!-- example({"example": "stepper-states",
+              "file": "stepper-states-example.html", 
+              "region": "states"}) -->
 
 In order to use the custom step states, you must add the `displayDefaultIndicatorType` option to
 the global default stepper options which can be specified by providing a value for

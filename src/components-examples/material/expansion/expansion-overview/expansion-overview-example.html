@@ -1,24 +1,19 @@
 <mat-accordion>
-  <mat-expansion-panel>
+<!-- #docregion basic-panel -->
+<!-- #docregion hide-toggle -->
+  <mat-expansion-panel hideToggle>
+<!-- #enddocregion hide-toggle -->
     <mat-expansion-panel-header>
       <mat-panel-title>
-        Personal data
+        This is the expansion title
       </mat-panel-title>
       <mat-panel-description>
-        Type your name and age
+        This is a summary of the content
       </mat-panel-description>
     </mat-expansion-panel-header>
-
-    <mat-form-field>
-      <mat-label>First name</mat-label>
-      <input matInput>
-    </mat-form-field>
-
-    <mat-form-field>
-      <mat-label>Age</mat-label>
-      <input matInput type="number" min="1">
-    </mat-form-field>
+    <p>This is the primary content of the panel.</p>
   </mat-expansion-panel>
+<!-- #enddocregion basic-panel -->
   <mat-expansion-panel (opened)="panelOpenState = true"
                        (closed)="panelOpenState = false">
     <mat-expansion-panel-header>

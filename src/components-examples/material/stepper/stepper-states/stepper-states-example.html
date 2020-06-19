@@ -35,13 +35,16 @@
   </mat-step>
 </mat-horizontal-stepper>
 
+<!-- #docregion states -->
 <mat-horizontal-stepper>
+<!-- #docregion label -->
   <mat-step label="Step 1" state="phone">
     <p>Put down your phones.</p>
     <div>
       <button mat-button matStepperNext>Next</button>
     </div>
   </mat-step>
+<!-- #enddocregion label -->
   <mat-step label="Step 2" state="chat">
     <p>Socialize with each other.</p>
     <div>
@@ -54,6 +57,7 @@
   </mat-step>
 
   <!-- Icon overrides. -->
+<!-- #docregion override-icons -->
   <ng-template matStepperIcon="phone">
     <mat-icon>call_end</mat-icon>
   </ng-template>
@@ -61,3 +65,5 @@
     <mat-icon>forum</mat-icon>
   </ng-template>
 </mat-horizontal-stepper>
+<!-- #enddocregion override-icons -->
+<!-- #enddocregion states -->

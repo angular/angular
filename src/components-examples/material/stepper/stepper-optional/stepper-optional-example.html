@@ -15,7 +15,9 @@
       </div>
     </form>
   </mat-step>
+  <!-- #docregion optional -->
   <mat-step [stepControl]="secondFormGroup" [optional]="isOptional">
+  <!-- #enddocregion optional -->
     <form [formGroup]="secondFormGroup">
       <ng-template matStepLabel>Fill out your address</ng-template>
       <mat-form-field>
