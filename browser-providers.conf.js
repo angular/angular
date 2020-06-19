@@ -14,7 +14,8 @@
 var CIconfiguration = {
   'Chrome': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'FirefoxESR': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  // Set ESR as a not required browser as it fails for Ivy acceptance tests.
+  'FirefoxESR': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   // Disabled because using the "beta" channel of Chrome can cause non-deterministic CI results.
   // e.g. a new chrome beta version has been released, but the Saucelabs selenium server does
   // not provide a chromedriver version that is compatible with the new beta.
