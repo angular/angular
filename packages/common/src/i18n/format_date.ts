@@ -384,6 +384,11 @@ function weekGetter(size: number, monthBased = false): DateFormatter {
     } else {
       let firstThurs = getFirstThursdayOfYear(date.getFullYear());
       const thisThurs = getThursdayThisWeek(date);
+      /*
+       If some days of a year are part of next year according
+       to ISO 8601. Change the firstThurs for those days to next
+       year firstThurs
+      */
       if (thisThurs.getFullYear() !== firstThurs.getFullYear()) {
         firstThurs = getFirstThursdayOfYear(date.getFullYear() + 1);
       }
