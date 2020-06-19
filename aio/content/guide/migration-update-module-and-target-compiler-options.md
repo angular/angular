@@ -24,7 +24,7 @@ This migration provides improvements to the long-term supportability of projects
 For the functionality that executes on Node.js, such as Universal and Protractor, the new settings provide performance and troubleshooting benefits as well.
 The minimum Node.js version for the Angular CLI (v10.13) supports features in ES2018 and earlier.
 By targeting later ES versions, the compiler transforms less code and can use newer features directly.
-Since zone.js does not support native async/await, the universal builds must still target ES2016.
+Since zone.js does not support native async/await, the Universal compilation still targets ES2016.
 
 ## Why `"es2020"` instead of `"esnext"`?
 
