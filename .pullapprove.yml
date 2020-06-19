@@ -1230,8 +1230,9 @@ groups:
       # By checking the number of active groups when these are excluded, we can determine
       # if any other groups are matched.
       - len(groups.active.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
-      # Because when `global-*` groups are matched they cause other groups to unmatch
-      # we also much only match if the `global-*` groups are not in the approved group
-      # list.
-      # This check also implicitly allows for this condition to be globally approved.
-      - len(groups.approved.include("global-approvers").include("global-docs-approvers")) == 0
+      # When any of the `global-*` groups is approved, they cause other groups to deactivate.
+      # In those cases, the condition above would evaluate to `true` while in reality, only a global
+      # approval has been provided. To ensure we don't activate the fallback group in such cases,
+      # ensure that no explicit global approval has been provided.
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
