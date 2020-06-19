@@ -1241,6 +1241,12 @@ describe('MatDatepicker', () => {
         testComponent = fixture.componentInstance;
       }));
 
+      function revalidate() {
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+      }
+
       afterEach(fakeAsync(() => {
         testComponent.datepicker.close();
         fixture.detectChanges();
@@ -1253,9 +1259,7 @@ describe('MatDatepicker', () => {
 
       it('should mark invalid when value is before min', fakeAsync(() => {
         testComponent.date = new Date(2009, DEC, 31);
-        fixture.detectChanges();
-        flush();
-        fixture.detectChanges();
+        revalidate();
 
         expect(fixture.debugElement.query(By.css('input'))!.nativeElement.classList)
             .toContain('ng-invalid');
@@ -1263,10 +1267,7 @@ describe('MatDatepicker', () => {
 
       it('should mark invalid when value is after max', fakeAsync(() => {
         testComponent.date = new Date(2020, JAN, 2);
-        fixture.detectChanges();
-        flush();
-
-        fixture.detectChanges();
+        revalidate();
 
         expect(fixture.debugElement.query(By.css('input'))!.nativeElement.classList)
             .toContain('ng-invalid');
@@ -1274,9 +1275,7 @@ describe('MatDatepicker', () => {
 
       it('should not mark invalid when value equals min', fakeAsync(() => {
         testComponent.date = testComponent.datepicker._minDate;
-        fixture.detectChanges();
-        flush();
-        fixture.detectChanges();
+        revalidate();
 
         expect(fixture.debugElement.query(By.css('input'))!.nativeElement.classList)
             .not.toContain('ng-invalid');
@@ -1284,9 +1283,7 @@ describe('MatDatepicker', () => {
 
       it('should not mark invalid when value equals max', fakeAsync(() => {
         testComponent.date = testComponent.datepicker._maxDate;
-        fixture.detectChanges();
-        flush();
-        fixture.detectChanges();
+        revalidate();
 
         expect(fixture.debugElement.query(By.css('input'))!.nativeElement.classList)
             .not.toContain('ng-invalid');
@@ -1294,9 +1291,7 @@ describe('MatDatepicker', () => {
 
       it('should not mark invalid when value is between min and max', fakeAsync(() => {
         testComponent.date = new Date(2010, JAN, 2);
-        fixture.detectChanges();
-        flush();
-        fixture.detectChanges();
+        revalidate();
 
         expect(fixture.debugElement.query(By.css('input'))!.nativeElement.classList)
             .not.toContain('ng-invalid');
@@ -1306,31 +1301,49 @@ describe('MatDatepicker', () => {
         const inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
         inputEl.value = '';
         dispatchFakeEvent(inputEl, 'input');
-
-        fixture.detectChanges();
-        flush();
-        fixture.detectChanges();
+        revalidate();
 
         expect(testComponent.model.valid).toBe(true);
 
         inputEl.value = 'abcdefg';
         dispatchFakeEvent(inputEl, 'input');
-
-        fixture.detectChanges();
-        flush();
-        fixture.detectChanges();
+        revalidate();
 
         expect(testComponent.model.valid).toBe(false);
 
         inputEl.value = '';
         dispatchFakeEvent(inputEl, 'input');
-
-        fixture.detectChanges();
-        flush();
-        fixture.detectChanges();
+        revalidate();
 
         expect(testComponent.model.valid).toBe(true);
       }));
+
+      it('should update validity when a value is assigned', fakeAsync(() => {
+        const inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
+        inputEl.value = '';
+        dispatchFakeEvent(inputEl, 'input');
+        revalidate();
+
+        expect(testComponent.model.valid).toBe(true);
+
+        inputEl.value = 'abcdefg';
+        dispatchFakeEvent(inputEl, 'input');
+        revalidate();
+
+        expect(testComponent.model.valid).toBe(false);
+
+        const validDate = new Date(2010, JAN, 2);
+
+        // Assigning through the selection model simulates the user doing it via the calendar.
+        const model = fixture.debugElement.query(By.directive(MatDatepicker))
+            .injector.get<MatDateSelectionModel<Date>>(MatDateSelectionModel);
+        model.updateSelection(validDate, null);
+        revalidate();
+
+        expect(testComponent.model.valid).toBe(true);
+        expect(testComponent.date).toBe(validDate);
+      }));
+
     });
 
     describe('datepicker with filter and validation', () => {

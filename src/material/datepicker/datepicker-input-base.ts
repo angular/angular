@@ -71,7 +71,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   }
   set value(value: D | null) {
     value = this._dateAdapter.deserialize(value);
-    this._lastValueValid = !value || this._dateAdapter.isValid(value);
+    this._lastValueValid = this._isValidValue(value);
     value = this._getValidDateOrNull(value);
     const oldDate = this.value;
     this._assignValue(value);
@@ -194,6 +194,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
     this._valueChangesSubscription = this._model.selectionChanged.subscribe(event => {
       if (event.source !== this) {
         const value = this._getValueFromModel(event.selection);
+        this._lastValueValid = this._isValidValue(value);
         this._cvaOnChange(value);
         this._onTouched();
         this._formatValue(value);
@@ -298,7 +299,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   _onInput(value: string) {
     const lastValueWasValid = this._lastValueValid;
     let date = this._dateAdapter.parse(value, this._dateFormats.parse.dateInput);
-    this._lastValueValid = !date || this._dateAdapter.isValid(date);
+    this._lastValueValid = this._isValidValue(date);
     date = this._getValidDateOrNull(date);
 
     if (!this._dateAdapter.sameDate(date, this.value)) {
@@ -349,6 +350,11 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
     } else {
       this._pendingValue = value;
     }
+  }
+
+  /** Whether a value is considered valid. */
+  private _isValidValue(value: D | null): boolean {
+    return !value || this._dateAdapter.isValid(value);
   }
 
   /**
