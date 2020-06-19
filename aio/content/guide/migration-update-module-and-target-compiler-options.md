@@ -30,4 +30,4 @@ Since zone.js does not support native async/await, the universal builds must sti
 
 In TypeScript 3.9, the behavior of the TypeScript compiler controlled by `module` is the same with both `"esnext"` and `"es2020"` values.
 This behavior can change in the future, because the `"esnext"` option could evolve in a backwards incompatible ways, resulting in build-time or run-time errors during a TypeScript update.
-This could result in undesirable instability which can be avoided by using the `"es2020"` option whose behavior is not going to change any more.
+As a result, code can become unstable. Using the `"es2020"` option mitigates this risk.
