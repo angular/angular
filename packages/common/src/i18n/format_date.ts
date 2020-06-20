@@ -382,16 +382,10 @@ function weekGetter(size: number, monthBased = false): DateFormatter {
       const today = date.getDate();
       result = 1 + Math.floor((today + nbDaysBefore1stDayOfMonth) / 7);
     } else {
-      let firstThurs = getFirstThursdayOfYear(date.getFullYear());
       const thisThurs = getThursdayThisWeek(date);
-      /*
-       If some days of a year are part of next year according
-       to ISO 8601. Change the firstThurs for those days to next
-       year firstThurs
-      */
-      if (thisThurs.getFullYear() !== firstThurs.getFullYear()) {
-        firstThurs = getFirstThursdayOfYear(date.getFullYear() + 1);
-      }
+      // Some days of a year are part of next year according to ISO 8601.
+      // Compute the firstThurs from the year of this week's Thursday
+      const firstThurs = getFirstThursdayOfYear(thisThurs.getFullYear());
       const diff = thisThurs.getTime() - firstThurs.getTime();
       result = 1 + Math.round(diff / 6.048e8);  // 6.048e8 ms per week
     }

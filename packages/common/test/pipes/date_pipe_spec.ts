@@ -82,8 +82,8 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
       it('should return first week if some dates fall in previous leap year but belong to next year according to ISO 8601 format',
          () => {
            expect(pipe.transform('2012-12-29T00:00:00', 'w')).toEqual('52');
-           expect(pipe.transform('2019-12-30T00:00:00', 'w')).toEqual('1');
-           expect(pipe.transform('2019-12-31T00:00:00', 'w')).toEqual('1');
+           expect(pipe.transform('2012-12-30T00:00:00', 'w')).toEqual('1');
+           expect(pipe.transform('2012-12-31T00:00:00', 'w')).toEqual('1');
          });
     });
   });
