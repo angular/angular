@@ -1,4 +1,4 @@
-# Introduction to Angular concepts
+# Introduction to Angular concepts.
 
 Angular is a platform and framework for building single-page client applications using HTML and TypeScript.
 Angular is written in TypeScript.
