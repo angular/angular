@@ -89,4 +89,10 @@ export class SitePage {
     browser.wait(ExpectedConditions.presenceOf(results.first()), 2000);
     return results.map(elem => elem && elem.getText());
   }
+
+  clickDropdownItem(dropdown: ElementFinder, itemName: string){
+    dropdown.element(by.css('.form-select-button')).click();
+    const menuItem = dropdown.element(by.cssContainingText('.form-select-dropdown li', itemName));
+    menuItem.click();
+  }
 }

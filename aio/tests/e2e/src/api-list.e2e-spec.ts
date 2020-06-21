@@ -2,10 +2,10 @@ import { by, element } from 'protractor';
 import { SitePage } from './app.po';
 
 describe('api-list', () => {
-  let page: SitePage;
   const apiSearchInput = element(by.css('aio-api-list .form-search input'));
-  const apiStatusDropdown = element(by.css('aio-api-list aio-select[label="Status:"] .form-select-button'));
-  const apiTypeDropdown = element(by.css('aio-api-list aio-select[label="Type:"] .form-select-button'));
+  const apiStatusDropdown = element(by.css('aio-api-list aio-select[label="Status:"]'));
+  const apiTypeDropdown = element(by.css('aio-api-list aio-select[label="Type:"]'));
+  let page: SitePage;
 
   beforeEach(() => {
     page = new SitePage();
@@ -17,8 +17,8 @@ describe('api-list', () => {
 
     apiSearchInput.clear();
     apiSearchInput.sendKeys('anima');
-    expect(page.getApiSearchResults()).not.toContain('HttpEventType');
 
+    expect(page.getApiSearchResults()).not.toContain('HttpEventType');
     expect(page.getApiSearchResults()).toContain('AnimationSequenceMetadata');
   });
 
@@ -27,32 +27,26 @@ describe('api-list', () => {
 
     apiSearchInput.clear();
     apiSearchInput.sendKeys('date');
-    expect(page.getApiSearchResults()).not.toContain('formatCurrency');
 
+    expect(page.getApiSearchResults()).not.toContain('formatCurrency');
     expect(page.getApiSearchResults()).toContain('getLocaleDateTimeFormat');
   });
 
   it('should find LowerCasePipe when searching for type pipe', () => {
     expect(page.getApiSearchResults()).toContain('getLocaleDateTimeFormat');
 
-    apiTypeDropdown.click();
-    const menuItem = element.all(by.css('aio-api-list aio-select[label="Type:"] .form-select-dropdown li')).get(8);
-    menuItem.click();
+    page.clickDropdownItem(apiTypeDropdown, 'Pipe');
 
     expect(page.getApiSearchResults()).not.toContain('getLocaleDateTimeFormat');
-
     expect(page.getApiSearchResults()).toContain('LowerCasePipe');
   });
 
   it('should find ElementRef when searching for status Security Risk', () => {
     expect(page.getApiSearchResults()).toContain('getLocaleDateTimeFormat');
 
-    apiStatusDropdown.click();
-    const menuItem = element.all(by.css('aio-api-list aio-select[label="Status:"] .form-select-dropdown li')).get(3);
-    menuItem.click();
+    page.clickDropdownItem(apiStatusDropdown, 'Security Risk');
 
     expect(page.getApiSearchResults()).not.toContain('getLocaleDateTimeFormat');
-
     expect(page.getApiSearchResults()).toContain('ElementRef');
   });
 });
