@@ -9,8 +9,8 @@ import { CustomElementsModule } from 'app/custom-elements/custom-elements.module
 import { TocService } from 'app/shared/toc.service';
 import { ElementsLoader } from 'app/custom-elements/elements-loader';
 import {
-MockTitle, MockTocService, ObservableWithSubscriptionSpies,
-TestDocViewerComponent, TestModule, TestParentComponent, MockElementsLoader
+  MockElementsLoader, MockTitle, MockTocService, newObservableWithSubscriptionSpies, ObservableWithSubscriptionSpies,
+  TestDocViewerComponent, TestModule, TestParentComponent,
 } from 'testing/doc-viewer-utils';
 import { MockLogger } from 'testing/logger.service';
 import { DocViewerComponent, NO_ANIMATIONS } from './doc-viewer.component';
@@ -21,7 +21,10 @@ describe('DocViewerComponent', () => {
   let docViewerEl: HTMLElement;
   let docViewer: TestDocViewerComponent;
 
-  const safeFlushAsapScheduler = () => asapScheduler.actions.length && asapScheduler.flush();
+  const safeFlushAsapScheduler = () => {
+    ((window as any).mylogs || ((window as any).mylogs = [])).push('[safeFlushAsapScheduler] 1');
+    return asapScheduler.actions.length && asapScheduler.flush();
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -36,6 +39,7 @@ describe('DocViewerComponent', () => {
     docViewerEl = parentFixture.debugElement.children[0].nativeElement;
     docViewer = parentComponent.docViewer as any;
   });
+  afterEach(() => (window as any).mylogs && ((window as any).mylogs = []));
 
   it('should create a `DocViewer`', () => {
     expect(docViewer).toEqual(jasmine.any(DocViewerComponent));
@@ -401,20 +405,45 @@ describe('DocViewerComponent', () => {
         expect(loadElementsSpy.calls.argsFor(1)).toEqual([docViewer.nextViewContainer]);
       });
 
-      it('should unsubscribe from the previous "embed" observable when unsubscribed from', () => {
-        const obs = new ObservableWithSubscriptionSpies();
-        loadElementsSpy.and.returnValue(obs);
+      it('should unsubscribe from the previous "embed" observable when unsubscribed from', (done) => {
+        const {observable, subscribeSpy, unsubscribeSpy} = newObservableWithSubscriptionSpies();
+        loadElementsSpy.and.returnValue(observable);
+
+        ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] 1');
 
         const renderObservable = docViewer.render({contents: 'Some content', id: 'foo'});
-        const subscription = renderObservable.subscribe();
 
-        expect(obs.subscribeSpy).toHaveBeenCalledTimes(1);
-        expect(obs.unsubscribeSpies[0]).not.toHaveBeenCalled();
+        ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] 2');
+
+        const subscription = renderObservable.subscribe({
+          next: () => ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] subscribe next'),
+          error: err => ((window as any).mylogs || ((window as any).mylogs = [])).push(`[Test] subscribe error: ${err}`),
+          complete: () => ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] subscribe complete'),
+        });
+
+        expect(subscribeSpy).toHaveBeenCalledTimes(1);
+        expect(unsubscribeSpy).not.toHaveBeenCalled();
+
+        ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] 3');
 
         subscription.unsubscribe();
+        ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] 4');
+        ((window as any).mylogs || ((window as any).mylogs = [])).
+          push(`[Test] Calls before flush: ${unsubscribeSpy.calls.count()}`);
 
-        expect(obs.subscribeSpy).toHaveBeenCalledTimes(1);
-        expect(obs.unsubscribeSpies[0]).toHaveBeenCalledTimes(1);
+        safeFlushAsapScheduler();
+        ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] 5');
+
+        expect(subscribeSpy).toHaveBeenCalledTimes(1);
+        expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
+
+        setTimeout(() => {
+          ((window as any).mylogs || ((window as any).mylogs = [])).
+            push(`[Test] Calls after timeout: ${unsubscribeSpy.calls.count()}`);
+
+          console.log((window as any).mylogs && (window as any).mylogs.join('\n'));
+          done();
+        }, 1000);
       });
     });
 
@@ -436,20 +465,45 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).toHaveBeenCalledWith(addTitleAndTocSpy);
       });
 
-      it('should unsubscribe from the previous "swap" observable when unsubscribed from', () => {
-        const obs = new ObservableWithSubscriptionSpies();
-        swapViewsSpy.and.returnValue(obs);
+      it('should unsubscribe from the previous "swap" observable when unsubscribed from', (done) => {
+        const {observable, subscribeSpy, unsubscribeSpy} = newObservableWithSubscriptionSpies();
+        loadElementsSpy.and.returnValue(observable);
+
+        ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] 1');
 
         const renderObservable = docViewer.render({contents: 'Hello, world!', id: 'foo'});
-        const subscription = renderObservable.subscribe();
 
-        expect(obs.subscribeSpy).toHaveBeenCalledTimes(1);
-        expect(obs.unsubscribeSpies[0]).not.toHaveBeenCalled();
+        ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] 2');
+
+        const subscription = renderObservable.subscribe({
+          next: () => ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] subscribe next'),
+          error: err => ((window as any).mylogs || ((window as any).mylogs = [])).push(`[Test] subscribe error: ${err}`),
+          complete: () => ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] subscribe complete'),
+        });
+
+        expect(subscribeSpy).toHaveBeenCalledTimes(1);
+        expect(unsubscribeSpy).not.toHaveBeenCalled();
+
+        ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] 3');
 
         subscription.unsubscribe();
+        ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] 4');
+        ((window as any).mylogs || ((window as any).mylogs = [])).
+          push(`[Test] Calls before flush: ${unsubscribeSpy.calls.count()}`);
 
-        expect(obs.subscribeSpy).toHaveBeenCalledTimes(1);
-        expect(obs.unsubscribeSpies[0]).toHaveBeenCalledTimes(1);
+        safeFlushAsapScheduler();
+        ((window as any).mylogs || ((window as any).mylogs = [])).push('[Test] 5');
+
+        expect(subscribeSpy).toHaveBeenCalledTimes(1);
+        expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
+
+        setTimeout(() => {
+          ((window as any).mylogs || ((window as any).mylogs = [])).
+            push(`[Test] Calls after timeout: ${unsubscribeSpy.calls.count()}`);
+
+          console.log((window as any).mylogs && (window as any).mylogs.join('\n'));
+          done();
+        }, 1000);
       });
     });
 

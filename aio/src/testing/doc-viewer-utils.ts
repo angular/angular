@@ -87,12 +87,38 @@ export class TestModule { }
 
 export class ObservableWithSubscriptionSpies<T = void> extends Observable<T> {
   unsubscribeSpies: jasmine.Spy[] = [];
-  subscribeSpy = spyOn(this as Observable<T>, 'subscribe').and.callFake((...args: any[]) => {
-    const subscription = super.subscribe(...args);
-    const unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
+  subscribeSpy = spyOn(this as Observable<T>, 'subscribe').and.callFake(() => {
+    const subscription = super.subscribe({
+      next: () => ((window as any).mylogs || ((window as any).mylogs = [])).push('[ObservableWithSpies] subscribe next'),
+      error: err => ((window as any).mylogs || ((window as any).mylogs = [])).push(`[ObservableWithSpies] subscribe error: ${err}`),
+      complete: () => ((window as any).mylogs || ((window as any).mylogs = [])).push('[ObservableWithSpies] subscribe complete'),
+    });
+    const unsubscribe = subscription.unsubscribe;
+    const unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callFake(() => {
+      ((window as any).mylogs || ((window as any).mylogs = [])).push('[ObservableWithSpies] unsubscribe ' + this.unsubscribeSpies.length);
+      return unsubscribe.call(subscription);
+    });
     this.unsubscribeSpies.push(unsubscribeSpy);
+    ((window as any).mylogs || ((window as any).mylogs = [])).push('[ObservableWithSpies] subscribe ' + this.unsubscribeSpies.length);
     return subscription;
   });
 
-  constructor(subscriber = () => undefined) { super(subscriber); }
+  constructor(subscribe = () => undefined) { super(subscribe); }
 }
+
+
+export const newObservableWithSubscriptionSpies = () => {
+  const unsubscribeSpy = jasmine.createSpy('unsubscribe').and.callFake(() => {
+    ((window as any).mylogs || ((window as any).mylogs = [])).push('[ObservableWithSpies] unsubscribe');
+  });
+  const subscribeSpy = jasmine.createSpy('subscribe').and.callFake(() => {
+    ((window as any).mylogs || ((window as any).mylogs = [])).push('[ObservableWithSpies] subscribe');
+    return unsubscribeSpy;
+  });
+
+  return {
+    observable: new Observable(subscribeSpy),
+    subscribeSpy,
+    unsubscribeSpy,
+  };
+};

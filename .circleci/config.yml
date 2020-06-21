@@ -772,99 +772,173 @@ workflows:
           filters:
             branches:
               ignore: g3
-      - lint:
-          requires:
-            - setup
-      - test:
-          requires:
-            - setup
-      - test_ivy_aot:
-          requires:
-            - setup
+      # - lint:
+      #     requires:
+      #       - setup
+      # - test:
+      #     requires:
+      #       - setup
+      # - test_ivy_aot:
+      #     requires:
+      #       - setup
       - build-npm-packages:
           requires:
             - setup
-      - build-ivy-npm-packages:
-          requires:
-            - setup
-      - legacy-unit-tests-saucelabs:
+      # - build-ivy-npm-packages:
+      #     requires:
+      #       - setup
+      # - legacy-unit-tests-saucelabs:
+      #     requires:
+      #       - setup
+      - test_aio:
+          name: test_aio_0
           requires:
             - setup
       - test_aio:
+          name: test_aio_1
           requires:
             - setup
-      - deploy_aio:
+      - test_aio:
+          name: test_aio_2
           requires:
-            - test_aio
+            - setup
+      - test_aio:
+          name: test_aio_3
+          requires:
+            - setup
+      - test_aio:
+          name: test_aio_4
+          requires:
+            - setup
+      - test_aio:
+          name: test_aio_5
+          requires:
+            - setup
+      - test_aio:
+          name: test_aio_6
+          requires:
+            - setup
+      - test_aio:
+          name: test_aio_7
+          requires:
+            - setup
+      - test_aio:
+          name: test_aio_8
+          requires:
+            - setup
+      - test_aio:
+          name: test_aio_9
+          requires:
+            - setup
+      # - deploy_aio:
+      #     requires:
+      #       - test_aio
       - test_aio_local:
+          name: test_aio_local_0
           requires:
             - build-npm-packages
       - test_aio_local:
-          name: test_aio_local_viewengine
-          viewengine: true
+          name: test_aio_local_1
           requires:
             - build-npm-packages
-      - test_aio_tools:
+      - test_aio_local:
+          name: test_aio_local_2
           requires:
             - build-npm-packages
-      - test_docs_examples:
+      - test_aio_local:
+          name: test_aio_local_3
           requires:
             - build-npm-packages
-      - test_docs_examples:
-          name: test_docs_examples_viewengine
-          viewengine: true
+      - test_aio_local:
+          name: test_aio_local_4
           requires:
             - build-npm-packages
-      - aio_preview:
-          # Only run on PR builds. (There can be no previews for non-PR builds.)
-          <<: *only_on_pull_requests
-          requires:
-            - setup
-      - test_aio_preview:
-          requires:
-            - aio_preview
-      - publish_packages_as_artifacts:
+      - test_aio_local:
+          name: test_aio_local_5
           requires:
             - build-npm-packages
-      - publish_snapshot:
-          # Note: no filters on this job because we want it to run for all upstream branches
-          # We'd really like to filter out pull requests here, but not yet available:
-          # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
-          # Instead, the job just exits immediately at the first step.
-          requires:
-            # Only publish if tests and integration tests pass
-            - test
-            - test_ivy_aot
-            # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
-            - test_aio_local
-            - test_aio_local_viewengine
-            - test_docs_examples
-            - test_docs_examples_viewengine
-            # Get the artifacts to publish from the build-packages-dist job
-            # since the publishing script expects the legacy outputs layout.
-            - build-npm-packages
-            - build-ivy-npm-packages
-            - legacy-unit-tests-saucelabs
-      - components-repo-unit-tests:
+      - test_aio_local:
+          name: test_aio_local_6
           requires:
             - build-npm-packages
-      - test_zonejs:
+      - test_aio_local:
+          name: test_aio_local_7
           requires:
-            - setup
-      # Windows Jobs
-      # These are very slow so we run them on non-PRs only for now.
-      # TODO: remove the filter when CircleCI makes Windows FS faster.
-      # The Windows jobs are only run after their non-windows counterparts finish successfully.
-      # This isn't strictly necessary as there is no artifact dependency, but helps economize
-      # CI resources by not attempting to build when we know should fail.
-      - test_win:
-          <<: *skip_on_pull_requests
+            - build-npm-packages
+      - test_aio_local:
+          name: test_aio_local_8
           requires:
-            - test
-      - test_ivy_aot_win:
-          <<: *skip_on_pull_requests
+            - build-npm-packages
+      - test_aio_local:
+          name: test_aio_local_9
           requires:
-            - test_ivy_aot
+            - build-npm-packages
+      # - test_aio_local:
+      #     name: test_aio_local_viewengine
+      #     viewengine: true
+      #     requires:
+      #       - build-npm-packages
+      # - test_aio_tools:
+      #     requires:
+      #       - build-npm-packages
+      # - test_docs_examples:
+      #     requires:
+      #       - build-npm-packages
+      # - test_docs_examples:
+      #     name: test_docs_examples_viewengine
+      #     viewengine: true
+      #     requires:
+      #       - build-npm-packages
+      # - aio_preview:
+      #     # Only run on PR builds. (There can be no previews for non-PR builds.)
+      #     <<: *only_on_pull_requests
+      #     requires:
+      #       - setup
+      # - test_aio_preview:
+      #     requires:
+      #       - aio_preview
+      # - publish_packages_as_artifacts:
+      #     requires:
+      #       - build-npm-packages
+      # - publish_snapshot:
+      #     # Note: no filters on this job because we want it to run for all upstream branches
+      #     # We'd really like to filter out pull requests here, but not yet available:
+      #     # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
+      #     # Instead, the job just exits immediately at the first step.
+      #     requires:
+      #       # Only publish if tests and integration tests pass
+      #       - test
+      #       - test_ivy_aot
+      #       # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
+      #       - test_aio_local
+      #       - test_aio_local_viewengine
+      #       - test_docs_examples
+      #       - test_docs_examples_viewengine
+      #       # Get the artifacts to publish from the build-packages-dist job
+      #       # since the publishing script expects the legacy outputs layout.
+      #       - build-npm-packages
+      #       - build-ivy-npm-packages
+      #       - legacy-unit-tests-saucelabs
+      # - components-repo-unit-tests:
+      #     requires:
+      #       - build-npm-packages
+      # - test_zonejs:
+      #     requires:
+      #       - setup
+      # # Windows Jobs
+      # # These are very slow so we run them on non-PRs only for now.
+      # # TODO: remove the filter when CircleCI makes Windows FS faster.
+      # # The Windows jobs are only run after their non-windows counterparts finish successfully.
+      # # This isn't strictly necessary as there is no artifact dependency, but helps economize
+      # # CI resources by not attempting to build when we know should fail.
+      # - test_win:
+      #     <<: *skip_on_pull_requests
+      #     requires:
+      #       - test
+      # - test_ivy_aot_win:
+      #     <<: *skip_on_pull_requests
+      #     requires:
+      #       - test_ivy_aot
 
   monitoring:
     jobs:

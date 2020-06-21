@@ -68,6 +68,7 @@ export class DocViewerComponent implements OnDestroy {
       private metaService: Meta,
       private tocService: TocService,
       private elementsLoader: ElementsLoader) {
+    ((window as any).mylogs || ((window as any).mylogs = [])).push('[DocViewerComponent] constructor 1');
     this.hostElement = elementRef.nativeElement;
     // Security: the initialDocViewerContent comes from the prerendered DOM and is considered to be secure
     this.hostElement.innerHTML = initialDocViewerContent;
@@ -78,11 +79,13 @@ export class DocViewerComponent implements OnDestroy {
 
     this.docContents$
         .pipe(
+            tap(v => ((window as any).mylogs || ((window as any).mylogs = [])).push('[DocViewerComponent] docContents$ ' + v.id)),
             observeOn(asapScheduler),
             switchMap(newDoc => this.render(newDoc)),
             takeUntil(this.onDestroy$),
         )
         .subscribe();
+    ((window as any).mylogs || ((window as any).mylogs = [])).push('[DocViewerComponent] constructor 2');
   }
 
   ngOnDestroy() {
@@ -133,12 +136,16 @@ export class DocViewerComponent implements OnDestroy {
 
     this.setNoIndex(doc.id === FILE_NOT_FOUND_ID || doc.id === FETCHING_ERROR_ID);
 
+    ((window as any).mylogs || ((window as any).mylogs = [])).push('[DocViewerComponent] render 1');
     return this.void$.pipe(
         // Security: `doc.contents` is always authored by the documentation team
         //           and is considered to be safe.
+        tap(() => ((window as any).mylogs || ((window as any).mylogs = [])).push('[DocViewerComponent] render 2')),
         tap(() => this.nextViewContainer.innerHTML = doc.contents || ''),
         tap(() => addTitleAndToc = this.prepareTitleAndToc(this.nextViewContainer, doc.id)),
+        tap(() => ((window as any).mylogs || ((window as any).mylogs = [])).push('[DocViewerComponent] render 3')),
         switchMap(() => this.elementsLoader.loadContainedCustomElements(this.nextViewContainer)),
+        tap(() => ((window as any).mylogs || ((window as any).mylogs = [])).push('[DocViewerComponent] render 4')),
         tap(() => this.docReady.emit()),
         switchMap(() => this.swapViews(addTitleAndToc)),
         tap(() => this.docRendered.emit()),
@@ -149,7 +156,7 @@ export class DocViewerComponent implements OnDestroy {
           this.setNoIndex(true);
           return this.void$;
         }),
-    );
+    ) as any;
   }
 
   /**
