@@ -609,10 +609,16 @@ Then inject it inside a test by calling `TestBed.inject()` with the service clas
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** We used to have `TestBed.get()` instead of `TestBed.inject()`.
 The `get` method wasn't type safe, it always returned `any`, and this is error prone.
 We decided to migrate to a new function instead of updating the existing one given
 the large scale use that would have an immense amount of breaking changes.
+-->
+**참고:** 이 문서에서는 `TestBed.inject()` 대신 `TestBed.get()`을 사용했습니다.
+`get()` 메소드는 타입을 다루는 관점에서 안전하지 않습니다.
+이 메소드는 항상 `any` 타입을 반환하며 반환하는 객체가 에러인 경우에도 그렇습니다.
+하지만 `get()` 메소드가 이미 많이 쓰이고 있었기 때문에 이 메소드를 수정하는 대신 새로운 메소드 `inject()`를 도입했습니다.
 
 </div>
 
@@ -1031,6 +1037,24 @@ The CLI creates an initial test file for you by default when you ask it to
 generate a new component.
 
 For example, the following CLI command generates a `BannerComponent` in the `app/banner` folder (with inline template and styles):
+
+Angular CLI를 사용해서 컴포넌트를 생성하면 이 컴포넌트를 테스트하는 파일이 함께 생성됩니다.
+
+
+예를 들어 다음 명령을 실행하면 `app/banner` 폴더에 `BannerComponent` 컴포넌트 파일이 생성되는데, 인라인 옵션을 지정했기 때문에 템플릿과 스타일이 인라인으로 구성됩니다:
+
+<code-example language="sh" class="code-shell">
+ng generate component banner --inline-template --inline-style --module app
+</code-example>
+
+It also generates an initial test file for the component, `banner-external.component.spec.ts`, that looks like this:
+
+<code-example
+  path="testing/src/app/banner/banner-initial.component.spec.ts"
+  region="v1"
+  header="app/banner/banner-external.component.spec.ts (initial)"></code-example>
+
+<div class="alert is-helpful">
 -->
 Angular CLI를 사용해서 컴포넌트를 생성하면 이 컴포넌트를 테스트하는 파일이 함께 생성됩니다.
 
@@ -1041,23 +1065,25 @@ Angular CLI를 사용해서 컴포넌트를 생성하면 이 컴포넌트를 테
 ng generate component banner --inline-template --inline-style --module app
 </code-example>
 
-<!--
-It also generates an initial test file for the component, `banner-external.component.spec.ts`, that looks like this:
--->
 Angular CLI는 이 컴포넌트를 생성하면서 다음 내용으로 `banner-external.component.spec.ts` 파일을 함께 생성합니다:
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="v1"
-  header="app/banner/banner-external.component.spec.ts (initial)"></code-example>
+  header="app/banner/banner-external.component.spec.ts (초기 코드)"></code-example>
 
 <div class="alert is-helpful">
 
+<!--
 Because `compileComponents` is asynchronous, it uses
 the [`async`](api/core/testing/async) utility
 function imported from `@angular/core/testing`.
 
 Please refer to the [async](#async) section for more details.
+-->
+`compileComponents`는 비동기로 동작하기 때문에 `@angular/core/testing` 패키지로 제공하는 [`async`](api/core/testing/async) 유틸리티 함수를 사용했습니다.
+
+자세한 내용은 [async](#async) 섹션을 참고하세요.
 
 </div>
 
@@ -1548,30 +1574,17 @@ Some testers prefer that the Angular test environment run change detection autom
 
 That's possible by configuring the `TestBed` with the `ComponentFixtureAutoDetect` provider.
 First import it from the testing utility library:
--->
-`BannerComponent`를 테스트할 때는 변화감지 동작을 실행해야 하는 경우가 그리 많지 않기 때문에 `detectChanges`를 수동으로 실행해도 크게 번거롭지 않습니다.
-하지만 Angular 테스트 환경에서도 변화감지 로직이 자동으로 동작해야 편한 경우가 있습니다.
-
-그러면 변화감지 로직을 자동으로 실행하도록 `TtestBed`를 구성할 수 있습니다.
-먼저, 테스트 라이브러리에서 `ComponentFixtureAutoDetect` 프로바이더를 로드합니다:
 
 <code-example path="testing/src/app/banner/banner.component.detect-changes.spec.ts" region="import-ComponentFixtureAutoDetect" header="app/banner/banner.component.detect-changes.spec.ts (import)"></code-example>
 
-<!--
 Then add it to the `providers` array of the testing module configuration:
--->
-그리고 이 프로바이더를 `providers` 배열에 추가합니다:
 
 <code-example path="testing/src/app/banner/banner.component.detect-changes.spec.ts" region="auto-detect" header="app/banner/banner.component.detect-changes.spec.ts (AutoDetect)"></code-example>
 
-<!--
 Here are three tests that illustrate how automatic change detection works.
--->
-이 프로바이더가 동작하는지 확인해 봅시다. 테스트 스펙 3개를 다음과 같이 정의합니다.
 
 <code-example path="testing/src/app/banner/banner.component.detect-changes.spec.ts" region="auto-detect-tests" header="app/banner/banner.component.detect-changes.spec.ts (AutoDetect Tests)"></code-example>
 
-<!--
 The first test shows the benefit of automatic change detection.
 
 The second and third test reveal an important limitation.
@@ -1580,6 +1593,22 @@ The `ComponentFixtureAutoDetect` service responds to _asynchronous activities_ s
 But a direct, synchronous update of the component property is invisible.
 The test must call `fixture.detectChanges()` manually to trigger another cycle of change detection.
 -->
+`BannerComponent`를 테스트할 때는 변화감지 동작을 실행해야 하는 경우가 그리 많지 않기 때문에 `detectChanges`를 수동으로 실행해도 크게 번거롭지 않습니다.
+하지만 Angular 테스트 환경에서도 변화감지 로직이 자동으로 동작해야 편한 경우가 있습니다.
+
+그러면 변화감지 로직을 자동으로 실행하도록 `TtestBed`를 구성할 수 있습니다.
+먼저, 테스트 라이브러리에서 `ComponentFixtureAutoDetect` 프로바이더를 로드합니다:
+
+<code-example path="testing/src/app/banner/banner.component.detect-changes.spec.ts" region="import-ComponentFixtureAutoDetect" header="app/banner/banner.component.detect-changes.spec.ts (심볼 로드)"></code-example>
+
+그리고 이 프로바이더를 `providers` 배열에 추가합니다:
+
+<code-example path="testing/src/app/banner/banner.component.detect-changes.spec.ts" region="auto-detect" header="app/banner/banner.component.detect-changes.spec.ts (자동감지 활성화)"></code-example>
+
+이 프로바이더가 동작하는지 확인해 봅시다. 테스트 스펙 3개를 다음과 같이 정의합니다.
+
+<code-example path="testing/src/app/banner/banner.component.detect-changes.spec.ts" region="auto-detect-tests" header="app/banner/banner.component.detect-changes.spec.ts (자동감지 테스트)"></code-example>
+
 변화감지 로직은 첫번째 테스트 스펙에서만 자동으로 실행됩니다.
 
 두번째 스펙과 세번째 스펙에서는 왜 자동으로 실행되지 않는지 자세하게 알아봅시다.
@@ -1620,7 +1649,10 @@ It won't read that property until you raise the element's `input` event by calli
 _Then_ you call `detectChanges()`.
 
 The following example demonstrates the proper sequence.
+
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" header="app/hero/hero-detail.component.spec.ts (pipe test)"></code-example>
 -->
+
 테스트 코드에서 사용자의 입력을 흉내내려면 `<input>` 엘리먼트를 찾아서 이 엘리먼트의 `value` 프로퍼티를 변경해야 합니다.
 
 그리고 `fixture.detectChanges()`를 실행하면 Angular의 변화감지 로직을 실행할 수 있지만, 이 메소드를 실행하기 전에 꼭 해야하는 작업이 있습니다.
@@ -1631,7 +1663,7 @@ Angular는 개발자가 `<input>` 엘리먼트의 `value` 프로퍼티를 변경
 
 이 순서대로 테스트 코드를 작성해 봅시다.
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" header="app/hero/hero-detail.component.spec.ts (pipe test)"></code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" header="app/hero/hero-detail.component.spec.ts (파이프 테스트)"></code-example>
 
 <hr>
 
@@ -1930,39 +1962,23 @@ The third test checks that the component displays the proper message when there 
 <!--
 In this sample, the `AboutComponent` template hosts a `TwainComponent`.
 The `TwainComponent` displays Mark Twain quotes.
--->
-이번 예제에서는 `AboutComponent` 템플릿 안에 `TwainComponent`가 존재합니다.
-그리고 `TwainComponent`는 Mark Twain의 명언을 표시할 것입니다.
 
-<!--
 <code-example
   path="testing/src/app/twain/twain.component.ts"
   region="template"
   header="app/twain/twain.component.ts (template)"></code-example>
--->
-<code-example
-  path="testing/src/app/twain/twain.component.ts"
-  region="template"
-  header="app/twain/twain.component.ts (템플릿)"></code-example>
 
-<!--
 Note that the value of the component's `quote` property passes through an `AsyncPipe`.
 That means the property returns either a `Promise` or an `Observable`.
 
 In this example, the `TwainComponent.getQuote()` method tells you that
 the `quote` property returns an `Observable`.
--->
-이 때 컴포넌트의 `quote` 프로퍼티는 `AsyncPipe`로 처리됩니다.
-이 말은 `quote` 프로퍼티에 `Promise` 타입이나 `Observable` 타입이 할당된다는 의미입니다.
-
-실제로 `TwainComponent.getQuote()` 메소드에서 확인할 수 있듯이, `quote` 프로퍼티가 반환하는 값은 `Observable` 타입입니다.
 
 <code-example
   path="testing/src/app/twain/twain.component.ts"
   region="get-quote"
   header="app/twain/twain.component.ts (getQuote)"></code-example>
 
-<!--
 The `TwainComponent` gets quotes from an injected `TwainService`.
 The component starts the returned `Observable` with a placeholder value (`'...'`),
 before the service can return its first quote.
@@ -1974,6 +1990,24 @@ in order to avoid updating that message twice in the same change detection cycle
 
 These are all features you'll want to test.
 -->
+이번 예제에서는 `AboutComponent` 템플릿 안에 `TwainComponent`가 존재합니다.
+그리고 `TwainComponent`는 Mark Twain의 명언을 표시할 것입니다.
+
+<code-example
+  path="testing/src/app/twain/twain.component.ts"
+  region="template"
+  header="app/twain/twain.component.ts (템플릿)"></code-example>
+
+이 때 컴포넌트의 `quote` 프로퍼티는 `AsyncPipe`로 처리됩니다.
+이 말은 `quote` 프로퍼티에 `Promise` 타입이나 `Observable` 타입이 할당된다는 의미입니다.
+
+실제로 `TwainComponent.getQuote()` 메소드에서 확인할 수 있듯이, `quote` 프로퍼티가 반환하는 값은 `Observable` 타입입니다.
+
+<code-example
+  path="testing/src/app/twain/twain.component.ts"
+  region="get-quote"
+  header="app/twain/twain.component.ts (getQuote())"></code-example>
+
 `TwainComponent`의 `quote` 프로퍼티는 기본 문자열 `'...'`을 `Observable` 타입으로 전달하며, 컴포넌트가 초기화된 이후에는 의존성으로 주입된 `TwainService`에서 데이터를 가져옵니다.
 
 서비스에서 에러가 발생하면 `catchError` 인터셉트 함수가 실행됩니다.
@@ -2079,9 +2113,9 @@ If you created your project with the Angular CLI, `zone-testing` is already impo
 The following test confirms the expected behavior when the service returns an `ErrorObservable`.
 -->
 `fakeAsync()`를 사용하려면 테스트 설정 파일에서 `zone-testing` 패키지를 로드해야 합니다.
-If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
+그리고 Angular CLI를 사용해서 프로젝트를 생성하면 `src/test.ts` 파일에는 `zone-testing`을 로드하는 부분이 자동으로 추가됩니다.
 
-The following test confirms the expected behavior when the service returns an `ErrorObservable`.
+아래 코드는 서비스가 `ErrorObservable`을 제대로 반환하는지 검사하는 테스트 코드입니다.
 
 
 <code-example
@@ -2114,8 +2148,13 @@ There is no nested syntax (like a `Promise.then()`) to disrupt the flow of contr
 
 <div class="alert is-helpful">
 
+<!--
 Limitation: The `fakeAsync()` function won't work if the test body makes an `XMLHttpRequest` (XHR) call.
 XHR calls within a test are rare, but if you need to call XHR, see [`async()`](#async), below.
+-->
+한계: `fakeAsync()` 함수는 `XMLHttpRequest`(XHR)을 직접 사용하는 코드에서는 제대로 동작하지 않습니다.
+하지만 테스트 코드에서 XHR을 사용하는 경우는 별로 없습니다.
+XHR을 꼭 사용해야 한다면 아래 [`async()`](#async) 섹션을 참고하세요.
 
 </div>
 
@@ -6054,15 +6093,27 @@ next to their corresponding helper files.
 
 {@a q-kiss}
 
+<!--
 #### Keep it simple
+-->
+#### 단순하게 유지하세요.
 
+<!--
 [Component class testing](#component-class-testing) should be kept very clean and simple.
 It should test only a single unit. On a first glance, you should be able to understand 
 what the test is testing. If it's doing more, then it doesn't belong here.
+-->
+[컴포넌트 클래스를 테스트하는 코드](#component-class-testing)는 간결한 것이 좋습니다.
+그리고 클래스 코드를 포괄적으로 테스트하지 말고 각 부분을 집중해서 테스트해야 합니다.
+테스트 코드는 언뜻 봐도 무엇을 테스트하는 것인지 알 수 있어야 하며, 무엇을 테스트하는지 금방 알 수 없다면 더 작은 단위로 나누는 것이 좋습니다.
+
 
 {@a q-end-to-end}
 
+<!--
 #### Use E2E (end-to-end) to test more than a single unit
+-->
+#### 유닛 테스트를 완성하고 나면 E2E(엔드-투-엔드) 테스트도 적용해 보세요.
 
 <!--
 E2E tests are great for high-level validation of the entire system.

@@ -1,7 +1,7 @@
 <!--
 # Building with Bazel
 -->
-# Bazel로 빌드하기
+# Bazel 빌드하기
 
 <!--
 This guide explains how to build and test Angular apps with Bazel.
@@ -149,7 +149,7 @@ Bazel 환경설정 파일을 커스터마이징하는 방법에 대해 더 자�
 <!--
 ## Running Bazel directly
 -->
-## Bazel을 직접 실행하기
+## Bazel 직접 실행하기
 
 <!--
 In some cases you'll want to bypass the Angular CLI builder, and run the Bazel CLI directly.

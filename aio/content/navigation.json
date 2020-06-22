@@ -845,7 +845,7 @@
         {
           "url": "guide/bazel",
           "!title": "Building with Bazel",
-          "title": "Bazel로 빌드하기",
+          "title": "Bazel 빌드하기",
           "!tooltip": "How to set up your environment to build and test with Bazel.",
           "tooltip": "Bazel을 사용한 빌드 환경을 어떻게 구성하는지, 이 환경에서 테스트는 어떻게 실행하는지 안내합니다."
         },
