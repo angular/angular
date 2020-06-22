@@ -82,8 +82,8 @@ function extractPathPrefix(path: string) {
 /**
  * Run a task and track how long it takes.
  *
- * @param task The task whose duration we are tracking
- * @param log The function to call with the duration of the task
+ * @param task The task whose duration we are tracking.
+ * @param log The function to call with the duration of the task.
  * @returns The result of calling `task`.
  */
 export function trackDuration<T = void>(task: () => T extends Promise<unknown>? never : T,
@@ -136,7 +136,7 @@ function addPath(root: Node, path: AbsoluteFsPath): void {
 }
 
 /**
- * Flatten the tree of nodes back into an array of absolute paths
+ * Flatten the tree of nodes back into an array of absolute paths.
  */
 function flattenTree(root: Node): AbsoluteFsPath[] {
   const paths: AbsoluteFsPath[] = [];

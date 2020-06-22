@@ -15,6 +15,7 @@ import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
 import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
+import {EntryPointCollector} from '../../src/entry_point_finder/entry_point_collector';
 import {ProgramBasedEntryPointFinder} from '../../src/entry_point_finder/program_based_entry_point_finder';
 import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
@@ -68,9 +69,10 @@ runInEachFileSystem(() => {
         const dtsHost = new DtsDependencyHost(fs);
         const config = new NgccConfiguration(fs, projectPath);
         const resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
+        const collector = new EntryPointCollector(fs, config, logger, resolver);
         const manifest = new EntryPointManifest(fs, config, logger);
         return new ProgramBasedEntryPointFinder(
-            fs, config, logger, resolver, basePath, tsConfig, projectPath);
+            fs, config, logger, resolver, collector, manifest, basePath, tsConfig, projectPath);
       }
 
       function createProgram(projectPath: AbsoluteFsPath): TestFile[] {
