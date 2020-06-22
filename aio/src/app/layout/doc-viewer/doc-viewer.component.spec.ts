@@ -401,7 +401,10 @@ describe('DocViewerComponent', () => {
         expect(loadElementsSpy.calls.argsFor(1)).toEqual([docViewer.nextViewContainer]);
       });
 
-      it('should unsubscribe from the previous "embed" observable when unsubscribed from', () => {
+      // This test sometimes incorrectly fails on CI.
+      // Reported in https://github.com/angular/angular/issues/37629.
+      // Investigated in https://github.com/angular/angular/pull/37637.
+      xit('should unsubscribe from the previous "embed" observable when unsubscribed from', () => {
         const obs = new ObservableWithSubscriptionSpies();
         loadElementsSpy.and.returnValue(obs);
 
@@ -436,7 +439,10 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).toHaveBeenCalledWith(addTitleAndTocSpy);
       });
 
-      it('should unsubscribe from the previous "swap" observable when unsubscribed from', () => {
+      // This test sometimes incorrectly fails on CI.
+      // Reported in https://github.com/angular/angular/issues/37629.
+      // Investigated in https://github.com/angular/angular/pull/37637.
+      xit('should unsubscribe from the previous "swap" observable when unsubscribed from', () => {
         const obs = new ObservableWithSubscriptionSpies();
         swapViewsSpy.and.returnValue(obs);
 
