@@ -10,6 +10,16 @@ import {HttpErrorResponse, HttpEvent, HttpHeaders, HttpRequest, HttpResponse, Ht
 import {Observer} from 'rxjs';
 
 /**
+ * Type that describes options that can be used to create an error
+ * in `TestRequest`.
+ */
+type TestRequestErrorOptions = {
+  headers?: HttpHeaders|{[name: string]: string | string[]},
+  status?: number,
+  statusText?: string,
+};
+
+/**
  * A mock requests that was received and is ready to be answered.
  *
  * This interface allows access to the underlying `HttpRequest`, and allows
@@ -78,12 +88,14 @@ export class TestRequest {
 
   /**
    * Resolve the request by returning an `ErrorEvent` (e.g. simulating a network failure).
+   * @deprecated Http requests never emit an `ErrorEvent`. Please specify a `ProgressEvent`.
    */
-  error(error: ErrorEvent, opts: {
-    headers?: HttpHeaders|{[name: string]: string | string[]},
-    status?: number,
-    statusText?: string,
-  } = {}): void {
+  error(error: ErrorEvent, opts?: TestRequestErrorOptions): void;
+  /**
+   * Resolve the request by returning an `ProgressEvent` (e.g. simulating a network failure).
+   */
+  error(error: ProgressEvent, opts?: TestRequestErrorOptions): void;
+  error(error: ProgressEvent|ErrorEvent, opts: TestRequestErrorOptions = {}): void {
     if (this.cancelled) {
       throw new Error(`Cannot return an error for a cancelled request.`);
     }

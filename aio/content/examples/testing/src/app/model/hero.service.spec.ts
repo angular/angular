@@ -186,27 +186,21 @@ describe('HeroesService (with mocks)', () => {
       req.flush(msg, {status: 404, statusText: 'Not Found'});
     });
 
-    it('should turn network error into user-facing error', () => {
-      const emsg = 'simulated network error';
+    it('should turn network error into user-facing error', done => {
+      // Create mock ProgressEvent with type `error`, raised when something goes wrong at
+      // the network level. Connection timeout, DNS error, offline, etc.
+      const errorEvent = new ProgressEvent('error');
 
       const updateHero: Hero = { id: 1, name: 'A' };
       heroService.updateHero(updateHero).subscribe(
         heroes => fail('expected to fail'),
-        error => expect(error.message).toContain(emsg)
+        error => {
+          expect(error).toBe(errorEvent);
+          done();
+        }
       );
 
       const req = httpTestingController.expectOne(heroService.heroesUrl);
-
-      // Create mock ErrorEvent, raised when something goes wrong at the network level.
-      // Connection timeout, DNS error, offline, etc
-      const errorEvent = new ErrorEvent('so sad', {
-        message: emsg,
-        // The rest of this is optional and not used.
-        // Just showing that you could provide this too.
-        filename: 'HeroService.ts',
-        lineno: 42,
-        colno: 21
-      });
 
       // Respond with mock error
       req.error(errorEvent);
