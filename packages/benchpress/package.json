@@ -1,12 +1,12 @@
 {
   "name": "@angular/benchpress",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Benchpress - a framework for e2e performance tests",
   "main": "index.js",
   "typings": "./index.d.ts",
   "strictNullChecks": true,
   "dependencies": {
-    "@angular/core": "^9.0.0",
+    "@angular/core": "^10.0.0-0 || ^11.0.0",
     "reflect-metadata": "^0.1.13"
   },
   "repository": {
