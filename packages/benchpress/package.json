@@ -7,12 +7,7 @@
   "strictNullChecks": true,
   "dependencies": {
     "@angular/core": "^9.0.0",
-    "@types/node": "^12.11.1",
-    "@types/q": "^1.5.2",
-    "protractor": "^5.4.2",
-    "q": "^1.5.1",
-    "reflect-metadata": "^0.1.2",
-    "selenium-webdriver": "^2.53.3"
+    "reflect-metadata": "^0.1.13"
   },
   "repository": {
     "type": "git",
