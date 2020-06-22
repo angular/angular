@@ -34,8 +34,7 @@ As an example, the solution `tsconfig.json` for a new project is as follows:
 ## Why is this migration necessary?
 
 Solution-style `tsconfig.json` files provide an improved editing experience and fix several long-standing defects when editing files in an IDE.
-IDE's that leverage the TypeScript language service (for example, [Visual Studio Code](https://code.visualstudio.com)), will only use
-TypeScript configuration files that are named `tsconfig.json`.
+IDEs that leverage the TypeScript language service (for example, [Visual Studio Code](https://code.visualstudio.com)), will only use TypeScript configuration files that are named `tsconfig.json`.
 In complex projects, there may be more than one compilation unit and each of these units may have different settings and options.
 
 With the Angular CLI, a project will have application code that will target a browser.
