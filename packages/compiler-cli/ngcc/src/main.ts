@@ -21,6 +21,7 @@ import {EsmDependencyHost} from './dependencies/esm_dependency_host';
 import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
+import {EntryPointCollector} from './entry_point_finder/entry_point_collector';
 import {EntryPointFinder} from './entry_point_finder/interface';
 import {ProgramBasedEntryPointFinder} from './entry_point_finder/program_based_entry_point_finder';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
@@ -203,10 +204,15 @@ function getEntryPointFinder(
   if (absoluteTargetEntryPointPath !== null) {
     return new TargetedEntryPointFinder(
         fs, config, logger, resolver, basePath, pathMappings, absoluteTargetEntryPointPath);
-  } else if (tsConfig !== null) {
-    return new ProgramBasedEntryPointFinder(
-        fs, config, logger, resolver, basePath, tsConfig, projectPath);
+  } else {
+    const entryPointCollector = new EntryPointCollector(fs, config, logger, resolver);
+    if (tsConfig !== null) {
+      return new ProgramBasedEntryPointFinder(
+          fs, config, logger, resolver, entryPointCollector, entryPointManifest, basePath, tsConfig,
+          projectPath);
+    } else {
+      return new DirectoryWalkerEntryPointFinder(
+          logger, resolver, entryPointCollector, entryPointManifest, basePath, pathMappings);
+    }
   }
-  return new DirectoryWalkerEntryPointFinder(
-      fs, config, logger, resolver, entryPointManifest, basePath, pathMappings);
 }
