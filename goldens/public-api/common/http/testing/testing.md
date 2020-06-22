@@ -49,13 +49,9 @@ export interface RequestMatch {
 export class TestRequest {
     constructor(request: HttpRequest<any>, observer: Observer<HttpEvent<any>>);
     get cancelled(): boolean;
-    error(error: ErrorEvent, opts?: {
-        headers?: HttpHeaders | {
-            [name: string]: string | string[];
-        };
-        status?: number;
-        statusText?: string;
-    }): void;
+    // @deprecated
+    error(error: ErrorEvent, opts?: TestRequestErrorOptions): void;
+    error(error: ProgressEvent, opts?: TestRequestErrorOptions): void;
     event(event: HttpEvent<any>): void;
     flush(body: ArrayBuffer | Blob | boolean | string | number | Object | (boolean | string | number | Object | null)[] | null, opts?: {
         headers?: HttpHeaders | {

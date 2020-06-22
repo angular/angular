@@ -53,8 +53,8 @@ export class MockXMLHttpRequest {
   mockResponseHeaders: string = '';
 
   listeners: {
-    error?: (event: ErrorEvent) => void,
-    timeout?: (event: ErrorEvent) => void,
+    error?: (event: ProgressEvent) => void,
+    timeout?: (event: ProgressEvent) => void,
     abort?: () => void,
     load?: () => void,
     progress?: (event: ProgressEvent) => void,
