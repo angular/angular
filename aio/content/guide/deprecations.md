@@ -489,7 +489,7 @@ If you rely on the behavior that the same object instance should cause change de
 - Clone the resulting value so that it has a new identity.
 - Explicitly call [`ChangeDetectorRef.detectChanges()`](api/core/ChangeDetectorRef#detectchanges) to force the update. 
 
-{@ deprecated-cli-flags}
+{@a deprecated-cli-flags}
 ## Deprecated CLI APIs and Options
 
 This section contains a complete list all of the currently deprecated CLI flags.
