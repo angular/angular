@@ -6,11 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive} from '@angular/core';
+import {Directive, InjectionToken} from '@angular/core';
 
+/**
+ * Injection token that can be used to reference instances of `MatPrefix`. It serves as
+ * alternative token to the actual `MatPrefix` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_PREFIX = new InjectionToken<MatPrefix>('MatPrefix');
 
 /** Prefix to be placed in front of the form field. */
 @Directive({
   selector: '[matPrefix]',
+  providers: [{provide: MAT_PREFIX, useExisting: MatPrefix}],
 })
 export class MatPrefix {}

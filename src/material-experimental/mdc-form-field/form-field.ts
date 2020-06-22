@@ -29,11 +29,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {NgControl} from '@angular/forms';
-import {
-  LabelOptions,
-  MAT_LABEL_GLOBAL_OPTIONS,
-  ThemePalette
-} from '@angular/material/core';
+import {LabelOptions, MAT_LABEL_GLOBAL_OPTIONS, ThemePalette} from '@angular/material/core';
 import {
   getMatFormFieldDuplicatedHintError,
   getMatFormFieldMissingControlError,
@@ -49,14 +45,14 @@ import {
 } from '@material/textfield';
 import {merge, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {MatError} from './directives/error';
+import {MAT_ERROR, MatError} from './directives/error';
 import {MatFormFieldFloatingLabel} from './directives/floating-label';
 import {MatHint} from './directives/hint';
 import {MatLabel} from './directives/label';
 import {MatFormFieldLineRipple} from './directives/line-ripple';
 import {MatFormFieldNotchedOutline} from './directives/notched-outline';
-import {MatPrefix} from './directives/prefix';
-import {MatSuffix} from './directives/suffix';
+import {MAT_PREFIX, MatPrefix} from './directives/prefix';
+import {MAT_SUFFIX, MatSuffix} from './directives/suffix';
 
 /** Type for the available floatLabel values. */
 export type FloatLabelType = 'always' | 'auto';
@@ -137,9 +133,12 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
   @ContentChild(MatLabel) _labelChildNonStatic: MatLabel|undefined;
   @ContentChild(MatLabel, {static: true}) _labelChildStatic: MatLabel|undefined;
   @ContentChild(MatFormFieldControl) _formFieldControl: MatFormFieldControl<any>;
-  @ContentChildren(MatPrefix, {descendants: true}) _prefixChildren: QueryList<MatPrefix>;
-  @ContentChildren(MatSuffix, {descendants: true}) _suffixChildren: QueryList<MatSuffix>;
-  @ContentChildren(MatError, {descendants: true}) _errorChildren: QueryList<MatError>;
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
+  @ContentChildren(MAT_PREFIX as any, {descendants: true}) _prefixChildren: QueryList<MatPrefix>;
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
+  @ContentChildren(MAT_SUFFIX as any, {descendants: true}) _suffixChildren: QueryList<MatSuffix>;
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
+  @ContentChildren(MAT_ERROR as any, {descendants: true}) _errorChildren: QueryList<MatError>;
   @ContentChildren(MatHint, {descendants: true}) _hintChildren: QueryList<MatHint>;
 
   /** Whether the required marker should be hidden. */

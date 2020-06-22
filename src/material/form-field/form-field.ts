@@ -36,7 +36,7 @@ import {
 } from '@angular/material/core';
 import {fromEvent, merge, Subject} from 'rxjs';
 import {startWith, take, takeUntil} from 'rxjs/operators';
-import {MatError} from './error';
+import {MAT_ERROR, MatError} from './error';
 import {matFormFieldAnimations} from './form-field-animations';
 import {MatFormFieldControl} from './form-field-control';
 import {
@@ -44,11 +44,11 @@ import {
   getMatFormFieldMissingControlError,
   getMatFormFieldPlaceholderConflictError,
 } from './form-field-errors';
-import {MatHint} from './hint';
+import {_MAT_HINT, MatHint} from './hint';
 import {MatLabel} from './label';
 import {MatPlaceholder} from './placeholder';
-import {MatPrefix} from './prefix';
-import {MatSuffix} from './suffix';
+import {MAT_PREFIX, MatPrefix} from './prefix';
+import {MAT_SUFFIX, MatSuffix} from './suffix';
 import {Platform} from '@angular/cdk/platform';
 import {NgControl} from '@angular/forms';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
@@ -276,10 +276,15 @@ export class MatFormField extends _MatFormFieldMixinBase
   }
 
   @ContentChild(MatPlaceholder) _placeholderChild: MatPlaceholder;
-  @ContentChildren(MatError, {descendants: true}) _errorChildren: QueryList<MatError>;
-  @ContentChildren(MatHint, {descendants: true}) _hintChildren: QueryList<MatHint>;
-  @ContentChildren(MatPrefix, {descendants: true}) _prefixChildren: QueryList<MatPrefix>;
-  @ContentChildren(MatSuffix, {descendants: true}) _suffixChildren: QueryList<MatSuffix>;
+
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
+  @ContentChildren(MAT_ERROR as any, {descendants: true}) _errorChildren: QueryList<MatError>;
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
+  @ContentChildren(_MAT_HINT as any, {descendants: true}) _hintChildren: QueryList<MatHint>;
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
+  @ContentChildren(MAT_PREFIX as any, {descendants: true}) _prefixChildren: QueryList<MatPrefix>;
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
+  @ContentChildren(MAT_SUFFIX as any, {descendants: true}) _suffixChildren: QueryList<MatSuffix>;
 
   constructor(
       public _elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef,

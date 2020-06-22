@@ -1,3 +1,5 @@
+export declare const _MAT_HINT: InjectionToken<MatHint>;
+
 export declare type FloatLabelType = 'always' | 'never' | 'auto';
 
 export declare function getMatFormFieldDuplicatedHintError(align: string): Error;
@@ -6,9 +8,15 @@ export declare function getMatFormFieldMissingControlError(): Error;
 
 export declare function getMatFormFieldPlaceholderConflictError(): Error;
 
+export declare const MAT_ERROR: InjectionToken<MatError>;
+
 export declare const MAT_FORM_FIELD: InjectionToken<MatFormField>;
 
 export declare const MAT_FORM_FIELD_DEFAULT_OPTIONS: InjectionToken<MatFormFieldDefaultOptions>;
+
+export declare const MAT_PREFIX: InjectionToken<MatPrefix>;
+
+export declare const MAT_SUFFIX: InjectionToken<MatSuffix>;
 
 export declare class MatError {
     id: string;

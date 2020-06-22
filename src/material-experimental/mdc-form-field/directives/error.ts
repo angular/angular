@@ -6,9 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input} from '@angular/core';
+import {Directive, InjectionToken, Input} from '@angular/core';
 
 let nextUniqueId = 0;
+
+/**
+ * Injection token that can be used to reference instances of `MatError`. It serves as
+ * alternative token to the actual `MatError` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_ERROR = new InjectionToken<MatError>('MatError');
 
 /** Single error message to be shown underneath the form-field. */
 @Directive({
@@ -17,7 +24,8 @@ let nextUniqueId = 0;
     'class': 'mat-mdc-form-field-error',
     'role': 'alert',
     '[id]': 'id',
-  }
+  },
+  providers: [{provide: MAT_ERROR, useExisting: MatError}],
 })
 export class MatError {
   @Input() id: string = `mat-mdc-error-${nextUniqueId++}`;
