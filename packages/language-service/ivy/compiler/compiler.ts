@@ -9,9 +9,9 @@
 
 import {CompilerOptions} from '@angular/compiler-cli';
 import {NgCompiler, NgCompilerHost} from '@angular/compiler-cli/src/ngtsc/core';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {PatchedProgramIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
-import {TypeCheckingProgramStrategy, UpdateMode} from '@angular/compiler-cli/src/ngtsc/typecheck';
+import {TypeCheckingProgramStrategy, TypeCheckShimGenerator, UpdateMode} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {makeCompilerHostFromProject} from './compiler_host';
@@ -75,6 +75,9 @@ export class Compiler {
 function createTypeCheckingProgramStrategy(project: ts.server.Project):
     TypeCheckingProgramStrategy {
   return {
+    shimPathForComponent(component: ts.ClassDeclaration): AbsoluteFsPath {
+      return TypeCheckShimGenerator.shimFor(absoluteFromSourceFile(component.getSourceFile()));
+    },
     getProgram(): ts.Program {
       const program = project.getLanguageService().getProgram();
       if (!program) {

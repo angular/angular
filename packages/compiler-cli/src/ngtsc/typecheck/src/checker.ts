@@ -16,7 +16,7 @@ import {isShim} from '../../shims';
 
 import {TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from './api';
 import {FileTypeCheckingData, TypeCheckContext, TypeCheckRequest} from './context';
-import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
+import {shouldReportDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
 
 /**
  * Interface to trigger generation of type-checking code for a program given a new
@@ -49,8 +49,8 @@ export class TemplateTypeChecker {
   refresh(): TypeCheckRequest {
     this.files.clear();
 
-    const ctx =
-        new TypeCheckContext(this.config, this.compilerHost, this.refEmitter, this.reflector);
+    const ctx = new TypeCheckContext(
+        this.config, this.compilerHost, this.typeCheckingStrategy, this.refEmitter, this.reflector);
 
     // Typecheck all the files.
     for (const sf of this.originalProgram.getSourceFiles()) {
@@ -86,25 +86,32 @@ export class TemplateTypeChecker {
     if (!this.files.has(path)) {
       return [];
     }
-    const record = this.files.get(path)!;
+    const fileRecord = this.files.get(path)!;
 
     const typeCheckProgram = this.typeCheckingStrategy.getProgram();
-    const typeCheckSf = getSourceFileOrError(typeCheckProgram, record.typeCheckFile);
-    const rawDiagnostics = [];
-    rawDiagnostics.push(...typeCheckProgram.getSemanticDiagnostics(typeCheckSf));
-    if (record.hasInlines) {
+
+    const diagnostics: (ts.Diagnostic|null)[] = [];
+    if (fileRecord.hasInlines) {
       const inlineSf = getSourceFileOrError(typeCheckProgram, path);
-      rawDiagnostics.push(...typeCheckProgram.getSemanticDiagnostics(inlineSf));
+      diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(inlineSf).map(
+          diag => convertDiagnostic(diag, fileRecord.sourceResolver)));
+    }
+    for (const [shimPath, shimRecord] of fileRecord.shimData) {
+      const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
+
+      diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(shimSf).map(
+          diag => convertDiagnostic(diag, fileRecord.sourceResolver)));
+      diagnostics.push(...shimRecord.genesisDiagnostics);
     }
 
-    return rawDiagnostics
-        .map(diag => {
-          if (!shouldReportDiagnostic(diag)) {
-            return null;
-          }
-          return translateDiagnostic(diag, record.sourceResolver);
-        })
-        .filter((diag: ts.Diagnostic|null): diag is ts.Diagnostic => diag !== null)
-        .concat(record.genesisDiagnostics);
+    return diagnostics.filter((diag: ts.Diagnostic|null): diag is ts.Diagnostic => diag !== null);
   }
+}
+
+function convertDiagnostic(
+    diag: ts.Diagnostic, sourceResolver: TemplateSourceResolver): ts.Diagnostic|null {
+  if (!shouldReportDiagnostic(diag)) {
+    return null;
+  }
+  return translateDiagnostic(diag, sourceResolver);
 }

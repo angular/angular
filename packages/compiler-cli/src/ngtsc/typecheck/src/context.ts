@@ -14,12 +14,11 @@ import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 
-import {TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, TypeCtorMetadata} from './api';
+import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, TypeCtorMetadata} from './api';
 import {TemplateSourceResolver} from './diagnostics';
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
-import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
 import {generateTypeCheckBlock, requiresInlineTypeCheckBlock} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
@@ -46,7 +45,8 @@ export interface TypeCheckRequest {
 }
 
 /**
- * Data for a type-checking shim which is required to support generation of diagnostics.
+ * Data for template type-checking related to a specific input file in the user's program (which
+ * contains components to be checked).
  */
 export interface FileTypeCheckingData {
   /**
@@ -56,9 +56,28 @@ export interface FileTypeCheckingData {
   hasInlines: boolean;
 
   /**
-   * Source mapping information for mapping diagnostics back to the original template.
+   * Source mapping information for mapping diagnostics from inlined type check blocks back to the
+   * original template.
    */
   sourceResolver: TemplateSourceResolver;
+
+  /**
+   * Data for each shim generated from this input file.
+   *
+   * A single input file will generate one or more shim files that actually contain template
+   * type-checking code.
+   */
+  shimData: Map<AbsoluteFsPath, ShimTypeCheckingData>;
+}
+
+/**
+ * Data specific to a single shim generated from an input file.
+ */
+export interface ShimTypeCheckingData {
+  /**
+   * Path to the shim file.
+   */
+  path: AbsoluteFsPath;
 
   /**
    * Any `ts.Diagnostic`s which were produced during the generation of this shim.
@@ -66,15 +85,10 @@ export interface FileTypeCheckingData {
    * Some diagnostics are produced during creation time and are tracked here.
    */
   genesisDiagnostics: ts.Diagnostic[];
-
-  /**
-   * Path to the shim file.
-   */
-  typeCheckFile: AbsoluteFsPath;
 }
 
 /**
- * Data for a type-checking shim which is still having its code generated.
+ * Data for an input file which is still in the process of template type-checking code generation.
  */
 export interface PendingFileTypeCheckingData {
   /**
@@ -83,10 +97,18 @@ export interface PendingFileTypeCheckingData {
   hasInlines: boolean;
 
   /**
-   * `TemplateSourceManager` being used to track source mapping information for this shim.
+   * Source mapping information for mapping diagnostics from inlined type check blocks back to the
+   * original template.
    */
   sourceManager: TemplateSourceManager;
 
+  /**
+   * Map of in-progress shim data for shims generated from this input file.
+   */
+  shimData: Map<AbsoluteFsPath, PendingShimData>;
+}
+
+export interface PendingShimData {
   /**
    * Recorder for out-of-band diagnostics which are raised during generation.
    */
@@ -98,9 +120,28 @@ export interface PendingFileTypeCheckingData {
   domSchemaChecker: DomSchemaChecker;
 
   /**
-   * Path to the shim file.
+   * Shim file in the process of being generated.
    */
-  typeCheckFile: TypeCheckFile;
+  file: TypeCheckFile;
+}
+
+/**
+ * Abstracts the operation of determining which shim file will host a particular component's
+ * template type-checking code.
+ *
+ * Different consumers of the type checking infrastructure may choose different approaches to
+ * optimize for their specific use case (for example, the command-line compiler optimizes for
+ * efficient `ts.Program` reuse in watch mode).
+ */
+export interface ComponentToShimMappingStrategy {
+  /**
+   * Given a component, determine a path to the shim file into which that component's type checking
+   * code will be generated.
+   *
+   * A major constraint is that components in different input files must not share the same shim
+   * file. The behavior of the template type-checking system is undefined if this is violated.
+   */
+  shimPathForComponent(node: ts.ClassDeclaration): AbsoluteFsPath;
 }
 
 /**
@@ -115,6 +156,7 @@ export class TypeCheckContext {
   constructor(
       private config: TypeCheckingConfig,
       private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
+      private componentMappingStrategy: ComponentToShimMappingStrategy,
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost) {}
 
   /**
@@ -160,8 +202,7 @@ export class TypeCheckContext {
       schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping,
       file: ParseSourceFile): void {
     const fileData = this.dataForFile(ref.node.getSourceFile());
-
-    const id = fileData.sourceManager.captureSource(sourceMapping, file);
+    const shimData = this.pendingShimForComponent(ref.node);
     // Get all of the directives used in the template and record type constructors for all of them.
     for (const dir of boundTarget.getUsedDirectives()) {
       const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
@@ -184,15 +225,19 @@ export class TypeCheckContext {
       }
     }
 
-    const tcbMetadata: TypeCheckBlockMetadata = {id, boundTarget, pipes, schemas};
+    const meta = {
+      id: fileData.sourceManager.captureSource(ref.node, sourceMapping, file),
+      boundTarget,
+      pipes,
+      schemas,
+    };
     if (requiresInlineTypeCheckBlock(ref.node)) {
       // This class didn't meet the requirements for external type checking, so generate an inline
       // TCB for the class.
-      this.addInlineTypeCheckBlock(fileData, ref, tcbMetadata);
+      this.addInlineTypeCheckBlock(fileData, shimData, ref, meta);
     } else {
       // The class can be type-checked externally as normal.
-      fileData.typeCheckFile.addTypeCheckBlock(
-          ref, tcbMetadata, fileData.domSchemaChecker, fileData.oobRecorder);
+      shimData.file.addTypeCheckBlock(ref, meta, shimData.domSchemaChecker, shimData.oobRecorder);
     }
   }
 
@@ -278,17 +323,27 @@ export class TypeCheckContext {
       perFileData: new Map<AbsoluteFsPath, FileTypeCheckingData>(),
     };
 
-    for (const [sfPath, fileData] of this.fileMap.entries()) {
-      updates.set(fileData.typeCheckFile.fileName, fileData.typeCheckFile.render());
-      results.perFileData.set(sfPath, {
-        genesisDiagnostics: [
-          ...fileData.domSchemaChecker.diagnostics,
-          ...fileData.oobRecorder.diagnostics,
-        ],
-        hasInlines: fileData.hasInlines,
-        sourceResolver: fileData.sourceManager,
-        typeCheckFile: fileData.typeCheckFile.fileName,
-      });
+    // Then go through each input file that has pending code generation operations.
+    for (const [sfPath, pendingFileData] of this.fileMap) {
+      const fileData: FileTypeCheckingData = {
+        hasInlines: pendingFileData.hasInlines,
+        shimData: new Map(),
+        sourceResolver: pendingFileData.sourceManager,
+      };
+
+      // For each input file, consider generation operations for each of its shims.
+      for (const [shimPath, pendingShimData] of pendingFileData.shimData) {
+        updates.set(pendingShimData.file.fileName, pendingShimData.file.render());
+        fileData.shimData.set(shimPath, {
+          genesisDiagnostics: [
+            ...pendingShimData.domSchemaChecker.diagnostics,
+            ...pendingShimData.oobRecorder.diagnostics,
+          ],
+          path: pendingShimData.file.fileName,
+        });
+      }
+
+      results.perFileData.set(sfPath, fileData);
     }
 
     for (const [sfPath, fileData] of this.adoptedFiles.entries()) {
@@ -299,7 +354,8 @@ export class TypeCheckContext {
   }
 
   private addInlineTypeCheckBlock(
-      fileData: PendingFileTypeCheckingData, ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+      fileData: PendingFileTypeCheckingData, shimData: PendingShimData,
+      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       tcbMeta: TypeCheckBlockMetadata): void {
     const sf = ref.node.getSourceFile();
     if (!this.opMap.has(sf)) {
@@ -307,24 +363,35 @@ export class TypeCheckContext {
     }
     const ops = this.opMap.get(sf)!;
     ops.push(new TcbOp(
-        ref, tcbMeta, this.config, this.reflector, fileData.domSchemaChecker,
-        fileData.oobRecorder));
+        ref, tcbMeta, this.config, this.reflector, shimData.domSchemaChecker,
+        shimData.oobRecorder));
     fileData.hasInlines = true;
+  }
+
+  private pendingShimForComponent(node: ts.ClassDeclaration): PendingShimData {
+    const fileData = this.dataForFile(node.getSourceFile());
+    const shimPath = this.componentMappingStrategy.shimPathForComponent(node);
+    if (!fileData.shimData.has(shimPath)) {
+      fileData.shimData.set(shimPath, {
+        domSchemaChecker: new RegistryDomSchemaChecker(fileData.sourceManager),
+        oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager),
+        file: new TypeCheckFile(
+            shimPath, this.config, this.refEmitter, this.reflector, this.compilerHost),
+      });
+    }
+    return fileData.shimData.get(shimPath)!;
   }
 
   private dataForFile(sf: ts.SourceFile): PendingFileTypeCheckingData {
     const sfPath = absoluteFromSourceFile(sf);
 
+    const sourceManager = new TemplateSourceManager();
+
     if (!this.fileMap.has(sfPath)) {
-      const sourceManager = new TemplateSourceManager();
       const data: PendingFileTypeCheckingData = {
-        domSchemaChecker: new RegistryDomSchemaChecker(sourceManager),
-        oobRecorder: new OutOfBandDiagnosticRecorderImpl(sourceManager),
-        typeCheckFile: new TypeCheckFile(
-            TypeCheckShimGenerator.shimFor(sfPath), this.config, this.refEmitter, this.reflector,
-            this.compilerHost),
         hasInlines: false,
         sourceManager,
+        shimData: new Map(),
       };
       this.fileMap.set(sfPath, data);
     }

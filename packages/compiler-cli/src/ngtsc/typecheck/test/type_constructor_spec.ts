@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {absoluteFrom, getFileSystem, getSourceFileOrError, LogicalFileSystem, NgtscCompilerHost} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, getSourceFileOrError, LogicalFileSystem, NgtscCompilerHost} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {isNamedClassDeclaration, ReflectionHost, TypeScriptReflectionHost} from '../../reflection';
@@ -15,8 +15,7 @@ import {getDeclaration, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {UpdateMode} from '../src/api';
 import {ReusedProgramStrategy} from '../src/augmented_program';
-import {PendingFileTypeCheckingData, TypeCheckContext} from '../src/context';
-import {RegistryDomSchemaChecker} from '../src/dom';
+import {ComponentToShimMappingStrategy, PendingFileTypeCheckingData, TypeCheckContext} from '../src/context';
 import {TemplateSourceManager} from '../src/source';
 import {TypeCheckFile} from '../src/type_check_file';
 
@@ -73,10 +72,11 @@ TestClass.ngTypeCtor({value: 'test'});
           new AbsoluteModuleStrategy(program, checker, moduleResolver, reflectionHost),
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
-        const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, host, emitter, reflectionHost);
+        const ctx = new TypeCheckContext(
+            ALL_ENABLED_CONFIG, host, new TestMappingStrategy(), emitter, reflectionHost);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
-        const pendingFile = makePendingFile(reflectionHost, host);
+        const pendingFile = makePendingFile();
         ctx.addInlineTypeCtor(
             pendingFile, getSourceFileOrError(program, _('/main.ts')), new Reference(TestClass), {
               fnName: 'ngTypeCtor',
@@ -109,8 +109,9 @@ TestClass.ngTypeCtor({value: 'test'});
           new AbsoluteModuleStrategy(program, checker, moduleResolver, reflectionHost),
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
-        const pendingFile = makePendingFile(reflectionHost, host);
-        const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, host, emitter, reflectionHost);
+        const pendingFile = makePendingFile();
+        const ctx = new TypeCheckContext(
+            ALL_ENABLED_CONFIG, host, new TestMappingStrategy(), emitter, reflectionHost);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(
@@ -152,8 +153,9 @@ TestClass.ngTypeCtor({value: 'test'});
           new AbsoluteModuleStrategy(program, checker, moduleResolver, reflectionHost),
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
-        const pendingFile = makePendingFile(reflectionHost, host);
-        const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, host, emitter, reflectionHost);
+        const pendingFile = makePendingFile();
+        const ctx = new TypeCheckContext(
+            ALL_ENABLED_CONFIG, host, new TestMappingStrategy(), emitter, reflectionHost);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(
@@ -184,16 +186,16 @@ TestClass.ngTypeCtor({value: 'test'});
   }
 });
 
-function makePendingFile(
-    reflector: ReflectionHost, compilerHost: ts.CompilerHost): PendingFileTypeCheckingData {
-  const manager = new TemplateSourceManager();
+function makePendingFile(): PendingFileTypeCheckingData {
   return {
-    domSchemaChecker: new RegistryDomSchemaChecker(manager),
     hasInlines: false,
-    oobRecorder: new NoopOobRecorder(),
-    sourceManager: manager,
-    typeCheckFile: new TypeCheckFile(
-        absoluteFrom('/typecheck.ts'), ALL_ENABLED_CONFIG, new ReferenceEmitter([]), reflector,
-        compilerHost)
+    sourceManager: new TemplateSourceManager(),
+    shimData: new Map(),
   };
+}
+
+class TestMappingStrategy implements ComponentToShimMappingStrategy {
+  shimPathForComponent(): AbsoluteFsPath {
+    return absoluteFrom('/typecheck.ts');
+  }
 }

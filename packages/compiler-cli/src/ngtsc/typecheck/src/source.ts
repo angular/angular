@@ -7,6 +7,7 @@
  */
 
 import {AbsoluteSourceSpan, ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
+import * as ts from 'typescript';
 
 import {TemplateId, TemplateSourceMapping} from './api';
 import {TemplateSourceResolver} from './diagnostics';
@@ -47,7 +48,6 @@ export class TemplateSource {
  * Implements `TemplateSourceResolver` to resolve the source of a template based on these IDs.
  */
 export class TemplateSourceManager implements TemplateSourceResolver {
-  private nextTemplateId: number = 1;
   /**
    * This map keeps track of all template sources that have been type-checked by the id that is
    * attached to a TCB's function declaration as leading trivia. This enables translation of
@@ -55,8 +55,9 @@ export class TemplateSourceManager implements TemplateSourceResolver {
    */
   private templateSources = new Map<TemplateId, TemplateSource>();
 
-  captureSource(mapping: TemplateSourceMapping, file: ParseSourceFile): TemplateId {
-    const id = `tcb${this.nextTemplateId++}` as TemplateId;
+  captureSource(node: ts.ClassDeclaration, mapping: TemplateSourceMapping, file: ParseSourceFile):
+      TemplateId {
+    const id = getTemplateId(node);
     this.templateSources.set(id, new TemplateSource(mapping, file));
     return id;
   }
@@ -75,4 +76,29 @@ export class TemplateSourceManager implements TemplateSourceResolver {
     const templateSource = this.templateSources.get(id)!;
     return templateSource.toParseSourceSpan(span.start, span.end);
   }
+}
+
+const TEMPLATE_ID = Symbol('ngTemplateId');
+const NEXT_TEMPLATE_ID = Symbol('ngNextTemplateId');
+
+interface HasTemplateId {
+  [TEMPLATE_ID]: TemplateId;
+}
+
+interface HasNextTemplateId {
+  [NEXT_TEMPLATE_ID]: number;
+}
+
+function getTemplateId(node: ts.ClassDeclaration&Partial<HasTemplateId>): TemplateId {
+  if (node[TEMPLATE_ID] === undefined) {
+    node[TEMPLATE_ID] = allocateTemplateId(node.getSourceFile());
+  }
+  return node[TEMPLATE_ID]!;
+}
+
+function allocateTemplateId(sf: ts.SourceFile&Partial<HasNextTemplateId>): TemplateId {
+  if (sf[NEXT_TEMPLATE_ID] === undefined) {
+    sf[NEXT_TEMPLATE_ID] = 1;
+  }
+  return (`tcb${sf[NEXT_TEMPLATE_ID]!++}`) as TemplateId;
 }
