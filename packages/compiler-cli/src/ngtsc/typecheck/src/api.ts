@@ -13,6 +13,7 @@ import {AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
 import {TemplateGuardMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
+import {ComponentToShimMappingStrategy} from './context';
 
 
 /**
@@ -284,7 +285,7 @@ export interface ExternalTemplateSourceMapping {
  * This abstraction allows both the Angular compiler itself as well as the language service to
  * implement efficient template type-checking using common infrastructure.
  */
-export interface TypeCheckingProgramStrategy {
+export interface TypeCheckingProgramStrategy extends ComponentToShimMappingStrategy {
   /**
    * Retrieve the latest version of the program, containing all the updates made thus far.
    */

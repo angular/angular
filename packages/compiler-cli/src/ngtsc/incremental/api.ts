@@ -12,21 +12,21 @@ import {AbsoluteFsPath} from '../file_system';
 /**
  * Interface of the incremental build engine.
  *
- * `W` is a generic type representing a unit of work. This is generic to avoid a cyclic dependency
- * between the incremental engine API definition and its consumer(s).
- * `T` is a generic type representing template type-checking data for a particular file, which is
- * generic for the same reason.
+ * `AnalysisT` is a generic type representing a unit of work. This is generic to avoid a cyclic
+ * dependency between the incremental engine API definition and its consumer(s).
+ * `FileTypeCheckDataT` is a generic type representing template type-checking data for a particular
+ * input file, which is generic for the same reason.
  */
-export interface IncrementalBuild<W, T> {
+export interface IncrementalBuild<AnalysisT, FileTypeCheckDataT> {
   /**
    * Retrieve the prior analysis work, if any, done for the given source file.
    */
-  priorWorkFor(sf: ts.SourceFile): W[]|null;
+  priorWorkFor(sf: ts.SourceFile): AnalysisT[]|null;
 
   /**
    * Retrieve the prior type-checking work, if any, that's been done for the given source file.
    */
-  priorTypeCheckingResultsFor(sf: ts.SourceFile): T|null;
+  priorTypeCheckingResultsFor(fileSf: ts.SourceFile): FileTypeCheckDataT|null;
 }
 
 /**
