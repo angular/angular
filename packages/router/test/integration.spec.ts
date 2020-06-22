@@ -910,17 +910,29 @@ describe('Integration', () => {
      })));
 
   describe('duplicate in-flight navigations', () => {
+    @Injectable()
+    class RedirectingGuard {
+      constructor(private router: Router) {}
+      canActivate() {
+        this.router.navigate(['/simple']);
+        return false;
+      }
+    }
+
     beforeEach(() => {
       TestBed.configureTestingModule({
-        providers: [{
-          provide: 'in1Second',
-          useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-            let res: any = null;
-            const p = new Promise(_ => res = _);
-            setTimeout(() => res(true), 1000);
-            return p;
-          }
-        }]
+        providers: [
+          {
+            provide: 'in1Second',
+            useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+              let res: any = null;
+              const p = new Promise(_ => res = _);
+              setTimeout(() => res(true), 1000);
+              return p;
+            }
+          },
+          RedirectingGuard
+        ]
       });
     });
 
@@ -965,6 +977,28 @@ describe('Integration', () => {
          advance(fixture);
 
          expect(location.path()).toEqual('/simple');
+       }));
+
+    it('should skip duplicate location events', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const location = TestBed.inject(Location) as unknown as SpyLocation;
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {path: 'blocked', component: SimpleCmp, canActivate: [RedirectingGuard]},
+           {path: 'simple', component: SimpleCmp}
+         ]);
+         router.navigateByUrl('/simple');
+         advance(fixture);
+
+         const recordedEvents = [] as Event[];
+         router.events.forEach(e => onlyNavigationStartAndEnd(e) && recordedEvents.push(e));
+
+         location.simulateUrlPop('/blocked');
+         location.simulateHashChange('/blocked');
+
+         advance(fixture);
+         expectEvents(recordedEvents, [[NavigationStart, '/blocked']]);
        }));
   });
 
@@ -3878,8 +3912,8 @@ describe('Integration', () => {
 
            expectEvents(recordedEvents, [
              [NavigationStart, '/lazyFalse/loaded'],
-             // No GuardCheck events as `canLoad` is a special guard that's not actually part of the
-             // guard lifecycle.
+             // No GuardCheck events as `canLoad` is a special guard that's not actually part of
+             // the guard lifecycle.
              [NavigationCancel, '/lazyFalse/loaded'],
 
              [NavigationStart, '/blank'], [RoutesRecognized, '/blank'],
@@ -4842,8 +4876,8 @@ describe('Integration', () => {
         constructor(
             lazy: LazyParentComponent,  // should be able to inject lazy/direct parent
             lazyService: LazyLoadedServiceDefinedInModule,  // should be able to inject lazy service
-            eager:
-                EagerParentComponent  // should use the injector of the location to create a parent
+            eager: EagerParentComponent  // should use the injector of the location to create a
+                                         // parent
         ) {}
       }
 
