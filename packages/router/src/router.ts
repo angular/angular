@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Location} from '@angular/common';
+import {Location, PopStateEvent} from '@angular/common';
 import {Compiler, Injectable, Injector, isDevMode, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
-import {BehaviorSubject, EMPTY, Observable, of, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable, of, Subject, SubscriptionLike} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';
 
 import {QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
@@ -277,6 +277,16 @@ function defaultRouterHook(snapshot: RouterStateSnapshot, runExtras: {
 }
 
 /**
+ * Information related to a location change, necessary for scheduling follow-up Router navigations.
+ */
+type LocationChangeInfo = {
+  source: 'popstate'|'hashchange',
+  urlTree: UrlTree,
+  state: RestoredState|null,
+  transitionId: number
+};
+
+/**
  * @description
  *
  * A service that provides navigation and URL manipulation capabilities.
@@ -298,8 +308,12 @@ export class Router {
   private lastSuccessfulNavigation: Navigation|null = null;
   private currentNavigation: Navigation|null = null;
 
-  // TODO(issue/24571): remove '!'.
-  private locationSubscription!: Subscription;
+  private locationSubscription?: SubscriptionLike;
+  /**
+   * Tracks the previously seen location change from the location subscription so we can compare
+   * the two latest to see if they are duplicates. See setUpLocationChangeListener.
+   */
+  private lastLocationChangeInfo: LocationChangeInfo|null = null;
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
   private ngModule: NgModuleRef<any>;
@@ -851,24 +865,64 @@ export class Router {
   }
 
   /**
-   * Sets up the location change listener.
+   * Sets up the location change listener. This listener detects navigations triggered from outside
+   * the Router (the browser back/forward buttons, for example) and schedules a corresponding Router
+   * navigation so that the correct events, guards, etc. are triggered.
    */
   setUpLocationChangeListener(): void {
     // Don't need to use Zone.wrap any more, because zone.js
     // already patch onPopState, so location change callback will
     // run into ngZone
     if (!this.locationSubscription) {
-      this.locationSubscription = <any>this.location.subscribe((change: any) => {
-        let rawUrlTree = this.parseUrl(change['url']);
-        const source: NavigationTrigger = change['type'] === 'popstate' ? 'popstate' : 'hashchange';
-        // Navigations coming from Angular router have a navigationId state property. When this
-        // exists, restore the state.
-        const state = change.state && change.state.navigationId ? change.state : null;
-        setTimeout(() => {
-          this.scheduleNavigation(rawUrlTree, source, state, {replaceUrl: true});
-        }, 0);
+      this.locationSubscription = this.location.subscribe(event => {
+        const currentChange = this.extractLocationChangeInfoFromEvent(event);
+        if (this.shouldScheduleNavigation(this.lastLocationChangeInfo, currentChange)) {
+          // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
+          // hybrid apps.
+          setTimeout(() => {
+            const {source, state, urlTree} = currentChange;
+            this.scheduleNavigation(urlTree, source, state, {replaceUrl: true});
+          }, 0);
+        }
+        this.lastLocationChangeInfo = currentChange;
       });
     }
+  }
+
+  /** Extracts router-related information from a `PopStateEvent`. */
+  private extractLocationChangeInfoFromEvent(change: PopStateEvent): LocationChangeInfo {
+    return {
+      source: change['type'] === 'popstate' ? 'popstate' : 'hashchange',
+      urlTree: this.parseUrl(change['url']!),
+      // Navigations coming from Angular router have a navigationId state
+      // property. When this exists, restore the state.
+      state: change.state?.navigationId ? change.state : null,
+      transitionId: this.getTransition().id
+    } as const;
+  }
+
+  /**
+   * Determines whether two events triggered by the Location subscription are due to the same
+   * navigation. The location subscription can fire two events (popstate and hashchange) for a
+   * single navigation. The second one should be ignored, that is, we should not schedule another
+   * navigation in the Router.
+   */
+  private shouldScheduleNavigation(previous: LocationChangeInfo|null, current: LocationChangeInfo):
+      boolean {
+    if (!previous) return true;
+
+    const sameDestination = current.urlTree.toString() === previous.urlTree.toString();
+    const eventsOccurredAtSameTime = current.transitionId === previous.transitionId;
+    if (!eventsOccurredAtSameTime || !sameDestination) {
+      return true;
+    }
+
+    if ((current.source === 'hashchange' && previous.source === 'popstate') ||
+        (current.source === 'popstate' && previous.source === 'hashchange')) {
+      return false;
+    }
+
+    return true;
   }
 
   /** The current URL. */
@@ -918,7 +972,7 @@ export class Router {
   dispose(): void {
     if (this.locationSubscription) {
       this.locationSubscription.unsubscribe();
-      this.locationSubscription = null!;
+      this.locationSubscription = undefined;
     }
   }
 
@@ -1148,21 +1202,6 @@ export class Router {
         lastNavigation.urlAfterRedirects;
     const duplicateNav = lastNavigationUrl.toString() === rawUrl.toString();
     if (browserNavPrecededByRouterNav && duplicateNav) {
-      return Promise.resolve(true);  // return value is not used
-    }
-
-    // Because of a bug in IE and Edge, the location class fires two events (popstate and
-    // hashchange) every single time. The second one should be ignored. Otherwise, the URL will
-    // flicker. Handles the case when a popstate was emitted first.
-    if (lastNavigation && source == 'hashchange' && lastNavigation.source === 'popstate' &&
-        lastNavigation.rawUrl.toString() === rawUrl.toString()) {
-      return Promise.resolve(true);  // return value is not used
-    }
-    // Because of a bug in IE and Edge, the location class fires two events (popstate and
-    // hashchange) every single time. The second one should be ignored. Otherwise, the URL will
-    // flicker. Handles the case when a hashchange was emitted first.
-    if (lastNavigation && source == 'popstate' && lastNavigation.source === 'hashchange' &&
-        lastNavigation.rawUrl.toString() === rawUrl.toString()) {
       return Promise.resolve(true);  // return value is not used
     }
 
