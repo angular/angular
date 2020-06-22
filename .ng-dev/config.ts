@@ -84,6 +84,7 @@ const merge = () => {
     githubApiMerge: false,
     claSignedLabel: 'cla: yes',
     mergeReadyLabel: /^PR action: merge(-assistance)?/,
+    caretakerNoteLabel: 'PR action: merge-assistance',
     commitMessageFixupLabel: 'commit message fixup',
     labels: [
       {
