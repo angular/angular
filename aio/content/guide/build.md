@@ -522,22 +522,40 @@ PWA 앱을 대상으로 [Lighthouse](https://developers.google.com/web/tools/lig
 ]
 ```
 
+<!--
 ### Backward compatibility with CSS grid
+-->
+### CSS 그리드 하위 호환성 설정
 
+<!--
 CSS grid layout support in Autoprefixer, which was previously on by default, is off by default in Angular 8 and higher.
 
 To use CSS grid with IE10/11, you must explicitly enable it using the `autoplace` option.
 To do this, add the following to the top of the global styles file (or within a specific css selector scope):
+-->
+CSS 그리드 레이아웃은 자동 접두사(autoprefixer) 기능을 지원합니다.
+이 기능은 Angular 8 버전 이전까지는 기본으로 활성화되었지만 8버전부터는 지원하지 않는 것이 기본값입니다.
+
+IE10/11 환경에서 CSS 그리드를 사용하려면 `autoplace` 옵션을 사용해서 이 기능을 명시적으로 활성화해야 합니다.
+전역 스타일 파일 제일 위쪽에 다음 코드를 추가하면 됩니다.
 
 ```
 /* autoprefixer grid: autoplace /
 ```
+
+<!--
 or
+-->
+또는
+
 ```
 / autoprefixer grid: no-autoplace */
 ```
 
+<!--
 For more information, see [Autoprefixer documentation](https://autoprefixer.github.io/).
+-->
+자세한 내용은 [자동 접두사 문서](https://autoprefixer.github.io/)를 참고하세요.
 
 
 {@a proxy}
@@ -559,6 +577,36 @@ Angular CLI가 제공하는 개발 서버는 `webpack` 개발 서버를 사용�
 1. Create a file `proxy.conf.json` in your project's `src/` folder.
 
 1. Add the following content to the new proxy file:
+
+    ```
+    {
+      "/api": {
+        "target": "http://localhost:3000",
+        "secure": false
+      }
+    }
+    ```
+
+1. In the CLI configuration file, `angular.json`, add the `proxyConfig` option to the `serve` target:
+
+    ```
+    ...
+    "architect": {
+      "serve": {
+        "builder": "@angular-devkit/build-angular:dev-server",
+        "options": {
+          "browserTarget": "your-application-name:build",
+          "proxyConfig": "src/proxy.conf.json"
+        },
+    ...
+    ```
+
+1. To run the dev server with this proxy configuration, call `ng serve`.
+
+You can edit the proxy configuration file to add configuration options; some examples are given below.
+For a description of all options, see [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy).
+
+Note that if you edit the proxy configuration file, you must relaunch the `ng serve` process to make your changes effective.
 -->
 1. `src/` 폴더에 `proxy.conf.json` 파일을 만듭니다.
 
@@ -573,9 +621,6 @@ Angular CLI가 제공하는 개발 서버는 `webpack` 개발 서버를 사용�
     }
     ```
 
-<!--
-1. In the CLI configuration file, `angular.json`, add the `proxyConfig` option to the `serve` target:
--->
 1. Angular CLI 환경설정 파일인 `angular.json` 파일의 빌드 대상 중 `serve`에 `proxyConfig` 옵션을 추가하고 다음과 같이 작성합니다:
 
     ```
@@ -590,14 +635,6 @@ Angular CLI가 제공하는 개발 서버는 `webpack` 개발 서버를 사용�
     ...
     ```
 
-<!--
-1. To run the dev server with this proxy configuration, call `ng serve`.
-
-You can edit the proxy configuration file to add configuration options; some examples are given below.
-For a description of all options, see [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy).
-
-Note that if you edit the proxy configuration file, you must relaunch the `ng serve` process to make your changes effective.
--->
 1. `ng serve` 명령을 실행해서 이 프록시 설정으로 개발 서버를 실행합니다.
 
 프록시 설정 파일에는 더 구체적인 규칙을 지정할 수도 있으며, 이 문서에서는 자주 사용하는 옵션에 대해서만 설명합니다.
