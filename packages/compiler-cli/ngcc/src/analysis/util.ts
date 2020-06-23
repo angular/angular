@@ -5,13 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
-
-import {absoluteFromSourceFile, AbsoluteFsPath, relative} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, relative} from '../../../src/ngtsc/file_system';
 import {DependencyTracker} from '../../../src/ngtsc/incremental/api';
 
-export function isWithinPackage(packagePath: AbsoluteFsPath, sourceFile: ts.SourceFile): boolean {
-  const relativePath = relative(packagePath, absoluteFromSourceFile(sourceFile));
+export function isWithinPackage(packagePath: AbsoluteFsPath, filePath: AbsoluteFsPath): boolean {
+  const relativePath = relative(packagePath, filePath);
   return !relativePath.startsWith('..') && !relativePath.startsWith('node_modules/');
 }
 
