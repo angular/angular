@@ -8,6 +8,7 @@
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {ParsedConfiguration} from '../../../src/perform_compile';
+
 import {createDependencyInfo, EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver} from '../dependencies/dependency_resolver';
 import {EsmDependencyHost} from '../dependencies/esm_dependency_host';
