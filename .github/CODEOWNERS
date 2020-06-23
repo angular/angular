@@ -135,7 +135,7 @@
 /src/components-examples/**                        @andrewseguin
 
 # Dev-app
-/src/dev-app/*                                     @jelbourn
+/src/dev-app/*                                     @devversion
 /src/dev-app/autocomplete/**                       @crisbeto
 /src/dev-app/badge/**                              @jelbourn
 /src/dev-app/baseline/**                           @mmalerba
@@ -247,7 +247,7 @@
 /src/e2e-app/virtual-scroll/**                     @mmalerba
 
 # Universal app
-/src/universal-app/**                              @jelbourn
+/src/universal-app/**                              @devversion
 
 # Integration tests
 /integration/**                                    @jelbourn @devversion
