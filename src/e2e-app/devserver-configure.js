@@ -36,7 +36,7 @@ require.config({
     '@material/tab-bar': '@material/tab-bar/dist/mdc.tabBar',
     '@material/tab-indicator': '@material/tab-indicator/dist/mdc.tabIndicator',
     '@material/tab-scroller': '@material/tab-scroller/dist/mdc.tabScroller',
-    '@material/text-field': '@material/textfield/dist/mdc.textField',
+    '@material/textfield': '@material/textfield/dist/mdc.textfield',
     '@material/top-app-bar': '@material/top-app-bar/dist/mdc.topAppBar',
   }
 });
