@@ -194,6 +194,7 @@ export function provideLocationStrategy(
                            new PathLocationStrategy(platformLocationStrategy, baseHref);
 }
 
+
 export function provideForRootGuard(router: Router): any {
   if (router) {
     throw new Error(
