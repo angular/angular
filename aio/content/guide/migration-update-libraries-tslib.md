@@ -42,8 +42,8 @@ Peer dependencies do not accurately represent this relationship between the runt
 If `tslib` remained declared as a library peer dependency, it would be possible for some Angular workspaces to get into a state where the workspace could not satisfy `tslib` peer dependency requirements for multiple libraries, resulting in build-time or run-time errors.
 
 As of TypeScript 3.9 (used by Angular v10), `tslib` version of 2.x is required to build new applications.
-However older libraries built with previous version of TypeScript and already published to npm might need `tslib` 1.x.
-This migration makes it possible for code depending on these incompatible versions of `tslib` to remain interoperable.
+However, older libraries built with previous version of TypeScript and already published to npm might need `tslib` 1.x.
+This migration makes it possible for code depending on incompatible versions of the `tslib` runtime library to remain interoperable.
 
 
 ## Do I still need `tslib` as a dependency in my workspace `package.json`?
