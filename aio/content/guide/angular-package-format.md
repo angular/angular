@@ -1,34 +1,41 @@
 # Angular Package Format
 
 This document describes the Angular Package Format (APF).
-APF provides a structure and format for the Angular framework packages currently available on npm.
-This format applies to packages distributing Angular components, such as Angular Material, as well as the core framework packages published under the `@angular` namespace, such as `@angular/core` and `@angular/forms`.
+APF is an Angular specific specification for layout of npm packages that is used by Angular framework packages (e.g. `@angular/core`, `@angular/forms`), Angular Material packages (e.g. `@angular/material`), as well as 3rd party Angular libraries.
 
 APF enables a package to work seamlessly under most common scenarios that use Angular.
-Packages that use APF are compatible with the tooling offered by the Angular team and the community itself.
-It is recommended that third-party library developers follow the same structure.
+Packages that use APF are compatible with the tooling offered by the Angular team as well as wider JavaScript ecosystem.
+It is recommended that third-party library developers follow the same npm package format.
 
 <div class="alert is-helpful">
-A new version of APF launches at the same time as a new version of Angular.
+
+APF is versioned along with the rest of Angular, and every major version improves the package format.
+You can find the versions of the specification prior to v10 this [google doc](https://docs.google.com/document/d/1Vyqu-D2EkRbnfw4YEm4xxUZe_fAOg001nFfuU3pWMMs/edit#heading=h.k0mh3o8u5hx).
+
 </div>
 
 ## Purpose
 
-In today's JavaScript landscape, developers consume packages in many different ways. For example, some may use SystemJS, others could use Webpack. Others might consume packages in Node, in the browser as a UMD bundle, or through global variable access.
+JavaScript developers consume npm packages in many different ways.
+For example, many pre-process the packages and create "bundles" using tools like Webpack (used by Angular CLI), Rollup, or SystemJS.
+Others consume packages directly from their Node.js applications, or load them directly in the browser as a UMD bundles.
 
-APF supports all of the commonly used development tools and workflows, and adds emphasis on optimizations that result either in smaller application payload size or faster development iteration cycle or build times.
+APF supports all of the commonly used development tools and workflows, and adds emphasis on optimizations that result either in smaller application payload size or faster development iteration cycle (build times).
 
 ## File layout
 
 The following is an abbreviated version of the `@angular/core` package with an explanation of the purpose of the various files.
 
-<code-example language="none">
+<code-example language="none" class="no-auto-link">
 node_modules/@angular/core                              Package root
 
    --- paths part of the public PUBLIC API ---
 │
 ├── README.md                                           Readme file used by npmjs web UI
-├── package.json                                        Primary package.json for the package. Also represents the primary entry point. This file contains a mapping used by runtimes and tools performing module resolution.
+├── package.json                                        Primary package.json for the package.
+|                                                       Also represents the primary entry point.
+|                                                       This file contains a mapping used by runtimes
+|                                                       and tools performing module resolution.
 │   { ...
 │       es2015: ./fesm2015/core.js                      Node.js will use the `main` field to resolve an import from `@angular/core` to ./bundles/core.umd.js,core.js
 │         main: ./bundles/core.umd.js                   while Angular CLI will use the `es2015` field to map the same import to ./fesm2015/core.js.
@@ -135,16 +142,16 @@ esm2015/testing/testing.js
 <td>script tags</td>
 <td>UMD</td>
 <td><p><pre>
-Requires manual resolution by the developer to: 
+Requires manual resolution by the developer to:
 <br>
 bundles/core.umd.js and bundles/core.umd.min.js
 </pre></p>
 
 </td>
 <td><p><pre>
-Requires manual resolution by the developer to: 
+Requires manual resolution by the developer to:
 <br>
-bundles/core-testing.umd.js 
+bundles/core-testing.umd.js
 </pre></p>
 
 </td>
@@ -158,7 +165,7 @@ bundles/core.umd.js
 
 </td>
 <td><p><pre>
-bundles/core-testing.umd.js 
+bundles/core-testing.umd.js
 </pre></p>
 
 </td>
@@ -251,7 +258,7 @@ node_modules/@angular/material                          Package root
       fesm2015: ../fesm2015/tabs.js                     Flat Module metadata file
        esm2015: ../esm2015/tabs/index.js                Secondary entry point package.json. Maps typings and JavaScript files similar to the primary entry package.json
            ... }
- 
+
    --- paths part of the public PRIVATE API ---
 │
 ├── buttom                                              esm2015 directory containing distribution with individual unflattened (fine-grained/internal) ES modules.
@@ -301,12 +308,12 @@ You configure the primary entry point primarily through the `package.json` file 
 
 <code-example language='none'>
 {
-  "name": "@angular/core", 
-  "module": "./fesm2015/core.js", 
-  "es2015": "./fesm2015/core.js", 
+  "name": "@angular/core",
+  "module": "./fesm2015/core.js",
+  "es2015": "./fesm2015/core.js",
   "esm2015": "./esm2015/core.js",
   "fesm2015": "./fesm2015/core.js",
-  "main": "bundles/core.umd.js", 
+  "main": "bundles/core.umd.js",
   "typings": "core.d.ts",
   "sideEffects": false
 }
@@ -408,7 +415,6 @@ To produce all of the required build artifacts, it is recommended that you use t
     "skipTemplateCodegen": true,
     "flatModuleOutFile": "my-ui-lib.js",
     "flatModuleId": "my-ui-lib",
-    "annotateForClosureCompiler": true
   }
 }
 </code-example>
@@ -471,24 +477,6 @@ ES2015 language level is now the default language level that is consumed by Angu
 
 If applications still need to support ES5 browsers, then the Angular CLI  can downlevel the bundle to ES5 at application build time via [differential loading and builds features](https://angular.io/guide/deployment#differential-loading).
 
-### Closure compiler annotations (experimental)
-
-The [Closure compiler](https://developers.google.com/closure/compiler/) is the most advanced JavaScript minifier available today, but in order for it to do a good job, it requires type hints in the form of JSDoc type annotations. These can be automatically generated using the `ngc` compiler, if the `annotateForClosure` flag is turned on in the `tsconfig.json` file.
-
-<code-example language='none'>
-{
-  "compilerOptions": {
-    ...
-    "module": "es2015",
-    ...
-  },
-  "angularCompilerOptions": {
-    ...
-    "annotateForClosureCompiler": true,
-    ...
-  }
-}
-</code-example>
 
 ### `d.ts` bundling and type definition flattening
 
@@ -498,8 +486,8 @@ In prior APF versions, each entry point would have a `src` directory next to the
 
 ## Examples
 
-* [@angular/core package](https://github.com/angular/core-builds/tree/4.0.0)
-* [@angular/material package](https://github.com/angular/material2-builds#d7f549850cfd94b31bb624e2702b61305fd6337d)
+* [@angular/core package](https://github.com/angular/core-builds/tree/10.0.x)
+* [@angular/material package](https://github.com/angular/material2-builds/tree/10.0.x)
 * [jasonaden/simple-ui-lib](https://github.com/jasonaden/simple-ui-lib)
 * [filipesilva/angular/quickstart-lib](https://github.com/filipesilva/angular-quickstart-lib)
 
@@ -535,7 +523,7 @@ The following terms are used throughout this document very intentionally. In thi
   <dt>Top-level import</dt>
   <dd>An import coming from an entry point. The available top-level imports are what define the public API and are exposed in the <code>@angular/name</code> modules, such as <code>@angular/core</code> or <code>@angular/common</code>.</dd>
   <dt>Tree-shaking</dt>
-  <dd>The process of identifying and removing code not used by an application. Also known as dead code elimination. This is a global optimization performed at the application level using tools like Rollup, Closure, or Uglify.</dd>
+  <dd>The process of identifying and removing code not used by an application. Also known as dead code elimination. This is a global optimization performed at the application level using tools like Rollup, Closure, or Terser.</dd>
   <dt>AOT compiler</dt>
   <dd>The <a href="https://angular.io/docs/ts/latest/cookbook/aot-compiler.html">Ahead of Time compiler for Angular.</dd>
   <dt>Flattened type definitions</dt>

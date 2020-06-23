@@ -34,6 +34,14 @@ An Angular [component](#component) packaged as a [custom element](#custom-elemen
 
 Learn more in [Angular Elements Overview](guide/elements).
 
+{@a apf}
+
+## Angular package format (APF)
+
+An Angular specific specification for layout of npm packages that is used by Angular framework packages, Angular Material packages, as well as 3rd party Angular libraries.
+
+Learn more in the [Angular Package Format specification](guide/angular-package-format).
+
 {@a annotation}
 
 ## annotation
