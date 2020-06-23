@@ -27,8 +27,8 @@ import {
 } from '@angular/core';
 import {CanDisable, CanDisableCtor, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs';
-import {MatTabContent} from './tab-content';
-import {MatTabLabel} from './tab-label';
+import {MAT_TAB_CONTENT} from './tab-content';
+import {MAT_TAB_LABEL, MatTabLabel} from './tab-label';
 
 
 // Boilerplate for applying mixins to MatTab.
@@ -53,8 +53,9 @@ export const MAT_TAB_GROUP = new InjectionToken<any>('MAT_TAB_GROUP');
   exportAs: 'matTab',
 })
 export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** Content for the tab label given by `<ng-template mat-tab-label>`. */
-  @ContentChild(MatTabLabel)
+  @ContentChild(MAT_TAB_LABEL as any)
   get templateLabel(): MatTabLabel { return this._templateLabel; }
   set templateLabel(value: MatTabLabel) {
     // Only update the templateLabel via query if there is actually
@@ -67,10 +68,11 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
   }
   private _templateLabel: MatTabLabel;
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /**
    * Template provided in the tab content that will be used if present, used to enable lazy-loading
    */
-  @ContentChild(MatTabContent, {read: TemplateRef, static: true})
+  @ContentChild(MAT_TAB_CONTENT as any, {read: TemplateRef, static: true})
   _explicitContent: TemplateRef<any>;
 
   /** Template inside the MatTab view that contains an `<ng-content>`. */
