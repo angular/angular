@@ -10,6 +10,8 @@ export declare const MAT_SELECT_SCROLL_STRATEGY_PROVIDER: {
 
 export declare function MAT_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay): () => ScrollStrategy;
 
+export declare const MAT_SELECT_TRIGGER: InjectionToken<MatSelectTrigger>;
+
 export declare class MatSelect extends _MatSelectMixinBase implements AfterContentInit, OnChanges, OnDestroy, OnInit, DoCheck, ControlValueAccessor, CanDisable, HasTabIndex, MatFormFieldControl<any>, CanUpdateErrorState, CanDisableRipple {
     _ariaDescribedby: string;
     readonly _closedStream: Observable<void>;

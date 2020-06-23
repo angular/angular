@@ -3,7 +3,8 @@ import {MatSelectModule} from '@angular/material/select';
 
 /**
  * Basic component using `MatSelect` and `MatOption`. Other supported parts of the
- * select like `MatOptgroup` are not used and should be tree-shaken away.
+ * select like `MatOptgroup` or `MatSelectTrigger` are not used and should be
+ * tree-shaken away.
  */
 @Component({
   template: `

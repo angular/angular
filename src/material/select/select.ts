@@ -198,11 +198,20 @@ const _MatSelectMixinBase:
         mixinDisableRipple(mixinTabIndex(mixinDisabled(mixinErrorState(MatSelectBase))));
 
 
+
+/**
+ * Injection token that can be used to reference instances of `MatSelectTrigger`. It serves as
+ * alternative token to the actual `MatSelectTrigger` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_SELECT_TRIGGER = new InjectionToken<MatSelectTrigger>('MatSelectTrigger');
+
 /**
  * Allows the user to customize the trigger that is displayed when the select has a value.
  */
 @Directive({
-  selector: 'mat-select-trigger'
+  selector: 'mat-select-trigger',
+  providers: [{provide: MAT_SELECT_TRIGGER, useExisting: MatSelectTrigger}],
 })
 export class MatSelectTrigger {}
 
@@ -372,8 +381,9 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Classes to be passed to the select panel. Supports the same syntax as `ngClass`. */
   @Input() panelClass: string|string[]|Set<string>|{[key: string]: any};
 
+  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** User-supplied override of the trigger element. */
-  @ContentChild(MatSelectTrigger) customTrigger: MatSelectTrigger;
+  @ContentChild(MAT_SELECT_TRIGGER as any) customTrigger: MatSelectTrigger;
 
   /** Placeholder to be shown if no value has been selected. */
   @Input()
