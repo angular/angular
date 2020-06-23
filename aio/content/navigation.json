@@ -554,7 +554,7 @@
               "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
             },
             {
-              "url": "guide/lightweight-inection-tokens",
+              "url": "guide/lightweight-injection-tokens",
               "title": "Lightweight Injection Tokens for Libraries",
               "tooltip": "Optimize client app size by designing library services with lightweight injection tokens."
             }
