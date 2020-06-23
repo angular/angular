@@ -19,16 +19,28 @@ $mat-form-field-hint-min-space: 1em !default;
 // their padding variables are calculated with respect to the vertical empty space of the
 // inputs. We take the explicit numbers provided by the Material Design specification.
 // https://material.io/components/text-fields/#specs
-$mat-form-field-no-label-padding-bottom: 16px;
-$mat-form-field-no-label-padding-top: 20px;
 
-// Vertical spacing of the text-field if there is a label. MDC hard-codes the spacing
-// into their styles, but their spacing variables would not work for our form-field
-// structure anyway. This is because MDC's input elements are larger than the text, and
-// their padding variables are calculated with respect to the vertical empty space of the
-// inputs. We take the numbers provided by the Material Design specification. **Note** that
-// the drawn values in the spec are slightly shifted because the spec assumes that typed input
-// text exceeds the input element boundaries. We account for this since typed input text does
-// not overflow in browsers by default.
-$mat-form-field-with-label-input-padding-top: 24px;
-$mat-form-field-with-label-input-padding-bottom: 12px;
+// Dimensions in the spec assume that an input box does not need to account for larger
+// characters. In browsers though, inputs always add additional vertical spacing to account
+// for such potential characters. This means that all determined spacing from the spec needs
+// to account for the input offset. The offset is based on the default font size used in the
+// spec images. i.e. the input box for a 16dp input is 1px larger on top and bottom.
+// Related information: https://www.w3.org/TR/CSS21/visudet.html#inline-non-replaced.
+$mat-form-field-input-box-vertical-offset: 1px;
+
+// Vertical spacing of the text-field if there is a label. MDC hard-codes the spacing into
+// their styles, but their spacing variables would not work for our form-field structure anyway.
+// This is because MDC's alignment depends on the input element to expand to full infix height.
+// We allow for arbitrary form controls and support dynamic height, so we manage the control
+// infix alignment through padding on the infix that works for any control. We manually measure
+// spacing as provided by the Material Design specification. The outlined dimensions in the
+// spec section do not match with the text fields shown in the overview or the ones implemented
+// by MDC. Note that we need to account for the input box offset. See above for more context.
+$mat-form-field-with-label-input-padding-top: 28px - $mat-form-field-input-box-vertical-offset;
+$mat-form-field-with-label-input-padding-bottom: 12px - $mat-form-field-input-box-vertical-offset;
+
+// Vertical spacing of the text-field if there is no label. We manually measure the
+// spacing in the specs. See comment above for padding for text fields with label. The
+// same reasoning applies to the padding for text fields without label.
+$mat-form-field-no-label-padding-bottom: 20px - $mat-form-field-input-box-vertical-offset;
+$mat-form-field-no-label-padding-top: 20px - $mat-form-field-input-box-vertical-offset;
