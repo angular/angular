@@ -83,7 +83,7 @@ Here are some things to consider in migrating application functionality to a lib
 
    * If you register global service providers or share providers across multiple NgModules, use the [`forRoot()` and `forChild()` design patterns](guide/singleton-services) provided by the [RouterModule](api/router/RouterModule).
 
-   * If your library provides optional services that might not be used by all client applications, support proper tree-shaking for that case by using the [lightweight token design pattern](guide/lightweight-tokens).
+   * If your library provides optional services that might not be used by all client applications, support proper tree-shaking for that case by using the [lightweight token design pattern](guide/lightweight-injection-tokens).
 
 {@a integrating-with-the-cli}
 
@@ -116,7 +116,7 @@ To learn more, see [Schematics Overview](guide/schematics) and [Schematics for
 
 ## Publishing your library
 
-Use the Angular CLI and the npm package manager to build and publish your library as an npm package. 
+Use the Angular CLI and the npm package manager to build and publish your library as an npm package.
 
 Before publishing a library to NPM, build it using the `--prod` flag which will use the older compiler and runtime known as View Engine instead of Ivy.
 
