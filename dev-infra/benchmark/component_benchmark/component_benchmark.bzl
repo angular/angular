@@ -25,6 +25,7 @@ def component_benchmark(
         driver_deps,
         ng_srcs,
         ng_deps,
+        ng_assets = [],
         assets = None,
         styles = None,
         entry_point = None,
@@ -65,6 +66,7 @@ def component_benchmark(
       driver_deps: Driver's dependencies
       ng_srcs: All of the ts srcs for the angular app
       ng_deps: Dependencies for the angular app
+      ng_assets: The static assets for the angular app
       assets: Static files
       styles: Stylesheets
       entry_point: Main entry point for the angular app
@@ -104,6 +106,7 @@ def component_benchmark(
     ng_module(
         name = app_lib,
         srcs = ng_srcs,
+        assets = ng_assets,
         # Creates ngFactory and ngSummary to be imported by the app's entry point.
         generate_ve_shims = True,
         deps = ng_deps,
