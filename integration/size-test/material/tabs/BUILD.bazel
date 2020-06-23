@@ -1,0 +1,13 @@
+load("//integration/size-test:index.bzl", "size_test")
+
+size_test(
+    name = "basic",
+    file = "basic.ts",
+    deps = ["//src/material/tabs"],
+)
+
+size_test(
+    name = "advanced",
+    file = "advanced.ts",
+    deps = ["//src/material/tabs"],
+)
