@@ -6,23 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {
+  APP_ID,
+  Inject,
+  Injectable,
+  Renderer2,
+  RendererFactory2,
+  RendererStyleFlags2,
+  RendererType2,
+  ViewEncapsulation,
+} from "@angular/core";
 
-import {EventManager} from './events/event_manager';
-import {DomSharedStylesHost} from './shared_styles_host';
+import { EventManager } from "./events/event_manager";
+import { DomSharedStylesHost } from "./shared_styles_host";
 
-export const NAMESPACE_URIS: {[ns: string]: string} = {
-  'svg': 'http://www.w3.org/2000/svg',
-  'xhtml': 'http://www.w3.org/1999/xhtml',
-  'xlink': 'http://www.w3.org/1999/xlink',
-  'xml': 'http://www.w3.org/XML/1998/namespace',
-  'xmlns': 'http://www.w3.org/2000/xmlns/',
+export const NAMESPACE_URIS: { [ns: string]: string } = {
+  svg: "http://www.w3.org/2000/svg",
+  xhtml: "http://www.w3.org/1999/xhtml",
+  xlink: "http://www.w3.org/1999/xlink",
+  xml: "http://www.w3.org/XML/1998/namespace",
+  xmlns: "http://www.w3.org/2000/xmlns/",
 };
 
-const COMPONENT_REGEX = /%COMP%/g;
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
+const COMPONENT_REGEX = /%C%/;
+const NG_DEV_MODE = typeof ngDevMode === "undefined" || !!ngDevMode;
 
-export const COMPONENT_VARIABLE = '%COMP%';
+export const COMPONENT_VARIABLE = "%C%";
 export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 
@@ -35,7 +44,10 @@ export function shimHostAttribute(componentShortId: string): string {
 }
 
 export function flattenStyles(
-    compId: string, styles: Array<any|any[]>, target: string[]): string[] {
+  compId: string,
+  styles: Array<any | any[]>,
+  target: string[]
+): string[] {
   for (let i = 0; i < styles.length; i++) {
     let style = styles[i];
 
@@ -59,7 +71,7 @@ function decoratePreventDefault(eventHandler: Function): Function {
     // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`. The debug_node
     // can inspect the listener toString contents for the existence of this special token. Because
     // the token is a string literal, it is ensured to not be modified by compiled code.
-    if (event === '__ngUnwrap__') {
+    if (event === "__ngUnwrap__") {
       return eventHandler;
     }
 
@@ -80,12 +92,14 @@ export class DomRendererFactory2 implements RendererFactory2 {
   private defaultRenderer: Renderer2;
 
   constructor(
-      private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      @Inject(APP_ID) private appId: string) {
+    private eventManager: EventManager,
+    private sharedStylesHost: DomSharedStylesHost,
+    @Inject(APP_ID) private appId: string
+  ) {
     this.defaultRenderer = new DefaultDomRenderer2(eventManager);
   }
 
-  createRenderer(element: any, type: RendererType2|null): Renderer2 {
+  createRenderer(element: any, type: RendererType2 | null): Renderer2 {
     if (!element || !type) {
       return this.defaultRenderer;
     }
@@ -94,7 +108,11 @@ export class DomRendererFactory2 implements RendererFactory2 {
         let renderer = this.rendererByCompId.get(type.id);
         if (!renderer) {
           renderer = new EmulatedEncapsulationDomRenderer2(
-              this.eventManager, this.sharedStylesHost, type, this.appId);
+            this.eventManager,
+            this.sharedStylesHost,
+            type,
+            this.appId
+          );
           this.rendererByCompId.set(type.id, renderer);
         }
         (<EmulatedEncapsulationDomRenderer2>renderer).applyToHost(element);
@@ -102,7 +120,12 @@ export class DomRendererFactory2 implements RendererFactory2 {
       }
       case ViewEncapsulation.Native:
       case ViewEncapsulation.ShadowDom:
-        return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
+        return new ShadowDomRenderer(
+          this.eventManager,
+          this.sharedStylesHost,
+          element,
+          type
+        );
       default: {
         if (!this.rendererByCompId.has(type.id)) {
           const styles = flattenStyles(type.id, type.styles, []);
@@ -119,7 +142,7 @@ export class DomRendererFactory2 implements RendererFactory2 {
 }
 
 class DefaultDomRenderer2 implements Renderer2 {
-  data: {[key: string]: any} = Object.create(null);
+  data: { [key: string]: any } = Object.create(null);
 
   constructor(private eventManager: EventManager) {}
 
@@ -131,7 +154,10 @@ class DefaultDomRenderer2 implements Renderer2 {
     if (namespace) {
       // In cases where Ivy (not ViewEngine) is giving us the actual namespace, the look up by key
       // will result in undefined, so we just return the namespace here.
-      return document.createElementNS(NAMESPACE_URIS[namespace] || namespace, name);
+      return document.createElementNS(
+        NAMESPACE_URIS[namespace] || namespace,
+        name
+      );
     }
 
     return document.createElement(name);
@@ -161,14 +187,21 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
   }
 
-  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
-    let el: any = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
-                                                       selectorOrNode;
+  selectRootElement(
+    selectorOrNode: string | any,
+    preserveContent?: boolean
+  ): any {
+    let el: any =
+      typeof selectorOrNode === "string"
+        ? document.querySelector(selectorOrNode)
+        : selectorOrNode;
     if (!el) {
-      throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
+      throw new Error(
+        `The selector "${selectorOrNode}" did not match any elements`
+      );
     }
     if (!preserveContent) {
-      el.textContent = '';
+      el.textContent = "";
     }
     return el;
   }
@@ -183,7 +216,7 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
-      name = namespace + ':' + name;
+      name = namespace + ":" + name;
       // TODO(FW-811): Ivy may cause issues here because it's passing around
       // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
@@ -223,10 +256,18 @@ class DefaultDomRenderer2 implements Renderer2 {
     el.classList.remove(name);
   }
 
-  setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
+  setStyle(
+    el: any,
+    style: string,
+    value: any,
+    flags: RendererStyleFlags2
+  ): void {
     if (flags & RendererStyleFlags2.DashCase) {
       el.style.setProperty(
-          style, value, !!(flags & RendererStyleFlags2.Important) ? 'important' : '');
+        style,
+        value,
+        !!(flags & RendererStyleFlags2.Important) ? "important" : ""
+      );
     } else {
       el.style[style] = value;
     }
@@ -238,12 +279,12 @@ class DefaultDomRenderer2 implements Renderer2 {
     } else {
       // IE requires '' instead of null
       // see https://github.com/angular/angular/issues/7916
-      el.style[style] = '';
+      el.style[style] = "";
     }
   }
 
   setProperty(el: any, name: string, value: any): void {
-    NG_DEV_MODE && checkNoSyntheticProp(name, 'property');
+    NG_DEV_MODE && checkNoSyntheticProp(name, "property");
     el[name] = value;
   }
 
@@ -251,23 +292,37 @@ class DefaultDomRenderer2 implements Renderer2 {
     node.nodeValue = value;
   }
 
-  listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
-      () => void {
-    NG_DEV_MODE && checkNoSyntheticProp(event, 'listener');
-    if (typeof target === 'string') {
-      return <() => void>this.eventManager.addGlobalEventListener(
-          target, event, decoratePreventDefault(callback));
+  listen(
+    target: "window" | "document" | "body" | any,
+    event: string,
+    callback: (event: any) => boolean
+  ): () => void {
+    NG_DEV_MODE && checkNoSyntheticProp(event, "listener");
+    if (typeof target === "string") {
+      return <() => void>(
+        this.eventManager.addGlobalEventListener(
+          target,
+          event,
+          decoratePreventDefault(callback)
+        )
+      );
     }
-    return <() => void>this.eventManager.addEventListener(
-               target, event, decoratePreventDefault(callback)) as () => void;
+    return (<() => void>(
+      this.eventManager.addEventListener(
+        target,
+        event,
+        decoratePreventDefault(callback)
+      )
+    )) as () => void;
   }
 }
 
-const AT_CHARCODE = (() => '@'.charCodeAt(0))();
+const AT_CHARCODE = (() => "@".charCodeAt(0))();
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
-    throw new Error(`Found the synthetic ${nameKind} ${
-        name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`);
+    throw new Error(
+      `Found the synthetic ${nameKind} ${name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`
+    );
   }
 }
 
@@ -276,23 +331,30 @@ class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
   private hostAttr: string;
 
   constructor(
-      eventManager: EventManager, sharedStylesHost: DomSharedStylesHost,
-      private component: RendererType2, appId: string) {
+    eventManager: EventManager,
+    sharedStylesHost: DomSharedStylesHost,
+    private component: RendererType2,
+    appId: string
+  ) {
     super(eventManager);
-    const styles = flattenStyles(appId + '-' + component.id, component.styles, []);
+    const styles = flattenStyles(
+      appId + "-" + component.id,
+      component.styles,
+      []
+    );
     sharedStylesHost.addStyles(styles);
 
-    this.contentAttr = shimContentAttribute(appId + '-' + component.id);
-    this.hostAttr = shimHostAttribute(appId + '-' + component.id);
+    this.contentAttr = shimContentAttribute(appId + "-" + component.id);
+    this.hostAttr = shimHostAttribute(appId + "-" + component.id);
   }
 
   applyToHost(element: any) {
-    super.setAttribute(element, this.hostAttr, '');
+    super.setAttribute(element, this.hostAttr, "");
   }
 
   createElement(parent: any, name: string): Element {
     const el = super.createElement(parent, name);
-    super.setAttribute(el, this.contentAttr, '');
+    super.setAttribute(el, this.contentAttr, "");
     return el;
   }
 }
@@ -301,18 +363,21 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   private shadowRoot: any;
 
   constructor(
-      eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      private hostEl: any, private component: RendererType2) {
+    eventManager: EventManager,
+    private sharedStylesHost: DomSharedStylesHost,
+    private hostEl: any,
+    private component: RendererType2
+  ) {
     super(eventManager);
     if (component.encapsulation === ViewEncapsulation.ShadowDom) {
-      this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+      this.shadowRoot = (hostEl as any).attachShadow({ mode: "open" });
     } else {
       this.shadowRoot = (hostEl as any).createShadowRoot();
     }
     this.sharedStylesHost.addHost(this.shadowRoot);
     const styles = flattenStyles(component.id, component.styles, []);
     for (let i = 0; i < styles.length; i++) {
-      const styleEl = document.createElement('style');
+      const styleEl = document.createElement("style");
       styleEl.textContent = styles[i];
       this.shadowRoot.appendChild(styleEl);
     }
@@ -330,7 +395,11 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     return super.appendChild(this.nodeOrShadowRoot(parent), newChild);
   }
   insertBefore(parent: any, newChild: any, refChild: any): void {
-    return super.insertBefore(this.nodeOrShadowRoot(parent), newChild, refChild);
+    return super.insertBefore(
+      this.nodeOrShadowRoot(parent),
+      newChild,
+      refChild
+    );
   }
   removeChild(parent: any, oldChild: any): void {
     return super.removeChild(this.nodeOrShadowRoot(parent), oldChild);
