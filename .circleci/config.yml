@@ -377,6 +377,10 @@ jobs:
 
   test_aio:
     executor: default-executor
+    parameters:
+      debugArtifactsDir:
+        type: string
+        default: aio/dist/size-debug-artifacts
     steps:
       - custom_attach_workspace
       - init_environment
@@ -395,6 +399,15 @@ jobs:
       - run: yarn --cwd aio test-a11y-score-localhost
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size
+        # When `payload-size` check fails, copy the files that were checked into `debugArtifactsDir`.
+      - run:
+          when: on_fail
+          name: Prepare JS bundles to be stored as artifacts
+          command: node aio/scripts/prepare-size-debug-artifacts aio << parameters.debugArtifactsDir >>
+        # Store files in `debugArtifactsDir` (if any) as artifacts for debugging purposes.
+      - store_artifacts:
+          path: << parameters.debugArtifactsDir >>
+          destination: aio
         # Run unit tests for Firebase redirects
       - run: yarn --cwd aio redirects-test
 
@@ -410,6 +423,9 @@ jobs:
 
   test_aio_local:
     parameters:
+      debugArtifactsDir:
+        type: string
+        default: aio/dist/size-debug-artifacts
       viewengine:
         type: boolean
         default: false
@@ -428,6 +444,15 @@ jobs:
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size aio-local<<# parameters.viewengine >>-viewengine<</ parameters.viewengine >>
+        # When `payload-size` check fails, copy the files that were checked into `debugArtifactsDir`.
+      - run:
+          when: on_fail
+          name: Prepare JS bundles to be stored as artifacts
+          command: node aio/scripts/prepare-size-debug-artifacts aio-local<<# parameters.viewengine >>-viewengine<</ parameters.viewengine >> << parameters.debugArtifactsDir >>
+        # Store files in `debugArtifactsDir` (if any) as artifacts for debugging purposes.
+      - store_artifacts:
+          path: << parameters.debugArtifactsDir >>
+          destination: aio
 
   test_aio_tools:
     executor: default-executor
