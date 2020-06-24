@@ -1,3 +1,13 @@
+<a name="10.0.0"></a>
+# [10.0.0](https://github.com/angular/angular/compare/10.0.0-rc.6...10.0.0) (2020-06-24)
+
+
+### Performance Improvements
+
+* **forms:** optimize internal method _anyControls in FormGroup ([#32534](https://github.com/angular/angular/issues/32534)) ([6c7467a](https://github.com/angular/angular/commit/6c7467a))
+
+
+
 <!--
 <a name="10.0.0"></a>
 # [10.0.0](https://github.com/angular/angular/compare/10.0.0-next.0...10.0.0) (2020-06-24)
