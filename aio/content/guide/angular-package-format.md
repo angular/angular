@@ -14,6 +14,7 @@ You can find the versions of the specification prior to v10 in this [google doc]
 
 </div>
 
+
 ## Purpose
 
 JavaScript developers consume npm packages in many different ways.
@@ -22,11 +23,21 @@ Others consume packages directly from their Node.js applications, or load them d
 
 APF supports all of the commonly used development tools and workflows, and adds emphasis on optimizations that result either in smaller application payload size or faster development iteration cycle (build times).
 
+
+## Distributing libraries in APF
+
+Developers can rely on Angular CLI and [ng-packagr](https://github.com/ng-packagr/ng-packagr) (a build tool Angular CLI uses) to produce packages in the Angular package format.
+
+You can follow our documentation on [Creating libraries](guide/creating-libraries) to learn how to do it.
+
+The rest of this document captures nuances of the Angular Package Format and explains its various components.
+
+
 ## File layout
 
-The following is an abbreviated version of the `@angular/core` package with an explanation of the purpose of the various files.
+The following is an abbreviated version of the `@angular/core` package layout with an explanation of the purpose of the various files.
 
-```html
+<code-example language="html">
 node_modules/@angular/core                              Package root
 
    --- paths part of the PUBLIC API ---
@@ -127,7 +138,7 @@ node_modules/@angular/core                              Package root
     |                                                   under testing/
     |
     └── testing.js.map                                  Source map
-```
+</code-example>
 
 This package layout allows us to support the following usage-scenarios and environments.
 
@@ -255,31 +266,44 @@ For most library cases, group a single logical group together into a single `NgM
 
 The following is an example of how the Angular Material project would look in this format.
 
-<code-example language="none">
+<code-example language="html">
 node_modules/@angular/material                          Package root
 
    --- paths part of the public PUBLIC API ---
 │
 ├── README.md                                           Readme file used by npmjs web UI
-├── package.json                                        Primary package.json used by npm/yarn. Since @angular/material doesn't any have primary entry points, no resolution configuration is present in this file.
-│
-│
+|
+├── package.json                                        Primary package.json used by npm/yarn.
+|                                                       Since @angular/material doesn't any have primary
+|                                                       entry points, no resolution configuration is
+|                                                       present in this file.
 │
 ├── bundles                                             Directory that contains all bundles (UMD/ES5)
+|   |
 │   ├── material.umd.js                                 Primary bundle. Filename: $PKGNAME.umd.js
+|   |
 │   ├── material.umd.min.js                             Primary minified bundle. $PKGNAME.umd.min.js
+|   |
 │   ├── material-button.umd.js                          Secondary bundles are prefixed with "$PKGNAME-
+|   |
 │   ├── material-button.umd.min.js                      Minified secondary bundle
+|   |
 │   ├── material-tabs.umd.js                            Others...
 │   ├── material-tabs.umd.min.js
 │   └── material-[component].umd.js
+|
 ├── button
 │   └── package.json
 │        { ...
 │       es2015: ../fesm2015/button/index.js             Directory containing ESM2015 files
-│      typings: ./index.d.ts                            This index re-exports from @angular/material/button, tabs, etc.
+|
+│      typings: ./index.d.ts                            This index re-exports from
+|                                                       @angular/material/button, tabs, etc.
 │         main: ../bundles/material-button.umd.js
-│       module: ../fesm2015/button/index.js             Secondary entry points are flattened into a single JavaScript file.
+|
+│       module: ../fesm2015/button/index.js             Secondary entry points are flattened into a
+|                                                       single JavaScript file.
+|
 │     fesm2015: ../fesm2015/button.js
 │      esm2015: ../esm2015/button/index.js
 │          ... }
@@ -296,9 +320,14 @@ node_modules/@angular/material                          Package root
 
    --- paths part of the public PRIVATE API ---
 │
-├── buttom                                              esm2015 directory containing distribution with individual unflattened (fine-grained/internal) ES modules.
+├── button                                              esm2015 directory containing distribution with
+|   |                                                   individual non-flattened (fine-grained/internal)
+|   |                                                   ES modules.
 │   ├── index.d.ts
-│   └── index.metadata.json                             This distribution is currently available only for experimentation. It is deprecated as of v9, might be removed in the future.
+|   |
+│   └── index.metadata.json                             This distribution is currently available only
+|                                                       for experimentation. It is deprecated as of v9,
+|                                                       might be removed in the future.
 │
 ├── tabs
 │   ├── index.d.ts
@@ -324,7 +353,7 @@ The README file in the markdown format that displays a description of a package 
 
 The following example is the readme content for the `@angular/core` package.
 
-<code-example language="none">
+<code-example language="html">
 Angular
 =======
 
@@ -341,7 +370,7 @@ See the [definition in the Angular glossary](https://angular.io/guide/glossary#e
 
 You configure the primary entry point primarily through the `package.json` file in the package root using the following properties.
 
-<code-example language='none'>
+<code-example language="js">
 {
   "name": "@angular/core",
   "module": "./fesm2015/core.js",
@@ -418,7 +447,7 @@ The Module ID of an import for a secondary entry point directs a module loader t
 
 The following is an example of the contents of the `package.json` file for the secondary entry point.
 
-<code-example language='none'>
+<code-example language="js">
 {
   "name": "@angular/common/http",
   "main": "../bundles/common-http.umd.js",
@@ -437,7 +466,7 @@ The previous code example redirects `@angular/core/testing` imports to the appro
 
 To produce all of the required build artifacts, it is recommended that you use the Angular compiler, `ngc`, to compile your code with the following settings in the `tsconfig.json` file.
 
-<code-example language='none'>
+<code-example language="js">
 {
   "compilerOptions": {
     ...
@@ -473,7 +502,7 @@ For example, a `FESM5` file would be for ESM+ES5 (import/export statements and E
 
 To generate a flattened ES module index file, use the following configuration options in your `tsconfig.json` file.
 
-<code-example language='none'>
+<code-example language="js">
 {
   "compilerOptions": {
     ...
