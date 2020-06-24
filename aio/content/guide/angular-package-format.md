@@ -26,7 +26,7 @@ APF supports all of the commonly used development tools and workflows, and adds 
 
 The following is an abbreviated version of the `@angular/core` package with an explanation of the purpose of the various files.
 
-```
+```html
 node_modules/@angular/core                              Package root
 
    --- paths part of the PUBLIC API ---
@@ -70,16 +70,16 @@ node_modules/@angular/core                              Package root
 ├── bundles                                             Directory that contains all bundles (UMD/ES5)
 |   |
 │   ├── core.umd.js                                     Primary entry point bundle.
-|   |                                                     Filename: $PKGNAME.umd.js
+|   |                                                   Filename: $PKGNAME.umd.js
 |   |
 │   ├── core.umd.min.js                                 Primary entry point minified bundle.
-|   |                                                     Filename: $PKGNAME.umd.min.js
+|   |                                                   Filename: $PKGNAME.umd.min.js
 |   |
 │   ├── core-testing.umd.js                             Secondary entry point bundle.
-|   |                                                     Filename: $PKGNAME-$NAME.umd.js
+|   |                                                   Filename: $PKGNAME-$NAME.umd.js
 |   |
 │   └── core-testing.umd.min.js                         Secondary entry point minified bundle.
-|                                                         Filename: $PKGNAME-$NAME.umd.min.js
+|                                                       Filename: $PKGNAME-$NAME.umd.min.js
 
 
    --- paths part of the PRIVATE API ---
@@ -105,7 +105,8 @@ node_modules/@angular/core                              Package root
 │   └── testing.js.map                                  Source map
 │
 └── esm2015 (deprecated)                                esm2015 directory containing distribution with
-    |                                                     individual (non-flattened/fine-grained/internal) ES modules.
+    |                                                   individual (non-flattened/fine-grained/internal)
+    |                                                   ES modules.
     │
     │                                                   This distribution is currently available only
     |                                                   for experimentation. It is deprecated as of v9,
@@ -160,7 +161,7 @@ fesm2015/testing.js
 <td>unused</td>
 <td>ESM2015<br>
 <br>
-(unflattened ESM+ES2015)</td>
+(non-flattened ESM+ES2015)</td>
 <td><p><pre>
 esm2015/core.js
 </pre></p>
@@ -494,16 +495,29 @@ After `ngc` generates the index file, such as `my-ui-lib.js`, you can use bundle
 
 <div class='callout is-helpful'>
 <header>Note about the defaults in package.json</header>
-<p>As of Webpack version 4, the flattening of ES modules for optimization should not be necessary for Webpack users. In fact, theoretically you should be able to get better code-splitting without the flattening of modules in Webpack. In practice, you may still see size regressions when using unflattened modules as input for Webpack version 4. This is why module and es2015 <code>package.json</code> entries still point to FESM files.
+<p>As of Webpack version 4, the flattening of ES modules for optimization should not be necessary for Webpack users. In fact, theoretically you should be able to get better code-splitting without the flattening of modules in Webpack. In practice, you may still see size regressions when using non-flattened modules as input for Webpack version 4. This is why module and es2015 <code>package.json</code> entries still point to FESM files.
 </div>
 
 ### Inlining of templates and stylesheets
 
 Component libraries are typically implemented using stylesheets and HTML templates stored in separate files. While it's not required, we suggest that component authors inline the templates and stylesheets into their FESM files as well as `*.metadata.json` files by replacing the `styleUrls` and `templateUrl` with `styles` and `template` metadata properties, respectively. This simplifies consumption of the components by application developers.
 
-### Webpack v4 `"sideEffects": false`
+### `"sideEffects": false` and non-local side effects in libraries
 
-As of Webpack v4, packages that contain a special property called `"sideEffects"` set to false in their `package.json` file, will be processed by Webpack more aggressively than those that don't. The end result of these optimizations should be smaller bundle sizes and better code distribution in bundle chunks after code-splitting. This optimization can break your code if it contains non-local side effects; however, this is not common in Angular applications and it is usually a sign of bad design. Our recommendation is for all packages to claim the side effect free status by setting the `sideEffects` property to `false`, and that developers follow the [Angular Style Guide](https://angular.io/guide/styleguide) which naturally results in code without non-local side effects. For more information, see the [Webpack documentation on side effects](https://github.com/webpack/webpack/tree/master/examples/side-effects).
+As of Webpack v4, packages that contain a special property called `"sideEffects"` set to false in their `package.json` file, will be processed by Webpack more aggressively than those that don't.
+
+The end result of these optimizations should be smaller bundle sizes and better code distribution in bundle chunks after code-splitting.
+
+This optimization can break your code if it contains non-local side effects; however, this is not common in Angular applications and it is usually a sign of bad design.
+
+Our recommendation is for all packages to claim the side effect free status by setting the `sideEffects` property to `false`, and that developers follow the [Angular Style Guide](https://angular.io/guide/styleguide) which naturally results in code without non-local side effects.
+
+If you need more information, the following links may be helpful.
+
+* [Tree-shaking](https://webpack.js.org/guides/tree-shaking/)
+* [Dealing with side effects and pure functions in JavaScript](https://dev.to/vonheikemen/dealing-with-side-effects-and-pure-functions-in-javascript-16mg)
+* [How to deal with dirty side effects in your pure function JavaScript](https://jrsinclair.com/articles/2018/how-to-deal-with-dirty-side-effects-in-your-pure-functional-javascript/)
+
 
 ### ES2015 language level
 
@@ -516,7 +530,9 @@ If applications still need to support ES5 browsers, then the Angular CLI  can do
 
 As of APF v8 we now prefer to run the `.d.ts` bundler tool from [https://api-extractor.com/](https://api-extractor.com/) so that the entire API appears in a single file.
 
-In prior APF versions, each entry point would have a `src` directory next to the `.d.ts` entry point and this directory contained individual `.d.ts` files matching the structore of the original source code. While this distribution format is still allowed and supported, it is highly discouraged because it confuses tools like IDEs that then offer incorrect autocompletion, and allows users to depend on deep-import paths which are typically not considered to be public API of a library or a package.
+In prior APF versions, each entry point would have a `src` directory next to the `.d.ts` entry point and this directory contained individual `.d.ts` files matching the structure of the original source code.
+
+While this distribution format is still allowed and supported, it is highly discouraged because it confuses tools like IDEs that then offer incorrect autocompletion, and allows users to depend on deep-import paths which are typically not considered to be public API of a library or a package.
 
 ## Examples
 
