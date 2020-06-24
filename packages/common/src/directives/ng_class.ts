@@ -205,15 +205,15 @@ export class NgClass implements DoCheck {
   }
 
   /**
-   * This methode is use to batch and update/remove classes with a single operation.
+   * This method is used to batch add/remove classes with a single operation.
    *
    * This is important because the patched DOM API for SSR (Domino) is not optimal for repeated
    * operations on the same node.
    *
    * Example when having: `<div [ngClass]="{'class1 class2 class3': true}”></div>`
    *
-   * A 3P partner/client using Angular version 9 and Ivy reported that while they browser runtime
-   * became faster their server side runtime code is slower. Their tracked it down to ngClass with
+   * A 3P partner/client using Angular version 9 and Ivy reported that while the browser runtime
+   * became faster their server side runtime is slower. They tracked it down to ngClass with
    * multiple classes. With batching operations the same client reported ~10% runtime improvemenent
    * for their SSR'd application.
    *
