@@ -140,7 +140,7 @@ export interface ContentChildrenDecorator {
    *
    * * **selector** - The directive type or the name used for querying.
    * * **descendants** - True to include all descendants, otherwise include only direct children.
-   * * **read** - True to read a different token from the queried elements.
+   * * **read** - Used to read a different token from the queried elements.
    *
    * @usageNotes
    *
@@ -157,8 +157,10 @@ export interface ContentChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): any;
-  new(selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): Query;
+  (selector: Type<any>|InjectionToken<unknown>|Function|string,
+   opts?: {descendants?: boolean, read?: any}): any;
+  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
+      opts?: {descendants?: boolean, read?: any}): Query;
 }
 
 /**
@@ -204,7 +206,7 @@ export interface ContentChildDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
-   * * **read** - True to read a different token from the queried element.
+   * * **read** - Used to read a different token from the queried element.
    * * **static** - True to resolve query results before change detection runs,
    * false to resolve after change detection. Defaults to false.
    *
@@ -218,8 +220,10 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new(selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ContentChild;
+  (selector: Type<any>|InjectionToken<unknown>|Function|string,
+   opts?: {read?: any, static?: boolean}): any;
+  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
+      opts?: {read?: any, static?: boolean}): ContentChild;
 }
 
 /**
@@ -263,7 +267,7 @@ export interface ViewChildrenDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
-   * * **read** - True to read a different token from the queried elements.
+   * * **read** - Used to read a different token from the queried elements.
    *
    * @usageNotes
    *
@@ -275,8 +279,9 @@ export interface ViewChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any}): any;
-  new(selector: Type<any>|Function|string, opts?: {read?: any}): ViewChildren;
+  (selector: Type<any>|InjectionToken<unknown>|Function|string, opts?: {read?: any}): any;
+  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
+      opts?: {read?: any}): ViewChildren;
 }
 
 /**
@@ -317,7 +322,7 @@ export interface ViewChildDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
-   * * **read** - True to read a different token from the queried elements.
+   * * **read** - Used to read a different token from the queried elements.
    * * **static** - True to resolve query results before change detection runs,
    * false to resolve after change detection. Defaults to false.
    *
@@ -343,8 +348,10 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new(selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ViewChild;
+  (selector: Type<any>|InjectionToken<unknown>|Function|string,
+   opts?: {read?: any, static?: boolean}): any;
+  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
+      opts?: {read?: any, static?: boolean}): ViewChild;
 }
 
 /**

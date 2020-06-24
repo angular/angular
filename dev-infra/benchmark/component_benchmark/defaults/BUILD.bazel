@@ -1,0 +1,13 @@
+package(default_visibility = ["//visibility:public"])
+
+# Make source files available for distribution via pkg_npm
+filegroup(
+    name = "files",
+    srcs = glob(["*"]),
+)
+
+exports_files([
+    "index.html",
+    "index.ts",
+    "styles.css",
+])

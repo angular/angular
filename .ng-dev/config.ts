@@ -32,6 +32,7 @@ const commitMessage = {
     'http',
     'language-service',
     'localize',
+    'migrations',
     'ngcc',
     'packaging',
     'platform-browser',
@@ -51,24 +52,18 @@ const commitMessage = {
 const format = {
   'clang-format': {
     'matchers': [
-      'dev-infra/**/*.{js,ts}',
-      'packages/**/*.{js,ts}',
-      '!packages/zone.js',
-      '!packages/common/locales/**/*.{js,ts}',
-      '!packages/common/src/i18n/available_locales.ts',
-      '!packages/common/src/i18n/currencies.ts',
-      '!packages/common/src/i18n/locale_en.ts',
-      'modules/benchmarks/**/*.{js,ts}',
-      'modules/playground/**/*.{js,ts}',
-      'tools/**/*.{js,ts}',
-      '!tools/gulp-tasks/cldr/extract.js',
-      '!tools/public_api_guard/**/*.d.ts',
-      '!tools/ts-api-guardian/test/fixtures/**',
-      '*.{js,ts}',
-      '!**/node_modules/**',
-      '!**/dist/**',
-      '!**/built/**',
+      '**/*.{js,ts}',
+      // TODO: burn down format failures and remove aio and integration exceptions.
+      '!aio/**',
+      '!integration/**',
+      // TODO: remove this exclusion as part of IE deprecation.
       '!shims_for_IE.js',
+      // Both third_party and .yarn are directories containing copied code which should
+      // not be modified.
+      '!third_party/**',
+      '!.yarn/**',
+      // Do not format d.ts files as they are generated
+      '!**/*.d.ts',
     ]
   },
   'buildifier': true
@@ -107,8 +102,9 @@ const merge = () => {
     requiredBaseCommits: {
       // PRs that target either `master` or the patch branch, need to be rebased
       // on top of the latest commit message validation fix.
-      'master': '4341743b4a6d7e23c6f944aa9e34166b701369a1',
-      [patch]: '2a53f471592f424538802907aca1f60f1177a86d'
+      // These SHAs are the commits that update the required license text in the header.
+      'master': '5aeb9a4124922d8ac08eb73b8f322905a32b0b3a',
+      [patch]: '27b95ba64a5d99757f4042073fd1860e20e3ed24'
     },
   };
   return config;

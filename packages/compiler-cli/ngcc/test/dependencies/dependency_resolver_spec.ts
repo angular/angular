@@ -10,6 +10,7 @@ import {DepGraph} from 'dependency-graph';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {DependencyInfo, EntryPointWithDependencies} from '../../src/dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
 import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
@@ -17,7 +18,6 @@ import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
-import {MockLogger} from '../helpers/mock_logger';
 
 
 interface DepMap {
@@ -60,52 +60,63 @@ runInEachFileSystem(() => {
         first = {
           name: 'first',
           path: _('/first'),
-          package: _('/first'),
+          packageName: 'first',
+          packagePath: _('/first'),
           packageJson: {esm5: './index.js'},
+          typings: _('/first/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/first/index.d.ts'),
         } as EntryPoint;
         second = {
+          name: 'second',
           path: _('/second'),
-          package: _('/second'),
+          packageName: 'second',
+          packagePath: _('/second'),
           packageJson: {esm2015: './sub/index.js'},
+          typings: _('/second/sub/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/second/sub/index.d.ts'),
         } as EntryPoint;
         third = {
+          name: 'third',
           path: _('/third'),
-          package: _('/third'),
+          packageName: 'third',
+          packagePath: _('/third'),
           packageJson: {fesm5: './index.js'},
+          typings: _('/third/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/third/index.d.ts'),
         } as EntryPoint;
         fourth = {
+          name: 'fourth',
           path: _('/fourth'),
-          package: _('/fourth'),
+          packageName: 'fourth',
+          packagePath: _('/fourth'),
           packageJson: {fesm2015: './sub2/index.js'},
+          typings: _('/fourth/sub2/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/fourth/sub2/index.d.ts'),
         } as EntryPoint;
         fifth = {
+          name: 'fifth',
           path: _('/fifth'),
-          package: _('/fifth'),
+          packageName: 'fifth',
+          packagePath: _('/fifth'),
           packageJson: {module: './index.js'},
+          typings: _('/fifth/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/fifth/index.d.ts'),
         } as EntryPoint;
 
         sixthIgnoreMissing = {
+          name: 'sixth',
           path: _('/sixth'),
-          package: _('/sixth'),
+          packageName: 'sixth',
+          packagePath: _('/sixth'),
           packageJson: {module: './index.js'},
+          typings: _('/sixth/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: true,
-          typings: _('/sixth/index.d.ts'),
         } as EntryPoint;
 
         dependencies = {
@@ -269,7 +280,7 @@ runInEachFileSystem(() => {
 
       it('should not log a warning for ignored deep imports', () => {
         spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
-          [_('/project/node_modules/test-package/index.js')]: {
+          [_('/project/node_modules/test-package/test-entry-point/index.js')]: {
             resolved: [],
             missing: [],
             deepImports: [
@@ -279,7 +290,10 @@ runInEachFileSystem(() => {
           },
         }));
         spyOn(dtsHost, 'collectDependencies').and.callFake(createFakeComputeDependencies({
-          [_('/project/node_modules/test-package/index.d.ts')]: {resolved: [], missing: []},
+          [_('/project/node_modules/test-package/test-entry-point/index.d.ts')]: {
+            resolved: [],
+            missing: [],
+          },
         }));
         // Setup the configuration to ignore deep imports that contain either "deep/" or "two".
         fs.ensureDir(_('/project'));
@@ -289,20 +303,21 @@ runInEachFileSystem(() => {
         config = new NgccConfiguration(fs, _('/project'));
         resolver = new DependencyResolver(fs, logger, config, {esm5: host, esm2015: host}, dtsHost);
         const testEntryPoint = {
-          name: 'test-package',
-          path: _('/project/node_modules/test-package'),
-          package: _('/project/node_modules/test-package'),
+          name: 'test-package/test-entry-point',
+          path: _('/project/node_modules/test-package/test-entry-point'),
+          packageName: 'test-package',
+          packagePath: _('/project/node_modules/test-package'),
           packageJson: {esm5: './index.js'},
+          typings: _('/project/node_modules/test-package/test-entry-point/index.d.ts'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
-          typings: _('/project/node_modules/test-package/index.d.ts'),
         } as EntryPoint;
 
         const result = resolver.sortEntryPointsByDependency(
             getEntryPointsWithDeps(resolver, [testEntryPoint]));
         expect(result.entryPoints).toEqual([testEntryPoint]);
         expect(logger.logs.warn).toEqual([[
-          `Entry point 'test-package' contains deep imports into '${
+          `Entry point 'test-package/test-entry-point' contains deep imports into '${
               _('/project/node_modules/deeper/one')}'. This is probably not a problem, but may cause the compilation of entry points to be out of order.`
         ]]);
       });

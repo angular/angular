@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/webapis-notification",
+  "main": "../../bundles/webapis-notification.umd.js",
+  "fesm2015": "../../fesm2015/webapis-notification.js",
+  "es2015": "../../fesm2015/webapis-notification.js",
+  "module": "../../fesm2015/webapis-notification.js"
+}

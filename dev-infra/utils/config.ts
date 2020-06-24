@@ -8,21 +8,26 @@
 
 import {existsSync} from 'fs';
 import {dirname, join} from 'path';
-import {exec} from 'shelljs';
 
 import {error} from './console';
+import {exec} from './shelljs';
 import {isTsNodeAvailable} from './ts-node';
+
+/** Configuration for Git client interactions. */
+export interface GitClientConfig {
+  /** Owner name of the repository. */
+  owner: string;
+  /** Name of the repository. */
+  name: string;
+  /** If SSH protocol should be used for git interactions. */
+  useSsh?: boolean;
+}
 
 /**
  * Describes the Github configuration for dev-infra. This configuration is
  * used for API requests, determining the upstream remote, etc.
  */
-export interface GithubConfig {
-  /** Owner name of the repository. */
-  owner: string;
-  /** Name of the repository. */
-  name: string;
-}
+export interface GithubConfig extends GitClientConfig {}
 
 /** The common configuration for ng-dev. */
 type CommonConfig = {
@@ -119,7 +124,7 @@ export function assertNoErrors(errors: string[]) {
 
 /** Gets the path of the directory for the repository base. */
 export function getRepoBaseDir() {
-  const baseRepoDir = exec(`git rev-parse --show-toplevel`, {silent: true});
+  const baseRepoDir = exec(`git rev-parse --show-toplevel`);
   if (baseRepoDir.code) {
     throw Error(
         `Unable to find the path to the base directory of the repository.\n` +

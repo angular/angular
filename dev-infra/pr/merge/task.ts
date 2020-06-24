@@ -6,12 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {promptConfirm} from '../../utils/console';
+import {GitClient, GitCommandError} from '../../utils/git';
+
 import {MergeConfigWithRemote} from './config';
 import {PullRequestFailure} from './failures';
-import {GitClient, GitCommandError} from './git';
+import {getCaretakerNotePromptMessage} from './messages';
 import {isPullRequest, loadAndValidatePullRequest,} from './pull-request';
 import {GithubApiMergeStrategy} from './strategies/api-merge';
 import {AutosquashMergeStrategy} from './strategies/autosquash-merge';
+
+/** Github OAuth scopes required for the merge task. */
+const REQUIRED_SCOPES = ['repo'];
 
 /** Describes the status of a pull request merge. */
 export const enum MergeStatus {
@@ -19,6 +25,8 @@ export const enum MergeStatus {
   DIRTY_WORKING_DIR,
   SUCCESS,
   FAILED,
+  USER_ABORTED,
+  GITHUB_ERROR,
 }
 
 /** Result of a pull request merge. */
@@ -36,7 +44,7 @@ export interface MergeResult {
  */
 export class PullRequestMergeTask {
   /** Git client that can be used to execute Git commands. */
-  git = new GitClient(this.projectRoot, this._githubToken, this.config);
+  git = new GitClient(this._githubToken, {github: this.config.remote});
 
   constructor(
       public projectRoot: string, public config: MergeConfigWithRemote,
@@ -48,6 +56,15 @@ export class PullRequestMergeTask {
    * @param force Whether non-critical pull request failures should be ignored.
    */
   async merge(prNumber: number, force = false): Promise<MergeResult> {
+    // Assert the authenticated GitClient has access on the required scopes.
+    const hasOauthScopes = await this.git.hasOauthScopes(...REQUIRED_SCOPES);
+    if (hasOauthScopes !== true) {
+      return {
+        status: MergeStatus.GITHUB_ERROR,
+        failure: PullRequestFailure.insufficientPermissionsToMerge(hasOauthScopes.error)
+      };
+    }
+
     if (this.git.hasUncommittedChanges()) {
       return {status: MergeStatus.DIRTY_WORKING_DIR};
     }
@@ -56,6 +73,14 @@ export class PullRequestMergeTask {
 
     if (!isPullRequest(pullRequest)) {
       return {status: MergeStatus.FAILED, failure: pullRequest};
+    }
+
+    // If the pull request has a caretaker note applied, raise awareness by prompting
+    // the caretaker. The caretaker can then decide to proceed or abort the merge.
+    if (pullRequest.hasCaretakerNote &&
+        !await promptConfirm(
+            getCaretakerNotePromptMessage(pullRequest) + `\nDo you want to proceed merging?`)) {
+      return {status: MergeStatus.USER_ABORTED};
     }
 
     const strategy = this.config.githubApiMerge ?

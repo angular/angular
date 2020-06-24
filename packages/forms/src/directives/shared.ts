@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {isDevMode} from '@angular/core';
 
 import {FormArray, FormControl, FormGroup} from '../model';
 import {Validators} from '../validators';
@@ -156,7 +156,7 @@ export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any)
   const change = changes['model'];
 
   if (change.isFirstChange()) return true;
-  return !looseIdentical(viewModel, change.currentValue);
+  return !Object.is(viewModel, change.currentValue);
 }
 
 const BUILTIN_ACCESSORS = [

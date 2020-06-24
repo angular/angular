@@ -41,8 +41,8 @@ filegroup(
         "@npm//:node_modules/core-js/client/core.js",
         ":custom_elements_native_shim",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
-        "//packages/zone.js/dist:zone.js",
-        "//packages/zone.js/dist:zone-testing.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:zone-testing.umd.js",
     ],
 )
 

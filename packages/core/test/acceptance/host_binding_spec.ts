@@ -1427,4 +1427,53 @@ describe('host bindings', () => {
         '<img src="unsafe:javascript:alert(3)">', bypassSanitizationTrustHtml,
         /* isAttribute */ false);
   });
+
+  onlyInIvy('VE would silently ignore this').describe('host binding on containers', () => {
+    @Directive({selector: '[staticHostAtt]', host: {'static': 'attr'}})
+    class StaticHostAttr {
+      constructor() {}
+    }
+
+    @Directive({selector: '[dynamicHostAtt]', host: {'[attr.dynamic]': '"dynamic"'}})
+    class DynamicHostAttr {
+      constructor() {}
+    }
+
+    it('should fail with expected error with ng-container', () => {
+      @Component({
+        selector: 'my-app',
+        template: `
+          <ng-template #ref></ng-template>
+          <ng-container [ngTemplateOutlet]="ref" staticHostAtt dynamicHostAtt></ng-container>
+        `
+      })
+      class App {
+      }
+
+      const comp =
+          TestBed.configureTestingModule({declarations: [App, StaticHostAttr, DynamicHostAttr]})
+              .createComponent(App);
+      // TODO(FW-2202): binding static attrs won't throw an error. We should be more consistent.
+      expect(() => comp.detectChanges())
+          .toThrowError(
+              /Attempted to set attribute `dynamic` on a container node. Host bindings are not valid on ng-container or ng-template./);
+    });
+
+    it('should fail with expected error with ng-template', () => {
+      @Component({
+        selector: 'my-app',
+        template: ` <ng-template staticHostAtt dynamicHostAtt></ng-template> `
+      })
+      class App {
+      }
+
+      const comp =
+          TestBed.configureTestingModule({declarations: [App, StaticHostAttr, DynamicHostAttr]})
+              .createComponent(App);
+      // TODO(FW-2202): binding static attrs won't throw an error. We should be more consistent.
+      expect(() => comp.detectChanges())
+          .toThrowError(
+              /Attempted to set attribute `dynamic` on a container node. Host bindings are not valid on ng-container or ng-template./);
+    });
+  });
 });

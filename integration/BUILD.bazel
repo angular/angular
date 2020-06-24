@@ -33,15 +33,6 @@ INTEGRATION_TESTS = {
             "no-ivy-aot",
         ],
     },
-    "bazel-schematics": {
-        "tags": [
-            # Bazel-in-bazel tests are resource intensive and should not be over-parallized
-            # as they will complete for the resources of other parallel tests slowing
-            # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
-            "cpu:3",
-            "no-ivy-aot",
-        ],
-    },
     "cli-hello-world": {"commands": "payload_size_tracking"},
     "cli-hello-world-ivy-compat": {"commands": "payload_size_tracking"},
     "cli-hello-world-ivy-i18n": {

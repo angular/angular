@@ -7,8 +7,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFromSourceFile, AbsoluteFsPath, dirname, FileSystem, join, relative} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
-import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {FileToWrite} from '../rendering/utils';
@@ -39,9 +39,9 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
       formatProperties: EntryPointJsonProperty[]) {
     // The new folder is at the root of the overall package
     const entryPoint = bundle.entryPoint;
-    const ngccFolder = join(entryPoint.package, NGCC_DIRECTORY);
-    this.copyBundle(bundle, entryPoint.package, ngccFolder);
-    transformedFiles.forEach(file => this.writeFile(file, entryPoint.package, ngccFolder));
+    const ngccFolder = join(entryPoint.packagePath, NGCC_DIRECTORY);
+    this.copyBundle(bundle, entryPoint.packagePath, ngccFolder);
+    transformedFiles.forEach(file => this.writeFile(file, entryPoint.packagePath, ngccFolder));
     this.updatePackageJson(entryPoint, formatProperties, ngccFolder);
   }
 
@@ -59,7 +59,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
 
     // Revert the transformed files.
     for (const filePath of transformedFilePaths) {
-      this.revertFile(filePath, entryPoint.package);
+      this.revertFile(filePath, entryPoint.packagePath);
     }
 
     // Revert any changes to `package.json`.
@@ -118,7 +118,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     const oldFormatProp = formatProperties[0]!;
     const oldFormatPath = packageJson[oldFormatProp]!;
     const oldAbsFormatPath = join(entryPoint.path, oldFormatPath);
-    const newAbsFormatPath = join(ngccFolder, relative(entryPoint.package, oldAbsFormatPath));
+    const newAbsFormatPath = join(ngccFolder, relative(entryPoint.packagePath, oldAbsFormatPath));
     const newFormatPath = relative(entryPoint.path, newAbsFormatPath);
 
     // Update all properties in `package.json` (both in memory and on disk).

@@ -1,4 +1,0 @@
-# This BUILD file exists to mark //tools/components as a package.
-#
-# Without this, using component_benchmark.bzl would throw an error saying:
-# Label '//tools/components:component_benchmark.bzl' is invalid because 'tools/components' is not a package

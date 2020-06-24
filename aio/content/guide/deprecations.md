@@ -35,6 +35,7 @@ v9 - v12
 
 | Area                          | API or Feature                                                                | May be removed in |
 | ----------------------------- | ---------------------------------------------------------------------------   | ----------------- |
+| `@angular/bazel`              | [`Bazel builder and schematics`](#bazelbuilder)                               | v10 |
 | `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v11 |
 | `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11 |
 | `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v11 |
@@ -59,10 +60,9 @@ v9 - v12
 | `@angular/core/testing`       | [`TestBed.get`](#testing)                                                     | <!--v9--> v12 |
 | `@angular/router`             | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
 | template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
-| browser support               | [`IE 9 and 10`](#ie-9-10)                                                     | <!--v10--> v11 |
+| browser support               | [`IE 9 and 10, IE mobile`](#ie-9-10-and-mobile)                               | <!--v10--> v11 |
 
-
-
+For information about Angular CDK and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/master/CHANGELOG.md).
 
 ## Deprecated APIs
 
@@ -160,7 +160,11 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 This section lists all of the currently-deprecated features, which includes template syntax, configuration options, and any other deprecations not listed in the [Deprecated APIs](#deprecated-apis) section above. It also includes deprecated API usage scenarios or API combinations, to augment the information above.
 
+{@a bazelbuilder}
+### Bazel builder and schematics
 
+Bazel builder and schematics were introduced in Angular Labs to let users try out Bazel without having to manage Bazel version and BUILD files.
+This feature has been deprecated. For more information, please refer to the [migration doc](https://github.com/angular/angular/blob/master/packages/bazel/src/schematics/README.md).
 
 {@a wtf}
 ### Web Tracing Framework integration
@@ -459,17 +463,17 @@ export class MyModule {
 ```
 
 
-{@a ie-9-10}
-### IE 9 and 10 support
+{@a ie-9-10-and-mobile}
+### IE 9, 10, and IE mobile support
 
-Support for IE 9 and 10 has been deprecated and will be removed in a future version.
+Support for IE 9 and 10 has been deprecated, as well as support for IE Mobile. These will be dropped in a future version.
 Supporting outdated browsers like these increases bundle size, code complexity, and test load, and also requires time and effort that could be spent on improvements to the framework.
 For example, fixing issues can be more difficult, as a straightforward fix for modern browsers could break old ones that have quirks due to not receiving updates from vendors.
 
 The final decision was made on three key points:
-* __Vendor support__: Microsoft dropped support of IE 9 and 10 on 1/12/16, meaning they no longer provide security updates or technical support.
-* __Usage statistics__: We looked at usage trends for IE 9 and 10 from various sources and all indicated that usage percentages were extremely small (fractions of 1%).
-* __Feedback from partners__: We also reached out to some of our Angular customers and none expressed concern about dropping IE 9 and 10 support.
+* __Vendor support__: Microsoft dropped support of IE 9 and 10 on 1/12/16, meaning they no longer provide security updates or technical support. Additionally, Microsoft dropped support for Windows 10 Mobile in December 2019.
+* __Usage statistics__: We looked at usage trends for IE 9 and 10 (as well as IE Mobile) from various sources and all indicated that usage percentages were extremely small (fractions of 1%).
+* __Feedback from partners__: We also reached out to some of our Angular customers and none expressed concern about dropping IE 9, 10, nor IE Mobile support.
 
 
 {@a wrapped-value}
@@ -484,6 +488,56 @@ No replacement is planned for this deprecation.
 If you rely on the behavior that the same object instance should cause change detection, you have two options:
 - Clone the resulting value so that it has a new identity.
 - Explicitly call [`ChangeDetectorRef.detectChanges()`](api/core/ChangeDetectorRef#detectchanges) to force the update. 
+
+{@a deprecated-cli-flags}
+## Deprecated CLI APIs and Options
+
+This section contains a complete list all of the currently deprecated CLI flags.
+
+### @angular-devkit/build-angular
+
+| API/Option                      | May be removed in | Notes                                                                           |
+| ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
+| `i18nFile`                      | <!--v9--> v11     | Specified in the project locale configuration in version 9 and later.           |
+| `i18nFormat`                    | <!--v9--> v11     | Format is now automatically detected.                                           |
+| `i18nLocale`                    | <!--v9--> v11     | New [localization option](/guide/i18n#localize-config) in version 9 and later.  |
+| `lazyModules`                   | <!--v9--> v11     | Used with deprecated SystemJsNgModuleLoader.                                    |
+| `rebaseRootRelativeCssUrls`     | <!--v8--> v11     | Intended only to assist with specific migration issues.                         |
+| `scripts[].lazy`                | <!--v8--> v11     | Renamed to `scripts[].inject`.                                                  |
+| `styles[].lazy`                 | <!--v8--> v11     | Renamed to `styles[].inject`.                                                   |
+| `i18nFormat`                    | <!--v9--> v11     | Renamed to `format` to simplify the user experience.                            |
+| `i18nLocale`                    | <!--v9--> v11     | Redundant with project’s source locale.                                         |
+| `scripts[].lazy`                | <!--v8--> v11     | Renamed to `scripts[].inject`.                                                  |
+| `styles[].lazy`                 | <!--v8--> v11     | Renamed to `styles[].inject`.                                                   |
+| `i18nFile`                      | <!--v9--> v11     | Specified in the project locale configuration in version 9 and later.           |
+| `i18nFormat`                    | <!--v9--> v11     | Format is now automatically detected.                                           |
+| `i18nLocale`                    | <!--v9--> v11     | New [localization option](/guide/i18n#localize-config) in version 9 and later.  |
+| `lazyModules`                   | <!--v9--> v11     | Used with deprecated SystemJsNgModuleLoader.                                    |
+
+### @angular-devkit/core
+
+| API/Option                      | May be removed in | Notes                                                                           |
+| ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
+| `ModuleNotFoundException`       | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
+| `resolve`                       | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
+| `setResolveHook`                | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
+| `ResolveOptions`                | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
+| `terminal`                      | <!--v8--> v10     | Unused implementation of terminal codes (color).                                |
+| `isObservable`                  | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Use `isObservable` function from the `rxjs` package.|
+
+### @ngtools/webpack
+
+| API/Option                      | May be removed in | Notes                                                                           |
+| ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
+| `discoverLazyRoutes`            | <!--v9--> TBD     | Used with deprecated SystemJsNgModuleLoader.                                    |
+| `additionalLazyModules`         | <!--v9--> TBD     | Used with deprecated SystemJsNgModuleLoader.                                    |
+| `additionalLazyModuleResources` | <!--v9--> TBD     | Used with deprecated SystemJsNgModuleLoader.                                    |
+
+### @schematics/angular
+
+| API/Option                      | May be removed in | Notes                                                                           |
+| ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
+| `entryComponent`                | <!--v9--> TBD     | No longer needed with Ivy.                                                      |
 
 {@a removed}
 ## Removed APIs

@@ -167,9 +167,10 @@ runInEachFileSystem(() => {
          const fs = getFileSystem();
          const entryPoint: EntryPoint = {
            name: 'test',
-           packageJson: {name: 'test'},
-           package: absoluteFrom('/node_modules/test'),
            path: absoluteFrom('/node_modules/test'),
+           packageName: 'test',
+           packagePath: absoluteFrom('/node_modules/test'),
+           packageJson: {name: 'test'},
            typings: absoluteFrom('/node_modules/test/index.d.ts'),
            compiledByAngular: true,
            ignoreMissingDependencies: false,
@@ -217,9 +218,10 @@ runInEachFileSystem(() => {
             const fs = getFileSystem();
             const entryPoint: EntryPoint = {
               name: 'test',
-              packageJson: {name: 'test'},
-              package: absoluteFrom('/node_modules/test'),
               path: absoluteFrom('/node_modules/test'),
+              packageName: 'test',
+              packagePath: absoluteFrom('/node_modules/test'),
+              packageJson: {name: 'test'},
               typings: absoluteFrom('/node_modules/test/index.d.ts'),
               compiledByAngular: true,
               ignoreMissingDependencies: false,
@@ -239,9 +241,10 @@ runInEachFileSystem(() => {
             const fs = getFileSystem();
             const entryPoint: EntryPoint = {
               name: 'internal',
-              packageJson: {name: 'internal'},
-              package: absoluteFrom('/node_modules/internal'),
               path: absoluteFrom('/node_modules/internal'),
+              packageName: 'internal',
+              packagePath: absoluteFrom('/node_modules/internal'),
+              packageJson: {name: 'internal'},
               typings: absoluteFrom('/node_modules/internal/index.d.ts'),
               compiledByAngular: true,
               ignoreMissingDependencies: false,
@@ -261,9 +264,10 @@ runInEachFileSystem(() => {
             const fs = getFileSystem();
             const entryPoint: EntryPoint = {
               name: 'test',
-              packageJson: {name: 'test'},
-              package: absoluteFrom('/node_modules/test'),
               path: absoluteFrom('/node_modules/test'),
+              packageName: 'test',
+              packagePath: absoluteFrom('/node_modules/test'),
+              packageJson: {name: 'test'},
               typings: absoluteFrom('/node_modules/test/index.d.ts'),
               compiledByAngular: true,
               ignoreMissingDependencies: false,
@@ -284,9 +288,10 @@ runInEachFileSystem(() => {
       const fs = getFileSystem();
       const entryPoint: EntryPoint = {
         name: 'secondary',
-        packageJson: {name: 'secondary'},
-        package: absoluteFrom('/node_modules/primary'),
         path: absoluteFrom('/node_modules/primary/secondary'),
+        packageName: 'primary',
+        packagePath: absoluteFrom('/node_modules/primary'),
+        packageJson: {name: 'secondary'},
         typings: absoluteFrom('/node_modules/primary/secondary/index.d.ts'),
         compiledByAngular: true,
         ignoreMissingDependencies: false,

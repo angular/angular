@@ -8,9 +8,9 @@
 
 import * as ts from 'typescript';
 
+import {Logger} from '../../../src/ngtsc/logging';
 import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
-import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
 
@@ -866,10 +866,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   /**
    * Try to retrieve the symbol of a static property on a class.
    *
-   * In some cases, a static property can either be set on the inner declaration inside the class'
-   * IIFE, or it can be set on the outer variable declaration. Therefore, the host checks both
-   * places, first looking up the property on the inner symbol, and if the property is not found it
-   * will fall back to looking up the property on the outer symbol.
+   * In some cases, a static property can either be set on the inner (implementation or adjacent)
+   * declaration inside the class' IIFE, or it can be set on the outer variable declaration.
+   * Therefore, the host checks all places, first looking up the property on the inner symbols, and
+   * if the property is not found it will fall back to looking up the property on the outer symbol.
    *
    * @param symbol the class whose property we are interested in.
    * @param propertyName the name of static property.
@@ -877,8 +877,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected getStaticProperty(symbol: NgccClassSymbol, propertyName: ts.__String): ts.Symbol
       |undefined {
-    return symbol.implementation.exports && symbol.implementation.exports.get(propertyName) ||
-        symbol.declaration.exports && symbol.declaration.exports.get(propertyName);
+    return symbol.implementation.exports?.get(propertyName) ||
+        symbol.adjacent?.exports?.get(propertyName) ||
+        symbol.declaration.exports?.get(propertyName);
   }
 
   /**

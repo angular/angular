@@ -1,0 +1,26 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+
+exports_files([
+    "rollup.config-tmpl.js",
+    "terser_config.json",
+])
+
+nodejs_binary(
+    name = "rollup_with_build_optimizer",
+    data = [
+        "@npm//@angular-devkit/build-optimizer",
+        "@npm//rollup",
+        "@npm//rollup-plugin-commonjs",
+        "@npm//rollup-plugin-node-resolve",
+        "@npm//rollup-plugin-sourcemaps",
+    ],
+    entry_point = "@npm//:node_modules/rollup/dist/bin/rollup",
+)
+
+# Make source files available for distribution via pkg_npm
+filegroup(
+    name = "files",
+    srcs = glob(["*"]),
+)

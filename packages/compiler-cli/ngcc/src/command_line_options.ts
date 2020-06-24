@@ -9,8 +9,7 @@
 import * as yargs from 'yargs';
 
 import {resolve, setFileSystem, NodeJSFileSystem} from '../../src/ngtsc/file_system';
-import {ConsoleLogger} from './logging/console_logger';
-import {LogLevel} from './logging/logger';
+import {ConsoleLogger, LogLevel} from '../../src/ngtsc/logging';
 import {NgccOptions} from './ngcc_options';
 
 export function parseCommandLineOptions(args: string[]): NgccOptions {
@@ -36,7 +35,14 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
             alias: 'target',
             describe:
                 'A relative path (from the `source` path) to a single entry-point to process (plus its dependencies).\n' +
-                'If this property is provided then `error-on-failed-entry-point` is forced to true',
+                'If this property is provided then `error-on-failed-entry-point` is forced to true.\n' +
+                'This option overrides the `--use-program-dependencies` option.',
+          })
+          .option('use-program-dependencies', {
+            type: 'boolean',
+            describe:
+                'If this property is provided then the entry-points to process are parsed from the program defined by the loaded tsconfig.json. See `--tsconfig`.\n' +
+                'This option is overridden by the `--target` option.',
           })
           .option('first-only', {
             describe:
@@ -116,6 +122,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
   const enableI18nLegacyMessageIdFormat = options['legacy-message-ids'];
   const invalidateEntryPointManifest = options['invalidate-entry-point-manifest'];
   const errorOnFailedEntryPoint = options['error-on-failed-entry-point'];
+  const findEntryPointsFromTsConfigProgram = options['use-program-dependencies'];
   // yargs is not so great at mixed string+boolean types, so we have to test tsconfig against a
   // string "false" to capture the `tsconfig=false` option.
   // And we have to convert the option to a string to handle `no-tsconfig`, which will be `false`.
@@ -134,6 +141,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
     async: options['async'],
     invalidateEntryPointManifest,
     errorOnFailedEntryPoint,
-    tsConfigPath
+    tsConfigPath,
+    findEntryPointsFromTsConfigProgram,
   };
 }

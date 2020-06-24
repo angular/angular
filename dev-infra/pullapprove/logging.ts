@@ -10,15 +10,15 @@ import {info} from '../utils/console';
 import {PullApproveGroupResult} from './group';
 
 /** Create logs for each pullapprove group result. */
-export function logGroup(group: PullApproveGroupResult, matched = true) {
+export function logGroup(group: PullApproveGroupResult, matched = true, printMessageFn = info) {
   const conditions = matched ? group.matchedConditions : group.unmatchedConditions;
-  info.group(`[${group.groupName}]`);
+  printMessageFn.group(`[${group.groupName}]`);
   if (conditions.length) {
     conditions.forEach(matcher => {
       const count = matcher.matchedFiles.size;
-      info(`${count} ${count === 1 ? 'match' : 'matches'} - ${matcher.expression}`);
+      printMessageFn(`${count} ${count === 1 ? 'match' : 'matches'} - ${matcher.expression}`);
     });
-    info.groupEnd();
+    printMessageFn.groupEnd();
   }
 }
 

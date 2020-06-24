@@ -93,7 +93,7 @@ Adopt these two conventions in your own projects for _every kind_ of test file.
 
 ## Set up continuous integration
 
-One of the best ways to keep your project bug free is through a test suite, but it's easy to forget to run tests all the time.
+One of the best ways to keep your project bug-free is through a test suite, but it's easy to forget to run tests all the time.
 Continuous integration (CI) servers let you set up your project repository so that your tests run on every commit and pull request.
 
 There are paid CI services like Circle CI and Travis CI, and you can also host your own for free using Jenkins and others.

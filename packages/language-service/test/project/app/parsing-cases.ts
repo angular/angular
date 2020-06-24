@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Component, Directive, EventEmitter, Input, OnChanges, Output, Pipe, PipeTransform, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {Hero} from './app.component';
 
@@ -69,6 +69,20 @@ export class WithContextDirective {
   }
 }
 
+@Pipe({
+  name: 'prefixPipe',
+})
+export class TestPipe implements PipeTransform {
+  transform(value: string, prefix: string): string;
+  transform(value: number, prefix: number): number;
+  transform(value: string|number, prefix: string|number): string|number {
+    if (typeof value === 'string') {
+      return `${prefix} ${value}`;
+    }
+    return parseInt(`${prefix}${value}`, 10 /* radix */);
+  }
+}
+
 /**
  * This Component provides the `test-comp` selector.
  */
@@ -88,7 +102,7 @@ export class TemplateReference {
   /**
    * This is the title of the `TemplateReference` Component.
    */
-  title = 'Some title';
+  title = 'Tour of Heroes';
   hero: Hero = {id: 1, name: 'Windstorm'};
   heroP = Promise.resolve(this.hero);
   heroes: Hero[] = [this.hero];
@@ -107,4 +121,7 @@ export class TemplateReference {
   constNames = [{name: 'name'}] as const;
   private myField = 'My Field';
   strOrNumber: string|number = '';
+  setTitle(newTitle: string) {
+    this.title = newTitle;
+  }
 }

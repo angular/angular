@@ -2,7 +2,6 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "LICENSE",
-    "protractor-perf.conf.js",
     "karma-js.conf.js",
     "browser-providers.conf.js",
     "scripts/ci/track-payload-size.sh",
@@ -21,9 +20,9 @@ filegroup(
     # do not sort
     srcs = [
         "@npm//:node_modules/core-js/client/core.js",
-        "//packages/zone.js/dist:zone.js",
-        "//packages/zone.js/dist:zone-testing.js",
-        "//packages/zone.js/dist:task-tracking.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:zone-testing.umd.js",
+        "//packages/zone.js/bundles:task-tracking.umd.js",
         "//:test-events.js",
         "//:shims_for_IE.js",
         # Including systemjs because it defines `__eval`, which produces correct stack traces.

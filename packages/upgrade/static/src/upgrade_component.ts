@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {Directive, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 
 import {IAttributes, IAugmentedJQuery, IDirective, IInjectorService, ILinkFn, IScope, ITranscludeFunction} from '../../src/common/src/angular1';
 import {$SCOPE} from '../../src/common/src/constants';
@@ -206,7 +206,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       const newValue = this.bindingDestination[propName];
       const oldValue = twoWayBoundLastValues[idx];
 
-      if (!looseIdentical(newValue, oldValue)) {
+      if (!Object.is(newValue, oldValue)) {
         const outputName = propertyToOutputMap[propName];
         const eventEmitter: EventEmitter<any> = (this as any)[outputName];
 

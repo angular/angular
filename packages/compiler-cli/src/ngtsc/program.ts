@@ -14,6 +14,7 @@ import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
 import {NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions} from './core/api';
+import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
 import {ReusedProgramStrategy} from './typecheck';
@@ -51,6 +52,7 @@ export class NgtscProgram implements api.Program {
   private host: NgCompilerHost;
   private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER;
   private perfTracker: PerfTracker|null = null;
+  private incrementalStrategy: TrackedIncrementalBuildStrategy;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: NgCompilerOptions,
@@ -77,9 +79,14 @@ export class NgtscProgram implements api.Program {
     const reusedProgramStrategy = new ReusedProgramStrategy(
         this.tsProgram, this.host, this.options, this.host.shimExtensionPrefixes);
 
+    this.incrementalStrategy = oldProgram !== undefined ?
+        oldProgram.incrementalStrategy.toNextBuildStrategy() :
+        new TrackedIncrementalBuildStrategy();
+
     // Create the NgCompiler which will drive the rest of the compilation.
     this.compiler = new NgCompiler(
-        this.host, options, this.tsProgram, reusedProgramStrategy, reuseProgram, this.perfRecorder);
+        this.host, options, this.tsProgram, reusedProgramStrategy, this.incrementalStrategy,
+        reuseProgram, this.perfRecorder);
   }
 
   getTsProgram(): ts.Program {

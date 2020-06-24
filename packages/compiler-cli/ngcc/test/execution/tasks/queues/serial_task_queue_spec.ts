@@ -7,11 +7,11 @@
  */
 import {DepGraph} from 'dependency-graph';
 
+import {MockLogger} from '../../../../../src/ngtsc/logging/testing';
 import {PartiallyOrderedTasks, Task, TaskQueue} from '../../../../src/execution/tasks/api';
 import {SerialTaskQueue} from '../../../../src/execution/tasks/queues/serial_task_queue';
 import {computeTaskDependencies} from '../../../../src/execution/tasks/utils';
 import {EntryPoint} from '../../../../src/packages/entry_point';
-import {MockLogger} from '../../../helpers/mock_logger';
 
 
 describe('SerialTaskQueue', () => {

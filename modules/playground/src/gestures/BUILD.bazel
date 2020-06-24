@@ -19,7 +19,7 @@ ts_devserver(
     name = "devserver",
     bootstrap = [
         "@npm//:node_modules/hammerjs/hammer.js",
-        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     entry_module = "angular/modules/playground/src/gestures/index",
