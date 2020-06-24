@@ -28,17 +28,26 @@ export interface Profile {
   noImprovementCount: number;
 }
 
-export function createBenchmark(benchmarkName: string): Benchmark {
+/**
+ * @param benchmarkName The name for this benchmark, used in the console.log for identification.
+ * @param beforeEachIteration A function that can be used to do the necessary set up for each
+ *     iteration. Because tests may rely on mutating some state, there may be a need to reset that
+ *     state in each iteration. In addition, the time to run the test setup is excluded from the
+ *     performance timing.
+ */
+export function createBenchmark(
+    benchmarkName: string, beforeEachIteration?: () => void): Benchmark {
   const profiles: Profile[] = [];
 
   const benchmark = function Benchmark(profileName: string): Profile {
-    let iterationCounter: number = 0;
-    let timestamp: number = 0;
+    let iterationCounter = 0;
+    let sampleStartTime = 0;
+    let timeToRunTestSetup = 0;
     const profile: Profile = function Profile() {
       if (iterationCounter === 0) {
         let runAgain = false;
         // if we reached the end of the iteration count than we should decide what to do next.
-        if (timestamp === 0) {
+        if (sampleStartTime === 0) {
           // this is the first time we are executing
           iterationCounter = profile.iterationCount;
           runAgain = true;
@@ -47,7 +56,7 @@ export function createBenchmark(benchmarkName: string): Benchmark {
         } else {
           profile.sampleCount++;
           // we came to an end of a sample, compute the time.
-          const duration_ms = performance.now() - timestamp;
+          const duration_ms = (performance.now() - timeToRunTestSetup) - sampleStartTime;
           const iterationTime_ms = duration_ms / profile.iterationCount;
           if (profile.bestTime > iterationTime_ms) {
             profile.bestTime = iterationTime_ms;
@@ -69,9 +78,20 @@ export function createBenchmark(benchmarkName: string): Benchmark {
           }
         }
         iterationCounter = profile.iterationCount;
-        timestamp = performance.now();
+        // If a test setup function was provided, run it before starting the performance timing
+        // (performance.now).
+        if (beforeEachIteration) beforeEachIteration();
+        sampleStartTime = performance.now();
+        timeToRunTestSetup = 0;
         return runAgain;
       } else {
+        // If there is a test setup function provided, we need to run it before starting the next
+        // iteration.
+        if (beforeEachIteration) {
+          const start = performance.now();
+          beforeEachIteration();
+          timeToRunTestSetup += performance.now() - start;
+        }
         // this is the common path and it needs te be quick!
         iterationCounter--;
         return true;
