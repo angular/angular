@@ -29,25 +29,35 @@ The following is an abbreviated version of the `@angular/core` package with an e
 <code-example class="no-auto-link nocode">
 node_modules/@angular/core                              Package root
 
-   --- paths part of the public PUBLIC API ---
+   --- paths part of the PUBLIC API ---
 │
 ├── README.md                                           Readme file used by npmjs web UI
+|
 ├── package.json                                        Primary package.json for the package.
 |                                                       Also represents the primary entry point.
 |                                                       This file contains a mapping used by runtimes
 |                                                       and tools performing module resolution.
 │   { ...
-│       es2015: ./fesm2015/core.js                      Node.js will use the `main` field to resolve an import from `@angular/core` to ./bundles/core.umd.js,core.js
-│         main: ./bundles/core.umd.js                   while Angular CLI will use the `es2015` field to map the same import to ./fesm2015/core.js.
+│       es2015: ./fesm2015/core.js                      Node.js will use the `main` field to resolve
+|                                                       an import from `@angular/core` to
+|                                                       ./bundles/core.umd.js,core.js
+|
+│         main: ./bundles/core.umd.js                   while Angular CLI will use the `es2015` field
+|                                                       to map the same import to ./fesm2015/core.js.
+|
 │       module: ./fesm2015/core.js
 │      typings: ./core.d.ts
 │     fesm2015: ./fesm2015/core.js
 │      esm2015: ./esm2015/core.js
 │     ... }
 │
-├── testing                                             Secondary entry point @angular/core/testing that is colocated within the @angular/core package.
+├── testing                                             Secondary entry point @angular/core/testing
+|   |                                                   that is colocated within the @angular/core
+|   |                                                   package.
 │   │
-│   └── package.json                                    Secondary entry point package.json. Maps typings and JavaScript files similar to the primary entry package.json.
+│   └── package.json                                    Secondary entry point package.json. Maps
+|                                                       typings and JavaScript files similar to the
+|                                                       primary entry package.json.
 │       { ...
 │          es2015: ../fesm2015/testing.js
 │            main: ../bundles/core-testing.umd.js
@@ -58,39 +68,63 @@ node_modules/@angular/core                              Package root
 │         ... }
 │
 ├── bundles                                             Directory that contains all bundles (UMD/ES5)
-│   ├── core.umd.js                                     Primary entry point bundle. Filename: $PKGNAME.umd.js
-│   ├── core.umd.min.js                                 Primary entry point minified bundle. $PKGNAME.umd.min.js
-│   ├── core-testing.umd.js                             Secondary entry point bundle. Filename "$PKGNAME-$NAME.umd.js"
-│   └── core-testing.umd.min.js                         Secondary entry point minified bundle. Filename "$PKGNAME-$NAME.umd.min.js"
+|   |
+│   ├── core.umd.js                                     Primary entry point bundle.
+|   |                                                     Filename: $PKGNAME.umd.js
+|   |
+│   ├── core.umd.min.js                                 Primary entry point minified bundle.
+|   |                                                     Filename: $PKGNAME.umd.min.js
+|   |
+│   ├── core-testing.umd.js                             Secondary entry point bundle.
+|   |                                                     Filename: $PKGNAME-$NAME.umd.js
+|   |
+│   └── core-testing.umd.min.js                         Secondary entry point minified bundle.
+|                                                         Filename: $PKGNAME-$NAME.umd.min.js
 
 
-   --- paths part of the public PRIVATE API ---
+   --- paths part of the PRIVATE API ---
 │
 ├── core.d.ts                                           Primary entry point: flattened type definitions
+|
 ├── core.metadata.json                                  Primary entry point: metadata used by AOT compiler
+|
 ├── testing
+|   |
 │   ├── testing.d.ts                                    Secondary entry point: flattened type definitions
+|   |
 │   └── testing.metadata.json                           Secondary entry point: metadata used by AOT compiler
 │
-├── fesm2015                                            Directory containing fesm5 files
-│   ├── core.js (ESM/ES2015)                            Primary entry point ESM+ES2015 flat module (fesm)
+├── fesm2015                                            Directory containing fesm2015 files
+|   |
+│   ├── core.js                                         Primary entry point ESM+ES2015 flat module (fesm)
+|   |
 │   ├── core.js.map                                     Source map
+|   |
 │   ├── testing.js                                      Secondary entry point ESM+ES2015 flat module (fesm)
+|   |
 │   └── testing.js.map                                  Source map
 │
-└── esm2015 (deprecated)                                esm2015 directory containing distribution with individual unflattened (fine-grained/internal) ES modules.
+└── esm2015 (deprecated)                                esm2015 directory containing distribution with
+    |                                                     individual (non-flattened/fine-grained/internal) ES modules.
     │
-    │                                                   This distribution is currently available only for experimentation. It is deprecated as of v9, might be removed in the future.
+    │                                                   This distribution is currently available only
+    |                                                   for experimentation. It is deprecated as of v9,
+    |                                                   might be removed in the future.
     │
-    │
-    │
-    ├── core                                            Directory with ES Modules - all paths within this directory are private api.
+    ├── core                                            Directory with ES Modules - all paths within
+    |   |                                               this directory are private api.
     │   └── ....js
-    ├── testing                                         Similar to "core" directory but core/testing which represents a secondary entry point
+    ├── testing                                         Similar to "core" directory but core/testing
+    |   |                                               which represents a secondary entry point
     │   └── ....js
+    |
     ├── core.js (ESM/ES2015)                            Public module that reexports all symbols under core/
+    |
     ├── core.js.map                                     Source map (.map files exist next to all .js files)
-    ├── testing.js                                      Public module that reexports all symbols under testing/
+    |
+    ├── testing.js                                      Public module that reexports all symbols
+    |                                                   under testing/
+    |
     └── testing.js.map                                  Source map
 </code-example>
 
