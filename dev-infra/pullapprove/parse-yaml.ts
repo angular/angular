@@ -9,7 +9,7 @@ import {parse as parseYaml} from 'yaml';
 
 export interface PullApproveGroupConfig {
   conditions?: string[];
-  reviewers: {
+  reviewers?: {
     users: string[],
     teams?: string[],
   }|{
@@ -31,5 +31,5 @@ export interface PullApproveConfig {
 }
 
 export function parsePullApproveYaml(rawYaml: string): PullApproveConfig {
-  return parseYaml(rawYaml) as PullApproveConfig;
+  return parseYaml(rawYaml, {merge: true}) as PullApproveConfig;
 }

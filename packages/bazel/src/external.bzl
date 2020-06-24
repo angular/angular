@@ -19,12 +19,14 @@ load(
 )
 load(
     "@build_bazel_rules_nodejs//:providers.bzl",
+    _LinkablePackageInfo = "LinkablePackageInfo",
     _NpmPackageInfo = "NpmPackageInfo",
     _js_ecma_script_module_info = "js_ecma_script_module_info",
     _js_named_module_info = "js_named_module_info",
     _node_modules_aspect = "node_modules_aspect",
 )
 
+LinkablePackageInfo = _LinkablePackageInfo
 NpmPackageInfo = _NpmPackageInfo
 node_modules_aspect = _node_modules_aspect
 
@@ -34,6 +36,11 @@ COMMON_OUTPUTS = _COMMON_OUTPUTS
 compile_ts = _compile_ts
 DEPS_ASPECTS = _DEPS_ASPECTS
 ts_providers_dict_to_struct = _ts_providers_dict_to_struct
+
+# Should be defined as `BuildSettingInfo` from Skylib, but a dependency on
+# Skylib is not necessary here because this is only used in google3 where Skylib
+# is loaded differently anyways where this file is overridden.
+BuildSettingInfo = provider(doc = "Not used outside google3.")
 
 DEFAULT_API_EXTRACTOR = "@npm//@angular/bazel/bin:api-extractor"
 DEFAULT_NG_COMPILER = "@npm//@angular/bazel/bin:ngc-wrapped"

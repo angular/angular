@@ -7,17 +7,17 @@
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relative} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
 import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {DirectoryWalkerEntryPointFinder} from '../../src/entry_point_finder/directory_walker_entry_point_finder';
-import {NgccConfiguration} from '../../src/packages/configuration';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {PathMappings} from '../../src/path_mappings';
-import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('DirectoryWalkerEntryPointFinder', () => {
@@ -101,6 +101,50 @@ runInEachFileSystem(() => {
             undefined);
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
+      });
+
+      it('should not include ignored entry-points', () => {
+        const basePath = _Abs('/project/node_modules');
+        const finder = new DirectoryWalkerEntryPointFinder(
+            fs, config, logger, resolver, manifest, basePath, undefined);
+
+        loadTestFiles(createPackage(basePath, 'some-package'));
+        spyOn(config, 'getPackageConfig')
+            .and.returnValue(
+                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                  entryPoints: {
+                    '.': {ignore: true},
+                  },
+                }));
+
+        const {entryPoints} = finder.findEntryPoints();
+        expect(entryPoints).toEqual([]);
+      });
+
+      it('should look for sub-entry-points even if a containing entry-point is ignored', () => {
+        const basePath = _Abs('/project/node_modules');
+        const finder = new DirectoryWalkerEntryPointFinder(
+            fs, config, logger, resolver, manifest, basePath, undefined);
+
+        loadTestFiles([
+          ...createPackage(basePath, 'some-package'),
+          ...createPackage(fs.resolve(basePath, 'some-package'), 'sub-entry-point-1'),
+          ...createPackage(
+              fs.resolve(basePath, 'some-package/sub-entry-point-1'), 'sub-entry-point-2'),
+        ]);
+        spyOn(config, 'getPackageConfig')
+            .and.returnValue(
+                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                  entryPoints: {
+                    './sub-entry-point-1': {ignore: true},
+                  },
+                }));
+
+        const {entryPoints} = finder.findEntryPoints();
+        expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
+          ['some-package', 'some-package'],
+          ['some-package', 'some-package/sub-entry-point-1/sub-entry-point-2'],
+        ]);
       });
 
       it('should write an entry-point manifest file if none was found and basePath is `node_modules`',
@@ -409,7 +453,8 @@ runInEachFileSystem(() => {
 
       function dumpEntryPointPaths(
           basePath: AbsoluteFsPath, entryPoints: EntryPoint[]): [string, string][] {
-        return entryPoints.map(x => [relative(basePath, x.package), relative(basePath, x.path)]);
+        return entryPoints.map(
+            x => [relative(basePath, x.packagePath), relative(basePath, x.path)]);
       }
     });
   });

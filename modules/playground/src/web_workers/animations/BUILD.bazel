@@ -25,7 +25,7 @@ ts_devserver(
         "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
         "@npm//:node_modules/tslib/tslib.js",
         "index.html",
-        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
     ],
     deps = [":animations"],
 )

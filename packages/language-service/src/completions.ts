@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, EmptyExpr, ExpressionBinding, getHtmlTagDefinition, HtmlAstPath, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, ReferenceAst, TagContentType, TemplateBinding, Text, VariableBinding} from '@angular/compiler';
+import {AbsoluteSourceSpan, AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, EmptyExpr, ExpressionBinding, getHtmlTagDefinition, HtmlAstPath, Node as HtmlAst, NullTemplateVisitor, ParseSpan, ReferenceAst, TagContentType, TemplateBinding, Text, VariableBinding} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {ATTR, getBindingDescriptor} from './binding_utils';
@@ -164,9 +164,6 @@ export function getTemplateCompletions(
             }
           },
           visitText(ast) {
-            // Check if we are in a entity.
-            result = entityCompletions(getSourceText(template, spanOf(ast)), astPosition);
-            if (result.length) return result;
             result = interpolationCompletions(templateInfo, templatePosition);
             if (result.length) return result;
             const element = path.first(Element);
@@ -357,27 +354,6 @@ function elementCompletions(info: ng.AstResult): ng.CompletionEntry[] {
   }
 
   return results;
-}
-
-function entityCompletions(value: string, position: number): ng.CompletionEntry[] {
-  // Look for entity completions
-  const re = /&[A-Za-z]*;?(?!\d)/g;
-  let found: RegExpExecArray|null;
-  let result: ng.CompletionEntry[] = [];
-  while (found = re.exec(value)) {
-    let len = found[0].length;
-    if (position >= found.index && position < (found.index + len)) {
-      result = Object.keys(NAMED_ENTITIES).map(name => {
-        return {
-          name: `&${name};`,
-          kind: ng.CompletionKind.ENTITY,
-          sortText: name,
-        };
-      });
-      break;
-    }
-  }
-  return result;
 }
 
 function interpolationCompletions(info: ng.AstResult, position: number): ng.CompletionEntry[] {
@@ -590,10 +566,6 @@ class ExpressionVisitor extends NullTemplateVisitor {
       }
     }
   }
-}
-
-function getSourceText(template: ng.TemplateSource, span: ng.Span): string {
-  return template.source.substring(span.start, span.end);
 }
 
 interface AngularAttributes {

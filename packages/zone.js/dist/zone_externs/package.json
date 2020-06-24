@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/zone_externs",
+  "main": "../../zone_externs.js",
+  "fesm2015": "../../zone_externs.js",
+  "es2015": "../../zone_externs.js",
+  "module": "../../zone_externs.js"
+}

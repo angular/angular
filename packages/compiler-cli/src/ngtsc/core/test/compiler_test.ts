@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom as _, FileSystem, getFileSystem, getSourceFileOrError, NgtscCompilerHost, setFileSystem} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
+import {NoopIncrementalBuildStrategy} from '../../incremental';
 import {ReusedProgramStrategy} from '../../typecheck/src/augmented_program';
 import {NgCompilerOptions} from '../api';
 import {NgCompiler} from '../src/compiler';
@@ -47,7 +48,8 @@ runInEachFileSystem(() => {
       const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
       const program = ts.createProgram({host, options, rootNames: host.inputFiles});
       const compiler = new NgCompiler(
-          host, options, program, new ReusedProgramStrategy(program, host, options, []));
+          host, options, program, new ReusedProgramStrategy(program, host, options, []),
+          new NoopIncrementalBuildStrategy());
 
       const diags = compiler.getDiagnostics(getSourceFileOrError(program, COMPONENT));
       expect(diags.length).toBe(1);

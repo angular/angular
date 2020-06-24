@@ -1,7 +1,2 @@
-~{empty}
-<~{start-tag}h~{start-tag-after-h}1~{start-tag-h1} ~{h1-after-space}>
-  ~{h1-content} {{~{sub-start}title~{sub-end}}}
-</h1>
-~{after-h1}<h2>{{~{h2-hero}hero.~{h2-name}name}} details!</h2>
-<div><label>id: </label>{{~{label-hero}hero.~{label-id}id}}</div>
-&~{entity-amp}amp;
+<h1>{{title}}</h1>
+<h2>{{hero.name}} details!</h2>

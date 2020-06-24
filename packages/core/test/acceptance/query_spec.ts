@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {AfterViewInit, Component, ContentChild, ContentChildren, Directive, ElementRef, EventEmitter, forwardRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ViewRef} from '@angular/core';
+import {AfterViewInit, Component, ContentChild, ContentChildren, Directive, ElementRef, EventEmitter, forwardRef, InjectionToken, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ViewRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -17,10 +17,23 @@ describe('query logic', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [
-        AppComp, QueryComp, SimpleCompA, SimpleCompB, StaticViewQueryComp, TextDirective,
-        SubclassStaticViewQueryComp, StaticContentQueryComp, SubclassStaticContentQueryComp,
-        QueryCompWithChanges, StaticContentQueryDir, SuperDirectiveQueryTarget, SuperDirective,
-        SubComponent
+        AppComp,
+        QueryComp,
+        SimpleCompA,
+        SimpleCompB,
+        StaticViewQueryComp,
+        TextDirective,
+        SubclassStaticViewQueryComp,
+        StaticContentQueryComp,
+        SubclassStaticContentQueryComp,
+        QueryCompWithChanges,
+        StaticContentQueryDir,
+        SuperDirectiveQueryTarget,
+        SuperDirective,
+        SubComponent,
+        TestComponentWithToken,
+        TestInjectionTokenContentQueries,
+        TestInjectionTokenQueries,
       ]
     });
   });
@@ -72,6 +85,19 @@ describe('query logic', () => {
       const fixture = initWithTemplate(QueryComp, template);
       const comp = fixture.componentInstance;
       expect(comp.viewChildren.first).toBeAnInstanceOf(TemplateRef);
+    });
+
+    it('should support selecting InjectionToken', () => {
+      const fixture = TestBed.createComponent(TestInjectionTokenQueries);
+      const instance = fixture.componentInstance;
+      fixture.detectChanges();
+      expect(instance.viewFirstOption).toBeDefined();
+      expect(instance.viewFirstOption instanceof TestComponentWithToken).toBe(true);
+      expect(instance.viewOptions).toBeDefined();
+      expect(instance.viewOptions.length).toBe(2);
+      expect(instance.contentFirstOption).toBeUndefined();
+      expect(instance.contentOptions).toBeDefined();
+      expect(instance.contentOptions.length).toBe(0);
     });
 
     onlyInIvy('multiple local refs are supported in Ivy')
@@ -358,6 +384,17 @@ describe('query logic', () => {
       const comp = fixture.debugElement.children[0].references['q'];
       expect(comp.contentChild).toBeAnInstanceOf(SimpleCompA);
       expect(comp.contentChildren.first).toBeAnInstanceOf(SimpleCompA);
+    });
+
+    it('should support selecting InjectionToken', () => {
+      const fixture = TestBed.createComponent(TestInjectionTokenContentQueries);
+      const instance =
+          fixture.debugElement.query(By.directive(TestInjectionTokenQueries)).componentInstance;
+      fixture.detectChanges();
+      expect(instance.contentFirstOption).toBeDefined();
+      expect(instance.contentFirstOption instanceof TestComponentWithToken).toBe(true);
+      expect(instance.contentOptions).toBeDefined();
+      expect(instance.contentOptions.length).toBe(2);
     });
 
     onlyInIvy('multiple local refs are supported in Ivy')
@@ -1770,4 +1807,40 @@ class SuperDirective {
   `
 })
 class SubComponent extends SuperDirective {
+}
+
+const MY_OPTION_TOKEN = new InjectionToken<TestComponentWithToken>('ComponentWithToken');
+
+@Component({
+  selector: 'my-option',
+  template: 'Option',
+  providers: [{provide: MY_OPTION_TOKEN, useExisting: TestComponentWithToken}],
+})
+class TestComponentWithToken {
+}
+
+@Component({
+  selector: 'test-injection-token',
+  template: `
+    <my-option></my-option>
+    <my-option></my-option>
+    <ng-content></ng-content>
+  `
+})
+class TestInjectionTokenQueries {
+  @ViewChild(MY_OPTION_TOKEN) viewFirstOption!: TestComponentWithToken;
+  @ViewChildren(MY_OPTION_TOKEN) viewOptions!: QueryList<TestComponentWithToken>;
+  @ContentChild(MY_OPTION_TOKEN) contentFirstOption!: TestComponentWithToken;
+  @ContentChildren(MY_OPTION_TOKEN) contentOptions!: QueryList<TestComponentWithToken>;
+}
+
+@Component({
+  template: `
+    <test-injection-token>
+      <my-option></my-option>
+      <my-option></my-option>
+    </test-injection-token>
+  `
+})
+class TestInjectionTokenContentQueries {
 }

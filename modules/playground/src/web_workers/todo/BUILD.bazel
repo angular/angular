@@ -19,8 +19,8 @@ ts_devserver(
     name = "devserver",
     bootstrap = [
         "@npm//:node_modules/systemjs/dist/system.js",
-        "//packages/zone.js/dist:zone.js",
-        "//packages/zone.js/dist:long-stack-trace-zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:long-stack-trace-zone.umd.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     entry_module = "angular/modules/playground/src/web_workers/todo/index",

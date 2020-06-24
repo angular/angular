@@ -50,11 +50,6 @@
     "url": "https://github.com/angular/angular.git",
     "directory": "packages/bazel"
   },
-  "builders": "./src/builders/builders.json",
-  "schematics": "./src/schematics/collection.json",
-  "ng-add": {
-    "save": "devDependencies"
-  },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },

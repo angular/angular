@@ -30,8 +30,8 @@ export default [
     ['J', 'H', 'M', 'A', 'M', 'B', 'H', 'Ö', 'H', 'W', 'W', 'C'],
     ['Jen', 'Hor', 'Mär', 'Abr', 'Mei', 'Brá', 'Hei', 'Öig', 'Her', 'Wím', 'Win', 'Chr'],
     [
-      'Jenner', 'Hornig', 'Märze', 'Abrille', 'Meije', 'Bráčet', 'Heiwet', 'Öigšte',
-      'Herbštmánet', 'Wímánet', 'Wintermánet', 'Chrištmánet'
+      'Jenner', 'Hornig', 'Märze', 'Abrille', 'Meije', 'Bráčet', 'Heiwet', 'Öigšte', 'Herbštmánet',
+      'Wímánet', 'Wintermánet', 'Chrištmánet'
     ]
   ],
   u,

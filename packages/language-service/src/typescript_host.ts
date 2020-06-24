@@ -72,8 +72,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     ngModules: [],
   };
 
-  constructor(
-      readonly tsLsHost: tss.LanguageServiceHost, private readonly tsLS: tss.LanguageService) {
+  constructor(readonly tsLsHost: tss.LanguageServiceHost, readonly tsLS: tss.LanguageService) {
     this.summaryResolver = new AotSummaryResolver(
         {
           loadSummary(_filePath: string) {
@@ -175,8 +174,15 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       }
     };
     const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
-    this.analyzedModules =
-        analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
+
+    try {
+      this.analyzedModules =
+          analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
+    } catch (e) {
+      // Analyzing modules may throw; in that case, reuse the old modules.
+      this.error(`Analyzing NgModules failed. ${e}`);
+      return this.analyzedModules;
+    }
 
     // update template references and fileToComponent
     const urlResolver = createOfflineCompileUrlResolver();

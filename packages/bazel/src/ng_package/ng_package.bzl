@@ -21,7 +21,6 @@ load(
     "create_package",
 )
 load("//packages/bazel/src:external.bzl", "FLAT_DTS_FILE_SUFFIX")
-load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
 load("//packages/bazel/src/ng_package:collect-type-definitions.bzl", "collect_type_definitions")
 
 # Prints a debug message if "--define=VERBOSE_LOGS=true" is specified.
@@ -195,7 +194,12 @@ def _compute_node_modules_root(ctx):
         node_modules_root = "external/npm/node_modules"
     return node_modules_root
 
-def _write_rollup_config(ctx, root_dir, filename = "_%s.rollup.conf.js", include_tslib = False):
+def _write_rollup_config(
+        ctx,
+        root_dir,
+        filename = "_%s.rollup.conf.js",
+        include_tslib = False,
+        downlevel_to_es5 = False):
     """Generate a rollup config file.
 
     Args:
@@ -239,6 +243,7 @@ def _write_rollup_config(ctx, root_dir, filename = "_%s.rollup.conf.js", include
             "TMPL_workspace_name": ctx.workspace_name,
             "TMPL_external": ", ".join(["'%s'" % e for e in external]),
             "TMPL_globals": ", ".join(["'%s': '%s'" % g for g in globals.items()]),
+            "TMPL_downlevel_to_es5": "true" if downlevel_to_es5 else "false",
         },
     )
 
@@ -347,23 +352,17 @@ def _ng_package_impl(ctx):
             esm_2015_files_depsets.append(dep[JSEcmaScriptModuleInfo].sources)
 
     esm_2015_files = _filter_out_generated_files(depset(transitive = esm_2015_files_depsets), "mjs")
-    esm5_sources = _filter_out_generated_files(flatten_esm5(ctx), "js")
 
     # These accumulators match the directory names where the files live in the
     # Angular package format.
     fesm2015 = []
-    fesm5 = []
     esm2015 = []
-    esm5 = []
     bundles = []
     bundled_type_definitions = []
     type_definitions = []
 
-    # For Angular Package Format v6, we put all the individual .js files in the
-    # esm5/ and esm2015/ folders.
-    for f in esm5_sources.to_list():
-        if f.path.endswith(".js"):
-            esm5.append(struct(js = f, map = None))
+    # Collect all prodmode esm2015 source files which should be copied into the
+    # `esm2015` folder according to Angular Package Format v10.
     for f in esm_2015_files.to_list():
         # tsickle generated `{module}.externs.js` file will be added to JSEcmaScriptModuleInfo sources
         # by ng_module so we include both .js and .mjs sources from the JSEcmaScriptModuleInfo provider
@@ -462,24 +461,16 @@ def _ng_package_impl(ctx):
             index_file.replace(".js", ".mjs"),
         ] if p])
 
-        es5_entry_point = "/".join([p for p in [
-            ctx.label.package,
-            entry_point,
-            index_file,
-        ] if p])
-
         if entry_point:
             # TODO jasonaden says there is no particular reason these filenames differ
             prefix = primary_entry_point_name(ctx.attr.name, ctx.attr.entry_point, ctx.attr.entry_point_name)
             umd_output_filename = "-".join([prefix] + entry_point.split("/"))
             fesm_output_filename = entry_point.replace("/", "__")
             fesm2015_output = ctx.actions.declare_file("fesm2015/%s.js" % fesm_output_filename)
-            fesm5_output = ctx.actions.declare_file("%s.js" % fesm_output_filename)
             umd_output = ctx.actions.declare_file("%s.umd.js" % umd_output_filename)
             min_output = ctx.actions.declare_file("%s.umd.min.js" % umd_output_filename)
         else:
             fesm2015_output = ctx.outputs.fesm2015
-            fesm5_output = ctx.outputs.fesm5
             umd_output = ctx.outputs.umd
             min_output = ctx.outputs.umd_min
 
@@ -489,11 +480,16 @@ def _ng_package_impl(ctx):
         for d in ctx.attr.deps:
             if NpmPackageInfo in d:
                 node_modules_files += _filter_js_inputs(d.files)
-        esm5_rollup_inputs = depset(node_modules_files, transitive = [esm5_sources])
 
+        esm2015_rollup_inputs = depset(node_modules_files, transitive = [esm_2015_files])
         esm2015_config = _write_rollup_config(ctx, ctx.bin_dir.path, filename = "_%s.rollup_esm2015.conf.js")
-        esm5_config = _write_rollup_config(ctx, "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]), filename = "_%s.rollup_esm5.conf.js")
-        esm5_tslib_config = _write_rollup_config(ctx, "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]), filename = "_%s.rollup_esm5_tslib.conf.js", include_tslib = True)
+        umd_config = _write_rollup_config(
+            ctx,
+            ctx.bin_dir.path,
+            filename = "_%s.rollup_umd.conf.js",
+            include_tslib = True,
+            downlevel_to_es5 = True,
+        )
 
         fesm2015.append(
             _run_rollup(
@@ -501,20 +497,8 @@ def _ng_package_impl(ctx):
                 "fesm2015",
                 esm2015_config,
                 es2015_entry_point,
-                depset(node_modules_files, transitive = [esm_2015_files]),
+                esm2015_rollup_inputs,
                 fesm2015_output,
-                format = "esm",
-            ),
-        )
-
-        fesm5.append(
-            _run_rollup(
-                ctx,
-                "fesm5",
-                esm5_config,
-                es5_entry_point,
-                esm5_rollup_inputs,
-                fesm5_output,
                 format = "esm",
             ),
         )
@@ -523,14 +507,15 @@ def _ng_package_impl(ctx):
             _run_rollup(
                 ctx,
                 "umd",
-                esm5_tslib_config,
-                es5_entry_point,
-                esm5_rollup_inputs,
+                umd_config,
+                es2015_entry_point,
+                esm2015_rollup_inputs,
                 umd_output,
                 module_name = module_name,
                 format = "umd",
             ),
         )
+
         terser_sourcemap = _terser(
             ctx,
             umd_output,
@@ -541,11 +526,10 @@ def _ng_package_impl(ctx):
     packager_inputs = (
         ctx.files.srcs +
         ctx.files.data +
-        esm5_sources.to_list() +
         type_definitions +
         bundled_type_definitions +
-        [f.js for f in fesm2015 + fesm5 + esm2015 + esm5 + bundles] +
-        [f.map for f in fesm2015 + fesm5 + esm2015 + esm5 + bundles if f.map]
+        [f.js for f in fesm2015 + esm2015 + bundles] +
+        [f.map for f in fesm2015 + esm2015 + bundles if f.map]
     )
 
     packager_args = ctx.actions.args()
@@ -582,9 +566,7 @@ def _ng_package_impl(ctx):
         packager_args.add("")
 
     packager_args.add_joined(_flatten_paths(fesm2015), join_with = ",", omit_if_empty = False)
-    packager_args.add_joined(_flatten_paths(fesm5), join_with = ",", omit_if_empty = False)
     packager_args.add_joined(_flatten_paths(esm2015), join_with = ",", omit_if_empty = False)
-    packager_args.add_joined(_flatten_paths(esm5), join_with = ",", omit_if_empty = False)
     packager_args.add_joined(_flatten_paths(bundles), join_with = ",", omit_if_empty = False)
     packager_args.add_joined([s.path for s in ctx.files.srcs], join_with = ",", omit_if_empty = False)
     packager_args.add_joined([s.path for s in type_definitions], join_with = ",", omit_if_empty = False)
@@ -627,7 +609,7 @@ def _ng_package_impl(ctx):
         files = depset([package_dir]),
     )]
 
-_NG_PACKAGE_DEPS_ASPECTS = [esm5_outputs_aspect, ng_package_module_mappings_aspect, node_modules_aspect]
+_NG_PACKAGE_DEPS_ASPECTS = [ng_package_module_mappings_aspect, node_modules_aspect]
 
 _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
     "srcs": attr.label_list(
@@ -800,7 +782,6 @@ def _ng_package_outputs(name, entry_point, entry_point_name):
 
     basename = primary_entry_point_name(name, entry_point, entry_point_name)
     outputs = {
-        "fesm5": "fesm5/%s.js" % basename,
         "fesm2015": "fesm2015/%s.js" % basename,
         "umd": "%s.umd.js" % basename,
         "umd_min": "%s.umd.min.js" % basename,

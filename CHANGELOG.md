@@ -1,3 +1,143 @@
+<!--
+<a name="10.0.0"></a>
+# [10.0.0](https://github.com/angular/angular/compare/10.0.0-next.0...10.0.0) (2020-06-24)
+
+
+### Release Highlights & Update instructions
+To learn about the release highlights and our CLI-powered automated update workflow for your projects please check out the [v10 release announcement](https://blog.angular.io/TODO).
+
+
+#### Dependency updates
+@angular/compiler-cli now requires:
+- TypeScript 3.9
+
+TODO: concat all the 10.0.0-next.* & -rc.* release notes, and group them by area/package just like in https://github.com/angular/angular/blob/master/CHANGELOG.md#900-2020-02-06 but consider listing features before bugfixes because people care about feature in major releases more than about bug fixes.
+-->
+
+
+<a name="10.0.0-rc.6"></a>
+# [10.0.0-rc.6](https://github.com/angular/angular/compare/10.0.0-rc.5...10.0.0-rc.6) (2020-06-15)
+
+
+### Bug Fixes
+
+* **compiler:** unable to resolve destructuring variable declarations ([#37497](https://github.com/angular/angular/issues/37497)) ([df10597](https://github.com/angular/angular/commit/df10597)), closes [#36917](https://github.com/angular/angular/issues/36917)
+* **core:** should fake a top event task when coalescing events to prevent draining microTaskQueue too early. ([#36841](https://github.com/angular/angular/issues/36841)) ([9b8eb42](https://github.com/angular/angular/commit/9b8eb42)), closes [#36839](https://github.com/angular/angular/issues/36839)
+* **language-service:** wrong completions in conditional operator ([#37505](https://github.com/angular/angular/issues/37505)) ([32020f9](https://github.com/angular/angular/commit/32020f9))
+* **ngcc:** correctly get config for packages in nested `node_modules/` ([#37040](https://github.com/angular/angular/issues/37040)) ([9ade1c3](https://github.com/angular/angular/commit/9ade1c3))
+* **ngcc:** correctly get config for sub-entry-points when primary entry-point is ignored ([#37040](https://github.com/angular/angular/issues/37040)) ([bf57776](https://github.com/angular/angular/commit/bf57776))
+* **ngcc:** correctly retrieve a package's version from its `package.json` ([#37040](https://github.com/angular/angular/issues/37040)) ([11c0402](https://github.com/angular/angular/commit/11c0402))
+* **router:** fix navigation ignoring logic to compare to the browser url ([#37408](https://github.com/angular/angular/issues/37408)) ([5db2e79](https://github.com/angular/angular/commit/5db2e79)), closes [#16710](https://github.com/angular/angular/issues/16710) [/github.com/angular/angular/issues/16710#issuecomment-634869739](https://github.com//github.com/angular/angular/issues/16710/issues/issuecomment-634869739) [#13586](https://github.com/angular/angular/issues/13586)
+
+
+### Features
+
+* **bazel:** expose explicit mapping from closure to devmode files ([#36262](https://github.com/angular/angular/issues/36262)) ([ba796bb](https://github.com/angular/angular/commit/ba796bb))
+
+
+
+<a name="10.0.0-rc.5"></a>
+# [10.0.0-rc.5](https://github.com/angular/angular/compare/10.0.0-rc.4...10.0.0-rc.5) (2020-06-11)
+
+
+### Bug Fixes
+
+* **ngcc:** do not scan import expressions in d.ts files ([#37503](https://github.com/angular/angular/issues/37503)) ([8248307](https://github.com/angular/angular/commit/8248307))
+* **ngcc:** use annotateForClosureCompiler option ([#36652](https://github.com/angular/angular/issues/36652)) ([eca8d11](https://github.com/angular/angular/commit/eca8d11)), closes [#36618](https://github.com/angular/angular/issues/36618)
+
+
+### Features
+
+* **language-service:** Remove HTML entities autocompletion ([#37515](https://github.com/angular/angular/issues/37515)) ([67bd88b](https://github.com/angular/angular/commit/67bd88b))
+
+
+
+<a name="10.0.0-rc.4"></a>
+# [10.0.0-rc.4](https://github.com/angular/angular/compare/10.0.0-rc.3...10.0.0-rc.4) (2020-06-10)
+
+
+### Bug Fixes
+
+* **common:** prevent duplicate URL change notifications ([#37459](https://github.com/angular/angular/issues/37459)) ([0864726](https://github.com/angular/angular/commit/0864726))
+* **compiler-cli:** downlevel angular decorators to static properties ([#37382](https://github.com/angular/angular/issues/37382)) ([323651b](https://github.com/angular/angular/commit/323651b)), closes [#30586](https://github.com/angular/angular/issues/30586) [#30106](https://github.com/angular/angular/issues/30106) [#30586](https://github.com/angular/angular/issues/30586) [#30141](https://github.com/angular/angular/issues/30141)
+* **language-service:** Improve signature selection by finding exact match ([#37494](https://github.com/angular/angular/issues/37494)) ([e97a2d4](https://github.com/angular/angular/commit/e97a2d4))
+* **platform-server:** correctly handle absolute relative URLs ([#37341](https://github.com/angular/angular/issues/37341)) ([420d1c3](https://github.com/angular/angular/commit/420d1c3)), closes [#37314](https://github.com/angular/angular/issues/37314)
+* **router:** Fix relative link generation from empty path components ([#37446](https://github.com/angular/angular/issues/37446)) ([585e3f6](https://github.com/angular/angular/commit/585e3f6)), closes [#26243](https://github.com/angular/angular/issues/26243) [#13011](https://github.com/angular/angular/issues/13011) [#35687](https://github.com/angular/angular/issues/35687)
+
+
+### Features
+
+* **language-service:** TS references from template items ([#37437](https://github.com/angular/angular/issues/37437)) ([bf2cb6f](https://github.com/angular/angular/commit/bf2cb6f))
+
+
+### Performance Improvements
+
+* **core:** avoid pulling in jit-specific code in aot bundles ([#37372](https://github.com/angular/angular/issues/37372)) ([#37514](https://github.com/angular/angular/issues/37514)) ([6114cd2](https://github.com/angular/angular/commit/6114cd2)), closes [#29083](https://github.com/angular/angular/issues/29083)
+
+
+<a name="9.1.11"></a>
+## [9.1.11](https://github.com/angular/angular/compare/9.1.10...9.1.11) (2020-06-10)
+
+### Reverts
+
+* **elements:** fire custom element output events during component initialization ([dc9da17](https://github.com/angular/angular/commit/dc9da17))
+
+
+<a name="9.1.10"></a>
+## [9.1.10](https://github.com/angular/angular/compare/9.1.9...9.1.10) (2020-06-09)
+
+
+### Bug Fixes
+
+* **elements:** fire custom element output events during component initialization ([454e073](https://github.com/angular/angular/commit/454e073)), closes [/github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts#L167-L170](https://github.com//github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts/issues/L167-L170) [/github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts#L164](https://github.com//github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts/issues/L164) [/github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/component-factory-strategy.ts#L158](https://github.com//github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/component-factory-strategy.ts/issues/L158) [#36141](https://github.com/angular/angular/issues/36141)
+
+
+### Performance Improvements
+
+* **ngcc:** cache parsed tsconfig between runs ([1aae94a](https://github.com/angular/angular/commit/1aae94a)), closes [#37417](https://github.com/angular/angular/issues/37417) [#36882](https://github.com/angular/angular/issues/36882)
+
+
+
+<a name="10.0.0-rc.3"></a>
+# [10.0.0-rc.3](https://github.com/angular/angular/compare/10.0.0-rc.2...10.0.0-rc.3) (2020-06-08)
+
+
+### Bug Fixes
+
+* **common:** prevent duplicate URL change notifications ([#37404](https://github.com/angular/angular/issues/37404)) ([fff424a](https://github.com/angular/angular/commit/fff424a))
+* **compiler-cli:** use ModuleWithProviders type if static eval fails ([#37126](https://github.com/angular/angular/issues/37126)) ([305b5a3](https://github.com/angular/angular/commit/305b5a3))
+* **core:** infinite loop if injectable using inheritance has a custom decorator ([#37022](https://github.com/angular/angular/issues/37022)) ([bc54936](https://github.com/angular/angular/commit/bc54936)), closes [#35733](https://github.com/angular/angular/issues/35733)
+* **elements:** fire custom element output events during component initialization ([#36161](https://github.com/angular/angular/issues/36161)) ([e9bff5f](https://github.com/angular/angular/commit/e9bff5f)), closes [/github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts#L167-L170](https://github.com//github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts/issues/L167-L170) [/github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts#L164](https://github.com//github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts/issues/L164) [/github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/component-factory-strategy.ts#L158](https://github.com//github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/component-factory-strategy.ts/issues/L158) [#36141](https://github.com/angular/angular/issues/36141)
+* **language-service:** Recover from error in analyzing Ng Modules ([#37108](https://github.com/angular/angular/issues/37108)) ([2c1f35e](https://github.com/angular/angular/commit/2c1f35e))
+* **ngcc:** capture dynamic import expressions as well as declarations ([#37075](https://github.com/angular/angular/issues/37075)) ([5c0bdae](https://github.com/angular/angular/commit/5c0bdae))
+* **ngcc:** do not inline source-maps for non-inline typings source-maps ([#37363](https://github.com/angular/angular/issues/37363)) ([b4e26b5](https://github.com/angular/angular/commit/b4e26b5)), closes [#37324](https://github.com/angular/angular/issues/37324)
+* **ngcc:** ensure that more dependencies are found by `EsmDependencyHost` ([#37075](https://github.com/angular/angular/issues/37075)) ([c6872c0](https://github.com/angular/angular/commit/c6872c0))
+* **ngcc:** find decorated constructor params on IIFE wrapped classes ([#37436](https://github.com/angular/angular/issues/37436)) ([2cb3b66](https://github.com/angular/angular/commit/2cb3b66)), closes [#37330](https://github.com/angular/angular/issues/37330)
+* **service-worker:** Don't stay locked in EXISTING_CLIENTS_ONLY if corrupted data ([#37453](https://github.com/angular/angular/issues/37453)) ([6f93847](https://github.com/angular/angular/commit/6f93847)), closes [#31109](https://github.com/angular/angular/issues/31109) [#31865](https://github.com/angular/angular/issues/31865) [/github.com/angular/angular/blob/3569fdf/packages/service-worker/worker/src/driver.ts#L559-L563](https://github.com//github.com/angular/angular/blob/3569fdf/packages/service-worker/worker/src/driver.ts/issues/L559-L563) [/github.com/angular/angular/blob/3569fdf/packages/service-worker/worker/src/driver.ts#L505-L519](https://github.com//github.com/angular/angular/blob/3569fdf/packages/service-worker/worker/src/driver.ts/issues/L505-L519)
+
+
+### Features
+
+* **ngcc:** implement a program-based entry-point finder ([#37075](https://github.com/angular/angular/issues/37075)) ([f3ccd29](https://github.com/angular/angular/commit/f3ccd29))
+
+
+### Performance Improvements
+
+* **ngcc:** allow immediately reporting a stale lock file ([#37250](https://github.com/angular/angular/issues/37250)) ([930d204](https://github.com/angular/angular/commit/930d204))
+* **ngcc:** cache parsed tsconfig between runs ([#37417](https://github.com/angular/angular/issues/37417)) ([f9daa13](https://github.com/angular/angular/commit/f9daa13)), closes [#36882](https://github.com/angular/angular/issues/36882)
+
+
+<a name="10.0.0-rc.2"></a>
+# [10.0.0-rc.2](https://github.com/angular/angular/compare/10.0.0-rc.0...10.0.0-rc.2) (2020-06-01)
+
+
+### Bug Fixes
+
+* **core:** reenable decorator downleveling for Angular npm packages ([#37317](https://github.com/angular/angular/issues/37317)) ([d16a7f3](https://github.com/angular/angular/commit/d16a7f3)), closes [#37221](https://github.com/angular/angular/issues/37221) [#37221](https://github.com/angular/angular/issues/37221)
+
+
+Note: the 10.0.0-rc.1 release on npm accidentally glitched-out midway, so we cut 10.0.0-rc.2 instead. oops :-)
+
 <a name="10.0.0-rc.0"></a>
 # [10.0.0-rc.0](https://github.com/angular/angular/compare/10.0.0-next.9...10.0.0-rc.0) (2020-05-21)
 
@@ -75,6 +215,9 @@ This release contains a re-submit of the following 3 commits with fixes for TS 3
 * **router:** update type for routerLink to include null and undefined ([#37018](https://github.com/angular/angular/issues/37018)) ([ef9f8df](https://github.com/angular/angular/commit/ef9f8df)), closes [#13380](https://github.com/angular/angular/issues/13380) [#36544](https://github.com/angular/angular/issues/36544)
 
 
+### Features
+
+* **core** update to tslib 2.0 and move to direct dependencies ([#37198](https://github.com/angular/angular/pull/37198)), closes [#37188](https://github.com/angular/angular/issues/37188)
 
 <a name="10.0.0-next.8"></a>
 # [10.0.0-next.8](https://github.com/angular/angular/compare/10.0.0-next.7...10.0.0-next.8) (2020-05-18)

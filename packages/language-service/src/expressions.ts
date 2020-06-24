@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath as AstPathBase, ASTWithName, ASTWithSource, RecursiveAstVisitor} from '@angular/compiler';
+import {AST, AstPath as AstPathBase, ASTWithName, ASTWithSource, Interpolation, RecursiveAstVisitor} from '@angular/compiler';
 
 import {AstType} from './expression_type';
 import {BuiltinType, Span, Symbol, SymbolTable, TemplateSource} from './types';
-import {inSpan} from './utils';
+import {inSpan, isNarrower} from './utils';
 
 type AstPath = AstPathBase<AST>;
 
@@ -20,7 +20,10 @@ function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): A
     visit(ast: AST) {
       if ((!excludeEmpty || ast.sourceSpan.start < ast.sourceSpan.end) &&
           inSpan(position, ast.sourceSpan)) {
-        path.push(ast);
+        const isNotNarrower = path.length && !isNarrower(ast.span, path[path.length - 1].span);
+        if (!isNotNarrower) {
+          path.push(ast);
+        }
         ast.visit(this);
       }
     }
@@ -32,7 +35,14 @@ function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): A
     ast = ast.ast;
   }
 
-  visitor.visit(ast);
+  // `Interpolation` is useless here except the `expressions` of it.
+  if (ast instanceof Interpolation) {
+    ast = ast.expressions.filter((_ast: AST) => inSpan(position, _ast.sourceSpan))[0];
+  }
+
+  if (ast) {
+    visitor.visit(ast);
+  }
 
   return new AstPathBase<AST>(path, position);
 }

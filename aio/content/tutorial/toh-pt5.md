@@ -7,6 +7,12 @@ There are new requirements for the Tour of Heroes app:
 * When users click a hero name in either view, navigate to a detail view of the selected hero.
 * When users click a *deep link* in an email, open the detail view for a particular hero.
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
 When you’re done, users will be able to navigate the app like this:
 
 <div class="lightbox">
@@ -466,7 +472,7 @@ from heroes list to the mini detail to the hero details and back to the heroes a
 
 ## Final code review
 
-Here are the code files discussed on this page and your app should look like this <live-example></live-example>.
+Here are the code files discussed on this page.
 
 {@a approutingmodule}
 {@a appmodule}

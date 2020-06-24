@@ -4,6 +4,12 @@ The application now has a basic title.
 Next you will create a new component to display hero information
 and place that component in the application shell.
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
 ## Create the heroes component
 
 Using the Angular CLI, generate a new component named `heroes`.
@@ -201,7 +207,7 @@ Note that `AppModule`  declares both application components, `AppComponent` and 
 
 ## Final code review
 
-Your app should look like this <live-example></live-example>. Here are the code files discussed on this page.
+Here are the code files discussed on this page.
 
 <code-tabs>
 

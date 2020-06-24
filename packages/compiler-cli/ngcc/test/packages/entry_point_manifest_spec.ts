@@ -9,12 +9,12 @@ import {createHash} from 'crypto';
 
 import {absoluteFrom, FileSystem, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {EntryPointWithDependencies} from '../../src/dependencies/dependency_host';
 import {NGCC_VERSION} from '../../src/packages/build_marker';
-import {NgccConfiguration} from '../../src/packages/configuration';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
 import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
-import {MockLogger} from '../helpers/mock_logger';
 
 import {createPackageJson} from './entry_point_spec';
 
@@ -148,9 +148,10 @@ runInEachFileSystem(() => {
         expect(entryPoints).toEqual([{
           entryPoint: {
             name: 'some_package/valid_entry_point',
-            packageJson: jasmine.any(Object),
-            package: _Abs('/project/node_modules/some_package'),
             path: _Abs('/project/node_modules/some_package/valid_entry_point'),
+            packageName: 'some_package',
+            packagePath: _Abs('/project/node_modules/some_package'),
+            packageJson: jasmine.any(Object),
             typings:
                 _Abs('/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts'),
             compiledByAngular: true,
@@ -182,6 +183,54 @@ runInEachFileSystem(() => {
         ]);
         fs.writeFile(
             _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
+        const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
+        expect(entryPoints).toEqual(null);
+      });
+
+      it('should return null if any of the entry-points are ignored by a config', () => {
+        fs.ensureDir(_Abs('/project/node_modules'));
+        fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
+        loadTestFiles([
+          {
+            name: _Abs('/project/node_modules/some_package/valid_entry_point/package.json'),
+            contents: createPackageJson('valid_entry_point'),
+          },
+          {
+            name: _Abs(
+                '/project/node_modules/some_package/valid_entry_point/valid_entry_point.metadata.json'),
+            contents: 'some meta data',
+          },
+          {
+            name: _Abs('/project/node_modules/some_package/ignored_entry_point/package.json'),
+            contents: createPackageJson('ignored_entry_point'),
+          },
+          {
+            name: _Abs(
+                '/project/node_modules/some_package/ignored_entry_point/ignored_entry_point.metadata.json'),
+            contents: 'some meta data',
+          },
+        ]);
+        manifestFile.entryPointPaths.push(
+            [
+              _Abs('/project/node_modules/some_package'),
+              _Abs('/project/node_modules/some_package/valid_entry_point'), [], [], []
+            ],
+            [
+              _Abs('/project/node_modules/some_package'),
+              _Abs('/project/node_modules/some_package/ignored_entry_point'), [], [], []
+            ],
+        );
+        fs.writeFile(
+            _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
+
+        spyOn(config, 'getPackageConfig')
+            .and.returnValue(
+                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some_package'), {
+                  entryPoints: {
+                    './ignored_entry_point': {ignore: true},
+                  },
+                }));
+
         const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
         expect(entryPoints).toEqual(null);
       });
@@ -251,8 +300,8 @@ runInEachFileSystem(() => {
         fs.writeFile(_Abs('/project/package-lock.json'), 'LOCK FILE CONTENTS');
         const entryPoint1: EntryPointWithDependencies = {
           entryPoint: {
-            package: _Abs('/project/node_modules/package-1/'),
             path: _Abs('/project/node_modules/package-1/'),
+            packagePath: _Abs('/project/node_modules/package-1/'),
           } as any,
           depInfo: {
             dependencies: new Set([
@@ -265,8 +314,8 @@ runInEachFileSystem(() => {
         };
         const entryPoint2: EntryPointWithDependencies = {
           entryPoint: {
-            package: _Abs('/project/node_modules/package-2/'),
             path: _Abs('/project/node_modules/package-2/entry-point'),
+            packagePath: _Abs('/project/node_modules/package-2/'),
           } as any,
           depInfo: {
             dependencies: new Set(),

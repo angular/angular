@@ -153,8 +153,8 @@ export function makePropDecorator(
 
       function PropDecorator(target: any, name: string) {
         const constructor = target.constructor;
-        // Use of Object.defineProperty is important since it creates non-enumerable property which
-        // prevents the property is copied during subclassing.
+        // Use of Object.defineProperty is important because it creates a non-enumerable property
+        // which prevents the property from being copied during subclassing.
         const meta = constructor.hasOwnProperty(PROP_METADATA) ?
             (constructor as any)[PROP_METADATA] :
             Object.defineProperty(constructor, PROP_METADATA, {value: {}})[PROP_METADATA];

@@ -7,10 +7,10 @@
  */
 import {absoluteFrom, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {MockLogger} from '../helpers/mock_logger';
 import {makeTestEntryPointBundle} from '../helpers/utils';
 
 runInEachFileSystem(() => {
@@ -82,7 +82,7 @@ runInEachFileSystem(() => {
             'test', 'esm2015', false, [_('/node_modules/test/entrypoint.js')]);
         const program = bundle.src.program;
         const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src);
-        const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package);
+        const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath);
         const analysis = analyzer.analyzeProgram(program);
 
         const entrypoint = getSourceFileOrError(program, _('/node_modules/test/entrypoint.js'));
@@ -113,7 +113,7 @@ runInEachFileSystem(() => {
             'test', 'esm2015', false, [_('/node_modules/test/entrypoint.js')]);
         const program = bundle.src.program;
         const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src);
-        const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package);
+        const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath);
         const analysis = analyzer.analyzeProgram(program);
 
         const x = getSourceFileOrError(program, _('/node_modules/other/x.js'));
@@ -126,7 +126,7 @@ runInEachFileSystem(() => {
             'test', 'esm2015', false, [_('/node_modules/test/entrypoint.js')]);
         const program = bundle.src.program;
         const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src);
-        const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package);
+        const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath);
         const analysis = analyzer.analyzeProgram(program);
 
         const x = getSourceFileOrError(program, _('/node_modules/test/node_modules/nested/e.js'));

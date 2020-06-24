@@ -191,24 +191,8 @@ export function compile({
     fileLoader = new UncachedFileLoader();
   }
 
-  if (!bazelOpts.es5Mode) {
-    if (bazelOpts.workspaceName === 'google3') {
-      compilerOpts.annotateForClosureCompiler = true;
-      compilerOpts.annotationsAs = 'static fields';
-    } else {
-      compilerOpts.annotateForClosureCompiler = false;
-      compilerOpts.annotationsAs = 'decorators';
-    }
-  }
-
   // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.
   const isInIvyMode = !!compilerOpts.enableIvy;
-
-  // Disable downleveling and Closure annotation if in Ivy mode.
-  if (isInIvyMode) {
-    compilerOpts.annotationsAs = 'decorators';
-  }
-
   if (!compilerOpts.rootDirs) {
     throw new Error('rootDirs is not set!');
   }
@@ -265,9 +249,6 @@ export function compile({
   }
 
   if (isInIvyMode) {
-    // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
-    bazelHost.transformDecorators = false;
-
     const delegate = bazelHost.shouldSkipTsickleProcessing.bind(bazelHost);
     bazelHost.shouldSkipTsickleProcessing = (fileName: string) => {
       // The base implementation of shouldSkipTsickleProcessing checks whether `fileName` is part of
@@ -278,11 +259,37 @@ export function compile({
     };
   }
 
-  // Prevent tsickle adding any types at all if we don't want closure compiler annotations.
+  // By default, disable tsickle decorator transforming in the tsickle compiler host.
+  // The Angular compilers have their own logic for decorator processing and we wouldn't
+  // want tsickle to interfere with that.
+  bazelHost.transformDecorators = false;
+
+  // By default in the `prodmode` output, we do not add annotations for closure compiler.
+  // Though, if we are building inside `google3`, closure annotations are desired for
+  // prodmode output, so we enable it by default. The defaults can be overridden by
+  // setting the `annotateForClosureCompiler` compiler option in the user tsconfig.
+  if (!bazelOpts.es5Mode) {
+    if (bazelOpts.workspaceName === 'google3') {
+      compilerOpts.annotateForClosureCompiler = true;
+      // Enable the tsickle decorator transform in google3 with Ivy mode enabled. The tsickle
+      // decorator transformation is still needed. This might be because of custom decorators
+      // with the `@Annotation` JSDoc that will be processed by the tsickle decorator transform.
+      // TODO: Figure out why this is needed in g3 and how we can improve this. FW-2225
+      if (isInIvyMode) {
+        bazelHost.transformDecorators = true;
+      }
+    } else {
+      compilerOpts.annotateForClosureCompiler = false;
+    }
+  }
+
+  // The `annotateForClosureCompiler` Angular compiler option is not respected by default
+  // as ngc-wrapped handles tsickle emit on its own. This means that we need to update
+  // the tsickle compiler host based on the `annotateForClosureCompiler` flag.
   if (compilerOpts.annotateForClosureCompiler) {
     bazelHost.transformTypesToClosure = true;
-    bazelHost.transformDecorators = true;
   }
+
   const origBazelHostFileExist = bazelHost.fileExists;
   bazelHost.fileExists = (fileName: string) => {
     if (NGC_ASSETS.test(fileName)) {

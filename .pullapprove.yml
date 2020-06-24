@@ -34,41 +34,8 @@
 ####################################################################################
 #  GitHub usernames
 ####################################################################################
-#  aikidave - Dave Shevitz
-#  alan-agius4 - Alan Agius
-#  alxhub - Alex Rickabaugh
-#  AndrewKushnir - Andrew Kushnir
-#  andrewseguin - Andrew Seguin
-#  atscott - Andrew Scott
-#  ayazhafiz - Ayaz Hafiz
-#  clydin - Charles Lyding
-#  crisbeto - Kristiyan Kostadinov
-#  dennispbrown - Denny Brown
-#  devversion - Paul Gschwendtner
-#  dgp1130 - Doug Parker
-#  filipesilva - Filipe Silva
-#  gkalpak - Georgios Kalpakas
-#  gregmagolan - Greg Magolan
-#  IgorMinar - Igor Minar
-#  jbogarthyde - Judy Bogart
-#  jelbourn - Jeremy Elbourn
-#  JiaLiPassion - Jia Li
-#  JoostK - Joost Koehoorn
-#  josephperrott - Joey Perrott
-#  juleskremer - Jules Kremer
-#  kapunahelewong - Kapunahele Wong
-#  kara - Kara Erickson
-#  kyliau - Keen Yee Liau
-#  manughub - Manu Murthy
-#  matsko - Matias Niemela
-#  mgechev - Minko Gechev
-#  mhevery - Miško Hevery
-#  michaelprentice - Michael Prentice
-#  mmalerba - Miles Malerba
-#  petebacondarwin - Pete Bacon Darwin
-#  pkozlowski-opensource - Pawel Kozlowski
-#  robwormald - Rob Wormald
-#  StephenFluin - Stephen Fluin
+# See reviewer list under `required-minimum-review` group.  Team member names and
+# usernames are managed there.
 
 
 ####################################################################################
@@ -80,8 +47,8 @@
 #  Used for approving minor changes, large-scale refactorings, and in emergency situations.
 #
 # IgorMinar
+# jelbourn
 # josephperrott
-# kara
 # mhevery
 #
 # =========================================================
@@ -100,8 +67,16 @@ version: 3
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
 meta:
-  1: &can-be-global-approved "\"global-approvers\" not in groups.approved"
-  2: &can-be-global-docs-approved "\"global-docs-approvers\" not in groups.approved"
+  can-be-global-approved: &can-be-global-approved "\"global-approvers\" not in groups.approved"
+  can-be-global-docs-approved: &can-be-global-docs-approved "\"global-docs-approvers\" not in groups.approved"
+  defaults: &defaults
+    reviews:
+      # Authors provide their approval implicitly, this approval allows for a reviewer
+      # from a group not to need a review specifically for an area of the repository
+      # they own.  This is coupled with the `required-minimum-review` group which requires
+      # that all PRs are reviewed by at least one team member who is not the author of
+      # the PR.
+      author_value: 1
 
 # turn on 'draft' support
 # https://docs.pullapprove.com/config/github-api-version/
@@ -158,9 +133,62 @@ groups:
       reviewed_for: required
 
   # =========================================================
+  # Require review on all PRs
+  #
+  # All PRs require at least one review.  This rule will not
+  # request any reviewers, however will require that at least
+  # one review is provided before the group is satisfied.
+  # =========================================================
+  required-minimum-review:
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+    reviews:
+      request: 0 # Do not request any reviews from the reviewer group
+      required: 1 # Require that all PRs have approval from at least one of the users in the group
+      author_value: 0 # The author of the PR cannot provide an approval for themself
+    reviewers:
+      users:
+         - aikidave                # Dave Shevitz
+         - alan-agius4             # Alan Agius
+         - alxhub                  # Alex Rickabaugh
+         - AndrewKushnir           # Andrew Kushnir
+         - andrewseguin            # Andrew Seguin
+         - atscott                 # Andrew Scott
+         - ayazhafiz               # Ayaz Hafiz
+         - clydin                  # Charles Lyding
+         - crisbeto                # Kristiyan Kostadinov
+         - dennispbrown            # Denny Brown
+         - devversion              # Paul Gschwendtner
+         - dgp1130                 # Doug Parker
+         - filipesilva             # Filipe Silva
+         - gkalpak                 # Georgios Kalpakas
+         - gregmagolan             # Greg Magolan
+         - IgorMinar               # Igor Minar
+         - jbogarthyde             # Judy Bogart
+         - jelbourn                # Jeremy Elbourn
+         - JiaLiPassion            # Jia Li
+         - JoostK                  # Joost Koehoorn
+         - josephperrott           # Joey Perrott
+         - juleskremer             # Jules Kremer
+         - kapunahelewong          # Kapunahele Wong
+         - kara                    # Kara Erickson
+         - kyliau                  # Keen Yee Liau
+         - manughub                # Manu Murthy
+         - matsko                  # Matias Niemela
+         - mgechev                 # Minko Gechev
+         - mhevery                 # Miško Hevery
+         - mmalerba                # Miles Malerba
+         - petebacondarwin         # Pete Bacon Darwin
+         - pkozlowski-opensource   # Pawel Kozlowski
+         - Splaktar                # Michael Prentice
+         - StephenFluin            # Stephen Fluin
+
+  # =========================================================
   #  Framework: Animations
   # =========================================================
   fw-animations:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -185,6 +213,7 @@ groups:
   #  Framework: Compiler
   # =========================================================
   fw-compiler:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -203,13 +232,13 @@ groups:
         - alxhub
         - AndrewKushnir
         - JoostK
-        - kara
 
 
   # =========================================================
   #  Framework: Compiler / ngcc
   # =========================================================
   fw-ngcc:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -226,6 +255,7 @@ groups:
   #  Framework: Migrations
   # =========================================================
   fw-migrations:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -235,13 +265,13 @@ groups:
         - alxhub
         - crisbeto
         - devversion
-        - kara
 
 
   # =========================================================
   #  Framework: Core
   # =========================================================
   fw-core:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -285,6 +315,7 @@ groups:
           'aio/content/images/guide/dependency-injection-in-action/**',
           'aio/content/guide/dependency-injection-navtree.md',
           'aio/content/guide/dependency-injection-providers.md',
+          'aio/content/guide/lightweight-injection-tokens.md',
           'aio/content/guide/displaying-data.md',
           'aio/content/examples/displaying-data/**',
           'aio/content/images/guide/displaying-data/**',
@@ -352,7 +383,7 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - kara
+        - ~kara  # do not request reviews from Kara, but allow her to approve PRs
         - mhevery
         - pkozlowski-opensource
 
@@ -361,6 +392,7 @@ groups:
   #  Framework: Http
   # =========================================================
   fw-http:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -382,6 +414,7 @@ groups:
   #  Framework: Elements
   # =========================================================
   fw-elements:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -402,6 +435,7 @@ groups:
   #  Framework: Forms
   # =========================================================
   fw-forms:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -434,6 +468,7 @@ groups:
   #  Framework: i18n
   # =========================================================
   fw-i18n:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -467,6 +502,7 @@ groups:
   #  Framework: Platform Server
   # =========================================================
   fw-platform-server:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -486,6 +522,7 @@ groups:
   #  Framework: Router
   # =========================================================
   fw-router:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -508,6 +545,7 @@ groups:
   #  Framework: Service Worker
   # =========================================================
   fw-service-worker:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -535,6 +573,7 @@ groups:
   #  Framework: Upgrade
   # =========================================================
   fw-upgrade:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -565,6 +604,7 @@ groups:
   #  Framework: Testing
   # =========================================================
   fw-testing:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -579,7 +619,6 @@ groups:
       users:
         - AndrewKushnir
         - IgorMinar
-        - kara
         - pkozlowski-opensource
 
 
@@ -587,6 +626,7 @@ groups:
   #  Framework: Benchmarks
   # =========================================================
   fw-benchmarks:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -596,7 +636,6 @@ groups:
     reviewers:
       users:
         - IgorMinar
-        - kara
         - pkozlowski-opensource
 
 
@@ -604,6 +643,7 @@ groups:
   #  Framework: Playground
   # =========================================================
   fw-playground:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -613,13 +653,15 @@ groups:
     reviewers:
       users:
         - IgorMinar
-        - kara
+        - jelbourn
+        - pkozlowski-opensource
 
 
   # =========================================================
   #  Framework: Security
   # =========================================================
   fw-security:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -637,18 +679,25 @@ groups:
       users:
         - IgorMinar
         - mhevery
+        - jelbourn
+        - pkozlowski-opensource
+    reviews:
+      request: -1   # request reviews from everyone
+      required: 2   # require at least 2 approvals
+      reviewed_for: required
+
 
   # =========================================================
   #  Bazel
   # =========================================================
   bazel:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/bazel/**',
-          'aio/content/guide/bazel.md'
           ])
     reviewers:
       users:
@@ -661,6 +710,7 @@ groups:
   #  Language Service
   # =========================================================
   language-service:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -680,6 +730,7 @@ groups:
   #  zone.js
   # =========================================================
   zone-js:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -693,11 +744,27 @@ groups:
         - JiaLiPassion
         - mhevery
 
+  # =========================================================
+  #  in-memory-web-api
+  # =========================================================
+  in-memory-web-api:
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'packages/misc/angular-in-memory-web-api/**',
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - crisbeto
 
   # =========================================================
   #  Benchpress
   # =========================================================
   benchpress:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -708,12 +775,14 @@ groups:
     reviewers:
       users:
         - alxhub
+        - josephperrott
 
 
   # =========================================================
   #  Integration Tests
   # =========================================================
   integration-tests:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -724,7 +793,6 @@ groups:
       users:
         - IgorMinar
         - josephperrott
-        - kara
         - mhevery
 
 
@@ -732,6 +800,7 @@ groups:
   #  Docs: Gettings Started & Tutorial
   # =========================================================
   docs-getting-started-and-tutorial:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -764,6 +833,7 @@ groups:
   #  Docs: Marketing
   # =========================================================
   docs-marketing:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -786,6 +856,7 @@ groups:
   #  Docs: Observables
   # =========================================================
   docs-observables:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -811,6 +882,7 @@ groups:
   #  Docs: Packaging, Tooling, Releasing
   # =========================================================
   docs-packaging-and-releasing:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -830,20 +902,47 @@ groups:
           'aio/content/guide/migration-localize.md',
           'aio/content/guide/migration-module-with-providers.md',
           'aio/content/guide/static-query-migration.md',
-          'aio/content/guide/updating-to-version-9.md',
+          'aio/content/guide/updating-to-version-10.md',
           'aio/content/guide/ivy-compatibility.md',
           'aio/content/guide/ivy-compatibility-examples.md'
           ])
     reviewers:
       users:
         - IgorMinar
-        - kara
+        - jelbourn
+
+
+  # =========================================================
+  #  Tooling: Compiler API shared with Angular CLI
+  #
+  #  Changing this API might break Angular CLI, so we require
+  #  the CLI team to approve changes here.
+  # =========================================================
+  tooling-cli-shared-api:
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'packages/compiler-cli/src/tooling.ts'
+        ])
+    reviewers:
+      users:
+        - alan-agius4
+        - clydin
+        - kyliau
+        - IgorMinar
+    reviews:
+      request: -1   # request reviews from everyone
+      required: 2   # require at least 2 approvals
+      reviewed_for: required
 
 
   # =========================================================
   #  Docs: CLI
   # =========================================================
   docs-cli:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -860,8 +959,12 @@ groups:
           'aio/content/images/guide/deployment/**',
           'aio/content/guide/file-structure.md',
           'aio/content/guide/ivy.md',
+          'aio/content/guide/strict-mode.md',
           'aio/content/guide/web-worker.md',
           'aio/content/guide/workspace-config.md',
+          'aio/content/guide/migration-solution-style-tsconfig.md',
+          'aio/content/guide/migration-update-module-and-target-compiler-options.md',
+          'aio/content/guide/migration-update-libraries-tslib.md',
           ])
     reviewers:
       users:
@@ -874,6 +977,7 @@ groups:
   #  Docs: CLI Libraries
   # =========================================================
   docs-libraries:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -894,6 +998,7 @@ groups:
   #  Docs: Schematics
   # =========================================================
   docs-schematics:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -916,6 +1021,7 @@ groups:
   #  Docs-infra
   # =========================================================
   docs-infra:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -945,6 +1051,7 @@ groups:
   #  Dev-infra
   # =========================================================
   dev-infra:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -969,8 +1076,6 @@ groups:
           'docs/TOOLS.md',
           'docs/TRIAGE_AND_LABELS.md',
           'goldens/*',
-          'modules/e2e_util/e2e_util.ts',
-          'modules/e2e_util/perf_util.ts',
           'modules/*',
           'packages/*',
           'packages/examples/test-utils/**',
@@ -978,15 +1083,10 @@ groups:
           'packages/examples/*',
           'scripts/**',
           'third_party/**',
-          'tools/brotli-cli/**',
-          'tools/browsers/**',
           'tools/build/**',
           'tools/circular_dependency_test/**',
           'tools/contributing-stats/**',
-          'tools/components/**',
           'tools/gulp-tasks/**',
-          'tools/ng_rollup_bundle/**',
-          'tools/ngcontainer/**',
           'tools/npm/**',
           'tools/npm_integration_test/**',
           'tools/rxjs/**',
@@ -1016,6 +1116,7 @@ groups:
   #  Public API
   # =========================================================
   public-api:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -1030,14 +1131,21 @@ groups:
           ])
     reviewers:
       users:
+        - alxhub
         - IgorMinar
-        - kara
+        - jelbourn
+        - pkozlowski-opensource
+    reviews:
+      request: -1   # request reviews from everyone
+      required: 3   # require at least 3 approvals
+      reviewed_for: required
 
 
   # ================================================
   #  Size tracking
   # ================================================
   size-tracking:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -1046,14 +1154,21 @@ groups:
           ])
     reviewers:
       users:
+        - alxhub
         - IgorMinar
-        - kara
+        - jelbourn
+        - pkozlowski-opensource
+    reviews:
+      request: -1   # request reviews from everyone
+      required: 2   # require at least 2 approvals
+      reviewed_for: required
 
 
   # ================================================
   #  Circular dependencies
   # ================================================
   circular-dependencies:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -1063,8 +1178,9 @@ groups:
     reviewers:
       users:
         - IgorMinar
+        - jelbourn
         - josephperrott
-        - kara
+        - pkozlowski-opensource
 
 
 ####################################################################################
@@ -1075,6 +1191,7 @@ groups:
   #  Code Ownership
   # =========================================================
   code-ownership:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -1090,12 +1207,37 @@ groups:
   #  Catch all for if no groups match the code change
   # ====================================================
   fallback:
+    <<: *defaults
+    # A group is considered to be `active` for a PR if at least one of group's
+    # conditions matches the PR.
+    #
+    # The PullApprove CI check should fail if a PR has no `active` groups, as
+    # this indicates the PR is modifying a file that has no owner.
+    #
+    # This is enforced through the pullapprove verification check done
+    # as part of the CircleCI lint job.  Failures in this lint job should be
+    # fixed as part of the PR.  This can be done by updating the
+    # `.pullapprove.yml` file cover the unmatched path.
+    # The pullapprove verification script is part of the ng-dev tool and can be
+    # run locally with the command: `yarn -s ng-dev pullapprove verify`
+    #
+    # For cases in which the verification check fails to ensure coverage, this
+    # group will be active.  The expectation is that this should be remedied
+    # before merging the PR as described above.  In an emergency situation
+    # `global-approvers` can still approve PRs that match this `fallback` rule,
+    # but that should be an exception and not an expectation.
     conditions:
+      # The following groups have no file based conditions and will be initially `active` on all PRs
+      # - `global-approvers`
+      # - `global-docs-approvers`
+      # - `required-minimum-review`
+      #
+      # By checking the number of active groups when these are excluded, we can determine
+      # if any other groups are matched.
+      - len(groups.active.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+      # When any of the `global-*` groups is approved, they cause other groups to deactivate.
+      # In those cases, the condition above would evaluate to `true` while in reality, only a global
+      # approval has been provided. To ensure we don't activate the fallback group in such cases,
+      # ensure that no explicit global approval has been provided.
       - *can-be-global-approved
-      # Groups which are found to have matching conditions are `active`
-      # according to PullApprove. If no groups are matched and considered
-      # active, we still want to have a review occur.
-      - len(groups.active) == 0
-    reviewers:
-      users:
-        - IgorMinar
+      - *can-be-global-docs-approved

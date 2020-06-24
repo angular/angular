@@ -33,16 +33,16 @@ export default [
     ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
     ['jan', 'feb', 'mar', 'apr', 'máj', 'jún', 'júl', 'aug', 'sep', 'okt', 'nov', 'dec'],
     [
-      'januára', 'februára', 'marca', 'apríla', 'mája', 'júna', 'júla', 'augusta',
-      'septembra', 'októbra', 'novembra', 'decembra'
+      'januára', 'februára', 'marca', 'apríla', 'mája', 'júna', 'júla', 'augusta', 'septembra',
+      'októbra', 'novembra', 'decembra'
     ]
   ],
   [
     ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
     ['jan', 'feb', 'mar', 'apr', 'máj', 'jún', 'júl', 'aug', 'sep', 'okt', 'nov', 'dec'],
     [
-      'január', 'február', 'marec', 'apríl', 'máj', 'jún', 'júl', 'august', 'september',
-      'október', 'november', 'december'
+      'január', 'február', 'marec', 'apríl', 'máj', 'jún', 'júl', 'august', 'september', 'október',
+      'november', 'december'
     ]
   ],
   [['pred Kr.', 'po Kr.'], u, ['pred Kristom', 'po Kristovi']],

@@ -8,12 +8,12 @@
 import {createHash} from 'crypto';
 
 import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
-import {Logger} from '../logging/logger';
 
 import {NGCC_VERSION} from './build_marker';
 import {NgccConfiguration} from './configuration';
-import {getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from './entry_point';
+import {getEntryPointInfo, isEntryPoint} from './entry_point';
 
 /**
  * Manages reading and writing a manifest file that contains a list of all the entry-points that
@@ -75,7 +75,7 @@ export class EntryPointManifest {
         const result = getEntryPointInfo(
             this.fs, this.config, this.logger, this.fs.resolve(basePath, packagePath),
             this.fs.resolve(basePath, entryPointPath));
-        if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
+        if (!isEntryPoint(result)) {
           throw new Error(`The entry-point manifest at ${
               manifestPath} contained an invalid pair of package paths: [${packagePath}, ${
               entryPointPath}]`);
@@ -126,7 +126,7 @@ export class EntryPointManifest {
       lockFileHash: lockFileHash,
       entryPointPaths: entryPoints.map(e => {
         const entryPointPaths: EntryPointPaths = [
-          this.fs.relative(basePath, e.entryPoint.package),
+          this.fs.relative(basePath, e.entryPoint.packagePath),
           this.fs.relative(basePath, e.entryPoint.path),
         ];
         // Only add depInfo arrays if needed.

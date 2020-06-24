@@ -28,7 +28,7 @@ const graphql = unauthenticatedGraphql.defaults({
 
 /** Get a PR from github  */
 export async function getPr<PrSchema>(
-    prSchema: PrSchema, number: number, {owner, name}: GithubConfig) {
+    prSchema: PrSchema, prNumber: number, {owner, name}: GithubConfig) {
   const PR_QUERY = params(
       {
         $number: 'Int!',    // The PR number
@@ -41,7 +41,8 @@ export async function getPr<PrSchema>(
         })
       });
 
-  const result = await graphql(graphqlQuery(PR_QUERY), {number, owner, name}) as typeof PR_QUERY;
+  const result =
+      await graphql(graphqlQuery(PR_QUERY), {number: prNumber, owner, name}) as typeof PR_QUERY;
   return result.repository.pullRequest;
 }
 

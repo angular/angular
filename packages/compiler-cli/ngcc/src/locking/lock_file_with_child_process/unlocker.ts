@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {NodeJSFileSystem} from '../../../../src/ngtsc/file_system';
-import {ConsoleLogger} from '../../logging/console_logger';
+import {ConsoleLogger} from '../../../../src/ngtsc/logging';
 import {removeLockFile} from './util';
 
 /// <reference types="node" />

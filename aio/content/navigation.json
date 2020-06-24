@@ -255,11 +255,6 @@
               "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
             },
             {
-              "url": "guide/forms",
-              "title": "Template-driven Forms",
-              "tooltip": "Create a template-driven form using directives and Angular template syntax."
-            },
-            {
               "url": "guide/form-validation",
               "title": "Validate form input",
               "tooltip": "Validate user's form entries."
@@ -557,6 +552,11 @@
               "url": "guide/creating-libraries",
               "title": "Creating Libraries",
               "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
+            },
+            {
+              "url": "guide/lightweight-injection-tokens",
+              "title": "Lightweight Injection Tokens for Libraries",
+              "tooltip": "Optimize client app size by designing library services with lightweight injection tokens."
             }
           ]
         },
@@ -585,11 +585,6 @@
           "url": "guide/cli-builder",
           "title": "CLI Builders",
           "tooltip": "Using builders to customize Angular CLI."
-        },
-        {
-          "url": "guide/web-worker",
-          "title": "Web Workers in Angular",
-          "tooltip": "Implement background processing with web workers."
         }
       ]
     },
@@ -627,11 +622,6 @@
           "url": "guide/build",
           "title": "Building & Serving",
           "tooltip": "Building and serving Angular apps."
-        },
-        {
-          "url": "guide/bazel",
-          "title": "Building with Bazel",
-          "tooltip": "How to set up your environment to build and test with Bazel."
         },
         {
           "url": "guide/testing",
@@ -690,6 +680,11 @@
           "url": "guide/browser-support",
           "title": "Browser Support",
           "tooltip": "Browser support and polyfills guide."
+        },
+        {
+          "url": "guide/strict-mode",
+          "title": "Strict mode",
+          "tooltip": "Reference documentation for Angular's strict mode."
         }
       ]
     },
@@ -754,6 +749,11 @@
           "url": "guide/router-tutorial",
           "title": "Using Angular Routes in a Single-page Application",
           "tooltip": "A tutorial that covers many patterns associated with Angular routing."
+        },
+        {
+          "url": "guide/forms",
+          "title": "Building a Template-driven Form",
+          "tooltip": "Create a template-driven form using directives and Angular template syntax."
         }
       ]
     },
@@ -772,13 +772,13 @@
           "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
         },
         {
-          "title": "Updating to Version 9",
-          "tooltip": "Support for updating your application from version 8 to 9.",
+          "title": "Updating to Version 10",
+          "tooltip": "Support for updating your application from version 9 to 10.",
           "children": [
             {
-              "url": "guide/updating-to-version-9",
+              "url": "guide/updating-to-version-10",
               "title": "Overview",
-              "tooltip": "Everything you need to know for updating your application from version 8 to 9."
+              "tooltip": "Everything you need to know for updating your application from version 9 to 10."
             },
             {
               "url": "guide/ivy-compatibility",
@@ -786,29 +786,9 @@
               "tooltip": "Details to help you make sure your application is compatible with Ivy."
             },
             {
-              "title": "Optional Migrations",
-              "tooltip": "Optional migration details regarding updating to version 9.",
+              "title": "Migrations",
+              "tooltip": "Migration details regarding updating to version 10.",
               "children": [
-                {
-                  "url": "guide/migration-renderer",
-                  "title": "Renderer to Renderer2",
-                  "tooltip": "Migration from the deprecated Renderer API to the newer Renderer2 API."
-                },
-                {
-                  "url": "guide/migration-dynamic-flag",
-                  "title": "Dynamic Queries Flag",
-                  "tooltip": "Migration to remove unnecessary `static: false` flag from @ViewChild and @ContentChild queries."
-                },
-                {
-                  "url": "guide/migration-injectable",
-                  "title": "Missing @Injectable() Decorators",
-                  "tooltip": "Migration to add missing @Injectable() decorators and incomplete provider definitions."
-                },
-                {
-                  "url": "guide/migration-localize",
-                  "title": "$localize Global Import",
-                  "tooltip": "Migration to add an import statement for @angular/localize to polyfills.ts."
-                },
                 {
                   "url": "guide/migration-module-with-providers",
                   "title": "Missing ModuleWithProviders Generic",
@@ -818,6 +798,26 @@
                   "url": "guide/migration-undecorated-classes",
                   "title": "Missing @Directive() Decorators",
                   "tooltip": "Migration to add missing @Directive()/@Component() decorators."
+                },
+                {
+                  "url": "guide/migration-injectable",
+                  "title": "Missing @Injectable() Decorators",
+                  "tooltip": "Migration to add missing @Injectable() decorators and incomplete provider definitions."
+                },
+                {
+                  "url": "guide/migration-solution-style-tsconfig",
+                  "title": "Solution-style `tsconfig.json`",
+                  "tooltip": "Migration to create a solution-style `tsconfig.json`."
+                },
+                {
+                  "url": "guide/migration-update-libraries-tslib",
+                  "title": "`tslib` direct dependency",
+                  "tooltip": "Migration to a direct dependency on the `tslib` npm package."
+                },
+                {
+                  "url": "guide/migration-update-module-and-target-compiler-options",
+                  "title": "`module` and `target` compiler options",
+                  "tooltip": "Migration to update `module` and `target` compiler options."
                 }
               ]
             }

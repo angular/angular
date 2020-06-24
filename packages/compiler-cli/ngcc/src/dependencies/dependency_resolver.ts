@@ -9,7 +9,7 @@
 import {DepGraph} from 'dependency-graph';
 
 import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_system';
-import {Logger} from '../logging/logger';
+import {Logger} from '../../../src/ngtsc/logging';
 import {NgccConfiguration} from '../packages/configuration';
 import {EntryPoint, EntryPointFormat, getEntryPointFormat, SUPPORTED_FORMAT_PROPERTIES} from '../packages/entry_point';
 import {PartiallyOrderedList} from '../utils';
@@ -225,8 +225,9 @@ export class DependencyResolver {
   private filterIgnorableDeepImports(entryPoint: EntryPoint, deepImports: Set<AbsoluteFsPath>):
       AbsoluteFsPath[] {
     const version = (entryPoint.packageJson.version || null) as string | null;
-    const packageConfig = this.config.getPackageConfig(entryPoint.package, version);
-    const matchers = packageConfig.ignorableDeepImportMatchers || [];
+    const packageConfig =
+        this.config.getPackageConfig(entryPoint.packageName, entryPoint.packagePath, version);
+    const matchers = packageConfig.ignorableDeepImportMatchers;
     return Array.from(deepImports)
         .filter(deepImport => !matchers.some(matcher => matcher.test(deepImport)));
   }

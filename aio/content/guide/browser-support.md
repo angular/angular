@@ -54,16 +54,17 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
     <td>
       <div> 11, 10*, 9* ("compatibility view" mode not supported) </div>
-      <div>*deprecated in v10, see the <a href="/guide/deprecations#ie-9-10">deprecations guide</a>.</div>
+      <div>*deprecated in v10, see the {@link guide/deprecations#ie-9-10-and-mobile deprecations guide}.</div>
     </td>
   </tr>
  <tr>
    <tr>
     <td>
-      IE Mobile
+      IE Mobile*
     </td>
     <td>
       11
+      <div>*deprecated in v10, see the {@link guide/deprecations#ie-9-10-and-mobile deprecations guide}.</div>
     </td>
   </tr>
  <tr>
@@ -525,7 +526,7 @@ For example:
     // __Zone_enable_cross_context_check = true;
   &lt;/script>
   &lt;!-- zone.js required by Angular -->
-  &lt;script src="node_modules/zone.js/dist/zone.js">&lt;/script>
+  &lt;script src="node_modules/zone.js/bundles/zone.umd.js">&lt;/script>
 
   &lt;!-- application polyfills -->
 </code-example>

@@ -15,14 +15,14 @@ import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {getSourceFileOrError, LogicalFileSystem} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
-import {IncrementalDriver} from '../../incremental';
+import {IncrementalBuildStrategy, IncrementalDriver} from '../../incremental';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader} from '../../metadata';
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
 import {TypeScriptReflectionHost} from '../../reflection';
-import {HostResourceLoader} from '../../resource';
+import {AdapterResourceLoader} from '../../resource';
 import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
 import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {generatedFactoryTransform} from '../../shims';
@@ -30,11 +30,7 @@ import {ivySwitchTransform} from '../../switch';
 import {aliasTransformFactory, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {isTemplateDiagnostic, TemplateTypeChecker, TypeCheckContext, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
-import {LazyRoute, NgCompilerOptions} from '../api';
-
-import {NgCompilerHost} from './host';
-
-
+import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -94,18 +90,19 @@ export class NgCompiler {
   private nextProgram: ts.Program;
   private entryPoint: ts.SourceFile|null;
   private moduleResolver: ModuleResolver;
-  private resourceManager: HostResourceLoader;
+  private resourceManager: AdapterResourceLoader;
   private cycleAnalyzer: CycleAnalyzer;
   readonly incrementalDriver: IncrementalDriver;
   readonly ignoreForDiagnostics: Set<ts.SourceFile>;
   readonly ignoreForEmit: Set<ts.SourceFile>;
 
   constructor(
-      private host: NgCompilerHost, private options: NgCompilerOptions,
+      private adapter: NgCompilerAdapter, private options: NgCompilerOptions,
       private tsProgram: ts.Program,
       private typeCheckingProgramStrategy: TypeCheckingProgramStrategy,
-      oldProgram: ts.Program|null = null, private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER) {
-    this.constructionDiagnostics.push(...this.host.diagnostics);
+      private incrementalStrategy: IncrementalBuildStrategy, oldProgram: ts.Program|null = null,
+      private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER) {
+    this.constructionDiagnostics.push(...this.adapter.constructionDiagnostics);
     const incompatibleTypeCheckOptionsDiagnostic = verifyCompatibleTypeCheckOptions(this.options);
     if (incompatibleTypeCheckOptionsDiagnostic !== null) {
       this.constructionDiagnostics.push(incompatibleTypeCheckOptionsDiagnostic);
@@ -115,24 +112,25 @@ export class NgCompiler {
     this.closureCompilerEnabled = !!this.options.annotateForClosureCompiler;
 
     this.entryPoint =
-        host.entryPoint !== null ? getSourceFileOrNull(tsProgram, host.entryPoint) : null;
+        adapter.entryPoint !== null ? getSourceFileOrNull(tsProgram, adapter.entryPoint) : null;
 
     const moduleResolutionCache = ts.createModuleResolutionCache(
-        this.host.getCurrentDirectory(), fileName => this.host.getCanonicalFileName(fileName));
+        this.adapter.getCurrentDirectory(),
+        fileName => this.adapter.getCanonicalFileName(fileName));
     this.moduleResolver =
-        new ModuleResolver(tsProgram, this.options, this.host, moduleResolutionCache);
-    this.resourceManager = new HostResourceLoader(host, this.options);
+        new ModuleResolver(tsProgram, this.options, this.adapter, moduleResolutionCache);
+    this.resourceManager = new AdapterResourceLoader(adapter, this.options);
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
 
     let modifiedResourceFiles: Set<string>|null = null;
-    if (this.host.getModifiedResourceFiles !== undefined) {
-      modifiedResourceFiles = this.host.getModifiedResourceFiles() || null;
+    if (this.adapter.getModifiedResourceFiles !== undefined) {
+      modifiedResourceFiles = this.adapter.getModifiedResourceFiles() || null;
     }
 
     if (oldProgram === null) {
       this.incrementalDriver = IncrementalDriver.fresh(tsProgram);
     } else {
-      const oldDriver = getIncrementalDriver(oldProgram);
+      const oldDriver = this.incrementalStrategy.getIncrementalDriver(oldProgram);
       if (oldDriver !== null) {
         this.incrementalDriver =
             IncrementalDriver.reconcile(oldProgram, oldDriver, tsProgram, modifiedResourceFiles);
@@ -143,12 +141,12 @@ export class NgCompiler {
         this.incrementalDriver = IncrementalDriver.fresh(tsProgram);
       }
     }
-    setIncrementalDriver(tsProgram, this.incrementalDriver);
+    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, tsProgram);
 
     this.ignoreForDiagnostics =
-        new Set(tsProgram.getSourceFiles().filter(sf => this.host.isShim(sf)));
+        new Set(tsProgram.getSourceFiles().filter(sf => this.adapter.isShim(sf)));
 
-    this.ignoreForEmit = this.host.ignoreForEmit;
+    this.ignoreForEmit = this.adapter.ignoreForEmit;
   }
 
   /**
@@ -279,7 +277,7 @@ export class NgCompiler {
       const containingFile = this.tsProgram.getRootFileNames()[0];
       const [entryPath, moduleName] = entryRoute.split('#');
       const resolvedModule =
-          resolveModuleName(entryPath, containingFile, this.options, this.host, null);
+          resolveModuleName(entryPath, containingFile, this.options, this.adapter, null);
 
       if (resolvedModule) {
         entryRoute = entryPointKeyFor(resolvedModule.resolvedFileName, moduleName);
@@ -326,8 +324,9 @@ export class NgCompiler {
       afterDeclarations.push(aliasTransformFactory(compilation.traitCompiler.exportStatements));
     }
 
-    if (this.host.factoryTracker !== null) {
-      before.push(generatedFactoryTransform(this.host.factoryTracker.sourceInfo, importRewriter));
+    if (this.adapter.factoryTracker !== null) {
+      before.push(
+          generatedFactoryTransform(this.adapter.factoryTracker.sourceInfo, importRewriter));
     }
     before.push(ivySwitchTransform);
 
@@ -499,7 +498,7 @@ export class NgCompiler {
     const typeCheckSpan = this.perfRecorder.start('typeCheckDiagnostics');
     const diagnostics: ts.Diagnostic[] = [];
     for (const sf of this.tsProgram.getSourceFiles()) {
-      if (sf.isDeclarationFile || this.host.isShim(sf)) {
+      if (sf.isDeclarationFile || this.adapter.isShim(sf)) {
         continue;
       }
 
@@ -508,7 +507,7 @@ export class NgCompiler {
 
     const program = this.typeCheckingProgramStrategy.getProgram();
     this.perfRecorder.stop(typeCheckSpan);
-    setIncrementalDriver(program, this.incrementalDriver);
+    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, program);
     this.nextProgram = program;
 
     return diagnostics;
@@ -600,7 +599,7 @@ export class NgCompiler {
     // Construct the ReferenceEmitter.
     let refEmitter: ReferenceEmitter;
     let aliasingHost: AliasingHost|null = null;
-    if (this.host.unifiedModulesHost === null || !this.options._useHostForImportGeneration) {
+    if (this.adapter.unifiedModulesHost === null || !this.options._useHostForImportGeneration) {
       let localImportStrategy: ReferenceEmitStrategy;
 
       // The strategy used for local, in-project imports depends on whether TS has been configured
@@ -613,7 +612,7 @@ export class NgCompiler {
         // rootDirs logic is in effect - use the `LogicalProjectStrategy` for in-project relative
         // imports.
         localImportStrategy = new LogicalProjectStrategy(
-            reflector, new LogicalFileSystem([...this.host.rootDirs], this.host));
+            reflector, new LogicalFileSystem([...this.adapter.rootDirs], this.adapter));
       } else {
         // Plain relative imports are all that's needed.
         localImportStrategy = new RelativePathStrategy(reflector);
@@ -648,9 +647,9 @@ export class NgCompiler {
         // Then use aliased references (this is a workaround to StrictDeps checks).
         new AliasStrategy(),
         // Then use fileNameToModuleName to emit imports.
-        new UnifiedModulesStrategy(reflector, this.host.unifiedModulesHost),
+        new UnifiedModulesStrategy(reflector, this.adapter.unifiedModulesHost),
       ]);
-      aliasingHost = new UnifiedModulesAliasingHost(this.host.unifiedModulesHost);
+      aliasingHost = new UnifiedModulesAliasingHost(this.adapter.unifiedModulesHost);
     }
 
     const evaluator = new PartialEvaluator(reflector, checker, this.incrementalDriver.depGraph);
@@ -693,7 +692,7 @@ export class NgCompiler {
     const handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
       new ComponentDecoratorHandler(
           reflector, evaluator, metaRegistry, metaReader, scopeReader, scopeRegistry, isCore,
-          this.resourceManager, this.host.rootDirs, this.options.preserveWhitespaces || false,
+          this.resourceManager, this.adapter.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
@@ -721,7 +720,7 @@ export class NgCompiler {
           injectableRegistry),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry, isCore,
-          routeAnalyzer, refEmitter, this.host.factoryTracker, defaultImportTracker,
+          routeAnalyzer, refEmitter, this.adapter.factoryTracker, defaultImportTracker,
           this.closureCompilerEnabled, injectableRegistry, this.options.i18nInLocale),
     ];
 
@@ -731,7 +730,7 @@ export class NgCompiler {
 
     const templateTypeChecker = new TemplateTypeChecker(
         this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,
-        this.getTypeCheckingConfig(), refEmitter, reflector, this.host, this.incrementalDriver);
+        this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver);
 
     return {
       isCore,
@@ -754,7 +753,7 @@ export class NgCompiler {
 /**
  * Determine if the given `Program` is @angular/core.
  */
-function isAngularCorePackage(program: ts.Program): boolean {
+export function isAngularCorePackage(program: ts.Program): boolean {
   // Look for its_just_angular.ts somewhere in the program.
   const r3Symbols = getR3SymbolsFile(program);
   if (r3Symbols === null) {
@@ -793,44 +792,6 @@ function isAngularCorePackage(program: ts.Program): boolean {
  */
 function getR3SymbolsFile(program: ts.Program): ts.SourceFile|null {
   return program.getSourceFiles().find(file => file.fileName.indexOf('r3_symbols.ts') >= 0) || null;
-}
-
-/**
- * Symbol under which the `IncrementalDriver` is stored on a `ts.Program`.
- *
- * The TS model of incremental compilation is based around reuse of a previous `ts.Program` in the
- * construction of a new one. The `NgCompiler` follows this abstraction - passing in a previous
- * `ts.Program` is sufficient to trigger incremental compilation. This previous `ts.Program` need
- * not be from an Angular compilation (that is, it need not have been created from `NgCompiler`).
- *
- * If it is, though, Angular can benefit from reusing previous analysis work. This reuse is managed
- * by the `IncrementalDriver`, which is inherited from the old program to the new program. To
- * support this behind the API of passing an old `ts.Program`, the `IncrementalDriver` is stored on
- * the `ts.Program` under this symbol.
- */
-const SYM_INCREMENTAL_DRIVER = Symbol('NgIncrementalDriver');
-
-/**
- * Get an `IncrementalDriver` from the given `ts.Program` if one is present.
- *
- * See `SYM_INCREMENTAL_DRIVER` for more details.
- */
-function getIncrementalDriver(program: ts.Program): IncrementalDriver|null {
-  const driver = (program as any)[SYM_INCREMENTAL_DRIVER];
-  if (driver === undefined || !(driver instanceof IncrementalDriver)) {
-    return null;
-  }
-  return driver;
-}
-
-/**
- * Save the given `IncrementalDriver` onto the given `ts.Program`, for retrieval in a subsequent
- * incremental compilation.
- *
- * See `SYM_INCREMENTAL_DRIVER` for more details.
- */
-function setIncrementalDriver(program: ts.Program, driver: IncrementalDriver): void {
-  (program as any)[SYM_INCREMENTAL_DRIVER] = driver;
 }
 
 /**

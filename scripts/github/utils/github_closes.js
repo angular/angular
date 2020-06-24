@@ -28,7 +28,7 @@ if (require.main === module) {
 
 function rewriteMsg(msg, prNo) {
   var lines = msg.split(/\n/);
-  lines[0] += ' (#' + prNo +')';
+  lines[0] += ' (#' + prNo + ')';
   lines.push('PR Close #' + prNo);
   return lines.join('\n');
 }
