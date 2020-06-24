@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {getSystemPath, normalize, Path} from '@angular-devkit/core';
+import {getSystemPath, JsonParseMode, normalize, parseJson, Path} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import * as virtualFs from '@angular-devkit/core/src/virtual-fs/host';
 import {HostTree, Tree} from '@angular-devkit/schematics';
@@ -94,7 +93,10 @@ export async function createTestCaseSetup(migrationName: string, collectionPath:
   });
 
   const testAppTsconfigPath = 'projects/cdk-testing/tsconfig.app.json';
-  const testAppTsconfig = JSON.parse(appTree.readContent(testAppTsconfigPath));
+  // Parse TypeScript configuration files with JSON5 as they could contain comments or
+  // unquoted properties.
+  const testAppTsconfig =
+      parseJson(appTree.readContent(testAppTsconfigPath), JsonParseMode.Json5) as any;
 
   // include all TypeScript files in the project. Otherwise all test input
   // files won't be part of the program and cannot be migrated.
