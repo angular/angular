@@ -10,7 +10,7 @@ It is recommended that third-party library developers follow the same npm packag
 <div class="alert is-helpful">
 
 APF is versioned along with the rest of Angular, and every major version improves the package format.
-You can find the versions of the specification prior to v10 this [google doc](https://docs.google.com/document/d/1Vyqu-D2EkRbnfw4YEm4xxUZe_fAOg001nFfuU3pWMMs/edit#heading=h.k0mh3o8u5hx).
+You can find the versions of the specification prior to v10 in this [google doc](https://docs.google.com/document/d/1Vyqu-D2EkRbnfw4YEm4xxUZe_fAOg001nFfuU3pWMMs/edit#heading=h.k0mh3o8u5hx).
 
 </div>
 
