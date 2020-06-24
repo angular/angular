@@ -816,7 +816,7 @@
                 },
                 {
                   "url": "guide/migration-update-module-and-target-compiler-options",
-                  "title": "",
+                  "title": "`module` and `target` compiler options",
                   "tooltip": "Migration to update `module` and `target` compiler options."
                 }
               ]

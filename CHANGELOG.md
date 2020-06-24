@@ -10,6 +10,8 @@ To learn about the release highlights and our CLI-powered automated update workf
 #### Dependency updates
 @angular/compiler-cli now requires:
 - TypeScript 3.9
+
+TODO: concat all the 10.0.0-next.* & -rc.* release notes, and group them by area/package just like in https://github.com/angular/angular/blob/master/CHANGELOG.md#900-2020-02-06 but consider listing features before bugfixes because people care about feature in major releases more than about bug fixes.
 -->
 
 
