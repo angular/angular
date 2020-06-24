@@ -68,8 +68,7 @@ node_modules/@angular/core                              Package root
 │   │
 │   └── package.json                                    Secondary entry point package.json. Maps
 |                                                       typings and JavaScript files similar to the
-|                                                       primary entry package.json.
-│       { ...
+│       { ...                                           primary entry package.json.
 │          es2015: ../fesm2015/testing.js
 │            main: ../bundles/core-testing.umd.js
 │          module: ../fesm2015/testing.js
@@ -347,7 +346,7 @@ node_modules/@angular/material                          Package root
         └── ....js
 </code-example>
 
-### README.md
+## README.md
 
 The README file in the markdown format that displays a description of a package on npm and Github.
 
@@ -362,7 +361,7 @@ The sources for this package are in the main [Angular](https://github.com/angula
 Licence: MIT
 </code-example>
 
-### Primary entry point
+## Primary entry point
 
 The primary entry point of a package is the module with a module ID that matches the name of the package. For example, for the `@angular/core` package, the import from the primary entry point looks like `import { Component, ...} from '@angular/core'`.
 
@@ -435,7 +434,7 @@ webpack v4+ specific flag to enable advanced optimizations and code splitting ([
 </tbody>
 </table>
 
-### Secondary entry point
+## Secondary entry point
 
 Besides the primary entry point, a package can contain zero or more secondary entry points, such as `@angular/common/http`.
 These entry points contain symbols that you don't want to group together with the symbols in the main entry point for two reasons:
@@ -443,7 +442,10 @@ These entry points contain symbols that you don't want to group together with th
 1. Users typically perceive them as distinct from the main group of symbols, and if they were pertinent to the main group of symbols they would have already been there.
 1. The symbols in the secondary group are typically only used in certain scenarios, such as when writing and running tests. Excluding these symbols from the main entry point can reduce the chance of them being accidentally used incorrectly. For example, using testing mocks in production code as used in `@angular/core/testing`.
 
-The Module ID of an import for a secondary entry point directs a module loader to a directory by the secondary entry point's name. For instance, `@angular/core/testing` resolves to a directory by the same name. This directory contains a `package.json` file that directs the loader to the correct location for what it's looking for. This allows us to create multiple entry points within a single package.
+The Module ID of an import for a secondary entry point directs a module loader to a directory by the secondary entry point's name.
+For instance, `@angular/core/testing` resolves to a directory by the same name.
+This directory contains a `package.json` file that directs the loader to the correct location for what it's looking for.
+This allows us to create multiple entry points within a single package.
 
 The following is an example of the contents of the `package.json` file for the secondary entry point.
 
@@ -531,7 +533,7 @@ After `ngc` generates the index file, such as `my-ui-lib.js`, you can use bundle
 
 Component libraries are typically implemented using stylesheets and HTML templates stored in separate files. While it's not required, we suggest that component authors inline the templates and stylesheets into their FESM files as well as `*.metadata.json` files by replacing the `styleUrls` and `templateUrl` with `styles` and `template` metadata properties, respectively. This simplifies consumption of the components by application developers.
 
-### `"sideEffects": false` and non-local side effects in libraries
+### Non-local side effects in libraries
 
 As of Webpack v4, packages that contain a special property called `"sideEffects"` set to false in their `package.json` file, will be processed by Webpack more aggressively than those that don't.
 
