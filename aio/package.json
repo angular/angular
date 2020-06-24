@@ -105,8 +105,8 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "0.1000.0-rc.2",
-    "@angular/cli": "10.0.0-rc.2",
+    "@angular-devkit/build-angular": "0.1000.0-next.3",
+    "@angular/cli": "10.0.0-next.3",
     "@angular/compiler-cli": "10.0.0-rc.2",
     "@angular/language-service": "10.0.0-rc.2",
     "@types/jasmine": "^3.4.2",
@@ -165,7 +165,7 @@
     "tree-kill": "^1.1.0",
     "ts-node": "^8.4.1",
     "tslint": "~6.1.0",
-    "typescript": "~3.9.5",
+    "typescript": "~3.8.3",
     "uglify-js": "^3.0.15",
     "unist-util-filter": "^0.2.1",
     "unist-util-source": "^1.0.1",
