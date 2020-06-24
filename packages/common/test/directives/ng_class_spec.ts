@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
+import {Component, Renderer2} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 {
@@ -388,6 +388,48 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
         const trailing = fixture.nativeElement.querySelector('[trailing-space]');
         expect(leading.className).toBe('foo');
         expect(trailing.className).toBe('foo');
+      });
+    });
+
+    describe('batch add/remove', () => {
+      it('should batch addClass operations', () => {
+        @Component({
+          template: `
+            <div [ngClass]="{'class1 class2 class3': true}"></div>
+          `
+        })
+        class Cmp {
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const renderer = fixture.componentRef.injector.get(Renderer2);
+        const addClassSpy = spyOn(renderer, 'addClass');
+        const element = fixture.nativeElement.querySelector('div');
+
+        fixture.detectChanges();
+        expect(addClassSpy).toHaveBeenCalledWith(element, ['class1', 'class2', 'class3']);
+        expect(addClassSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('should batch removeClass operations', () => {
+        @Component({
+          template: `
+            <div [ngClass]="{'class1 class2 class3': false}"></div>
+          `
+        })
+        class Cmp {
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const renderer = fixture.componentRef.injector.get(Renderer2);
+        const removeClassSpy = spyOn(renderer, 'removeClass');
+        const element = fixture.nativeElement.querySelector('div');
+
+        fixture.detectChanges();
+        expect(removeClassSpy).toHaveBeenCalledWith(element, ['class1', 'class2', 'class3']);
+        expect(removeClassSpy).toHaveBeenCalledTimes(1);
       });
     });
   });

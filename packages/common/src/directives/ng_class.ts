@@ -185,10 +185,10 @@ export class NgClass implements DoCheck {
 
   /**
    * Toggle one or more classes on an Element.
-   * 
-   * When updating multiple classes pass an array or classes instead of calling this method multiple times.
-   * As this will leverage the classList API and update multiple classes with a single operation.
-   * This drastically improves the rendering during SSR.
+   *
+   * When updating multiple classes pass an array or classes instead of calling this method multiple
+   * times. As this will leverage the classList API and update multiple classes with a single
+   * operation. This drastically improves the rendering during SSR.
    */
   private _toggleClass(classNames: string|string[], enabled: boolean): void {
     let classes = typeof classNames === 'string' ? classNames : classNames.join(' ');
@@ -204,6 +204,22 @@ export class NgClass implements DoCheck {
     }
   }
 
+  /**
+   * This methode is use to batch and update/remove classes with a single operation.
+   *
+   * This is important because the patched DOM API for SSR (Domino) is not optimal for repeated
+   * operations on the same node.
+   *
+   * Example when having: `<div [ngClass]="{'class1 class2 class3': true}”></div>`
+   *
+   * A 3P partner/client using Angular version 9 and Ivy reported that while they browser runtime
+   * became faster their server side runtime code is slower. Their tracked it down to ngClass with
+   * multiple classes. With batching operations the same client reported ~10% runtime improvemenent
+   * for their SSR'd application.
+   *
+   * One of the issues why Domino is not performant for repeated operations is:
+   * https://github.com/fgnass/domino/pull/166
+   */
   private _togglePartitionedClasses(added: string[], removed: string[]): void {
     if (added.length) {
       this._toggleClass(added, true);
