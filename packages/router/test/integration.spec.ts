@@ -924,26 +924,31 @@ describe('Integration', () => {
       });
     });
 
-    it('work', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+    it('work', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const location = TestBed.inject(Location) as SpyLocation;
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig([{path: 'simple', component: SimpleCmp, canActivate: ['in1Second']}]);
+         const recordedEvents: any[] = [];
+         router.events.forEach(e => onlyNavigationStartAndEnd(e) && recordedEvents.push(e));
 
          // Trigger two location changes to the same URL.
          // Because of the guard the order will look as follows:
          // - location change 'simple'
          // - start processing the change, start a guard
          // - location change 'simple'
-         // - the first location change gets canceled, the URL gets reset to '/'
-         // - the second location change gets finished, the URL should be reset to '/simple'
-         (<any>location).simulateUrlPop('/simple');
-         (<any>location).simulateUrlPop('/simple');
+         // - the second location change gets skipped - it's the same as the first, in flight nav
+         // - the first location change gets finished, the URL should be set to '/simple'
+         location.simulateUrlPop('/simple');
+         location.simulateUrlPop('/simple');
 
          tick(2000);
          advance(fixture);
 
          expect(location.path()).toEqual('/simple');
-       })));
+         expectEvents(recordedEvents, [[NavigationStart, '/simple'], [NavigationEnd, '/simple']]);
+       }));
   });
 
   it('should support secondary routes', fakeAsync(inject([Router], (router: Router) => {

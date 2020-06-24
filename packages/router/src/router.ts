@@ -1127,6 +1127,16 @@ export class Router {
       extras: NavigationExtras,
       priorPromise?: {resolve: any, reject: any, promise: Promise<boolean>}): Promise<boolean> {
     const lastNavigation = this.getTransition();
+    const lastNavigationStillProcessing = lastNavigation.id === this.currentNavigation?.id;
+    const navigationToSameUrlAsInFlightNav =
+        lastNavigationStillProcessing && lastNavigation.rawUrl.toString() === rawUrl.toString();
+    // Prevent potential infinite loops by skipping navigations to the same URL.
+    if (navigationToSameUrlAsInFlightNav) {
+      // Because this could be an imperative navigation (navigateByUrl), the return value might be
+      // used, i.e. `this.router.navigateByUrl('/').then(() => {});` This navigation is not
+      // processed so we should resolve `false`.
+      return Promise.resolve(false);
+    }
     // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
     // and that navigation results in 'replaceState' that leads to the same URL,
     // we should skip those.
