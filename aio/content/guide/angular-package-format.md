@@ -26,7 +26,7 @@ APF supports all of the commonly used development tools and workflows, and adds 
 
 The following is an abbreviated version of the `@angular/core` package with an explanation of the purpose of the various files.
 
-<code-example class="no-auto-link nocode">
+```
 node_modules/@angular/core                              Package root
 
    --- paths part of the PUBLIC API ---
@@ -126,7 +126,7 @@ node_modules/@angular/core                              Package root
     |                                                   under testing/
     |
     └── testing.js.map                                  Source map
-</code-example>
+```
 
 This package layout allows us to support the following usage-scenarios and environments.
 
