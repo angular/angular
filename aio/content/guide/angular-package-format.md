@@ -26,7 +26,7 @@ APF supports all of the commonly used development tools and workflows, and adds 
 
 The following is an abbreviated version of the `@angular/core` package with an explanation of the purpose of the various files.
 
-<code-example language="none" class="no-auto-link">
+<code-example class="no-auto-link nocode">
 node_modules/@angular/core                              Package root
 
    --- paths part of the public PUBLIC API ---
