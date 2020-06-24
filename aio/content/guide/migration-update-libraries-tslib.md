@@ -1,4 +1,4 @@
-# tslib Direct Dependency Migration
+# `tslib` direct dependency migration
 
 ## What does this migration do?
 

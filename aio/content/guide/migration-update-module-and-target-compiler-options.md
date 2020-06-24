@@ -1,4 +1,4 @@
-# Update module and target compiler options migration
+# Update `module` and `target` compiler options migration
 
 ## What does this migration do?
 
