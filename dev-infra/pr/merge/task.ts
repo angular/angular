@@ -16,9 +16,6 @@ import {isPullRequest, loadAndValidatePullRequest,} from './pull-request';
 import {GithubApiMergeStrategy} from './strategies/api-merge';
 import {AutosquashMergeStrategy} from './strategies/autosquash-merge';
 
-/** Github OAuth scopes required for the merge task. */
-const REQUIRED_SCOPES = ['repo'];
-
 /** Describes the status of a pull request merge. */
 export const enum MergeStatus {
   UNKNOWN_GIT_ERROR,
@@ -56,8 +53,19 @@ export class PullRequestMergeTask {
    * @param force Whether non-critical pull request failures should be ignored.
    */
   async merge(prNumber: number, force = false): Promise<MergeResult> {
-    // Assert the authenticated GitClient has access on the required scopes.
-    const hasOauthScopes = await this.git.hasOauthScopes(...REQUIRED_SCOPES);
+    // Check whether the given Github token has sufficient permissions for writing
+    // to the configured repository. If the repository is not private, only the
+    // reduced `public_repo` OAuth scope is sufficient for performing merges.
+    const hasOauthScopes = await this.git.hasOauthScopes((scopes, missing) => {
+      if (!scopes.includes('repo')) {
+        if (this.config.remote.private) {
+          missing.push('repo');
+        } else if (!scopes.includes('public_repo')) {
+          missing.push('public_repo');
+        }
+      }
+    });
+
     if (hasOauthScopes !== true) {
       return {
         status: MergeStatus.GITHUB_ERROR,
