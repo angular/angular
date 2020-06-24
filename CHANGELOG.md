@@ -1,3 +1,20 @@
+<!--
+<a name="10.0.0"></a>
+# [10.0.0](https://github.com/angular/angular/compare/10.0.0-next.0...10.0.0) (2020-06-24)
+
+
+### Release Highlights & Update instructions
+To learn about the release highlights and our CLI-powered automated update workflow for your projects please check out the [v10 release announcement](https://blog.angular.io/TODO).
+
+
+#### Dependency updates
+@angular/compiler-cli now requires:
+- TypeScript 3.9
+
+TODO: concat all the 10.0.0-next.* & -rc.* release notes, and group them by area/package just like in https://github.com/angular/angular/blob/master/CHANGELOG.md#900-2020-02-06 but consider listing features before bugfixes because people care about feature in major releases more than about bug fixes.
+-->
+
+
 <a name="10.0.0-rc.6"></a>
 # [10.0.0-rc.6](https://github.com/angular/angular/compare/10.0.0-rc.5...10.0.0-rc.6) (2020-06-15)
 

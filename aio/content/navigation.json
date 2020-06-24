@@ -803,6 +803,21 @@
                   "url": "guide/migration-injectable",
                   "title": "Missing @Injectable() Decorators",
                   "tooltip": "Migration to add missing @Injectable() decorators and incomplete provider definitions."
+                },
+                {
+                  "url": "guide/migration-solution-style-tsconfig",
+                  "title": "Solution-style `tsconfig.json`",
+                  "tooltip": "Migration to create a solution-style `tsconfig.json`."
+                },
+                {
+                  "url": "guide/migration-update-libraries-tslib",
+                  "title": "`tslib` direct dependency",
+                  "tooltip": "Migration to a direct dependency on the `tslib` npm package."
+                },
+                {
+                  "url": "guide/migration-update-module-and-target-compiler-options",
+                  "title": "`module` and `target` compiler options",
+                  "tooltip": "Migration to update `module` and `target` compiler options."
                 }
               ]
             }
