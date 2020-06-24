@@ -1,4 +1,4 @@
-# Update module and target compiler options migration
+# Update `module` and `target` compiler options migration
 
 ## What does this migration do?
 
@@ -14,7 +14,7 @@ Used in `browser` builder options (`ng build` for applications) | `"module"` | `
 Used in `ng-packgr` builder options (`ng build` for libraries) | `"module"` | `"esnext"` | `"es2020"`
 Used in `karma` builder options (`ng test` for applications) | `"module"` | `"esnext"` | `"es2020"`
 Used in `server` builder options (universal) | `"module"` | `"commonjs"` | _removed_
-&nbsp; | `"target"` | _any_ | `"es2016"`
+Used in `server` builder options (universal) | `"target"` | _any_ | `"es2016"`
 Used in `protractor` builder options (`ng e2e` for applications) | `"target"` | `"es5"` | `"es2018"`
 
 ## Why is this migration necessary?
