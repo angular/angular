@@ -21,6 +21,9 @@ type RateLimitResponseWithOAuthScopeHeader = Octokit.Response<Octokit.RateLimitG
   headers: {'x-oauth-scopes': string};
 };
 
+/** Describes a function that can be used to test for given Github OAuth scopes. */
+export type OAuthScopeTestFunction = (scopes: string[], missing: string[]) => void;
+
 /** Error for failed Git commands. */
 export class GitCommandError extends Error {
   constructor(client: GitClient, public args: string[]) {
@@ -155,14 +158,11 @@ export class GitClient {
    * Assert the GitClient instance is using a token with permissions for the all of the
    * provided OAuth scopes.
    */
-  async hasOauthScopes(...requestedScopes: string[]): Promise<true|{error: string}> {
-    const missingScopes: string[] = [];
+  async hasOauthScopes(testFn: OAuthScopeTestFunction): Promise<true|{error: string}> {
     const scopes = await this.getAuthScopesForToken();
-    requestedScopes.forEach(scope => {
-      if (!scopes.includes(scope)) {
-        missingScopes.push(scope);
-      }
-    });
+    const missingScopes: string[] = [];
+    // Test Github OAuth scopes and collect missing ones.
+    testFn(scopes, missingScopes);
     // If no missing scopes are found, return true to indicate all OAuth Scopes are available.
     if (missingScopes.length === 0) {
       return true;
