@@ -39,7 +39,6 @@ If you're curious about the specific migrations being run by the CLI, see the [a
 
 | Area                          | API or Feature                                                                 | May be removed in |
 | ----------------------------- | ---------------------------------------------------------------------------    | ----------------- |
-| `@angular/bazel`              | [`Bazel builder and schematics`](guide/deprecations#bazelbuilder)                            | v10 |
 | `@angular/core`               | [`WrappedValue`](guide/deprecations#wrapped-value)                                     | <!--v10--> v12 |
 | browser support               | [`IE 9, 10, and IE Mobile`](guide/deprecations#ie-9-10-and-ie-mobile-support) | <!--v10--> v11 |
 
@@ -54,6 +53,8 @@ The following APIs have been removed starting with version 10.0.0*:
 | `@angular/core`  | Undecorated base classes that use Angular features | Add Angular decorator | See [migration guide](guide/migration-undecorated-classes) for more info |
 | `@angular/core`  | `ModuleWithProviders` without a generic             | `ModuleWithProviders` with a generic | See [migration guide](guide/migration-module-with-providers) for more info |
 | `@angular/core`  | Style Sanitization | no action needed | See [style sanitization API removal](/guide/deprecations#style-sanitization) for more info
+| `@angular/bazel` | [`Bazel builder and schematics`](guide/deprecations#bazelbuilder) | `bazelbuild/rules_nodejs` | [More info](https://github.com/angular/angular/tree/10.0.x/packages/bazel/src/schematics) |
+
 
 *To see APIs removed in version 9, check out this guide on the [version 9 docs site](https://v9.angular.io/guide/deprecations#removed).
 
@@ -76,3 +77,6 @@ Read about the migrations the CLI handles for you automatically:
 
 * [Migrating missing `@Directive()`/`@Component()` decorators](guide/migration-undecorated-classes)
 * [Migrating `ModuleWithProviders`](guide/migration-module-with-providers)
+* [Solution-style `tsconfig.json` migration](guide/migration-solution-style-tsconfig)
+* [`tslib` direct dependency migration](guide/migration-update-libraries-tslib)
+* [Update `module` and `target` compiler options migration](guide/migration-update-module-and-target-compiler-options)
