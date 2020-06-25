@@ -18,6 +18,9 @@ export declare class ActivatedRoute {
     toString(): string;
 }
 
+
+
+
 export declare class ActivatedRouteSnapshot {
     get children(): ActivatedRouteSnapshot[];
     component: Type<any> | string | null;
