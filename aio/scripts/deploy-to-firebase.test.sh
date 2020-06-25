@@ -68,6 +68,7 @@ function check {
   expected="Git branch        : master
 Build/deploy mode : next
 Firebase project  : aio-staging
+Firebase site     : aio-staging
 Deployment URL    : https://next.angular.io/"
   check "$actual" "$expected"
 )
@@ -103,6 +104,7 @@ Deployment URL    : https://next.angular.io/"
   expected="Git branch        : 4.3.x
 Build/deploy mode : stable
 Firebase project  : angular-io
+Firebase site     : angular-io
 Deployment URL    : https://angular.io/"
   check "$actual" "$expected"
 )
@@ -139,6 +141,7 @@ Deployment URL    : https://angular.io/"
   expected="Git branch        : 2.4.x
 Build/deploy mode : archive
 Firebase project  : v2-angular-io
+Firebase site     : v2-angular-io
 Deployment URL    : https://v2.angular.io/"
   check "$actual" "$expected"
 )
@@ -158,7 +161,8 @@ Deployment URL    : https://v2.angular.io/"
   )
   expected="Git branch        : 9.1.x
 Build/deploy mode : archive
-Firebase project  : v9-angular-io
+Firebase project  : aio-staging
+Firebase site     : v9-angular-io
 Deployment URL    : https://v9.angular.io/"
   # TODO: This test incorrectly expects the Firebase project to be v9-angular-io.
   #       v9-angular-io is a "multisites" project currently within the aio-staging project
