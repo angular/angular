@@ -28,13 +28,13 @@ export class ClusterExecutor implements Executor {
 
   async execute(analyzeEntryPoints: AnalyzeEntryPointsFn, _createCompileFn: CreateCompileFn):
       Promise<void> {
-    return this.lockFile.lock(() => {
+    return this.lockFile.lock(async () => {
       this.logger.debug(
           `Running ngcc on ${this.constructor.name} (using ${this.workerCount} worker processes).`);
       const master = new ClusterMaster(
           this.workerCount, this.fileSystem, this.logger, this.fileWriter, this.pkgJsonUpdater,
           analyzeEntryPoints, this.createTaskCompletedCallback);
-      return master.run();
+      return await master.run();
     });
   }
 }
