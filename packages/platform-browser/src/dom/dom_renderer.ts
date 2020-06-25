@@ -31,7 +31,7 @@ export const NAMESPACE_URIS: { [ns: string]: string } = {
 const COMPONENT_REGEX = /%C%/g;
 const NG_DEV_MODE = typeof ngDevMode === "undefined" || !!ngDevMode;
 
-export const COMPONENT_VARIABLE = "%C%";
+export const COMPONENT_VARIABLE = '%C%';
 export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 
