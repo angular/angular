@@ -52,7 +52,7 @@ describe('MenuItem', () => {
   });
 
   it('should not have a submenu', () => {
-    expect(button.hasSubmenu).toBeFalse();
+    expect(button.hasSubmenu()).toBeFalse();
   });
 });
 

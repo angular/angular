@@ -10,8 +10,10 @@ ng_module(
     ),
     module_name = "@angular/cdk-experimental/menu",
     deps = [
+        "//src/cdk/bidi",
         "//src/cdk/coercion",
         "//src/cdk/collections",
+        "//src/cdk/overlay",
         "@npm//@angular/core",
         "@npm//rxjs",
     ],
