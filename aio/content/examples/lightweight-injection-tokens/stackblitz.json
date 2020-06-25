@@ -1,0 +1,10 @@
+{
+  "description": "Lightweight Injection Tokens",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["Lightweight Injection Tokens"]
+}
