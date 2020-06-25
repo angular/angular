@@ -2,7 +2,7 @@
 # [10.0.0](https://github.com/angular/angular/compare/10.0.0-rc.6...10.0.0) (2020-06-24)
 
 ### Release Highlights & Update instructions
-To learn about the release highlights and our CLI-powered automated update workflow for your projects please check out the [v10 release announcement](https://blog.angular.io/TODO).
+To learn about the release highlights and our CLI-powered automated update workflow for your projects please check out the [v10 release announcement](https://blog.angular.io/version-10-of-angular-now-available-78960babd41).
 
 
 ### Features
