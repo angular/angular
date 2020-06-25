@@ -144,6 +144,31 @@ Deployment URL    : https://v2.angular.io/"
 )
 
 (
+  echo ===== archive - v9-angular-io multisite special case - deploy success
+  actual=$(
+    export BASH_ENV=/dev/null
+    export CI_REPO_OWNER=angular
+    export CI_REPO_NAME=angular
+    export CI_PULL_REQUEST=false
+    export CI_BRANCH=9.1.x
+    export CI_STABLE_BRANCH=10.0.x
+    export CI_COMMIT=$(git ls-remote origin 9.1.x | cut -c1-40)
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
+    $deployToFirebaseDryRun
+  )
+  expected="Git branch        : 9.1.x
+Build/deploy mode : archive
+Firebase project  : v9-angular-io
+Deployment URL    : https://v9.angular.io/"
+  # TODO: This test incorrectly expects the Firebase project to be v9-angular-io.
+  #       v9-angular-io is a "multisites" project currently within the aio-staging project
+  #       This setup is temporary and was created in order to deploy v9.angular.io without
+  #       disruptions.
+  #       See https://angular-team.atlassian.net/browse/DEV-125 for more info.
+  check "$actual" "$expected"
+)
+
+(
   echo ===== archive - skip deploy - commit not HEAD
   actual=$(
     export BASH_ENV=/dev/null

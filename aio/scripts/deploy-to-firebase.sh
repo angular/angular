@@ -33,7 +33,7 @@ else
   readonly majorVersionStable=${CI_STABLE_BRANCH%%.*}
 
   # Do not deploy if the major version is not less than the stable branch major version
-  if [[ !( "$majorVersion" -lt "$majorVersionStable" ) ]]; then
+  if (( $majorVersion >= $majorVersionStable )); then
     echo "Skipping deploy of branch \"$CI_BRANCH\" to firebase."
     echo "We only deploy archive branches with the major version less than the stable branch: \"$CI_STABLE_BRANCH\""
     exit 0
@@ -105,9 +105,20 @@ fi
   # Check payload size
   yarn payload-size
 
+
   # Deploy to Firebase
-  yarn firebase use "$projectId" --token "$firebaseToken"
-  yarn firebase deploy --message "Commit: $CI_COMMIT" --non-interactive --token "$firebaseToken"
+
+  # Special case v9-angular-io because its piloting the firebase hosting "multisites" setup
+  # See https://angular-team.atlassian.net/browse/DEV-125 for more info.
+  if [[ "$projectId" == "v9-angular-io" ]]; then
+    yarn firebase use aio-staging --token "$firebaseToken"
+    yarn firebase target:apply hosting aio $projectId --token "$firebaseToken"
+    yarn firebase deploy --only hosting:aio --message "Commit: $CI_COMMIT" --non-interactive --token "$firebaseToken"
+  elif
+    yarn firebase use "$projectId" --token "$firebaseToken"
+    yarn firebase deploy --message "Commit: $CI_COMMIT" --non-interactive --token "$firebaseToken"
+  fi
+
 
   # Run PWA-score tests
   yarn test-pwa-score "$deployedUrl" "$CI_AIO_MIN_PWA_SCORE"
