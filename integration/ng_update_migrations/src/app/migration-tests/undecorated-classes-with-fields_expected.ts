@@ -4,8 +4,10 @@ import {
   ElementRef,
   HostBinding,
   HostListener,
+  Injectable,
   Input,
-  NgModule
+  NgModule,
+  Pipe
 } from '@angular/core';
 
 export class NonAngularBaseClass {
@@ -86,4 +88,18 @@ export class UndecoratedPipeBase {
 @Directive()
 export class WithDirectiveLifecycleHook {
   ngOnInit() {}
+}
+
+// This class is already decorated and should not be migrated. i.e. no TODO
+// or Angular decorator should be added. `@Injectable` is sufficient.
+@Injectable()
+export class MyService {
+  ngOnDestroy() {}
+}
+
+// This class is already decorated and should not be migrated. i.e. no TODO
+// or Angular decorator should be added. `@Injectable` is sufficient.
+@Pipe({name: 'my-pipe'})
+export class MyPipe {
+  ngOnDestroy() {}
 }

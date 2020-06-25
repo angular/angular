@@ -43,26 +43,36 @@ const DIRECTIVE_LIFECYCLE_HOOKS = new Set([
 const AMBIGUOUS_LIFECYCLE_HOOKS = new Set(['ngOnDestroy']);
 
 /** Describes how a given class is used in the context of Angular. */
-enum ClassKind {
+enum InferredKind {
   DIRECTIVE,
   AMBIGUOUS,
   UNKNOWN,
 }
 
+/** Describes possible types of Angular declarations. */
+enum DeclarationType {
+  DIRECTIVE,
+  COMPONENT,
+  ABSTRACT_DIRECTIVE,
+  PIPE,
+  INJECTABLE,
+}
+
 /** Analyzed class declaration. */
 interface AnalyzedClass {
-  /** Whether the class is decorated with @Directive or @Component. */
-  isDirectiveOrComponent: boolean;
-  /** Whether the class is an abstract directive. */
-  isAbstractDirective: boolean;
-  /** Kind of the given class in terms of Angular. */
-  kind: ClassKind;
+  /** Type of declaration that is determined through an applied decorator. */
+  decoratedType: DeclarationType|null;
+  /** Inferred class kind in terms of Angular. */
+  inferredKind: InferredKind;
 }
 
 interface AnalysisFailure {
   node: ts.Node;
   message: string;
 }
+
+/** TODO message that is added to ambiguous classes using Angular features. */
+const AMBIGUOUS_CLASS_TODO = 'Add Angular decorator.';
 
 export class UndecoratedClassesWithDecoratedFieldsTransform {
   private printer = ts.createPrinter();
@@ -81,10 +91,10 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
    * indicating that a given class uses Angular features. https://hackmd.io/vuQfavzfRG6KUCtU7oK_EA
    */
   migrate(sourceFiles: ts.SourceFile[]): AnalysisFailure[] {
-    const {result, ambiguous} = this._findUndecoratedAbstractDirectives(sourceFiles);
+    const {detectedAbstractDirectives, ambiguousClasses} =
+        this._findUndecoratedAbstractDirectives(sourceFiles);
 
-
-    result.forEach(node => {
+    detectedAbstractDirectives.forEach(node => {
       const sourceFile = node.getSourceFile();
       const recorder = this.getUpdateRecorder(sourceFile);
       const directiveExpr =
@@ -98,12 +108,19 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
     // determine whether the class is used as directive, service or pipe. The migration
     // could potentially determine the type by checking NgModule definitions or inheritance
     // of other known declarations, but this is out of scope and a TODO/failure is sufficient.
-    return Array.from(ambiguous).reduce((failures, node) => {
+    return Array.from(ambiguousClasses).reduce((failures, node) => {
+      // If the class has been reported as ambiguous before, skip adding a TODO and
+      // printing an error. A class could be visited multiple times when it's part
+      // of multiple build targets in the CLI project.
+      if (this._hasBeenReportedAsAmbiguous(node)) {
+        return failures;
+      }
+
       const sourceFile = node.getSourceFile();
       const recorder = this.getUpdateRecorder(sourceFile);
 
       // Add a TODO to the class that uses Angular features but is not decorated.
-      recorder.addClassTodo(node, `Add Angular decorator.`);
+      recorder.addClassTodo(node, AMBIGUOUS_CLASS_TODO);
 
       // Add an error for the class that will be printed in the `ng update` output.
       return failures.concat({
@@ -125,59 +142,83 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
    * directives. Those are ambiguous and could be either Directive, Pipe or service.
    */
   private _findUndecoratedAbstractDirectives(sourceFiles: ts.SourceFile[]) {
-    const result = new Set<ts.ClassDeclaration>();
+    const ambiguousClasses = new Set<ts.ClassDeclaration>();
+    const declarations = new WeakMap<ts.ClassDeclaration, DeclarationType>();
+    const detectedAbstractDirectives = new Set<ts.ClassDeclaration>();
     const undecoratedClasses = new Set<ts.ClassDeclaration>();
-    const nonAbstractDirectives = new WeakSet<ts.ClassDeclaration>();
-    const abstractDirectives = new WeakSet<ts.ClassDeclaration>();
-    const ambiguous = new Set<ts.ClassDeclaration>();
 
     const visitNode = (node: ts.Node) => {
       node.forEachChild(visitNode);
       if (!ts.isClassDeclaration(node)) {
         return;
       }
-      const {isDirectiveOrComponent, isAbstractDirective, kind} =
-          this._analyzeClassDeclaration(node);
-      if (isDirectiveOrComponent) {
-        if (isAbstractDirective) {
-          abstractDirectives.add(node);
-        } else {
-          nonAbstractDirectives.add(node);
-        }
-      } else if (kind === ClassKind.DIRECTIVE) {
-        abstractDirectives.add(node);
-        result.add(node);
+      const {inferredKind, decoratedType} = this._analyzeClassDeclaration(node);
+
+      if (decoratedType !== null) {
+        declarations.set(node, decoratedType);
+        return;
+      }
+
+      if (inferredKind === InferredKind.DIRECTIVE) {
+        detectedAbstractDirectives.add(node);
+      } else if (inferredKind === InferredKind.AMBIGUOUS) {
+        ambiguousClasses.add(node);
       } else {
-        if (kind === ClassKind.AMBIGUOUS) {
-          ambiguous.add(node);
-        }
         undecoratedClasses.add(node);
       }
     };
 
     sourceFiles.forEach(sourceFile => sourceFile.forEachChild(visitNode));
 
-    // We collected all undecorated class declarations which inherit from abstract directives.
-    // For such abstract directives, the derived classes also need to be migrated.
-    undecoratedClasses.forEach(node => {
-      for (const {node: baseClass} of findBaseClassDeclarations(node, this.typeChecker)) {
-        // If the undecorated class inherits from a non-abstract directive, skip the current
-        // class. We do this because undecorated classes which inherit metadata from non-abstract
-        // directives are handled in the `undecorated-classes-with-di` migration that copies
-        // inherited metadata into an explicit decorator.
-        if (nonAbstractDirectives.has(baseClass)) {
-          break;
-        } else if (abstractDirectives.has(baseClass)) {
-          result.add(node);
-          // In case the undecorated class previously could not be detected as directive,
-          // remove it from the ambiguous set as we now know that it's a guaranteed directive.
-          ambiguous.delete(node);
+    /**
+     * Checks the inheritance of the given set of classes. It removes classes from the
+     * detected abstract directives set when they inherit from a non-abstract Angular
+     * declaration. e.g. an abstract directive can never extend from a component.
+     *
+     * If a class inherits from an abstract directive though, we will migrate them too
+     * as derived classes also need to be decorated. This has been done for a simpler mental
+     * model and reduced complexity in the Angular compiler. See migration plan document.
+     */
+    const checkInheritanceOfClasses = (classes: Set<ts.ClassDeclaration>) => {
+      classes.forEach(node => {
+        for (const {node: baseClass} of findBaseClassDeclarations(node, this.typeChecker)) {
+          if (!declarations.has(baseClass)) {
+            continue;
+          }
+          // If the undecorated class inherits from an abstract directive, always migrate it.
+          // Derived undecorated classes of abstract directives are always also considered
+          // abstract directives and need to be decorated too. This is necessary as otherwise
+          // the inheritance chain cannot be resolved by the Angular compiler. e.g. when it
+          // flattens directive metadata for type checking. In the other case, we never want
+          // to migrate a class if it extends from a non-abstract Angular declaration. That
+          // is an unsupported pattern as of v9 and was previously handled with the
+          // `undecorated-classes-with-di` migration (which copied the inherited decorator).
+          if (declarations.get(baseClass) === DeclarationType.ABSTRACT_DIRECTIVE) {
+            detectedAbstractDirectives.add(node);
+          } else {
+            detectedAbstractDirectives.delete(node);
+          }
+          ambiguousClasses.delete(node);
           break;
         }
-      }
-    });
+      });
+    };
 
-    return {result, ambiguous};
+    // Check inheritance of any detected abstract directive. We want to remove
+    // classes that are not eligible abstract directives due to inheritance. i.e.
+    // if a class extends from a component, it cannot be a derived abstract directive.
+    checkInheritanceOfClasses(detectedAbstractDirectives);
+    // Update the class declarations to reflect the detected abstract directives. This is
+    // then used later when we check for undecorated classes that inherit from an abstract
+    // directive and need to be decorated.
+    detectedAbstractDirectives.forEach(
+        n => declarations.set(n, DeclarationType.ABSTRACT_DIRECTIVE));
+    // Check ambiguous and undecorated classes if they inherit from an abstract directive.
+    // If they do, we want to migrate them too. See function definition for more details.
+    checkInheritanceOfClasses(ambiguousClasses);
+    checkInheritanceOfClasses(undecoratedClasses);
+
+    return {detectedAbstractDirectives, ambiguousClasses};
   }
 
   /**
@@ -186,19 +227,30 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
    */
   private _analyzeClassDeclaration(node: ts.ClassDeclaration): AnalyzedClass {
     const ngDecorators = node.decorators && getAngularDecorators(this.typeChecker, node.decorators);
-    const kind = this._determineClassKind(node);
+    const inferredKind = this._determineClassKind(node);
     if (ngDecorators === undefined || ngDecorators.length === 0) {
-      return {isDirectiveOrComponent: false, isAbstractDirective: false, kind};
+      return {decoratedType: null, inferredKind};
     }
     const directiveDecorator = ngDecorators.find(({name}) => name === 'Directive');
     const componentDecorator = ngDecorators.find(({name}) => name === 'Component');
+    const pipeDecorator = ngDecorators.find(({name}) => name === 'Pipe');
+    const injectableDecorator = ngDecorators.find(({name}) => name === 'Injectable');
     const isAbstractDirective =
         directiveDecorator !== undefined && this._isAbstractDirective(directiveDecorator);
-    return {
-      isDirectiveOrComponent: !!directiveDecorator || !!componentDecorator,
-      isAbstractDirective,
-      kind,
-    };
+
+    let decoratedType: DeclarationType|null = null;
+    if (isAbstractDirective) {
+      decoratedType = DeclarationType.ABSTRACT_DIRECTIVE;
+    } else if (componentDecorator !== undefined) {
+      decoratedType = DeclarationType.COMPONENT;
+    } else if (directiveDecorator !== undefined) {
+      decoratedType = DeclarationType.DIRECTIVE;
+    } else if (pipeDecorator !== undefined) {
+      decoratedType = DeclarationType.PIPE;
+    } else if (injectableDecorator !== undefined) {
+      decoratedType = DeclarationType.INJECTABLE;
+    }
+    return {decoratedType, inferredKind};
   }
 
   /**
@@ -228,8 +280,8 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
    * e.g. lifecycle hooks or decorated members like `@Input` or `@Output` are
    * considered Angular features..
    */
-  private _determineClassKind(node: ts.ClassDeclaration): ClassKind {
-    let usage = ClassKind.UNKNOWN;
+  private _determineClassKind(node: ts.ClassDeclaration): InferredKind {
+    let usage = InferredKind.UNKNOWN;
 
     for (const member of node.members) {
       const propertyName = member.name !== undefined ? getPropertyNameText(member.name) : null;
@@ -237,7 +289,7 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
       // If the class declares any of the known directive lifecycle hooks, we can
       // immediately exit the loop as the class is guaranteed to be a directive.
       if (propertyName !== null && DIRECTIVE_LIFECYCLE_HOOKS.has(propertyName)) {
-        return ClassKind.DIRECTIVE;
+        return InferredKind.DIRECTIVE;
       }
 
       const ngDecorators = member.decorators !== undefined ?
@@ -245,7 +297,7 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
           [];
       for (const {name} of ngDecorators) {
         if (DIRECTIVE_FIELD_DECORATORS.has(name)) {
-          return ClassKind.DIRECTIVE;
+          return InferredKind.DIRECTIVE;
         }
       }
 
@@ -253,10 +305,27 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
       // the given class is a directive, update the kind and continue looking for other
       // members that would unveil a more specific kind (i.e. being a directive).
       if (propertyName !== null && AMBIGUOUS_LIFECYCLE_HOOKS.has(propertyName)) {
-        usage = ClassKind.AMBIGUOUS;
+        usage = InferredKind.AMBIGUOUS;
       }
     }
 
     return usage;
+  }
+
+  /**
+   * Checks whether a given class has been reported as ambiguous in previous
+   * migration run. e.g. when build targets are migrated first, and then test
+   * targets that have an overlap with build source files, the same class
+   * could be detected as ambiguous.
+   */
+  private _hasBeenReportedAsAmbiguous(node: ts.ClassDeclaration): boolean {
+    const sourceFile = node.getSourceFile();
+    const leadingComments = ts.getLeadingCommentRanges(sourceFile.text, node.pos);
+    if (leadingComments === undefined) {
+      return false;
+    }
+    return leadingComments.some(
+        ({kind, pos, end}) => kind === ts.SyntaxKind.SingleLineCommentTrivia &&
+            sourceFile.text.substring(pos, end).includes(`TODO: ${AMBIGUOUS_CLASS_TODO}`));
   }
 }
