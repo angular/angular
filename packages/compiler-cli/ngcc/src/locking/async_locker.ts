@@ -37,7 +37,11 @@ export class AsyncLocker {
    */
   async lock<T>(fn: () => Promise<T>): Promise<T> {
     await this.create();
-    return fn().finally(() => this.lockFile.remove());
+    try {
+      return await fn();
+    } finally {
+      this.lockFile.remove();
+    }
   }
 
   protected async create() {
