@@ -20,8 +20,8 @@ import { UrlResolver } from "./url_resolver";
 import { OutputContext } from "./util";
 
 const COMPONENT_VARIABLE = '%C%';
-export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
-export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
+export const HOST_ATTR = `_h-${COMPONENT_VARIABLE}`;
+export const CONTENT_ATTR = `_c-${COMPONENT_VARIABLE}`;
 
 export class StylesCompileDependency {
   constructor(

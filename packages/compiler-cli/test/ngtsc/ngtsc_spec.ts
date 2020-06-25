@@ -7915,7 +7915,7 @@ export const Foo = Foo__PRE_R3__;
         env.driveMain();
         const jsContents = env.getContents("test.js");
         expect(jsContents).toContain(
-          'styles: ["h2[_ngcontent-%C%] {width: 10px}", "h1[_ngcontent-%C%] {font-size: larger}"]'
+          'styles: ["h2[_c-%C%] {width: 10px}", "h1[_c-%C%] {font-size: larger}"]'
         );
       });
 
@@ -7937,7 +7937,7 @@ export const Foo = Foo__PRE_R3__;
         env.driveMain();
         const jsContents = env.getContents("test.js");
         expect(jsContents).toContain(
-          'styles: ["h1[_ngcontent-%C%] {font-size: larger}"]'
+          'styles: ["h1[_c-%C%] {font-size: larger}"]'
         );
       });
     });
