@@ -34,7 +34,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       masterRunSpy = spyOn(ClusterMaster.prototype, 'run')
-                         .and.returnValue(Promise.resolve('CusterMaster#run()' as any));
+                         .and.returnValue(Promise.resolve('ClusterMaster#run()' as any));
       createTaskCompletedCallback = jasmine.createSpy('createTaskCompletedCallback');
 
       mockLogger = new MockLogger();
@@ -63,7 +63,7 @@ runInEachFileSystem(() => {
         const createCompilerFnSpy = jasmine.createSpy('createCompilerFn');
 
         expect(await executor.execute(analyzeEntryPointsSpy, createCompilerFnSpy))
-            .toBe('CusterMaster#run()' as any);
+            .toBe('ClusterMaster#run()' as any);
 
         expect(masterRunSpy).toHaveBeenCalledWith();
 
@@ -77,6 +77,22 @@ runInEachFileSystem(() => {
            await executor.execute(anyFn, anyFn);
            expect(lockFileLog).toEqual(['write()', 'remove()']);
          });
+
+      it('should call LockFile.write() and LockFile.remove() if analyzeFn fails', async () => {
+        const analyzeEntryPointsSpy =
+            jasmine.createSpy('analyzeEntryPoints').and.throwError('analyze error');
+        const createCompilerFnSpy = jasmine.createSpy('createCompilerFn');
+        let error = '';
+        try {
+          await executor.execute(analyzeEntryPointsSpy, createCompilerFnSpy);
+        } catch (e) {
+          error = e.message;
+        }
+        expect(analyzeEntryPointsSpy).toHaveBeenCalledWith();
+        expect(createCompilerFnSpy).not.toHaveBeenCalled();
+        expect(error).toEqual('analyze error');
+        expect(lockFileLog).toEqual(['write()', 'remove()']);
+      });
 
       it('should call LockFile.write() and LockFile.remove() if master runner fails', async () => {
         const anyFn: () => any = () => undefined;
