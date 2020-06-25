@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/** Regular expression that matches empty line whitespace. */
-const omitEmptyLineWhitespaceRegex = /^[ \t]$/gm;
-
 /**
  * Template string function that can be used to dedent the resulting
  * string literal. The smallest common indentation will be omitted.
@@ -28,6 +25,7 @@ export function dedent(strings: TemplateStringsArray, ...values: any[]) {
 
   const minLineIndent = Math.min(...matches.map(el => el.length));
   const omitMinIndentRegex = new RegExp(`^[ \\t]{${minLineIndent}}`, 'gm');
+  const omitEmptyLineWhitespaceRegex = /^[ \t]+$/gm;
   const result = minLineIndent > 0 ? joinedString.replace(omitMinIndentRegex, '') : joinedString;
   return result.replace(omitEmptyLineWhitespaceRegex, '');
 }
