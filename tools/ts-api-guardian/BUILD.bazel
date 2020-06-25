@@ -1,6 +1,6 @@
 # BEGIN-INTERNAL
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
-load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
 load("//tools:defaults.bzl", "jasmine_node_test")
 
 ts_library(
