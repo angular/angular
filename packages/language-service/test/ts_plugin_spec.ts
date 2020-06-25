@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {create} from '../src/ts_plugin';
+import {create, getExternalFiles} from '../src/ts_plugin';
 import {CompletionKind} from '../src/types';
 
 import {MockTypescriptHost} from './test_utils';
@@ -127,6 +127,13 @@ describe('plugin', () => {
         replacementSpan: {start: 182, length: 8},
         insertText: 'children',
       },
+    ]);
+  });
+
+  it('should return external templates when getExternalFiles() is called', () => {
+    const externalTemplates = getExternalFiles(mockProject);
+    expect(externalTemplates).toEqual([
+      '/app/test.ng',
     ]);
   });
 });
