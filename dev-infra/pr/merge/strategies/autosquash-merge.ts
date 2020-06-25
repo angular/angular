@@ -59,7 +59,7 @@ export class AutosquashMergeStrategy extends MergeStrategy {
     // is desired, we set the `GIT_SEQUENCE_EDITOR` environment variable to `true` so that
     // the rebase seems interactive to Git, while it's not interactive to the user.
     // See: https://github.com/git/git/commit/891d4a0313edc03f7e2ecb96edec5d30dc182294.
-    const branchBeforeRebase = this.git.getCurrentBranch();
+    const branchOrRevisionBeforeRebase = this.git.getCurrentBranchOrRevision();
     const rebaseEnv =
         needsCommitMessageFixup ? undefined : {...process.env, GIT_SEQUENCE_EDITOR: 'true'};
     this.git.run(
@@ -69,9 +69,9 @@ export class AutosquashMergeStrategy extends MergeStrategy {
     // Update pull requests commits to reference the pull request. This matches what
     // Github does when pull requests are merged through the Web UI. The motivation is
     // that it should be easy to determine which pull request contained a given commit.
-    // **Note**: The filter-branch command relies on the working tree, so we want to make
-    // sure that we are on the initial branch where the merge script has been run.
-    this.git.run(['checkout', '-f', branchBeforeRebase]);
+    // Note: The filter-branch command relies on the working tree, so we want to make sure
+    // that we are on the initial branch or revision where the merge script has been invoked.
+    this.git.run(['checkout', '-f', branchOrRevisionBeforeRebase]);
     this.git.run(
         ['filter-branch', '-f', '--msg-filter', `${MSG_FILTER_SCRIPT} ${prNumber}`, revisionRange]);
 

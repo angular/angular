@@ -119,9 +119,16 @@ export class GitClient {
     return this.run(['branch', branchName, '--contains', sha]).stdout !== '';
   }
 
-  /** Gets the currently checked out branch. */
-  getCurrentBranch(): string {
-    return this.run(['rev-parse', '--abbrev-ref', 'HEAD']).stdout.trim();
+  /** Gets the currently checked out branch or revision. */
+  getCurrentBranchOrRevision(): string {
+    const branchName = this.run(['rev-parse', '--abbrev-ref', 'HEAD']).stdout.trim();
+    // If no branch name could be resolved. i.e. `HEAD` has been returned, then Git
+    // is currently in a detached state. In those cases, we just want to return the
+    // currently checked out revision/SHA.
+    if (branchName === 'HEAD') {
+      return this.run(['rev-parse', 'HEAD']).stdout.trim();
+    }
+    return branchName;
   }
 
   /** Gets whether the current Git repository has uncommitted changes. */

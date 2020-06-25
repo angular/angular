@@ -63,8 +63,8 @@ export async function discoverNewConflictsForPr(
     process.exit(1);
   }
 
-  /** The active github branch when the run began. */
-  const originalBranch = git.getCurrentBranch();
+  /** The active github branch or revision before we performed any Git commands. */
+  const previousBranchOrRevision = git.getCurrentBranchOrRevision();
   /* Progress bar to indicate progress. */
   const progressBar = new Bar({format: `[{bar}] ETA: {eta}s | {value}/{total}`});
   /* PRs which were found to be conflicting. */
@@ -103,7 +103,7 @@ export async function discoverNewConflictsForPr(
   const result = exec(`git rebase FETCH_HEAD`);
   if (result.code) {
     error('The requested PR currently has conflicts');
-    cleanUpGitState(originalBranch);
+    cleanUpGitState(previousBranchOrRevision);
     process.exit(1);
   }
 
@@ -130,7 +130,7 @@ export async function discoverNewConflictsForPr(
   info();
   info(`Result:`);
 
-  cleanUpGitState(originalBranch);
+  cleanUpGitState(previousBranchOrRevision);
 
   // If no conflicts are found, exit successfully.
   if (conflicts.length === 0) {
@@ -147,14 +147,14 @@ export async function discoverNewConflictsForPr(
   process.exit(1);
 }
 
-/** Reset git back to the provided branch. */
-export function cleanUpGitState(branch: string) {
+/** Reset git back to the provided branch or revision. */
+export function cleanUpGitState(previousBranchOrRevision: string) {
   // Ensure that any outstanding rebases are aborted.
   exec(`git rebase --abort`);
   // Ensure that any changes in the current repo state are cleared.
   exec(`git reset --hard`);
   // Checkout the original branch from before the run began.
-  exec(`git checkout ${branch}`);
+  exec(`git checkout ${previousBranchOrRevision}`);
   // Delete the generated branch.
   exec(`git branch -D ${tempWorkingBranch}`);
 }

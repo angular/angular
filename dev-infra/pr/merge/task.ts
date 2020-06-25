@@ -87,14 +87,14 @@ export class PullRequestMergeTask {
         new GithubApiMergeStrategy(this.git, this.config.githubApiMerge) :
         new AutosquashMergeStrategy(this.git);
 
-    // Branch that is currently checked out so that we can switch back to it once
-    // the pull request has been merged.
-    let previousBranch: null|string = null;
+    // Branch or revision that is currently checked out so that we can switch back to
+    // it once the pull request has been merged.
+    let previousBranchOrRevision: null|string = null;
 
     // The following block runs Git commands as child processes. These Git commands can fail.
     // We want to capture these command errors and return an appropriate merge request status.
     try {
-      previousBranch = this.git.getCurrentBranch();
+      previousBranchOrRevision = this.git.getCurrentBranchOrRevision();
 
       // Run preparations for the merge (e.g. fetching branches).
       await strategy.prepare(pullRequest);
@@ -107,7 +107,7 @@ export class PullRequestMergeTask {
 
       // Switch back to the previous branch. We need to do this before deleting the temporary
       // branches because we cannot delete branches which are currently checked out.
-      this.git.run(['checkout', '-f', previousBranch]);
+      this.git.run(['checkout', '-f', previousBranchOrRevision]);
 
       await strategy.cleanup(pullRequest);
 
@@ -123,8 +123,8 @@ export class PullRequestMergeTask {
     } finally {
       // Always try to restore the branch if possible. We don't want to leave
       // the repository in a different state than before.
-      if (previousBranch !== null) {
-        this.git.runGraceful(['checkout', '-f', previousBranch]);
+      if (previousBranchOrRevision !== null) {
+        this.git.runGraceful(['checkout', '-f', previousBranchOrRevision]);
       }
     }
   }

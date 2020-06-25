@@ -50,10 +50,10 @@ export async function rebasePr(
   }
 
   /**
-   * The branch originally checked out before this method performs any Git
-   * operations that may change the working branch.
+   * The branch or revision originally checked out before this method performed
+   * any Git operations that may change the working branch.
    */
-  const originalBranch = git.getCurrentBranch();
+  const previousBranchOrRevision = git.getCurrentBranchOrRevision();
   /* Get the PR information from Github. */
   const pr = await getPr(PR_SCHEMA, prNumber, config.github);
 
@@ -121,7 +121,7 @@ export async function rebasePr(
     info();
     info(`To abort the rebase and return to the state of the repository before this command`);
     info(`run the following command:`);
-    info(` $ git rebase --abort && git reset --hard && git checkout ${originalBranch}`);
+    info(` $ git rebase --abort && git reset --hard && git checkout ${previousBranchOrRevision}`);
     process.exit(1);
   } else {
     info(`Cleaning up git state, and restoring previous state.`);
@@ -137,7 +137,7 @@ export async function rebasePr(
     // Ensure that any changes in the current repo state are cleared.
     git.runGraceful(['reset', '--hard'], {stdio: 'ignore'});
     // Checkout the original branch from before the run began.
-    git.runGraceful(['checkout', originalBranch], {stdio: 'ignore'});
+    git.runGraceful(['checkout', previousBranchOrRevision], {stdio: 'ignore'});
   }
 }
 
