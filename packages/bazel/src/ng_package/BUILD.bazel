@@ -2,30 +2,6 @@ package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
-# BEGIN-DEV-ONLY
-load("@npm_bazel_typescript//:index.bzl", "ts_library")
-
-ts_library(
-    name = "lib",
-    srcs = glob(["*.ts"]),
-    node_modules = "@npm//typescript:typescript__typings",
-    tsconfig = ":tsconfig.json",
-    deps = [
-        "@npm//@types/node",
-        "@npm//@types/shelljs",
-    ],
-)
-
-# END-DEV-ONLY
-nodejs_binary(
-    name = "packager",
-    data = [
-        "lib",
-        "@npm//shelljs",
-    ],
-    entry_point = ":packager.ts",
-)
-
 nodejs_binary(
     name = "rollup_for_ng_package",
     data = [
@@ -44,6 +20,20 @@ exports_files([
     "terser_config.default.json",
 ])
 
+# BEGIN-DEV-ONLY
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+
+ts_library(
+    name = "lib",
+    srcs = glob(["*.ts"]),
+    node_modules = "@npm//typescript:typescript__typings",
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "@npm//@types/node",
+        "@npm//@types/shelljs",
+    ],
+)
+
 filegroup(
     name = "package_assets",
     srcs = glob(["*.bzl"]) + [
@@ -52,3 +42,13 @@ filegroup(
         "terser_config.default.json",
     ],
 )
+
+nodejs_binary(
+    name = "packager",
+    data = [
+        "lib",
+        "@npm//shelljs",
+    ],
+    entry_point = ":packager.ts",
+)
+# END-DEV-ONLY

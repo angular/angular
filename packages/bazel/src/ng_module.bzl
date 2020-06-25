@@ -19,6 +19,7 @@ load(
     "TsConfigInfo",
     "compile_ts",
     "js_ecma_script_module_info",
+    "js_module_info",
     "js_named_module_info",
     "node_modules_aspect",
     "ts_providers_dict_to_struct",
@@ -636,6 +637,10 @@ def _ng_module_impl(ctx):
     # See design doc https://docs.google.com/document/d/1ggkY5RqUkVL4aQLYm7esRW978LgX3GUCnQirrk5E1C0/edit#
     # and issue https://github.com/bazelbuild/rules_nodejs/issues/57 for more details.
     ts_providers["providers"].extend([
+        js_module_info(
+            sources = ts_providers["typescript"]["es5_sources"],
+            deps = ctx.attr.deps,
+        ),
         js_named_module_info(
             sources = ts_providers["typescript"]["es5_sources"],
             deps = ctx.attr.deps,
