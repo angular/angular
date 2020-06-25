@@ -1,13 +1,24 @@
+<!--
 # Workspace and project file structure
+-->
+# 워크스페이스, 프로젝트 파일 구조
 
+<!--
 You develop applications in the context of an Angular [workspace](guide/glossary#workspace). A workspace contains the files for one or more [projects](guide/glossary#project). A project is the set of files that comprise a standalone application or a shareable library.
 
 The Angular CLI `ng new` command creates a workspace.
+-->
+Angular 애플리케이션은 Angular [워크스페이스(workspace)](guide/glossary#workspace) 컨텍스트 안에서 개발합니다.
+그리고 워크스페이스에는 [프로젝트(project)](guide/glossary#project)가 여러개 존재할 수도 있습니다.
+프로젝트는 단독으로 동작하는 애플리케이션이나 라이브러리를 구성하는 파일 모음을 의미합니다.
+
+Angular CLI로 `ng new` 명령을 실행하면 워크스페이스를 생성할 수 있습니다.
 
 <code-example language="bash">
 ng new &lt;my-project&gt;
 </code-example>
 
+<!--
 When you run this command, the CLI installs the necessary Angular npm packages and other dependencies in a new workspace, with a root-level application named *my-project*.
 The workspace root folder contains various support and configuration files, and a README file with generated descriptive text that you can customize.
 
@@ -24,9 +35,32 @@ and for enterprises that use a "monorepo" development style, with a single repos
 
 To set up a monorepo workspace, you should skip the creating the root application.
 See [Setting up for a multi-project workspace](#multiple-projects) below.
+-->
+그러면 Angular CLI가 Angular npm 패키지를 설치하면서 새로운 *my-project*라는 폴더에 워크스페이스를 생성합니다.
+워크스페이스 최상위 폴더에는 워크스페이스 관리 파일이나 환경설정 파일이 생성됩니다.
+워크스페이스 설명은 보통 README 파일에 작성하는데, 이 파일도 이 때 생성됩니다.
 
+그리고 `ng new` 명령을 실행하면 워크스페이스 최상위 폴더에 애플리케이션의 기본 틀과 엔드-투-엔드 테스트 환경도 함께 구성됩니다.
+이 때 생성되는 애플리케이션 기본틀은 바로 실행할 수 있을 정도로 구성되기 때문에 수정하기도 쉽습니다.
+이 애플리케이션의 이름은 워크스페이스 이름과 같고, 소스 파일은 워크스페이스의 `src/` 폴더 안에 구성됩니다.
+
+`ng new` 명령이 실행된 결과가 이렇게 때문에 워크스페이스 하나에 애플리케이션을 여러개 구성할 수도 있습니다.
+하지만 아직 Angular에 익숙하지 않다면 애플리케이션 하나를 생성할 때마다 `ng new` 명령을 실행하는 것이 좋습니다.
+
+Angluar 워크스페이스에는 [프로젝트를 여러개](#multiple-projects) 구성할 수도 있습니다.
+[라이브러리](guide/glossary#library)를 만들어서 공유할 목적이라면 이런 개발 환경도 고려해볼만 합니다.
+워크스페이스 아래 생성하는 Angular 프로젝트는 모두 한 저장소(repository)로 관리할 수 있으며, 같은 환경설정의 영향을 받습니다.
+
+단일 저장소(monorepo) 워크스페이스를 구성하려면 최상위 폴더에 생성되는 애플리케이션 생성은 건너뛰는 것이 좋습니다.
+아래 [다중 프로젝트를 위한 워크스페이스 구성하기](#multiple-projects) 섹션을 참고하세요.
+
+
+<!--
 ## Workspace configuration files
+-->
+## 워크스페이스 환경설정 파일
 
+<!--
 All projects within a workspace share a [CLI configuration context](guide/workspace-config).
 The top level of the workspace contains workspace-wide configuration files, configuration files for the root-level application, and subfolders for the root-level application source and test files.
 
@@ -42,6 +76,22 @@ The top level of the workspace contains workspace-wide configuration files, conf
 | `node_modules/`         | Provides [npm packages](guide/npm-packages) to the entire workspace. Workspace-wide `node_modules` dependencies are visible to all projects. |
 | `tsconfig.json`         | Default [TypeScript](https://www.typescriptlang.org/) configuration for projects in the workspace. |
 | `tslint.json`           | Default [TSLint](https://palantir.github.io/tslint/) configuration for projects in the workspace. |
+-->
+워크스페이스 안에 있는 모든 프로젝트는 같은 [CLI 환경설정 컨텍스트](guide/workspace-config)를 공유합니다.
+그래서 워크스페이스 전역에 적용되는 환경설정 파일과 최상위 애플리케이션의 환경설정 파일은 워크스페이스 최상위 폴더에 위치하며, 그 아래로 최상위 애플리케이션의 소스 파일과 테스트 파일이 위치합니다.
+
+| 워크스페이스 파일 | 용도 |
+| :--------------------- | :------------------------------------------|
+| `.editorconfig`        | 코드 에디터 환경설정 파일. [EditConfig](https://editorconfig.org/)를 참고하세요. |
+| `.gitignore`           | [Git](https://git-scm.com/)으로 관리하지 않을 파일을 지정합니다. |
+| `README.md`            | 앱 설명 파일 |
+| `angular.json`         | 워크스페이스에 있는 모든 프로젝트에 적용될 Angular CLI 환경설정파일입니다. Angular CLI로 빌드, 서빙, 테스트할 때 사용하는 [TSLint](https://palantir.github.io/tslint/), [Karma](https://karma-runner.github.io/), [Protractor](http://www.protractortest.org/)에 대한 설정도 이 파일에 지정합니다. 자세한 내용은 [Angular 워크스페이스 환경설정](guide/workspace-config) 문서를 참고하세요. |
+| `package.json`          | 워크스페이스에 있는 모든 프로젝트에 적용될 [npm 패키지](guide/npm-packages)를 지정합니다. 자세한 내용은 [npm 문서](https://docs.npmjs.com/files/package.json)를 참고하세요. |
+| `package-lock.json`     | `node_modules`에 설치된 패키지 버전 정보를 저장합니다. 자세한 내용은 [npm 문서](https://docs.npmjs.com/files/package-lock.json)를 참고하세요. 이 파일은 npm을 사용했을 때 생성되며, yarn을 사용한다면 이 파일 대신 [yarn.lock](https://yarnpkg.com/lang/en/docs/yarn-lock/) 파일이 생성됩니다. |
+| `src/`                  | 최상위 애플리케이션 프로젝트를 구성하는 소스 파일입니다. |
+| `node_modules/`         | 워크스페이스에 사용할 [npm 패키지](guide/npm-packages)가 설치되는 폴더입니다. 이 폴더에 설치한 [npm 패키지](guide/npm-packages)는 워크스페이스에 존재하는 모든 프로젝트에 사용할 수 있습니다. |
+| `tsconfig.json`         | 워크스페이스에 있는 프로젝트에 적용할 [TypeScript](https://www.typescriptlang.org/) 환경설정 파일입니다. |
+| `tslint.json`           | 워크스페이스에 있는 프로젝트에 적용할 [TSLint](https://palantir.github.io/tslint/) 환경설정 파일입니다. |
 
 
 ## Application project files
