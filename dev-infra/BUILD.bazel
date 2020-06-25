@@ -1,5 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
-load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
 
 ts_library(
     name = "cli",
@@ -49,7 +49,7 @@ pkg_npm(
         # substitutions to replace these in the published version of dev-infra.
         "//dev-infra/": "@npm_angular_dev_infra_private//",
         "//packages/benchpress": "@npm//@angular/benchpress",
-        "//packages/bazel/": "@npm_angular_bazel//",
+        "//packages/bazel": "@npm//@angular/bazel",
         "//packages/zone.js/bundles:zone.umd.js": "@npm//:node_modules/zone.js/dist/zone.js",
         "//packages/core": "@npm//@angular/core",
         "//packages/platform-browser": "@npm//@angular/platform-browser",
@@ -57,7 +57,7 @@ pkg_npm(
         # This substitution is particularly verbose because we need to make sure
         # that only things available via Angular Bazel are imported from
         # tools/defaults.bzl.
-        "load\(\"//tools:defaults.bzl\", \"ng_module\"\)": "load(\"@npm_angular_bazel//:index.bzl\", \"ng_module\")",
+        "load\(\"//tools:defaults.bzl\", \"ng_module\"\)": "load(\"@npm//@angular/bazel:index.bzl\", \"ng_module\")",
     },
     visibility = ["//visibility:public"],
     deps = [
