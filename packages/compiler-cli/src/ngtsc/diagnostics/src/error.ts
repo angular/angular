@@ -8,13 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from './error_code';
+import {ErrorCode} from './error_code';
 
 export class FatalDiagnosticError {
-  constructor(
-      readonly code: ErrorCode, readonly node: ts.Node,
-      readonly message: string|ts.DiagnosticMessageChain,
-      readonly relatedInformation?: ts.DiagnosticRelatedInformation[]) {}
+  constructor(readonly code: ErrorCode, readonly node: ts.Node, readonly message: string) {}
 
   /**
    * @internal
@@ -22,17 +19,17 @@ export class FatalDiagnosticError {
   _isFatalDiagnosticError = true;
 
   toDiagnostic(): ts.DiagnosticWithLocation {
-    return makeDiagnostic(this.code, this.node, this.message, this.relatedInformation);
+    return makeDiagnostic(this.code, this.node, this.message);
   }
 }
 
 export function makeDiagnostic(
-    code: ErrorCode, node: ts.Node, messageText: string|ts.DiagnosticMessageChain,
+    code: ErrorCode, node: ts.Node, messageText: string,
     relatedInformation?: ts.DiagnosticRelatedInformation[]): ts.DiagnosticWithLocation {
   node = ts.getOriginalNode(node);
   return {
     category: ts.DiagnosticCategory.Error,
-    code: ngErrorCode(code),
+    code: Number('-99' + code.valueOf()),
     file: ts.getOriginalNode(node).getSourceFile(),
     start: node.getStart(undefined, false),
     length: node.getWidth(),

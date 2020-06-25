@@ -1622,8 +1622,7 @@ runInEachFileSystem(os => {
         expect(errors.length).toBe(1);
         const {code, messageText} = errors[0];
         expect(code).toBe(ngErrorCode(errorCode));
-        const text = ts.flattenDiagnosticMessageText(messageText, '\n');
-        expect(trim(text)).toContain(errorMessage);
+        expect(trim(messageText as string)).toContain(errorMessage);
       }
 
       it('should throw if invalid arguments are provided in @NgModule', () => {
@@ -3429,11 +3428,8 @@ runInEachFileSystem(os => {
       class CompA {}
     `);
       const errors = env.driveDiagnostics();
-      expect(errors.length).toBe(1);
-      const messageText = ts.flattenDiagnosticMessageText(errors[0].messageText, '\n');
-      expect(messageText)
+      expect(errors[0].messageText)
           .toContain('encapsulation must be a member of ViewEncapsulation enum from @angular/core');
-      expect(messageText).toContain('Value is of type \'string\'.');
     });
 
     it('should handle `changeDetection` field', () => {
@@ -3463,12 +3459,9 @@ runInEachFileSystem(os => {
       class CompA {}
     `);
       const errors = env.driveDiagnostics();
-      expect(errors.length).toBe(1);
-      const messageText = ts.flattenDiagnosticMessageText(errors[0].messageText, '\n');
-      expect(messageText)
+      expect(errors[0].messageText)
           .toContain(
               'changeDetection must be a member of ChangeDetectionStrategy enum from @angular/core');
-      expect(messageText).toContain('Value is of type \'string\'.');
     });
 
     it('should ignore empty bindings', () => {
@@ -4707,10 +4700,7 @@ runInEachFileSystem(os => {
           `);
 
           const diags = await driveDiagnostics();
-          expect(diags.length).toBe(1);
-          const messageText = ts.flattenDiagnosticMessageText(diags[0].messageText, '\n');
-          expect(messageText).toContain('styleUrls must be an array of strings');
-          expect(messageText).toContain('Value is of type \'string\'.');
+          expect(diags[0].messageText).toBe('styleUrls must be an array of strings');
           expect(diags[0].file!.fileName).toBe(absoluteFrom('/test.ts'));
         });
       });

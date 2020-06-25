@@ -20,7 +20,7 @@ import {FactoryTracker} from '../../shims/api';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
 
-import {createValueHasWrongTypeError, getProviderDiagnostics} from './diagnostics';
+import {getProviderDiagnostics} from './diagnostics';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
@@ -170,18 +170,21 @@ export class NgModuleDecoratorHandler implements
       const rawExpr = ngModule.get('schemas')!;
       const result = this.evaluator.evaluate(rawExpr);
       if (!Array.isArray(result)) {
-        throw createValueHasWrongTypeError(rawExpr, result, `NgModule.schemas must be an array`);
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr, `NgModule.schemas must be an array`);
       }
 
       for (const schemaRef of result) {
         if (!(schemaRef instanceof Reference)) {
-          throw createValueHasWrongTypeError(
-              rawExpr, result, 'NgModule.schemas must be an array of schemas');
+          throw new FatalDiagnosticError(
+              ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr,
+              'NgModule.schemas must be an array of schemas');
         }
         const id = schemaRef.getIdentityIn(schemaRef.node.getSourceFile());
         if (id === null || schemaRef.ownedByModuleGuess !== '@angular/core') {
-          throw createValueHasWrongTypeError(
-              rawExpr, result, 'NgModule.schemas must be an array of schemas');
+          throw new FatalDiagnosticError(
+              ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr,
+              'NgModule.schemas must be an array of schemas');
         }
         // Since `id` is the `ts.Identifer` within the schema ref's declaration file, it's safe to
         // use `id.text` here to figure out which schema is in use. Even if the actual reference was
@@ -194,8 +197,9 @@ export class NgModuleDecoratorHandler implements
             schemas.push(NO_ERRORS_SCHEMA);
             break;
           default:
-            throw createValueHasWrongTypeError(
-                rawExpr, schemaRef, `'${schemaRef.debugName}' is not a valid NgModule schema`);
+            throw new FatalDiagnosticError(
+                ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr,
+                `'${schemaRef.debugName}' is not a valid NgModule schema`);
         }
       }
     }
@@ -550,8 +554,8 @@ export class NgModuleDecoratorHandler implements
       arrayName: string): Reference<ClassDeclaration>[] {
     const refList: Reference<ClassDeclaration>[] = [];
     if (!Array.isArray(resolvedList)) {
-      throw createValueHasWrongTypeError(
-          expr, resolvedList,
+      throw new FatalDiagnosticError(
+          ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
           `Expected array when reading the NgModule.${arrayName} of ${className}`);
     }
 
@@ -567,18 +571,18 @@ export class NgModuleDecoratorHandler implements
         refList.push(...this.resolveTypeList(expr, entry, className, arrayName));
       } else if (isDeclarationReference(entry)) {
         if (!this.isClassDeclarationReference(entry)) {
-          throw createValueHasWrongTypeError(
-              entry.node, entry,
+          throw new FatalDiagnosticError(
+              ErrorCode.VALUE_HAS_WRONG_TYPE, entry.node,
               `Value at position ${idx} in the NgModule.${arrayName} of ${
                   className} is not a class`);
         }
         refList.push(entry);
       } else {
         // TODO(alxhub): Produce a better diagnostic here - the array index may be an inner array.
-        throw createValueHasWrongTypeError(
-            expr, entry,
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
             `Value at position ${idx} in the NgModule.${arrayName} of ${
-                className} is not a reference`);
+                className} is not a reference: ${entry}`);
       }
     });
 
