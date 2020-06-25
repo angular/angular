@@ -34,7 +34,7 @@ import {isDevMode} from '../util/is_dev_mode';
  *
  * This regular expression was taken from the Closure sanitization library.
  */
-const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file):|[^&:/?#]*(?:[/?#]|$))/gi;
+const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file|sms):|[^&:/?#]*(?:[/?#]|$))/gi;
 
 /* A pattern that matches safe srcset values */
 const SAFE_SRCSET_PATTERN = /^(?:(?:https?|file):|[^&:/?#]*(?:[/?#]|$))/gi;
