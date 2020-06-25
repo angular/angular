@@ -28,7 +28,7 @@ export const NAMESPACE_URIS: { [ns: string]: string } = {
   xmlns: "http://www.w3.org/2000/xmlns/",
 };
 
-const COMPONENT_REGEX = /%C%/;
+const COMPONENT_REGEX = /%C%/g;
 const NG_DEV_MODE = typeof ngDevMode === "undefined" || !!ngDevMode;
 
 export const COMPONENT_VARIABLE = "%C%";
