@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {platform} from 'os';
 import * as ts from 'typescript';
 
 import {absoluteFrom as _, absoluteFromSourceFile} from '../../file_system';
@@ -13,14 +14,13 @@ import {runInEachFileSystem} from '../../file_system/testing';
 import {Reference} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
-
 import {ObjectAssignBuiltinFn} from '../src/builtin';
 import {describeResolvedType, traceDynamicValue} from '../src/diagnostics';
 import {DynamicValue} from '../src/dynamic';
 import {PartialEvaluator} from '../src/interface';
 import {EnumValue, ResolvedModule} from '../src/result';
 
-runInEachFileSystem(() => {
+runInEachFileSystem(os => {
   describe('partial evaluator', () => {
     describe('describeResolvedType()', () => {
       it('should describe primitives', () => {
@@ -100,168 +100,170 @@ runInEachFileSystem(() => {
       });
     });
 
-    describe('traceDynamicValue()', () => {
-      it('should not include the origin node if points to a different dynamic node.', () => {
-        // In the below expression, the read of "value" is evaluated to be dynamic, but it's also
-        // the exact node for which the diagnostic is produced. Therefore, this node is not part
-        // of the trace.
-        const trace = traceExpression('const value = nonexistent;', 'value');
+    if (os !== 'Windows' && platform() !== 'win32') {
+      describe('traceDynamicValue()', () => {
+        it('should not include the origin node if points to a different dynamic node.', () => {
+          // In the below expression, the read of "value" is evaluated to be dynamic, but it's also
+          // the exact node for which the diagnostic is produced. Therefore, this node is not part
+          // of the trace.
+          const trace = traceExpression('const value = nonexistent;', 'value');
 
-        expect(trace.length).toBe(1);
-        expect(trace[0].messageText).toBe(`Unknown reference.`);
-        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[0])).toBe('nonexistent');
-      });
+          expect(trace.length).toBe(1);
+          expect(trace[0].messageText).toBe(`Unknown reference.`);
+          expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[0])).toBe('nonexistent');
+        });
 
-      it('should include the origin node if it is dynamic by itself', () => {
-        const trace = traceExpression('', 'nonexistent;');
+        it('should include the origin node if it is dynamic by itself', () => {
+          const trace = traceExpression('', 'nonexistent;');
 
-        expect(trace.length).toBe(1);
-        expect(trace[0].messageText).toBe(`Unknown reference.`);
-        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[0])).toBe('nonexistent');
-      });
+          expect(trace.length).toBe(1);
+          expect(trace[0].messageText).toBe(`Unknown reference.`);
+          expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[0])).toBe('nonexistent');
+        });
 
-      it('should include a trace for a dynamic subexpression in the origin expression', () => {
-        const trace = traceExpression('const value = nonexistent;', 'value.property');
+        it('should include a trace for a dynamic subexpression in the origin expression', () => {
+          const trace = traceExpression('const value = nonexistent;', 'value.property');
 
-        expect(trace.length).toBe(2);
-        expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[0])).toBe('value');
+          expect(trace.length).toBe(2);
+          expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
+          expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[0])).toBe('value');
 
-        expect(trace[1].messageText).toBe('Unknown reference.');
-        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[1])).toBe('nonexistent');
-      });
+          expect(trace[1].messageText).toBe('Unknown reference.');
+          expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[1])).toBe('nonexistent');
+        });
 
-      it('should reduce the granularity to a single entry per statement', () => {
-        // Dynamic values exist for each node that has been visited, but only the initial dynamic
-        // value within a statement is included in the trace.
-        const trace = traceExpression(
-            `const firstChild = document.body.childNodes[0];
+        it('should reduce the granularity to a single entry per statement', () => {
+          // Dynamic values exist for each node that has been visited, but only the initial dynamic
+          // value within a statement is included in the trace.
+          const trace = traceExpression(
+              `const firstChild = document.body.childNodes[0];
              const child = firstChild.firstChild;`,
-            'child !== undefined');
+              'child !== undefined');
 
-        expect(trace.length).toBe(4);
-        expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[0])).toBe('child');
+          expect(trace.length).toBe(4);
+          expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
+          expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[0])).toBe('child');
 
-        expect(trace[1].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[1])).toBe('firstChild');
+          expect(trace[1].messageText).toBe('Unable to evaluate this expression statically.');
+          expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[1])).toBe('firstChild');
 
-        expect(trace[2].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(absoluteFromSourceFile(trace[2].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[2])).toBe('document.body');
+          expect(trace[2].messageText).toBe('Unable to evaluate this expression statically.');
+          expect(absoluteFromSourceFile(trace[2].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[2])).toBe('document.body');
 
-        expect(trace[3].messageText)
-            .toBe(
-                `A value for 'document' cannot be determined statically, as it is an external declaration.`);
-        expect(absoluteFromSourceFile(trace[3].file!)).toBe(_('/lib.d.ts'));
-        expect(getSourceCode(trace[3])).toBe('document: any');
-      });
+          expect(trace[3].messageText)
+              .toBe(
+                  `A value for 'document' cannot be determined statically, as it is an external declaration.`);
+          expect(absoluteFromSourceFile(trace[3].file!)).toBe(_('/lib.d.ts'));
+          expect(getSourceCode(trace[3])).toBe('document: any');
+        });
 
-      it('should trace dynamic strings', () => {
-        const trace = traceExpression('', '`${document}`');
+        it('should trace dynamic strings', () => {
+          const trace = traceExpression('', '`${document}`');
 
-        expect(trace.length).toBe(1);
-        expect(trace[0].messageText).toBe('A string value could not be determined statically.');
-        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[0])).toBe('document');
-      });
+          expect(trace.length).toBe(1);
+          expect(trace[0].messageText).toBe('A string value could not be determined statically.');
+          expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[0])).toBe('document');
+        });
 
-      it('should trace invalid expression types', () => {
-        const trace = traceExpression('', 'true()');
+        it('should trace invalid expression types', () => {
+          const trace = traceExpression('', 'true()');
 
-        expect(trace.length).toBe(1);
-        expect(trace[0].messageText).toBe('Unable to evaluate an invalid expression.');
-        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[0])).toBe('true');
-      });
+          expect(trace.length).toBe(1);
+          expect(trace[0].messageText).toBe('Unable to evaluate an invalid expression.');
+          expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[0])).toBe('true');
+        });
 
-      it('should trace unknown syntax', () => {
-        const trace = traceExpression('', `new String('test')`);
+        it('should trace unknown syntax', () => {
+          const trace = traceExpression('', `new String('test')`);
 
-        expect(trace.length).toBe(1);
-        expect(trace[0].messageText).toBe('This syntax is not supported.');
-        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[0])).toBe('new String(\'test\')');
-      });
+          expect(trace.length).toBe(1);
+          expect(trace[0].messageText).toBe('This syntax is not supported.');
+          expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[0])).toBe('new String(\'test\')');
+        });
 
-      it('should trace complex function invocations', () => {
-        const trace = traceExpression(
-            `
+        it('should trace complex function invocations', () => {
+          const trace = traceExpression(
+              `
           function complex() {
             console.log('test');
             return true;
           }`,
-            'complex()');
+              'complex()');
 
-        expect(trace.length).toBe(2);
-        expect(trace[0].messageText)
-            .toBe(
-                'Unable to evaluate function call of complex function. A function must have exactly one return statement.');
-        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[0])).toBe('complex()');
+          expect(trace.length).toBe(2);
+          expect(trace[0].messageText)
+              .toBe(
+                  'Unable to evaluate function call of complex function. A function must have exactly one return statement.');
+          expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[0])).toBe('complex()');
 
-        expect(trace[1].messageText).toBe('Function is declared here.');
-        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[1])).toContain(`console.log('test');`);
+          expect(trace[1].messageText).toBe('Function is declared here.');
+          expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[1])).toContain(`console.log('test');`);
+        });
+
+        it('should trace object destructuring of external reference', () => {
+          const trace = traceExpression('const {body: {firstChild}} = document;', 'firstChild');
+
+          expect(trace.length).toBe(2);
+          expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
+          expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[0])).toBe('body: {firstChild}');
+
+          expect(trace[1].messageText)
+              .toBe(
+                  `A value for 'document' cannot be determined statically, as it is an external declaration.`);
+          expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/lib.d.ts'));
+          expect(getSourceCode(trace[1])).toBe('document: any');
+        });
+
+        it('should trace deep object destructuring of external reference', () => {
+          const trace =
+              traceExpression('const {doc: {body: {firstChild}}} = {doc: document};', 'firstChild');
+
+          expect(trace.length).toBe(2);
+          expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
+          expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[0])).toBe('body: {firstChild}');
+
+          expect(trace[1].messageText)
+              .toBe(
+                  `A value for 'document' cannot be determined statically, as it is an external declaration.`);
+          expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/lib.d.ts'));
+          expect(getSourceCode(trace[1])).toBe('document: any');
+        });
+
+        it('should trace array destructuring of dynamic value', () => {
+          const trace =
+              traceExpression('const [firstChild] = document.body.childNodes;', 'firstChild');
+
+          expect(trace.length).toBe(3);
+          expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
+          expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[0])).toBe('firstChild');
+
+          expect(trace[1].messageText).toBe('Unable to evaluate this expression statically.');
+          expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
+          expect(getSourceCode(trace[1])).toBe('document.body');
+
+          expect(trace[2].messageText)
+              .toBe(
+                  `A value for 'document' cannot be determined statically, as it is an external declaration.`);
+          expect(absoluteFromSourceFile(trace[2].file!)).toBe(_('/lib.d.ts'));
+          expect(getSourceCode(trace[2])).toBe('document: any');
+        });
       });
-
-      it('should trace object destructuring of external reference', () => {
-        const trace = traceExpression('const {body: {firstChild}} = document;', 'firstChild');
-
-        expect(trace.length).toBe(2);
-        expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[0])).toBe('body: {firstChild}');
-
-        expect(trace[1].messageText)
-            .toBe(
-                `A value for 'document' cannot be determined statically, as it is an external declaration.`);
-        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/lib.d.ts'));
-        expect(getSourceCode(trace[1])).toBe('document: any');
-      });
-
-      it('should trace deep object destructuring of external reference', () => {
-        const trace =
-            traceExpression('const {doc: {body: {firstChild}}} = {doc: document};', 'firstChild');
-
-        expect(trace.length).toBe(2);
-        expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[0])).toBe('body: {firstChild}');
-
-        expect(trace[1].messageText)
-            .toBe(
-                `A value for 'document' cannot be determined statically, as it is an external declaration.`);
-        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/lib.d.ts'));
-        expect(getSourceCode(trace[1])).toBe('document: any');
-      });
-
-      it('should trace array destructuring of dynamic value', () => {
-        const trace =
-            traceExpression('const [firstChild] = document.body.childNodes;', 'firstChild');
-
-        expect(trace.length).toBe(3);
-        expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[0])).toBe('firstChild');
-
-        expect(trace[1].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
-        expect(getSourceCode(trace[1])).toBe('document.body');
-
-        expect(trace[2].messageText)
-            .toBe(
-                `A value for 'document' cannot be determined statically, as it is an external declaration.`);
-        expect(absoluteFromSourceFile(trace[2].file!)).toBe(_('/lib.d.ts'));
-        expect(getSourceCode(trace[2])).toBe('document: any');
-      });
-    });
+    }
   });
 });
 
