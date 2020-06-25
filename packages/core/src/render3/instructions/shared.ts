@@ -796,22 +796,6 @@ export function storeCleanupWithContext(
 }
 
 /**
- * Saves the cleanup function itself in LView.cleanupInstances.
- *
- * This is necessary for functions that are wrapped with their contexts, like in renderer2
- * listeners.
- *
- * On the first template pass, the index of the cleanup function is saved in TView.
- */
-export function storeCleanupFn(tView: TView, lView: LView, cleanupFn: Function): void {
-  getLCleanup(lView).push(cleanupFn);
-
-  if (tView.firstCreatePass) {
-    getTViewCleanup(tView).push(lView[CLEANUP]!.length - 1, null);
-  }
-}
-
-/**
  * Constructs a TNode object from the arguments.
  *
  * @param tView `TView` to which this `TNode` belongs (used only in `ngDevMode`)
