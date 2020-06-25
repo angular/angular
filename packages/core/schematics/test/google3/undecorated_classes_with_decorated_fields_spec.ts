@@ -136,24 +136,36 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
 
   it('should not change decorated classes', () => {
     writeFile('/index.ts', `
-      import { Input, Component, Output, EventEmitter } from '@angular/core';
+      import { Input, Component, Directive, Pipe, Injectable } from '@angular/core';
 
       @Component({})
-      export class Base {
+      export class MyComp {
+        @Input() isActive: boolean;
+      }
+      
+      @Directive({selector: 'dir'})
+      export class MyDir {
         @Input() isActive: boolean;
       }
 
-      export class Child extends Base {
-        @Output() clicked = new EventEmitter<void>();
+      @Injectable()
+      export class MyService {
+        ngOnDestroy() {}
+      }
+      
+      @Pipe({name: 'my-pipe'})
+      export class MyPipe {
+        ngOnDestroy() {}
       }
     `);
 
     runTSLint(true);
     const content = getFile('/index.ts');
-    expect(content).toContain(
-        `import { Input, Component, Output, EventEmitter, Directive } from '@angular/core';`);
-    expect(content).toContain(`@Component({})\n      export class Base {`);
-    expect(content).toContain(`@Directive()\nexport class Child extends Base {`);
+    expect(content).toMatch(/@Component\({}\)\s+export class MyComp {/);
+    expect(content).toMatch(/@Directive\({selector: 'dir'}\)\s+export class MyDir {/);
+    expect(content).toMatch(/@Injectable\(\)\s+export class MyService {/);
+    expect(content).toMatch(/@Pipe\({name: 'my-pipe'}\)\s+export class MyPipe {/);
+    expect(content).not.toContain('TODO');
   });
 
   it('should add @Directive to undecorated classes that have @Output', () => {

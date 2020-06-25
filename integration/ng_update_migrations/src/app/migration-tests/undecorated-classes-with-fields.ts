@@ -4,8 +4,10 @@ import {
   ElementRef,
   HostBinding,
   HostListener,
+  Injectable,
   Input,
-  NgModule
+  NgModule,
+  Pipe
 } from '@angular/core';
 
 export class NonAngularBaseClass {
@@ -75,4 +77,14 @@ export class UndecoratedPipeBase {
 
 export class WithDirectiveLifecycleHook {
   ngOnInit() {}
+}
+
+@Injectable()
+export class MyService {
+  ngOnDestroy() {}
+}
+
+@Pipe({name: 'my-pipe'})
+export class MyPipe {
+  ngOnDestroy() {}
 }
