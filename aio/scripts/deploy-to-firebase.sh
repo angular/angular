@@ -114,7 +114,7 @@ fi
     yarn firebase use aio-staging --token "$firebaseToken"
     yarn firebase target:apply hosting aio $projectId --token "$firebaseToken"
     yarn firebase deploy --only hosting:aio --message "Commit: $CI_COMMIT" --non-interactive --token "$firebaseToken"
-  elif
+  else
     yarn firebase use "$projectId" --token "$firebaseToken"
     yarn firebase deploy --message "Commit: $CI_COMMIT" --non-interactive --token "$firebaseToken"
   fi
