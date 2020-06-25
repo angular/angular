@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "target": "aio",
     "public": "dist",
     "cleanUrls": true,
     "redirects": [
