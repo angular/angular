@@ -1034,7 +1034,14 @@ export class TransitionAnimationEngine {
         // instead stretch the first keyframe gap until the animation starts. This is
         // important in order to prevent extra initialization styles from being
         // required by the user for the animation.
-        instruction.timelines.forEach(tl => tl.stretchStartingKeyframe = true);
+        const timelines: AnimationTimelineInstruction[] = [];
+        instruction.timelines.forEach(tl => {
+          tl.stretchStartingKeyframe = true;
+          if (!this.disabledNodes.has(tl.element)) {
+            timelines.push(tl);
+          }
+        });
+        instruction.timelines = timelines;
 
         subTimelines.append(element, instruction.timelines);
 
