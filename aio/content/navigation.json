@@ -1014,6 +1014,10 @@
   ],
   "docVersions": [
     {
+      "title": "v9",
+      "url": "https://v9.angular.io/"
+    },
+    {
       "title": "v8",
       "url": "https://v8.angular.io/"
     },
