@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, NgModule} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, NgModule} from '@angular/core';
 import {InternalViewRef} from '@angular/core/src/linker/view_ref';
 import {TestBed} from '@angular/core/testing';
 
@@ -53,5 +53,23 @@ describe('ViewRef', () => {
     appComponent.destroy();
     fixture.detectChanges();
     expect(document.body.querySelector('dynamic-cpt')).toBeFalsy();
+  });
+
+  it('should invoke the onDestroy callback of a view ref', () => {
+    let called = false;
+
+    @Component({template: ''})
+    class App {
+      constructor(changeDetectorRef: ChangeDetectorRef) {
+        (changeDetectorRef as InternalViewRef).onDestroy(() => called = true);
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    fixture.destroy();
+
+    expect(called).toBe(true);
   });
 });
