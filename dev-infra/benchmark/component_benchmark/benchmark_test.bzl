@@ -1,4 +1,4 @@
-load("@npm_bazel_protractor//:index.bzl", "protractor_web_test_suite")
+load("@npm//@bazel/protractor:index.bzl", "protractor_web_test_suite")
 
 """
   Macro that can be used to define a benchmark test. This differentiates from

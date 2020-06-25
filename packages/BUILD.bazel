@@ -5,8 +5,7 @@ exports_files([
     "tsconfig.json",
 ])
 
-load("@npm_bazel_typescript//:index.bzl", "ts_config")
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "ts_config", "ts_library")
 
 ts_library(
     name = "types",
