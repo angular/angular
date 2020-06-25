@@ -47,3 +47,9 @@ filegroup(
         "@npm//:node_modules/angular-mocks-1.6/angular-mocks.js",
     ],
 )
+
+# Detect if the build is running under --stamp
+config_setting(
+    name = "stamp",
+    values = {"stamp": "true"},
+)
