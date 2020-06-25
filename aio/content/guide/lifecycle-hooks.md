@@ -495,7 +495,7 @@ for one turn of the browser's JavaScript cycle, which triggers a new change-dete
 
 #### Write lean hook methods to avoid performance problems
 
-When you run the *AfterView* sample, notice how frequently Angular calls `AfterViewChecked()`$emdash;often when there are no changes of interest.
+When you run the *AfterView* sample, notice how frequently Angular calls `AfterViewChecked()`-often when there are no changes of interest.
 Be very careful about how much logic or computation you put into one of these methods.
 
 <div class="lightbox">
