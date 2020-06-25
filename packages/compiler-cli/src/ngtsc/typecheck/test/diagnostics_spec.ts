@@ -246,6 +246,36 @@ runInEachFileSystem(() => {
       expect(messages).toEqual([]);
     });
 
+    describe('safe navigation', () => {
+      it('should use `null` as default value for safe property access', () => {
+        const messages = diagnose(`{{ formatName(person?.name) }}`, `
+        export class TestComponent {
+          person?: {
+            name: string;
+          };
+          formatName(name: string | undefined): string;
+        }`);
+
+        expect(messages).toEqual([
+          `synthetic.html(1, 15): Argument of type 'string | null' is not assignable to parameter of type 'string | undefined'.`
+        ]);
+      });
+
+      it('should use `null` as default value for safe method call', () => {
+        const messages = diagnose(`{{ formatName(person?.getName()) }}`, `
+        export class TestComponent {
+          person?: {
+            getName(): string;
+          };
+          formatName(name: string | undefined): string;
+        }`);
+
+        expect(messages).toEqual([
+          `synthetic.html(1, 15): Argument of type 'string | null' is not assignable to parameter of type 'string | undefined'.`
+        ]);
+      });
+    });
+
     describe('outputs', () => {
       it('should produce a diagnostic for directive outputs', () => {
         const messages = diagnose(

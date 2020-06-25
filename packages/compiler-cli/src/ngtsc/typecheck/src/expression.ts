@@ -248,7 +248,7 @@ class AstTranslator implements AstVisitor {
       const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
       addParseSpanInfo(method, ast.nameSpan);
       const call = ts.createCall(method, undefined, args);
-      node = ts.createParen(ts.createConditional(NULL_AS_ANY, call, UNDEFINED));
+      node = ts.createParen(ts.createConditional(NULL_AS_ANY, call, ts.createNull()));
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // "a?.method(...)" becomes (a as any).method(...)
       const method = ts.createPropertyAccess(tsCastToAny(receiver), ast.name);
@@ -274,7 +274,7 @@ class AstTranslator implements AstVisitor {
       // "a?.b" becomes (null as any ? a!.b : undefined)
       // The type of this expression is (typeof a!.b) | undefined, which is exactly as desired.
       const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
-      node = ts.createParen(ts.createConditional(NULL_AS_ANY, expr, UNDEFINED));
+      node = ts.createParen(ts.createConditional(NULL_AS_ANY, expr, ts.createNull()));
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // Emulate a View Engine bug where 'any' is inferred for the left-hand side of the safe
       // navigation operation. With this bug, the type of the left-hand side is regarded as any.

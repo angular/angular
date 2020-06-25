@@ -565,10 +565,10 @@ describe('type check blocks', () => {
     describe('config.strictSafeNavigationTypes', () => {
       const TEMPLATE = `{{a?.b}} {{a?.method()}}`;
 
-      it('should use undefined for safe navigation operations when enabled', () => {
+      it('should use null for safe navigation operations when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('((null as any) ? (((ctx).a))!.method() : undefined)');
-        expect(block).toContain('((null as any) ? (((ctx).a))!.b : undefined)');
+        expect(block).toContain('((null as any) ? (((ctx).a))!.method() : null)');
+        expect(block).toContain('((null as any) ? (((ctx).a))!.b : null)');
       });
       it('should use an \'any\' type for safe navigation operations when disabled', () => {
         const DISABLED_CONFIG:
@@ -583,8 +583,8 @@ describe('type check blocks', () => {
       const TEMPLATE = `{{a.method()?.b}} {{a()?.method()}}`;
       it('should check the presence of a property/method on the receiver when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('((null as any) ? ((((ctx).a)).method())!.b : undefined)');
-        expect(block).toContain('((null as any) ? ((ctx).a())!.method() : undefined)');
+        expect(block).toContain('((null as any) ? ((((ctx).a)).method())!.b : null)');
+        expect(block).toContain('((null as any) ? ((ctx).a())!.method() : null)');
       });
       it('should not check the presence of a property/method on the receiver when disabled', () => {
         const DISABLED_CONFIG:
