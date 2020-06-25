@@ -3309,14 +3309,14 @@ describe('animation query tests', function() {
            })
            class Cmp {
              exp: any = '';
-             disableExp = false;
+             disabledExp = false;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
-           cmp.disableExp = true;
+           cmp.disabledExp = true;
            fixture.detectChanges();
            resetLog();
 
@@ -3363,14 +3363,14 @@ describe('animation query tests', function() {
            })
            class Cmp {
              exp: any = '';
-             disableExp = false;
+             disabledExp = false;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
-           cmp.disableExp = true;
+           cmp.disabledExp = true;
            fixture.detectChanges();
            resetLog();
 
@@ -3384,6 +3384,63 @@ describe('animation query tests', function() {
            expect(p1.duration).toEqual(500);
            expect(p1.element.classList.contains('child')).toBeTrue();
            expect(p2.duration).toEqual(1000);
+           expect(p2.element.classList.contains('parent')).toBeTrue();
+         });
+
+      it('should disable the animation for the given element regardless of existing parent element animation queries or child element animation queries',
+         () => {
+           @Component({
+             selector: 'some-cmp',
+             template: `
+              <div class="parent" [@parentAnimation]="exp">
+                <div class="child" [@.disabled]="disabledExp" [@childAnimation]="exp">
+                  <div class="grand-child" [@grandChildAnimation]="exp"></div>
+                </div>
+              </div>
+            `,
+             animations: [
+               trigger(
+                   'parentAnimation',
+                   [
+                     transition(
+                         '* => go',
+                         [query('@*', animateChild()), animate(1500, style({opacity: 0}))]),
+                   ]),
+               trigger(
+                   'childAnimation',
+                   [
+                     transition('* => go', [animate(1000, style({opacity: 0}))]),
+                   ]),
+               trigger(
+                   'grandChildAnimation',
+                   [
+                     transition('* => go', [animate(500, style({opacity: 0}))]),
+                   ]),
+             ]
+           })
+           class Cmp {
+             exp: any = '';
+             disabledExp = false;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.disabledExp = true;
+           fixture.detectChanges();
+           resetLog();
+
+           cmp.exp = 'go';
+           fixture.detectChanges();
+
+           const players = getLog();
+           expect(players.length).toEqual(2);
+
+           const [p1, p2] = players;
+           expect(p1.duration).toEqual(500);
+           expect(p1.element.classList.contains('grand-child')).toBeTrue();
+           expect(p2.duration).toEqual(1500);
            expect(p2.element.classList.contains('parent')).toBeTrue();
          });
     });
