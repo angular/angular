@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom as _} from '../../file_system';
+import {absoluteFrom as _, absoluteFromSourceFile} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {Reference} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
@@ -109,7 +109,7 @@ runInEachFileSystem(() => {
 
         expect(trace.length).toBe(1);
         expect(trace[0].messageText).toBe(`Unknown reference.`);
-        expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('nonexistent');
       });
 
@@ -118,7 +118,7 @@ runInEachFileSystem(() => {
 
         expect(trace.length).toBe(1);
         expect(trace[0].messageText).toBe(`Unknown reference.`);
-        expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('nonexistent');
       });
 
@@ -127,11 +127,11 @@ runInEachFileSystem(() => {
 
         expect(trace.length).toBe(2);
         expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('value');
 
         expect(trace[1].messageText).toBe('Unknown reference.');
-        expect(trace[1].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[1])).toBe('nonexistent');
       });
 
@@ -145,21 +145,21 @@ runInEachFileSystem(() => {
 
         expect(trace.length).toBe(4);
         expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('child');
 
         expect(trace[1].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(trace[1].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[1])).toBe('firstChild');
 
         expect(trace[2].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(trace[2].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[2].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[2])).toBe('document.body');
 
         expect(trace[3].messageText)
             .toBe(
                 `A value for 'document' cannot be determined statically, as it is an external declaration.`);
-        expect(trace[3].file!.fileName).toBe(_('/lib.d.ts'));
+        expect(absoluteFromSourceFile(trace[3].file!)).toBe(_('/lib.d.ts'));
         expect(getSourceCode(trace[3])).toBe('document: any');
       });
 
@@ -168,7 +168,7 @@ runInEachFileSystem(() => {
 
         expect(trace.length).toBe(1);
         expect(trace[0].messageText).toBe('A string value could not be determined statically.');
-        expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('document');
       });
 
@@ -177,7 +177,7 @@ runInEachFileSystem(() => {
 
         expect(trace.length).toBe(1);
         expect(trace[0].messageText).toBe('Unable to evaluate an invalid expression.');
-        expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('true');
       });
 
@@ -186,7 +186,7 @@ runInEachFileSystem(() => {
 
         expect(trace.length).toBe(1);
         expect(trace[0].messageText).toBe('This syntax is not supported.');
-        expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('new String(\'test\')');
       });
 
@@ -203,11 +203,11 @@ runInEachFileSystem(() => {
         expect(trace[0].messageText)
             .toBe(
                 'Unable to evaluate function call of complex function. A function must have exactly one return statement.');
-        expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('complex()');
 
         expect(trace[1].messageText).toBe('Function is declared here.');
-        expect(trace[1].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[1])).toContain(`console.log('test');`);
       });
 
@@ -216,13 +216,13 @@ runInEachFileSystem(() => {
 
         expect(trace.length).toBe(2);
         expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('body: {firstChild}');
 
         expect(trace[1].messageText)
             .toBe(
                 `A value for 'document' cannot be determined statically, as it is an external declaration.`);
-        expect(trace[1].file!.fileName).toBe(_('/lib.d.ts'));
+        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/lib.d.ts'));
         expect(getSourceCode(trace[1])).toBe('document: any');
       });
 
@@ -232,13 +232,13 @@ runInEachFileSystem(() => {
 
         expect(trace.length).toBe(2);
         expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('body: {firstChild}');
 
         expect(trace[1].messageText)
             .toBe(
                 `A value for 'document' cannot be determined statically, as it is an external declaration.`);
-        expect(trace[1].file!.fileName).toBe(_('/lib.d.ts'));
+        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/lib.d.ts'));
         expect(getSourceCode(trace[1])).toBe('document: any');
       });
 
@@ -248,17 +248,17 @@ runInEachFileSystem(() => {
 
         expect(trace.length).toBe(3);
         expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(trace[0].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[0])).toBe('firstChild');
 
         expect(trace[1].messageText).toBe('Unable to evaluate this expression statically.');
-        expect(trace[1].file!.fileName).toBe(_('/entry.ts'));
+        expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
         expect(getSourceCode(trace[1])).toBe('document.body');
 
         expect(trace[2].messageText)
             .toBe(
                 `A value for 'document' cannot be determined statically, as it is an external declaration.`);
-        expect(trace[2].file!.fileName).toBe(_('/lib.d.ts'));
+        expect(absoluteFromSourceFile(trace[2].file!)).toBe(_('/lib.d.ts'));
         expect(getSourceCode(trace[2])).toBe('document: any');
       });
     });
