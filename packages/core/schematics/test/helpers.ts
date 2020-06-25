@@ -9,6 +9,7 @@
 /**
  * Template string function that can be used to dedent the resulting
  * string literal. The smallest common indentation will be omitted.
+ * Additionally, whitespace in empty lines is removed.
  */
 export function dedent(strings: TemplateStringsArray, ...values: any[]) {
   let joinedString = '';
@@ -24,5 +25,7 @@ export function dedent(strings: TemplateStringsArray, ...values: any[]) {
 
   const minLineIndent = Math.min(...matches.map(el => el.length));
   const omitMinIndentRegex = new RegExp(`^[ \\t]{${minLineIndent}}`, 'gm');
-  return minLineIndent > 0 ? joinedString.replace(omitMinIndentRegex, '') : joinedString;
+  const omitEmptyLineWhitespaceRegex = /^[ \t]+$/gm;
+  const result = minLineIndent > 0 ? joinedString.replace(omitMinIndentRegex, '') : joinedString;
+  return result.replace(omitEmptyLineWhitespaceRegex, '');
 }
