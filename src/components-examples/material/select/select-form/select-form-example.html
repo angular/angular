@@ -1,6 +1,6 @@
 <form>
   <h4>mat-select</h4>
-  <mat-form-field>
+  <mat-form-field appearance="fill">
     <mat-label>Favorite food</mat-label>
     <mat-select [(ngModel)]="selectedValue" name="food">
       <mat-option *ngFor="let food of foods" [value]="food.value">
@@ -10,7 +10,7 @@
   </mat-form-field>
   <p> Selected food: {{selectedValue}} </p>
   <h4>native html select</h4>
-  <mat-form-field>
+  <mat-form-field appearance="fill">
     <mat-label>Favorite car</mat-label>
     <select matNativeControl [(ngModel)]="selectedCar" name="car">
       <option value="" selected></option>

@@ -1,5 +1,5 @@
 <h4>Basic mat-select with initial value</h4>
-<mat-form-field>
+<mat-form-field appearance="fill">
   <mat-label>Favorite Food</mat-label>
   <mat-select [(value)]="selectedFood">
     <mat-option></mat-option>
@@ -9,7 +9,7 @@
 <p>You selected: {{selectedFood}}</p>
 
 <h4>Basic native select with initial value</h4>
-<mat-form-field>
+<mat-form-field appearance="fill">
   <mat-label>Favorite Car</mat-label>
   <select matNativeControl (change)="selectCar($event)">
     <option value=""></option>
