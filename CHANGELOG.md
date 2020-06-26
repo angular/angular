@@ -1,3 +1,26 @@
+<a name="10.0.1"></a>
+## [10.0.1](https://github.com/angular/angular/compare/10.0.0...10.0.1) (2020-06-26)
+
+
+### Bug Fixes
+
+* **core:** cleanup DOM elements when root view is removed ([#37600](https://github.com/angular/angular/issues/37600)) ([64f2ffa](https://github.com/angular/angular/commit/64f2ffa)), closes [#36449](https://github.com/angular/angular/issues/36449)
+* **forms:** change error message ([#37643](https://github.com/angular/angular/issues/37643)) ([c5bc2e7](https://github.com/angular/angular/commit/c5bc2e7))
+* **forms:** correct usage of `selectedOptions` ([#37620](https://github.com/angular/angular/issues/37620)) ([dfb58c4](https://github.com/angular/angular/commit/dfb58c4)), closes [#37433](https://github.com/angular/angular/issues/37433)
+* **http:** avoid abort a request when fetch operation is completed ([#37367](https://github.com/angular/angular/issues/37367)) ([a5d5f67](https://github.com/angular/angular/commit/a5d5f67))
+* **language-service:** reinstate getExternalFiles() ([#37750](https://github.com/angular/angular/issues/37750)) ([ad6680f](https://github.com/angular/angular/commit/ad6680f))
+* **migrations:** do not incorrectly add todo for @Injectable or @Pipe ([#37732](https://github.com/angular/angular/issues/37732)) ([13020b9](https://github.com/angular/angular/commit/13020b9)), closes [#37726](https://github.com/angular/angular/issues/37726)
+* **router:** `RouterLinkActive` should run CD when setting `isActive` ([#21411](https://github.com/angular/angular/issues/21411)) ([a8ea817](https://github.com/angular/angular/commit/a8ea817)), closes [#15943](https://github.com/angular/angular/issues/15943) [#19934](https://github.com/angular/angular/issues/19934)
+* **router:** add null support for RouterLink directive ([#32616](https://github.com/angular/angular/issues/32616)) ([69948ce](https://github.com/angular/angular/commit/69948ce))
+* **router:** fix error when calling ParamMap.get function ([#31599](https://github.com/angular/angular/issues/31599)) ([3190ccf](https://github.com/angular/angular/commit/3190ccf))
+
+
+### Performance Improvements
+
+* **compiler-cli:** fix regressions in incremental program reuse ([#37690](https://github.com/angular/angular/issues/37690)) ([96b96fb](https://github.com/angular/angular/commit/96b96fb))
+
+
+
 <a name="10.0.0"></a>
 # [10.0.0](https://github.com/angular/angular/compare/10.0.0-rc.6...10.0.0) (2020-06-24)
 
