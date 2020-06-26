@@ -6642,7 +6642,7 @@ export const Foo = Foo__PRE_R3__;
         const jsContents = env.getContents('test.js');
         expect(jsContents)
             .toContain(
-                'styles: ["h2[_ngcontent-%COMP%] {width: 10px}", "h1[_ngcontent-%COMP%] {font-size: larger}"]');
+                'styles: ["h2[_ngcontent-%C%] {width: 10px}", "h1[_ngcontent-%C%] {font-size: larger}"]');
       });
 
       it('should process inline <link> tags', () => {
@@ -6659,7 +6659,7 @@ export const Foo = Foo__PRE_R3__;
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('styles: ["h1[_ngcontent-%COMP%] {font-size: larger}"]');
+        expect(jsContents).toContain('styles: ["h1[_ngcontent-%C%] {font-size: larger}"]');
       });
     });
 
