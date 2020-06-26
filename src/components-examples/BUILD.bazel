@@ -75,7 +75,6 @@ filegroup(
 highlight_files(
     name = "examples-highlighted",
     srcs = [":example-source-files"],
-    tags = ["docs-package"],
 )
 
 package_docs_content(
@@ -102,7 +101,6 @@ package_docs_content(
         # in the docs-content. Hence there is no target section name.
         ":examples-highlighted": "",
     },
-    tags = ["docs-package"],
 )
 
 ng_package(
