@@ -12,17 +12,19 @@ Angular is supported by the Angular Team at Google and by a community of individ
 ## Why Angular is useful
 
 Building web applications is typically an exercise in tricking the browser to dynamically load portions of the user interface (UI).
-With Angular you can use the [single-page application](https://en.wikipedia.org/wiki/Single-page_application "Single-page application in Wikipedia") (SPA) design pattern to dynamically rewrite the current web page with new portions of the page from the server, which is significantly faster than loading entire pages from the server.
+With Angular you can use the [single-page application](https://en.wikipedia.org/wiki/Single-page_application "Single-page application in Wikipedia") (SPA) design pattern to dynamically rewrite the current web page with new portions of the page, which is significantly faster than loading entire pages from the server.
 As users access your app's features, the browser needs to render only the parts that matter to the user, instead of loading a new page. 
 This pattern can significantly improve your application's user experience.
 Examples of single-page applications include Gmail, Google Maps, Facebook, and GitHub.
 
 HTML is a great declarative language for static documents, but it doesn't provide enough functionality to create web applications.
-Angular extends HTML to provide features that eliminate much of the code you would otherwise have to write, such as data binding, dependency injection, form validation, routing, and document object model (DOM) control structures.
+Angular extends HTML to provide features that eliminate much of the code you would otherwise have to write, such as data binding, dependency injection, form validation, routing, and document object model (DOM) manipulation.
 
-By declaratively describing how your app's UI should change as your app state changes, you are freed from writing low-level DOM manipulation tasks.
+By declaratively describing how your app's UI should change as your app state changes, you are freed from writing low-level DOM manipulation code.
 You don't have to write a lot of "plumbing" code to get a basic app working.
 You can bootstrap your app using auto-injected services so that you can start developing features immediately.
+
+## How to use Angular
 
 You define an Angular app using a set of [*components*](#components), which define views as sets of screen elements that Angular can choose among and modify according to your program logic and data.
 An [*NgModule*](#modules) collects components into functional sets and provides a compilation context for them.
@@ -30,11 +32,11 @@ An [*NgModule*](#modules) collects components into functional sets and provides 
 Components use [*services*](#dependency-injection), which provide specific functionality not directly related to views such as sending or receiving data.
 Service providers can be injected into components as dependencies, making your code modular, reusable, and efficient.
 
-Modules, components and services are classes that use *decorators*.
-These decorators mark their type and provide metadata that tells Angular how to use them.
+Modules, components and services are classes that use [*decorators*](guide/glossary#decorator--decoration "Definition of decorator").
+Decorators identify the type of class and provide metadata that tells Angular how to use them.
 
 * The metadata for a component class associates it with a [*template*](#templates) that defines a view.
-A template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before rendering it for display.
+A template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before it is rendered by a browser.
 
 * The metadata for a service class provides the information Angular needs to make it available to components through *dependency injection (DI)*.
 
@@ -48,7 +50,7 @@ The router provides sophisticated in-browser navigational capabilities.
 
 </div>
 
-## Modules
+## How modules work
 
 An [NgModule](/guide/glossary#ngmodule "Definition of NgModule") declares a compilation context for a set of components and includes services and other module imports. 
 In the following example, the Hero Detail, Hero List, and Sales Tax features are implemented as components within an `NgModule`.
@@ -73,7 +75,7 @@ In addition, this technique lets you take advantage of *lazy-loading*&mdash;that
 
 {@a components}
 
-## Components
+## How components work
 
 Every Angular application has at least one [component](/guide/glossary#component "Definition of component"), the *root component* that connects a component hierarchy with the page document object model (DOM).
 Each component defines a class that contains application data and logic, and is associated with a *template* that defines a view to be displayed in a target environment.
@@ -91,14 +93,14 @@ The `@Component()` decorator identifies the class immediately below it as a comp
 
 {@a templates}
 
-### Templates, directives, and data binding
+## Templates, directives, and data binding
 
 A [template](/guide/glossary#template "Definition of template") combines HTML with Angular markup that can modify HTML elements before they are displayed.
 Template *directives* provide program logic, and *binding markup* connects your app's data and the DOM.
 There are two types of data binding:
 
 * *Event binding* lets your app respond to user input in the target environment by updating your application data.
-* *Property binding* lets you interpolate values that are computed from your application data into the HTML.
+* *Property binding* lets you map values from your application data into the HTML.
 
 Before a view is displayed, Angular evaluates the directives and resolves the binding syntax in the template to modify the DOM according to your program data and logic.
 Updates to the app state are automatically reflected in the view through DOM updates.
@@ -121,7 +123,7 @@ For data or logic that isn't associated with a specific view, and that you want 
 A service class definition is immediately preceded by the `@Injectable()` decorator.
 The decorator provides the metadata that allows other providers to be **injected** as dependencies into your class.
 
- *Dependency injection* (DI) lets you keep your component classes lean and efficient.
+ *Dependency injection* (DI) lets you keep your component classes lean by splitting the code into smaller cohesive chunks.
  They don't fetch data from the server, validate user input, or log directly to the console; they delegate such tasks to services.
 
 <div class="alert is-helpful">
@@ -130,7 +132,7 @@ The decorator provides the metadata that allows other providers to be **injected
 
 </div>
 
-### Routing
+## How routing works
 
 The Angular `Router` NgModule provides a service that lets you define a navigation path among the different application states and view hierarchies in your app.
 It is modeled on the familiar browser navigation conventions:
