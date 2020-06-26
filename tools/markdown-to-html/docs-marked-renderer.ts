@@ -83,8 +83,8 @@ export class DocsMarkdownRenderer extends Renderer {
         if (content.match(/\{[\s\S]*\}/g)) {
           const {example, file, region} = JSON.parse(content);
           return `<div material-docs-example="${example}"
-                             file="${file}"
-                             region="${region}"></div>`;
+                             ${file ? `file="${file}"` : ''}
+                             ${region ? `region="${region}"` : ''}></div>`;
         } else {
           return `<div material-docs-example="${content}"></div>`;
         }

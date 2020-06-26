@@ -52,13 +52,30 @@ describe('DocsMarkdownRenderer', () => {
           "region": "some-region"
          }
         ) -->`);
-    expectEqualIgnoreLeadingWhitespace(result, `<div material-docs-example="
+    expectEqualIgnoreLeadingWhitespace(result, `<div material-docs-example="exampleName"
+          file="example-html.html"
+          region="some-region"></div>`);
+  });
+
+  it('generates html using new API with no region', () => {
+    const result = renderer.html(`<!-- example(
          {
           "example": "exampleName",
           "file": "example-html.html",
-          "region": "some-region",
          }
-        "></div>`);
+        ) -->`);
+    expectEqualIgnoreLeadingWhitespace(result, `<div material-docs-example="exampleName"
+          file="example-html.html"></div>`);
+  });
+
+  it('generates html using new API with no file and no region', () => {
+    const result = renderer.html(`<!-- example(
+         {
+          "example": "exampleName",
+         }
+        ) -->`);
+    expectEqualIgnoreLeadingWhitespace(result,
+      `<div material-docs-example="exampleName"></div>`);
   });
 
   it('generates html using old API', () => {
