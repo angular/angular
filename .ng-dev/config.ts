@@ -4,6 +4,7 @@ import {MergeConfig} from '../dev-infra/pr/merge/config';
 const commitMessage = {
   'maxLength': 120,
   'minBodyLength': 100,
+  'minBodyLengthExcludes': ['docs'],
   'types': [
     'build',
     'ci',
