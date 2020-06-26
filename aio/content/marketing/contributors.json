@@ -599,7 +599,9 @@
   "sonukapoor": {
     "name": "Sonu Kapoor",
     "groups": ["Collaborators"],
-    "picture": "sonukapoor.jpg"
+    "picture": "sonukapoor.jpg",
+    "website": "https://www.linkedin.com/in/sonu-kapoor/",
+    "bio": "Sonu is a Software Engineer from Toronto, with a high interest in front-end technologies and algorithms."
   },
   "jschwarty": {
     "name": "Justin Schwartzenberger",
