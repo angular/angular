@@ -147,7 +147,7 @@ const TEST_STRING = `I'm a body!`;
             .toEqual('application/x-www-form-urlencoded;charset=UTF-8');
       });
       it('serializes parameters as urlencoded', () => {
-        if(typeof URLSearchParams !== 'undefined'){
+        if (typeof URLSearchParams !== 'undefined') {
           const params = new URLSearchParams();
           params.set('first', 'test');
           params.set('second', 'data');
