@@ -150,6 +150,15 @@ var_21: &slack_notify_on_failure
 # -----------------------------
 version: 2.1
 
+# Configures CircleCI orbs for this pipeline. Orbs allow consumption of publicly shared
+# CircleCI commands, jobs, configuration elements or executors. Read more about orbs here:
+# https://circleci.com/docs/2.0/orb-intro/
+orbs:
+  # Set up the `queue` orb that allows us to queue up builds across jobs. We use it
+  # to make sure that snapshot builds are not deployed out of order, resulting in Git
+  # push conflicts.
+  queue: eddiewebb/queue@1.5.0
+
 # -----------------------------------------------------------------------------------------
 # Job definitions. Jobs which are defined just here, will not run automatically. Each job
 # must be part of a workflow definition in order to run for PRs and push builds.
@@ -427,6 +436,11 @@ jobs:
       # as part of this job to the docs-content repository. It's not contained in the
       # attached release output, so we need to build it here.
       - run: bazel build src/components-examples:npm_package --config=release
+
+      # Ensures that we do not push the snapshot artifacts upstream until all previous
+      # snapshot build jobs have completed. This helps avoiding conflicts when multiple
+      # commits have been pushed (resulting in multiple concurrent snapshot publish jobs).
+      - queue/until_front_of_line
       - run: ./scripts/circleci/publish-snapshots.sh
       - *slack_notify_on_failure
 
