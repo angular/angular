@@ -596,6 +596,13 @@
     "twitter": "devjoost",
     "bio": "Joost is a Software Engineer from the Netherlands with an interest in open source software who likes to learn something new every day. He works at Blueriq during the day and contributes to Angular in his spare time, by working on the Angular compiler and runtime. He may review your PR even if you never asked for it ;)"
   },
+  "sonukapoor": {
+    "name": "Sonu Kapoor",
+    "groups": ["Collaborators"],
+    "picture": "sonukapoor.jpg",
+    "website": "https://www.linkedin.com/in/sonu-kapoor/",
+    "bio": "Sonu is a Software Engineer from Toronto, with a high interest in front-end technologies and algorithms."
+  },
   "jschwarty": {
     "name": "Justin Schwartzenberger",
     "picture": "justinschwartzenberger.jpg",
