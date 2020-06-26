@@ -70,7 +70,7 @@ function isFormData(value: any): value is FormData {
  *
  * In some execution environments URLSearchParams is not defined.
  */
-function isURLSearchParams(value: any): value is URLSearchParams {
+function isURLSearchParams(value: unknown): value is URLSearchParams {
   return typeof URLSearchParams !== 'undefined' && value instanceof URLSearchParams;
 }
 
