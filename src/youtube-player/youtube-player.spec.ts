@@ -49,6 +49,7 @@ describe('YoutubePlayer', () => {
           videoId: VIDEO_ID,
           width: DEFAULT_PLAYER_WIDTH,
           height: DEFAULT_PLAYER_HEIGHT,
+          playerVars: undefined
         }));
     });
 
@@ -129,6 +130,21 @@ describe('YoutubePlayer', () => {
       expect(playerSpy.setSize).toHaveBeenCalledWith(DEFAULT_PLAYER_WIDTH, DEFAULT_PLAYER_HEIGHT);
       expect(testComponent.youtubePlayer.width).toBe(DEFAULT_PLAYER_WIDTH);
       expect(testComponent.youtubePlayer.height).toBe(DEFAULT_PLAYER_HEIGHT);
+    });
+
+    it('passes the configured playerVars to the player', () => {
+      const playerVars: YT.PlayerVars = { modestbranding: YT.ModestBranding.Modest };
+      fixture.componentInstance.playerVars = playerVars;
+      fixture.detectChanges();
+
+      events.onReady({target: playerSpy});
+      const calls = playerCtorSpy.calls.all();
+
+      // We expect 2 calls since the first one is run on init and the
+      // second one happens after the `playerVars` have changed.
+      expect(calls.length).toBe(2);
+      expect(calls[0].args[1]).toEqual(jasmine.objectContaining({playerVars: undefined}));
+      expect(calls[1].args[1]).toEqual(jasmine.objectContaining({playerVars}));
     });
 
     it('initializes the player with start and end seconds', () => {
@@ -462,6 +478,7 @@ describe('YoutubePlayer', () => {
   template: `
     <youtube-player #player [videoId]="videoId" *ngIf="visible" [width]="width" [height]="height"
       [startSeconds]="startSeconds" [endSeconds]="endSeconds" [suggestedQuality]="suggestedQuality"
+      [playerVars]="playerVars"
       (ready)="onReady($event)"
       (stateChange)="onStateChange($event)"
       (playbackQualityChange)="onPlaybackQualityChange($event)"
@@ -479,6 +496,7 @@ class TestApp {
   startSeconds: number | undefined;
   endSeconds: number | undefined;
   suggestedQuality: YT.SuggestedVideoQuality | undefined;
+  playerVars: YT.PlayerVars | undefined;
   onReady = jasmine.createSpy('onReady');
   onStateChange = jasmine.createSpy('onStateChange');
   onPlaybackQualityChange = jasmine.createSpy('onPlaybackQualityChange');

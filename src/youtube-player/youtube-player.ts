@@ -71,12 +71,13 @@ export const DEFAULT_PLAYER_HEIGHT = 390;
 // The native YT.Player doesn't expose the set videoId, but we need it for
 // convenience.
 interface Player extends YT.Player {
-  videoId?: string | undefined;
+  videoId?: string;
+  playerVars?: YT.PlayerVars;
 }
 
 // The player isn't fully initialized when it's constructed.
 // The only field available is destroy and addEventListener.
-type UninitializedPlayer = Pick<Player, 'videoId' | 'destroy' | 'addEventListener'>;
+type UninitializedPlayer = Pick<Player, 'videoId' | 'playerVars' | 'destroy' | 'addEventListener'>;
 
 /**
  * Object used to store the state of the player if the
@@ -158,6 +159,17 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   private _suggestedQuality = new BehaviorSubject<YT.SuggestedVideoQuality | undefined>(undefined);
 
   /**
+   * Extra parameters used to configure the player. See:
+   * https://developers.google.com/youtube/player_parameters.html?playerVersion=HTML5#Parameters
+   */
+  @Input()
+  get playerVars(): YT.PlayerVars | undefined { return this._playerVars.value; }
+  set playerVars(playerVars: YT.PlayerVars | undefined) {
+    this._playerVars.next(playerVars);
+  }
+  private _playerVars = new BehaviorSubject<YT.PlayerVars | undefined>(undefined);
+
+  /**
    * Whether the iframe will attempt to load regardless of the status of the api on the
    * page. Set this to true if you don't want the `onYouTubeIframeAPIReady` field to be
    * set on the global window.
@@ -225,6 +237,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
         iframeApiAvailableObs,
         this._width,
         this._height,
+        this._playerVars,
         this._ngZone
       ).pipe(tap(player => {
         // Emit this before the `waitUntilReady` call so that we can bind to
@@ -290,6 +303,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     this._endSeconds.complete();
     this._suggestedQuality.complete();
     this._youtubeContainer.complete();
+    this._playerVars.complete();
     this._destroyed.next();
     this._destroyed.complete();
   }
@@ -614,15 +628,18 @@ function createPlayerObservable(
   iframeApiAvailableObs: Observable<boolean>,
   widthObs: Observable<number>,
   heightObs: Observable<number>,
+  playerVarsObs: Observable<YT.PlayerVars | undefined>,
   ngZone: NgZone
 ): Observable<UninitializedPlayer | undefined> {
 
-  const playerOptions =
-    videoIdObs
-    .pipe(
-      withLatestFrom(combineLatest([widthObs, heightObs])),
-      map(([videoId, [width, height]]) => videoId ? ({videoId, width, height}) : undefined),
-    );
+  const playerOptions = combineLatest([videoIdObs, playerVarsObs]).pipe(
+    withLatestFrom(combineLatest([widthObs, heightObs])),
+    map(([constructorOptions, sizeOptions]) => {
+      const [videoId, playerVars] = constructorOptions;
+      const [width, height] = sizeOptions;
+      return videoId ? ({ videoId, playerVars, width, height }) : undefined;
+    }),
+  );
 
   return combineLatest([youtubeContainer, playerOptions, of(ngZone)])
       .pipe(
@@ -644,13 +661,16 @@ function syncPlayerState(
   player: UninitializedPlayer | undefined,
   [container, videoOptions, ngZone]: [HTMLElement, YT.PlayerOptions | undefined, NgZone],
 ): UninitializedPlayer | undefined {
-  if (!videoOptions) {
+  if (player && videoOptions && player.playerVars !== videoOptions.playerVars) {
+    // The player needs to be recreated if the playerVars are different.
+    player.destroy();
+  } else if (!videoOptions) {
     if (player) {
+      // Destroy the player if the videoId was removed.
       player.destroy();
     }
     return;
-  }
-  if (player) {
+  } else if (player) {
     return player;
   }
 
@@ -658,8 +678,8 @@ function syncPlayerState(
   // off a 250ms setInterval which will continually trigger change detection if we don't.
   const newPlayer: UninitializedPlayer =
       ngZone.runOutsideAngular(() => new YT.Player(container, videoOptions));
-  // Bind videoId for future use.
   newPlayer.videoId = videoOptions.videoId;
+  newPlayer.playerVars = videoOptions.playerVars;
   return newPlayer;
 }
 

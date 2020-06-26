@@ -6,6 +6,8 @@ export declare class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     set height(height: number | undefined);
     playbackQualityChange: Observable<YT.OnPlaybackQualityChangeEvent>;
     playbackRateChange: Observable<YT.OnPlaybackRateChangeEvent>;
+    get playerVars(): YT.PlayerVars | undefined;
+    set playerVars(playerVars: YT.PlayerVars | undefined);
     ready: Observable<YT.PlayerEvent>;
     showBeforeIframeApiLoads: boolean | undefined;
     set startSeconds(startSeconds: number | undefined);
@@ -41,7 +43,7 @@ export declare class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     setVolume(volume: number): void;
     stopVideo(): void;
     unMute(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<YouTubePlayer, "youtube-player", never, { "videoId": "videoId"; "height": "height"; "width": "width"; "startSeconds": "startSeconds"; "endSeconds": "endSeconds"; "suggestedQuality": "suggestedQuality"; "showBeforeIframeApiLoads": "showBeforeIframeApiLoads"; }, { "ready": "ready"; "stateChange": "stateChange"; "error": "error"; "apiChange": "apiChange"; "playbackQualityChange": "playbackQualityChange"; "playbackRateChange": "playbackRateChange"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<YouTubePlayer, "youtube-player", never, { "videoId": "videoId"; "height": "height"; "width": "width"; "startSeconds": "startSeconds"; "endSeconds": "endSeconds"; "suggestedQuality": "suggestedQuality"; "playerVars": "playerVars"; "showBeforeIframeApiLoads": "showBeforeIframeApiLoads"; }, { "ready": "ready"; "stateChange": "stateChange"; "error": "error"; "apiChange": "apiChange"; "playbackQualityChange": "playbackQualityChange"; "playbackRateChange": "playbackRateChange"; }, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<YouTubePlayer, never>;
 }
 
