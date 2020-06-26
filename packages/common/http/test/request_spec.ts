@@ -146,6 +146,15 @@ const TEST_STRING = `I'm a body!`;
         expect(withParams.detectContentTypeHeader())
             .toEqual('application/x-www-form-urlencoded;charset=UTF-8');
       });
+      it('serializes parameters as urlencoded', () => {
+        const params = new URLSearchParams();
+        params.set('first', 'test');
+        params.set('second', 'data');
+        const withParams = baseReq.clone({body: params});
+        expect(withParams.serializeBody()).toEqual('first=test&second=data');
+        expect(withParams.detectContentTypeHeader())
+            .toEqual('application/x-www-form-urlencoded;charset=UTF-8');
+      });
     });
     describe('parameter handling', () => {
       const baseReq = new HttpRequest('GET', '/test', null);
