@@ -56,8 +56,8 @@ describe('MenuItemRadio', () => {
     expect(radioElement.getAttribute('type')).toBe('button');
   });
 
-  it('should not have a submenu', () => {
-    expect(radioButton.hasSubmenu()).toBeFalse();
+  it('should not have a menu', () => {
+    expect(radioButton.hasMenu()).toBeFalse();
   });
 
   it('should not toggle checked state when disabled', () => {

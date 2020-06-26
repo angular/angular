@@ -40,16 +40,16 @@ export class CdkMenuItem {
     @Self() @Optional() private readonly _menuTrigger?: CdkMenuItemTrigger
   ) {}
 
-  /** Open the submenu if one is attached */
+  /** Open the menu if one is attached */
   trigger() {
-    if (!this.disabled && this.hasSubmenu()) {
+    if (!this.disabled && this.hasMenu()) {
       this._menuTrigger!.toggle();
     }
   }
 
   /** Whether the menu item opens a menu. */
-  hasSubmenu() {
-    return !!this._menuTrigger && this._menuTrigger.hasSubmenu();
+  hasMenu() {
+    return !!this._menuTrigger && this._menuTrigger.hasMenu();
   }
 
   static ngAcceptInputType_disabled: BooleanInput;

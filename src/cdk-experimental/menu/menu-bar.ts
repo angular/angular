@@ -30,7 +30,7 @@ import {CDK_MENU, Menu} from './menu-interface';
 })
 export class CdkMenuBar extends CdkMenuGroup implements Menu {
   /**
-   * Sets the aria-orientation attribute and determines where sub-menus will be opened.
+   * Sets the aria-orientation attribute and determines where menus will be opened.
    * Does not affect styling/layout.
    */
   @Input('cdkMenuBarOrientation') orientation: 'horizontal' | 'vertical' = 'horizontal';

@@ -51,8 +51,8 @@ describe('MenuItem', () => {
     expect(nativeButton.getAttribute('type')).toBe('button');
   });
 
-  it('should not have a submenu', () => {
-    expect(button.hasSubmenu()).toBeFalse();
+  it('should not have a menu', () => {
+    expect(button.hasMenu()).toBeFalse();
   });
 });
 

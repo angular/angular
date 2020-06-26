@@ -44,7 +44,7 @@ import {throwMissingMenuPanelError} from './menu-errors';
 })
 export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnDestroy {
   /**
-   * Sets the aria-orientation attribute and determines where sub-menus will be opened.
+   * Sets the aria-orientation attribute and determines where menus will be opened.
    * Does not affect styling/layout.
    */
   @Input('cdkMenuOrientation') orientation: 'horizontal' | 'vertical' = 'vertical';

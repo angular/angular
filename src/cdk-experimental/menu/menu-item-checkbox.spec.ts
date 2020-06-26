@@ -43,8 +43,8 @@ describe('MenuItemCheckbox', () => {
     expect(checkboxElement.getAttribute('type')).toBe('button');
   });
 
-  it('should not have a submenu', () => {
-    expect(checkbox.hasSubmenu()).toBeFalse();
+  it('should not have a menu', () => {
+    expect(checkbox.hasMenu()).toBeFalse();
   });
 
   it('should toggle the aria checked attribute', () => {

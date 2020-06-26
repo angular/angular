@@ -49,8 +49,8 @@ describe('MenuItemTrigger', () => {
       expect(menuItemElement.getAttribute('type')).toBe('button');
     });
 
-    it('should  have a submenu', () => {
-      expect(menuItem.hasSubmenu()).toBeTrue();
+    it('should  have a menu', () => {
+      expect(menuItem.hasMenu()).toBeTrue();
     });
   });
 
@@ -108,11 +108,11 @@ describe('MenuItemTrigger', () => {
       expect(nativeTriggers[0].getAttribute('aria-expanded')).toEqual('false');
     });
 
-    it('should hide sub-menus on initial load', () => {
+    it('should hide menus on initial load', () => {
       expect(menus.length).toEqual(0);
     });
 
-    it('should only open the attached submenu', () => {
+    it('should only open the attached menu', () => {
       triggers[0].toggle();
       detectChanges();
 
@@ -120,7 +120,7 @@ describe('MenuItemTrigger', () => {
       expect(menus[0] as Menu).toEqual(triggers[0]._menuPanel!._menu!);
     });
 
-    it('should not open the submenu when menu item disabled', () => {
+    it('should not open the menu when menu item disabled', () => {
       menuItems[0].disabled = true;
 
       menuItems[0].trigger();
@@ -129,7 +129,7 @@ describe('MenuItemTrigger', () => {
       expect(menus.length).toBe(0);
     });
 
-    it('should toggle the attached submenu', () => {
+    it('should toggle the attached menu', () => {
       triggers[0].toggle();
       detectChanges();
       expect(menus.length).toEqual(1);
@@ -149,7 +149,7 @@ describe('MenuItemTrigger', () => {
       expect(menus.length).toEqual(2);
     });
 
-    it('should close all sub-menus when root menu is closed', () => {
+    it('should close all menus when root menu is closed', () => {
       triggers[0].toggle();
       detectChanges();
       triggers[1].toggle();
@@ -178,7 +178,7 @@ describe('MenuItemTrigger', () => {
       expect(triggers[0]._menuPanel!._menu).toEqual(menus[0]);
     });
 
-    it('should emit request to open event on submenu open', () => {
+    it('should emit request to open event on menu open', () => {
       const triggerSpy = jasmine.createSpy('cdkMenuItem open request emitter');
       triggers[0].opened.subscribe(triggerSpy);
 
@@ -187,7 +187,7 @@ describe('MenuItemTrigger', () => {
       expect(triggerSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should emit request to close event on submenu close', () => {
+    it('should emit request to close event on menu close', () => {
       const triggerSpy = jasmine.createSpy('cdkMeuItem close request emitter');
       const closedSpy = jasmine.createSpy('cdkMenu closed emitter');
       triggers[0].closed.subscribe(triggerSpy);
