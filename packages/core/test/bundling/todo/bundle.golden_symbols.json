@@ -1164,7 +1164,7 @@
     "name": "shouldSearchParent"
   },
   {
-    "name": "storeCleanupFn"
+    "name": "storeCleanupWithContext"
   },
   {
     "name": "stringify"
