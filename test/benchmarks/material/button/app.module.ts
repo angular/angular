@@ -8,43 +8,35 @@
 
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'app-root',
   template: `
     <button id="show" (click)="show()">Show</button>
     <button id="hide" (click)="hide()">Hide</button>
-    <button id="indeterminate" (click)="indeterminate()">Indeterminate</button>
 
-    <mat-checkbox *ngIf="isVisible"
-      [checked]="isChecked"
-      [indeterminate]="isIndeterminate"
-      (change)="toggleIsChecked()">
-    Check me!</mat-checkbox>
+    <button *ngIf="isVisible" mat-raised-button>Basic</button>
   `,
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['//src/material/core/theming/prebuilt/indigo-pink.css'],
 })
-export class CheckboxBenchmarkApp {
+export class ButtonBenchmarkApp {
   isChecked = false;
   isVisible = false;
-  isIndeterminate = false;
 
   show() { this.isVisible = true; }
   hide() { this.isVisible = false; }
-  indeterminate() { this.isIndeterminate = true; }
-  toggleIsChecked() { this.isChecked = !this.isChecked; }
 }
 
 
 @NgModule({
-  declarations: [CheckboxBenchmarkApp],
+  declarations: [ButtonBenchmarkApp],
   imports: [
     BrowserModule,
-    MatCheckboxModule,
+    MatButtonModule,
   ],
   providers: [],
-  bootstrap: [CheckboxBenchmarkApp],
+  bootstrap: [ButtonBenchmarkApp],
 })
 export class AppModule {}
