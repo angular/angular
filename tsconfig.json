@@ -40,7 +40,8 @@
     "e2e/**/*.ts",
     "test/**/*.ts",
     "tools/**/*.ts",
-    "integration/**/*.ts"
+    "integration/**/*.ts",
+    "scripts/**/*.ts"
   ],
   "exclude": [
     // Exclude files that depend on Node APIs because those depend on the Node types and therefore
