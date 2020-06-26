@@ -11,7 +11,7 @@ import {coerceCssPixelValue} from '@angular/cdk/coercion';
 import {Directionality} from '@angular/cdk/bidi';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {CdkColumnDef} from '@angular/cdk/table';
-import {fromEvent, Subject} from 'rxjs';
+import {fromEvent, Subject, merge} from 'rxjs';
 import {
   distinctUntilChanged,
   filter,
@@ -59,21 +59,19 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
 
   private _listenForMouseEvents() {
     this.ngZone.runOutsideAngular(() => {
-      const takeUntilDestroyed = takeUntil<MouseEvent>(this.destroyed);
-
       fromEvent<MouseEvent>(this.elementRef.nativeElement!, 'mouseenter').pipe(
-          takeUntilDestroyed,
           mapTo(this.resizeRef.origin.nativeElement!),
+          takeUntil(this.destroyed),
       ).subscribe(cell => this.eventDispatcher.headerCellHovered.next(cell));
 
       fromEvent<MouseEvent>(this.elementRef.nativeElement!, 'mouseleave').pipe(
-          takeUntilDestroyed,
           map(event => event.relatedTarget &&
               _closest(event.relatedTarget as Element, HEADER_CELL_SELECTOR)),
+          takeUntil(this.destroyed)
       ).subscribe(cell => this.eventDispatcher.headerCellHovered.next(cell));
 
       fromEvent<MouseEvent>(this.elementRef.nativeElement!, 'mousedown')
-          .pipe(takeUntilDestroyed).subscribe(mousedownEvent => {
+          .pipe(takeUntil(this.destroyed)).subscribe(mousedownEvent => {
         this._dragStarted(mousedownEvent);
       });
     });
@@ -100,11 +98,11 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
 
     this.updateResizeActive(true);
 
-    mouseup.pipe(takeUntil(escape), takeUntil(this.destroyed)).subscribe(({screenX}) => {
+    mouseup.pipe(takeUntil(merge(escape, this.destroyed))).subscribe(({screenX}) => {
       this._notifyResizeEnded(size, screenX !== startX);
     });
 
-    escape.pipe(takeUntil(mouseup), takeUntil(this.destroyed)).subscribe(() => {
+    escape.pipe(takeUntil(merge(mouseup, this.destroyed))).subscribe(() => {
       this._notifyResizeEnded(initialSize);
     });
 
@@ -113,9 +111,7 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
         startWith(startX),
         distinctUntilChanged(),
         pairwise(),
-        takeUntil(mouseup),
-        takeUntil(escape),
-        takeUntil(this.destroyed),
+        takeUntil(merge(mouseup, escape, this.destroyed))
     ).subscribe(([prevX, currX]) => {
       let deltaX = currX - prevX;
 

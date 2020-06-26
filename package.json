@@ -59,6 +59,7 @@
     "core-js": "^2.6.9",
     "material-components-web": "7.0.0-canary.7461aad68.0",
     "rxjs": "^6.5.3",
+    "rxjs-tslint-rules": "^4.33.1",
     "systemjs": "0.19.43",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"

@@ -91,8 +91,8 @@ export abstract class ColumnResize implements AfterViewInit, OnDestroy {
         this.notifier.triggerResize.pipe(mapTo(undefined)),
         this.notifier.resizeCompleted.pipe(mapTo(undefined))
     ).pipe(
-        takeUntil(this.destroyed),
-        take(1),
+      take(1),
+      takeUntil(this.destroyed),
     ).subscribe(() => {
       this.setResized();
     });
