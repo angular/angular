@@ -26,7 +26,20 @@ import {angularCoreEnv} from './environment';
 import {getJitOptions} from './jit_options';
 import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
 
-
+/**
+ * Keep track of the compilation depth to avoid reentrancy issues during JIT compilation. This
+ * matters in the following scenario:
+ *
+ * Consider a component 'A' that extends component 'B', both declared in module 'M'. During
+ * the compilation of 'A' the definition of 'B' is requested to capture the inheritance chain,
+ * potentially triggering compilation of 'B'. If this nested compilation were to trigger
+ * `flushModuleScopingQueueAsMuchAsPossible` it may happen that module 'M' is still pending in the
+ * queue, resulting in 'A' and 'B' to be patched with the NgModule scope. As the compilation of
+ * 'A' is still in progress, this would introduce a circular dependency on its compilation. To avoid
+ * this issue, the module scope queue is only flushed for compilations at the depth 0, to ensure
+ * all compilations have finished.
+ */
+let compilationDepth = 0;
 
 /**
  * Compile an Angular component according to its decorator metadata, and patch the resulting
@@ -106,18 +119,26 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           interpolation: metadata.interpolation,
           viewProviders: metadata.viewProviders || null,
         };
-        if (meta.usesInheritance) {
-          addDirectiveDefToUndecoratedParents(type);
+
+        compilationDepth++;
+        try {
+          if (meta.usesInheritance) {
+            addDirectiveDefToUndecoratedParents(type);
+          }
+          ngComponentDef = compiler.compileComponent(angularCoreEnv, templateUrl, meta);
+        } finally {
+          // Ensure that the compilation depth is decremented even when the compilation failed.
+          compilationDepth--;
         }
 
-        ngComponentDef = compiler.compileComponent(angularCoreEnv, templateUrl, meta);
-
-        // When NgModule decorator executed, we enqueued the module definition such that
-        // it would only dequeue and add itself as module scope to all of its declarations,
-        // but only if  if all of its declarations had resolved. This call runs the check
-        // to see if any modules that are in the queue can be dequeued and add scope to
-        // their declarations.
-        flushModuleScopingQueueAsMuchAsPossible();
+        if (compilationDepth === 0) {
+          // When NgModule decorator executed, we enqueued the module definition such that
+          // it would only dequeue and add itself as module scope to all of its declarations,
+          // but only if  if all of its declarations had resolved. This call runs the check
+          // to see if any modules that are in the queue can be dequeued and add scope to
+          // their declarations.
+          flushModuleScopingQueueAsMuchAsPossible();
+        }
 
         // If component compilation is async, then the @NgModule annotation which declares the
         // component may execute and set an ngSelectorScope property on the component type. This
