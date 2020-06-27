@@ -318,10 +318,10 @@ encapsulation enabled, each DOM element has some extra attributes
 attached to it:
 
 <code-example format="">
-  &lt;hero-details _nghost-pmm-5>
-    &lt;h2 _ngcontent-pmm-5>Mister Fantastic&lt;/h2>
-    &lt;hero-team _ngcontent-pmm-5 _nghost-pmm-6>
-      &lt;h3 _ngcontent-pmm-6>Team&lt;/h3>
+  &lt;hero-details _h-pmm-5>
+    &lt;h2 _c-pmm-5>Mister Fantastic&lt;/h2>
+    &lt;hero-team _c-pmm-5 _h-pmm-6>
+      &lt;h3 _c-pmm-6>Team&lt;/h3>
     &lt;/hero-team>
   &lt;/hero-detail>
 
@@ -339,12 +339,12 @@ generated and you never refer to them in application code. But they are targeted
 by the generated component styles, which are in the `<head>` section of the DOM:
 
 <code-example format="">
-  [_nghost-pmm-5] {
+  [_h-pmm-5] {
     display: block;
     border: 1px solid black;
   }
 
-  h3[_ngcontent-pmm-6] {
+  h3[_c-pmm-6] {
     background-color: white;
     border: 1px solid #777;
   }

@@ -131,16 +131,16 @@ describe('component', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
           .toMatch(
-              /<encapsulated _nghost-[a-z\-]+(\d+)="">foo<leaf _ngcontent-[a-z\-]+\1=""><span>bar<\/span><\/leaf><\/encapsulated>/);
+              /<encapsulated _h-[a-z\-]+(\d+)="">foo<leaf _c-[a-z\-]+\1=""><span>bar<\/span><\/leaf><\/encapsulated>/);
     });
 
     it('should encapsulate host', () => {
       const fixture = TestBed.createComponent(EncapsulatedComponent);
       fixture.detectChanges();
       const html = fixture.nativeElement.outerHTML;
-      const match = html.match(/_nghost-([a-z\-]+\d+)/);
+      const match = html.match(/_h-([a-z\-]+\d+)/);
       expect(match).toBeDefined();
-      expect(html).toMatch(new RegExp(`<leaf _ngcontent-${match[1]}=""><span>bar</span></leaf>`));
+      expect(html).toMatch(new RegExp(`<leaf _c-${match[1]}=""><span>bar</span></leaf>`));
     });
 
     it('should encapsulate host and children with different attributes', () => {
@@ -150,7 +150,7 @@ describe('component', () => {
       const fixture = TestBed.createComponent(EncapsulatedComponent);
       fixture.detectChanges();
       const html = fixture.nativeElement.outerHTML;
-      const match = html.match(/_nghost-([a-z\-]+\d+)/g);
+      const match = html.match(/_h-([a-z\-]+\d+)/g);
       expect(match).toBeDefined();
       expect(match.length).toEqual(2);
       expect(html).toMatch(
