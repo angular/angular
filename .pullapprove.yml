@@ -67,6 +67,23 @@ version: 3
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
 meta:
+  # The following groups have no file based conditions and will be initially `active` on all PRs
+  # - `global-approvers`
+  # - `global-docs-approvers`
+  # - `required-minimum-review`
+  #
+  # By checking the number of active/pending/rejected groups when these are excluded, we can determine
+  # if any other groups are matched.
+  #
+  # Also note that the ordering of groups matters in this file. The only groups visible to the current
+  # one are those that appear above it.
+  no-groups-above-this-pending: &no-groups-above-this-pending
+    len(groups.pending.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+  no-groups-above-this-rejected: &no-groups-above-this-rejected
+    len(groups.rejected.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+  no-groups-above-this-active: &no-groups-above-this-active
+    len(groups.active.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+
   can-be-global-approved: &can-be-global-approved "\"global-approvers\" not in groups.approved"
   can-be-global-docs-approved: &can-be-global-docs-approved "\"global-docs-approvers\" not in groups.approved"
   defaults: &defaults
@@ -1258,14 +1275,7 @@ groups:
     # `global-approvers` can still approve PRs that match this `fallback` rule,
     # but that should be an exception and not an expectation.
     conditions:
-      # The following groups have no file based conditions and will be initially `active` on all PRs
-      # - `global-approvers`
-      # - `global-docs-approvers`
-      # - `required-minimum-review`
-      #
-      # By checking the number of active groups when these are excluded, we can determine
-      # if any other groups are matched.
-      - len(groups.active.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+      - *no-groups-above-this-active
       # When any of the `global-*` groups is approved, they cause other groups to deactivate.
       # In those cases, the condition above would evaluate to `true` while in reality, only a global
       # approval has been provided. To ensure we don't activate the fallback group in such cases,
