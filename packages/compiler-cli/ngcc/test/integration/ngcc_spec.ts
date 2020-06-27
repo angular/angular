@@ -838,6 +838,33 @@ runInEachFileSystem(() => {
          });
     });
 
+    describe('with entryPointListPath', () => {
+      it('should only compile the entry-points that are listed in the given file, or are dependencies',
+         () => {
+           const entryPointList = [
+             '@angular/common/testing',
+             '@angular/common/http',
+           ];
+           fs.writeFile(_('/entry-points.json'), JSON.stringify(entryPointList));
+           mainNgcc({basePath: '/node_modules', entryPointListPath: '/entry-points.json'});
+
+           // common/testing, common/http and core are in the file so get processed.
+           expect(loadPackage('@angular/common/testing').__processed_by_ivy_ngcc__)
+               .toEqual(STANDARD_MARKERS);
+           expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__)
+               .toEqual(STANDARD_MARKERS);
+           // core and common are dependencies of `common/http` so are processed.
+           expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual(STANDARD_MARKERS);
+           expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__)
+               .toEqual(STANDARD_MARKERS);
+
+           // common/http/testing is not in the file nor is it a dependency so it does not get
+           // processed.
+           expect(loadPackage('@angular/common/http/testing').__processed_by_ivy_ngcc__)
+               .toBeUndefined();
+         });
+    });
+
     it('should clean up outdated artifacts', () => {
       compileIntoFlatEs2015Package('test-package', {
         'index.ts': `

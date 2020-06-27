@@ -24,6 +24,7 @@ import {BasePaths} from './entry_point_finder/base_paths';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
 import {EntryPointCollector} from './entry_point_finder/entry_point_collector';
 import {EntryPointFinder} from './entry_point_finder/interface';
+import {MultiTargetEntryPointFinder} from './entry_point_finder/multi_target_entry_point_finder';
 import {ProgramBasedEntryPointFinder} from './entry_point_finder/program_based_entry_point_finder';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
 import {getAnalyzeEntryPointsFn} from './execution/analyze_entry_points';
@@ -70,6 +71,7 @@ export function mainNgcc(options: AsyncNgccOptions|SyncNgccOptions): void|Promis
     absBasePath,
     projectPath,
     tsConfig,
+    entryPointListPath,
     getFileWriter,
   } = getSharedSetup(options);
 
@@ -83,10 +85,13 @@ export function mainNgcc(options: AsyncNgccOptions|SyncNgccOptions): void|Promis
   const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
   const absoluteTargetEntryPointPath =
       targetEntryPointPath !== undefined ? resolve(basePath, targetEntryPointPath) : null;
+  const absoluteEntryPointListPath =
+      entryPointListPath !== undefined ? resolve(basePath, entryPointListPath) : null;
   const finder = getEntryPointFinder(
       fileSystem, logger, dependencyResolver, config, entryPointManifest, absBasePath,
       absoluteTargetEntryPointPath, pathMappings,
-      options.findEntryPointsFromTsConfigProgram ? tsConfig : null, projectPath);
+      options.findEntryPointsFromTsConfigProgram ? tsConfig : null, projectPath,
+      absoluteEntryPointListPath);
   if (finder instanceof TargetedEntryPointFinder &&
       !finder.targetNeedsProcessingOrCleaning(supportedPropertiesToConsider, compileAllFormats)) {
     logger.debug('The target entry-point has already been processed');
@@ -201,10 +206,15 @@ function getEntryPointFinder(
     fs: FileSystem, logger: Logger, resolver: DependencyResolver, config: NgccConfiguration,
     entryPointManifest: EntryPointManifest, basePath: AbsoluteFsPath,
     absoluteTargetEntryPointPath: AbsoluteFsPath|null, pathMappings: PathMappings|undefined,
-    tsConfig: ParsedConfiguration|null, projectPath: AbsoluteFsPath): EntryPointFinder {
+    tsConfig: ParsedConfiguration|null, projectPath: AbsoluteFsPath,
+    entryPointListPath: AbsoluteFsPath|null): EntryPointFinder {
   const entryPointCollector = new EntryPointCollector(fs, config, logger, resolver);
   const basePaths = new BasePaths(logger);
-  if (absoluteTargetEntryPointPath !== null) {
+  if (entryPointListPath !== null) {
+    return new MultiTargetEntryPointFinder(
+        fs, logger, resolver, pathMappings, entryPointCollector, entryPointManifest, basePath,
+        basePaths, entryPointListPath);
+  } else if (absoluteTargetEntryPointPath !== null) {
     return new TargetedEntryPointFinder(
         fs, config, logger, resolver, basePath, basePaths, pathMappings,
         absoluteTargetEntryPointPath);

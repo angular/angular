@@ -34,6 +34,18 @@ export interface SyncNgccOptions {
   targetEntryPointPath?: string;
 
   /**
+   * The path to a file that contains a list of initial the entry-points paths.
+   * If not absolute then it must be relative to `basePath`.
+   * The entry-points specified in the file, and their dependencies, will be processed.
+   *
+   * The file should be in JSON format that contains an array of paths, relative to the `basePath`.
+   *
+   * If provided, this property overrides the `targetEntryPointPath` and
+   * `findEntryPointsFromTsConfigProgram` strategies for finding entry-points.
+   */
+  entryPointListPath?: string;
+
+  /**
    * Which entry-point properties in the package.json to consider when processing an entry-point.
    * Each property should hold a path to the particular bundle format for the entry-point.
    * Defaults to all the properties in the package.json.
@@ -143,8 +155,8 @@ export type AsyncNgccOptions = Omit<SyncNgccOptions, 'async'>&{async: true};
  */
 export type NgccOptions = AsyncNgccOptions|SyncNgccOptions;
 
-export type OptionalNgccOptionKeys =
-    'targetEntryPointPath'|'tsConfigPath'|'pathMappings'|'findEntryPointsFromTsConfigProgram';
+export type OptionalNgccOptionKeys = 'targetEntryPointPath'|'tsConfigPath'|'pathMappings'|
+    'findEntryPointsFromTsConfigProgram'|'entryPointListPath';
 export type RequiredNgccOptions = Required<Omit<NgccOptions, OptionalNgccOptionKeys>>;
 export type OptionalNgccOptions = Pick<NgccOptions, OptionalNgccOptionKeys>;
 export type SharedSetup = {
@@ -169,6 +181,7 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
   let {
     basePath,
     targetEntryPointPath,
+    entryPointListPath,
     propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
     compileAllFormats = true,
     createNewEntryPointFormats = false,
@@ -189,6 +202,7 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
   return {
     basePath,
     targetEntryPointPath,
+    entryPointListPath,
     propertiesToConsider,
     compileAllFormats,
     createNewEntryPointFormats,
