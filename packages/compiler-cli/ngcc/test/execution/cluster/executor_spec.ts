@@ -8,9 +8,9 @@
 
 /// <reference types="node" />
 
-import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import * as cluster from 'cluster';
 
+import {getFileSystem} from '../../../../src/ngtsc/file_system';
 import {MockFileSystemNative, runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../../src/ngtsc/logging/testing';
 import {ClusterExecutor} from '../../../src/execution/cluster/executor';
