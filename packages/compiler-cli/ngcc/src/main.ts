@@ -20,6 +20,7 @@ import {DtsDependencyHost} from './dependencies/dts_dependency_host';
 import {EsmDependencyHost} from './dependencies/esm_dependency_host';
 import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
+import {BasePaths} from './entry_point_finder/base_paths';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
 import {EntryPointCollector} from './entry_point_finder/entry_point_collector';
 import {EntryPointFinder} from './entry_point_finder/interface';
@@ -201,18 +202,21 @@ function getEntryPointFinder(
     entryPointManifest: EntryPointManifest, basePath: AbsoluteFsPath,
     absoluteTargetEntryPointPath: AbsoluteFsPath|null, pathMappings: PathMappings|undefined,
     tsConfig: ParsedConfiguration|null, projectPath: AbsoluteFsPath): EntryPointFinder {
+  const entryPointCollector = new EntryPointCollector(fs, config, logger, resolver);
+  const basePaths = new BasePaths(logger);
   if (absoluteTargetEntryPointPath !== null) {
     return new TargetedEntryPointFinder(
-        fs, config, logger, resolver, basePath, pathMappings, absoluteTargetEntryPointPath);
+        fs, config, logger, resolver, basePath, basePaths, pathMappings,
+        absoluteTargetEntryPointPath);
   } else {
-    const entryPointCollector = new EntryPointCollector(fs, config, logger, resolver);
     if (tsConfig !== null) {
       return new ProgramBasedEntryPointFinder(
-          fs, config, logger, resolver, entryPointCollector, entryPointManifest, basePath, tsConfig,
-          projectPath);
+          fs, logger, resolver, entryPointCollector, entryPointManifest, basePath, basePaths,
+          tsConfig, projectPath);
     } else {
       return new DirectoryWalkerEntryPointFinder(
-          logger, resolver, entryPointCollector, entryPointManifest, basePath, pathMappings);
+          logger, resolver, entryPointCollector, entryPointManifest, basePath, basePaths,
+          pathMappings);
     }
   }
 }

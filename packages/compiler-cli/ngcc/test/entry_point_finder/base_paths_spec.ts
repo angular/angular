@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-
+import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {getBasePaths} from '../../src/entry_point_finder/utils';
+
+import {BasePaths} from '../../src/entry_point_finder/base_paths';
 
 runInEachFileSystem(() => {
   let _: typeof absoluteFrom;
@@ -23,7 +23,7 @@ runInEachFileSystem(() => {
   describe('getBasePaths', () => {
     it('should just return the `sourceDirectory if there are no `pathMappings', () => {
       const sourceDirectory = _('/path/to/project/node_modules');
-      const basePaths = getBasePaths(logger, sourceDirectory, undefined);
+      const basePaths = new BasePaths(logger).getBasePaths(sourceDirectory, undefined);
       expect(basePaths).toEqual([sourceDirectory]);
     });
 
@@ -39,7 +39,7 @@ runInEachFileSystem(() => {
         baseUrl: projectDirectory,
         paths: {'@dist': ['dist-1', 'sub-folder/dist-2'], '@lib/*': ['libs/*']}
       };
-      const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+      const basePaths = new BasePaths(logger).getBasePaths(sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
         sourceDirectory,
         fs.resolve(projectDirectory, 'dist-1'),
@@ -57,7 +57,7 @@ runInEachFileSystem(() => {
 
       const sourceDirectory = _('/path/to/project/node_modules');
       const pathMappings = {baseUrl: projectDirectory, paths: {'@dist': ['a/b', 'a/b-2', 'a/b/c']}};
-      const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+      const basePaths = new BasePaths(logger).getBasePaths(sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
         sourceDirectory,
         fs.resolve(projectDirectory, 'a/b'),
@@ -77,7 +77,7 @@ runInEachFileSystem(() => {
         baseUrl: projectDirectory,
         paths: {'@dist': ['dist-1', 'dist-1/sub-folder'], '@lib/*': ['node_modules/libs/*']}
       };
-      const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+      const basePaths = new BasePaths(logger).getBasePaths(sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
         sourceDirectory,
         fs.resolve(projectDirectory, 'dist-1'),
@@ -92,7 +92,7 @@ runInEachFileSystem(() => {
 
       const sourceDirectory = _('/path/to/project/node_modules');
       const pathMappings = {baseUrl: projectDirectory, paths: {'@dist': ['dist-1/file.js']}};
-      const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+      const basePaths = new BasePaths(logger).getBasePaths(sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
         sourceDirectory,
         fs.resolve(projectDirectory, 'dist-1'),
@@ -107,7 +107,7 @@ runInEachFileSystem(() => {
          fs.ensureDir(fs.resolve(sourceDirectory));
 
          const pathMappings = {baseUrl: projectDirectory, paths: {'*': ['./*']}};
-         const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+         const basePaths = new BasePaths(logger).getBasePaths(sourceDirectory, pathMappings);
          expect(basePaths).toEqual([
            sourceDirectory,
            projectDirectory,
@@ -120,7 +120,7 @@ runInEachFileSystem(() => {
 
       const sourceDirectory = _('/path/to/project/node_modules');
       const pathMappings = {baseUrl: _('/'), paths: {'@dist': ['dist']}};
-      const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+      const basePaths = new BasePaths(logger).getBasePaths(sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
         fs.resolve('/dist'),
         sourceDirectory,
@@ -143,7 +143,7 @@ runInEachFileSystem(() => {
         baseUrl: projectDirectory,
         paths: {'@dist': ['dist-1', 'sub-folder/dist-2'], '@lib/*': ['libs/*']}
       };
-      const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+      const basePaths = new BasePaths(logger).getBasePaths(sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
         sourceDirectory,
         fs.resolve(projectDirectory, 'dist-1'),

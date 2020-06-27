@@ -13,6 +13,7 @@ import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
 import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
+import {BasePaths} from '../../src/entry_point_finder/base_paths';
 import {TargetedEntryPointFinder} from '../../src/entry_point_finder/targeted_entry_point_finder';
 import {NGCC_VERSION} from '../../src/packages/build_marker';
 import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
@@ -50,8 +51,8 @@ runInEachFileSystem(() => {
           ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['@angular/common']),
         ]);
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), undefined,
-            targetPath);
+            fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'),
+            new BasePaths(logger), undefined, targetPath);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['common', 'common'],
@@ -69,8 +70,8 @@ runInEachFileSystem(() => {
           ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
         ]);
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'), undefined,
-            targetPath);
+            fs, config, logger, resolver, _Abs('/sub_entry_points/node_modules'),
+            new BasePaths(logger), undefined, targetPath);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['common', 'common'],
@@ -92,7 +93,8 @@ runInEachFileSystem(() => {
           ...createPackage(fs.resolve(basePath, '@angular/common'), 'testing', ['@angular/common']),
         ]);
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, _Abs('/namespaced/node_modules'), undefined, targetPath);
+            fs, config, logger, resolver, _Abs('/namespaced/node_modules'), new BasePaths(logger),
+            undefined, targetPath);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['@angular/common', '@angular/common'],
@@ -104,7 +106,8 @@ runInEachFileSystem(() => {
         const targetPath = _Abs('/no_packages/node_modules/should_not_be_found');
         fs.ensureDir(_Abs('/no_packages/node_modules/should_not_be_found'));
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, _Abs('/no_packages/node_modules'), undefined, targetPath);
+            fs, config, logger, resolver, _Abs('/no_packages/node_modules'), new BasePaths(logger),
+            undefined, targetPath);
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
       });
@@ -113,7 +116,7 @@ runInEachFileSystem(() => {
         const basePath = _Abs('/project/node_modules');
         const targetPath = _Abs('/project/node_modules/some-package');
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, basePath, undefined, targetPath);
+            fs, config, logger, resolver, basePath, new BasePaths(logger), undefined, targetPath);
 
         loadTestFiles(createPackage(basePath, 'some-package'));
         spyOn(config, 'getPackageConfig')
@@ -137,8 +140,8 @@ runInEachFileSystem(() => {
           },
         ]);
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'), undefined,
-            targetPath);
+            fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'),
+            new BasePaths(logger), undefined, targetPath);
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
       });
@@ -162,8 +165,8 @@ runInEachFileSystem(() => {
              },
            ]);
            const finder = new TargetedEntryPointFinder(
-               fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'), undefined,
-               targetPath);
+               fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'),
+               new BasePaths(logger), undefined, targetPath);
            const {entryPoints} = finder.findEntryPoints();
            expect(entryPoints).toEqual([]);
          });
@@ -175,8 +178,8 @@ runInEachFileSystem(() => {
           ...createPackage(_Abs('/nested_node_modules/node_modules/outer/node_modules'), 'inner'),
         ]);
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, _Abs('/nested_node_modules/node_modules'), undefined,
-            targetPath);
+            fs, config, logger, resolver, _Abs('/nested_node_modules/node_modules'),
+            new BasePaths(logger), undefined, targetPath);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(_Abs('/nested_node_modules/node_modules'), entryPoints))
             .toEqual([
@@ -194,7 +197,7 @@ runInEachFileSystem(() => {
           ...createPackage(_Abs('/nested_node_modules/node_modules/package'), 'entry-point'),
         ]);
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, basePath, undefined, targetPath);
+            fs, config, logger, resolver, basePath, new BasePaths(logger), undefined, targetPath);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(_Abs('/nested_node_modules'), entryPoints)).toEqual([
           ['node_modules/package', 'node_modules/package/entry-point'],
@@ -219,7 +222,8 @@ runInEachFileSystem(() => {
            // entry-point info for the `lib3/entry-point` dependency.
            const targetPath = _Abs('/project/node_modules/lib1/node_modules/lib2');
            const finder = new TargetedEntryPointFinder(
-               fs, config, logger, resolver, basePath, undefined, targetPath);
+               fs, config, logger, resolver, basePath, new BasePaths(logger), undefined,
+               targetPath);
            const {entryPoints} = finder.findEntryPoints();
            expect(dumpEntryPointPaths(_Abs('/project/node_modules'), entryPoints)).toEqual([
              ['lib3', 'lib3/entry-point'],
@@ -251,7 +255,8 @@ runInEachFileSystem(() => {
            // entry-point info for the `lib3/entry-point` dependency.
            const targetPath = _Abs('/project/node_modules/lib1/node_modules/lib2');
            const finder = new TargetedEntryPointFinder(
-               fs, config, logger, resolver, basePath, undefined, targetPath);
+               fs, config, logger, resolver, basePath, new BasePaths(logger), undefined,
+               targetPath);
            const {entryPoints} = finder.findEntryPoints();
            expect(dumpEntryPointPaths(_Abs('/project/node_modules'), entryPoints)).toEqual([
              ['@scope/lib3/node_modules/lib4', '@scope/lib3/node_modules/lib4/entry-point'],
@@ -285,7 +290,8 @@ runInEachFileSystem(() => {
         const dtsHost = new DtsDependencyHost(fs, pathMappings);
         resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, basePath, pathMappings, targetPath);
+            fs, config, logger, resolver, basePath, new BasePaths(logger), pathMappings,
+            targetPath);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['pkg1', 'pkg1'],
@@ -313,7 +319,8 @@ runInEachFileSystem(() => {
            const dtsHost = new DtsDependencyHost(fs, pathMappings);
            resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
            const finder = new TargetedEntryPointFinder(
-               fs, config, logger, resolver, basePath, pathMappings, targetPath);
+               fs, config, logger, resolver, basePath, new BasePaths(logger), pathMappings,
+               targetPath);
            const {entryPoints} = finder.findEntryPoints();
            expect(entryPoints.length).toEqual(1);
            const entryPoint = entryPoints[0];
@@ -346,7 +353,8 @@ runInEachFileSystem(() => {
            const dtsHost = new DtsDependencyHost(fs, pathMappings);
            resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
            const finder = new TargetedEntryPointFinder(
-               fs, config, logger, resolver, basePath, pathMappings, targetPath);
+               fs, config, logger, resolver, basePath, new BasePaths(logger), pathMappings,
+               targetPath);
            const {entryPoints} = finder.findEntryPoints();
            expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
              ['../dist/my-lib/a', '../dist/my-lib/a'],
@@ -373,7 +381,8 @@ runInEachFileSystem(() => {
         const dtsHost = new DtsDependencyHost(fs, pathMappings);
         resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, basePath, pathMappings, targetPath);
+            fs, config, logger, resolver, basePath, new BasePaths(logger), pathMappings,
+            targetPath);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['test', 'test'],
@@ -392,7 +401,8 @@ runInEachFileSystem(() => {
         const targetPath = _Abs('/no_packages/node_modules/should_not_be_found');
         fs.ensureDir(targetPath);
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, _Abs('/no_packages/node_modules'), undefined, targetPath);
+            fs, config, logger, resolver, _Abs('/no_packages/node_modules'), new BasePaths(logger),
+            undefined, targetPath);
         expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
       });
 
@@ -405,8 +415,8 @@ runInEachFileSystem(() => {
           },
         ]);
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'), undefined,
-            targetPath);
+            fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'),
+            new BasePaths(logger), undefined, targetPath);
         expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
       });
 
@@ -414,7 +424,7 @@ runInEachFileSystem(() => {
         const basePath = _Abs('/project/node_modules');
         const targetPath = _Abs('/project/node_modules/some-package');
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, basePath, undefined, targetPath);
+            fs, config, logger, resolver, basePath, new BasePaths(logger), undefined, targetPath);
 
         loadTestFiles(createPackage(basePath, 'some-package'));
         spyOn(config, 'getPackageConfig')
@@ -446,8 +456,8 @@ runInEachFileSystem(() => {
           },
         ]);
         const finder = new TargetedEntryPointFinder(
-            fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'), undefined,
-            targetPath);
+            fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'),
+            new BasePaths(logger), undefined, targetPath);
         expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
       });
 
@@ -469,8 +479,8 @@ runInEachFileSystem(() => {
              },
            ]);
            const finder = new TargetedEntryPointFinder(
-               fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'), undefined,
-               targetPath);
+               fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'),
+               new BasePaths(logger), undefined, targetPath);
            expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
          });
 
@@ -486,7 +496,7 @@ runInEachFileSystem(() => {
             ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
           ]);
           const finder = new TargetedEntryPointFinder(
-              fs, config, logger, resolver, basePath, undefined, targetPath);
+              fs, config, logger, resolver, basePath, new BasePaths(logger), undefined, targetPath);
           expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(true);
         });
 
@@ -512,7 +522,8 @@ runInEachFileSystem(() => {
              fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
 
              const finder = new TargetedEntryPointFinder(
-                 fs, config, logger, resolver, basePath, undefined, targetPath);
+                 fs, config, logger, resolver, basePath, new BasePaths(logger), undefined,
+                 targetPath);
              expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(true);
            });
 
@@ -538,7 +549,7 @@ runInEachFileSystem(() => {
           fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
 
           const finder = new TargetedEntryPointFinder(
-              fs, config, logger, resolver, basePath, undefined, targetPath);
+              fs, config, logger, resolver, basePath, new BasePaths(logger), undefined, targetPath);
           expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], true)).toBe(false);
         });
       });
@@ -556,7 +567,7 @@ runInEachFileSystem(() => {
           ]);
 
           const finder = new TargetedEntryPointFinder(
-              fs, config, logger, resolver, basePath, undefined, targetPath);
+              fs, config, logger, resolver, basePath, new BasePaths(logger), undefined, targetPath);
           expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], false)).toBe(true);
         });
 
@@ -582,7 +593,8 @@ runInEachFileSystem(() => {
              fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
 
              const finder = new TargetedEntryPointFinder(
-                 fs, config, logger, resolver, basePath, undefined, targetPath);
+                 fs, config, logger, resolver, basePath, new BasePaths(logger), undefined,
+                 targetPath);
              expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], false)).toBe(true);
            });
 
@@ -608,7 +620,8 @@ runInEachFileSystem(() => {
              fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
 
              const finder = new TargetedEntryPointFinder(
-                 fs, config, logger, resolver, basePath, undefined, targetPath);
+                 fs, config, logger, resolver, basePath, new BasePaths(logger), undefined,
+                 targetPath);
              expect(finder.targetNeedsProcessingOrCleaning(['fesm2015', 'esm5'], false))
                  .toBe(false);
            });

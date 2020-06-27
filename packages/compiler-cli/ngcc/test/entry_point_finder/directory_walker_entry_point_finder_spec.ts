@@ -13,6 +13,7 @@ import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
 import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
+import {BasePaths} from '../../src/entry_point_finder/base_paths';
 import {DirectoryWalkerEntryPointFinder} from '../../src/entry_point_finder/directory_walker_entry_point_finder';
 import {EntryPointCollector} from '../../src/entry_point_finder/entry_point_collector';
 import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
@@ -53,7 +54,7 @@ runInEachFileSystem(() => {
           ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, basePath, undefined);
+            logger, resolver, collector, manifest, basePath, new BasePaths(logger), undefined);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['common', 'common'],
@@ -74,7 +75,7 @@ runInEachFileSystem(() => {
           ...createPackage(fs.resolve(basePath, '@angular/common'), 'testing', ['@angular/common']),
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, basePath, undefined);
+            logger, resolver, collector, manifest, basePath, new BasePaths(logger), undefined);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['@angular/common', '@angular/common'],
@@ -87,7 +88,8 @@ runInEachFileSystem(() => {
       it('should return an empty array if there are no packages', () => {
         fs.ensureDir(_Abs('/no_packages/node_modules/should_not_be_found'));
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, _Abs('/no_packages/node_modules'), undefined);
+            logger, resolver, collector, manifest, _Abs('/no_packages/node_modules'),
+            new BasePaths(logger), undefined);
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
       });
@@ -101,7 +103,7 @@ runInEachFileSystem(() => {
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
             logger, resolver, collector, manifest, _Abs('/no_valid_entry_points/node_modules'),
-            undefined);
+            new BasePaths(logger), undefined);
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
       });
@@ -109,7 +111,7 @@ runInEachFileSystem(() => {
       it('should not include ignored entry-points', () => {
         const basePath = _Abs('/project/node_modules');
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, basePath, undefined);
+            logger, resolver, collector, manifest, basePath, new BasePaths(logger), undefined);
 
         loadTestFiles(createPackage(basePath, 'some-package'));
         spyOn(config, 'getPackageConfig')
@@ -127,7 +129,7 @@ runInEachFileSystem(() => {
       it('should look for sub-entry-points even if a containing entry-point is ignored', () => {
         const basePath = _Abs('/project/node_modules');
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, basePath, undefined);
+            logger, resolver, collector, manifest, basePath, new BasePaths(logger), undefined);
 
         loadTestFiles([
           ...createPackage(basePath, 'some-package'),
@@ -164,7 +166,7 @@ runInEachFileSystem(() => {
            spyOn(manifest, 'readEntryPointsUsingManifest').and.callThrough();
            spyOn(manifest, 'writeEntryPointManifest').and.callThrough();
            const finder = new DirectoryWalkerEntryPointFinder(
-               logger, resolver, collector, manifest, basePath, undefined);
+               logger, resolver, collector, manifest, basePath, new BasePaths(logger), undefined);
            finder.findEntryPoints();
            expect(manifest.readEntryPointsUsingManifest).toHaveBeenCalled();
            expect(manifest.writeEntryPointManifest).toHaveBeenCalled();
@@ -185,7 +187,7 @@ runInEachFileSystem(() => {
         spyOn(manifest, 'readEntryPointsUsingManifest').and.callThrough();
         spyOn(manifest, 'writeEntryPointManifest').and.callThrough();
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, basePath, undefined);
+            logger, resolver, collector, manifest, basePath, new BasePaths(logger), undefined);
         finder.findEntryPoints();
         expect(manifest.readEntryPointsUsingManifest).toHaveBeenCalled();
         expect(manifest.writeEntryPointManifest).toHaveBeenCalled();
@@ -203,7 +205,7 @@ runInEachFileSystem(() => {
           {name: _Abs('/sub_entry_points/yarn.lock'), contents: 'MOCK LOCK FILE'},
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, basePath, undefined);
+            logger, resolver, collector, manifest, basePath, new BasePaths(logger), undefined);
 
         // Prime the manifest by calling findEntryPoints() once.
         finder.findEntryPoints();
@@ -232,7 +234,8 @@ runInEachFileSystem(() => {
           ...createPackage(_Abs('/dotted_folders/node_modules/'), '.common'),
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, _Abs('/dotted_folders/node_modules'), undefined);
+            logger, resolver, collector, manifest, _Abs('/dotted_folders/node_modules'),
+            new BasePaths(logger), undefined);
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
       });
@@ -244,7 +247,7 @@ runInEachFileSystem(() => {
         loadTestFiles(createPackage(_Abs('/external/node_modules'), 'common'));
         const finder = new DirectoryWalkerEntryPointFinder(
             logger, resolver, collector, manifest, _Abs('/symlinked_folders/node_modules'),
-            undefined);
+            new BasePaths(logger), undefined);
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
       });
@@ -256,7 +259,7 @@ runInEachFileSystem(() => {
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
             logger, resolver, collector, manifest, _Abs('/nested_node_modules/node_modules'),
-            undefined);
+            new BasePaths(logger), undefined);
         const {entryPoints} = finder.findEntryPoints();
         // Note that the `inner` entry-point is not part of the `outer` package
         expect(dumpEntryPointPaths(_Abs('/nested_node_modules/node_modules'), entryPoints))
@@ -275,7 +278,7 @@ runInEachFileSystem(() => {
 
         const finder = new DirectoryWalkerEntryPointFinder(
             logger, resolver, collector, manifest, _Abs('/nested_node_modules/node_modules'),
-            undefined);
+            new BasePaths(logger), undefined);
         const spy = spyOn(collector, 'walkDirectoryForPackages').and.callThrough();
         const {entryPoints} = finder.findEntryPoints();
         expect(spy.calls.allArgs()).toEqual([
@@ -297,7 +300,7 @@ runInEachFileSystem(() => {
         ]);
 
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, basePath, undefined);
+            logger, resolver, collector, manifest, basePath, new BasePaths(logger), undefined);
         const spy = spyOn(collector, 'walkDirectoryForPackages').and.callThrough();
         const {entryPoints} = finder.findEntryPoints();
         expect(spy.calls.allArgs()).toEqual([
@@ -321,7 +324,7 @@ runInEachFileSystem(() => {
         ]);
 
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, basePath, undefined);
+            logger, resolver, collector, manifest, basePath, new BasePaths(logger), undefined);
         const spy = spyOn(collector, 'walkDirectoryForPackages').and.callThrough();
         const {entryPoints} = finder.findEntryPoints();
         expect(spy.calls.allArgs()).toEqual([
@@ -341,7 +344,7 @@ runInEachFileSystem(() => {
              ...createPackage(fs.resolve(basePath, 'package/container'), 'entry-point-1'),
            ]);
            const finder = new DirectoryWalkerEntryPointFinder(
-               logger, resolver, collector, manifest, basePath, undefined);
+               logger, resolver, collector, manifest, basePath, new BasePaths(logger), undefined);
            const {entryPoints} = finder.findEntryPoints();
            expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
              ['package', 'package'],
@@ -371,7 +374,7 @@ runInEachFileSystem(() => {
         resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
         collector = new EntryPointCollector(fs, config, logger, resolver);
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, basePath, pathMappings);
+            logger, resolver, collector, manifest, basePath, new BasePaths(logger), pathMappings);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['pkg1', 'pkg1'],
@@ -399,7 +402,7 @@ runInEachFileSystem(() => {
         const dtsHost = new DtsDependencyHost(fs, pathMappings);
         resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
         const finder = new DirectoryWalkerEntryPointFinder(
-            logger, resolver, collector, manifest, basePath, pathMappings);
+            logger, resolver, collector, manifest, basePath, new BasePaths(logger), pathMappings);
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['test', 'test'],

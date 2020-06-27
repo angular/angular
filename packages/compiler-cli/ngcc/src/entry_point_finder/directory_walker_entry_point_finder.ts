@@ -12,21 +12,21 @@ import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/depende
 import {EntryPointManifest} from '../packages/entry_point_manifest';
 import {PathMappings} from '../path_mappings';
 
+import {BasePaths} from './base_paths';
 import {EntryPointCollector} from './entry_point_collector';
 import {EntryPointFinder} from './interface';
-import {getBasePaths, trackDuration} from './utils';
+import {trackDuration} from './utils';
 
 /**
  * An EntryPointFinder that searches for all entry-points that can be found given a `basePath` and
  * `pathMappings`.
  */
 export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
-  private basePaths = getBasePaths(this.logger, this.sourceDirectory, this.pathMappings);
   constructor(
       private logger: Logger, private resolver: DependencyResolver,
       private entryPointCollector: EntryPointCollector,
       private entryPointManifest: EntryPointManifest, private sourceDirectory: AbsoluteFsPath,
-      private pathMappings: PathMappings|undefined) {}
+      private basePaths: BasePaths, private pathMappings: PathMappings|undefined) {}
 
   /**
    * Search the `sourceDirectory`, and sub-directories, using `pathMappings` as necessary, to find
@@ -34,7 +34,7 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
    */
   findEntryPoints(): SortedEntryPointsInfo {
     const unsortedEntryPoints: EntryPointWithDependencies[] = [];
-    for (const basePath of this.basePaths) {
+    for (const basePath of this.basePaths.getBasePaths(this.sourceDirectory, this.pathMappings)) {
       const entryPoints = this.entryPointManifest.readEntryPointsUsingManifest(basePath) ||
           this.walkBasePathForPackages(basePath);
       entryPoints.forEach(e => unsortedEntryPoints.push(e));
