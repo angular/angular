@@ -11,6 +11,7 @@ import {newArray} from '../util/array_utils';
 import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
 import {global} from '../util/global';
 import {stringify} from '../util/stringify';
+import {stripIstanbulInstrumentationStatements} from './istanbul_canonicalizer';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
@@ -74,9 +75,10 @@ export const ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR =
  * an initialized instance property.
  */
 export function isDelegateCtor(typeStr: string): boolean {
-  return ES5_DELEGATE_CTOR.test(typeStr) ||
-      ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR.test(typeStr) ||
-      (ES2015_INHERITED_CLASS.test(typeStr) && !ES2015_INHERITED_CLASS_WITH_CTOR.test(typeStr));
+  const canonical = stripIstanbulInstrumentationStatements(typeStr);
+  return ES5_DELEGATE_CTOR.test(canonical) ||
+      ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR.test(canonical) ||
+      (ES2015_INHERITED_CLASS.test(canonical) && !ES2015_INHERITED_CLASS_WITH_CTOR.test(canonical));
 }
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {

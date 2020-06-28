@@ -306,6 +306,24 @@ class TestObj {
         noCtor(`class $Bar1_ extends $Fo0_ {}`);
         noCtor(`class Bar extends Foo { other(){} }`);
       });
+
+      it('should support istanbul instrumented constructors in ES2015', () => {
+        const {ChildNoCtor, ChildNoCtorPrivateProps, ChildWithCtor} =
+            require('./istanbul_inheritance_fixture_es2015.instrumented');
+
+        expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
+      });
+
+      it('should support istanbul instrumented constructors in ES5', () => {
+        const {ChildNoCtor, ChildNoCtorPrivateProps, ChildWithCtor} =
+            require('./istanbul_inheritance_fixture_es5.instrumented');
+
+        expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
+      });
     });
 
     describe('inheritance with decorators', () => {
