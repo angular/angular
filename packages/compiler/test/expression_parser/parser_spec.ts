@@ -1163,7 +1163,7 @@ function createParser() {
 }
 
 function parseAction(text: string, location: any = null, offset: number = 0): ASTWithSource {
-  return createParser().parseAction(text, location, offset);
+  return createParser().parseAction(text, /* isAssignmentEvent */ false, location, offset);
 }
 
 function parseBinding(text: string, location: any = null, offset: number = 0): ASTWithSource {
