@@ -2752,11 +2752,11 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 ## Components
 
-{@a 05-03}
+{@a 05-01}
 
 ### Components as elements
 
-#### Style 05-03
+#### Style 05-01
 
 <div class="s-rule do">
 
@@ -2808,11 +2808,13 @@ There are a few cases where you give a component an attribute, such as when you 
 
 <a href="#toc">Back to top</a>
 
-{@a 05-04}
+{@a 05-02}
 
 ### Extract templates and styles to their own files
 
-#### Style 05-04
+
+
+#### Style 05-02
 
 
 <div class="s-rule do">
@@ -2926,11 +2928,11 @@ in those editors that support it; it won't help with CSS styles.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-12}
+{@a 05-3}
 
 ### Decorate _input_ and _output_ properties
 
-#### Style 05-12
+#### Style 05-3
 
 
 <div class="s-rule do">
@@ -3019,11 +3021,11 @@ Put it on the line above when doing so is clearly more readable.
 <a href="#toc">Back to top</a>
 
 
-{@a 05-13}
+{@a 05-4}
 
 ### Avoid aliasing _inputs_ and _outputs_
 
-#### Style 05-13
+#### Style 05-4
 
 
 <div class="s-rule avoid">
@@ -3096,11 +3098,11 @@ and the directive name doesn't describe the property.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-14}
+{@a 05-5}
 
 ### Member sequence
 
-#### Style 05-14
+#### Style 05-5
 
 
 <div class="s-rule do">
@@ -3153,11 +3155,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-15}
+{@a 05-6}
 
 ### Delegate complex component logic to services
 
-#### Style 05-15
+#### Style 05-6
 
 
 <div class="s-rule do">
@@ -3242,11 +3244,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-16}
+{@a 05-7}
 
 ### Don't prefix _output_ properties
 
-#### Style 05-16
+#### Style 05-7
 
 
 <div class="s-rule do">
@@ -3325,11 +3327,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-17}
+{@a 05-8}
 
 ### Put presentation logic in the component class
 
-#### Style 05-17
+#### Style 05-8
 
 
 <div class="s-rule do">
