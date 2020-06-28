@@ -376,7 +376,10 @@ jobs:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   test_aio:
-    executor: default-executor
+    executor:
+      name: default-executor
+      # The rollup+closure compiler CLI setup has higher ram requirements.
+      resource_class: large
     parameters:
       debugArtifactsDir:
         type: string
