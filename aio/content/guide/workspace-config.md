@@ -126,6 +126,7 @@ The following top-level configuration properties are available for each project,
 -->
 ## 스키매틱 생성하기
 
+<!--
 Angular generation [schematics](guide/glossary#schematic) are instructions for modifying a project by adding files or modifying existing files.
 Individual schematics for the default Angular CLI `ng generate` sub-commands are collected in the package `@angular`.
 Specify the schematic name for a subcommand in the format `schematic-package:schematic-name`;
@@ -136,6 +137,16 @@ The schema describes the options available to the CLI for each of the `ng genera
 
 The fields given in the schema correspond to the allowed argument values and defaults for the CLI sub-command options.
 You can update your workspace schema file to set a different default for a sub-command option.
+-->
+Angular에서 생성 [스키매틱(schematics)](guide/glossary#schematic)을 정의하면 Angular 구성요소를 프로젝트에 추가하면서 미리 정해둔 대로 프로젝트 파일을 자동 수정할 수 있습니다.
+Angular CLI로 `ng generate` 명령을 사용할 때 활용되는 스키매틱은 `@angular` 패키지에서 제공하는 것입니다.
+이 때 `ng generate` 뒤에 오는 세부 명령은 `schematic-package:스키매틱-이름` 형식으로 지정되어 있기 때문에 컴포넌트 생성 명령은 `@angular:component` 스키매틱으로 정의되어 있습니다.
+
+그리고 Angular CLI로 프로젝트와 구성요소를 생성할 떄 사용되는 JSON 스키마는 [`@schematics/angular`](https://github.com/angular/angular-cli/blob/7.0.x/packages/schematics/angular/application/schema.json) 패키지로 제공됩니다.
+`ng generate` 명령에 어떤 옵션을 사용할 수 있는지 알아보려면 `ng generate --help` 명령을 실행해서 도움말을 확인해 보세요.
+
+워크스페이스에 있는 스키마 파일을 변경하면 세부 명령의 기본 옵션값을 변경할 수 있습니다.
+
 
 {@a architect}
 
@@ -146,15 +157,26 @@ You can update your workspace schema file to set a different default for a sub-c
 -->
 ## Architect 옵션
 
+<!--
 Architect is the tool that the CLI uses to perform complex tasks, such as compilation and test running.
 Architect is a shell that runs a specified [builder](guide/glossary#builder) to perform a given task, according to a [target](guide/glossary#target) configuration.
 You can define and configure new builders and targets to extend the CLI.
 See [Angular CLI Builders](guide/cli-builder).
+-->
+Architect는 Angular CLI가 애플리케이션 빌드나 테스트 작업같이 복잡한 로직을 실행할 때 활용하는 툴입니다.
+Architect는 [빌더(builder)](guide/glossary#builder)를 사용해서 [빌드 대상](guide/glossary#target)과 관련된 환경설정 값으로 해당 작업을 수행합니다.
+그리고 필요한 경우에는 빌더나 빌드 대상을 추가해서 Angular CLI의 기능을 확장할 수도 있습니다.
+자세한 내용은 [Angular LCI 빌더](guide/cli-builder) 문서를 참고하세요.
+
 
 {@a default-build-targets}
 
+<!--
 ### Default Architect builders and targets
+-->
+### Architect 기본 빌더, 기본 빌드 대상
 
+<!--
 Angular defines default builders for use with specific CLI commands, or with the general `ng run` command.
 The JSON schemas that the define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/8.0.x/packages/angular/cli/lib/config/schema.json) package.
 The schemas configure options for the following builders.
@@ -167,9 +189,26 @@ The schemas configure options for the following builders.
 * protractor
 * server
 * tslint
+-->
+Angular는 Angular CLI를 사용할 때 활용할 빌더와 기본 옵션을 미리 지정해두었습니다.
+Angular CLI 명령의 기본 옵션과 기본 빌드 대상은 [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/8.0.x/packages/angular/cli/lib/config/schema.json) 패키지에 정의되어 있으며, 다음 빌더들이 활용됩니다.
 
+* app-shell
+* browser
+* dev-server
+* extract-i18n
+* karma
+* protractor
+* server
+* tslint
+
+
+<!--
 ### Configuring builder targets
+-->
+### 빌드 대상 지정하기
 
+<!--
 The `architect` section of `angular.json` contains a set of Architect targets.
 Many of the targets correspond to the CLI commands that run them.
 Some additional predefined targets can be run using the `ng run` command, and you can define your own targets.
@@ -177,6 +216,15 @@ Some additional predefined targets can be run using the `ng run` command, and yo
 Each target object specifies the `builder` for that target, which is the npm package for the tool that Architect runs.
 In addition, each target has an `options` section that configures default options for the target, and a `configurations` section that names and specifies alternative configurations for the target.
 See the example in [Build target](#build-target) below.
+-->
+Architect 빌드 대상은 `angular.json` 파일의 `architect` 섹션에서 지정합니다.
+이 섹션에서 지정하는 내용은 Angular CLI 명령이 실행될 때 적용되며, 이 파일에 지정하지 않은 빌드 대상은 `ng run` 명령으로 실행할 수 있습니다.
+
+`architect` 섹션에 지정하는 객체의 키는 npm 패키지 형태로 배포되는 빌더 이름을 지정합니다.
+그리고 이 객체에 `options` 섹션을 지정하면 해당 빌드 대상을 실행하면서 기본값으로 사용할 옵션을 지정할 수 있습니다.
+환경에 따라 기본 옵션이 달라진다면 `configurations`에서 해당 빌드에 대한 설정을 추가 구성하면 됩니다.
+자세한 내용은 아래 [빌드 대상](#build-target) 예제를 참고하세요.
+
 
 <code-example language="json">
 
@@ -270,16 +318,27 @@ The `architect/build` section configures defaults for options of the `ng build` 
 By default, a `production` configuration is defined, and the `ng build` command has `--prod` option that builds using this configuration. The `production` configuration sets defaults that optimize the app in a number of ways, such as bundling files, minimizing excess whitespace, removing comments and dead code, and rewriting code to use short, cryptic names ("minification").
 
 You can define and name additional alternate configurations (such as `stage`, for instance) appropriate to your development process. Some examples of different build configurations are `stable`, `archive` and `next` used by AIO itself, and the individual locale-specific configurations required for building localized versions of an app. For details, see [Internationalization (i18n)](guide/i18n#merge-aot).
--->
-`ng build` 명령을 실행할 때 `--prod` 옵션을 사용하면 `production` 설정이 적용되는데, `production` 설정에는 애플리케이션 번들링을 최적화하기 위해 공백 문자나 주석, 사용하지 않는 코드를 제거하고, 코드를 짧게 변환하면서 난독화하는 동작을 포함되어 있습니다.
-
-개발 과정에 필요하다면 `stage`와 같은 빌드 설정을 추가할 수도 있습니다. 그래서 Angular IO (Angular 공식 가이드 문서) 프로젝트는 `stable`, `archive`, `next`와 같은 빌드 설정을 추가로 정의해서 사용하고 있으며, 애플리케이션에 다국어를 적용하기 위한 설정도 추가할 수 있습니다. 자세한 내용은 [Internationalization (i18n)](guide/i18n#merge-aot) 문서를 참고하세요.
 
 You can select an alternate configuration by passing its name to the `--configuration` command line flag.
 
 You can also pass in more than one configuration name as a comma-separated list. For example, to apply both `stage` and `fr` build configurations, use the command `ng build --configuration stage,fr`. In this case,  the command parses the named configurations from left to right. If multiple configurations change the same setting, the last-set value is the final one.
 
 If the `--prod` command line flag is also used, it is applied first, and its settings can be overridden by any configurations specified via the `--configuration` flag.
+-->
+`ng build` 명령을 실행할 때 `--prod` 옵션을 사용하면 `production` 설정이 적용되는데, `production` 설정에는 애플리케이션 번들링을 최적화하기 위해 공백 문자나 주석, 사용하지 않는 코드를 제거하고, 코드를 짧게 변환하면서 난독화하는 동작이 포함되어 있습니다.
+
+개발 과정에 필요하다면 `stage`와 같은 빌드 설정을 추가할 수도 있습니다. 그래서 Angular IO (Angular 공식 가이드 문서) 프로젝트는 `stable`, `archive`, `next`와 같은 빌드 설정을 추가로 정의해서 사용하고 있으며, 애플리케이션에 다국어를 적용하기 위한 설정도 추가할 수 있습니다. 자세한 내용은 [Internationalization (i18n)](guide/i18n#merge-aot) 문서를 참고하세요.
+
+커맨드라인에서 `--configuration` 옵션을 사용하면 빌드하는 환경을 변경할 수 있습니다.
+
+이 때 쉼표(`,`)로 구분해서 여러 환경을 지정할 수도 있습니다.
+그래서 `stage` 환경과 `fr` 환경을 동시에 적용해서 애플리케이션을 빌드하려면 `ng build --configuration stage,fr`과 같이 실행하면 됩니다.
+이 경우에 환경설정으로 지정한 이름은 왼쪽에서 오른쪽으로 파싱됩니다.
+그래서 환경설정 중에 충돌하는 항목이 있으면 가장 마지막에 지정된 값이 사용됩니다.
+
+`--prod` 옵션도 비슷하게 동작합니다.
+`--prod` 옵션을 `--configuration`보다 먼저 사용하면 `--prod`에서 설정한 환경설정 값을 `--configuration`이 오버라이드할 수 있습니다.
+
 
 {@a build-props}
 
@@ -292,10 +351,6 @@ If the `--prod` command line flag is also used, it is applied first, and its set
 The configurable options for a default or targeted build generally correspond to the options available for the [`ng build`](cli/build), [`ng serve`](cli/serve), and [`ng test`](cli/test) commands. For details of those options and their possible values, see the [CLI Reference](cli).
 
 Some additional options can only be set through the configuration file, either by direct editing or with the [`ng config`](cli/config) command.
--->
-이 환경설정 파일은 일반적으로 [`ng build`](cli/build), [`ng serve`](cli/serve), [`ng test`](cli/test) 명령에 적용됩니다. 이 명령에 사용할 수 있는 옵션의 목록은 [Angular CLI](cli) 문서를 참고하세요.
-
-그런데 Angular CLI 명령을 실행하면서 사용하는 옵션 외에 `angular.json` 파일에만 설정할 수 있는 옵션도 있습니다. 이 옵션은 [`ng config`](cli/config) 명령으로 설정해도 됩니다.
 
 | OPTIONS PROPERTIES | DESCRIPTION |
 | :------------------------- | :---------------------------- |
@@ -305,6 +360,20 @@ Some additional options can only be set through the configuration file, either b
 | `scripts`                  | An object containing JavaScript script files to add to the global context of the project. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in [Styles and scripts configuration](#style-script-config) below. |
 | `budgets`                  | Default size-budget type and threshholds for all or parts of your app. You can configure the builder to report a warning or an error when the output reaches or exceeds a threshold size. See [Configure size budgets](guide/build#configure-size-budgets). (Not available in `test` section.) |
 | `fileReplacements`         | An object containing files and their compile-time replacements. See more in [Configure target-specific file replacements](guide/build#configure-target-specific-file-replacements).|
+-->
+이 환경설정 파일의 내용은 [`ng build`](cli/build), [`ng serve`](cli/serve), [`ng test`](cli/test) 명령에 적용됩니다. 이 명령에 사용할 수 있는 옵션의 목록은 [Angular CLI](cli) 문서를 참고하세요.
+
+그런데 Angular CLI 명령을 실행하면서 사용하는 옵션 외에 `angular.json` 파일에만 설정할 수 있는 옵션도 있습니다. 이 옵션은 [`ng config`](cli/config) 명령으로 설정해도 됩니다.
+
+| 옵션값 | 설명 |
+| :------------------------- | :---------------------------- |
+| `assets`                   | 프로젝트 전역에 사용되는 정적 리소스를 지정합니다. 기본 경로는 `asssets` 입니다. 자세한 내용은 아래 [애셋 환경설정](#asset-config) 섹션을 참고하세요. |
+| `styles`                   | 프로젝트 전역에 사용되는 스타일 파일을 지정합니다. Angular는 기본 CSS는 물론이고 [sass/scss](http://sass-lang.com/), [less](http://lesscss.org/), [stylus](http://stylus-lang.com/)도 기본으로 지원합니다. 자세한 내용은 아래 [스타일, 스크립트 환경설정](#style-script-config) 섹션을 참고하세요. |
+| `stylePreprocessorOptions` | 스타일 전처리기에 전달할 옵션을 키-값 형태로 지정합니다. 자세한 내용은 아래 [스타일, 스크립트 환경설정](#style-script-config) 섹션을 참고하세요. |
+| `scripts`                  | 프로젝트 전역에 사용되는 JavaScript 파일을 지정합니다. 이 때 지정되는 JavaScript 파일들은 `index.html`에 `<script>` 태그로 자동 추가됩니다. 자세한 내용은 아래 [스타일, 스크립트 환경설정](#style-script-config) 섹션을 참고하세요. |
+| `budgets`                  | 애플리케이션 빌드 결과물의 한계 크기를 지정합니다. 애플리케이션을 빌드해서 생성되는 빌드 결과물의 크기가 이 옵션에서 지정된 값보다 크면 경고 메시지나 에러 메시지를 출력합니다. 자세한 내용은 [빌드 결과물 크기 지정하기](guide/build#configure-size-budgets) 문서를 참고하세요. (`test` 환경설정에는 적용되지 않습니다.) |
+| `fileReplacements`         | 컴파일 시점에 기본 옵션을 대체할 파일을 지정합니다. 자세한 내용은 [빌드 환경에 맞게 환경설정 파일 교체하기](guide/build#configure-target-specific-file-replacements) 문서를 참고하세요. |
+
 
 {@a complex-config}
 
@@ -314,9 +383,13 @@ The options `assets`, `styles`, and `scripts` can have either simple path string
 The `sourceMap` and `optimization` options can be set to a simple Boolean value with a command flag, but can also be given a complex value using the configuration file.
 The following sections provide more details of how these complex values are used in each case.
 
+
 {@a asset-config}
 
+<!--
 ### Assets configuration
+-->
+### 애셋 환경설정
 
 Each `build` target configuration can include an `assets` array that lists files or folders you want to copy as-is when building your project.
 By default, the `src/assets/` folder and `src/favicon.ico` are copied over.
