@@ -2495,7 +2495,7 @@ module are referenced across the entire application.
 
 
 
-<div class="s-rule avoid">
+<div class="s-rule consider">
 
 
 
@@ -2749,6 +2749,32 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 </div>
 
 <a href="#toc">Back to top</a>
+
+
+{@ 04-13}
+
+### Feature Routing
+
+#### Style 04-13
+
+
+<div class="s-rule consider">
+
+**Consider** creating a route for all distinct features in an application.
+For example, the `crisis-center-routing.module.ts` helps navigate through the different views in that feature.
+
+</div>
+
+
+<div class="s-why-last">
+
+**Why?** Use of the routing module helps increase readability and stabilization of your code.
+
+</div>
+
+<a href="#toc">Back to top</a>
+
+
 
 ## Components
 
