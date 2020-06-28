@@ -421,6 +421,22 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse bound events and properties via [(...)] with non-null operator', () => {
+      expectFromHtml('<div [(prop)]="v!"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, 'prop', 'v!'],
+        ['BoundEvent', 'propChange', null, 'v = $event'],
+      ]);
+    });
+
+    it('should report an error for assignments into non-null asserted expressions', () => {
+      // TODO(joost): this syntax is allowed in TypeScript. Consider changing the grammar to
+      //  allow this syntax, or improve the error message.
+      // See https://github.com/angular/angular/pull/37809
+      expect(() => parse('<div (prop)="v! = $event"></div>'))
+          .toThrowError(/Unexpected token '=' at column 4/);
+    });
+
     it('should report missing property names in bindon- syntax', () => {
       expect(() => parse('<div bindon-></div>'))
           .toThrowError(/Property name is missing in binding/);
