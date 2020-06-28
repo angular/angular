@@ -38,7 +38,7 @@ export class MyService {...}
 export class MyOtherService {...}
 export class MyThirdClass {...}
 export class MyFourthClass {...}
-export class MySixthClass {...}
+export class MyFifthClass {...}
 
 ...
 ```
