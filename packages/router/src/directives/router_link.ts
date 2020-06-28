@@ -251,7 +251,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   // TODO(issue/24571): remove '!'.
-  @Input() fragment!: string;
+  @Input() fragment: string|null = null;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
    * @see {@link NavigationExtras#queryParamsHandling NavigationExtras#queryParamsHandling}

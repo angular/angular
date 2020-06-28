@@ -95,7 +95,7 @@ export interface NavigationExtras {
    * this.router.navigate(['/results'], { fragment: 'top' });
    * ```
    */
-  fragment?: string;
+  fragment?: string|null;
 
   /**
    * **DEPRECATED**: Use `queryParamsHandling: "preserve"` instead to preserve

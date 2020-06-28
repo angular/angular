@@ -1817,6 +1817,30 @@ describe('Integration', () => {
          expect(cmp.route.snapshot.data).toEqual({two: 2});
        })));
 
+    it('should have a null fragment', fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'parent',
+           resolve: {two: 'resolveTwo'},
+           children: [
+             {path: 'child1', component: CollectParamsCmp},
+             {path: 'child2', component: CollectParamsCmp}
+           ]
+         }]);
+
+         router.navigateByUrl('/parent/child1');
+         advance(fixture);
+
+         const cmp = fixture.debugElement.children[1].componentInstance;
+         expect(cmp.route.snapshot.fragment).toEqual(null);
+
+         router.navigateByUrl('/parent/child2');
+         advance(fixture);
+
+         expect(cmp.route.snapshot.fragment).toEqual(null);
+       })));
+
     it('should rerun resolvers when the urls segments of a wildcard route change',
        fakeAsync(inject([Router, Location], (router: Router) => {
          const fixture = createRoot(router, RootCmp);

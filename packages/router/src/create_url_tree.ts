@@ -13,7 +13,7 @@ import {forEach, last, shallowEqual} from './utils/collection';
 
 export function createUrlTree(
     route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params,
-    fragment: string): UrlTree {
+    fragment: string|null): UrlTree {
   if (commands.length === 0) {
     return tree(urlTree.root, urlTree.root, urlTree, queryParams, fragment);
   }
@@ -39,7 +39,7 @@ function isMatrixParams(command: any): boolean {
 
 function tree(
     oldSegmentGroup: UrlSegmentGroup, newSegmentGroup: UrlSegmentGroup, urlTree: UrlTree,
-    queryParams: Params, fragment: string): UrlTree {
+    queryParams: Params, fragment: string|null): UrlTree {
   let qp: any = {};
   if (queryParams) {
     forEach(queryParams, (value: any, name: any) => {
