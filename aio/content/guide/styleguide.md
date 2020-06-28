@@ -2928,11 +2928,11 @@ in those editors that support it; it won't help with CSS styles.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-3}
+{@a 05-03}
 
 ### Decorate _input_ and _output_ properties
 
-#### Style 05-3
+#### Style 05-03
 
 
 <div class="s-rule do">
@@ -3021,11 +3021,11 @@ Put it on the line above when doing so is clearly more readable.
 <a href="#toc">Back to top</a>
 
 
-{@a 05-4}
+{@a 05-04}
 
 ### Avoid aliasing _inputs_ and _outputs_
 
-#### Style 05-4
+#### Style 05-04
 
 
 <div class="s-rule avoid">
@@ -3098,11 +3098,11 @@ and the directive name doesn't describe the property.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-5}
+{@a 05-05}
 
 ### Member sequence
 
-#### Style 05-5
+#### Style 05-05
 
 
 <div class="s-rule do">
@@ -3155,11 +3155,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-6}
+{@a 05-06}
 
 ### Delegate complex component logic to services
 
-#### Style 05-6
+#### Style 05-06
 
 
 <div class="s-rule do">
@@ -3244,11 +3244,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-7}
+{@a 05-07}
 
 ### Don't prefix _output_ properties
 
-#### Style 05-7
+#### Style 05-07
 
 
 <div class="s-rule do">
@@ -3327,11 +3327,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-8}
+{@a 05-08}
 
 ### Put presentation logic in the component class
 
-#### Style 05-8
+#### Style 05-08
 
 
 <div class="s-rule do">
