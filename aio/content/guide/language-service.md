@@ -64,7 +64,7 @@ In the marketplace, search for Angular Language Service extension, and click the
 
 ### WebStorm
 
-[WebStorm](https://www.jetbrains.com/webstorm/) automatically bundles an [extension](https://plugins.jetbrains.com/plugin/6971-angular-and-angularjs) which has the same feature set as the Angular Language Service. In other JetBrain products the plugin can be installed through the marketplace. Make sure that you have AngularJS or Angular library files in your project (for example, in the node_modules folder) – this is required for the IDE to enable Angular support for this project.
+[WebStorm](https://www.jetbrains.com/webstorm/) automatically bundles an [extension](https://plugins.jetbrains.com/plugin/6971-angular-and-angularjs) which has the same feature set as the Angular Language Service. In other JetBrain products (for example IntelliJ IDEA, AppCode or PyCharm) the plugin can be installed through the marketplace. Make sure that you have AngularJS or Angular library files in your project (for example, in the node_modules folder) – this is required for the IDE to enable Angular support for this project.
 
 Make sure to follow the instructions for [creating a new project](https://www.jetbrains.com/help/webstorm/angular.html#create_new_angular_app) or [using an existing angular project](https://www.jetbrains.com/help/webstorm/angular.html#angular_cli_open_existing_application)
 
