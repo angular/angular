@@ -9,16 +9,7 @@
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
 /// <reference types="googlemaps" />
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewEncapsulation,
-  NgZone
-} from '@angular/core';
+import {Input, OnDestroy, OnInit, Output, NgZone, Directive} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
 
@@ -39,12 +30,9 @@ export const DEFAULT_MARKER_OPTIONS = {
  *
  * See developers.google.com/maps/documentation/javascript/reference/marker
  */
-@Component({
+@Directive({
   selector: 'map-marker',
   exportAs: 'mapMarker',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
 })
 export class MapMarker implements OnInit, OnDestroy, MapAnchorPoint {
   private _eventManager = new MapEventManager(this._ngZone);

@@ -7,8 +7,11 @@
               (mapMousemove)="handleMove($event)"
               (mapRightclick)="handleRightclick()"
               [mapTypeId]="mapTypeId">
-    <map-marker #firstMarker [position]="center" (mapClick)="clickMarker(firstMarker)"></map-marker>
-    <map-marker #marker
+    <map-marker
+      #firstMarker="mapMarker"
+      [position]="center"
+      (mapClick)="clickMarker(firstMarker)"></map-marker>
+    <map-marker #marker="mapMarker"
                 *ngFor="let markerPosition of markerPositions"
                 [position]="markerPosition"
                 [options]="markerOptions"

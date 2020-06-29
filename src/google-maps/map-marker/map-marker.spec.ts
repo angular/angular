@@ -1,6 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
 
 import {DEFAULT_OPTIONS} from '../google-map/google-map';
 
@@ -124,44 +123,44 @@ describe('MapMarker', () => {
     createMarkerConstructorSpy(markerSpy).and.callThrough();
 
     const fixture = TestBed.createComponent(TestApp);
-    const markerComponent = fixture.debugElement.query(By.directive(MapMarker)).componentInstance;
     fixture.detectChanges();
+    const marker = fixture.componentInstance.marker;
 
     markerSpy.getAnimation.and.returnValue(null);
-    expect(markerComponent.getAnimation()).toBe(null);
+    expect(marker.getAnimation()).toBe(null);
 
     markerSpy.getClickable.and.returnValue(true);
-    expect(markerComponent.getClickable()).toBe(true);
+    expect(marker.getClickable()).toBe(true);
 
     markerSpy.getCursor.and.returnValue('cursor');
-    expect(markerComponent.getCursor()).toBe('cursor');
+    expect(marker.getCursor()).toBe('cursor');
 
     markerSpy.getDraggable.and.returnValue(true);
-    expect(markerComponent.getDraggable()).toBe(true);
+    expect(marker.getDraggable()).toBe(true);
 
     markerSpy.getIcon.and.returnValue('icon');
-    expect(markerComponent.getIcon()).toBe('icon');
+    expect(marker.getIcon()).toBe('icon');
 
     markerSpy.getLabel.and.returnValue(null);
-    expect(markerComponent.getLabel()).toBe(null);
+    expect(marker.getLabel()).toBe(null);
 
     markerSpy.getOpacity.and.returnValue(5);
-    expect(markerComponent.getOpacity()).toBe(5);
+    expect(marker.getOpacity()).toBe(5);
 
     markerSpy.getPosition.and.returnValue(null);
-    expect(markerComponent.getPosition()).toEqual(null);
+    expect(marker.getPosition()).toEqual(null);
 
     markerSpy.getShape.and.returnValue(null);
-    expect(markerComponent.getShape()).toBe(null);
+    expect(marker.getShape()).toBe(null);
 
     markerSpy.getTitle.and.returnValue('title');
-    expect(markerComponent.getTitle()).toBe('title');
+    expect(marker.getTitle()).toBe('title');
 
     markerSpy.getVisible.and.returnValue(true);
-    expect(markerComponent.getVisible()).toBe(true);
+    expect(marker.getVisible()).toBe(true);
 
     markerSpy.getZIndex.and.returnValue(2);
-    expect(markerComponent.getZIndex()).toBe(2);
+    expect(marker.getZIndex()).toBe(2);
   });
 
   it('initializes marker event handlers', () => {
