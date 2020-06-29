@@ -186,6 +186,28 @@ describe('FocusTrap', () => {
         expect(document.activeElement).toBe(buttonOutsideTrappedRegion);
       });
     }));
+
+    it('should capture focus if auto capture is enabled later on', async(() => {
+      const fixture = TestBed.createComponent(FocusTrapWithAutoCapture);
+      fixture.componentInstance.autoCaptureEnabled = false;
+      fixture.componentInstance.showTrappedRegion = true;
+      fixture.detectChanges();
+
+      const buttonOutsideTrappedRegion = fixture.nativeElement.querySelector('button');
+      buttonOutsideTrappedRegion.focus();
+      expect(document.activeElement).toBe(buttonOutsideTrappedRegion);
+
+      fixture.componentInstance.autoCaptureEnabled = true;
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        expect(document.activeElement!.id).toBe('auto-capture-target');
+
+        fixture.destroy();
+        expect(document.activeElement).toBe(buttonOutsideTrappedRegion);
+      });
+    }));
+
   });
 });
 
@@ -205,7 +227,7 @@ class SimpleFocusTrap {
 @Component({
   template: `
     <button type="button">Toggle</button>
-    <div *ngIf="showTrappedRegion" cdkTrapFocus cdkTrapFocusAutoCapture>
+    <div *ngIf="showTrappedRegion" cdkTrapFocus [cdkTrapFocusAutoCapture]="autoCaptureEnabled">
       <input id="auto-capture-target">
       <button>SAVE</button>
     </div>
@@ -214,6 +236,7 @@ class SimpleFocusTrap {
 class FocusTrapWithAutoCapture {
   @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
   showTrappedRegion = false;
+  autoCaptureEnabled = true;
 }
 
 

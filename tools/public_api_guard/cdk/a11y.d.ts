@@ -42,7 +42,7 @@ export declare class CdkMonitorFocus implements AfterViewInit, OnDestroy {
     static ɵfac: i0.ɵɵFactoryDef<CdkMonitorFocus, never>;
 }
 
-export declare class CdkTrapFocus implements OnDestroy, AfterContentInit, DoCheck {
+export declare class CdkTrapFocus implements OnDestroy, AfterContentInit, OnChanges, DoCheck {
     get autoCapture(): boolean;
     set autoCapture(value: boolean);
     get enabled(): boolean;
@@ -51,6 +51,7 @@ export declare class CdkTrapFocus implements OnDestroy, AfterContentInit, DoChec
     constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory, _document: any);
     ngAfterContentInit(): void;
     ngDoCheck(): void;
+    ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_autoCapture: BooleanInput;
     static ngAcceptInputType_enabled: BooleanInput;

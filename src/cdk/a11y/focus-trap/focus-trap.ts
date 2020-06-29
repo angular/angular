@@ -19,6 +19,8 @@ import {
   OnDestroy,
   DoCheck,
   isDevMode,
+  SimpleChanges,
+  OnChanges,
 } from '@angular/core';
 import {take} from 'rxjs/operators';
 import {InteractivityChecker} from '../interactivity-checker/interactivity-checker';
@@ -89,6 +91,7 @@ export class FocusTrap {
     }
 
     this._startAnchor = this._endAnchor = null;
+    this._hasAttached = false;
   }
 
   /**
@@ -378,7 +381,7 @@ export class FocusTrapFactory {
   selector: '[cdkTrapFocus]',
   exportAs: 'cdkTrapFocus',
 })
-export class CdkTrapFocus implements OnDestroy, AfterContentInit, DoCheck {
+export class CdkTrapFocus implements OnDestroy, AfterContentInit, OnChanges, DoCheck {
   private _document: Document;
 
   /** Underlying FocusTrap instance. */
@@ -425,8 +428,7 @@ export class CdkTrapFocus implements OnDestroy, AfterContentInit, DoCheck {
     this.focusTrap.attachAnchors();
 
     if (this.autoCapture) {
-      this._previouslyFocusedElement = this._document.activeElement as HTMLElement;
-      this.focusTrap.focusInitialElementWhenReady();
+      this._captureFocus();
     }
   }
 
@@ -434,6 +436,20 @@ export class CdkTrapFocus implements OnDestroy, AfterContentInit, DoCheck {
     if (!this.focusTrap.hasAttached()) {
       this.focusTrap.attachAnchors();
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    const autoCaptureChange = changes['autoCapture'];
+
+    if (autoCaptureChange && !autoCaptureChange.firstChange && this.autoCapture &&
+        this.focusTrap.hasAttached()) {
+      this._captureFocus();
+    }
+  }
+
+  private _captureFocus() {
+    this._previouslyFocusedElement = this._document.activeElement as HTMLElement;
+    this.focusTrap.focusInitialElementWhenReady();
   }
 
   static ngAcceptInputType_enabled: BooleanInput;
