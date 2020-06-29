@@ -172,7 +172,7 @@ To help you get going, the following steps use predefined product data from the 
       <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.2.html" region="ngfor">
       </code-example>
 
-      `*ngFor`를 사용하면 목폭에 있는 상품마다 `<div>`를 반복할 수 있습니다.
+      `*ngFor`를 사용하면 목록에 있는 상품마다 `<div>`를 반복할 수 있습니다.
 
       <div class="alert is-helpful">
 
