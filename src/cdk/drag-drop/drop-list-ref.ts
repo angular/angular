@@ -153,10 +153,11 @@ export class DropListRef<T = any> {
   private _activeDraggables: DragRef[];
 
   /**
-   * Keeps track of the item that was last swapped with the dragged item, as
-   * well as what direction the pointer was moving in when the swap occured.
+   * Keeps track of the item that was last swapped with the dragged item, as well as what direction
+   * the pointer was moving in when the swap occured and whether the user's pointer continued to
+   * overlap with the swapped item after the swapping occurred.
    */
-  private _previousSwap = {drag: null as DragRef | null, delta: 0};
+  private _previousSwap = {drag: null as DragRef | null, delta: 0, overlaps: false};
 
   /** Draggable items in the container. */
   private _draggables: ReadonlyArray<DragRef>;
@@ -485,9 +486,6 @@ export class DropListRef<T = any> {
     const newPosition = siblingAtNewPosition.clientRect;
     const delta = currentIndex > newIndex ? 1 : -1;
 
-    this._previousSwap.drag = siblingAtNewPosition.drag;
-    this._previousSwap.delta = isHorizontal ? pointerDelta.x : pointerDelta.y;
-
     // How many pixels the item's placeholder should be offset.
     const itemOffset = this._getItemOffsetPx(currentPosition, newPosition, delta);
 
@@ -536,6 +534,11 @@ export class DropListRef<T = any> {
         adjustClientRect(sibling.clientRect, offset, 0);
       }
     });
+
+    // Note that it's important that we do this after the client rects have been adjusted.
+    this._previousSwap.overlaps = isInsideClientRect(newPosition, pointerX, pointerY);
+    this._previousSwap.drag = siblingAtNewPosition.drag;
+    this._previousSwap.delta = isHorizontal ? pointerDelta.x : pointerDelta.y;
   }
 
   /**
@@ -644,6 +647,7 @@ export class DropListRef<T = any> {
     this._itemPositions = [];
     this._previousSwap.drag = null;
     this._previousSwap.delta = 0;
+    this._previousSwap.overlaps = false;
     this._stopScrolling();
     this._viewportScrollSubscription.unsubscribe();
     this._parentPositions.clear();
@@ -748,9 +752,11 @@ export class DropListRef<T = any> {
       if (delta) {
         const direction = isHorizontal ? delta.x : delta.y;
 
-        // If the user is still hovering over the same item as last time, and they didn't change
-        // the direction in which they're dragging, we don't consider it a direction swap.
-        if (drag === this._previousSwap.drag && direction === this._previousSwap.delta) {
+        // If the user is still hovering over the same item as last time, their cursor hasn't left
+        // the item after we made the swap, and they didn't change the direction in which they're
+        // dragging, we don't consider it a direction swap.
+        if (drag === this._previousSwap.drag && this._previousSwap.overlaps &&
+            direction === this._previousSwap.delta) {
           return false;
         }
       }

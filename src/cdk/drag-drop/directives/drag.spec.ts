@@ -2878,6 +2878,48 @@ describe('CdkDrag', () => {
       flush();
     }));
 
+    it('it should allow item swaps in the same drag direction, if the pointer did not ' +
+      'overlap with the sibling item after the previous swap', fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.detectChanges();
+
+        const items = fixture.componentInstance.dragItems.map(i => i.element.nativeElement);
+        const draggedItem = items[0];
+        const target = items[items.length - 1];
+        const itemRect = draggedItem.getBoundingClientRect();
+
+        startDraggingViaMouse(fixture, draggedItem, itemRect.left, itemRect.top);
+
+        const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+
+        expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
+            .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+        let targetRect = target.getBoundingClientRect();
+
+        // Trigger a mouse move coming from the bottom so that the list thinks that we're
+        // sorting upwards. This usually how a user would behave with a mouse pointer.
+        dispatchMouseEvent(document, 'mousemove', targetRect.left, targetRect.bottom + 50);
+        fixture.detectChanges();
+        dispatchMouseEvent(document, 'mousemove', targetRect.left, targetRect.bottom - 1);
+        fixture.detectChanges();
+
+        expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
+            .toEqual(['One', 'Two', 'Three', 'Zero']);
+
+        // Refresh the rect since the element position has changed.
+        targetRect = target.getBoundingClientRect();
+        dispatchMouseEvent(document, 'mousemove', targetRect.left, targetRect.bottom - 1);
+        fixture.detectChanges();
+
+        expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
+            .toEqual(['One', 'Two', 'Zero', 'Three']);
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+      }));
+
     it('should clean up the preview element if the item is destroyed mid-drag', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
