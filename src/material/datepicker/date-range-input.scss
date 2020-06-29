@@ -3,8 +3,11 @@
 
 $mat-date-range-input-separator-spacing: 4px;
 $mat-date-range-input-part-max-width: calc(50% - #{$mat-date-range-input-separator-spacing});
-$mat-date-range-input-placeholder-transition:
-  color $swift-ease-out-duration $swift-ease-out-duration / 3 $swift-ease-out-timing-function;
+
+@mixin _mat-date-range-input-placeholder-transition($property) {
+  transition: #{$property} $swift-ease-out-duration $swift-ease-out-duration / 3
+      $swift-ease-out-timing-function;
+}
 
 // Host of the date range input.
 .mat-date-range-input {
@@ -20,15 +23,17 @@ $mat-date-range-input-placeholder-transition:
 
 // Text shown between the two inputs.
 .mat-date-range-input-separator {
+  @include _mat-date-range-input-placeholder-transition(opacity);
   margin: 0 $mat-date-range-input-separator-spacing;
-  transition: $mat-date-range-input-placeholder-transition;
 }
 
 .mat-date-range-input-separator-hidden {
   // Disable text selection, because the user can click
   // through the main label when the input is disabled.
   @include user-select(none);
-  color: transparent;
+
+  // Use opacity to hide the text, because `color: transparent` will be shown in high contrast mode.
+  opacity: 0;
   transition: none;
 }
 
@@ -54,7 +59,7 @@ $mat-date-range-input-placeholder-transition:
   }
 
   @include input-placeholder {
-    transition: $mat-date-range-input-placeholder-transition;
+    @include _mat-date-range-input-placeholder-transition(color);
   }
 
   .mat-form-field-hide-placeholder &,
