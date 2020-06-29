@@ -1,6 +1,6 @@
 import {Platform} from '@angular/cdk/platform';
 import {inject} from '@angular/core/testing';
-import {InteractivityChecker} from './interactivity-checker';
+import {InteractivityChecker, IsFocusableConfig} from './interactivity-checker';
 
 describe('InteractivityChecker', () => {
   let platform: Platform;
@@ -151,6 +151,17 @@ describe('InteractivityChecker', () => {
 
       expect(checker.isFocusable(input))
           .toBe(false, 'Expected element with `display: none` to not be visible');
+    });
+
+    it('should return true for a `display: none` element with ignoreVisibility', () => {
+      testContainerElement.innerHTML =
+          `<input style="display: none;">`;
+      const input = testContainerElement.querySelector('input') as HTMLElement;
+      let config = new IsFocusableConfig();
+      config.ignoreVisibility = true;
+
+      expect(checker.isFocusable(input, config))
+          .toBe(true, 'Expected element with `display: none` to be focusable');
     });
 
     it('should return false for the child of a `display: none` element', () => {

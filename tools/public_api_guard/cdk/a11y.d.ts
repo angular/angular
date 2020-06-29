@@ -181,7 +181,7 @@ export interface Highlightable extends ListKeyManagerOption {
 export declare class InteractivityChecker {
     constructor(_platform: Platform);
     isDisabled(element: HTMLElement): boolean;
-    isFocusable(element: HTMLElement): boolean;
+    isFocusable(element: HTMLElement, config?: IsFocusableConfig): boolean;
     isTabbable(element: HTMLElement): boolean;
     isVisible(element: HTMLElement): boolean;
     static ɵfac: i0.ɵɵFactoryDef<InteractivityChecker, never>;
@@ -189,6 +189,10 @@ export declare class InteractivityChecker {
 }
 
 export declare function isFakeMousedownFromScreenReader(event: MouseEvent): boolean;
+
+export declare class IsFocusableConfig {
+    ignoreVisibility: boolean;
+}
 
 export declare class ListKeyManager<T extends ListKeyManagerOption> {
     get activeItem(): T | null;

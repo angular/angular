@@ -9,6 +9,15 @@
 import {Platform} from '@angular/cdk/platform';
 import {Injectable} from '@angular/core';
 
+/**
+ * Configuration for the isFocusable method.
+ */
+export class IsFocusableConfig {
+  /**
+   * Whether to count an element as focusable even if it is not currently visible.
+   */
+  ignoreVisibility: boolean = false;
+}
 
 // The InteractivityChecker leans heavily on the ally.js accessibility utilities.
 // Methods like `isTabbable` are only covering specific edge-cases for the browsers which are
@@ -132,12 +141,14 @@ export class InteractivityChecker {
    * Gets whether an element can be focused by the user.
    *
    * @param element Element to be checked.
+   * @param config The config object with options to customize this method's behavior
    * @returns Whether the element is focusable.
    */
-  isFocusable(element: HTMLElement): boolean {
+  isFocusable(element: HTMLElement, config?: IsFocusableConfig): boolean {
     // Perform checks in order of left to most expensive.
     // Again, naive approach that does not capture many edge cases and browser quirks.
-    return isPotentiallyFocusable(element) && !this.isDisabled(element) && this.isVisible(element);
+    return isPotentiallyFocusable(element) && !this.isDisabled(element) &&
+      (config?.ignoreVisibility || this.isVisible(element));
   }
 
 }
