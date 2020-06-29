@@ -89,6 +89,13 @@ describe('MatDateRangeInput', () => {
     expect(fixture.componentInstance.end.nativeElement.getAttribute('type')).toBe('text');
   });
 
+  it('should set the correct role on the range input', () => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+    const rangeInput = fixture.nativeElement.querySelector('.mat-date-range-input');
+    expect(rangeInput.getAttribute('role')).toBe('group');
+  });
+
   it('should mark the entire range input as disabled if both inputs are disabled', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
@@ -151,26 +158,24 @@ describe('MatDateRangeInput', () => {
     expect(label.getAttribute('aria-owns')).toBe(start.id);
   });
 
-  it('should point the input aria-labelledby to the form field label', () => {
+  it('should point the range input aria-labelledby to the form field label', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
     const labelId = fixture.nativeElement.querySelector('label').id;
-    const {start, end} = fixture.componentInstance;
+    const rangeInput = fixture.nativeElement.querySelector('.mat-date-range-input');
 
     expect(labelId).toBeTruthy();
-    expect(start.nativeElement.getAttribute('aria-labelledby')).toBe(labelId);
-    expect(end.nativeElement.getAttribute('aria-labelledby')).toBe(labelId);
+    expect(rangeInput.getAttribute('aria-labelledby')).toBe(labelId);
   });
 
-  it('should point the input aria-labelledby to the form field hint element', () => {
+  it('should point the range input aria-labelledby to the form field hint element', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
     const labelId = fixture.nativeElement.querySelector('.mat-hint').id;
-    const {start, end} = fixture.componentInstance;
+    const rangeInput = fixture.nativeElement.querySelector('.mat-date-range-input');
 
     expect(labelId).toBeTruthy();
-    expect(start.nativeElement.getAttribute('aria-describedby')).toBe(labelId);
-    expect(end.nativeElement.getAttribute('aria-describedby')).toBe(labelId);
+    expect(rangeInput.getAttribute('aria-describedby')).toBe(labelId);
   });
 
   it('should float the form field label when either input is focused', () => {
