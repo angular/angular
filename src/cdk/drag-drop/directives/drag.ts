@@ -222,18 +222,12 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   /**
    * Returns the element that is being used as a placeholder
    * while the current element is being dragged.
-   * @deprecated No longer being used to be removed.
-   * @breaking-change 11.0.0
    */
   getPlaceholderElement(): HTMLElement {
     return this._dragRef.getPlaceholderElement();
   }
 
-  /**
-   * Returns the root draggable element.
-   * @deprecated No longer being used to be removed.
-   * @breaking-change 11.0.0
-   */
+  /** Returns the root draggable element. */
   getRootElement(): HTMLElement {
     return this._dragRef.getRootElement();
   }

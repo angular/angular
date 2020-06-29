@@ -695,9 +695,6 @@ export class DragRef<T = any> {
 
   /** Starts the dragging sequence. */
   private _startDragSequence(event: MouseEvent | TouchEvent) {
-    // Emit the event on the item before the one on the container.
-    this.started.next({source: this});
-
     if (isTouchEvent(event)) {
       this._lastTouchEventTime = Date.now();
     }
@@ -722,10 +719,12 @@ export class DragRef<T = any> {
       element.style.display = 'none';
       this._document.body.appendChild(parent.replaceChild(placeholder, element));
       getPreviewInsertionPoint(this._document).appendChild(preview);
+      this.started.next({source: this}); // Emit before notifying the container.
       dropContainer.start();
       this._initialContainer = dropContainer;
       this._initialIndex = dropContainer.getItemIndex(this);
     } else {
+      this.started.next({source: this});
       this._initialContainer = this._initialIndex = undefined!;
     }
 

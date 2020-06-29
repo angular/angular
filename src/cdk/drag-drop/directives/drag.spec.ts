@@ -28,7 +28,7 @@ import {_supportsShadowDom} from '@angular/cdk/platform';
 import {of as observableOf} from 'rxjs';
 
 import {DragDropModule} from '../drag-drop-module';
-import {CdkDragDrop, CdkDragEnter} from '../drag-events';
+import {CdkDragDrop, CdkDragEnter, CdkDragStart} from '../drag-events';
 import {Point, DragRef} from '../drag-ref';
 import {extendStyles} from '../drag-styling';
 import {moveItemInArray} from '../drag-utils';
@@ -4022,6 +4022,20 @@ describe('CdkDrag', () => {
       expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
     }));
 
+    it('should make the placeholder available in the start event', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+      let placeholder: HTMLElement | undefined;
+
+      fixture.componentInstance.startedSpy.and.callFake((event: CdkDragStart) => {
+        placeholder = event.source.getPlaceholderElement();
+      });
+
+      startDraggingViaMouse(fixture, item);
+      expect(placeholder).toBeTruthy();
+    }));
+
   });
 
   describe('in a connected drop container', () => {
@@ -5409,6 +5423,7 @@ const DROP_ZONE_FIXTURE_TEMPLATE = `
       [cdkDragPreviewClass]="previewClass"
       [style.height.px]="item.height"
       [style.margin-bottom.px]="item.margin"
+      (cdkDragStarted)="startedSpy($event)"
       style="width: 100%; background: red;">{{item.value}}</div>
   </div>
 `;
@@ -5430,6 +5445,7 @@ class DraggableInDropZone {
   droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   });
+  startedSpy = jasmine.createSpy('started spy');
 }
 
 @Component({
