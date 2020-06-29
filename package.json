@@ -44,7 +44,7 @@
     "integration-tests": "bazel test //integration/... --test_tag_filters=-view-engine-only --build_tests_only",
     "integration-tests:view-engine": "bazel test //integration/... --test_tag_filters=view-engine-only --build_tests_only --config=view-engine"
   },
-  "version": "10.0.0-rc.2",
+  "version": "10.1.0-next.0",
   "dependencies": {
     "@angular/animations": "^10.0.0",
     "@angular/common": "^10.0.0",
