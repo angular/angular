@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactory, ComponentRef, Injector, NgModuleRef, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, Injector, NgModuleRef, NgZone, SimpleChange, SimpleChanges, Type} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 
@@ -20,22 +20,40 @@ describe('ComponentFactoryNgElementStrategy', () => {
   let injector: any;
   let componentRef: any;
   let applicationRef: any;
+  let ngZone: any;
+
+  let injectables: Map<unknown, unknown>;
 
   beforeEach(() => {
     factory = new FakeComponentFactory();
     componentRef = factory.componentRef;
 
     applicationRef = jasmine.createSpyObj('applicationRef', ['attachView']);
+
+    ngZone = jasmine.createSpyObj('ngZone', ['run']);
+    ngZone.run.and.callFake((fn: () => unknown) => fn());
+
     injector = jasmine.createSpyObj('injector', ['get']);
-    injector.get.and.returnValue(applicationRef);
+    injector.get.and.callFake((token: unknown) => {
+      if (!injectables.has(token)) {
+        throw new Error(`Failed to get injectable from mock injector: ${token}`);
+      }
+      return injectables.get(token);
+    });
+
+    injectables = new Map<unknown, unknown>([
+      [ApplicationRef, applicationRef],
+      [NgZone, ngZone],
+    ]);
 
     strategy = new ComponentNgElementStrategy(factory, injector);
+    ngZone.run.calls.reset();
   });
 
   it('should create a new strategy from the factory', () => {
     const factoryResolver = jasmine.createSpyObj('factoryResolver', ['resolveComponentFactory']);
     factoryResolver.resolveComponentFactory.and.returnValue(factory);
-    injector.get.and.returnValue(factoryResolver);
+    injectables.set(ComponentFactoryResolver, factoryResolver);
 
     const strategyFactory = new ComponentNgElementStrategyFactory(FakeComponent, injector);
     expect(strategyFactory.create(injector)).toBeTruthy();
@@ -265,6 +283,30 @@ describe('ComponentFactoryNgElementStrategy', () => {
          strategy.disconnect();
          expect(componentRef.destroy).toHaveBeenCalledTimes(1);
        }));
+  });
+
+  describe('runInZone', () => {
+    const param = 'foofoo';
+    const fn = () => param;
+
+    it('should run the callback directly when invoked in element\'s zone', () => {
+      expect(strategy['runInZone'](fn)).toEqual('foofoo');
+      expect(ngZone.run).not.toHaveBeenCalled();
+    });
+
+    it('should run the callback inside the element\'s zone when invoked in a different zone',
+       () => {
+         expect(Zone.root.run(() => (strategy['runInZone'](fn)))).toEqual('foofoo');
+         expect(ngZone.run).toHaveBeenCalledWith(fn);
+       });
+
+    it('should run the callback directly when called without zone.js loaded', () => {
+      // simulate no zone.js loaded
+      (strategy as any)['elementZone'] = null;
+
+      expect(Zone.root.run(() => (strategy['runInZone'](fn)))).toEqual('foofoo');
+      expect(ngZone.run).not.toHaveBeenCalled();
+    });
   });
 });
 
