@@ -1,0 +1,26 @@
+@import '../mdc-helpers/mdc-helpers';
+
+@mixin mat-mdc-snackbar-color($config-or-theme) {}
+
+@mixin mat-mdc-snackbar-typography($config-or-theme) {}
+
+@mixin mat-mdc-snackbar-density($config-or-theme) {}
+
+@mixin mat-mdc-snackbar-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-snackbar') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
+
+    @if $color != null {
+      @include mat-mdc-snackbar-color($color);
+    }
+    @if $density != null {
+      @include mat-mdc-snackbar-density($density);
+    }
+    @if $typography != null {
+      @include mat-mdc-snackbar-typography($typography);
+    }
+  }
+}

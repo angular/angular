@@ -7,7 +7,7 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {Component, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, TemplateRef, ViewChild} from '@angular/core';
 import {
   MatSnackBar,
   MatSnackBarConfig,
@@ -20,7 +20,6 @@ import {
   selector: 'snack-bar-demo',
   styleUrls: ['snack-bar-demo.css'],
   templateUrl: 'snack-bar-demo.html',
-  encapsulation: ViewEncapsulation.None,
 })
 export class SnackBarDemo {
   @ViewChild('template') template: TemplateRef<any>;

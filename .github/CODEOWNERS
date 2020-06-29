@@ -111,7 +111,7 @@
 /src/material-experimental/mdc-progress-spinner/** @andrewseguin
 /src/material-experimental/mdc-progress-bar/**     @andrewseguin
 /src/material-experimental/mdc-radio/**            @mmalerba
-/src/material-experimental/mdc-snack-bar/**        @andrewseguin
+/src/material-experimental/mdc-snackbar/**         @opozo
 /src/material-experimental/mdc-slide-toggle/**     @crisbeto
 /src/material-experimental/mdc-slider/**           @devversion
 /src/material-experimental/mdc-tabs/**             @crisbeto
@@ -176,9 +176,8 @@
 /src/dev-app/mdc-menu/**                           @crisbeto
 /src/dev-app/mdc-progress-bar/**                   @crisbeto
 /src/dev-app/mdc-radio/**                          @mmalerba
-/src/dev-app/mdc-snack-bar/**                      @andrewseguin
+/src/dev-app/mdc-snackbar/**                       @opozo
 /src/dev-app/mdc-sidenav/**                        @crisbeto
-/src/dev-app/mdc-snack-bar/**                      @andrewseguin
 /src/dev-app/mdc-slide-toggle/**                   @crisbeto
 /src/dev-app/mdc-slider/**                         @devversion
 /src/dev-app/mdc-table/**                          @andrewseguin

@@ -24,7 +24,7 @@ entryPoints = [
     "mdc-slide-toggle/testing",
     "mdc-slider",
     "mdc-slider/testing",
-    "mdc-snack-bar",
+    "mdc-snackbar",
     "mdc-table",
     "mdc-tabs",
     "popover-edit",
