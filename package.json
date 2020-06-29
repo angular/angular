@@ -41,6 +41,7 @@
     "ts-circular-deps:approve": "yarn -s ts-circular-deps approve --config ./src/circular-deps-test.conf.js",
     "merge": "ng-dev pr merge",
     "approve-api": "node ./scripts/approve-api-golden.js",
+    "approve-size-tests": "node ./scripts/approve-size-golden.js",
     "integration-tests": "bazel test //integration/... --test_tag_filters=-view-engine-only --build_tests_only",
     "integration-tests:view-engine": "bazel test //integration/... --test_tag_filters=view-engine-only --build_tests_only --config=view-engine"
   },
