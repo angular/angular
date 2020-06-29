@@ -21,18 +21,18 @@ export declare class MatTree<T> extends CdkTree<T> {
     static ɵfac: i0.ɵɵFactoryDef<MatTree<any>, never>;
 }
 
-export declare class MatTreeFlatDataSource<T, F> extends DataSource<F> {
+export declare class MatTreeFlatDataSource<T, F, K = F> extends DataSource<F> {
     _data: BehaviorSubject<T[]>;
     _expandedData: BehaviorSubject<F[]>;
     _flattenedData: BehaviorSubject<F[]>;
     get data(): T[];
     set data(value: T[]);
-    constructor(_treeControl: FlatTreeControl<F>, _treeFlattener: MatTreeFlattener<T, F>, initialData?: T[]);
+    constructor(_treeControl: FlatTreeControl<F, K>, _treeFlattener: MatTreeFlattener<T, F, K>, initialData?: T[]);
     connect(collectionViewer: CollectionViewer): Observable<F[]>;
     disconnect(): void;
 }
 
-export declare class MatTreeFlattener<T, F> {
+export declare class MatTreeFlattener<T, F, K = F> {
     getChildren: (node: T) => Observable<T[]> | T[] | undefined | null;
     getLevel: (node: F) => number;
     isExpandable: (node: F) => boolean;
@@ -40,7 +40,7 @@ export declare class MatTreeFlattener<T, F> {
     constructor(transformFunction: (node: T, level: number) => F, getLevel: (node: F) => number, isExpandable: (node: F) => boolean, getChildren: (node: T) => Observable<T[]> | T[] | undefined | null);
     _flattenChildren(children: T[], level: number, resultNodes: F[], parentMap: boolean[]): void;
     _flattenNode(node: T, level: number, resultNodes: F[], parentMap: boolean[]): F[];
-    expandFlattenedNodes(nodes: F[], treeControl: TreeControl<F>): F[];
+    expandFlattenedNodes(nodes: F[], treeControl: TreeControl<F, K>): F[];
     flattenNodes(structuredData: T[]): F[];
 }
 

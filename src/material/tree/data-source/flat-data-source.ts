@@ -45,7 +45,7 @@ import {map, take} from 'rxjs/operators';
  * }
  * and the output flattened type is `F` with additional information.
  */
-export class MatTreeFlattener<T, F> {
+export class MatTreeFlattener<T, F, K = F> {
 
   constructor(public transformFunction: (node: T, level: number) => F,
               public getLevel: (node: F) => number,
@@ -97,7 +97,7 @@ export class MatTreeFlattener<T, F> {
    * Expand flattened node with current expansion status.
    * The returned list may have different length.
    */
-  expandFlattenedNodes(nodes: F[], treeControl: TreeControl<F>): F[] {
+  expandFlattenedNodes(nodes: F[], treeControl: TreeControl<F, K>): F[] {
     let results: F[] = [];
     let currentExpand: boolean[] = [];
     currentExpand[0] = true;
@@ -126,7 +126,7 @@ export class MatTreeFlattener<T, F> {
  * The nested tree nodes of type `T` are flattened through `MatTreeFlattener`, and converted
  * to type `F` for `MatTree` to consume.
  */
-export class MatTreeFlatDataSource<T, F> extends DataSource<F> {
+export class MatTreeFlatDataSource<T, F, K = F> extends DataSource<F> {
   _flattenedData = new BehaviorSubject<F[]>([]);
 
   _expandedData = new BehaviorSubject<F[]>([]);
@@ -139,8 +139,8 @@ export class MatTreeFlatDataSource<T, F> extends DataSource<F> {
     this._treeControl.dataNodes = this._flattenedData.value;
   }
 
-  constructor(private _treeControl: FlatTreeControl<F>,
-              private _treeFlattener: MatTreeFlattener<T, F>,
+  constructor(private _treeControl: FlatTreeControl<F, K>,
+              private _treeFlattener: MatTreeFlattener<T, F, K>,
               initialData: T[] = []) {
     super();
     this._data = new BehaviorSubject<T[]>(initialData);
