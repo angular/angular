@@ -45,10 +45,6 @@
     "src/cdk/testing/private/e2e/query.ts"
   ],
   [
-    "src/material/core/ripple/ripple-ref.ts",
-    "src/material/core/ripple/ripple-renderer.ts"
-  ],
-  [
     "src/material/datepicker/date-range-input.ts",
     "src/material/datepicker/date-range-picker.ts"
   ],

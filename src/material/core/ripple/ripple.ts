@@ -18,8 +18,8 @@ import {
   OnInit,
   Optional,
 } from '@angular/core';
-import {RippleRef} from './ripple-ref';
-import {RippleAnimationConfig, RippleConfig, RippleRenderer, RippleTarget} from './ripple-renderer';
+import {RippleAnimationConfig, RippleConfig, RippleRef} from './ripple-ref';
+import {RippleRenderer, RippleTarget} from './ripple-renderer';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 /** Configurable options for `matRipple`. */

@@ -368,7 +368,9 @@ export declare class RippleRef {
     config: RippleConfig;
     element: HTMLElement;
     state: RippleState;
-    constructor(_renderer: RippleRenderer,
+    constructor(_renderer: {
+        fadeOutRipple(ref: RippleRef): void;
+    },
     element: HTMLElement,
     config: RippleConfig);
     fadeOut(): void;

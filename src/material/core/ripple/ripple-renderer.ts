@@ -9,27 +9,7 @@ import {ElementRef, NgZone} from '@angular/core';
 import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {isFakeMousedownFromScreenReader} from '@angular/cdk/a11y';
 import {coerceElement} from '@angular/cdk/coercion';
-import {RippleRef, RippleState} from './ripple-ref';
-
-export type RippleConfig = {
-  color?: string;
-  centered?: boolean;
-  radius?: number;
-  persistent?: boolean;
-  animation?: RippleAnimationConfig;
-  terminateOnPointerUp?: boolean;
-};
-
-/**
- * Interface that describes the configuration for the animation of a ripple.
- * There are two animation phases with different durations for the ripples.
- */
-export interface RippleAnimationConfig {
-  /** Duration in milliseconds for the enter animation (expansion from point of contact). */
-  enterDuration?: number;
-  /** Duration in milliseconds for the exit animation (fade-out). */
-  exitDuration?: number;
-}
+import {RippleRef, RippleState, RippleConfig} from './ripple-ref';
 
 /**
  * Interface that describes the target for launching ripples.

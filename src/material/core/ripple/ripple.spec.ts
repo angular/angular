@@ -8,9 +8,10 @@ import {
   dispatchTouchEvent,
   createMouseEvent,
 } from '@angular/cdk/testing/private';
-import {defaultRippleAnimationConfig, RippleAnimationConfig} from './ripple-renderer';
+import {defaultRippleAnimationConfig} from './ripple-renderer';
 import {
-  MatRipple, MatRippleModule, MAT_RIPPLE_GLOBAL_OPTIONS, RippleState, RippleGlobalOptions
+  MatRipple, MatRippleModule, MAT_RIPPLE_GLOBAL_OPTIONS, RippleState, RippleGlobalOptions,
+  RippleAnimationConfig
 } from './index';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
