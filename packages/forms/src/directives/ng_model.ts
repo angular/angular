@@ -317,18 +317,20 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _checkParentType(): void {
-    if (!(this._parent instanceof NgModelGroup) &&
-        this._parent instanceof AbstractFormGroupDirective) {
-      TemplateDrivenErrors.formGroupNameException();
-    } else if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm)) {
-      TemplateDrivenErrors.modelParentException();
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!(this._parent instanceof NgModelGroup) &&
+          this._parent instanceof AbstractFormGroupDirective) {
+        TemplateDrivenErrors.formGroupNameException();
+      } else if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm)) {
+        TemplateDrivenErrors.modelParentException();
+      }
     }
   }
 
   private _checkName(): void {
     if (this.options && this.options.name) this.name = this.options.name;
 
-    if (!this._isStandalone() && !this.name) {
+    if (!this._isStandalone() && !this.name && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       TemplateDrivenErrors.missingNameException();
     }
   }

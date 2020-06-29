@@ -115,7 +115,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
    */
   @Input()
   set compareWith(fn: (o1: any, o2: any) => boolean) {
-    if (typeof fn !== 'function') {
+    if (typeof fn !== 'function' && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw new Error(`compareWith must be a function, but received ${JSON.stringify(fn)}`);
     }
     this._compareWith = fn;

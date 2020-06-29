@@ -17,6 +17,13 @@ export const RADIO_VALUE_ACCESSOR: any = {
   multi: true
 };
 
+function throwNameError() {
+  throw new Error(`
+      If you define both a name and a formControlName attribute on your radio button, their values
+      must match. Ex: <input type="radio" formControlName="food" name="food">
+    `);
+}
+
 /**
  * @description
  * Class used by Angular to track radio buttons. For internal use only.
@@ -213,16 +220,10 @@ export class RadioControlValueAccessor implements ControlValueAccessor, OnDestro
   }
 
   private _checkName(): void {
-    if (this.name && this.formControlName && this.name !== this.formControlName) {
-      this._throwNameError();
+    if (this.name && this.formControlName && this.name !== this.formControlName &&
+        (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throwNameError();
     }
     if (!this.name && this.formControlName) this.name = this.formControlName;
-  }
-
-  private _throwNameError(): void {
-    throw new Error(`
-      If you define both a name and a formControlName attribute on your radio button, their values
-      must match. Ex: <input type="radio" formControlName="food" name="food">
-    `);
   }
 }

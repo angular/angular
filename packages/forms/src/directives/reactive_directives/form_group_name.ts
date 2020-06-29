@@ -96,7 +96,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
 
   /** @internal */
   _checkParentType(): void {
-    if (_hasInvalidParent(this._parent)) {
+    if (_hasInvalidParent(this._parent) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       ReactiveErrors.groupParentException();
     }
   }
@@ -228,7 +228,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
   }
 
   private _checkParentType(): void {
-    if (_hasInvalidParent(this._parent)) {
+    if (_hasInvalidParent(this._parent) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       ReactiveErrors.arrayParentException();
     }
   }
