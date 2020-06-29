@@ -29,6 +29,7 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     _container?: MatDrawerContainer | undefined);
     _animationDoneListener(event: AnimationEvent): void;
     _animationStartListener(event: AnimationEvent): void;
+    _closeViaBackdropClick(): Promise<MatDrawerToggleResult>;
     close(): Promise<MatDrawerToggleResult>;
     ngAfterContentChecked(): void;
     ngAfterContentInit(): void;
@@ -69,7 +70,7 @@ export declare class MatDrawerContainer implements AfterContentInit, DoCheck, On
     get scrollable(): CdkScrollable;
     get start(): MatDrawer | null;
     constructor(_dir: Directionality, _element: ElementRef<HTMLElement>, _ngZone: NgZone, _changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, defaultAutosize?: boolean, _animationMode?: string | undefined);
-    _closeModalDrawer(): void;
+    _closeModalDrawersViaBackdrop(): void;
     _isShowingBackdrop(): boolean;
     _onBackdropClicked(): void;
     close(): void;
