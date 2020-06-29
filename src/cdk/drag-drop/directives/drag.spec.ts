@@ -2151,6 +2151,19 @@ describe('CdkDrag', () => {
           'Expected cloned canvas to have the same content as the source.');
     }));
 
+    it('should not throw when cloning an invalid canvas', fakeAsync(() => {
+      const fixture = createComponent(DraggableWithInvalidCanvasInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      expect(() => {
+        startDraggingViaMouse(fixture, item);
+        tick();
+      }).not.toThrow();
+
+      expect(document.querySelector('.cdk-drag-preview canvas')).toBeTruthy();
+    }));
+
     it('should clear the ids from descendants of the preview', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
@@ -5948,6 +5961,30 @@ class DraggableWithCanvasInDropZone extends DraggableInDropZone implements After
     }
   }
 }
+
+@Component({
+  template: `
+    <div
+      cdkDropList
+      style="width: 100px; background: pink;"
+      [id]="dropZoneId"
+      [cdkDropListData]="items"
+      (cdkDropListSorted)="sortedSpy($event)"
+      (cdkDropListDropped)="droppedSpy($event)">
+      <div
+        *ngFor="let item of items"
+        cdkDrag
+        [cdkDragData]="item"
+        [style.height.px]="item.height"
+        [style.margin-bottom.px]="item.margin"
+        style="width: 100%; background: red;">
+          {{item.value}}
+          <canvas width="0" height="0"></canvas>
+        </div>
+    </div>
+  `
+})
+class DraggableWithInvalidCanvasInDropZone extends DraggableInDropZone {}
 
 /**
  * Component that passes through whatever content is projected into it.

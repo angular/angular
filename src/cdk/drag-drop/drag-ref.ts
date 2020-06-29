@@ -1292,7 +1292,11 @@ function deepCloneNode(node: HTMLElement): HTMLElement {
       const correspondingCloneContext = cloneCanvases[i].getContext('2d');
 
       if (correspondingCloneContext) {
-        correspondingCloneContext.drawImage(descendantCanvases[i], 0, 0);
+        // In some cases `drawImage` can throw (e.g. if the canvas size is 0x0).
+        // We can't do much about it so just ignore the error.
+        try {
+          correspondingCloneContext.drawImage(descendantCanvases[i], 0, 0);
+        } catch {}
       }
     }
   }
