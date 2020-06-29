@@ -291,6 +291,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
 
   /** Handles the value in one of the child inputs changing. */
   _handleChildValueChange() {
+    this.stateChanges.next();
     this._changeDetectorRef.markForCheck();
   }
 

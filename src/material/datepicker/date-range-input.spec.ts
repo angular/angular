@@ -527,6 +527,21 @@ describe('MatDateRangeInput', () => {
     expect(fixture.componentInstance.rangeInput.placeholder).toBe('Start date – End date');
   });
 
+  it('should emit to the stateChanges stream when typing a value into an input', () => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+    const {start, rangeInput} = fixture.componentInstance;
+    const spy = jasmine.createSpy('stateChanges spy');
+    const subscription = rangeInput.stateChanges.subscribe(spy);
+
+    start.nativeElement.value = '10/10/2020';
+    dispatchFakeEvent(start.nativeElement, 'input');
+    fixture.detectChanges();
+
+    expect(spy).toHaveBeenCalled();
+    subscription.unsubscribe();
+  });
+
 });
 
 @Component({
