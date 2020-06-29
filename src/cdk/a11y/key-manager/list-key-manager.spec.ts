@@ -143,6 +143,18 @@ describe('Key managers', () => {
         subscription.unsubscribe();
       });
 
+      it('should emit if the active item changed, but not the active index', () => {
+        const spy = jasmine.createSpy('change spy');
+        const subscription = keyManager.change.subscribe(spy);
+
+        keyManager.setActiveItem(0);
+        itemList.items.unshift(new FakeFocusable('zero'));
+        keyManager.setActiveItem(0);
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        subscription.unsubscribe();
+      });
+
       it('should activate the first item when pressing down on a clean key manager', () => {
         keyManager = new ListKeyManager<FakeFocusable>(itemList);
 
