@@ -4,14 +4,15 @@ import {NestedTreeControl} from './nested-tree-control';
 
 
 describe('CdkNestedTreeControl', () => {
-  let treeControl: NestedTreeControl<TestData>;
   let getChildren = (node: TestData) => observableOf(node.children);
 
-  beforeEach(() => {
-    treeControl = new NestedTreeControl<TestData>(getChildren);
-  });
-
   describe('base tree control actions', () => {
+    let treeControl: NestedTreeControl<TestData>;
+
+    beforeEach(() => {
+      treeControl = new NestedTreeControl<TestData>(getChildren);
+    });
+
     it('should be able to expand and collapse dataNodes', () => {
       const nodes = generateData(10, 4);
       const node = nodes[1];
@@ -196,6 +197,24 @@ describe('CdkNestedTreeControl', () => {
       });
     });
   });
+
+  it('maintains node expansion state based on trackBy function, if provided', () => {
+    const treeControl = new NestedTreeControl<TestData, string>(
+        getChildren, {trackBy: (node: TestData) => `${node.a} ${node.b} ${node.c}`});
+
+    const nodes = generateData(2, 2);
+    const secondNode = nodes[1];
+    treeControl.dataNodes = nodes;
+
+    treeControl.expand(secondNode);
+    expect(treeControl.isExpanded(secondNode)).toBeTruthy('Expect second node to be expanded');
+
+    // Replace the second node with a brand new instance with same hash
+    nodes[1] = new TestData(
+        secondNode.a, secondNode.b, secondNode.c, secondNode.level, secondNode.children);
+    expect(treeControl.isExpanded(nodes[1])).toBeTruthy('Expect second node to still be expanded');
+  });
+
 });
 
 export class TestData {

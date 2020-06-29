@@ -9,12 +9,22 @@ import {Observable, isObservable} from 'rxjs';
 import {take, filter} from 'rxjs/operators';
 import {BaseTreeControl} from './base-tree-control';
 
-/** Nested tree control. Able to expand/collapse a subtree recursively for NestedNode type. */
-export class NestedTreeControl<T> extends BaseTreeControl<T> {
+/** Optional set of configuration that can be provided to the NestedTreeControl. */
+export interface NestedTreeControlOptions<T, K> {
+  trackBy?: (dataNode: T) => K;
+}
 
+/** Nested tree control. Able to expand/collapse a subtree recursively for NestedNode type. */
+export class NestedTreeControl<T, K = T> extends BaseTreeControl<T, K> {
   /** Construct with nested tree function getChildren. */
-  constructor(public getChildren: (dataNode: T) => (Observable<T[]> | T[] | undefined | null)) {
+  constructor(
+      public getChildren: (dataNode: T) => (Observable<T[]>| T[] | undefined | null),
+      public options?: NestedTreeControlOptions<T, K>) {
     super();
+
+    if (this.options) {
+      this.trackBy = this.options.trackBy;
+    }
   }
 
   /**
@@ -27,7 +37,7 @@ export class NestedTreeControl<T> extends BaseTreeControl<T> {
     this.expansionModel.clear();
     const allNodes = this.dataNodes.reduce((accumulator: T[], dataNode) =>
         [...accumulator, ...this.getDescendants(dataNode), dataNode], []);
-    this.expansionModel.select(...allNodes);
+    this.expansionModel.select(...allNodes.map(node => this._trackByValue(node)));
   }
 
   /** Gets a list of descendant dataNodes of a subtree rooted at given data node recursively. */

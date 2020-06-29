@@ -161,12 +161,17 @@ export declare function getTreeMultipleDefaultNodeDefsError(): Error;
 
 export declare function getTreeNoValidDataSourceError(): Error;
 
-export declare class NestedTreeControl<T> extends BaseTreeControl<T> {
+export declare class NestedTreeControl<T, K = T> extends BaseTreeControl<T, K> {
     getChildren: (dataNode: T) => (Observable<T[]> | T[] | undefined | null);
-    constructor(getChildren: (dataNode: T) => (Observable<T[]> | T[] | undefined | null));
+    options?: NestedTreeControlOptions<T, K> | undefined;
+    constructor(getChildren: (dataNode: T) => (Observable<T[]> | T[] | undefined | null), options?: NestedTreeControlOptions<T, K> | undefined);
     protected _getDescendants(descendants: T[], dataNode: T): void;
     expandAll(): void;
     getDescendants(dataNode: T): T[];
+}
+
+export interface NestedTreeControlOptions<T, K> {
+    trackBy?: (dataNode: T) => K;
 }
 
 export interface TreeControl<T, K = T> {
