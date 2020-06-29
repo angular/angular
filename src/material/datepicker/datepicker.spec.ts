@@ -763,6 +763,18 @@ describe('MatDatepicker', () => {
         expect(inputEl.classList).toContain('ng-dirty');
       }));
 
+      it('should mark input dirty after invalid value is typed in', () => {
+        let inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
+
+        expect(inputEl.classList).toContain('ng-pristine');
+
+        inputEl.value = 'hello there';
+        dispatchFakeEvent(inputEl, 'input');
+        fixture.detectChanges();
+
+        expect(inputEl.classList).toContain('ng-dirty');
+      });
+
       it('should not mark dirty after model change', fakeAsync(() => {
         let inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
@@ -1502,6 +1514,20 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
 
         expect(valueDuringChangeEvent).toBe('1/1/2020');
+      });
+
+      it('should not fire dateInput when typing an invalid value', () => {
+        expect(testComponent.onDateInput).not.toHaveBeenCalled();
+
+        inputEl.value = 'a';
+        dispatchFakeEvent(inputEl, 'input');
+        fixture.detectChanges();
+        expect(testComponent.onDateInput).not.toHaveBeenCalled();
+
+        inputEl.value = 'b';
+        dispatchFakeEvent(inputEl, 'input');
+        fixture.detectChanges();
+        expect(testComponent.onDateInput).not.toHaveBeenCalled();
       });
 
     });

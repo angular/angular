@@ -307,8 +307,16 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
       this._cvaOnChange(date);
       this._valueChange.emit(date);
       this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
-    } else if (lastValueWasValid !== this._lastValueValid) {
-      this._validatorOnChange();
+    } else {
+      // Call the CVA change handler for invalid values
+      // since this is what marks the control as dirty.
+      if (value && !this.value) {
+        this._cvaOnChange(date);
+      }
+
+      if (lastValueWasValid !== this._lastValueValid) {
+        this._validatorOnChange();
+      }
     }
   }
 
