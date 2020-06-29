@@ -1208,6 +1208,54 @@ describe('CdkDrag', () => {
       }).not.toThrow();
     }));
 
+    it('should update the free drag position if the page is scrolled', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+
+      const cleanup = makeScrollable();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      startDraggingViaMouse(fixture, dragElement, 0, 0);
+      dispatchMouseEvent(document, 'mousemove', 50, 100);
+      fixture.detectChanges();
+
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+
+      scrollTo(0, 500);
+      dispatchFakeEvent(document, 'scroll');
+      fixture.detectChanges();
+      expect(dragElement.style.transform).toBe('translate3d(50px, 600px, 0px)');
+
+      cleanup();
+    }));
+
+    it('should update the free drag position if the user moves their pointer after the page ' +
+      'is scrolled', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+
+        const cleanup = makeScrollable();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        expect(dragElement.style.transform).toBeFalsy();
+        startDraggingViaMouse(fixture, dragElement, 0, 0);
+        dispatchMouseEvent(document, 'mousemove', 50, 100);
+        fixture.detectChanges();
+
+        expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+
+        scrollTo(0, 500);
+        dispatchFakeEvent(document, 'scroll');
+        fixture.detectChanges();
+        dispatchMouseEvent(document, 'mousemove', 50, 200);
+        fixture.detectChanges();
+
+        expect(dragElement.style.transform).toBe('translate3d(50px, 700px, 0px)');
+
+        cleanup();
+      }));
+
   });
 
   describe('draggable with a handle', () => {
