@@ -359,10 +359,11 @@ Then inject it inside a test by calling `TestBed.inject()` with the service clas
 
 <div class="alert is-helpful">
 
-**Note:** We used to have `TestBed.get()` instead of `TestBed.inject()`.
-The `get` method wasn't type safe, it always returned `any`, and this is error prone.
-We decided to migrate to a new function instead of updating the existing one given
-the large scale use that would have an immense amount of breaking changes.
+**Note:** `TestBed.get()` was deprecated as of Angular version 9. 
+To help minimize breaking changes, Angular introduces a 
+new function called `TestBed.inject()`, which you should use instead. 
+For information on the removal of `TestBed.get()`, 
+see its entry in the [Deprecations index](guide/deprecations#index).
 
 </div>
 
