@@ -4,7 +4,6 @@ export declare const MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR: any;
 
 export declare class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit, AfterViewInit, CanDisableRipple, OnDestroy {
     _buttonElement: ElementRef<HTMLButtonElement>;
-    _type: ToggleType;
     get appearance(): MatButtonToggleAppearance;
     set appearance(value: MatButtonToggleAppearance);
     ariaLabel: string;

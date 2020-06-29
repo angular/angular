@@ -40,7 +40,10 @@ import {
 } from '@angular/material/core';
 
 
-/** Acceptable types for a button toggle. */
+/**
+ * @deprecated No longer used.
+ * @breaking-change 11.0.0
+ */
 export type ToggleType = 'checkbox' | 'radio';
 
 /** Possible appearance styles for the button toggle. */
@@ -412,9 +415,6 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
    */
   @Input('aria-labelledby') ariaLabelledby: string | null = null;
 
-  /** Type of the button toggle. Either 'radio' or 'checkbox'. */
-  _type: ToggleType;
-
   @ViewChild('button') _buttonElement: ElementRef<HTMLButtonElement>;
 
   /** The parent button toggle group (exclusive selection). Optional. */
@@ -495,7 +495,6 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   ngOnInit() {
     const group = this.buttonToggleGroup;
     this._isSingleSelector = group && !group.multiple;
-    this._type = this._isSingleSelector ? 'radio' : 'checkbox';
     this.id = this.id || `mat-button-toggle-${_uniqueIdCounter++}`;
 
     if (this._isSingleSelector) {
