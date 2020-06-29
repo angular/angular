@@ -58,11 +58,11 @@
   // Render the focus indicator on focus. Defining a pseudo element's
   // content will cause it to render.
 
-  // For checkboxes, radios, and slide toggles, render the focus indicator
-  // when the class .cdk-focused is present.
-  .cdk-focused.mat-checkbox .mat-focus-indicator::before,
-  .cdk-focused.mat-radio-button .mat-focus-indicator::before,
-  .cdk-focused.mat-slide-toggle .mat-focus-indicator::before,
+  // Checkboxes, radios, and slide toggles render focus indicators when the
+  // associated visually-hidden input is focused.
+  .mat-checkbox-input:focus ~ .mat-focus-indicator::before,
+  .mat-radio-input:focus ~ .mat-focus-indicator::before,
+  .mat-slide-toggle-input:focus ~ .mat-slide-toggle-thumb-container .mat-focus-indicator::before,
 
   // For options, render the focus indicator when the class .mat-active
   // is present.
