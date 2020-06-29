@@ -168,18 +168,18 @@ export function runHarnessTests(
 
   it('should be able to focus input', async () => {
     const input = await loader.getHarness(inputHarness.with({selector: '[name="favorite-food"]'}));
-    expect(getActiveElementTagName()).not.toBe('input');
+    expect(await input.isFocused()).toBe(false);
     await input.focus();
-    expect(getActiveElementTagName()).toBe('input');
+    expect(await input.isFocused()).toBe(true);
   });
 
   it('should be able to blur input', async () => {
     const input = await loader.getHarness(inputHarness.with({selector: '[name="favorite-food"]'}));
-    expect(getActiveElementTagName()).not.toBe('input');
+    expect(await input.isFocused()).toBe(false);
     await input.focus();
-    expect(getActiveElementTagName()).toBe('input');
+    expect(await input.isFocused()).toBe(true);
     await input.blur();
-    expect(getActiveElementTagName()).not.toBe('input');
+    expect(await input.isFocused()).toBe(false);
   });
 
   it('should be able to set the value of a control that cannot be typed in', async () => {
@@ -193,10 +193,6 @@ export function runHarnessTests(
     await input.setValue('#00ff00');
     expect((await input.getValue()).toLowerCase()).toBe('#00ff00');
   });
-}
-
-function getActiveElementTagName() {
-  return document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
 }
 
 @Component({

@@ -230,6 +230,11 @@ export class MatRadioButtonHarness extends ComponentHarness {
     return (await this._input()).blur();
   }
 
+  /** Whether the radio-button is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this._input()).isFocused();
+  }
+
   /**
    * Puts the radio-button in a checked state by clicking it if it is currently unchecked,
    * or doing nothing if it is already checked.

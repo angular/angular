@@ -102,6 +102,11 @@ export class MatCheckboxHarness extends ComponentHarness {
     return (await this._input()).blur();
   }
 
+  /** Whether the checkbox is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this._input()).isFocused();
+  }
+
   /**
    * Toggle the checked state of the checkbox and returns a void promise that indicates when the
    * action is complete.

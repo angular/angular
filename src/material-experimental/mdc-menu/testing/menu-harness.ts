@@ -56,6 +56,11 @@ export class MatMenuHarness extends ComponentHarness {
     return (await this.host()).blur();
   }
 
+  /** Whether the menu is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this.host()).isFocused();
+  }
+
   async open(): Promise<void> {
     throw Error('not implemented');
   }
@@ -105,14 +110,21 @@ export class MatMenuItemHarness extends ComponentHarness {
     return (await this.host()).text();
   }
 
-  /** Focuses the menu and returns a void promise that indicates when the action is complete. */
+  /**
+   * Focuses the menu item and returns a void promise that indicates when the action is complete.
+   */
   async focus(): Promise<void> {
     return (await this.host()).focus();
   }
 
-  /** Blurs the menu and returns a void promise that indicates when the action is complete. */
+  /** Blurs the menu item and returns a void promise that indicates when the action is complete. */
   async blur(): Promise<void> {
     return (await this.host()).blur();
+  }
+
+  /** Whether the menu item is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this.host()).isFocused();
   }
 
   async click(): Promise<void> {

@@ -28,6 +28,7 @@ export declare class MatActionListItemHarness extends MatListItemHarnessBase {
     blur(): Promise<void>;
     click(): Promise<void>;
     focus(): Promise<void>;
+    isFocused(): Promise<boolean>;
     static hostSelector: string;
     static with(options?: ActionListItemHarnessFilters): HarnessPredicate<MatActionListItemHarness>;
 }
@@ -49,6 +50,7 @@ export declare class MatListOptionHarness extends MatListItemHarnessBase {
     focus(): Promise<void>;
     getCheckboxPosition(): Promise<'before' | 'after'>;
     isDisabled(): Promise<boolean>;
+    isFocused(): Promise<boolean>;
     isSelected(): Promise<boolean>;
     select(): Promise<void>;
     toggle(): Promise<void>;
@@ -67,6 +69,7 @@ export declare class MatNavListItemHarness extends MatListItemHarnessBase {
     click(): Promise<void>;
     focus(): Promise<void>;
     getHref(): Promise<string | null>;
+    isFocused(): Promise<boolean>;
     static hostSelector: string;
     static with(options?: NavListItemHarnessFilters): HarnessPredicate<MatNavListItemHarness>;
 }

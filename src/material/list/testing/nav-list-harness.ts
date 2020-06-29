@@ -68,4 +68,9 @@ export class MatNavListItemHarness extends MatListItemHarnessBase {
   async blur(): Promise<void> {
     return (await this.host()).blur();
   }
+
+  /** Whether the nav list item is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this.host()).isFocused();
+  }
 }

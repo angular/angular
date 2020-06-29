@@ -62,11 +62,11 @@ export function runHarnessTests(
 
     it('should focus and blur a menu', async () => {
       const menu = await loader.getHarness(menuHarness.with({triggerText: 'Settings'}));
-      expect(getActiveElementId()).not.toBe('settings');
+      expect(await menu.isFocused()).toBe(false);
       await menu.focus();
-      expect(getActiveElementId()).toBe('settings');
+      expect(await menu.isFocused()).toBe(true);
       await menu.blur();
-      expect(getActiveElementId()).not.toBe('settings');
+      expect(await menu.isFocused()).toBe(false);
     });
 
     it('should open and close', async () => {
@@ -170,10 +170,6 @@ export function runHarnessTests(
           /Item matching {"text":"Leaf Item 1"} does not have a submenu/);
     });
   });
-}
-
-function getActiveElementId() {
-  return document.activeElement ? document.activeElement.id : '';
 }
 
 @Component({

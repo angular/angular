@@ -93,19 +93,19 @@ export function runHarnessTests(
   it('should be able to focus slider', async () => {
     // the first slider is disabled.
     const slider = (await loader.getAllHarnesses(sliderHarness))[1];
-    expect(getActiveElementTagName()).not.toBe('mat-slider');
+    expect(await slider.isFocused()).toBe(false);
     await slider.focus();
-    expect(getActiveElementTagName()).toBe('mat-slider');
+    expect(await slider.isFocused()).toBe(true);
   });
 
   it('should be able to blur slider', async () => {
     // the first slider is disabled.
     const slider = (await loader.getAllHarnesses(sliderHarness))[1];
-    expect(getActiveElementTagName()).not.toBe('mat-slider');
+    expect(await slider.isFocused()).toBe(false);
     await slider.focus();
-    expect(getActiveElementTagName()).toBe('mat-slider');
+    expect(await slider.isFocused()).toBe(true);
     await slider.blur();
-    expect(getActiveElementTagName()).not.toBe('mat-slider');
+    expect(await slider.isFocused()).toBe(false);
   });
 
   it('should be able to set value of slider', async () => {
@@ -174,10 +174,6 @@ export function runHarnessTests(
       expect(await sliders[2].getValue()).toBe(210);
     });
   }
-}
-
-function getActiveElementTagName() {
-  return document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
 }
 
 @Component({

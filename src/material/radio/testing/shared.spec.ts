@@ -212,17 +212,17 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
 
     it('should focus radio-button', async () => {
       const radioButton = await loader.getHarness(radioButtonHarness.with({selector: '#opt2'}));
-      expect(getActiveElementTagName()).not.toBe('input');
+      expect(await radioButton.isFocused()).toBe(false);
       await radioButton.focus();
-      expect(getActiveElementTagName()).toBe('input');
+      expect(await radioButton.isFocused()).toBe(true);
     });
 
     it('should blur radio-button', async () => {
       const radioButton = await loader.getHarness(radioButtonHarness.with({selector: '#opt2'}));
       await radioButton.focus();
-      expect(getActiveElementTagName()).toBe('input');
+      expect(await radioButton.isFocused()).toBe(true);
       await radioButton.blur();
-      expect(getActiveElementTagName()).not.toBe('input');
+      expect(await radioButton.isFocused()).toBe(false);
     });
 
     it('should check radio-button', async () => {
@@ -264,10 +264,6 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
       expect(await radioButton.isRequired()).toBe(true);
     });
   });
-}
-
-function getActiveElementTagName() {
-  return document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
 }
 
 @Component({

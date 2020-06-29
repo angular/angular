@@ -9,6 +9,7 @@ export declare class MatSliderHarness extends ComponentHarness {
     getPercentage(): Promise<number>;
     getValue(): Promise<number>;
     isDisabled(): Promise<boolean>;
+    isFocused(): Promise<boolean>;
     setValue(value: number): Promise<void>;
     static hostSelector: string;
     static with(options?: SliderHarnessFilters): HarnessPredicate<MatSliderHarness>;

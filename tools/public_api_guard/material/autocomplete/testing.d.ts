@@ -10,6 +10,7 @@ export declare class MatAutocompleteHarness extends ComponentHarness {
     getOptions(filters?: Omit<OptionHarnessFilters, 'ancestor'>): Promise<MatOptionHarness[]>;
     getValue(): Promise<string>;
     isDisabled(): Promise<boolean>;
+    isFocused(): Promise<boolean>;
     isOpen(): Promise<boolean>;
     selectOption(filters: OptionHarnessFilters): Promise<void>;
     static hostSelector: string;

@@ -85,6 +85,11 @@ export class MatButtonToggleHarness extends ComponentHarness {
     return (await this._button()).blur();
   }
 
+  /** Whether the toggle is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this._button()).isFocused();
+  }
+
   /** Toggle the checked state of the buttons toggle. */
   async toggle(): Promise<void> {
     return (await this._button()).click();

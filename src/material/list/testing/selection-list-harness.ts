@@ -112,6 +112,11 @@ export class MatListOptionHarness extends MatListItemHarnessBase {
     return (await this.host()).blur();
   }
 
+  /** Whether the list option is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this.host()).isFocused();
+  }
+
   /** Toggles the checked state of the checkbox. */
   async toggle() {
     return (await this.host()).click();

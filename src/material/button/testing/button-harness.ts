@@ -62,4 +62,9 @@ export class MatButtonHarness extends ComponentHarness {
   async blur(): Promise<void> {
     return (await this.host()).blur();
   }
+
+  /** Whether the button is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this.host()).isFocused();
+  }
 }

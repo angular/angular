@@ -63,11 +63,11 @@ export function runHarnessTests(
 
   it('should focus and blur an input', async () => {
     const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
-    expect(getActiveElementId()).not.toBe('plain');
+    expect(await input.isFocused()).toBe(false);
     await input.focus();
-    expect(getActiveElementId()).toBe('plain');
+    expect(await input.isFocused()).toBe(true);
     await input.blur();
-    expect(getActiveElementId()).not.toBe('plain');
+    expect(await input.isFocused()).toBe(false);
   });
 
   it('should be able to type in an input', async () => {
@@ -147,10 +147,6 @@ export function runHarnessTests(
     await expectAsync(input.selectOption({text: 'Texas'})).toBeRejectedWithError(
         /Could not find a mat-option matching {"text":"Texas"}/);
   });
-}
-
-function getActiveElementId() {
-  return document.activeElement ? document.activeElement.id : '';
 }
 
 @Component({

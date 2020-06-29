@@ -126,6 +126,11 @@ export class MatSliderHarness extends ComponentHarness {
     return (await this.host()).blur();
   }
 
+  /** Whether the slider is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this.host()).isFocused();
+  }
+
   /** Calculates the percentage of the given value. */
   private async _calculatePercentage(value: number) {
     const [min, max] = await Promise.all([this.getMinValue(), this.getMaxValue()]);

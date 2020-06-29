@@ -29,6 +29,7 @@ export declare class MatExpansionPanelHarness extends ComponentHarness {
     hasToggleIndicator(): Promise<boolean>;
     isDisabled(): Promise<boolean>;
     isExpanded(): Promise<boolean>;
+    isFocused(): Promise<boolean>;
     toggle(): Promise<void>;
     static hostSelector: string;
     static with(options?: ExpansionPanelHarnessFilters): HarnessPredicate<MatExpansionPanelHarness>;

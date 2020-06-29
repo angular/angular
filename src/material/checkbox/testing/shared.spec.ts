@@ -114,17 +114,17 @@ export function runHarnessTests(
 
   it('should focus checkbox', async () => {
     const checkbox = await loader.getHarness(checkboxHarness.with({label: 'First'}));
-    expect(getActiveElementTagName()).not.toBe('input');
+    expect(await checkbox.isFocused()).toBe(false);
     await checkbox.focus();
-    expect(getActiveElementTagName()).toBe('input');
+    expect(await checkbox.isFocused()).toBe(true);
   });
 
   it('should blur checkbox', async () => {
     const checkbox = await loader.getHarness(checkboxHarness.with({label: 'First'}));
     await checkbox.focus();
-    expect(getActiveElementTagName()).toBe('input');
+    expect(await checkbox.isFocused()).toBe(true);
     await checkbox.blur();
-    expect(getActiveElementTagName()).not.toBe('input');
+    expect(await checkbox.isFocused()).toBe(false);
   });
 
   it('should toggle checkbox', async () => {
@@ -165,10 +165,6 @@ export function runHarnessTests(
     await disabledCheckbox.toggle();
     expect(await disabledCheckbox.isChecked()).toBe(false);
   });
-}
-
-function getActiveElementTagName() {
-  return document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
 }
 
 @Component({

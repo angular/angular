@@ -81,17 +81,17 @@ export function runHarnessTests(
 
   it('should focus the button toggle', async () => {
     const toggle = await loader.getHarness(buttonToggleHarness.with({text: 'First'}));
-    expect(getActiveElementTagName()).not.toBe('button');
+    expect(await toggle.isFocused()).toBe(false);
     await toggle.focus();
-    expect(getActiveElementTagName()).toBe('button');
+    expect(await toggle.isFocused()).toBe(true);
   });
 
   it('should blur the button toggle', async () => {
     const toggle = await loader.getHarness(buttonToggleHarness.with({text: 'First'}));
     await toggle.focus();
-    expect(getActiveElementTagName()).toBe('button');
+    expect(await toggle.isFocused()).toBe(true);
     await toggle.blur();
-    expect(getActiveElementTagName()).not.toBe('button');
+    expect(await toggle.isFocused()).toBe(false);
   });
 
   it('should toggle the button value', async () => {
@@ -120,10 +120,6 @@ export function runHarnessTests(
     expect(await checkedToggle.isChecked()).toBe(false);
     expect(await uncheckedToggle.isChecked()).toBe(false);
   });
-}
-
-function getActiveElementTagName() {
-  return document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
 }
 
 @Component({

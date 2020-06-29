@@ -27,6 +27,7 @@ export declare class MatButtonToggleHarness extends ComponentHarness {
     getText(): Promise<string>;
     isChecked(): Promise<boolean>;
     isDisabled(): Promise<boolean>;
+    isFocused(): Promise<boolean>;
     toggle(): Promise<void>;
     uncheck(): Promise<void>;
     static hostSelector: string;

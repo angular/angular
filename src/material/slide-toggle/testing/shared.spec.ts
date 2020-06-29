@@ -102,17 +102,17 @@ export function runHarnessTests(
 
   it('should focus slide-toggle', async () => {
     const slideToggle = await loader.getHarness(slideToggleHarness.with({label: 'First'}));
-    expect(getActiveElementTagName()).not.toBe('input');
+    expect(await slideToggle.isFocused()).toBe(false);
     await slideToggle.focus();
-    expect(getActiveElementTagName()).toBe('input');
+    expect(await slideToggle.isFocused()).toBe(true);
   });
 
   it('should blur slide-toggle', async () => {
     const slideToggle = await loader.getHarness(slideToggleHarness.with({label: 'First'}));
     await slideToggle.focus();
-    expect(getActiveElementTagName()).toBe('input');
+    expect(await slideToggle.isFocused()).toBe(true);
     await slideToggle.blur();
-    expect(getActiveElementTagName()).not.toBe('input');
+    expect(await slideToggle.isFocused()).toBe(false);
   });
 
   it('should toggle slide-toggle', async () => {
@@ -155,10 +155,6 @@ export function runHarnessTests(
     await disabledToggle.toggle();
     expect(await disabledToggle.isChecked()).toBe(false);
   });
-}
-
-function getActiveElementTagName() {
-  return document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
 }
 
 @Component({

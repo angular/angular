@@ -77,6 +77,11 @@ export class MatSelectHarness extends MatFormFieldControlHarness {
     return (await this.host()).blur();
   }
 
+  /** Whether the select is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this.host()).isFocused();
+  }
+
   /** Gets the options inside the select panel. */
   async getOptions(filter: Omit<OptionHarnessFilters, 'ancestor'> = {}):
     Promise<MatOptionHarness[]> {

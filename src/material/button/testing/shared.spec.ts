@@ -67,11 +67,11 @@ export function runHarnessTests(
 
   it('should focus and blur a button', async () => {
     const button = await loader.getHarness(buttonHarness.with({text: 'Basic button'}));
-    expect(getActiveElementId()).not.toBe('basic');
+    expect(await button.isFocused()).toBe(false);
     await button.focus();
-    expect(getActiveElementId()).toBe('basic');
+    expect(await button.isFocused()).toBe(true);
     await button.blur();
-    expect(getActiveElementId()).not.toBe('basic');
+    expect(await button.isFocused()).toBe(false);
   });
 
   it('should click a button', async () => {
@@ -96,10 +96,6 @@ export function runHarnessTests(
 
     expect(fixture.componentInstance.clicked).toBe(false);
   });
-}
-
-function getActiveElementId() {
-  return document.activeElement ? document.activeElement.id : '';
 }
 
 @Component({

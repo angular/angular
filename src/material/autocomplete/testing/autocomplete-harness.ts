@@ -56,6 +56,11 @@ export class MatAutocompleteHarness extends ComponentHarness {
     return (await this.host()).blur();
   }
 
+  /** Whether the autocomplete input is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this.host()).isFocused();
+  }
+
   /** Enters text into the autocomplete. */
   async enterText(value: string): Promise<void> {
     return (await this.host()).sendKeys(value);

@@ -105,11 +105,11 @@ export function runHarnessTests(
 
   it('should focus and blur a select', async () => {
     const select = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
-    expect(getActiveElementId()).not.toBe('single-selection');
+    expect(await select.isFocused()).toBe(false);
     await select.focus();
-    expect(getActiveElementId()).toBe('single-selection');
+    expect(await select.isFocused()).toBe(true);
     await select.blur();
-    expect(getActiveElementId()).not.toBe('single-selection');
+    expect(await select.isFocused()).toBe(false);
   });
 
   it('should be able to open and close a single-selection select', async () => {
@@ -234,10 +234,6 @@ export function runHarnessTests(
     expect(control.value).toBe('CA');
   });
 
-}
-
-function getActiveElementId() {
-  return document.activeElement ? document.activeElement.id : '';
 }
 
 @Component({

@@ -8,6 +8,7 @@ export declare class MatSlideToggleHarness extends ComponentHarness {
     getName(): Promise<string | null>;
     isChecked(): Promise<boolean>;
     isDisabled(): Promise<boolean>;
+    isFocused(): Promise<boolean>;
     isRequired(): Promise<boolean>;
     isValid(): Promise<boolean>;
     toggle(): Promise<void>;

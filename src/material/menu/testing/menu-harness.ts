@@ -57,6 +57,11 @@ export class MatMenuHarness extends ComponentHarness {
     return (await this.host()).blur();
   }
 
+  /** Whether the menu is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this.host()).isFocused();
+  }
+
   /** Opens the menu. */
   async open(): Promise<void> {
     if (!await this.isOpen()) {
@@ -166,6 +171,11 @@ export class MatMenuItemHarness extends ComponentHarness {
   /** Blurs the menu item. */
   async blur(): Promise<void> {
     return (await this.host()).blur();
+  }
+
+  /** Whether the menu item is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this.host()).isFocused();
   }
 
   /** Clicks the menu item. */

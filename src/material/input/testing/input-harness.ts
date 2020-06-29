@@ -98,6 +98,11 @@ export class MatInputHarness extends MatFormFieldControlHarness {
     return (await this.host()).blur();
   }
 
+  /** Whether the input is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this.host()).isFocused();
+  }
+
   /**
    * Sets the value of the input. The value will be set by simulating
    * keypresses that correspond to the given value.

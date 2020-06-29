@@ -14,6 +14,7 @@ export declare class MatCheckboxHarness extends ComponentHarness {
     getValue(): Promise<string | null>;
     isChecked(): Promise<boolean>;
     isDisabled(): Promise<boolean>;
+    isFocused(): Promise<boolean>;
     isIndeterminate(): Promise<boolean>;
     isRequired(): Promise<boolean>;
     isValid(): Promise<boolean>;

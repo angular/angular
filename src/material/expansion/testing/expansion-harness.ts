@@ -125,6 +125,11 @@ export class MatExpansionPanelHarness extends ComponentHarness {
     return (await this._header()).blur();
   }
 
+  /** Whether the panel is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this._header()).isFocused();
+  }
+
   /** Whether the panel has a toggle indicator displayed. */
   async hasToggleIndicator(): Promise<boolean> {
     return (await this._expansionIndicator()) !== null;

@@ -8,6 +8,7 @@ export declare class MatRadioButtonHarness extends ComponentHarness {
     getValue(): Promise<string | null>;
     isChecked(): Promise<boolean>;
     isDisabled(): Promise<boolean>;
+    isFocused(): Promise<boolean>;
     isRequired(): Promise<boolean>;
     static hostSelector: string;
     static with(options?: RadioButtonHarnessFilters): HarnessPredicate<MatRadioButtonHarness>;

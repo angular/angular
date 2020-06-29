@@ -12,6 +12,7 @@ export declare class MatInputHarness extends MatFormFieldControlHarness {
     getType(): Promise<string>;
     getValue(): Promise<string>;
     isDisabled(): Promise<boolean>;
+    isFocused(): Promise<boolean>;
     isReadonly(): Promise<boolean>;
     isRequired(): Promise<boolean>;
     setValue(newValue: string): Promise<void>;

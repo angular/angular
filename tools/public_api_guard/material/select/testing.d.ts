@@ -8,6 +8,7 @@ export declare class MatSelectHarness extends MatFormFieldControlHarness {
     getValueText(): Promise<string>;
     isDisabled(): Promise<boolean>;
     isEmpty(): Promise<boolean>;
+    isFocused(): Promise<boolean>;
     isMultiple(): Promise<boolean>;
     isOpen(): Promise<boolean>;
     isRequired(): Promise<boolean>;

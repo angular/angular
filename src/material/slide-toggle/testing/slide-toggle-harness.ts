@@ -90,6 +90,11 @@ export class MatSlideToggleHarness extends ComponentHarness {
     return (await this._input()).blur();
   }
 
+  /** Whether the slide-toggle is focused. */
+  async isFocused(): Promise<boolean> {
+    return (await this._input()).isFocused();
+  }
+
   /** Toggle the checked state of the slide-toggle. */
   async toggle(): Promise<void> {
     return (await this._inputContainer()).click();

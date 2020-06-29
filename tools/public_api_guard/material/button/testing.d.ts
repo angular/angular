@@ -8,6 +8,7 @@ export declare class MatButtonHarness extends ComponentHarness {
     focus(): Promise<void>;
     getText(): Promise<string>;
     isDisabled(): Promise<boolean>;
+    isFocused(): Promise<boolean>;
     static hostSelector: string;
     static with(options?: ButtonHarnessFilters): HarnessPredicate<MatButtonHarness>;
 }
