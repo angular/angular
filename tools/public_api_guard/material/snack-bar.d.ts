@@ -7,10 +7,13 @@ export declare function MAT_SNACK_BAR_DEFAULT_OPTIONS_FACTORY(): MatSnackBarConf
 export declare class MatSnackBar implements OnDestroy {
     get _openedSnackBarRef(): MatSnackBarRef<any> | null;
     set _openedSnackBarRef(value: MatSnackBarRef<any> | null);
+    protected handsetCssClass: string;
+    protected simpleSnackBarComponent: Type<TextOnlySnackBar>;
+    protected snackBarContainerComponent: Type<SnackBarContainer>;
     constructor(_overlay: Overlay, _live: LiveAnnouncer, _injector: Injector, _breakpointObserver: BreakpointObserver, _parentSnackBar: MatSnackBar, _defaultConfig: MatSnackBarConfig);
     dismiss(): void;
     ngOnDestroy(): void;
-    open(message: string, action?: string, config?: MatSnackBarConfig): MatSnackBarRef<SimpleSnackBar>;
+    open(message: string, action?: string, config?: MatSnackBarConfig): MatSnackBarRef<TextOnlySnackBar>;
     openFromComponent<T>(component: ComponentType<T>, config?: MatSnackBarConfig): MatSnackBarRef<T>;
     openFromTemplate(template: TemplateRef<any>, config?: MatSnackBarConfig): MatSnackBarRef<EmbeddedViewRef<any>>;
     static ɵfac: i0.ɵɵFactoryDef<MatSnackBar, [null, null, null, null, { optional: true; skipSelf: true; }, null]>;
@@ -33,7 +36,7 @@ export declare class MatSnackBarConfig<D = any> {
     viewContainerRef?: ViewContainerRef;
 }
 
-export declare class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy {
+export declare class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy, SnackBarContainer {
     _animationState: string;
     readonly _onEnter: Subject<any>;
     readonly _onExit: Subject<any>;
@@ -65,9 +68,9 @@ export declare class MatSnackBarModule {
 }
 
 export declare class MatSnackBarRef<T> {
-    containerInstance: MatSnackBarContainer;
+    containerInstance: SnackBarContainer;
     instance: T;
-    constructor(containerInstance: MatSnackBarContainer, _overlayRef: OverlayRef);
+    constructor(containerInstance: SnackBarContainer, _overlayRef: OverlayRef);
     _dismissAfter(duration: number): void;
     _open(): void;
     afterDismissed(): Observable<MatSnackBarDismiss>;
@@ -80,7 +83,7 @@ export declare class MatSnackBarRef<T> {
 
 export declare type MatSnackBarVerticalPosition = 'top' | 'bottom';
 
-export declare class SimpleSnackBar {
+export declare class SimpleSnackBar implements TextOnlySnackBar {
     data: {
         message: string;
         action: string;
@@ -91,4 +94,22 @@ export declare class SimpleSnackBar {
     action(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<SimpleSnackBar, "simple-snack-bar", never, {}, {}, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<SimpleSnackBar, never>;
+}
+
+export interface SnackBarContainer {
+    _onEnter: Subject<any>;
+    _onExit: Subject<any>;
+    attachComponentPortal: <T>(portal: ComponentPortal<T>) => ComponentRef<T>;
+    attachTemplatePortal: <C>(portal: TemplatePortal<C>) => EmbeddedViewRef<C>;
+    enter: () => void;
+    exit: () => Observable<void>;
+    snackBarConfig: MatSnackBarConfig;
+}
+
+export interface TextOnlySnackBar {
+    data: {
+        message: string;
+        action: string;
+    };
+    snackBarRef: MatSnackBarRef<TextOnlySnackBar>;
 }

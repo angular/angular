@@ -6,10 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation, Inject, ChangeDetectionStrategy} from '@angular/core';
-import {MatSnackBarRef} from './snack-bar-ref';
+import {ChangeDetectionStrategy, Component, Inject, ViewEncapsulation} from '@angular/core';
 import {MAT_SNACK_BAR_DATA} from './snack-bar-config';
+import {MatSnackBarRef} from './snack-bar-ref';
 
+
+/**
+ * Internal interface for a simple snack bar component..
+ * @docs-private
+ */
+export interface TextOnlySnackBar {
+  data: {message: string, action: string};
+  snackBarRef: MatSnackBarRef<TextOnlySnackBar>;
+}
 
 /**
  * A component used to open as the default snack bar, matching material spec.
@@ -25,7 +34,7 @@ import {MAT_SNACK_BAR_DATA} from './snack-bar-config';
     'class': 'mat-simple-snackbar',
   }
 })
-export class SimpleSnackBar {
+export class SimpleSnackBar implements TextOnlySnackBar {
   /** Data that was injected into the snack bar. */
   data: {message: string, action: string};
 

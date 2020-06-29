@@ -1,0 +1,38 @@
+@import '../mdc-helpers/mdc-helpers';
+@import '@material/snackbar/mixins.import';
+
+@mixin mat-mdc-snack-bar-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
+  @include mat-using-mdc-theme($config) {
+    @include mdc-snackbar-core-styles($query: $mat-theme-styles-query);
+  }
+}
+
+@mixin mat-mdc-snack-bar-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
+  @include mat-using-mdc-typography($config) {
+    @include mdc-snackbar-core-styles($query: $mat-typography-styles-query);
+  }
+}
+
+@mixin mat-mdc-snack-bar-density($config-or-theme) {}
+
+@mixin mat-mdc-snack-bar-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-snack-bar') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
+
+    @if $color != null {
+      @include mat-mdc-snack-bar-color($color);
+    }
+    @if $density != null {
+      @include mat-mdc-snack-bar-density($density);
+    }
+    @if $typography != null {
+      @include mat-mdc-snack-bar-typography($typography);
+    }
+  }
+}
+

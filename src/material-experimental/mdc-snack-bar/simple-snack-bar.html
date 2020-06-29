@@ -1,0 +1,9 @@
+<div matSnackBarLabel>
+  {{data.message}}
+</div>
+
+<div matSnackBarActions *ngIf="data.action">
+  <button mat-button matSnackBarAction (click)="snackBarRef.dismissWithAction()">
+    {{data.action}}
+  </button>
+</div>

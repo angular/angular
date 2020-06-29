@@ -31,6 +31,19 @@ import {take} from 'rxjs/operators';
 import {matSnackBarAnimations} from './snack-bar-animations';
 import {MatSnackBarConfig} from './snack-bar-config';
 
+/**
+ * Internal interface for a snack bar container.
+ * @docs-private
+ */
+export interface SnackBarContainer {
+  snackBarConfig: MatSnackBarConfig;
+  _onExit: Subject<any>;
+  _onEnter: Subject<any>;
+  enter: () => void;
+  exit: () => Observable<void>;
+  attachTemplatePortal: <C>(portal: TemplatePortal<C>) => EmbeddedViewRef<C>;
+  attachComponentPortal: <T>(portal: ComponentPortal<T>) => ComponentRef<T>;
+}
 
 /**
  * Internal component that wraps user-provided snack bar content.
@@ -54,7 +67,8 @@ import {MatSnackBarConfig} from './snack-bar-config';
     '(@state.done)': 'onAnimationEnd($event)'
   },
 })
-export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy {
+export class MatSnackBarContainer extends BasePortalOutlet
+    implements OnDestroy, SnackBarContainer {
   /** Whether the component has been destroyed. */
   private _destroyed = false;
 
