@@ -6,8 +6,8 @@ filegroup(
     data = [
         "//modules/playground:systemjs-config.js",
         "//modules/playground:systemjs-rxjs-operators.js",
+        "//packages/zone.js/bundles:zone.umd.js",
         "@npm//reflect-metadata",
         "@npm//systemjs",
-        "@npm//zone.js",
     ],
 )

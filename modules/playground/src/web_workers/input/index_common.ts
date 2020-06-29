@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -26,7 +26,11 @@ export class InputCmp {
   inputVal = '';
   textareaVal = '';
 
-  inputChanged(e: Event) { this.inputVal = (e.target as HTMLInputElement).value; }
+  inputChanged(e: Event) {
+    this.inputVal = (e.target as HTMLInputElement).value;
+  }
 
-  textAreaChanged(e: Event) { this.textareaVal = (e.target as HTMLTextAreaElement).value; }
+  textAreaChanged(e: Event) {
+    this.textareaVal = (e.target as HTMLTextAreaElement).value;
+  }
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -42,7 +42,13 @@ export abstract class UrlHandlingStrategy {
  * @publicApi
  */
 export class DefaultUrlHandlingStrategy implements UrlHandlingStrategy {
-  shouldProcessUrl(url: UrlTree): boolean { return true; }
-  extract(url: UrlTree): UrlTree { return url; }
-  merge(newUrlPart: UrlTree, wholeUrl: UrlTree): UrlTree { return newUrlPart; }
+  shouldProcessUrl(url: UrlTree): boolean {
+    return true;
+  }
+  extract(url: UrlTree): UrlTree {
+    return url;
+  }
+  merge(newUrlPart: UrlTree, wholeUrl: UrlTree): UrlTree {
+    return newUrlPart;
+  }
 }

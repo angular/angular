@@ -1,23 +1,25 @@
 import { Injectable } from '@angular/core';
+import * as angular from 'angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LazyLoaderService {
-  bootstrapped = false;
+  private app: angular.auto.IInjectorService;
 
   load(el: HTMLElement): void {
-    if (this.bootstrapped) {
-      return;
-    }
-
     import('./angularjs-app').then(app => {
       try {
-        app.bootstrap(el);
-        this.bootstrapped = true;
+        this.app = app.bootstrap(el);
       } catch (e) {
         console.error(e);
       }
     });
+  }
+
+  destroy() {
+    if (this.app) {
+      this.app.get('$rootScope').$destroy();
+    }
   }
 }

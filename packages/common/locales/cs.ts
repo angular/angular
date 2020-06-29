@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,7 +20,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'cs', [['dop.', 'odp.'], u, u], u,
+  'cs',
+  [['dop.', 'odp.'], u, u],
+  u,
   [
     ['N', 'P', 'Ú', 'S', 'Č', 'P', 'S'], ['ne', 'po', 'út', 'st', 'čt', 'pá', 'so'],
     ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota'],
@@ -31,26 +33,30 @@ export default [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'],
     [
-      'ledna', 'února', 'března', 'dubna', 'května', 'června', 'července', 'srpna', 'září',
-      'října', 'listopadu', 'prosince'
+      'ledna', 'února', 'března', 'dubna', 'května', 'června', 'července', 'srpna', 'září', 'října',
+      'listopadu', 'prosince'
     ]
   ],
   [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'],
     [
-      'leden', 'únor', 'březen', 'duben', 'květen', 'červen', 'červenec', 'srpen', 'září',
-      'říjen', 'listopad', 'prosinec'
+      'leden', 'únor', 'březen', 'duben', 'květen', 'červen', 'červenec', 'srpen', 'září', 'říjen',
+      'listopad', 'prosinec'
     ]
   ],
-  [
-    ['př.n.l.', 'n.l.'], ['př. n. l.', 'n. l.'],
-    ['před naším letopočtem', 'našeho letopočtu']
-  ],
-  1, [6, 0], ['dd.MM.yy', 'd. M. y', 'd. MMMM y', 'EEEE d. MMMM y'],
-  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  [['př.n.l.', 'n.l.'], ['př. n. l.', 'n. l.'], ['před naším letopočtem', 'našeho letopočtu']],
+  1,
+  [6, 0],
+  ['dd.MM.yy', 'd. M. y', 'd. MMMM y', 'EEEE d. MMMM y'],
+  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'Kč', 'česká koruna', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'CZK',
+  'Kč',
+  'česká koruna',
+  {
     'AUD': ['AU$', '$'],
     'CSK': ['Kčs'],
     'CZK': ['Kč'],
@@ -61,7 +67,9 @@ export default [
     'TWD': ['NT$'],
     'USD': ['US$', '$'],
     'VND': [u, '₫'],
-    'XEU': ['ECU']
+    'XEU': ['ECU'],
+    'XXX': []
   },
+  'ltr',
   plural
 ];

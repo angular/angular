@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Pipe, PipeTransform} from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -24,7 +24,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * @ngModule CommonModule
  * @publicApi
  */
-@Injectable()
 @Pipe({name: 'lowercase'})
 export class LowerCasePipe implements PipeTransform {
   /**
@@ -53,7 +52,7 @@ const unicodeWordMatch =
 
 /**
  * Transforms text to title case.
- * Capitalizes the first letter of each word, and transforms the
+ * Capitalizes the first letter of each word and transforms the
  * rest of the word to lower case.
  * Words are delimited by any whitespace character, such as a space, tab, or line-feed character.
  *
@@ -68,7 +67,6 @@ const unicodeWordMatch =
  * @ngModule CommonModule
  * @publicApi
  */
-@Injectable()
 @Pipe({name: 'titlecase'})
 export class TitleCasePipe implements PipeTransform {
   /**
@@ -93,7 +91,6 @@ export class TitleCasePipe implements PipeTransform {
  * @ngModule CommonModule
  * @publicApi
  */
-@Injectable()
 @Pipe({name: 'uppercase'})
 export class UpperCasePipe implements PipeTransform {
   /**

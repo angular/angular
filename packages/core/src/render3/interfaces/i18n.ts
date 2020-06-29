@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -31,10 +31,6 @@ export const enum I18nMutateOpCode {
    * Mask for OpCode
    */
   MASK_OPCODE = 0b111,
-  /**
-   * Mask for reference index
-   */
-  MASK_REF = ((2 ^ 16) - 1) << SHIFT_REF,
 
   /**
    * OpCode to select a node. (next OpCode will contain the operation.)
@@ -44,10 +40,6 @@ export const enum I18nMutateOpCode {
    * OpCode to append the current node to `PARENT`.
    */
   AppendChild = 0b001,
-  /**
-   * OpCode to insert the current node to `PARENT` before `REF`.
-   */
-  InsertBefore = 0b010,
   /**
    * OpCode to remove the `REF` node from `PARENT`.
    */
@@ -74,7 +66,9 @@ export const enum I18nMutateOpCode {
 export const ELEMENT_MARKER: ELEMENT_MARKER = {
   marker: 'element'
 };
-export interface ELEMENT_MARKER { marker: 'element'; }
+export interface ELEMENT_MARKER {
+  marker: 'element';
+}
 
 /**
  * Marks that the next string is for comment.
@@ -85,7 +79,9 @@ export const COMMENT_MARKER: COMMENT_MARKER = {
   marker: 'comment'
 };
 
-export interface COMMENT_MARKER { marker: 'comment'; }
+export interface COMMENT_MARKER {
+  marker: 'comment';
+}
 
 /**
  * Array storing OpCode for dynamically creating `i18n` blocks.
@@ -170,17 +166,9 @@ export const enum I18nUpdateOpCode {
    */
   SHIFT_REF = 2,
   /**
-   * Stores shift amount for bits 31-17 that contain which ICU in i18n block are we referring to.
-   */
-  SHIFT_ICU = 17,
-  /**
    * Mask for OpCode
    */
   MASK_OPCODE = 0b11,
-  /**
-   * Mask for reference index.
-   */
-  MASK_REF = ((2 ^ 16) - 1) << SHIFT_REF,
 
   /**
    * OpCode to update a text node.
@@ -216,10 +204,10 @@ export const enum I18nUpdateOpCode {
  * Assume
  * ```ts
  *   if (rf & RenderFlags.Update) {
- *    i18nExp(bind(ctx.exp1)); // If changed set mask bit 1
- *    i18nExp(bind(ctx.exp2)); // If changed set mask bit 2
- *    i18nExp(bind(ctx.exp3)); // If changed set mask bit 3
- *    i18nExp(bind(ctx.exp4)); // If changed set mask bit 4
+ *    i18nExp(ctx.exp1); // If changed set mask bit 1
+ *    i18nExp(ctx.exp2); // If changed set mask bit 2
+ *    i18nExp(ctx.exp3); // If changed set mask bit 3
+ *    i18nExp(ctx.exp4); // If changed set mask bit 4
  *    i18nApply(0);            // Apply all changes by executing the OpCodes.
  *  }
  * ```

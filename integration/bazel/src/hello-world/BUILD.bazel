@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@npm_bazel_karma//:index.bzl", "ts_web_test_suite")
+load("@npm_bazel_karma//:index.bzl", "karma_web_test_suite")
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
 load("@npm_angular_bazel//:index.bzl", "ng_module", "ng_package")
@@ -17,15 +17,17 @@ ng_module(
         exclude = ["*.spec.ts"],
     ),
     assets = [":hello-world-styles"],
+    generate_ve_shims = True,
     deps = [
         "@npm//@angular/core",
         "@npm//@types",
+        "@npm//tslib",
     ],
 )
 
 ng_package(
     name = "npm_package",
-    entry_point = "src/hello-world/index.js",
+    entry_point = ":index.ts",
     deps = [":hello-world"],
 )
 
@@ -40,14 +42,15 @@ ts_library(
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
         "@npm//jasmine",
+        "@npm//tslib",
     ],
 )
 
-ts_web_test_suite(
+karma_web_test_suite(
     name = "test",
     bootstrap = [
-        "@npm//node_modules/zone.js:dist/zone-testing-bundle.js",
-        "@npm//node_modules/reflect-metadata:Reflect.js",
+        "@npm//:node_modules/zone.js/bundles/zone-testing-bundle.umd.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     browsers = [
         "@io_bazel_rules_webtesting//browsers:chromium-local",
@@ -55,6 +58,8 @@ ts_web_test_suite(
         # See https://github.com/bazelbuild/rules_typescript/issues/296
         # "@io_bazel_rules_webtesting//browsers:firefox-local",
     ],
+    # rules_webtesting has a required_tag "native" for `chromium-local` browser
+    tags = ["native"],
     deps = [
         ":test_lib",
         "//src:rxjs_umd_modules",

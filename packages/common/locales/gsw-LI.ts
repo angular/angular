@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,8 @@ function plural(n: number): number {
 }
 
 export default [
-  'gsw-LI', [['vorm.', 'nam.'], u, ['am Vormittag', 'am Namittag']],
+  'gsw-LI',
+  [['vorm.', 'nam.'], u, ['am Vormittag', 'am Namittag']],
   [['vorm.', 'nam.'], u, ['Vormittag', 'Namittag']],
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['Su.', 'Mä.', 'Zi.', 'Mi.', 'Du.', 'Fr.', 'Sa.'],
@@ -33,10 +34,19 @@ export default [
       'Oktoober', 'Novämber', 'Dezämber'
     ]
   ],
-  u, [['v. Chr.', 'n. Chr.'], u, u], 1, [6, 0],
+  u,
+  [['v. Chr.', 'n. Chr.'], u, u],
+  1,
+  [6, 0],
   ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', '’', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'CHF', 'Schwiizer Franke', {'ATS': ['öS']},
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'CHF',
+  'CHF',
+  'Schwiizer Franke',
+  {'ATS': ['öS']},
+  'ltr',
   plural
 ];

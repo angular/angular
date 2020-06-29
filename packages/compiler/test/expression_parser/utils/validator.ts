@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,8 +22,8 @@ class ASTValidator extends RecursiveAstVisitor {
     if (!inSpan(ast.span, this.parentSpan)) {
       if (this.parentSpan) {
         const parentSpan = this.parentSpan as ParseSpan;
-        throw Error(
-            `Invalid AST span [expected (${ast.span.start}, ${ast.span.end}) to be in (${parentSpan.start},  ${parentSpan.end}) for ${unparse(ast)}`);
+        throw Error(`Invalid AST span [expected (${ast.span.start}, ${ast.span.end}) to be in (${
+            parentSpan.start},  ${parentSpan.end}) for ${unparse(ast)}`);
       } else {
         throw Error(`Invalid root AST span for ${unparse(ast)}`);
       }
@@ -111,7 +111,7 @@ class ASTValidator extends RecursiveAstVisitor {
   }
 }
 
-function inSpan(span: ParseSpan, parentSpan: ParseSpan | undefined): parentSpan is ParseSpan {
+function inSpan(span: ParseSpan, parentSpan: ParseSpan|undefined): parentSpan is ParseSpan {
   return !parentSpan || (span.start >= parentSpan.start && span.end <= parentSpan.end);
 }
 

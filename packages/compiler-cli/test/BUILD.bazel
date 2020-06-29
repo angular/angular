@@ -7,18 +7,18 @@ ts_library(
     testonly = True,
     srcs = [
         "mocks.ts",
-        "runfile_helpers.ts",
         "test_support.ts",
     ],
     visibility = [
         ":__subpackages__",
-        "//packages/compiler-cli/ngcc/test:__subpackages__",
         "//packages/language-service/test:__subpackages__",
     ],
     deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/test/helpers",
         "@npm//typescript",
     ],
 )
@@ -40,7 +40,7 @@ ts_library(
 
 jasmine_node_test(
     name = "extract_i18n",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     data = [
         "//packages/core:npm_package",
     ],
@@ -53,7 +53,6 @@ jasmine_node_test(
         ":extract_i18n_lib",
         "//packages/common:npm_package",
         "//packages/core",
-        "//tools/testing:node",
         "@npm//minimist",
     ],
 )
@@ -76,7 +75,7 @@ ts_library(
 jasmine_node_test(
     name = "ngc",
     timeout = "long",  # 900 seconds
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
@@ -91,40 +90,9 @@ jasmine_node_test(
     deps = [
         ":ngc_lib",
         "//packages/core",
-        "//tools/testing:node",
         "@npm//minimist",
         "@npm//rxjs",
         "@npm//tsickle",
-    ],
-)
-
-# ngctools_api_spec
-ts_library(
-    name = "ngtools_api_lib",
-    testonly = True,
-    srcs = [
-        "ngtools_api_spec.ts",
-    ],
-    deps = [
-        ":test_utils",
-        "//packages/compiler",
-        "//packages/compiler-cli",
-        "//packages/private/testing",
-        "@npm//typescript",
-    ],
-)
-
-jasmine_node_test(
-    name = "ngtools_api",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    data = [
-        "//packages/core:npm_package",
-        "//packages/router:npm_package",
-    ],
-    deps = [
-        ":ngtools_api_lib",
-        "//packages/core",
-        "//tools/testing:node",
     ],
 )
 
@@ -139,20 +107,20 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "//packages/private/testing",
         "@npm//typescript",
     ],
 )
 
 jasmine_node_test(
     name = "perform_watch",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     data = [
         "//packages/core:npm_package",
     ],
     deps = [
         ":perform_watch_lib",
         "//packages/core",
-        "//tools/testing:node",
     ],
 )
 
@@ -172,13 +140,12 @@ ts_library(
 
 jasmine_node_test(
     name = "perform_compile",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     data = [
         "//packages/core:npm_package",
     ],
     deps = [
         ":perform_compile_lib",
         "//packages/core",
-        "//tools/testing:node",
     ],
 )

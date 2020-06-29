@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,63 +18,62 @@ import {PlaceholderRegistry} from './serializers/placeholder';
 
 const _expParser = new ExpressionParser(new ExpressionLexer());
 
-type VisitNodeFn = (html: html.Node, i18n: i18n.Node) => void;
+export type VisitNodeFn = (html: html.Node, i18n: i18n.Node) => i18n.Node;
+
+export interface I18nMessageFactory {
+  (nodes: html.Node[], meaning: string|undefined, description: string|undefined,
+   customId: string|undefined, visitNodeFn?: VisitNodeFn): i18n.Message;
+}
 
 /**
  * Returns a function converting html nodes to an i18n Message given an interpolationConfig
  */
-export function createI18nMessageFactory(interpolationConfig: InterpolationConfig): (
-    nodes: html.Node[], meaning: string, description: string, id: string,
-    visitNodeFn?: VisitNodeFn) => i18n.Message {
+export function createI18nMessageFactory(interpolationConfig: InterpolationConfig):
+    I18nMessageFactory {
   const visitor = new _I18nVisitor(_expParser, interpolationConfig);
+  return (nodes, meaning, description, customId, visitNodeFn) =>
+             visitor.toI18nMessage(nodes, meaning, description, customId, visitNodeFn);
+}
 
-  return (nodes: html.Node[], meaning: string, description: string, id: string,
-          visitNodeFn?: VisitNodeFn) =>
-             visitor.toI18nMessage(nodes, meaning, description, id, visitNodeFn);
+interface I18nMessageVisitorContext {
+  isIcu: boolean;
+  icuDepth: number;
+  placeholderRegistry: PlaceholderRegistry;
+  placeholderToContent: {[phName: string]: string};
+  placeholderToMessage: {[phName: string]: i18n.Message};
+  visitNodeFn: VisitNodeFn;
+}
+
+function noopVisitNodeFn(_html: html.Node, i18n: i18n.Node): i18n.Node {
+  return i18n;
 }
 
 class _I18nVisitor implements html.Visitor {
-  // TODO(issue/24571): remove '!'.
-  private _isIcu !: boolean;
-  // TODO(issue/24571): remove '!'.
-  private _icuDepth !: number;
-  // TODO(issue/24571): remove '!'.
-  private _placeholderRegistry !: PlaceholderRegistry;
-  // TODO(issue/24571): remove '!'.
-  private _placeholderToContent !: {[phName: string]: string};
-  // TODO(issue/24571): remove '!'.
-  private _placeholderToMessage !: {[phName: string]: i18n.Message};
-  private _visitNodeFn: VisitNodeFn|undefined;
-
   constructor(
       private _expressionParser: ExpressionParser,
       private _interpolationConfig: InterpolationConfig) {}
 
   public toI18nMessage(
-      nodes: html.Node[], meaning: string, description: string, id: string,
-      visitNodeFn?: VisitNodeFn): i18n.Message {
-    this._isIcu = nodes.length == 1 && nodes[0] instanceof html.Expansion;
-    this._icuDepth = 0;
-    this._placeholderRegistry = new PlaceholderRegistry();
-    this._placeholderToContent = {};
-    this._placeholderToMessage = {};
-    this._visitNodeFn = visitNodeFn;
+      nodes: html.Node[], meaning = '', description = '', customId = '',
+      visitNodeFn: VisitNodeFn|undefined): i18n.Message {
+    const context: I18nMessageVisitorContext = {
+      isIcu: nodes.length == 1 && nodes[0] instanceof html.Expansion,
+      icuDepth: 0,
+      placeholderRegistry: new PlaceholderRegistry(),
+      placeholderToContent: {},
+      placeholderToMessage: {},
+      visitNodeFn: visitNodeFn || noopVisitNodeFn,
+    };
 
-    const i18nodes: i18n.Node[] = html.visitAll(this, nodes, {});
+    const i18nodes: i18n.Node[] = html.visitAll(this, nodes, context);
 
     return new i18n.Message(
-        i18nodes, this._placeholderToContent, this._placeholderToMessage, meaning, description, id);
+        i18nodes, context.placeholderToContent, context.placeholderToMessage, meaning, description,
+        customId);
   }
 
-  private _visitNode(html: html.Node, i18n: i18n.Node): i18n.Node {
-    if (this._visitNodeFn) {
-      this._visitNodeFn(html, i18n);
-    }
-    return i18n;
-  }
-
-  visitElement(el: html.Element, context: any): i18n.Node {
-    const children = html.visitAll(this, el.children);
+  visitElement(el: html.Element, context: I18nMessageVisitorContext): i18n.Node {
+    const children = html.visitAll(this, el.children, context);
     const attrs: {[k: string]: string} = {};
     el.attrs.forEach(attr => {
       // Do not visit the attributes, translatable ones are top-level ASTs
@@ -83,70 +82,71 @@ class _I18nVisitor implements html.Visitor {
 
     const isVoid: boolean = getHtmlTagDefinition(el.name).isVoid;
     const startPhName =
-        this._placeholderRegistry.getStartTagPlaceholderName(el.name, attrs, isVoid);
-    this._placeholderToContent[startPhName] = el.sourceSpan !.toString();
+        context.placeholderRegistry.getStartTagPlaceholderName(el.name, attrs, isVoid);
+    context.placeholderToContent[startPhName] = el.sourceSpan!.toString();
 
     let closePhName = '';
 
     if (!isVoid) {
-      closePhName = this._placeholderRegistry.getCloseTagPlaceholderName(el.name);
-      this._placeholderToContent[closePhName] = `</${el.name}>`;
+      closePhName = context.placeholderRegistry.getCloseTagPlaceholderName(el.name);
+      context.placeholderToContent[closePhName] = `</${el.name}>`;
     }
 
     const node = new i18n.TagPlaceholder(
-        el.name, attrs, startPhName, closePhName, children, isVoid, el.sourceSpan !);
-    return this._visitNode(el, node);
+        el.name, attrs, startPhName, closePhName, children, isVoid, el.sourceSpan!);
+    return context.visitNodeFn(el, node);
   }
 
-  visitAttribute(attribute: html.Attribute, context: any): i18n.Node {
-    const node = this._visitTextWithInterpolation(attribute.value, attribute.sourceSpan);
-    return this._visitNode(attribute, node);
+  visitAttribute(attribute: html.Attribute, context: I18nMessageVisitorContext): i18n.Node {
+    const node = this._visitTextWithInterpolation(attribute.value, attribute.sourceSpan, context);
+    return context.visitNodeFn(attribute, node);
   }
 
-  visitText(text: html.Text, context: any): i18n.Node {
-    const node = this._visitTextWithInterpolation(text.value, text.sourceSpan !);
-    return this._visitNode(text, node);
+  visitText(text: html.Text, context: I18nMessageVisitorContext): i18n.Node {
+    const node = this._visitTextWithInterpolation(text.value, text.sourceSpan!, context);
+    return context.visitNodeFn(text, node);
   }
 
-  visitComment(comment: html.Comment, context: any): i18n.Node|null { return null; }
+  visitComment(comment: html.Comment, context: I18nMessageVisitorContext): i18n.Node|null {
+    return null;
+  }
 
-  visitExpansion(icu: html.Expansion, context: any): i18n.Node {
-    this._icuDepth++;
+  visitExpansion(icu: html.Expansion, context: I18nMessageVisitorContext): i18n.Node {
+    context.icuDepth++;
     const i18nIcuCases: {[k: string]: i18n.Node} = {};
     const i18nIcu = new i18n.Icu(icu.switchValue, icu.type, i18nIcuCases, icu.sourceSpan);
     icu.cases.forEach((caze): void => {
       i18nIcuCases[caze.value] = new i18n.Container(
-          caze.expression.map((node) => node.visit(this, {})), caze.expSourceSpan);
+          caze.expression.map((node) => node.visit(this, context)), caze.expSourceSpan);
     });
-    this._icuDepth--;
+    context.icuDepth--;
 
-    if (this._isIcu || this._icuDepth > 0) {
+    if (context.isIcu || context.icuDepth > 0) {
       // Returns an ICU node when:
       // - the message (vs a part of the message) is an ICU message, or
       // - the ICU message is nested.
-      const expPh = this._placeholderRegistry.getUniquePlaceholder(`VAR_${icu.type}`);
+      const expPh = context.placeholderRegistry.getUniquePlaceholder(`VAR_${icu.type}`);
       i18nIcu.expressionPlaceholder = expPh;
-      this._placeholderToContent[expPh] = icu.switchValue;
-      return this._visitNode(icu, i18nIcu);
+      context.placeholderToContent[expPh] = icu.switchValue;
+      return context.visitNodeFn(icu, i18nIcu);
     }
 
     // Else returns a placeholder
     // ICU placeholders should not be replaced with their original content but with the their
-    // translations. We need to create a new visitor (they are not re-entrant) to compute the
-    // message id.
+    // translations.
     // TODO(vicb): add a html.Node -> i18n.Message cache to avoid having to re-create the msg
-    const phName = this._placeholderRegistry.getPlaceholderName('ICU', icu.sourceSpan.toString());
-    const visitor = new _I18nVisitor(this._expressionParser, this._interpolationConfig);
-    this._placeholderToMessage[phName] = visitor.toI18nMessage([icu], '', '', '');
+    const phName = context.placeholderRegistry.getPlaceholderName('ICU', icu.sourceSpan.toString());
+    context.placeholderToMessage[phName] = this.toI18nMessage([icu], '', '', '', undefined);
     const node = new i18n.IcuPlaceholder(i18nIcu, phName, icu.sourceSpan);
-    return this._visitNode(icu, node);
+    return context.visitNodeFn(icu, node);
   }
 
-  visitExpansionCase(icuCase: html.ExpansionCase, context: any): i18n.Node {
+  visitExpansionCase(_icuCase: html.ExpansionCase, _context: I18nMessageVisitorContext): i18n.Node {
     throw new Error('Unreachable code');
   }
 
-  private _visitTextWithInterpolation(text: string, sourceSpan: ParseSourceSpan): i18n.Node {
+  private _visitTextWithInterpolation(
+      text: string, sourceSpan: ParseSourceSpan, context: I18nMessageVisitorContext): i18n.Node {
     const splitInterpolation = this._expressionParser.splitInterpolation(
         text, sourceSpan.start.toString(), this._interpolationConfig);
 
@@ -163,7 +163,7 @@ class _I18nVisitor implements html.Visitor {
     for (let i = 0; i < splitInterpolation.strings.length - 1; i++) {
       const expression = splitInterpolation.expressions[i];
       const baseName = _extractPlaceholderName(expression) || 'INTERPOLATION';
-      const phName = this._placeholderRegistry.getPlaceholderName(baseName, expression);
+      const phName = context.placeholderRegistry.getPlaceholderName(baseName, expression);
 
       if (splitInterpolation.strings[i].length) {
         // No need to add empty strings
@@ -171,7 +171,7 @@ class _I18nVisitor implements html.Visitor {
       }
 
       nodes.push(new i18n.Placeholder(expression, phName, sourceSpan));
-      this._placeholderToContent[phName] = sDelimiter + expression + eDelimiter;
+      context.placeholderToContent[phName] = sDelimiter + expression + eDelimiter;
     }
 
     // The last index contains no expression

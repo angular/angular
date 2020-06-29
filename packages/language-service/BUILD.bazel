@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "npm_package", "ts_library")
+load("//tools:defaults.bzl", "pkg_npm", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -9,8 +9,12 @@ ts_library(
             "*.ts",
             "src/**/*.ts",
         ],
+        exclude = [
+            "src/ts_utils.ts",
+        ],
     ),
     deps = [
+        ":ts_utils",
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
@@ -20,7 +24,15 @@ ts_library(
     ],
 )
 
-npm_package(
+ts_library(
+    name = "ts_utils",
+    srcs = ["src/ts_utils.ts"],
+    deps = [
+        "@npm//typescript",
+    ],
+)
+
+pkg_npm(
     name = "npm_package",
     srcs = ["package.json"],
     tags = [
@@ -28,9 +40,13 @@ npm_package(
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//visibility:private"],
+    visibility = [
+        "//integration:__pkg__",
+    ],
     deps = [
         ":language-service",
-        "//packages/language-service/bundles:language-service",
+        # min bundle is not used at the moment; omit from package to speed up build
+        "//packages/language-service/bundles:language-service.umd.js",
+        "//packages/language-service/bundles:ivy.umd.js",
     ],
 )

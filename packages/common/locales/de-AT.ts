@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'de-AT', [['vm.', 'nm.'], ['vorm.', 'nachm.'], u], u,
+  'de-AT',
+  [['AM', 'PM'], u, u],
+  [['vm.', 'nm.'], ['AM', 'PM'], u],
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
     ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
@@ -31,28 +33,32 @@ export default [
   ],
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+    ['Jän.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'],
     [
-      'Jän.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.',
-      'Dez.'
-    ],
-    [
-      'Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September',
-      'Oktober', 'November', 'Dezember'
+      'Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober',
+      'November', 'Dezember'
     ]
   ],
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['Jän', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
     [
-      'Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September',
-      'Oktober', 'November', 'Dezember'
+      'Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober',
+      'November', 'Dezember'
     ]
   ],
-  [['v. Chr.', 'n. Chr.'], u, u], 1, [6, 0],
+  [['v. Chr.', 'n. Chr.'], u, u],
+  1,
+  [6, 0],
   ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'um\' {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, '{1} \'um\' {0}', u],
   [',', ' ', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':', u, '.'],
-  ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], '€', 'Euro', {
+  ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'],
+  'EUR',
+  '€',
+  'Euro',
+  {
     'ATS': ['öS'],
     'AUD': ['AU$', '$'],
     'BGM': ['BGK'],
@@ -67,7 +73,9 @@ export default [
     'SYP': [],
     'THB': ['฿'],
     'TWD': ['NT$'],
+    'XXX': [],
     'ZMW': [u, 'K']
   },
+  'ltr',
   plural
 ];

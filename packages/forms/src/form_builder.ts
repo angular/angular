@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,8 +11,8 @@ import {Injectable} from '@angular/core';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup, FormHooks} from './model';
 
-function isAbstractControlOptions(options: AbstractControlOptions | {[key: string]: any}):
-    options is AbstractControlOptions {
+function isAbstractControlOptions(options: AbstractControlOptions|
+                                  {[key: string]: any}): options is AbstractControlOptions {
   return (<AbstractControlOptions>options).asyncValidators !== undefined ||
       (<AbstractControlOptions>options).validators !== undefined ||
       (<AbstractControlOptions>options).updateOn !== undefined;
@@ -98,8 +98,7 @@ export class FormBuilder {
    *
    * The following example returns a control with an initial value in a disabled state.
    *
-   * <code-example path="forms/ts/formBuilder/form_builder_example.ts"
-   *   linenums="false" region="disabled-control">
+   * <code-example path="forms/ts/formBuilder/form_builder_example.ts" region="disabled-control">
    * </code-example>
    */
   control(

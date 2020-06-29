@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,6 +12,9 @@ import {EventEmitter} from '../event_emitter';
 import {flatten} from '../util/array_utils';
 import {getSymbolIterator} from '../util/symbol';
 
+function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
+  return ((this as any as {_results: Array<T>})._results as any)[getSymbolIterator()]();
+}
 
 /**
  * An unmodifiable list of items that Angular keeps up to date when the state
@@ -39,22 +42,34 @@ import {getSymbolIterator} from '../util/symbol';
  *
  * @publicApi
  */
-export class QueryList<T>/* implements Iterable<T> */ {
+export class QueryList<T> implements Iterable<T> {
   public readonly dirty = true;
   private _results: Array<T> = [];
   public readonly changes: Observable<any> = new EventEmitter();
 
   readonly length: number = 0;
   // TODO(issue/24571): remove '!'.
-  readonly first !: T;
+  readonly first!: T;
   // TODO(issue/24571): remove '!'.
-  readonly last !: T;
+  readonly last!: T;
+
+  constructor() {
+    // This function should be declared on the prototype, but doing so there will cause the class
+    // declaration to have side-effects and become not tree-shakable. For this reason we do it in
+    // the constructor.
+    // [getSymbolIterator()](): Iterator<T> { ... }
+    const symbol = getSymbolIterator();
+    const proto = QueryList.prototype as any;
+    if (!proto[symbol]) proto[symbol] = symbolIterator;
+  }
 
   /**
    * See
    * [Array.map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
    */
-  map<U>(fn: (item: T, index: number, array: T[]) => U): U[] { return this._results.map(fn); }
+  map<U>(fn: (item: T, index: number, array: T[]) => U): U[] {
+    return this._results.map(fn);
+  }
 
   /**
    * See
@@ -84,7 +99,9 @@ export class QueryList<T>/* implements Iterable<T> */ {
    * See
    * [Array.forEach](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
    */
-  forEach(fn: (item: T, index: number, array: T[]) => void): void { this._results.forEach(fn); }
+  forEach(fn: (item: T, index: number, array: T[]) => void): void {
+    this._results.forEach(fn);
+  }
 
   /**
    * See
@@ -97,38 +114,51 @@ export class QueryList<T>/* implements Iterable<T> */ {
   /**
    * Returns a copy of the internal results list as an Array.
    */
-  toArray(): T[] { return this._results.slice(); }
+  toArray(): T[] {
+    return this._results.slice();
+  }
 
-  [getSymbolIterator()](): Iterator<T> { return (this._results as any)[getSymbolIterator()](); }
-
-  toString(): string { return this._results.toString(); }
+  toString(): string {
+    return this._results.toString();
+  }
 
   /**
    * Updates the stored data of the query list, and resets the `dirty` flag to `false`, so that
    * on change detection, it will not notify of changes to the queries, unless a new change
    * occurs.
    *
-   * @param resultsTree The results tree to store
+   * @param resultsTree The query results to store
    */
   reset(resultsTree: Array<T|any[]>): void {
     this._results = flatten(resultsTree);
-    (this as{dirty: boolean}).dirty = false;
-    (this as{length: number}).length = this._results.length;
-    (this as{last: T}).last = this._results[this.length - 1];
-    (this as{first: T}).first = this._results[0];
+    (this as {dirty: boolean}).dirty = false;
+    (this as {length: number}).length = this._results.length;
+    (this as {last: T}).last = this._results[this.length - 1];
+    (this as {first: T}).first = this._results[0];
   }
 
   /**
    * Triggers a change event by emitting on the `changes` {@link EventEmitter}.
    */
-  notifyOnChanges(): void { (this.changes as EventEmitter<any>).emit(this); }
+  notifyOnChanges(): void {
+    (this.changes as EventEmitter<any>).emit(this);
+  }
 
   /** internal */
-  setDirty() { (this as{dirty: boolean}).dirty = true; }
+  setDirty() {
+    (this as {dirty: boolean}).dirty = true;
+  }
 
   /** internal */
   destroy(): void {
     (this.changes as EventEmitter<any>).complete();
     (this.changes as EventEmitter<any>).unsubscribe();
   }
+
+  // The implementation of `Symbol.iterator` should be declared here, but this would cause
+  // tree-shaking issues with `QueryList. So instead, it's added in the constructor (see comments
+  // there) and this declaration is left here to ensure that TypeScript considers QueryList to
+  // implement the Iterable interface. This is required for template type-checking of NgFor loops
+  // over QueryLists to work correctly, since QueryList must be assignable to NgIterable.
+  [Symbol.iterator]!: () => Iterator<T>;
 }

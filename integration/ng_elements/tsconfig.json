@@ -2,7 +2,8 @@
   "angularCompilerOptions": {
     "annotationsAs": "static fields",
     "annotateForClosureCompiler": true,
-    "alwaysCompileGeneratedCode": true
+    "alwaysCompileGeneratedCode": true,
+    "enableIvy": false,
   },
 
   "compilerOptions": {

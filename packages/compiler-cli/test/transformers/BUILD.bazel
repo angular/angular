@@ -8,6 +8,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/test:test_utils",
         "//packages/compiler/test:test_utils",
         "//packages/core",
@@ -19,7 +20,7 @@ ts_library(
 jasmine_node_test(
     name = "test",
     timeout = "long",  # 900 seconds
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
@@ -33,7 +34,6 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//packages/core",
-        "//tools/testing:node",
         "@npm//source-map",
     ],
 )

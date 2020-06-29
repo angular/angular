@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {ApplicationRef, ComponentRef} from '@angular/core';
-import {getDOM} from '../../dom/dom_adapter';
 import {window} from './browser';
 
 export class ChangeDetectionPerfRecord {
@@ -21,7 +21,9 @@ export class ChangeDetectionPerfRecord {
 export class AngularProfiler {
   appRef: ApplicationRef;
 
-  constructor(ref: ComponentRef<any>) { this.appRef = ref.injector.get(ApplicationRef); }
+  constructor(ref: ComponentRef<any>) {
+    this.appRef = ref.injector.get(ApplicationRef);
+  }
 
   // tslint:disable:no-console
   /**

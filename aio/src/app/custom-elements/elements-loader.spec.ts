@@ -35,8 +35,8 @@ describe('ElementsLoader', () => {
       ]
     });
 
-    elementsLoader = injector.get(ElementsLoader);
-    compiler = injector.get(Compiler);
+    elementsLoader = injector.inject(ElementsLoader);
+    compiler = injector.inject(Compiler);
   });
 
   describe('loadContainedCustomElements()', () => {
@@ -260,10 +260,10 @@ class FakeComponentFactory extends ComponentFactory<any> {
 
   constructor(private identifyingInput: string) { super(); }
 
-  create(injector: Injector,
-         projectableNodes?: any[][],
-         rootSelectorOrNode?: string | any,
-         ngModule?: NgModuleRef<any>): ComponentRef<any> {
+  create(_injector: Injector,
+         _projectableNodes?: any[][],
+         _rootSelectorOrNode?: string | any,
+         _ngModule?: NgModuleRef<any>): ComponentRef<any> {
     return jasmine.createSpy('ComponentRef') as any;
   }
 }
@@ -271,7 +271,7 @@ class FakeComponentFactory extends ComponentFactory<any> {
 class FakeComponentFactoryResolver extends ComponentFactoryResolver {
   constructor(private modulePath: string) { super(); }
 
-  resolveComponentFactory(component: Type<any>): ComponentFactory<any> {
+  resolveComponentFactory(_component: Type<any>): ComponentFactory<any> {
     return new FakeComponentFactory(this.modulePath);
   }
 }
@@ -288,7 +288,7 @@ class FakeModuleRef extends NgModuleRef<WithCustomElementComponent> {
   }
 
   destroy() {}
-  onDestroy(callback: () => void) {}
+  onDestroy(_callback: () => void) {}
 }
 
 class FakeModuleFactory extends NgModuleFactory<any> {
@@ -297,7 +297,7 @@ class FakeModuleFactory extends NgModuleFactory<any> {
 
   constructor(private modulePath: string) { super(); }
 
-  create(parentInjector: Injector | null): NgModuleRef<any> {
+  create(_parentInjector: Injector | null): NgModuleRef<any> {
     return this.moduleRefToCreate;
   }
 }

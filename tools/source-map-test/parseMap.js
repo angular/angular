@@ -2,7 +2,7 @@
 
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -41,7 +41,9 @@ module.exports = function getMappings(bundlePath) {
           matchData.push({
             genLineIndex,
             sourceLineIndex,
-            sourceFile: sourceMap.sources[sourceFileIndex], genText, sourceText
+            sourceFile: sourceMap.sources[sourceFileIndex],
+            genText,
+            sourceText
           });
         }
 
@@ -59,6 +61,7 @@ function getFile(filePath) {
 }
 
 function decodeLines(sourceMap) {
-  return sourceMap.mappings.split(';').map(
-      line => { return line.split(',').map(seg => vlq.decode(seg)); });
+  return sourceMap.mappings.split(';').map(line => {
+    return line.split(',').map(seg => vlq.decode(seg));
+  });
 }

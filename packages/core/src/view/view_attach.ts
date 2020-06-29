@@ -1,28 +1,30 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {addToArray, removeFromArray} from '../util/array_utils';
+
 import {ElementData, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewState} from './types';
-import {RenderNodeAction, declaredViewContainer, isComponentView, renderNode, visitRootRenderNodes} from './util';
+import {declaredViewContainer, renderNode, RenderNodeAction, visitRootRenderNodes} from './util';
 
 export function attachEmbeddedView(
-    parentView: ViewData, elementData: ElementData, viewIndex: number | undefined | null,
+    parentView: ViewData, elementData: ElementData, viewIndex: number|undefined|null,
     view: ViewData) {
-  let embeddedViews = elementData.viewContainer !._embeddedViews;
+  let embeddedViews = elementData.viewContainer!._embeddedViews;
   if (viewIndex === null || viewIndex === undefined) {
     viewIndex = embeddedViews.length;
   }
   view.viewContainerParent = parentView;
-  addToArray(embeddedViews, viewIndex !, view);
+  addToArray(embeddedViews, viewIndex!, view);
   attachProjectedView(elementData, view);
 
   Services.dirtyParentQueries(view);
 
-  const prevView = viewIndex ! > 0 ? embeddedViews[viewIndex ! - 1] : null;
+  const prevView = viewIndex! > 0 ? embeddedViews[viewIndex! - 1] : null;
   renderAttachEmbeddedView(elementData, prevView, view);
 }
 
@@ -47,7 +49,7 @@ function attachProjectedView(vcElementData: ElementData, view: ViewData) {
   projectedViews.push(view);
   // Note: we are changing the NodeDef here as we cannot calculate
   // the fact whether a template is used for projection during compilation.
-  markNodeAsProjectedTemplate(view.parent !.def, view.parentNodeDef !);
+  markNodeAsProjectedTemplate(view.parent!.def, view.parentNodeDef!);
 }
 
 function markNodeAsProjectedTemplate(viewDef: ViewDefinition, nodeDef: NodeDef) {
@@ -64,7 +66,7 @@ function markNodeAsProjectedTemplate(viewDef: ViewDefinition, nodeDef: NodeDef) 
 }
 
 export function detachEmbeddedView(elementData: ElementData, viewIndex?: number): ViewData|null {
-  const embeddedViews = elementData.viewContainer !._embeddedViews;
+  const embeddedViews = elementData.viewContainer!._embeddedViews;
   if (viewIndex == null || viewIndex >= embeddedViews.length) {
     viewIndex = embeddedViews.length - 1;
   }
@@ -99,7 +101,7 @@ export function detachProjectedView(view: ViewData) {
 
 export function moveEmbeddedView(
     elementData: ElementData, oldViewIndex: number, newViewIndex: number): ViewData {
-  const embeddedViews = elementData.viewContainer !._embeddedViews;
+  const embeddedViews = elementData.viewContainer!._embeddedViews;
   const view = embeddedViews[oldViewIndex];
   removeFromArray(embeddedViews, oldViewIndex);
   if (newViewIndex == null) {
@@ -120,9 +122,9 @@ export function moveEmbeddedView(
 }
 
 function renderAttachEmbeddedView(
-    elementData: ElementData, prevView: ViewData | null, view: ViewData) {
-  const prevRenderNode = prevView ? renderNode(prevView, prevView.def.lastRenderRootNode !) :
-                                    elementData.renderElement;
+    elementData: ElementData, prevView: ViewData|null, view: ViewData) {
+  const prevRenderNode =
+      prevView ? renderNode(prevView, prevView.def.lastRenderRootNode!) : elementData.renderElement;
   const parentNode = view.renderer.parentNode(prevRenderNode);
   const nextSibling = view.renderer.nextSibling(prevRenderNode);
   // Note: We can't check if `nextSibling` is present, as on WebWorkers it will always be!
@@ -132,22 +134,4 @@ function renderAttachEmbeddedView(
 
 export function renderDetachView(view: ViewData) {
   visitRootRenderNodes(view, RenderNodeAction.RemoveChild, null, null, undefined);
-}
-
-function addToArray(arr: any[], index: number, value: any) {
-  // perf: array.push is faster than array.splice!
-  if (index >= arr.length) {
-    arr.push(value);
-  } else {
-    arr.splice(index, 0, value);
-  }
-}
-
-function removeFromArray(arr: any[], index: number) {
-  // perf: array.pop is faster than array.splice!
-  if (index >= arr.length - 1) {
-    arr.pop();
-  } else {
-    arr.splice(index, 1);
-  }
 }

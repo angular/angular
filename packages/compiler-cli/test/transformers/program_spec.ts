@@ -1,11 +1,11 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+/// <reference types="node" />
 import * as ng from '@angular/compiler-cli';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -13,9 +13,9 @@ import * as ts from 'typescript';
 
 import {formatDiagnostics} from '../../src/perform_compile';
 import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
-import {checkVersion, createSrcToOutPathMapper} from '../../src/transformers/program';
+import {createSrcToOutPathMapper} from '../../src/transformers/program';
 import {StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
-import {TestSupport, expectNoDiagnosticsInProgram, setup} from '../test_support';
+import {expectNoDiagnosticsInProgram, setup, stripAnsi, TestSupport} from '../test_support';
 
 describe('ng program', () => {
   let testSupport: TestSupport;
@@ -84,19 +84,21 @@ describe('ng program', () => {
 
     const originalGetSourceFile = host.getSourceFile;
     const cache = new Map<string, ts.SourceFile>();
-    host.getSourceFile = function(fileName: string): ts.SourceFile {
-      const sf = originalGetSourceFile.call(host, fileName) as ts.SourceFile;
-      if (sf) {
-        if (cache.has(sf.fileName)) {
-          const oldSf = cache.get(sf.fileName) !;
-          if (oldSf.getFullText() === sf.getFullText()) {
-            return oldSf;
-          }
-        }
-        cache.set(sf.fileName, sf);
-      }
-      return sf;
-    };
+    host.getSourceFile = function(fileName: string, languageVersion: ts.ScriptTarget):
+                             ts.SourceFile|
+                         undefined {
+                           const sf = originalGetSourceFile.call(host, fileName, languageVersion);
+                           if (sf) {
+                             if (cache.has(sf.fileName)) {
+                               const oldSf = cache.get(sf.fileName)!;
+                               if (oldSf.getFullText() === sf.getFullText()) {
+                                 return oldSf;
+                               }
+                             }
+                             cache.set(sf.fileName, sf);
+                           }
+                           return sf;
+                         };
     return host;
   }
 
@@ -197,12 +199,14 @@ describe('ng program', () => {
       const host = ng.createCompilerHost({options});
       const originalGetSourceFile = host.getSourceFile;
       const fileCache = new Map<string, ts.SourceFile>();
-      host.getSourceFile = (fileName: string) => {
+      host.getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => {
         if (fileCache.has(fileName)) {
           return fileCache.get(fileName);
         }
-        const sf = originalGetSourceFile.call(host, fileName);
-        fileCache.set(fileName, sf);
+        const sf = originalGetSourceFile.call(host, fileName, languageVersion);
+        if (sf !== undefined) {
+          fileCache.set(fileName, sf);
+        }
         return sf;
       };
 
@@ -245,7 +249,8 @@ describe('ng program', () => {
       fileCache.delete(path.posix.join(testSupport.basePath, 'src/index.ts'));
       const p6 = ng.createProgram({
         rootNames: [path.posix.join(testSupport.basePath, 'src/index.ts')],
-        options: testSupport.createCompilerOptions(options), host,
+        options: testSupport.createCompilerOptions(options),
+        host,
         oldProgram: p5
       });
       const p7 = compile(p6, options, undefined, host).program;
@@ -292,7 +297,6 @@ describe('ng program', () => {
     describe(
         'verify that program structure is reused within tsc in order to speed up incremental compilation',
         () => {
-
           it('should reuse the old ts program completely if nothing changed', () => {
             testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
             const host = createWatchModeHost();
@@ -348,7 +352,6 @@ describe('ng program', () => {
             expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
           });
         });
-
   });
 
   it('should not typecheck templates if skipTemplateCodegen is set but fullTemplateTypeCheck is not',
@@ -470,8 +473,8 @@ describe('ng program', () => {
 
     host.writeFile =
         (fileName: string, data: string, writeByteOrderMark: boolean,
-         onError: (message: string) => void|undefined,
-         sourceFiles: ReadonlyArray<ts.SourceFile>) => {
+         onError: ((message: string) => void)|undefined,
+         sourceFiles?: ReadonlyArray<ts.SourceFile>) => {
           written.set(fileName, {original: sourceFiles, data});
         };
     const program = ng.createProgram(
@@ -484,19 +487,19 @@ describe('ng program', () => {
       const writeData = written.get(path.posix.join(testSupport.basePath, fileName));
       expect(writeData).toBeTruthy();
       expect(
-          writeData !.original !.some(
+          writeData!.original!.some(
               sf => sf.fileName === path.posix.join(testSupport.basePath, checks.originalFileName)))
           .toBe(true);
       switch (checks.shouldBe) {
         case ShouldBe.Empty:
-          expect(writeData !.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
+          expect(writeData!.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
           break;
         case ShouldBe.EmptyExport:
-          expect(writeData !.data)
+          expect(writeData!.data)
               .toMatch(/^((\s*\/\*([^*]|\*[^/])*\*\/\s*)|(\s*export\s*{\s*}\s*;\s*)|())$/);
           break;
         case ShouldBe.NoneEmpty:
-          expect(writeData !.data).not.toBe('');
+          expect(writeData!.data).not.toBe('');
           break;
       }
     }
@@ -983,11 +986,11 @@ describe('ng program', () => {
         {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
     const errorDiags =
         program1.emit().diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
-    expect(formatDiagnostics(errorDiags))
-        .toContain(`src/main.ts(5,13): error TS2322: Type '1' is not assignable to type 'string'.`);
-    expect(formatDiagnostics(errorDiags))
+    expect(stripAnsi(formatDiagnostics(errorDiags)))
+        .toContain(`src/main.ts:5:13 - error TS2322: Type '1' is not assignable to type 'string'.`);
+    expect(stripAnsi(formatDiagnostics(errorDiags)))
         .toContain(
-            `src/main.html(1,1): error TS100: Property 'nonExistent' does not exist on type 'MyComp'.`);
+            `src/main.html:1:1 - error TS100: Property 'nonExistent' does not exist on type 'MyComp'.`);
   });
 
   it('should not report emit errors with noEmitOnError=false', () => {
@@ -1098,7 +1101,7 @@ describe('ng program', () => {
          const originalGetSourceFile = host.getSourceFile;
          host.getSourceFile =
              (fileName: string, languageVersion: ts.ScriptTarget,
-              onError?: ((message: string) => void) | undefined): ts.SourceFile => {
+              onError?: ((message: string) => void)|undefined): ts.SourceFile|undefined => {
                // We should never try to load .ngfactory.ts files
                if (fileName.match(/\.ngfactory\.ts$/)) {
                  throw new Error(`Non existent ngfactory file: ` + fileName);
@@ -1112,35 +1115,4 @@ describe('ng program', () => {
              .toContain('Function expressions are not supported');
        });
   });
-
-  describe('checkVersion', () => {
-    const MIN_TS_VERSION = '2.7.2';
-    const MAX_TS_VERSION = '2.8.0';
-
-    const versionError = (version: string) =>
-        `The Angular Compiler requires TypeScript >=${MIN_TS_VERSION} and <${MAX_TS_VERSION} but ${version} was found instead.`;
-
-    it('should not throw when a supported TypeScript version is used', () => {
-      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, undefined)).not.toThrow();
-      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, false)).not.toThrow();
-      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
-    });
-
-    it('should handle a TypeScript version < the minimum supported one', () => {
-      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, undefined))
-          .toThrowError(versionError('2.4.1'));
-      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, false))
-          .toThrowError(versionError('2.4.1'));
-      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
-    });
-
-    it('should handle a TypeScript version > the maximum supported one', () => {
-      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, undefined))
-          .toThrowError(versionError('2.9.0'));
-      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, false))
-          .toThrowError(versionError('2.9.0'));
-      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
-    });
-  });
-
 });

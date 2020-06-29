@@ -1,32 +1,35 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import * as ts from 'typescript';
+import {ReflectionHost} from '../../reflection';
 
 /**
  * Find the name, if any, by which a node is exported from a given file.
  */
 export function findExportedNameOfNode(
-    target: ts.Node, file: ts.SourceFile, checker: ts.TypeChecker): string|null {
-  // First, get the exports of the file.
-  const symbol = checker.getSymbolAtLocation(file);
-  if (symbol === undefined) {
+    target: ts.Node, file: ts.SourceFile, reflector: ReflectionHost): string|null {
+  const exports = reflector.getExportsOfModule(file);
+  if (exports === null) {
     return null;
   }
-  const exports = checker.getExportsOfModule(symbol);
-
   // Look for the export which declares the node.
-  const found = exports.find(sym => symbolDeclaresNode(sym, target, checker));
-  if (found === undefined) {
+  const keys = Array.from(exports.keys());
+  const name = keys.find(key => {
+    const decl = exports.get(key);
+    return decl !== undefined && decl.node === target;
+  });
+
+  if (name === undefined) {
     throw new Error(
         `Failed to find exported name of node (${target.getText()}) in '${file.fileName}'.`);
   }
-  return found.name;
+  return name;
 }
 
 /**

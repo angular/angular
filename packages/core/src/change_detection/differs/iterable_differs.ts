@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,7 @@ import {DefaultIterableDifferFactory} from '../differs/default_iterable_differ';
  *
  * @publicApi
  */
-export type NgIterable<T> = Array<T>| Iterable<T>;
+export type NgIterable<T> = Array<T>|Iterable<T>;
 
 /**
  * A strategy for tracking changes over time to an iterable. Used by {@link NgForOf} to
@@ -34,7 +34,7 @@ export interface IterableDiffer<V> {
    * @returns an object describing the difference. The return value is only valid until the next
    * `diff()` invocation.
    */
-  diff(object: NgIterable<V>): IterableChanges<V>|null;
+  diff(object: NgIterable<V>|undefined|null): IterableChanges<V>|null;
 }
 
 /**
@@ -86,8 +86,10 @@ export interface IterableChanges<V> {
   /** Iterate over all removed items. */
   forEachRemovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
 
-  /** Iterate over all items which had their identity (as computed by the `TrackByFunction`)
-   * changed. */
+  /**
+   * Iterate over all items which had their identity (as computed by the `TrackByFunction`)
+   * changed.
+   */
   forEachIdentityChange(fn: (record: IterableChangeRecord<V>) => void): void;
 }
 
@@ -124,7 +126,9 @@ export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {}
  *
  * @publicApi
  */
-export interface TrackByFunction<T> { (index: number, item: T): any; }
+export interface TrackByFunction<T> {
+  (index: number, item: T): any;
+}
 
 /**
  * Provides a factory for {@link IterableDiffer}.
@@ -143,7 +147,8 @@ export interface IterableDifferFactory {
  */
 export class IterableDiffers {
   /** @nocollapse */
-  static ngInjectableDef = ɵɵdefineInjectable({
+  static ɵprov = ɵɵdefineInjectable({
+    token: IterableDiffers,
     providedIn: 'root',
     factory: () => new IterableDiffers([new DefaultIterableDifferFactory()])
   });
@@ -152,7 +157,9 @@ export class IterableDiffers {
    * @deprecated v4.0.0 - Should be private
    */
   factories: IterableDifferFactory[];
-  constructor(factories: IterableDifferFactory[]) { this.factories = factories; }
+  constructor(factories: IterableDifferFactory[]) {
+    this.factories = factories;
+  }
 
   static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers {
     if (parent != null) {
@@ -205,8 +212,8 @@ export class IterableDiffers {
     if (factory != null) {
       return factory;
     } else {
-      throw new Error(
-          `Cannot find a differ supporting object '${iterable}' of type '${getTypeNameForDebugging(iterable)}'`);
+      throw new Error(`Cannot find a differ supporting object '${iterable}' of type '${
+          getTypeNameForDebugging(iterable)}'`);
     }
   }
 }

@@ -14,10 +14,12 @@ Here are the most important tasks you might need to use:
 
 * `yarn` - install all the dependencies.
 * `yarn setup` - install all the dependencies, boilerplate, stackblitz, zips and run dgeni on the docs.
-* `yarn setup-local` - same as `setup`, but use the locally built Angular packages for aio and docs examples boilerplate.
+* `yarn setup-local` - same as `setup`, but build the Angular packages from the source code and use these locally built versions (instead of the ones fetched from npm) for aio and docs examples boilerplate.
 
 * `yarn build` - create a production build of the application (after installing dependencies, boilerplate, etc).
 * `yarn build-local` - same as `build`, but use `setup-local` instead of `setup`.
+* `yarn build-local-with-viewengine` - same as `build-local`, but in addition also turns on `ViewEngine` (pre-Ivy) mode in aio.
+                                       (Note: To turn on `ViewEngine` mode in docs examples, see `yarn boilerplate:add:viewengine` below.)
 
 * `yarn start` - run a development web server that watches the files; then builds the doc-viewer and reloads the page, as necessary.
 * `yarn serve-and-sync` - run both the `docs-watch` and `start` in the same console.
@@ -31,16 +33,29 @@ Here are the most important tasks you might need to use:
 * `yarn docs-lint` - check that the doc gen code follows our style rules.
 * `yarn docs-test` - run the unit tests for the doc generation code.
 
-* `yarn boilerplate:add` - generate all the boilerplate code for the examples, so that they can be run locally. Add the option `--local` to use your local version of Angular contained in the "dist" folder.
+* `yarn boilerplate:add` - generate all the boilerplate code for the examples, so that they can be run locally.
+* `yarn boilerplate:add:viewengine` - same as `boilerplate:add` but also turns on `ViewEngine` (pre-Ivy) mode.
+
 * `yarn boilerplate:remove` - remove all the boilerplate code that was added via `yarn boilerplate:add`.
 * `yarn generate-stackblitz` - generate the stackblitz files that are used by the `live-example` tags in the docs.
 * `yarn generate-zips` - generate the zip files from the examples. Zip available via the `live-example` tags in the docs.
 
-* `yarn example-e2e` - run all e2e tests for examples
-  - `yarn example-e2e --setup` - force webdriver update & other setup, then run tests
-  - `yarn example-e2e --filter=foo` - limit e2e tests to those containing the word "foo"
-  - `yarn example-e2e --setup --local` - run e2e tests with the local version of Angular contained in the "dist" folder
+* `yarn example-e2e` - run all e2e tests for examples. Available options:
+  - `--setup`: generate boilerplate, force webdriver update & other setup, then run tests.
+  - `--local`: run e2e tests with the local version of Angular contained in the "dist" folder.
+               _Requires `--setup` in order to take effect._
+  - `--viewengine`: run e2e tests in `ViewEngine` (pre-Ivy) mode.
+  - `--filter=foo`: limit e2e tests to those containing the word "foo".
 
+> **Note for Windows users**
+>
+> Setting up the examples involves creating some [symbolic links](https://en.wikipedia.org/wiki/Symbolic_link) (see [here](./tools/examples/README.md#symlinked-node_modules) for details). On Windows, this requires to either have [Developer Mode enabled](https://blogs.windows.com/windowsdeveloper/2016/12/02/symlinks-windows-10) (supported on Windows 10 or newer) or run the setup commands as administrator.
+>
+> The affected commands are:
+> - `yarn setup` / `yarn setup-*`
+> - `yarn build` / `yarn build-*`
+> - `yarn boilerplate:add`
+> - `yarn example-e2e --setup`
 
 ## Using ServiceWorker locally
 
@@ -89,7 +104,7 @@ You also want to see those changes displayed properly in the doc viewer
 with a quick, edit/view cycle time.
 
 For this purpose, use the `yarn docs-watch` task, which watches for changes to source files and only
-re-processes the the files necessary to generate the docs that are related to the file that has changed.
+re-processes the files necessary to generate the docs that are related to the file that has changed.
 Since this task takes shortcuts, it is much faster (often less than 1 second) but it won't produce full
 fidelity content. For example, links to other docs and code examples may not render correctly. This is
 most particularly noticed in links to other docs and in the embedded examples, which may not always render

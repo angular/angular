@@ -11,6 +11,10 @@ their sub-folder. Also there are a number of common boilerplate files that are n
 each example's project. Maintain these common boilerplate files centrally to reduce the amount
 of effort if one of them needs to change.
 
+> **Note for Windows users**
+>
+> Setting up the examples involves creating some [symbolic links](https://en.wikipedia.org/wiki/Symbolic_link) (see [here](#symlinked-node_modules) for details). On Windows, this requires to either have [Developer Mode enabled](https://blogs.windows.com/windowsdeveloper/2016/12/02/symlinks-windows-10) (supported on Windows 10 or newer) or run the setup commands as administrator.
+
 ## Boilerplate overview
 
 As mentioned, many of the documentation pages contain snippets extracted from real example applications.
@@ -28,12 +32,12 @@ Currently you will find the next project types:
 * cli - For CLI based examples. This is the default one, to be used in the majority of the examples.
 * getting-started - CLI-based with its own set of styles.
 * i18n - CLI-based with additional scripts for internationalization.
-* ivy - CLI-based with additional configuration for running the examples with the Ivy renderer and ngstc compiler.
 * schematics - CLI-based with additional scripts for building schematics.
 * service-worker - CLI-based with additional packages and configuration for service workers.
 * systemjs - Currently in deprecation, only used in a few examples.
 * testing - CLI-based with additional styles for jasmine testing.
 * universal - CLI-based with an extra server target.
+* viewengine - Additional configuration for running CLI-/SystemJS-based examples with `ViewEngine` (the pre-Ivy compiler/renderer).
 
 There is also a `common` folder that contains files used in all different examples.
 
@@ -52,16 +56,16 @@ This configuration file indicates what type of boilerplate this example needs. E
 If the file is empty then the default type of cli is assumed.
 When the boilerplate tooling runs, it will copy into the example folder all of the appropriate files based on the project type.
 
+<a name="symlinked-node_modules"></a>
 ### A node_modules to share
 
 With all the boilerplate files in place, the only missing piece are the installed packages. For
 that you have a `/aio/tools/examples/shared/package.json` which contains **all** the packages
 needed to run all the examples through all different boilerplates.
 
-After installing these dependencies, a `node_modules` will be created at
-`/aio/tools/examples/shared/node_modules`. This folder will be **symlinked** into each example.
-So it is not a copy like the other boilerplate files. This solution works in all OSes. Windows
-may require admin rights.
+After installing these dependencies, a `node_modules/` folder will be created at
+`/aio/tools/examples/shared/node_modules/`. This folder will be **symlinked** into each example.
+So it is not a copy like the other boilerplate files.
 
 ### End to end tests
 

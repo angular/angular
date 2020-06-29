@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,12 +8,11 @@
 
 import {devModeEqual} from '../change_detection/change_detection_util';
 import {assertDataInRange, assertLessThan, assertNotSame} from '../util/assert';
-import {throwErrorIfNoChangesMode} from './errors';
+
+import {getExpressionChangedErrorDetails, throwErrorIfNoChangesMode} from './errors';
 import {LView} from './interfaces/view';
 import {getCheckNoChangesMode} from './state';
 import {NO_CHANGE} from './tokens';
-import {isDifferent} from './util/misc_utils';
-
 
 
 // TODO(misko): consider inlining
@@ -31,27 +30,47 @@ export function getBinding(lView: LView, bindingIndex: number): any {
   return lView[bindingIndex];
 }
 
-/** Updates binding if changed, then returns whether it was updated. */
+/**
+ * Updates binding if changed, then returns whether it was updated.
+ *
+ * This function also checks the `CheckNoChangesMode` and throws if changes are made.
+ * Some changes (Objects/iterables) during `CheckNoChangesMode` are exempt to comply with VE
+ * behavior.
+ *
+ * @param lView current `LView`
+ * @param bindingIndex The binding in the `LView` to check
+ * @param value New value to check against `lView[bindingIndex]`
+ * @returns `true` if the bindings has changed. (Throws if binding has changed during
+ *          `CheckNoChangesMode`)
+ */
 export function bindingUpdated(lView: LView, bindingIndex: number, value: any): boolean {
   ngDevMode && assertNotSame(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
   ngDevMode &&
       assertLessThan(bindingIndex, lView.length, `Slot should have been initialized to NO_CHANGE`);
-
   const oldValue = lView[bindingIndex];
-  if (isDifferent(oldValue, value)) {
+
+  if (Object.is(oldValue, value)) {
+    return false;
+  } else {
     if (ngDevMode && getCheckNoChangesMode()) {
       // View engine didn't report undefined values as changed on the first checkNoChanges pass
       // (before the change detection was run).
       const oldValueToCompare = oldValue !== NO_CHANGE ? oldValue : undefined;
       if (!devModeEqual(oldValueToCompare, value)) {
-        throwErrorIfNoChangesMode(oldValue === NO_CHANGE, oldValueToCompare, value);
+        const details =
+            getExpressionChangedErrorDetails(lView, bindingIndex, oldValueToCompare, value);
+        throwErrorIfNoChangesMode(
+            oldValue === NO_CHANGE, details.oldValue, details.newValue, details.propName);
       }
+      // There was a change, but the `devModeEqual` decided that the change is exempt from an error.
+      // For this reason we exit as if no change. The early exit is needed to prevent the changed
+      // value to be written into `LView` (If we would write the new value that we would not see it
+      // as change on next CD.)
+      return false;
     }
     lView[bindingIndex] = value;
     return true;
   }
-
-  return false;
 }
 
 /** Updates 2 bindings if changed, then returns whether either was updated. */

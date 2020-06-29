@@ -11,5 +11,6 @@
     "!src/app/main-final.ts",
     "!src/index-final.html"
   ],
+  "file": "src/app/app.component.ts",
   "tags": ["reactive", "forms"]
 }

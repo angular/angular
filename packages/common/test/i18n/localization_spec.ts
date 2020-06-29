@@ -1,29 +1,29 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
+import localeFr from '@angular/common/locales/fr';
 import localeRo from '@angular/common/locales/ro';
 import localeSr from '@angular/common/locales/sr';
 import localeZgh from '@angular/common/locales/zgh';
-import localeFr from '@angular/common/locales/fr';
-import {LOCALE_ID} from '@angular/core';
-import {TestBed, inject} from '@angular/core/testing';
-import {NgLocaleLocalization, NgLocalization, getPluralCategory, DEPRECATED_PLURAL_FN, getPluralCase} from '@angular/common/src/i18n/localization';
-import {Plural} from '@angular/common';
-import {registerLocaleData} from '../../src/i18n/locale_data';
+import {getPluralCategory, NgLocaleLocalization, NgLocalization} from '@angular/common/src/i18n/localization';
+import {LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
+import {inject, TestBed} from '@angular/core/testing';
 
 {
   describe('l10n', () => {
     beforeAll(() => {
-      registerLocaleData(localeRo);
-      registerLocaleData(localeSr);
-      registerLocaleData(localeZgh);
-      registerLocaleData(localeFr);
+      ɵregisterLocaleData(localeRo);
+      ɵregisterLocaleData(localeSr);
+      ɵregisterLocaleData(localeZgh);
+      ɵregisterLocaleData(localeFr);
     });
+
+    afterAll(() => ɵunregisterLocaleData());
 
     describe('NgLocalization', () => {
       function roTests() {
@@ -40,19 +40,6 @@ import {registerLocaleData} from '../../src/i18n/locale_data';
         beforeEach(() => {
           TestBed.configureTestingModule({
             providers: [{provide: LOCALE_ID, useValue: 'ro'}],
-          });
-        });
-
-        roTests();
-      });
-
-      describe('ro with v4 plurals', () => {
-        beforeEach(() => {
-          TestBed.configureTestingModule({
-            providers: [
-              {provide: LOCALE_ID, useValue: 'ro'},
-              {provide: DEPRECATED_PLURAL_FN, useValue: getPluralCase}
-            ],
           });
         });
 
@@ -82,110 +69,90 @@ import {registerLocaleData} from '../../src/i18n/locale_data';
 
         srTests();
       });
-
-      describe('sr with v4 plurals', () => {
-        beforeEach(() => {
-          TestBed.configureTestingModule({
-            providers: [
-              {provide: LOCALE_ID, useValue: 'sr'},
-              {provide: DEPRECATED_PLURAL_FN, useValue: getPluralCase}
-            ],
-          });
-        });
-
-        srTests();
-      });
     });
 
     describe('NgLocaleLocalization', () => {
-      function ngLocaleLocalizationTests(
-          getPluralCase: ((locale: string, value: number | string) => Plural) | null) {
-        it('should return the correct values for the "en" locale', () => {
-          const l10n = new NgLocaleLocalization('en-US', getPluralCase);
+      it('should return the correct values for the "en" locale', () => {
+        const l10n = new NgLocaleLocalization('en-US');
 
-          expect(l10n.getPluralCategory(0)).toEqual('other');
-          expect(l10n.getPluralCategory(1)).toEqual('one');
-          expect(l10n.getPluralCategory(2)).toEqual('other');
-        });
+        expect(l10n.getPluralCategory(0)).toEqual('other');
+        expect(l10n.getPluralCategory(1)).toEqual('one');
+        expect(l10n.getPluralCategory(2)).toEqual('other');
+      });
 
-        it('should return the correct values for the "ro" locale', () => {
-          const l10n = new NgLocaleLocalization('ro', getPluralCase);
+      it('should return the correct values for the "ro" locale', () => {
+        const l10n = new NgLocaleLocalization('ro');
 
-          expect(l10n.getPluralCategory(0)).toEqual('few');
-          expect(l10n.getPluralCategory(1)).toEqual('one');
-          expect(l10n.getPluralCategory(2)).toEqual('few');
-          expect(l10n.getPluralCategory(12)).toEqual('few');
-          expect(l10n.getPluralCategory(23)).toEqual('other');
-          expect(l10n.getPluralCategory(1212)).toEqual('few');
-          expect(l10n.getPluralCategory(1223)).toEqual('other');
-        });
+        expect(l10n.getPluralCategory(0)).toEqual('few');
+        expect(l10n.getPluralCategory(1)).toEqual('one');
+        expect(l10n.getPluralCategory(2)).toEqual('few');
+        expect(l10n.getPluralCategory(12)).toEqual('few');
+        expect(l10n.getPluralCategory(23)).toEqual('other');
+        expect(l10n.getPluralCategory(1212)).toEqual('few');
+        expect(l10n.getPluralCategory(1223)).toEqual('other');
+      });
 
-        it('should return the correct values for the "sr" locale', () => {
-          const l10n = new NgLocaleLocalization('sr', getPluralCase);
+      it('should return the correct values for the "sr" locale', () => {
+        const l10n = new NgLocaleLocalization('sr');
 
-          expect(l10n.getPluralCategory(1)).toEqual('one');
-          expect(l10n.getPluralCategory(31)).toEqual('one');
-          expect(l10n.getPluralCategory(0.1)).toEqual('one');
-          expect(l10n.getPluralCategory(1.1)).toEqual('one');
-          expect(l10n.getPluralCategory(2.1)).toEqual('one');
+        expect(l10n.getPluralCategory(1)).toEqual('one');
+        expect(l10n.getPluralCategory(31)).toEqual('one');
+        expect(l10n.getPluralCategory(0.1)).toEqual('one');
+        expect(l10n.getPluralCategory(1.1)).toEqual('one');
+        expect(l10n.getPluralCategory(2.1)).toEqual('one');
 
-          expect(l10n.getPluralCategory(3)).toEqual('few');
-          expect(l10n.getPluralCategory(33)).toEqual('few');
-          expect(l10n.getPluralCategory(0.2)).toEqual('few');
-          expect(l10n.getPluralCategory(0.3)).toEqual('few');
-          expect(l10n.getPluralCategory(0.4)).toEqual('few');
-          expect(l10n.getPluralCategory(2.2)).toEqual('few');
+        expect(l10n.getPluralCategory(3)).toEqual('few');
+        expect(l10n.getPluralCategory(33)).toEqual('few');
+        expect(l10n.getPluralCategory(0.2)).toEqual('few');
+        expect(l10n.getPluralCategory(0.3)).toEqual('few');
+        expect(l10n.getPluralCategory(0.4)).toEqual('few');
+        expect(l10n.getPluralCategory(2.2)).toEqual('few');
 
-          expect(l10n.getPluralCategory(2.11)).toEqual('other');
-          expect(l10n.getPluralCategory(2.12)).toEqual('other');
-          expect(l10n.getPluralCategory(2.13)).toEqual('other');
-          expect(l10n.getPluralCategory(2.14)).toEqual('other');
-          expect(l10n.getPluralCategory(2.15)).toEqual('other');
+        expect(l10n.getPluralCategory(2.11)).toEqual('other');
+        expect(l10n.getPluralCategory(2.12)).toEqual('other');
+        expect(l10n.getPluralCategory(2.13)).toEqual('other');
+        expect(l10n.getPluralCategory(2.14)).toEqual('other');
+        expect(l10n.getPluralCategory(2.15)).toEqual('other');
 
-          expect(l10n.getPluralCategory(0)).toEqual('other');
-          expect(l10n.getPluralCategory(5)).toEqual('other');
-          expect(l10n.getPluralCategory(10)).toEqual('other');
-          expect(l10n.getPluralCategory(35)).toEqual('other');
-          expect(l10n.getPluralCategory(37)).toEqual('other');
-          expect(l10n.getPluralCategory(40)).toEqual('other');
-          expect(l10n.getPluralCategory(0.0)).toEqual('other');
-          expect(l10n.getPluralCategory(0.5)).toEqual('other');
-          expect(l10n.getPluralCategory(0.6)).toEqual('other');
+        expect(l10n.getPluralCategory(0)).toEqual('other');
+        expect(l10n.getPluralCategory(5)).toEqual('other');
+        expect(l10n.getPluralCategory(10)).toEqual('other');
+        expect(l10n.getPluralCategory(35)).toEqual('other');
+        expect(l10n.getPluralCategory(37)).toEqual('other');
+        expect(l10n.getPluralCategory(40)).toEqual('other');
+        expect(l10n.getPluralCategory(0.0)).toEqual('other');
+        expect(l10n.getPluralCategory(0.5)).toEqual('other');
+        expect(l10n.getPluralCategory(0.6)).toEqual('other');
 
-          expect(l10n.getPluralCategory(2)).toEqual('few');
-          expect(l10n.getPluralCategory(2.1)).toEqual('one');
-          expect(l10n.getPluralCategory(2.2)).toEqual('few');
-          expect(l10n.getPluralCategory(2.3)).toEqual('few');
-          expect(l10n.getPluralCategory(2.4)).toEqual('few');
-          expect(l10n.getPluralCategory(2.5)).toEqual('other');
+        expect(l10n.getPluralCategory(2)).toEqual('few');
+        expect(l10n.getPluralCategory(2.1)).toEqual('one');
+        expect(l10n.getPluralCategory(2.2)).toEqual('few');
+        expect(l10n.getPluralCategory(2.3)).toEqual('few');
+        expect(l10n.getPluralCategory(2.4)).toEqual('few');
+        expect(l10n.getPluralCategory(2.5)).toEqual('other');
 
-          expect(l10n.getPluralCategory(20)).toEqual('other');
-          expect(l10n.getPluralCategory(21)).toEqual('one');
-          expect(l10n.getPluralCategory(22)).toEqual('few');
-          expect(l10n.getPluralCategory(23)).toEqual('few');
-          expect(l10n.getPluralCategory(24)).toEqual('few');
-          expect(l10n.getPluralCategory(25)).toEqual('other');
-        });
+        expect(l10n.getPluralCategory(20)).toEqual('other');
+        expect(l10n.getPluralCategory(21)).toEqual('one');
+        expect(l10n.getPluralCategory(22)).toEqual('few');
+        expect(l10n.getPluralCategory(23)).toEqual('few');
+        expect(l10n.getPluralCategory(24)).toEqual('few');
+        expect(l10n.getPluralCategory(25)).toEqual('other');
+      });
 
-        it('should return the default value for a locale with no rule', () => {
-          const l10n = new NgLocaleLocalization('zgh', getPluralCase);
+      it('should return the default value for a locale with no rule', () => {
+        const l10n = new NgLocaleLocalization('zgh');
 
-          expect(l10n.getPluralCategory(0)).toEqual('other');
-          expect(l10n.getPluralCategory(1)).toEqual('other');
-          expect(l10n.getPluralCategory(3)).toEqual('other');
-          expect(l10n.getPluralCategory(5)).toEqual('other');
-          expect(l10n.getPluralCategory(10)).toEqual('other');
-        });
-      }
-
-      ngLocaleLocalizationTests(null);
-      ngLocaleLocalizationTests(getPluralCase);
+        expect(l10n.getPluralCategory(0)).toEqual('other');
+        expect(l10n.getPluralCategory(1)).toEqual('other');
+        expect(l10n.getPluralCategory(3)).toEqual('other');
+        expect(l10n.getPluralCategory(5)).toEqual('other');
+        expect(l10n.getPluralCategory(10)).toEqual('other');
+      });
     });
 
-    function pluralCategoryTests(
-        getPluralCase: ((locale: string, value: number | string) => Plural) | null) {
+    describe('getPluralCategory', () => {
       it('should return plural category', () => {
-        const l10n = new NgLocaleLocalization('fr', getPluralCase);
+        const l10n = new NgLocaleLocalization('fr');
 
         expect(getPluralCategory(0, ['one', 'other'], l10n)).toEqual('one');
         expect(getPluralCategory(1, ['one', 'other'], l10n)).toEqual('one');
@@ -193,7 +160,7 @@ import {registerLocaleData} from '../../src/i18n/locale_data';
       });
 
       it('should return discrete cases', () => {
-        const l10n = new NgLocaleLocalization('fr', getPluralCase);
+        const l10n = new NgLocaleLocalization('fr');
 
         expect(getPluralCategory(0, ['one', 'other', '=0'], l10n)).toEqual('=0');
         expect(getPluralCategory(1, ['one', 'other'], l10n)).toEqual('one');
@@ -202,7 +169,7 @@ import {registerLocaleData} from '../../src/i18n/locale_data';
       });
 
       it('should fallback to other when the case is not present', () => {
-        const l10n = new NgLocaleLocalization('ro', getPluralCase);
+        const l10n = new NgLocaleLocalization('ro');
         expect(getPluralCategory(1, ['one', 'other'], l10n)).toEqual('one');
         // 2 -> 'few'
         expect(getPluralCategory(2, ['one', 'other'], l10n)).toEqual('other');
@@ -211,17 +178,12 @@ import {registerLocaleData} from '../../src/i18n/locale_data';
       describe('errors', () => {
         it('should report an error when the "other" category is not present', () => {
           expect(() => {
-            const l10n = new NgLocaleLocalization('ro', getPluralCase);
+            const l10n = new NgLocaleLocalization('ro');
             // 2 -> 'few'
             getPluralCategory(2, ['one'], l10n);
           }).toThrowError('No plural message found for value "2"');
         });
       });
-    }
-
-    describe('getPluralCategory', () => {
-      pluralCategoryTests(null);
-      pluralCategoryTests(getPluralCase);
     });
   });
 }

@@ -158,11 +158,11 @@ export class Provider6bComponent {
 
 // #docregion silent-logger
 // An object in the shape of the logger service
-export function SilentLoggerFn() {}
+function silentLoggerFn() {}
 
-const silentLogger = {
+export const SilentLogger = {
   logs: ['Silent logger says "Shhhhh!". Provided via "useValue"'],
-  log: SilentLoggerFn
+  log: silentLoggerFn
 };
 // #enddocregion silent-logger
 
@@ -171,7 +171,7 @@ const silentLogger = {
   template: template,
   providers:
     // #docregion providers-7
-    [{ provide: Logger, useValue: silentLogger }]
+    [{ provide: Logger, useValue: SilentLogger }]
     // #enddocregion providers-7
 })
 export class Provider7Component {
@@ -247,7 +247,7 @@ let some_message = 'Hello from the injected logger';
 export class Provider10Component implements OnInit {
   log: string;
   // #docregion provider-10-ctor
-  constructor(@Optional() private logger: Logger) {
+  constructor(@Optional() private logger?: Logger) {
     if (this.logger) {
       this.logger.log(some_message);
     }

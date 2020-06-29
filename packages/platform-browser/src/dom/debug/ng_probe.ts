@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ApplicationRef, DebugNode, NgProbeToken, NgZone, Optional, Provider, getDebugNode} from '@angular/core';
+import {APP_INITIALIZER, ApplicationRef, DebugNode, NgProbeToken, NgZone, Optional, Provider, ɵgetDebugNodeR2} from '@angular/core';
 
 import {exportNgVar} from '../util';
 
@@ -23,14 +23,14 @@ const CORE_TOKENS_GLOBAL_NAME = 'coreTokens';
  * null if the given native element does not have an Angular view associated
  * with it.
  */
-export function inspectNativeElement(element: any): DebugNode|null {
-  return getDebugNode(element);
+export function inspectNativeElementR2(element: any): DebugNode|null {
+  return ɵgetDebugNodeR2(element);
 }
 
-export function _createNgProbe(coreTokens: NgProbeToken[]): any {
-  exportNgVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
+export function _createNgProbeR2(coreTokens: NgProbeToken[]): any {
+  exportNgVar(INSPECT_GLOBAL_NAME, inspectNativeElementR2);
   exportNgVar(CORE_TOKENS_GLOBAL_NAME, {...CORE_TOKENS, ..._ngProbeTokensToMap(coreTokens || [])});
-  return () => inspectNativeElement;
+  return () => inspectNativeElementR2;
 }
 
 function _ngProbeTokensToMap(tokens: NgProbeToken[]): {[name: string]: any} {
@@ -52,7 +52,7 @@ export const ELEMENT_PROBE_PROVIDERS__POST_R3__ = [];
 export const ELEMENT_PROBE_PROVIDERS__PRE_R3__: Provider[] = [
   {
     provide: APP_INITIALIZER,
-    useFactory: _createNgProbe,
+    useFactory: _createNgProbeR2,
     deps: [
       [NgProbeToken, new Optional()],
     ],

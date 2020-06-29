@@ -1,16 +1,24 @@
+html {
+  font-size: 62.5%;
+}
+
 body {
   font-family: $main-font;
   margin: 0;
   color: $darkgray;
-  font-size: 14px;
+  @include font-size(14);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  color: $deepgray;
+}
+
 h1 {
-  display: inline-block;
-  font-size: 24px;
+  @include font-size(24);
   font-weight: 500;
+  display: inline-block;
   margin: 8px 0px;
 
   @media screen and (max-width: 600px) {
@@ -19,42 +27,46 @@ h1 {
 }
 
 h2 {
-  font-size: 22px;
+  @include font-size(22);
   font-weight: 500;
   margin: 32px 0px 24px;
   clear: both;
 }
 
 h3 {
-  font-size: 20px;
+  @include font-size(20);
   font-weight: 400;
   margin: 24px 0px 12px;
   clear: both;
 }
 
 h4 {
-  font-size: 18px;
+  @include font-size(18);
   font-weight: 400;
   margin: 8px 0px;
   clear: both;
 }
 
 h5 {
-  font-size: 16px;
+  @include font-size(16);
   font-weight: 500;
   margin: 8px 0px;
   clear: both;
 }
 
 h6 {
-  color: $mediumgray;
-  font-size: 16px;
+  @include font-size(16);
   font-weight: 500;
+  color: $mediumgray;
   margin: 8px 0px;
   clear: both;
 }
 
-h2, h3, h4, h5, h6 {
+h2,
+h3,
+h4,
+h5,
+h6 {
   a {
     font-size: inherit;
   }
@@ -68,13 +80,20 @@ h2, h3, h4, h5, h6 {
   margin-top: 0;
 }
 
-p, ol, ul, ol, li, input, a  {
-  font-size: 14px;
-  line-height: 24px;
-  letter-spacing: 0.30px;
+p,
+ol,
+ul,
+ol,
+li,
+input,
+a {
+  @include font-size(14);
+  @include line-height(24);
+  @include letter-spacing(0.3);
   font-weight: 400;
+  color: $darkgray;
   & > em {
-    letter-spacing: 0.30px;
+    @include letter-spacing(0.3);
   }
 }
 
@@ -87,13 +106,26 @@ p + ul {
 }
 
 ol {
-  li, p {
+  li,
+  p {
     margin: 4px 0;
   }
 }
 
-li p {
-  margin: 0;
+ol ol {
+  list-style-type: lower-alpha;
+
+  ol {
+    list-style-type: lower-roman;
+  }
+}
+
+li {
+  padding-bottom: 8px;
+
+  p {
+    margin: 0;
+  }
 }
 
 a {
@@ -101,12 +133,11 @@ a {
 }
 
 .app-toolbar a {
-  font-size: 16px;
+  @include font-size(16);
   font-weight: 400;
-  color: white;
+  color: $white;
   font-family: $main-font;
   text-transform: uppercase;
-  padding: 21px 0;
 }
 
 strong {
@@ -129,9 +160,10 @@ table tbody th {
 td {
   font-weight: 400;
   padding: 8px 30px;
-  letter-spacing: 0.30px;
+  @include letter-spacing(0.3);
 
-  > p, ul {
+  > p,
+  ul {
     &:first-child {
       margin-top: 0;
     }
@@ -142,7 +174,7 @@ td {
 }
 
 th {
-  font-size: 16px;
+  @include font-size(16);
   font-weight: 500;
   padding: 13px 32px;
   text-align: left;
@@ -151,11 +183,48 @@ th {
 code {
   font-family: $code-font;
   font-size: 90%;
+  color: $darkgray;
 }
 
 .sidenav-content a {
   color: $blue;
   &:hover {
     color: $mediumgray;
+  }
+}
+
+// The following css rule adds an icon to external links in the docs area.
+// The following `folder-*` classes are applied to the `doc-viewer`component when it is displaying docs for these areas of the documentation.
+// We add the icon to all external links which are identified as absolute links (those that start with `http` or https`).
+// For more info see PR #36601
+
+.folder-api,
+.folder-cli,
+.folder-docs,
+.folder-guide,
+.folder-start,
+.folder-tutorial {
+  
+  aio-doc-viewer{
+    a {
+      &[href^="http:"]::after,
+      &[href^="https:"]::after {
+        font-family: "Material Icons";
+        content: "open_in_new";
+        margin-left: 2px;
+        position: relative;
+        @include line-height(24);
+        vertical-align: bottom; 
+      }
+    }
+
+    // The docs-viewer also contain links to GitHub (e.g. the edit this page icon) identified with `.github-links` class.
+    // We don't want to add the external link icon to these links, so we hide them.
+    .github-links a {
+      &[href^="http:"]::after,
+      &[href^="https:"]::after {
+        display: none;
+      }
+    }
   }
 }

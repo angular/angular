@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -26,11 +26,11 @@ export {
   CurrencyPipe,
   DatePipe,
   DecimalPipe,
-  KeyValue,
-  KeyValuePipe,
   I18nPluralPipe,
   I18nSelectPipe,
   JsonPipe,
+  KeyValue,
+  KeyValuePipe,
   LowerCasePipe,
   PercentPipe,
   SlicePipe,

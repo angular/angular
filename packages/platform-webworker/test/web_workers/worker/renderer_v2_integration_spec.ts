@@ -1,18 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, destroyPlatform} from '@angular/core';
+import {ɵgetDOM as getDOM} from '@angular/common';
+import {Component, ComponentRef, destroyPlatform, Renderer2, RendererFactory2, RendererType2} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
-import {browserDetection, dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
+import {browserDetection, dispatchEvent, hasClass} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ClientMessageBrokerFactory} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
 import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/render_store';
@@ -22,7 +22,7 @@ import {MessageBasedRenderer2} from '@angular/platform-webworker/src/web_workers
 import {WebWorkerRendererFactory2} from '@angular/platform-webworker/src/web_workers/worker/renderer';
 import {modifiedInIvy} from '@angular/private/testing';
 
-import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
+import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
 
 let lastCreatedRenderer: Renderer2;
 
@@ -58,7 +58,7 @@ let lastCreatedRenderer: Renderer2;
       const domRendererFactory = uiInjector.get(RendererFactory2);
 
       // Worker side
-      lastCreatedRenderer = null !;
+      lastCreatedRenderer = null!;
 
       wwRenderStore = new RenderStore();
 
@@ -69,9 +69,8 @@ let lastCreatedRenderer: Renderer2;
           {provide: RenderStore, useValue: wwRenderStore},
           {
             provide: RendererFactory2,
-            useFactory:
-                (wwSerializer: Serializer) => createWebWorkerRendererFactory2(
-                    wwSerializer, uiSerializer, domRendererFactory, uiRenderStore, wwRenderStore),
+            useFactory: (wwSerializer: Serializer) => createWebWorkerRendererFactory2(
+                wwSerializer, uiSerializer, domRendererFactory, uiRenderStore, wwRenderStore),
             deps: [Serializer],
           },
         ],
@@ -79,7 +78,7 @@ let lastCreatedRenderer: Renderer2;
     });
 
     function getRenderElement(workerEl: any): any {
-      const id = wwRenderStore.serialize(workerEl) !;
+      const id = wwRenderStore.serialize(workerEl)!;
       return uiRenderStore.deserialize(id);
     }
 
@@ -109,19 +108,19 @@ let lastCreatedRenderer: Renderer2;
                 expect(el.tabIndex).toEqual(1);
 
                 lastCreatedRenderer.addClass(workerEl, 'a');
-                expect(getDOM().hasClass(el, 'a')).toBe(true);
+                expect(hasClass(el, 'a')).toBe(true);
 
                 lastCreatedRenderer.removeClass(workerEl, 'a');
-                expect(getDOM().hasClass(el, 'a')).toBe(false);
+                expect(hasClass(el, 'a')).toBe(false);
 
                 lastCreatedRenderer.setStyle(workerEl, 'width', '10px');
-                expect(getDOM().getStyle(el, 'width')).toEqual('10px');
+                expect(el.style['width']).toEqual('10px');
 
                 lastCreatedRenderer.removeStyle(workerEl, 'width');
-                expect(getDOM().getStyle(el, 'width')).toEqual('');
+                expect(el.style['width']).toEqual('');
 
                 lastCreatedRenderer.setAttribute(workerEl, 'someattr', 'someValue');
-                expect(getDOM().getAttribute(el, 'someattr')).toEqual('someValue');
+                expect(el.getAttribute('someattr')).toEqual('someValue');
               };
 
               // root element
@@ -137,7 +136,7 @@ let lastCreatedRenderer: Renderer2;
       fixture.componentInstance.ctxBoolProp = true;
       fixture.detectChanges();
       const el = getRenderElement(fixture.nativeElement);
-      expect(getDOM().getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
+      expect(el.innerHTML).toContain('"ng-reflect-ng-if": "true"');
     });
 
     it('should add and remove fragments', () => {

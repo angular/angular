@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,6 @@ const sourceMap = require('source-map');
 
 const someGenFilePath = '/somePackage/someGenFile';
 const someGenFileName = someGenFilePath + '.ts';
-const someSourceFilePath = '/somePackage/someSourceFile';
 const anotherModuleUrl = '/somePackage/someOtherPath';
 
 const sameModuleIdentifier = new o.ExternalReference(null, 'someLocalId', null);
@@ -33,19 +32,19 @@ describe('TypeScriptNodeEmitter', () => {
   beforeEach(() => {
     context = new MockAotContext('/', FILES);
     host = new MockCompilerHost(context);
-    emitter = new TypeScriptNodeEmitter();
+    emitter = new TypeScriptNodeEmitter(false);
     someVar = o.variable('someVar', null, null);
   });
 
   function emitStmt(
-      stmt: o.Statement | o.Statement[], format: Format = Format.Flat, preamble?: string): string {
+      stmt: o.Statement|o.Statement[], format: Format = Format.Flat, preamble?: string): string {
     const stmts = Array.isArray(stmt) ? stmt : [stmt];
 
     const program = ts.createProgram(
         [someGenFileName], {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017}, host);
     const moduleSourceFile = program.getSourceFile(someGenFileName);
     const transformers: ts.CustomTransformers = {
-      before: [context => {
+      before: [() => {
         return sourceFile => {
           const [newSourceFile] = emitter.updateSourceFile(sourceFile, stmts, preamble);
           return newSourceFile;
@@ -53,12 +52,11 @@ describe('TypeScriptNodeEmitter', () => {
       }]
     };
     let result: string = '';
-    const emitResult = program.emit(
-        moduleSourceFile, (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
-          if (fileName.startsWith(someGenFilePath)) {
-            result = data;
-          }
-        }, undefined, undefined, transformers);
+    program.emit(moduleSourceFile, (fileName, data) => {
+      if (fileName.startsWith(someGenFilePath)) {
+        result = data;
+      }
+    }, undefined, undefined, transformers);
     return normalizeResult(result, format);
   }
 
@@ -92,24 +90,42 @@ describe('TypeScriptNodeEmitter', () => {
     });
 
     it('should create a reexport', () => {
-      expect(emitStmt(someVar.set(o.importExpr(externalModuleIdentifier))
-                          .toDeclStmt(null, [o.StmtModifier.Exported])))
-          .toEqual(
-              `var someOtherPath_1 = require("/somePackage/someOtherPath"); exports.someVar = someOtherPath_1.someExternalId;`);
+      const result = emitStmt(someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt(null, [
+        o.StmtModifier.Exported
+      ]));
+      expect(result).toContain(`var someOtherPath_1 = require("/somePackage/someOtherPath");`);
+      if (!result.includes('exports.someVar = someOtherPath_1.someExternalId;') &&
+          // In TS 3.9 re-exports of namespaced imports are defined as getters
+          !result.includes(
+              'Object.defineProperty(exports, "someVar", { enumerable: true, get: function () { return someOtherPath_1.someExternalId; } });')) {
+        fail(
+            'Expected `someVar` to be exported directly or via a `definedProperty` call. Instead got:\n' +
+            result);
+      }
     });
 
     it('should create multiple reexports from the same file', () => {
       const someVar2 = o.variable('someVar2');
       const externalModuleIdentifier2 =
           new o.ExternalReference(anotherModuleUrl, 'someExternalId2', null);
-      expect(emitStmt([
+      const result = emitStmt([
         someVar.set(o.importExpr(externalModuleIdentifier))
             .toDeclStmt(null, [o.StmtModifier.Exported]),
         someVar2.set(o.importExpr(externalModuleIdentifier2))
             .toDeclStmt(null, [o.StmtModifier.Exported])
-      ]))
-          .toEqual(
-              `var someOtherPath_1 = require("/somePackage/someOtherPath"); exports.someVar = someOtherPath_1.someExternalId; exports.someVar2 = someOtherPath_1.someExternalId2;`);
+      ]);
+      expect(result).toContain(`var someOtherPath_1 = require("/somePackage/someOtherPath");`);
+      if (!result.includes(
+              'exports.someVar = someOtherPath_1.someExternalId;' +
+              'exports.someVar2 = someOtherPath_1.someExternalId2;') &&
+          // In TS 3.9 re-exports of namespaced imports are defined as getters
+          !result.includes(
+              'Object.defineProperty(exports, "someVar", { enumerable: true, get: function () { return someOtherPath_1.someExternalId; } }); ' +
+              'Object.defineProperty(exports, "someVar2", { enumerable: true, get: function () { return someOtherPath_1.someExternalId2; } })')) {
+        fail(
+            'Expected `someVar` and `someVar2` to be exported directly or via a `definedProperty` call. Instead got:\n' +
+            result);
+      }
     });
   });
 
@@ -246,8 +262,8 @@ describe('TypeScriptNodeEmitter', () => {
     expect(emitStmt(new o.DeclareFunctionStmt(
                'someFn', [], [new o.ReturnStatement(o.literal(1))], o.INT_TYPE)))
         .toEqual(`function someFn() { return 1; }`);
-    expect(emitStmt(new o.DeclareFunctionStmt('someFn', [new o.FnParam('param1', o.INT_TYPE)], [
-    ]))).toEqual(`function someFn(param1) { }`);
+    expect(emitStmt(new o.DeclareFunctionStmt('someFn', [new o.FnParam('param1', o.INT_TYPE)], [])))
+        .toEqual(`function someFn(param1) { }`);
   });
 
   describe('comments', () => {
@@ -256,8 +272,9 @@ describe('TypeScriptNodeEmitter', () => {
           .toBe('/* SomePreamble */ a;');
     });
 
-    it('should support singleline comments',
-       () => { expect(emitStmt(new o.CommentStmt('Simple comment'))).toBe('// Simple comment'); });
+    it('should support singleline comments', () => {
+      expect(emitStmt(new o.CommentStmt('Simple comment'))).toBe('// Simple comment');
+    });
 
     it('should support multiline comments', () => {
       expect(emitStmt(new o.CommentStmt('Multiline comment', true)))
@@ -314,86 +331,90 @@ describe('TypeScriptNodeEmitter', () => {
             `try { body(); } catch (error) { var stack = error.stack; catchFn(error, stack); }`);
   });
 
-  it('should support support throwing',
-     () => { expect(emitStmt(new o.ThrowStmt(someVar))).toEqual('throw someVar;'); });
+  it('should support support throwing', () => {
+    expect(emitStmt(new o.ThrowStmt(someVar))).toEqual('throw someVar;');
+  });
 
   describe('classes', () => {
     let callSomeMethod: o.Statement;
 
-    beforeEach(() => { callSomeMethod = o.THIS_EXPR.callMethod('someMethod', []).toStmt(); });
+    beforeEach(() => {
+      callSomeMethod = o.THIS_EXPR.callMethod('someMethod', []).toStmt();
+    });
 
 
     it('should support declaring classes', () => {
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
-      ]))).toEqual('class SomeClass { }');
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [], [
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [])))
+          .toEqual('class SomeClass { }');
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [], [
         o.StmtModifier.Exported
       ]))).toEqual('class SomeClass { } exports.SomeClass = SomeClass;');
-      expect(emitStmt(new o.ClassStmt('SomeClass', o.variable('SomeSuperClass'), [], [], null !, [
-      ]))).toEqual('class SomeClass extends SomeSuperClass { }');
+      expect(
+          emitStmt(new o.ClassStmt('SomeClass', o.variable('SomeSuperClass'), [], [], null!, [])))
+          .toEqual('class SomeClass extends SomeSuperClass { }');
     });
 
     it('should support declaring constructors', () => {
       const superCall = o.SUPER_EXPR.callFn([o.variable('someParam')]).toStmt();
-      expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [], new o.ClassMethod(null !, [], []), [])))
+      expect(emitStmt(
+                 new o.ClassStmt('SomeClass', null!, [], [], new o.ClassMethod(null!, [], []), [])))
           .toEqual(`class SomeClass { constructor() { } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [],
-                 new o.ClassMethod(null !, [new o.FnParam('someParam', o.INT_TYPE)], []), [])))
+                 'SomeClass', null!, [], [],
+                 new o.ClassMethod(null!, [new o.FnParam('someParam', o.INT_TYPE)], []), [])))
           .toEqual(`class SomeClass { constructor(someParam) { } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [], new o.ClassMethod(null !, [], [superCall]), [])))
+                 'SomeClass', null!, [], [], new o.ClassMethod(null!, [], [superCall]), [])))
           .toEqual(`class SomeClass { constructor() { super(someParam); } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [], new o.ClassMethod(null !, [], [callSomeMethod]), [])))
+                 'SomeClass', null!, [], [], new o.ClassMethod(null!, [], [callSomeMethod]), [])))
           .toEqual(`class SomeClass { constructor() { this.someMethod(); } }`);
     });
 
     it('should support declaring fields', () => {
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [new o.ClassField('someField')], [], null !, [])))
+                 'SomeClass', null!, [new o.ClassField('someField')], [], null!, [])))
           .toEqual(`class SomeClass { constructor() { this.someField = null; } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [new o.ClassField('someField', o.INT_TYPE)], [], null !, [])))
+                 'SomeClass', null!, [new o.ClassField('someField', o.INT_TYPE)], [], null!, [])))
           .toEqual(`class SomeClass { constructor() { this.someField = null; } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !,
-                 [new o.ClassField('someField', o.INT_TYPE, [o.StmtModifier.Private])], [], null !,
+                 'SomeClass', null!,
+                 [new o.ClassField('someField', o.INT_TYPE, [o.StmtModifier.Private])], [], null!,
                  [])))
           .toEqual(`class SomeClass { constructor() { this.someField = null; } }`);
     });
 
     it('should support declaring getters', () => {
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [new o.ClassGetter('someGetter', [])], null !, [])))
+                 'SomeClass', null!, [], [new o.ClassGetter('someGetter', [])], null!, [])))
           .toEqual(`class SomeClass { get someGetter() { } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [new o.ClassGetter('someGetter', [], o.INT_TYPE)], null !,
+                 'SomeClass', null!, [], [new o.ClassGetter('someGetter', [], o.INT_TYPE)], null!,
                  [])))
           .toEqual(`class SomeClass { get someGetter() { } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [new o.ClassGetter('someGetter', [callSomeMethod])],
-                 null !, [])))
+                 'SomeClass', null!, [], [new o.ClassGetter('someGetter', [callSomeMethod])], null!,
+                 [])))
           .toEqual(`class SomeClass { get someGetter() { this.someMethod(); } }`);
       expect(
           emitStmt(new o.ClassStmt(
-              'SomeClass', null !, [],
-              [new o.ClassGetter('someGetter', [], null !, [o.StmtModifier.Private])], null !, [])))
+              'SomeClass', null!, [],
+              [new o.ClassGetter('someGetter', [], null!, [o.StmtModifier.Private])], null!, [])))
           .toEqual(`class SomeClass { get someGetter() { } }`);
     });
 
     it('should support methods', () => {
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [
         new o.ClassMethod('someMethod', [], [])
       ]))).toEqual(`class SomeClass { someMethod() { } }`);
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [
         new o.ClassMethod('someMethod', [], [], o.INT_TYPE)
       ]))).toEqual(`class SomeClass { someMethod() { } }`);
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [
         new o.ClassMethod('someMethod', [new o.FnParam('someParam', o.INT_TYPE)], [])
       ]))).toEqual(`class SomeClass { someMethod(someParam) { } }`);
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [
         new o.ClassMethod('someMethod', [], [callSomeMethod])
       ]))).toEqual(`class SomeClass { someMethod() { this.someMethod(); } }`);
     });
@@ -431,7 +452,7 @@ describe('TypeScriptNodeEmitter', () => {
 
   it('should support combined types', () => {
     const writeVarExpr = o.variable('a').set(o.NULL_EXPR);
-    expect(emitStmt(writeVarExpr.toDeclStmt(new o.ArrayType(null !)))).toEqual('var a = null;');
+    expect(emitStmt(writeVarExpr.toDeclStmt(new o.ArrayType(null!)))).toEqual('var a = null;');
     expect(emitStmt(writeVarExpr.toDeclStmt(new o.ArrayType(o.INT_TYPE)))).toEqual('var a = null;');
 
     expect(emitStmt(writeVarExpr.toDeclStmt(new o.MapType(null)))).toEqual('var a = null;');
@@ -439,7 +460,7 @@ describe('TypeScriptNodeEmitter', () => {
   });
 
   describe('source maps', () => {
-    function emitStmt(stmt: o.Statement | o.Statement[], preamble?: string): string {
+    function emitStmt(stmt: o.Statement|o.Statement[], preamble?: string): string {
       const stmts = Array.isArray(stmt) ? stmt : [stmt];
 
       const program = ts.createProgram(
@@ -473,13 +494,15 @@ describe('TypeScriptNodeEmitter', () => {
     function mappingItemsOf(text: string) {
       // find the source map:
       const sourceMapMatch = /sourceMappingURL\=data\:application\/json;base64,(.*)$/.exec(text);
-      const sourceMapBase64 = sourceMapMatch ![1];
+      const sourceMapBase64 = sourceMapMatch![1];
       const sourceMapBuffer = Buffer.from(sourceMapBase64, 'base64');
       const sourceMapText = sourceMapBuffer.toString('utf8');
       const sourceMapParsed = JSON.parse(sourceMapText);
       const consumer = new sourceMap.SourceMapConsumer(sourceMapParsed);
       const mappings: any[] = [];
-      consumer.eachMapping((mapping: any) => { mappings.push(mapping); });
+      consumer.eachMapping((mapping: any) => {
+        mappings.push(mapping);
+      });
       return mappings;
     }
 
@@ -503,7 +526,7 @@ describe('TypeScriptNodeEmitter', () => {
           generatedColumn: 0,
           originalLine: 1,
           originalColumn: 0,
-          name: null !  // TODO: Review use of `!` here (#19904)
+          name: null!  // TODO: Review use of `!` here (#19904)
         },
         {
           source: sourceUrl,
@@ -511,7 +534,7 @@ describe('TypeScriptNodeEmitter', () => {
           generatedColumn: 16,
           originalLine: 1,
           originalColumn: 26,
-          name: null !  // TODO: Review use of `!` here (#19904)
+          name: null!  // TODO: Review use of `!` here (#19904)
         }
       ]);
     });
@@ -558,13 +581,20 @@ const FILES: Directory = {
   somePackage: {'someGenFile.ts': `export var a: number;`}
 };
 
-const enum Format { Raw, Flat }
+const enum Format {
+  Raw,
+  Flat
+}
 
 function normalizeResult(result: string, format: Format): string {
   // Remove TypeScript prefixes
   let res = result.replace('"use strict";', ' ')
                 .replace('exports.__esModule = true;', ' ')
                 .replace('Object.defineProperty(exports, "__esModule", { value: true });', ' ');
+
+  // Remove hoisted initial export assignments. These were added in TS 3.9:
+  // https://github.com/Microsoft/TypeScript/commit/c6c2c4c8d5aa0947de16f484b8c16fb0eab1c48f
+  res = res.replace(/^exports\.\S+ = void 0;$/gm, '');
 
   // Remove new lines
   // Squish adjacent spaces

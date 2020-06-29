@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@
 import {Component, Input, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {TreeNode, emptyTree} from '../util';
+import {emptyTree, TreeNode} from '../util';
 
 @Component({
   selector: 'tree',
@@ -19,8 +19,7 @@ import {TreeNode, emptyTree} from '../util';
     <tree *ngIf='data.right != null' [data]='data.right'></tree><tree *ngIf='data.left != null' [data]='data.left'></tree>`
 })
 export class TreeComponent {
-  @Input()
-  data: TreeNode = emptyTree;
+  @Input() data: TreeNode = emptyTree;
 }
 
 @NgModule({

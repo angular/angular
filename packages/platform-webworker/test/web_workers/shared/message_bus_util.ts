@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -24,7 +24,7 @@ export function createConnectedMessageBus(): MessageBus {
 
 class MockPostMessage {
   // TODO(issue/24571): remove '!'.
-  private _listener !: EventListener;
+  private _listener!: EventListener;
 
   addEventListener(type: string, listener: EventListener, useCapture?: boolean): void {
     if (type === 'message') {
@@ -32,5 +32,7 @@ class MockPostMessage {
     }
   }
 
-  postMessage(data: any, transfer?: [ArrayBuffer]): void { this._listener(<any>{data: data}); }
+  postMessage(data: any, transfer?: [Transferable]): void {
+    this._listener(<any>{data: data});
+  }
 }

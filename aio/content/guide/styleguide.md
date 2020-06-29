@@ -1,4 +1,4 @@
-# Style Guide
+# Angular coding style guide
 
 Looking for an opinionated guide to Angular syntax, conventions, and application structure?
 Step right in!
@@ -927,7 +927,7 @@ As always, strive for consistency.
 <div class="s-rule do">
 
 **Do** use a custom prefix for a component selector.
-For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
+For example, the prefix `toh` represents **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
 
 </div>
 
@@ -1080,6 +1080,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 **Do** use consistent names for all pipes, named after their feature.
+The pipe class name should use [UpperCamelCase](guide/glossary#case-types)
+(the general convention for class names),
+and the corresponding `name` string should use *lowerCamelCase*.
+The `name` string cannot use hyphens ("dash-case" or "kebab-case").
 
 
 </div>
@@ -1670,7 +1674,7 @@ keep the **F**lattest structure you can, and
 
 
 
-**Why?** LIFT Provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
+**Why?** LIFT provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
 To confirm your intuition about a particular structure, ask:
 _can I quickly open and start work in all of the related files for this feature_?
 
@@ -1690,7 +1694,7 @@ _can I quickly open and start work in all of the related files for this feature_
 
 
 
-**Do** make locating code intuitive, simple and fast.
+**Do** make locating code intuitive, simple, and fast.
 
 
 </div>
@@ -2968,7 +2972,7 @@ in those editors that support it; it won't help with CSS styles.
 
 
 **Why?** If you ever need to rename the property or event name associated with
-`@Input` or `@Output`, you can modify it in a single place.
+`@Input()` or `@Output()`, you can modify it in a single place.
 
 
 </div>
@@ -3670,7 +3674,7 @@ Compare with the less preferred `host` metadata alternative.
 
 </div>
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts"></code-example>
 
 
 

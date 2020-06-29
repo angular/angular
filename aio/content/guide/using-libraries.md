@@ -1,7 +1,7 @@
-# Using Published Libraries
+# Using published libraries
 
 When building Angular applications you can take advantage of sophisticated first-party libraries, such as [Angular Material](https://material.angular.io/), as well as rich ecosystem of third-party libraries.
-See the [Angular Resources](https://angular.io/resources) page for links to the most popular ones.
+See the [Angular Resources](resources) page for links to the most popular ones.
 
 ## Installing libraries
 
@@ -19,7 +19,7 @@ Library packages often include typings in `.d.ts` files; see examples in `node_m
 
 For example, suppose you have a library named `d3`:
 
-<code-example format="." language="bash">
+<code-example language="bash">
 npm install d3 --save
 npm install @types/d3 --save-dev
 </code-example>
@@ -72,7 +72,7 @@ Configure the CLI to do this at build time using the "scripts" and "styles" opti
 
 For example, to use the [Bootstrap 4](https://getbootstrap.com/docs/4.0/getting-started/introduction/) library, first install the library and its dependencies using the npm package manager:
 
-<code-example format="." language="bash">
+<code-example language="bash">
 npm install jquery --save
 npm install popper.js --save
 npm install bootstrap --save
@@ -121,7 +121,7 @@ Some scripts extend other libraries; for instance with JQuery plugins:
 $('.test').myPlugin();
 ```
 
-In this case, the installed `@types/jquery` doesn't include `myPlugin`, so you need to add an interface  in `src/typings.d.ts`. For example:
+In this case, the installed `@types/jquery` doesn't include `myPlugin`, so you need to add an interface in `src/typings.d.ts`. For example:
 
 ```
 interface JQuery {

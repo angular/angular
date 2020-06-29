@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Renderer2, forwardRef} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Renderer2} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -75,7 +75,9 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
    *
    * @param fn The callback function
    */
-  registerOnChange(fn: (_: any) => {}): void { this.onChange = fn; }
+  registerOnChange(fn: (_: any) => {}): void {
+    this.onChange = fn;
+  }
 
   /**
    * @description
@@ -83,7 +85,9 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
    *
    * @param fn The callback function
    */
-  registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
+  registerOnTouched(fn: () => {}): void {
+    this.onTouched = fn;
+  }
 
   /**
    * Sets the "disabled" property on the input element.

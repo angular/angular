@@ -1,19 +1,19 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {newArray} from '../../util/array_utils';
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
-import {TVIEW, T_HOST} from '../interfaces/view';
-import {appendProjectedNodes} from '../node_manipulation';
+import {DECLARATION_COMPONENT_VIEW, T_HOST} from '../interfaces/view';
+import {applyProjection} from '../node_manipulation';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
-import {getLView, setIsNotParent} from '../state';
-import {findComponentView} from '../util/view_traversal_utils';
-
+import {getLView, getTView, setIsNotParent} from '../state';
 import {getOrCreateTNode} from './shared';
+
 
 
 /**
@@ -73,15 +73,15 @@ export function matchingProjectionSlotIndex(tNode: TNode, projectionSlots: Proje
  * @codeGenApi
  */
 export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
-  const componentNode = findComponentView(getLView())[T_HOST] as TElementNode;
+  const componentNode = getLView()[DECLARATION_COMPONENT_VIEW][T_HOST] as TElementNode;
 
   if (!componentNode.projection) {
     // If no explicit projection slots are defined, fall back to a single
     // projection slot with the wildcard selector.
     const numProjectionSlots = projectionSlots ? projectionSlots.length : 1;
-    const projectionHeads: (TNode | null)[] = componentNode.projection =
-        new Array(numProjectionSlots).fill(null);
-    const tails: (TNode | null)[] = projectionHeads.slice();
+    const projectionHeads: (TNode|null)[] = componentNode.projection =
+        newArray(numProjectionSlots, null! as TNode);
+    const tails: (TNode|null)[] = projectionHeads.slice();
 
     let componentChild: TNode|null = componentNode.child;
 
@@ -91,7 +91,7 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
 
       if (slotIndex !== null) {
         if (tails[slotIndex]) {
-          tails[slotIndex] !.projectionNext = componentChild;
+          tails[slotIndex]!.projectionNext = componentChild;
         } else {
           projectionHeads[slotIndex] = componentChild;
         }
@@ -101,6 +101,11 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
       componentChild = componentChild.next;
     }
   }
+}
+
+let delayProjection = false;
+export function setDelayProjection(value: boolean) {
+  delayProjection = value;
 }
 
 
@@ -114,12 +119,13 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
  *        - 1 based index of the selector from the {@link projectionDef}
  *
  * @codeGenApi
-*/
+ */
 export function ɵɵprojection(
     nodeIndex: number, selectorIndex: number = 0, attrs?: TAttributes): void {
   const lView = getLView();
-  const tProjectionNode = getOrCreateTNode(
-      lView[TVIEW], lView[T_HOST], nodeIndex, TNodeType.Projection, null, attrs || null);
+  const tView = getTView();
+  const tProjectionNode =
+      getOrCreateTNode(tView, lView[T_HOST], nodeIndex, TNodeType.Projection, null, attrs || null);
 
   // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
   if (tProjectionNode.projection === null) tProjectionNode.projection = selectorIndex;
@@ -127,6 +133,9 @@ export function ɵɵprojection(
   // `<ng-content>` has no content
   setIsNotParent();
 
-  // re-distribution of projectable nodes is stored on a component's view level
-  appendProjectedNodes(lView, tProjectionNode, selectorIndex, findComponentView(lView));
+  // We might need to delay the projection of nodes if they are in the middle of an i18n block
+  if (!delayProjection) {
+    // re-distribution of projectable nodes is stored on a component's view level
+    applyProjection(tView, lView, tProjectionNode);
+  }
 }

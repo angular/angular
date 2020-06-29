@@ -1,24 +1,24 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'zone.js/dist/zone-node.js';
-import 'zone.js/dist/long-stack-trace-zone.js';
-import 'zone.js/dist/proxy.js';
-import 'zone.js/dist/sync-test.js';
-import 'zone.js/dist/async-test.js';
-import 'zone.js/dist/fake-async-test.js';
-import 'zone.js/dist/task-tracking.js';
+import 'zone.js/lib/node/rollup-main';
+import 'zone.js/lib/zone-spec/long-stack-trace';
+import 'zone.js/lib/zone-spec/task-tracking';
+import 'zone.js/lib/zone-spec/proxy';
+import 'zone.js/lib/zone-spec/sync-test';
+import 'zone.js/lib/zone-spec/async-test';
+import 'zone.js/lib/zone-spec/fake-async-test';
 import 'reflect-metadata/Reflect';
 
 // Initialize jasmine with @bazel/jasmine boot() function. This will initialize
 // global.jasmine so that it can be patched by zone.js jasmine-patch.js.
 require('@bazel/jasmine').boot();
-import 'zone.js/dist/jasmine-patch.js';
+import 'zone.js/lib/jasmine/jasmine';
 
 (global as any).isNode = true;
 (global as any).isBrowser = false;

@@ -1,15 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {APP_INITIALIZER, ApplicationInitStatus, Inject, InjectionToken, Injector, StaticProvider} from '@angular/core';
-
-import {getDOM} from '../dom/dom_adapter';
 
 /**
  * An id that identifies a particular application being bootstrapped, that should
@@ -24,8 +22,8 @@ export function appInitializerFactory(transitionId: string, document: any, injec
     injector.get(ApplicationInitStatus).donePromise.then(() => {
       const dom = getDOM();
       const styles: any[] =
-          Array.prototype.slice.apply(dom.querySelectorAll(document, `style[ng-transition]`));
-      styles.filter(el => dom.getAttribute(el, 'ng-transition') === transitionId)
+          Array.prototype.slice.apply(document.querySelectorAll(`style[ng-transition]`));
+      styles.filter(el => el.getAttribute('ng-transition') === transitionId)
           .forEach(el => dom.remove(el));
     });
   };

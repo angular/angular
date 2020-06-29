@@ -1,4 +1,4 @@
-# How to update the CLI project 
+# How to update the CLI project
 
 The Angular CLI default setup is updated using `ng update`. Any necessary file changes will be done automatically through migration schematics.
 
@@ -46,5 +46,5 @@ The specific changes to each project type are listed below:
     - Includes a `server` target in the `build` architect runners
   - package.json
     - Includes custom scripts for building the `server`
-    - Includes additional `dependencies` on `@nguniversal/common`, `@nguniversal/express-engine`, and `@nguniversal/module-map-ngfactory-loader`
-    - Includes `devDependencies` on `@angular/platform-server`, and `ts-loader`
+    - Includes additional `dependencies` on `@angular/platform-server`, `@nguniversal/express-engine`, and `express`
+    - Includes additional `devDependencies` on `@nguniversal/builders` and `@types/express`

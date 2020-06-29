@@ -12,7 +12,7 @@
   }
 
   .feature-title {
-    font-size: 16px;
+    @include font-size(16);
     font-weight: 500;
     margin: 8px 0px;
     clear: both;
@@ -28,8 +28,8 @@
 
     .feature {
       max-width: 300px;
-      margin: 0 16px;  
-      
+      margin: 0 16px;
+
       @media (max-width: 768px) {
         max-width: 100%;
       }

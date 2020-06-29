@@ -4,16 +4,16 @@ package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "ng-add",
-    srcs =
-        [
-            "index.ts",
-            "schema.ts",
-        ],
+    srcs = [
+        "index.ts",
+        "schema.d.ts",
+    ],
+    data = [
+        "schema.json",
+    ],
     deps = [
-        "//packages/common",
-        "//packages/core",
         "@npm//@angular-devkit/schematics",
-        "@npm//rxjs",
+        "@npm//@schematics/angular",
     ],
 )
 
@@ -25,10 +25,8 @@ ts_library(
     ],
     deps = [
         ":ng-add",
-        "//packages/common",
-        "//packages/core",
         "@npm//@angular-devkit/schematics",
-        "@npm//rxjs",
+        "@npm//@schematics/angular",
     ],
 )
 
@@ -37,6 +35,5 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//packages/elements/schematics:collection",
-        "@npm//@schematics/angular",
     ],
 )

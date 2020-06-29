@@ -1,0 +1,15 @@
+# Settings in this file should be OS agnostic. Use the bazel.<OS>.rc files for OS specific settings.
+
+# Don't be spammy in the logs
+build --noshow_progress
+
+# Print all the options that apply to the build.
+# This helps us diagnose which options override others
+# (e.g. /etc/bazel.bazelrc vs. tools/bazel.rc)
+build --announce_rc
+
+# Retry in the event of flakes, eg. https://circleci.com/gh/angular/angular/31309
+test --flaky_test_attempts=2
+
+# More details on failures
+build --verbose_failures=true

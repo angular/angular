@@ -1,4 +1,4 @@
-# Schematics
+# Generating code using schematics
 
 A schematic is a template-based code generator that supports complex logic.
 It is a set of instructions for transforming a software project by generating or modifying code.
@@ -17,13 +17,13 @@ Schematics that are included in the `@schematics/angular` collection are run by 
 The package contains named schematics that configure the options that are available to the CLI for `ng generate` sub-commands, such as `ng generate component` and `ng generate service`.
 The subcommands for `ng generate` are shorthand for the corresponding schematic. You can specify a particular schematic (or collection of schematics) to generate, using the long form:
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng generate my-schematic-collection:my-schematic-name
 </code-example>
 
-&mdash;or&mdash;
+or
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng generate my-schematic-name --collection collection-name
 </code-example>
 
@@ -42,7 +42,7 @@ As a library developer, you can create your own collections of custom schematics
 
 * An *add schematic* allows developers to install your library in an Angular workspace using `ng add`.
 
-* *Generation schematics* can tell the `ng generate` subcommands how to modify projects, add configurations and scripts, and scaffold  artifacts that are defined in your library.
+* *Generation schematics* can tell the `ng generate` subcommands how to modify projects, add configurations and scripts, and scaffold artifacts that are defined in your library.
 
 * An *update schematic* can tell the `ng update` command how to update your library's dependencies and adjust for breaking changes when you release a new version.
 
@@ -62,7 +62,7 @@ Partner and third party libraries also support the Angular CLI with add schemati
 For example, `@ng-bootstrap/schematics` adds [ng-bootstrap](https://ng-bootstrap.github.io/)  to an app, and  `@clr/angular` installs and sets up [Clarity from VMWare](https://vmware.github.io/clarity/documentation/v1.0/get-started).
 
 An add schematic can also update a project with configuration changes, add additional dependencies (such as polyfills), or scaffold package-specific initialization code.
-For example, the `@angular/pwa` schematic turns your application into a PWA by adding an app manifest and service worker, and the `@angular/elements`  schematic adds  the `document-register-element.js` polyfill and dependencies for Angular Elements.
+For example, the `@angular/pwa` schematic turns your application into a PWA by adding an app manifest and service worker, and the `@angular/elements`  schematic adds the `document-register-element.js` polyfill and dependencies for Angular Elements.
 
 ### Generation schematics
 
@@ -72,7 +72,7 @@ The documented sub-commands use the default Angular generation schematics, but y
 Angular Material, for example, supplies generation schematics for the UI components that it defines.
 The following command uses one of these schematics to render an Angular Material `<mat-table>` that is pre-configured with a datasource for sorting and pagination.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng generate @angular/material:table <component-name>
 </code-example>
 
@@ -80,7 +80,7 @@ ng generate @angular/material:table <component-name>
 
  The `ng update` command can be used to update your workspace's library dependencies. If you supply no options or use the help option, the command examines your workspace and suggests libraries to update.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng update
     We analyzed your package.json, there are some packages to update:
 
@@ -113,7 +113,7 @@ If you create a new version of your library that introduces potential breaking c
 
 For example, suppose you want to update the Angular Material library.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng update @angular/material
 </code-example>
 

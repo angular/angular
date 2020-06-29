@@ -10,7 +10,7 @@ declare var System: any;
   `,
 })
 export class AppComponent implements AfterViewInit {
-  @ViewChild('vc', {read: ViewContainerRef, static: false}) container: ViewContainerRef;
+  @ViewChild('vc', {read: ViewContainerRef}) container: ViewContainerRef;
 
   constructor(private compiler: Compiler) {}
 

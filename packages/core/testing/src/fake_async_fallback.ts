@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -55,7 +55,7 @@ let _inFakeAsyncCall = false;
  */
 export function fakeAsyncFallback(fn: Function): (...args: any[]) => any {
   // Not using an arrow function to preserve context passed from call site
-  return function(...args: any[]) {
+  return function(this: unknown, ...args: any[]) {
     const proxyZoneSpec = ProxyZoneSpec.assertPresent();
     if (_inFakeAsyncCall) {
       throw new Error('fakeAsync() calls can not be nested');
@@ -118,8 +118,11 @@ function _getFakeAsyncZoneSpec(): any {
  *
  * @publicApi
  */
-export function tickFallback(millis: number = 0): void {
-  _getFakeAsyncZoneSpec().tick(millis);
+export function tickFallback(
+    millis: number = 0, tickOptions: {processNewMacroTasksSynchronously: boolean} = {
+      processNewMacroTasksSynchronously: true
+    }): void {
+  _getFakeAsyncZoneSpec().tick(millis, null, tickOptions);
 }
 
 /**

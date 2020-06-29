@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,8 @@ export type TransformerFactory = (context: ts.TransformationContext) => Transfor
 /**
  * Returns a transformer that adds the requested static methods specified by modules.
  */
-export function getAngularClassTransformerFactory(modules: PartialModule[]): TransformerFactory {
+export function getAngularClassTransformerFactory(
+    modules: PartialModule[], annotateForClosureCompiler: boolean): TransformerFactory {
   if (modules.length === 0) {
     // If no modules are specified, just return an identity transform.
     return () => sf => sf;
@@ -27,7 +28,7 @@ export function getAngularClassTransformerFactory(modules: PartialModule[]): Tra
     return function(sourceFile: ts.SourceFile): ts.SourceFile {
       const module = moduleMap.get(sourceFile.fileName);
       if (module && module.statements.length > 0) {
-        const [newSourceFile] = updateSourceFile(sourceFile, module, context);
+        const [newSourceFile] = updateSourceFile(sourceFile, module, annotateForClosureCompiler);
         return newSourceFile;
       }
       return sourceFile;

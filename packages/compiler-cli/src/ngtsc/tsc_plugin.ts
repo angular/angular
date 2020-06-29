@@ -1,82 +1,127 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PluginCompilerHost, TscPlugin} from '@bazel/typescript/internal/tsc_wrapped/plugin_api';
 import * as ts from 'typescript';
 
-import {SyntheticFilesCompilerHost} from './synthetic_files_compiler_host';
+import {NgCompiler, NgCompilerHost} from './core';
+import {NgCompilerOptions, UnifiedModulesHost} from './core/api';
+import {NodeJSFileSystem, setFileSystem} from './file_system';
+import {PatchedProgramIncrementalBuildStrategy} from './incremental';
+import {NOOP_PERF_RECORDER} from './perf';
+import {untagAllTsFiles} from './shims';
+import {ReusedProgramStrategy} from './typecheck/src/augmented_program';
 
-// Copied from tsc_wrapped/plugin_api.ts to avoid a runtime dependency on the
-// @bazel/typescript package - it would be strange for non-Bazel users of
-// Angular to fetch that package.
-function createProxy<T>(delegate: T): T {
-  const proxy = Object.create(null);
-  for (const k of Object.keys(delegate)) {
-    proxy[k] = function() { return (delegate as any)[k].apply(delegate, arguments); };
-  }
-  return proxy;
+// The following is needed to fix a the chicken-and-egg issue where the sync (into g3) script will
+// refuse to accept this file unless the following string appears:
+// import * as plugin from '@bazel/typescript/internal/tsc_wrapped/plugin_api';
+
+/**
+ * A `ts.CompilerHost` which also returns a list of input files, out of which the `ts.Program`
+ * should be created.
+ *
+ * Currently mirrored from @bazel/typescript/internal/tsc_wrapped/plugin_api (with the naming of
+ * `fileNameToModuleName` corrected).
+ */
+interface PluginCompilerHost extends ts.CompilerHost, Partial<UnifiedModulesHost> {
+  readonly inputFiles: ReadonlyArray<string>;
 }
 
+/**
+ * Mirrors the plugin interface from tsc_wrapped which is currently under active development. To
+ * enable progress to be made in parallel, the upstream interface isn't implemented directly.
+ * Instead, `TscPlugin` here is structurally assignable to what tsc_wrapped expects.
+ */
+interface TscPlugin {
+  readonly name: string;
+
+  wrapHost(
+      host: ts.CompilerHost&Partial<UnifiedModulesHost>, inputFiles: ReadonlyArray<string>,
+      options: ts.CompilerOptions): PluginCompilerHost;
+
+  setupCompilation(program: ts.Program, oldProgram?: ts.Program): {
+    ignoreForDiagnostics: Set<ts.SourceFile>,
+    ignoreForEmit: Set<ts.SourceFile>,
+  };
+
+  getDiagnostics(file?: ts.SourceFile): ts.Diagnostic[];
+
+  getOptionDiagnostics(): ts.Diagnostic[];
+
+  getNextProgram(): ts.Program;
+
+  createTransformers(): ts.CustomTransformers;
+}
+
+/**
+ * A plugin for `tsc_wrapped` which allows Angular compilation from a plain `ts_library`.
+ */
 export class NgTscPlugin implements TscPlugin {
-  constructor(private angularCompilerOptions: unknown) {}
+  name = 'ngtsc';
 
-  wrapHost(inputFiles: string[], compilerHost: ts.CompilerHost) {
-    return new SyntheticFilesCompilerHost(inputFiles, compilerHost, (rootFiles: string[]) => {
-      // For demo purposes, assume that the first .ts rootFile is the only
-      // one that needs ngfactory.js/d.ts back-compat files produced.
-      const tsInputs = rootFiles.filter(f => f.endsWith('.ts') && !f.endsWith('.d.ts'));
-      const factoryPath: string = tsInputs[0].replace(/\.ts/, '.ngfactory.ts');
+  private options: NgCompilerOptions|null = null;
+  private host: NgCompilerHost|null = null;
+  private _compiler: NgCompiler|null = null;
 
-      return {
-        factoryPath: (host: ts.CompilerHost) =>
-                         ts.createSourceFile(factoryPath, 'contents', ts.ScriptTarget.ES5),
-      };
-    });
+  get compiler(): NgCompiler {
+    if (this._compiler === null) {
+      throw new Error('Lifecycle error: setupCompilation() must be called first.');
+    }
+    return this._compiler;
   }
 
-  wrap(program: ts.Program, config: {}, host: ts.CompilerHost) {
-    const proxy = createProxy(program);
-    proxy.getSemanticDiagnostics = (sourceFile: ts.SourceFile) => {
-      const result: ts.Diagnostic[] = [...program.getSemanticDiagnostics(sourceFile)];
+  constructor(private ngOptions: {}) {
+    setFileSystem(new NodeJSFileSystem());
+  }
 
-      // For demo purposes, trigger a diagnostic when the sourcefile has a magic string
-      if (sourceFile.text.indexOf('diag') >= 0) {
-        const fake: ts.Diagnostic = {
-          file: sourceFile,
-          start: 0,
-          length: 3,
-          messageText: 'Example Angular Compiler Diagnostic',
-          category: ts.DiagnosticCategory.Error,
-          code: 12345,
-          // source is the name of the plugin.
-          source: 'ngtsc',
-        };
-        result.push(fake);
-      }
-      return result;
+  wrapHost(
+      host: ts.CompilerHost&UnifiedModulesHost, inputFiles: readonly string[],
+      options: ts.CompilerOptions): PluginCompilerHost {
+    // TODO(alxhub): Eventually the `wrapHost()` API will accept the old `ts.Program` (if one is
+    // available). When it does, its `ts.SourceFile`s need to be re-tagged to enable proper
+    // incremental compilation.
+    this.options = {...this.ngOptions, ...options} as NgCompilerOptions;
+    this.host = NgCompilerHost.wrap(host, inputFiles, this.options, /* oldProgram */ null);
+    return this.host;
+  }
+
+  setupCompilation(program: ts.Program, oldProgram?: ts.Program): {
+    ignoreForDiagnostics: Set<ts.SourceFile>,
+    ignoreForEmit: Set<ts.SourceFile>,
+  } {
+    if (this.host === null || this.options === null) {
+      throw new Error('Lifecycle error: setupCompilation() before wrapHost().');
+    }
+    this.host.postProgramCreationCleanup();
+    untagAllTsFiles(program);
+    const typeCheckStrategy = new ReusedProgramStrategy(
+        program, this.host, this.options, this.host.shimExtensionPrefixes);
+    this._compiler = new NgCompiler(
+        this.host, this.options, program, typeCheckStrategy,
+        new PatchedProgramIncrementalBuildStrategy(), oldProgram, NOOP_PERF_RECORDER);
+    return {
+      ignoreForDiagnostics: this._compiler.ignoreForDiagnostics,
+      ignoreForEmit: this._compiler.ignoreForEmit,
     };
-    return proxy;
   }
 
-  createTransformers(host: PluginCompilerHost) {
-    const afterDeclarations: Array<ts.TransformerFactory<ts.SourceFile|ts.Bundle>> =
-        [(context: ts.TransformationContext) => (sf: ts.SourceFile | ts.Bundle) => {
-          const visitor = (node: ts.Node): ts.Node => {
-            if (ts.isClassDeclaration(node)) {
-              // For demo purposes, transform the class name in the .d.ts output
-              return ts.updateClassDeclaration(
-                  node, node.decorators, node.modifiers, ts.createIdentifier('NEWNAME'),
-                  node.typeParameters, node.heritageClauses, node.members);
-            }
-            return ts.visitEachChild(node, visitor, context);
-          };
-          return visitor(sf) as ts.SourceFile;
-        }];
-    return {afterDeclarations};
+  getDiagnostics(file?: ts.SourceFile): ts.Diagnostic[] {
+    return this.compiler.getDiagnostics(file);
+  }
+
+  getOptionDiagnostics(): ts.Diagnostic[] {
+    return this.compiler.getOptionDiagnostics();
+  }
+
+  getNextProgram(): ts.Program {
+    return this.compiler.getNextProgram();
+  }
+
+  createTransformers(): ts.CustomTransformers {
+    return this.compiler.prepareEmit().transformers;
   }
 }

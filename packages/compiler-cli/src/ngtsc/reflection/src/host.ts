@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,9 +9,12 @@
 import * as ts from 'typescript';
 
 /**
- * Metadata extracted from an instance of a decorator on another declaration.
+ * Metadata extracted from an instance of a decorator on another declaration, or synthesized from
+ * other information about a class.
  */
-export interface Decorator {
+export type Decorator = ConcreteDecorator|SyntheticDecorator;
+
+export interface BaseDecorator {
   /**
    * Name by which the decorator was invoked in the user's code.
    *
@@ -21,25 +24,78 @@ export interface Decorator {
   name: string;
 
   /**
-   * Identifier which refers to the decorator in source.
+   * Identifier which refers to the decorator in the user's code.
    */
-  identifier: ts.Identifier;
+  identifier: DecoratorIdentifier|null;
+
+/**
+ * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
+ * if the decorator was declared in the same module and not imported.
+ */
+import: Import|null;
 
   /**
-   * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
-   * if the decorator was declared in the same module and not imported.
+   * TypeScript reference to the decorator itself, or `null` if the decorator is synthesized (e.g.
+   * in ngcc).
    */
-  import : Import | null;
+  node: ts.Node|null;
 
   /**
-   * TypeScript reference to the decorator itself.
-   */
-  node: ts.Node;
-
-  /**
-   * Arguments of the invocation of the decorator, if the decorator is invoked, or `null` otherwise.
+   * Arguments of the invocation of the decorator, if the decorator is invoked, or `null`
+   * otherwise.
    */
   args: ts.Expression[]|null;
+}
+
+/**
+ * Metadata extracted from an instance of a decorator on another declaration, which was actually
+ * present in a file.
+ *
+ * Concrete decorators always have an `identifier` and a `node`.
+ */
+export interface ConcreteDecorator extends BaseDecorator {
+  identifier: DecoratorIdentifier;
+  node: ts.Node;
+}
+
+/**
+ * Synthetic decorators never have an `identifier` or a `node`, but know the node for which they
+ * were synthesized.
+ */
+export interface SyntheticDecorator extends BaseDecorator {
+  identifier: null;
+  node: null;
+
+  /**
+   * The `ts.Node` for which this decorator was created.
+   */
+  synthesizedFor: ts.Node;
+}
+
+export const Decorator = {
+  nodeForError: (decorator: Decorator): ts.Node => {
+    if (decorator.node !== null) {
+      return decorator.node;
+    } else {
+      // TODO(alxhub): we can't rely on narrowing until TS 3.6 is in g3.
+      return (decorator as SyntheticDecorator).synthesizedFor;
+    }
+  },
+};
+
+/**
+ * A decorator is identified by either a simple identifier (e.g. `Decorator`) or, in some cases,
+ * a namespaced property access (e.g. `core.Decorator`).
+ */
+export type DecoratorIdentifier = ts.Identifier|NamespacedIdentifier;
+export type NamespacedIdentifier = ts.PropertyAccessExpression&{
+  expression: ts.Identifier;
+  name: ts.Identifier
+};
+export function isDecoratorIdentifier(exp: ts.Expression): exp is DecoratorIdentifier {
+  return ts.isIdentifier(exp) ||
+      ts.isPropertyAccessExpression(exp) && ts.isIdentifier(exp.expression) &&
+      ts.isIdentifier(exp.name);
 }
 
 /**
@@ -57,13 +113,7 @@ export interface Decorator {
  * For `ReflectionHost` purposes, a class declaration should always have a `name` identifier,
  * because we need to be able to reference it in other parts of the program.
  */
-export type ClassDeclaration<T extends ts.Declaration = ts.Declaration> = T & {name: ts.Identifier};
-
-/**
- * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is
- * a `ClassDeclaration`.
- */
-export type ClassSymbol = ts.Symbol & {valueDeclaration: ClassDeclaration};
+export type ClassDeclaration<T extends ts.Declaration = ts.Declaration> = T&{name: ts.Identifier};
 
 /**
  * An enumeration of possible kinds of class members.
@@ -191,11 +241,26 @@ export interface ClassMember {
  */
 export type TypeValueReference = {
   local: true; expression: ts.Expression; defaultImportStatement: ts.ImportDeclaration | null;
-} |
-{
+}|{
   local: false;
-  name: string;
+
+  /**
+   * The module specifier from which the `importedName` symbol should be imported.
+   */
   moduleName: string;
+
+  /**
+   * The name of the top-level symbol that is imported from `moduleName`. If `nestedPath` is also
+   * present, a nested object is being referenced from the top-level symbol.
+   */
+  importedName: string;
+
+  /**
+   * If present, represents the symbol names that are referenced from the top-level import.
+   * When `null` or empty, the `importedName` itself is the symbol being referenced.
+   */
+  nestedPath: string[]|null;
+
   valueDeclaration: ts.Declaration;
 };
 
@@ -254,15 +319,16 @@ export interface CtorParameter {
  * itself. In ES5 code this can be more complicated, as the default values for parameters may
  * be extracted from certain body statements.
  */
-export interface FunctionDefinition<T extends ts.MethodDeclaration|ts.FunctionDeclaration|
-                                    ts.FunctionExpression> {
+export interface FunctionDefinition {
   /**
    * A reference to the node which declares the function.
    */
-  node: T;
+  node: ts.MethodDeclaration|ts.FunctionDeclaration|ts.FunctionExpression|ts.VariableDeclaration;
 
   /**
-   * Statements of the function body, if a body is present, or null if no body is present.
+   * Statements of the function body, if a body is present, or null if no body is present or the
+   * function is identified to represent a tslib helper function, in which case `helper` will
+   * indicate which helper this function represents.
    *
    * This list may have been filtered to exclude statements which perform parameter default value
    * initialization.
@@ -273,6 +339,31 @@ export interface FunctionDefinition<T extends ts.MethodDeclaration|ts.FunctionDe
    * Metadata regarding the function's parameters, including possible default value expressions.
    */
   parameters: Parameter[];
+}
+
+/**
+ * Possible declarations of known values, such as built-in objects/functions or TypeScript helpers.
+ */
+export enum KnownDeclaration {
+  /**
+   * Indicates the JavaScript global `Object` class.
+   */
+  JsGlobalObject,
+
+  /**
+   * Indicates the `__assign` TypeScript helper function.
+   */
+  TsHelperAssign,
+
+  /**
+   * Indicates the `__spread` TypeScript helper function.
+   */
+  TsHelperSpread,
+
+  /**
+   * Indicates the `__spreadArrays` TypeScript helper function.
+   */
+  TsHelperSpreadArrays,
 }
 
 /**
@@ -314,28 +405,108 @@ export interface Import {
 }
 
 /**
- * The declaration of a symbol, along with information about how it was imported into the
- * application.
+ * A single enum member extracted from JavaScript when no `ts.EnumDeclaration` is available.
  */
-export interface Declaration<T extends ts.Declaration = ts.Declaration> {
+export interface EnumMember {
   /**
-   * TypeScript reference to the declaration itself.
+   * The name of the enum member.
    */
-  node: T;
+  name: ts.PropertyName;
 
+  /**
+   * The initializer expression of the enum member. Unlike in TypeScript, this is always available
+   * in emitted JavaScript.
+   */
+  initializer: ts.Expression;
+}
+
+/**
+ * Base type for all `Declaration`s.
+ */
+export interface BaseDeclaration<T extends ts.Declaration = ts.Declaration> {
   /**
    * The absolute module path from which the symbol was imported into the application, if the symbol
    * was imported via an absolute module (even through a chain of re-exports). If the symbol is part
    * of the application and was not imported from an absolute path, this will be `null`.
    */
   viaModule: string|null;
+
+  /**
+   * TypeScript reference to the declaration itself, if one exists.
+   */
+  node: T|null;
+
+  /**
+   * If set, describes the type of the known declaration this declaration resolves to.
+   */
+  known: KnownDeclaration|null;
 }
+
+/**
+ * A declaration that has an associated TypeScript `ts.Declaration`.
+ *
+ * The alternative is an `InlineDeclaration`.
+ */
+export interface ConcreteDeclaration<T extends ts.Declaration = ts.Declaration> extends
+    BaseDeclaration<T> {
+  node: T;
+
+  /**
+   * Optionally represents a special identity of the declaration, or `null` if the declaration
+   * does not have a special identity.
+   */
+  identity: SpecialDeclarationIdentity|null;
+}
+
+export type SpecialDeclarationIdentity = DownleveledEnum;
+
+export const enum SpecialDeclarationKind {
+  DownleveledEnum,
+}
+
+/**
+ * A special declaration identity that represents an enum. This is used in downleveled forms where
+ * a `ts.EnumDeclaration` is emitted in an alternative form, e.g. an IIFE call that declares all
+ * members.
+ */
+export interface DownleveledEnum {
+  kind: SpecialDeclarationKind.DownleveledEnum;
+  enumMembers: EnumMember[];
+}
+
+/**
+ * A declaration that does not have an associated TypeScript `ts.Declaration`, only a
+ * `ts.Expression`.
+ *
+ * This can occur in some downlevelings when an `export const VAR = ...;` (a `ts.Declaration`) is
+ * transpiled to an assignment statement (e.g. `exports.VAR = ...;`). There is no `ts.Declaration`
+ * associated with `VAR` in that case, only an expression.
+ */
+export interface InlineDeclaration extends BaseDeclaration {
+  node: null;
+
+  /**
+   * The `ts.Expression` which constitutes the value of the declaration.
+   */
+  expression: ts.Expression;
+}
+
+/**
+ * The declaration of a symbol, along with information about how it was imported into the
+ * application.
+ *
+ * This can either be a `ConcreteDeclaration` if the underlying TypeScript node for the symbol is an
+ * actual `ts.Declaration`, or an `InlineDeclaration` if the declaration was transpiled in certain
+ * downlevelings to a `ts.Expression` instead.
+ */
+export type Declaration<T extends ts.Declaration = ts.Declaration> =
+    ConcreteDeclaration<T>|InlineDeclaration;
 
 /**
  * Abstracts reflection operations on a TypeScript AST.
  *
- * Depending on the format of the code being interpreted, different concepts are represented with
- * different syntactical structures. The `ReflectionHost` abstracts over those differences and
+ * Depending on the format of the code being interpreted, different concepts are represented
+ * with different syntactical structures. The `ReflectionHost` abstracts over those differences and
  * presents a single API by which the compiler can query specific information about the AST.
  *
  * All operations on the `ReflectionHost` require the use of TypeScript `ts.Node`s with binding
@@ -354,7 +525,7 @@ export interface ReflectionHost {
    * result of an IIFE execution.
    *
    * @returns an array of `Decorator` metadata if decorators are present on the declaration, or
-   * `null` if either no decorators were present or if the declaration is not of a decorable type.
+   * `null` if either no decorators were present or if the declaration is not of a decoratable type.
    */
   getDecoratorsOfDeclaration(declaration: ts.Declaration): Decorator[]|null;
 
@@ -404,8 +575,7 @@ export interface ReflectionHost {
    *
    * @returns a `FunctionDefinition` giving metadata about the function definition.
    */
-  getDefinitionOfFunction<T extends ts.MethodDeclaration|ts.FunctionDeclaration|
-                          ts.FunctionExpression>(fn: T): FunctionDefinition<T>;
+  getDefinitionOfFunction(fn: ts.Node): FunctionDefinition|null;
 
   /**
    * Determine if an identifier was imported from another module and return `Import` metadata
@@ -479,6 +649,16 @@ export interface ReflectionHost {
   hasBaseClass(clazz: ClassDeclaration): boolean;
 
   /**
+   * Get an expression representing the base class (if any) of the given `clazz`.
+   *
+   * This expression is most commonly an Identifier, but is possible to inherit from a more dynamic
+   * expression.
+   *
+   * @param clazz the class whose base we want to get.
+   */
+  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null;
+
+  /**
    * Get the number of generic type parameters of a given class.
    *
    * @param clazz a `ClassDeclaration` representing the class over which to reflect.
@@ -513,4 +693,24 @@ export interface ReflectionHost {
    * `ts.Program` as the input declaration.
    */
   getDtsDeclaration(declaration: ts.Declaration): ts.Declaration|null;
+
+  /**
+   * Get a `ts.Identifier` for a given `ClassDeclaration` which can be used to refer to the class
+   * within its definition (such as in static fields).
+   *
+   * This can differ from `clazz.name` when ngcc runs over ES5 code, since the class may have a
+   * different name within its IIFE wrapper than it does externally.
+   */
+  getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier;
+
+  /**
+   * Get a `ts.Identifier` for a given `ClassDeclaration` which can be used to refer to the class
+   * from statements that are "adjacent", and conceptually tightly bound, to the class but not
+   * actually inside it.
+   *
+   * Similar to `getInternalNameOfClass()`, this name can differ from `clazz.name` when ngcc runs
+   * over ES5 code, since these "adjacent" statements need to exist in the IIFE where the class may
+   * have a different name than it does externally.
+   */
+  getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier;
 }

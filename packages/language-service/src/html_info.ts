@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@
 
 // This section defines the HTML elements and attribute surface of HTML 4
 // which is derived from https://www.w3.org/TR/html4/strict.dtd
-type attrType = string | string[];
+type attrType = string|string[];
 type hash<T> = {
   [name: string]: T
 };
@@ -104,7 +104,9 @@ const groups: hash<number>[] = [
   {class: 1, style: 1},
   {hreflang: 2, rel: 1, rev: 1},
   {ismap: 7},
-  { defer: 25, event: 1, for : 1 }
+  {
+    defer: 25, event: 1, for: 1
+  }
 ];
 
 const elements: {[name: string]: number[]} = {
@@ -193,7 +195,7 @@ export function elementNames(): string[] {
   return Object.keys(elements).sort().map(v => v.toLowerCase());
 }
 
-function compose(indexes: number[] | undefined): hash<attrType> {
+function compose(indexes: number[]|undefined): hash<attrType> {
   const result: hash<attrType> = {};
   if (indexes) {
     for (let index of indexes) {
@@ -374,14 +376,6 @@ const SCHEMA: string[] = [
   ':svg:cursor^:svg:|',
 ];
 
-const attrToPropMap: {[name: string]: string} = <any>{
-  'class': 'className',
-  'formaction': 'formAction',
-  'innerHtml': 'innerHTML',
-  'readonly': 'readOnly',
-  'tabindex': 'tabIndex'
-};
-
 const EVENT = 'event';
 const BOOLEAN = 'boolean';
 const NUMBER = 'number';
@@ -407,7 +401,7 @@ export class SchemaInformation {
         }
       }
       properties.forEach((property: string) => {
-        if (property == '') {
+        if (property === '') {
         } else if (property.startsWith('*')) {
           type[property.substring(1)] = EVENT;
         } else if (property.startsWith('!')) {
@@ -423,7 +417,9 @@ export class SchemaInformation {
     });
   }
 
-  allKnownElements(): string[] { return Object.keys(this.schema); }
+  allKnownElements(): string[] {
+    return Object.keys(this.schema);
+  }
 
   eventsOf(elementName: string): string[] {
     const elementType = this.schema[elementName.toLowerCase()] || {};
@@ -456,8 +452,4 @@ export function eventNames(elementName: string): string[] {
 
 export function propertyNames(elementName: string): string[] {
   return SchemaInformation.instance.propertiesOf(elementName);
-}
-
-export function propertyType(elementName: string, propertyName: string): string {
-  return SchemaInformation.instance.typeOf(elementName, propertyName);
 }

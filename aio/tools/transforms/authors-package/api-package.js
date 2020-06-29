@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -24,7 +24,7 @@ const packageMap = {
   'platform-webworker-dynamic': ['platform-webworker-dynamic/index.ts'],
   router: ['router/index.ts', 'router/testing/index.ts', 'router/upgrade/index.ts'],
   'service-worker': ['service-worker/index.ts'],
-  upgrade: ['upgrade/index.ts', 'upgrade/static/index.ts']
+  upgrade: ['upgrade/index.ts', 'upgrade/static/index.ts', 'upgrade/static/testing/index.ts']
 };
 
 

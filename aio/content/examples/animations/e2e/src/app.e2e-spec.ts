@@ -89,14 +89,14 @@ describe('Animation Tests', () => {
       sleepFor(2000);
     });
 
-    it('should be inactive with an orange background', async () => {
+    it('should be inactive with a blue background', async () => {
       const toggleButton = statusSlider.getToggleButton();
       const container = statusSlider.getComponentContainer();
       let text = await container.getText();
 
       if (text === 'Active') {
         await toggleButton.click();
-        await browser.wait(async () => await container.getCssValue('backgroundColor') === inactiveColor, 2000);
+        await browser.wait(async () => await container.getCssValue('backgroundColor') === inactiveColor, 3000);
       }
 
       text = await container.getText();
@@ -106,14 +106,14 @@ describe('Animation Tests', () => {
       expect(bgColor).toBe(inactiveColor);
     });
 
-    it('should be active with a blue background', async () => {
+    it('should be active with an orange background', async () => {
       const toggleButton = statusSlider.getToggleButton();
       const container = statusSlider.getComponentContainer();
       let text = await container.getText();
 
       if (text === 'Inactive') {
         await toggleButton.click();
-        await browser.wait(async () => await container.getCssValue('backgroundColor') === activeColor, 2000);
+        await browser.wait(async () => await container.getCssValue('backgroundColor') === activeColor, 3000);
       }
 
       text = await container.getText();

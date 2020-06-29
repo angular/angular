@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -100,14 +100,14 @@ describe('mock_compiler', () => {
     it('should be able to properly handle string literals with escaped quote', () => {
       const files = {
         app: {
-          'test.ts': String.raw `const identifier = "\"quoted\"";`,
+          'test.ts': String.raw`const identifier = "\"quoted\"";`,
         }
       };
 
       const result = compile(files, angularFiles);
 
       expect(() => {
-        expectEmit(result.source, String.raw `const $a$ = "\"quoted\"";`, 'Output does not match.');
+        expectEmit(result.source, String.raw`const $a$ = "\"quoted\"";`, 'Output does not match.');
       }).not.toThrow();
     });
   });

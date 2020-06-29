@@ -29,16 +29,13 @@ describe('ApiService', () => {
 
   it('should not immediately connect to the server', () => {
     httpMock.expectNone({});
+    expect().nothing();  // Prevent jasmine from complaining about no expectations.
   });
 
   it('subscribers should be completed/unsubscribed when service destroyed', () => {
       let completed = false;
 
-      service.sections.subscribe(
-        undefined,
-        undefined,
-        () => completed = true
-      );
+      service.sections.subscribe({complete: () => completed = true});
 
       service.ngOnDestroy();
       expect(completed).toBe(true);
@@ -91,6 +88,7 @@ describe('ApiService', () => {
     it('should connect to the server w/ expected URL', () => {
       service.fetchSections();
       httpMock.expectOne('generated/docs/api/api-list.json');
+      expect().nothing();  // Prevent jasmine from complaining about no expectations.
     });
 
     it('should refresh the #sections observable w/ new content on second call', () => {

@@ -7,39 +7,39 @@ import { LoadChildrenCallback } from '@angular/router';
 export const ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES = [
   {
     selector: 'aio-announcement-bar',
-    loadChildren: () => import('./announcement-bar/announcement-bar.module').then(mod => mod.AnnouncementBarModule)
+    loadChildren: () => import('./announcement-bar/announcement-bar.module').then(m => m.AnnouncementBarModule)
   },
   {
     selector: 'aio-api-list',
-    loadChildren: () => import('./api/api-list.module').then(mod => mod.ApiListModule)
+    loadChildren: () => import('./api/api-list.module').then(m => m.ApiListModule)
   },
   {
     selector: 'aio-contributor-list',
-    loadChildren: () => import('./contributor/contributor-list.module').then(mod => mod.ContributorListModule)
+    loadChildren: () => import('./contributor/contributor-list.module').then(m => m.ContributorListModule)
   },
   {
     selector: 'aio-file-not-found-search',
-    loadChildren: () => import('./search/file-not-found-search.module').then(mod => mod.FileNotFoundSearchModule)
+    loadChildren: () => import('./search/file-not-found-search.module').then(m => m.FileNotFoundSearchModule)
   },
   {
     selector: 'aio-resource-list',
-    loadChildren: () => import('./resource/resource-list.module').then(mod => mod.ResourceListModule)
+    loadChildren: () => import('./resource/resource-list.module').then(m => m.ResourceListModule)
   },
   {
     selector: 'aio-toc',
-    loadChildren: () => import('./toc/toc.module').then(mod => mod.TocModule)
+    loadChildren: () => import('./toc/toc.module').then(m => m.TocModule)
   },
   {
     selector: 'code-example',
-    loadChildren: () => import('./code/code-example.module').then(mod => mod.CodeExampleModule)
+    loadChildren: () => import('./code/code-example.module').then(m => m.CodeExampleModule)
   },
   {
     selector: 'code-tabs',
-    loadChildren: () => import('./code/code-tabs.module').then(mod => mod.CodeTabsModule)
+    loadChildren: () => import('./code/code-tabs.module').then(m => m.CodeTabsModule)
   },
   {
     selector: 'live-example',
-    loadChildren: () => import('./live-example/live-example.module').then(mod => mod.LiveExampleModule)
+    loadChildren: () => import('./live-example/live-example.module').then(m => m.LiveExampleModule)
   }
 ];
 

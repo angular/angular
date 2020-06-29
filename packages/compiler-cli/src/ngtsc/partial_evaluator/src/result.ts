@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
+import {Declaration} from '../../reflection';
 
 import {DynamicValue} from './dynamic';
 
@@ -20,24 +21,50 @@ import {DynamicValue} from './dynamic';
  * non-primitive value, or a special `DynamicValue` type which indicates the value was not
  * available statically.
  */
-export type ResolvedValue = number | boolean | string | null | undefined | Reference | EnumValue |
-    ResolvedValueArray | ResolvedValueMap | BuiltinFn | DynamicValue<unknown>;
+export type ResolvedValue = number|boolean|string|null|undefined|Reference|EnumValue|
+    ResolvedValueArray|ResolvedValueMap|ResolvedModule|KnownFn|DynamicValue<unknown>;
 
 /**
  * An array of `ResolvedValue`s.
  *
  * This is a reified type to allow the circular reference of `ResolvedValue` -> `ResolvedValueArray`
- * ->
- * `ResolvedValue`.
+ * -> `ResolvedValue`.
  */
 export interface ResolvedValueArray extends Array<ResolvedValue> {}
 
 /**
  * A map of strings to `ResolvedValue`s.
  *
- * This is a reified type to allow the circular reference of `ResolvedValue` -> `ResolvedValueMap` ->
- * `ResolvedValue`.
- */ export interface ResolvedValueMap extends Map<string, ResolvedValue> {}
+ * This is a reified type to allow the circular reference of `ResolvedValue` -> `ResolvedValueMap`
+ * -> `ResolvedValue`.
+ */
+export interface ResolvedValueMap extends Map<string, ResolvedValue> {}
+
+/**
+ * A collection of publicly exported declarations from a module. Each declaration is evaluated
+ * lazily upon request.
+ */
+export class ResolvedModule {
+  constructor(
+      private exports: Map<string, Declaration>,
+      private evaluate: (decl: Declaration) => ResolvedValue) {}
+
+  getExport(name: string): ResolvedValue {
+    if (!this.exports.has(name)) {
+      return undefined;
+    }
+
+    return this.evaluate(this.exports.get(name)!);
+  }
+
+  getExports(): ResolvedValueMap {
+    const map = new Map<string, ResolvedValue>();
+    this.exports.forEach((decl, name) => {
+      map.set(name, this.evaluate(decl));
+    });
+    return map;
+  }
+}
 
 /**
  * A value member of an enumeration.
@@ -46,11 +73,15 @@ export interface ResolvedValueArray extends Array<ResolvedValue> {}
  */
 export class EnumValue {
   constructor(
-      readonly enumRef: Reference<ts.EnumDeclaration>, readonly name: string,
+      readonly enumRef: Reference<ts.Declaration>, readonly name: string,
       readonly resolved: ResolvedValue) {}
 }
 
 /**
- * An implementation of a builtin function, such as `Array.prototype.slice`.
+ * An implementation of a known function that can be statically evaluated.
+ * It could be a built-in function or method (such as `Array.prototype.slice`) or a TypeScript
+ * helper (such as `__spread`).
  */
-export abstract class BuiltinFn { abstract evaluate(args: ResolvedValueArray): ResolvedValue; }
+export abstract class KnownFn {
+  abstract evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue;
+}

@@ -5,6 +5,7 @@
     "!**/*.js",
     "!src/app/scrap.txt"
   ],
+  "file": "src/app/app.component.ts",
   "tags": [
     "structural", "directives", "template", "ngIf",
     "ngSwitch", "ngFor"

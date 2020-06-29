@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {CommonModule, PathLocationStrategy} from '@angular/common';
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 import {UpgradeModule} from '@angular/upgrade/static';
 
 import {$locationShim} from '../src/location_shim';
@@ -43,15 +43,26 @@ export function injectorFactory() {
 export class $rootScopeMock {
   private watchers: any[] = [];
   private events: {[k: string]: any[]} = {};
-  runWatchers() { this.watchers.forEach(fn => fn()); }
+  runWatchers() {
+    this.watchers.forEach(fn => fn());
+  }
 
-  $watch(fn: any) { this.watchers.push(fn); }
+  $watch(fn: any) {
+    this.watchers.push(fn);
+  }
 
   $broadcast(evt: string, ...args: any[]) {
     if (this.events[evt]) {
-      this.events[evt].forEach(fn => { fn.apply(fn, args); });
+      this.events[evt].forEach(fn => {
+        fn.apply(fn, args);
+      });
     }
-    return {defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }};
+    return {
+      defaultPrevented: false,
+      preventDefault() {
+        this.defaultPrevented = true;
+      }
+    };
   }
 
   $on(evt: string, fn: any) {
@@ -61,7 +72,9 @@ export class $rootScopeMock {
     this.events[evt].push(fn);
   }
 
-  $evalAsync(fn: any) { fn(); }
+  $evalAsync(fn: any) {
+    fn();
+  }
 }
 
 describe('LocationProvider', () => {
@@ -75,7 +88,7 @@ describe('LocationProvider', () => {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
@@ -83,7 +96,6 @@ describe('LocationProvider', () => {
        expect($location).toBeDefined();
        expect($location instanceof $locationShim).toBe(true);
      }));
-
 });
 
 
@@ -101,11 +113,13 @@ describe('LocationHtml5Url', function() {
       providers: [UpgradeModule],
 
     });
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
 
   it('should set the URL', () => {
@@ -158,8 +172,9 @@ describe('LocationHtml5Url', function() {
     }).toThrow();
   });
 
-  it('should support state',
-     function() { expect($location.state({a: 2}).state()).toEqual({a: 2}); });
+  it('should support state', function() {
+    expect($location.state({a: 2}).state()).toEqual({a: 2});
+  });
 });
 
 
@@ -176,14 +191,18 @@ describe('NewUrl', function() {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
   // Sets the default most of these tests rely on
-  function setupUrl(url = '/path/b?search=a&b=c&d#hash') { $location.url(url); }
+  function setupUrl(url = '/path/b?search=a&b=c&d#hash') {
+    $location.url(url);
+  }
 
   it('should provide common getters', function() {
     setupUrl();
@@ -409,7 +428,6 @@ describe('NewUrl', function() {
   });
 
   describe('encoding', function() {
-
     it('should encode special characters', function() {
       $location.path('/a <>#');
       $location.search({'i j': '<>#'});
@@ -455,7 +473,6 @@ describe('NewUrl', function() {
       $location.search({'a+b': 'c+d'});
       expect($location.search()).toEqual({'a+b': 'c+d'});
     });
-
   });
 
   it('should not preserve old properties when parsing new url', function() {
@@ -482,11 +499,13 @@ describe('New URL Parsing', () => {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
   it('should prepend path with basePath', function() {
     $location.$$parse('http://server/base/abc?a');
@@ -496,7 +515,6 @@ describe('New URL Parsing', () => {
     $location.path('/new/path');
     expect($location.absUrl()).toBe('http://server/base/new/path?a');
   });
-
 });
 
 describe('New URL Parsing', () => {
@@ -512,11 +530,13 @@ describe('New URL Parsing', () => {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
   it('should parse new url', function() {
     $location.$$parse('http://host.com/base');
@@ -549,8 +569,9 @@ describe('New URL Parsing', () => {
   });
 
   it('should throw error when invalid server url given', function() {
-
-    expect(function() { $location.$$parse('http://other.server.org/path#/path'); })
+    expect(function() {
+      $location.$$parse('http://other.server.org/path#/path');
+    })
         .toThrowError(
             'Invalid url "http://other.server.org/path#/path", missing path prefix "http://host.com/".');
   });
@@ -620,14 +641,13 @@ describe('New URL Parsing', () => {
       // After watchers have been run, location should be updated and `state` should change
       expect($location.state()).toBe(null);
     });
-
   });
 });
 
 describe('$location.onChange()', () => {
-
   let $location: $locationShim;
   let upgradeModule: UpgradeModule;
+  let mock$rootScope: $rootScopeMock;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -638,17 +658,23 @@ describe('$location.onChange()', () => {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
+    mock$rootScope = upgradeModule.$injector.get('$rootScope');
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
-  it('should have onChange method', () => { expect(typeof $location.onChange).toBe('function'); });
+  it('should have onChange method', () => {
+    expect(typeof $location.onChange).toBe('function');
+  });
 
   it('should add registered functions to changeListeners', () => {
-
-    function changeListener(url: string, state: unknown) { return undefined; }
+    function changeListener(url: string, state: unknown) {
+      return undefined;
+    }
     function errorHandler(e: Error) {}
 
     expect(($location as any).$$changeListeners.length).toBe(0);
@@ -661,7 +687,6 @@ describe('$location.onChange()', () => {
   });
 
   it('should call changeListeners when URL is updated', () => {
-
     const onChangeVals =
         {url: 'url', state: 'state' as unknown, oldUrl: 'oldUrl', oldState: 'oldState' as unknown};
 
@@ -674,35 +699,59 @@ describe('$location.onChange()', () => {
 
     $location.onChange(changeListener);
 
-    // Mock out setting browserUrl
-    ($location as any).browserUrl = (url: string, replace: boolean, state: unknown) => {};
-
     const newState = {foo: 'bar'};
-    ($location as any).setBrowserUrlWithFallback('/newUrl', false, newState);
+    $location.state(newState);
+    $location.path('/newUrl');
+    mock$rootScope.runWatchers();
+
     expect(onChangeVals.url).toBe('/newUrl');
-    expect(onChangeVals.state).toBe(newState);
-    expect(onChangeVals.oldUrl).toBe('/');
+    expect(onChangeVals.state).toEqual(newState);
+    expect(onChangeVals.oldUrl).toBe('http://host.com');
     expect(onChangeVals.oldState).toBe(null);
   });
 
-  it('should call forward errors to error handler', () => {
+  it('should call changeListeners after $locationChangeSuccess', () => {
+    let changeListenerCalled = false;
+    let locationChangeSuccessEmitted = false;
 
-    let error !: Error;
+    function changeListener(url: string, state: unknown, oldUrl: string, oldState: unknown) {
+      changeListenerCalled = true;
+    }
+
+    $location.onChange(changeListener);
+
+    mock$rootScope.$on('$locationChangeSuccess', () => {
+      // Ensure that the changeListener hasn't been called yet
+      expect(changeListenerCalled).toBe(false);
+      locationChangeSuccessEmitted = true;
+    });
+
+    // Update state and run watchers
+    const stateValue = {foo: 'bar'};
+    $location.state(stateValue);
+    mock$rootScope.runWatchers();
+
+    // Ensure that change listeners are called and location events are emitted
+    expect(changeListenerCalled).toBe(true);
+    expect(locationChangeSuccessEmitted).toBe(true);
+  });
+
+  it('should call forward errors to error handler', () => {
+    let error!: Error;
 
     function changeListener(url: string, state: unknown, oldUrl: string, oldState: unknown) {
       throw new Error('Handle error');
     }
-    function errorHandler(e: Error) { error = e; }
+    function errorHandler(e: Error) {
+      error = e;
+    }
 
     $location.onChange(changeListener, errorHandler);
 
-    // Mock out setting browserUrl
-    ($location as any).browserUrl = (url: string, replace: boolean, state: unknown) => {};
-
-    ($location as any).setBrowserUrlWithFallback('/newUrl');
+    $location.url('/newUrl');
+    mock$rootScope.runWatchers();
     expect(error.message).toBe('Handle error');
   });
-
 });
 
 function parseLinkAndReturn(location: $locationShim, toUrl: string, relHref?: string) {

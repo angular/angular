@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,6 +11,7 @@ import {CacheState, UpdateCacheStatus, UpdateSource} from './api';
 import {AssetGroup, LazyAssetGroup, PrefetchAssetGroup} from './assets';
 import {DataGroup} from './data';
 import {Database} from './database';
+import {DebugHandler} from './debug';
 import {IdleScheduler} from './idle';
 import {Manifest} from './manifest';
 
@@ -56,11 +57,14 @@ export class AppVersion implements UpdateSource {
    */
   private _okay = true;
 
-  get okay(): boolean { return this._okay; }
+  get okay(): boolean {
+    return this._okay;
+  }
 
   constructor(
       private scope: ServiceWorkerGlobalScope, private adapter: Adapter, private database: Database,
-      private idle: IdleScheduler, readonly manifest: Manifest, readonly manifestHash: string) {
+      private idle: IdleScheduler, private debugHandler: DebugHandler, readonly manifest: Manifest,
+      readonly manifestHash: string) {
     // The hashTable within the manifest is an Object - convert it to a Map for easier lookups.
     Object.keys(this.manifest.hashTable).forEach(url => {
       this.hashTable.set(url, this.manifest.hashTable[url]);
@@ -85,11 +89,12 @@ export class AppVersion implements UpdateSource {
     });
 
     // Process each `DataGroup` declared in the manifest.
-    this.dataGroups = (manifest.dataGroups || [])
-                          .map(
-                              config => new DataGroup(
-                                  this.scope, this.adapter, config, this.database,
-                                  `${adapter.cacheNamePrefix}:${config.version}:data`));
+    this.dataGroups =
+        (manifest.dataGroups || [])
+            .map(
+                config => new DataGroup(
+                    this.scope, this.adapter, config, this.database, this.debugHandler,
+                    `${adapter.cacheNamePrefix}:${config.version}:data`));
 
     // This keeps backwards compatibility with app versions without navigation urls.
     // Fix: https://github.com/angular/angular/issues/27209
@@ -114,7 +119,7 @@ export class AppVersion implements UpdateSource {
       // Fully initialize each asset group, in series. Starts with an empty Promise,
       // and waits for the previous groups to have been initialized before initializing
       // the next one in turn.
-      await this.assetGroups.reduce<Promise<void>>(async(previous, group) => {
+      await this.assetGroups.reduce<Promise<void>>(async (previous, group) => {
         // Wait for the previous groups to complete initialization. If there is a
         // failure, this will throw, and each subsequent group will throw, until the
         // whole sequence fails.
@@ -137,7 +142,7 @@ export class AppVersion implements UpdateSource {
     // the group list, keeping track of a possible response. If there is one, it gets passed
     // through, and if
     // not the next group is consulted to produce a candidate response.
-    const asset = await this.assetGroups.reduce(async(potentialResponse, group) => {
+    const asset = await this.assetGroups.reduce(async (potentialResponse, group) => {
       // Wait on the previous potential response. If it's not null, it should just be passed
       // through.
       const resp = await potentialResponse;
@@ -158,7 +163,7 @@ export class AppVersion implements UpdateSource {
 
     // Perform the same reduction operation as above, but this time processing
     // the data caching groups.
-    const data = await this.dataGroups.reduce(async(potentialResponse, group) => {
+    const data = await this.dataGroups.reduce(async (potentialResponse, group) => {
       const resp = await potentialResponse;
       if (resp !== null) {
         return resp;
@@ -230,7 +235,7 @@ export class AppVersion implements UpdateSource {
   lookupResourceWithoutHash(url: string): Promise<CacheState|null> {
     // Limit the search to asset groups, and only scan the cache, don't
     // load resources from the network.
-    return this.assetGroups.reduce(async(potentialResponse, group) => {
+    return this.assetGroups.reduce(async (potentialResponse, group) => {
       const resp = await potentialResponse;
       if (resp !== null) {
         return resp;
@@ -246,13 +251,13 @@ export class AppVersion implements UpdateSource {
    * List all unhashed resources from all asset groups.
    */
   previouslyCachedResources(): Promise<string[]> {
-    return this.assetGroups.reduce(async(resources, group) => {
+    return this.assetGroups.reduce(async (resources, group) => {
       return (await resources).concat(await group.unhashedResources());
     }, Promise.resolve<string[]>([]));
   }
 
   async recentCacheStatus(url: string): Promise<UpdateCacheStatus> {
-    return this.assetGroups.reduce(async(current, group) => {
+    return this.assetGroups.reduce(async (current, group) => {
       const status = await current;
       if (status === UpdateCacheStatus.CACHED) {
         return status;
@@ -276,7 +281,9 @@ export class AppVersion implements UpdateSource {
   /**
    * Get the opaque application data which was provided with the manifest.
    */
-  get appData(): Object|null { return this.manifest.appData || null; }
+  get appData(): Object|null {
+    return this.manifest.appData || null;
+  }
 
   /**
    * Check whether a request accepts `text/html` (based on the `Accept` header).

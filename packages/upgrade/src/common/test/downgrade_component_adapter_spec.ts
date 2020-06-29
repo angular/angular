@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -78,7 +78,6 @@ withEachNg1Version(() => {
     });
 
     describe('testability', () => {
-
       let adapter: DowngradeComponentAdapter;
       let content: string;
       let compiler: Compiler;
@@ -88,7 +87,9 @@ withEachNg1Version(() => {
       class mockScope implements angular.IScope {
         private destroyListeners: (() => void)[] = [];
 
-        $new() { return this; }
+        $new() {
+          return this;
+        }
         $watch(exp: angular.Ng1Expression, fn?: (a1?: any, a2?: any) => void) {
           return () => {};
         }
@@ -112,17 +113,17 @@ withEachNg1Version(() => {
           return () => {};
         }
         // TODO(issue/24571): remove '!'.
-        $$childTail !: angular.IScope;
+        $$childTail!: angular.IScope;
         // TODO(issue/24571): remove '!'.
-        $$childHead !: angular.IScope;
+        $$childHead!: angular.IScope;
         // TODO(issue/24571): remove '!'.
-        $$nextSibling !: angular.IScope;
+        $$nextSibling!: angular.IScope;
         [key: string]: any;
         $id = 'mockScope';
         // TODO(issue/24571): remove '!'.
-        $parent !: angular.IScope;
+        $parent!: angular.IScope;
         // TODO(issue/24571): remove '!'.
-        $root !: angular.IScope;
+        $root!: angular.IScope;
       }
 
       function getAdaptor(): DowngradeComponentAdapter {
@@ -161,7 +162,7 @@ withEachNg1Version(() => {
 
         const modFactory = compiler.compileModuleSync(NewModule);
         const module = modFactory.create(TestBed);
-        componentFactory = module.componentFactoryResolver.resolveComponentFactory(NewComponent) !;
+        componentFactory = module.componentFactoryResolver.resolveComponentFactory(NewComponent)!;
         parentInjector = TestBed;
 
         return new DowngradeComponentAdapter(
@@ -170,16 +171,15 @@ withEachNg1Version(() => {
       }
 
       beforeEach(() => {
-        compiler = TestBed.get(Compiler);
-        registry = TestBed.get(TestabilityRegistry);
+        compiler = TestBed.inject(Compiler);
+        registry = TestBed.inject(TestabilityRegistry);
         adapter = getAdaptor();
       });
       beforeEach(() => registry.unregisterAllApplications());
       afterEach(() => registry.unregisterAllApplications());
 
       it('should add testabilities hook when creating components', () => {
-
-        let registry = TestBed.get(TestabilityRegistry);
+        let registry = TestBed.inject(TestabilityRegistry);
         adapter.createComponent([]);
         expect(registry.getAllTestabilities().length).toEqual(1);
 
@@ -189,15 +189,14 @@ withEachNg1Version(() => {
       });
 
       it('should remove the testability hook when destroy a component', () => {
-        const registry = TestBed.get(TestabilityRegistry);
+        const registry = TestBed.inject(TestabilityRegistry);
         expect(registry.getAllTestabilities().length).toEqual(0);
         adapter.createComponent([]);
         expect(registry.getAllTestabilities().length).toEqual(1);
         adapter.registerCleanup();
-        element.remove !();
+        element.remove!();
         expect(registry.getAllTestabilities().length).toEqual(0);
       });
     });
-
   });
 });

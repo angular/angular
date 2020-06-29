@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {AstPath} from '../ast_path';
-import {AST as I18nAST} from '../i18n/i18n_ast';
+import {I18nMeta} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
 
 export interface Node {
@@ -15,17 +15,29 @@ export interface Node {
   visit(visitor: Visitor, context: any): any;
 }
 
-export class Text implements Node {
-  constructor(public value: string, public sourceSpan: ParseSourceSpan, public i18n?: I18nAST) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitText(this, context); }
+export abstract class NodeWithI18n implements Node {
+  constructor(public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
+  abstract visit(visitor: Visitor, context: any): any;
 }
 
-export class Expansion implements Node {
+export class Text extends NodeWithI18n {
+  constructor(public value: string, sourceSpan: ParseSourceSpan, i18n?: I18nMeta) {
+    super(sourceSpan, i18n);
+  }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitText(this, context);
+  }
+}
+
+export class Expansion extends NodeWithI18n {
   constructor(
       public switchValue: string, public type: string, public cases: ExpansionCase[],
-      public sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan,
-      public i18n?: I18nAST) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitExpansion(this, context); }
+      sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan, i18n?: I18nMeta) {
+    super(sourceSpan, i18n);
+  }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitExpansion(this, context);
+  }
 }
 
 export class ExpansionCase implements Node {
@@ -33,27 +45,39 @@ export class ExpansionCase implements Node {
       public value: string, public expression: Node[], public sourceSpan: ParseSourceSpan,
       public valueSourceSpan: ParseSourceSpan, public expSourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context: any): any { return visitor.visitExpansionCase(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitExpansionCase(this, context);
+  }
 }
 
-export class Attribute implements Node {
+export class Attribute extends NodeWithI18n {
   constructor(
-      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, public i18n?: I18nAST) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitAttribute(this, context); }
+      public name: string, public value: string, sourceSpan: ParseSourceSpan,
+      public valueSpan?: ParseSourceSpan, i18n?: I18nMeta) {
+    super(sourceSpan, i18n);
+  }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitAttribute(this, context);
+  }
 }
 
-export class Element implements Node {
+export class Element extends NodeWithI18n {
   constructor(
       public name: string, public attrs: Attribute[], public children: Node[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null = null,
-      public endSourceSpan: ParseSourceSpan|null = null, public i18n?: I18nAST) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitElement(this, context); }
+      sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null = null,
+      public endSourceSpan: ParseSourceSpan|null = null, i18n?: I18nMeta) {
+    super(sourceSpan, i18n);
+  }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitElement(this, context);
+  }
 }
 
 export class Comment implements Node {
   constructor(public value: string|null, public sourceSpan: ParseSourceSpan) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitComment(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitComment(this, context);
+  }
 }
 
 export interface Visitor {
@@ -73,7 +97,7 @@ export function visitAll(visitor: Visitor, nodes: Node[], context: any = null): 
   const result: any[] = [];
 
   const visit = visitor.visit ?
-      (ast: Node) => visitor.visit !(ast, context) || ast.visit(visitor, context) :
+      (ast: Node) => visitor.visit!(ast, context) || ast.visit(visitor, context) :
       (ast: Node) => ast.visit(visitor, context);
   nodes.forEach(ast => {
     const astResult = visit(ast);
@@ -99,7 +123,9 @@ export class RecursiveVisitor implements Visitor {
   visitComment(ast: Comment, context: any): any {}
 
   visitExpansion(ast: Expansion, context: any): any {
-    return this.visitChildren(context, visit => { visit(ast.cases); });
+    return this.visitChildren(context, visit => {
+      visit(ast.cases);
+    });
   }
 
   visitExpansionCase(ast: ExpansionCase, context: any): any {}
@@ -108,11 +134,11 @@ export class RecursiveVisitor implements Visitor {
       context: any, cb: (visit: (<V extends Node>(children: V[]|undefined) => void)) => void) {
     let results: any[][] = [];
     let t = this;
-    function visit<T extends Node>(children: T[] | undefined) {
+    function visit<T extends Node>(children: T[]|undefined) {
       if (children) results.push(visitAll(t, children, context));
     }
     cb(visit);
-    return [].concat.apply([], results);
+    return Array.prototype.concat.apply([], results);
   }
 }
 

@@ -38,6 +38,7 @@
 <a href="#safe-navigation-operator">Safe navigation operator <i>?.</i></a><br>
 <a href="#non-null-assertion-operator">Non-null assertion operator <i>!.</i></a><br>
 <a href="#enums">Enums</a><br>
+<a href="#svg-templates">SVG Templates</a><br>
 
 <!-- Interpolation and expressions -->
 <hr><h2 id="interpolation">Interpolation</h2>
@@ -442,7 +443,7 @@ button</button>
 
 <!-- #docregion without-NgModel -->
 <input [value]="currentHero.name"
-       (input)="currentHero.name=$event.target.value" >
+       (input)="updateCurrentHeroName($event)">
 <!-- #enddocregion without-NgModel -->
 without NgModel
 <br>
@@ -752,7 +753,7 @@ bindon-ngModel
 
 <div>
   <!-- pipe price to USD and display the $ symbol -->
-  <label>Price: </label>{{product.price | currency:'USD':true}}
+  <label>Price: </label>{{product.price | currency:'USD':'symbol'}}
 </div>
 
 <a class="to-toc" href="#toc">top</a>
@@ -856,4 +857,10 @@ The null hero's name is {{nullHero && nullHero.name}}
   <!-- #enddocregion enums -->
 </p>
 
+<a class="to-toc" href="#toc">top</a>
+
+<hr><h2 id="svg-templates">SVG Templates</h2>
+<!-- #docregion svg-templates -->
+<app-svg></app-svg>
+<!-- #enddocregion svg-templates -->
 <a class="to-toc" href="#toc">top</a>

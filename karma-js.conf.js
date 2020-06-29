@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -36,13 +36,14 @@ module.exports = function(config) {
       {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
       'node_modules/core-js/client/core.js',
-      'node_modules/zone.js/dist/zone.js',
-      'node_modules/zone.js/dist/zone-testing.js',
-      'node_modules/zone.js/dist/task-tracking.js',
+      'node_modules/jasmine-ajax/lib/mock-ajax.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/task-tracking.umd.js',
 
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'test-events.js',
-      'shims_for_IE.js',
+      'third_party/shims_for_IE.js',
       'node_modules/systemjs/dist/system.src.js',
 
       // Serve polyfills necessary for testing the `elements` package.
@@ -64,7 +65,6 @@ module.exports = function(config) {
         included: false,
         watched: false,
       },
-      {pattern: 'packages/common/i18n/**', included: false, watched: false, served: true},
     ],
 
     exclude: [
@@ -80,12 +80,14 @@ module.exports = function(config) {
       'dist/all/@angular/compiler/test/render3/**',
       'dist/all/@angular/core/test/bundling/**',
       'dist/all/@angular/core/test/render3/ivy/**',
+      'dist/all/@angular/core/test/render3/perf/**',
       'dist/all/@angular/elements/schematics/**',
       'dist/all/@angular/examples/**/e2e_test/*',
       'dist/all/@angular/language-service/**',
+      'dist/all/@angular/localize/**/test/**',
+      'dist/all/@angular/localize/schematics/**',
       'dist/all/@angular/router/**/test/**',
       'dist/all/@angular/platform-browser/testing/e2e_util.js',
-      'dist/all/angular1_router.js',
       'dist/examples/**/e2e_test/**',
     ],
 
@@ -114,8 +116,6 @@ module.exports = function(config) {
       '/base/npm/': '/base/',
     },
 
-    reporters: ['dots'],
-
     sauceLabs: {
       testName: 'Angular2',
       retryLimit: 3,
@@ -143,11 +143,16 @@ module.exports = function(config) {
     browserDisconnectTimeout: 180000,
     browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 300000,
-  }
+  };
 
-  // When running under Bazel with karma_web_test, SAUCE_TUNNEL_IDENTIFIER and KARMA_WEB_TEST_MODE
-  // will only be available when `--config=saucelabs` is set. See //:test_web_all target
-  // and /.bazelrc.
+  // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1431. The idea is
+  // that we do no not allow `@bazel/karma` to add the `progress` reporter.
+  Object.defineProperty(conf, 'reporters', {
+    enumerable: true,
+    get: () => ['dots'],
+    set: () => {},
+  });
+
   if (process.env['SAUCE_TUNNEL_IDENTIFIER']) {
     console.log(`SAUCE_TUNNEL_IDENTIFIER: ${process.env.SAUCE_TUNNEL_IDENTIFIER}`);
 
@@ -161,6 +166,16 @@ module.exports = function(config) {
     // TODO: This is currently not used because BS doesn't run on the CI. Consider removing.
     conf.browserStack.build = tunnelIdentifier;
     conf.browserStack.tunnelIdentifier = tunnelIdentifier;
+  }
+
+  // For SauceLabs jobs, we set up a domain which resolves to the machine which launched
+  // the tunnel. We do this because devices are sometimes not able to properly resolve
+  // `localhost` or `127.0.0.1` through the SauceLabs tunnel. Using a domain that does not
+  // resolve to anything on SauceLabs VMs ensures that such requests are always resolved through
+  // the tunnel, and resolve to the actual tunnel host machine (commonly the CircleCI VMs).
+  // More context can be found in: https://github.com/angular/angular/pull/35171.
+  if (process.env.SAUCE_LOCALHOST_ALIAS_DOMAIN) {
+    conf.hostname = process.env.SAUCE_LOCALHOST_ALIAS_DOMAIN;
   }
 
   if (process.env.KARMA_WEB_TEST_MODE) {

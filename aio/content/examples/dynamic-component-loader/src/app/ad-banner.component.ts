@@ -36,14 +36,14 @@ export class AdBannerComponent implements OnInit, OnDestroy {
 
   loadComponent() {
     this.currentAdIndex = (this.currentAdIndex + 1) % this.ads.length;
-    let adItem = this.ads[this.currentAdIndex];
+    const adItem = this.ads[this.currentAdIndex];
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(adItem.component);
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(adItem.component);
 
-    let viewContainerRef = this.adHost.viewContainerRef;
+    const viewContainerRef = this.adHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<AdComponent>componentRef.instance).data = adItem.data;
   }
 

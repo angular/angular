@@ -11,7 +11,7 @@ This cookbook describes the steps required to set up and use Angular app files i
 
 
 There is no *live example* for this cookbook because it describes Visual Studio, not 
-the Angular application itself. It uses the starter Angular application created by the CLI command [`ng new`](cli/new) as an example. 
+the Angular application itself. It uses the starter Angular application created by the CLI command [`ng new`](cli/new) as an example.
 
 
 </div>
@@ -30,8 +30,8 @@ Visual Studio 2015, follow these steps:
 
 If you prefer a `File | New Project` experience and are using **ASP.NET Core**, 
 then consider the _experimental_
-<a href="http://blog.stevensanderson.com/2016/10/04/angular2-template-for-visual-studio/">ASP.NET Core + Angular template for Visual Studio 2015</a>. 
-Note that the resulting code does not map to the docs. Adjust accordingly.   
+<a href="http://blog.stevensanderson.com/2016/10/04/angular2-template-for-visual-studio/">ASP.NET Core + Angular template for Visual Studio 2015</a>.
+Note that the resulting code does not map to the docs. Adjust accordingly.
 
 
 </div>
@@ -47,7 +47,7 @@ Note that the resulting code does not map to the docs. Adjust accordingly.
 
 Install **[Node.js® and npm](https://nodejs.org/en/download/)**
 if they are not already on your machine.
-See [Local Environment Setup](guide/setup-local "Setting up for Local Development") for supported versions and instructions. 
+See [Local Environment Setup](guide/setup-local "Setting up for Local Development") for supported versions and instructions.
 
 
 
@@ -115,10 +115,10 @@ restart it to make sure everything is clean.
   Step 1: Create a starter Angular app
 </h2>
 
- 
- Follow the instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development") to create a starter Angular app using the CLI command [`ng new`](cli/new). 
 
- 
+ Follow the instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development") to create a starter Angular app using the CLI command [`ng new`](cli/new).
+
+
 
 
 
@@ -165,7 +165,7 @@ Include the files in the Visual Studio project as follows:
   * src/index.html
   * package.json
   * src/tsconfig.json
-  
+
 
 
 <h2 id='restore'>
@@ -177,7 +177,7 @@ Include the files in the Visual Studio project as follows:
 Restore the packages required for an Angular application as follows:
 
 * Right-click on the `package.json` file in Solution Explorer and select `Restore Packages`.
-  <br>This uses `npm` to install all of the packages defined in the `package.json` file. 
+  <br>This uses `npm` to install all of the packages defined in the `package.json` file.
   It may take some time.
 * If desired, open the Output window (`View` | `Output`) to watch the npm commands execute.
 * Ignore the warnings.
@@ -199,12 +199,12 @@ Right-click `index.html` in Solution Explorer and select option `Set As Start Pa
 
 ### To run in VS with F5
 
-Most Visual Studio developers like to press the F5 key and see the IIS server come up. 
-To use the IIS server with the Getting Started app, you must make the following three changes. 
+Most Visual Studio developers like to press the F5 key and see the IIS server come up.
+To use the IIS server with the Getting Started app, you must make the following three changes.
 
 1. In `index.html`, change base href from `<base href="/">` to `<base href="/src/">`.
-2. Also in `index.html`, change  the scripts to use `/node_modules` with a slash 
-instead of `node_modules` without the slash. 
+2. Also in `index.html`, change the scripts to use `/node_modules` with a slash 
+instead of `node_modules` without the slash.
 3. In `src/systemjs.config.js`, near the top of the file, 
 change the npm `path` to `/node_modules/` with a slash.
 
@@ -227,7 +227,7 @@ If your app uses routing, you need to teach the server to always return
 `index.html` when the user asks for an HTML page
 for reasons explained in the [Deployment](guide/deployment#fallback) guide.
 
-Everything seems fine while you move about _within_ the app. 
+Everything seems fine while you move about _within_ the app.
 But you'll see the problem right away if you refresh the browser
 or paste a link to an app page (called a "deep link") into the browser address bar.
 
@@ -241,11 +241,11 @@ This section walks through the steps to adapt the Getting Started application.
 
 #### Configure IIS rewrite rules
 
-Visual Studio ships with IIS Express, which has the rewrite module baked in. 
+Visual Studio ships with IIS Express, which has the rewrite module baked in.
 However, if you're using regular IIS you'll have to install the rewrite 
-module.  
+module.
 
-Tell Visual Studio how to handle requests for route app pages by adding these 
+Tell Visual Studio how to handle requests for route app pages by adding these
 rewrite rules near the bottom of the `web.config`:
 
 
@@ -274,7 +274,7 @@ rewrite rules near the bottom of the `web.config`:
 
 
 The match url, `<match url=".*" />`, will rewrite every request. You'll have to adjust this if 
-you want some requests to get through, such as web API requests. 
+you want some requests to get through, such as web API requests.
 
 The URL in `<action type="Rewrite" url="/src/"/>` should 
 match the base href in `index.html`.
@@ -300,4 +300,4 @@ It's faster to run without the debugger by pressing `Ctrl-F5`.
 The default browser opens and displays the Getting Started sample application.
 
 Try editing any of the project files. Save and refresh the browser to
-see the changes. 
+see the changes.

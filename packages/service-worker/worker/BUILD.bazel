@@ -9,22 +9,22 @@ ts_library(
             "*.ts",
             "src/**/*.ts",
         ],
-        exclude = ["main.ts"],
+        exclude = [
+            "main.ts",
+        ],
     ),
-    tsconfig = ":tsconfig.json",
     deps = ["@npm//@types/node"],
 )
 
 ts_library(
     name = "main",
     srcs = ["main.ts"],
-    tsconfig = ":tsconfig.json",
     deps = [":worker"],
 )
 
 ng_rollup_bundle(
     name = "ngsw_worker",
-    entry_point = "packages/service-worker/worker/main.js",
+    entry_point = ":main.ts",
     deps = [
         ":main",
     ],

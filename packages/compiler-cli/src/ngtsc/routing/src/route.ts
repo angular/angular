@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,10 +22,14 @@ export abstract class RouterEntryPoint {
 class RouterEntryPointImpl implements RouterEntryPoint {
   constructor(readonly filePath: string, readonly moduleName: string) {}
 
-  get name(): string { return this.moduleName; }
+  get name(): string {
+    return this.moduleName;
+  }
 
   // For debugging purposes.
-  toString(): string { return `RouterEntryPoint(name: ${this.name}, filePath: ${this.filePath})`; }
+  toString(): string {
+    return `RouterEntryPoint(name: ${this.name}, filePath: ${this.filePath})`;
+  }
 }
 
 export class RouterEntryPointManager {
@@ -39,7 +43,7 @@ export class RouterEntryPointManager {
     if (moduleName === undefined) {
       return null;
     }
-    const resolvedSf = this.moduleResolver.resolveModuleName(relativeFile, context);
+    const resolvedSf = this.moduleResolver.resolveModule(relativeFile, context.fileName);
     if (resolvedSf === null) {
       return null;
     }
@@ -51,7 +55,7 @@ export class RouterEntryPointManager {
     if (!this.map.has(key)) {
       this.map.set(key, new RouterEntryPointImpl(sf.fileName, moduleName));
     }
-    return this.map.get(key) !;
+    return this.map.get(key)!;
   }
 }
 

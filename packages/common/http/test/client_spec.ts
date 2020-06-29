@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,13 +14,15 @@ import {toArray} from 'rxjs/operators';
 
 {
   describe('HttpClient', () => {
-    let client: HttpClient = null !;
-    let backend: HttpClientTestingBackend = null !;
+    let client: HttpClient = null!;
+    let backend: HttpClientTestingBackend = null!;
     beforeEach(() => {
       backend = new HttpClientTestingBackend();
       client = new HttpClient(backend);
     });
-    afterEach(() => { backend.verify(); });
+    afterEach(() => {
+      backend.verify();
+    });
     describe('makes a basic request', () => {
       it('for JSON data', done => {
         client.get('/test').subscribe(res => {

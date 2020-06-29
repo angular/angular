@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,8 @@ function plural(n: number): number {
 }
 
 export default [
-  'tk', [['öň', 'soň'], ['go.öň', 'go.soň'], ['günortadan öň', 'günortadan soň']],
+  'tk',
+  [['öň', 'soň'], ['go.öň', 'go.soň'], ['günortadan öň', 'günortadan soň']],
   [['öň', 'soň'], ['g.öň', 'g.soň'], ['günortadan öň', 'günortadan soň']],
   [
     ['Ý', 'D', 'S', 'Ç', 'P', 'A', 'Ş'], ['ýek', 'duş', 'siş', 'çar', 'pen', 'ann', 'şen'],
@@ -33,22 +34,30 @@ export default [
     ['Ý', 'F', 'M', 'A', 'M', 'I', 'I', 'A', 'S', 'O', 'N', 'D'],
     ['ýan', 'few', 'mart', 'apr', 'maý', 'iýun', 'iýul', 'awg', 'sen', 'okt', 'noý', 'dek'],
     [
-      'ýanwar', 'fewral', 'mart', 'aprel', 'maý', 'iýun', 'iýul', 'awgust', 'sentýabr',
-      'oktýabr', 'noýabr', 'dekabr'
+      'ýanwar', 'fewral', 'mart', 'aprel', 'maý', 'iýun', 'iýul', 'awgust', 'sentýabr', 'oktýabr',
+      'noýabr', 'dekabr'
     ]
   ],
   [
     ['Ý', 'F', 'M', 'A', 'M', 'I', 'I', 'A', 'S', 'O', 'N', 'D'],
-    ['Ýan', 'Few', 'Mart', 'Apr', 'Maý', 'Iýun', 'Iýul', 'Awg', 'Sen', 'Okt', 'Noý', 'Dek'],
+    ['Ýan', 'Few', 'Mar', 'Apr', 'Maý', 'Iýun', 'Iýul', 'Awg', 'Sen', 'Okt', 'Noý', 'Dek'],
     [
-      'Ýanwar', 'Fewral', 'Mart', 'Aprel', 'Maý', 'Iýun', 'Iýul', 'Awgust', 'Sentýabr',
-      'Oktýabr', 'Noýabr', 'Dekabr'
+      'Ýanwar', 'Fewral', 'Mart', 'Aprel', 'Maý', 'Iýun', 'Iýul', 'Awgust', 'Sentýabr', 'Oktýabr',
+      'Noýabr', 'Dekabr'
     ]
   ],
-  [['B.e.öň', 'B.e.'], u, ['Isadan öň', 'Isadan soň']], 1, [6, 0],
+  [['B.e.öň', 'B.e.'], u, ['Isadan öň', 'Isadan soň']],
+  1,
+  [6, 0],
   ['dd.MM.y', 'd MMM y', 'd MMMM y', 'd MMMM y EEEE'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'san däl', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'TMT', 'Türkmen manady',
-  {'EUR': [u, '€'], 'GBP': [u, '£'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'TMT',
+  'TMT',
+  'Türkmen manady',
+  {'EUR': [u, '€'], 'GBP': [u, '£'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

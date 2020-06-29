@@ -23,7 +23,7 @@ An NgModule is defined by a class decorated with `@NgModule()`. The `@NgModule()
 
 Here's a simple root NgModule definition.
 
-<code-example path="architecture/src/app/mini-app.ts" region="module" header="src/app/app.module.ts" linenums="false"></code-example>
+<code-example path="architecture/src/app/mini-app.ts" region="module" header="src/app/app.module.ts"></code-example>
 
 <div class="alert is-helpful">
 
@@ -35,21 +35,17 @@ Here's a simple root NgModule definition.
 
 NgModules provide a *compilation context* for their components. A root NgModule always has a root component that is created during bootstrap, but any NgModule can include any number of additional components, which can be loaded through the router or created through the template. The components that belong to an NgModule share a compilation context.
 
-<figure>
-
-<img src="generated/images/guide/architecture/compilation-context.png" alt="Component compilation context" class="left">
-
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/compilation-context.png" alt="Component compilation context" class="left">
+</div>
 
 <br class="clear">
 
 A component and its template together define a *view*. A component can contain a *view hierarchy*, which allows you to define arbitrarily complex areas of the screen that can be created, modified, and destroyed as a unit. A view hierarchy can mix views defined in components that belong to different NgModules. This is often the case, especially for UI libraries.
 
-<figure>
-
-<img src="generated/images/guide/architecture/view-hierarchy.png" alt="View hierarchy" class="left">
-
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/view-hierarchy.png" alt="View hierarchy" class="left">
+</div>
 
 <br class="clear">
 
@@ -69,9 +65,9 @@ In JavaScript each *file* is a module and all objects defined in the file belong
 The module declares some objects to be public by marking them with the `export` key word.
 Other JavaScript modules use *import statements* to access public objects from other modules.
 
-<code-example path="architecture/src/app/app.module.ts" region="imports" linenums="false"></code-example>
+<code-example path="architecture/src/app/app.module.ts" region="imports"></code-example>
 
-<code-example path="architecture/src/app/app.module.ts" region="export" linenums="false"></code-example>
+<code-example path="architecture/src/app/app.module.ts" region="export"></code-example>
 
 <div class="alert is-helpful">
   <a href="http://exploringjs.com/es6/ch_modules.html">Learn more about the JavaScript module system on the web.</a>
@@ -87,17 +83,17 @@ Angular loads as a collection of JavaScript modules. You can think of them as li
 
 For example, import Angular's `Component` decorator from the `@angular/core` library like this.
 
-<code-example path="architecture/src/app/app.component.ts" region="import" linenums="false"></code-example>
+<code-example path="architecture/src/app/app.component.ts" region="import"></code-example>
 
 You also import NgModules from Angular *libraries* using JavaScript import statements.
 For example, the following code imports the `BrowserModule` NgModule from the `platform-browser` library.
 
-<code-example path="architecture/src/app/mini-app.ts" region="import-browser-module" linenums="false"></code-example>
+<code-example path="architecture/src/app/mini-app.ts" region="import-browser-module"></code-example>
 
 In the example of the simple root module above, the application module needs material from within
 `BrowserModule`. To access that material, add it to the `@NgModule` metadata `imports` like this.
 
-<code-example path="architecture/src/app/mini-app.ts" region="ngmodule-imports" linenums="false"></code-example>
+<code-example path="architecture/src/app/mini-app.ts" region="ngmodule-imports"></code-example>
 
 In this way you're using the Angular and JavaScript module systems *together*. Although it's easy to confuse the two systems, which share the common vocabulary of "imports" and "exports", you will become familiar with the different contexts in which they are used.
 

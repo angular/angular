@@ -1,0 +1,10 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "ng-add": {
+      "description": "Add @angular/localize polyfill to a project.",
+      "factory": "./ng-add",
+      "schema": "ng-add/schema.json"
+    }
+  }
+}

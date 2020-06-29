@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.JsonpCallbackContext
+ * Copyright Google LLC All Rights Reserved.sonpCallbackContext
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -38,11 +38,15 @@ class TestInterceptor implements HttpInterceptor {
 }
 
 class InterceptorA extends TestInterceptor {
-  constructor() { super('A'); }
+  constructor() {
+    super('A');
+  }
 }
 
 class InterceptorB extends TestInterceptor {
-  constructor() { super('B'); }
+  constructor() {
+    super('B');
+  }
 }
 
 @Injectable()
@@ -67,7 +71,7 @@ class ReentrantInterceptor implements HttpInterceptor {
       });
     });
     it('initializes HttpClient properly', done => {
-      injector.get(HttpClient).get('/test', {responseType: 'text'}).subscribe(value => {
+      injector.get(HttpClient).get('/test', {responseType: 'text'}).subscribe((value: string) => {
         expect(value).toBe('ok!');
         done();
       });
@@ -76,7 +80,7 @@ class ReentrantInterceptor implements HttpInterceptor {
     it('intercepts outbound responses in the order in which interceptors were bound', done => {
       injector.get(HttpClient)
           .get('/test', {observe: 'response', responseType: 'text'})
-          .subscribe(value => done());
+          .subscribe(() => done());
       const req = injector.get(HttpTestingController).expectOne('/test') as TestRequest;
       expect(req.request.headers.get('Intercepted')).toEqual('A,B');
       req.flush('ok!');
@@ -84,7 +88,7 @@ class ReentrantInterceptor implements HttpInterceptor {
     it('intercepts inbound responses in the right (reverse binding) order', done => {
       injector.get(HttpClient)
           .get('/test', {observe: 'response', responseType: 'text'})
-          .subscribe(value => {
+          .subscribe((value: HttpResponse<string>) => {
             expect(value.headers.get('Intercepted')).toEqual('B,A');
             done();
           });
@@ -98,7 +102,9 @@ class ReentrantInterceptor implements HttpInterceptor {
           {provide: HTTP_INTERCEPTORS, useClass: ReentrantInterceptor, multi: true},
         ],
       });
-      injector.get(HttpClient).get('/test').subscribe(() => { done(); });
+      injector.get(HttpClient).get('/test').subscribe(() => {
+        done();
+      });
       injector.get(HttpTestingController).expectOne('/test').flush('ok!');
     });
   });

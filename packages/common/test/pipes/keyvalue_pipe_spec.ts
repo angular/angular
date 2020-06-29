@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -63,6 +63,16 @@ describe('KeyValuePipe', () => {
       const transform2 = pipe.transform({1: 3});
       expect(transform1 !== transform2).toEqual(true);
     });
+    it('should accept a type union of an object with string keys and null', () => {
+      let value!: {[key: string]: string}|null;
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(value)).toEqual(null);
+    });
+    it('should accept a type union of an object with number keys and null', () => {
+      let value!: {[key: number]: string}|null;
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(value)).toEqual(null);
+    });
   });
 
   describe('Map', () => {
@@ -115,6 +125,11 @@ describe('KeyValuePipe', () => {
       const transform2 = pipe.transform(new Map([[1, 3]]));
       expect(transform1 !== transform2).toEqual(true);
     });
+    it('should accept a type union of a Map and null', () => {
+      let value!: Map<number, number>|null;
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(value)).toEqual(null);
+    });
   });
 });
 
@@ -149,7 +164,10 @@ describe('defaultComparator', () => {
     expect(values.sort(defaultComparator)).toEqual([{key: false, value: 1}, {key: true, value: 3}]);
   });
   it('should sort numbers as strings in numerical ascending', () => {
-    const values = [{key: '2', value: 1}, {key: 1, value: 3}];
+    // We need to cast the values array to "any[]" because the object keys
+    // have no type overlap and the "Array.sort" expects all keys to have the
+    // same type when passed to the sort comparator.
+    const values = [{key: '2', value: 1}, {key: 1, value: 3}] as any[];
     expect(values.sort(defaultComparator)).toEqual([{key: 1, value: 3}, {key: '2', value: 1}]);
   });
 });

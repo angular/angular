@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -60,18 +60,20 @@ export class WhitespaceVisitor implements html.Visitor {
     }
 
     return new html.Element(
-        element.name, element.attrs, html.visitAll(this, element.children), element.sourceSpan,
-        element.startSourceSpan, element.endSourceSpan, element.i18n);
+        element.name, element.attrs, visitAllWithSiblings(this, element.children),
+        element.sourceSpan, element.startSourceSpan, element.endSourceSpan, element.i18n);
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
     return attribute.name !== PRESERVE_WS_ATTR_NAME ? attribute : null;
   }
 
-  visitText(text: html.Text, context: any): any {
+  visitText(text: html.Text, context: SiblingVisitorContext|null): any {
     const isNotBlank = text.value.match(NO_WS_REGEXP);
+    const hasExpansionSibling = context &&
+        (context.prev instanceof html.Expansion || context.next instanceof html.Expansion);
 
-    if (isNotBlank) {
+    if (isNotBlank || hasExpansionSibling) {
       return new html.Text(
           replaceNgsp(text.value).replace(WS_REPLACE_REGEXP, ' '), text.sourceSpan, text.i18n);
     }
@@ -79,15 +81,39 @@ export class WhitespaceVisitor implements html.Visitor {
     return null;
   }
 
-  visitComment(comment: html.Comment, context: any): any { return comment; }
+  visitComment(comment: html.Comment, context: any): any {
+    return comment;
+  }
 
-  visitExpansion(expansion: html.Expansion, context: any): any { return expansion; }
+  visitExpansion(expansion: html.Expansion, context: any): any {
+    return expansion;
+  }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return expansionCase; }
+  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
+    return expansionCase;
+  }
 }
 
 export function removeWhitespaces(htmlAstWithErrors: ParseTreeResult): ParseTreeResult {
   return new ParseTreeResult(
       html.visitAll(new WhitespaceVisitor(), htmlAstWithErrors.rootNodes),
       htmlAstWithErrors.errors);
+}
+
+interface SiblingVisitorContext {
+  prev: html.Node|undefined;
+  next: html.Node|undefined;
+}
+
+function visitAllWithSiblings(visitor: WhitespaceVisitor, nodes: html.Node[]): any[] {
+  const result: any[] = [];
+
+  nodes.forEach((ast, i) => {
+    const context: SiblingVisitorContext = {prev: nodes[i - 1], next: nodes[i + 1]};
+    const astResult = ast.visit(visitor, context);
+    if (astResult) {
+      result.push(astResult);
+    }
+  });
+  return result;
 }

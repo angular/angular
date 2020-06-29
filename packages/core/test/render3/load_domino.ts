@@ -1,17 +1,16 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 // Needed to run animation tests
-require('zone.js/dist/zone-node.js');
-
+import 'zone.js/lib/node/rollup-main';
 import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {DominoAdapter} from '@angular/platform-server/src/domino_adapter';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 if (typeof window == 'undefined') {
   const domino = require('domino');

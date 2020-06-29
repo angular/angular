@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,9 +12,8 @@ import {Provider} from '../di/interface/provider';
 import {convertInjectableProviderToFactory} from '../di/util';
 import {Type} from '../interface/type';
 import {SchemaMetadata} from '../metadata/schema';
-import {NgModuleType} from '../render3';
 import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
-import {TypeDecorator, makeDecorator} from '../util/decorators';
+import {makeDecorator, TypeDecorator} from '../util/decorators';
 
 
 /**
@@ -83,13 +82,14 @@ export interface NgModuleDef<T> {
 /**
  * A wrapper around an NgModule that associates it with the providers.
  *
- * @param T the module type. In Ivy applications, this must be explicitly
- * provided.
+ * @param T the module type.
+ *
+ * Note that using ModuleWithProviders without a generic type is deprecated.
+ * The generic will become required in a future version of Angular.
  *
  * @publicApi
  */
-export interface ModuleWithProviders<
-    T = any /** TODO(alxhub): remove default when callers pass explicit type param */> {
+export interface ModuleWithProviders<T> {
   ngModule: Type<T>;
   providers?: Provider[];
 }
@@ -105,7 +105,7 @@ export interface NgModuleDecorator {
    * Decorator that marks a class as an NgModule and supplies configuration metadata.
    */
   (obj?: NgModule): TypeDecorator;
-  new (obj?: NgModule): NgModule;
+  new(obj?: NgModule): NgModule;
 }
 
 /**
@@ -265,6 +265,7 @@ export interface NgModule {
    * using one of the imperative techniques, such as `ViewContainerRef.createComponent()`.
    *
    * @see [Entry Components](guide/entry-components)
+   * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
    */
   entryComponents?: Array<Type<any>|any[]>;
 
@@ -320,7 +321,7 @@ export const NgModule: NgModuleDecorator = makeDecorator(
      * * The `imports` and `exports` options bring in members from other modules, and make
      * this module's members available to others.
      */
-    (type: NgModuleType, meta: NgModule) => SWITCH_COMPILE_NGMODULE(type, meta));
+    (type: Type<any>, meta: NgModule) => SWITCH_COMPILE_NGMODULE(type, meta));
 
 /**
  * @description
@@ -342,15 +343,17 @@ export const NgModule: NgModuleDecorator = makeDecorator(
  *
  * @publicApi
  */
-export interface DoBootstrap { ngDoBootstrap(appRef: ApplicationRef): void; }
+export interface DoBootstrap {
+  ngDoBootstrap(appRef: ApplicationRef): void;
+}
 
-function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule): void {
+function preR3NgModuleCompile(moduleType: Type<any>, metadata?: NgModule): void {
   let imports = (metadata && metadata.imports) || [];
   if (metadata && metadata.exports) {
     imports = [...imports, metadata.exports];
   }
 
-  moduleType.ngInjectorDef = ɵɵdefineInjector({
+  (moduleType as InjectorType<any>).ɵinj = ɵɵdefineInjector({
     factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
     providers: metadata && metadata.providers,
     imports: imports,

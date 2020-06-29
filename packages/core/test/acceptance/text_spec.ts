@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {of } from 'rxjs';
+import {of} from 'rxjs';
 
 describe('text instructions', () => {
   it('should handle all flavors of interpolated text', () => {
@@ -41,8 +41,9 @@ describe('text instructions', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    const allTextContent = Array.from(fixture.nativeElement.querySelectorAll('div'))
-                               .map((div: HTMLDivElement) => div.textContent);
+    const allTextContent =
+        Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('div'))
+            .map((div: HTMLDivElement) => div.textContent);
 
     expect(allTextContent).toEqual([
       'a1b2c3d4e5f6g7h8i9j',
@@ -65,8 +66,8 @@ describe('text instructions', () => {
       `
     })
     class App {
-      who = of ('Sally');
-      item = of ({
+      who = of('Sally');
+      item = of({
         what: 'seashells',
         where: 'seashore',
       });
@@ -111,5 +112,21 @@ describe('text instructions', () => {
     const div = fixture.nativeElement.querySelector('div');
 
     expect(div.innerHTML).toBe('&lt;h1&gt;LOL, big text&lt;/h1&gt;');
+  });
+
+  it('should stringify functions used in bindings', () => {
+    @Component({
+      template: '<div>{{test}}</div>',
+    })
+    class App {
+      test = function foo() {};
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const div = fixture.nativeElement.querySelector('div');
+
+    expect(div.innerHTML).toBe('function foo() { }');
   });
 });

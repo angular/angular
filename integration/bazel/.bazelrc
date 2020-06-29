@@ -9,10 +9,20 @@ test --test_output=errors
 # Bazel doesn't calculate the memory ceiling correctly when running under Docker.
 # Limit Bazel to consuming resources that fit in CircleCI "xlarge" class
 # https://circleci.com/docs/2.0/configuration-reference/#resource_class
-build --local_resources=14336,8.0,1.0
+build --local_ram_resources=14336
+build --local_cpu_resources=8
 
-# Use the Angular 6 compiler
-build --define=compile=legacy
+# Use the Angular Ivy compiler
+# See https://github.com/angular/angular/blob/master/docs/BAZEL.md#various-flags-used-for-tests
+build --define=angular_ivy_enabled=True
+
+# Temporary define while angular depends on the legacy rollup_bundle rule.
+# TODO: remove this setting after https://github.com/angular/angular/pull/33201 lands.
+build --define=enable_legacy_rollup_rule=1
 
 # Don't create symlinks
 build --symlink_prefix=/
+
+# Turn on managed directories feature in Bazel
+# This allows us to avoid installing a second copy of node_modules
+common --experimental_allow_incremental_repository_updates

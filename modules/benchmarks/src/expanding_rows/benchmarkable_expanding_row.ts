@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -44,12 +44,12 @@ export interface MlbTeam {
 })
 export class BenchmarkableExpandingRow {
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  showExpandingRow !: boolean;
+  showExpandingRow!: boolean;
 
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  teams !: MlbTeam[];
+  teams!: MlbTeam[];
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  private fakeTeams !: MlbTeam[];
+  private fakeTeams!: MlbTeam[];
 
   init(): void {
     this.teams = this.fakeTeams;

@@ -14,7 +14,7 @@ import { UserServiceConfig } from './user.service';
 })
 export class GreetingModule {
   // #docregion ctor
-  constructor (@Optional() @SkipSelf() parentModule: GreetingModule) {
+  constructor (@Optional() @SkipSelf() parentModule?: GreetingModule) {
     if (parentModule) {
       throw new Error(
         'GreetingModule is already loaded. Import it in the AppModule only');
@@ -23,7 +23,7 @@ export class GreetingModule {
   // #enddocregion ctor
 
   // #docregion for-root
-  static forRoot(config: UserServiceConfig): ModuleWithProviders {
+  static forRoot(config: UserServiceConfig): ModuleWithProviders<GreetingModule> {
     return {
       ngModule: GreetingModule,
       providers: [

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -30,8 +30,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
       [
         state('collapsed, void', style({height: '0px', color: 'maroon', borderColor: 'maroon'})),
         state('expanded', style({height: '*', borderColor: 'green', color: 'green'})),
-        transition(
-            'collapsed <=> expanded', [animate(500, style({height: '250px'})), animate(500)])
+        transition('collapsed <=> expanded', [animate(500, style({height: '250px'})), animate(500)])
       ])],
   template: `
     <button (click)="expand()">Open</button>
@@ -44,10 +43,16 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 })
 export class MyExpandoCmp {
   // TODO(issue/24571): remove '!'.
-  stateExpression !: string;
-  constructor() { this.collapse(); }
-  expand() { this.stateExpression = 'expanded'; }
-  collapse() { this.stateExpression = 'collapsed'; }
+  stateExpression!: string;
+  constructor() {
+    this.collapse();
+  }
+  expand() {
+    this.stateExpression = 'expanded';
+  }
+  collapse() {
+    this.stateExpression = 'collapsed';
+  }
 }
 
 @NgModule(

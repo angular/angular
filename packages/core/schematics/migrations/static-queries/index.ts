@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,13 +8,13 @@
 
 import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {dirname, relative} from 'path';
+import {relative} from 'path';
 import {from} from 'rxjs';
 import * as ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
+import {createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {NgQueryResolveVisitor} from './angular/ng_query_visitor';
 import {QueryTemplateStrategy} from './strategies/template_strategy/template_strategy';
@@ -53,12 +53,6 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
   const basePath = process.cwd();
   const logger = context.logger;
-
-  logger.info('------ Static Query Migration ------');
-  logger.info('With Angular version 8, developers need to');
-  logger.info('explicitly specify the timing of ViewChild and');
-  logger.info('ContentChild queries. Read more about this here:');
-  logger.info('https://v8.angular.io/guide/static-query-migration');
 
   if (!buildPaths.length && !testPaths.length) {
     throw new SchematicsException(
@@ -104,8 +98,6 @@ async function runMigration(tree: Tree, context: SchematicContext) {
     logger.info('https://v8.angular.io/guide/static-query-migration');
     failures.forEach(failure => logger.warn(`⮑   ${failure}`));
   }
-
-  logger.info('------------------------------------------------');
 }
 
 /**
@@ -114,62 +106,46 @@ async function runMigration(tree: Tree, context: SchematicContext) {
  */
 function analyzeProject(
     tree: Tree, tsconfigPath: string, basePath: string, analyzedFiles: Set<string>,
-    logger: logging.LoggerApi):
-    AnalyzedProject|null {
-      const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-      const host = ts.createCompilerHost(parsed.options, true);
+    logger: logging.LoggerApi): AnalyzedProject|null {
+  const {program, host} = createMigrationProgram(tree, tsconfigPath, basePath);
+  const syntacticDiagnostics = program.getSyntacticDiagnostics();
 
-      // We need to overwrite the host "readFile" method, as we want the TypeScript
-      // program to be based on the file contents in the virtual file tree. Otherwise
-      // if we run the migration for multiple tsconfig files which have intersecting
-      // source files, it can end up updating query definitions multiple times.
-      host.readFile = fileName => {
-        const buffer = tree.read(relative(basePath, fileName));
-        // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset which
-        // which breaks the CLI UpdateRecorder.
-        // See: https://github.com/angular/angular/pull/30719
-        return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
-      };
+  // Syntactic TypeScript errors can throw off the query analysis and therefore we want
+  // to notify the developer that we couldn't analyze parts of the project. Developers
+  // can just re-run the migration after fixing these failures.
+  if (syntacticDiagnostics.length) {
+    logger.warn(
+        `\nTypeScript project "${tsconfigPath}" has syntactical errors which could cause ` +
+        `an incomplete migration. Please fix the following failures and rerun the migration:`);
+    logger.error(ts.formatDiagnostics(syntacticDiagnostics, host));
+    logger.info(
+        'Migration can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"\n');
+  }
 
-      const program = ts.createProgram(parsed.fileNames, parsed.options, host);
-      const syntacticDiagnostics = program.getSyntacticDiagnostics();
+  const typeChecker = program.getTypeChecker();
+  const sourceFiles = program.getSourceFiles().filter(
+      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const queryVisitor = new NgQueryResolveVisitor(typeChecker);
 
-      // Syntactic TypeScript errors can throw off the query analysis and therefore we want
-      // to notify the developer that we couldn't analyze parts of the project. Developers
-      // can just re-run the migration after fixing these failures.
-      if (syntacticDiagnostics.length) {
-        logger.warn(
-            `\nTypeScript project "${tsconfigPath}" has syntactical errors which could cause ` +
-            `an incomplete migration. Please fix the following failures and rerun the migration:`);
-        logger.error(ts.formatDiagnostics(syntacticDiagnostics, host));
-        logger.info(
-            'Migration can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"\n');
-      }
+  // Analyze all project source-files and collect all queries that
+  // need to be migrated.
+  sourceFiles.forEach(sourceFile => {
+    const relativePath = relative(basePath, sourceFile.fileName);
 
-      const typeChecker = program.getTypeChecker();
-      const sourceFiles = program.getSourceFiles().filter(
-          f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
-      const queryVisitor = new NgQueryResolveVisitor(typeChecker);
-
-      // Analyze all project source-files and collect all queries that
-      // need to be migrated.
-      sourceFiles.forEach(sourceFile => {
-        const relativePath = relative(basePath, sourceFile.fileName);
-
-        // Only look for queries within the current source files if the
-        // file has not been analyzed before.
-        if (!analyzedFiles.has(relativePath)) {
-          analyzedFiles.add(relativePath);
-          queryVisitor.visitNode(sourceFile);
-        }
-      });
-
-      if (queryVisitor.resolvedQueries.size === 0) {
-        return null;
-      }
-
-      return {program, host, tsconfigPath, typeChecker, basePath, queryVisitor, sourceFiles};
+    // Only look for queries within the current source files if the
+    // file has not been analyzed before.
+    if (!analyzedFiles.has(relativePath)) {
+      analyzedFiles.add(relativePath);
+      queryVisitor.visitNode(sourceFile);
     }
+  });
+
+  if (queryVisitor.resolvedQueries.size === 0) {
+    return null;
+  }
+
+  return {program, host, tsconfigPath, typeChecker, basePath, queryVisitor, sourceFiles};
+}
 
 /**
  * Runs the static query migration for the given project. The schematic analyzes all
@@ -199,7 +175,7 @@ async function runStaticQueryMigration(
     // is necessary in order to be able to check component templates for static query usage.
     resolvedTemplates.forEach(template => {
       if (classMetadata.has(template.container)) {
-        classMetadata.get(template.container) !.template = template;
+        classMetadata.get(template.container)!.template = template;
       }
     });
   }

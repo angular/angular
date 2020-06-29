@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {LOCATION_INITIALIZED, PlatformLocation} from '@angular/common';
-import {APP_INITIALIZER, InjectionToken, NgZone} from '@angular/core';
+import {APP_INITIALIZER, NgZone, StaticProvider} from '@angular/core';
 
 import {WebWorkerPlatformLocation} from './platform_location';
 
@@ -17,10 +17,11 @@ import {WebWorkerPlatformLocation} from './platform_location';
  * a worker context.
  *
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
-export const WORKER_APP_LOCATION_PROVIDERS = [
-  {provide: PlatformLocation, useClass: WebWorkerPlatformLocation}, {
+export const WORKER_APP_LOCATION_PROVIDERS: StaticProvider[] = [
+  {provide: PlatformLocation, useClass: WebWorkerPlatformLocation} as any as StaticProvider, {
     provide: APP_INITIALIZER,
     useFactory: appInitFnFactory,
     multi: true,

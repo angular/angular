@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,9 +15,13 @@ class Todo {
   editing: boolean;
 
   // TODO(issue/24571): remove '!'.
-  private _title !: string;
-  get title() { return this._title; }
-  set title(value: string) { this._title = value.trim(); }
+  private _title!: string;
+  get title() {
+    return this._title;
+  }
+  set title(value: string) {
+    this._title = value.trim();
+  }
 
   constructor(title: string, public completed: boolean = false) {
     this.editing = false;
@@ -39,21 +43,37 @@ class TodoStore {
     return this.todos.filter((todo: Todo) => todo.completed === completed);
   }
 
-  allCompleted() { return this.todos.length === this.getCompleted().length; }
+  allCompleted() {
+    return this.todos.length === this.getCompleted().length;
+  }
 
-  setAllTo(completed: boolean) { this.todos.forEach((t: Todo) => t.completed = completed); }
+  setAllTo(completed: boolean) {
+    this.todos.forEach((t: Todo) => t.completed = completed);
+  }
 
-  removeCompleted() { this.todos = this.getWithCompleted(false); }
+  removeCompleted() {
+    this.todos = this.getWithCompleted(false);
+  }
 
-  getRemaining() { return this.getWithCompleted(false); }
+  getRemaining() {
+    return this.getWithCompleted(false);
+  }
 
-  getCompleted() { return this.getWithCompleted(true); }
+  getCompleted() {
+    return this.getWithCompleted(true);
+  }
 
-  toggleCompletion(todo: Todo) { todo.completed = !todo.completed; }
+  toggleCompletion(todo: Todo) {
+    todo.completed = !todo.completed;
+  }
 
-  remove(todo: Todo) { this.todos.splice(this.todos.indexOf(todo), 1); }
+  remove(todo: Todo) {
+    this.todos.splice(this.todos.indexOf(todo), 1);
+  }
 
-  add(title: string) { this.todos.push(new Todo(title)); }
+  add(title: string) {
+    this.todos.push(new Todo(title));
+  }
 }
 
 @Component({
@@ -87,9 +107,9 @@ class TodoStore {
           <input *ngIf="todo.editing"
                  class="edit" #editedtodo
                  [value]="todo.title"
-                 (blur)="updateEditingTodo(todo, editedtodo.value)"
-                 (keyup)="updateEditedTodoValue($event.target.value)"
-                 (keyup)="$event.code == 'Enter' && updateEditingTodo(todo, editedtodo.value)"
+                 (blur)="updateEditedTodoValue(todo, editedtodo.value)"
+                 (keyup)="updateEditedTodoValue(todo, $event.target.value)"
+                 (keyup)="$event.code == 'Enter' && updateEditedTodoValue(todo, editedtodo.value)"
                  (keyup)="$event.code == 'Escape' && cancelEditingTodo(todo)">
         </li>
       </ul>

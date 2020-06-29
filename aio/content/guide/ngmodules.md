@@ -1,13 +1,5 @@
 # NgModules
 
-#### Prerequisites
-
-A basic understanding of the following concepts:
-* [Bootstrapping](guide/bootstrapping).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-
-<hr>
-
 **NgModules** configure the injector and the compiler and help organize related things together.
 
 An NgModule is a class marked by the `@NgModule` decorator.
@@ -19,7 +11,6 @@ making some of them public, through the `exports` property, so that external com
 For an example app showcasing all the techniques that NgModules related pages
 cover, see the <live-example></live-example>. For explanations on the individual techniques, visit the relevant NgModule pages under the NgModules
 section.
-
 
 ## Angular modularity
 
@@ -57,12 +48,14 @@ You then import these modules into the root module.
 
 ## The basic NgModule
 
-The [Angular CLI](cli) generates the following basic app module when creating a new app.
+The [Angular CLI](cli) generates the following basic `AppModule` when creating a new app.
 
-<code-example path="bootstrapping/src/app/app.module.ts" region="whole-ngmodule" header="src/app/app.module.ts" linenums="false">
+
+<code-example path="ngmodules/src/app/app.module.1.ts" header="src/app/app.module.ts (default AppModule)">
+// @NgModule decorator with its metadata
 </code-example>
 
-At the top are the import statements. The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`). This page builds on [Bootstrapping](guide/bootstrapping), which covers the structure of an NgModule in detail. If you need more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/bootstrapping).
+At the top are the import statements. The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`). For more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/bootstrapping).
 
 <hr />
 

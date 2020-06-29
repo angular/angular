@@ -6,5 +6,6 @@
     "!**/*.[1].*",
     "!**/dummy.module.ts"
   ],
+  "file": "src/app/heroes/heroes.component.html",
   "tags": ["tutorial", "tour", "heroes"]
 }

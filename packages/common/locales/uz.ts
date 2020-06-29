@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'uz', [['TO', 'TK'], u, u], u,
+  'uz',
+  [['TO', 'TK'], u, u],
+  u,
   [
     ['Y', 'D', 'S', 'C', 'P', 'J', 'S'], ['Yak', 'Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan'],
     ['yakshanba', 'dushanba', 'seshanba', 'chorshanba', 'payshanba', 'juma', 'shanba'],
@@ -40,10 +42,18 @@ export default [
       'Noyabr', 'Dekabr'
     ]
   ],
-  [['m.a.', 'milodiy'], u, ['miloddan avvalgi', 'milodiy']], 1, [6, 0],
+  [['m.a.', 'milodiy'], u, ['miloddan avvalgi', 'milodiy']],
+  1,
+  [6, 0],
   ['dd/MM/yy', 'd-MMM, y', 'd-MMMM, y', 'EEEE, d-MMMM, y'],
-  ['HH:mm', 'HH:mm:ss', 'H:mm:ss (z)', 'H:mm:ss (zzzz)'], ['{1}, {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'H:mm:ss (z)', 'H:mm:ss (zzzz)'],
+  ['{1}, {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'son emas', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'soʻm', 'O‘zbekiston so‘mi',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'UZS': ['soʻm']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'UZS',
+  'soʻm',
+  'O‘zbekiston so‘mi',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'UZS': ['soʻm']},
+  'ltr',
+  plural
 ];

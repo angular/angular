@@ -8,7 +8,7 @@ import { CurrentNode, NavigationNode } from 'app/navigation/navigation.service';
   </aio-nav-item>`
 })
 export class NavMenuComponent {
-  @Input() currentNode: CurrentNode;
+  @Input() currentNode: CurrentNode | undefined;
   @Input() isWide = false;
   @Input() nodes: NavigationNode[];
   get filteredNodes() { return this.nodes ? this.nodes.filter(n => !n.hidden) : []; }

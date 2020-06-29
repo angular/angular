@@ -1,14 +1,14 @@
 {
-  "short_name": "Angular",
-  "name": "Angular",
+  "short_name": "angular.io",
+  "name": "Angular Documentation",
   "icons": [
     {
-      "src":"assets/images/favicons/favicon-194x194.png",
+      "src": "assets/images/favicons/favicon-194x194.png",
       "sizes": "194x194 512x512",
       "type": "image/png"
     },
     {
-      "src":"assets/images/favicons/favicon-144x144.png",
+      "src": "assets/images/favicons/favicon-144x144.png",
       "sizes": "144x144",
       "type": "image/png"
     }

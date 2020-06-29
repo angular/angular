@@ -1,12 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 import {Type} from '../interface/type';
+import {autoRegisterModuleById} from '../render3/definition';
 import {NgModuleType} from '../render3/ng_module_ref';
 import {stringify} from '../util/stringify';
 
@@ -30,7 +32,7 @@ export function registerModuleFactory(id: string, factory: NgModuleFactory<any>)
   modules.set(id, factory);
 }
 
-function assertSameOrNotExisting(id: string, type: Type<any>| null, incoming: Type<any>): void {
+function assertSameOrNotExisting(id: string, type: Type<any>|null, incoming: Type<any>): void {
   if (type && type !== incoming) {
     throw new Error(
         `Duplicate module registered for ${id} - ${stringify(type)} vs ${stringify(type.name)}`);
@@ -38,19 +40,19 @@ function assertSameOrNotExisting(id: string, type: Type<any>| null, incoming: Ty
 }
 
 export function registerNgModuleType(ngModuleType: NgModuleType) {
-  if (ngModuleType.ngModuleDef.id !== null) {
-    const id = ngModuleType.ngModuleDef.id;
+  if (ngModuleType.ɵmod.id !== null) {
+    const id = ngModuleType.ɵmod.id;
     const existing = modules.get(id) as NgModuleType | null;
     assertSameOrNotExisting(id, existing, ngModuleType);
     modules.set(id, ngModuleType);
   }
 
-  let imports = ngModuleType.ngModuleDef.imports;
+  let imports = ngModuleType.ɵmod.imports;
   if (imports instanceof Function) {
     imports = imports();
   }
   if (imports) {
-    imports.forEach((i: NgModuleType<any>) => registerNgModuleType(i));
+    imports.forEach(i => registerNgModuleType(i as NgModuleType));
   }
 }
 
@@ -59,5 +61,5 @@ export function clearModulesForTest(): void {
 }
 
 export function getRegisteredNgModuleType(id: string) {
-  return modules.get(id);
+  return modules.get(id) || autoRegisterModuleById[id];
 }

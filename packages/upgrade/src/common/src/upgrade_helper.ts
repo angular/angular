@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 
 import {ElementRef, Injector, SimpleChanges} from '@angular/core';
 
-import {DirectiveRequireProperty, IAugmentedJQuery, ICloneAttachFunction, ICompileService, IController, IControllerService, IDirective, IHttpBackendService, IInjectorService, ILinkFn, IScope, ITemplateCacheService, SingleOrListOrMap, element as angularElement} from './angular1';
+import {DirectiveRequireProperty, element as angularElement, IAugmentedJQuery, ICloneAttachFunction, ICompileService, IController, IControllerService, IDirective, IHttpBackendService, IInjectorService, ILinkFn, IScope, ITemplateCacheService, SingleOrListOrMap} from './angular1';
 import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $INJECTOR, $TEMPLATE_CACHE} from './constants';
 import {controllerKey, directiveNormalize, isFunction} from './util';
 
@@ -71,13 +71,13 @@ export class UpgradeHelper {
   }
 
   static getTemplate(
-      $injector: IInjectorService, directive: IDirective, fetchRemoteTemplate = false): string
-      |Promise<string> {
+      $injector: IInjectorService, directive: IDirective, fetchRemoteTemplate = false,
+      $element?: IAugmentedJQuery): string|Promise<string> {
     if (directive.template !== undefined) {
-      return getOrCall<string>(directive.template);
+      return getOrCall<string>(directive.template, $element);
     } else if (directive.templateUrl) {
       const $templateCache = $injector.get($TEMPLATE_CACHE) as ITemplateCacheService;
-      const url = getOrCall<string>(directive.templateUrl);
+      const url = getOrCall<string>(directive.templateUrl, $element);
       const template = $templateCache.get(url);
 
       if (template !== undefined) {
@@ -107,14 +107,15 @@ export class UpgradeHelper {
     const locals = {'$scope': $scope, '$element': this.$element};
     const controller = this.$controller(controllerType, locals, null, this.directive.controllerAs);
 
-    this.$element.data !(controllerKey(this.directive.name !), controller);
+    this.$element.data!(controllerKey(this.directive.name!), controller);
 
     return controller;
   }
 
   compileTemplate(template?: string): ILinkFn {
     if (template === undefined) {
-      template = UpgradeHelper.getTemplate(this.$injector, this.directive) as string;
+      template =
+          UpgradeHelper.getTemplate(this.$injector, this.directive, false, this.$element) as string;
     }
 
     return this.compileHtml(template);
@@ -145,7 +146,7 @@ export class UpgradeHelper {
       // there will be no transclusion scope here.
       // Provide a dummy `scope.$destroy()` method to prevent `cloneAttachFn` from throwing.
       scope = scope || {$destroy: () => undefined};
-      return cloneAttachFn !($template, scope);
+      return cloneAttachFn!($template, scope);
     };
     let $template = contentChildNodes;
 
@@ -191,7 +192,7 @@ export class UpgradeHelper {
         Object.keys(slots).filter(slotName => slots[slotName]).forEach(slotName => {
           const nodes = slots[slotName];
           slots[slotName] = (scope: IScope, cloneAttach: ICloneAttachFunction) => {
-            return cloneAttach !(nodes, scope);
+            return cloneAttach!(nodes, scope);
           };
         });
       }
@@ -224,7 +225,7 @@ export class UpgradeHelper {
     const requiredControllers = this.resolveRequire(directiveRequire);
 
     if (controllerInstance && this.directive.bindToController && isMap(directiveRequire)) {
-      const requiredControllersMap = requiredControllers as{[key: string]: IControllerInstance};
+      const requiredControllersMap = requiredControllers as {[key: string]: IControllerInstance};
       Object.keys(requiredControllersMap).forEach(key => {
         controllerInstance[key] = requiredControllersMap[key];
       });
@@ -251,12 +252,12 @@ export class UpgradeHelper {
   }
 
   private getDirectiveRequire(): DirectiveRequireProperty {
-    const require = this.directive.require || (this.directive.controller && this.directive.name) !;
+    const require = this.directive.require || (this.directive.controller && this.directive.name)!;
 
     if (isMap(require)) {
       Object.keys(require).forEach(key => {
         const value = require[key];
-        const match = value.match(REQUIRE_PREFIX_RE) !;
+        const match = value.match(REQUIRE_PREFIX_RE)!;
         const name = value.substring(match[0].length);
 
         if (!name) {
@@ -276,10 +277,10 @@ export class UpgradeHelper {
       return require.map(req => this.resolveRequire(req));
     } else if (typeof require === 'object') {
       const value: {[key: string]: IControllerInstance} = {};
-      Object.keys(require).forEach(key => value[key] = this.resolveRequire(require[key]) !);
+      Object.keys(require).forEach(key => value[key] = this.resolveRequire(require[key])!);
       return value;
     } else if (typeof require === 'string') {
-      const match = require.match(REQUIRE_PREFIX_RE) !;
+      const match = require.match(REQUIRE_PREFIX_RE)!;
       const inheritType = match[1] || match[3];
 
       const name = require.substring(match[0].length);
@@ -288,8 +289,8 @@ export class UpgradeHelper {
       const startOnParent = inheritType === '^^';
 
       const ctrlKey = controllerKey(name);
-      const elem = startOnParent ? this.$element.parent !() : this.$element;
-      const value = searchParents ? elem.inheritedData !(ctrlKey) : elem.data !(ctrlKey);
+      const elem = startOnParent ? this.$element.parent!() : this.$element;
+      const value = searchParents ? elem.inheritedData!(ctrlKey) : elem.data!(ctrlKey);
 
       if (!value && !isOptional) {
         throw new Error(
@@ -304,8 +305,8 @@ export class UpgradeHelper {
   }
 }
 
-function getOrCall<T>(property: T | Function): T {
-  return isFunction(property) ? property() : property;
+function getOrCall<T>(property: T|Function, ...args: any[]): T {
+  return isFunction(property) ? property(...args) : property;
 }
 
 // NOTE: Only works for `typeof T !== 'object'`.

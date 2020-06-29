@@ -1,20 +1,23 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {Type, ɵglobal as global} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
-import {By, ɵgetDOM as getDOM} from '@angular/platform-browser';
-
+import {By} from '@angular/platform-browser';
+import {childNodesAsList, hasClass, hasStyle, isCommentNode} from './browser_util';
 
 
 /**
  * Jasmine matchers that check Angular specific conditions.
+ *
+ * Note: These matchers will only work in a browser environment.
  */
 export interface NgMatchers<T = any> extends jasmine.Matchers<T> {
   /**
@@ -120,7 +123,9 @@ export const expect: <T = any>(actual: T) => NgMatchers<T> = _global.expect;
     return '' + m;
   }
   const res: any[] = [];
-  m.forEach((v: any, k: any) => { res.push(`${String(k)}:${String(v)}`); });
+  m.forEach((v: any, k: any) => {
+    res.push(`${String(k)}:${String(v)}`);
+  });
   return `{ ${res.join(',')} }`;
 };
 
@@ -138,7 +143,7 @@ _global.beforeEach(function() {
       return pass;
     } else {
       // TODO(misko): we should change the return, but jasmine.d.ts is not null safe
-      return undefined !;
+      return undefined!;
     }
   });
   jasmine.addMatchers({
@@ -146,7 +151,12 @@ _global.beforeEach(function() {
       return {
         compare: function(actual: any) {
           const pass = typeof actual === 'object' && typeof actual.then === 'function';
-          return {pass: pass, get message() { return 'Expected ' + actual + ' to be a promise'; }};
+          return {
+            pass: pass,
+            get message() {
+              return 'Expected ' + actual + ' to be a promise';
+            }
+          };
         }
       };
     },
@@ -171,7 +181,9 @@ _global.beforeEach(function() {
           const actualText = elementText(actual);
           return {
             pass: actualText == expectedText,
-            get message() { return 'Expected ' + actualText + ' to be equal to ' + expectedText; }
+            get message() {
+              return 'Expected ' + actualText + ' to be equal to ' + expectedText;
+            }
           };
         }
       };
@@ -183,9 +195,10 @@ _global.beforeEach(function() {
       function buildError(isNot: boolean) {
         return function(actual: any, className: string) {
           return {
-            pass: getDOM().hasClass(actual, className) == !isNot,
+            pass: hasClass(actual, className) == !isNot,
             get message() {
-              return `Expected ${actual.outerHTML} ${isNot ? 'not ' : ''}to contain the CSS class "${className}"`;
+              return `Expected ${actual.outerHTML} ${
+                  isNot ? 'not ' : ''}to contain the CSS class "${className}"`;
             }
           };
         };
@@ -197,11 +210,11 @@ _global.beforeEach(function() {
         compare: function(actual: any, styles: {[k: string]: string}|string) {
           let allPassed: boolean;
           if (typeof styles === 'string') {
-            allPassed = getDOM().hasStyle(actual, styles);
+            allPassed = hasStyle(actual, styles);
           } else {
             allPassed = Object.keys(styles).length !== 0;
             Object.keys(styles).forEach(prop => {
-              allPassed = allPassed && getDOM().hasStyle(actual, prop, styles[prop]);
+              allPassed = allPassed && hasStyle(actual, prop, styles[prop]);
             });
           }
 
@@ -210,7 +223,8 @@ _global.beforeEach(function() {
             get message() {
               const expectedValueStr = typeof styles === 'string' ? styles : JSON.stringify(styles);
               return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
-                      CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${expectedValueStr}"`;
+                      CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${
+                  expectedValueStr}"`;
             }
           };
         }
@@ -223,7 +237,9 @@ _global.beforeEach(function() {
           const errorMessage = actual.toString();
           return {
             pass: errorMessage.indexOf(expectedText) > -1,
-            get message() { return 'Expected ' + errorMessage + ' to contain ' + expectedText; }
+            get message() {
+              return 'Expected ' + errorMessage + ' to contain ' + expectedText;
+            }
           };
         }
       };
@@ -242,8 +258,8 @@ _global.beforeEach(function() {
           return {
             pass: missedMethods.length == 0,
             get message() {
-              return 'Expected ' + actualObject + ' to have the following methods: ' +
-                  missedMethods.join(', ');
+              return 'Expected ' + actualObject +
+                  ' to have the following methods: ' + missedMethods.join(', ');
             }
           };
         }
@@ -260,8 +276,8 @@ _global.beforeEach(function() {
           if (!(actualFixture instanceof ComponentFixture)) {
             return {
               pass: false,
-              message: msgFn(
-                  `Expected actual to be of type \'ComponentFixture\' [actual=${actualFixture.constructor.name}]`)
+              message: msgFn(`Expected actual to be of type \'ComponentFixture\' [actual=${
+                  actualFixture.constructor.name}]`)
             };
           }
 
@@ -277,7 +293,7 @@ _global.beforeEach(function() {
 
 function elementText(n: any): string {
   const hasNodes = (n: any) => {
-    const children = getDOM().childNodes(n);
+    const children = n.childNodes;
     return children && children.length > 0;
   };
 
@@ -285,21 +301,25 @@ function elementText(n: any): string {
     return n.map(elementText).join('');
   }
 
-  if (getDOM().isCommentNode(n)) {
+  if (isCommentNode(n)) {
     return '';
   }
 
-  if (getDOM().isElementNode(n) && getDOM().tagName(n) == 'CONTENT') {
-    return elementText(Array.prototype.slice.apply(getDOM().getDistributedNodes(n)));
+  if (getDOM().isElementNode(n) && (n as Element).tagName == 'CONTENT') {
+    return elementText(Array.prototype.slice.apply((<any>n).getDistributedNodes()));
   }
 
-  if (getDOM().hasShadowRoot(n)) {
-    return elementText(getDOM().childNodesAsList(getDOM().getShadowRoot(n)));
+  if (hasShadowRoot(n)) {
+    return elementText(childNodesAsList((<any>n).shadowRoot));
   }
 
   if (hasNodes(n)) {
-    return elementText(getDOM().childNodesAsList(n));
+    return elementText(childNodesAsList(n));
   }
 
-  return getDOM().getText(n) !;
+  return (n as any).textContent;
+}
+
+function hasShadowRoot(node: any): boolean {
+  return node.shadowRoot != null && node instanceof HTMLElement;
 }

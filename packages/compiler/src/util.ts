@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -52,8 +52,8 @@ export function isDefined(val: any): boolean {
   return val !== null && val !== undefined;
 }
 
-export function noUndefined<T>(val: T | undefined): T {
-  return val === undefined ? null ! : val;
+export function noUndefined<T>(val: T|undefined): T {
+  return val === undefined ? null! : val;
 }
 
 export interface ValueVisitor {
@@ -69,14 +69,20 @@ export class ValueTransformer implements ValueVisitor {
   }
   visitStringMap(map: {[key: string]: any}, context: any): any {
     const result: {[key: string]: any} = {};
-    Object.keys(map).forEach(key => { result[key] = visitValue(map[key], this, context); });
+    Object.keys(map).forEach(key => {
+      result[key] = visitValue(map[key], this, context);
+    });
     return result;
   }
-  visitPrimitive(value: any, context: any): any { return value; }
-  visitOther(value: any, context: any): any { return value; }
+  visitPrimitive(value: any, context: any): any {
+    return value;
+  }
+  visitOther(value: any, context: any): any {
+    return value;
+  }
 }
 
-export type SyncAsync<T> = T | Promise<T>;
+export type SyncAsync<T> = T|Promise<T>;
 
 export const SyncAsync = {
   assertSync: <T>(value: SyncAsync<T>): T => {
@@ -86,7 +92,9 @@ export const SyncAsync = {
     return value;
   },
   then: <T, R>(value: SyncAsync<T>, cb: (value: T) => R | Promise<R>| SyncAsync<R>):
-            SyncAsync<R> => { return isPromise(value) ? value.then(cb) : cb(value);},
+      SyncAsync<R> => {
+        return isPromise(value) ? value.then(cb) : cb(value);
+      },
   all: <T>(syncAsyncValues: SyncAsync<T>[]): SyncAsync<T[]> => {
     return syncAsyncValues.some(isPromise) ? Promise.all(syncAsyncValues) : syncAsyncValues as T[];
   }
@@ -168,7 +176,7 @@ export function stringify(token: any): string {
     return token;
   }
 
-  if (token instanceof Array) {
+  if (Array.isArray(token)) {
     return '[' + token.map(stringify).join(', ') + ']';
   }
 
@@ -182,6 +190,10 @@ export function stringify(token: any): string {
 
   if (token.name) {
     return `${token.name}`;
+  }
+
+  if (!token.toString) {
+    return 'object';
   }
 
   // WARNING: do not try to `JSON.stringify(token)` here
@@ -210,7 +222,7 @@ export function resolveForwardRef(type: any): any {
 /**
  * Determine if the argument is shaped like a Promise
  */
-export function isPromise(obj: any): obj is Promise<any> {
+export function isPromise<T = any>(obj: any): obj is Promise<T> {
   // allow any Promise/A+ compliant thenable.
   // It's up to the caller to ensure that obj.then conforms to the spec
   return !!obj && typeof obj.then === 'function';
@@ -249,3 +261,31 @@ const __global = typeof global !== 'undefined' && global;
 // should be __global in that case.
 const _global: {[name: string]: any} = __global || __window || __self;
 export {_global as global};
+
+export function newArray<T = any>(size: number): T[];
+export function newArray<T>(size: number, value: T): T[];
+export function newArray<T>(size: number, value?: T): T[] {
+  const list: T[] = [];
+  for (let i = 0; i < size; i++) {
+    list.push(value!);
+  }
+  return list;
+}
+
+/**
+ * Partitions a given array into 2 arrays, based on a boolean value returned by the condition
+ * function.
+ *
+ * @param arr Input array that should be partitioned
+ * @param conditionFn Condition function that is called for each item in a given array and returns a
+ * boolean value.
+ */
+export function partitionArray<T>(
+    arr: T[], conditionFn: <K extends T>(value: K) => boolean): [T[], T[]] {
+  const truthy: T[] = [];
+  const falsy: T[] = [];
+  arr.forEach(item => {
+    (conditionFn(item) ? truthy : falsy).push(item);
+  });
+  return [truthy, falsy];
+}

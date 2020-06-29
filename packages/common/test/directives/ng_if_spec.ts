@@ -1,25 +1,28 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
   describe('ngIf directive', () => {
     let fixture: ComponentFixture<any>;
 
-    function getComponent(): TestComponent { return fixture.componentInstance; }
+    function getComponent(): TestComponent {
+      return fixture.componentInstance;
+    }
 
-    afterEach(() => { fixture = null !; });
+    afterEach(() => {
+      fixture = null!;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -103,8 +106,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
          fixture.detectChanges();
          expect(fixture.debugElement.queryAll(By.css('span')).length).toEqual(3);
-         expect(getDOM().getText(fixture.nativeElement))
-             .toEqual('helloNumberhelloStringhelloFunction');
+         expect(fixture.nativeElement.textContent).toEqual('helloNumberhelloStringhelloFunction');
 
          getComponent().numberCondition = 0;
          fixture.detectChanges();
@@ -126,14 +128,14 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          fixture.detectChanges();
          let els = fixture.debugElement.queryAll(By.css('span'));
          expect(els.length).toEqual(1);
-         getDOM().addClass(els[0].nativeElement, 'marker');
+         els[0].nativeElement.classList.add('marker');
          expect(fixture.nativeElement).toHaveText('hello');
 
          getComponent().numberCondition = 2;
          fixture.detectChanges();
          els = fixture.debugElement.queryAll(By.css('span'));
          expect(els.length).toEqual(1);
-         expect(getDOM().hasClass(els[0].nativeElement, 'marker')).toBe(true);
+         expect(els[0].nativeElement.classList.contains('marker')).toBe(true);
 
          expect(fixture.nativeElement).toHaveText('hello');
        }));

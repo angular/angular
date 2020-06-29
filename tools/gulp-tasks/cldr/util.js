@@ -53,7 +53,9 @@ module.exports.stringify = function(obj, quoteKeys) {
     }
   }
 
-  function isDate(obj) { return Object.prototype.toString.call(obj) === '[object Date]'; }
+  function isDate(obj) {
+    return Object.prototype.toString.call(obj) === '[object Date]';
+  }
 
   var objStack = [];
   function checkForCircular(obj) {
@@ -130,7 +132,8 @@ module.exports.stringify = function(obj, quoteKeys) {
               buffer += 'null';
             } /* else if (typeof res === 'undefined') {  // modified to support empty array values
               buffer += '';
-            }*/ else {
+            }*/
+            else {
               buffer += res;
             }
             if (i < obj_part.length - 1) {

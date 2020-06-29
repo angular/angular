@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -36,7 +36,7 @@ export abstract class NgControl extends AbstractControlDirective {
    * @description
    * The name for the control
    */
-  name: string|null = null;
+  name: string|number|null = null;
 
   /**
    * @description
@@ -66,7 +66,9 @@ export abstract class NgControl extends AbstractControlDirective {
    *
    * @throws An exception that this method is not implemented
    */
-  get validator(): ValidatorFn|null { return <ValidatorFn>unimplemented(); }
+  get validator(): ValidatorFn|null {
+    return <ValidatorFn>unimplemented();
+  }
 
   /**
    * @description
@@ -74,7 +76,9 @@ export abstract class NgControl extends AbstractControlDirective {
    *
    * @throws An exception that this method is not implemented
    */
-  get asyncValidator(): AsyncValidatorFn|null { return <AsyncValidatorFn>unimplemented(); }
+  get asyncValidator(): AsyncValidatorFn|null {
+    return <AsyncValidatorFn>unimplemented();
+  }
 
   /**
    * @description

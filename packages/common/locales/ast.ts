@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,8 @@ function plural(n: number): number {
 }
 
 export default [
-  'ast', [['a', 'p'], ['AM', 'PM'], ['de la mañana', 'de la tarde']],
+  'ast',
+  [['a', 'p'], ['AM', 'PM'], ['de la mañana', 'de la tarde']],
   [['a', 'p'], ['AM', 'PM'], ['mañana', 'tarde']],
   [
     ['D', 'L', 'M', 'M', 'X', 'V', 'S'], ['dom', 'llu', 'mar', 'mié', 'xue', 'vie', 'sáb'],
@@ -42,12 +43,18 @@ export default [
       'ochobre', 'payares', 'avientu'
     ]
   ],
-  [['e.C.', 'd.C.'], u, ['enantes de Cristu', 'después de Cristu']], 1, [6, 0],
+  [['e.C.', 'd.C.'], u, ['enantes de Cristu', 'después de Cristu']],
+  1,
+  [6, 0],
   ['d/M/yy', 'd MMM y', 'd MMMM \'de\' y', 'EEEE, d MMMM \'de\' y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   ['{1} {0}', '{1}, {0}', '{1} \'a\' \'les\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'ND', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'EUR',
+  '€',
+  'euro',
+  {
     'BYN': [],
     'DKK': [],
     'HRK': [],
@@ -57,7 +64,9 @@ export default [
     'RUR': [],
     'SEK': [],
     'THB': ['฿'],
-    'TWD': ['NT$']
+    'TWD': ['NT$'],
+    'XXX': []
   },
+  'ltr',
   plural
 ];

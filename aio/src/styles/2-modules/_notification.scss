@@ -32,6 +32,7 @@ aio-notification {
 
   .content {
     max-width: calc(100% - #{$notificationHeight});
+    background: $darkgray;
     text-transform: none;
     padding: 0;
 
@@ -57,7 +58,7 @@ aio-notification {
       border-radius: 15px;
       text-transform: uppercase;
       padding: 0 10px;
-      font-size: 12px;
+      @include font-size(12);
       @media (max-width: 780px) {
         display: none;
       }

@@ -5,7 +5,7 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages/core/schematics:tsconfig.json",
     visibility = [
-        "//packages/core/schematics/migrations/template-var-assignment/google3:__pkg__",
+        "//packages/core/schematics/migrations/google3:__pkg__",
     ],
     deps = ["@npm//typescript"],
 )

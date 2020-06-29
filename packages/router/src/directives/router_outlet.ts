@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,14 +18,17 @@ import {PRIMARY_OUTLET} from '../shared';
  *
  * Acts as a placeholder that Angular dynamically fills based on the current router state.
  *
+ * Each outlet can have a unique name, determined by the optional `name` attribute.
+ * The name cannot be set or changed dynamically. If not set, default value is "primary".
+ *
  * ```
  * <router-outlet></router-outlet>
  * <router-outlet name='left'></router-outlet>
  * <router-outlet name='right'></router-outlet>
  * ```
  *
- * A router outlet will emit an activate event any time a new component is being instantiated,
- * and a deactivate event when it is being destroyed.
+ * A router outlet emits an activate event when a new component is instantiated,
+ * and a deactivate event when a component is destroyed.
  *
  * ```
  * <router-outlet
@@ -53,7 +56,9 @@ export class RouterOutlet implements OnDestroy, OnInit {
     parentContexts.onChildOutletCreated(this.name, this);
   }
 
-  ngOnDestroy(): void { this.parentContexts.onChildOutletDestroyed(this.name); }
+  ngOnDestroy(): void {
+    this.parentContexts.onChildOutletDestroyed(this.name);
+  }
 
   ngOnInit(): void {
     if (!this.activated) {
@@ -72,7 +77,9 @@ export class RouterOutlet implements OnDestroy, OnInit {
     }
   }
 
-  get isActivated(): boolean { return !!this.activated; }
+  get isActivated(): boolean {
+    return !!this.activated;
+  }
 
   get component(): Object {
     if (!this.activated) throw new Error('Outlet is not activated');
@@ -128,7 +135,7 @@ export class RouterOutlet implements OnDestroy, OnInit {
     }
     this._activatedRoute = activatedRoute;
     const snapshot = activatedRoute._futureSnapshot;
-    const component = <any>snapshot.routeConfig !.component;
+    const component = <any>snapshot.routeConfig!.component;
     resolver = resolver || this.resolver;
     const factory = resolver.resolveComponentFactory(component);
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;

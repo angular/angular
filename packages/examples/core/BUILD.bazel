@@ -1,8 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//packages/bazel:index.bzl", "protractor_web_test_suite")
-load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ts_library")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
 
 ng_module(
     name = "core_examples",
@@ -13,11 +11,11 @@ ng_module(
             "**/*_howto.ts",
         ],
     ),
-    # TODO: FW-1004 Type checking is currently not complete.
-    type_check = False,
+    generate_ve_shims = True,
     deps = [
         "//packages/animations",
         "//packages/core",
+        "//packages/forms",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
@@ -53,37 +51,35 @@ ts_library(
 
 ts_devserver(
     name = "devserver",
+    additional_root_paths = ["angular/packages/examples"],
+    bootstrap = [
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:task-tracking.umd.js",
+    ],
     entry_module = "@angular/examples/core/main",
-    index_html = "//packages/examples:index.html",
     port = 4200,
     scripts = [
-        "@npm//node_modules/tslib:tslib.js",
+        "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
-    static_files = [
-        "@npm//node_modules/zone.js:dist/zone.js",
-        "@npm//node_modules/zone.js:dist/task-tracking.js",
-    ],
+    static_files = ["//packages/examples:index.html"],
     deps = [":core_examples"],
 )
 
 protractor_web_test_suite(
     name = "protractor_tests",
-    data = ["//packages/bazel/src/protractor/utils"],
     on_prepare = ":start-server.js",
     server = ":devserver",
     deps = [
         ":core_e2e_tests_lib",
-        "@npm//protractor",
         "@npm//selenium-webdriver",
     ],
 )
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":core_tests_lib",
-        "//tools/testing:node",
     ],
 )

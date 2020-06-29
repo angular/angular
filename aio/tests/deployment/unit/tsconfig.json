@@ -4,7 +4,7 @@
     "module": "commonjs"
   },
   "include": [
-    "../shared/**/*.d.ts",
+    "../shared/**/*.ts",
     "**/*.ts"
   ]
 }

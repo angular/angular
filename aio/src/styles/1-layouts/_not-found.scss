@@ -1,7 +1,3 @@
-#file-not-found {
-    padding: 3rem 3rem 3rem;
-}
-
 .nf-container {
     align-items: center;
     padding: 32px;
@@ -13,8 +9,8 @@
     flex-direction: column;
 
     h1 {
-        font-size: 48px;
-        color: $blue;
+      @include font-size(48);
+      color: $blue;
         text-transform: uppercase;
         margin: 8px 0;
     }
@@ -22,6 +18,6 @@
 
 .nf-icon.material-icons {
     color: $blue;
-    font-size: 100px;
+    @include font-size(100);
     position: static;
 }

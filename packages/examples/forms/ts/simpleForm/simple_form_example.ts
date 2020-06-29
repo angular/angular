@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,7 +19,7 @@ import {NgForm} from '@angular/forms';
       <input name="last" ngModel>
       <button>Submit</button>
     </form>
-    
+
     <p>First name value: {{ first.value }}</p>
     <p>First name valid: {{ first.valid }}</p>
     <p>Form value: {{ f.value | json }}</p>

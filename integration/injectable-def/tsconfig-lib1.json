@@ -17,6 +17,7 @@
   "angularCompilerOptions": {
     "skipTemplateCodegen": true,
     "flatModuleOutFile": "index.js",
-    "flatModuleId": "lib1_built"
+    "flatModuleId": "lib1_built",
+    "enableIvy": false,
   }
 }

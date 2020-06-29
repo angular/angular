@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,7 +14,9 @@ export class RenderStore {
   private _lookupById = new Map<number, any>();
   private _lookupByObject = new Map<any, number>();
 
-  allocateId(): number { return this._nextIndex++; }
+  allocateId(): number {
+    return this._nextIndex++;
+  }
 
   store(obj: any, id: number): void {
     if (id == null) return;

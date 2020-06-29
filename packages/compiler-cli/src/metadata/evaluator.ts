@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {CollectorOptions} from './collector';
-import {ClassMetadata, FunctionMetadata, InterfaceMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSourceLocationInfo, MetadataSymbolicCallExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportDefaultReference, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
+import {ClassMetadata, FunctionMetadata, InterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportDefaultReference, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSourceLocationInfo, MetadataSymbolicCallExpression, MetadataValue} from './schema';
 import {Symbols} from './symbols';
 
 
@@ -46,8 +46,9 @@ export function recordMapEntry<T extends MetadataEntry>(
     sourceFile?: ts.SourceFile) {
   if (!nodeMap.has(entry)) {
     nodeMap.set(entry, node);
-    if (node && (isMetadataImportedSymbolReferenceExpression(entry) ||
-                 isMetadataImportDefaultReference(entry)) &&
+    if (node &&
+        (isMetadataImportedSymbolReferenceExpression(entry) ||
+         isMetadataImportDefaultReference(entry)) &&
         entry.line == null) {
       const info = sourceInfo(node, sourceFile);
       if (info.line != null) entry.line = info.line;
@@ -88,7 +89,7 @@ export interface ImportMetadata {
 }
 
 
-function getSourceFileOfNode(node: ts.Node | undefined): ts.SourceFile {
+function getSourceFileOfNode(node: ts.Node|undefined): ts.SourceFile {
   while (node && node.kind != ts.SyntaxKind.SourceFile) {
     node = node.parent;
   }
@@ -97,7 +98,7 @@ function getSourceFileOfNode(node: ts.Node | undefined): ts.SourceFile {
 
 /* @internal */
 export function sourceInfo(
-    node: ts.Node | undefined, sourceFile: ts.SourceFile | undefined): MetadataSourceLocationInfo {
+    node: ts.Node|undefined, sourceFile: ts.SourceFile|undefined): MetadataSourceLocationInfo {
   if (node) {
     sourceFile = sourceFile || getSourceFileOfNode(node);
     if (sourceFile) {
@@ -306,7 +307,7 @@ export class Evaluator {
                 error = propertyValue;
                 return true;  // Stop the forEachChild.
               } else {
-                obj[<string>propertyName] = isPropertyAssignment(assignment) ?
+                obj[propertyName] = isPropertyAssignment(assignment) ?
                     recordEntry(propertyValue, assignment.initializer) :
                     propertyValue;
               }
@@ -401,7 +402,7 @@ export class Evaluator {
           return recordEntry(member, node);
         }
         if (expression && this.isFoldable(propertyAccessExpression.expression))
-          return (<any>expression)[<string>member];
+          return (<any>expression)[member];
         if (isMetadataModuleReferenceExpression(expression)) {
           // A select into a module reference and be converted into a reference to the symbol
           // in the module
@@ -435,7 +436,7 @@ export class Evaluator {
       case ts.SyntaxKind.TypeReference:
         const typeReferenceNode = <ts.TypeReferenceNode>node;
         const typeNameNode = typeReferenceNode.typeName;
-        const getReference: (typeNameNode: ts.Identifier | ts.QualifiedName) => MetadataValue =
+        const getReference: (typeNameNode: ts.Identifier|ts.QualifiedName) => MetadataValue =
             node => {
               if (typeNameNode.kind === ts.SyntaxKind.QualifiedName) {
                 const qualifiedName = <ts.QualifiedName>node;
@@ -555,7 +556,7 @@ export class Evaluator {
               return !operand;
           }
         }
-        let operatorText: string;
+        let operatorText: '+'|'-'|'~'|'!';
         switch (prefixUnaryExpression.operator) {
           case ts.SyntaxKind.PlusToken:
             operatorText = '+';
@@ -691,6 +692,6 @@ function isPropertyAssignment(node: ts.Node): node is ts.PropertyAssignment {
 
 const empty = ts.createNodeArray<any>();
 
-function arrayOrEmpty<T extends ts.Node>(v: ts.NodeArray<T>| undefined): ts.NodeArray<T> {
+function arrayOrEmpty<T extends ts.Node>(v: ts.NodeArray<T>|undefined): ts.NodeArray<T> {
   return v || empty;
 }

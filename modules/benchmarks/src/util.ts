@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -35,24 +35,41 @@ export function getStringParameter(name: string) {
 }
 
 export function bindAction(selector: string, callback: () => void) {
-  document.querySelector(selector) !.addEventListener('click', callback);
+  document.querySelector(selector)!.addEventListener('click', callback);
 }
 
 
 export function profile(create: () => void, destroy: () => void, name: string) {
   return function() {
-    window.console.profile(name);
-    let duration = 0;
+    // 'console.profile' is experimental and was removed from DOM lib in TS 3.9
+    (window.console as any).profile(name);
+    const noOfRuns = 150;
+    let durations: number[] = [];
     let count = 0;
-    while (count++ < 150) {
+    while (count++ < noOfRuns) {
       const start = window.performance.now();
       create();
-      duration += window.performance.now() - start;
+      const end = window.performance.now() - start;
+      durations.push(end);
       destroy();
     }
-    window.console.profileEnd();
-    window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
+    // 'console.profileEnd' is experimental and was removed from DOM lib in TS 3.9
+    (window.console as any).profileEnd();
+    reportProfileResults(durations, noOfRuns);
   };
+}
+
+function reportProfileResults(durations: number[], count: number) {
+  const totalDuration = durations.reduce((soFar: number, duration: number) => soFar + duration, 0);
+  const avgDuration = (totalDuration / count).toFixed(2);
+  const minDuration = durations
+                          .reduce(
+                              (soFar: number, duration: number) => Math.min(soFar, duration),
+                              Number.MAX_SAFE_INTEGER)
+                          .toFixed(2);
+  window.console.log(
+      `Iterations: ${count}; cold time: ${durations[0].toFixed(2)} ms; average time: ${
+          avgDuration} ms / iteration; best time: ${minDuration} ms`);
 }
 
 // helper script that will read out the url parameters

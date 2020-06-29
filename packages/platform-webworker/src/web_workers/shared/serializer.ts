@@ -1,18 +1,19 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, RendererType2, Type, ɵstringify as stringify} from '@angular/core';
+import {Injectable, RendererType2, Type, ɵstringify as stringify} from '@angular/core';
 import {RenderStore} from './render_store';
 
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export const enum SerializerTypes {
   // RendererType2
@@ -42,10 +43,7 @@ export class Serializer {
       return obj.map(v => this.serialize(v, type));
     }
     if (type === SerializerTypes.RENDER_STORE_OBJECT) {
-      return this._renderStore.serialize(obj) !;
-    }
-    if (type === RenderComponentType) {
-      return this._serializeRenderComponentType(obj);
+      return this._renderStore.serialize(obj)!;
     }
     if (type === SerializerTypes.RENDERER_TYPE_2) {
       return this._serializeRendererType2(obj);
@@ -66,9 +64,6 @@ export class Serializer {
     }
     if (type === SerializerTypes.RENDER_STORE_OBJECT) {
       return this._renderStore.deserialize(map);
-    }
-    if (type === RenderComponentType) {
-      return this._deserializeRenderComponentType(map);
     }
     if (type === SerializerTypes.RENDERER_TYPE_2) {
       return this._deserializeRendererType2(map);
@@ -97,22 +92,6 @@ export class Serializer {
     return new LocationType(
         loc['href'], loc['protocol'], loc['host'], loc['hostname'], loc['port'], loc['pathname'],
         loc['search'], loc['hash'], loc['origin']);
-  }
-
-  private _serializeRenderComponentType(type: RenderComponentType): Object {
-    return {
-      'id': type.id,
-      'templateUrl': type.templateUrl,
-      'slotCount': type.slotCount,
-      'encapsulation': this.serialize(type.encapsulation),
-      'styles': this.serialize(type.styles),
-    };
-  }
-
-  private _deserializeRenderComponentType(props: {[key: string]: any}): RenderComponentType {
-    return new RenderComponentType(
-        props['id'], props['templateUrl'], props['slotCount'],
-        this.deserialize(props['encapsulation']), this.deserialize(props['styles']), {});
   }
 
   private _serializeRendererType2(type: RendererType2): {[key: string]: any} {

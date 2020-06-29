@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,16 +13,18 @@
  *
  * This file has two copies. Please ensure that they are in sync:
  *  - packages/compiler/src/compiler_facade_interface.ts             (master)
- *  - packages/core/src/render3/jit/compiler_facade_interface.ts     (copy)
+ *  - packages/core/src/compiler/compiler_facade_interface.ts     (copy)
  *
  * Please ensure that the two files are in sync using this command:
  * ```
  * cp packages/compiler/src/compiler_facade_interface.ts \
- *    packages/core/src/render3/jit/compiler_facade_interface.ts
+ *    packages/core/src/compiler/compiler_facade_interface.ts
  * ```
  */
 
-export interface ExportedCompilerFacade { ɵcompilerFacade: CompilerFacade; }
+export interface ExportedCompilerFacade {
+  ɵcompilerFacade: CompilerFacade;
+}
 
 export interface CompilerFacade {
   compilePipe(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3PipeMetadataFacade):
@@ -37,19 +39,22 @@ export interface CompilerFacade {
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3DirectiveMetadataFacade): any;
   compileComponent(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3ComponentMetadataFacade): any;
-  compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3BaseMetadataFacade):
-      any;
+  compileFactory(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3FactoryDefMetadataFacade): any;
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
   R3ResolvedDependencyType: typeof R3ResolvedDependencyType;
-  ResourceLoader: {new (): ResourceLoader};
+  R3FactoryTarget: typeof R3FactoryTarget;
+  ResourceLoader: {new(): ResourceLoader};
 }
 
-export interface CoreEnvironment { [name: string]: Function; }
+export interface CoreEnvironment {
+  [name: string]: Function;
+}
 
 export type ResourceLoader = {
-  get(url: string): Promise<string>| string;
+  get(url: string): Promise<string>|string;
 };
 
 export type StringMap = {
@@ -57,7 +62,7 @@ export type StringMap = {
 };
 
 export type StringMapWithRename = {
-  [key: string]: string | [string, string];
+  [key: string]: string|[string, string];
 };
 
 export type Provider = any;
@@ -65,6 +70,16 @@ export type Provider = any;
 export enum R3ResolvedDependencyType {
   Token = 0,
   Attribute = 1,
+  ChangeDetectorRef = 2,
+  Invalid = 3,
+}
+
+export enum R3FactoryTarget {
+  Directive = 0,
+  Component = 1,
+  Injectable = 2,
+  Pipe = 3,
+  NgModule = 4,
 }
 
 export interface R3DependencyMetadataFacade {
@@ -89,7 +104,6 @@ export interface R3InjectableMetadataFacade {
   name: string;
   type: any;
   typeArgumentCount: number;
-  ctorDeps: R3DependencyMetadataFacade[]|null;
   providedIn: any;
   useClass?: any;
   useFactory?: any;
@@ -104,7 +118,6 @@ export interface R3NgModuleMetadataFacade {
   declarations: Function[];
   imports: Function[];
   exports: Function[];
-  emitInline: boolean;
   schemas: {name: string}[]|null;
   id: string|null;
 }
@@ -149,16 +162,21 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   changeDetection?: ChangeDetectionStrategy;
 }
 
-export interface R3BaseMetadataFacade {
+export interface R3FactoryDefMetadataFacade {
   name: string;
-  propMetadata: {[key: string]: any[]};
-  inputs?: {[key: string]: string | [string, string]};
-  outputs?: {[key: string]: string};
-  queries?: R3QueryMetadataFacade[];
-  viewQueries?: R3QueryMetadataFacade[];
+  type: any;
+  typeArgumentCount: number;
+  deps: R3DependencyMetadataFacade[]|null;
+  injectFn: 'directiveInject'|'inject';
+  target: R3FactoryTarget;
 }
 
-export type ViewEncapsulation = number;
+export enum ViewEncapsulation {
+  Emulated = 0,
+  Native = 1,
+  None = 2,
+  ShadowDom = 3
+}
 
 export type ChangeDetectionStrategy = number;
 

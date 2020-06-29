@@ -1,20 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import * as ts from 'typescript';
 
-import {resolveModuleName} from '../../util/src/typescript';
-import {Reference} from './references';
-
-export interface ReferenceResolver {
-  resolve(decl: ts.Declaration, importFromHint: string|null, fromFile: string):
-      Reference<ts.Declaration>;
-}
+import {absoluteFrom} from '../../file_system';
+import {getSourceFileOrNull, resolveModuleName} from '../../util/src/typescript';
 
 /**
  * Used by `RouterEntryPointManager` and `NgModuleRouteAnalyzer` (which is in turn is used by
@@ -25,14 +19,15 @@ export interface ReferenceResolver {
 export class ModuleResolver {
   constructor(
       private program: ts.Program, private compilerOptions: ts.CompilerOptions,
-      private host: ts.CompilerHost) {}
+      private host: ts.ModuleResolutionHost&Pick<ts.CompilerHost, 'resolveModuleNames'>,
+      private moduleResolutionCache: ts.ModuleResolutionCache|null) {}
 
-  resolveModuleName(module: string, containingFile: ts.SourceFile): ts.SourceFile|null {
-    const resolved =
-        resolveModuleName(module, containingFile.fileName, this.compilerOptions, this.host);
+  resolveModule(moduleName: string, containingFile: string): ts.SourceFile|null {
+    const resolved = resolveModuleName(
+        moduleName, containingFile, this.compilerOptions, this.host, this.moduleResolutionCache);
     if (resolved === undefined) {
       return null;
     }
-    return this.program.getSourceFile(resolved.resolvedFileName) || null;
+    return getSourceFileOrNull(this.program, absoluteFrom(resolved.resolvedFileName));
   }
 }

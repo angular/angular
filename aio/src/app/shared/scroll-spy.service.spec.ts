@@ -39,7 +39,7 @@ describe('ScrollSpiedElement', () => {
 describe('ScrollSpiedElementGroup', () => {
   describe('#calibrate()', () => {
     it('should calculate `top` for all spied elements', () => {
-      const spy = spyOn(ScrollSpiedElement.prototype, 'calculateTop').and.returnValue(0);
+      const spy = spyOn(ScrollSpiedElement.prototype, 'calculateTop');
       const elems = [{}, {}, {}] as Element[];
       const group = new ScrollSpiedElementGroup(elems);
 
@@ -68,7 +68,7 @@ describe('ScrollSpiedElementGroup', () => {
       const tops = [50, 150, 100];
 
       spyOn(ScrollSpiedElement.prototype, 'calculateTop').and.callFake(
-        function(this: ScrollSpiedElement, scrollTop: number, topOffset: number) {
+        function(this: ScrollSpiedElement) {
         this.top = tops[this.index];
       });
 

@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {ActivatedRoute} from './router_state';
-import {PRIMARY_OUTLET, Params} from './shared';
+import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last, shallowEqual} from './utils/collection';
 
@@ -148,7 +148,12 @@ function findStartingPosition(nav: Navigation, tree: UrlTree, route: ActivatedRo
   }
 
   if (route.snapshot._lastPathIndex === -1) {
-    return new Position(route.snapshot._urlSegment, true, 0);
+    const segmentGroup = route.snapshot._urlSegment;
+    // Pathless ActivatedRoute has _lastPathIndex === -1 but should not process children
+    // see issue #26224, #13011, #35687
+    // However, if the ActivatedRoute is the root we should process children like above.
+    const processChildren = segmentGroup === tree.root;
+    return new Position(segmentGroup, processChildren, 0);
   }
 
   const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
@@ -164,7 +169,7 @@ function createPositionApplyingDoubleDots(
   let dd = numberOfDoubleDots;
   while (dd > ci) {
     dd -= ci;
-    g = g.parent !;
+    g = g.parent!;
     if (!g) {
       throw new Error('Invalid number of \'../\'');
     }
@@ -181,9 +186,11 @@ function getPath(command: any): any {
 }
 
 function getOutlets(commands: any[]): {[k: string]: any[]} {
-  if (!(typeof commands[0] === 'object')) return {[PRIMARY_OUTLET]: commands};
-  if (commands[0].outlets === undefined) return {[PRIMARY_OUTLET]: commands};
-  return commands[0].outlets;
+  if (typeof commands[0] === 'object' && commands[0] !== null && commands[0].outlets) {
+    return commands[0].outlets;
+  }
+
+  return {[PRIMARY_OUTLET]: commands};
 }
 
 function updateSegmentGroup(
@@ -269,7 +276,8 @@ function createNewSegmentGroup(
 
   let i = 0;
   while (i < commands.length) {
-    if (typeof commands[i] === 'object' && commands[i].outlets !== undefined) {
+    if (typeof commands[i] === 'object' && commands[i] !== null &&
+        commands[i].outlets !== undefined) {
       const children = createNewSegmentChildren(commands[i].outlets);
       return new UrlSegmentGroup(paths, children);
     }

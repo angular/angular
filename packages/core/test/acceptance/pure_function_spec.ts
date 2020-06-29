@@ -1,14 +1,15 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {CommonModule} from '@angular/common';
-import {Component, Input} from '@angular/core';
+import {Component, Directive, Input, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {onlyInIvy} from '@angular/private/testing';
 
 describe('components using pure function instructions internally', () => {
   describe('with array literals', () => {
@@ -17,8 +18,7 @@ describe('components using pure function instructions internally', () => {
       template: ``,
     })
     class MyComp {
-      @Input()
-      names: string[] = [];
+      @Input() names: string[] = [];
     }
 
 
@@ -59,7 +59,7 @@ describe('components using pure function instructions internally', () => {
       myComp.names = ['should not be overwritten'];
       fixture.detectChanges();
 
-      expect(myComp !.names).toEqual(['should not be overwritten']);
+      expect(myComp!.names).toEqual(['should not be overwritten']);
     });
 
 
@@ -90,11 +90,9 @@ describe('components using pure function instructions internally', () => {
         template: ``,
       })
       class ManyPropComp {
-        @Input()
-        names1: string[] = [];
+        @Input() names1: string[] = [];
 
-        @Input()
-        names2: string[] = [];
+        @Input() names2: string[] = [];
       }
 
       @Component({
@@ -116,14 +114,14 @@ describe('components using pure function instructions internally', () => {
       fixture.detectChanges();
       const manyPropComp = fixture.debugElement.query(By.directive(ManyPropComp)).componentInstance;
 
-      expect(manyPropComp !.names1).toEqual(['Nancy', 'Carson']);
-      expect(manyPropComp !.names2).toEqual(['George']);
+      expect(manyPropComp!.names1).toEqual(['Nancy', 'Carson']);
+      expect(manyPropComp!.names2).toEqual(['George']);
 
       fixture.componentInstance.customName = 'George';
       fixture.componentInstance.customName2 = 'Carson';
       fixture.detectChanges();
-      expect(manyPropComp !.names1).toEqual(['Nancy', 'George']);
-      expect(manyPropComp !.names2).toEqual(['Carson']);
+      expect(manyPropComp!.names1).toEqual(['Nancy', 'George']);
+      expect(manyPropComp!.names2).toEqual(['Carson']);
     });
 
 
@@ -221,7 +219,6 @@ describe('components using pure function instructions internally', () => {
 
 
     it('should work up to 8 bindings', () => {
-
       @Component({
         template: `
                 <my-comp [names]="['a', 'b', 'c', 'd', 'e', 'f', 'g', v8]"></my-comp>
@@ -345,8 +342,7 @@ describe('components using pure function instructions internally', () => {
       template: ``,
     })
     class ObjectComp {
-      @Input()
-      config: any = [];
+      @Input() config: any = [];
     }
 
     it('should support an object literal', () => {
@@ -477,6 +473,145 @@ describe('components using pure function instructions internally', () => {
       fixture.detectChanges();
       expect(objectComps[0].config).toEqual({opacity: 0, duration: 1000});
       expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
+    });
+  });
+
+  onlyInIvy('issue has only been fixed for Ivy').describe('identical literals', () => {
+    @Directive({selector: '[dir]'})
+    class Dir {
+      @Input('dir') value: any;
+    }
+
+    it('should not share object literals across elements', () => {
+      @Component({
+        template: `
+          <div [dir]="{}"></div>
+          <div [dir]="{}"></div>
+        `
+      })
+      class App {
+        @ViewChildren(Dir) directives!: QueryList<Dir>;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const directives = fixture.componentInstance.directives.toArray();
+      expect(directives[0].value).not.toBe(directives[1].value);
+    });
+
+    it('should not share array literals across elements', () => {
+      @Component({
+        template: `
+          <div [dir]="[]"></div>
+          <div [dir]="[]"></div>
+        `
+      })
+      class App {
+        @ViewChildren(Dir) directives!: QueryList<Dir>;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const directives = fixture.componentInstance.directives.toArray();
+      expect(directives[0].value).not.toBe(directives[1].value);
+    });
+
+    it('should not share object literals across component instances', () => {
+      @Component({template: `<div [dir]="{}"></div>`})
+      class App {
+        @ViewChild(Dir) directive!: Dir;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const firstFixture = TestBed.createComponent(App);
+      firstFixture.detectChanges();
+
+      const secondFixture = TestBed.createComponent(App);
+      secondFixture.detectChanges();
+
+      expect(firstFixture.componentInstance.directive.value)
+          .not.toBe(secondFixture.componentInstance.directive.value);
+    });
+
+    it('should not share array literals across component instances', () => {
+      @Component({template: `<div [dir]="[]"></div>`})
+      class App {
+        @ViewChild(Dir) directive!: Dir;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const firstFixture = TestBed.createComponent(App);
+      firstFixture.detectChanges();
+
+      const secondFixture = TestBed.createComponent(App);
+      secondFixture.detectChanges();
+
+      expect(firstFixture.componentInstance.directive.value)
+          .not.toBe(secondFixture.componentInstance.directive.value);
+    });
+
+    it('should not confuse object literals and null inside of a literal', () => {
+      @Component({
+        template: `
+          <div [dir]="{foo: null}"></div>
+          <div [dir]="{foo: {}}"></div>
+        `
+      })
+      class App {
+        @ViewChildren(Dir) directives!: QueryList<Dir>;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const values = fixture.componentInstance.directives.map(directive => directive.value);
+
+      expect(values).toEqual([{foo: null}, {foo: {}}]);
+    });
+
+    it('should not confuse array literals and null inside of a literal', () => {
+      @Component({
+        template: `
+          <div [dir]="{foo: null}"></div>
+          <div [dir]="{foo: []}"></div>
+        `
+      })
+      class App {
+        @ViewChildren(Dir) directives!: QueryList<Dir>;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const values = fixture.componentInstance.directives.map(directive => directive.value);
+
+      expect(values).toEqual([{foo: null}, {foo: []}]);
+    });
+
+    it('should not confuse function calls and null inside of a literal', () => {
+      @Component({
+        template: `
+          <div [dir]="{foo: null}"></div>
+          <div [dir]="{foo: getFoo()}"></div>
+        `
+      })
+      class App {
+        @ViewChildren(Dir) directives!: QueryList<Dir>;
+        getFoo() {
+          return 'foo!';
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const values = fixture.componentInstance.directives.map(directive => directive.value);
+
+      expect(values).toEqual([{foo: null}, {foo: 'foo!'}]);
     });
   });
 });

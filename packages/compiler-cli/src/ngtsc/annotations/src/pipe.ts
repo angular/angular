@@ -1,36 +1,41 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
+import {compilePipeFromMetadata, Identifiers, R3FactoryTarget, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {MetadataRegistry} from '../../metadata';
+import {InjectableClassRegistry, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
+import {LocalModuleScopeRegistry} from '../../scope';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
+import {createValueHasWrongTypeError} from './diagnostics';
 
+import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getValidConstructorDependencies, unwrapExpression} from './util';
+import {findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, unwrapExpression, wrapTypeReference} from './util';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
   metadataStmt: Statement|null;
 }
 
-export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, Decorator> {
+export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHandlerData, unknown> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private metaRegistry: MetadataRegistry, private defaultImportRecorder: DefaultImportRecorder,
-      private isCore: boolean) {}
+      private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
+      private defaultImportRecorder: DefaultImportRecorder,
+      private injectableRegistry: InjectableClassRegistry, private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
+  readonly name = PipeDecoratorHandler.name;
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
@@ -40,6 +45,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,
+        decorator: decorator,
         metadata: decorator,
       };
     } else {
@@ -47,16 +53,21 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     }
   }
 
-  analyze(clazz: ClassDeclaration, decorator: Decorator): AnalysisOutput<PipeHandlerData> {
+  analyze(clazz: ClassDeclaration, decorator: Readonly<Decorator>):
+      AnalysisOutput<PipeHandlerData> {
     const name = clazz.name.text;
-    const type = new WrappedNodeExpr(clazz.name);
+    const type = wrapTypeReference(this.reflector, clazz);
+    const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(clazz));
+
     if (decorator.args === null) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_NOT_CALLED, decorator.node, `@Pipe must be called`);
+          ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
+          `@Pipe must be called`);
     }
     if (decorator.args.length !== 1) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ARITY_WRONG, decorator.node, '@Pipe must have exactly one argument');
+          ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
+          '@Pipe must have exactly one argument');
     }
     const meta = unwrapExpression(decorator.args[0]);
     if (!ts.isObjectLiteralExpression(meta)) {
@@ -69,22 +80,18 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
       throw new FatalDiagnosticError(
           ErrorCode.PIPE_MISSING_NAME, meta, `@Pipe decorator is missing name field`);
     }
-    const pipeNameExpr = pipe.get('name') !;
+    const pipeNameExpr = pipe.get('name')!;
     const pipeName = this.evaluator.evaluate(pipeNameExpr);
     if (typeof pipeName !== 'string') {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, pipeNameExpr, `@Pipe.name must be a string`);
+      throw createValueHasWrongTypeError(pipeNameExpr, pipeName, `@Pipe.name must be a string`);
     }
-    const ref = new Reference(clazz);
-    this.metaRegistry.registerPipeMetadata({ref, name: pipeName});
 
     let pure = true;
     if (pipe.has('pure')) {
-      const expr = pipe.get('pure') !;
+      const expr = pipe.get('pure')!;
       const pureValue = this.evaluator.evaluate(expr);
       if (typeof pureValue !== 'boolean') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `@Pipe.pure must be a boolean`);
+        throw createValueHasWrongTypeError(expr, pureValue, `@Pipe.pure must be a boolean`);
       }
       pure = pureValue;
     }
@@ -94,7 +101,9 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
         meta: {
           name,
           type,
-          typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0, pipeName,
+          internalType,
+          typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0,
+          pipeName,
           deps: getValidConstructorDependencies(
               clazz, this.reflector, this.defaultImportRecorder, this.isCore),
           pure,
@@ -105,16 +114,43 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     };
   }
 
-  compile(node: ClassDeclaration, analysis: PipeHandlerData): CompileResult {
-    const res = compilePipeFromMetadata(analysis.meta);
-    const statements = res.statements;
-    if (analysis.metadataStmt !== null) {
-      statements.push(analysis.metadataStmt);
+  register(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): void {
+    const ref = new Reference(node);
+    this.metaRegistry.registerPipeMetadata({ref, name: analysis.meta.pipeName});
+
+    this.injectableRegistry.registerInjectable(node);
+  }
+
+  resolve(node: ClassDeclaration): ResolveResult<unknown> {
+    const duplicateDeclData = this.scopeRegistry.getDuplicateDeclarations(node);
+    if (duplicateDeclData !== null) {
+      // This pipe was declared twice (or more).
+      return {
+        diagnostics: [makeDuplicateDeclarationError(node, duplicateDeclData, 'Pipe')],
+      };
     }
-    return {
-      name: 'ngPipeDef',
-      initializer: res.expression, statements,
-      type: res.type,
-    };
+
+    return {};
+  }
+
+  compile(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): CompileResult[] {
+    const meta = analysis.meta;
+    const res = compilePipeFromMetadata(meta);
+    const factoryRes = compileNgFactoryDefField({
+      ...meta,
+      injectFn: Identifiers.directiveInject,
+      target: R3FactoryTarget.Pipe,
+    });
+    if (analysis.metadataStmt !== null) {
+      factoryRes.statements.push(analysis.metadataStmt);
+    }
+    return [
+      factoryRes, {
+        name: 'ɵpipe',
+        initializer: res.expression,
+        statements: [],
+        type: res.type,
+      }
+    ];
   }
 }

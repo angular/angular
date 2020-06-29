@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,20 +8,24 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, ContentChildren, Directive, Injectable, NO_ERRORS_SCHEMA, OnDestroy, QueryList, TemplateRef} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('NgTemplateOutlet', () => {
   let fixture: ComponentFixture<any>;
 
-  function setTplRef(value: any): void { fixture.componentInstance.currentTplRef = value; }
+  function setTplRef(value: any): void {
+    fixture.componentInstance.currentTplRef = value;
+  }
 
   function detectChangesAndExpectText(text: string): void {
     fixture.detectChanges();
     expect(fixture.debugElement.nativeElement).toHaveText(text);
   }
 
-  afterEach(() => { fixture = null as any; });
+  afterEach(() => {
+    fixture = null as any;
+  });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -58,7 +62,7 @@ describe('NgTemplateOutlet', () => {
            `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
        fixture = createTestComponent(template);
        fixture.detectChanges();
-       const refs = fixture.debugElement.children[0].references !['refs'];
+       const refs = fixture.debugElement.children[0].references!['refs'];
 
        setTplRef(refs.tplRefs.first);
        detectChangesAndExpectText('foo');
@@ -74,7 +78,7 @@ describe('NgTemplateOutlet', () => {
        fixture = createTestComponent(template);
 
        fixture.detectChanges();
-       const refs = fixture.debugElement.children[0].references !['refs'];
+       const refs = fixture.debugElement.children[0].references!['refs'];
 
        setTplRef(refs.tplRefs.first);
        detectChangesAndExpectText('foo');
@@ -204,6 +208,38 @@ describe('NgTemplateOutlet', () => {
     fixture.componentInstance.value = 'baz';
     detectChangesAndExpectText('');
   });
+
+  // https://github.com/angular/angular/issues/30801
+  it('should not throw if the context is left blank', () => {
+    const template = `
+      <ng-template #testTemplate>test</ng-template>
+      <ng-template [ngTemplateOutlet]="testTemplate" [ngTemplateOutletContext]=""></ng-template>
+    `;
+
+    expect(() => {
+      fixture = createTestComponent(template);
+      detectChangesAndExpectText('test');
+    }).not.toThrow();
+  });
+
+  it('should not throw when switching from template to null and back to template', async(() => {
+       const template = `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template></tpl-refs>` +
+           `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
+       fixture = createTestComponent(template);
+       fixture.detectChanges();
+       const refs = fixture.debugElement.children[0].references!['refs'];
+
+       setTplRef(refs.tplRefs.first);
+       detectChangesAndExpectText('foo');
+
+       setTplRef(null);
+       detectChangesAndExpectText('');
+
+       expect(() => {
+         setTplRef(refs.tplRefs.first);
+         detectChangesAndExpectText('foo');
+       }).not.toThrow();
+     }));
 });
 
 @Injectable()
@@ -215,19 +251,21 @@ class DestroyedSpyService {
 class DestroyableCmpt implements OnDestroy {
   constructor(private _spyService: DestroyedSpyService) {}
 
-  ngOnDestroy(): void { this._spyService.destroyed = true; }
+  ngOnDestroy(): void {
+    this._spyService.destroyed = true;
+  }
 }
 
 @Directive({selector: 'tpl-refs', exportAs: 'tplRefs'})
 class CaptureTplRefs {
   // TODO(issue/24571): remove '!'.
-  @ContentChildren(TemplateRef) tplRefs !: QueryList<TemplateRef<any>>;
+  @ContentChildren(TemplateRef) tplRefs!: QueryList<TemplateRef<any>>;
 }
 
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   // TODO(issue/24571): remove '!'.
-  currentTplRef !: TemplateRef<any>;
+  currentTplRef!: TemplateRef<any>;
   context: any = {foo: 'bar'};
   value = 'bar';
 }

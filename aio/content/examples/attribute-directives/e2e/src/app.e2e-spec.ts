@@ -25,8 +25,8 @@ describe('Attribute directives', () => {
     greenRb.click();
     browser.actions().mouseMove(highlightedEle).perform();
 
-    // Wait for up to 2s for the background color to be updated,
+    // Wait for up to 4s for the background color to be updated,
     // to account for slow environments (e.g. CI).
-    browser.wait(() => highlightedEle.getCssValue('background-color').then(c => c === lightGreen), 2000);
+    browser.wait(() => highlightedEle.getCssValue('background-color').then(c => c === lightGreen), 4000);
   });
 });

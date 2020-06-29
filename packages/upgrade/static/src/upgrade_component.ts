@@ -1,14 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {Directive, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 
-import {IAttributes, IAugmentedJQuery, IDirective, IDirectivePrePost, IInjectorService, ILinkFn, IScope, ITranscludeFunction} from '../../src/common/src/angular1';
+import {IAttributes, IAugmentedJQuery, IDirective, IInjectorService, ILinkFn, IScope, ITranscludeFunction} from '../../src/common/src/angular1';
 import {$SCOPE} from '../../src/common/src/constants';
 import {IBindingDestination, IControllerInstance, UpgradeHelper} from '../../src/common/src/upgrade_helper';
 import {isFunction} from '../../src/common/src/util';
@@ -33,7 +33,7 @@ class Bindings {
  * A helper class that allows an AngularJS component to be used from Angular.
  *
  * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
- * library for hybrid upgrade apps that support AoT compilation.*
+ * library for hybrid upgrade apps that support AOT compilation.*
  *
  * This helper class should be used as a base class for creating Angular directives
  * that wrap AngularJS components that need to be "upgraded".
@@ -53,7 +53,7 @@ class Bindings {
  *
  * In this example you can see that we must derive from the `UpgradeComponent`
  * base class but also provide an {@link Directive `@Directive`} decorator. This is
- * because the AoT compiler requires that this information is statically available at
+ * because the AOT compiler requires that this information is statically available at
  * compile time.
  *
  * Note that we must do the following:
@@ -66,6 +66,7 @@ class Bindings {
  *
  * @publicApi
  */
+@Directive()
 export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   private helper: UpgradeHelper;
 
@@ -79,18 +80,18 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   private bindings: Bindings;
 
   // TODO(issue/24571): remove '!'.
-  private controllerInstance !: IControllerInstance;
+  private controllerInstance!: IControllerInstance;
   // TODO(issue/24571): remove '!'.
-  private bindingDestination !: IBindingDestination;
+  private bindingDestination!: IBindingDestination;
 
   // We will be instantiating the controller in the `ngOnInit` hook, when the
   // first `ngOnChanges` will have been already triggered. We store the
   // `SimpleChanges` and "play them back" later.
   // TODO(issue/24571): remove '!'.
-  private pendingChanges !: SimpleChanges | null;
+  private pendingChanges!: SimpleChanges|null;
 
   // TODO(issue/24571): remove '!'.
-  private unregisterDoCheckWatcher !: Function;
+  private unregisterDoCheckWatcher!: Function;
 
   /**
    * Create a new `UpgradeComponent` instance. You should not normally need to do this.
@@ -135,8 +136,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     if (controllerType) {
       this.controllerInstance = this.helper.buildController(controllerType, this.$componentScope);
     } else if (bindToController) {
-      throw new Error(
-          `Upgraded directive '${this.directive.name}' specifies 'bindToController' but no controller.`);
+      throw new Error(`Upgraded directive '${
+          this.directive.name}' specifies 'bindToController' but no controller.`);
     }
 
     // Set up outputs
@@ -160,7 +161,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // Hook: $doCheck
     if (this.controllerInstance && isFunction(this.controllerInstance.$doCheck)) {
-      const callDoCheck = () => this.controllerInstance.$doCheck !();
+      const callDoCheck = () => this.controllerInstance.$doCheck!();
 
       this.unregisterDoCheckWatcher = this.$componentScope.$parent.$watch(callDoCheck);
       callDoCheck();
@@ -168,15 +169,15 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // Linking
     const link = this.directive.link;
-    const preLink = (typeof link == 'object') && (link as IDirectivePrePost).pre;
-    const postLink = (typeof link == 'object') ? (link as IDirectivePrePost).post : link;
+    const preLink = typeof link == 'object' && link.pre;
+    const postLink = typeof link == 'object' ? link.post : link;
     const attrs: IAttributes = NOT_SUPPORTED;
     const transcludeFn: ITranscludeFunction = NOT_SUPPORTED;
     if (preLink) {
       preLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
-    linkFn(this.$componentScope, null !, {parentBoundTranscludeFn: attachChildNodes});
+    linkFn(this.$componentScope, null!, {parentBoundTranscludeFn: attachChildNodes});
 
     if (postLink) {
       postLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
@@ -205,7 +206,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       const newValue = this.bindingDestination[propName];
       const oldValue = twoWayBoundLastValues[idx];
 
-      if (!looseIdentical(newValue, oldValue)) {
+      if (!Object.is(newValue, oldValue)) {
         const outputName = propertyToOutputMap[propName];
         const eventEmitter: EventEmitter<any> = (this as any)[outputName];
 
@@ -224,12 +225,12 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   private initializeBindings(directive: IDirective) {
     const btcIsObject = typeof directive.bindToController === 'object';
-    if (btcIsObject && Object.keys(directive.scope !).length) {
+    if (btcIsObject && Object.keys(directive.scope!).length) {
       throw new Error(
           `Binding definitions on scope and controller at the same time is not supported.`);
     }
 
-    const context = (btcIsObject) ? directive.bindToController : directive.scope;
+    const context = btcIsObject ? directive.bindToController : directive.scope;
     const bindings = new Bindings();
 
     if (typeof context == 'object') {

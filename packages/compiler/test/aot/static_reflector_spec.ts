@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, core as compilerCore} from '@angular/compiler';
+import {core as compilerCore, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost} from '@angular/compiler';
 import {CollectorOptions, METADATA_VERSION} from '@angular/compiler-cli';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
@@ -20,7 +20,8 @@ describe('StaticReflector', () => {
   function init(
       testData: {[key: string]: any} = DEFAULT_TEST_DATA,
       decorators: {name: string, filePath: string, ctor: any}[] = [],
-      errorRecorder?: (error: any, fileName: string) => void, collectorOptions?: CollectorOptions) {
+      errorRecorder?: (error: any, fileName?: string) => void,
+      collectorOptions?: CollectorOptions) {
     const symbolCache = new StaticSymbolCache();
     host = new MockStaticSymbolResolverHost(testData, collectorOptions);
     const summaryResolver = new MockSummaryResolver([]);
@@ -357,7 +358,7 @@ describe('StaticReflector', () => {
   it('should record data about the error in the exception', () => {
     let threw = false;
     try {
-      const metadata = host.getMetadataFor('/tmp/src/invalid-metadata.ts') !;
+      const metadata = host.getMetadataFor('/tmp/src/invalid-metadata.ts')!;
       expect(metadata).toBeDefined();
       const moduleMetadata: any = metadata[0]['metadata'];
       expect(moduleMetadata).toBeDefined();
@@ -618,7 +619,7 @@ describe('StaticReflector', () => {
       `;
 
     let error: any = undefined;
-    init(data, [], (err: any, filePath: string) => {
+    init(data, [], (err: any, filePath?: string) => {
       expect(error).toBeUndefined();
       error = err;
     });
@@ -1333,10 +1334,9 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         'decorators': [{
           '__symbolic': 'call',
           'expression': {'__symbolic': 'reference', 'name': 'Directive', 'module': '@angular/core'},
-          'arguments': [{
-            'selector': '[ngFor][ngForOf]',
-            'inputs': ['ngForTrackBy', 'ngForOf', 'ngForTemplate']
-          }]
+          'arguments': [
+            {'selector': '[ngFor][ngForOf]', 'inputs': ['ngForTrackBy', 'ngForOf', 'ngForTemplate']}
+          ]
         }],
         'members': {
           '__ctor__': [{
@@ -1344,11 +1344,8 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
             'parameters': [
               {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'ViewContainerRef'},
               {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'TemplateRef'},
-              {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'IterableDiffers'}, {
-                '__symbolic': 'reference',
-                'module': '@angular/core',
-                'name': 'ChangeDetectorRef'
-              }
+              {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'IterableDiffers'},
+              {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'ChangeDetectorRef'}
             ]
           }]
         }
@@ -1386,8 +1383,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
             '__symbolic': 'property',
             'decorators': [{
               '__symbolic': 'call',
-              'expression':
-                  {'__symbolic': 'reference', 'name': 'Input', 'module': '@angular/core'}
+              'expression': {'__symbolic': 'reference', 'name': 'Input', 'module': '@angular/core'}
             }]
           }],
           'onMouseOver': [{

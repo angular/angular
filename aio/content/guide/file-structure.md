@@ -4,7 +4,7 @@ You develop applications in the context of an Angular [workspace](guide/glossary
 
 The Angular CLI `ng new` command creates a workspace.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng new &lt;my-project&gt;
 </code-example>
 
@@ -40,7 +40,8 @@ The top level of the workspace contains workspace-wide configuration files, conf
 | `package-lock.json`     | Provides version information for all packages installed into `node_modules` by the npm client. See [npm documentation](https://docs.npmjs.com/files/package-lock.json) for details. If you use the yarn client, this file will be [yarn.lock](https://yarnpkg.com/lang/en/docs/yarn-lock/) instead. |
 | `src/`                  | Source files for the root-level application project. |
 | `node_modules/`         | Provides [npm packages](guide/npm-packages) to the entire workspace. Workspace-wide `node_modules` dependencies are visible to all projects. |
-| `tsconfig.json`         | Default [TypeScript](https://www.typescriptlang.org/) configuration for projects in the workspace. |
+| `tsconfig.json`         | The `tsconfig.json` file is a ["Solution Style"](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html#support-for-solution-style-tsconfigjson-files) TypeScript configuration file. Code editors and TypeScript’s language server use this file to improve development experience. Compilers do not use this file. |
+| `tsconfig.base.json`    | The base [TypeScript](https://www.typescriptlang.org/) configuration for projects in the workspace. All other configuration files inherit from this base file. For more information, see the [Configuration inheritance with extends](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#configuration-inheritance-with-extends) section of the TypeScript documentation.|
 | `tslint.json`           | Default [TSLint](https://palantir.github.io/tslint/) configuration for projects in the workspace. |
 
 
@@ -58,12 +59,12 @@ This initial root-level application is the *default app* for CLI commands (unles
 
 </div>
 
-For a single-application workspace, the `src/` subfolder of the workspace contains the source files (application logic, data, and assets) for the root  application.
+For a single-application workspace, the `src/` subfolder of the workspace contains the source files (application logic, data, and assets) for the root application.
 For a multi-project workspace, additional projects in the `projects/` folder contain a `project-name/src/` subfolder with the same structure.
 
 ### Application source files
 
-Files at the top level of `src/` support testing and running your  application. Subfolders contain the application source and  application-specific configuration.
+Files at the top level of `src/` support testing and running your application. Subfolders contain the application source and application-specific configuration.
 
 | APP SUPPORT FILES    | PURPOSE |
 | :--------------------- | :------------------------------------------|
@@ -72,10 +73,16 @@ Files at the top level of `src/` support testing and running your  application. 
 | `environments/`        | Contains build configuration options for particular target environments. By default there is an unnamed standard development environment and a production ("prod") environment. You can define additional target environment configurations. |
 | `favicon.ico`          | An icon to use for this application in the bookmark bar. |
 | `index.html`           | The main HTML page that is served when someone visits your site. The CLI automatically adds all JavaScript and CSS files when building your app, so you typically don't need to add any `<script>` or` <link>` tags here manually. |
-| `main.ts`              | The main entry point for your  application. Compiles the application with the [JIT compiler](https://angular.io/guide/glossary#jit) and bootstraps the application's root module (AppModule) to run in the browser. You can also use the [AOT compiler](https://angular.io/guide/aot-compiler) without changing any code by appending the `--aot` flag to the CLI `build` and `serve` commands. |
+| `main.ts`              | The main entry point for your application. Compiles the application with the [JIT compiler](guide/glossary#jit) and bootstraps the application's root module (AppModule) to run in the browser. You can also use the [AOT compiler](guide/aot-compiler) without changing any code by appending the `--aot` flag to the CLI `build` and `serve` commands. |
 | `polyfills.ts`         | Provides polyfill scripts for browser support. |
 | `styles.sass`          | Lists CSS files that supply styles for a project. The extension reflects the style preprocessor you have configured for the project. |
 | `test.ts`              | The main entry point for your unit tests, with some Angular-specific configuration. You don't typically need to edit this file. |
+
+<div class="alert is-helpful">
+
+If you create an application using Angular's strict mode, you will also have an additional `package.json` file in the `src/app` directory. For more information, see [Strict mode](/guide/strict-mode).
+
+</div>
 
 {@a app-src}
 
@@ -84,24 +91,25 @@ Angular components, templates, and styles go here.
 
 | `src/app/` FILES | PURPOSE |
 | :-------------------------- | :------------------------------------------|
-| `app/app.component.ts`      | Defines the logic for the app's root component, named `AppComponent`. The view associated with this root component becomes the root of the [view hierarchy](guide/glossary#view-hierarchy) as you add components and services to your  application. |
+| `app/app.component.ts`      | Defines the logic for the app's root component, named `AppComponent`. The view associated with this root component becomes the root of the [view hierarchy](guide/glossary#view-hierarchy) as you add components and services to your application. |
 | `app/app.component.html`    | Defines the HTML template associated with the root `AppComponent`. |
 | `app/app.component.css`     | Defines the base CSS stylesheet for the root `AppComponent`. |
 | `app/app.component.spec.ts` | Defines a unit test for the root `AppComponent`. |
 | `app/app.module.ts`         | Defines the root module, named `AppModule`, that tells Angular how to assemble the application. Initially declares only the `AppComponent`. As you add more components to the app, they must be declared here. |
+| `app/package.json`              | This file is generated only in applications created using `--strict` mode. This file is not used by package managers. It is used to tell the tools and bundlers whether the code under this directory is free of non-local [side-effects](guide/strict-mode#side-effect). |
 
 ### Application configuration files
 
 The application-specific configuration files for the root application reside at the workspace root level.
 For a multi-project workspace, project-specific configuration files are in the project root, under `projects/project-name/`.
 
-Project-specific [TypeScript](https://www.typescriptlang.org/) configuration files inherit from the workspace-wide `tsconfig.json`, and project-specific [TSLint](https://palantir.github.io/tslint/) configuration files inherit from the workspace-wide `tslint.json`.
+Project-specific [TypeScript](https://www.typescriptlang.org/) configuration files inherit from the workspace-wide `tsconfig.base.json`, and project-specific [TSLint](https://palantir.github.io/tslint/) configuration files inherit from the workspace-wide `tslint.json`.
 
 | APPLICATION-SPECIFIC CONFIG FILES    | PURPOSE |
 | :--------------------- | :------------------------------------------|
-| `browserslist`         | Configures sharing of target browsers and Node.js versions among various front-end tools. See [Browserslist on GitHub](https://github.com/browserslist/browserslist) for more information.  |
+| `.browserslistrc`       | Configures sharing of target browsers and Node.js versions among various front-end tools. See [Browserslist on GitHub](https://github.com/browserslist/browserslist) for more information.  |
 | `karma.conf.js`      | Application-specific [Karma](https://karma-runner.github.io/2.0/config/configuration-file.html) configuration. |
-| `tsconfig.app.json`    | Application-specific [TypeScript](https://www.typescriptlang.org/) configuration, including TypeScript and Angular template compiler options. See [TypeScript Configuration](guide/typescript-configuration). |
+| `tsconfig.app.json`    | Application-specific [TypeScript](https://www.typescriptlang.org/) configuration, including TypeScript and Angular template compiler options. See [TypeScript Configuration](guide/typescript-configuration) and [Angular Compiler Options](guide/angular-compiler-options). |
 | `tsconfig.spec.json`   | [TypeScript](https://www.typescriptlang.org/) configuration for the application tests. See [TypeScript Configuration](guide/typescript-configuration). |
 | `tslint.json`          | Application-specific [TSLint](https://palantir.github.io/tslint/) configuration. |
 
@@ -111,7 +119,7 @@ An `e2e/` folder at the top level contains source files for a set of end-to-end 
 
 For a multi-project workspace, application-specific end-to-end tests are in the project root, under `projects/project-name/e2e/`.
 
-<code-example language="none" linenums="false">
+<code-example language="none">
   e2e/
      src/                 (end-to-end tests for my-app)
         app.e2e-spec.ts
@@ -131,13 +139,13 @@ A multi-project workspace is suitable for an enterprise that uses a single repos
 If you intend to have multiple projects in a workspace, you can skip the initial application generation when you create the workspace, and give the workspace a unique name.
 The following command creates a workspace with all of the workspace-wide configuration files, but no root-level application.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng new my-workspace --createApplication="false"
 </code-example>
 
 You can then generate apps and libraries with names that are unique within the workspace.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 cd my-workspace
 ng generate application my-first-app
 </code-example>
@@ -148,7 +156,7 @@ The first explicitly generated application goes into the `projects/` folder alon
 Newly generated libraries are also added under `projects/`.
 When you create projects this way, the file structure of the workspace is entirely consistent with the structure of the [workspace configuration file](guide/workspace-config), `angular.json`.
 
-<code-example language="none" linenums="false">
+<code-example language="none">
 my-workspace/
   ...             (workspace-wide config files)
   projects/       (generated applications and libraries)
@@ -165,7 +173,7 @@ my-workspace/
 
 ## Library project files
 
-When you generate a library using the CLI (with a command such as `ng generate library my-lib`), the generated files go into the projects/ folder of the workspace. For more information about creating your own libraries, see  [Creating Libraries](https://angular.io/guide/creating-libraries).
+When you generate a library using the CLI (with a command such as `ng generate library my-lib`), the generated files go into the projects/ folder of the workspace. For more information about creating your own libraries, see  [Creating Libraries](guide/creating-libraries).
 
 Libraries (unlike applications and their associated e2e projects) have their own `package.json` configuration files.
 

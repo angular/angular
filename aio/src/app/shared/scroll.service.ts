@@ -1,7 +1,7 @@
 import { DOCUMENT, Location, PlatformLocation, PopStateEvent, ViewportScroller } from '@angular/common';
-import { Injectable, Inject } from '@angular/core';
-import { fromEvent } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { Injectable, Inject, OnDestroy } from '@angular/core';
+import { fromEvent, Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 type ScrollPosition = [number, number];
 interface ScrollPositionPopStateEvent extends PopStateEvent {
@@ -14,10 +14,12 @@ export const topMargin = 16;
  * A service that scrolls document elements into view
  */
 @Injectable()
-export class ScrollService {
+export class ScrollService implements OnDestroy {
 
   private _topOffset: number | null;
   private _topOfPageElement: Element;
+  private onDestroy = new Subject<void>();
+  private storage: Storage;
 
   // The scroll position which has to be restored, after a `popstate` event.
   poppedStateScrollPosition: ScrollPosition | null = null;
@@ -48,31 +50,65 @@ export class ScrollService {
       private platformLocation: PlatformLocation,
       private viewportScroller: ViewportScroller,
       private location: Location) {
+    try {
+      this.storage = window.sessionStorage;
+    } catch {
+      // When cookies are disabled in the browser, even trying to access
+      // `window.sessionStorage` throws an error. Use a no-op storage.
+      this.storage = {
+        length: 0,
+        clear: () => undefined,
+        getItem: () => null,
+        key: () => null,
+        removeItem: () => undefined,
+        setItem: () => undefined
+      };
+    }
+
     // On resize, the toolbar might change height, so "invalidate" the top offset.
-    fromEvent(window, 'resize').subscribe(() => this._topOffset = null);
+    fromEvent(window, 'resize')
+        .pipe(takeUntil(this.onDestroy))
+        .subscribe(() => this._topOffset = null);
 
     fromEvent(window, 'scroll')
-      .pipe(debounceTime(250)).subscribe(() => this.updateScrollPositionInHistory());
+        .pipe(debounceTime(250), takeUntil(this.onDestroy))
+        .subscribe(() => this.updateScrollPositionInHistory());
 
-    // Change scroll restoration strategy to `manual` if it's supported
+    fromEvent(window, 'beforeunload')
+        .pipe(takeUntil(this.onDestroy))
+        .subscribe(() => this.updateScrollLocationHref());
+
+    // Change scroll restoration strategy to `manual` if it's supported.
     if (this.supportManualScrollRestoration) {
       history.scrollRestoration = 'manual';
-      // we have to detect forward and back navigation thanks to popState event
-      this.location.subscribe((event: ScrollPositionPopStateEvent) => {
-        // the type is `hashchange` when the fragment identifier of the URL has changed. It allows us to go to position
-        // just before a click on an anchor
+
+      // We have to detect forward and back navigation thanks to popState event.
+      const locationSubscription = this.location.subscribe((event: ScrollPositionPopStateEvent) => {
+        // The type is `hashchange` when the fragment identifier of the URL has changed. It allows
+        // us to go to position just before a click on an anchor.
         if (event.type === 'hashchange') {
           this.scrollToPosition();
         } else {
           // Navigating with the forward/back button, we have to remove the position from the
           // session storage in order to avoid a race-condition.
-          this.removeStoredScrollPosition();
+          this.removeStoredScrollInfo();
           // The `popstate` event is always triggered by a browser action such as clicking the
           // forward/back button. It can be followed by a `hashchange` event.
           this.poppedStateScrollPosition = event.state ? event.state.scrollPosition : null;
         }
       });
+
+      this.onDestroy.subscribe(() => locationSubscription.unsubscribe());
     }
+
+    // If this was not a reload, discard the stored scroll info.
+    if (window.location.href !== this.getStoredScrollLocationHref()) {
+      this.removeStoredScrollInfo();
+    }
+  }
+
+  ngOnDestroy() {
+    this.onDestroy.next();
   }
 
   /**
@@ -162,6 +198,10 @@ export class ScrollService {
     }
   }
 
+  updateScrollLocationHref(): void {
+    this.storage.setItem('scrollLocationHref', window.location.href);
+  }
+
   /**
    * Update the state with scroll position into history.
    */
@@ -169,20 +209,26 @@ export class ScrollService {
     if (this.supportManualScrollRestoration) {
       const currentScrollPosition = this.viewportScroller.getScrollPosition();
       this.location.replaceState(this.location.path(true), undefined, {scrollPosition: currentScrollPosition});
-      window.sessionStorage.setItem('scrollPosition', currentScrollPosition.join(','));
+      this.storage.setItem('scrollPosition', currentScrollPosition.join(','));
     }
   }
 
+  getStoredScrollLocationHref(): string | null {
+    const href = this.storage.getItem('scrollLocationHref');
+    return href || null;
+  }
+
   getStoredScrollPosition(): ScrollPosition | null {
-    const position = window.sessionStorage.getItem('scrollPosition');
+    const position = this.storage.getItem('scrollPosition');
     if (!position) { return null; }
 
     const [x, y] = position.split(',');
     return [+x, +y];
   }
 
-  removeStoredScrollPosition() {
-    window.sessionStorage.removeItem('scrollPosition');
+  removeStoredScrollInfo() {
+    this.storage.removeItem('scrollLocationHref');
+    this.storage.removeItem('scrollPosition');
   }
 
   /**

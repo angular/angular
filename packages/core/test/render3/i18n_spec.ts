@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,13 +8,16 @@
 
 import {noop} from '../../../compiler/src/render3/view/util';
 import {getTranslationForTemplate, ɵɵi18nAttributes, ɵɵi18nPostprocess, ɵɵi18nStart} from '../../src/render3/i18n';
-import {ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/all';
+import {setDelayProjection, ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/all';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
 import {TemplateFixture} from './render_util';
 
 describe('Runtime i18n', () => {
+  afterEach(() => {
+    setDelayProjection(false);
+  });
   describe('getTranslationForTemplate', () => {
     it('should crop messages for the selected template', () => {
       let message = `simple text`;
@@ -68,10 +71,12 @@ describe('Runtime i18n', () => {
       const MSG_DIV = `simple text`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
+      }, null, nbConsts, index);
 
       // Check debug
-      const debugOps = (opCodes as any).create.debug !.operations;
+      const debugOps = (opCodes as any).create.debug!.operations;
       expect(debugOps[0].__raw_opCode).toBe('simple text');
       expect(debugOps[0].type).toBe('Create Text Node');
       expect(debugOps[0].nodeIndex).toBe(1);
@@ -99,7 +104,9 @@ describe('Runtime i18n', () => {
       const index = 1;
       const elementIndex = 2;
       const elementIndex2 = 3;
-      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
+      }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 5,
@@ -135,7 +142,9 @@ describe('Runtime i18n', () => {
       const MSG_DIV = `Hello �0�!`;
       const nbConsts = 2;
       const index = 1;
-      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
+      }, null, nbConsts, index);
 
       expect((opCodes as any).update.debug.operations).toEqual([
         {__raw_opCode: 8, checkBit: 1, type: 'Text', nodeIndex: 2, text: 'Hello �0�!'}
@@ -160,7 +169,9 @@ describe('Runtime i18n', () => {
       const MSG_DIV = `Hello �0� and �1�, again �0�!`;
       const nbConsts = 2;
       const index = 1;
-      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
+      }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 1,
@@ -193,7 +204,10 @@ describe('Runtime i18n', () => {
       let nbConsts = 3;
       let index = 1;
       const firstTextNode = 3;
-      let opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const rootTemplate = 2;
+      let opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
+      }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 2,
@@ -201,7 +215,7 @@ describe('Runtime i18n', () => {
           '',
           nbConsts,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          2 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+          ~rootTemplate << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
           '!',
           nbConsts + 1,
@@ -223,7 +237,9 @@ describe('Runtime i18n', () => {
       index = 0;
       const spanElement = 1;
       const bElementSubTemplate = 2;
-      opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV, 1); }, null, nbConsts, index);
+      opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV, 1);
+      }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 2,
@@ -233,7 +249,7 @@ describe('Runtime i18n', () => {
           'before',
           nbConsts,
           spanElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          bElementSubTemplate << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+          ~bElementSubTemplate << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
           spanElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
           'after',
           nbConsts + 1,
@@ -250,7 +266,9 @@ describe('Runtime i18n', () => {
       nbConsts = 2;
       index = 0;
       const bElement = 1;
-      opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV, 2); }, null, nbConsts, index);
+      opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV, 2);
+      }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 1,
@@ -275,7 +293,9 @@ describe('Runtime i18n', () => {
       }`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
+      }, null, nbConsts, index);
       const tIcuIndex = 0;
       const icuCommentNodeIndex = index + 1;
       const firstTextNodeIndex = index + 2;
@@ -463,7 +483,9 @@ describe('Runtime i18n', () => {
       }`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
+      }, null, nbConsts, index);
       const icuCommentNodeIndex = index + 1;
       const firstTextNodeIndex = index + 2;
       const nestedIcuCommentNodeIndex = index + 3;
@@ -495,18 +517,18 @@ describe('Runtime i18n', () => {
             cases: ['cat', 'dog', 'other'],
             create: [
               [
-                'cats', nestedTextNodeIndex, nestedIcuCommentNodeIndex
-                        << I18nMutateOpCode.SHIFT_PARENT |
+                'cats', nestedTextNodeIndex,
+                nestedIcuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT |
                     I18nMutateOpCode.AppendChild
               ],
               [
-                'dogs', nestedTextNodeIndex, nestedIcuCommentNodeIndex
-                        << I18nMutateOpCode.SHIFT_PARENT |
+                'dogs', nestedTextNodeIndex,
+                nestedIcuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT |
                     I18nMutateOpCode.AppendChild
               ],
               [
-                'animals', nestedTextNodeIndex, nestedIcuCommentNodeIndex
-                        << I18nMutateOpCode.SHIFT_PARENT |
+                'animals', nestedTextNodeIndex,
+                nestedIcuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT |
                     I18nMutateOpCode.AppendChild
               ]
             ],
@@ -597,8 +619,9 @@ describe('Runtime i18n', () => {
       const MSG_div_attr = ['title', MSG_title];
       const nbConsts = 2;
       const index = 1;
-      const opCodes =
-          getOpCodes(() => { ɵɵi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nAttributes(index, MSG_div_attr);
+      }, null, nbConsts, index);
 
       expect(opCodes).toEqual([
         0b1,  // bindings mask
@@ -614,8 +637,9 @@ describe('Runtime i18n', () => {
       const MSG_div_attr = ['title', MSG_title];
       const nbConsts = 2;
       const index = 1;
-      const opCodes =
-          getOpCodes(() => { ɵɵi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nAttributes(index, MSG_div_attr);
+      }, null, nbConsts, index);
 
       expect(opCodes).toEqual([
         0b11,  // bindings mask
@@ -630,8 +654,9 @@ describe('Runtime i18n', () => {
       const MSG_div_attr = ['title', MSG_title, 'aria-label', MSG_title];
       const nbConsts = 2;
       const index = 1;
-      const opCodes =
-          getOpCodes(() => { ɵɵi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nAttributes(index, MSG_div_attr);
+      }, null, nbConsts, index);
 
       expect(opCodes).toEqual([
         0b1,  // bindings mask

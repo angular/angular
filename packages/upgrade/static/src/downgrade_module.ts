@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,7 +11,7 @@ import {platformBrowser} from '@angular/platform-browser';
 
 import {IInjectorService, IProvideService, module_ as angularModule} from '../../src/common/src/angular1';
 import {$INJECTOR, $PROVIDE, DOWNGRADED_MODULE_COUNT_KEY, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
-import {LazyModuleRef, UpgradeAppType, getDowngradedModuleCount, isFunction} from '../../src/common/src/util';
+import {getDowngradedModuleCount, isFunction, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
@@ -27,7 +27,7 @@ let moduleUid = 0;
  * instantiated.
  *
  * *Part of the [upgrade/static](api?query=upgrade/static) library for hybrid upgrade apps that
- * support AoT compilation.*
+ * support AOT compilation.*
  *
  * It allows loading/bootstrapping the Angular part of a hybrid application lazily and not having to
  * pay the cost up-front. For example, you can have an AngularJS application that uses Angular for
@@ -128,9 +128,8 @@ let moduleUid = 0;
  *
  * @publicApi
  */
-export function downgradeModule<T>(
-    moduleFactoryOrBootstrapFn: NgModuleFactory<T>|
-    ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
+export function downgradeModule<T>(moduleFactoryOrBootstrapFn: NgModuleFactory<T>|(
+    (extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
   const lazyModuleName = `${UPGRADE_MODULE_NAME}.lazy${++moduleUid}`;
   const lazyModuleRefKey = `${LAZY_MODULE_REF}${lazyModuleName}`;
   const lazyInjectorKey = `${INJECTOR_KEY}${lazyModuleName}`;

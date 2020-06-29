@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,7 +20,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'sk', [['AM', 'PM'], u, u], u,
+  'sk',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['n', 'p', 'u', 's', 'š', 'p', 's'], ['ne', 'po', 'ut', 'st', 'št', 'pi', 'so'],
     ['nedeľa', 'pondelok', 'utorok', 'streda', 'štvrtok', 'piatok', 'sobota'],
@@ -31,23 +33,30 @@ export default [
     ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
     ['jan', 'feb', 'mar', 'apr', 'máj', 'jún', 'júl', 'aug', 'sep', 'okt', 'nov', 'dec'],
     [
-      'januára', 'februára', 'marca', 'apríla', 'mája', 'júna', 'júla', 'augusta',
-      'septembra', 'októbra', 'novembra', 'decembra'
+      'januára', 'februára', 'marca', 'apríla', 'mája', 'júna', 'júla', 'augusta', 'septembra',
+      'októbra', 'novembra', 'decembra'
     ]
   ],
   [
     ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
     ['jan', 'feb', 'mar', 'apr', 'máj', 'jún', 'júl', 'aug', 'sep', 'okt', 'nov', 'dec'],
     [
-      'január', 'február', 'marec', 'apríl', 'máj', 'jún', 'júl', 'august', 'september',
-      'október', 'november', 'december'
+      'január', 'február', 'marec', 'apríl', 'máj', 'jún', 'júl', 'august', 'september', 'október',
+      'november', 'december'
     ]
   ],
-  [['pred Kr.', 'po Kr.'], u, ['pred Kristom', 'po Kristovi']], 1, [6, 0],
-  ['d. M. y', u, 'd. MMMM y', 'EEEE d. MMMM y'], ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+  [['pred Kr.', 'po Kr.'], u, ['pred Kristom', 'po Kristovi']],
+  1,
+  [6, 0],
+  ['d. M. y', u, 'd. MMMM y', 'EEEE d. MMMM y'],
+  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
   ['{1} {0}', '{1}, {0}', u, u],
   [',', ' ', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'EUR',
+  '€',
+  'euro',
+  {
     'AUD': [u, '$'],
     'BRL': [u, 'R$'],
     'CAD': [u, '$'],
@@ -61,7 +70,9 @@ export default [
     'NZD': [u, '$'],
     'TWD': [u, 'NT$'],
     'USD': [u, '$'],
-    'VND': [u, '₫']
+    'VND': [u, '₫'],
+    'XXX': []
   },
+  'ltr',
   plural
 ];

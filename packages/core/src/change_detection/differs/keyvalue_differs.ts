@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -118,7 +118,8 @@ export interface KeyValueDifferFactory {
  */
 export class KeyValueDiffers {
   /** @nocollapse */
-  static ngInjectableDef = ɵɵdefineInjectable({
+  static ɵprov = ɵɵdefineInjectable({
+    token: KeyValueDiffers,
     providedIn: 'root',
     factory: () => new KeyValueDiffers([new DefaultKeyValueDifferFactory()])
   });
@@ -128,7 +129,9 @@ export class KeyValueDiffers {
    */
   factories: KeyValueDifferFactory[];
 
-  constructor(factories: KeyValueDifferFactory[]) { this.factories = factories; }
+  constructor(factories: KeyValueDifferFactory[]) {
+    this.factories = factories;
+  }
 
   static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
     if (parent) {

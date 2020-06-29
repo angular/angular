@@ -20,7 +20,7 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
   isEmbedded = false;
   @ViewChildren('tocItem') private items: QueryList<ElementRef>;
   private onDestroy = new Subject();
-  private primaryMax = 4;
+  primaryMax = 4;
   tocList: TocItem[];
 
   constructor(
@@ -52,7 +52,10 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
       // We use the `asap` scheduler because updates to `activeItemIndex` are triggered by DOM changes,
       // which, in turn, are caused by the rendering that happened due to a ChangeDetection.
       // Without asap, we would be updating the model while still in a ChangeDetection handler, which is disallowed by Angular.
-      combineLatest(this.tocService.activeItemIndex.pipe(subscribeOn(asapScheduler)), this.items.changes.pipe(startWith(this.items)))
+      combineLatest([
+        this.tocService.activeItemIndex.pipe(subscribeOn(asapScheduler)),
+        this.items.changes.pipe(startWith(this.items)),
+      ])
           .pipe(takeUntil(this.onDestroy))
           .subscribe(([index, items]) => {
             this.activeIndex = index;

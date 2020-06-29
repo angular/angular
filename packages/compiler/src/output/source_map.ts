@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -23,10 +23,10 @@ type Segment = {
 export type SourceMap = {
   version: number,
   file?: string,
-  sourceRoot: string,
-  sources: string[],
-  sourcesContent: (string | null)[],
-  mappings: string,
+      sourceRoot: string,
+      sources: string[],
+      sourcesContent: (string|null)[],
+      mappings: string,
 };
 
 export class SourceMapGenerator {
@@ -74,7 +74,13 @@ export class SourceMapGenerator {
     return this;
   }
 
-  private get currentLine(): Segment[]|null { return this.lines.slice(-1)[0]; }
+  /**
+   * @internal strip this from published d.ts files due to
+   * https://github.com/microsoft/TypeScript/issues/36216
+   */
+  private get currentLine(): Segment[]|null {
+    return this.lines.slice(-1)[0];
+  }
 
   toJSON(): SourceMap|null {
     if (!this.hasMappings) {
@@ -83,7 +89,7 @@ export class SourceMapGenerator {
 
     const sourcesIndex = new Map<string, number>();
     const sources: string[] = [];
-    const sourcesContent: (string | null)[] = [];
+    const sourcesContent: (string|null)[] = [];
 
     Array.from(this.sourcesContent.keys()).forEach((url: string, i: number) => {
       sourcesIndex.set(url, i);
@@ -109,14 +115,14 @@ export class SourceMapGenerator {
                         if (segment.sourceUrl != null) {
                           // zero-based index into the “sources” list
                           segAsStr +=
-                              toBase64VLQ(sourcesIndex.get(segment.sourceUrl) ! - lastSourceIndex);
-                          lastSourceIndex = sourcesIndex.get(segment.sourceUrl) !;
+                              toBase64VLQ(sourcesIndex.get(segment.sourceUrl)! - lastSourceIndex);
+                          lastSourceIndex = sourcesIndex.get(segment.sourceUrl)!;
                           // the zero-based starting line in the original source
-                          segAsStr += toBase64VLQ(segment.sourceLine0 ! - lastSourceLine0);
-                          lastSourceLine0 = segment.sourceLine0 !;
+                          segAsStr += toBase64VLQ(segment.sourceLine0! - lastSourceLine0);
+                          lastSourceLine0 = segment.sourceLine0!;
                           // the zero-based starting column in the original source
-                          segAsStr += toBase64VLQ(segment.sourceCol0 ! - lastSourceCol0);
-                          lastSourceCol0 = segment.sourceCol0 !;
+                          segAsStr += toBase64VLQ(segment.sourceCol0! - lastSourceCol0);
+                          lastSourceCol0 = segment.sourceCol0!;
                         }
 
                         return segAsStr;

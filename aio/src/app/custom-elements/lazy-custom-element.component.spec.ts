@@ -23,7 +23,7 @@ describe('LazyCustomElementComponent', () => {
       ],
     });
 
-    mockLogger = injector.get(Logger);
+    mockLogger = injector.inject(Logger) as any;
     fixture = TestBed.createComponent(LazyCustomElementComponent);
   });
 

@@ -1,4 +1,4 @@
-# Dependency Injection in Angular
+# Dependency injection in Angular
 
 Dependency injection (DI), is an important application design pattern.
 Angular has its own DI framework, which is typically
@@ -114,7 +114,7 @@ from the injector of its parent NgModule, or from the `root` injector.
 
 * Learn more about the [different kinds of providers](guide/dependency-injection-providers).
 
-* Learn more about  how the [injector hierarchy](guide/hierarchical-dependency-injection) works.
+* Learn more about how the [injector hierarchy](guide/hierarchical-dependency-injection) works.
 
 </div>
 
@@ -134,7 +134,7 @@ The `@NgModule()` and `@Component()` decorators have the `providers` metadata op
 
 Components are directives, and the `providers` option is inherited from `@Directive()`. You can also configure providers for directives and pipes at the same level as the component.
 
-Learn more about [where to configure providers](guide/hierarchical-dependency-injection#where-to-register).
+Learn more about [where to configure providers](guide/hierarchical-dependency-injection).
 
 </div>
 
@@ -196,8 +196,7 @@ Listing dependencies as constructor parameters may be all you need to test appli
 For example, you can create a new `HeroListComponent` with a mock service that you can manipulate
 under test.
 
-<code-example path="dependency-injection/src/app/test.component.ts" region="spec" header="src/app/test.component.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/test.component.ts" region="spec" header="src/app/test.component.ts"></code-example>
 
 <div class="alert is-helpful">
 
@@ -230,7 +229,7 @@ Here is the revised `HeroService` that injects `Logger`, side by side with the p
 
 The constructor asks for an injected instance of `Logger` and stores it in a private field called `logger`. The `getHeroes()` method logs a message when asked to fetch heroes.
 
-Notice that the `Logger` service also has the `@Injectable()` decorator, even though it might not need its own dependencies. In fact, the `@Injectable()` decorator is **required  for all services**.
+Notice that the `Logger` service also has the `@Injectable()` decorator, even though it might not need its own dependencies. In fact, the `@Injectable()` decorator is **required for all services**.
 
 When Angular creates a class whose constructor has parameters, it looks for type and injection metadata about those parameters so that it can inject the correct service.
 If Angular can't find that parameter information, it throws an error.
@@ -259,8 +258,7 @@ In simple examples, the dependency value is an *instance*, and
 the class *type* serves as its own lookup key.
 Here you get a `HeroService` directly from the injector by supplying the `HeroService` type as the token:
 
-<code-example path="dependency-injection/src/app/injector.component.ts" region="get-hero-service" header="src/app/injector.component.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/injector.component.ts" region="get-hero-service" header="src/app/injector.component.ts"></code-example>
 
 The behavior is similar when you write a constructor that requires an injected class-based dependency.
 When you define a constructor parameter with the `HeroService` class type,
@@ -287,8 +285,7 @@ constructor parameter with `@Optional()`.
 <code-example path="dependency-injection/src/app/providers.component.ts" region="import-optional">
 </code-example>
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="provider-10-ctor" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="provider-10-ctor"></code-example>
 
 When using `@Optional()`, your code must be prepared for a null value. If you
 don't register a logger provider anywhere, the injector sets the
@@ -296,7 +293,7 @@ value of `logger` to null.
 
 <div class="alert is-helpful">
 
-`@Inject()` and `@Optional()` are _parameter decorators_.  They alter the way the DI framework provides a dependency, by annotating the dependency parameter on the constructor of the class that requires the dependency.
+`@Inject()` and `@Optional()` are _parameter decorators_. They alter the way the DI framework provides a dependency, by annotating the dependency parameter on the constructor of the class that requires the dependency.
 
 Learn more about parameter decorators in [Hierarchical Dependency Injectors](guide/hierarchical-dependency-injection).
 
@@ -317,5 +314,3 @@ Dive deeper into the capabilities and advanced feature of the Angular DI system 
 * Learn more about [DI tokens and providers](guide/dependency-injection-providers).
 
 * [Dependency Injection in Action](guide/dependency-injection-in-action) is a cookbook for some of the interesting things you can do with DI.
-
-

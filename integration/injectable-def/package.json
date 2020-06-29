@@ -11,13 +11,13 @@
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
-    "@types/node": "^9.4.0",
+    "@types/node": "file:../../node_modules/@types/node",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../node_modules/zone.js"
+    "zone.js": "file:../../dist/zone.js-dist/zone.js"
   },
   "devDependencies": {
-    "@types/jasmine": "2.5.41",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "concurrently": "3.4.0",
     "lite-server": "2.2.2",
     "protractor": "file:../../node_modules/protractor"

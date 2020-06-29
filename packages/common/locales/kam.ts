@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,13 +16,12 @@ function plural(n: number): number {
 }
 
 export default [
-  'kam', [['Ĩyakwakya', 'Ĩyawĩoo'], u, u], u,
+  'kam',
+  [['Ĩyakwakya', 'Ĩyawĩoo'], u, u],
+  u,
   [
     ['Y', 'W', 'E', 'A', 'A', 'A', 'A'], ['Wky', 'Wkw', 'Wkl', 'Wtũ', 'Wkn', 'Wtn', 'Wth'],
-    [
-      'Wa kyumwa', 'Wa kwambĩlĩlya', 'Wa kelĩ', 'Wa katatũ', 'Wa kana', 'Wa katano',
-      'Wa thanthatũ'
-    ],
+    ['Wa kyumwa', 'Wa kwambĩlĩlya', 'Wa kelĩ', 'Wa katatũ', 'Wa kana', 'Wa katano', 'Wa thanthatũ'],
     ['Wky', 'Wkw', 'Wkl', 'Wtũ', 'Wkn', 'Wtn', 'Wth']
   ],
   u,
@@ -35,10 +34,19 @@ export default [
       'Mwai wa ĩkumi na ĩmwe', 'Mwai wa ĩkumi na ilĩ'
     ]
   ],
-  u, [['MY', 'IY'], u, ['Mbee wa Yesũ', 'Ĩtina wa Yesũ']], 0, [6, 0],
+  u,
+  [['MY', 'IY'], u, ['Mbee wa Yesũ', 'Ĩtina wa Yesũ']],
+  0,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Ksh', 'Silingi ya Kenya',
-  {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'KES',
+  'Ksh',
+  'Silingi ya Kenya',
+  {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

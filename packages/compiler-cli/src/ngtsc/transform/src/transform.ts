@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,9 +12,9 @@ import * as ts from 'typescript';
 import {DefaultImportRecorder, ImportRewriter} from '../../imports';
 import {Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateStatement} from '../../translator';
-import {VisitListEntryResult, Visitor, visit} from '../../util/src/visitor';
+import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
 
-import {IvyCompilation} from './compilation';
+import {TraitCompiler} from './compilation';
 import {addImports} from './utils';
 
 const NO_DECORATORS = new Set<ts.Decorator>();
@@ -31,7 +31,7 @@ interface FileOverviewMeta {
 }
 
 export function ivyTransformFactory(
-    compilation: IvyCompilation, reflector: ReflectionHost, importRewriter: ImportRewriter,
+    compilation: TraitCompiler, reflector: ReflectionHost, importRewriter: ImportRewriter,
     defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
     isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
@@ -45,9 +45,10 @@ export function ivyTransformFactory(
 
 class IvyVisitor extends Visitor {
   constructor(
-      private compilation: IvyCompilation, private reflector: ReflectionHost,
+      private compilation: TraitCompiler, private reflector: ReflectionHost,
       private importManager: ImportManager, private defaultImportRecorder: DefaultImportRecorder,
-      private isCore: boolean, private constantPool: ConstantPool) {
+      private isClosureCompilerEnabled: boolean, private isCore: boolean,
+      private constantPool: ConstantPool) {
     super();
   }
 
@@ -55,25 +56,38 @@ class IvyVisitor extends Visitor {
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     // Determine if this class has an Ivy field that needs to be added, and compile the field
     // to an expression if so.
-    const res = this.compilation.compileIvyFieldFor(node, this.constantPool);
+    const res = this.compilation.compile(node, this.constantPool);
 
-    if (res !== undefined) {
+    if (res !== null) {
       // There is at least one field to add.
       const statements: ts.Statement[] = [];
       const members = [...node.members];
 
       res.forEach(field => {
         // Translate the initializer for the field into TS nodes.
-        const exprNode =
-            translateExpression(field.initializer, this.importManager, this.defaultImportRecorder);
+        const exprNode = translateExpression(
+            field.initializer, this.importManager, this.defaultImportRecorder,
+            ts.ScriptTarget.ES2015);
 
         // Create a static property declaration for the new field.
         const property = ts.createProperty(
             undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], field.name, undefined,
             undefined, exprNode);
 
+        if (this.isClosureCompilerEnabled) {
+          // Closure compiler transforms the form `Service.ɵprov = X` into `Service$ɵprov = X`. To
+          // prevent this transformation, such assignments need to be annotated with @nocollapse.
+          // Note that tsickle is typically responsible for adding such annotations, however it
+          // doesn't yet handle synthetic fields added during other transformations.
+          ts.addSyntheticLeadingComment(
+              property, ts.SyntaxKind.MultiLineCommentTrivia, '* @nocollapse ',
+              /* hasTrailingNewLine */ false);
+        }
+
         field.statements
-            .map(stmt => translateStatement(stmt, this.importManager, this.defaultImportRecorder))
+            .map(
+                stmt => translateStatement(
+                    stmt, this.importManager, this.defaultImportRecorder, ts.ScriptTarget.ES2015))
             .forEach(stmt => statements.push(stmt));
 
         members.push(property);
@@ -83,7 +97,7 @@ class IvyVisitor extends Visitor {
       node = ts.updateClassDeclaration(
           node,
           // Remove the decorator which triggered this compilation, leaving the others alone.
-          maybeFilterDecorator(node.decorators, this.compilation.ivyDecoratorsFor(node)),
+          maybeFilterDecorator(node.decorators, this.compilation.decoratorsFor(node)),
           node.modifiers, node.name, node.typeParameters, node.heritageClauses || [],
           // Map over the class members and remove any Angular decorators from them.
           members.map(member => this._stripAngularDecorators(member)));
@@ -203,7 +217,7 @@ class IvyVisitor extends Visitor {
  * A transformer which operates on ts.SourceFiles and applies changes from an `IvyCompilation`.
  */
 function transformIvySourceFile(
-    compilation: IvyCompilation, context: ts.TransformationContext, reflector: ReflectionHost,
+    compilation: TraitCompiler, context: ts.TransformationContext, reflector: ReflectionHost,
     importRewriter: ImportRewriter, file: ts.SourceFile, isCore: boolean,
     isClosureCompilerEnabled: boolean,
     defaultImportRecorder: DefaultImportRecorder): ts.SourceFile {
@@ -212,13 +226,15 @@ function transformIvySourceFile(
 
   // Recursively scan through the AST and perform any updates requested by the IvyCompilation.
   const visitor = new IvyVisitor(
-      compilation, reflector, importManager, defaultImportRecorder, isCore, constantPool);
+      compilation, reflector, importManager, defaultImportRecorder, isClosureCompilerEnabled,
+      isCore, constantPool);
   let sf = visit(file, visitor, context);
 
   // Generate the constant statements first, as they may involve adding additional imports
   // to the ImportManager.
   const constants = constantPool.statements.map(
-      stmt => translateStatement(stmt, importManager, defaultImportRecorder));
+      stmt => translateStatement(
+          stmt, importManager, defaultImportRecorder, getLocalizeCompileTarget(context)));
 
   // Preserve @fileoverview comments required by Closure, since the location might change as a
   // result of adding extra imports and constant pool statements.
@@ -232,6 +248,22 @@ function transformIvySourceFile(
   }
 
   return sf;
+}
+
+/**
+ * Compute the correct target output for `$localize` messages generated by Angular
+ *
+ * In some versions of TypeScript, the transformation of synthetic `$localize` tagged template
+ * literals is broken. See https://github.com/microsoft/TypeScript/issues/38485
+ *
+ * Here we compute what the expected final output target of the compilation will
+ * be so that we can generate ES5 compliant `$localize` calls instead of relying upon TS to do the
+ * downleveling for us.
+ */
+function getLocalizeCompileTarget(context: ts.TransformationContext):
+    Exclude<ts.ScriptTarget, ts.ScriptTarget.JSON> {
+  const target = context.getCompilerOptions().target || ts.ScriptTarget.ES2015;
+  return target !== ts.ScriptTarget.JSON ? target : ts.ScriptTarget.ES2015;
 }
 
 function getFileOverviewComment(statements: ts.NodeArray<ts.Statement>): FileOverviewMeta|null {
@@ -269,7 +301,7 @@ function setFileOverviewComment(sf: ts.SourceFile, fileoverview: FileOverviewMet
 }
 
 function maybeFilterDecorator(
-    decorators: ts.NodeArray<ts.Decorator>| undefined,
+    decorators: ts.NodeArray<ts.Decorator>|undefined,
     toRemove: ts.Decorator[]): ts.NodeArray<ts.Decorator>|undefined {
   if (decorators === undefined) {
     return undefined;

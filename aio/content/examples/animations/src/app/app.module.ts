@@ -35,6 +35,7 @@ import { InsertRemoveComponent } from './insert-remove.component';
       { path: 'hero-groups', component: HeroListGroupPageComponent },
       { path: 'enter-leave', component: HeroListEnterLeavePageComponent },
       { path: 'auto', component: HeroListAutoCalcPageComponent },
+      { path: 'insert-remove', component: InsertRemoveComponent},
       { path: 'home', component: HomeComponent, data: {animation: 'HomePage'} },
       { path: 'about', component: AboutComponent, data: {animation: 'AboutPage'} },
 

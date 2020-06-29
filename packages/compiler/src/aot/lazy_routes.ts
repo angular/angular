@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,9 +8,7 @@
 
 import {CompileNgModuleMetadata, tokenReference} from '../compile_metadata';
 import {Route} from '../core';
-import {CompileMetadataResolver} from '../metadata_resolver';
 
-import {AotCompilerHost} from './compiler_host';
 import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
 
@@ -34,7 +32,7 @@ export function listLazyRoutes(
   return allLazyRoutes;
 }
 
-function _collectLoadChildren(routes: string | Route | Route[], target: string[] = []): string[] {
+function _collectLoadChildren(routes: string|Route|Route[], target: string[] = []): string[] {
   if (typeof routes === 'string') {
     target.push(routes);
   } else if (Array.isArray(routes)) {

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,7 +22,7 @@ export class MetadataOverrider {
    * based on an old instance and overrides.
    */
   overrideMetadata<C extends T, T>(
-      metadataClass: {new (options: T): C;}, oldMetadata: C, override: MetadataOverride<T>): C {
+      metadataClass: {new(options: T): C;}, oldMetadata: C, override: MetadataOverride<T>): C {
     const props: StringMap = {};
     if (oldMetadata) {
       _valueProps(oldMetadata).forEach((prop) => props[prop] = (<any>oldMetadata)[prop]);
@@ -48,9 +48,10 @@ function removeMetadata(metadata: StringMap, remove: any, references: Map<any, s
   const removeObjects = new Set<string>();
   for (const prop in remove) {
     const removeValue = remove[prop];
-    if (removeValue instanceof Array) {
-      removeValue.forEach(
-          (value: any) => { removeObjects.add(_propHashKey(prop, value, references)); });
+    if (Array.isArray(removeValue)) {
+      removeValue.forEach((value: any) => {
+        removeObjects.add(_propHashKey(prop, value, references));
+      });
     } else {
       removeObjects.add(_propHashKey(prop, removeValue, references));
     }
@@ -58,7 +59,7 @@ function removeMetadata(metadata: StringMap, remove: any, references: Map<any, s
 
   for (const prop in metadata) {
     const propValue = metadata[prop];
-    if (propValue instanceof Array) {
+    if (Array.isArray(propValue)) {
       metadata[prop] = propValue.filter(
           (value: any) => !removeObjects.has(_propHashKey(prop, value, references)));
     } else {
@@ -73,7 +74,7 @@ function addMetadata(metadata: StringMap, add: any) {
   for (const prop in add) {
     const addValue = add[prop];
     const propValue = metadata[prop];
-    if (propValue != null && propValue instanceof Array) {
+    if (propValue != null && Array.isArray(propValue)) {
       metadata[prop] = propValue.concat(addValue);
     } else {
       metadata[prop] = addValue;

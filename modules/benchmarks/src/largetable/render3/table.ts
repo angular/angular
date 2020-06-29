@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {Component, Input, NgModule, ɵdetectChanges} from '@angular/core';
 
-import {TableCell, buildTable, emptyTable} from '../util';
+import {buildTable, emptyTable, TableCell} from '../util';
 
 @Component({
   selector: 'largetable',
@@ -26,16 +26,19 @@ import {TableCell, buildTable, emptyTable} from '../util';
   `,
 })
 export class LargeTableComponent {
-  @Input()
-  data: TableCell[][] = emptyTable;
+  @Input() data: TableCell[][] = emptyTable;
 
-  trackByIndex(index: number, item: any) { return index; }
+  trackByIndex(index: number, item: any) {
+    return index;
+  }
 
-  getColor(row: number) { return row % 2 ? '' : 'grey'; }
+  getColor(row: number) {
+    return row % 2 ? '' : 'grey';
+  }
 }
 
 @NgModule({declarations: [LargeTableComponent], imports: [CommonModule]})
-class TableModule {
+export class TableModule {
 }
 
 

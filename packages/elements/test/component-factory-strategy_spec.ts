@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -45,14 +45,21 @@ describe('ComponentFactoryNgElementStrategy', () => {
     beforeEach(() => {
       // Set up an initial value to make sure it is passed to the component
       strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('falsyUndefined', undefined);
+      strategy.setInputValue('falsyNull', null);
+      strategy.setInputValue('falsyEmpty', '');
+      strategy.setInputValue('falsyFalse', false);
+      strategy.setInputValue('falsyZero', 0);
       strategy.connect(document.createElement('div'));
     });
 
-    it('should attach the component to the view',
-       () => { expect(applicationRef.attachView).toHaveBeenCalledWith(componentRef.hostView); });
+    it('should attach the component to the view', () => {
+      expect(applicationRef.attachView).toHaveBeenCalledWith(componentRef.hostView);
+    });
 
-    it('should detect changes',
-       () => { expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalled(); });
+    it('should detect changes', () => {
+      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalled();
+    });
 
     it('should listen to output events', () => {
       const events: NgElementStrategyEvent[] = [];
@@ -73,11 +80,42 @@ describe('ComponentFactoryNgElementStrategy', () => {
       expect(componentRef.instance.fooFoo).toBe('fooFoo-1');
     });
 
-    it('should call ngOnChanges with the change', () => {
-      expectSimpleChanges(
-          componentRef.instance.simpleChanges[0],
-          {fooFoo: new SimpleChange(undefined, 'fooFoo-1', false)});
+    it('should initialize the component with falsy initial values', () => {
+      expect(strategy.getInputValue('falsyUndefined')).toEqual(undefined);
+      expect(componentRef.instance.falsyUndefined).toEqual(undefined);
+      expect(strategy.getInputValue('falsyNull')).toEqual(null);
+      expect(componentRef.instance.falsyNull).toEqual(null);
+      expect(strategy.getInputValue('falsyEmpty')).toEqual('');
+      expect(componentRef.instance.falsyEmpty).toEqual('');
+      expect(strategy.getInputValue('falsyFalse')).toEqual(false);
+      expect(componentRef.instance.falsyFalse).toEqual(false);
+      expect(strategy.getInputValue('falsyZero')).toEqual(0);
+      expect(componentRef.instance.falsyZero).toEqual(0);
     });
+
+    it('should call ngOnChanges with the change', () => {
+      expectSimpleChanges(componentRef.instance.simpleChanges[0], {
+        fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
+        falsyUndefined: new SimpleChange(undefined, undefined, true),
+        falsyNull: new SimpleChange(undefined, null, true),
+        falsyEmpty: new SimpleChange(undefined, '', true),
+        falsyFalse: new SimpleChange(undefined, false, true),
+        falsyZero: new SimpleChange(undefined, 0, true),
+      });
+    });
+
+    it('should call ngOnChanges with proper firstChange value', fakeAsync(() => {
+         strategy.setInputValue('fooFoo', 'fooFoo-2');
+         strategy.setInputValue('barBar', 'barBar-1');
+         strategy.setInputValue('falsyUndefined', 'notanymore');
+         tick(16);  // scheduler waits 16ms if RAF is unavailable
+         (strategy as any).detectChanges();
+         expectSimpleChanges(componentRef.instance.simpleChanges[1], {
+           fooFoo: new SimpleChange('fooFoo-1', 'fooFoo-2', false),
+           barBar: new SimpleChange(undefined, 'barBar-1', true),
+           falsyUndefined: new SimpleChange(undefined, 'notanymore', false),
+         });
+       }));
   });
 
   it('should not call ngOnChanges if not present on the component', () => {
@@ -104,7 +142,9 @@ describe('ComponentFactoryNgElementStrategy', () => {
   });
 
   describe('when inputs change and is connected', () => {
-    beforeEach(() => { strategy.connect(document.createElement('div')); });
+    beforeEach(() => {
+      strategy.connect(document.createElement('div'));
+    });
 
     it('should be set on the component instance', () => {
       strategy.setInputValue('fooFoo', 'fooFoo-1');
@@ -213,7 +253,9 @@ export class FakeComponent {
   // Keep track of the simple changes passed to ngOnChanges
   simpleChanges: SimpleChanges[] = [];
 
-  ngOnChanges(simpleChanges: SimpleChanges) { this.simpleChanges.push(simpleChanges); }
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    this.simpleChanges.push(simpleChanges);
+  }
 }
 
 export class FakeComponentFactory extends ComponentFactory<any> {
@@ -227,13 +269,24 @@ export class FakeComponentFactory extends ComponentFactory<any> {
         jasmine.createSpyObj('changeDetectorRef', ['detectChanges']);
   }
 
-  get selector(): string { return 'fake-component'; }
-  get componentType(): Type<any> { return FakeComponent; }
-  get ngContentSelectors(): string[] { return ['content-1', 'content-2']; }
+  get selector(): string {
+    return 'fake-component';
+  }
+  get componentType(): Type<any> {
+    return FakeComponent;
+  }
+  get ngContentSelectors(): string[] {
+    return ['content-1', 'content-2'];
+  }
   get inputs(): {propName: string; templateName: string}[] {
     return [
       {propName: 'fooFoo', templateName: 'fooFoo'},
       {propName: 'barBar', templateName: 'my-bar-bar'},
+      {propName: 'falsyUndefined', templateName: 'falsyUndefined'},
+      {propName: 'falsyNull', templateName: 'falsyNull'},
+      {propName: 'falsyEmpty', templateName: 'falsyEmpty'},
+      {propName: 'falsyFalse', templateName: 'falsyFalse'},
+      {propName: 'falsyZero', templateName: 'falsyZero'},
     ];
   }
 
@@ -252,15 +305,16 @@ export class FakeComponentFactory extends ComponentFactory<any> {
 }
 
 function expectSimpleChanges(actual: SimpleChanges, expected: SimpleChanges) {
-  Object.keys(actual).forEach(
-      key => { expect(expected[key]).toBeTruthy(`Change included additional key ${key}`); });
+  Object.keys(actual).forEach(key => {
+    expect(expected[key]).toBeTruthy(`Change included additional key ${key}`);
+  });
 
   Object.keys(expected).forEach(key => {
     expect(actual[key]).toBeTruthy(`Change should have included key ${key}`);
     if (actual[key]) {
-      expect(actual[key].previousValue).toBe(expected[key].previousValue);
-      expect(actual[key].currentValue).toBe(expected[key].currentValue);
-      expect(actual[key].firstChange).toBe(expected[key].firstChange);
+      expect(actual[key].previousValue).toBe(expected[key].previousValue, `${key}.previousValue`);
+      expect(actual[key].currentValue).toBe(expected[key].currentValue, `${key}.currentValue`);
+      expect(actual[key].firstChange).toBe(expected[key].firstChange, `${key}.firstChange`);
     }
   });
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,7 +28,7 @@ function httpGet(server, path, headers) {
             })
         .on('error', (e) => reject(e));
   });
-};
+}
 
 let warnNoToken = true;
 
@@ -47,7 +47,7 @@ async function githubGet(path) {
   }
 
   return JSON.parse(await httpGet('api.github.com', '/repos/angular/angular/' + path, headers));
-};
+}
 
 async function githubPrInfo(prNumber) {
   const pr = (await githubGet('pulls/' + prNumber));
@@ -62,7 +62,7 @@ async function githubPrInfo(prNumber) {
     },
     branch: branch
   };
-};  // trailing ; so that clang-format is not confused on async function
+}
 
 function gitHasLocalModifications() {
   return execNoFatal('git diff-index --quiet HEAD --').code != 0;

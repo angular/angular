@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -75,13 +75,21 @@ class R3AstHumanizer implements t.Visitor<void> {
     ]);
   }
 
-  visitText(text: t.Text) { this.result.push(['Text', text.value]); }
+  visitText(text: t.Text) {
+    this.result.push(['Text', text.value]);
+  }
 
-  visitBoundText(text: t.BoundText) { this.result.push(['BoundText', unparse(text.value)]); }
+  visitBoundText(text: t.BoundText) {
+    this.result.push(['BoundText', unparse(text.value)]);
+  }
 
-  visitIcu(icu: t.Icu) { return null; }
+  visitIcu(icu: t.Icu) {
+    return null;
+  }
 
-  private visitAll(nodes: t.Node[][]) { nodes.forEach(node => t.visitAll(this, node)); }
+  private visitAll(nodes: t.Node[][]) {
+    nodes.forEach(node => t.visitAll(this, node));
+  }
 }
 
 function expectFromHtml(html: string) {
@@ -95,7 +103,18 @@ function expectFromR3Nodes(nodes: t.Node[]) {
   return expect(humanizer.result);
 }
 
+function expectSpanFromHtml(html: string) {
+  const {nodes} = parse(html);
+  return expect(nodes[0]!.sourceSpan.toString());
+}
+
 describe('R3 template transform', () => {
+  describe('ParseSpan on nodes toString', () => {
+    it('should create valid text span on Element with adjacent start and end tags', () => {
+      expectSpanFromHtml('<div></div>').toBe('<div></div>');
+    });
+  });
+
   describe('Nodes without binding', () => {
     it('should parse text nodes', () => {
       expectFromHtml('a').toEqual([
@@ -155,6 +174,10 @@ describe('R3 template transform', () => {
         ['Element', 'div'],
         ['BoundAttribute', BindingType.Property, 'prop', 'v'],
       ]);
+    });
+
+    it('should report missing property names in bind- syntax', () => {
+      expect(() => parse('<div bind-></div>')).toThrowError(/Property name is missing in binding/);
     });
 
     it('should parse bound properties via {{...}}', () => {
@@ -276,6 +299,24 @@ describe('R3 template transform', () => {
 
   describe('inline templates', () => {
     it('should support attribute and bound attributes', () => {
+      // Desugared form is
+      // <ng-template ngFor [ngForOf]="items" let-item>
+      //   <div></div>
+      // </ng-template>
+      expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
+        ['Template'],
+        ['TextAttribute', 'ngFor', ''],
+        ['BoundAttribute', BindingType.Property, 'ngForOf', 'items'],
+        ['Variable', 'item', '$implicit'],
+        ['Element', 'div'],
+      ]);
+
+      // Note that this test exercises an *incorrect* usage of the ngFor
+      // directive. There is a missing 'let' in the beginning of the expression
+      // which causes the template to be desugared into
+      // <ng-template [ngFor]="item" [ngForOf]="items">
+      //   <div></div>
+      // </ng-template>
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
         ['Template'],
         ['BoundAttribute', BindingType.Property, 'ngFor', 'item'],
@@ -329,6 +370,10 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should report missing event names in on- syntax', () => {
+      expect(() => parse('<div on-></div>')).toThrowError(/Event name is missing in binding/);
+    });
+
     it('should parse bound events and properties via [(...)]', () => {
       expectFromHtml('<div [(prop)]="v"></div>').toEqual([
         ['Element', 'div'],
@@ -345,9 +390,26 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should report missing property names in bindon- syntax', () => {
+      expect(() => parse('<div bindon-></div>'))
+          .toThrowError(/Property name is missing in binding/);
+    });
+
     it('should report an error on empty expression', () => {
       expect(() => parse('<div (event)="">')).toThrowError(/Empty expressions are not allowed/);
       expect(() => parse('<div (event)="   ">')).toThrowError(/Empty expressions are not allowed/);
+    });
+  });
+
+  describe('variables', () => {
+    it('should report variables not on template elements', () => {
+      expect(() => parse('<div let-a-name="b"></div>'))
+          .toThrowError(/"let-" is only supported on ng-template elements./);
+    });
+
+    it('should report missing variable names', () => {
+      expect(() => parse('<ng-template let-><ng-template>'))
+          .toThrowError(/Variable does not have a name/);
     });
   });
 
@@ -371,6 +433,20 @@ describe('R3 template transform', () => {
         ['Element', 'div'],
         ['Reference', 'someA', ''],
       ]);
+    });
+
+    it('should report invalid reference names', () => {
+      expect(() => parse('<div #a-b></div>')).toThrowError(/"-" is not allowed in reference names/);
+    });
+
+    it('should report missing reference names', () => {
+      expect(() => parse('<div #></div>')).toThrowError(/Reference does not have a name/);
+    });
+  });
+
+  describe('literal attribute', () => {
+    it('should report missing animation trigger in @ syntax', () => {
+      expect(() => parse('<div @></div>')).toThrowError(/Animation trigger is missing/);
     });
   });
 

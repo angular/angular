@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ca', [['a. m.', 'p. m.'], u, u], u,
+  'ca',
+  [['a. m.', 'p. m.'], u, u],
+  u,
   [
     ['dg', 'dl', 'dt', 'dc', 'dj', 'dv', 'ds'], ['dg.', 'dl.', 'dt.', 'dc.', 'dj.', 'dv.', 'ds.'],
     ['diumenge', 'dilluns', 'dimarts', 'dimecres', 'dijous', 'divendres', 'dissabte'],
@@ -32,38 +34,44 @@ export default [
       'de set.', 'd’oct.', 'de nov.', 'de des.'
     ],
     [
-      'de gener', 'de febrer', 'de març', 'd’abril', 'de maig', 'de juny', 'de juliol',
-      'd’agost', 'de setembre', 'd’octubre', 'de novembre', 'de desembre'
+      'de gener', 'de febrer', 'de març', 'd’abril', 'de maig', 'de juny', 'de juliol', 'd’agost',
+      'de setembre', 'd’octubre', 'de novembre', 'de desembre'
     ]
   ],
   [
     ['GN', 'FB', 'MÇ', 'AB', 'MG', 'JN', 'JL', 'AG', 'ST', 'OC', 'NV', 'DS'],
     [
-      'gen.', 'febr.', 'març', 'abr.', 'maig', 'juny', 'jul.', 'ag.', 'set.', 'oct.', 'nov.',
-      'des.'
+      'gen.', 'febr.', 'març', 'abr.', 'maig', 'juny', 'jul.', 'ag.', 'set.', 'oct.', 'nov.', 'des.'
     ],
     [
       'gener', 'febrer', 'març', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre', 'octubre',
       'novembre', 'desembre'
     ]
   ],
-  [['aC', 'dC'], u, ['abans de Crist', 'després de Crist']], 1, [6, 0],
+  [['aC', 'dC'], u, ['abans de Crist', 'després de Crist']],
+  1,
+  [6, 0],
   ['d/M/yy', 'd MMM y', 'd MMMM \'de\' y', 'EEEE, d MMMM \'de\' y'],
   ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
   ['{1} {0}', '{1}, {0}', '{1} \'a\' \'les\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'EUR',
+  '€',
+  'euro',
+  {
     'AUD': ['AU$', '$'],
     'BRL': [u, 'R$'],
     'CAD': [u, '$'],
-    'CNY': ['¥'],
+    'CNY': [u, '¥'],
     'ESP': ['₧'],
-    'JPY': ['JP¥', '¥'],
     'MXN': [u, '$'],
     'THB': ['฿'],
     'USD': [u, '$'],
-    'VEF': [],
-    'XCD': [u, '$']
+    'VEF': [u, 'Bs F'],
+    'XCD': [u, '$'],
+    'XXX': []
   },
+  'ltr',
   plural
 ];

@@ -9,6 +9,7 @@ ts_library(
     ]),
     deps = [
         "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/file_system",
         "@npm//@types/node",
         "@npm//typescript",
     ],

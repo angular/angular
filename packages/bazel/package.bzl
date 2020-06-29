@@ -1,4 +1,4 @@
-# Copyright Google Inc. All Rights Reserved.
+# Copyright Google LLC All Rights Reserved.
 #
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
@@ -25,24 +25,30 @@ def rules_angular_dev_dependencies():
     """
 
     # Needed for Remote Execution
+    # https://github.com/bazelbuild/bazel-toolchains/releases
     _maybe(
         http_archive,
         name = "bazel_toolchains",
-        sha256 = "142bcbd8cb751ce1193a1d7fef4e328493cd0a69cc0555183ad237f81418ba40",
-        strip_prefix = "bazel-toolchains-628224f6cf48e81116d0ee0bf65424eaa630d5b3",
+        sha256 = "db48eed61552e25d36fe051a65d2a329cc0fb08442627e8f13960c5ab087a44e",
+        strip_prefix = "bazel-toolchains-3.2.0",
         urls = [
-            "https://github.com/xingao267/bazel-toolchains/archive/628224f6cf48e81116d0ee0bf65424eaa630d5b3.tar.gz",
+            "https://mirror.bazel.build/github.com/bazelbuild/bazel-toolchains/releases/download/3.2.0/bazel-toolchains-3.2.0.tar.gz",
+            "https://github.com/bazelbuild/bazel-toolchains/releases/download/3.2.0/bazel-toolchains-3.2.0.tar.gz",
         ],
     )
 
     #############################################
     # Dependencies for generating documentation #
     #############################################
-    http_archive(
+    _maybe(
+        http_archive,
         name = "io_bazel_rules_sass",
-        sha256 = "76ae498b9a96fa029f026f8358ed44b93c934dde4691a798cb3a4137c307b7dc",
-        strip_prefix = "rules_sass-1.15.1",
-        url = "https://github.com/bazelbuild/rules_sass/archive/1.15.1.zip",
+        sha256 = "77e241148f26d5dbb98f96fe0029d8f221c6cb75edbb83e781e08ac7f5322c5f",
+        strip_prefix = "rules_sass-1.24.0",
+        urls = [
+            "https://github.com/bazelbuild/rules_sass/archive/1.24.0.zip",
+            "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.24.0.zip",
+        ],
     )
 
     http_archive(

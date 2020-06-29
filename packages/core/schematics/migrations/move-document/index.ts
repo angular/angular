@@ -1,17 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {dirname, relative} from 'path';
+import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
+import {createMigrationProgram} from '../../utils/typescript/compiler_host';
+
 import {COMMON_IMPORT, DOCUMENT_TOKEN_NAME, DocumentImportVisitor, ResolvedDocumentImport} from './document_import_visitor';
 import {addToImport, createImport, removeFromImport} from './move-import';
 
@@ -23,7 +24,7 @@ export default function(): Rule {
     const basePath = process.cwd();
 
     if (!buildPaths.length && !testPaths.length) {
-      throw new SchematicsException(`Could not find any tsconfig file. Cannot migrate DOCUMENT 
+      throw new SchematicsException(`Could not find any tsconfig file. Cannot migrate DOCUMENT
           to new import source.`);
     }
 
@@ -39,22 +40,7 @@ export default function(): Rule {
  * new import source.
  */
 function runMoveDocumentMigration(tree: Tree, tsconfigPath: string, basePath: string) {
-  const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = ts.createCompilerHost(parsed.options, true);
-
-  // We need to overwrite the host "readFile" method, as we want the TypeScript
-  // program to be based on the file contents in the virtual file tree. Otherwise
-  // if we run the migration for multiple tsconfig files which have intersecting
-  // source files, it can end up updating query definitions multiple times.
-  host.readFile = fileName => {
-    const buffer = tree.read(relative(basePath, fileName));
-    // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset which
-    // which breaks the CLI UpdateRecorder.
-    // See: https://github.com/angular/angular/pull/30719
-    return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
-  };
-
-  const program = ts.createProgram(parsed.fileNames, parsed.options, host);
+  const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const visitor = new DocumentImportVisitor(typeChecker);
   const sourceFiles = program.getSourceFiles().filter(

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,9 +19,9 @@ ng_module(
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
+        "//packages/zone.js/lib:zone_d_ts",
         "@npm//@types/node",
         "@npm//rxjs",
-        "@npm//zone.js",
     ],
 )
 
@@ -31,17 +31,28 @@ ng_package(
         "package.json",
         "//packages/platform-server/testing:package.json",
     ],
-    entry_point = "packages/platform-server/index.js",
+    entry_point = ":index.ts",
     tags = [
         "release-with-framework",
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//integration:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
     ],
     deps = [
         ":platform-server",
         "//packages/platform-server/testing",
     ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "platform-server_api",
+    actualDir = "angular/packages/platform-server/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/platform-server",
 )

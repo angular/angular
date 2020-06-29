@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,12 +12,12 @@ import {Router} from '@angular/router';
 import {UpgradeModule} from '@angular/upgrade/static';
 
 /**
- * @description
+ * Creates an initializer that sets up `ngRoute` integration
+ * along with setting up the Angular router.
  *
- * Creates an initializer that in addition to setting up the Angular
- * router sets up the ngRoute integration.
+ * @usageNotes
  *
- * ```
+ * <code-example language="typescript">
  * @NgModule({
  *  imports: [
  *   RouterModule.forRoot(SOME_ROUTES),
@@ -30,14 +30,14 @@ import {UpgradeModule} from '@angular/upgrade/static';
  * export class AppModule {
  *   ngDoBootstrap() {}
  * }
- * ```
+ * </code-example>
  *
  * @publicApi
  */
 export const RouterUpgradeInitializer = {
   provide: APP_BOOTSTRAP_LISTENER,
   multi: true,
-  useFactory: locationSyncBootstrapListener as(ngUpgrade: UpgradeModule) => () => void,
+  useFactory: locationSyncBootstrapListener as (ngUpgrade: UpgradeModule) => () => void,
   deps: [UpgradeModule]
 };
 
@@ -45,20 +45,24 @@ export const RouterUpgradeInitializer = {
  * @internal
  */
 export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
-  return () => { setUpLocationSync(ngUpgrade); };
+  return () => {
+    setUpLocationSync(ngUpgrade);
+  };
 }
 
 /**
- * @description
+ * Sets up a location change listener to trigger `history.pushState`.
+ * Works around the problem that `onPopState` does not trigger `history.pushState`.
+ * Must be called *after* calling `UpgradeModule.bootstrap`.
  *
- * Sets up a location synchronization.
- *
- * History.pushState does not fire onPopState, so the Angular location
- * doesn't detect it. The workaround is to attach a location change listener
+ * @param ngUpgrade The upgrade NgModule.
+ * @param urlType The location strategy.
+ * @see `HashLocationStrategy`
+ * @see `PathLocationStrategy`
  *
  * @publicApi
  */
-export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path' | 'hash' = 'path') {
+export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path'|'hash' = 'path') {
   if (!ngUpgrade.$injector) {
     throw new Error(`
         RouterUpgradeInitializer can be used only after UpgradeModule.bootstrap has been called.
@@ -87,7 +91,7 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path' | 'h
 }
 
 /**
- * Normalize and parse a URL.
+ * Normalizes and parses a URL.
  *
  * - Normalizing means that a relative URL will be resolved into an absolute URL in the context of
  *   the application document.

@@ -1,18 +1,15 @@
-import { Component, ElementRef, HostBinding, HostListener, OnInit,
-         QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, HostBinding, HostListener, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
-
-import { CurrentNodes, NavigationService, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
-import { DocumentService, DocumentContents } from 'app/documents/document.service';
+import { DocumentContents, DocumentService } from 'app/documents/document.service';
+import { NotificationComponent } from 'app/layout/notification/notification.component';
+import { CurrentNodes, NavigationNode, NavigationService, VersionInfo } from 'app/navigation/navigation.service';
+import { SearchResults } from 'app/search/interfaces';
+import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { SearchService } from 'app/search/search.service';
 import { Deployment } from 'app/shared/deployment.service';
 import { LocationService } from 'app/shared/location.service';
-import { NotificationComponent } from 'app/layout/notification/notification.component';
 import { ScrollService } from 'app/shared/scroll.service';
-import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
-import { SearchResults } from 'app/search/interfaces';
-import { SearchService } from 'app/search/search.service';
 import { TocService } from 'app/shared/toc.service';
-
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
@@ -77,6 +74,8 @@ export class AppComponent implements OnInit {
 
   versionInfo: VersionInfo;
 
+  private currentUrl: string;
+
   get isOpened() { return this.isSideBySide && this.isSideNavDoc; }
   get mode() { return this.isSideBySide ? 'side' : 'over'; }
 
@@ -120,11 +119,6 @@ export class AppComponent implements OnInit {
     this.documentService.currentDocument.subscribe(doc => this.currentDocument = doc);
 
     this.locationService.currentPath.subscribe(path => {
-      // Redirect to docs if we are in archive mode and are not hitting a docs page
-      // (i.e. we have arrived at a marketing page)
-      if (this.deployment.mode === 'archive' && !/^(docs$|api|guide|tutorial)/.test(path)) {
-        this.locationService.replace('docs');
-      }
       if (path === this.currentPath) {
         // scroll only if on same page (most likely a change to the hash)
         this.scrollService.scroll();
@@ -138,41 +132,49 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.navigationService.currentNodes.subscribe(currentNodes => this.currentNodes = currentNodes);
+    this.navigationService.currentNodes.subscribe(currentNodes => {
+      this.currentNodes = currentNodes;
+
+      // Redirect to docs if we are in archive mode and are not hitting a docs page
+      // (i.e. we have arrived at a marketing page)
+      if (this.deployment.mode === 'archive' && !currentNodes[sideNavView]) {
+        this.locationService.replace('docs');
+      }
+    });
 
     // Compute the version picker list from the current version and the versions in the navigation map
-    combineLatest(
+    combineLatest([
       this.navigationService.versionInfo,
-      this.navigationService.navigationViews.pipe(map(views => views['docVersions'])))
-      .subscribe(([versionInfo, versions]) => {
-        // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
-        const computedVersions: NavigationNode[] = [
-          { title: 'next', url: 'https://next.angular.io' },
-          { title: 'stable', url: 'https://angular.io' },
-        ];
-        if (this.deployment.mode === 'archive') {
-          computedVersions.push({ title: `v${versionInfo.major}` });
-        }
-        this.docVersions = [...computedVersions, ...versions];
+      this.navigationService.navigationViews.pipe(map(views => views['docVersions'])),
+    ]).subscribe(([versionInfo, versions]) => {
+      // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
+      const computedVersions: NavigationNode[] = [
+        { title: 'next', url: 'https://next.angular.io/' },
+        { title: 'stable', url: 'https://angular.io/' },
+      ];
+      if (this.deployment.mode === 'archive') {
+        computedVersions.push({ title: `v${versionInfo.major}` });
+      }
+      this.docVersions = [...computedVersions, ...versions];
 
-        // Find the current version - eithers title matches the current deployment mode
-        // or its title matches the major version of the current version info
-        this.currentDocVersion = this.docVersions.find(version =>
-          version.title === this.deployment.mode || version.title === `v${versionInfo.major}`)!;
-        this.currentDocVersion.title += ` (v${versionInfo.raw})`;
-      });
+      // Find the current version - eithers title matches the current deployment mode
+      // or its title matches the major version of the current version info
+      this.currentDocVersion = this.docVersions.find(version =>
+        version.title === this.deployment.mode || version.title === `v${versionInfo.major}`)!;
+      this.currentDocVersion.title += ` (v${versionInfo.raw})`;
+    });
 
     this.navigationService.navigationViews.subscribe(views => {
-      this.footerNodes  = views['Footer']  || [];
+      this.footerNodes = views['Footer'] || [];
       this.sideNavNodes = views['SideNav'] || [];
-      this.topMenuNodes = views['TopBar']  || [];
+      this.topMenuNodes = views['TopBar'] || [];
       this.topMenuNarrowNodes = views['TopBarNarrow'] || this.topMenuNodes;
     });
 
     this.navigationService.versionInfo.subscribe(vi => this.versionInfo = vi);
 
     const hasNonEmptyToc = this.tocService.tocList.pipe(map(tocList => tocList.length > 0));
-    combineLatest(hasNonEmptyToc, this.showFloatingToc)
+    combineLatest([hasNonEmptyToc, this.showFloatingToc])
         .subscribe(([hasToc, showFloatingToc]) => this.hasFloatingToc = hasToc && showFloatingToc);
 
     // Generally, we want to delay updating the shell (e.g. host classes, sidenav state) for the new
@@ -180,11 +182,13 @@ export class AppComponent implements OnInit {
     // the new document applied prematurely).
     // For the first document, though, (when we know there is no previous document), we want to
     // ensure the styles are applied as soon as possible to avoid flicker.
-    combineLatest(
+    combineLatest([
       this.documentService.currentDocument,  // ...needed to determine host classes
-      this.navigationService.currentNodes)   // ...needed to determine `sidenav` state
-      .pipe(first())
+      this.navigationService.currentNodes,   // ...needed to determine `sidenav` state
+    ]).pipe(first())
       .subscribe(() => this.updateShell());
+
+    this.locationService.currentUrl.subscribe(url => this.currentUrl = url);
   }
 
   onDocReady() {
@@ -199,7 +203,7 @@ export class AppComponent implements OnInit {
   }
 
   onDocRemoved() {
-    this.scrollService.removeStoredScrollPosition();
+    this.scrollService.removeStoredScrollInfo();
   }
 
   onDocInserted() {
@@ -228,7 +232,8 @@ export class AppComponent implements OnInit {
   onDocVersionChange(versionIndex: number) {
     const version = this.docVersions[versionIndex];
     if (version.url) {
-      this.locationService.go(version.url);
+      const versionUrl = version.url  + (!version.url.endsWith('/') ? '/' : '');
+      this.locationService.go(`${versionUrl}${this.currentUrl}`);
     }
   }
 
@@ -260,7 +265,7 @@ export class AppComponent implements OnInit {
     }
 
     // Deal with anchor clicks; climb DOM tree until anchor found (or null)
-    let target: HTMLElement|null = eventTarget;
+    let target: HTMLElement | null = eventTarget;
     while (target && !(target instanceof HTMLAnchorElement)) {
       target = target.parentElement;
     }
@@ -403,7 +408,7 @@ export class AppComponent implements OnInit {
     if (key === '/' || keyCode === 191) {
       this.focusSearchBox();
     }
-    if (key === 'Escape' || keyCode === 27 ) {
+    if (key === 'Escape' || keyCode === 27) {
       // escape key
       if (this.showSearchResults) {
         this.hideSearchResults();

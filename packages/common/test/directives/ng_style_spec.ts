@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,19 +8,23 @@
 
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 {
   describe('NgStyle', () => {
-    let fixture: ComponentFixture<any>;
+    let fixture: ComponentFixture<TestComponent>;
 
-    function getComponent(): TestComponent { return fixture.componentInstance; }
+    function getComponent(): TestComponent {
+      return fixture.componentInstance;
+    }
 
     function expectNativeEl(fixture: ComponentFixture<any>): any {
       return expect(fixture.debugElement.children[0].nativeElement);
     }
 
-    afterEach(() => { fixture = null !; });
+    afterEach(() => {
+      fixture = null!;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});
@@ -157,6 +161,37 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
          expectNativeEl(fixture).not.toHaveCssStyle('max-width');
          expectNativeEl(fixture).toHaveCssStyle({'font-size': '12px'});
        }));
+
+    it('should not write to the native node unless the bound expression has changed', () => {
+      const template = `<div [ngStyle]="{'color': expr}"></div>`;
+
+      fixture = createTestComponent(template);
+      fixture.componentInstance.expr = 'red';
+
+      fixture.detectChanges();
+      expectNativeEl(fixture).toHaveCssStyle({'color': 'red'});
+
+      // Overwrite native styles so that we can check if ngStyle has performed DOM manupulation to
+      // update it.
+      fixture.debugElement.children[0].nativeElement.style.color = 'blue';
+      fixture.detectChanges();
+      // Assert that the style hasn't been updated
+      expectNativeEl(fixture).toHaveCssStyle({'color': 'blue'});
+
+      fixture.componentInstance.expr = 'yellow';
+      fixture.detectChanges();
+      // Assert that the style has changed now that the model has changed
+      expectNativeEl(fixture).toHaveCssStyle({'color': 'yellow'});
+    });
+
+    it('should correctly update style with units (.px) when the model is set to number', () => {
+      const template = `<div [ngStyle]="{'width.px': expr}"></div>`;
+      fixture = createTestComponent(template);
+      fixture.componentInstance.expr = 400;
+
+      fixture.detectChanges();
+      expectNativeEl(fixture).toHaveCssStyle({'width': '400px'});
+    });
   });
 }
 

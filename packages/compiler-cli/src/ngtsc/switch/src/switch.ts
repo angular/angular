@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -107,8 +107,8 @@ function flipIvySwitchesInVariableStatement(
     // reported as a thrown error and not a diagnostic as transformers cannot output diagnostics.
     let newIdentifier = findPostSwitchIdentifier(statements, postSwitchName);
     if (newIdentifier === null) {
-      throw new Error(
-          `Unable to find identifier ${postSwitchName} in ${stmt.getSourceFile().fileName} for the Ivy switch.`);
+      throw new Error(`Unable to find identifier ${postSwitchName} in ${
+          stmt.getSourceFile().fileName} for the Ivy switch.`);
     }
 
     // Copy the identifier with updateIdentifier(). This copies the internal information which

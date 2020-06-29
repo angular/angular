@@ -1,0 +1,18 @@
+@startuml
+[*] --> notScheduled: initialize
+notScheduled --> scheduling: scheduleTask
+
+scheduling: zoneSpec.onScheduleTask
+scheduling: zoneSpec.onHasTask
+
+scheduling --> scheduled: override with\n anotherZone
+scheduled --> running: timeout callback\nreadystatechange\ncallback
+running: anotherZoneSpec:onInvokeTask
+
+scheduled --> canceling: clearTimeout\n/abort request
+canceling: anotherZoneSpec.onCancelTask
+canceling --> notScheduled
+canceling: zneSpec.onHasTask
+running --> notScheduled
+running: zoneSpec.onHasTask
+@enduml

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -45,7 +45,9 @@ export class ResourceLoaderImpl extends ResourceLoader {
       }
     };
 
-    xhr.onerror = function() { reject(`Failed to load ${url}`); };
+    xhr.onerror = function() {
+      reject(`Failed to load ${url}`);
+    };
 
     xhr.send();
     return promise;

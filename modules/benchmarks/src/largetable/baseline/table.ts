@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -50,12 +50,12 @@ export class TableComponent {
     this._rootEl.appendChild(table);
     const tbody = document.createElement('tbody');
     table.appendChild(tbody);
-    this._renderCells = new Array(data.length);
+    this._renderCells = [];
     for (let r = 0; r < data.length; r++) {
       const dataRow = data[r];
       const tr = document.createElement('tr');
       tbody.appendChild(tr);
-      const renderRow = new Array(dataRow.length);
+      const renderRow = [];
       this._renderCells[r] = renderRow;
       for (let c = 0; c < dataRow.length; c++) {
         const dataCell = dataRow[c];

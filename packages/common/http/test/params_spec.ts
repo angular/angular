@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -74,6 +74,21 @@ import {HttpParams} from '@angular/common/http/src/params';
       it('should give an accurate list of keys', () => {
         const body = new HttpParams({fromString: 'a=1&b=2&c=3&d=4'});
         expect(body.keys()).toEqual(['a', 'b', 'c', 'd']);
+      });
+    });
+
+    describe('toString', () => {
+      it('should stringify string params', () => {
+        const body = new HttpParams({fromObject: {a: '', b: '2', c: '3'}});
+        expect(body.toString()).toBe('a=&b=2&c=3');
+      });
+      it('should stringify array params', () => {
+        const body = new HttpParams({fromObject: {a: '', b: ['21', '22'], c: '3'}});
+        expect(body.toString()).toBe('a=&b=21&b=22&c=3');
+      });
+      it('should stringify empty array params', () => {
+        const body = new HttpParams({fromObject: {a: '', b: [], c: '3'}});
+        expect(body.toString()).toBe('a=&c=3');
       });
     });
   });

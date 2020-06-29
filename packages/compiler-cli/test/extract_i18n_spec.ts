@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import {mainXi18n} from '../src/extract_i18n';
-import {makeTempDir, setup} from './test_support';
+import {setup} from './test_support';
 
 const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE messagebundle [
@@ -207,7 +207,9 @@ describe('extract_i18n command line', () => {
   beforeEach(() => {
     errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
     const support = setup();
-    write = (fileName: string, content: string) => { support.write(fileName, content); };
+    write = (fileName: string, content: string) => {
+      support.write(fileName, content);
+    };
     basePath = support.basePath;
     outDir = path.join(basePath, 'built');
     write('tsconfig-base.json', `{
@@ -225,6 +227,9 @@ describe('extract_i18n command line', () => {
         "moduleResolution": "node",
         "lib": ["es6", "dom"],
         "typeRoots": ["node_modules/@types"]
+      },
+      "angularCompilerOptions": {
+        "enableIvy": false
       }
     }`);
   });

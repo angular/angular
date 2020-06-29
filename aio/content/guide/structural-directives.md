@@ -1,4 +1,4 @@
-# Structural Directives
+# Structural directives
 
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}
@@ -31,9 +31,7 @@ Structural directives are easy to recognize.
 An asterisk (*) precedes the directive attribute name as in this example.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif)" region="ngif">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif)" region="ngif"></code-example>
 
 
 
@@ -52,9 +50,7 @@ described in the [_Template Syntax_](guide/template-syntax) guide and seen in sa
 Here's an example of them in a template:
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (built-in)" region="built-in">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (built-in)" region="built-in"></code-example>
 
 
 
@@ -121,9 +117,7 @@ You can [only apply one](guide/structural-directives#one-per-element) _structura
 It takes a boolean expression and makes an entire chunk of the DOM appear or disappear.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-true)" region="ngif-true">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif-true)" region="ngif-true"></code-example>
 
 
 
@@ -131,9 +125,9 @@ The `ngIf` directive doesn't hide elements with CSS. It adds and removes them ph
 Confirm that fact using browser developer tools to inspect the DOM.
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/element-not-in-dom.png' alt="ngIf=false element not in DOM">
-</figure>
+</div>
 
 
 
@@ -150,18 +144,16 @@ The component and DOM nodes can be garbage-collected and free up memory.
 A directive could hide the unwanted paragraph instead by setting its `display` style to `none`.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (display-none)" region="display-none">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (display-none)" region="display-none"></code-example>
 
 
 
 While invisible, the element remains in the DOM.
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/element-display-in-dom.png' alt="hidden element still in DOM">
-</figure>
+</div>
 
 
 
@@ -201,9 +193,7 @@ and wondered why it is necessary and what it does.
 Here is `*ngIf` displaying the hero's name if `hero` exists.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (asterisk)" region="asterisk">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (asterisk)" region="asterisk"></code-example>
 
 
 
@@ -211,9 +201,7 @@ The asterisk is "syntactic sugar" for something a bit more complicated.
 Internally, Angular translates the `*ngIf` _attribute_ into a `<ng-template>` _element_, wrapped around the host element, like this.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-template)" region="ngif-template">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif-template)" region="ngif-template"></code-example>
 
 
 
@@ -223,9 +211,9 @@ Internally, Angular translates the `*ngIf` _attribute_ into a `<ng-template>` _e
 The first form is not actually rendered, only the finished product ends up in the DOM.
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/hero-div-in-dom.png' alt="hero div in DOM">
-</figure>
+</div>
 
 
 
@@ -246,9 +234,7 @@ Angular transforms the `*ngFor` in similar fashion from asterisk (*) syntax to `
 Here's a full-featured application of `NgFor`, written both ways:
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (inside-ngfor)" region="inside-ngfor">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (inside-ngfor)" region="inside-ngfor"></code-example>
 
 
 
@@ -265,7 +251,7 @@ You enable these features in the string assigned to `ngFor`, which you write in 
 
 Everything _outside_ the `ngFor` string stays with the host element
 (the `<div>`) as it moves inside the `<ng-template>`.
-In this example, the `[ngClass]="odd"` stays on the `<div>`.
+In this example, the `[class.odd]="odd"` stays on the `<div>`.
 
 
 </div>
@@ -275,44 +261,170 @@ In this example, the `[ngClass]="odd"` stays on the `<div>`.
 {@a microsyntax}
 
 
-### Microsyntax
+## Microsyntax
 
 The Angular microsyntax lets you configure a directive in a compact, friendly string.
 The microsyntax parser translates that string into attributes on the `<ng-template>`:
 
 * The `let` keyword declares a [_template input variable_](guide/structural-directives#template-input-variable)
 that you reference within the template. The input variables in this example are `hero`, `i`, and `odd`.
-The parser translates `let hero`, `let i`, and `let odd` into variables named,
+The parser translates `let hero`, `let i`, and `let odd` into variables named
 `let-hero`, `let-i`, and `let-odd`.
 
-* The microsyntax parser takes `of` and `trackBy`, title-cases them (`of` -> `Of`, `trackBy` -> `TrackBy`),
-and prefixes them with the directive's attribute name (`ngFor`), yielding the names `ngForOf` and `ngForTrackBy`.
-Those are the names of two `NgFor` _input properties_ .
+* The microsyntax parser title-cases all directives and prefixes them with the directive's
+attribute name, such as `ngFor`. For example, the `ngFor` input properties,
+`of` and `trackBy`, become `ngForOf` and `ngForTrackBy`, respectively.
 That's how the directive learns that the list is `heroes` and the track-by function is `trackById`.
 
 * As the `NgFor` directive loops through the list, it sets and resets properties of its own _context_ object.
-These properties include `index` and `odd` and a special property named `$implicit`.
+These properties can include, but aren't limited to, `index`, `odd`, and a special property
+named `$implicit`.
 
 * The `let-i` and `let-odd` variables were defined as `let i=index` and `let odd=odd`.
 Angular sets them to the current value of the context's `index` and `odd` properties.
 
 * The context property for `let-hero` wasn't specified.
 Its intended source is implicit.
-Angular sets `let-hero` to the value of the context's `$implicit` property
+Angular sets `let-hero` to the value of the context's `$implicit` property,
 which `NgFor` has initialized with the hero for the current iteration.
 
-* The [API guide](api/common/NgForOf "API: NgFor")
+* The [`NgFor` API guide](api/common/NgForOf "API: NgFor")
 describes additional `NgFor` directive properties and context properties.
 
-* `NgFor` is implemented by the `NgForOf` directive. Read more about additional `NgForOf` directive properties and context properties [NgForOf API reference](api/common/NgForOf).
+* The `NgForOf` directive implements `NgFor`. Read more about additional `NgForOf` directive properties and context properties in the [NgForOf API reference](api/common/NgForOf).
+
+### Writing your own structural directives
+
+These microsyntax mechanisms are also available to you when you write your own structural directives.
+For example, microsyntax in Angular allows you to write `<div *ngFor="let item of items">{{item}}</div>`
+instead of `<ng-template ngFor let-item [ngForOf]="items"><div>{{item}}</div></ng-template>`.
+The following sections provide detailed information on constraints, grammar,
+and translation of microsyntax.
+
+### Constraints
+
+Microsyntax must meet the following requirements:
+
+- It must be known ahead of time so that IDEs can parse it without knowing the underlying semantics of the directive or what directives are present.
+- It must translate to key-value attributes in the DOM.
+
+### Grammar
+
+When you write your own structural directives, use the following grammar:
+
+```
+*:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )*"
+```
+
+The following tables describe each portion of the microsyntax grammar.
+
+<!-- What should I put in the table headers? -->
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+  </tr>
+  <tr>
+    <td><code>prefix</code></td>
+    <td>HTML attribute key</td>
+  </tr>
+  <tr>
+    <td><code>key</code></td>
+    <td>HTML attribute key</td>
+  </tr>
+  <tr>
+    <td><code>local</code></td>
+    <td>local variable name used in the template</td>
+  </tr>
+  <tr>
+    <td><code>export</code></td>
+    <td>value exported by the directive under a given name</td>
+  </tr>
+  <tr>
+    <td><code>expression</code></td>
+    <td>standard Angular expression</td>
+  </tr>
+</table>
+
+<!-- The items in this table seem different. Is there another name for how we should describe them? -->
+<table>
+  <tr>
+    <th></th>
+  </tr>
+  <tr>
+    <td colspan="3"><code>keyExp = :key ":"? :expression ("as" :local)? ";"? </code></td>
+  </tr>
+  <tr>
+    <td colspan="3"><code>let = "let" :local "=" :export ";"?</code></td>
+  </tr>
+  <tr>
+    <td colspan="3"><code>as = :export "as" :local ";"?</code></td>
+  </tr>
+</table>
 
 
-These microsyntax mechanisms are available to you when you write your own structural directives.
+### Translation
+
+A microsyntax is translated to the normal binding syntax as follows:
+
+<!-- What to put in the table headers below? Are these correct?-->
+<table>
+  <tr>
+    <th>Microsyntax</th>
+    <th>Translation</th>
+  </tr>
+  <tr>
+    <td><code>prefix</code> and naked <code>expression</code></td>
+    <td><code>[prefix]="expression"</code></td>
+  </tr>
+  <tr>
+    <td><code>keyExp</code></td>
+    <td><code>[prefixKey] "expression"
+    (let-prefixKey="export")</code>
+    <br />
+    Notice that the <code>prefix</code>
+    is added to the <code>key</code>
+    </td>
+  </tr>
+  <tr>
+    <td><code>let</code></td>
+    <td><code>let-local="export"</code></td>
+  </tr>
+</table>
+
+### Microsyntax examples
+
+The following table demonstrates how Angular desugars microsyntax.
+
+<table>
+  <tr>
+    <th>Microsyntax</th>
+    <th>Desugared</th>
+  </tr>
+  <tr>
+    <td><code>*ngFor="let item of [1,2,3]"</code></td>
+    <td><code>&lt;ng-template ngFor let-item [ngForOf]="[1,2,3]"&gt;</code></td>
+  </tr>
+  <tr>
+    <td><code>*ngFor="let item of [1,2,3] as items; trackBy: myTrack; index as i"</code></td>
+    <td><code>&lt;ng-template ngFor let-item [ngForOf]="[1,2,3]" let-items="ngForOf" [ngForTrackBy]="myTrack" let-i="index"&gt;</code>
+    </td>
+  </tr>
+  <tr>
+    <td><code>*ngIf="exp"</code></td>
+    <td><code>&lt;ng-template [ngIf]="exp"&gt;</code></td>
+  </tr>
+  <tr>
+    <td><code>*ngIf="exp as value"</code></td>
+    <td><code>&lt;ng-template [ngIf]="exp" let-value="ngIf"&gt;</code></td>
+  </tr>
+</table>
+
 Studying the
 [source code for `NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
 and [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")
 is a great way to learn more.
-
 
 
 {@a template-input-variable}
@@ -321,7 +433,7 @@ is a great way to learn more.
 {@a template-input-variables}
 
 
-### Template input variable
+## Template input variable
 
 A _template input variable_ is a variable whose value you can reference _within_ a single instance of the template.
 There are several such variables in this example: `hero`, `i`, and `odd`.
@@ -346,7 +458,7 @@ variable as the `hero` declared as `#hero`.
 {@a one-per-element}
 
 
-### One structural directive per host element
+## One structural directive per host element
 
 Someday you'll want to repeat a block of HTML but only when a particular condition is true.
 You'll _try_ to put both an `*ngFor` and an `*ngIf` on the same host element.
@@ -373,9 +485,7 @@ The Angular _NgSwitch_ is actually a set of cooperating directives: `NgSwitch`, 
 Here's an example.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngswitch)" region="ngswitch">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngswitch)" region="ngswitch"></code-example>
 
 
 
@@ -409,9 +519,7 @@ As with other structural directives, the `NgSwitchCase` and `NgSwitchDefault`
 can be desugared into the `<ng-template>` element form.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngswitch-template)" region="ngswitch-template">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngswitch-template)" region="ngswitch-template"></code-example>
 
 
 
@@ -444,18 +552,16 @@ those elements disappear.
 That's the fate of the middle "Hip!" in the phrase "Hip! Hip! Hooray!".
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (template-tag)" region="template-tag">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (template-tag)" region="template-tag"></code-example>
 
 
 
 Angular erases the middle "Hip!", leaving the cheer a bit less enthusiastic.
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/template-rendering.png' alt="template tag rendering">
-</figure>
+</div>
 
 
 
@@ -476,9 +582,7 @@ There's often a _root_ element that can and should host the structural directive
 The list element (`<li>`) is a typical host element of an `NgFor` repeater.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngfor-li)" region="ngfor-li">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngfor-li)" region="ngfor-li"></code-example>
 
 
 
@@ -486,9 +590,7 @@ When there isn't a host element, you can usually wrap the content in a native HT
 such as a `<div>`, and attach the directive to that wrapper.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif)" region="ngif">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif)" region="ngif"></code-example>
 
 
 
@@ -501,27 +603,23 @@ neither expect nor accommodate the new layout.
 For example, suppose you have the following paragraph layout.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-span)" region="ngif-span">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif-span)" region="ngif-span"></code-example>
 
 
 
 You also have a CSS style rule that happens to apply to a `<span>` within a `<p>`aragraph.
 
 
-<code-example path="structural-directives/src/app/app.component.css" linenums="false" header="src/app/app.component.css (p-span)" region="p-span">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.css" header="src/app/app.component.css (p-span)" region="p-span"></code-example>
 
 
 
 The constructed paragraph renders strangely.
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/bad-paragraph.png' alt="spanned paragraph with bad style">
-</figure>
+</div>
 
 
 
@@ -534,18 +632,16 @@ You can't wrap the _options_ in a conditional `<div>` or a `<span>`.
 When you try this,
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (select-span)" region="select-span">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (select-span)" region="select-span"></code-example>
 
 
 
 the drop down is empty.
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/bad-select.png' alt="spanned options don't work">
-</figure>
+</div>
 
 
 
@@ -559,36 +655,32 @@ because Angular _doesn't put it in the DOM_.
 Here's the conditional paragraph again, this time using `<ng-container>`.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-ngcontainer)" region="ngif-ngcontainer">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif-ngcontainer)" region="ngif-ngcontainer"></code-example>
 
 
 
 It renders properly.
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with proper style">
-</figure>
+</div>
 
 
 
 Now conditionally exclude a _select_ `<option>` with `<ng-container>`.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (select-ngcontainer)" region="select-ngcontainer">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (select-ngcontainer)" region="select-ngcontainer"></code-example>
 
 
 
 The drop down works properly.
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly">
-</figure>
+</div>
 
 <div class="alert is-helpful">
 
@@ -630,9 +722,7 @@ that does the opposite of `NgIf`.
 `UnlessDirective` displays the content when the condition is ***false***.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (appUnless-1)" region="appUnless-1">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (appUnless-1)" region="appUnless-1"></code-example>
 
 
 
@@ -649,9 +739,7 @@ Creating a directive is similar to creating a component.
 Here's how you might begin:
 
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (skeleton)" region="skeleton">
-
-</code-example>
+<code-example path="structural-directives/src/app/unless.directive.ts" header="src/app/unless.directive.ts (skeleton)" region="skeleton"></code-example>
 
 
 
@@ -684,9 +772,7 @@ and access the _view container_ through a
 You inject both in the directive constructor as private variables of the class.
 
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (ctor)" region="ctor">
-
-</code-example>
+<code-example path="structural-directives/src/app/unless.directive.ts" header="src/app/unless.directive.ts (ctor)" region="ctor"></code-example>
 
 
 
@@ -707,9 +793,7 @@ Read about `@Input` in the [_Template Syntax_](guide/template-syntax#inputs-outp
 
 
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (set)" region="set">
-
-</code-example>
+<code-example path="structural-directives/src/app/unless.directive.ts" header="src/app/unless.directive.ts (set)" region="set"></code-example>
 
 
 
@@ -727,9 +811,7 @@ Nobody reads the `appUnless` property so it doesn't need a getter.
 The completed directive code looks like this:
 
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (excerpt)" region="no-docs">
-
-</code-example>
+<code-example path="structural-directives/src/app/unless.directive.ts" header="src/app/unless.directive.ts (excerpt)" region="no-docs"></code-example>
 
 
 
@@ -738,9 +820,7 @@ Add this directive to the `declarations` array of the AppModule.
 Then create some HTML to try it.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (appUnless)" region="appUnless">
-
-</code-example>
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (appUnless)" region="appUnless"></code-example>
 
 
 
@@ -748,9 +828,92 @@ When the `condition` is falsy, the top (A) paragraph appears and the bottom (B) 
 When the `condition` is truthy, the top (A) paragraph is removed and the bottom (B) paragraph appears.
 
 
-<figure>
+<div class="lightbox">
   <img src='generated/images/guide/structural-directives/unless-anim.gif' alt="UnlessDirective in action">
-</figure>
+</div>
+
+{@a directive-type-checks}
+
+## Improving template type checking for custom directives
+
+You can improve template type checking for custom directives by adding template guard properties to your directive definition.
+These properties help the Angular template type checker find mistakes in the template at compile time, which can avoid runtime errors those mistakes can cause.
+
+Use the type-guard properties to inform the template type checker of an expected type, thus improving compile-time type-checking for that template.
+
+* A property `ngTemplateGuard_(someInputProperty)` lets you specify a more accurate type for an input expression within the template.
+* The `ngTemplateContextGuard` static property declares the type of the template context.
+
+This section provides example of both kinds of type-guard property.
+
+<div class="alert is-helpful">
+
+   For more information, see [Template type checking guide](guide/template-typecheck "Template type-checking guide").
+
+</div>
+
+{@a narrowing-input-types}
+
+### Make in-template type requirements more specific with template guards
+
+A structural directive in a template controls whether that template is rendered at run time, based on its input expression.
+To help the compiler catch template type errors, you should specify as closely as possible the required type of a directive's input expression when it occurs inside the template.
+
+A type guard function *narrows* the expected type of an input expression to a subset of types that might be passed to the directive within the template at run time.
+You can provide such a function to help the type-checker infer the proper type for the expression at compile time.
+
+For example, the `NgIf` implementation uses type-narrowing to ensure that the
+template is only instantiated if the input expression to `*ngIf` is truthy.
+To provide the specific type requirement, the `NgIf` directive defines a [static property `ngTemplateGuard_ngIf: 'binding'`](api/common/NgIf#static-properties).
+The `binding` value is a special case for a common kind of type-narrowing where the input expression is evaluated in order to satisfy the type requirement.
+
+To provide a more specific type for an input expression to a directive within the template, add a `ngTemplateGuard_xx` property to the directive, where the suffix to the static property name is the `@Input` field name.
+The value of the property can be either a general type-narrowing function based on its return type, or the string `"binding"` as in the case of `NgIf`.
+
+For example, consider the following structural directive that takes the result of a template expression as an input.
+
+<code-example language="ts" header="IfLoadedDirective">
+export type Loaded<T> = { type: 'loaded', data: T };
+export type Loading = { type: 'loading' };
+export type LoadingState<T> = Loaded<T> | Loading;
+export class IfLoadedDirective<T> {
+    @Input('ifLoaded') set state(state: LoadingState<T>) {}
+    static ngTemplateGuard_state<T>(dir: IfLoadedDirective<T>, expr: LoadingState<T>): expr is Loaded<T> { return true; };
+export interface Person {
+  name: string;
+}
+
+@Component({
+  template: `<div *ifLoaded="state">{{ state.data }}</div>`,
+})
+export class AppComponent {
+  state: LoadingState<Person>;
+}
+</code-example>
+
+In this example, the `LoadingState<T>` type permits either of two states, `Loaded<T>` or `Loading`. The expression used as the directive’s `state` input is of the umbrella type `LoadingState`, as it’s unknown what the loading state is at that point.
+
+The `IfLoadedDirective` definition declares the static field `ngTemplateGuard_state`, which expresses the narrowing behavior.
+Within the `AppComponent` template, the `*ifLoaded` structural directive should render this template only when `state` is actually `Loaded<Person>`.
+The type guard allows the type checker to infer that the acceptable type of `state` within the template is a `Loaded<T>`, and further infer that `T` must be an instance of `Person`.
+
+{@a narrowing-context-type}
+
+### Typing the directive's context
+
+If your structural directive provides a context to the instantiated template, you can properly type it inside the template by providing a static `ngTemplateContextGuard` function.
+The following snippet shows an example of such a function.
+
+<code-example language="ts" header="myDirective.ts">
+@Directive({…})
+export class ExampleDirective {
+    // Make sure the template checker knows the type of the context with which the
+    // template of this directive will be rendered
+    static ngTemplateContextGuard(dir: ExampleDirective, ctx: unknown): ctx is ExampleContext { return true; };
+
+    // …
+}
+</code-example>
 
 
 
@@ -799,7 +962,7 @@ Here is the source from the `src/app/` folder.
 
 
 
-You learned
+You learned:
 
 * that structural directives manipulate HTML layout.
 * to use [`<ng-container>`](guide/structural-directives#ngcontainer) as a grouping element when there is no suitable host element.

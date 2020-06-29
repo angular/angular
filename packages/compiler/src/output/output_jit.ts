@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -87,7 +87,9 @@ export class JitEvaluator {
    * @param args The arguments to pass to the function being executed.
    * @returns The return value of the executed function.
    */
-  executeFunction(fn: Function, args: any[]) { return fn(...args); }
+  executeFunction(fn: Function, args: any[]) {
+    return fn(...args);
+  }
 }
 
 /**
@@ -98,7 +100,9 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   private _evalArgValues: any[] = [];
   private _evalExportedVars: string[] = [];
 
-  constructor(private reflector: CompileReflector) { super(); }
+  constructor(private reflector: CompileReflector) {
+    super();
+  }
 
   createReturnStmt(ctx: EmitterVisitorContext) {
     const stmt = new o.ReturnStatement(new o.LiteralMapExpr(this._evalExportedVars.map(

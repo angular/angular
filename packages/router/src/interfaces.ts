@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -88,7 +88,7 @@ export interface CanActivate {
 }
 
 export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-    Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
+    Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 
 /**
  * @description
@@ -175,7 +175,7 @@ export interface CanActivateChild {
 }
 
 export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-    Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
+    Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 
 /**
  * @description
@@ -259,29 +259,26 @@ export interface CanDeactivate<T> {
 export type CanDeactivateFn<T> =
     (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
      nextState?: RouterStateSnapshot) =>
-        Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
+        Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 
 /**
  * @description
  *
  * Interface that classes can implement to be a data provider.
+ * A data provider class can be used with the router to resolve data during navigation.
+ * The interface defines a `resolve()` method that will be invoked when the navigation starts.
+ * The router will then wait for the data to be resolved before the route is finally activated.
  *
  * ```
- * class Backend {
- *   fetchTeam(id: string) {
- *     return 'someTeam';
- *   }
- * }
- *
- * @Injectable()
- * class TeamResolver implements Resolve<Team> {
- *   constructor(private backend: Backend) {}
+ * @Injectable({ providedIn: 'root' })
+ * export class HeroResolver implements Resolve<Hero> {
+ *   constructor(private service: HeroService) {}
  *
  *   resolve(
  *     route: ActivatedRouteSnapshot,
  *     state: RouterStateSnapshot
  *   ): Observable<any>|Promise<any>|any {
- *     return this.backend.fetchTeam(route.params.id);
+ *     return this.service.getHero(route.paramMap.get('id'));
  *   }
  * }
  *
@@ -289,42 +286,46 @@ export type CanDeactivateFn<T> =
  *   imports: [
  *     RouterModule.forRoot([
  *       {
- *         path: 'team/:id',
- *         component: TeamComponent,
+ *         path: 'detail/:id',
+ *         component: HeroDetailComponent,
  *         resolve: {
- *           team: TeamResolver
+ *           hero: HeroResolver
  *         }
  *       }
  *     ])
  *   ],
- *   providers: [TeamResolver]
+ *   exports: [RouterModule]
  * })
- * class AppModule {}
+ * export class AppRoutingModule {}
  * ```
  *
  * You can alternatively provide a function with the `resolve` signature:
  *
  * ```
+ * export const myHero: Hero = {
+ *   // ...
+ * }
+ *
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
  *       {
- *         path: 'team/:id',
- *         component: TeamComponent,
+ *         path: 'detail/:id',
+ *         component: HeroComponent,
  *         resolve: {
- *           team: 'teamResolver'
+ *           hero: 'heroResolver'
  *         }
  *       }
  *     ])
  *   ],
  *   providers: [
  *     {
- *       provide: 'teamResolver',
- *       useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => 'team'
+ *       provide: 'heroResolver',
+ *       useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => myHero
  *     }
  *   ]
  * })
- * class AppModule {}
+ * export class AppModule {}
  * ```
  *
  * @publicApi
@@ -338,6 +339,10 @@ export interface Resolve<T> {
  * @description
  *
  * Interface that a class can implement to be a guard deciding if children can be loaded.
+ * If all guards return `true`, navigation will continue. If any guard returns `false`,
+ * navigation will be cancelled. If any guard returns a `UrlTree`, current navigation will
+ * be cancelled and a new navigation will be kicked off to the `UrlTree` returned from the
+ * guard.
  *
  * ```
  * class UserToken {}
@@ -399,8 +404,9 @@ export interface Resolve<T> {
  * @publicApi
  */
 export interface CanLoad {
-  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean;
+  canLoad(route: Route, segments: UrlSegment[]):
+      Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 }
 
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
-    Observable<boolean>| Promise<boolean>| boolean;
+    Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;

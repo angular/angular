@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Pipe, PipeTransform} from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -44,7 +44,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * @publicApi
  */
-@Injectable()
 @Pipe({name: 'slice', pure: false})
 export class SlicePipe implements PipeTransform {
   /**
@@ -76,5 +75,7 @@ export class SlicePipe implements PipeTransform {
     return value.slice(start, end);
   }
 
-  private supports(obj: any): boolean { return typeof obj === 'string' || Array.isArray(obj); }
+  private supports(obj: any): boolean {
+    return typeof obj === 'string' || Array.isArray(obj);
+  }
 }

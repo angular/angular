@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -29,9 +29,9 @@ export interface NgElementConstructor<P> {
 
   /**
    * Initializes a constructor instance.
-   * @param injector The source component's injector.
+   * @param injector If provided, overrides the configured injector.
    */
-  new (injector: Injector): NgElement&WithProperties<P>;
+  new(injector?: Injector): NgElement&WithProperties<P>;
 }
 
 /**
@@ -44,20 +44,20 @@ export abstract class NgElement extends HTMLElement {
    * The strategy that controls how a component is transformed in a custom element.
    */
   // TODO(issue/24571): remove '!'.
-  protected ngElementStrategy !: NgElementStrategy;
+  protected ngElementStrategy!: NgElementStrategy;
   /**
    * A subscription to change, connect, and disconnect events in the custom element.
    */
   protected ngElementEventsSubscription: Subscription|null = null;
 
   /**
-    * Prototype for a handler that responds to a change in an observed attribute.
-    * @param attrName The name of the attribute that has changed.
-    * @param oldValue The previous value of the attribute.
-    * @param newValue The new value of the attribute.
-    * @param namespace The namespace in which the attribute is defined.
-    * @returns Nothing.
-    */
+   * Prototype for a handler that responds to a change in an observed attribute.
+   * @param attrName The name of the attribute that has changed.
+   * @param oldValue The previous value of the attribute.
+   * @param newValue The new value of the attribute.
+   * @param namespace The namespace in which the attribute is defined.
+   * @returns Nothing.
+   */
   abstract attributeChangedCallback(
       attrName: string, oldValue: string|null, newValue: string, namespace?: string): void;
   /**
@@ -136,43 +136,70 @@ export function createCustomElement<P>(
     // field externs. So using quoted access to explicitly prevent renaming.
     static readonly['observedAttributes'] = Object.keys(attributeToPropertyInputs);
 
-    constructor(injector?: Injector) {
-      super();
-
-      // Note that some polyfills (e.g. document-register-element) do not call the constructor.
-      // Do not assume this strategy has been created.
+    protected get ngElementStrategy(): NgElementStrategy {
+      // NOTE:
+      // Some polyfills (e.g. `document-register-element`) do not call the constructor, therefore
+      // it is not safe to set `ngElementStrategy` in the constructor and assume it will be
+      // available inside the methods.
+      //
       // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
       // now this is tested using a Google internal test suite.
-      this.ngElementStrategy = strategyFactory.create(injector || config.injector);
+      if (!this._ngElementStrategy) {
+        const strategy = this._ngElementStrategy =
+            strategyFactory.create(this.injector || config.injector);
+
+        // Collect pre-existing values on the element to re-apply through the strategy.
+        const preExistingValues =
+            inputs.filter(({propName}) => this.hasOwnProperty(propName)).map(({propName}): [
+              string, any
+            ] => [propName, (this as any)[propName]]);
+
+        // In some browsers (e.g. IE10), `Object.setPrototypeOf()` (which is required by some Custom
+        // Elements polyfills) is not defined and is thus polyfilled in a way that does not preserve
+        // the prototype chain. In such cases, `this` will not be an instance of `NgElementImpl` and
+        // thus not have the component input getters/setters defined on `NgElementImpl.prototype`.
+        if (!(this instanceof NgElementImpl)) {
+          // Add getters and setters to the instance itself for each property input.
+          defineInputGettersSetters(inputs, this);
+        } else {
+          // Delete the property from the instance, so that it can go through the getters/setters
+          // set on `NgElementImpl.prototype`.
+          preExistingValues.forEach(([propName]) => delete (this as any)[propName]);
+        }
+
+        // Re-apply pre-existing values through the strategy.
+        preExistingValues.forEach(([propName, value]) => strategy.setInputValue(propName, value));
+      }
+
+      return this._ngElementStrategy!;
+    }
+
+    private _ngElementStrategy?: NgElementStrategy;
+
+    constructor(private readonly injector?: Injector) {
+      super();
     }
 
     attributeChangedCallback(
         attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
-      if (!this.ngElementStrategy) {
-        this.ngElementStrategy = strategyFactory.create(config.injector);
-      }
-
-      const propName = attributeToPropertyInputs[attrName] !;
+      const propName = attributeToPropertyInputs[attrName]!;
       this.ngElementStrategy.setInputValue(propName, newValue);
     }
 
     connectedCallback(): void {
-      if (!this.ngElementStrategy) {
-        this.ngElementStrategy = strategyFactory.create(config.injector);
-      }
-
       this.ngElementStrategy.connect(this);
 
       // Listen for events from the strategy and dispatch them as custom events
       this.ngElementEventsSubscription = this.ngElementStrategy.events.subscribe(e => {
-        const customEvent = createCustomEvent(this.ownerDocument !, e.name, e.value);
+        const customEvent = createCustomEvent(this.ownerDocument!, e.name, e.value);
         this.dispatchEvent(customEvent);
       });
     }
 
     disconnectedCallback(): void {
-      if (this.ngElementStrategy) {
-        this.ngElementStrategy.disconnect();
+      // Not using `this.ngElementStrategy` to avoid unnecessarily creating the `NgElementStrategy`.
+      if (this._ngElementStrategy) {
+        this._ngElementStrategy.disconnect();
       }
 
       if (this.ngElementEventsSubscription) {
@@ -182,16 +209,36 @@ export function createCustomElement<P>(
     }
   }
 
-  // Add getters and setters to the prototype for each property input. If the config does not
-  // contain property inputs, use all inputs by default.
-  inputs.map(({propName}) => propName).forEach(property => {
-    Object.defineProperty(NgElementImpl.prototype, property, {
-      get: function() { return this.ngElementStrategy.getInputValue(property); },
-      set: function(newValue: any) { this.ngElementStrategy.setInputValue(property, newValue); },
+  // TypeScript 3.9+ defines getters/setters as configurable but non-enumerable properties (in
+  // compliance with the spec). This breaks emulated inheritance in ES5 on environments that do not
+  // natively support `Object.setPrototypeOf()` (such as IE 9-10).
+  // Update the property descriptor of `NgElementImpl#ngElementStrategy` to make it enumerable.
+  // The below 'const', shouldn't be needed but currently this breaks build-optimizer
+  // Build-optimizer currently uses TypeScript 3.6 which is unable to resolve an 'accessor'
+  // in 'getTypeOfVariableOrParameterOrPropertyWorker'.
+  const getterName = 'ngElementStrategy';
+  Object.defineProperty(NgElementImpl.prototype, getterName, {enumerable: true});
+
+  // Add getters and setters to the prototype for each property input.
+  defineInputGettersSetters(inputs, NgElementImpl.prototype);
+
+  return (NgElementImpl as any) as NgElementConstructor<P>;
+}
+
+// Helpers
+function defineInputGettersSetters(
+    inputs: {propName: string, templateName: string}[], target: object): void {
+  // Add getters and setters for each property input.
+  inputs.forEach(({propName}) => {
+    Object.defineProperty(target, propName, {
+      get(): any {
+        return this.ngElementStrategy.getInputValue(propName);
+      },
+      set(newValue: any): void {
+        this.ngElementStrategy.setInputValue(propName, newValue);
+      },
       configurable: true,
       enumerable: true,
     });
   });
-
-  return (NgElementImpl as any) as NgElementConstructor<P>;
 }

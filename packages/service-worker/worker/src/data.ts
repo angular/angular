@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,6 +8,7 @@
 
 import {Adapter, Context} from './adapter';
 import {Database, Table} from './database';
+import {DebugHandler} from './debug';
 import {DataGroupConfig} from './manifest';
 
 /**
@@ -58,7 +59,7 @@ interface LruState {
   /**
    * Map of URLs to data for each URL (including next/prev pointers).
    */
-  map: {[url: string]: LruNode | undefined};
+  map: {[url: string]: LruNode|undefined};
 
   /**
    * Count of the number of nodes in the chain.
@@ -87,7 +88,9 @@ class LruList {
   /**
    * The current count of URLs in the list.
    */
-  get size(): number { return this.state.count; }
+  get size(): number {
+    return this.state.count;
+  }
 
   /**
    * Remove the tail.
@@ -124,7 +127,7 @@ class LruList {
       }
 
       // There is at least one other node. Make the next node the new head.
-      const next = this.state.map[node.next !] !;
+      const next = this.state.map[node.next!]!;
       next.previous = null;
       this.state.head = next.url;
       node.next = null;
@@ -135,7 +138,7 @@ class LruList {
 
     // The node is not the head, so it has a previous. It may or may not be the tail.
     // If it is not, then it has a next. First, grab the previous node.
-    const previous = this.state.map[node.previous !] !;
+    const previous = this.state.map[node.previous!]!;
 
     // Fix the forward pointer to skip over node and go directly to node.next.
     previous.next = node.next;
@@ -145,10 +148,10 @@ class LruList {
     // updated to point to the previous node (removing the tail).
     if (node.next !== null) {
       // There is a next node, fix its back pointer to skip this node.
-      this.state.map[node.next] !.previous = node.previous !;
+      this.state.map[node.next]!.previous = node.previous!;
     } else {
       // There is no next node - the accessed node must be the tail. Move the tail pointer.
-      this.state.tail = node.previous !;
+      this.state.tail = node.previous!;
     }
 
     node.next = null;
@@ -188,7 +191,7 @@ class LruList {
     // First, check if there's an existing head node. If there is, it has previous: null.
     // Its previous pointer should be set to the node we're inserting.
     if (this.state.head !== null) {
-      this.state.map[this.state.head] !.previous = url;
+      this.state.map[this.state.head]!.previous = url;
     }
 
     // The next pointer of the node being inserted gets set to the old head, before the head
@@ -243,11 +246,14 @@ export class DataGroup {
 
   constructor(
       private scope: ServiceWorkerGlobalScope, private adapter: Adapter,
-      private config: DataGroupConfig, private db: Database, private prefix: string) {
+      private config: DataGroupConfig, private db: Database, private debugHandler: DebugHandler,
+      private prefix: string) {
     this.patterns = this.config.patterns.map(pattern => new RegExp(pattern));
     this.cache = this.scope.caches.open(`${this.prefix}:dynamic:${this.config.name}:cache`);
-    this.lruTable = this.db.open(`${this.prefix}:dynamic:${this.config.name}:lru`);
-    this.ageTable = this.db.open(`${this.prefix}:dynamic:${this.config.name}:age`);
+    this.lruTable = this.db.open(
+        `${this.prefix}:dynamic:${this.config.name}:lru`, this.config.cacheQueryOptions);
+    this.ageTable = this.db.open(
+        `${this.prefix}:dynamic:${this.config.name}:age`, this.config.cacheQueryOptions);
   }
 
   /**
@@ -273,7 +279,15 @@ export class DataGroup {
       return;
     }
     const table = await this.lruTable;
-    return table.write('lru', this._lru !.state);
+    try {
+      return table.write('lru', this._lru!.state);
+    } catch (err) {
+      // Writing lru cache table failed. This could be a result of a full storage.
+      // Continue serving clients as usual.
+      this.debugHandler.log(err, `DataGroup(${this.config.name}@${this.config.version}).syncLru()`);
+      // TODO: Better detect/handle full storage; e.g. using
+      // [navigator.storage](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorStorage/storage).
+    }
   }
 
   /**
@@ -334,7 +348,7 @@ export class DataGroup {
       res = fromCache.res;
       // Check the age of the resource.
       if (this.config.refreshAheadMs !== undefined && fromCache.age >= this.config.refreshAheadMs) {
-        ctx.waitUntil(this.safeCacheResponse(req, this.safeFetch(req)));
+        ctx.waitUntil(this.safeCacheResponse(req, this.safeFetch(req), lru));
       }
     }
 
@@ -353,11 +367,12 @@ export class DataGroup {
       res = this.adapter.newResponse(null, {status: 504, statusText: 'Gateway Timeout'});
 
       // Cache the network response eventually.
-      ctx.waitUntil(this.safeCacheResponse(req, networkFetch));
+      ctx.waitUntil(this.safeCacheResponse(req, networkFetch, lru));
+    } else {
+      // The request completed in time, so cache it inline with the response flow.
+      await this.safeCacheResponse(req, res, lru);
     }
 
-    // The request completed in time, so cache it inline with the response flow.
-    await this.cacheResponse(req, res, lru);
     return res;
   }
 
@@ -377,14 +392,14 @@ export class DataGroup {
 
     // If the network fetch times out or errors, fall back on the cache.
     if (res === undefined) {
-      ctx.waitUntil(this.safeCacheResponse(req, networkFetch));
+      ctx.waitUntil(this.safeCacheResponse(req, networkFetch, lru, true));
 
       // Ignore the age, the network response will be cached anyway due to the
       // behavior of freshness.
       const fromCache = await this.loadFromCache(req, lru);
       res = (fromCache !== null) ? fromCache.res : null;
     } else {
-      await this.cacheResponse(req, res, lru, true);
+      await this.safeCacheResponse(req, res, lru, true);
     }
 
     // Either the network fetch didn't time out, or the cache yielded a usable response.
@@ -394,9 +409,7 @@ export class DataGroup {
     }
 
     // No response in the cache. No choice but to fall back on the full network fetch.
-    res = await networkFetch;
-    await this.cacheResponse(req, res, lru, true);
-    return res;
+    return networkFetch;
   }
 
   private networkFetchWithTimeout(req: Request): [Promise<Response|undefined>, Promise<Response>] {
@@ -404,7 +417,7 @@ export class DataGroup {
     // Otherwise, just fetch from the network directly.
     if (this.config.timeoutMs !== undefined) {
       const networkFetch = this.scope.fetch(req);
-      const safeNetworkFetch = (async() => {
+      const safeNetworkFetch = (async () => {
         try {
           return await networkFetch;
         } catch {
@@ -414,7 +427,7 @@ export class DataGroup {
           });
         }
       })();
-      const networkFetchUndefinedError = (async() => {
+      const networkFetchUndefinedError = (async () => {
         try {
           return await networkFetch;
         } catch {
@@ -433,11 +446,27 @@ export class DataGroup {
     }
   }
 
-  private async safeCacheResponse(req: Request, res: Promise<Response>): Promise<void> {
+  private async safeCacheResponse(
+      req: Request, resOrPromise: Promise<Response>|Response, lru: LruList,
+      okToCacheOpaque?: boolean): Promise<void> {
     try {
-      await this.cacheResponse(req, await res, await this.lru());
+      const res = await resOrPromise;
+      try {
+        await this.cacheResponse(req, res, lru, okToCacheOpaque);
+      } catch (err) {
+        // Saving the API response failed. This could be a result of a full storage.
+        // Since this data is cached lazily and temporarily, continue serving clients as usual.
+        this.debugHandler.log(
+            err,
+            `DataGroup(${this.config.name}@${this.config.version}).safeCacheResponse(${
+                req.url}, status: ${res.status})`);
+
+        // TODO: Better detect/handle full storage; e.g. using
+        // [navigator.storage](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorStorage/storage).
+      }
     } catch {
-      // TODO: handle this error somehow?
+      // Request failed
+      // TODO: Handle this error somehow?
     }
   }
 
@@ -445,7 +474,7 @@ export class DataGroup {
       Promise<{res: Response, age: number}|null> {
     // Look for a response in the cache. If one exists, return it.
     const cache = await this.cache;
-    let res = await cache.match(req);
+    let res = await cache.match(req, this.config.cacheQueryOptions);
     if (res !== undefined) {
       // A response was found in the cache, but its age is not yet known. Look it up.
       try {
@@ -480,10 +509,10 @@ export class DataGroup {
    * If the request times out on the server, an error will be returned but the real network
    * request will still be running in the background, to be cached when it completes.
    */
-  private async cacheResponse(
-      req: Request, res: Response, lru: LruList, okToCacheOpaque: boolean = false): Promise<void> {
+  private async cacheResponse(req: Request, res: Response, lru: LruList, okToCacheOpaque = false):
+      Promise<void> {
     // Only cache successful responses.
-    if (!res.ok || (okToCacheOpaque && res.type === 'opaque')) {
+    if (!(res.ok || (okToCacheOpaque && res.type === 'opaque'))) {
       return;
     }
 
@@ -505,7 +534,7 @@ export class DataGroup {
 
     // Store the response in the cache (cloning because the browser will consume
     // the body during the caching operation).
-    await(await this.cache).put(req, res.clone());
+    await (await this.cache).put(req, res.clone());
 
     // Store the age of the cache.
     const ageTable = await this.ageTable;
@@ -537,8 +566,8 @@ export class DataGroup {
   private async clearCacheForUrl(url: string): Promise<void> {
     const [cache, ageTable] = await Promise.all([this.cache, this.ageTable]);
     await Promise.all([
-      cache.delete(this.adapter.newRequest(url, {method: 'GET'})),
-      cache.delete(this.adapter.newRequest(url, {method: 'HEAD'})),
+      cache.delete(this.adapter.newRequest(url, {method: 'GET'}), this.config.cacheQueryOptions),
+      cache.delete(this.adapter.newRequest(url, {method: 'HEAD'}), this.config.cacheQueryOptions),
       ageTable.delete(url),
     ]);
   }

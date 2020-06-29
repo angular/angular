@@ -1,14 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {SecurityContext} from '@angular/core';
-import {ArgumentType, BindingFlags, NodeCheckFn, NodeFlags, Services, ViewData, ViewFlags, ViewState, asElementData, directiveDef, elementDef, rootRenderNodes} from '@angular/core/src/view/index';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {ArgumentType, asElementData, BindingFlags, directiveDef, elementDef, NodeCheckFn, NodeFlags, rootRenderNodes, Services, ViewData, ViewFlags, ViewState} from '@angular/core/src/view/index';
 
 import {callMostRecentEventListenerHandler, compViewDef, createAndGetRootNodes, createRootView, isBrowser, recordNodeToRemove} from './helper';
 
@@ -18,14 +18,16 @@ import {callMostRecentEventListenerHandler, compViewDef, createAndGetRootNodes, 
  * We map addEventListener to the Zones internal name. This is because we want to be fast
  * and bypass the zone bookkeeping. We know that we can do the bookkeeping faster.
  */
-const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener';
+const addEventListener = 'addEventListener';
 
 {
   describe(`Component Views`, () => {
     it('should create and attach component views', () => {
-      let instance: AComp = undefined !;
+      let instance: AComp = undefined!;
       class AComp {
-        constructor() { instance = this; }
+        constructor() {
+          instance = this;
+        }
       }
 
       const {view, rootNodes} = createAndGetRootNodes(compViewDef([
@@ -42,8 +44,8 @@ const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener'
       expect(compView.context).toBe(instance);
       expect(compView.component).toBe(instance);
 
-      const compRootEl = getDOM().childNodes(rootNodes[0])[0];
-      expect(getDOM().nodeName(compRootEl).toLowerCase()).toBe('span');
+      const compRootEl = rootNodes[0].childNodes[0];
+      expect(compRootEl.nodeName.toLowerCase()).toBe('span');
     });
 
     if (isBrowser()) {
@@ -108,15 +110,18 @@ const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener'
               check(view, 0, ArgumentType.Inline, value);
             });
 
-        const {view, rootNodes} = createAndGetRootNodes(
-          compViewDef([
-            elementDef(0, NodeFlags.None, null, null, 1, 'div', null, null, null, null, () => compViewDef(
-              [
-                elementDef(0, NodeFlags.None, null, null, 0, 'span', null, [[BindingFlags.TypeElementAttribute, 'a', SecurityContext.NONE]]),
-              ], null, update
-            )),
-            directiveDef(1, NodeFlags.Component, null, 0, AComp, []),
-          ]));
+        const {view, rootNodes} = createAndGetRootNodes(compViewDef([
+          elementDef(
+              0, NodeFlags.None, null, null, 1, 'div', null, null, null, null,
+              () => compViewDef(
+                  [
+                    elementDef(
+                        0, NodeFlags.None, null, null, 0, 'span', null,
+                        [[BindingFlags.TypeElementAttribute, 'a', SecurityContext.NONE]]),
+                  ],
+                  null, update)),
+          directiveDef(1, NodeFlags.Component, null, 0, AComp, []),
+        ]));
         const compView = asElementData(view, 0).componentView;
 
         value = 'v1';
@@ -218,13 +223,15 @@ const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener'
                           [
                             elementDef(
                                 0, NodeFlags.None, null, null, 0, 'span', null, null,
-                                [[null !, 'click']]),
+                                [[null!, 'click']]),
                           ],
                           update, null, ViewFlags.OnPush);
                     }),
                 directiveDef(1, NodeFlags.Component, null, 0, AComp, [], {a: [0, 'a']}),
               ],
-              (check, view) => { check(view, 1, ArgumentType.Inline, compInputValue); }));
+              (check, view) => {
+                check(view, 1, ArgumentType.Inline, compInputValue);
+              }));
 
           Services.checkAndUpdateView(view);
 
@@ -272,10 +279,21 @@ const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener'
                       0, NodeFlags.None, null, null, 0, 'span', null,
                       [[BindingFlags.TypeElementAttribute, 'a', SecurityContext.NONE]])],
                   null, update)),
-          directiveDef(1, NodeFlags.Component, null, 0, AComp, [], null, null, ),
+          directiveDef(
+              1,
+              NodeFlags.Component,
+              null,
+              0,
+              AComp,
+              [],
+              null,
+              null,
+              ),
         ]));
 
-        update.and.callFake((check: NodeCheckFn, view: ViewData) => { throw new Error('Test'); });
+        update.and.callFake((check: NodeCheckFn, view: ViewData) => {
+          throw new Error('Test');
+        });
         expect(() => Services.checkAndUpdateView(view)).toThrowError('Test');
         expect(update).toHaveBeenCalled();
 
@@ -283,7 +301,6 @@ const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener'
         expect(() => Services.checkAndUpdateView(view)).toThrowError('Test');
         expect(update).toHaveBeenCalled();
       });
-
     });
 
     describe('destroy', () => {
@@ -293,7 +310,9 @@ const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener'
         class AComp {}
 
         class ChildProvider {
-          ngOnDestroy() { log.push('ngOnDestroy'); }
+          ngOnDestroy() {
+            log.push('ngOnDestroy');
+          }
         }
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef([
@@ -303,7 +322,16 @@ const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener'
                 elementDef(0, NodeFlags.None, null, null, 1, 'span'),
                 directiveDef(1, NodeFlags.OnDestroy, null, 0, ChildProvider, [])
               ])),
-          directiveDef(1, NodeFlags.Component, null, 0, AComp, [], null, null, ),
+          directiveDef(
+              1,
+              NodeFlags.Component,
+              null,
+              0,
+              AComp,
+              [],
+              null,
+              null,
+              ),
         ]));
 
         Services.destroyView(view);
@@ -321,6 +349,5 @@ const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener'
             .toThrowError('ViewDestroyedError: Attempt to use a destroyed view: detectChanges');
       });
     });
-
   });
 }

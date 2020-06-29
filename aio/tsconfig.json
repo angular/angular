@@ -7,20 +7,19 @@
     "declaration": false,
     "module": "esnext",
     "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
     "lib": [
       "es2018",
       "dom"
     ],
     "skipLibCheck": true,
     "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
     "noUnusedLocals": true,
+    "noUnusedParameters": true,
     // disabled because this is on by default in tsc 2.7 breaking our codebase - we need to refactor
     "strictPropertyInitialization": false
   },
@@ -32,5 +31,10 @@
     "out-tsc",
     "scripts",
     "tools"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "disableTypeScriptVersionCheck": true,
+    "strictInjectionParameters": true,
+    "strictTemplates": true
+  }
 }

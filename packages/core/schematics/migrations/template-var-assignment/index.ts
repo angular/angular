@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,12 +8,11 @@
 
 import {logging, normalize} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {dirname, relative} from 'path';
-import * as ts from 'typescript';
+import {relative} from 'path';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
+import {createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {analyzeResolvedTemplate} from './analyze_template';
 
@@ -46,20 +45,7 @@ export default function(): Rule {
  */
 function runTemplateVariableAssignmentCheck(
     tree: Tree, tsconfigPath: string, basePath: string, logger: Logger) {
-  const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = ts.createCompilerHost(parsed.options, true);
-
-  // We need to overwrite the host "readFile" method, as we want the TypeScript
-  // program to be based on the file contents in the virtual file tree.
-  host.readFile = fileName => {
-    const buffer = tree.read(relative(basePath, fileName));
-    // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset which
-    // which breaks the CLI UpdateRecorder.
-    // See: https://github.com/angular/angular/pull/30719
-    return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
-  };
-
-  const program = ts.createProgram(parsed.fileNames, parsed.options, host);
+  const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
   const sourceFiles = program.getSourceFiles().filter(
@@ -97,6 +83,5 @@ function runTemplateVariableAssignmentCheck(
     logger.info('');
     logger.info('The following template assignments were found:');
     collectedFailures.forEach(failure => logger.warn(`⮑   ${failure}`));
-    logger.info('------------------------------------------------');
   }
 }

@@ -28,7 +28,7 @@ export class KeyUpComponent_v1 {
   // #docregion key-up-component-1-class
 
   onKey(event: KeyboardEvent) { // with type info
-    this.values += (<HTMLInputElement>event.target).value + ' | ';
+    this.values += (event.target as HTMLInputElement).value + ' | ';
   }
 // #docregion key-up-component-1-class-no-type
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -36,16 +36,18 @@ export function asyncFallback(fn: Function): (done: any) => any {
   // function when asynchronous activity is finished.
   if (_global.jasmine) {
     // Not using an arrow function to preserve context passed from call site
-    return function(done: any) {
+    return function(this: unknown, done: any) {
       if (!done) {
         // if we run beforeEach in @angular/core/testing/testing_internal then we get no done
         // fake it here and assume sync.
         done = function() {};
-        done.fail = function(e: any) { throw e; };
+        done.fail = function(e: any) {
+          throw e;
+        };
       }
       runInTestZone(fn, this, done, (err: any) => {
         if (typeof err === 'string') {
-          return done.fail(new Error(<string>err));
+          return done.fail(new Error(err));
         } else {
           done.fail(err);
         }
@@ -56,7 +58,7 @@ export function asyncFallback(fn: Function): (done: any) => any {
   // is finished. This will be correctly consumed by the Mocha framework with
   // it('...', async(myFn)); or can be used in a custom framework.
   // Not using an arrow function to preserve context passed from call site
-  return function() {
+  return function(this: unknown) {
     return new Promise<void>((finishCallback, failCallback) => {
       runInTestZone(fn, this, finishCallback, failCallback);
     });
@@ -87,7 +89,7 @@ function runInTestZone(
   // If we do it in ProxyZone then we will get to infinite recursion.
   const proxyZone = Zone.current.getZoneWith('ProxyZoneSpec');
   const previousDelegate = proxyZoneSpec.getDelegate();
-  proxyZone !.parent !.run(() => {
+  proxyZone!.parent!.run(() => {
     const testZoneSpec: ZoneSpec = new AsyncTestZoneSpec(
         () => {
           // Need to restore the original zone.

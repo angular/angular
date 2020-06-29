@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,12 +12,13 @@ import {Identifiers} from '@angular/compiler/src/render3/r3_identifiers';
 import {angularCoreEnv} from '../../src/render3/jit/environment';
 
 const INTERFACE_EXCEPTIONS = new Set<string>([
-  'ɵɵBaseDef',
   'ɵɵComponentDefWithMeta',
   'ɵɵDirectiveDefWithMeta',
   'ɵɵInjectorDef',
   'ɵɵNgModuleDefWithMeta',
   'ɵɵPipeDefWithMeta',
+  'ɵɵFactoryDef',
+  'ModuleWithProviders',
 ]);
 
 describe('r3 jit environment', () => {
@@ -28,7 +29,7 @@ describe('r3 jit environment', () => {
     Object
         // Map over the static properties of Identifiers.
         .keys(Identifiers)
-        .map(key => (Identifiers as any as{[key: string]: string | ExternalReference})[key])
+        .map(key => (Identifiers as any as {[key: string]: string | ExternalReference})[key])
         // A few such properties are string constants. Ignore them, and focus on ExternalReferences.
         .filter(isExternalReference)
         // Some references are to interface types. Only take properties which have runtime values.
@@ -41,7 +42,7 @@ describe('r3 jit environment', () => {
   });
 });
 
-function isExternalReference(sym: ExternalReference | string): sym is ExternalReference&
+function isExternalReference(sym: ExternalReference|string): sym is ExternalReference&
     {name: string} {
   return typeof sym === 'object' && sym.name !== null && sym.moduleName !== null;
 }

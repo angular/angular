@@ -8,16 +8,24 @@
   "rules": {
     "file-header": [
       true,
-      "Copyright Google Inc\\."
+      {
+        "match": "Copyright Google LLC",
+        "allow-single-line-comments": false
+      }
     ],
     "no-console": [
       true,
       "log"
     ],
+    "no-construct": true,
     "no-duplicate-imports": true,
     "no-duplicate-variable": true,
     "no-jasmine-focus": true,
     "no-var-keyword": true,
+    "prefer-literal": [
+      true,
+      "object"
+    ],
     "require-internal-with-underscore": true,
     "no-toplevel-property-access": [
       true,
@@ -27,7 +35,6 @@
       "packages/core/src/",
       "packages/elements/src/",
       "packages/forms/src/",
-      "packages/http/src/",
       "packages/platform-browser/src/",
       "packages/router/src/"
     ],
@@ -47,7 +54,10 @@
   "jsRules": {
     "file-header": [
       true,
-      "Copyright Google Inc\\."
+      {
+        "match": "Copyright Google LLC",
+        "allow-single-line-comments": false
+      }
     ],
     "no-console": [
       true,
@@ -67,6 +77,28 @@
     "no-inner-declarations": [
       true,
       "function"
+    ]
+  },
+  "linterOptions": {
+    "exclude": [
+      "**/node_modules/**/*",
+      // Ignore AIO and integration tests.
+      "./aio/**/*",
+      "./integration/**/*",
+      // Ignore output directories
+      "./built/**/*",
+      "./dist/**/*",
+      "./bazel-out/**/*",
+      // Ignore special files
+      "**/*.externs.js",
+      // Ignore test files
+      "./packages/localize/**/test_files/**/*",
+      "./tools/ts-api-guardian/test/fixtures/**/*",
+      "./tools/public_api_guard/**/*.d.ts",
+      "./modules/benchmarks_external/**/*",
+      // Ignore zone.js directory
+      // TODO(JiaLiPassion): add zone.js back later
+      "./packages/zone.js/**/*"
     ]
   }
 }

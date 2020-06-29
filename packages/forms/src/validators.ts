@@ -1,25 +1,32 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
-import {Observable, forkJoin, from} from 'rxjs';
+import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+
 import {AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
-import {AbstractControl, FormControl} from './model';
+import {AbstractControl} from './model';
 
 function isEmptyInputValue(value: any): boolean {
   // we don't check for string here so it also works with arrays
   return value == null || value.length === 0;
 }
 
+function hasValidLength(value: any): boolean {
+  // non-strict comparison is intentional, to check for both `null` and `undefined` values
+  return value != null && typeof value.length === 'number';
+}
+
 /**
  * @description
- * An `InjectionToken` for registering additional synchronous validators used with `AbstractControl`s.
+ * An `InjectionToken` for registering additional synchronous validators used with
+ * `AbstractControl`s.
  *
  * @see `NG_ASYNC_VALIDATORS`
  *
@@ -48,7 +55,8 @@ export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgVa
 
 /**
  * @description
- * An `InjectionToken` for registering additional asynchronous validators used with `AbstractControl`s.
+ * An `InjectionToken` for registering additional asynchronous validators used with
+ * `AbstractControl`s.
  *
  * @see `NG_VALIDATORS`
  *
@@ -57,8 +65,38 @@ export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgVa
 export const NG_ASYNC_VALIDATORS =
     new InjectionToken<Array<Validator|Function>>('NgAsyncValidators');
 
+/**
+ * A regular expression that matches valid e-mail addresses.
+ *
+ * At a high level, this regexp matches e-mail addresses of the format `local-part@tld`, where:
+ * - `local-part` consists of one or more of the allowed characters (alphanumeric and some
+ *   punctuation symbols).
+ * - `local-part` cannot begin or end with a period (`.`).
+ * - `local-part` cannot be longer than 64 characters.
+ * - `tld` consists of one or more `labels` separated by periods (`.`). For example `localhost` or
+ *   `foo.com`.
+ * - A `label` consists of one or more of the allowed characters (alphanumeric, dashes (`-`) and
+ *   periods (`.`)).
+ * - A `label` cannot begin or end with a dash (`-`) or a period (`.`).
+ * - A `label` cannot be longer than 63 characters.
+ * - The whole address cannot be longer than 254 characters.
+ *
+ * ## Implementation background
+ *
+ * This regexp was ported over from AngularJS (see there for git history):
+ * https://github.com/angular/angular.js/blob/c133ef836/src/ng/directive/input.js#L27
+ * It is based on the
+ * [WHATWG version](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address) with
+ * some enhancements to incorporate more RFC rules (such as rules related to domain names and the
+ * lengths of different parts of the address). The main differences from the WHATWG version are:
+ *   - Disallow `local-part` to begin or end with a period (`.`).
+ *   - Disallow `local-part` length to exceed 64 characters.
+ *   - Disallow total address length to exceed 254 characters.
+ *
+ * See [this commit](https://github.com/angular/angular.js/commit/f3f5cf72e) for more details.
+ */
 const EMAIL_REGEXP =
-    /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/;
+    /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 /**
  * @description
@@ -90,9 +128,11 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `min` property if the validation check fails, otherwise `null`.
    *
+   * @see `updateValueAndValidity()`
+   *
    */
   static min(min: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors|null => {
       if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -121,9 +161,11 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `max` property if the validation check fails, otherwise `null`.
    *
+   * @see `updateValueAndValidity()`
+   *
    */
   static max(max: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors|null => {
       if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -151,6 +193,8 @@ export class Validators {
    * @returns An error map with the `required` property
    * if the validation check fails, otherwise `null`.
    *
+   * @see `updateValueAndValidity()`
+   *
    */
   static required(control: AbstractControl): ValidationErrors|null {
     return isEmptyInputValue(control.value) ? {'required': true} : null;
@@ -173,6 +217,9 @@ export class Validators {
    *
    * @returns An error map that contains the `required` property
    * set to `true` if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static requiredTrue(control: AbstractControl): ValidationErrors|null {
     return control.value === true ? null : {'required': true};
@@ -181,6 +228,22 @@ export class Validators {
   /**
    * @description
    * Validator that requires the control's value pass an email validation test.
+   *
+   * Tests the value using a [regular
+   * expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
+   * pattern suitable for common usecases. The pattern is based on the definition of a valid email
+   * address in the [WHATWG HTML
+   * specification](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address) with
+   * some enhancements to incorporate more RFC rules (such as rules related to domain names and the
+   * lengths of different parts of the address).
+   *
+   * The differences from the WHATWG version include:
+   * - Disallow `local-part` (the part before the `@` symbol) to begin or end with a period (`.`).
+   * - Disallow `local-part` to be longer than 64 characters.
+   * - Disallow the whole address to be longer than 254 characters.
+   *
+   * If this pattern does not satisfy your business needs, you can use `Validators.pattern()` to
+   * validate the value against a different pattern.
    *
    * @usageNotes
    *
@@ -195,6 +258,8 @@ export class Validators {
    * @returns An error map with the `email` property
    * if the validation check fails, otherwise `null`.
    *
+   * @see `updateValueAndValidity()`
+   *
    */
   static email(control: AbstractControl): ValidationErrors|null {
     if (isEmptyInputValue(control.value)) {
@@ -207,7 +272,11 @@ export class Validators {
    * @description
    * Validator that requires the length of the control's value to be greater than or equal
    * to the provided minimum length. This validator is also provided by default if you use the
-   * the HTML5 `minlength` attribute.
+   * the HTML5 `minlength` attribute. Note that the `minLength` validator is intended to be used
+   * only for types that have a numeric `length` property, such as strings or arrays. The
+   * `minLength` validator logic is also not invoked for values when their `length` property is 0
+   * (for example in case of an empty string or an empty array), to support optional controls. You
+   * can use the standard `required` validator if empty values should not be considered valid.
    *
    * @usageNotes
    *
@@ -225,15 +294,20 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * `minlength` if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static minLength(minLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      if (isEmptyInputValue(control.value)) {
-        return null;  // don't validate empty values to allow optional controls
+    return (control: AbstractControl): ValidationErrors|null => {
+      if (isEmptyInputValue(control.value) || !hasValidLength(control.value)) {
+        // don't validate empty values to allow optional controls
+        // don't validate values without `length` property
+        return null;
       }
-      const length: number = control.value ? control.value.length : 0;
-      return length < minLength ?
-          {'minlength': {'requiredLength': minLength, 'actualLength': length}} :
+
+      return control.value.length < minLength ?
+          {'minlength': {'requiredLength': minLength, 'actualLength': control.value.length}} :
           null;
     };
   }
@@ -242,7 +316,8 @@ export class Validators {
    * @description
    * Validator that requires the length of the control's value to be less than or equal
    * to the provided maximum length. This validator is also provided by default if you use the
-   * the HTML5 `maxlength` attribute.
+   * the HTML5 `maxlength` attribute. Note that the `maxLength` validator is intended to be used
+   * only for types that have a numeric `length` property, such as strings or arrays.
    *
    * @usageNotes
    *
@@ -260,12 +335,14 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * `maxlength` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static maxLength(maxLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const length: number = control.value ? control.value.length : 0;
-      return length > maxLength ?
-          {'maxlength': {'requiredLength': maxLength, 'actualLength': length}} :
+    return (control: AbstractControl): ValidationErrors|null => {
+      return hasValidLength(control.value) && control.value.length > maxLength ?
+          {'maxlength': {'requiredLength': maxLength, 'actualLength': control.value.length}} :
           null;
     };
   }
@@ -274,11 +351,6 @@ export class Validators {
    * @description
    * Validator that requires the control's value to match a regex pattern. This validator is also
    * provided by default if you use the HTML5 `pattern` attribute.
-   *
-   * Note that if a Regexp is provided, the Regexp is used as is to test the values. On the other
-   * hand, if a string is passed, the `^` character is prepended and the `$` character is
-   * appended to the provided string (if not already present), and the resulting regular
-   * expression is used to test the values.
    *
    * @usageNotes
    *
@@ -294,8 +366,16 @@ export class Validators {
    * <input pattern="[a-zA-Z ]*">
    * ```
    *
+   * @param pattern A regular expression to be used as is to test the values, or a string.
+   * If a string is passed, the `^` character is prepended and the `$` character is
+   * appended to the provided string (if not already present), and the resulting regular
+   * expression is used to test the values.
+   *
    * @returns A validator function that returns an error map with the
    * `pattern` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static pattern(pattern: string|RegExp): ValidatorFn {
     if (!pattern) return Validators.nullValidator;
@@ -315,7 +395,7 @@ export class Validators {
       regexStr = pattern.toString();
       regex = pattern;
     }
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors|null => {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -328,8 +408,13 @@ export class Validators {
   /**
    * @description
    * Validator that performs no operation.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
-  static nullValidator(control: AbstractControl): ValidationErrors|null { return null; }
+  static nullValidator(control: AbstractControl): ValidationErrors|null {
+    return null;
+  }
 
   /**
    * @description
@@ -338,6 +423,9 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * merged error maps of the validators if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static compose(validators: null): null;
   static compose(validators: (ValidatorFn|null|undefined)[]): ValidatorFn|null;
@@ -358,7 +446,10 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * merged error objects of the async validators if the validation check fails, otherwise `null`.
-  */
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
   static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
     if (!validators) return null;
     const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
@@ -392,9 +483,13 @@ function _executeAsyncValidators(control: AbstractControl, validators: AsyncVali
 }
 
 function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null {
-  const res: {[key: string]: any} =
-      arrayOfErrors.reduce((res: ValidationErrors | null, errors: ValidationErrors | null) => {
-        return errors != null ? {...res !, ...errors} : res !;
-      }, {});
+  let res: {[key: string]: any} = {};
+
+  // Not using Array.reduce here due to a Chrome 80 bug
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
+  arrayOfErrors.forEach((errors: ValidationErrors|null) => {
+    res = errors != null ? {...res!, ...errors} : res!;
+  });
+
   return Object.keys(res).length === 0 ? null : res;
 }

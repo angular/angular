@@ -93,7 +93,7 @@ class Helper {
     return fs.readFileSync(absFilePath, 'utf8');
   }
 
-  public runCmd(cmd: string, opts: cp.ExecFileOptions = {}): Promise<CmdResult> {
+  public runCmd(cmd: string, opts: cp.ExecOptions = {}): Promise<CmdResult> {
     return new Promise(resolve => {
       const proc = cp.exec(cmd, opts, (err, stdout, stderr) => resolve({success: !err, err, stdout, stderr}));
       this.createCleanUpFn(() => proc.kill());
@@ -101,7 +101,7 @@ class Helper {
   }
 
   public runForAllSupportedSchemes(suiteFactory: TestSuiteFactory): void {
-    Object.keys(this.portPerScheme).forEach(scheme => suiteFactory(scheme, this.portPerScheme[scheme]));
+    Object.entries(this.portPerScheme).forEach(([scheme, port]) => suiteFactory(scheme, port));
   }
 
   public verifyResponse(status: number, regex: string | RegExp = /^/): VerifyCmdResultFn {

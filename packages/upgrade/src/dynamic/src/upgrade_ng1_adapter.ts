@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -23,7 +23,7 @@ const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
 
 export class UpgradeNg1ComponentAdapterBuilder {
   // TODO(issue/24571): remove '!'.
-  type !: Type<any>;
+  type!: Type<any>;
   inputs: string[] = [];
   inputsRename: string[] = [];
   outputs: string[] = [];
@@ -47,7 +47,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
 
     @Directive({jit: true, ...directive})
     class MyClass extends UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck,
-        OnDestroy {
+                                                                OnDestroy {
       constructor(@Inject($SCOPE) scope: IScope, injector: Injector, elementRef: ElementRef) {
         super(
             new UpgradeHelper(injector, name, elementRef, self.directive || undefined), scope,
@@ -59,13 +59,13 @@ export class UpgradeNg1ComponentAdapterBuilder {
   }
 
   extractBindings() {
-    const btcIsObject = typeof this.directive !.bindToController === 'object';
-    if (btcIsObject && Object.keys(this.directive !.scope !).length) {
+    const btcIsObject = typeof this.directive!.bindToController === 'object';
+    if (btcIsObject && Object.keys(this.directive!.scope!).length) {
       throw new Error(
           `Binding definitions on scope and controller at the same time are not supported.`);
     }
 
-    const context = (btcIsObject) ? this.directive !.bindToController : this.directive !.scope;
+    const context = (btcIsObject) ? this.directive!.bindToController : this.directive!.scope;
 
     if (typeof context == 'object') {
       Object.keys(context).forEach(propName => {
@@ -135,6 +135,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
   }
 }
 
+@Directive()
 class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   private controllerInstance: IControllerInstance|null = null;
   destinationObj: IBindingDestination|null = null;
@@ -200,15 +201,15 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
 
     // Linking
     const link = this.directive.link;
-    const preLink = (typeof link == 'object') && (link as IDirectivePrePost).pre;
-    const postLink = (typeof link == 'object') ? (link as IDirectivePrePost).post : link;
+    const preLink = typeof link == 'object' && link.pre;
+    const postLink = typeof link == 'object' ? link.post : link;
     const attrs: IAttributes = NOT_SUPPORTED;
     const transcludeFn: ITranscludeFunction = NOT_SUPPORTED;
     if (preLink) {
       preLink(this.componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
-    linkFn(this.componentScope, null !, {parentBoundTranscludeFn: attachChildNodes});
+    linkFn(this.componentScope, null!, {parentBoundTranscludeFn: attachChildNodes});
 
     if (postLink) {
       postLink(this.componentScope, this.$element, attrs, requiredControllers, transcludeFn);
@@ -228,8 +229,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       ng1Changes[this.propertyMap[name]] = change;
     });
 
-    if (isFunction(this.destinationObj !.$onChanges)) {
-      this.destinationObj !.$onChanges !(ng1Changes);
+    if (isFunction(this.destinationObj!.$onChanges)) {
+      this.destinationObj!.$onChanges!(ng1Changes);
     }
   }
 
@@ -239,7 +240,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     const checkProperties = this.checkProperties;
     const propOuts = this.propOuts;
     checkProperties.forEach((propName, i) => {
-      const value = destinationObj ![propName];
+      const value = destinationObj![propName];
       const last = lastValues[i];
       if (!strictEquals(last, value)) {
         const eventEmitter: EventEmitter<any> = (this as any)[propOuts[i]];
@@ -252,9 +253,11 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     }
   }
 
-  ngOnDestroy() { this.helper.onDestroy(this.componentScope, this.controllerInstance); }
+  ngOnDestroy() {
+    this.helper.onDestroy(this.componentScope, this.controllerInstance);
+  }
 
   setComponentProperty(name: string, value: any) {
-    this.destinationObj ![this.propertyMap[name]] = value;
+    this.destinationObj![this.propertyMap[name]] = value;
   }
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,12 +11,9 @@ import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from
 import {IAnnotatedFunction, IAttributes, IAugmentedJQuery, ICompileService, IDirective, IInjectorService, INgModelController, IParseService, IScope} from './angular1';
 import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
-import {LazyModuleRef, UpgradeAppType, controllerKey, getDowngradedModuleCount, getTypeName, getUpgradeAppType, isFunction, validateInjectionKey} from './util';
+import {SyncPromise, Thenable} from './promise_util';
+import {controllerKey, getDowngradedModuleCount, getTypeName, getUpgradeAppType, LazyModuleRef, UpgradeAppType, validateInjectionKey} from './util';
 
-
-interface Thenable<T> {
-  then(callback: (value: T) => any): any;
-}
 
 /**
  * @description
@@ -24,7 +21,7 @@ interface Thenable<T> {
  * A helper function that allows an Angular component to be used from AngularJS.
  *
  * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
- * library for hybrid upgrade apps that support AoT compilation*
+ * library for hybrid upgrade apps that support AOT compilation*
  *
  * This helper function returns a factory function to be used for registering
  * an AngularJS wrapper directive for "downgrading" an Angular component.
@@ -43,6 +40,9 @@ interface Thenable<T> {
  * can use to define the AngularJS directive that wraps the "downgraded" component.
  *
  * {@example upgrade/static/ts/full/module.ts region="ng2-heroes-wrapper"}
+ *
+ * For more details and examples on downgrading Angular components to AngularJS components please
+ * visit the [Upgrade guide](guide/upgrade#using-angular-components-from-angularjs-code).
  *
  * @param info contains information about the Component that is being downgraded:
  *
@@ -65,7 +65,9 @@ interface Thenable<T> {
  * @publicApi
  */
 export function downgradeComponent(info: {
-  component: Type<any>; downgradedModule?: string; propagateDigest?: boolean;
+  component: Type<any>;
+  downgradedModule?: string;
+  propagateDigest?: boolean;
   /** @deprecated since v4. This parameter is no longer used */
   inputs?: string[];
   /** @deprecated since v4. This parameter is no longer used */
@@ -151,12 +153,12 @@ export function downgradeComponent(info: {
 
         // If there is a parent component, use its injector as parent injector.
         // If this is a "top-level" Angular component, use the module injector.
-        const finalParentInjector = parentInjector || moduleInjector !;
+        const finalParentInjector = parentInjector || moduleInjector!;
 
         // If this is a "top-level" Angular component or the parent component may belong to a
         // different `NgModule`, use the module injector for module-specific dependencies.
         // If there is a parent component that belongs to the same `NgModule`, use its injector.
-        const finalModuleInjector = moduleInjector || parentInjector !;
+        const finalModuleInjector = moduleInjector || parentInjector!;
 
         const doDowngrade = (injector: Injector, moduleInjector: Injector) => {
           // Retrieve `ComponentFactoryResolver` from the injector tied to the `NgModule` this
@@ -164,7 +166,7 @@ export function downgradeComponent(info: {
           const componentFactoryResolver: ComponentFactoryResolver =
               moduleInjector.get(ComponentFactoryResolver);
           const componentFactory: ComponentFactory<any> =
-              componentFactoryResolver.resolveComponentFactory(info.component) !;
+              componentFactoryResolver.resolveComponentFactory(info.component)!;
 
           if (!componentFactory) {
             throw new Error(`Expecting ComponentFactory for: ${getTypeName(info.component)}`);
@@ -199,12 +201,12 @@ export function downgradeComponent(info: {
               wrapCallback(() => doDowngrade(pInjector, mInjector))();
             };
 
-        if (isThenable(finalParentInjector) || isThenable(finalModuleInjector)) {
-          Promise.all([finalParentInjector, finalModuleInjector])
-              .then(([pInjector, mInjector]) => downgradeFn(pInjector, mInjector));
-        } else {
-          downgradeFn(finalParentInjector, finalModuleInjector);
-        }
+        // NOTE:
+        // Not using `ParentInjectorPromise.all()` (which is inherited from `SyncPromise`), because
+        // Closure Compiler (or some related tool) complains:
+        // `TypeError: ...$src$downgrade_component_ParentInjectorPromise.all is not a function`
+        SyncPromise.all([finalParentInjector, finalModuleInjector])
+            .then(([pInjector, mInjector]) => downgradeFn(pInjector, mInjector));
 
         ranAsync = true;
       }
@@ -218,42 +220,26 @@ export function downgradeComponent(info: {
 
 /**
  * Synchronous promise-like object to wrap parent injectors,
- * to preserve the synchronous nature of Angular 1's $compile.
+ * to preserve the synchronous nature of AngularJS's `$compile`.
  */
-class ParentInjectorPromise {
-  // TODO(issue/24571): remove '!'.
-  private injector !: Injector;
+class ParentInjectorPromise extends SyncPromise<Injector> {
   private injectorKey: string = controllerKey(INJECTOR_KEY);
-  private callbacks: ((injector: Injector) => any)[] = [];
 
   constructor(private element: IAugmentedJQuery) {
+    super();
+
     // Store the promise on the element.
-    element.data !(this.injectorKey, this);
+    element.data!(this.injectorKey, this);
   }
 
-  then(callback: (injector: Injector) => any) {
-    if (this.injector) {
-      callback(this.injector);
-    } else {
-      this.callbacks.push(callback);
-    }
-  }
-
-  resolve(injector: Injector) {
-    this.injector = injector;
-
+  resolve(injector: Injector): void {
     // Store the real injector on the element.
-    this.element.data !(this.injectorKey, injector);
+    this.element.data!(this.injectorKey, injector);
 
     // Release the element to prevent memory leaks.
-    this.element = null !;
+    this.element = null!;
 
-    // Run the queued callbacks.
-    this.callbacks.forEach(callback => callback(injector));
-    this.callbacks.length = 0;
+    // Resolve the promise.
+    super.resolve(injector);
   }
-}
-
-function isThenable<T>(obj: object): obj is Thenable<T> {
-  return isFunction((obj as any).then);
 }

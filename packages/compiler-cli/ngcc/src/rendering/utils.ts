@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {ImportRewriter, NoopImportRewriter, R3SymbolsImportRewriter} from '../../../src/ngtsc/imports';
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {NgccFlatImportRewriter} from './ngcc_import_rewriter';
 
 /**
@@ -24,11 +24,11 @@ export interface FileToWrite {
  * Create an appropriate ImportRewriter given the parameters.
  */
 export function getImportRewriter(
-    r3SymbolsFile: ts.SourceFile | null, isCore: boolean, isFlat: boolean): ImportRewriter {
+    r3SymbolsFile: ts.SourceFile|null, isCore: boolean, isFlat: boolean): ImportRewriter {
   if (isCore && isFlat) {
     return new NgccFlatImportRewriter();
   } else if (isCore) {
-    return new R3SymbolsImportRewriter(r3SymbolsFile !.fileName);
+    return new R3SymbolsImportRewriter(r3SymbolsFile!.fileName);
   } else {
     return new NoopImportRewriter();
   }

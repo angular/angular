@@ -1,19 +1,21 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
-import {Observable, from, of } from 'rxjs';
+import {from, Observable, of} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
+
 import {LoadChildren, LoadedRouterConfig, Route, standardizeConfig} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 
 /**
- * @docsNotRequired
+ * The [DI token](guide/glossary/#di-token) for a router configuration.
+ * @see `ROUTES`
  * @publicApi
  */
 export const ROUTES = new InjectionToken<Route[][]>('ROUTES');
@@ -29,7 +31,7 @@ export class RouterConfigLoader {
       this.onLoadStartListener(route);
     }
 
-    const moduleFactory$ = this.loadModuleFactory(route.loadChildren !);
+    const moduleFactory$ = this.loadModuleFactory(route.loadChildren!);
 
     return moduleFactory$.pipe(map((factory: NgModuleFactory<any>) => {
       if (this.onLoadEndListener) {
@@ -49,7 +51,7 @@ export class RouterConfigLoader {
     } else {
       return wrapIntoObservable(loadChildren()).pipe(mergeMap((t: any) => {
         if (t instanceof NgModuleFactory) {
-          return of (t);
+          return of(t);
         } else {
           return from(this.compiler.compileModuleAsync(t));
         }

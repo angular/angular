@@ -1,7 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { asapScheduler as asap, BehaviorSubject } from 'rxjs';
+import { asapScheduler, BehaviorSubject } from 'rxjs';
 
 import { ScrollService } from 'app/shared/scroll.service';
 import { TocItem, TocService } from 'app/shared/toc.service';
@@ -48,7 +48,7 @@ describe('TocComponent', () => {
       fixture = TestBed.createComponent(HostEmbeddedTocComponent);
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
-      tocService = TestBed.get(TocService);
+      tocService = TestBed.inject(TocService)  as unknown as TestTocService;
     });
 
     it('should create tocComponent', () => {
@@ -137,7 +137,7 @@ describe('TocComponent', () => {
         beforeEach(() => {
           fixture.detectChanges();
           page = setPage();
-          scrollToTopSpy = TestBed.get(ScrollService).scrollToTop;
+          scrollToTopSpy = (TestBed.inject(ScrollService) as unknown as TestScrollService).scrollToTop;
         });
 
         it('should have more than 4 displayed items', () => {
@@ -252,7 +252,7 @@ describe('TocComponent', () => {
 
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
-      tocService = TestBed.get(TocService);
+      tocService = TestBed.inject(TocService)  as unknown as TestTocService;
 
       fixture.detectChanges();
       page = setPage();
@@ -465,10 +465,11 @@ class TestScrollService {
 class TestTocService {
   tocList = new BehaviorSubject<TocItem[]>(getTestTocList());
   activeItemIndex = new BehaviorSubject<number | null>(null);
+
   setActiveIndex(index: number|null) {
     this.activeItemIndex.next(index);
-    if (asap.scheduled !== undefined) {
-      asap.flush();
+    if (asapScheduler.actions.length > 0) {
+      asapScheduler.flush();
     }
   }
 }

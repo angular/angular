@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,6 +19,11 @@ describe('style parsing', () => {
   it('should parse a string into a key/value map', () => {
     const result = parseStyle('width:100px;height:200px;opacity:0');
     expect(result).toEqual(['width', '100px', 'height', '200px', 'opacity', '0']);
+  });
+
+  it('should allow empty values', () => {
+    const result = parseStyle('width:;height:   ;');
+    expect(result).toEqual(['width', '', 'height', '']);
   });
 
   it('should trim values and properties', () => {
@@ -85,7 +90,8 @@ describe('style parsing', () => {
       expect(hyphenate('-fooBar-man')).toEqual('-foo-bar-man');
     });
 
-    it('should make everything lowercase',
-       () => { expect(hyphenate('-WebkitAnimation')).toEqual('-webkit-animation'); });
+    it('should make everything lowercase', () => {
+      expect(hyphenate('-WebkitAnimation')).toEqual('-webkit-animation');
+    });
   });
 });

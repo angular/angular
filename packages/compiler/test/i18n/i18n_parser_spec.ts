@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,11 +14,10 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
 
 {
   describe('I18nParser', () => {
-
     describe('elements', () => {
       it('should extract from elements', () => {
         expect(_humanizeMessages('<div i18n="m|d">text</div>')).toEqual([
-          [['text'], 'm', 'd'],
+          [['text'], 'm', 'd', ''],
         ]);
       });
 
@@ -29,25 +28,33 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
               'text',
               '<ph tag name="START_TAG_SPAN"><ph tag name="START_BOLD_TEXT">nested</ph name="CLOSE_BOLD_TEXT"></ph name="CLOSE_TAG_SPAN">'
             ],
-            'm', 'd'
+            'm', 'd', ''
           ],
         ]);
       });
 
-      it('should not create a message for empty elements',
-         () => { expect(_humanizeMessages('<div i18n="m|d"></div>')).toEqual([]); });
+      it('should not create a message for empty elements', () => {
+        expect(_humanizeMessages('<div i18n="m|d"></div>')).toEqual([]);
+      });
 
-      it('should not create a message for plain elements',
-         () => { expect(_humanizeMessages('<div></div>')).toEqual([]); });
+      it('should not create a message for plain elements', () => {
+        expect(_humanizeMessages('<div></div>')).toEqual([]);
+      });
 
-      it('should suppoprt void elements', () => {
+      it('should support void elements', () => {
         expect(_humanizeMessages('<div i18n="m|d"><p><br></p></div>')).toEqual([
           [
             [
               '<ph tag name="START_PARAGRAPH"><ph tag name="LINE_BREAK"/></ph name="CLOSE_PARAGRAPH">'
             ],
-            'm', 'd'
+            'm', 'd', ''
           ],
+        ]);
+      });
+
+      it('should trim whitespace from custom ids (but not meanings)', () => {
+        expect(_humanizeMessages('<div i18n="\n   m|d@@id\n   ">text</div>')).toEqual([
+          [['text'], '\n   m', 'd', 'id'],
         ]);
       });
     });
@@ -55,7 +62,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
     describe('attributes', () => {
       it('should extract from attributes outside of translatable section', () => {
         expect(_humanizeMessages('<div i18n-title="m|d" title="msg"></div>')).toEqual([
-          [['msg'], 'm', 'd'],
+          [['msg'], 'm', 'd', ''],
         ]);
       });
 
@@ -66,9 +73,9 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
                 [
                   '<ph tag name="START_PARAGRAPH"><ph tag name="START_BOLD_TEXT"></ph name="CLOSE_BOLD_TEXT"></ph name="CLOSE_PARAGRAPH">'
                 ],
-                '', ''
+                '', '', ''
               ],
-              [['msg'], 'm', 'd'],
+              [['msg'], 'm', 'd', ''],
             ]);
       });
 
@@ -76,12 +83,12 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
         expect(_humanizeMessages(
                    '<!-- i18n --><p><b i18n-title="m|d" title="msg"></b></p><!-- /i18n -->'))
             .toEqual([
-              [['msg'], 'm', 'd'],
+              [['msg'], 'm', 'd', ''],
               [
                 [
                   '<ph tag name="START_PARAGRAPH"><ph tag name="START_BOLD_TEXT"></ph name="CLOSE_BOLD_TEXT"></ph name="CLOSE_PARAGRAPH">'
                 ],
-                '', ''
+                '', '', ''
               ],
             ]);
       });
@@ -91,12 +98,12 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
             _humanizeMessages(
                 '<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}<!-- /i18n -->'))
             .toEqual([
-              [['msg'], 'm', 'd'],
+              [['msg'], 'm', 'd', ''],
               [
                 [
                   '{count, plural, =0 {[<ph tag name="START_PARAGRAPH"><ph tag name="START_BOLD_TEXT"></ph name="CLOSE_BOLD_TEXT"></ph name="CLOSE_PARAGRAPH">]}}'
                 ],
-                '', ''
+                '', '', ''
               ],
             ]);
       });
@@ -105,31 +112,32 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
         expect(
             _humanizeMessages('{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}'))
             .toEqual([
-              [['msg'], 'm', 'd'],
+              [['msg'], 'm', 'd', ''],
             ]);
       });
 
-      it('should not create a message for empty attributes',
-         () => { expect(_humanizeMessages('<div i18n-title="m|d" title></div>')).toEqual([]); });
+      it('should not create a message for empty attributes', () => {
+        expect(_humanizeMessages('<div i18n-title="m|d" title></div>')).toEqual([]);
+      });
     });
 
     describe('interpolation', () => {
       it('should replace interpolation with placeholder', () => {
         expect(_humanizeMessages('<div i18n="m|d">before{{ exp }}after</div>')).toEqual([
-          [['[before, <ph name="INTERPOLATION"> exp </ph>, after]'], 'm', 'd'],
+          [['[before, <ph name="INTERPOLATION"> exp </ph>, after]'], 'm', 'd', ''],
         ]);
       });
 
       it('should support named interpolation', () => {
         expect(_humanizeMessages('<div i18n="m|d">before{{ exp //i18n(ph="teSt") }}after</div>'))
             .toEqual([
-              [['[before, <ph name="TEST"> exp //i18n(ph="teSt") </ph>, after]'], 'm', 'd'],
+              [['[before, <ph name="TEST"> exp //i18n(ph="teSt") </ph>, after]'], 'm', 'd', ''],
             ]);
 
         expect(
             _humanizeMessages('<div i18n=\'m|d\'>before{{ exp //i18n(ph=\'teSt\') }}after</div>'))
             .toEqual([
-              [[`[before, <ph name="TEST"> exp //i18n(ph='teSt') </ph>, after]`], 'm', 'd'],
+              [[`[before, <ph name="TEST"> exp //i18n(ph='teSt') </ph>, after]`], 'm', 'd', ''],
             ]);
       });
     });
@@ -140,9 +148,9 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
          <!-- i18n: desc2 -->message2<!-- /i18n -->
          <!-- i18n -->message3<!-- /i18n -->`))
             .toEqual([
-              [['message1'], 'meaning1', 'desc1'],
-              [['message2'], '', 'desc2'],
-              [['message3'], '', ''],
+              [['message1'], 'meaning1', 'desc1', ''],
+              [['message2'], '', 'desc2', ''],
+              [['message3'], '', '', ''],
             ]);
       });
 
@@ -153,7 +161,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
               'text',
               '<ph tag name="START_PARAGRAPH">html, <ph tag name="START_BOLD_TEXT">nested</ph name="CLOSE_BOLD_TEXT"></ph name="CLOSE_PARAGRAPH">'
             ],
-            '', ''
+            '', '', ''
           ],
         ]);
       });
@@ -162,29 +170,36 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
     describe('ICU messages', () => {
       it('should extract as ICU when single child of an element', () => {
         expect(_humanizeMessages('<div i18n="m|d">{count, plural, =0 {zero}}</div>')).toEqual([
-          [['{count, plural, =0 {[zero]}}'], 'm', 'd'],
+          [['{count, plural, =0 {[zero]}}'], 'm', 'd', ''],
         ]);
       });
 
       it('should extract as ICU + ph when not single child of an element', () => {
         expect(_humanizeMessages('<div i18n="m|d">b{count, plural, =0 {zero}}a</div>')).toEqual([
-          [['b', '<ph icu name="ICU">{count, plural, =0 {[zero]}}</ph>', 'a'], 'm', 'd'],
-          [['{count, plural, =0 {[zero]}}'], '', ''],
+          [['b', '<ph icu name="ICU">{count, plural, =0 {[zero]}}</ph>', 'a'], 'm', 'd', ''],
+          [['{count, plural, =0 {[zero]}}'], '', '', ''],
+        ]);
+      });
+
+      it('should extract as ICU + ph when wrapped in whitespace in an element', () => {
+        expect(_humanizeMessages('<div i18n="m|d"> {count, plural, =0 {zero}} </div>')).toEqual([
+          [[' ', '<ph icu name="ICU">{count, plural, =0 {[zero]}}</ph>', ' '], 'm', 'd', ''],
+          [['{count, plural, =0 {[zero]}}'], '', '', ''],
         ]);
       });
 
       it('should extract as ICU when single child of a block', () => {
         expect(_humanizeMessages('<!-- i18n:m|d -->{count, plural, =0 {zero}}<!-- /i18n -->'))
             .toEqual([
-              [['{count, plural, =0 {[zero]}}'], 'm', 'd'],
+              [['{count, plural, =0 {[zero]}}'], 'm', 'd', ''],
             ]);
       });
 
       it('should extract as ICU + ph when not single child of a block', () => {
         expect(_humanizeMessages('<!-- i18n:m|d -->b{count, plural, =0 {zero}}a<!-- /i18n -->'))
             .toEqual([
-              [['{count, plural, =0 {[zero]}}'], '', ''],
-              [['b', '<ph icu name="ICU">{count, plural, =0 {[zero]}}</ph>', 'a'], 'm', 'd'],
+              [['{count, plural, =0 {[zero]}}'], '', '', ''],
+              [['b', '<ph icu name="ICU">{count, plural, =0 {[zero]}}</ph>', 'a'], 'm', 'd', ''],
             ]);
       });
 
@@ -197,9 +212,9 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
                   'b', '<ph icu name="ICU">{count, plural, =0 {[{sex, select, male {[m]}}]}}</ph>',
                   'a'
                 ],
-                'm', 'd'
+                'm', 'd', ''
               ],
-              [['{count, plural, =0 {[{sex, select, male {[m]}}]}}'], '', ''],
+              [['{count, plural, =0 {[{sex, select, male {[m]}}]}}'], '', '', ''],
             ]);
       });
     });
@@ -207,7 +222,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
     describe('implicit elements', () => {
       it('should extract from implicit elements', () => {
         expect(_humanizeMessages('<b>bold</b><i>italic</i>', ['b'])).toEqual([
-          [['bold'], '', ''],
+          [['bold'], '', '', ''],
         ]);
       });
     });
@@ -217,7 +232,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
         expect(_humanizeMessages(
                    '<b title="bb">bold</b><i title="ii">italic</i>', [], {'b': ['title']}))
             .toEqual([
-              [['bb'], '', ''],
+              [['bb'], '', '', ''],
             ]);
       });
     });
@@ -232,14 +247,13 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
               '<ph tag name="START_PARAGRAPH">two</ph name="CLOSE_PARAGRAPH">',
               '<ph tag name="START_PARAGRAPH_1">three</ph name="CLOSE_PARAGRAPH">',
             ],
-            'm', 'd'
+            'm', 'd', ''
           ],
         ]);
 
         expect(_humanizePlaceholders(html)).toEqual([
           'START_PARAGRAPH=<p>, CLOSE_PARAGRAPH=</p>, START_PARAGRAPH_1=<p other>',
         ]);
-
       });
 
       it('should reuse the same placeholder name for interpolations', () => {
@@ -249,7 +263,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
             [
               '[<ph name="INTERPOLATION"> a </ph>, <ph name="INTERPOLATION"> a </ph>, <ph name="INTERPOLATION_1"> b </ph>]'
             ],
-            'm', 'd'
+            'm', 'd', ''
           ],
         ]);
 
@@ -269,11 +283,11 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
               '<ph icu name="ICU">{count, plural, =0 {[0]}}</ph>',
               '<ph icu name="ICU_1">{count, plural, =1 {[1]}}</ph>',
             ],
-            'm', 'd'
+            'm', 'd', ''
           ],
-          [['{count, plural, =0 {[0]}}'], '', ''],
-          [['{count, plural, =0 {[0]}}'], '', ''],
-          [['{count, plural, =1 {[1]}}'], '', ''],
+          [['{count, plural, =0 {[0]}}'], '', '', ''],
+          [['{count, plural, =0 {[0]}}'], '', '', ''],
+          [['{count, plural, =1 {[1]}}'], '', '', ''],
         ]);
 
         expect(_humanizePlaceholders(html)).toEqual([
@@ -289,7 +303,6 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
           '',
           '',
         ]);
-
       });
     });
   });
@@ -297,11 +310,11 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
 
 export function _humanizeMessages(
     html: string, implicitTags: string[] = [],
-    implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string][] {
+    implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string, string][] {
   // clang-format off
   // https://github.com/angular/clang-format/issues/35
   return _extractMessages(html, implicitTags, implicitAttrs).map(
-    message => [serializeNodes(message.nodes), message.meaning, message.description, ]) as [string[], string, string][];
+    message => [serializeNodes(message.nodes), message.meaning, message.description, message.id]) as [string[], string, string, string][];
   // clang-format on
 }
 

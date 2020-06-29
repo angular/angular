@@ -1,7 +1,7 @@
 {
   "open": false,
   "logLevel": "silent",
-  "port": 8000,
+  "port": 4203,
   "server": {
     "baseDir": "src",
     "routes": {
