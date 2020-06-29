@@ -42,20 +42,22 @@ export class NoopIncrementalBuildStrategy implements IncrementalBuildStrategy {
  * Tracks an `IncrementalDriver` within the strategy itself.
  */
 export class TrackedIncrementalBuildStrategy implements IncrementalBuildStrategy {
-  private previous: IncrementalDriver|null = null;
-  private next: IncrementalDriver|null = null;
+  private driver: IncrementalDriver|null = null;
+  private isSet: boolean = false;
 
   getIncrementalDriver(): IncrementalDriver|null {
-    return this.next !== null ? this.next : this.previous;
+    return this.driver;
   }
 
   setIncrementalDriver(driver: IncrementalDriver): void {
-    this.next = driver;
+    this.driver = driver;
+    this.isSet = true;
   }
 
   toNextBuildStrategy(): TrackedIncrementalBuildStrategy {
     const strategy = new TrackedIncrementalBuildStrategy();
-    strategy.previous = this.next;
+    // Only reuse a driver that was explicitly set via `setIncrementalDriver`.
+    strategy.driver = this.isSet ? this.driver : null;
     return strategy;
   }
 }
