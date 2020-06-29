@@ -14,7 +14,7 @@ import {readFileSync, removeSync} from 'fs-extra';
 import {sync as globSync} from 'glob';
 import {basename, extname, join, relative, sep} from 'path';
 import {EMPTY} from 'rxjs';
-import {createTestApp} from '../testing';
+import {createTestApp} from './test-app';
 
 /** Suffix that indicates whether a given file is a test case input. */
 const TEST_CASE_INPUT_SUFFIX = '_input.ts';
