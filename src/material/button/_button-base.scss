@@ -58,7 +58,7 @@ $mat-mini-fab-padding: 8px !default;
   // on most browsers except on IE11 where it defaults to `hidden`.
   overflow: visible;
 
-  &[disabled] {
+  &.mat-button-disabled {
     cursor: default;
   }
 

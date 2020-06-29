@@ -24,7 +24,7 @@ $_mat-button-ripple-opacity: 0.1;
     background-color: mat-color($warn);
   }
 
-  &[disabled] .mat-button-focus-overlay {
+  &.mat-button-disabled .mat-button-focus-overlay {
     background-color: transparent;
   }
 }
@@ -76,8 +76,8 @@ $_mat-button-ripple-opacity: 0.1;
     #{$property}: mat-color($warn, $hue);
   }
 
-  &.mat-primary, &.mat-accent, &.mat-warn, &[disabled] {
-    &[disabled] {
+  &.mat-primary, &.mat-accent, &.mat-warn, &.mat-button-disabled {
+    &.mat-button-disabled {
       $palette: if($property == 'color', $foreground, $background);
       #{$property}: mat-color($palette, disabled-button);
     }
@@ -118,7 +118,7 @@ $_mat-button-ripple-opacity: 0.1;
 
   // Note: this needs a bit extra specificity, because we're not guaranteed the inclusion
   // order of the theme styles and the button reset may end up resetting this as well.
-  .mat-stroked-button:not([disabled]) {
+  .mat-stroked-button:not(.mat-button-disabled) {
     border-color: mat-color($foreground, divider);
   }
 
@@ -139,11 +139,11 @@ $_mat-button-ripple-opacity: 0.1;
   .mat-raised-button {
     @include _mat-theme-overridable-elevation(2, $config);
 
-    &:not([disabled]):active {
+    &:not(.mat-button-disabled):active {
       @include _mat-theme-overridable-elevation(8, $config);
     }
 
-    &[disabled] {
+    &.mat-button-disabled {
       @include _mat-theme-overridable-elevation(0, $config);
     }
   }
@@ -151,11 +151,11 @@ $_mat-button-ripple-opacity: 0.1;
   .mat-fab, .mat-mini-fab {
     @include _mat-theme-overridable-elevation(6, $config);
 
-    &:not([disabled]):active {
+    &:not(.mat-button-disabled):active {
       @include _mat-theme-overridable-elevation(12, $config);
     }
 
-    &[disabled] {
+    &.mat-button-disabled {
       @include _mat-theme-overridable-elevation(0, $config);
     }
   }
