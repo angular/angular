@@ -412,12 +412,46 @@ describe('CdkVirtualScrollViewport', () => {
       fixture.detectChanges();
       flush();
 
-      triggerScroll(viewport);
+      expect(viewport.getOffsetToRenderedContentStart())
+          .toBe(testComponent.itemSize, 'should be scrolled to bottom of 5 item list');
+    }));
+
+    it('should handle dynamic item array with dynamic buffer', fakeAsync(() => {
+      finishInit(fixture);
+      triggerScroll(viewport, testComponent.itemSize * 6);
       fixture.detectChanges();
       flush();
 
       expect(viewport.getOffsetToRenderedContentStart())
-          .toBe(testComponent.itemSize, 'should be scrolled to bottom of 5 item list');
+          .toBe(testComponent.itemSize * 6, 'should be scrolled to bottom of 10 item list');
+
+      testComponent.items = Array(5).fill(0);
+      testComponent.minBufferPx = testComponent.itemSize;
+      testComponent.maxBufferPx = testComponent.itemSize;
+
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.getOffsetToRenderedContentStart())
+          .toBe(0, 'should render from first item');
+    }));
+
+    it('should handle dynamic item array keeping position when possibile', fakeAsync(() => {
+      testComponent.items = Array(100).fill(0);
+      finishInit(fixture);
+      triggerScroll(viewport, testComponent.itemSize * 50);
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.getOffsetToRenderedContentStart())
+          .toBe(testComponent.itemSize * 50, 'should be scrolled to index 50 item list');
+
+      testComponent.items = Array(54).fill(0);
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.getOffsetToRenderedContentStart())
+          .toBe(testComponent.itemSize * 50, 'should be kept the scroll position');
     }));
 
     it('should update viewport as user scrolls right in horizontal mode', fakeAsync(() => {
@@ -900,6 +934,15 @@ function triggerScroll(viewport: CdkVirtualScrollViewport, offset?: number) {
     .cdk-virtual-scroll-orientation-horizontal .cdk-virtual-scroll-content-wrapper {
       flex-direction: row;
     }
+
+    .cdk-virtual-scroll-viewport {
+      background-color: #f5f5f5;
+    }
+
+    .item {
+      box-sizing: border-box;
+      border: 1px dashed #ccc;
+    }
   `],
   encapsulation: ViewEncapsulation.None,
 })
@@ -952,6 +995,15 @@ class FixedSizeVirtualScroll {
     .cdk-virtual-scroll-orientation-horizontal .cdk-virtual-scroll-content-wrapper {
       flex-direction: row;
     }
+
+    .cdk-virtual-scroll-viewport {
+      background-color: #f5f5f5;
+    }
+
+    .item {
+      box-sizing: border-box;
+      border: 1px dashed #ccc;
+    }
   `],
   encapsulation: ViewEncapsulation.None,
 })
@@ -982,9 +1034,19 @@ class FixedSizeVirtualScrollWithRtlDirection {
 @Component({
   template: `
     <cdk-virtual-scroll-viewport>
-      <div *cdkVirtualFor="let item of items">{{item}}</div>
+      <div class="item" *cdkVirtualFor="let item of items">{{item}}</div>
     </cdk-virtual-scroll-viewport>
-  `
+  `,
+  styles: [`
+    .cdk-virtual-scroll-viewport {
+      background-color: #f5f5f5;
+    }
+
+    .item {
+      box-sizing: border-box;
+      border: 1px dashed #ccc;
+    }
+  `]
 })
 class VirtualScrollWithNoStrategy {
   items = [];
@@ -1013,11 +1075,14 @@ class InjectsViewContainer {
     .cdk-virtual-scroll-viewport {
       width: 200px;
       height: 200px;
+      background-color: #f5f5f5;
     }
 
     .item {
       width: 100%;
       height: 50px;
+      box-sizing: border-box;
+      border: 1px dashed #ccc;
     }
   `],
   encapsulation: ViewEncapsulation.None
