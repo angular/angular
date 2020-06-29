@@ -255,7 +255,7 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   @ViewChild('connectionContainer', {static: true}) _connectionContainerRef: ElementRef;
   @ViewChild('inputContainer') _inputContainerRef: ElementRef;
-  @ViewChild('label') private _label: ElementRef;
+  @ViewChild('label') private _label: ElementRef<HTMLElement>;
 
   @ContentChild(MatFormFieldControl) _controlNonStatic: MatFormFieldControl<any>;
   @ContentChild(MatFormFieldControl, {static: true}) _controlStatic: MatFormFieldControl<any>;
@@ -540,7 +540,7 @@ export class MatFormField extends _MatFormFieldMixinBase
     const labelEl = this._label ? this._label.nativeElement : null;
 
     if (this.appearance !== 'outline' || !labelEl || !labelEl.children.length ||
-        !labelEl.textContent.trim()) {
+        !labelEl.textContent!.trim()) {
       return;
     }
 
@@ -578,11 +578,12 @@ export class MatFormField extends _MatFormFieldMixinBase
       }
 
       const containerStart = this._getStartEnd(containerRect);
-      const labelStart = this._getStartEnd(labelEl.children[0].getBoundingClientRect());
+      const labelChildren = labelEl.children;
+      const labelStart = this._getStartEnd(labelChildren[0].getBoundingClientRect());
       let labelWidth = 0;
 
-      for (const child of labelEl.children) {
-        labelWidth += child.offsetWidth;
+      for (let i = 0; i < labelChildren.length; i++) {
+        labelWidth += (labelChildren[i] as HTMLElement).offsetWidth;
       }
       startWidth = Math.abs(labelStart - containerStart) - outlineGapPadding;
       gapWidth = labelWidth > 0 ? labelWidth * floatingLabelScale + outlineGapPadding * 2 : 0;
