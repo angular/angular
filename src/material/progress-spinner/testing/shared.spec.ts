@@ -26,20 +26,30 @@ export function runHarnessTests(progressSpinnerModule: typeof MatProgressSpinner
 
   it('should load all progress spinner harnesses', async () => {
     const progressSpinners = await loader.getAllHarnesses(progressSpinnerHarness);
-    expect(progressSpinners.length).toBe(2);
+    expect(progressSpinners.length).toBe(3);
   });
 
   it('should get the value', async () => {
     fixture.componentInstance.value = 50;
-    const [determinate, indeterminate] = await loader.getAllHarnesses(progressSpinnerHarness);
+    const [
+      determinate,
+      indeterminate,
+      impliedIndeterminate
+    ] = await loader.getAllHarnesses(progressSpinnerHarness);
     expect(await determinate.getValue()).toBe(50);
     expect(await indeterminate.getValue()).toBe(null);
+    expect(await impliedIndeterminate.getValue()).toBe(null);
   });
 
   it('should get the mode', async () => {
-    const [determinate, indeterminate] = await loader.getAllHarnesses(progressSpinnerHarness);
+    const [
+      determinate,
+      indeterminate,
+      impliedIndeterminate
+    ] = await loader.getAllHarnesses(progressSpinnerHarness);
     expect(await determinate.getMode()).toBe('determinate');
     expect(await indeterminate.getMode()).toBe('indeterminate');
+    expect(await impliedIndeterminate.getMode()).toBe('indeterminate');
   });
 }
 
@@ -47,6 +57,7 @@ export function runHarnessTests(progressSpinnerModule: typeof MatProgressSpinner
   template: `
     <mat-progress-spinner mode="determinate" [value]="value"></mat-progress-spinner>
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <mat-spinner></mat-spinner>
   `
 })
 class ProgressSpinnerHarnessTest {

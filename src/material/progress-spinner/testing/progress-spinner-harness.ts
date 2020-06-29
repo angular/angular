@@ -14,7 +14,7 @@ import {ProgressSpinnerHarnessFilters} from './progress-spinner-harness-filters'
 /** Harness for interacting with a standard mat-progress-spinner in tests. */
 export class MatProgressSpinnerHarness extends ComponentHarness {
   /** The selector for the host element of a `MatProgressSpinner` instance. */
-  static hostSelector = 'mat-progress-spinner';
+  static hostSelector = 'mat-progress-spinner,mat-spinner';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatProgressSpinnerHarness` that
