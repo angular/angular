@@ -308,7 +308,7 @@ So when IE is refreshed (manually or automatically by `ng serve`), sometimes the
 
 ## Appendix: Test using `fakeAsync()/async()`
 
-If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read the [Testing guide](guide/testing#async-test-with-fakeasync)), you need to import `zone.js/dist/zone-testing` in your test setup file.
+If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read the [Testing guide](guide/testing-components-scenarios#fake-async)), you need to import `zone.js/dist/zone-testing` in your test setup file.
 
 <div class="alert is-important">
 If you create project with `Angular/CLI`, it is already imported in `src/test.ts`.
