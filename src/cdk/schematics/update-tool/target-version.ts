@@ -22,6 +22,7 @@ export enum TargetVersion {
  * based on the "TargetVersion" enum.
  */
 export function getAllVersionNames(): string[] {
-  return Object.keys(TargetVersion)
-      .filter(enumValue => typeof TargetVersion[enumValue] === 'string');
+  return Object.keys(TargetVersion).filter(enumValue => {
+    return typeof (TargetVersion as Record<string, string|undefined>)[enumValue] === 'string';
+  });
 }

@@ -133,13 +133,11 @@ export class ComponentResourceCollector {
         property.initializer.elements.forEach(el => {
           if (ts.isStringLiteralLike(el)) {
             const stylesheetPath = this._fileSystem.resolve(sourceFileDirPath, el.text);
+            const stylesheet = this.resolveExternalStylesheet(stylesheetPath, node);
 
-            // In case the stylesheet does not exist in the file system, skip it gracefully.
-            if (!this._fileSystem.exists(stylesheetPath)) {
-              return;
+            if (stylesheet) {
+              this.resolvedStylesheets.push(stylesheet);
             }
-
-            this.resolvedStylesheets.push(this.resolveExternalStylesheet(stylesheetPath, node));
           }
         });
       }
@@ -155,24 +153,32 @@ export class ComponentResourceCollector {
         }
 
         const fileContent = this._fileSystem.read(templatePath);
-        const lineStartsMap = computeLineStartsMap(fileContent);
 
-        this.resolvedTemplates.push({
-          filePath: templatePath,
-          container: node,
-          content: fileContent,
-          inline: false,
-          start: 0,
-          getCharacterAndLineOfPosition: pos => getLineAndCharacterFromPosition(lineStartsMap, pos),
-        });
+        if (fileContent) {
+          const lineStartsMap = computeLineStartsMap(fileContent);
+
+          this.resolvedTemplates.push({
+            filePath: templatePath,
+            container: node,
+            content: fileContent,
+            inline: false,
+            start: 0,
+            getCharacterAndLineOfPosition: p => getLineAndCharacterFromPosition(lineStartsMap, p),
+          });
+        }
       }
     });
   }
 
   /** Resolves an external stylesheet by reading its content and computing line mappings. */
   resolveExternalStylesheet(filePath: WorkspacePath, container: ts.ClassDeclaration|null):
-      ResolvedResource {
+      ResolvedResource|null {
     const fileContent = this._fileSystem.read(filePath);
+
+    if (!fileContent) {
+      return null;
+    }
+
     const lineStartsMap = computeLineStartsMap(fileContent);
 
     return {

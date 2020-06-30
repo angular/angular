@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "strict": true,
     "lib": ["es2015"],
     "types": ["node", "glob"]
   }

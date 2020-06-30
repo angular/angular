@@ -102,15 +102,17 @@ export class UpdateProject<Context> {
     // specified in any Angular component. Therefore we allow for additional stylesheets
     // being specified. We visit them in each migration unless they have been already
     // discovered before as actual component resource.
-    additionalStylesheetPaths.forEach(filePath => {
-      const resolvedPath = this._fileSystem.resolve(filePath);
-      const stylesheet = resourceCollector.resolveExternalStylesheet(resolvedPath, null);
-      // Do not visit stylesheets which have been referenced from a component.
-      if (!this._analyzedFiles.has(resolvedPath)) {
-        migrations.forEach(r => r.visitStylesheet(stylesheet));
-        this._analyzedFiles.add(resolvedPath);
-      }
-    });
+    if (additionalStylesheetPaths) {
+      additionalStylesheetPaths.forEach(filePath => {
+        const resolvedPath = this._fileSystem.resolve(filePath);
+        const stylesheet = resourceCollector.resolveExternalStylesheet(resolvedPath, null);
+        // Do not visit stylesheets which have been referenced from a component.
+        if (!this._analyzedFiles.has(resolvedPath) && stylesheet) {
+          migrations.forEach(r => r.visitStylesheet(stylesheet));
+          this._analyzedFiles.add(resolvedPath);
+        }
+      });
+    }
 
     // Call the "postAnalysis" method for each migration.
     migrations.forEach(r => r.postAnalysis());

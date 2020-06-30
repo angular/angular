@@ -52,11 +52,11 @@ export abstract class FileSystem<T = WorkspacePath> {
   /** Applies all changes which have been recorded in update recorders. */
   abstract commitEdits(): void;
   /** Creates a new file with the given content. */
-  abstract create(filePath: T, content: string);
+  abstract create(filePath: T, content: string): void;
   /** Overwrites an existing file with the given content. */
-  abstract overwrite(filePath: T, content: string);
+  abstract overwrite(filePath: T, content: string): void;
   /** Deletes the given file. */
-  abstract delete(filePath: T);
+  abstract delete(filePath: T): void;
   /**
    * Resolves given paths to a resolved path in the file system. For example, the devkit
    * tree considers the actual workspace directory as file system root.

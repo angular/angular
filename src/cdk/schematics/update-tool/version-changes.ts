@@ -29,15 +29,11 @@ export type ValueOfChanges<T> = T extends VersionChanges<infer X>? X : null;
  */
 export function getChangesForTarget<T>(target: TargetVersion, data: VersionChanges<T>): T[] {
   if (!data) {
-    throw new Error(
-        `No data could be found for target version: ${TargetVersion[target]}`);
+    const version = (TargetVersion as Record<string, string>)[target];
+    throw new Error(`No data could be found for target version: ${version}`);
   }
 
-  if (!data[target]) {
-    return [];
-  }
-
-  return data[target]!.reduce((result, prData) => result.concat(prData.changes), [] as T[]);
+  return (data[target] || []).reduce((result, prData) => result.concat(prData.changes), [] as T[]);
 }
 
 /**
