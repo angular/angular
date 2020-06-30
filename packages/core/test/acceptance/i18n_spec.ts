@@ -627,6 +627,24 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(element.textContent).toContain('ICU start --> Autre <-- ICU end');
     });
 
+    it('when `select` or `plural` keywords have spaces after them', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT , select , 10 {ten} 20 {twenty} other {other}}')]:
+            '{VAR_SELECT , select , 10 {dix} 20 {vingt} other {autre}}',
+        [computeMsgId('{VAR_PLURAL , plural , =0 {zero} =1 {one} other {other}}')]:
+            '{VAR_PLURAL , plural , =0 {zéro} =1 {une} other {autre}}'
+      });
+      const fixture = initWithTemplate(AppComp, `
+        <div i18n>
+          {count, select , 10 {ten} 20 {twenty} other {other}} -
+          {count, plural , =0 {zero} =1 {one} other {other}}
+        </div>
+      `);
+
+      const element = fixture.nativeElement;
+      expect(element.textContent).toContain('autre - zéro');
+    });
+
     it('with no root node and text and DOM nodes surrounding ICU', () => {
       loadTranslations({
         [computeMsgId('{VAR_SELECT, select, 10 {Ten} 20 {Twenty} other {Other}}')]:
