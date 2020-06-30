@@ -2593,6 +2593,25 @@ describe('MatAutocomplete', () => {
 
     expect(formControl.value).toBe('Cal', 'Expected new value to be propagated to model');
   }));
+
+  it('should not close when clicking inside alternate origin', () => {
+    const fixture = createComponent(AutocompleteWithDifferentOrigin);
+    fixture.detectChanges();
+    fixture.componentInstance.connectedTo = fixture.componentInstance.alternateOrigin;
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openPanel();
+    fixture.detectChanges();
+    zone.simulateZoneExit();
+
+    expect(fixture.componentInstance.trigger.panelOpen).toBe(true);
+
+    const origin = fixture.nativeElement.querySelector('.origin');
+    origin.click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.trigger.panelOpen).toBe(true);
+  });
+
 });
 
 const SIMPLE_AUTOCOMPLETE_TEMPLATE = `

@@ -360,9 +360,11 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
               (this._isInsideShadowRoot && event.composedPath ? event.composedPath()[0] :
                                                                 event.target) as HTMLElement;
           const formField = this._formField ? this._formField._elementRef.nativeElement : null;
+          const customOrigin = this.connectedTo ? this.connectedTo.elementRef.nativeElement : null;
 
           return this._overlayAttached && clickTarget !== this._element.nativeElement &&
               (!formField || !formField.contains(clickTarget)) &&
+              (!customOrigin || !customOrigin.contains(clickTarget)) &&
               (!!this._overlayRef && !this._overlayRef.overlayElement.contains(clickTarget));
         }));
   }
@@ -722,7 +724,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
     positionStrategy.withPositions(positions);
   }
 
-  private _getConnectedElement(): ElementRef {
+  private _getConnectedElement(): ElementRef<HTMLElement> {
     if (this.connectedTo) {
       return this.connectedTo.elementRef;
     }
