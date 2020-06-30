@@ -41,14 +41,6 @@
     "src/cdk/testing/private/e2e/query.ts"
   ],
   [
-    "src/material/datepicker/date-range-input.ts",
-    "src/material/datepicker/date-range-picker.ts"
-  ],
-  [
-    "src/material/datepicker/datepicker-input.ts",
-    "src/material/datepicker/datepicker.ts"
-  ],
-  [
     "src/material/grid-list/grid-list.ts",
     "src/material/grid-list/tile-styler.ts"
   ]

@@ -174,7 +174,7 @@ export interface MatCalendarUserEvent<D> {
 
 export declare type MatCalendarView = 'month' | 'year' | 'multi-year';
 
-export declare class MatDatepicker<D> extends MatDatepickerBase<MatDatepickerInput<D>, D | null, D> {
+export declare class MatDatepicker<D> extends MatDatepickerBase<MatDatepickerControl<D>, D | null, D> {
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepicker<any>, "mat-datepicker", ["matDatepicker"], {}, {}, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDatepicker<any>, never>;
 }
@@ -285,7 +285,7 @@ export declare class MatDatepickerToggleIcon {
     static ɵfac: i0.ɵɵFactoryDef<MatDatepickerToggleIcon, never>;
 }
 
-export declare class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>, MatDatepickerControl<D>, MatDateRangeInputParent<D>, AfterContentInit, OnDestroy {
+export declare class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>, MatDatepickerControl<D>, MatDateRangeInputParent<D>, MatDateRangePickerInput<D>, AfterContentInit, OnDestroy {
     _ariaDescribedBy: string | null;
     _disabledChange: Subject<boolean>;
     _endInput: MatEndDate<D>;
@@ -336,7 +336,7 @@ export declare class MatDateRangeInput<D> implements MatFormFieldControl<DateRan
     static ɵfac: i0.ɵɵFactoryDef<MatDateRangeInput<any>, [null, null, { optional: true; self: true; }, { optional: true; }, { optional: true; }]>;
 }
 
-export declare class MatDateRangePicker<D> extends MatDatepickerBase<MatDateRangeInput<D>, DateRange<D>, D> {
+export declare class MatDateRangePicker<D> extends MatDatepickerBase<MatDateRangePickerInput<D>, DateRange<D>, D> {
     protected _forwardContentValues(instance: MatDatepickerContent<DateRange<D>, D>): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDateRangePicker<any>, "mat-date-range-picker", ["matDateRangePicker"], {}, {}, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDateRangePicker<any>, never>;

@@ -34,7 +34,7 @@ import {
 import {MatDatepickerControl} from './datepicker-base';
 import {createMissingDateImplError} from './datepicker-errors';
 import {DateFilterFn} from './datepicker-input-base';
-import {MatDateRangePicker} from './date-range-picker';
+import {MatDateRangePicker, MatDateRangePickerInput} from './date-range-picker';
 import {DateRange, MatDateSelectionModel} from './date-selection-model';
 
 let nextUniqueId = 0;
@@ -60,7 +60,8 @@ let nextUniqueId = 0;
   ]
 })
 export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
-  MatDatepickerControl<D>, MatDateRangeInputParent<D>, AfterContentInit, OnDestroy {
+  MatDatepickerControl<D>, MatDateRangeInputParent<D>, MatDateRangePickerInput<D>,
+  AfterContentInit, OnDestroy {
   /** Current value of the range input. */
   get value() {
     return this._model ? this._model.selection : null;
