@@ -2431,14 +2431,6 @@ This release contains various API docs improvements.
 # [8.0.0-beta.0](https://github.com/angular/angular/compare/7.2.0...8.0.0-beta.0) (2019-01-16)
 
 
-### Bug Fixes
-
-
-
-### Features
-
-
-
 ### Performance Improvements
 
 
@@ -2584,10 +2576,6 @@ This release contains various API docs improvements.
 
 <a name="7.1.0"></a>
 # [7.1.0](https://github.com/angular/angular/compare/7.1.0-rc.0...7.1.0) (2018-11-21)
-
-
-### Bug Fixes
-
 
 
 ### Features
@@ -3725,9 +3713,6 @@ Note: Due to an animation fix back in 5.1.1 ([c2b3792](https://github.com/angula
 
 <a name="5.1.0-beta.0"></a>
 # [5.1.0-beta.0](https://github.com/angular/angular/compare/5.0.0-rc.4...5.1.0-beta.0) (2017-11-08)
-
-### Bug Fixes
-
 
 ### Features
 
