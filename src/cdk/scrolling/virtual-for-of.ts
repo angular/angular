@@ -240,7 +240,7 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
   ngOnDestroy() {
     this._viewport.detach();
 
-    this._dataSourceChanges.next();
+    this._dataSourceChanges.next(undefined!);
     this._dataSourceChanges.complete();
     this.viewChange.complete();
 

@@ -35,8 +35,8 @@ export declare class MatSnackBarConfig<D = any> {
 
 export declare class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy {
     _animationState: string;
-    readonly _onEnter: Subject<any>;
-    readonly _onExit: Subject<any>;
+    readonly _onEnter: Subject<void>;
+    readonly _onExit: Subject<void>;
     _portalOutlet: CdkPortalOutlet;
     _role: 'alert' | 'status' | null;
     attachDomPortal: (portal: DomPortal) => void;
