@@ -16,6 +16,7 @@ Zone.__load_patch('EventEmitter', (global: any) => {
   const EE_REMOVE_ALL_LISTENER = 'removeAllListeners';
   const EE_LISTENERS = 'listeners';
   const EE_ON = 'on';
+  const EE_OFF = 'off';
 
   const compareTaskCallbackVsDelegate = function(task: any, delegate: any) {
     // same callback, same capture, same event name, just return
@@ -47,6 +48,7 @@ Zone.__load_patch('EventEmitter', (global: any) => {
     });
     if (result && result[0]) {
       obj[EE_ON] = obj[EE_ADD_LISTENER];
+      obj[EE_OFF] = obj[EE_REMOVE_LISTENER];
     }
   }
 
