@@ -69,6 +69,15 @@ function isFormData(value: any): value is FormData {
 }
 
 /**
+ * Safely assert whether the given value is a URLSearchParams instance.
+ *
+ * In some execution environments URLSearchParams is not defined.
+ */
+function isUrlSearchParams(value: any): value is URLSearchParams {
+  return typeof URLSearchParams !== 'undefined' && value instanceof URLSearchParams;
+}
+
+/**
  * An outgoing HTTP request with an optional typed body.
  *
  * `HttpRequest` represents an outgoing request, including URL, method,
@@ -273,7 +282,7 @@ export class HttpRequest<T> {
     // Check whether the body is already in a serialized form. If so,
     // it can just be returned directly.
     if (isArrayBuffer(this.body) || isBlob(this.body) || isFormData(this.body) ||
-        typeof this.body === 'string') {
+        isUrlSearchParams(this.body) || typeof this.body === 'string') {
       return this.body;
     }
     // Check whether the body is an instance of HttpUrlEncodedParams.
