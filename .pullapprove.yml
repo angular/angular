@@ -612,6 +612,14 @@ groups:
         contains_any_globs(files.exclude('packages/compiler-cli/**'), [
           '**/testing/**',
           'aio/content/guide/testing.md',
+          'aio/content/guide/test-debugging.md',
+          'aio/content/guide/testing-attribute-directives.md',
+          'aio/content/guide/testing-code-coverage.md',
+          'aio/content/guide/testing-components-basics.md',
+          'aio/content/guide/testing-components-scenarios.md',
+          'aio/content/guide/testing-pipes.md',
+          'aio/content/guide/testing-services.md',
+          'aio/content/guide/testing-utility-apis.md',
           'aio/content/examples/testing/**',
           'aio/content/images/guide/testing/**'
           ])
