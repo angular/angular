@@ -1,5 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/noop-animation';
+@import '../../cdk/a11y/a11y';
 
 
 // Animation config
@@ -27,6 +28,12 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
     fill: transparent;
     transform-origin: center;
     transition: stroke-dashoffset 225ms linear;
+
+    @include cdk-high-contrast(active, off) {
+      // SVG colors aren't inverted automatically in high contrast mode. Set the
+      // stroke to currentColor in order to respect the user's color settings.
+      stroke: currentColor;
+    }
   }
 
   &.mat-progress-spinner-indeterminate-animation[mode='indeterminate'] {
