@@ -55,7 +55,7 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
   }
 
   function clearTask(task: Task) {
-    return clearNative!((<TimerOptions>task.data).handleId);
+    return clearNative!.call(window, (<TimerOptions>task.data).handleId);
   }
 
   setNative =
