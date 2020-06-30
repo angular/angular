@@ -1,3 +1,27 @@
+<a name="10.0.2"></a>
+## [10.0.2](https://github.com/angular/angular/compare/10.0.1...10.0.2) (2020-06-30)
+
+
+### Bug Fixes
+
+* **core:** determine required DOMParser feature availability ([#36578](https://github.com/angular/angular/issues/36578)) ([#37783](https://github.com/angular/angular/issues/37783)) ([12a71bc](https://github.com/angular/angular/commit/12a71bc))
+* **core:** do not trigger CSP alert/report in Firefox and Chrome ([#36578](https://github.com/angular/angular/issues/36578)) ([#37783](https://github.com/angular/angular/issues/37783)) ([b0b7248](https://github.com/angular/angular/commit/b0b7248)), closes [#25214](https://github.com/angular/angular/issues/25214)
+* **core:** don't consider inherited NG_ELEMENT_ID during DI ([#37574](https://github.com/angular/angular/issues/37574)) ([64b0ae9](https://github.com/angular/angular/commit/64b0ae9)), closes [#36235](https://github.com/angular/angular/issues/36235)
+* **core:** error when invoking callbacks registered via ViewRef.onDestroy ([#37543](https://github.com/angular/angular/issues/37543)) ([75b119e](https://github.com/angular/angular/commit/75b119e)), closes [#36213](https://github.com/angular/angular/issues/36213)
+* **core:** error when invoking callbacks registered via ViewRef.onDestroy ([#37543](https://github.com/angular/angular/issues/37543)) ([#37783](https://github.com/angular/angular/issues/37783)) ([df2cd37](https://github.com/angular/angular/commit/df2cd37)), closes [#36213](https://github.com/angular/angular/issues/36213)
+* **core:** fake_async_fallback should have the same logic with fake-async ([#37680](https://github.com/angular/angular/issues/37680)) ([7a91b23](https://github.com/angular/angular/commit/7a91b23))
+* **elements:** fire custom element output events during component initialization ([#37570](https://github.com/angular/angular/issues/37570)) ([89e16ed](https://github.com/angular/angular/commit/89e16ed)), closes [/github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts#L167-L170](https://github.com//github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts/issues/L167-L170) [/github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts#L164](https://github.com//github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/create-custom-element.ts/issues/L164) [/github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/component-factory-strategy.ts#L158](https://github.com//github.com/angular/angular/blob/c0143cb2abdd172de1b95fd1d2c4cfc738640e28/packages/elements/src/component-factory-strategy.ts/issues/L158) [#36141](https://github.com/angular/angular/issues/36141)
+* **language-service:** incorrect autocomplete results on unknown symbol ([#37518](https://github.com/angular/angular/issues/37518)) ([7c0b25f](https://github.com/angular/angular/commit/7c0b25f))
+* **ngcc:** ensure lockfile is removed when analyzeFn fails ([#37739](https://github.com/angular/angular/issues/37739)) ([1a1f99a](https://github.com/angular/angular/commit/1a1f99a))
+* **ngcc:** prevent including JavaScript sources outside of the package ([#37596](https://github.com/angular/angular/issues/37596)) ([4b90b6a](https://github.com/angular/angular/commit/4b90b6a)), closes [#37508](https://github.com/angular/angular/issues/37508)
+
+
+### Performance Improvements
+
+* **compiler-cli:** fix memory leak in retained incremental state ([#37835](https://github.com/angular/angular/issues/37835)) ([57a518a](https://github.com/angular/angular/commit/57a518a))
+
+
+
 <a name="10.0.1"></a>
 ## [10.0.1](https://github.com/angular/angular/compare/10.0.0...10.0.1) (2020-06-26)
 
