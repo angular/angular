@@ -1,6 +1,6 @@
 # CLI Overview and Command Reference
 
-The Angular CLI is a command-line interface tool that you use to initialize, develop, scaffold, and maintain Angular applications. You can use the tool directly in a command shell, or indirectly through an interactive UI such as [Angular Console](https://angularconsole.com).
+The Angular CLI is a command-line interface tool that you use to initialize, develop, scaffold, and maintain Angular applications. You can use the tool directly in a command shell, or indirectly through an interactive UI such as [Nx Console](https://nx.dev/angular/cli/console).
 
 ## Installing Angular CLI
 
@@ -38,15 +38,15 @@ When you use the [ng serve](cli/serve) command to build an app and serve it loca
 
 <div class="alert is-helpful">
 
-   When you run `ng new my-first-project` a new folder, named `my-first-project`, will be created in the current working directory. Since you want to be able to create files inside that folder, make sure you have sufficient rights in the current working directory before running the command.
+When you run `ng new my-first-project` a new folder, named `my-first-project`, will be created in the current working directory. Since you want to be able to create files inside that folder, make sure you have sufficient rights in the current working directory before running the command.
 
-   If the current working directory is not the right place for your project, you can change to a more appropriate directory by running `cd <path-to-other-directory>` first.
+If the current working directory is not the right place for your project, you can change to a more appropriate directory by running `cd <path-to-other-directory>` first.
 
 </div>
 
 ## Workspaces and project files
 
-The [ng new](cli/new) command creates an *Angular workspace* folder and generates a new app skeleton.
+The [ng new](cli/new) command creates an _Angular workspace_ folder and generates a new app skeleton.
 A workspace can contain multiple apps and libraries.
 The initial app created by the [ng new](cli/new) command is at the top level of the workspace.
 When you generate an additional app or library in a workspace, it goes into a `projects/` subfolder.
@@ -58,7 +58,7 @@ You can edit the generated files directly, or add to and modify them using CLI c
 Use the [ng generate](cli/generate) command to add new files for additional components and services, and code for new pipes, directives, and so on.
 Commands such as [add](cli/add) and [generate](cli/generate), which create or operate on apps and libraries, must be executed from within a workspace or project folder.
 
-* See more about the [Workspace file structure](guide/file-structure).
+- See more about the [Workspace file structure](guide/file-structure).
 
 ### Workspace and project configuration
 
@@ -68,30 +68,30 @@ This is where you can set per-project defaults for CLI command options, and spec
 The [ng config](cli/config) command lets you set and retrieve configuration values from the command line, or you can edit the `angular.json` file directly.
 Note that option names in the configuration file must use [camelCase](guide/glossary#case-types), while option names supplied to commands can use either camelCase or dash-case.
 
-* See more about [Workspace Configuration](guide/workspace-config).
-* See the [complete schema](https://github.com/angular/angular-cli/wiki/angular-workspace) for `angular.json`.
+- See more about [Workspace Configuration](guide/workspace-config).
+- See the [complete schema](https://github.com/angular/angular-cli/wiki/angular-workspace) for `angular.json`.
 
 ## CLI command-language syntax
 
 Command syntax is shown as follows:
 
-`ng` *commandNameOrAlias* *requiredArg* [*optionalArg*] `[options]`
+`ng` _commandNameOrAlias_ _requiredArg_ [*optionalArg*] `[options]`
 
-* Most commands, and some options, have aliases. Aliases are shown in the syntax statement for each command.
+- Most commands, and some options, have aliases. Aliases are shown in the syntax statement for each command.
 
-* Option names are prefixed with a double dash (--).
-    Option aliases are prefixed with a single dash (-).
-    Arguments are not prefixed.
-    For example:
-    <code-example language="bash">
-        ng build my-app -c production
-    </code-example>
+- Option names are prefixed with a double dash (--).
+  Option aliases are prefixed with a single dash (-).
+  Arguments are not prefixed.
+  For example:
+  <code-example language="bash">
+  ng build my-app -c production
+  </code-example>
 
-* Typically, the name of a generated artifact can be given as an argument to the command or specified with the --name option.
+- Typically, the name of a generated artifact can be given as an argument to the command or specified with the --name option.
 
-* Argument and option names can be given in either
-[camelCase or dash-case](guide/glossary#case-types).
-`--myOptionName` is equivalent to `--my-option-name`.
+- Argument and option names can be given in either
+  [camelCase or dash-case](guide/glossary#case-types).
+  `--myOptionName` is equivalent to `--my-option-name`.
 
 ### Boolean and enumerated options
 
@@ -106,6 +106,6 @@ Options that specify files can be given as absolute paths, or as paths relative 
 
 ### Schematics
 
-The [ng generate](cli/generate) and  [ng add](cli/add) commands take as an argument the artifact or library to be generated or added to the current project.
-In addition to any general options, each artifact or library defines its own options in a *schematic*.
+The [ng generate](cli/generate) and [ng add](cli/add) commands take as an argument the artifact or library to be generated or added to the current project.
+In addition to any general options, each artifact or library defines its own options in a _schematic_.
 Schematic options are supplied to the command in the same format as immediate command options.
