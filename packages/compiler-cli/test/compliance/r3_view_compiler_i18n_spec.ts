@@ -3661,6 +3661,39 @@ describe('i18n support in the template compiler', () => {
 
       verify(input, output);
     });
+
+    it('should produce proper messages when `select` or `plural` keywords have spaces after them',
+       () => {
+         const input = `
+            <div i18n>
+              {count, select , 1 {one} other {more than one}}
+              {count, plural , =1 {one} other {more than one}}
+            </div>
+          `;
+
+         const output = String.raw`
+            var $I18N_1$;
+            if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+                const $MSG_EXTERNAL_199763560911211963$$APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT , select , 1 {one} other {more than one}}");
+                $I18N_1$ = $MSG_EXTERNAL_199763560911211963$$APP_SPEC_TS_2$;
+            }
+            else {
+                $I18N_1$ = $localize \`{VAR_SELECT , select , 1 {one} other {more than one}}\`;
+            }
+            $I18N_1$ = i0.ɵɵi18nPostprocess($I18N_1$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+            var $I18N_3$;
+            if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+                const $MSG_EXTERNAL_3383986062053865025$$APP_SPEC_TS_4$ = goog.getMsg("{VAR_PLURAL , plural , =1 {one} other {more than one}}");
+                $I18N_3$ = $MSG_EXTERNAL_3383986062053865025$$APP_SPEC_TS_4$;
+            }
+            else {
+                $I18N_3$ = $localize \`{VAR_PLURAL , plural , =1 {one} other {more than one}}\`;
+            }
+            $I18N_3$ = i0.ɵɵi18nPostprocess($I18N_3$, { "VAR_PLURAL": "\uFFFD1\uFFFD" });
+          `;
+
+         verify(input, output);
+       });
   });
 
   describe('$localize legacy message ids', () => {
