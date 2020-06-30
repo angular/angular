@@ -104,64 +104,20 @@ class EventEmitter_ extends Subject<any> {
     super.next(value);
   }
 
-  subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription {
-    let schedulerFn: (t: any) => any;
-    let errorFn = (err: any): any => null;
-    let completeFn = (): any => null;
-
-    if (generatorOrNext && typeof generatorOrNext === 'object') {
-      schedulerFn = this.__isAsync ? (value: any) => {
-        setTimeout(() => generatorOrNext.next(value));
-      } : (value: any) => {
-        generatorOrNext.next(value);
-      };
-
-      if (generatorOrNext.error) {
-        errorFn = this.__isAsync ? (err) => {
-          setTimeout(() => generatorOrNext.error(err));
-        } : (err) => {
-          generatorOrNext.error(err);
-        };
-      }
-
-      if (generatorOrNext.complete) {
-        completeFn = this.__isAsync ? () => {
-          setTimeout(() => generatorOrNext.complete());
-        } : () => {
-          generatorOrNext.complete();
-        };
-      }
-    } else {
-      schedulerFn = this.__isAsync ? (value: any) => {
-        setTimeout(() => generatorOrNext(value));
-      } : (value: any) => {
-        generatorOrNext(value);
-      };
-
-      if (error) {
-        errorFn = this.__isAsync ? (err) => {
-          setTimeout(() => error(err));
-        } : (err) => {
-          error(err);
-        };
-      }
-
-      if (complete) {
-        completeFn = this.__isAsync ? () => {
-          setTimeout(() => complete());
-        } : () => {
-          complete();
-        };
-      }
+  /**
+   * @internal
+   */
+  _subscribe(subscriber: any): Subscription {
+    if (this.__isAsync) {
+      subscriber.next = (value: any) =>
+          setTimeout(subscriber.constructor.prototype.next.bind(subscriber, value));
+      subscriber.error = (err: any) =>
+          setTimeout(subscriber.constructor.prototype.error.bind(subscriber, err));
+      subscriber.complete = () =>
+          setTimeout(subscriber.constructor.prototype.complete.bind(subscriber));
     }
 
-    const sink = super.subscribe(schedulerFn, errorFn, completeFn);
-
-    if (generatorOrNext instanceof Subscription) {
-      generatorOrNext.add(sink);
-    }
-
-    return sink;
+    return super._subscribe(subscriber);
   }
 }
 
