@@ -66,6 +66,18 @@ describe('nodejs EventEmitter', () => {
       emitter.emit('test2', 'test value');
     });
   });
+  it('should remove listeners by calling off properly', () => {
+    zoneA.run(() => {
+      emitter.on('test', shouldNotRun);
+      emitter.on('test2', shouldNotRun);
+      emitter.off('test', shouldNotRun);
+    });
+    zoneB.run(() => {
+      emitter.off('test2', shouldNotRun);
+      emitter.emit('test', 'test value');
+      emitter.emit('test2', 'test value');
+    });
+  });
   it('remove listener should return event emitter', () => {
     zoneA.run(() => {
       emitter.on('test', shouldNotRun);
