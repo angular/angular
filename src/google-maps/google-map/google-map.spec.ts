@@ -116,6 +116,20 @@ describe('GoogleMap', () => {
     expect(container.style.width).toBe('600px');
   });
 
+  it('should be able to set null as the width/height', () => {
+    mapSpy = createMapSpy(DEFAULT_OPTIONS);
+    mapConstructorSpy = createMapConstructorSpy(mapSpy);
+
+    const fixture = TestBed.createComponent(TestApp);
+    const instance = fixture.componentInstance;
+    instance.height = instance.width = null;
+    fixture.detectChanges();
+
+    const container = fixture.debugElement.query(By.css('div'))!.nativeElement;
+    expect(container.style.height).toBeFalsy();
+    expect(container.style.width).toBeFalsy();
+  });
+
   it('sets center and zoom of the map', () => {
     const options = {center: {lat: 3, lng: 5}, zoom: 7, mapTypeId: undefined};
     mapSpy = createMapSpy(options);
@@ -314,8 +328,8 @@ describe('GoogleMap', () => {
 })
 class TestApp {
   @ViewChild(GoogleMap) map: GoogleMap;
-  height?: string | number;
-  width?: string | number;
+  height?: string | number | null;
+  width?: string | number | null;
   center?: google.maps.LatLngLiteral;
   zoom?: number;
   options?: google.maps.MapOptions;

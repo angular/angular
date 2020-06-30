@@ -77,11 +77,11 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   /** Whether we're currently rendering inside a browser. */
   _isBrowser: boolean;
 
-  /** Height of the map. */
-  @Input() height: string | number = DEFAULT_HEIGHT;
+  /** Height of the map. Set this to `null` if you'd like to control the height through CSS. */
+  @Input() height: string | number | null = DEFAULT_HEIGHT;
 
-  /** Width of the map. */
-  @Input() width: string | number = DEFAULT_WIDTH;
+  /** Width of the map. Set this to `null` if you'd like to control the width through CSS. */
+  @Input() width: string | number | null = DEFAULT_WIDTH;
 
   /**
    * Type of map that should be rendered. E.g. hybrid map, terrain map etc.
@@ -443,8 +443,9 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   private _setSize() {
     if (this._mapEl) {
       const styles = this._mapEl.style;
-      styles.height = coerceCssPixelValue(this.height) || DEFAULT_HEIGHT;
-      styles.width = coerceCssPixelValue(this.width) || DEFAULT_WIDTH;
+      styles.height =
+          this.height === null ? '' : (coerceCssPixelValue(this.height) || DEFAULT_HEIGHT);
+      styles.width = this.width === null ? '' : (coerceCssPixelValue(this.width) || DEFAULT_WIDTH);
     }
   }
 
