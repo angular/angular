@@ -130,10 +130,6 @@ export class NgZone {
 
     self._outer = self._inner = Zone.current;
 
-    if ((Zone as any)['wtfZoneSpec']) {
-      self._inner = self._inner.fork((Zone as any)['wtfZoneSpec']);
-    }
-
     if ((Zone as any)['TaskTrackingZoneSpec']) {
       self._inner = self._inner.fork(new ((Zone as any)['TaskTrackingZoneSpec'] as any));
     }
