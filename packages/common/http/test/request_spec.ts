@@ -143,6 +143,10 @@ const TEST_STRING = `I'm a body!`;
         const body = new ArrayBuffer(4);
         expect(baseReq.clone({body}).serializeBody()).toBe(body);
       });
+      it('passes URLSearchParams through', () => {
+        const body = new URLSearchParams('foo=1&bar=2');
+        expect(baseReq.clone({body}).serializeBody()).toBe(body);
+      });
       it('passes strings through', () => {
         const body = 'hello world';
         expect(baseReq.clone({body}).serializeBody()).toBe(body);
