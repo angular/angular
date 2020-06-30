@@ -1,0 +1,11 @@
+--- node_modules/@angular-devkit/build-angular/src/angular-cli-files/models/webpack-configs/common.js
++++ node_modules/@angular-devkit/build-angular/src/angular-cli-files/models/webpack-configs/common.js
+@@ -369,7 +369,7 @@ function getCommonConfig(wco) {
+             modules: [wco.tsConfig.options.baseUrl || projectRoot, 'node_modules'],
+             plugins: [
+                 PnpWebpackPlugin,
+-                new webpack_2.DedupeModuleResolvePlugin({ verbose: buildOptions.verbose }),
++                // new webpack_2.DedupeModuleResolvePlugin({ verbose: buildOptions.verbose }),
+             ],
+         },
+         resolveLoader: {
