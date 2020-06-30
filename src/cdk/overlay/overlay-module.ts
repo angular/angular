@@ -10,7 +10,7 @@ import {BidiModule} from '@angular/cdk/bidi';
 import {PortalModule} from '@angular/cdk/portal';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {NgModule, Provider} from '@angular/core';
-import {OVERLAY_KEYBOARD_DISPATCHER_PROVIDER} from './keyboard/overlay-keyboard-dispatcher';
+import {OVERLAY_KEYBOARD_DISPATCHER_PROVIDER} from './dispatchers/overlay-keyboard-dispatcher';
 import {Overlay} from './overlay';
 import {OVERLAY_CONTAINER_PROVIDER} from './overlay-container';
 import {

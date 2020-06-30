@@ -29,6 +29,7 @@ export declare class CdkConnectedOverlay implements OnDestroy, OnChanges {
     open: boolean;
     origin: CdkOverlayOrigin;
     overlayKeydown: EventEmitter<KeyboardEvent>;
+    overlayOutsideClick: EventEmitter<MouseEvent>;
     get overlayRef(): OverlayRef;
     panelClass: string | string[];
     positionChange: EventEmitter<ConnectedOverlayPositionChange>;
@@ -48,7 +49,7 @@ export declare class CdkConnectedOverlay implements OnDestroy, OnChanges {
     static ngAcceptInputType_hasBackdrop: BooleanInput;
     static ngAcceptInputType_lockPosition: BooleanInput;
     static ngAcceptInputType_push: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkConnectedOverlay, "[cdk-connected-overlay], [connected-overlay], [cdkConnectedOverlay]", ["cdkConnectedOverlay"], { "origin": "cdkConnectedOverlayOrigin"; "positions": "cdkConnectedOverlayPositions"; "positionStrategy": "cdkConnectedOverlayPositionStrategy"; "offsetX": "cdkConnectedOverlayOffsetX"; "offsetY": "cdkConnectedOverlayOffsetY"; "width": "cdkConnectedOverlayWidth"; "height": "cdkConnectedOverlayHeight"; "minWidth": "cdkConnectedOverlayMinWidth"; "minHeight": "cdkConnectedOverlayMinHeight"; "backdropClass": "cdkConnectedOverlayBackdropClass"; "panelClass": "cdkConnectedOverlayPanelClass"; "viewportMargin": "cdkConnectedOverlayViewportMargin"; "scrollStrategy": "cdkConnectedOverlayScrollStrategy"; "open": "cdkConnectedOverlayOpen"; "transformOriginSelector": "cdkConnectedOverlayTransformOriginOn"; "hasBackdrop": "cdkConnectedOverlayHasBackdrop"; "lockPosition": "cdkConnectedOverlayLockPosition"; "flexibleDimensions": "cdkConnectedOverlayFlexibleDimensions"; "growAfterOpen": "cdkConnectedOverlayGrowAfterOpen"; "push": "cdkConnectedOverlayPush"; }, { "backdropClick": "backdropClick"; "positionChange": "positionChange"; "attach": "attach"; "detach": "detach"; "overlayKeydown": "overlayKeydown"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkConnectedOverlay, "[cdk-connected-overlay], [connected-overlay], [cdkConnectedOverlay]", ["cdkConnectedOverlay"], { "origin": "cdkConnectedOverlayOrigin"; "positions": "cdkConnectedOverlayPositions"; "positionStrategy": "cdkConnectedOverlayPositionStrategy"; "offsetX": "cdkConnectedOverlayOffsetX"; "offsetY": "cdkConnectedOverlayOffsetY"; "width": "cdkConnectedOverlayWidth"; "height": "cdkConnectedOverlayHeight"; "minWidth": "cdkConnectedOverlayMinWidth"; "minHeight": "cdkConnectedOverlayMinHeight"; "backdropClass": "cdkConnectedOverlayBackdropClass"; "panelClass": "cdkConnectedOverlayPanelClass"; "viewportMargin": "cdkConnectedOverlayViewportMargin"; "scrollStrategy": "cdkConnectedOverlayScrollStrategy"; "open": "cdkConnectedOverlayOpen"; "transformOriginSelector": "cdkConnectedOverlayTransformOriginOn"; "hasBackdrop": "cdkConnectedOverlayHasBackdrop"; "lockPosition": "cdkConnectedOverlayLockPosition"; "flexibleDimensions": "cdkConnectedOverlayFlexibleDimensions"; "growAfterOpen": "cdkConnectedOverlayGrowAfterOpen"; "push": "cdkConnectedOverlayPush"; }, { "backdropClick": "backdropClick"; "positionChange": "positionChange"; "attach": "attach"; "detach": "detach"; "overlayKeydown": "overlayKeydown"; "overlayOutsideClick": "overlayOutsideClick"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkConnectedOverlay, [null, null, null, null, { optional: true; }]>;
 }
 
@@ -191,10 +192,10 @@ export interface OriginConnectionPosition {
 export declare class Overlay {
     scrollStrategies: ScrollStrategyOptions;
     constructor(
-    scrollStrategies: ScrollStrategyOptions, _overlayContainer: OverlayContainer, _componentFactoryResolver: ComponentFactoryResolver, _positionBuilder: OverlayPositionBuilder, _keyboardDispatcher: OverlayKeyboardDispatcher, _injector: Injector, _ngZone: NgZone, _document: any, _directionality: Directionality, _location?: Location | undefined);
+    scrollStrategies: ScrollStrategyOptions, _overlayContainer: OverlayContainer, _componentFactoryResolver: ComponentFactoryResolver, _positionBuilder: OverlayPositionBuilder, _keyboardDispatcher: OverlayKeyboardDispatcher, _injector: Injector, _ngZone: NgZone, _document: any, _directionality: Directionality, _location?: Location | undefined, _outsideClickDispatcher?: OverlayOutsideClickDispatcher | undefined);
     create(config?: OverlayConfig): OverlayRef;
     position(): OverlayPositionBuilder;
-    static ɵfac: i0.ɵɵFactoryDef<Overlay, [null, null, null, null, null, null, null, null, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<Overlay, [null, null, null, null, null, null, null, null, null, { optional: true; }, { optional: true; }]>;
     static ɵprov: i0.ɵɵInjectableDef<Overlay>;
 }
 
@@ -204,6 +205,7 @@ export declare class OverlayConfig {
     backdropClass?: string | string[];
     direction?: Direction | Directionality;
     disposeOnNavigation?: boolean;
+    excludeFromOutsideClick?: HTMLElement[];
     hasBackdrop?: boolean;
     height?: number | string;
     maxHeight?: number | string;
@@ -235,12 +237,10 @@ export declare class OverlayContainer implements OnDestroy {
     static ɵprov: i0.ɵɵInjectableDef<OverlayContainer>;
 }
 
-export declare class OverlayKeyboardDispatcher implements OnDestroy {
-    _attachedOverlays: OverlayReference[];
+export declare class OverlayKeyboardDispatcher extends BaseOverlayDispatcher {
     constructor(document: any);
     add(overlayRef: OverlayReference): void;
-    ngOnDestroy(): void;
-    remove(overlayRef: OverlayReference): void;
+    protected detach(): void;
     static ɵfac: i0.ɵɵFactoryDef<OverlayKeyboardDispatcher, never>;
     static ɵprov: i0.ɵɵInjectableDef<OverlayKeyboardDispatcher>;
 }
@@ -248,6 +248,14 @@ export declare class OverlayKeyboardDispatcher implements OnDestroy {
 export declare class OverlayModule {
     static ɵinj: i0.ɵɵInjectorDef<OverlayModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<OverlayModule, [typeof i1.CdkConnectedOverlay, typeof i1.CdkOverlayOrigin], [typeof i2.BidiModule, typeof i3.PortalModule, typeof i4.ScrollingModule], [typeof i1.CdkConnectedOverlay, typeof i1.CdkOverlayOrigin, typeof i4.ScrollingModule]>;
+}
+
+export declare class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher {
+    constructor(document: any, _platform: Platform);
+    add(overlayRef: OverlayReference): void;
+    protected detach(): void;
+    static ɵfac: i0.ɵɵFactoryDef<OverlayOutsideClickDispatcher, never>;
+    static ɵprov: i0.ɵɵInjectableDef<OverlayOutsideClickDispatcher>;
 }
 
 export declare class OverlayPositionBuilder {
@@ -261,10 +269,11 @@ export declare class OverlayPositionBuilder {
 
 export declare class OverlayRef implements PortalOutlet, OverlayReference {
     _keydownEvents: Subject<KeyboardEvent>;
+    _outsidePointerEvents: Subject<MouseEvent>;
     get backdropElement(): HTMLElement | null;
     get hostElement(): HTMLElement;
     get overlayElement(): HTMLElement;
-    constructor(_portalOutlet: PortalOutlet, _host: HTMLElement, _pane: HTMLElement, _config: ImmutableObject<OverlayConfig>, _ngZone: NgZone, _keyboardDispatcher: OverlayKeyboardDispatcher, _document: Document, _location?: Location | undefined);
+    constructor(_portalOutlet: PortalOutlet, _host: HTMLElement, _pane: HTMLElement, _config: ImmutableObject<OverlayConfig>, _ngZone: NgZone, _keyboardDispatcher: OverlayKeyboardDispatcher, _document: Document, _location?: Location | undefined, _outsideClickDispatcher?: OverlayOutsideClickDispatcher | undefined);
     addPanelClass(classes: string | string[]): void;
     attach<T>(portal: ComponentPortal<T>): ComponentRef<T>;
     attach<T>(portal: TemplatePortal<T>): EmbeddedViewRef<T>;
@@ -279,6 +288,7 @@ export declare class OverlayRef implements PortalOutlet, OverlayReference {
     getDirection(): Direction;
     hasAttached(): boolean;
     keydownEvents(): Observable<KeyboardEvent>;
+    outsidePointerEvents(): Observable<MouseEvent>;
     removePanelClass(classes: string | string[]): void;
     setDirection(dir: Direction | Directionality): void;
     updatePosition(): void;

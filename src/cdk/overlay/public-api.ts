@@ -10,6 +10,7 @@ export * from './overlay-config';
 export * from './position/connected-position';
 export * from './scroll/index';
 export * from './overlay-module';
+export * from './dispatchers/index';
 export {Overlay} from './overlay';
 export {OverlayContainer} from './overlay-container';
 export {CdkOverlayOrigin, CdkConnectedOverlay} from './overlay-directives';
@@ -17,7 +18,6 @@ export {FullscreenOverlayContainer} from './fullscreen-overlay-container';
 export {OverlayRef, OverlaySizeConfig} from './overlay-ref';
 export {ViewportRuler} from '@angular/cdk/scrolling';
 export {ComponentType} from '@angular/cdk/portal';
-export {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 export {OverlayPositionBuilder} from './position/overlay-position-builder';
 
 // Export pre-defined position strategies and interface to build custom ones.

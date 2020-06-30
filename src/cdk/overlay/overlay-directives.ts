@@ -222,6 +222,9 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   /** Emits when there are keyboard events that are targeted at the overlay. */
   @Output() overlayKeydown = new EventEmitter<KeyboardEvent>();
 
+  /** Emits when there are mouse outside click events that are targeted at the overlay. */
+  @Output() overlayOutsideClick = new EventEmitter<MouseEvent>();
+
   // TODO(jelbourn): inputs for size, scroll behavior, animation, etc.
 
   constructor(
@@ -288,6 +291,10 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
         event.preventDefault();
         this._detachOverlay();
       }
+    });
+
+    this._overlayRef.outsidePointerEvents().subscribe((event: MouseEvent) => {
+      this.overlayOutsideClick.next(event);
     });
   }
 

@@ -12,7 +12,8 @@ import {ComponentRef, EmbeddedViewRef, NgZone} from '@angular/core';
 import {Location} from '@angular/common';
 import {Observable, Subject, merge, SubscriptionLike, Subscription} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
-import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
+import {OverlayKeyboardDispatcher} from './dispatchers/overlay-keyboard-dispatcher';
+import {OverlayOutsideClickDispatcher} from './dispatchers/overlay-outside-click-dispatcher';
 import {OverlayConfig} from './overlay-config';
 import {coerceCssPixelValue, coerceArray} from '@angular/cdk/coercion';
 import {OverlayReference} from './overlay-reference';
@@ -48,6 +49,9 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   /** Stream of keydown events dispatched to this overlay. */
   _keydownEvents = new Subject<KeyboardEvent>();
 
+  /** Stream of mouse outside events dispatched to this overlay. */
+  _outsidePointerEvents = new Subject<MouseEvent>();
+
   constructor(
       private _portalOutlet: PortalOutlet,
       private _host: HTMLElement,
@@ -57,7 +61,9 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
       private _keyboardDispatcher: OverlayKeyboardDispatcher,
       private _document: Document,
       // @breaking-change 8.0.0 `_location` parameter to be made required.
-      private _location?: Location) {
+      private _location?: Location,
+      // @breaking-change 9.0.0 `_mouseClickDispatcher` parameter to be made required.
+      private _outsideClickDispatcher?: OverlayOutsideClickDispatcher) {
 
     if (_config.scrollStrategy) {
       this._scrollStrategy = _config.scrollStrategy;
@@ -153,6 +159,11 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
       this._locationChanges = this._location.subscribe(() => this.dispose());
     }
 
+    // @breaking-change 9.0.0 remove the null check for `_mouseClickDispatcher`
+    if (this._outsideClickDispatcher) {
+      this._outsideClickDispatcher.add(this);
+    }
+
     return attachResult;
   }
 
@@ -195,6 +206,11 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     // Stop listening for location changes.
     this._locationChanges.unsubscribe();
 
+    // @breaking-change 9.0.0 remove the null check for `_outsideClickDispatcher`
+    if (this._outsideClickDispatcher) {
+      this._outsideClickDispatcher.remove(this);
+    }
+
     return detachmentResult;
   }
 
@@ -214,6 +230,12 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     this._attachments.complete();
     this._backdropClick.complete();
     this._keydownEvents.complete();
+    this._outsidePointerEvents.complete();
+
+    // @breaking-change 9.0.0 remove the null check for `_outsideClickDispatcher`
+    if (this._outsideClickDispatcher) {
+      this._outsideClickDispatcher.remove(this);
+    }
 
     if (this._host && this._host.parentNode) {
       this._host.parentNode.removeChild(this._host);
@@ -252,6 +274,11 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   /** Gets an observable of keydown events targeted to this overlay. */
   keydownEvents(): Observable<KeyboardEvent> {
     return this._keydownEvents.asObservable();
+  }
+
+  /** Gets an observable of pointer events targeted outside this overlay. */
+  outsidePointerEvents(): Observable<MouseEvent> {
+    return this._outsidePointerEvents.asObservable();
   }
 
   /** Gets the current overlay configuration, which is immutable. */

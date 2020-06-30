@@ -11,11 +11,11 @@ import {
   Inject,
   Injectable,
   InjectionToken,
-  OnDestroy,
   Optional,
   SkipSelf,
 } from '@angular/core';
 import {OverlayReference} from '../overlay-reference';
+import {BaseOverlayDispatcher} from './base-overlay-dispatcher';
 
 
 /**
@@ -24,52 +24,25 @@ import {OverlayReference} from '../overlay-reference';
  * on event target and order of overlay opens.
  */
 @Injectable({providedIn: 'root'})
-export class OverlayKeyboardDispatcher implements OnDestroy {
-
-  /** Currently attached overlays in the order they were attached. */
-  _attachedOverlays: OverlayReference[] = [];
-
-  private _document: Document;
-  private _isAttached: boolean;
+export class OverlayKeyboardDispatcher extends BaseOverlayDispatcher {
 
   constructor(@Inject(DOCUMENT) document: any) {
-    this._document = document;
-  }
-
-  ngOnDestroy() {
-    this._detach();
+    super(document);
   }
 
   /** Add a new overlay to the list of attached overlay refs. */
   add(overlayRef: OverlayReference): void {
-    // Ensure that we don't get the same overlay multiple times.
-    this.remove(overlayRef);
+    super.add(overlayRef);
 
     // Lazily start dispatcher once first overlay is added
     if (!this._isAttached) {
       this._document.body.addEventListener('keydown', this._keydownListener);
       this._isAttached = true;
     }
-
-    this._attachedOverlays.push(overlayRef);
-  }
-
-  /** Remove an overlay from the list of attached overlay refs. */
-  remove(overlayRef: OverlayReference): void {
-    const index = this._attachedOverlays.indexOf(overlayRef);
-
-    if (index > -1) {
-      this._attachedOverlays.splice(index, 1);
-    }
-
-    // Remove the global listener once there are no more overlays.
-    if (this._attachedOverlays.length === 0) {
-      this._detach();
-    }
   }
 
   /** Detaches the global keyboard event listener. */
-  private _detach() {
+  protected detach() {
     if (this._isAttached) {
       this._document.body.removeEventListener('keydown', this._keydownListener);
       this._isAttached = false;
