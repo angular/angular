@@ -287,7 +287,6 @@ export declare class MatDatepickerToggleIcon {
 
 export declare class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>, MatDatepickerControl<D>, MatDateRangeInputParent<D>, AfterContentInit, OnDestroy {
     _ariaDescribedBy: string | null;
-    _ariaLabelledBy: string | null;
     _disabledChange: Subject<boolean>;
     _endInput: MatEndDate<D>;
     _groupDisabled: boolean;
@@ -318,6 +317,7 @@ export declare class MatDateRangeInput<D> implements MatFormFieldControl<DateRan
     stateChanges: Subject<void>;
     get value(): DateRange<D> | null;
     constructor(_changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>, control: ControlContainer, _dateAdapter: DateAdapter<D>, _formField?: MatFormField | undefined);
+    _getAriaLabelledby(): string | null;
     _getInputMirrorValue(): string;
     _handleChildValueChange(): void;
     _openDatepicker(): void;

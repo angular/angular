@@ -55,8 +55,8 @@ export interface MatDateRangeInputParent<D> {
   _startInput: MatDateRangeInputPartBase<D>;
   _endInput: MatDateRangeInputPartBase<D>;
   _groupDisabled: boolean;
-  _handleChildValueChange: () => void;
-  _openDatepicker: () => void;
+  _handleChildValueChange(): void;
+  _openDatepicker(): void;
 }
 
 /**

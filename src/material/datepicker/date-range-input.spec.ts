@@ -178,6 +178,15 @@ describe('MatDateRangeInput', () => {
     expect(rangeInput.getAttribute('aria-describedby')).toBe(labelId);
   });
 
+  it('should not set aria-labelledby if the form field does not have a label', () => {
+    const fixture = createComponent(RangePickerNoLabel);
+    fixture.detectChanges();
+    const {start, end} = fixture.componentInstance;
+
+    expect(start.nativeElement.getAttribute('aria-labelledby')).toBeFalsy();
+    expect(end.nativeElement.getAttribute('aria-labelledby')).toBeFalsy();
+  });
+
   it('should float the form field label when either input is focused', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
@@ -606,6 +615,7 @@ class StandardRangePicker {
 })
 class RangePickerNoStart {}
 
+
 @Component({
   template: `
     <mat-form-field>
@@ -637,3 +647,20 @@ class RangePickerNgModel {
   end: Date | null = null;
 }
 
+
+@Component({
+  template: `
+    <mat-form-field>
+      <mat-date-range-input [rangePicker]="rangePicker">
+        <input #start matStartDate/>
+        <input #end matEndDate/>
+      </mat-date-range-input>
+
+      <mat-date-range-picker #rangePicker></mat-date-range-picker>
+    </mat-form-field>
+  `
+})
+class RangePickerNoLabel {
+  @ViewChild('start') start: ElementRef<HTMLInputElement>;
+  @ViewChild('end') end: ElementRef<HTMLInputElement>;
+}
