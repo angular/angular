@@ -5,7 +5,7 @@
              plugins: [
                  PnpWebpackPlugin,
 -                new webpack_2.DedupeModuleResolvePlugin({ verbose: buildOptions.verbose }),
-+                // new webpack_2.DedupeModuleResolvePlugin({ verbose: buildOptions.verbose }),
++                new webpack_2.DedupeModuleResolvePlugin({ verbose: true }),
              ],
          },
          resolveLoader: {
