@@ -3692,7 +3692,7 @@ describe('i18n support in the template compiler', () => {
             $I18N_3$ = i0.ɵɵi18nPostprocess($I18N_3$, { "VAR_PLURAL": "\uFFFD1\uFFFD" });
           `;
 
-         verify(input, output, {verbose: true});
+         verify(input, output);
        });
   });
 
