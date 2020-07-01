@@ -39,7 +39,6 @@ import {MatPaginatedTabHeader} from './paginated-tab-header';
  * @docs-private
  */
 @Directive()
-// tslint:disable-next-line:class-name
 export abstract class _MatTabHeaderBase extends MatPaginatedTabHeader implements
   AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy {
 

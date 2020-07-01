@@ -96,7 +96,6 @@ export const MAT_RADIO_GROUP =
  * @docs-private
  */
 @Directive()
-// tslint:disable-next-line:class-name
 export abstract class _MatRadioGroupBase<T extends _MatRadioButtonBase> implements AfterContentInit,
   ControlValueAccessor {
   /** Selected value for the radio group. */
@@ -354,7 +353,6 @@ const _MatRadioButtonMixinBase:
  * @docs-private
  */
 @Directive()
-// tslint:disable-next-line:class-name
 export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase implements OnInit,
   AfterViewInit, OnDestroy, CanDisableRipple, HasTabIndex {
 

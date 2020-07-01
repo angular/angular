@@ -97,7 +97,6 @@ let menuPanelUid = 0;
 
 /** Base class with all of the `MatMenu` functionality. */
 @Directive()
-// tslint:disable-next-line:class-name
 export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit,
   OnDestroy {
   private _keyManager: FocusKeyManager<MatMenuItem>;
@@ -519,9 +518,7 @@ export class MatMenu extends _MatMenuBase {}
     {provide: MatMenu, useExisting: _MatMenu}
   ]
 })
-// tslint:disable-next-line:class-name
 export class _MatMenu extends MatMenu {
-
   constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone,
       @Inject(MAT_MENU_DEFAULT_OPTIONS) defaultOptions: MatMenuDefaultOptions) {
     super(elementRef, ngZone, defaultOptions);

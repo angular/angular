@@ -28,7 +28,6 @@ import {MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER, MatMenuTrigger} from './menu-
   ],
   providers: [MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER]
 })
-// tslint:disable-next-line:class-name
 export class _MatMenuDirectivesModule {}
 
 @NgModule({

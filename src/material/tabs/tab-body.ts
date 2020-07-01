@@ -109,7 +109,6 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
  * @docs-private
  */
 @Directive()
-// tslint:disable-next-line:class-name
 export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   /** Current position of the tab-body in the tab-group. Zero means that the tab is visible. */
   private _positionIndex: number;

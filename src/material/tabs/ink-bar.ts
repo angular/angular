@@ -14,7 +14,6 @@ import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
  * Interface for a a MatInkBar positioner method, defining the positioning and width of the ink
  * bar in a set of tabs.
  */
-// tslint:disable-next-line class-name Using leading underscore to denote internal interface.
 export interface _MatInkBarPositioner {
   (element: HTMLElement): { left: string, width: string };
 }

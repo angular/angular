@@ -54,7 +54,6 @@ import {startWith, takeUntil} from 'rxjs/operators';
  * @docs-private
  */
 @Directive()
-// tslint:disable-next-line:class-name
 export abstract class _MatTabNavBase extends MatPaginatedTabHeader implements AfterContentChecked,
   AfterContentInit, OnDestroy {
 
@@ -192,7 +191,6 @@ const _MatTabLinkMixinBase:
 
 /** Base class with all of the `MatTabLink` functionality. */
 @Directive()
-// tslint:disable-next-line:class-name
 export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewInit, OnDestroy,
   CanDisable, CanDisableRipple, HasTabIndex, RippleTarget, FocusableOption {
 

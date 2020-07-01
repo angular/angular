@@ -17,9 +17,7 @@ import {MatSlideToggleRequiredValidator} from './slide-toggle-required-validator
   exports: [MatSlideToggleRequiredValidator],
   declarations: [MatSlideToggleRequiredValidator],
 })
-// tslint:disable-next-line:class-name
-export class _MatSlideToggleRequiredValidatorModule {
-}
+export class _MatSlideToggleRequiredValidatorModule {}
 
 @NgModule({
   imports: [
