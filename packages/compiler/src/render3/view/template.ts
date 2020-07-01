@@ -343,15 +343,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
-  private i18nBindProps(
-      props: {[key: string]: t.Text|t.BoundText},
-      formatKey?: (key: string) => string): {[key: string]: o.Expression} {
+  private i18nBindProps(props: {[key: string]: t.Text|t.BoundText}): {[key: string]: o.Expression} {
     const bound: {[key: string]: o.Expression} = {};
     Object.keys(props).forEach(key => {
       const prop = props[key];
-      const formattedKey = formatKey ? formatKey(key) : key;
       if (prop instanceof t.Text) {
-        bound[formattedKey] = o.literal(prop.value);
+        bound[key] = o.literal(prop.value);
       } else {
         const value = prop.value.visit(this._valueConverter);
         this.allocateBindingSlots(value);
@@ -360,7 +357,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           const {id, bindings} = this.i18n!;
           const label = assembleI18nBoundString(strings, bindings.size, id);
           this.i18nAppendBindings(expressions);
-          bound[formattedKey] = o.literal(label);
+          bound[key] = o.literal(label);
         }
       }
     });
@@ -982,13 +979,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     const i18n = this.i18n!;
-    // Currently when the `plural` or `select` keywords in an ICU contain trailing spaces (e.g.
-    // `{count, select , ...}`), these spaces are also included into the key names in ICU vars (e.g.
-    // "VAR_SELECT "). These trailing spaces are not desirable, since they will later be converted
-    // into `_` symbols while normalizing placeholder names, which might lead to mismatches at
-    // runtime (i.e. placeholder will not be replaced with the correct value).
-    const keyFormatter = (key: string) => key.trim();
-    const vars = this.i18nBindProps(icu.vars, keyFormatter);
+    const vars = this.i18nBindProps(icu.vars);
 
     const placeholders = this.i18nBindProps(icu.placeholders);
 
