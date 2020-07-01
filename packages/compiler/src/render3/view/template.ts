@@ -980,7 +980,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const i18n = this.i18n!;
     const vars = this.i18nBindProps(icu.vars);
-
     const placeholders = this.i18nBindProps(icu.placeholders);
 
     // output ICU directly and keep ICU reference in context
