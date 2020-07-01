@@ -6,6 +6,9 @@ sh.set('-e');
 sh.cd(`${__dirname}/../../`);
 
 if (!sh.test('-f', PATCH_LOCK)) {
-  sh.ls(`${__dirname}/*.patch`).forEach(patchFile => sh.exec(`patch -p0 -i "${patchFile}"`));
+  sh.ls('-l', __dirname)
+      .filter(stat => stat.isFile() && /\.patch$/i.test(stat.name))
+      .forEach(stat => sh.exec(`patch -p0 -i "${__dirname}/${stat.name}"`));
+
   sh.touch(PATCH_LOCK);
 }
