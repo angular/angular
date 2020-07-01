@@ -42,8 +42,9 @@
     "merge": "ng-dev pr merge",
     "approve-api": "node ./scripts/approve-api-golden.js",
     "approve-size-tests": "node ./scripts/approve-size-golden.js",
-    "integration-tests": "bazel test //integration/... --test_tag_filters=-view-engine-only --build_tests_only",
-    "integration-tests:view-engine": "bazel test //integration/... --test_tag_filters=view-engine-only --build_tests_only --config=view-engine"
+    "integration-tests": "bazel test --test_tag_filters=-view-engine-only --build_tests_only -- //integration/... -//integration/size-test/...",
+    "integration-tests:view-engine": "bazel test --test_tag_filters=view-engine-only --build_tests_only -- //integration/... -//integration/size-test/...",
+    "integration-tests:size-test": "bazel test //integration/size-test/..."
   },
   "version": "10.1.0-next.0",
   "dependencies": {

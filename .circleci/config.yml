@@ -570,7 +570,13 @@ jobs:
       - *setup_bazel_remote_execution
       - *yarn_install
       - *setup_bazel_binary
-      - run: yarn integration-tests
+      # TODO: Re-enable when there are integration tests that should run with Ivy.
+      # Currently this command fails as there are no tests.
+      # - run: yarn integration-tests
+      - run:
+          name: Running size integration tests (failures are reported in Slack only).
+          command: |
+            yarn integration-tests:size-test || ./scripts/circleci/notify-slack-job-failure.sh
       - run: yarn integration-tests:view-engine
       - *slack_notify_on_failure
 
