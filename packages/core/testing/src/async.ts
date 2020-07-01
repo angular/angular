@@ -5,9 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {asyncFallback} from './async_fallback';
-
 /**
  * Wraps a test function in an asynchronous test zone. The test will automatically
  * complete when all asynchronous calls within this zone are done. Can be used
@@ -38,10 +35,11 @@ export function waitForAsync(fn: Function): (done: any) => any {
   if (typeof asyncTest === 'function') {
     return asyncTest(fn);
   }
-  // not using new version of zone.js
-  // TODO @JiaLiPassion, remove this after all library updated to
-  // newest version of zone.js(0.8.25)
-  return asyncFallback(fn);
+  return function() {
+    return Promise.reject(
+        'zone-testing.js is needed for the async() test helper but could not be found. ' +
+        'Please make sure that your environment includes zone.js/dist/zone-testing.js');
+  };
 }
 
 /**

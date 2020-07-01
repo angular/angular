@@ -11,8 +11,8 @@ import 'zone.js/lib/zone-spec/long-stack-trace';
 import 'zone.js/lib/zone-spec/task-tracking';
 import 'zone.js/lib/zone-spec/proxy';
 import 'zone.js/lib/zone-spec/sync-test';
-import 'zone.js/lib/zone-spec/async-test';
-import 'zone.js/lib/zone-spec/fake-async-test';
+import 'zone.js/lib/testing/async-testing';
+import 'zone.js/lib/testing/fake-async';
 import 'reflect-metadata/Reflect';
 
 // Initialize jasmine with @bazel/jasmine boot() function. This will initialize
