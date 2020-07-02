@@ -30,7 +30,7 @@ If you're curious about the specific migrations being run by the CLI, see the [a
 * The `minLength` and `maxLength` validators only validate values that have a numeric `length` property. See [PR 36157](https://github.com/angular/angular/pull/36157).
 * Templates with unknown property bindings or unknown element names now log errors instead of warnings. See [PR 36399](https://github.com/angular/angular/pull/36399).
 * `UrlMatcher` can now return `null` values. See [PR 36402](https://github.com/angular/angular/pull/36402).
-* Transplanted views now refresh at insertion point only. See PR 35968](https://github.com/angular/angular/pull/35968).
+* Transplanted views now refresh at insertion point only. See [PR 35968](https://github.com/angular/angular/pull/35968).
 * Formatting times with the `b` or `B` format codes now supports time periods that cross midnight. See [PR 36611](https://github.com/angular/angular/pull/36611).
 * Navigation is canceled for routes with at least one empty resolver. See [PR 24621](https://github.com/angular/angular/pull/24621).
 
