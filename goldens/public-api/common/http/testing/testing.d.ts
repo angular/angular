@@ -33,7 +33,7 @@ export declare class TestRequest {
         statusText?: string;
     }): void;
     event(event: HttpEvent<any>): void;
-    flush(body: ArrayBuffer | Blob | string | number | Object | (string | number | Object | null)[] | null, opts?: {
+    flush(body: ArrayBuffer | Blob | boolean | string | number | Object | (boolean | string | number | Object | null)[] | null, opts?: {
         headers?: HttpHeaders | {
             [name: string]: string | string[];
         };
