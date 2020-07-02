@@ -20,8 +20,8 @@ export type PackageSources = {
 /**
  * Instead of writing packaged code by hand, and manually describing the layout of the package, this
  * function transpiles the TypeScript sources into a flat file structure using the ES5 format. In
- * this package layout, all compiled sources are at the root of the package, with .d.ts files next
- * to the .js files. Each .js also has a corresponding .metadata.js file alongside with it.
+ * this package layout, all compiled sources are at the root of the package, with `.d.ts` files next
+ * to the `.js` files. Each `.js` also has a corresponding `.metadata.json` file alongside with it.
  *
  * All generated code is written into the `node_modules` in the top-level filesystem, ready for use
  * in testing ngcc.
@@ -41,7 +41,7 @@ export function compileIntoFlatEs5Package(pkgName: string, sources: PackageSourc
  * Instead of writing packaged code by hand, and manually describing the layout of the package,
  * this function transpiles the TypeScript sources into a flat file structure using the ES2015
  * format. In this package layout, all compiled sources are at the root of the package, with
- * `.d.ts` files next to the `.js` files. Each `.js` also has a corresponding `.metadata.js`
+ * `.d.ts` files next to the `.js` files. Each `.js` also has a corresponding `.metadata.json`
  * file alongside with it.
  *
  * All generated code is written into the `node_modules` in the top-level filesystem, ready for use
@@ -78,8 +78,8 @@ export interface FlatLayoutOptions {
 /**
  * Instead of writing packaged code by hand, and manually describing the layout of the package, this
  * function transpiles the TypeScript sources into a flat file structure using a single format. In
- * this package layout, all compiled sources are at the root of the package, with .d.ts files next
- * to the .js files. Each .js also has a corresponding .metadata.js file alongside with it.
+ * this package layout, all compiled sources are at the root of the package, with `.d.ts` files next
+ * to the `.js` files. Each `.js` also has a corresponding `.metadata.json` file alongside with it.
  *
  * All generated code is written into the `node_modules` in the top-level filesystem, ready for use
  * in testing ngcc.

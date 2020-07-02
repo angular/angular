@@ -24,11 +24,9 @@ export default [
   [['r.n.', 'i.n.'], u, u],
   u,
   [
-    ['D', 'L', 'M', 'C', 'D', 'A', 'S'],
-    ['Domh', 'Luan', 'Máirt', 'Céad', 'Déar', 'Aoine', 'Sath'],
+    ['D', 'L', 'M', 'C', 'D', 'A', 'S'], ['Domh', 'Luan', 'Máirt', 'Céad', 'Déar', 'Aoine', 'Sath'],
     [
-      'Dé Domhnaigh', 'Dé Luain', 'Dé Máirt', 'Dé Céadaoin', 'Déardaoin', 'Dé hAoine',
-      'Dé Sathairn'
+      'Dé Domhnaigh', 'Dé Luain', 'Dé Máirt', 'Dé Céadaoin', 'Déardaoin', 'Dé hAoine', 'Dé Sathairn'
     ],
     ['Do', 'Lu', 'Má', 'Cé', 'Dé', 'Ao', 'Sa']
   ],

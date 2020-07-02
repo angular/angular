@@ -7,10 +7,11 @@
  */
 
 import * as ts from 'typescript';
+import {absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
 
+import {Logger} from '../../../src/ngtsc/logging';
 import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
-import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
 
@@ -2525,7 +2526,7 @@ function getRootFileOrFail(bundle: BundleProgram): ts.SourceFile {
 function getNonRootPackageFiles(bundle: BundleProgram): ts.SourceFile[] {
   const rootFile = bundle.program.getSourceFile(bundle.path);
   return bundle.program.getSourceFiles().filter(
-      f => (f !== rootFile) && isWithinPackage(bundle.package, f));
+      f => (f !== rootFile) && isWithinPackage(bundle.package, absoluteFromSourceFile(f)));
 }
 
 function isTopLevel(node: ts.Node): boolean {

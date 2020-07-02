@@ -4,6 +4,7 @@ import {MergeConfig} from '../dev-infra/pr/merge/config';
 const commitMessage = {
   'maxLength': 120,
   'minBodyLength': 100,
+  'minBodyLengthExcludes': ['docs'],
   'types': [
     'build',
     'ci',
@@ -52,24 +53,16 @@ const commitMessage = {
 const format = {
   'clang-format': {
     'matchers': [
-      'dev-infra/**/*.{js,ts}',
-      'packages/**/*.{js,ts}',
-      '!packages/zone.js',
-      '!packages/common/locales/**/*.{js,ts}',
-      '!packages/common/src/i18n/available_locales.ts',
-      '!packages/common/src/i18n/currencies.ts',
-      '!packages/common/src/i18n/locale_en.ts',
-      'modules/benchmarks/**/*.{js,ts}',
-      'modules/playground/**/*.{js,ts}',
-      'tools/**/*.{js,ts}',
-      '!tools/gulp-tasks/cldr/extract.js',
-      '!tools/public_api_guard/**/*.d.ts',
-      '!tools/ts-api-guardian/test/fixtures/**',
-      '*.{js,ts}',
-      '!**/node_modules/**',
-      '!**/dist/**',
-      '!**/built/**',
-      '!shims_for_IE.js',
+      '**/*.{js,ts}',
+      // TODO: burn down format failures and remove aio and integration exceptions.
+      '!aio/**',
+      '!integration/**',
+      // Both third_party and .yarn are directories containing copied code which should
+      // not be modified.
+      '!third_party/**',
+      '!.yarn/**',
+      // Do not format d.ts files as they are generated
+      '!**/*.d.ts',
     ]
   },
   'buildifier': true
@@ -90,6 +83,7 @@ const merge = () => {
     githubApiMerge: false,
     claSignedLabel: 'cla: yes',
     mergeReadyLabel: /^PR action: merge(-assistance)?/,
+    caretakerNoteLabel: 'PR action: merge-assistance',
     commitMessageFixupLabel: 'commit message fixup',
     labels: [
       {

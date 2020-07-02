@@ -58,6 +58,9 @@ export const BROWSER_SANITIZATION_PROVIDERS__POST_R3__ = [];
 export const BROWSER_SANITIZATION_PROVIDERS = BROWSER_SANITIZATION_PROVIDERS__PRE_R3__;
 
 /**
+ * A factory function that returns a `PlatformRef` instance associated with browser service
+ * providers.
+ *
  * @publicApi
  */
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =

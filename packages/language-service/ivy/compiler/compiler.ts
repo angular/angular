@@ -10,6 +10,7 @@
 import {CompilerOptions} from '@angular/compiler-cli';
 import {NgCompiler, NgCompilerHost} from '@angular/compiler-cli/src/ngtsc/core';
 import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {PatchedProgramIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
 import {TypeCheckingProgramStrategy, UpdateMode} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
@@ -31,7 +32,9 @@ export class Compiler {
     );
     this.strategy = createTypeCheckingProgramStrategy(project);
     this.lastKnownProgram = this.strategy.getProgram();
-    this.compiler = new NgCompiler(ngCompilerHost, options, this.lastKnownProgram, this.strategy);
+    this.compiler = new NgCompiler(
+        ngCompilerHost, options, this.lastKnownProgram, this.strategy,
+        new PatchedProgramIncrementalBuildStrategy());
   }
 
   setCompilerOptions(options: CompilerOptions) {
@@ -43,8 +46,9 @@ export class Compiler {
     const ngCompilerHost =
         NgCompilerHost.wrap(this.tsCompilerHost, inputFiles, this.options, this.lastKnownProgram);
     const program = this.strategy.getProgram();
-    this.compiler =
-        new NgCompiler(ngCompilerHost, this.options, program, this.strategy, this.lastKnownProgram);
+    this.compiler = new NgCompiler(
+        ngCompilerHost, this.options, program, this.strategy,
+        new PatchedProgramIncrementalBuildStrategy(), this.lastKnownProgram);
     try {
       // This is the only way to force the compiler to update the typecheck file
       // in the program. We have to do try-catch because the compiler immediately

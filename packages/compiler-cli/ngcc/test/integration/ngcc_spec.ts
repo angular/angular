@@ -12,6 +12,7 @@ import * as os from 'os';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
 import {getLockFilePath} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
@@ -21,7 +22,6 @@ import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTI
 import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
-import {MockLogger} from '../helpers/mock_logger';
 
 import {compileIntoApf, compileIntoFlatEs2015Package, compileIntoFlatEs5Package} from './util';
 
@@ -400,6 +400,121 @@ runInEachFileSystem(() => {
       const es5Contents = fs.readFile(_(`/node_modules/test-package/esm5/src/index.js`));
       expect(es5Contents).toContain('ɵngcc0.ɵɵtext(0, "a - b - 3 - 4")');
     });
+
+    it('should not crash when scanning for ModuleWithProviders needs to evaluate code from an external package',
+       () => {
+         // Regression test for https://github.com/angular/angular/issues/37508
+         // During `ModuleWithProviders` analysis, return statements in methods are evaluated using
+         // the partial evaluator to identify whether they correspond with a `ModuleWithProviders`
+         // function. If an arbitrary method has a return statement that calls into an external
+         // module which doesn't have declaration files, ngcc would attempt to reflect on said
+         // module using the reflection host of the entry-point. This would crash in the case where
+         // e.g. the entry-point is UMD and the external module would be CommonJS, as the UMD
+         // reflection host would throw because it is unable to deal with CommonJS.
+
+         // Setup a non-TS package with CommonJS module format
+         loadTestFiles([
+           {
+             name: _(`/node_modules/identity/package.json`),
+             contents: `{"name": "identity", "main": "./index.js"}`,
+           },
+           {
+             name: _(`/node_modules/identity/index.js`),
+             contents: `
+            function identity(x) { return x; };
+            exports.identity = identity;
+            module.exports = identity;
+          `,
+           },
+         ]);
+
+         // Setup an Angular entry-point with UMD module format that references an export of the
+         // CommonJS package.
+         loadTestFiles([
+           {
+             name: _('/node_modules/test-package/package.json'),
+             contents: '{"name": "test-package", "main": "./index.js", "typings": "./index.d.ts"}'
+           },
+           {
+             name: _('/node_modules/test-package/index.js'),
+             contents: `
+            (function (global, factory) {
+              typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('identity')) :
+              typeof define === 'function' && define.amd ? define('test', ['exports', 'identity'], factory) :
+              (factory(global.test, global.identity));
+            }(this, (function (exports, identity) { 'use strict';
+              function Foo(x) {
+                // The below statement is analyzed for 'ModuleWithProviders', so is evaluated
+                // by ngcc. The reference into the non-TS CommonJS package used to crash ngcc.
+                return identity.identity(x);
+              }
+              exports.Foo = Foo;
+            })));
+          `
+           },
+           {
+             name: _('/node_modules/test-package/index.d.ts'),
+             contents: 'export declare class Foo { static doSomething(x: any): any; }'
+           },
+           {name: _('/node_modules/test-package/index.metadata.json'), contents: 'DUMMY DATA'},
+         ]);
+
+         expect(() => mainNgcc({
+                  basePath: '/node_modules',
+                  targetEntryPointPath: 'test-package',
+                  propertiesToConsider: ['main'],
+                }))
+             .not.toThrow();
+       });
+
+    it('should not be able to evaluate code in external packages when no .d.ts files are present',
+       () => {
+         loadTestFiles([
+           {
+             name: _(`/node_modules/external/package.json`),
+             contents: `{"name": "external", "main": "./index.js"}`,
+           },
+           {
+             name: _(`/node_modules/external/index.js`),
+             contents: `
+            export const selector = 'my-selector';
+          `,
+           },
+         ]);
+
+         compileIntoApf('test-package', {
+           '/index.ts': `
+          import {NgModule, Component} from '@angular/core';
+          import {selector} from 'external';
+
+          @Component({
+            selector,
+            template: ''
+          })
+          export class FooComponent {
+          }
+
+          @NgModule({
+            declarations: [FooComponent],
+          })
+          export class FooModule {}
+        `,
+         });
+
+         try {
+           mainNgcc({
+             basePath: '/node_modules',
+             targetEntryPointPath: 'test-package',
+             propertiesToConsider: ['esm2015', 'esm5'],
+           });
+           fail('should have thrown');
+         } catch (e) {
+           expect(e.message).toContain(
+               'Failed to compile entry-point test-package (esm2015 as esm2015) due to compilation errors:');
+           expect(e.message).toContain('NG1010');
+           expect(e.message).toContain('selector must be a string');
+         }
+       });
 
     it('should add ɵfac but not duplicate ɵprov properties on injectables', () => {
       compileIntoFlatEs2015Package('test-package', {
@@ -1572,7 +1687,7 @@ runInEachFileSystem(() => {
           },
           {
             name: _('/node_modules/deep_import/package.json'),
-            contents: '{"name": "deep-import", "es2015": "./index.js", "typings": "./index.d.ts"}',
+            contents: '{"name": "deep_import", "es2015": "./index.js", "typings": "./index.d.ts"}',
           },
           {
             name: _('/node_modules/deep_import/entry_point.js'),
@@ -1615,21 +1730,28 @@ runInEachFileSystem(() => {
         loadTestFiles([
           {
             name: _('/ngcc.config.js'),
-            contents: `module.exports = { packages: {
-            '@angular/core': {
-              entryPoints: {
-                './testing': {ignore: true}
-              },
-            },
-            '@angular/common': {
-              entryPoints: {
-                '.': {ignore: true}
-              },
-            }
-          }};`,
+            contents: `
+              module.exports = {
+                packages: {
+                  '@angular/core': {
+                    entryPoints: {
+                      './testing': {ignore: true},
+                    },
+                  },
+                  '@angular/common': {
+                    entryPoints: {
+                      '.': {ignore: true},
+                      './http': {override: {fesm2015: undefined}},
+                    },
+                  },
+                },
+              };
+            `,
           },
         ]);
+
         mainNgcc({basePath: '/node_modules', propertiesToConsider: ['es2015']});
+
         // We process core but not core/testing.
         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
           module: '0.0.0-PLACEHOLDER',
@@ -1638,12 +1760,14 @@ runInEachFileSystem(() => {
           typings: '0.0.0-PLACEHOLDER',
         });
         expect(loadPackage('@angular/core/testing').__processed_by_ivy_ngcc__).toBeUndefined();
+
         // We do not compile common but we do compile its sub-entry-points.
         expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toBeUndefined();
         expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__).toEqual({
+          // `fesm2015` is not processed, because the ngcc config removes it.
+          // fesm2015: '0.0.0-PLACEHOLDER',
           module: '0.0.0-PLACEHOLDER',
           es2015: '0.0.0-PLACEHOLDER',
-          fesm2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
       });

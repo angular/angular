@@ -15,6 +15,7 @@ import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGrea
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
+import {stringify} from '../../util/stringify';
 import {assertFirstCreatePass, assertLContainer, assertLView} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition';
@@ -272,7 +273,7 @@ export function assignTViewNodeToLView(
   let tNode = tView.node;
   if (tNode == null) {
     ngDevMode && tParentNode &&
-        assertNodeOfPossibleTypes(tParentNode, TNodeType.Element, TNodeType.Container);
+        assertNodeOfPossibleTypes(tParentNode, [TNodeType.Element, TNodeType.Container]);
     tView.node = tNode = createTNode(
                              tView,
                              tParentNode as TElementNode | TContainerNode | null,  //
@@ -795,22 +796,6 @@ export function storeCleanupWithContext(
 }
 
 /**
- * Saves the cleanup function itself in LView.cleanupInstances.
- *
- * This is necessary for functions that are wrapped with their contexts, like in renderer2
- * listeners.
- *
- * On the first template pass, the index of the cleanup function is saved in TView.
- */
-export function storeCleanupFn(tView: TView, lView: LView, cleanupFn: Function): void {
-  getLCleanup(lView).push(cleanupFn);
-
-  if (tView.firstCreatePass) {
-    getTViewCleanup(tView).push(lView[CLEANUP]!.length - 1, null);
-  }
-}
-
-/**
  * Constructs a TNode object from the arguments.
  *
  * @param tView `TView` to which this `TNode` belongs (used only in `ngDevMode`)
@@ -1278,7 +1263,7 @@ function instantiateAllDirectives(
     const isComponent = isComponentDef(def);
 
     if (isComponent) {
-      ngDevMode && assertNodeOfPossibleTypes(tNode, TNodeType.Element);
+      ngDevMode && assertNodeOfPossibleTypes(tNode, [TNodeType.Element]);
       addComponentLogic(lView, tNode as TElementNode, def as ComponentDef<any>);
     }
 
@@ -1366,7 +1351,7 @@ function findDirectiveDefMatches(
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode &&
       assertNodeOfPossibleTypes(
-          tNode, TNodeType.Element, TNodeType.ElementContainer, TNodeType.Container);
+          tNode, [TNodeType.Element, TNodeType.ElementContainer, TNodeType.Container]);
   const registry = tView.directiveRegistry;
   let matches: any[]|null = null;
   if (registry) {
@@ -1377,6 +1362,12 @@ function findDirectiveDefMatches(
         diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, viewData), tView, def.type);
 
         if (isComponentDef(def)) {
+          ngDevMode &&
+              assertNodeOfPossibleTypes(
+                  tNode, [TNodeType.Element],
+                  `"${tNode.tagName}" tags cannot be used as component hosts. ` +
+                      `Please use a different tag to activate the ${
+                          stringify(def.type)} component.`);
           if (tNode.flags & TNodeFlags.isComponentHost) throwMultipleComponentError(tNode);
           markAsComponentHost(tView, tNode);
           // The component is always stored first with directives after.

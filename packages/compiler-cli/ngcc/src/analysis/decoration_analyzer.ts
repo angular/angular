@@ -12,7 +12,7 @@ import {ParsedConfiguration} from '../../..';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
-import {absoluteFrom, dirname, FileSystem, LogicalFileSystem, resolve} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, absoluteFromSourceFile, dirname, FileSystem, LogicalFileSystem, resolve} from '../../../src/ngtsc/file_system';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
@@ -58,7 +58,7 @@ export class DecorationAnalyzer {
   private host = this.bundle.src.host;
   private typeChecker = this.bundle.src.program.getTypeChecker();
   private rootDirs = this.bundle.rootDirs;
-  private packagePath = this.bundle.entryPoint.package;
+  private packagePath = this.bundle.entryPoint.packagePath;
   private isCore = this.bundle.isCore;
   private compilerOptions = this.tsConfig !== null ? this.tsConfig.options : {};
 
@@ -148,7 +148,8 @@ export class DecorationAnalyzer {
    */
   analyzeProgram(): DecorationAnalyses {
     for (const sourceFile of this.program.getSourceFiles()) {
-      if (!sourceFile.isDeclarationFile && isWithinPackage(this.packagePath, sourceFile)) {
+      if (!sourceFile.isDeclarationFile &&
+          isWithinPackage(this.packagePath, absoluteFromSourceFile(sourceFile))) {
         this.compiler.analyzeFile(sourceFile);
       }
     }

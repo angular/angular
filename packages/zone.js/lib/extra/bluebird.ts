@@ -80,6 +80,6 @@ Zone.__load_patch('bluebird', (global: any, Zone: ZoneType, api: _ZonePrivate) =
     });
 
     // override global promise
-    global[api.symbol('ZoneAwarePromise')] = Bluebird;
+    global.Promise = Bluebird;
   };
 });

@@ -3,7 +3,7 @@
 ## Overview of template type checking
 
 Just as TypeScript catches type errors in your code, Angular checks the expressions and bindings within the templates of your application and can report any type errors it finds.
-Angular currently has three modes of doing this, depending on the value of the `fullTemplateTypeCheck` and `strictTemplates` flags in the [TypeScript configuration file](guide/typescript-configuration), `tsconfig.json`.
+Angular currently has three modes of doing this, depending on the value of the `fullTemplateTypeCheck` and `strictTemplates` flags in the [TypeScript configuration file](guide/typescript-configuration).
 
 ### Basic mode
 
@@ -107,7 +107,7 @@ There can also be false positives when the typings of an Angular library are eit
 In case of a false positive like these, there are a few options:
 
 * Use the [`$any()` type-cast function](guide/template-syntax#any-type-cast-function) in certain contexts to opt out of type-checking for a part of the expression.
-* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file, `tsconfig.json`.
+* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file.
 * You can disable certain type-checking operations individually, while maintaining strictness in other aspects, by setting a _strictness flag_ to `false`.
 * If you want to use `strictTemplates` and `strictNullChecks` together, you can opt out of strict null type checking specifically for input bindings via `strictNullInputTypes`.
 

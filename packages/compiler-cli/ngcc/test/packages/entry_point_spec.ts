@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join, relative} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../test/helpers';
-import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
-import {MockLogger} from '../helpers/mock_logger';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
+import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat, getEntryPointInfo, IGNORED_ENTRY_POINT, INCOMPATIBLE_ENTRY_POINT, isEntryPoint, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
 
 runInEachFileSystem(() => {
   describe('getEntryPointInfo()', () => {
@@ -44,18 +44,19 @@ runInEachFileSystem(() => {
              _('/project/node_modules/some_package/valid_entry_point'));
          expect(entryPoint).toEqual({
            name: 'some_package/valid_entry_point',
-           package: SOME_PACKAGE,
            path: _('/project/node_modules/some_package/valid_entry_point'),
+           packageName: 'some_package',
+           packagePath: SOME_PACKAGE,
+           packageJson: loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
            typings:
                _(`/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts`),
-           packageJson: loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
            compiledByAngular: true,
            ignoreMissingDependencies: false,
            generateDeepReexports: false,
          });
        });
 
-    it('should return `NO_ENTRY_POINT` if configured to ignore the specified entry-point', () => {
+    it('should return `IGNORED_ENTRY_POINT` if configured to ignore the specified entry-point', () => {
       loadTestFiles([
         {
           name: _('/project/node_modules/some_package/valid_entry_point/package.json'),
@@ -68,13 +69,100 @@ runInEachFileSystem(() => {
         },
       ]);
       const config = new NgccConfiguration(fs, _('/project'));
-      spyOn(config, 'getPackageConfig').and.returnValue({
-        entryPoints: {[_('/project/node_modules/some_package/valid_entry_point')]: {ignore: true}}
-      } as any);
+      spyOn(config, 'getPackageConfig')
+          .and.returnValue(new ProcessedNgccPackageConfig(
+              _('/project/node_modules/some_package'),
+              {entryPoints: {'./valid_entry_point': {ignore: true}}}));
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
-      expect(entryPoint).toBe(NO_ENTRY_POINT);
+      expect(entryPoint).toBe(IGNORED_ENTRY_POINT);
+    });
+
+    it('should retrieve the entry-point\'s version from the package\'s `package.json`', () => {
+      const entryPointPath = join(SOME_PACKAGE, 'valid_entry_point');
+
+      loadTestFiles([
+        {
+          name: _('/project/ngcc.config.js'),
+          contents: `
+            module.exports = {
+              packages: {
+                'some_package@3': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '3'}}},
+                },
+                'some_package@2': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '2'}}},
+                },
+                'some_package@1': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '1'}}},
+                },
+              },
+            };
+          `,
+        },
+        {
+          name: join(SOME_PACKAGE, 'package.json'),
+          contents: createPackageJson('', {version: '1.0.0'}),
+        },
+        {
+          name: join(entryPointPath, 'package.json'),
+          contents: createPackageJson('valid_entry_point', {version: '2.0.0'}),
+        },
+        {
+          name: join(entryPointPath, 'valid_entry_point.metadata.json'),
+          contents: 'some meta data',
+        },
+      ]);
+
+      const config = new NgccConfiguration(fs, _('/project'));
+      const info: EntryPoint =
+          getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath) as any;
+
+      expect(info.packageJson).toEqual(jasmine.objectContaining({packageVersion: '1'}));
+    });
+
+    it('should use `null` for version if it cannot be retrieved from a `package.json`', () => {
+      const entryPointPath = join(SOME_PACKAGE, 'valid_entry_point');
+
+      loadTestFiles([
+        {
+          name: _('/project/ngcc.config.js'),
+          contents: `
+            module.exports = {
+              packages: {
+                'some_package@3': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '3'}}},
+                },
+                'some_package@2': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '2'}}},
+                },
+                'some_package@1': {
+                  entryPoints: {valid_entry_point: {override: {packageVersion: '1'}}},
+                },
+              },
+            };
+          `,
+        },
+        {
+          name: join(SOME_PACKAGE, 'package.json'),
+          contents: createPackageJson(''),
+        },
+        {
+          name: join(entryPointPath, 'package.json'),
+          contents: createPackageJson('valid_entry_point'),
+        },
+        {
+          name: join(entryPointPath, 'valid_entry_point.metadata.json'),
+          contents: 'some meta data',
+        },
+      ]);
+
+      const config = new NgccConfiguration(fs, _('/project'));
+      const info: EntryPoint =
+          getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath) as any;
+
+      expect(info.packageJson).toEqual(jasmine.objectContaining({packageVersion: '3'}));
     });
 
     it('should override the properties on package.json if the entry-point is configured', () => {
@@ -94,10 +182,10 @@ runInEachFileSystem(() => {
         typings: './some_other.d.ts',
         esm2015: './some_other.js',
       };
-      spyOn(config, 'getPackageConfig').and.returnValue({
-        entryPoints: {[_('/project/node_modules/some_package/valid_entry_point')]: {override}},
-        versionRange: '*'
-      });
+      spyOn(config, 'getPackageConfig')
+          .and.returnValue(new ProcessedNgccPackageConfig(
+              _('/project/node_modules/some_package'),
+              {entryPoints: {'./valid_entry_point': {override}}}));
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
@@ -107,10 +195,11 @@ runInEachFileSystem(() => {
       };
       expect(entryPoint).toEqual({
         name: 'some_package/valid_entry_point',
-        package: SOME_PACKAGE,
         path: _('/project/node_modules/some_package/valid_entry_point'),
-        typings: _('/project/node_modules/some_package/valid_entry_point/some_other.d.ts'),
+        packageName: 'some_package',
+        packagePath: SOME_PACKAGE,
         packageJson: overriddenPackageJson,
+        typings: _('/project/node_modules/some_package/valid_entry_point/some_other.d.ts'),
         compiledByAngular: true,
         ignoreMissingDependencies: false,
         generateDeepReexports: false,
@@ -145,27 +234,175 @@ runInEachFileSystem(() => {
          const config = new NgccConfiguration(fs, _('/project'));
          const override =
              JSON.parse(createPackageJson('missing_package_json', {excludes: ['name']}));
-         spyOn(config, 'getPackageConfig').and.returnValue({
-           entryPoints:
-               {[_('/project/node_modules/some_package/missing_package_json')]: {override}},
-           versionRange: '*'
-         });
+         spyOn(config, 'getPackageConfig')
+             .and.returnValue(new ProcessedNgccPackageConfig(
+                 _('/project/node_modules/some_package/'),
+                 {entryPoints: {'./missing_package_json': {override}}}));
          const entryPoint = getEntryPointInfo(
              fs, config, new MockLogger(), SOME_PACKAGE,
              _('/project/node_modules/some_package/missing_package_json'));
          expect(entryPoint).toEqual({
            name: 'some_package/missing_package_json',
-           package: SOME_PACKAGE,
            path: _('/project/node_modules/some_package/missing_package_json'),
+           packageName: 'some_package',
+           packagePath: SOME_PACKAGE,
+           packageJson: {name: 'some_package/missing_package_json', ...override},
            typings: _(
                '/project/node_modules/some_package/missing_package_json/missing_package_json.d.ts'),
-           packageJson: {name: 'some_package/missing_package_json', ...override},
            compiledByAngular: true,
            ignoreMissingDependencies: false,
            generateDeepReexports: false,
          });
        });
 
+    [false, true].forEach(isScoped => {
+      const nameWithScope = (baseName: string) => `${isScoped ? '@some-scope/' : ''}${baseName}`;
+      const getPackageName = (packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath) => {
+        const config = new NgccConfiguration(fs, _('/project'));
+        const logger = new MockLogger();
+        const entryPoint = getEntryPointInfo(fs, config, logger, packagePath, entryPointPath);
+
+        if (!isEntryPoint(entryPoint)) {
+          return fail(`Expected an entry point but got ${entryPoint}`);
+        }
+
+        return entryPoint.packageName;
+      };
+      const setUpPackageWithEntryPointPackageJson =
+          (entryPointName: string, entryPointPath: AbsoluteFsPath) => {
+            // Ensure a `package.json` exists for the entry-point (containing `entryPointName`).
+            loadTestFiles([
+              {
+                name: join(entryPointPath, 'package.json'),
+                contents: JSON.stringify({name: entryPointName, typings: './index.d.ts'}),
+              },
+            ]);
+          };
+      const setUpPackageWithoutEntryPointPackageJson =
+          (packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath) => {
+            // Ensure there is an ngcc config for the entry-point providing a `typings` field  to
+            // avoid returning `INCOMPATIBLE_ENTRY_POINT` (since there is no `package.json`).
+            loadTestFiles([
+              {
+                name: join(packagePath, 'ngcc.config.js'),
+                contents: `
+                  module.exports = {
+                    entryPoints: {
+                      '${relative(packagePath, entryPointPath)}': {
+                        override: {typings: './index.d.ts'},
+                      },
+                    },
+                  };
+                `,
+              },
+            ]);
+          };
+
+      describe(`should compute the containing ${isScoped ? 'scoped ' : ''}package's name`, () => {
+        it('for a primary entry-point with a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('package-json-package-name');
+
+          setUpPackageWithEntryPointPackageJson(expectedPackageName, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a primary entry-point without a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point with a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('package-json-package-name');
+
+          setUpPackageWithEntryPointPackageJson(
+              `${expectedPackageName}/some-entry-point`, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point without a `package.json`', () => {
+          const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a primary entry-point without a `package.json` in nested `node_modules/`', () => {
+          const packagePath = _(`/project/node_modules/other-package/node_modules/${
+              nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point without a `package.json` in nested `node_modules/`', () => {
+          const packagePath = _(`/project/node_modules/other-package/node_modules/${
+              nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a primary entry-point with a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('package-json-package-name');
+
+          setUpPackageWithEntryPointPackageJson(expectedPackageName, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a primary entry-point without a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = packagePath;
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point with a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('package-json-package-name');
+
+          setUpPackageWithEntryPointPackageJson(expectedPackageName, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+
+        it('for a secondary entry-point without a `package.json` outside `node_modules/`', () => {
+          const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
+          const entryPointPath = join(packagePath, 'some-entry-point');
+          const expectedPackageName = nameWithScope('on-disk-package-name');
+
+          setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
+
+          expect(getPackageName(packagePath, entryPointPath)).toBe(expectedPackageName);
+        });
+      });
+    });
 
     it('should return `INCOMPATIBLE_ENTRY_POINT` if there is no typings or types field in the package.json',
        () => {
@@ -236,10 +473,11 @@ runInEachFileSystem(() => {
                _('/project/node_modules/some_package/missing_typings'));
            expect(entryPoint).toEqual({
              name: 'some_package/missing_typings',
-             package: SOME_PACKAGE,
              path: _('/project/node_modules/some_package/missing_typings'),
-             typings: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
+             packageName: 'some_package',
+             packagePath: SOME_PACKAGE,
              packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_typings'),
+             typings: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
              compiledByAngular: true,
              ignoreMissingDependencies: false,
              generateDeepReexports: false,
@@ -261,10 +499,11 @@ runInEachFileSystem(() => {
              _('/project/node_modules/some_package/missing_metadata'));
          expect(entryPoint).toEqual({
            name: 'some_package/missing_metadata',
-           package: SOME_PACKAGE,
            path: _('/project/node_modules/some_package/missing_metadata'),
-           typings: _(`/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts`),
+           packageName: 'some_package',
+           packagePath: SOME_PACKAGE,
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
+           typings: _(`/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts`),
            compiledByAngular: false,
            ignoreMissingDependencies: false,
            generateDeepReexports: false,
@@ -281,19 +520,20 @@ runInEachFileSystem(() => {
            // no metadata.json!
          ]);
          const config = new NgccConfiguration(fs, _('/project'));
-         spyOn(config, 'getPackageConfig').and.returnValue({
-           entryPoints: {[_('/project/node_modules/some_package/missing_metadata')]: {}},
-           versionRange: '*'
-         });
+         spyOn(config, 'getPackageConfig')
+             .and.returnValue(new ProcessedNgccPackageConfig(
+                 _('/project/node_modules/some_package'),
+                 {entryPoints: {'./missing_metadata': {}}}));
          const entryPoint = getEntryPointInfo(
              fs, config, new MockLogger(), SOME_PACKAGE,
              _('/project/node_modules/some_package/missing_metadata'));
          expect(entryPoint).toEqual({
            name: 'some_package/missing_metadata',
-           package: SOME_PACKAGE,
            path: _('/project/node_modules/some_package/missing_metadata'),
-           typings: _('/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts'),
+           packageName: 'some_package',
+           packagePath: SOME_PACKAGE,
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
+           typings: _('/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts'),
            compiledByAngular: true,
            ignoreMissingDependencies: false,
            generateDeepReexports: false,
@@ -318,12 +558,13 @@ runInEachFileSystem(() => {
           _('/project/node_modules/some_package/types_rather_than_typings'));
       expect(entryPoint).toEqual({
         name: 'some_package/types_rather_than_typings',
-        package: SOME_PACKAGE,
         path: _('/project/node_modules/some_package/types_rather_than_typings'),
-        typings: _(
-            `/project/node_modules/some_package/types_rather_than_typings/types_rather_than_typings.d.ts`),
+        packageName: 'some_package',
+        packagePath: SOME_PACKAGE,
         packageJson:
             loadPackageJson(fs, '/project/node_modules/some_package/types_rather_than_typings'),
+        typings: _(
+            `/project/node_modules/some_package/types_rather_than_typings/types_rather_than_typings.d.ts`),
         compiledByAngular: true,
         ignoreMissingDependencies: false,
         generateDeepReexports: false,
@@ -353,10 +594,11 @@ runInEachFileSystem(() => {
           _('/project/node_modules/some_package/material_style'));
       expect(entryPoint).toEqual({
         name: 'some_package/material_style',
-        package: SOME_PACKAGE,
         path: _('/project/node_modules/some_package/material_style'),
-        typings: _(`/project/node_modules/some_package/material_style/material_style.d.ts`),
+        packageName: 'some_package',
+        packagePath: SOME_PACKAGE,
         packageJson: loadPackageJson(fs, '/project/node_modules/some_package/material_style'),
+        typings: _(`/project/node_modules/some_package/material_style/material_style.d.ts`),
         compiledByAngular: true,
         ignoreMissingDependencies: false,
         generateDeepReexports: false,
@@ -381,7 +623,7 @@ runInEachFileSystem(() => {
     });
   });
 
-  describe('getEntryPointFormat', () => {
+  describe('getEntryPointFormat()', () => {
     let SOME_PACKAGE: AbsoluteFsPath;
     let _: typeof absoluteFrom;
     let fs: FileSystem;
@@ -399,10 +641,10 @@ runInEachFileSystem(() => {
       const result = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
-      if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
+      if (!isEntryPoint(result)) {
         return fail(`Expected an entry point but got ${result}`);
       }
-      entryPoint = result as any;
+      entryPoint = result;
     });
 
     it('should return `esm2015` format for `fesm2015` property', () => {
@@ -514,19 +756,23 @@ runInEachFileSystem(() => {
 });
 
 export function createPackageJson(
-    packageName: string,
-    {excludes, typingsProp = 'typings', typingsIsArray}:
-        {excludes?: string[], typingsProp?: string, typingsIsArray?: boolean} = {}): string {
+    entryPointName: string, {excludes, typingsProp = 'typings', typingsIsArray, version}: {
+      excludes?: string[],
+      typingsProp?: string,
+      typingsIsArray?: boolean,
+      version?: string
+    } = {}): string {
   const packageJson: any = {
-    name: `some_package/${packageName}`,
-    [typingsProp]: typingsIsArray ? [`./${packageName}.d.ts`] : `./${packageName}.d.ts`,
-    fesm2015: `./fesm2015/${packageName}.js`,
-    esm2015: `./esm2015/${packageName}.js`,
-    es2015: `./es2015/${packageName}.js`,
-    fesm5: `./fesm5/${packageName}.js`,
-    esm5: `./esm5/${packageName}.js`,
-    main: `./bundles/${packageName}/index.js`,
-    browser: `./bundles/${packageName}/index.js`,
+    name: (entryPointName === '') ? 'some_package' : `some_package/${entryPointName}`,
+    version,
+    [typingsProp]: typingsIsArray ? [`./${entryPointName}.d.ts`] : `./${entryPointName}.d.ts`,
+    fesm2015: `./fesm2015/${entryPointName}.js`,
+    esm2015: `./esm2015/${entryPointName}.js`,
+    es2015: `./es2015/${entryPointName}.js`,
+    fesm5: `./fesm5/${entryPointName}.js`,
+    esm5: `./esm5/${entryPointName}.js`,
+    main: `./bundles/${entryPointName}/index.js`,
+    browser: `./bundles/${entryPointName}/index.js`,
     module: './index.js',
   };
   if (excludes) {

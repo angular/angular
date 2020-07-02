@@ -22,6 +22,7 @@ import {addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedEle
  * http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
  * http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
  *
+ * @see Xliff1TranslationSerializer
  */
 export class Xliff1TranslationParser implements TranslationParser<XmlTranslationParserHint> {
   canParse(filePath: string, contents: string): XmlTranslationParserHint|false {

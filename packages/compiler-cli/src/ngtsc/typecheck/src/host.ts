@@ -35,8 +35,8 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
   readonly resolveModuleNames?: ts.CompilerHost['resolveModuleNames'];
 
   constructor(
-      sfMap: Map<string, ts.SourceFile>, private delegate: ts.CompilerHost,
-      private shimExtensionPrefixes: string[]) {
+      sfMap: Map<string, ts.SourceFile>, private originalProgram: ts.Program,
+      private delegate: ts.CompilerHost, private shimExtensionPrefixes: string[]) {
     this.sfMap = sfMap;
 
     if (delegate.getDirectories !== undefined) {
@@ -52,8 +52,15 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: ((message: string) => void)|undefined,
       shouldCreateNewSourceFile?: boolean|undefined): ts.SourceFile|undefined {
-    const delegateSf =
-        this.delegate.getSourceFile(fileName, languageVersion, onError, shouldCreateNewSourceFile)!;
+    // Try to use the same `ts.SourceFile` as the original program, if possible. This guarantees
+    // that program reuse will be as efficient as possible.
+    let delegateSf: ts.SourceFile|undefined = this.originalProgram.getSourceFile(fileName);
+    if (delegateSf === undefined) {
+      // Something went wrong and a source file is being requested that's not in the original
+      // program. Just in case, try to retrieve it from the delegate.
+      delegateSf = this.delegate.getSourceFile(
+          fileName, languageVersion, onError, shouldCreateNewSourceFile)!;
+    }
     if (delegateSf === undefined) {
       return undefined;
     }

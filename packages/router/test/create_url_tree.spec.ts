@@ -68,7 +68,21 @@ describe('createUrlTree', () => {
     expect(params[1].path).toEqual('11');
   });
 
-  it('should support first segments contaings slashes', () => {
+  it('should work if command = null', () => {
+    const p = serializer.parse('/a/b');
+    const t = createRoot(p, [null]);
+    const params = t.root.children[PRIMARY_OUTLET].segments;
+    expect(params[0].path).toEqual('null');
+  });
+
+  it('should work if command is undefined', () => {
+    const p = serializer.parse('/a/b');
+    const t = createRoot(p, [undefined]);
+    const params = t.root.children[PRIMARY_OUTLET].segments;
+    expect(params[0].path).toEqual('undefined');
+  });
+
+  it('should support first segments containing slashes', () => {
     const p = serializer.parse('/');
     const t = createRoot(p, [{segmentPath: '/one'}, 'two/three']);
     expect(serializer.serialize(t)).toEqual('/%2Fone/two%2Fthree');
@@ -126,6 +140,12 @@ describe('createUrlTree', () => {
     const p = serializer.parse('/a(right:b)');
     const t = createRoot(p, [{outlets: {right: null}}]);
     expect(serializer.serialize(t)).toEqual('/a');
+  });
+
+  it('should support removing parenthesis for primary segment on second path element', () => {
+    const p = serializer.parse('/a/(b//right:c)');
+    const t = createRoot(p, ['a', {outlets: {right: null}}]);
+    expect(serializer.serialize(t)).toEqual('/a/b');
   });
 
   it('should update matrix parameters', () => {

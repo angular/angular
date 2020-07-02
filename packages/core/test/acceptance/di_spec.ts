@@ -7,9 +7,9 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, Inject, Injectable, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, Inject, Injectable, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, ViewRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
 import {ɵINJECTOR_SCOPE} from '@angular/core/src/core';
-import {ViewRef} from '@angular/core/src/render3/view_ref';
+import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
@@ -1627,7 +1627,8 @@ describe('di', () => {
         TestBed.configureTestingModule({declarations: [MyApp, MyPipe], imports: [CommonModule]});
         const fixture = TestBed.createComponent(MyApp);
         fixture.detectChanges();
-        expect((pipeInstance!.cdr as ViewRef<MyApp>).context).toBe(fixture.componentInstance);
+        expect((pipeInstance!.cdr as ViewRefInternal<MyApp>).context)
+            .toBe(fixture.componentInstance);
       });
 
       it('should inject current component ChangeDetectorRef into directives on the same node as components',
@@ -1643,7 +1644,7 @@ describe('di', () => {
            fixture.detectChanges();
            const app = fixture.componentInstance;
            const comp = fixture.componentInstance.component;
-           expect((comp!.cdr as ViewRef<MyComp>).context).toBe(comp);
+           expect((comp!.cdr as ViewRefInternal<MyComp>).context).toBe(comp);
            // ChangeDetectorRef is the token, ViewRef has historically been the constructor
            expect(app.directive.value).toContain('ViewRef');
 
@@ -1664,7 +1665,7 @@ describe('di', () => {
            const fixture = TestBed.createComponent(MyComp);
            fixture.detectChanges();
            const comp = fixture.componentInstance;
-           expect((comp!.cdr as ViewRef<MyComp>).context).toBe(comp);
+           expect((comp!.cdr as ViewRefInternal<MyComp>).context).toBe(comp);
            // ChangeDetectorRef is the token, ViewRef has historically been the constructor
            expect(comp.directive.value).toContain('ViewRef');
 
@@ -1692,7 +1693,7 @@ describe('di', () => {
            const fixture = TestBed.createComponent(MyApp);
            fixture.detectChanges();
            const app = fixture.componentInstance;
-           expect((app!.cdr as ViewRef<MyApp>).context).toBe(app);
+           expect((app!.cdr as ViewRefInternal<MyApp>).context).toBe(app);
            const comp = fixture.componentInstance.component;
            // ChangeDetectorRef is the token, ViewRef has historically been the constructor
            expect(app.directive.value).toContain('ViewRef');
@@ -1720,7 +1721,7 @@ describe('di', () => {
         const fixture = TestBed.createComponent(MyComp);
         fixture.detectChanges();
         const comp = fixture.componentInstance;
-        expect((comp!.cdr as ViewRef<MyComp>).context).toBe(comp);
+        expect((comp!.cdr as ViewRefInternal<MyComp>).context).toBe(comp);
         // ChangeDetectorRef is the token, ViewRef has historically been the constructor
         expect(comp.directive.value).toContain('ViewRef');
 
@@ -1743,7 +1744,7 @@ describe('di', () => {
         const fixture = TestBed.createComponent(MyComp);
         fixture.detectChanges();
         const comp = fixture.componentInstance;
-        expect((comp!.cdr as ViewRef<MyComp>).context).toBe(comp);
+        expect((comp!.cdr as ViewRefInternal<MyComp>).context).toBe(comp);
         // ChangeDetectorRef is the token, ViewRef has historically been the constructor
         expect(comp.directive.value).toContain('ViewRef');
 
@@ -1773,7 +1774,8 @@ describe('di', () => {
         TestBed.configureTestingModule({declarations: [MyApp, MyDirective]});
         const fixture = TestBed.createComponent(MyApp);
         fixture.detectChanges();
-        expect((dirInstance!.cdr as ViewRef<MyApp>).context).toBe(fixture.componentInstance);
+        expect((dirInstance!.cdr as ViewRefInternal<MyApp>).context)
+            .toBe(fixture.componentInstance);
       });
     });
   });
@@ -2299,5 +2301,15 @@ describe('di', () => {
 
       expect(fixture.componentInstance.dir.token).toBe('parent');
     });
+  });
+
+  it('should not be able to inject ViewRef', () => {
+    @Component({template: ''})
+    class App {
+      constructor(_viewRef: ViewRef) {}
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    expect(() => TestBed.createComponent(App)).toThrowError(/NullInjectorError/);
   });
 });

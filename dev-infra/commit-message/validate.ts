@@ -148,7 +148,8 @@ export function validateCommitMessage(
   // Checking commit body //
   //////////////////////////
 
-  if (commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
+  if (!config.minBodyLengthTypeExcludes?.includes(commit.type) &&
+      commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
     printError(`The commit message body does not meet the minimum length of ${
         config.minBodyLength} characters`);
     return false;
@@ -157,7 +158,7 @@ export function validateCommitMessage(
   const bodyByLine = commit.body.split('\n');
   if (bodyByLine.some(line => line.length > config.maxLineLength)) {
     printError(
-        `The commit messsage body contains lines greater than ${config.maxLineLength} characters`);
+        `The commit message body contains lines greater than ${config.maxLineLength} characters`);
     return false;
   }
 

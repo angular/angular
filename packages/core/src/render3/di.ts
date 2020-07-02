@@ -99,8 +99,12 @@ let nextNgElementId = 0;
 export function bloomAdd(
     injectorIndex: number, tView: TView, type: Type<any>|InjectionToken<any>|string): void {
   ngDevMode && assertEqual(tView.firstCreatePass, true, 'expected firstCreatePass to be true');
-  let id: number|undefined =
-      typeof type !== 'string' ? (type as any)[NG_ELEMENT_ID] : type.charCodeAt(0) || 0;
+  let id: number|undefined;
+  if (typeof type === 'string') {
+    id = type.charCodeAt(0) || 0;
+  } else if (type.hasOwnProperty(NG_ELEMENT_ID)) {
+    id = (type as any)[NG_ELEMENT_ID];
+  }
 
   // Set a unique ID on the directive type, so if something tries to inject the directive,
   // we can easily retrieve the ID and hash it into the bloom bit that should be checked.
@@ -267,7 +271,7 @@ export function diPublicInInjector(
 export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): string|null {
   ngDevMode &&
       assertNodeOfPossibleTypes(
-          tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
+          tNode, [TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer]);
   ngDevMode && assertDefined(tNode, 'expecting tNode');
   if (attrNameToInject === 'class') {
     return tNode.classes;
@@ -584,7 +588,9 @@ export function bloomHashBitOrFactory(token: Type<any>|InjectionToken<any>|strin
   if (typeof token === 'string') {
     return token.charCodeAt(0) || 0;
   }
-  const tokenId: number|undefined = (token as any)[NG_ELEMENT_ID];
+  const tokenId: number|undefined =
+      // First check with `hasOwnProperty` so we don't get an inherited ID.
+      token.hasOwnProperty(NG_ELEMENT_ID) ? (token as any)[NG_ELEMENT_ID] : undefined;
   // Negative token IDs are used for special objects such as `Injector`
   return (typeof tokenId === 'number' && tokenId > 0) ? tokenId & BLOOM_MASK : tokenId;
 }

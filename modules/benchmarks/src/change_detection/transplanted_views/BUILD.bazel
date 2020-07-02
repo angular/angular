@@ -32,7 +32,7 @@ ts_devserver(
     bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
     port = 4200,
     static_files = ["index.html"],
-    deps = [":bundle.min_debug.es2015.js"],
+    deps = [":bundle.min_debug.js"],
 )
 
 benchmark_test(

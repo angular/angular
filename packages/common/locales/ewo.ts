@@ -22,8 +22,7 @@ export default [
   [
     ['s', 'm', 's', 's', 's', 'f', 's'], ['sɔ́n', 'mɔ́n', 'smb', 'sml', 'smn', 'fúl', 'sér'],
     [
-      'sɔ́ndɔ', 'mɔ́ndi', 'sɔ́ndɔ məlú mə́bɛ̌', 'sɔ́ndɔ məlú mə́lɛ́',
-      'sɔ́ndɔ məlú mə́nyi', 'fúladé', 'séradé'
+      'sɔ́ndɔ', 'mɔ́ndi', 'sɔ́ndɔ məlú mə́bɛ̌', 'sɔ́ndɔ məlú mə́lɛ́', 'sɔ́ndɔ məlú mə́nyi', 'fúladé', 'séradé'
     ],
     ['sɔ́n', 'mɔ́n', 'smb', 'sml', 'smn', 'fúl', 'sér']
   ],
@@ -32,9 +31,8 @@ export default [
     ['o', 'b', 'l', 'n', 't', 's', 'z', 'm', 'e', 'a', 'd', 'b'],
     ['ngo', 'ngb', 'ngl', 'ngn', 'ngt', 'ngs', 'ngz', 'ngm', 'nge', 'nga', 'ngad', 'ngab'],
     [
-      'ngɔn osú', 'ngɔn bɛ̌', 'ngɔn lála', 'ngɔn nyina', 'ngɔn tána', 'ngɔn saməna',
-      'ngɔn zamgbála', 'ngɔn mwom', 'ngɔn ebulú', 'ngɔn awóm', 'ngɔn awóm ai dziá',
-      'ngɔn awóm ai bɛ̌'
+      'ngɔn osú', 'ngɔn bɛ̌', 'ngɔn lála', 'ngɔn nyina', 'ngɔn tána', 'ngɔn saməna', 'ngɔn zamgbála',
+      'ngɔn mwom', 'ngɔn ebulú', 'ngɔn awóm', 'ngɔn awóm ai dziá', 'ngɔn awóm ai bɛ̌'
     ]
   ],
   u,

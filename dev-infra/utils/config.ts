@@ -21,6 +21,8 @@ export interface GitClientConfig {
   name: string;
   /** If SSH protocol should be used for git interactions. */
   useSsh?: boolean;
+  /** Whether the specified repository is private. */
+  private?: boolean;
 }
 
 /**

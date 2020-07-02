@@ -20,8 +20,7 @@ export default [
   [['A.M.', 'P.M.'], u, ['N’ụtụtụ', 'N’abali']],
   [['A.M.', 'P.M.'], u, u],
   [
-    ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-    ['Ụka', 'Mọn', 'Tiu', 'Wen', 'Tọọ', 'Fraị', 'Sat'],
+    ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Ụka', 'Mọn', 'Tiu', 'Wen', 'Tọọ', 'Fraị', 'Sat'],
     ['Sọndee', 'Mọnde', 'Tiuzdee', 'Wenezdee', 'Tọọzdee', 'Fraịdee', 'Satọdee'],
     ['Sọn', 'Mọn', 'Tiu', 'Wen', 'Tọọ', 'Fraị', 'Sat']
   ],
@@ -30,8 +29,8 @@ export default [
     ['J', 'F', 'M', 'E', 'M', 'J', 'J', 'Ọ', 'S', 'Ọ', 'N', 'D'],
     ['Jen', 'Feb', 'Maa', 'Epr', 'Mee', 'Juu', 'Jul', 'Ọgọ', 'Sep', 'Ọkt', 'Nov', 'Dis'],
     [
-      'Jenụwarị', 'Febrụwarị', 'Maachị', 'Epreel', 'Mee', 'Juun', 'Julaị',
-      'Ọgọọst', 'Septemba', 'Ọktoba', 'Novemba', 'Disemba'
+      'Jenụwarị', 'Febrụwarị', 'Maachị', 'Epreel', 'Mee', 'Juun', 'Julaị', 'Ọgọọst', 'Septemba',
+      'Ọktoba', 'Novemba', 'Disemba'
     ]
   ],
   u,

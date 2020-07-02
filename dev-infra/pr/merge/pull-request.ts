@@ -17,6 +17,8 @@ import {PullRequestMergeTask} from './task';
 
 /** Interface that describes a pull request. */
 export interface PullRequest {
+  /** URL to the pull request. */
+  url: string;
   /** Number of the pull request. */
   prNumber: number;
   /** Title of the pull request. */
@@ -33,6 +35,8 @@ export interface PullRequest {
   requiredBaseSha?: string;
   /** Whether the pull request commit message fixup. */
   needsCommitMessageFixup: boolean;
+  /** Whether the pull request has a caretaker note. */
+  hasCaretakerNote: boolean;
 }
 
 /**
@@ -63,7 +67,7 @@ export async function loadAndValidatePullRequest(
   }
 
   const {data: {state}} =
-      await git.api.repos.getCombinedStatusForRef({...git.remoteParams, ref: prData.head.sha});
+      await git.github.repos.getCombinedStatusForRef({...git.remoteParams, ref: prData.head.sha});
 
   if (state === 'failure' && !ignoreNonFatalFailures) {
     return PullRequestFailure.failingCiJobs();
@@ -77,13 +81,17 @@ export async function loadAndValidatePullRequest(
       config.requiredBaseCommits && config.requiredBaseCommits[githubTargetBranch];
   const needsCommitMessageFixup = !!config.commitMessageFixupLabel &&
       labels.some(name => matchesPattern(name, config.commitMessageFixupLabel));
+  const hasCaretakerNote = !!config.caretakerNoteLabel &&
+      labels.some(name => matchesPattern(name, config.caretakerNoteLabel!));
 
   return {
+    url: prData.html_url,
     prNumber,
     labels,
     requiredBaseSha,
     githubTargetBranch,
     needsCommitMessageFixup,
+    hasCaretakerNote,
     title: prData.title,
     targetBranches: getBranchesFromTargetLabel(targetLabel, githubTargetBranch),
     commitCount: prData.commits,
@@ -94,7 +102,7 @@ export async function loadAndValidatePullRequest(
 async function fetchPullRequestFromGithub(
     git: GitClient, prNumber: number): Promise<Octokit.PullsGetResponse|null> {
   try {
-    const result = await git.api.pulls.get({...git.remoteParams, pull_number: prNumber});
+    const result = await git.github.pulls.get({...git.remoteParams, pull_number: prNumber});
     return result.data;
   } catch (e) {
     // If the pull request could not be found, we want to return `null` so

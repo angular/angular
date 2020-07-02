@@ -40,7 +40,8 @@ The top level of the workspace contains workspace-wide configuration files, conf
 | `package-lock.json`     | Provides version information for all packages installed into `node_modules` by the npm client. See [npm documentation](https://docs.npmjs.com/files/package-lock.json) for details. If you use the yarn client, this file will be [yarn.lock](https://yarnpkg.com/lang/en/docs/yarn-lock/) instead. |
 | `src/`                  | Source files for the root-level application project. |
 | `node_modules/`         | Provides [npm packages](guide/npm-packages) to the entire workspace. Workspace-wide `node_modules` dependencies are visible to all projects. |
-| `tsconfig.json`         | Default [TypeScript](https://www.typescriptlang.org/) configuration for projects in the workspace. |
+| `tsconfig.json`         | The `tsconfig.json` file is a ["Solution Style"](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html#support-for-solution-style-tsconfigjson-files) TypeScript configuration file. Code editors and TypeScript’s language server use this file to improve development experience. Compilers do not use this file. |
+| `tsconfig.base.json`    | The base [TypeScript](https://www.typescriptlang.org/) configuration for projects in the workspace. All other configuration files inherit from this base file. For more information, see the [Configuration inheritance with extends](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#configuration-inheritance-with-extends) section of the TypeScript documentation.|
 | `tslint.json`           | Default [TSLint](https://palantir.github.io/tslint/) configuration for projects in the workspace. |
 
 
@@ -77,6 +78,12 @@ Files at the top level of `src/` support testing and running your application. S
 | `styles.sass`          | Lists CSS files that supply styles for a project. The extension reflects the style preprocessor you have configured for the project. |
 | `test.ts`              | The main entry point for your unit tests, with some Angular-specific configuration. You don't typically need to edit this file. |
 
+<div class="alert is-helpful">
+
+If you create an application using Angular's strict mode, you will also have an additional `package.json` file in the `src/app` directory. For more information, see [Strict mode](/guide/strict-mode).
+
+</div>
+
 {@a app-src}
 
 Inside the `src/` folder, the `app/` folder contains your project's logic and data.
@@ -89,13 +96,14 @@ Angular components, templates, and styles go here.
 | `app/app.component.css`     | Defines the base CSS stylesheet for the root `AppComponent`. |
 | `app/app.component.spec.ts` | Defines a unit test for the root `AppComponent`. |
 | `app/app.module.ts`         | Defines the root module, named `AppModule`, that tells Angular how to assemble the application. Initially declares only the `AppComponent`. As you add more components to the app, they must be declared here. |
+| `app/package.json`              | This file is generated only in applications created using `--strict` mode. This file is not used by package managers. It is used to tell the tools and bundlers whether the code under this directory is free of non-local [side-effects](guide/strict-mode#side-effect). |
 
 ### Application configuration files
 
 The application-specific configuration files for the root application reside at the workspace root level.
 For a multi-project workspace, project-specific configuration files are in the project root, under `projects/project-name/`.
 
-Project-specific [TypeScript](https://www.typescriptlang.org/) configuration files inherit from the workspace-wide `tsconfig.json`, and project-specific [TSLint](https://palantir.github.io/tslint/) configuration files inherit from the workspace-wide `tslint.json`.
+Project-specific [TypeScript](https://www.typescriptlang.org/) configuration files inherit from the workspace-wide `tsconfig.base.json`, and project-specific [TSLint](https://palantir.github.io/tslint/) configuration files inherit from the workspace-wide `tslint.json`.
 
 | APPLICATION-SPECIFIC CONFIG FILES    | PURPOSE |
 | :--------------------- | :------------------------------------------|

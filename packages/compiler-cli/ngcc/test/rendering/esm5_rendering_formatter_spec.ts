@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {loadTestFiles} from '../../../test/helpers';
@@ -21,7 +22,6 @@ import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../../src/constants';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {Esm5RenderingFormatter} from '../../src/rendering/esm5_rendering_formatter';
-import {MockLogger} from '../helpers/mock_logger';
 import {makeTestEntryPointBundle} from '../helpers/utils';
 
 function setup(file: {name: AbsoluteFsPath, contents: string}) {
@@ -33,8 +33,8 @@ function setup(file: {name: AbsoluteFsPath, contents: string}) {
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-  const switchMarkerAnalyses =
-      new SwitchMarkerAnalyzer(host, bundle.entryPoint.package).analyzeProgram(bundle.src.program);
+  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath)
+                                   .analyzeProgram(bundle.src.program);
   const renderer = new Esm5RenderingFormatter(host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), IMPORT_PREFIX);
   return {

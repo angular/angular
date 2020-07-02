@@ -33,6 +33,4 @@ function buildDevInfraPackage() {
   console.info('');
 }
 
-module.exports = {
-  buildDevInfraPackage
-};
+module.exports = {buildDevInfraPackage};

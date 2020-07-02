@@ -11,6 +11,7 @@
 import * as os from 'os';
 
 import {AbsoluteFsPath, FileSystem, resolve} from '../../src/ngtsc/file_system';
+import {Logger} from '../../src/ngtsc/logging';
 import {ParsedConfiguration} from '../../src/perform_compile';
 
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
@@ -20,6 +21,7 @@ import {EsmDependencyHost} from './dependencies/esm_dependency_host';
 import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
+import {EntryPointCollector} from './entry_point_finder/entry_point_collector';
 import {EntryPointFinder} from './entry_point_finder/interface';
 import {ProgramBasedEntryPointFinder} from './entry_point_finder/program_based_entry_point_finder';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
@@ -33,7 +35,6 @@ import {composeTaskCompletedCallbacks, createLogErrorHandler, createMarkAsProces
 import {AsyncLocker} from './locking/async_locker';
 import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
 import {SyncLocker} from './locking/sync_locker';
-import {Logger} from './logging/logger';
 import {AsyncNgccOptions, getSharedSetup, SyncNgccOptions} from './ngcc_options';
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
@@ -203,10 +204,15 @@ function getEntryPointFinder(
   if (absoluteTargetEntryPointPath !== null) {
     return new TargetedEntryPointFinder(
         fs, config, logger, resolver, basePath, pathMappings, absoluteTargetEntryPointPath);
-  } else if (tsConfig !== null) {
-    return new ProgramBasedEntryPointFinder(
-        fs, config, logger, resolver, basePath, tsConfig, projectPath);
+  } else {
+    const entryPointCollector = new EntryPointCollector(fs, config, logger, resolver);
+    if (tsConfig !== null) {
+      return new ProgramBasedEntryPointFinder(
+          fs, config, logger, resolver, entryPointCollector, entryPointManifest, basePath, tsConfig,
+          projectPath);
+    } else {
+      return new DirectoryWalkerEntryPointFinder(
+          logger, resolver, entryPointCollector, entryPointManifest, basePath, pathMappings);
+    }
   }
-  return new DirectoryWalkerEntryPointFinder(
-      fs, config, logger, resolver, entryPointManifest, basePath, pathMappings);
 }

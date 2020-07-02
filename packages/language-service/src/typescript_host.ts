@@ -152,6 +152,13 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   /**
+   * Return all known external templates.
+   */
+  getExternalTemplates(): string[] {
+    return [...this.fileToComponent.keys()];
+  }
+
+  /**
    * Checks whether the program has changed and returns all analyzed modules.
    * If program has changed, invalidate all caches and update fileToComponent
    * and templateReferences.

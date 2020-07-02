@@ -7,6 +7,7 @@
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relative} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
 import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
@@ -14,10 +15,9 @@ import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {TargetedEntryPointFinder} from '../../src/entry_point_finder/targeted_entry_point_finder';
 import {NGCC_VERSION} from '../../src/packages/build_marker';
-import {NgccConfiguration} from '../../src/packages/configuration';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {PathMappings} from '../../src/path_mappings';
-import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('TargetedEntryPointFinder', () => {
@@ -105,6 +105,25 @@ runInEachFileSystem(() => {
         fs.ensureDir(_Abs('/no_packages/node_modules/should_not_be_found'));
         const finder = new TargetedEntryPointFinder(
             fs, config, logger, resolver, _Abs('/no_packages/node_modules'), undefined, targetPath);
+        const {entryPoints} = finder.findEntryPoints();
+        expect(entryPoints).toEqual([]);
+      });
+
+      it('should return an empty array if the target path is an ignored entry-point', () => {
+        const basePath = _Abs('/project/node_modules');
+        const targetPath = _Abs('/project/node_modules/some-package');
+        const finder = new TargetedEntryPointFinder(
+            fs, config, logger, resolver, basePath, undefined, targetPath);
+
+        loadTestFiles(createPackage(basePath, 'some-package'));
+        spyOn(config, 'getPackageConfig')
+            .and.returnValue(
+                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                  entryPoints: {
+                    '.': {ignore: true},
+                  },
+                }));
+
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
       });
@@ -300,7 +319,7 @@ runInEachFileSystem(() => {
            const entryPoint = entryPoints[0];
            expect(entryPoint.name).toEqual('secondary');
            expect(entryPoint.path).toEqual(_Abs('/path_mapped/dist/primary/secondary'));
-           expect(entryPoint.package).toEqual(_Abs('/path_mapped/dist/primary'));
+           expect(entryPoint.packagePath).toEqual(_Abs('/path_mapped/dist/primary'));
          });
 
       it('should correctly compute an entry-point whose path starts with the same string as another entry-point, via pathMappings',
@@ -363,7 +382,8 @@ runInEachFileSystem(() => {
 
       function dumpEntryPointPaths(
           basePath: AbsoluteFsPath, entryPoints: EntryPoint[]): [string, string][] {
-        return entryPoints.map(x => [relative(basePath, x.package), relative(basePath, x.path)]);
+        return entryPoints.map(
+            x => [relative(basePath, x.packagePath), relative(basePath, x.path)]);
       }
     });
 
@@ -387,6 +407,24 @@ runInEachFileSystem(() => {
         const finder = new TargetedEntryPointFinder(
             fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'), undefined,
             targetPath);
+        expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
+      });
+
+      it('should return false if the target path is ignored by the config', () => {
+        const basePath = _Abs('/project/node_modules');
+        const targetPath = _Abs('/project/node_modules/some-package');
+        const finder = new TargetedEntryPointFinder(
+            fs, config, logger, resolver, basePath, undefined, targetPath);
+
+        loadTestFiles(createPackage(basePath, 'some-package'));
+        spyOn(config, 'getPackageConfig')
+            .and.returnValue(
+                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                  entryPoints: {
+                    '.': {ignore: true},
+                  },
+                }));
+
         expect(finder.targetNeedsProcessingOrCleaning(['fesm2015'], true)).toBe(false);
       });
 

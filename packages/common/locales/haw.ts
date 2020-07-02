@@ -28,13 +28,10 @@ export default [
   u,
   [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+    ['Ian.', 'Pep.', 'Mal.', 'ʻAp.', 'Mei', 'Iun.', 'Iul.', 'ʻAu.', 'Kep.', 'ʻOk.', 'Now.', 'Kek.'],
     [
-      'Ian.', 'Pep.', 'Mal.', 'ʻAp.', 'Mei', 'Iun.', 'Iul.', 'ʻAu.', 'Kep.', 'ʻOk.', 'Now.',
-      'Kek.'
-    ],
-    [
-      'Ianuali', 'Pepeluali', 'Malaki', 'ʻApelila', 'Mei', 'Iune', 'Iulai', 'ʻAukake',
-      'Kepakemapa', 'ʻOkakopa', 'Nowemapa', 'Kekemapa'
+      'Ianuali', 'Pepeluali', 'Malaki', 'ʻApelila', 'Mei', 'Iune', 'Iulai', 'ʻAukake', 'Kepakemapa',
+      'ʻOkakopa', 'Nowemapa', 'Kekemapa'
     ]
   ],
   u,
