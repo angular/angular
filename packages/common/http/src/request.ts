@@ -27,7 +27,6 @@ interface HttpRequestInit {
  */
 function mightHaveBody(method: string): boolean {
   switch (method) {
-    case 'DELETE':
     case 'GET':
     case 'HEAD':
     case 'OPTIONS':
@@ -128,14 +127,14 @@ export class HttpRequest<T> {
    */
   readonly urlWithParams: string;
 
-  constructor(method: 'DELETE'|'GET'|'HEAD'|'JSONP'|'OPTIONS', url: string, init?: {
+  constructor(method: 'GET'|'HEAD'|'JSONP'|'OPTIONS', url: string, init?: {
     headers?: HttpHeaders,
     reportProgress?: boolean,
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
   });
-  constructor(method: 'POST'|'PUT'|'PATCH', url: string, body: T|null, init?: {
+  constructor(method: 'DELETE'|'POST'|'PUT'|'PATCH', url: string, body: T|null, init?: {
     headers?: HttpHeaders,
     reportProgress?: boolean,
     params?: HttpParams,

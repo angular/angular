@@ -6,7 +6,7 @@ export declare abstract class HttpBackend implements HttpHandler {
 
 export declare class HttpClient {
     constructor(handler: HttpHandler);
-    delete(url: string, options: {
+    delete(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -18,7 +18,7 @@ export declare class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<ArrayBuffer>;
-    delete(url: string, options: {
+    delete(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -30,7 +30,7 @@ export declare class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<Blob>;
-    delete(url: string, options: {
+    delete(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -42,7 +42,7 @@ export declare class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<string>;
-    delete(url: string, options: {
+    delete(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -54,7 +54,7 @@ export declare class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<HttpEvent<ArrayBuffer>>;
-    delete(url: string, options: {
+    delete(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -66,7 +66,7 @@ export declare class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpEvent<Blob>>;
-    delete(url: string, options: {
+    delete(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -78,7 +78,7 @@ export declare class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<HttpEvent<string>>;
-    delete(url: string, options: {
+    delete(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -90,7 +90,7 @@ export declare class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpEvent<Object>>;
-    delete<T>(url: string, options: {
+    delete<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -102,7 +102,7 @@ export declare class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpEvent<T>>;
-    delete(url: string, options: {
+    delete(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -114,7 +114,7 @@ export declare class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<HttpResponse<ArrayBuffer>>;
-    delete(url: string, options: {
+    delete(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -126,7 +126,7 @@ export declare class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Blob>>;
-    delete(url: string, options: {
+    delete(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -138,7 +138,7 @@ export declare class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<HttpResponse<string>>;
-    delete(url: string, options: {
+    delete(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -150,7 +150,7 @@ export declare class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Object>>;
-    delete<T>(url: string, options: {
+    delete<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -162,7 +162,7 @@ export declare class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<T>>;
-    delete(url: string, options?: {
+    delete(url: string, body: any | null, options?: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -174,7 +174,7 @@ export declare class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<Object>;
-    delete<T>(url: string, options?: {
+    delete<T>(url: string, body: any | null, options?: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -1591,14 +1591,14 @@ export declare class HttpRequest<T> {
     readonly url: string;
     readonly urlWithParams: string;
     readonly withCredentials: boolean;
-    constructor(method: 'DELETE' | 'GET' | 'HEAD' | 'JSONP' | 'OPTIONS', url: string, init?: {
+    constructor(method: 'DELETE' | 'POST' | 'PUT' | 'PATCH', url: string, body: T | null, init?: {
         headers?: HttpHeaders;
         reportProgress?: boolean;
         params?: HttpParams;
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
     });
-    constructor(method: 'POST' | 'PUT' | 'PATCH', url: string, body: T | null, init?: {
+    constructor(method: 'GET' | 'HEAD' | 'JSONP' | 'OPTIONS', url: string, init?: {
         headers?: HttpHeaders;
         reportProgress?: boolean;
         params?: HttpParams;

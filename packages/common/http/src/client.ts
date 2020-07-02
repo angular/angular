@@ -561,11 +561,12 @@ export class HttpClient {
    *  and returns the response as an `ArrayBuffer`.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return  An `Observable` of the response body as an `ArrayBuffer`.
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     observe?: 'body',
     params?: HttpParams|{[param: string]: string | string[]},
@@ -579,11 +580,12 @@ export class HttpClient {
    * the response as a `Blob`.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of the response body as a `Blob`.
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     observe?: 'body',
     params?: HttpParams|{[param: string]: string | string[]},
@@ -596,11 +598,12 @@ export class HttpClient {
    * a string.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of the response, with the response body of type string.
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     observe?: 'body',
     params?: HttpParams|{[param: string]: string | string[]},
@@ -613,12 +616,13 @@ export class HttpClient {
    *  and returns the full event stream.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of all `HTTPEvents` for the request,
    * with response body as an `ArrayBuffer`.
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean, responseType: 'arraybuffer',
@@ -630,12 +634,13 @@ export class HttpClient {
    *  and returns the full event stream.
    *
    * @param url     The endpoint URL.
+   * @param body The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of all the `HTTPEvents` for the request, with the response body as a
    * `Blob`.
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean, responseType: 'blob',
@@ -647,12 +652,13 @@ export class HttpClient {
    * and returns the full event stream.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of all `HTTPEvents` for the request, with the response
    *  body of type string.
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean, responseType: 'text',
@@ -664,12 +670,13 @@ export class HttpClient {
    * and returns the full event stream.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of all `HTTPEvents` for the request, with response body of
    * type `Object`.
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
@@ -682,12 +689,13 @@ export class HttpClient {
    * and returns the full event stream.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of all the `HTTPEvents` for the request, with a response
    * body in the requested type.
    */
-  delete<T>(url: string, options: {
+  delete<T>(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
@@ -700,11 +708,12 @@ export class HttpClient {
    *  the full `HTTPResponse`.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of the full `HTTPResponse`, with the response body as an `ArrayBuffer`.
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean, responseType: 'arraybuffer',
@@ -716,11 +725,12 @@ export class HttpClient {
    * `HTTPResponse`.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of the `HTTPResponse`, with the response body of type `Blob`.
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean, responseType: 'blob',
@@ -732,11 +742,12 @@ export class HttpClient {
    *  returns the full `HTTPResponse`.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of the full `HTTPResponse`, with the response body of type string.
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean, responseType: 'text',
@@ -748,12 +759,13 @@ export class HttpClient {
    * the full `HTTPResponse`.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of the `HTTPResponse`, with the response body of type `Object`.
    *
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
@@ -766,11 +778,12 @@ export class HttpClient {
    * and returns the full `HTTPResponse`.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of the `HTTPResponse`, with the response body of the requested type.
    */
-  delete<T>(url: string, options: {
+  delete<T>(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
@@ -783,11 +796,12 @@ export class HttpClient {
    * returns the response body as a JSON object.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of the response, with the response body of type `Object`.
    */
-  delete(url: string, options?: {
+  delete(url: string, body: any|null, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     observe?: 'body',
     params?: HttpParams|{[param: string]: string | string[]},
@@ -801,11 +815,12 @@ export class HttpClient {
    * the response in a given type.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of the `HTTPResponse`, with response body in the requested type.
    */
-  delete<T>(url: string, options?: {
+  delete<T>(url: string, body: any|null, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     observe?: 'body',
     params?: HttpParams|{[param: string]: string | string[]},
@@ -820,10 +835,11 @@ export class HttpClient {
    * details on the return type.
    *
    * @param url     The endpoint URL.
+   * @param body    The content to replace with.
    * @param options The HTTP options to send with the request.
    *
    */
-  delete(url: string, options: {
+  delete(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     observe?: HttpObserve,
     params?: HttpParams|{[param: string]: string | string[]},
@@ -831,7 +847,7 @@ export class HttpClient {
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
   } = {}): Observable<any> {
-    return this.request<any>('DELETE', url, options as any);
+    return this.request<any>('DELETE', url, addBody(options, body));
   }
 
 
