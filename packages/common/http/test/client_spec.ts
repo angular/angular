@@ -31,6 +31,13 @@ import {toArray} from 'rxjs/operators';
         });
         backend.expectOne('/test').flush({'data': 'hello world'});
       });
+      it('for JSON(boolean) data', (done: DoneFn) => {
+        client.get('/test').subscribe(res => {
+          expect((res as any)).toEqual(true);
+          done();
+        });
+        backend.expectOne('/test').flush(true);
+      });
       it('for text data', done => {
         client.get('/test', {responseType: 'text'}).subscribe(res => {
           expect(res).toEqual('hello world');
