@@ -40,11 +40,14 @@ export class TestRequest {
    *
    * Both successful and unsuccessful responses can be delivered via `flush()`.
    */
-  flush(body: ArrayBuffer|Blob|boolean|string|number|Object|(boolean|string|number|Object|null)[]|null, opts: {
-    headers?: HttpHeaders|{[name: string]: string | string[]},
-    status?: number,
-    statusText?: string,
-  } = {}): void {
+  flush(
+      body: ArrayBuffer|Blob|boolean|string|number|Object|(boolean|string|number|Object|null)[]|
+      null,
+      opts: {
+        headers?: HttpHeaders|{[name: string]: string | string[]},
+        status?: number,
+        statusText?: string,
+      } = {}): void {
     if (this.cancelled) {
       throw new Error(`Cannot flush a cancelled request.`);
     }
@@ -146,7 +149,8 @@ function _toBlob(body: ArrayBuffer|Blob|string|number|Object|
  * Helper function to convert a response body to JSON data.
  */
 function _toJsonBody(
-    body: ArrayBuffer|Blob|boolean|string|number|Object|(boolean | string | number | Object | null)[],
+    body: ArrayBuffer|Blob|boolean|string|number|Object|
+    (boolean | string | number | Object | null)[],
     format: string = 'JSON'): Object|string|number|(Object | string | number)[] {
   if (typeof ArrayBuffer !== 'undefined' && body instanceof ArrayBuffer) {
     throw new Error(`Automatic conversion to ${format} is not supported for ArrayBuffers.`);
