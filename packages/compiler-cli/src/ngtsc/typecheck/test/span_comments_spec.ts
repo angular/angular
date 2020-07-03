@@ -10,6 +10,10 @@ import {tcb, TestDeclaration} from './test_utils';
 
 describe('type check blocks diagnostics', () => {
   describe('parse spans', () => {
+    it('should annotate unary ops', () => {
+      expect(tcbWithSpans('{{ -a }}')).toContain('(-((ctx).a /*4,5*/) /*4,5*/) /*3,5*/');
+    });
+
     it('should annotate binary ops', () => {
       expect(tcbWithSpans('{{ a + b }}'))
           .toContain('(((ctx).a /*3,4*/) /*3,4*/) + (((ctx).b /*7,8*/) /*7,8*/) /*3,8*/');

@@ -323,6 +323,26 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       private bindingId: string, private interpolationFunction: InterpolationFunction|undefined,
       private baseSourceSpan?: ParseSourceSpan, private implicitReceiverAccesses?: Set<string>) {}
 
+  visitUnary(ast: cdAst.Unary, mode: _Mode): any {
+    let op: o.UnaryOperator;
+    switch (ast.operation) {
+      case '+':
+        op = o.UnaryOperator.Plus;
+        break;
+      case '-':
+        op = o.UnaryOperator.Minus;
+        break;
+      default:
+        throw new Error(`Unsupported operation ${ast.operation}`);
+    }
+
+    return convertToStatementIfNeeded(
+        mode,
+        new o.UnaryOperatorExpr(
+            op, this._visit(ast.right, _Mode.Expression), undefined,
+            this.convertSourceSpan(ast.span)));
+  }
+
   visitBinary(ast: cdAst.Binary, mode: _Mode): any {
     let op: o.BinaryOperator;
     switch (ast.operation) {
@@ -703,6 +723,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return (this._nodeMap.get(ast) || ast).visit(visitor);
     };
     return ast.visit({
+      visitUnary(ast: cdAst.Unary) {
+        return null;
+      },
       visitBinary(ast: cdAst.Binary) {
         return null;
       },
@@ -777,6 +800,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return ast.some(ast => visit(visitor, ast));
     };
     return ast.visit({
+      visitUnary(ast: cdAst.Unary): boolean {
+        return visit(this, ast.right);
+      },
       visitBinary(ast: cdAst.Binary): boolean {
         return visit(this, ast.left) || visit(this, ast.right);
       },

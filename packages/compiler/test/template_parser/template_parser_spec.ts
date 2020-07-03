@@ -1656,7 +1656,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         expect(humanizeTplAst(parse('<div *ngIf="-1">', [ngIf]))).toEqual([
           [EmbeddedTemplateAst],
           [DirectiveAst, ngIf],
-          [BoundDirectivePropertyAst, 'ngIf', '0 - 1'],
+          [BoundDirectivePropertyAst, 'ngIf', '-1'],
           [ElementAst, 'div'],
         ]);
       });

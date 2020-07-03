@@ -216,6 +216,17 @@ export class Interpolation extends AST {
   }
 }
 
+export class Unary extends AST {
+  constructor(
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public operation: string,
+      public right: AST) {
+    super(span, sourceSpan);
+  }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitUnary(this, context);
+  }
+}
+
 export class Binary extends AST {
   constructor(
       span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public operation: string, public left: AST,
@@ -361,6 +372,7 @@ export interface TemplateBindingIdentifier {
 }
 
 export interface AstVisitor {
+  visitUnary(ast: Unary, context: any): any;
   visitBinary(ast: Binary, context: any): any;
   visitChain(ast: Chain, context: any): any;
   visitConditional(ast: Conditional, context: any): any;
@@ -397,6 +409,9 @@ export class RecursiveAstVisitor implements AstVisitor {
     // Classes that extend RecursiveAstVisitor should override this function
     // to selectively visit the specified node.
     ast.visit(this, context);
+  }
+  visitUnary(ast: Unary, context: any): any {
+    this.visit(ast.right, context);
   }
   visitBinary(ast: Binary, context: any): any {
     this.visit(ast.left, context);
@@ -525,6 +540,10 @@ export class AstTransformer implements AstVisitor {
 
   visitLiteralMap(ast: LiteralMap, context: any): AST {
     return new LiteralMap(ast.span, ast.sourceSpan, ast.keys, this.visitAll(ast.values));
+  }
+
+  visitUnary(ast: Unary, context: any): AST {
+    return new Unary(ast.span, ast.sourceSpan, ast.operation, ast.right.visit(this));
   }
 
   visitBinary(ast: Binary, context: any): AST {
@@ -661,6 +680,14 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const values = this.visitAll(ast.values);
     if (values !== ast.values) {
       return new LiteralMap(ast.span, ast.sourceSpan, ast.keys, values);
+    }
+    return ast;
+  }
+
+  visitUnary(ast: Unary, context: any): AST {
+    const right = ast.right.visit(this);
+    if (right !== ast.right) {
+      return new Unary(ast.span, ast.sourceSpan, ast.operation, right);
     }
     return ast;
   }

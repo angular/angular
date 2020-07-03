@@ -191,6 +191,8 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
       const rhs = o.variable('rhs');
       expect(emitStmt(someVar.cast(o.INT_TYPE).toStmt())).toEqual('(<number>someVar);');
       expect(emitStmt(o.not(someVar).toStmt())).toEqual('!someVar;');
+      expect(emitStmt(o.unary(o.UnaryOperator.Minus, someVar).toStmt())).toEqual('(-someVar);');
+      expect(emitStmt(o.unary(o.UnaryOperator.Plus, someVar).toStmt())).toEqual('(+someVar);');
       expect(emitStmt(o.assertNotNull(someVar).toStmt())).toEqual('someVar!;');
       expect(
           emitStmt(someVar.conditional(o.variable('trueCase'), o.variable('falseCase')).toStmt()))

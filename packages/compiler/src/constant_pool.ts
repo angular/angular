@@ -330,6 +330,7 @@ class KeyVisitor implements o.ExpressionVisitor {
   visitAssertNotNullExpr = invalid;
   visitCastExpr = invalid;
   visitFunctionExpr = invalid;
+  visitUnaryOperatorExpr = invalid;
   visitBinaryOperatorExpr = invalid;
   visitReadPropExpr = invalid;
   visitReadKeyExpr = invalid;
