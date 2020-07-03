@@ -866,7 +866,7 @@ describe('compiler compliance: template', () => {
       }
     };
 
-    const template = `i0.ɵɵtextInterpolate1(" ", (ctx.a == null ? null : ctx.a.b) ? 1 : 2, "")`;
+    const template = `i0.ɵɵtextInterpolate1(" ", (ctx.a == null ? undefined : ctx.a.b) ? 1 : 2, "")`;
 
     const result = compile(files, angularFiles);
     expectEmit(result.source, template, 'Incorrect template');

@@ -314,14 +314,14 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     // However, occasionally Angular needs to produce a left-associative conditional, such as in
     // the case of a null-safe navigation production: `{{a?.b ? c : d}}`. This template produces
     // a ternary of the form:
-    //   `a == null ? null : rest of expression`
+    //   `a == null ? undefined : rest of expression`
     // If the rest of the expression is also a ternary though, this would produce the form:
-    //   `a == null ? null : a.b ? c : d`
+    //   `a == null ? undefined : a.b ? c : d`
     // which, if left as right-associative, would be incorrectly associated as:
-    //   `a == null ? null : (a.b ? c : d)`
+    //   `a == null ? undefined : (a.b ? c : d)`
     //
     // In such cases, the left-associativity needs to be enforced with parentheses:
-    //   `(a == null ? null : a.b) ? c : d`
+    //   `(a == null ? undefined : a.b) ? c : d`
     //
     // Such parentheses could always be included in the condition (guaranteeing correct behavior) in
     // all cases, but this has a code size cost. Instead, parentheses are added only when a

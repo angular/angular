@@ -688,16 +688,16 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     }
 
     // Produce the conditional
-    return convertToStatementIfNeeded(mode, condition.conditional(o.literal(null), access));
+    return convertToStatementIfNeeded(mode, condition.conditional(o.literal(undefined), access));
   }
 
   // Given an expression of the form a?.b.c?.d.e then the left most safe node is
   // the (a?.b). The . and ?. are left associative thus can be rewritten as:
   // ((((a?.c).b).c)?.d).e. This returns the most deeply nested safe read or
   // safe method call as this needs to be transformed initially to:
-  //   a == null ? null : a.c.b.c?.d.e
+  //   a == null ? undefined : a.c.b.c?.d.e
   // then to:
-  //   a == null ? null : a.b.c == null ? null : a.b.c.d.e
+  //   a == null ? undefined : a.b.c == null ? undefined : a.b.c.d.e
   private leftMostSafeNode(ast: cdAst.AST): cdAst.SafePropertyRead|cdAst.SafeMethodCall {
     const visit = (visitor: cdAst.AstVisitor, ast: cdAst.AST): any => {
       return (this._nodeMap.get(ast) || ast).visit(visitor);

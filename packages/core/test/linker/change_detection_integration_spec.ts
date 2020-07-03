@@ -271,14 +271,14 @@ describe(`ChangeDetection`, () => {
            const ctx = _bindSimpleValue('address?.city', Person);
            ctx.componentInstance.address = null!;
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['id=null']);
+           expect(renderLog.log).toEqual(['id=undefined']);
          }));
 
       it('should support calling methods on nulls', fakeAsync(() => {
            const ctx = _bindSimpleValue('address?.toString()', Person);
            ctx.componentInstance.address = null!;
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['id=null']);
+           expect(renderLog.log).toEqual(['id=undefined']);
          }));
 
       it('should support reading properties on non nulls', fakeAsync(() => {
@@ -299,26 +299,26 @@ describe(`ChangeDetection`, () => {
            const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
            ctx.componentInstance.value = null!;
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['id=null']);
+           expect(renderLog.log).toEqual(['id=undefined']);
          }));
 
       it('should support nested short-circuting safe navigation', fakeAsync(() => {
            const ctx = _bindSimpleValue('value.value?.address.city', PersonHolderHolder);
            ctx.componentInstance.value = new PersonHolder();
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['id=null']);
+           expect(renderLog.log).toEqual(['id=undefined']);
          }));
 
       it('should support chained short-circuting safe navigation', fakeAsync(() => {
            const ctx = _bindSimpleValue('value?.value?.address.city', PersonHolderHolder);
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['id=null']);
+           expect(renderLog.log).toEqual(['id=undefined']);
          }));
 
       it('should support short-circuting array index operations', fakeAsync(() => {
            const ctx = _bindSimpleValue('value?.phones[0]', PersonHolder);
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['id=null']);
+           expect(renderLog.log).toEqual(['id=undefined']);
          }));
 
       it('should still throw if right-side would throw', fakeAsync(() => {
