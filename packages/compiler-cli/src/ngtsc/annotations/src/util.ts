@@ -12,12 +12,8 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {DefaultImportRecorder, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, CtorParameter, Decorator, Import, isNamedClassDeclaration, ReflectionHost, TypeValueReference} from '../../reflection';
+import {ClassDeclaration, CtorParameter, Decorator, Import, ImportedTypeValueReference, isNamedClassDeclaration, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind} from '../../reflection';
 import {DeclarationData} from '../../scope';
-
-export enum ConstructorDepErrorKind {
-  NO_SUITABLE_TOKEN,
-}
 
 export type ConstructorDeps = {
   deps: R3DependencyMetadata[];
@@ -29,7 +25,7 @@ export type ConstructorDeps = {
 export interface ConstructorDepError {
   index: number;
   param: CtorParameter;
-  kind: ConstructorDepErrorKind;
+  reason: UnavailableValue;
 }
 
 export function getConstructorDependencies(
@@ -94,10 +90,14 @@ export function getConstructorDependencies(
       resolved = R3ResolvedDependencyType.ChangeDetectorRef;
     }
     if (token === null) {
+      if (param.typeValueReference.kind !== TypeValueReferenceKind.UNAVAILABLE) {
+        throw new Error(
+            'Illegal state: expected value reference to be unavailable if no token is present');
+      }
       errors.push({
         index: idx,
-        kind: ConstructorDepErrorKind.NO_SUITABLE_TOKEN,
         param,
+        reason: param.typeValueReference.reason,
       });
     } else {
       deps.push({token, attribute, optional, self, skipSelf, host, resolved});
@@ -118,18 +118,15 @@ export function getConstructorDependencies(
  * file in which the `TypeValueReference` originated.
  */
 export function valueReferenceToExpression(
-    valueRef: TypeValueReference, defaultImportRecorder: DefaultImportRecorder): Expression;
+    valueRef: LocalTypeValueReference|ImportedTypeValueReference,
+    defaultImportRecorder: DefaultImportRecorder): Expression;
 export function valueReferenceToExpression(
-    valueRef: null, defaultImportRecorder: DefaultImportRecorder): null;
+    valueRef: TypeValueReference, defaultImportRecorder: DefaultImportRecorder): Expression|null;
 export function valueReferenceToExpression(
-    valueRef: TypeValueReference|null, defaultImportRecorder: DefaultImportRecorder): Expression|
-    null;
-export function valueReferenceToExpression(
-    valueRef: TypeValueReference|null, defaultImportRecorder: DefaultImportRecorder): Expression|
-    null {
-  if (valueRef === null) {
+    valueRef: TypeValueReference, defaultImportRecorder: DefaultImportRecorder): Expression|null {
+  if (valueRef.kind === TypeValueReferenceKind.UNAVAILABLE) {
     return null;
-  } else if (valueRef.local) {
+  } else if (valueRef.kind === TypeValueReferenceKind.LOCAL) {
     if (defaultImportRecorder !== null && valueRef.defaultImportStatement !== null &&
         ts.isIdentifier(valueRef.expression)) {
       defaultImportRecorder.recordImportedIdentifier(
@@ -137,16 +134,10 @@ export function valueReferenceToExpression(
     }
     return new WrappedNodeExpr(valueRef.expression);
   } else {
-    // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
-    const ref = valueRef as {
-      moduleName: string;
-      importedName: string;
-      nestedPath: string[]|null;
-    };
     let importExpr: Expression =
-        new ExternalExpr({moduleName: ref.moduleName, name: ref.importedName});
-    if (ref.nestedPath !== null) {
-      for (const property of ref.nestedPath) {
+        new ExternalExpr({moduleName: valueRef.moduleName, name: valueRef.importedName});
+    if (valueRef.nestedPath !== null) {
+      for (const property of valueRef.nestedPath) {
         importExpr = new ReadPropExpr(importExpr, property);
       }
     }
@@ -195,15 +186,80 @@ export function validateConstructorDependencies(
     return deps.deps;
   } else {
     // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
-    const {param, index} = (deps as {errors: ConstructorDepError[]}).errors[0];
     // There is at least one error.
-    throw new FatalDiagnosticError(
-        ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
-        `No suitable injection token for parameter '${param.name || index}' of class '${
-            clazz.name.text}'.\n` +
-            (param.typeNode !== null ? `Found ${param.typeNode.getText()}` :
-                                       'no type or decorator'));
+    const error = (deps as {errors: ConstructorDepError[]}).errors[0];
+    throw createUnsuitableInjectionTokenError(clazz, error);
   }
+}
+
+/**
+ * Creates a fatal error with diagnostic for an invalid injection token.
+ * @param clazz The class for which the injection token was unavailable.
+ * @param error The reason why no valid injection token is available.
+ */
+function createUnsuitableInjectionTokenError(
+    clazz: ClassDeclaration, error: ConstructorDepError): FatalDiagnosticError {
+  const {param, index, reason} = error;
+  let chainMessage: string|undefined = undefined;
+  let hints: ts.DiagnosticRelatedInformation[]|undefined = undefined;
+  switch (reason.kind) {
+    case ValueUnavailableKind.UNSUPPORTED:
+      chainMessage = 'Consider using the @Inject decorator to specify an injection token.';
+      hints = [
+        makeRelatedInformation(reason.typeNode, 'This type is not supported as injection token.'),
+      ];
+      break;
+    case ValueUnavailableKind.NO_VALUE_DECLARATION:
+      chainMessage = 'Consider using the @Inject decorator to specify an injection token.';
+      hints = [
+        makeRelatedInformation(
+            reason.typeNode,
+            'This type does not have a value, so it cannot be used as injection token.'),
+        makeRelatedInformation(reason.decl, 'The type is declared here.'),
+      ];
+      break;
+    case ValueUnavailableKind.TYPE_ONLY_IMPORT:
+      chainMessage =
+          'Consider changing the type-only import to a regular import, or use the @Inject decorator to specify an injection token.';
+      hints = [
+        makeRelatedInformation(
+            reason.typeNode,
+            'This type is imported using a type-only import, which prevents it from being usable as an injection token.'),
+        makeRelatedInformation(reason.importClause, 'The type-only import occurs here.'),
+      ];
+      break;
+    case ValueUnavailableKind.NAMESPACE:
+      chainMessage = 'Consider using the @Inject decorator to specify an injection token.';
+      hints = [
+        makeRelatedInformation(
+            reason.typeNode,
+            'This type corresponds with a namespace, which cannot be used as injection token.'),
+        makeRelatedInformation(reason.importClause, 'The namespace import occurs here.'),
+      ];
+      break;
+    case ValueUnavailableKind.UNKNOWN_REFERENCE:
+      chainMessage = 'The type should reference a known declaration.';
+      hints = [makeRelatedInformation(reason.typeNode, 'This type could not be resolved.')];
+      break;
+    case ValueUnavailableKind.MISSING_TYPE:
+      chainMessage =
+          'Consider adding a type to the parameter or use the @Inject decorator to specify an injection token.';
+      break;
+  }
+
+  const chain: ts.DiagnosticMessageChain = {
+    messageText: `No suitable injection token for parameter '${param.name || index}' of class '${
+        clazz.name.text}'.`,
+    category: ts.DiagnosticCategory.Error,
+    code: 0,
+    next: [{
+      messageText: chainMessage,
+      category: ts.DiagnosticCategory.Message,
+      code: 0,
+    }],
+  };
+
+  return new FatalDiagnosticError(ErrorCode.PARAM_MISSING_TOKEN, param.nameNode, chain, hints);
 }
 
 export function toR3Reference(

@@ -11,7 +11,10 @@ import * as ts from 'typescript';
 import {ErrorCode} from './error_code';
 
 export class FatalDiagnosticError {
-  constructor(readonly code: ErrorCode, readonly node: ts.Node, readonly message: string) {}
+  constructor(
+      readonly code: ErrorCode, readonly node: ts.Node,
+      readonly message: string|ts.DiagnosticMessageChain,
+      readonly relatedInformation?: ts.DiagnosticRelatedInformation[]) {}
 
   /**
    * @internal
@@ -19,7 +22,7 @@ export class FatalDiagnosticError {
   _isFatalDiagnosticError = true;
 
   toDiagnostic(): ts.DiagnosticWithLocation {
-    return makeDiagnostic(this.code, this.node, this.message);
+    return makeDiagnostic(this.code, this.node, this.message, this.relatedInformation);
   }
 }
 
