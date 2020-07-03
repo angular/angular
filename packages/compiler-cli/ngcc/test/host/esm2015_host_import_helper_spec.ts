@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassMemberKind, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, isNamedVariableDeclaration, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles, loadTsLib} from '../../../test/helpers';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
@@ -484,7 +484,7 @@ runInEachFileSystem(() => {
                 isNamedVariableDeclaration);
             const ctrDecorators = host.getConstructorParameters(classNode)!;
             const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference! as {
-                                                   local: true,
+                                                   kind: TypeValueReferenceKind.LOCAL,
                                                    expression: ts.Identifier,
                                                    defaultImportStatement: null,
                                                  }).expression;

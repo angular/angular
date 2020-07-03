@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
 
 import {Logger} from '../../../src/ngtsc/logging';
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
@@ -1594,7 +1594,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           {decorators: null, typeExpression: null};
       const nameNode = node.name;
 
-      let typeValueReference: TypeValueReference|null = null;
+      let typeValueReference: TypeValueReference;
       if (typeExpression !== null) {
         // `typeExpression` is an expression in a "type" context. Resolve it to a declared value.
         // Either it's a reference to an imported type, or a type declared locally. Distinguish the
@@ -1603,7 +1603,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         if (decl !== null && decl.node !== null && decl.viaModule !== null &&
             isNamedDeclaration(decl.node)) {
           typeValueReference = {
-            local: false,
+            kind: TypeValueReferenceKind.IMPORTED,
             valueDeclaration: decl.node,
             moduleName: decl.viaModule,
             importedName: decl.node.name.text,
@@ -1611,11 +1611,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           };
         } else {
           typeValueReference = {
-            local: true,
+            kind: TypeValueReferenceKind.LOCAL,
             expression: typeExpression,
             defaultImportStatement: null,
           };
         }
+      } else {
+        typeValueReference = {
+          kind: TypeValueReferenceKind.UNAVAILABLE,
+          reason: {kind: ValueUnavailableKind.MISSING_TYPE},
+        };
       }
 
       return {

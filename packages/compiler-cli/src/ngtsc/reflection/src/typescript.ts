@@ -68,8 +68,6 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
         if (childTypeNodes.length === 1) {
           typeNode = childTypeNodes[0];
-        } else {
-          typeNode = null;
         }
       }
 
