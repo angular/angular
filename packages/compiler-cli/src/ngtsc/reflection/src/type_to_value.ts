@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {TypeValueReference} from './host';
+import {TypeValueReference, TypeValueReferenceKind, UnavailableTypeValueReference, ValueUnavailableKind} from './host';
 
 /**
  * Potentially convert a `ts.TypeNode` to a `TypeValueReference`, which indicates how to use the
@@ -18,22 +18,26 @@ import {TypeValueReference} from './host';
  * declaration, or if it is not possible to statically understand.
  */
 export function typeToValue(
-    typeNode: ts.TypeNode|null, checker: ts.TypeChecker): TypeValueReference|null {
+    typeNode: ts.TypeNode|null, checker: ts.TypeChecker): TypeValueReference {
   // It's not possible to get a value expression if the parameter doesn't even have a type.
-  if (typeNode === null || !ts.isTypeReferenceNode(typeNode)) {
-    return null;
+  if (typeNode === null) {
+    return missingType();
+  }
+
+  if (!ts.isTypeReferenceNode(typeNode)) {
+    return unsupportedType(typeNode);
   }
 
   const symbols = resolveTypeSymbols(typeNode, checker);
   if (symbols === null) {
-    return null;
+    return unknownReference(typeNode);
   }
 
   const {local, decl} = symbols;
   // It's only valid to convert a type reference to a value reference if the type actually
   // has a value declaration associated with it.
   if (decl.valueDeclaration === undefined) {
-    return null;
+    return noValueDeclaration(typeNode, decl.declarations[0]);
   }
 
   // The type points to a valid value declaration. Rewrite the TypeReference into an
@@ -47,8 +51,13 @@ export function typeToValue(
       // This is a default import.
       //   import Foo from 'foo';
 
+      if (firstDecl.isTypeOnly) {
+        // Type-only imports cannot be represented as value.
+        return typeOnlyImport(typeNode, firstDecl);
+      }
+
       return {
-        local: true,
+        kind: TypeValueReferenceKind.LOCAL,
         // Copying the name here ensures the generated references will be correctly transformed
         // along with the import.
         expression: ts.updateIdentifier(firstDecl.name),
@@ -60,6 +69,11 @@ export function typeToValue(
       // or
       //   import {Foo as Bar} from 'foo';
 
+      if (firstDecl.parent.parent.isTypeOnly) {
+        // Type-only imports cannot be represented as value.
+        return typeOnlyImport(typeNode, firstDecl.parent.parent);
+      }
+
       // Determine the name to import (`Foo`) from the import specifier, as the symbol names of
       // the imported type could refer to a local alias (like `Bar` in the example above).
       const importedName = (firstDecl.propertyName || firstDecl.name).text;
@@ -70,7 +84,7 @@ export function typeToValue(
 
       const moduleName = extractModuleName(firstDecl.parent.parent.parent);
       return {
-        local: false,
+        kind: TypeValueReferenceKind.IMPORTED,
         valueDeclaration: decl.valueDeclaration,
         moduleName,
         importedName,
@@ -80,9 +94,14 @@ export function typeToValue(
       // The import is a namespace import
       //   import * as Foo from 'foo';
 
+      if (firstDecl.parent.isTypeOnly) {
+        // Type-only imports cannot be represented as value.
+        return typeOnlyImport(typeNode, firstDecl.parent);
+      }
+
       if (symbols.symbolNames.length === 1) {
         // The type refers to the namespace itself, which cannot be represented as a value.
-        return null;
+        return namespaceImport(typeNode, firstDecl.parent);
       }
 
       // The first symbol name refers to the local name of the namespace, which is is discarded
@@ -92,7 +111,7 @@ export function typeToValue(
 
       const moduleName = extractModuleName(firstDecl.parent.parent);
       return {
-        local: false,
+        kind: TypeValueReferenceKind.IMPORTED,
         valueDeclaration: decl.valueDeclaration,
         moduleName,
         importedName,
@@ -105,13 +124,58 @@ export function typeToValue(
   const expression = typeNodeToValueExpr(typeNode);
   if (expression !== null) {
     return {
-      local: true,
+      kind: TypeValueReferenceKind.LOCAL,
       expression,
       defaultImportStatement: null,
     };
   } else {
-    return null;
+    return unsupportedType(typeNode);
   }
+}
+
+function unsupportedType(typeNode: ts.TypeNode): UnavailableTypeValueReference {
+  return {
+    kind: TypeValueReferenceKind.UNAVAILABLE,
+    reason: {kind: ValueUnavailableKind.UNSUPPORTED, typeNode},
+  };
+}
+
+function noValueDeclaration(
+    typeNode: ts.TypeNode, decl: ts.Declaration): UnavailableTypeValueReference {
+  return {
+    kind: TypeValueReferenceKind.UNAVAILABLE,
+    reason: {kind: ValueUnavailableKind.NO_VALUE_DECLARATION, typeNode, decl},
+  };
+}
+
+function typeOnlyImport(
+    typeNode: ts.TypeNode, importClause: ts.ImportClause): UnavailableTypeValueReference {
+  return {
+    kind: TypeValueReferenceKind.UNAVAILABLE,
+    reason: {kind: ValueUnavailableKind.TYPE_ONLY_IMPORT, typeNode, importClause},
+  };
+}
+
+function unknownReference(typeNode: ts.TypeNode): UnavailableTypeValueReference {
+  return {
+    kind: TypeValueReferenceKind.UNAVAILABLE,
+    reason: {kind: ValueUnavailableKind.UNKNOWN_REFERENCE, typeNode},
+  };
+}
+
+function namespaceImport(
+    typeNode: ts.TypeNode, importClause: ts.ImportClause): UnavailableTypeValueReference {
+  return {
+    kind: TypeValueReferenceKind.UNAVAILABLE,
+    reason: {kind: ValueUnavailableKind.NAMESPACE, typeNode, importClause},
+  };
+}
+
+function missingType(): UnavailableTypeValueReference {
+  return {
+    kind: TypeValueReferenceKind.UNAVAILABLE,
+    reason: {kind: ValueUnavailableKind.MISSING_TYPE},
+  };
 }
 
 /**
