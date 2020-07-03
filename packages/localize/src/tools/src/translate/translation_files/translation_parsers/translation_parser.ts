@@ -9,6 +9,29 @@ import {ɵMessageId, ɵParsedTranslation} from '@angular/localize/private';
 import {Diagnostics} from '../../../diagnostics';
 
 /**
+ * Indicates that a parser can parse a given file, with a hint that can be used to speed up actual
+ * parsing.
+ */
+export interface CanParseAnalysis<Hint> {
+  canParse: true;
+  diagnostics: Diagnostics;
+  hint: Hint;
+}
+
+/**
+ * Indicates that a parser cannot parse a given file with diagnostics as why this is.
+ * */
+export interface CannotParseAnalysis {
+  canParse: false;
+  diagnostics: Diagnostics;
+}
+
+/**
+ * Information about whether a `TranslationParser` can parse a given file.
+ */
+export type ParseAnalysis<Hint> = CanParseAnalysis<Hint>|CannotParseAnalysis;
+
+/**
  * An object that holds translations that have been parsed from a translation file.
  */
 export interface ParsedTranslationBundle {
@@ -38,12 +61,23 @@ export interface TranslationParser<Hint = true> {
   /**
    * Can this parser parse the given file?
    *
+   * @deprecated Use `analyze()` instead
+   *
    * @param filePath The absolute path to the translation file.
    * @param contents The contents of the translation file.
    * @returns A hint, which can be used in doing the actual parsing, if the file can be parsed by
    * this parser; false otherwise.
    */
   canParse(filePath: string, contents: string): Hint|false;
+
+  /**
+   * Analyze the file to see if this parser can parse the given file.
+   *
+   * @param filePath The absolute path to the translation file.
+   * @param contents The contents of the translation file.
+   * @returns Information indicating whether the file can be parsed by this parser.
+   */
+  analyze(filePath: string, contents: string): ParseAnalysis<Hint>;
 
   /**
    * Parses the given file, extracting the target locale and translations.
