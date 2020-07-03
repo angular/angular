@@ -714,7 +714,7 @@ function createHostBindingsFunction(
 
 function bindingFn(implicit: any, value: AST) {
   return convertPropertyBinding(
-      null, implicit, value, 'b', BindingForm.TrySimple, () => error('Unexpected interpolation'));
+      null, implicit, value, 'b', BindingForm.Expression, () => error('Unexpected interpolation'));
 }
 
 function convertStylingCall(
