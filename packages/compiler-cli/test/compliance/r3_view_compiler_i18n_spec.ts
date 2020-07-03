@@ -805,8 +805,7 @@ describe('i18n support in the template compiler', () => {
           }
           if (rf & 2) {
               var $tmp_0_0$ = null;
-              const $currVal_0$ = ($tmp_0_0$ = ctx.valueA.getRawValue()) == null ? null : $tmp_0_0$.getTitle();
-              $r3$.ɵɵi18nExp($currVal_0$);
+              $r3$.ɵɵi18nExp(($tmp_0_0$ = ctx.valueA.getRawValue()) == null ? null : $tmp_0_0$.getTitle());
               $r3$.ɵɵi18nApply(1);
           }
         }
@@ -1320,9 +1319,8 @@ describe('i18n support in the template compiler', () => {
           }
           if (rf & 2) {
             var $tmp_2_0$ = null;
-            const $currVal_2$ = ($tmp_2_0$ = ctx.valueA.getRawValue()) == null ? null : $tmp_2_0$.getTitle();
             $r3$.ɵɵadvance(2);
-            $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 3, ctx.valueA))(ctx.valueA == null ? null : ctx.valueA.a == null ? null : ctx.valueA.a.b)($currVal_2$);
+            $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 3, ctx.valueA))(ctx.valueA == null ? null : ctx.valueA.a == null ? null : ctx.valueA.a.b)(($tmp_2_0$ = ctx.valueA.getRawValue()) == null ? null : $tmp_2_0$.getTitle());
             $r3$.ɵɵi18nApply(1);
           }
         }
