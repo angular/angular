@@ -47,6 +47,11 @@ export function typeToValue(
       // This is a default import.
       //   import Foo from 'foo';
 
+      if (firstDecl.isTypeOnly) {
+        // Type-only imports cannot be represented as value
+        return null;
+      }
+
       return {
         local: true,
         // Copying the name here ensures the generated references will be correctly transformed
@@ -59,6 +64,11 @@ export function typeToValue(
       //   import {Foo} from 'foo';
       // or
       //   import {Foo as Bar} from 'foo';
+
+      if (firstDecl.parent.parent.isTypeOnly) {
+        // Type-only imports cannot be represented as value
+        return null;
+      }
 
       // Determine the name to import (`Foo`) from the import specifier, as the symbol names of
       // the imported type could refer to a local alias (like `Bar` in the example above).
@@ -79,6 +89,11 @@ export function typeToValue(
     } else if (ts.isNamespaceImport(firstDecl)) {
       // The import is a namespace import
       //   import * as Foo from 'foo';
+
+      if (firstDecl.parent.isTypeOnly) {
+        // Type-only imports cannot be represented as value
+        return null;
+      }
 
       if (symbols.symbolNames.length === 1) {
         // The type refers to the namespace itself, which cannot be represented as a value.

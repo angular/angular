@@ -4202,6 +4202,43 @@ runInEachFileSystem(os => {
          expect(jsContents).toMatch(setClassMetadataRegExp('type: undefined'));
        });
 
+    it('should use `undefined` in setClassMetadata if types originate from type-only imports',
+       () => {
+         env.write(`types.ts`, `
+           export default class {}
+           export class TypeOnly {}
+         `);
+         env.write(`test.ts`, `
+           import {Component, Inject, Injectable} from '@angular/core';
+           import type DefaultImport from './types';
+           import type {TypeOnly} from './types';
+           import type * as types from './types';
+
+           @Component({
+             selector: 'some-comp',
+             template: '...',
+           })
+           export class SomeComp {
+             constructor(
+               @Inject('token') namedImport: TypeOnly,
+               @Inject('token') defaultImport: DefaultImport,
+               @Inject('token') namespacedImport: types.TypeOnly,
+             ) {}
+           }
+        `);
+
+         env.driveMain();
+         const jsContents = trim(env.getContents('test.js'));
+         // Module specifier for type-only import should not be emitted
+         expect(jsContents).not.toContain('./types');
+         // Default type-only import should not be emitted
+         expect(jsContents).not.toContain('DefaultImport');
+         // Named type-only import should not be emitted
+         expect(jsContents).not.toContain('TypeOnly');
+         // The parameter type in class metadata should be undefined
+         expect(jsContents).toMatch(setClassMetadataRegExp('type: undefined'));
+       });
+
     it('should not throw in case whitespaces and HTML comments are present inside <ng-content>',
        () => {
          env.write('test.ts', `
