@@ -66,7 +66,7 @@
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/semver": "^7.1.0",
-    "codelyzer": "^5.2.1",
+    "codelyzer": "^6.0.0",
     "cross-env": "^7.0.2",
     "cypress": "^4.0.0",
     "cypress-browser-extension-plugin": "^0.1.0",
