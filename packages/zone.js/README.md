@@ -54,36 +54,47 @@ For more details, please
 see [MODULE.md](MODULE.md).
 
 ## Bundles
-There are several bundles under `dist` folder.
+
+Starting with `v0.11.0`, `zone.js`  uses `Angular Package Format` for bundle distribution.
+(For backwards compatibility, all bundles can still be accessed from `dist` folder.)
 
 |Bundle|Summary|
 |---|---|
-|zone.js|the default bundle, contains the most used APIs such as `setTimeout/Promise/EventTarget...`, also this bundle supports all evergreen and legacy (IE/Legacy Firefox/Legacy Safari) Browsers|
-|zone-evergreen.js|the bundle for evergreen browsers, doesn't include the `patch` for `legacy` browsers such as `IE` or old versions of `Firefox/Safari`|
-|zone-legacy.js|the patch bundle for legacy browsers, only includes the `patch` for `legacy` browsers such as `IE` or old versions of `Firefox/Safari`. This bundle must be loaded after `zone-evergreen.js`, **`zone.js`=`zone-evergreen.js` + `zone-legacy.js`**|
-|zone-testing.js|the bundle for zone testing support, including `jasmine/mocha` support and `async/fakeAsync/sync` test utilities|
-|zone-externs.js|the API definitions for `closure compiler`|
+|`zone.js`| The default bundle. Contains the most used APIs such as `setTimeout/Promise/EventTarget...`, it also supports differential loading by importing  this bundle using `import zone.js`.  In legacy browsers it includes some additional patches such as `registerElement` and `EventTarget` like APIs.|
+|`zone-testing.js`| The bundle for zone testing support of `jasmine` / `mocha` / `jest`. Also includes test utility functions `async` / `fakeAsync` / `sync`.|
+|`zone-node.js`|The NodeJS support bundle.|
+|`zone-mix.js`|A mixed bundle which supports both browser and NodeJS. Useful for mixed environment such as Electron.|
+|`zone-externs.js`|the API definitions for `closure compiler`.|
 
-And here are the additional optional patches not included in the main zone.js bundles
+Additional optional patches not included in the `zone.js` bundles which extend functionality.
+The additional bundles can  be found under `zone.js/plugins` folder.
+To use these bundles, add the following code after importing zone.js bundle.
+
+```
+import 'zone.js';
+// For example, import canvas patch
+import 'zone.js/plugins/zone-patch-canvas';
+```
 
 |Patch|Summary|
 |---|---|
-|webapis-media-query.js|patch for `MediaQuery APIs`|
-|webapis-notification.js|patch for `Notification APIs`|
-|webapis-rtc-peer-connection.js|patch for `RTCPeerConnection APIs`|
-|webapis-shadydom.js|patch for `Shady DOM APIs`|
-|zone-bluebird.js|patch for `Bluebird APIs`|
-|zone-error.js|patch for `Error Global Object`, supports remove `Zone StackTrace`|
-|zone-patch-canvas.js|patch for `Canvas API`|
-|zone-patch-cordova.js|patch for `Cordova API`|
-|zone-patch-electron.js|patch for `Electron API`|
-|zone-patch-fetch.js|patch for `Fetch API`|
-|zone-patch-jsonp.js|utility for `jsonp API`|
-|zone-patch-resize-observer.js|patch for `ResizeObserver API`|
-|zone-patch-rxjs.js|patch for `rxjs API`|
-|zone-patch-rxjs-fake-async.js|patch for `rxjs fakeasync test`|
-|zone-patch-socket-io.js|patch for `socket-io`|
-|zone-patch-user-media.js|patch for `UserMedia API`|
+|`webapis-media-query.js`|patch for `MediaQuery APIs`|
+|`webapis-notification.js`|patch for `Notification APIs`|
+|`webapis-rtc-peer-connection.js`|patch for `RTCPeerConnection APIs`|
+|`webapis-shadydom.js`|patch for `Shady DOM APIs`|
+|`zone-bluebird.js`|patch for `Bluebird APIs`|
+|`zone-error.js`|patch for `Error Global Object`, supports adding zone information to stack frame, and also removing unrelated stack frames from `zone.js` internally|
+|`zone-patch-canvas.js`|patch for `Canvas API`|
+|`zone-patch-cordova.js`|patch for `Cordova API`|
+|`zone-patch-electron.js`|patch for `Electron API`|
+|`zone-patch-fetch.js`|patch for `Fetch API`|
+|`zone-patch-jsonp.js`|helper utility for `jsonp API`|
+|`zone-patch-resize-observer.js`|patch for `ResizeObserver API`|
+|`zone-patch-rxjs.js`|patch for `rxjs API`|
+|`zone-patch-rxjs-fake-async.js`|patch for `rxjs fakeasync test`|
+|`zone-patch-socket-io.js`|patch for `socket-io`|
+|`zone-patch-user-media.js`|patch for `UserMedia API`|
+|`zone-patch-message-port.js`|patch for `MessagePort API`|
 
 ## Promise A+ test passed
 [![Promises/A+ 1.1 compliant](https://promisesaplus.com/assets/logo-small.png)](https://promisesaplus.com/)
