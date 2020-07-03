@@ -248,6 +248,17 @@ runInEachFileSystem(() => {
       expect(messages).toEqual([]);
     });
 
+    it('should treat unary operators as literal types', () => {
+      const messages = diagnose(`{{ test(-1) + test(+1) + test(-2) }}`, `
+      class TestComponent {
+        test(value: -1 | 1): number { return value; }
+      }`);
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 31): Argument of type '-2' is not assignable to parameter of type '1 | -1'.`,
+      ]);
+    });
+
     describe('outputs', () => {
       it('should produce a diagnostic for directive outputs', () => {
         const messages = diagnose(

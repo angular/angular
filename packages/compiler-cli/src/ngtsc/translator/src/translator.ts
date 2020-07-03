@@ -7,7 +7,7 @@
  */
 
 import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, Type, TypeofExpr, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
-import {LocalizedString} from '@angular/compiler/src/output/output_ast';
+import {LocalizedString, UnaryOperator, UnaryOperatorExpr} from '@angular/compiler/src/output/output_ast';
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder, ImportRewriter, NOOP_DEFAULT_IMPORT_RECORDER, NoopImportRewriter} from '../../imports';
@@ -23,6 +23,11 @@ export class Context {
     return !this.isStatement ? new Context(true) : this;
   }
 }
+
+const UNARY_OPERATORS = new Map<UnaryOperator, ts.PrefixUnaryOperator>([
+  [UnaryOperator.Minus, ts.SyntaxKind.MinusToken],
+  [UnaryOperator.Plus, ts.SyntaxKind.PlusToken],
+]);
 
 const BINARY_OPERATORS = new Map<BinaryOperator, ts.BinaryOperator>([
   [BinaryOperator.And, ts.SyntaxKind.AmpersandAmpersandToken],
@@ -361,6 +366,14 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
         undefined, ts.createBlock(ast.statements.map(stmt => stmt.visitStatement(this, context))));
   }
 
+  visitUnaryOperatorExpr(ast: UnaryOperatorExpr, context: Context): ts.Expression {
+    if (!UNARY_OPERATORS.has(ast.operator)) {
+      throw new Error(`Unknown unary operator: ${UnaryOperator[ast.operator]}`);
+    }
+    return ts.createPrefix(
+        UNARY_OPERATORS.get(ast.operator)!, ast.expr.visitExpression(this, context));
+  }
+
   visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: Context): ts.Expression {
     if (!BINARY_OPERATORS.has(ast.operator)) {
       throw new Error(`Unknown binary operator: ${BinaryOperator[ast.operator]}`);
@@ -564,6 +577,10 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
   }
 
   visitFunctionExpr(ast: FunctionExpr, context: Context) {
+    throw new Error('Method not implemented.');
+  }
+
+  visitUnaryOperatorExpr(ast: UnaryOperatorExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 

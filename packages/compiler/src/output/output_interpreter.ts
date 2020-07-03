@@ -282,6 +282,18 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     }
     return null;
   }
+  visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, ctx: _ExecutionContext): any {
+    const rhs = () => ast.expr.visitExpression(this, ctx);
+
+    switch (ast.operator) {
+      case o.UnaryOperator.Plus:
+        return +rhs();
+      case o.UnaryOperator.Minus:
+        return -rhs();
+      default:
+        throw new Error(`Unknown operator ${ast.operator}`);
+    }
+  }
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: _ExecutionContext): any {
     const lhs = () => ast.lhs.visitExpression(this, ctx);
     const rhs = () => ast.rhs.visitExpression(this, ctx);

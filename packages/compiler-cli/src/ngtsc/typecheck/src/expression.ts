@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
+import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, Unary} from '@angular/compiler';
 import * as ts from 'typescript';
 import {TypeCheckingConfig} from '../api';
 
@@ -17,7 +17,12 @@ export const NULL_AS_ANY =
     ts.createAsExpression(ts.createNull(), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
 const UNDEFINED = ts.createIdentifier('undefined');
 
-const BINARY_OPS = new Map<string, ts.SyntaxKind>([
+const UNARY_OPS = new Map<string, ts.PrefixUnaryOperator>([
+  ['+', ts.SyntaxKind.PlusToken],
+  ['-', ts.SyntaxKind.MinusToken],
+]);
+
+const BINARY_OPS = new Map<string, ts.BinaryOperator>([
   ['+', ts.SyntaxKind.PlusToken],
   ['-', ts.SyntaxKind.MinusToken],
   ['<', ts.SyntaxKind.LessThanToken],
@@ -74,6 +79,17 @@ class AstTranslator implements AstVisitor {
     return ast.visit(this);
   }
 
+  visitUnary(ast: Unary): ts.Expression {
+    const expr = this.translate(ast.expr);
+    const op = UNARY_OPS.get(ast.operator);
+    if (op === undefined) {
+      throw new Error(`Unsupported Unary.operator: ${ast.operator}`);
+    }
+    const node = wrapForDiagnostics(ts.createPrefix(op, expr));
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
+
   visitBinary(ast: Binary): ts.Expression {
     const lhs = wrapForDiagnostics(this.translate(ast.left));
     const rhs = wrapForDiagnostics(this.translate(ast.right));
@@ -81,7 +97,7 @@ class AstTranslator implements AstVisitor {
     if (op === undefined) {
       throw new Error(`Unsupported Binary.operation: ${ast.operation}`);
     }
-    const node = ts.createBinary(lhs, op as any, rhs);
+    const node = ts.createBinary(lhs, op, rhs);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -314,6 +330,9 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return ast.receiver.visit(VeSafeLhsInferenceBugDetector.SINGLETON);
   }
 
+  visitUnary(ast: Unary): boolean {
+    return ast.expr.visit(this);
+  }
   visitBinary(ast: Binary): boolean {
     return ast.left.visit(this) || ast.right.visit(this);
   }

@@ -100,6 +100,11 @@ export interface TypeVisitor {
 
 ///// Expressions
 
+export enum UnaryOperator {
+  Minus,
+  Plus,
+}
+
 export enum BinaryOperator {
   Equals,
   NotEquals,
@@ -753,6 +758,28 @@ export class FunctionExpr extends Expression {
 }
 
 
+export class UnaryOperatorExpr extends Expression {
+  constructor(
+      public operator: UnaryOperator, public expr: Expression, type?: Type|null,
+      sourceSpan?: ParseSourceSpan|null, public parens: boolean = true) {
+    super(type || NUMBER_TYPE, sourceSpan);
+  }
+
+  isEquivalent(e: Expression): boolean {
+    return e instanceof UnaryOperatorExpr && this.operator === e.operator &&
+        this.expr.isEquivalent(e.expr);
+  }
+
+  isConstant() {
+    return false;
+  }
+
+  visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitUnaryOperatorExpr(this, context);
+  }
+}
+
+
 export class BinaryOperatorExpr extends Expression {
   public lhs: Expression;
   constructor(
@@ -912,6 +939,7 @@ export interface ExpressionVisitor {
   visitAssertNotNullExpr(ast: AssertNotNull, context: any): any;
   visitCastExpr(ast: CastExpr, context: any): any;
   visitFunctionExpr(ast: FunctionExpr, context: any): any;
+  visitUnaryOperatorExpr(ast: UnaryOperatorExpr, context: any): any;
   visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: any): any;
   visitReadPropExpr(ast: ReadPropExpr, context: any): any;
   visitReadKeyExpr(ast: ReadKeyExpr, context: any): any;
@@ -1292,6 +1320,13 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
         context);
   }
 
+  visitUnaryOperatorExpr(ast: UnaryOperatorExpr, context: any): any {
+    return this.transformExpr(
+        new UnaryOperatorExpr(
+            ast.operator, ast.expr.visitExpression(this, context), ast.type, ast.sourceSpan),
+        context);
+  }
+
   visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: any): any {
     return this.transformExpr(
         new BinaryOperatorExpr(
@@ -1517,6 +1552,10 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     this.visitAllStatements(ast.statements, context);
     return this.visitExpression(ast, context);
   }
+  visitUnaryOperatorExpr(ast: UnaryOperatorExpr, context: any): any {
+    ast.expr.visitExpression(this, context);
+    return this.visitExpression(ast, context);
+  }
   visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: any): any {
     ast.lhs.visitExpression(this, context);
     ast.rhs.visitExpression(this, context);
@@ -1728,6 +1767,12 @@ export function literalMap(
     type: MapType|null = null): LiteralMapExpr {
   return new LiteralMapExpr(
       values.map(e => new LiteralMapEntry(e.key, e.value, e.quoted)), type, null);
+}
+
+export function unary(
+    operator: UnaryOperator, expr: Expression, type?: Type,
+    sourceSpan?: ParseSourceSpan|null): UnaryOperatorExpr {
+  return new UnaryOperatorExpr(operator, expr, type, sourceSpan);
 }
 
 export function not(expr: Expression, sourceSpan?: ParseSourceSpan|null): NotExpr {
