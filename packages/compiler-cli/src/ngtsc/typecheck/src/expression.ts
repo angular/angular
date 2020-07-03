@@ -234,8 +234,8 @@ class AstTranslator implements AstVisitor {
     return node;
   }
 
-  visitQuote(ast: Quote): never {
-    throw new Error('Method not implemented.');
+  visitQuote(ast: Quote): ts.Expression {
+    return NULL_AS_ANY;
   }
 
   visitSafeMethodCall(ast: SafeMethodCall): ts.Expression {
