@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {CommonJsReflectionHost} from '../../src/host/commonjs_host';
@@ -1599,7 +1599,7 @@ exports.MissingClass2 = MissingClass2;
               isNamedVariableDeclaration);
           const ctrDecorators = host.getConstructorParameters(classNode)!;
           const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference! as {
-                                                 local: true,
+                                                 kind: TypeValueReferenceKind.LOCAL,
                                                  expression: ts.Identifier,
                                                  defaultImportStatement: null,
                                                }).expression;

@@ -224,25 +224,39 @@ export interface ClassMember {
   decorators: Decorator[]|null;
 }
 
+export const enum TypeValueReferenceKind {
+  LOCAL,
+  IMPORTED,
+  UNAVAILABLE,
+}
+
 /**
- * A reference to a value that originated from a type position.
- *
- * For example, a constructor parameter could be declared as `foo: Foo`. A `TypeValueReference`
- * extracted from this would refer to the value of the class `Foo` (assuming it was actually a
- * type).
- *
- * There are two kinds of such references. A reference with `local: false` refers to a type that was
- * imported, and gives the symbol `name` and the `moduleName` of the import. Note that this
- * `moduleName` may be a relative path, and thus is likely only valid within the context of the file
- * which contained the original type reference.
- *
- * A reference with `local: true` refers to any other kind of type via a `ts.Expression` that's
- * valid within the local file where the type was referenced.
+ * A type reference that refers to any type via a `ts.Expression` that's valid within the local file
+ * where the type was referenced.
  */
-export type TypeValueReference = {
-  local: true; expression: ts.Expression; defaultImportStatement: ts.ImportDeclaration | null;
-}|{
-  local: false;
+export interface LocalTypeValueReference {
+  kind: TypeValueReferenceKind.LOCAL;
+
+  /**
+   * The synthesized expression to reference the type in a value position.
+   */
+  expression: ts.Expression;
+
+  /**
+   * If the type originates from a default import, the import statement is captured here to be able
+   * to track its usages, preventing the import from being elided if it was originally only used in
+   * a type-position. See `DefaultImportTracker` for details.
+   */
+  defaultImportStatement: ts.ImportDeclaration|null;
+}
+
+/**
+ * A reference that refers to a type that was imported, and gives the symbol `name` and the
+ * `moduleName` of the import. Note that this `moduleName` may be a relative path, and thus is
+ * likely only valid within the context of the file which contained the original type reference.
+ */
+export interface ImportedTypeValueReference {
+  kind: TypeValueReferenceKind.IMPORTED;
 
   /**
    * The module specifier from which the `importedName` symbol should be imported.
@@ -262,7 +276,107 @@ export type TypeValueReference = {
   nestedPath: string[]|null;
 
   valueDeclaration: ts.Declaration;
-};
+}
+
+/**
+ * A representation for a type value reference that is used when no value is available. This can
+ * occur due to various reasons, which is indicated in the `reason` field.
+ */
+export interface UnavailableTypeValueReference {
+  kind: TypeValueReferenceKind.UNAVAILABLE;
+
+  /**
+   * The reason why no value reference could be determined for a type.
+   */
+  reason: UnavailableValue;
+}
+
+/**
+ * The various reasons why the compiler may be unable to synthesize a value from a type reference.
+ */
+export const enum ValueUnavailableKind {
+  /**
+   * No type node was available.
+   */
+  MISSING_TYPE,
+
+  /**
+   * The type does not have a value declaration, e.g. an interface.
+   */
+  NO_VALUE_DECLARATION,
+
+  /**
+   * The type is imported using a type-only imports, so it is not suitable to be used in a
+   * value-position.
+   */
+  TYPE_ONLY_IMPORT,
+
+  /**
+   * The type reference could not be resolved to a declaration.
+   */
+  UNKNOWN_REFERENCE,
+
+  /**
+   * The type corresponds with a namespace.
+   */
+  NAMESPACE,
+
+  /**
+   * The type is not supported in the compiler, for example union types.
+   */
+  UNSUPPORTED,
+}
+
+
+export interface UnsupportedType {
+  kind: ValueUnavailableKind.UNSUPPORTED;
+  typeNode: ts.TypeNode;
+}
+
+export interface NoValueDeclaration {
+  kind: ValueUnavailableKind.NO_VALUE_DECLARATION;
+  typeNode: ts.TypeNode;
+  decl: ts.Declaration;
+}
+
+export interface TypeOnlyImport {
+  kind: ValueUnavailableKind.TYPE_ONLY_IMPORT;
+  typeNode: ts.TypeNode;
+  importClause: ts.ImportClause;
+}
+
+export interface NamespaceImport {
+  kind: ValueUnavailableKind.NAMESPACE;
+  typeNode: ts.TypeNode;
+  importClause: ts.ImportClause;
+}
+
+export interface UnknownReference {
+  kind: ValueUnavailableKind.UNKNOWN_REFERENCE;
+  typeNode: ts.TypeNode;
+}
+
+export interface MissingType {
+  kind: ValueUnavailableKind.MISSING_TYPE;
+}
+
+/**
+ * The various reasons why a type node may not be referred to as a value.
+ */
+export type UnavailableValue =
+    UnsupportedType|NoValueDeclaration|TypeOnlyImport|NamespaceImport|UnknownReference|MissingType;
+
+/**
+ * A reference to a value that originated from a type position.
+ *
+ * For example, a constructor parameter could be declared as `foo: Foo`. A `TypeValueReference`
+ * extracted from this would refer to the value of the class `Foo` (assuming it was actually a
+ * type).
+ *
+ * See the individual types for additional information.
+ */
+export type TypeValueReference =
+    LocalTypeValueReference|ImportedTypeValueReference|UnavailableTypeValueReference;
 
 /**
  * A parameter to a constructor.
@@ -288,14 +402,10 @@ export interface CtorParameter {
    * Reference to the value of the parameter's type annotation, if it's possible to refer to the
    * parameter's type as a value.
    *
-   * This can either be a reference to a local value, in which case it has `local` set to `true` and
-   * contains a `ts.Expression`, or it's a reference to an imported value, in which case `local` is
-   * set to `false` and the symbol and module name of the imported value are provided instead.
-   *
-   * If the type is not present or cannot be represented as an expression, `typeValueReference` is
-   * `null`.
+   * This can either be a reference to a local value, a reference to an imported value, or no
+   * value if no is present or cannot be represented as an expression.
    */
-  typeValueReference: TypeValueReference|null;
+  typeValueReference: TypeValueReference;
 
   /**
    * TypeScript `ts.TypeNode` representing the type node found in the type position.
