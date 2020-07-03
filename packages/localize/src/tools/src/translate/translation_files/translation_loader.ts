@@ -57,8 +57,9 @@ export class TranslationLoader {
   private loadBundle(filePath: AbsoluteFsPath, providedLocale: string|undefined):
       TranslationBundle {
     const fileContents = this.fs.readFile(filePath);
+    const canParseDiagnostics = new Diagnostics();
     for (const translationParser of this.translationParsers) {
-      const result = translationParser.canParse(filePath, fileContents);
+      const result = translationParser.canParse(filePath, fileContents, canParseDiagnostics);
       if (!result) {
         continue;
       }
@@ -90,8 +91,9 @@ export class TranslationLoader {
 
       return {locale, translations, diagnostics};
     }
-    throw new Error(
-        `There is no "TranslationParser" that can parse this translation file: ${filePath}.`);
+
+    throw new Error(canParseDiagnostics.formatDiagnostics(
+        `There is no "TranslationParser" that can parse this translation file: ${filePath}.`));
   }
 
   /**

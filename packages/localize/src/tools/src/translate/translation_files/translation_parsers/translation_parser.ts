@@ -43,7 +43,7 @@ export interface TranslationParser<Hint = true> {
    * @returns A hint, which can be used in doing the actual parsing, if the file can be parsed by
    * this parser; false otherwise.
    */
-  canParse(filePath: string, contents: string): Hint|false;
+  canParse(filePath: string, contents: string, diagnostics?: Diagnostics): Hint|false;
 
   /**
    * Parses the given file, extracting the target locale and translations.

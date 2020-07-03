@@ -25,8 +25,9 @@ import {addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedEle
  * @see Xliff1TranslationSerializer
  */
 export class Xliff1TranslationParser implements TranslationParser<XmlTranslationParserHint> {
-  canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
-    return canParseXml(filePath, contents, 'xliff', {version: '1.2'});
+  canParse(filePath: string, contents: string, diagnostics?: Diagnostics): XmlTranslationParserHint|
+      false {
+    return canParseXml(filePath, contents, 'xliff', {version: '1.2'}, diagnostics);
   }
 
   parse(filePath: string, contents: string, hint?: XmlTranslationParserHint):

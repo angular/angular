@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵcomputeMsgId, ɵmakeParsedTranslation} from '@angular/localize';
+import {Diagnostics} from '../../../../src/diagnostics';
 import {ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
 import {XtbTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xtb_translation_parser';
 
@@ -22,6 +23,26 @@ describe('XtbTranslationParser', () => {
          expect(parser.canParse('/some/file.xmb', '')).toBe(false);
          expect(parser.canParse('/some/file.xtb', '')).toBe(false);
        });
+
+
+    it('should fill a diagnostics object, if provided, when the file is not a valid format', () => {
+      let diagnostics: Diagnostics;
+      const parser = new XtbTranslationParser();
+
+      diagnostics = new Diagnostics();
+      parser.canParse('/some/file.xtb', '<moo>', diagnostics);
+      expect(diagnostics.messages).toEqual([
+        {type: 'warning', message: 'The XML file does not contain a <translationbundle> root node.'}
+      ]);
+
+      diagnostics = new Diagnostics();
+      parser.canParse('/some/file.xtb', '<translationbundle></translation>', diagnostics);
+      expect(diagnostics.messages).toEqual([{
+        type: 'error',
+        message:
+            'Unexpected closing tag "translation". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags ("<translationbundle>[ERROR ->]</translation>"): /some/file.xtb@0:19'
+      }]);
+    });
   });
 
   for (const withHint of [true, false]) {
@@ -261,7 +282,7 @@ describe('XtbTranslationParser', () => {
           ].join('\n');
 
           expectToFail('/some/file.xtb', XTB, /Missing required "id" attribute/, [
-            `Missing required "id" attribute on <trans-unit> element. ("<translationbundle>`,
+            `Missing required "id" attribute on <translation> element. ("<translationbundle>`,
             `  [ERROR ->]<translation></translation>`,
             `</translationbundle>"): /some/file.xtb@1:2`,
           ].join('\n'));

@@ -205,7 +205,7 @@ runInEachFileSystem(() => {
         const loader = new TranslationLoader(fs, [parser], 'error', diagnostics);
         expect(() => loader.loadBundles([[enTranslationPath], [frTranslationPath]], []))
             .toThrowError(`There is no "TranslationParser" that can parse this translation file: ${
-                enTranslationPath}.`);
+                enTranslationPath}.\nWARNINGS:\n - MockTranslationParser parser cannot parse the file`);
       });
     });
   });
@@ -216,7 +216,10 @@ runInEachFileSystem(() => {
         private _canParse: (filePath: string) => boolean, private _locale?: string,
         private _translations: Record<string, ɵParsedTranslation> = {}) {}
 
-    canParse(filePath: string, fileContents: string) {
+    canParse(filePath: string, fileContents: string, diagnostics?: Diagnostics) {
+      if (diagnostics !== undefined) {
+        diagnostics.warn(this.constructor.name + ' parser cannot parse the file');
+      }
       this.log.push(`canParse(${filePath}, ${fileContents})`);
       return this._canParse(filePath);
     }

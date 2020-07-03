@@ -26,12 +26,13 @@ import {addParseDiagnostic, addParseError, canParseXml, getAttribute, parseInner
  * @see XmbTranslationSerializer
  */
 export class XtbTranslationParser implements TranslationParser<XmlTranslationParserHint> {
-  canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
+  canParse(filePath: string, contents: string, diagnostics?: Diagnostics): XmlTranslationParserHint|
+      false {
     const extension = extname(filePath);
     if (extension !== '.xtb' && extension !== '.xmb') {
       return false;
     }
-    return canParseXml(filePath, contents, 'translationbundle', {});
+    return canParseXml(filePath, contents, 'translationbundle', {}, diagnostics);
   }
 
   parse(filePath: string, contents: string, hint?: XmlTranslationParserHint):
@@ -81,7 +82,7 @@ class XtbVisitor extends BaseVisitor {
         if (id === undefined) {
           addParseDiagnostic(
               bundle.diagnostics, element.sourceSpan,
-              `Missing required "id" attribute on <trans-unit> element.`, ParseErrorLevel.ERROR);
+              `Missing required "id" attribute on <translation> element.`, ParseErrorLevel.ERROR);
           return;
         }
 

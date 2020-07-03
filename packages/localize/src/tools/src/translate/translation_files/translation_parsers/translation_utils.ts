@@ -80,25 +80,38 @@ export interface XmlTranslationParserHint {
  * document has the expected format.
  */
 export function canParseXml(
-    filePath: string, contents: string, rootNodeName: string,
-    attributes: Record<string, string>): XmlTranslationParserHint|false {
+    filePath: string, contents: string, rootNodeName: string, attributes: Record<string, string>,
+    diagnostics?: Diagnostics): XmlTranslationParserHint|false {
   const xmlParser = new XmlParser();
   const xml = xmlParser.parse(contents, filePath);
 
   if (xml.rootNodes.length === 0 ||
       xml.errors.some(error => error.level === ParseErrorLevel.ERROR)) {
+    if (diagnostics !== undefined) {
+      xml.errors.forEach(e => addParseError(diagnostics, e));
+    }
     return false;
   }
 
   const rootElements = xml.rootNodes.filter(isNamedElement(rootNodeName));
   const rootElement = rootElements[0];
   if (rootElement === undefined) {
+    if (diagnostics !== undefined) {
+      diagnostics.warn(`The XML file does not contain a <${rootNodeName}> root node.`);
+    }
     return false;
   }
 
   for (const attrKey of Object.keys(attributes)) {
     const attr = rootElement.attrs.find(attr => attr.name === attrKey);
     if (attr === undefined || attr.value !== attributes[attrKey]) {
+      if (diagnostics !== undefined) {
+        addParseDiagnostic(
+            diagnostics, rootElement.sourceSpan,
+            `The <${rootNodeName}> node does not have the required attribute: ${attrKey}="${
+                attributes[attrKey]}".`,
+            ParseErrorLevel.WARNING);
+      }
       return false;
     }
   }
