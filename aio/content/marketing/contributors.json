@@ -830,5 +830,13 @@
     "twitter": "ahasall",
     "website": "https://www.amadousall.com",
     "bio": "Amadou is a Frontend Software Engineer from Senegal based in France. He currently works at Air France where he helps developers build better Angular applications. Passionate about web technologies, Amadou is an international speaker, a technical writer, and a Google Developer Expert in Angular."
+  },
+  "kreuzercode": {
+    "name": "Kevin Kreuzer",
+    "picture": "kevin-kreuzer.jpg",
+    "twitter": "kreuzercode",
+    "website": "https://medium.com/@kevinkreuzer",
+    "bio": "Kevin is a passionate freelance front-end engineer and Google Developer Expert based in Switzerland. He is a JavaScript enthusiast and fascinated by Angular. Kevin always tries to learn new things, expand his knowledge, and share it with others in the form of blog posts, workshops, podcasts, or presentations. He is a writer for various publications and the most active writer on Angular in-depth in 2019. Contributing to multiple projects and maintaining 7 npm packages, Kevin is also a big believer in open source. Furthermore, Kevin is a big football fan. Since his childhood, he supports Real Madrid, which you will notice in a lot of his blog posts and tutorials.",
+    "group": "GDE"
   }
 }
