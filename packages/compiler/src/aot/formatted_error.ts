@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,7 +20,7 @@ export interface FormattedMessageChain {
   next?: FormattedMessageChain[];
 }
 
-export type FormattedError = Error & {
+export type FormattedError = Error&{
   chain: FormattedMessageChain;
   position?: Position;
 };
@@ -34,10 +34,10 @@ function indentStr(level: number): string {
   return half + half + (level % 2 === 1 ? ' ' : '');
 }
 
-function formatChain(chain: FormattedMessageChain | undefined, indent: number = 0): string {
+function formatChain(chain: FormattedMessageChain|undefined, indent: number = 0): string {
   if (!chain) return '';
   const position = chain.position ?
-      `${chain.position.fileName}(${chain.position.line+1},${chain.position.column+1})` :
+      `${chain.position.fileName}(${chain.position.line + 1},${chain.position.column + 1})` :
       '';
   const prefix = position && indent === 0 ? `${position}: ` : '';
   const postfix = position && indent !== 0 ? ` at ${position}` : '';

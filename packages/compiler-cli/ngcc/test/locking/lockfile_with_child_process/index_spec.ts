@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,11 +8,11 @@
 import {ChildProcess} from 'child_process';
 import * as process from 'process';
 
-import {CachedFileSystem, FileSystem, getFileSystem} from '../../../../src/ngtsc/file_system';
+import {FileSystem, getFileSystem} from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../../src/ngtsc/logging/testing';
 import {getLockFilePath} from '../../../src/locking/lock_file';
 import {LockFileWithChildProcess} from '../../../src/locking/lock_file_with_child_process';
-import {MockLogger} from '../../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('LockFileWithChildProcess', () => {
@@ -97,18 +97,6 @@ runInEachFileSystem(() => {
         const lockFile = new LockFileUnderTest(fs);
         expect(lockFile.read()).toEqual('{unknown}');
       });
-
-      it('should not read file from the cache, since the file may have been modified externally',
-         () => {
-           const rawFs = getFileSystem();
-           const fs = new CachedFileSystem(rawFs);
-           const lockFile = new LockFileUnderTest(fs);
-           rawFs.writeFile(lockFile.path, '' + process.pid);
-           expect(lockFile.read()).toEqual('' + process.pid);
-           // We need to write to the rawFs to ensure that we don't update the cache at this point
-           rawFs.writeFile(lockFile.path, '444');
-           expect(lockFile.read()).toEqual('444');
-         });
     });
 
     describe('remove()', () => {

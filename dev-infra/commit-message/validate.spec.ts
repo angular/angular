@@ -1,30 +1,31 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 // Imports
-import * as utilConfig from '../utils/config';
-
+import * as validateConfig from './config';
 import {validateCommitMessage} from './validate';
+
+type CommitMessageConfig = validateConfig.CommitMessageConfig;
 
 
 // Constants
-const config = {
-  'commitMessage': {
-    'maxLineLength': 120,
-    'minBodyLength': 0,
-    'types': [
+const config: {commitMessage: CommitMessageConfig} = {
+  commitMessage: {
+    maxLineLength: 120,
+    minBodyLength: 0,
+    types: [
       'feat',
       'fix',
       'refactor',
       'release',
       'style',
     ],
-    'scopes': [
+    scopes: [
       'common',
       'compiler',
       'core',
@@ -46,7 +47,7 @@ describe('validate-commit-message.js', () => {
     lastError = '';
 
     spyOn(console, 'error').and.callFake((msg: string) => lastError = msg);
-    spyOn(utilConfig, 'getAngularDevConfig').and.returnValue(config);
+    spyOn(validateConfig, 'getCommitMessageConfig').and.returnValue(config);
   });
 
   describe('validateMessage()', () => {
@@ -160,21 +161,12 @@ describe('validate-commit-message.js', () => {
     });
 
     describe('(squash)', () => {
-      it('should strip the `squash! ` prefix and validate the rest', () => {
-        const errorMessage = `The commit message header does not match the expected format.`;
-
-        // Valid messages.
-        expect(validateCommitMessage('squash! feat(core): add feature')).toBe(VALID);
-        expect(validateCommitMessage('squash! fix: a bug', {disallowSquash: false})).toBe(VALID);
-
-        // Invalid messages.
-        expect(validateCommitMessage('squash! fix a typo', {disallowSquash: false})).toBe(INVALID);
-        expect(lastError).toContain('squash! fix a typo');
-        expect(lastError).toContain(errorMessage);
-
-        expect(validateCommitMessage('squash! squash! fix: a bug')).toBe(INVALID);
-        expect(lastError).toContain('squash! squash! fix: a bug');
-        expect(lastError).toContain(errorMessage);
+      describe('without `disallowSquash`', () => {
+        it('should return commits as valid', () => {
+          expect(validateCommitMessage('squash! feat(core): add feature')).toBe(VALID);
+          expect(validateCommitMessage('squash! fix: a bug')).toBe(VALID);
+          expect(validateCommitMessage('squash! fix a typo')).toBe(VALID);
+        });
       });
 
       describe('with `disallowSquash`', () => {
@@ -191,21 +183,10 @@ describe('validate-commit-message.js', () => {
 
     describe('(fixup)', () => {
       describe('without `nonFixupCommitHeaders`', () => {
-        it('should strip the `fixup! ` prefix and validate the rest', () => {
-          const errorMessage = `The commit message header does not match the expected format.`;
-
-          // Valid messages.
+        it('should return commits as valid', () => {
           expect(validateCommitMessage('fixup! feat(core): add feature')).toBe(VALID);
           expect(validateCommitMessage('fixup! fix: a bug')).toBe(VALID);
-
-          // Invalid messages.
-          expect(validateCommitMessage('fixup! fix a typo')).toBe(INVALID);
-          expect(lastError).toContain('fixup! fix a typo');
-          expect(lastError).toContain(errorMessage);
-
-          expect(validateCommitMessage('fixup! fixup! fix: a bug')).toBe(INVALID);
-          expect(lastError).toContain('fixup! fixup! fix: a bug');
-          expect(lastError).toContain(errorMessage);
+          expect(validateCommitMessage('fixup! fixup! fix: a bug')).toBe(VALID);
         });
       });
 
@@ -245,6 +226,43 @@ describe('validate-commit-message.js', () => {
               `Unable to find match for fixup commit among prior commits: -`);
         });
       });
+    });
+
+    describe('minBodyLength', () => {
+      const minBodyLengthConfig: {commitMessage: CommitMessageConfig} = {
+        commitMessage: {
+          maxLineLength: 120,
+          minBodyLength: 30,
+          minBodyLengthTypeExcludes: ['docs'],
+          types: ['fix', 'docs'],
+          scopes: ['core']
+        }
+      };
+
+      beforeEach(() => {
+        (validateConfig.getCommitMessageConfig as jasmine.Spy).and.returnValue(minBodyLengthConfig);
+      });
+
+      it('should fail validation if the body is shorter than `minBodyLength`', () => {
+        expect(validateCommitMessage(
+                   'fix(core): something\n\n Explanation of the motivation behind this change'))
+            .toBe(VALID);
+        expect(validateCommitMessage('fix(core): something\n\n too short')).toBe(INVALID);
+        expect(lastError).toContain(
+            'The commit message body does not meet the minimum length of 30 characters');
+        expect(validateCommitMessage('fix(core): something')).toBe(INVALID);
+        expect(lastError).toContain(
+            'The commit message body does not meet the minimum length of 30 characters');
+      });
+
+      it('should pass validation if the body is shorter than `minBodyLength` but the commit type is in the `minBodyLengthTypeExclusions` list',
+         () => {
+           expect(validateCommitMessage('docs: just fixing a typo')).toBe(VALID);
+           expect(validateCommitMessage('docs(core): just fixing a typo')).toBe(VALID);
+           expect(validateCommitMessage(
+                      'docs(core): just fixing a typo\n\nThis was just a silly typo.'))
+               .toBe(VALID);
+         });
     });
   });
 });

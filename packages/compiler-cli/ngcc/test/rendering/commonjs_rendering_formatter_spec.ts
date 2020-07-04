@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {loadTestFiles} from '../../../test/helpers';
@@ -20,7 +21,6 @@ import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registr
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {CommonJsReflectionHost} from '../../src/host/commonjs_host';
 import {CommonJsRenderingFormatter} from '../../src/rendering/commonjs_rendering_formatter';
-import {MockLogger} from '../helpers/mock_logger';
 import {makeTestEntryPointBundle} from '../helpers/utils';
 
 runInEachFileSystem(() => {
@@ -156,7 +156,7 @@ exports.D = D;
       const referencesRegistry = new NgccReferencesRegistry(host);
       const decorationAnalyses =
           new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-      const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package)
+      const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath)
                                        .analyzeProgram(bundle.src.program);
       const renderer = new CommonJsRenderingFormatter(host, false);
       const importManager = new ImportManager(new NoopImportRewriter(), 'i');
@@ -315,8 +315,11 @@ SOME DEFINITION TEXT
             program, absoluteFromSourceFile(sourceFile), 'NoIife', ts.isFunctionDeclaration);
         const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: 'NoIife'};
         expect(() => renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT'))
-            .toThrowError(`Compiled class declaration is not inside an IIFE: NoIife in ${
-                _('/node_modules/test-package/some/file.js')}`);
+            .toThrowError(
+                `Compiled class "NoIife" in "${
+                    _('/node_modules/test-package/some/file.js')}" does not have a valid syntax.\n` +
+                `Expected an ES5 IIFE wrapped function. But got:\n` +
+                `function NoIife() {}`);
 
         const badIifeDeclaration = getDeclaration(
             program, absoluteFromSourceFile(sourceFile), 'BadIife', ts.isVariableDeclaration);

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,7 +22,9 @@ if (isBrowser) {
     const url200 = '/base/angular/packages/platform-browser/test/browser/static_assets/200.html';
     const url404 = '/bad/path/404.html';
 
-    beforeEach(() => { resourceLoader = new ResourceLoaderImpl(); });
+    beforeEach(() => {
+      resourceLoader = new ResourceLoaderImpl();
+    });
 
     it('should resolve the Promise with the file content on success',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {

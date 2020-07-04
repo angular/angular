@@ -9,7 +9,8 @@ import {Logger} from '../../lib/common/utils';
 import {BuildCreator} from '../../lib/preview-server/build-creator';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from '../../lib/preview-server/build-events';
 import {PreviewServerError} from '../../lib/preview-server/preview-error';
-import {expectToBePreviewServerError} from './helpers';
+import {customAsyncMatchers} from './jasmine-custom-async-matchers';
+
 
 // Tests
 describe('BuildCreator', () => {
@@ -24,6 +25,7 @@ describe('BuildCreator', () => {
   const publicShaDir = path.join(publicPrDir, shortSha);
   let bc: BuildCreator;
 
+  beforeEach(() => jasmine.addAsyncMatchers(customAsyncMatchers));
   beforeEach(() => bc = new BuildCreator(buildsDir));
 
 
@@ -35,8 +37,8 @@ describe('BuildCreator', () => {
 
 
     it('should extend EventEmitter', () => {
-      expect(bc).toEqual(jasmine.any(BuildCreator));
-      expect(bc).toEqual(jasmine.any(EventEmitter));
+      expect(bc).toBeInstanceOf(BuildCreator);
+      expect(bc).toBeInstanceOf(EventEmitter);
 
       expect(Object.getPrototypeOf(bc)).toBe(BuildCreator.prototype);
     });
@@ -67,47 +69,43 @@ describe('BuildCreator', () => {
       const shaDir = isPublic ? publicShaDir : hiddenShaDir;
 
 
-      it('should return a promise', done => {
+      it('should return a promise', async () => {
         const promise = bc.create(pr, sha, archive, isPublic);
-        promise.then(done);   // Do not complete the test (and release the spies) synchronously
-                              // to avoid running the actual `extractArchive()`.
+        expect(promise).toBeInstanceOf(Promise);
 
-        expect(promise).toEqual(jasmine.any(Promise));
+        // Do not complete the test (and release the spies) synchronously to avoid running the actual
+        // `extractArchive()`.
+        await promise;
       });
 
 
-      it('should update the PR\'s visibility first if necessary', done => {
-        bcUpdatePrVisibilitySpy.and.callFake(() => expect(shellMkdirSpy).not.toHaveBeenCalled());
+      it('should update the PR\'s visibility first if necessary', async () => {
+        await bc.create(pr, sha, archive, isPublic);
 
-        bc.create(pr, sha, archive, isPublic).
-          then(() => {
-            expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledWith(pr, isPublic);
-            expect(shellMkdirSpy).toHaveBeenCalled();
-          }).
-          then(done);
+        expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledBefore(shellMkdirSpy);
+        expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledWith(pr, isPublic);
+        expect(shellMkdirSpy).toHaveBeenCalled();
       });
 
 
-      it('should create the build directory (and any parent directories)', done => {
-        bc.create(pr, sha, archive, isPublic).
-          then(() => expect(shellMkdirSpy).toHaveBeenCalledWith('-p', shaDir)).
-          then(done);
+      it('should create the build directory (and any parent directories)', async () => {
+        await bc.create(pr, sha, archive, isPublic);
+        expect(shellMkdirSpy).toHaveBeenCalledWith('-p', shaDir);
       });
 
 
-      it('should extract the archive contents into the build directory', done => {
-        bc.create(pr, sha, archive, isPublic).
-          then(() => expect(bcExtractArchiveSpy).toHaveBeenCalledWith(archive, shaDir)).
-          then(done);
+      it('should extract the archive contents into the build directory', async () => {
+        await bc.create(pr, sha, archive, isPublic);
+        expect(bcExtractArchiveSpy).toHaveBeenCalledWith(archive, shaDir);
       });
 
 
-      it('should emit a CreatedBuildEvent on success', done => {
+      it('should emit a CreatedBuildEvent on success', async () => {
         let emitted = false;
 
         bcEmitSpy.and.callFake((type: string, evt: CreatedBuildEvent) => {
           expect(type).toBe(CreatedBuildEvent.type);
-          expect(evt).toEqual(jasmine.any(CreatedBuildEvent));
+          expect(evt).toBeInstanceOf(CreatedBuildEvent);
           expect(evt.pr).toBe(+pr);
           expect(evt.sha).toBe(shortSha);
           expect(evt.isPublic).toBe(isPublic);
@@ -115,130 +113,108 @@ describe('BuildCreator', () => {
           emitted = true;
         });
 
-        bc.create(pr, sha, archive, isPublic).
-          then(() => expect(emitted).toBe(true)).
-          then(done);
+        await bc.create(pr, sha, archive, isPublic);
+        expect(emitted).toBe(true);
       });
 
 
       describe('on error', () => {
-        let existsValues: {[dir: string]: boolean};
-
         beforeEach(() => {
-          existsValues = {
-            [prDir]: false,
-            [shaDir]: false,
-          };
-
-          bcExistsSpy.and.callFake((dir: string) => existsValues[dir]);
+          bcExistsSpy.and.returnValue(false);
         });
 
 
-        it('should abort and skip further operations if changing the PR\'s visibility fails', done => {
+        it('should abort and skip further operations if changing the PR\'s visibility fails', async () => {
           const mockError = new PreviewServerError(543, 'Test');
-          bcUpdatePrVisibilitySpy.and.callFake(() => Promise.reject(mockError));
+          bcUpdatePrVisibilitySpy.and.rejectWith(mockError);
 
-          bc.create(pr, sha, archive, isPublic).catch(err => {
-            expect(err).toBe(mockError);
+          await expectAsync(bc.create(pr, sha, archive, isPublic)).toBeRejectedWith(mockError);
 
-            expect(bcExistsSpy).not.toHaveBeenCalled();
-            expect(shellMkdirSpy).not.toHaveBeenCalled();
-            expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
-            expect(bcEmitSpy).not.toHaveBeenCalled();
-
-            done();
-          });
+          expect(bcExistsSpy).not.toHaveBeenCalled();
+          expect(shellMkdirSpy).not.toHaveBeenCalled();
+          expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
+          expect(bcEmitSpy).not.toHaveBeenCalled();
         });
 
 
-        it('should abort and skip further operations if the build does already exist', done => {
-          existsValues[shaDir] = true;
-          bc.create(pr, sha, archive, isPublic).catch(err => {
-            const publicOrNot = isPublic ? 'public' : 'non-public';
-            expectToBePreviewServerError(err, 409, `Request to overwrite existing ${publicOrNot} directory: ${shaDir}`);
-            expect(shellMkdirSpy).not.toHaveBeenCalled();
-            expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
-            expect(bcEmitSpy).not.toHaveBeenCalled();
-            done();
-          });
+        it('should abort and skip further operations if the build does already exist', async () => {
+          bcExistsSpy.withArgs(shaDir).and.returnValue(true);
+
+          await expectAsync(bc.create(pr, sha, archive, isPublic)).toBeRejectedWithPreviewServerError(
+              409, `Request to overwrite existing ${isPublic ? '' : 'non-'}public directory: ${shaDir}`);
+
+          expect(shellMkdirSpy).not.toHaveBeenCalled();
+          expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
+          expect(bcEmitSpy).not.toHaveBeenCalled();
         });
 
 
-        it('should detect existing build directory after visibility change', done => {
-          bcUpdatePrVisibilitySpy.and.callFake(() => existsValues[prDir] = existsValues[shaDir] = true);
+        it('should detect existing build directory after visibility change', async () => {
+          bcUpdatePrVisibilitySpy.and.callFake(() => bcExistsSpy.and.returnValue(true));
 
           expect(bcExistsSpy(prDir)).toBe(false);
           expect(bcExistsSpy(shaDir)).toBe(false);
 
-          bc.create(pr, sha, archive, isPublic).catch(err => {
-            const publicOrNot = isPublic ? 'public' : 'non-public';
-            expectToBePreviewServerError(err, 409, `Request to overwrite existing ${publicOrNot} directory: ${shaDir}`);
-            expect(shellMkdirSpy).not.toHaveBeenCalled();
-            expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
-            expect(bcEmitSpy).not.toHaveBeenCalled();
-            done();
-          });
+          await expectAsync(bc.create(pr, sha, archive, isPublic)).toBeRejectedWithPreviewServerError(
+              409, `Request to overwrite existing ${isPublic ? '' : 'non-'}public directory: ${shaDir}`);
+
+          expect(shellMkdirSpy).not.toHaveBeenCalled();
+          expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
+          expect(bcEmitSpy).not.toHaveBeenCalled();
         });
 
 
-        it('should abort and skip further operations if it fails to create the directories', done => {
+        it('should abort and skip further operations if it fails to create the directories', async () => {
           shellMkdirSpy.and.throwError('');
-          bc.create(pr, sha, archive, isPublic).catch(() => {
-            expect(shellMkdirSpy).toHaveBeenCalled();
-            expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
-            expect(bcEmitSpy).not.toHaveBeenCalled();
-            done();
-          });
+
+          await expectAsync(bc.create(pr, sha, archive, isPublic)).toBeRejected();
+
+          expect(shellMkdirSpy).toHaveBeenCalled();
+          expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
+          expect(bcEmitSpy).not.toHaveBeenCalled();
         });
 
 
-        it('should abort and skip further operations if it fails to extract the archive', done => {
-          bcExtractArchiveSpy.and.throwError('');
-          bc.create(pr, sha, archive, isPublic).catch(() => {
-            expect(shellMkdirSpy).toHaveBeenCalled();
-            expect(bcExtractArchiveSpy).toHaveBeenCalled();
-            expect(bcEmitSpy).not.toHaveBeenCalled();
-            done();
-          });
-        });
-
-
-        it('should delete the PR directory (for new PR)', done => {
-          bcExtractArchiveSpy.and.throwError('');
-          bc.create(pr, sha, archive, isPublic).catch(() => {
-            expect(shellRmSpy).toHaveBeenCalledWith('-rf', prDir);
-            done();
-          });
-        });
-
-
-        it('should delete the SHA directory (for existing PR)', done => {
-          existsValues[prDir] = true;
+        it('should abort and skip further operations if it fails to extract the archive', async () => {
           bcExtractArchiveSpy.and.throwError('');
 
-          bc.create(pr, sha, archive, isPublic).catch(() => {
-            expect(shellRmSpy).toHaveBeenCalledWith('-rf', shaDir);
-            done();
-          });
+          await expectAsync(bc.create(pr, sha, archive, isPublic)).toBeRejected();
+
+          expect(shellMkdirSpy).toHaveBeenCalled();
+          expect(bcExtractArchiveSpy).toHaveBeenCalled();
+          expect(bcEmitSpy).not.toHaveBeenCalled();
         });
 
 
-        it('should reject with an PreviewServerError', done => {
+        it('should delete the PR directory (for new PR)', async () => {
+          bcExtractArchiveSpy.and.throwError('');
+
+          await expectAsync(bc.create(pr, sha, archive, isPublic)).toBeRejected();
+          expect(shellRmSpy).toHaveBeenCalledWith('-rf', prDir);
+        });
+
+
+        it('should delete the SHA directory (for existing PR)', async () => {
+          bcExistsSpy.withArgs(prDir).and.returnValue(true);
+          bcExtractArchiveSpy.and.throwError('');
+
+          await expectAsync(bc.create(pr, sha, archive, isPublic)).toBeRejected();
+          expect(shellRmSpy).toHaveBeenCalledWith('-rf', shaDir);
+        });
+
+
+        it('should reject with an PreviewServerError', async () => {
           // tslint:disable-next-line: no-string-throw
           shellMkdirSpy.and.callFake(() => { throw 'Test'; });
-          bc.create(pr, sha, archive, isPublic).catch(err => {
-            expectToBePreviewServerError(err, 500, `Error while creating preview at: ${shaDir}\nTest`);
-            done();
-          });
+
+          await expectAsync(bc.create(pr, sha, archive, isPublic)).toBeRejectedWithPreviewServerError(
+              500, `Error while creating preview at: ${shaDir}\nTest`);
         });
 
 
-        it('should pass PreviewServerError instances unmodified', done => {
+        it('should pass PreviewServerError instances unmodified', async () => {
           shellMkdirSpy.and.callFake(() => { throw new PreviewServerError(543, 'Test'); });
-          bc.create(pr, sha, archive, isPublic).catch(err => {
-            expectToBePreviewServerError(err, 543, 'Test');
-            done();
-          });
+          await expectAsync(bc.create(pr, sha, archive, isPublic)).toBeRejectedWithPreviewServerError(543, 'Test');
         });
 
       });
@@ -265,12 +241,12 @@ describe('BuildCreator', () => {
     });
 
 
-    it('should return a promise', done => {
+    it('should return a promise', async () => {
       const promise = bc.updatePrVisibility(pr, true);
-      promise.then(done);   // Do not complete the test (and release the spies) synchronously
-                            // to avoid running the actual `extractArchive()`.
+      expect(promise).toBeInstanceOf(Promise);
 
-      expect(promise).toEqual(jasmine.any(Promise));
+      // Do not complete the test (and release the spies) synchronously to avoid running the actual `extractArchive()`.
+      await promise;
     });
 
 
@@ -279,58 +255,53 @@ describe('BuildCreator', () => {
       const newPrDir = makePublic ? publicPrDir : hiddenPrDir;
 
 
-      it('should rename the directory', done => {
-        bc.updatePrVisibility(pr, makePublic).
-          then(() => expect(shellMvSpy).toHaveBeenCalledWith(oldPrDir, newPrDir)).
-          then(done);
+      it('should rename the directory', async () => {
+        await bc.updatePrVisibility(pr, makePublic);
+        expect(shellMvSpy).toHaveBeenCalledWith(oldPrDir, newPrDir);
       });
 
 
       describe('when the visibility is updated', () => {
 
-        it('should resolve to true', done => {
-          bc.updatePrVisibility(pr, makePublic).
-            then(result => expect(result).toBe(true)).
-            then(done);
+        it('should resolve to true', async () => {
+          await expectAsync(bc.updatePrVisibility(pr, makePublic)).toBeResolvedTo(true);
         });
 
 
-        it('should rename the directory', done => {
-          bc.updatePrVisibility(pr, makePublic).
-            then(() => expect(shellMvSpy).toHaveBeenCalledWith(oldPrDir, newPrDir)).
-            then(done);
+        it('should rename the directory', async () => {
+          await bc.updatePrVisibility(pr, makePublic);
+          expect(shellMvSpy).toHaveBeenCalledWith(oldPrDir, newPrDir);
         });
 
 
-        it('should emit a ChangedPrVisibilityEvent on success', done => {
+        it('should emit a ChangedPrVisibilityEvent on success', async () => {
           let emitted = false;
 
           bcEmitSpy.and.callFake((type: string, evt: ChangedPrVisibilityEvent) => {
             expect(type).toBe(ChangedPrVisibilityEvent.type);
-            expect(evt).toEqual(jasmine.any(ChangedPrVisibilityEvent));
+            expect(evt).toBeInstanceOf(ChangedPrVisibilityEvent);
             expect(evt.pr).toBe(+pr);
-            expect(evt.shas).toEqual(jasmine.any(Array));
+            expect(evt.shas).toBeInstanceOf(Array);
             expect(evt.isPublic).toBe(makePublic);
 
             emitted = true;
           });
 
-          bc.updatePrVisibility(pr, makePublic).
-            then(() => expect(emitted).toBe(true)).
-            then(done);
+          await bc.updatePrVisibility(pr, makePublic);
+          expect(emitted).toBe(true);
         });
 
 
-        it('should include all shas in the emitted event', done => {
+        it('should include all shas in the emitted event', async () => {
           const shas = ['foo', 'bar', 'baz'];
           let emitted = false;
 
-          bcListShasByDate.and.callFake(() => Promise.resolve(shas));
+          bcListShasByDate.and.resolveTo(shas);
           bcEmitSpy.and.callFake((type: string, evt: ChangedPrVisibilityEvent) => {
             expect(bcListShasByDate).toHaveBeenCalledWith(newPrDir);
 
             expect(type).toBe(ChangedPrVisibilityEvent.type);
-            expect(evt).toEqual(jasmine.any(ChangedPrVisibilityEvent));
+            expect(evt).toBeInstanceOf(ChangedPrVisibilityEvent);
             expect(evt.pr).toBe(+pr);
             expect(evt.shas).toBe(shas);
             expect(evt.isPublic).toBe(makePublic);
@@ -338,94 +309,82 @@ describe('BuildCreator', () => {
             emitted = true;
           });
 
-          bc.updatePrVisibility(pr, makePublic).
-            then(() => expect(emitted).toBe(true)).
-            then(done);
+          await bc.updatePrVisibility(pr, makePublic);
+          expect(emitted).toBe(true);
         });
 
       });
 
 
-      it('should do nothing if the visibility is already up-to-date', done => {
+      it('should do nothing if the visibility is already up-to-date', async () => {
         bcExistsSpy.and.callFake((dir: string) => dir === newPrDir);
-        bc.updatePrVisibility(pr, makePublic).
-          then(result => {
-            expect(result).toBe(false);
-            expect(shellMvSpy).not.toHaveBeenCalled();
-            expect(bcListShasByDate).not.toHaveBeenCalled();
-            expect(bcEmitSpy).not.toHaveBeenCalled();
-          }).
-          then(done);
+
+        await expectAsync(bc.updatePrVisibility(pr, makePublic)).toBeResolvedTo(false);
+
+        expect(shellMvSpy).not.toHaveBeenCalled();
+        expect(bcListShasByDate).not.toHaveBeenCalled();
+        expect(bcEmitSpy).not.toHaveBeenCalled();
       });
 
 
-      it('should do nothing if the PR directory does not exist', done => {
+      it('should do nothing if the PR directory does not exist', async () => {
         bcExistsSpy.and.returnValue(false);
-        bc.updatePrVisibility(pr, makePublic).
-          then(result => {
-            expect(result).toBe(false);
-            expect(shellMvSpy).not.toHaveBeenCalled();
-            expect(bcListShasByDate).not.toHaveBeenCalled();
-            expect(bcEmitSpy).not.toHaveBeenCalled();
-          }).
-          then(done);
+
+        await expectAsync(bc.updatePrVisibility(pr, makePublic)).toBeResolvedTo(false);
+
+        expect(shellMvSpy).not.toHaveBeenCalled();
+        expect(bcListShasByDate).not.toHaveBeenCalled();
+        expect(bcEmitSpy).not.toHaveBeenCalled();
       });
 
 
       describe('on error', () => {
 
-        it('should abort and skip further operations if both directories exist', done => {
+        it('should abort and skip further operations if both directories exist', async () => {
           bcExistsSpy.and.returnValue(true);
-          bc.updatePrVisibility(pr, makePublic).catch(err => {
-            expectToBePreviewServerError(err, 409,
-              `Request to move '${oldPrDir}' to existing directory '${newPrDir}'.`);
-            expect(shellMvSpy).not.toHaveBeenCalled();
-            expect(bcListShasByDate).not.toHaveBeenCalled();
-            expect(bcEmitSpy).not.toHaveBeenCalled();
-            done();
-          });
+
+          await expectAsync(bc.updatePrVisibility(pr, makePublic)).toBeRejectedWithPreviewServerError(
+              409, `Request to move '${oldPrDir}' to existing directory '${newPrDir}'.`);
+
+          expect(shellMvSpy).not.toHaveBeenCalled();
+          expect(bcListShasByDate).not.toHaveBeenCalled();
+          expect(bcEmitSpy).not.toHaveBeenCalled();
         });
 
 
-        it('should abort and skip further operations if it fails to rename the directory', done => {
+        it('should abort and skip further operations if it fails to rename the directory', async () => {
           shellMvSpy.and.throwError('');
-          bc.updatePrVisibility(pr, makePublic).catch(() => {
-            expect(shellMvSpy).toHaveBeenCalled();
-            expect(bcListShasByDate).not.toHaveBeenCalled();
-            expect(bcEmitSpy).not.toHaveBeenCalled();
-            done();
-          });
+
+          await expectAsync(bc.updatePrVisibility(pr, makePublic)).toBeRejected();
+
+          expect(shellMvSpy).toHaveBeenCalled();
+          expect(bcListShasByDate).not.toHaveBeenCalled();
+          expect(bcEmitSpy).not.toHaveBeenCalled();
         });
 
 
-        it('should abort and skip further operations if it fails to list the SHAs', done => {
+        it('should abort and skip further operations if it fails to list the SHAs', async () => {
           bcListShasByDate.and.throwError('');
-          bc.updatePrVisibility(pr, makePublic).catch(() => {
-            expect(shellMvSpy).toHaveBeenCalled();
-            expect(bcListShasByDate).toHaveBeenCalled();
-            expect(bcEmitSpy).not.toHaveBeenCalled();
-            done();
-          });
+
+          await expectAsync(bc.updatePrVisibility(pr, makePublic)).toBeRejected();
+
+          expect(shellMvSpy).toHaveBeenCalled();
+          expect(bcListShasByDate).toHaveBeenCalled();
+          expect(bcEmitSpy).not.toHaveBeenCalled();
         });
 
 
-        it('should reject with an PreviewServerError', done => {
+        it('should reject with an PreviewServerError', async () => {
           // tslint:disable-next-line: no-string-throw
           shellMvSpy.and.callFake(() => { throw 'Test'; });
-          bc.updatePrVisibility(pr, makePublic).catch(err => {
-            expectToBePreviewServerError(err, 500,
-                `Error while making PR ${pr} ${makePublic ? 'public' : 'hidden'}.\nTest`);
-            done();
-          });
+          await expectAsync(bc.updatePrVisibility(pr, makePublic)).toBeRejectedWithPreviewServerError(
+              500, `Error while making PR ${pr} ${makePublic ? 'public' : 'hidden'}.\nTest`);
         });
 
 
-        it('should pass PreviewServerError instances unmodified', done => {
+        it('should pass PreviewServerError instances unmodified', async () => {
           shellMvSpy.and.callFake(() => { throw new PreviewServerError(543, 'Test'); });
-          bc.updatePrVisibility(pr, makePublic).catch(err => {
-            expectToBePreviewServerError(err, 543, 'Test');
-            done();
-          });
+          await expectAsync(bc.updatePrVisibility(pr, makePublic)).toBeRejectedWithPreviewServerError(543, 'Test');
         });
 
       });
@@ -443,12 +402,14 @@ describe('BuildCreator', () => {
 
     beforeEach(() => {
       fsAccessCbs = [];
-      fsAccessSpy = spyOn(fs, 'access').and.callFake((_: string, cb: (v?: any) => void) => fsAccessCbs.push(cb));
+      fsAccessSpy = spyOn(fs, 'access').and.callFake(
+        ((_: string, cb: (v?: any) => void) => fsAccessCbs.push(cb)) as unknown as typeof fs.access,
+      );
     });
 
 
     it('should return a promise', () => {
-      expect((bc as any).exists('foo')).toEqual(jasmine.any(Promise));
+      expect((bc as any).exists('foo')).toBeInstanceOf(Promise);
     });
 
 
@@ -458,25 +419,29 @@ describe('BuildCreator', () => {
     });
 
 
-    it('should resolve with \'true\' if \'fs.access()\' succeeds', done => {
-      Promise.
-        all([(bc as any).exists('foo'), (bc as any).exists('bar')]).
-        then(results => expect(results).toEqual([true, true])).
-        then(done);
+    it('should resolve with \'true\' if \'fs.access()\' succeeds', async () => {
+      const existsPromises = [
+        (bc as any).exists('foo'),
+        (bc as any).exists('bar'),
+      ];
 
       fsAccessCbs[0]();
       fsAccessCbs[1](null);
+
+      await expectAsync(Promise.all(existsPromises)).toBeResolvedTo([true, true]);
     });
 
 
-    it('should resolve with \'false\' if \'fs.access()\' errors', done => {
-      Promise.
-        all([(bc as any).exists('foo'), (bc as any).exists('bar')]).
-        then(results => expect(results).toEqual([false, false])).
-        then(done);
+    it('should resolve with \'false\' if \'fs.access()\' errors', async () => {
+      const existsPromises = [
+        (bc as any).exists('foo'),
+        (bc as any).exists('bar'),
+      ];
 
       fsAccessCbs[0]('Error');
       fsAccessCbs[1](new Error());
+
+      await expectAsync(Promise.all(existsPromises)).toBeResolvedTo([false, false]);
     });
 
   });
@@ -495,12 +460,15 @@ describe('BuildCreator', () => {
       consoleWarnSpy = spyOn(Logger.prototype, 'warn');
       shellChmodSpy = spyOn(shell, 'chmod');
       shellRmSpy = spyOn(shell, 'rm');
-      cpExecSpy = spyOn(cp, 'exec').and.callFake((_: string, cb: (...args: any[]) => void) => cpExecCbs.push(cb));
+      cpExecSpy = spyOn(cp, 'exec').and.callFake(
+        ((_: string, cb: (...args: any[]) => void) =>
+          cpExecCbs.push(cb)) as unknown as typeof cp.exec,
+      );
     });
 
 
     it('should return a promise', () => {
-      expect((bc as any).extractArchive('foo', 'bar')).toEqual(jasmine.any(Promise));
+      expect((bc as any).extractArchive('foo', 'bar')).toBeInstanceOf(Promise);
     });
 
 
@@ -512,78 +480,68 @@ describe('BuildCreator', () => {
     });
 
 
-    it('should log (as a warning) any stderr output if extracting succeeded', done => {
-      (bc as any).extractArchive('foo', 'bar').
-        then(() => expect(consoleWarnSpy).toHaveBeenCalledWith('This is stderr')).
-        then(done);
-
+    it('should log (as a warning) any stderr output if extracting succeeded', async () => {
+      const extractPromise = (bc as any).extractArchive('foo', 'bar');
       cpExecCbs[0](null, 'This is stdout', 'This is stderr');
+
+      await expectAsync(extractPromise).toBeResolved();
+      expect(consoleWarnSpy).toHaveBeenCalledWith('This is stderr');
     });
 
 
-    it('should make the build directory non-writable', done => {
-      (bc as any).extractArchive('foo', 'bar').
-        then(() => expect(shellChmodSpy).toHaveBeenCalledWith('-R', 'a-w', 'bar')).
-        then(done);
-
+    it('should make the build directory non-writable', async () => {
+      const extractPromise = (bc as any).extractArchive('foo', 'bar');
       cpExecCbs[0]();
+
+      await expectAsync(extractPromise).toBeResolved();
+      expect(shellChmodSpy).toHaveBeenCalledWith('-R', 'a-w', 'bar');
     });
 
 
-    it('should delete the build artifact file on success', done => {
-      (bc as any).extractArchive('input/file', 'output/dir').
-        then(() => expect(shellRmSpy).toHaveBeenCalledWith('-f', 'input/file')).
-        then(done);
-
+    it('should delete the build artifact file on success', async () => {
+      const extractPromise = (bc as any).extractArchive('input/file', 'output/dir');
       cpExecCbs[0]();
+
+      await expectAsync(extractPromise).toBeResolved();
+      expect(shellRmSpy).toHaveBeenCalledWith('-f', 'input/file');
     });
 
 
     describe('on error', () => {
 
-      it('should abort and skip further operations if it fails to extract the archive', done => {
-        (bc as any).extractArchive('foo', 'bar').catch((err: any) => {
-          expect(shellChmodSpy).not.toHaveBeenCalled();
-          expect(shellRmSpy).not.toHaveBeenCalled();
-          expect(err).toBe('Test');
-          done();
-        });
-
+      it('should abort and skip further operations if it fails to extract the archive', async () => {
+        const extractPromise = (bc as any).extractArchive('foo', 'bar');
         cpExecCbs[0]('Test');
+
+        await expectAsync(extractPromise).toBeRejectedWith('Test');
+        expect(shellChmodSpy).not.toHaveBeenCalled();
+        expect(shellRmSpy).not.toHaveBeenCalled();
       });
 
 
-      it('should abort and skip further operations if it fails to make non-writable', done => {
-        (bc as any).extractArchive('foo', 'bar').catch((err: any) => {
-          expect(shellChmodSpy).toHaveBeenCalled();
-          expect(shellRmSpy).not.toHaveBeenCalled();
-          expect(err).toBe('Test');
-          done();
-        });
+      it('should abort and skip further operations if it fails to make non-writable', async () => {
+        // tslint:disable-next-line: no-string-throw
+        shellChmodSpy.and.callFake(() => { throw 'Test'; });
 
-        shellChmodSpy.and.callFake(() => {
-          // tslint:disable-next-line: no-string-throw
-          throw 'Test';
-        });
-
+        const extractPromise = (bc as any).extractArchive('foo', 'bar');
         cpExecCbs[0]();
+
+        await expectAsync(extractPromise).toBeRejectedWith('Test');
+        expect(shellChmodSpy).toHaveBeenCalled();
+        expect(shellRmSpy).not.toHaveBeenCalled();
       });
 
 
-      it('should abort and reject if it fails to remove the build artifact file', done => {
-        (bc as any).extractArchive('foo', 'bar').catch((err: any) => {
-          expect(shellChmodSpy).toHaveBeenCalled();
-          expect(shellRmSpy).toHaveBeenCalled();
-          expect(err).toBe('Test');
-          done();
-        });
+      it('should abort and reject if it fails to remove the build artifact file', async () => {
+        // tslint:disable-next-line: no-string-throw
+        shellRmSpy.and.callFake(() => { throw 'Test'; });
 
-        shellRmSpy.and.callFake(() => {
-          // tslint:disable-next-line: no-string-throw
-          throw 'Test';
-        });
-
+        const extractPromise = (bc as any).extractArchive('foo', 'bar');
         cpExecCbs[0]();
+
+        await expectAsync(extractPromise).toBeRejectedWith('Test');
+        expect(shellChmodSpy).toHaveBeenCalled();
+        expect(shellRmSpy).toHaveBeenCalled();
       });
 
     });
@@ -600,62 +558,54 @@ describe('BuildCreator', () => {
     });
 
     beforeEach(() => {
-      shellLsSpy = spyOn(shell, 'ls').and.returnValue([]);
+      shellLsSpy = spyOn(shell, 'ls').and.returnValue([] as unknown as shell.ShellArray);
     });
 
 
-    it('should return a promise', done => {
+    it('should return a promise', async () => {
       const promise = (bc as any).listShasByDate('input/dir');
-      promise.then(done);   // Do not complete the test (and release the spies) synchronously
-                            // to avoid running the actual `ls()`.
+      expect(promise).toBeInstanceOf(Promise);
 
-      expect(promise).toEqual(jasmine.any(Promise));
+      // Do not complete the test (and release the spies) synchronously to avoid running the actual `ls()`.
+      await promise;
     });
 
 
-    it('should `ls()` files with their metadata', done => {
-      (bc as any).listShasByDate('input/dir').
-        then(() => expect(shellLsSpy).toHaveBeenCalledWith('-l', 'input/dir')).
-        then(done);
+    it('should `ls()` files with their metadata', async () => {
+      await (bc as any).listShasByDate('input/dir');
+      expect(shellLsSpy).toHaveBeenCalledWith('-l', 'input/dir');
     });
 
 
-    it('should reject if listing files fails', done => {
-      shellLsSpy.and.callFake(() => Promise.reject('Test'));
-      (bc as any).listShasByDate('input/dir').catch((err: string) => {
-        expect(err).toBe('Test');
-        done();
-      });
+    it('should reject if listing files fails', async () => {
+      shellLsSpy.and.rejectWith('Test');
+      await expectAsync((bc as any).listShasByDate('input/dir')).toBeRejectedWith('Test');
     });
 
 
-    it('should return the filenames', done => {
-      shellLsSpy.and.callFake(() => Promise.resolve([
+    it('should return the filenames', async () => {
+      shellLsSpy.and.resolveTo([
         lsResult('foo', 100),
         lsResult('bar', 200),
         lsResult('baz', 300),
-      ]));
+      ]);
 
-      (bc as any).listShasByDate('input/dir').
-        then((shas: string[]) => expect(shas).toEqual(['foo', 'bar', 'baz'])).
-        then(done);
+      await expectAsync((bc as any).listShasByDate('input/dir')).toBeResolvedTo(['foo', 'bar', 'baz']);
     });
 
 
-    it('should sort by date', done => {
-      shellLsSpy.and.callFake(() => Promise.resolve([
+    it('should sort by date', async () => {
+      shellLsSpy.and.resolveTo([
         lsResult('foo', 300),
         lsResult('bar', 100),
         lsResult('baz', 200),
-      ]));
+      ]);
 
-      (bc as any).listShasByDate('input/dir').
-        then((shas: string[]) => expect(shas).toEqual(['bar', 'baz', 'foo'])).
-        then(done);
+      await expectAsync((bc as any).listShasByDate('input/dir')).toBeResolvedTo(['bar', 'baz', 'foo']);
     });
 
 
-    it('should not break with ShellJS\' custom `sort()` method', done => {
+    it('should not break with ShellJS\' custom `sort()` method', async () => {
       const mockArray = [
         lsResult('foo', 300),
         lsResult('bar', 100),
@@ -663,26 +613,21 @@ describe('BuildCreator', () => {
       ];
       mockArray.sort = jasmine.createSpy('sort');
 
-      shellLsSpy.and.callFake(() => Promise.resolve(mockArray));
-      (bc as any).listShasByDate('input/dir').
-        then((shas: string[]) => {
-          expect(shas).toEqual(['bar', 'baz', 'foo']);
-          expect(mockArray.sort).not.toHaveBeenCalled();
-        }).
-        then(done);
+      shellLsSpy.and.resolveTo(mockArray);
+
+      await expectAsync((bc as any).listShasByDate('input/dir')).toBeResolvedTo(['bar', 'baz', 'foo']);
+      expect(mockArray.sort).not.toHaveBeenCalled();
     });
 
 
-    it('should only include directories', done => {
-      shellLsSpy.and.callFake(() => Promise.resolve([
+    it('should only include directories', async () => {
+      shellLsSpy.and.resolveTo([
         lsResult('foo', 100),
         lsResult('bar', 200, false),
         lsResult('baz', 300),
-      ]));
+      ]);
 
-      (bc as any).listShasByDate('input/dir').
-        then((shas: string[]) => expect(shas).toEqual(['foo', 'baz'])).
-        then(done);
+      await expectAsync((bc as any).listShasByDate('input/dir')).toBeResolvedTo(['foo', 'baz']);
     });
 
   });

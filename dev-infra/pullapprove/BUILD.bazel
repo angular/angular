@@ -4,6 +4,7 @@ ts_library(
     name = "pullapprove",
     srcs = [
         "cli.ts",
+        "condition_evaluator.ts",
         "group.ts",
         "logging.ts",
         "parse-yaml.ts",
@@ -12,7 +13,7 @@ ts_library(
     module_name = "@angular/dev-infra-private/pullapprove",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
-        "//dev-infra/utils:config",
+        "//dev-infra/utils",
         "@npm//@types/minimatch",
         "@npm//@types/node",
         "@npm//@types/shelljs",
@@ -20,7 +21,6 @@ ts_library(
         "@npm//@types/yargs",
         "@npm//minimatch",
         "@npm//shelljs",
-        "@npm//tslib",
         "@npm//yaml",
         "@npm//yargs",
     ],

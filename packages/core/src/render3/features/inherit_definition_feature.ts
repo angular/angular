@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -27,7 +27,7 @@ type WritableDef = Writable<DirectiveDef<any>|ComponentDef<any>>;
  *
  * @codeGenApi
  */
-export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
+export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
   let shouldInheritFields = true;
   const inheritanceChain: WritableDef[] = [definition];

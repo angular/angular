@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -56,7 +56,9 @@ export class RouterOutlet implements OnDestroy, OnInit {
     parentContexts.onChildOutletCreated(this.name, this);
   }
 
-  ngOnDestroy(): void { this.parentContexts.onChildOutletDestroyed(this.name); }
+  ngOnDestroy(): void {
+    this.parentContexts.onChildOutletDestroyed(this.name);
+  }
 
   ngOnInit(): void {
     if (!this.activated) {
@@ -75,7 +77,9 @@ export class RouterOutlet implements OnDestroy, OnInit {
     }
   }
 
-  get isActivated(): boolean { return !!this.activated; }
+  get isActivated(): boolean {
+    return !!this.activated;
+  }
 
   get component(): Object {
     if (!this.activated) throw new Error('Outlet is not activated');
@@ -131,7 +135,7 @@ export class RouterOutlet implements OnDestroy, OnInit {
     }
     this._activatedRoute = activatedRoute;
     const snapshot = activatedRoute._futureSnapshot;
-    const component = <any>snapshot.routeConfig !.component;
+    const component = <any>snapshot.routeConfig!.component;
     resolver = resolver || this.resolver;
     const factory = resolver.resolveComponentFactory(component);
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;

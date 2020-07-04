@@ -29,8 +29,9 @@ ts_library(
         "definitions_spec.ts",
         "diagnostics_spec.ts",
         "hover_spec.ts",
+        "references_spec.ts",
     ],
-    data = glob(["project/**/*"]),
+    data = [":project"],
     deps = [
         ":test_utils_lib",
         "//packages/language-service",
@@ -47,18 +48,24 @@ ts_library(
         "html_info_spec.ts",
         "language_service_spec.ts",
         "reflector_host_spec.ts",
-        "template_spec.ts",
         "ts_plugin_spec.ts",
         "typescript_host_spec.ts",
         "utils_spec.ts",
     ],
-    data = glob(["project/**/*"]),
+    data = [":project"],
     deps = [
         ":test_utils_lib",
         "//packages/compiler",
         "//packages/language-service",
+        "//packages/language-service:ts_utils",
         "@npm//typescript",
     ],
+)
+
+filegroup(
+    name = "project",
+    srcs = glob(["project/**/*"]),
+    visibility = ["//packages/language-service:__subpackages__"],
 )
 
 jasmine_node_test(

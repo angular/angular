@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,13 +14,14 @@ import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {XmlTranslationParserHint, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, parseInnerRange} from './translation_utils';
+import {addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, parseInnerRange, XmlTranslationParserHint} from './translation_utils';
 
 /**
  * A translation parser that can load translations from XLIFF 2 files.
  *
  * http://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
  *
+ * @see Xliff2TranslationSerializer
  */
 export class Xliff2TranslationParser implements TranslationParser<XmlTranslationParserHint> {
   canParse(filePath: string, contents: string): XmlTranslationParserHint|false {

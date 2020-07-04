@@ -282,15 +282,15 @@ test_deps = [
 test_entry_point = ":browser_entry_point.ts"
 
 karma_tests = {
-    "browser_test": ["//packages/zone.js/dist:zone-testing-bundle.js"],
+    "browser_test": ["//packages/zone.js/bundles:zone-testing-bundle.umd.js"],
     "browser_green_test": [
-        "//packages/zone.js/dist:zone-evergreen.js",
-        "//packages/zone.js/dist:zone-testing.js",
+        "//packages/zone.js/fesm2015:zone.js",
+        "//packages/zone.js/fesm2015:zone-testing.js",
     ],
     "browser_legacy_test": [
-        "//packages/zone.js/dist:zone-legacy.js",
-        "//packages/zone.js/dist:zone-evergreen.js",
-        "//packages/zone.js/dist:zone-testing.js",
+        "//packages/zone.js/bundles:zone-legacy.umd.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:zone-testing.umd.js",
     ],
 }
 
@@ -309,8 +309,8 @@ karma_test(
 karma_test(
     name = "browser_shadydom",
     bootstraps = {"browser_shadydom": [
-        "//packages/zone.js/dist:zone-testing-bundle.js",
-        "//packages/zone.js/dist:webapis-shadydom.js",
+        "//packages/zone.js/bundles:zone-testing-bundle.umd.js",
+        "//packages/zone.js/bundles:webapis-shadydom.umd.js",
     ]},
     ci = False,
     env_deps = [
@@ -331,7 +331,7 @@ karma_test(
 karma_test(
     name = "browser_disable_wrap_uncaught_promise_rejection",
     bootstraps = {"browser_disable_wrap_uncaught_promise_rejection": [
-        "//packages/zone.js/dist:zone-testing-bundle.js",
+        "//packages/zone.js/bundles:zone-testing-bundle.umd.js",
     ]},
     ci = False,
     env_deps = [

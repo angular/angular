@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -59,8 +59,8 @@ describe('reflector_host_spec', () => {
     // This resolves all Angular directives in the project.
     ngLSHost.getAnalyzedModules();
     const secondCount = spy.calls.count();
-    expect(secondCount).toBeGreaterThan(700);
-    expect(secondCount).toBeLessThan(800);
+    expect(secondCount).toBeGreaterThan(500);
+    expect(secondCount).toBeLessThan(600);
     spy.calls.reset();
 
     // Third count is due to recompution after the program changes.

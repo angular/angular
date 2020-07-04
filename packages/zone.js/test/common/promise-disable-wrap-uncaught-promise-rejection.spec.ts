@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,11 +21,11 @@ describe('disable wrap uncaught promise rejection', () => {
         .fork({
           name: 'promise-error',
           onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone, error: any):
-                             boolean => {
-                               promiseError = error;
-                               delegate.handleError(target, error);
-                               return false;
-                             }
+              boolean => {
+                promiseError = error;
+                delegate.handleError(target, error);
+                return false;
+              }
         })
         .run(() => {
           zone = Zone.current;
@@ -56,11 +56,11 @@ describe('disable wrap uncaught promise rejection', () => {
         .fork({
           name: 'promise-error',
           onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone, error: any):
-                             boolean => {
-                               promiseError = error;
-                               delegate.handleError(target, error);
-                               return false;
-                             }
+              boolean => {
+                promiseError = error;
+                delegate.handleError(target, error);
+                return false;
+              }
         })
         .run(() => {
           rejectObj = new TestRejection();

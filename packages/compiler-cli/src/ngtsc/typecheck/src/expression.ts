@@ -1,16 +1,16 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
+import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from './api';
-import {addParseSpanInfo, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
+import {addParseSpanInfo, wrapForDiagnostics} from './diagnostics';
 import {tsCastToAny} from './ts_util';
 
 export const NULL_AS_ANY =
@@ -103,7 +103,7 @@ class AstTranslator implements AstVisitor {
   }
 
   visitFunctionCall(ast: FunctionCall): ts.Expression {
-    const receiver = wrapForDiagnostics(this.translate(ast.target !));
+    const receiver = wrapForDiagnostics(this.translate(ast.target!));
     const args = ast.args.map(expr => this.translate(expr));
     const node = ts.createCall(receiver, undefined, args);
     addParseSpanInfo(node, ast.sourceSpan);
@@ -179,6 +179,7 @@ class AstTranslator implements AstVisitor {
   visitMethodCall(ast: MethodCall): ts.Expression {
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const method = ts.createPropertyAccess(receiver, ast.name);
+    addParseSpanInfo(method, ast.nameSpan);
     const args = ast.args.map(expr => this.translate(expr));
     const node = ts.createCall(method, undefined, args);
     addParseSpanInfo(node, ast.sourceSpan);
@@ -192,7 +193,9 @@ class AstTranslator implements AstVisitor {
     return node;
   }
 
-  visitPipe(ast: BindingPipe): never { throw new Error('Method not implemented.'); }
+  visitPipe(ast: BindingPipe): never {
+    throw new Error('Method not implemented.');
+  }
 
   visitPrefixNot(ast: PrefixNot): ts.Expression {
     const expression = wrapForDiagnostics(this.translate(ast.expression));
@@ -205,7 +208,9 @@ class AstTranslator implements AstVisitor {
     // This is a normal property read - convert the receiver to an expression and emit the correct
     // TypeScript expression to read the property.
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
-    const node = ts.createPropertyAccess(receiver, ast.name);
+    const name = ts.createPropertyAccess(receiver, ast.name);
+    addParseSpanInfo(name, ast.nameSpan);
+    const node = wrapForDiagnostics(name);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -213,15 +218,25 @@ class AstTranslator implements AstVisitor {
   visitPropertyWrite(ast: PropertyWrite): ts.Expression {
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const left = ts.createPropertyAccess(receiver, ast.name);
-    // TODO(joost): annotate `left` with the span of the property access, which is not currently
-    //  available on `ast`.
+    addParseSpanInfo(left, ast.nameSpan);
+    // TypeScript reports assignment errors on the entire lvalue expression. Annotate the lvalue of
+    // the assignment with the sourceSpan, which includes receivers, rather than nameSpan for
+    // consistency of the diagnostic location.
+    // a.b.c = 1
+    // ^^^^^^^^^ sourceSpan
+    //     ^     nameSpan
+    const leftWithPath = wrapForDiagnostics(left);
+    addParseSpanInfo(leftWithPath, ast.sourceSpan);
     const right = this.translate(ast.value);
-    const node = wrapForDiagnostics(ts.createBinary(left, ts.SyntaxKind.EqualsToken, right));
+    const node =
+        wrapForDiagnostics(ts.createBinary(leftWithPath, ts.SyntaxKind.EqualsToken, right));
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
 
-  visitQuote(ast: Quote): never { throw new Error('Method not implemented.'); }
+  visitQuote(ast: Quote): never {
+    throw new Error('Method not implemented.');
+  }
 
   visitSafeMethodCall(ast: SafeMethodCall): ts.Expression {
     // See the comments in SafePropertyRead above for an explanation of the cases here.
@@ -231,15 +246,18 @@ class AstTranslator implements AstVisitor {
     if (this.config.strictSafeNavigationTypes) {
       // "a?.method(...)" becomes (null as any ? a!.method(...) : undefined)
       const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
+      addParseSpanInfo(method, ast.nameSpan);
       const call = ts.createCall(method, undefined, args);
       node = ts.createParen(ts.createConditional(NULL_AS_ANY, call, UNDEFINED));
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // "a?.method(...)" becomes (a as any).method(...)
       const method = ts.createPropertyAccess(tsCastToAny(receiver), ast.name);
+      addParseSpanInfo(method, ast.nameSpan);
       node = ts.createCall(method, undefined, args);
     } else {
       // "a?.method(...)" becomes (a!.method(...) as any)
       const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
+      addParseSpanInfo(method, ast.nameSpan);
       node = tsCastToAny(ts.createCall(method, undefined, args));
     }
     addParseSpanInfo(node, ast.sourceSpan);
@@ -296,28 +314,64 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return ast.receiver.visit(VeSafeLhsInferenceBugDetector.SINGLETON);
   }
 
-  visitBinary(ast: Binary): boolean { return ast.left.visit(this) || ast.right.visit(this); }
-  visitChain(ast: Chain): boolean { return false; }
+  visitBinary(ast: Binary): boolean {
+    return ast.left.visit(this) || ast.right.visit(this);
+  }
+  visitChain(ast: Chain): boolean {
+    return false;
+  }
   visitConditional(ast: Conditional): boolean {
     return ast.condition.visit(this) || ast.trueExp.visit(this) || ast.falseExp.visit(this);
   }
-  visitFunctionCall(ast: FunctionCall): boolean { return true; }
-  visitImplicitReceiver(ast: ImplicitReceiver): boolean { return false; }
+  visitFunctionCall(ast: FunctionCall): boolean {
+    return true;
+  }
+  visitImplicitReceiver(ast: ImplicitReceiver): boolean {
+    return false;
+  }
   visitInterpolation(ast: Interpolation): boolean {
     return ast.expressions.some(exp => exp.visit(this));
   }
-  visitKeyedRead(ast: KeyedRead): boolean { return false; }
-  visitKeyedWrite(ast: KeyedWrite): boolean { return false; }
-  visitLiteralArray(ast: LiteralArray): boolean { return true; }
-  visitLiteralMap(ast: LiteralMap): boolean { return true; }
-  visitLiteralPrimitive(ast: LiteralPrimitive): boolean { return false; }
-  visitMethodCall(ast: MethodCall): boolean { return true; }
-  visitPipe(ast: BindingPipe): boolean { return true; }
-  visitPrefixNot(ast: PrefixNot): boolean { return ast.expression.visit(this); }
-  visitNonNullAssert(ast: PrefixNot): boolean { return ast.expression.visit(this); }
-  visitPropertyRead(ast: PropertyRead): boolean { return false; }
-  visitPropertyWrite(ast: PropertyWrite): boolean { return false; }
-  visitQuote(ast: Quote): boolean { return false; }
-  visitSafeMethodCall(ast: SafeMethodCall): boolean { return true; }
-  visitSafePropertyRead(ast: SafePropertyRead): boolean { return false; }
+  visitKeyedRead(ast: KeyedRead): boolean {
+    return false;
+  }
+  visitKeyedWrite(ast: KeyedWrite): boolean {
+    return false;
+  }
+  visitLiteralArray(ast: LiteralArray): boolean {
+    return true;
+  }
+  visitLiteralMap(ast: LiteralMap): boolean {
+    return true;
+  }
+  visitLiteralPrimitive(ast: LiteralPrimitive): boolean {
+    return false;
+  }
+  visitMethodCall(ast: MethodCall): boolean {
+    return true;
+  }
+  visitPipe(ast: BindingPipe): boolean {
+    return true;
+  }
+  visitPrefixNot(ast: PrefixNot): boolean {
+    return ast.expression.visit(this);
+  }
+  visitNonNullAssert(ast: PrefixNot): boolean {
+    return ast.expression.visit(this);
+  }
+  visitPropertyRead(ast: PropertyRead): boolean {
+    return false;
+  }
+  visitPropertyWrite(ast: PropertyWrite): boolean {
+    return false;
+  }
+  visitQuote(ast: Quote): boolean {
+    return false;
+  }
+  visitSafeMethodCall(ast: SafeMethodCall): boolean {
+    return true;
+  }
+  visitSafePropertyRead(ast: SafePropertyRead): boolean {
+    return false;
+  }
 }

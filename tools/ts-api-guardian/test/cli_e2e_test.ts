@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -23,7 +23,9 @@ describe('cli: e2e test', () => {
     }
   });
 
-  afterEach(() => { unlinkRecursively(outDir); });
+  afterEach(() => {
+    unlinkRecursively(outDir);
+  });
 
   it('should print usage without any argument', () => {
     const {stderr} = execute([]);

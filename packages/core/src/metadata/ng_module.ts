@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,7 +13,7 @@ import {convertInjectableProviderToFactory} from '../di/util';
 import {Type} from '../interface/type';
 import {SchemaMetadata} from '../metadata/schema';
 import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
-import {TypeDecorator, makeDecorator} from '../util/decorators';
+import {makeDecorator, TypeDecorator} from '../util/decorators';
 
 
 /**
@@ -80,18 +80,14 @@ export interface NgModuleDef<T> {
 }
 
 /**
- * A wrapper around an NgModule that associates it with the providers.
+ * A wrapper around an NgModule that associates it with [providers](guide/glossary#provider
+ * "Definition"). Usage without a generic type is deprecated.
  *
- * @param T the module type. In Ivy applications, this must be explicitly
- * provided.
- *
- * Note that using ModuleWithProviders without a generic type is deprecated.
- * The generic will become required in a future version of Angular.
+ * @see [Deprecations](guide/deprecations#modulewithproviders-type-without-a-generic)
  *
  * @publicApi
  */
-export interface ModuleWithProviders<
-    T = any /** TODO(alxhub): remove default when callers pass explicit type param */> {
+export interface ModuleWithProviders<T> {
   ngModule: Type<T>;
   providers?: Provider[];
 }
@@ -107,7 +103,7 @@ export interface NgModuleDecorator {
    * Decorator that marks a class as an NgModule and supplies configuration metadata.
    */
   (obj?: NgModule): TypeDecorator;
-  new (obj?: NgModule): NgModule;
+  new(obj?: NgModule): NgModule;
 }
 
 /**
@@ -298,10 +294,10 @@ export interface NgModule {
   id?: string;
 
   /**
-   * If true, this module will be skipped by the AOT compiler and so will always be compiled
-   * using JIT.
-   *
-   * This exists to support future Ivy work and has no effect currently.
+   * When present, this module is ignored by the AOT compiler.
+   * It remains in distributed code, and the JIT compiler attempts to compile it
+   * at run time, in the browser.
+   * To ensure the correct behavior, the app must import `@angular/compiler`.
    */
   jit?: true;
 }
@@ -345,7 +341,9 @@ export const NgModule: NgModuleDecorator = makeDecorator(
  *
  * @publicApi
  */
-export interface DoBootstrap { ngDoBootstrap(appRef: ApplicationRef): void; }
+export interface DoBootstrap {
+  ngDoBootstrap(appRef: ApplicationRef): void;
+}
 
 function preR3NgModuleCompile(moduleType: Type<any>, metadata?: NgModule): void {
   let imports = (metadata && metadata.imports) || [];

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,7 +11,9 @@ import {ApplicationRef} from '@angular/core/src/application_ref';
 import {SpyObject} from '@angular/core/testing/src/testing_internal';
 
 export class SpyApplicationRef extends SpyObject {
-  constructor() { super(ApplicationRef); }
+  constructor() {
+    super(ApplicationRef);
+  }
 }
 
 export class SpyComponentRef extends SpyObject {

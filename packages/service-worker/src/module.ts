@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 
 import {isPlatformBrowser} from '@angular/common';
 import {APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, ModuleWithProviders, NgModule, NgZone, PLATFORM_ID} from '@angular/core';
-import {Observable, merge, of } from 'rxjs';
+import {merge, Observable, of} from 'rxjs';
 import {delay, filter, take} from 'rxjs/operators';
 
 import {NgswCommChannel} from './low_level';
@@ -70,7 +70,7 @@ export abstract class SwRegistrationOptions {
    *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
    *     ServiceWorker will be registered as soon as the first value is emitted.
    *
-   * Default: 'registerWhenStable'
+   * Default: 'registerWhenStable:30000'
    */
   registrationStrategy?: string|(() => Observable<unknown>);
 }
@@ -105,7 +105,7 @@ export function ngswAppInitializer(
 
       switch (strategy) {
         case 'registerImmediately':
-          readyToRegister$ = of (null);
+          readyToRegister$ = of(null);
           break;
         case 'registerWithDelay':
           readyToRegister$ = delayWithTimeout(+args[0] || 0);
@@ -136,7 +136,7 @@ export function ngswAppInitializer(
 }
 
 function delayWithTimeout(timeout: number): Observable<unknown> {
-  return of (null).pipe(delay(timeout));
+  return of(null).pipe(delay(timeout));
 }
 
 function whenStable(injector: Injector): Observable<unknown> {

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,6 +9,7 @@ import * as i18n from '../../../i18n/i18n_ast';
 import {toPublicName} from '../../../i18n/serializers/xmb';
 import * as html from '../../../ml_parser/ast';
 import * as o from '../../../output/output_ast';
+import * as t from '../../r3_ast';
 
 /* Closure variables holding messages must be named `MSG_[A-Z0-9]+` */
 const CLOSURE_TRANSLATION_PREFIX = 'MSG_';
@@ -41,6 +42,10 @@ export function isSingleI18nIcu(meta?: i18n.I18nMeta): boolean {
   return isI18nRootNode(meta) && meta.nodes.length === 1 && meta.nodes[0] instanceof i18n.Icu;
 }
 
+export function hasI18nMeta(node: t.Node&{i18n?: i18n.I18nMeta}): boolean {
+  return !!node.i18n;
+}
+
 export function hasI18nAttrs(element: html.Element): boolean {
   return element.attrs.some((attr: html.Attribute) => isI18nAttribute(attr.name));
 }
@@ -49,7 +54,7 @@ export function icuFromI18nMessage(message: i18n.Message) {
   return message.nodes[0] as i18n.IcuPlaceholder;
 }
 
-export function wrapI18nPlaceholder(content: string | number, contextId: number = 0): string {
+export function wrapI18nPlaceholder(content: string|number, contextId: number = 0): string {
   const blockId = contextId > 0 ? `:${contextId}` : '';
   return `${I18N_PLACEHOLDER_SYMBOL}${content}${blockId}${I18N_PLACEHOLDER_SYMBOL}`;
 }
@@ -147,7 +152,7 @@ export function formatI18nPlaceholderName(name: string, useCamelCase: boolean = 
   if (/^\d+$/.test(chunks[chunks.length - 1])) {
     postfix = chunks.pop();
   }
-  let raw = chunks.shift() !.toLowerCase();
+  let raw = chunks.shift()!.toLowerCase();
   if (chunks.length) {
     raw += chunks.map(c => c.charAt(0).toUpperCase() + c.slice(1).toLowerCase()).join('');
   }
@@ -170,5 +175,5 @@ export function getTranslationConstPrefix(extra: string): string {
  */
 export function declareI18nVariable(variable: o.ReadVarExpr): o.Statement {
   return new o.DeclareVarStmt(
-      variable.name !, undefined, o.INFERRED_TYPE, null, variable.sourceSpan);
+      variable.name!, undefined, o.INFERRED_TYPE, null, variable.sourceSpan);
 }

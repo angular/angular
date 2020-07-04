@@ -1,17 +1,17 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
+import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
 
@@ -28,7 +28,9 @@ describe('component', () => {
         providers: [{provide: testToken, useExisting: ParentWithOnDestroy}]
       })
       class ParentWithOnDestroy {
-        ngOnDestroy() { destroyCalls++; }
+        ngOnDestroy() {
+          destroyCalls++;
+        }
       }
 
       @Component({selector: 'child', template: ''})
@@ -75,7 +77,7 @@ describe('component', () => {
       entryComponents: [OtherComponent]
     })
     class TestComponent {
-      @ViewChild('vc', {read: ViewContainerRef, static: true}) vcref !: ViewContainerRef;
+      @ViewChild('vc', {read: ViewContainerRef, static: true}) vcref!: ViewContainerRef;
 
       constructor(private _cfr: ComponentFactoryResolver) {}
 
@@ -152,7 +154,8 @@ describe('component', () => {
       expect(match).toBeDefined();
       expect(match.length).toEqual(2);
       expect(html).toMatch(
-          `<leaf ${match[0].replace('_nghost', '_ngcontent')}="" ${match[1]}=""><span ${match[1].replace('_nghost', '_ngcontent')}="">bar</span></leaf></div>`);
+          `<leaf ${match[0].replace('_nghost', '_ngcontent')}="" ${match[1]}=""><span ${
+              match[1].replace('_nghost', '_ngcontent')}="">bar</span></leaf></div>`);
     });
   });
 
@@ -162,7 +165,9 @@ describe('component', () => {
 
       @Component({selector: 'comp-with-destroy', template: ``})
       class ComponentWithOnDestroy implements OnDestroy {
-        ngOnDestroy() { wasOnDestroyCalled = true; }
+        ngOnDestroy() {
+          wasOnDestroyCalled = true;
+        }
       }
 
       // This test asserts that the view tree is set up correctly based on the knowledge that this
@@ -181,6 +186,135 @@ describe('component', () => {
           .toBe(
               true,
               'Expected component onDestroy method to be called when its parent view is destroyed');
+    });
+  });
+
+  it('should clear the contents of dynamically created component when it\'s attached to ApplicationRef',
+     () => {
+       let wasOnDestroyCalled = false;
+       @Component({
+         selector: '[comp]',
+         template: 'comp content',
+       })
+       class DynamicComponent {
+         ngOnDestroy() {
+           wasOnDestroyCalled = true;
+         }
+       }
+
+       @NgModule({
+         declarations: [DynamicComponent],
+         entryComponents: [DynamicComponent],  // needed only for ViewEngine
+       })
+       class TestModule {
+       }
+
+       @Component({
+         selector: 'button',
+         template: `
+           <div class="wrapper"></div>
+           <div id="app-root"></div>
+           <div class="wrapper"></div>
+         `,
+       })
+       class App {
+         componentRef!: ComponentRef<DynamicComponent>;
+
+         constructor(
+             private cfr: ComponentFactoryResolver, private injector: Injector,
+             private appRef: ApplicationRef) {}
+
+         create() {
+           const factory = this.cfr.resolveComponentFactory(DynamicComponent);
+           // Component to be bootstrapped into an element with the `app-root` id.
+           this.componentRef = factory.create(this.injector, undefined, '#app-root');
+           this.appRef.attachView(this.componentRef.hostView);
+         }
+
+         destroy() {
+           this.componentRef.destroy();
+         }
+       }
+
+       TestBed.configureTestingModule({imports: [TestModule], declarations: [App]});
+       const fixture = TestBed.createComponent(App);
+       fixture.detectChanges();
+
+       let appRootEl = fixture.nativeElement.querySelector('#app-root');
+       expect(appRootEl).toBeDefined();
+       expect(appRootEl.innerHTML).toBe('');  // app container content is empty
+
+       fixture.componentInstance.create();
+
+       appRootEl = fixture.nativeElement.querySelector('#app-root');
+       expect(appRootEl).toBeDefined();
+       expect(appRootEl.innerHTML).toBe('comp content');
+
+       fixture.componentInstance.destroy();
+       fixture.detectChanges();
+
+       appRootEl = fixture.nativeElement.querySelector('#app-root');
+       expect(appRootEl).toBeFalsy();  // host element is removed
+       const wrapperEls = fixture.nativeElement.querySelectorAll('.wrapper');
+       expect(wrapperEls.length).toBe(2);  // other elements are preserved
+     });
+
+  describe('invalid host element', () => {
+    it('should throw when <ng-container> is used as a host element for a Component', () => {
+      @Component({
+        selector: 'ng-container',
+        template: '...',
+      })
+      class Comp {
+      }
+
+      @Component({
+        selector: 'root',
+        template: '<ng-container></ng-container>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Comp]});
+      if (ivyEnabled) {
+        expect(() => TestBed.createComponent(App))
+            .toThrowError(
+                /"ng-container" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
+      } else {
+        // In VE there is no special check for the case when `<ng-container>` is used as a host
+        // element for a Component. VE tries to attach Component's content to a Comment node that
+        // represents the `<ng-container>` location and this call fails with a
+        // browser/environment-specific error message, so we just verify that this scenario is
+        // triggering an error in VE.
+        expect(() => TestBed.createComponent(App)).toThrow();
+      }
+    });
+
+    it('should throw when <ng-template> is used as a host element for a Component', () => {
+      @Component({
+        selector: 'ng-template',
+        template: '...',
+      })
+      class Comp {
+      }
+
+      @Component({
+        selector: 'root',
+        template: '<ng-template></ng-template>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Comp]});
+      if (ivyEnabled) {
+        expect(() => TestBed.createComponent(App))
+            .toThrowError(
+                /"ng-template" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
+      } else {
+        expect(() => TestBed.createComponent(App))
+            .toThrowError(
+                /Components on an embedded template: Comp \("\[ERROR ->\]<ng-template><\/ng-template>"\)/);
+      }
     });
   });
 
@@ -244,7 +378,7 @@ describe('component', () => {
       encapsulation: ViewEncapsulation.Emulated,
     })
     class Parent {
-      @ViewChild(Child) childInstance !: Child;
+      @ViewChild(Child) childInstance!: Child;
       constructor(public renderer: Renderer2) {}
     }
 
@@ -266,7 +400,9 @@ describe('component', () => {
     })
     class CompA {
       @Input() a: string = '';
-      ngDoCheck() { log.push('CompA:ngDoCheck'); }
+      ngDoCheck() {
+        log.push('CompA:ngDoCheck');
+      }
     }
 
     @Component({
@@ -275,7 +411,9 @@ describe('component', () => {
     })
     class CompB {
       @Input() b: string = '';
-      ngDoCheck() { log.push('CompB:ngDoCheck'); }
+      ngDoCheck() {
+        log.push('CompB:ngDoCheck');
+      }
     }
 
     @Component({template: `<span></span>`})
@@ -435,14 +573,14 @@ describe('component', () => {
       fixture.detectChanges();
 
       // Create an instance of DynamicComponent and provide host element *reference*
-      let targetEl = document.getElementById('dynamic-comp-root-a') !;
+      let targetEl = document.getElementById('dynamic-comp-root-a')!;
       fixture.componentInstance.createDynamicComponent(targetEl);
       fixture.detectChanges();
       expect(targetEl.innerHTML).not.toContain('Existing content in slot A');
       expect(targetEl.innerHTML).toContain('DynamicComponent Content');
 
       // Create an instance of DynamicComponent and provide host element *selector*
-      targetEl = document.getElementById('dynamic-comp-root-b') !;
+      targetEl = document.getElementById('dynamic-comp-root-b')!;
       fixture.componentInstance.createDynamicComponent('#dynamic-comp-root-b');
       fixture.detectChanges();
       expect(targetEl.innerHTML).not.toContain('Existing content in slot B');
@@ -453,7 +591,8 @@ describe('component', () => {
        () => runTestWithRenderer([{provide: RendererFactory2, useClass: DomRendererFactory2}]));
 
     onlyInIvy('Renderer3 is supported only in Ivy')
-        .it('with Renderer3', () => runTestWithRenderer(
-                                  [{provide: RendererFactory2, useValue: domRendererFactory3}]));
+        .it('with Renderer3',
+            () =>
+                runTestWithRenderer([{provide: RendererFactory2, useValue: domRendererFactory3}]));
   });
 });

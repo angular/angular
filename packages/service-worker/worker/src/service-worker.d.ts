@@ -53,9 +53,9 @@ interface WindowClient {
   navigate(url: string): Promise<WindowClient>;
 }
 
-type ClientFrameType = 'auxiliary' | 'top-level' | 'nested' | 'none';
-type ClientMatchTypes = 'window' | 'worker' | 'sharedworker' | 'all';
-type WindowClientState = 'hidden' | 'visible' | 'prerender' | 'unloaded';
+type ClientFrameType = 'auxiliary'|'top-level'|'nested'|'none';
+type ClientMatchTypes = 'window'|'worker'|'sharedworker'|'all';
+type WindowClientState = 'hidden'|'visible'|'prerender'|'unloaded';
 
 // Fetch API
 

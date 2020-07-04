@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,20 +10,18 @@ import {NgAnalyzedModules} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {AstResult} from './common';
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {getTemplateExpressionDiagnostics} from './expression_diagnostics';
+import {findPropertyValueOfType, findTightestNode} from './ts_utils';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
-import {findPropertyValueOfType, findTightestNode, offsetSpan, spanOf} from './utils';
-
-
+import {offsetSpan, spanOf} from './utils';
 
 /**
  * Return diagnostic information for the parsed AST of the template.
  * @param ast contains HTML and template AST
  */
-export function getTemplateDiagnostics(ast: AstResult): ng.Diagnostic[] {
+export function getTemplateDiagnostics(ast: ng.AstResult): ng.Diagnostic[] {
   const {parseErrors, templateAst, htmlAst, template} = ast;
   if (parseErrors && parseErrors.length) {
     return parseErrors.map(e => {

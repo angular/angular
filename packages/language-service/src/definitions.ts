@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,11 +8,10 @@
 
 import * as path from 'path';
 import * as ts from 'typescript';  // used as value and is provided at runtime
-import {AstResult} from './common';
+
 import {locateSymbols} from './locate_symbol';
-import {getPropertyAssignmentFromValue, isClassDecoratorProperty} from './template';
-import {Span} from './types';
-import {findTightestNode} from './utils';
+import {findTightestNode, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
+import {AstResult, Span} from './types';
 
 /**
  * Convert Angular Span to TypeScript TextSpan. Angular Span has 'start' and
@@ -121,11 +120,11 @@ function getUrlFromProperty(
   // `styleUrls`'s property assignment can be found from the array (parent) node.
   //
   // First search for `templateUrl`.
-  let asgn = getPropertyAssignmentFromValue(urlNode);
-  if (!asgn || asgn.name.getText() !== 'templateUrl') {
+  let asgn = getPropertyAssignmentFromValue(urlNode, 'templateUrl');
+  if (!asgn) {
     // `templateUrl` assignment not found; search for `styleUrls` array assignment.
-    asgn = getPropertyAssignmentFromValue(urlNode.parent);
-    if (!asgn || asgn.name.getText() !== 'styleUrls') {
+    asgn = getPropertyAssignmentFromValue(urlNode.parent, 'styleUrls');
+    if (!asgn) {
       // Nothing found, bail.
       return;
     }
@@ -133,7 +132,9 @@ function getUrlFromProperty(
 
   // If the property assignment is not a property of a class decorator, don't generate definitions
   // for it.
-  if (!isClassDecoratorProperty(asgn)) return;
+  if (!getClassDeclFromDecoratorProp(asgn)) {
+    return;
+  }
 
   const sf = urlNode.getSourceFile();
   // Extract url path specified by the url node, which is relative to the TypeScript source file

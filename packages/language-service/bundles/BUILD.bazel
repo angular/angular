@@ -1,4 +1,4 @@
-load("//tools/ng_rollup_bundle:ng_rollup_bundle.bzl", "ls_rollup_bundle")
+load("//packages/language-service/bundles:index.bzl", "ls_rollup_bundle")
 
 ls_rollup_bundle(
     name = "language-service",
@@ -15,6 +15,21 @@ ls_rollup_bundle(
         "//packages/language-service",
         "@npm//rxjs",
         "@npm//tslib",
+    ],
+)
+
+ls_rollup_bundle(
+    name = "ivy",
+    entry_point = "//packages/language-service/ivy:ts_plugin.ts",
+    globals = {
+        "fs": "fs",
+        "path": "path",
+        "typescript/lib/tsserverlibrary": "ts",
+    },
+    license_banner = ":banner",
+    visibility = ["//packages/language-service:__pkg__"],
+    deps = [
+        "//packages/language-service/ivy",
     ],
 )
 

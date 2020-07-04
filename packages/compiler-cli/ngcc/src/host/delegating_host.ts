@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {ClassDeclaration, ClassMember, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost} from '../../../src/ngtsc/reflection';
 import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
 
-import {ModuleWithProvidersFunction, NgccClassSymbol, NgccReflectionHost, SwitchableVariableDeclaration} from './ngcc_host';
+import {NgccClassSymbol, NgccReflectionHost, SwitchableVariableDeclaration} from './ngcc_host';
 
 /**
  * A reflection host implementation that delegates reflector queries depending on whether they
@@ -32,7 +32,8 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     if (isFromDtsFile(id)) {
-      return this.detectKnownDeclaration(this.tsHost.getDeclarationOfIdentifier(id));
+      const declaration = this.tsHost.getDeclarationOfIdentifier(id);
+      return declaration !== null ? this.detectKnownDeclaration(declaration) : null;
     }
     return this.ngccHost.getDeclarationOfIdentifier(id);
   }
@@ -149,10 +150,6 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
     return this.ngccHost.getDecoratorsOfSymbol(symbol);
   }
 
-  getModuleWithProvidersFunctions(sf: ts.SourceFile): ModuleWithProvidersFunction[] {
-    return this.ngccHost.getModuleWithProvidersFunctions(sf);
-  }
-
   getSwitchableDeclarations(module: ts.Node): SwitchableVariableDeclaration[] {
     return this.ngccHost.getSwitchableDeclarations(module);
   }
@@ -161,10 +158,7 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
     return this.ngccHost.getEndOfClass(classSymbol);
   }
 
-  detectKnownDeclaration(decl: null): null;
-  detectKnownDeclaration<T extends Declaration>(decl: T): T;
-  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null;
-  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null {
+  detectKnownDeclaration<T extends Declaration>(decl: T): T {
     return this.ngccHost.detectKnownDeclaration(decl);
   }
 }

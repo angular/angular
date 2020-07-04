@@ -1,12 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementArrayFinder, browser, by, element} from 'protractor';
+import {browser, by, element, ElementArrayFinder} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('nestedFormArray example', () => {
@@ -39,5 +40,4 @@ describe('nestedFormArray example', () => {
     expect(inputs.get(0).getAttribute('value')).toEqual('LA');
     expect(inputs.get(1).getAttribute('value')).toEqual('MTV');
   });
-
 });

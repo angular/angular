@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,8 +21,8 @@ import {DynamicValue} from './dynamic';
  * non-primitive value, or a special `DynamicValue` type which indicates the value was not
  * available statically.
  */
-export type ResolvedValue = number | boolean | string | null | undefined | Reference | EnumValue |
-    ResolvedValueArray | ResolvedValueMap | ResolvedModule | KnownFn | DynamicValue<unknown>;
+export type ResolvedValue = number|boolean|string|null|undefined|Reference|EnumValue|
+    ResolvedValueArray|ResolvedValueMap|ResolvedModule|KnownFn|DynamicValue<unknown>;
 
 /**
  * An array of `ResolvedValue`s.
@@ -54,12 +54,14 @@ export class ResolvedModule {
       return undefined;
     }
 
-    return this.evaluate(this.exports.get(name) !);
+    return this.evaluate(this.exports.get(name)!);
   }
 
   getExports(): ResolvedValueMap {
     const map = new Map<string, ResolvedValue>();
-    this.exports.forEach((decl, name) => { map.set(name, this.evaluate(decl)); });
+    this.exports.forEach((decl, name) => {
+      map.set(name, this.evaluate(decl));
+    });
     return map;
   }
 }
@@ -71,7 +73,7 @@ export class ResolvedModule {
  */
 export class EnumValue {
   constructor(
-      readonly enumRef: Reference<ts.EnumDeclaration>, readonly name: string,
+      readonly enumRef: Reference<ts.Declaration>, readonly name: string,
       readonly resolved: ResolvedValue) {}
 }
 

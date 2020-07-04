@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -26,12 +26,23 @@ export function assertNodeType(tNode: TNode, type: TNodeType): asserts tNode is 
   assertEqual(tNode.type, type, `should be a ${typeName(type)}`);
 }
 
-export function assertNodeOfPossibleTypes(tNode: TNode, ...types: TNodeType[]): void {
+export function assertNodeOfPossibleTypes(
+    tNode: TNode|null, types: TNodeType[], message?: string): void {
   assertDefined(tNode, 'should be called with a TNode');
   const found = types.some(type => tNode.type === type);
   assertEqual(
       found, true,
-      `Should be one of ${types.map(typeName).join(', ')} but got ${typeName(tNode.type)}`);
+      message ??
+          `Should be one of ${types.map(typeName).join(', ')} but got ${typeName(tNode.type)}`);
+}
+
+export function assertNodeNotOfTypes(tNode: TNode, types: TNodeType[], message?: string): void {
+  assertDefined(tNode, 'should be called with a TNode');
+  const found = types.some(type => tNode.type === type);
+  assertEqual(
+      found, false,
+      message ??
+          `Should not be one of ${types.map(typeName).join(', ')} but got ${typeName(tNode.type)}`);
 }
 
 function typeName(type: TNodeType): string {

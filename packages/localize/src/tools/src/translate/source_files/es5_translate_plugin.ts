@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,8 +8,10 @@
 import {ɵParsedTranslation} from '@angular/localize';
 import {NodePath, PluginObj} from '@babel/core';
 import {CallExpression} from '@babel/types';
+
 import {Diagnostics} from '../../diagnostics';
-import {TranslatePluginOptions, buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, unwrapMessagePartsFromLocalizeCall, unwrapSubstitutionsFromLocalizeCall} from './source_file_utils';
+
+import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, TranslatePluginOptions, unwrapMessagePartsFromLocalizeCall, unwrapSubstitutionsFromLocalizeCall} from '../../source_file_utils';
 
 export function makeEs5TranslatePlugin(
     diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>,

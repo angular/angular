@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,7 +14,9 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
   const __extends = function(d: any, b: any) {
     for (const p in b)
       if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __(this: Object) { this.constructor = d; }
+    function __(this: Object) {
+      this.constructor = d;
+    }
     d.prototype = b === null ? Object.create(b) : ((__.prototype = b.prototype), new (__ as any)());
   };
   // Patch jasmine's describe/it/beforeEach/afterEach functions so test code always runs
@@ -126,9 +128,9 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
           if (fakeAsyncZoneSpec) {
             const dateTime = arguments.length > 0 ? arguments[0] : new Date();
             return fakeAsyncZoneSpec.setCurrentRealTime.apply(
-                fakeAsyncZoneSpec, dateTime && typeof dateTime.getTime === 'function' ?
-                    [dateTime.getTime()] :
-                    arguments);
+                fakeAsyncZoneSpec,
+                dateTime && typeof dateTime.getTime === 'function' ? [dateTime.getTime()] :
+                                                                     arguments);
           }
           return originalMockDate.apply(this, arguments);
         };
@@ -150,6 +152,33 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
       return clock;
     };
   }
+
+  // monkey patch createSpyObj to make properties enumerable to true
+  if (!(jasmine as any)[Zone.__symbol__('createSpyObj')]) {
+    const originalCreateSpyObj = jasmine.createSpyObj;
+    (jasmine as any)[Zone.__symbol__('createSpyObj')] = originalCreateSpyObj;
+    jasmine.createSpyObj = function() {
+      const args: any = Array.prototype.slice.call(arguments);
+      const propertyNames = args.length >= 3 ? args[2] : null;
+      let spyObj: any;
+      if (propertyNames) {
+        const defineProperty = Object.defineProperty;
+        Object.defineProperty = function(obj: any, p: string, attributes: any) {
+          return defineProperty.call(
+              this, obj, p, {...attributes, configurable: true, enumerable: true});
+        };
+        try {
+          spyObj = originalCreateSpyObj.apply(this, args);
+        } finally {
+          Object.defineProperty = defineProperty;
+        }
+      } else {
+        spyObj = originalCreateSpyObj.apply(this, args);
+      }
+      return spyObj;
+    };
+  }
+
   /**
    * Gets a function wrapping the body of a Jasmine `describe` block to execute in a
    * synchronous-only zone.
@@ -163,8 +192,8 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
   function runInTestZone(
       testBody: Function, applyThis: any, queueRunner: QueueRunner, done?: Function) {
     const isClockInstalled = !!(jasmine as any)[symbol('clockInstalled')];
-    const testProxyZoneSpec = queueRunner.testProxyZoneSpec !;
-    const testProxyZone = queueRunner.testProxyZone !;
+    const testProxyZoneSpec = queueRunner.testProxyZoneSpec!;
+    const testProxyZone = queueRunner.testProxyZone!;
     let lastDelegate;
     if (isClockInstalled && enableAutoFakeAsyncWhenClockPatched) {
       // auto run a fakeAsync
@@ -190,9 +219,9 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
     // Note we have to make a function with correct number of arguments, otherwise jasmine will
     // think that all functions are sync or async.
     return (testBody && (testBody.length ? function(this: QueueRunnerUserContext, done: Function) {
-              return runInTestZone(testBody, this, this.queueRunner !, done);
+              return runInTestZone(testBody, this, this.queueRunner!, done);
             } : function(this: QueueRunnerUserContext) {
-              return runInTestZone(testBody, this, this.queueRunner !);
+              return runInTestZone(testBody, this, this.queueRunner!);
             }));
   }
   interface QueueRunner {

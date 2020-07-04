@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,15 +10,15 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {ClassMemberKind, CtorParameter, Decorator, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
+import {ClassMemberKind, ConcreteDeclaration, CtorParameter, Decorator, DownleveledEnum, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DelegatingReflectionHost} from '../../src/host/delegating_host';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {Esm5ReflectionHost, getIifeBody} from '../../src/host/esm5_host';
+import {Esm2015ReflectionHost, getIifeBody} from '../../src/host/esm2015_host';
+import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {NgccReflectionHost} from '../../src/host/ngcc_host';
 import {BundleProgram} from '../../src/packages/bundle_program';
-import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestBundleProgram, makeTestDtsBundleProgram} from '../helpers/utils';
 
 import {expectTypeValueReferencesForParameters} from './util';
@@ -47,7 +47,6 @@ runInEachFileSystem(() => {
     let UNWANTED_PROTOTYPE_EXPORT_FILE: TestFile;
     let TYPINGS_SRC_FILES: TestFile[];
     let TYPINGS_DTS_FILES: TestFile[];
-    let MODULE_WITH_PROVIDERS_PROGRAM: TestFile[];
     let NAMESPACED_IMPORT_FILE: TestFile;
 
     // Helpers
@@ -772,110 +771,6 @@ runInEachFileSystem(() => {
         },
         {name: _('/ep/typings/shadow-class.d.ts'), contents: `export declare class ShadowClass {}`},
         {name: _('/an_external_lib/index.d.ts'), contents: 'export declare class ShadowClass {}'},
-      ];
-
-      MODULE_WITH_PROVIDERS_PROGRAM = [
-        {
-          name: _('/src/index.js'),
-          contents: `
-          import * as functions from './functions';
-          import * as methods from './methods';
-          import * as outer_aliased_class from './outer_aliased_class';
-          import * as inner_aliased_class from './inner_aliased_class';
-          `
-        },
-        {
-          name: _('/src/functions.js'),
-          contents: `
-    import {ExternalModule} from './module';
-    import * as mod from './module';
-
-    var SomeService = (function() {
-      function SomeService() {}
-      return SomeService;
-    }());
-
-    var InternalModule = (function() {
-      function InternalModule() {}
-      return InternalModule;
-    }());
-    export function aNumber() { return 42; }
-    export function aString() { return 'foo'; }
-    export function emptyObject() { return {}; }
-    export function ngModuleIdentifier() { return { ngModule: InternalModule }; }
-    export function ngModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
-    export function ngModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
-    export function onlyProviders() { return { providers: [SomeService] }; }
-    export function ngModuleNumber() { return { ngModule: 42 }; }
-    export function ngModuleString() { return { ngModule: 'foo' }; }
-    export function ngModuleObject() { return { ngModule: { foo: 42 } }; }
-    export function externalNgModule() { return { ngModule: ExternalModule }; }
-    export function namespacedExternalNgModule() { return { ngModule: mod.ExternalModule }; }
-    export {SomeService, InternalModule};
-    `
-        },
-        {
-          name: _('/src/methods.js'),
-          contents: `
-    import {ExternalModule} from './module';
-    import * as mod from './module';
-    var SomeService = (function() {
-      function SomeService() {}
-      return SomeService;
-    }());
-
-    var InternalModule = (function() {
-      function InternalModule() {}
-      InternalModule.prototype = {
-        instanceNgModuleIdentifier: function() { return { ngModule: InternalModule }; },
-        instanceNgModuleWithEmptyProviders: function() { return { ngModule: InternalModule, providers: [] }; },
-        instanceNgModuleWithProviders: function() { return { ngModule: InternalModule, providers: [SomeService] }; },
-        instanceExternalNgModule: function() { return { ngModule: ExternalModule }; },
-        namespacedExternalNgModule = function() { return { ngModule: mod.ExternalModule }; },
-      };
-      InternalModule.aNumber = function() { return 42; };
-      InternalModule.aString = function() { return 'foo'; };
-      InternalModule.emptyObject = function() { return {}; };
-      InternalModule.ngModuleIdentifier = function() { return { ngModule: InternalModule }; };
-      InternalModule.ngModuleWithEmptyProviders = function() { return { ngModule: InternalModule, providers: [] }; };
-      InternalModule.ngModuleWithProviders = function() { return { ngModule: InternalModule, providers: [SomeService] }; };
-      InternalModule.onlyProviders = function() { return { providers: [SomeService] }; };
-      InternalModule.ngModuleNumber = function() { return { ngModule: 42 }; };
-      InternalModule.ngModuleString = function() { return { ngModule: 'foo' }; };
-      InternalModule.ngModuleObject = function() { return { ngModule: { foo: 42 } }; };
-      InternalModule.externalNgModule = function() { return { ngModule: ExternalModule }; };
-      InternalModule.namespacedExternalNgModule = function() { return { ngModule: mod.ExternalModule }; };
-      return InternalModule;
-    }());
-    export {SomeService, InternalModule};
-    `
-        },
-        {
-          name: _('/src/outer_aliased_class.js'),
-          contents: `
-    var AliasedModule = AliasedModule_1 = (function() {
-      function AliasedModule() {}
-      return AliasedModule;
-    }());
-    AliasedModule.forRoot = function() { return { ngModule: AliasedModule_1 }; };
-    export { AliasedModule };
-    var AliasedModule_1;
-    `
-        },
-        {
-          name: _('/src/inner_aliased_class.js'),
-          contents: `
-    var AliasedModule = (function() {
-      function AliasedModule() {}
-      AliasedModule_1 = AliasedModule;
-      AliasedModule.forRoot = function() { return { ngModule: AliasedModule_1 }; };
-      var AliasedModule_1;
-      return AliasedModule;
-    }());
-    export { AliasedModule };
-    `
-        },
-        {name: _('/src/module.js'), contents: 'export class ExternalModule {}'},
       ];
 
       NAMESPACED_IMPORT_FILE = {
@@ -1754,6 +1649,7 @@ runInEachFileSystem(() => {
                   known: knownAs,
                   node: getHelperDeclaration(helperName),
                   viaModule,
+                  identity: null,
                 });
               };
 
@@ -1786,6 +1682,7 @@ runInEachFileSystem(() => {
         expect(actualDeclaration).not.toBe(null);
         expect(actualDeclaration!.node).toBe(expectedDeclarationNode);
         expect(actualDeclaration!.viaModule).toBe(null);
+        expect((actualDeclaration as ConcreteDeclaration).identity).toBe(null);
       });
 
       it('should return the declaration of an externally defined identifier', () => {
@@ -2124,6 +2021,179 @@ runInEachFileSystem(() => {
         testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread, 'tslib');
         testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays, 'tslib');
       });
+
+      it('should recognize undeclared, unimported TypeScript helpers (by name)', () => {
+        const file: TestFile = {
+          name: _('/test.js'),
+          contents: `
+            var a = __assign({foo: 'bar'}, {baz: 'qux'});
+            var b = __spread(['foo', 'bar'], ['baz', 'qux']);
+            var c = __spreadArrays(['foo', 'bar'], ['baz', 'qux']);
+          `,
+        };
+        loadTestFiles([file]);
+        const bundle = makeTestBundleProgram(file.name);
+        const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
+
+        const testForHelper = (varName: string, helperName: string, knownAs: KnownDeclaration) => {
+          const node = getDeclaration(bundle.program, file.name, varName, ts.isVariableDeclaration);
+          const helperIdentifier = getIdentifierFromCallExpression(node);
+          const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
+
+          expect(helperDeclaration).toEqual({
+            known: knownAs,
+            expression: helperIdentifier,
+            node: null,
+            viaModule: null,
+          });
+        };
+
+        testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
+        testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
+        testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
+      });
+
+      it('should recognize suffixed, undeclared, unimported TypeScript helpers (by name)', () => {
+        const file: TestFile = {
+          name: _('/test.js'),
+          contents: `
+            var a = __assign$1({foo: 'bar'}, {baz: 'qux'});
+            var b = __spread$2(['foo', 'bar'], ['baz', 'qux']);
+            var c = __spreadArrays$3(['foo', 'bar'], ['baz', 'qux']);
+          `,
+        };
+        loadTestFiles([file]);
+        const bundle = makeTestBundleProgram(file.name);
+        const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
+
+        const testForHelper = (varName: string, helperName: string, knownAs: KnownDeclaration) => {
+          const node = getDeclaration(bundle.program, file.name, varName, ts.isVariableDeclaration);
+          const helperIdentifier = getIdentifierFromCallExpression(node);
+          const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
+
+          expect(helperDeclaration).toEqual({
+            known: knownAs,
+            expression: helperIdentifier,
+            node: null,
+            viaModule: null,
+          });
+        };
+
+        testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
+        testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
+        testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
+      });
+
+      it('should recognize enum declarations with string values', () => {
+        const testFile: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `
+          export var Enum;
+          (function (Enum) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })(Enum || (Enum = {}));
+
+          var value = Enum;`
+        };
+        loadTestFiles([testFile]);
+        const bundle = makeTestBundleProgram(testFile.name);
+        const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
+        const valueDecl = getDeclaration(
+            bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+            ts.isVariableDeclaration);
+        const declaration = host.getDeclarationOfIdentifier(
+                                valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+        const enumMembers = (declaration.identity as DownleveledEnum).enumMembers;
+        expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+        expect(enumMembers!.length).toBe(2);
+        expect(enumMembers![0].name.getText()).toBe('"ValueA"');
+        expect(enumMembers![0].initializer!.getText()).toBe('"1"');
+        expect(enumMembers![1].name.getText()).toBe('"ValueB"');
+        expect(enumMembers![1].initializer!.getText()).toBe('"2"');
+      });
+
+      it('should recognize enum declarations with numeric values', () => {
+        const testFile: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `
+          export var Enum;
+          (function (Enum) {
+              Enum[Enum["ValueA"] = "1"] = "ValueA";
+              Enum[Enum["ValueB"] = "2"] = "ValueB";
+          })(Enum || (Enum = {}));
+
+          var value = Enum;`
+        };
+        loadTestFiles([testFile]);
+        const bundle = makeTestBundleProgram(testFile.name);
+        const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
+        const valueDecl = getDeclaration(
+            bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+            ts.isVariableDeclaration);
+        const declaration = host.getDeclarationOfIdentifier(
+                                valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+        const enumMembers = (declaration.identity as DownleveledEnum).enumMembers;
+        expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+        expect(enumMembers!.length).toBe(2);
+        expect(enumMembers![0].name.getText()).toBe('"ValueA"');
+        expect(enumMembers![0].initializer!.getText()).toBe('"1"');
+        expect(enumMembers![1].name.getText()).toBe('"ValueB"');
+        expect(enumMembers![1].initializer!.getText()).toBe('"2"');
+      });
+
+      it('should not consider IIFEs that do no assign members to the parameter as an enum declaration',
+         () => {
+           const testFile: TestFile = {
+             name: _('/node_modules/test-package/some/file.js'),
+             contents: `
+          export var Enum;
+          (function (E) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })(Enum || (Enum = {}));
+
+          var value = Enum;`
+           };
+           loadTestFiles([testFile]);
+           const bundle = makeTestBundleProgram(testFile.name);
+           const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
+           const valueDecl = getDeclaration(
+               bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+               ts.isVariableDeclaration);
+           const declaration = host.getDeclarationOfIdentifier(
+                                   valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+           expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+           expect(declaration.identity).toBe(null);
+         });
+
+      it('should not consider IIFEs without call argument as an enum declaration', () => {
+        const testFile: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `
+          export var Enum;
+          (function (Enum) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })();
+
+          var value = Enum;`
+        };
+        loadTestFiles([testFile]);
+        const bundle = makeTestBundleProgram(testFile.name);
+        const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
+        const valueDecl = getDeclaration(
+            bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+            ts.isVariableDeclaration);
+        const declaration = host.getDeclarationOfIdentifier(
+                                valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+        expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+        expect(declaration.identity).toBe(null);
+      });
     });
 
     describe('getExportsOfModule()', () => {
@@ -2213,7 +2283,8 @@ runInEachFileSystem(() => {
         const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
         const outerNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-        const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+        const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                              .statements.find(isNamedFunctionDeclaration)!;
         const classSymbol = host.getClassSymbol(outerNode);
 
         expect(classSymbol).toBeDefined();
@@ -2227,7 +2298,8 @@ runInEachFileSystem(() => {
         const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
         const outerNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-        const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+        const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                              .statements.find(isNamedFunctionDeclaration)!;
         const classSymbol = host.getClassSymbol(innerNode);
 
         expect(classSymbol).toBeDefined();
@@ -2242,7 +2314,8 @@ runInEachFileSystem(() => {
            const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
            const outerNode = getDeclaration(
                bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-           const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+           const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                                 .statements.find(isNamedFunctionDeclaration)!;
 
            const innerSymbol = host.getClassSymbol(innerNode)!;
            const outerSymbol = host.getClassSymbol(outerNode)!;
@@ -2257,7 +2330,8 @@ runInEachFileSystem(() => {
            const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
            const outerNode = getDeclaration(
                bundle.program, SIMPLE_CLASS_FILE.name, 'NoParensClass', isNamedVariableDeclaration);
-           const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+           const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                                 .statements.find(isNamedFunctionDeclaration)!;
            const classSymbol = host.getClassSymbol(outerNode);
 
            expect(classSymbol).toBeDefined();
@@ -2273,7 +2347,8 @@ runInEachFileSystem(() => {
            const outerNode = getDeclaration(
                bundle.program, SIMPLE_CLASS_FILE.name, 'InnerParensClass',
                isNamedVariableDeclaration);
-           const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+           const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                                 .statements.find(isNamedFunctionDeclaration)!;
            const classSymbol = host.getClassSymbol(outerNode);
 
            expect(classSymbol).toBeDefined();
@@ -2333,7 +2408,8 @@ runInEachFileSystem(() => {
         const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
         const outerNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
-        const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+        const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                              .statements.find(isNamedFunctionDeclaration)!;
         expect(host.isClass(innerNode)).toBe(true);
       });
 
@@ -2701,81 +2777,6 @@ runInEachFileSystem(() => {
             bundle.program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
         expect(host.getAdjacentNameOfClass(childClass).text).toEqual('InnerChildClass');
       });
-    });
-
-    describe('getModuleWithProvidersFunctions', () => {
-      it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(_('/src/index.js'));
-           const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
-           const file = getSourceFileOrError(bundle.program, _('/src/functions.js'));
-           const fns = host.getModuleWithProvidersFunctions(file);
-           expect(fns.map(fn => [fn.declaration.name!.getText(), fn.ngModule.node.name.text]))
-               .toEqual([
-                 ['ngModuleIdentifier', 'InternalModule'],
-                 ['ngModuleWithEmptyProviders', 'InternalModule'],
-                 ['ngModuleWithProviders', 'InternalModule'],
-                 ['externalNgModule', 'ExternalModule'],
-                 ['namespacedExternalNgModule', 'ExternalModule'],
-               ]);
-         });
-
-      it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(_('/src/index.js'));
-           const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
-           const file = getSourceFileOrError(bundle.program, _('/src/methods.js'));
-           const fn = host.getModuleWithProvidersFunctions(file);
-           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
-             [
-               'function() { return { ngModule: InternalModule }; }',
-               'InternalModule',
-             ],
-             [
-               'function() { return { ngModule: InternalModule, providers: [] }; }',
-               'InternalModule',
-             ],
-             [
-               'function() { return { ngModule: InternalModule, providers: [SomeService] }; }',
-               'InternalModule',
-             ],
-             [
-               'function() { return { ngModule: ExternalModule }; }',
-               'ExternalModule',
-             ],
-             [
-               'function() { return { ngModule: mod.ExternalModule }; }',
-               'ExternalModule',
-             ],
-           ]);
-         });
-
-      it('should resolve aliased module references to their original declaration (outer alias)',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(_('/src/index.js'));
-           const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
-           const file = getSourceFileOrError(bundle.program, _('/src/outer_aliased_class.js'));
-           const fn = host.getModuleWithProvidersFunctions(file);
-           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
-             ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
-           ]);
-         });
-
-      // https://github.com/angular/angular/issues/29078
-      it('should resolve aliased module references to their original declaration (inner alias)',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(_('/src/index.js'));
-           const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
-           const file = getSourceFileOrError(bundle.program, _('/src/inner_aliased_class.js'));
-           const fn = host.getModuleWithProvidersFunctions(file);
-           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
-             ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
-           ]);
-         });
     });
 
     describe('getEndOfClass()', () => {

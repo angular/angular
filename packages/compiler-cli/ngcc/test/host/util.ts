@@ -1,7 +1,7 @@
 
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -32,7 +32,7 @@ export function expectTypeValueReferencesForParameters(
         }
       } else if (param.typeValueReference !== null) {
         expect(param.typeValueReference.moduleName).toBe(fromModule!);
-        expect(param.typeValueReference.name).toBe(expected);
+        expect(param.typeValueReference.importedName).toBe(expected);
       }
     }
   });

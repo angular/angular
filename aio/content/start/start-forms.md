@@ -1,6 +1,6 @@
-# Getting Started with Angular: Forms
+# Try it: Use forms for user input
 
-At the end of [Managing Data](start/start-data "Getting Started: Managing Data"), the online store application has a product catalog and a shopping cart.
+At the end of [Managing Data](start/start-data "Try it: Managing Data"), the online store application has a product catalog and a shopping cart.
 
 This section walks you through adding a form-based checkout feature to collect user information as part of checkout.
 
@@ -49,7 +49,7 @@ Now that you've defined the form model in the component class, you need a checko
 
 ## Create the checkout form
 
-Use the following steps to add a checkout form at the bottom of the "Cart" page.
+Use the following steps to add a checkout form at the bottom of the "Cart" view.
 
 1. Open `cart.component.html`.
 
@@ -73,7 +73,7 @@ Use the following steps to add a checkout form at the bottom of the "Cart" page.
 After putting a few items in the cart, users can now review their items, enter their name and address, and submit their purchase:
 
 <div class="lightbox">
-  <img src='generated/images/guide/start/cart-with-items-and-form.png' alt="Cart page with checkout form">
+  <img src='generated/images/guide/start/cart-with-items-and-form.png' alt="Cart view with checkout form">
 </div>
 
 To confirm submission, open the console where you should see an object containing the name and address you submitted.
@@ -82,4 +82,4 @@ To confirm submission, open the console where you should see an object containin
 
 Congratulations! You have a complete online store application with a product catalog, a shopping cart, and a checkout function.
 
-[Continue to the "Deployment" section](start/start-deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+[Continue to the "Deployment" section](start/start-deployment "Try it: Deployment") to move to local development, or deploy your app to Firebase or your own server.

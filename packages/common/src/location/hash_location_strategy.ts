@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -48,7 +48,9 @@ export class HashLocationStrategy extends LocationStrategy {
     this._platformLocation.onHashChange(fn);
   }
 
-  getBaseHref(): string { return this._baseHref; }
+  getBaseHref(): string {
+    return this._baseHref;
+  }
 
   path(includeHash: boolean = false): string {
     // the hash value is always prefixed with a `#`
@@ -80,7 +82,11 @@ export class HashLocationStrategy extends LocationStrategy {
     this._platformLocation.replaceState(state, title, url);
   }
 
-  forward(): void { this._platformLocation.forward(); }
+  forward(): void {
+    this._platformLocation.forward();
+  }
 
-  back(): void { this._platformLocation.back(); }
+  back(): void {
+    this._platformLocation.back();
+  }
 }

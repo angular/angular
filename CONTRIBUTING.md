@@ -22,7 +22,7 @@ Do not open issues for general support questions as we want to keep GitHub issue
 Stack Overflow is a much better place to ask questions since:
 
 - there are thousands of people willing to help on Stack Overflow
-- questions and answers stay available for public viewing so your question / answer might help someone else
+- questions and answers stay available for public viewing so your question/answer might help someone else
 - Stack Overflow's voting system assures that the best answers are prominently visible.
 
 To save your and our time, we will systematically close all issues that are requests for general support and redirect people to Stack Overflow.
@@ -42,7 +42,9 @@ Please consider what kind of change it is:
 
 * For a **Major Feature**, first open an issue and outline your proposal so that it can be
 discussed. This will also allow us to better coordinate our efforts, prevent duplication of work,
-and help you to craft the change so that it is successfully accepted into the project.
+and help you to craft the change so that it is successfully accepted into the project. **Note**:
+Adding a new topic to the documentation, or significantly re-writing a topic, counts as a major
+feature.
 * **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
 
 ## <a name="submit"></a> Submission Guidelines
@@ -55,7 +57,7 @@ We want to fix all the issues as soon as possible, but before fixing a bug we ne
 
 A minimal reproduction allows us to quickly confirm a bug (or point out a coding problem) as well as confirm that we are fixing the right problem.
 
-We will be insisting on a minimal reproduction scenario in order to save maintainers time and ultimately be able to fix more bugs. Interestingly, from our experience, users often find coding problems themselves while preparing a minimal reproduction. We understand that sometimes it might be hard to extract essential bits of code from a larger codebase but we really need to isolate the problem before we can fix it.
+We will be insisting on a minimal reproduction scenario in order to save maintainers' time and ultimately be able to fix more bugs. Interestingly, from our experience, users often find coding problems themselves while preparing a minimal reproduction. We understand that sometimes it might be hard to extract essential bits of code from a larger codebase but we really need to isolate the problem before we can fix it.
 
 Unfortunately, we are not able to investigate / fix bugs without a minimal reproduction, so if we don't hear back from you, we are going to close an issue that doesn't have enough info to be reproduced.
 
@@ -68,7 +70,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR
   that relates to your submission. You don't want to duplicate effort.
 1. Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
-  Discussing the design up front helps to ensure that we're ready to accept your work.
+  Discussing the design upfront helps to ensure that we're ready to accept your work.
 1. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
   We cannot accept code without this. Make sure you sign with the primary email address of the Git identity that has been granted access to the Angular repository.
 1. Fork the angular/angular repo.
@@ -83,8 +85,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 1. Run the full Angular test suite, as described in the [developer documentation][dev-doc],
   and ensure that all tests pass.
 1. Commit your changes using a descriptive commit message that follows our
-  [commit message conventions](#commit). Adherence to these conventions
-  is necessary because release notes are automatically generated from these messages.
+  [commit message conventions](#commit). Adherence to these conventions is necessary because release notes are automatically generated from these messages.
 
      ```shell
      git commit -a
@@ -179,13 +180,13 @@ Samples: (even more [samples](https://github.com/angular/angular/commits/master)
 docs(changelog): update changelog to beta.5
 ```
 ```
-fix(release): need to depend on latest rxjs and zone.js
+fix(release): need to depend on the latest rxjs and zone.js
 
 The version in our package.json gets copied to the one we publish, and users need the latest of these.
 ```
 
 ### Revert
-If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
+If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body, it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
 
 ### Type
 Must be one of the following:
@@ -236,6 +237,7 @@ There are currently a few exceptions to the "use package name" rule:
 * **docs-infra**: used for docs-app (angular.io) related changes within the /aio directory of the
   repo
 * **dev-infra**: used for dev-infra related changes within the directories /scripts, /tools and /dev-infra
+* **migrations**: used for changes to the `ng update` migrations.
 * **ngcc**: used for changes to the [Angular Compatibility Compiler](./packages/compiler-cli/ngcc/README.md)
 * **ve**: used for changes specific to ViewEngine (legacy compiler/renderer).
 * none/empty string: useful for `style`, `test` and `refactor` changes that are done across all
@@ -279,7 +281,7 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
   * https://help.github.com/articles/about-commit-email-addresses/
   * https://help.github.com/articles/blocking-command-line-pushes-that-expose-your-personal-email-address/
 
-  Note that if you have more than one Git identity, it is important to verify that you are logged in with the same ID with which you signed the CLA, before you commit changes. If not, your PR will fail the CLA check.
+  Note that if you have more than one Git identity, it is important to verify that you are logged in with the same ID with which you signed the CLA before you commit changes. If not, your PR will fail the CLA check.
 
 <hr>
 

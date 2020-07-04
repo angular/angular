@@ -1,16 +1,19 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {fromObject} from 'convert-source-map';
 import MagicString from 'magic-string';
+import {encode} from 'sourcemap-codec';
 import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {Reexport} from '../../../src/ngtsc/imports';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
@@ -21,7 +24,6 @@ import {CompiledClass} from '../../src/analysis/types';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {DtsRenderer} from '../../src/rendering/dts_renderer';
 import {RedundantDecoratorMap, RenderingFormatter} from '../../src/rendering/rendering_formatter';
-import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
 class TestRenderingFormatter implements RenderingFormatter {
@@ -78,7 +80,8 @@ function createTestRenderer(
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
   const moduleWithProvidersAnalyses =
-      new ModuleWithProvidersAnalyzer(host, referencesRegistry, true)
+      new ModuleWithProvidersAnalyzer(
+          host, bundle.src.program.getTypeChecker(), referencesRegistry, true)
           .analyzeProgram(bundle.src.program);
   const privateDeclarationsAnalyses =
       new PrivateDeclarationsAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
@@ -194,5 +197,47 @@ runInEachFileSystem(() => {
           result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts'))!;
       expect(typingsFile.contents).toContain(`\n// ADD MODUlE WITH PROVIDERS PARAMS\n`);
     });
+
+    it('should render an external source map for files whose original file does not have a source map',
+       () => {
+         const {
+           renderer,
+           decorationAnalyses,
+           privateDeclarationsAnalyses,
+           moduleWithProvidersAnalyses
+         } = createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
+
+         const result = renderer.renderProgram(
+             decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
+
+         const typingsFile =
+             result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts'))!;
+         expect(typingsFile.contents).toContain('//# sourceMappingURL=file.d.ts.map');
+       });
+
+    it('should render an internal source map for files whose original file has an internal source map',
+       () => {
+         const sourceMap = fromObject({
+           'version': 3,
+           'file': 'file.d.ts',
+           'sources': ['file.d.ts'],
+           'names': [],
+           'mappings': encode([[]]),
+           'sourcesContent': [INPUT_DTS_PROGRAM.contents],
+         });
+         INPUT_DTS_PROGRAM.contents += sourceMap.toComment();
+         const {
+           renderer,
+           decorationAnalyses,
+           privateDeclarationsAnalyses,
+           moduleWithProvidersAnalyses
+         } = createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
+         const result = renderer.renderProgram(
+             decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
+
+         const typingsFile =
+             result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts'))!;
+         expect(typingsFile.contents).toContain('//# sourceMappingURL=data:application/json');
+       });
   });
 });

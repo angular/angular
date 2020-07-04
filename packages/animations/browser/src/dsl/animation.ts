@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,7 +22,7 @@ export class Animation {
     const errors: any[] = [];
     const ast = buildAnimationAst(_driver, input, errors);
     if (errors.length) {
-      const errorMessage = `animation validation failed:\n${errors.join("\n")}`;
+      const errorMessage = `animation validation failed:\n${errors.join('\n')}`;
       throw new Error(errorMessage);
     }
     this._animationAst = ast;
@@ -42,7 +42,7 @@ export class Animation {
         this._driver, element, this._animationAst, ENTER_CLASSNAME, LEAVE_CLASSNAME, start, dest,
         options, subInstructions, errors);
     if (errors.length) {
-      const errorMessage = `animation building failed:\n${errors.join("\n")}`;
+      const errorMessage = `animation building failed:\n${errors.join('\n')}`;
       throw new Error(errorMessage);
     }
     return result;

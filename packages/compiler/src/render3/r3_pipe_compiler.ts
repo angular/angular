@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,9 +10,9 @@ import {CompilePipeMetadata, identifierName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {DefinitionKind} from '../constant_pool';
 import * as o from '../output/output_ast';
-import {OutputContext, error} from '../util';
+import {error, OutputContext} from '../util';
 
-import {R3DependencyMetadata, R3FactoryTarget, compileFactoryFunction, dependenciesFromGlobalMetadata} from './r3_factory';
+import {compileFactoryFunction, dependenciesFromGlobalMetadata, R3DependencyMetadata, R3FactoryTarget} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
 import {R3Reference, typeWithParameters, wrapReference} from './util';
 

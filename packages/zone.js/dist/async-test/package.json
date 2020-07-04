@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/async-test",
+  "main": "../../bundles/async-test.umd.js",
+  "fesm2015": "../../fesm2015/async-test.js",
+  "es2015": "../../fesm2015/async-test.js",
+  "module": "../../fesm2015/async-test.js"
+}

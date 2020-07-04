@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,6 @@
 import {compareFileSizeData} from './file_size_compare';
 
 describe('file size compare', () => {
-
   it('should report if size entry differ by more than the specified max percentage diff', () => {
     const diffs = compareFileSizeData(
         {

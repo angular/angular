@@ -1,14 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../../src/ngtsc/logging/testing';
 import {removeLockFile} from '../../../src/locking/lock_file_with_child_process/util';
-import {MockLogger} from '../../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('LockFileWithChildProcess utils', () => {

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,8 @@ import {RenderStore} from './render_store';
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export const enum SerializerTypes {
   // RendererType2
@@ -42,7 +43,7 @@ export class Serializer {
       return obj.map(v => this.serialize(v, type));
     }
     if (type === SerializerTypes.RENDER_STORE_OBJECT) {
-      return this._renderStore.serialize(obj) !;
+      return this._renderStore.serialize(obj)!;
     }
     if (type === SerializerTypes.RENDERER_TYPE_2) {
       return this._serializeRendererType2(obj);

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,9 +20,10 @@ import {LView, TVIEW, TView} from './interfaces/view';
 
 
 export function assertTNodeForLView(tNode: TNode, lView: LView) {
-  tNode.hasOwnProperty('tView_') && assertEqual(
-                                        (tNode as any as{tView_: TView}).tView_, lView[TVIEW],
-                                        'This TNode does not belong to this LView.');
+  tNode.hasOwnProperty('tView_') &&
+      assertEqual(
+          (tNode as any as {tView_: TView}).tView_, lView[TVIEW],
+          'This TNode does not belong to this LView.');
 }
 
 export function assertComponentType(
@@ -45,20 +46,15 @@ export function assertPreviousIsParent(isParent: boolean) {
   assertEqual(isParent, true, 'previousOrParentTNode should be a parent');
 }
 
-export function assertHasParent(tNode: TNode | null) {
+export function assertHasParent(tNode: TNode|null) {
   assertDefined(tNode, 'previousOrParentTNode should exist!');
-  assertDefined(tNode !.parent, 'previousOrParentTNode should have a parent');
+  assertDefined(tNode!.parent, 'previousOrParentTNode should have a parent');
 }
 
 export function assertDataNext(lView: LView, index: number, arr?: any[]) {
   if (arr == null) arr = lView;
   assertEqual(
       arr.length, index, `index ${index} expected to be at the end of arr (length ${arr.length})`);
-}
-
-export function assertLContainerOrUndefined(value: any): asserts value is LContainer|undefined|
-    null {
-  value && assertEqual(isLContainer(value), true, 'Expecting LContainer or undefined or null');
 }
 
 export function assertLContainer(value: any): asserts value is LContainer {

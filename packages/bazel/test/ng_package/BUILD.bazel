@@ -25,6 +25,10 @@ jasmine_node_test(
         "@npm//@types/shelljs",
         "@npm//shelljs",
     ],
+    # The "ng_package" rule currently does not properly handle flat module
+    # bundles which the common package tests rely on. We temporarily disable
+    # this test until we fix `ng_package` for Ivy. Tracked with: FW-2144.
+    tags = ["fixme-ivy-aot"],
 )
 
 ts_library(
@@ -45,6 +49,10 @@ jasmine_node_test(
         "//packages/common:npm_package",
         "@npm//shelljs",
     ],
+    # The "ng_package" rule currently does not properly handle flat module
+    # bundles which the common package tests rely on. We temporarily disable
+    # this test until we fix `ng_package` for Ivy. Tracked with: FW-2144.
+    tags = ["fixme-ivy-aot"],
 )
 
 ts_library(

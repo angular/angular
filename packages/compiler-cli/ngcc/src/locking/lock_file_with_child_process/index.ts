@@ -1,14 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {ChildProcess, fork} from 'child_process';
 
-import {AbsoluteFsPath, CachedFileSystem, FileSystem} from '../../../../src/ngtsc/file_system';
-import {Logger, LogLevel} from '../../logging/logger';
+import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
+import {Logger, LogLevel} from '../../../../src/ngtsc/logging';
 import {getLockFilePath, LockFile} from '../lock_file';
 
 import {removeLockFile} from './util';
@@ -57,11 +57,6 @@ export class LockFileWithChildProcess implements LockFile {
 
   read(): string {
     try {
-      if (this.fs instanceof CachedFileSystem) {
-        // The lock-file file is "volatile", it might be changed by an external process,
-        // so we must not rely upon the cached value when reading it.
-        this.fs.invalidateCaches(this.path);
-      }
       return this.fs.readFile(this.path);
     } catch {
       return '{unknown}';
@@ -81,6 +76,14 @@ export class LockFileWithChildProcess implements LockFile {
     this.logger.debug('Forking unlocker child-process');
     const logLevel =
         this.logger.level !== undefined ? this.logger.level.toString() : LogLevel.info.toString();
-    return fork(this.fs.resolve(__dirname, './unlocker.js'), [path, logLevel], {detached: true});
+    const isWindows = process.platform === 'win32';
+    const unlocker = fork(
+        __dirname + '/unlocker.js', [path, logLevel],
+        {detached: true, stdio: isWindows ? 'pipe' : 'inherit'});
+    if (isWindows) {
+      unlocker.stdout?.on('data', process.stdout.write.bind(process.stdout));
+      unlocker.stderr?.on('data', process.stderr.write.bind(process.stderr));
+    }
+    return unlocker;
   }
 }

@@ -6,17 +6,23 @@ var P = global[Zone.__symbol__('Promise')];
 
 var someRejectionReason = {message: 'some rejection reason'};
 var anotherReason = {message: 'another rejection reason'};
-process.on(
-    'unhandledRejection', function(reason, promise) { console.log('unhandledRejection', reason); });
+process.on('unhandledRejection', function(reason, promise) {
+  console.log('unhandledRejection', reason);
+});
 
 describe('mocha promise sanity check', () => {
-  it('passes with a resolved promise', () => { return P.resolve(3); });
+  it('passes with a resolved promise', () => {
+    return P.resolve(3);
+  });
 
-  it('passes with a rejected then resolved promise',
-     () => { return P.reject(someRejectionReason).catch(x => 'this should be resolved'); });
+  it('passes with a rejected then resolved promise', () => {
+    return P.reject(someRejectionReason).catch(x => 'this should be resolved');
+  });
 
   var ifPromiseIt = P === Promise ? it : it.skip;
-  ifPromiseIt('is the native Promise', () => { assert.equal(P, Promise); });
+  ifPromiseIt('is the native Promise', () => {
+    assert.equal(P, Promise);
+  });
 });
 
 describe('onFinally', () => {
@@ -33,7 +39,9 @@ describe('onFinally', () => {
                 assert.strictEqual(x, 3);
                 done();
               },
-              function onRejected() { done(new Error('should not be called')); });
+              function onRejected() {
+                done(new Error('should not be called'));
+              });
     });
 
     specify('from rejected', (done) => {
@@ -44,7 +52,9 @@ describe('onFinally', () => {
           })
           .finally()
           .then(
-              function onFulfilled() { done(new Error('should not be called')); },
+              function onFulfilled() {
+                done(new Error('should not be called'));
+              },
               function onRejected(reason) {
                 assert.strictEqual(reason, someRejectionReason);
                 done();
@@ -64,7 +74,9 @@ describe('onFinally', () => {
             throw someRejectionReason;
           })
           .then(
-              function onFulfilled() { done(new Error('should not be called')); },
+              function onFulfilled() {
+                done(new Error('should not be called'));
+              },
               function onRejected(reason) {
                 assert.strictEqual(reason, someRejectionReason);
                 done();
@@ -78,7 +90,9 @@ describe('onFinally', () => {
             throw someRejectionReason;
           })
           .then(
-              function onFulfilled() { done(new Error('should not be called')); },
+              function onFulfilled() {
+                done(new Error('should not be called'));
+              },
               function onRejected(reason) {
                 assert.strictEqual(reason, someRejectionReason);
                 done();
@@ -102,7 +116,9 @@ describe('onFinally', () => {
                 assert.strictEqual(x, 3);
                 done();
               },
-              function onRejected() { done(new Error('should not be called')); });
+              function onRejected() {
+                done(new Error('should not be called'));
+              });
     });
 
     specify('from rejected', (done) => {
@@ -116,7 +132,9 @@ describe('onFinally', () => {
             throw someRejectionReason;
           })
           .then(
-              function onFulfilled() { done(new Error('should not be called')); },
+              function onFulfilled() {
+                done(new Error('should not be called'));
+              },
               function onRejected(e) {
                 assert.strictEqual(e, someRejectionReason);
                 done();
@@ -188,7 +206,9 @@ describe('onFinally', () => {
                 assert.strictEqual(x, 3);
                 done();
               },
-              function onRejected() { done(new Error('should not be called')); });
+              function onRejected() {
+                done(new Error('should not be called'));
+              });
     });
 
     specify('from rejected', (done) => {
@@ -202,7 +222,9 @@ describe('onFinally', () => {
             return adapter.resolved(4);
           })
           .then(
-              function onFulfilled() { done(new Error('should not be called')); },
+              function onFulfilled() {
+                done(new Error('should not be called'));
+              },
               function onRejected(e) {
                 assert.strictEqual(e, someRejectionReason);
                 done();
@@ -222,7 +244,9 @@ describe('onFinally', () => {
             return adapter.rejected(4);
           })
           .then(
-              function onFulfilled(x) { done(new Error('should not be called')); },
+              function onFulfilled(x) {
+                done(new Error('should not be called'));
+              },
               function onRejected(e) {
                 assert.strictEqual(e, 4);
                 done();
@@ -241,7 +265,9 @@ describe('onFinally', () => {
             return adapter.rejected(newReason);
           })
           .then(
-              function onFulfilled(x) { done(new Error('should not be called')); },
+              function onFulfilled(x) {
+                done(new Error('should not be called'));
+              },
               function onRejected(e) {
                 assert.strictEqual(e, newReason);
                 done();
@@ -260,7 +286,9 @@ describe('onFinally', () => {
           .finally(function onFinally() {
             assert(arguments.length === 0);
             timeout = setTimeout(done, 1.5e3);
-            return new P((resolve) => { setTimeout(() => resolve(4), 1e3); });
+            return new P((resolve) => {
+              setTimeout(() => resolve(4), 1e3);
+            });
           })
           .then(
               function onFulfilled(x) {
@@ -284,7 +312,9 @@ describe('onFinally', () => {
           .finally(function onFinally() {
             assert(arguments.length === 0);
             timeout = setTimeout(done, 1.5e3);
-            return new P((resolve) => { setTimeout(() => resolve(4), 1e3); });
+            return new P((resolve) => {
+              setTimeout(() => resolve(4), 1e3);
+            });
           })
           .then(
               function onFulfilled() {
@@ -310,7 +340,9 @@ describe('onFinally', () => {
           .finally(function onFinally() {
             assert(arguments.length === 0);
             timeout = setTimeout(done, 1.5e3);
-            return new P((resolve, reject) => { setTimeout(() => reject(4), 1e3); });
+            return new P((resolve, reject) => {
+              setTimeout(() => reject(4), 1e3);
+            });
           })
           .then(
               function onFulfilled() {
@@ -334,7 +366,9 @@ describe('onFinally', () => {
           .finally(function onFinally() {
             assert(arguments.length === 0);
             timeout = setTimeout(done, 1.5e3);
-            return new P((resolve, reject) => { setTimeout(() => reject(anotherReason), 1e3); });
+            return new P((resolve, reject) => {
+              setTimeout(() => reject(anotherReason), 1e3);
+            });
           })
           .then(
               function onFulfilled() {

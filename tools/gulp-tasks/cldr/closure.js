@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -138,7 +138,9 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
     return str;
   }
 
-  function formatLocale(locale) { return locale.replace(/-/g, '_'); }
+  function formatLocale(locale) {
+    return locale.replace(/-/g, '_');
+  }
   // clang-format off
   return `${HEADER}
 import {registerLocaleData} from '../src/i18n/locale_data';

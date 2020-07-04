@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -101,6 +101,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   private readonly overrideDirectory = new Set<string>();
   private readonly existsCache = new Map<string, boolean>();
   private readonly fileCache = new Map<string, string|undefined>();
+  errors: string[] = [];
 
   constructor(
       private readonly scriptNames: string[],
@@ -122,6 +123,19 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
       this.overrides.delete(fileName);
     }
     return content;
+  }
+
+  /**
+   * Override the inline template in `fileName`.
+   * @param fileName path to component that has inline template
+   * @param content new template
+   *
+   * @return the new content of the file
+   */
+  overrideInlineTemplate(fileName: string, content: string): string {
+    const originalContent = this.getRawFileContent(fileName)!;
+    const newContent = originalContent.replace(/template: `([\s\S]+)`/, `template: \`${content}\``);
+    return this.override(fileName, newContent);
   }
 
   addScript(fileName: string, content: string) {
@@ -384,6 +398,10 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
       };
     }
     throw new Error(`Failed to find marker '${selector}' in ${fileName}`);
+  }
+
+  error(msg: string) {
+    this.errors.push(msg);
   }
 }
 

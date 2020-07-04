@@ -1,7 +1,7 @@
 
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -122,7 +122,7 @@ export class DecoratorRewriter {
       |null {
     try {
       return ts
-          .transform(prop, [ctx => this.importRewriterFactory.create(ctx, this.newSourceFile !)])
+          .transform(prop, [ctx => this.importRewriterFactory.create(ctx, this.newSourceFile!)])
           .transformed[0];
     } catch (e) {
       // If the error is for an unresolved identifier, we want to return "null" because

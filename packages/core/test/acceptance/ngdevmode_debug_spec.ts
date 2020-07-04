@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -40,10 +40,9 @@ onlyInIvy('Debug information exist in ivy only').describe('ngDevMode debug', () 
 
       const element: HTMLElement = fixture.nativeElement;
       fixture.detectChanges();
-      const li = element.querySelector('li') !;
+      const li = element.querySelector('li')!;
       const embeddedLView = loadLContext(li).lView;
       expect(embeddedLView.constructor.name).toEqual('LEmbeddedView_MyApp_li_1');
-
     });
   });
 });

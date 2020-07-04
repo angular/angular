@@ -1,12 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFrom, AbsoluteFsPath, dirname, FileSystem, isRoot, join, resolve} from '../../../src/ngtsc/file_system';
-import {isRelativePath, PathMappings, resolveFileWithPostfixes} from '../utils';
+import {PathMappings} from '../path_mappings';
+import {isRelativePath, resolveFileWithPostfixes} from '../utils';
 
 /**
  * This is a very cut-down implementation of the TypeScript module resolution strategy.

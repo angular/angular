@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,9 @@ import {DynamicValue} from './dynamic';
 import {KnownFn, ResolvedValue, ResolvedValueArray} from './result';
 
 export class ArraySliceBuiltinFn extends KnownFn {
-  constructor(private lhs: ResolvedValueArray) { super(); }
+  constructor(private lhs: ResolvedValueArray) {
+    super();
+  }
 
   evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
     if (args.length === 0) {
@@ -24,7 +26,9 @@ export class ArraySliceBuiltinFn extends KnownFn {
 }
 
 export class ArrayConcatBuiltinFn extends KnownFn {
-  constructor(private lhs: ResolvedValueArray) { super(); }
+  constructor(private lhs: ResolvedValueArray) {
+    super();
+  }
 
   evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
     const result: ResolvedValueArray = [...this.lhs];

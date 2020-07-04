@@ -1,15 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {AbsoluteFsPath, FileSystem, PathSegment} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵMessageId, ɵParsedTranslation} from '@angular/localize';
-import {relative} from 'path';
 
 import {Diagnostics} from '../diagnostics';
-import {FileUtils} from '../file_utils';
 
 import {OutputPathFn} from './output_path';
 
@@ -36,7 +35,7 @@ export interface TranslationHandler {
    * @param relativeFilePath A relative path from the sourceRoot to the resource file to handle.
    * @param contents The contents of the file to handle.
    */
-  canTranslate(relativeFilePath: string, contents: Buffer): boolean;
+  canTranslate(relativeFilePath: PathSegment, contents: Buffer): boolean;
 
   /**
    * Translate the file at `relativeFilePath` containing `contents`, using the given `translations`,
@@ -54,8 +53,9 @@ export interface TranslationHandler {
    * stripped out.
    */
   translate(
-      diagnostics: Diagnostics, sourceRoot: string, relativeFilePath: string, contents: Buffer,
-      outputPathFn: OutputPathFn, translations: TranslationBundle[], sourceLocale?: string): void;
+      diagnostics: Diagnostics, sourceRoot: AbsoluteFsPath, relativeFilePath: PathSegment,
+      contents: Buffer, outputPathFn: OutputPathFn, translations: TranslationBundle[],
+      sourceLocale?: string): void;
 }
 
 /**
@@ -63,14 +63,17 @@ export interface TranslationHandler {
  * The file will be translated by the first handler that returns true for `canTranslate()`.
  */
 export class Translator {
-  constructor(private resourceHandlers: TranslationHandler[], private diagnostics: Diagnostics) {}
+  constructor(
+      private fs: FileSystem, private resourceHandlers: TranslationHandler[],
+      private diagnostics: Diagnostics) {}
 
   translateFiles(
-      inputPaths: string[], rootPath: string, outputPathFn: OutputPathFn,
+      inputPaths: PathSegment[], rootPath: AbsoluteFsPath, outputPathFn: OutputPathFn,
       translations: TranslationBundle[], sourceLocale?: string): void {
     inputPaths.forEach(inputPath => {
-      const contents = FileUtils.readFileBuffer(inputPath);
-      const relativePath = relative(rootPath, inputPath);
+      const absInputPath = this.fs.resolve(rootPath, inputPath);
+      const contents = this.fs.readFileBuffer(absInputPath);
+      const relativePath = this.fs.relative(rootPath, absInputPath);
       for (const resourceHandler of this.resourceHandlers) {
         if (resourceHandler.canTranslate(relativePath, contents)) {
           return resourceHandler.translate(

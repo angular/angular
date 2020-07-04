@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {NgccReflectionHost, SwitchableVariableDeclaration} from '../host/ngcc_host';
 import {isWithinPackage} from './util';
 
@@ -35,7 +35,7 @@ export class SwitchMarkerAnalyzer {
   analyzeProgram(program: ts.Program): SwitchMarkerAnalyses {
     const analyzedFiles = new SwitchMarkerAnalyses();
     program.getSourceFiles()
-        .filter(sourceFile => isWithinPackage(this.packagePath, sourceFile))
+        .filter(sourceFile => isWithinPackage(this.packagePath, absoluteFromSourceFile(sourceFile)))
         .forEach(sourceFile => {
           const declarations = this.host.getSwitchableDeclarations(sourceFile);
           if (declarations.length) {

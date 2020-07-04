@@ -6,10 +6,9 @@ It includes information about prerequisites, installing the CLI, creating an ini
 
 
 <div class="callout is-helpful">
-<header>Learning Angular</header>
+<header>Try Angular without local setup</header>
 
-If you are new to Angular, see [Getting Started](start). Getting Started helps you quickly learn the essentials of Angular, in the context of building a basic online store app. It leverages the [StackBlitz](https://stackblitz.com/) online development environment, so you don't need to set up your local environment until you're ready.
-
+If you are new to Angular, you might want to start with [Try it now!](start), which introduces the essentials of Angular in the context of a ready-made basic online store app that you can examine and modify. This standalone tutorial takes advantage of the interactive [StackBlitz](https://stackblitz.com/) environment for online development. You don't need to set up your local environment until you're ready.
 
 </div>
 
@@ -18,49 +17,56 @@ If you are new to Angular, see [Getting Started](start). Getting Started helps y
 {@a prerequisites}
 ## Prerequisites
 
-Before you begin, make sure your development environment includes `Node.js®` and an npm package manager.
+To use the Angular framework, you should be familiar with the following:
+
+* [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
+* [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML)
+* [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps)
+
+Knowledge of [TypeScript](https://www.typescriptlang.org/) is helpful, but not required.
+
+To install Angular on your local system, you need the following:
 
 {@a nodejs}
-### Node.js
 
-Angular requires a [current, active LTS, or maintenance LTS](https://nodejs.org/about/releases/) version of `Node.js`. See the `engines` key for the specific version requirements in our [package.json](https://unpkg.com/@angular/cli/package.json).
+* **Node.js**
+  
+  Angular requires a [current, active LTS, or maintenance LTS](https://nodejs.org/about/releases) version of Node.js.
 
-* To check your version, run `node -v` in a terminal/console window.
+  <div class="alert is-helpful">
 
-* To get `Node.js`, go to [nodejs.org](https://nodejs.org "Nodejs.org").
+  For information about specific version requirements, see the `engines` key in the [package.json](https://unpkg.com/@angular/cli/package.json) file.
+
+  </div>
+
+  For more information on installing Node.js, see [nodejs.org](http://nodejs.org "Nodejs.org").
+  If you are unsure what version of Node.js runs on your system, run `node -v` in a terminal window.
 
 {@a npm}
-### npm package manager
 
-Angular, the Angular CLI, and Angular apps depend on features and functionality provided by libraries that are available as [npm packages](https://docs.npmjs.com/getting-started/what-is-npm). To download and install npm packages, you must have an npm package manager.
+* **npm package manager**
 
-This setup guide uses the [npm client](https://docs.npmjs.com/cli/install) command line interface, which is installed with `Node.js` by default.
-
-To check that you have the npm client installed, run `npm -v` in a terminal/console window.
+  Angular, the Angular CLI, and Angular applications depend on [npm packages](https://docs.npmjs.com/getting-started/what-is-npm) for many features and functions.
+  To download and install npm packages, you need an npm package manager.
+  This guide uses the [npm client](https://docs.npmjs.com/cli/install) command line interface, which is installed with `Node.js` by default.
+  To check that you have the npm client installed, run `npm -v` in a terminal window.
 
 
 {@a install-cli}
 
-## Step 1: Install the Angular CLI
+## Install the Angular CLI
 
-You use the Angular CLI
-to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
+You use the Angular CLI to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
 
-Install the Angular CLI globally.
-
-To install the CLI using `npm`, open a terminal/console window and enter the following command:
-
+To install the Angular CLI, open a terminal window and run the following command:
 
 <code-example language="sh" class="code-shell">
   npm install -g @angular/cli
-
 </code-example>
-
-
 
 {@a create-proj}
 
-## Step 2: Create a workspace and initial application
+## Create a workspace and initial application
 
 You develop apps in the context of an Angular [**workspace**](guide/glossary#workspace).
 
@@ -79,16 +85,22 @@ The Angular CLI installs the necessary Angular npm packages and other dependenci
 
 The CLI creates a new workspace and a simple Welcome app, ready to run.
 
+<div class="alert is-helpful">
+
+You also have the option to use Angular's strict mode, which can help you write better, more maintainable code.
+For more information, see [Strict mode](/guide/strict-mode).
+
+</div>
 
 {@a serve}
 
-## Step 3: Run the application
+## Run the application
 
-The Angular CLI includes a server, so that you can easily build and serve your app locally.
+The Angular CLI includes a server, so that you can build and serve your app locally.
 
-1. Go to the workspace folder (`my-app`).
+1. Navigate to the workspace folder, such as `my-app`.
 
-1. Launch the server by using the CLI command `ng serve`, with the `--open` option.
+1. Run the following command:
 
 <code-example language="sh" class="code-shell">
   cd my-app
@@ -101,7 +113,7 @@ and rebuilds the app as you make changes to those files.
 The `--open` (or just `-o`) option automatically opens your browser
 to `http://localhost:4200/`.
 
-You will see:
+If your installation and setup was successful, you should see a page similar to the following.
 
 
 <div class="lightbox">
@@ -111,18 +123,10 @@ You will see:
 
 ## Next steps
 
+* For a more thorough introduction to the fundamental concepts and terminology of Angular single-page app architecture and design principles, read the [Angular Concepts](guide/architecture) section.
 
-* If you are new to Angular, see the [Getting Started](start) tutorial. Getting Started helps you quickly learn the essentials of Angular, in the context of building a basic online store app.
-
-  <div class="alert is-helpful">
-
-  Getting Started assumes the [StackBlitz](https://stackblitz.com/) online development environment.
-  To learn how to export an app from StackBlitz to your local environment, skip ahead to the [Deployment](start/start-deployment "Getting Started: Deployment") section.
-
-  </div>
-
+* Work through the [Tour of Heroes Tutorial](tutorial), a complete hands-on exercise that introduces you to the app development process using the Angular CLI and walks through important subsystems.
 
 * To learn more about using the Angular CLI, see the [CLI Overview](cli "CLI Overview"). In addition to creating the initial workspace and app scaffolding, you can use the CLI to generate Angular code such as components and services. The CLI supports the full development cycle, including building, testing, bundling, and deployment.
-
 
 * For more information about the Angular files generated by `ng new`, see [Workspace and Project File Structure](guide/file-structure).

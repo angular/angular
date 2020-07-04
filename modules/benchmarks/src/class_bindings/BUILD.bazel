@@ -1,7 +1,7 @@
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
-load("//tools/components:component_benchmark.bzl", "component_benchmark")
+load("//dev-infra/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
 
 sass_binary(
     name = "class_bindings_styles",
@@ -12,7 +12,8 @@ component_benchmark(
     name = "benchmark",
     driver = ":class_bindings.perf-spec.ts",
     driver_deps = [
-        "//modules/e2e_util",
+        "//dev-infra/benchmark/driver-utilities",
+        "@npm//@types/jasmine",
         "@npm//protractor",
     ],
     ng_deps = [

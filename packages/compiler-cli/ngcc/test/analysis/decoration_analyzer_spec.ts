@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 import {FatalDiagnosticError, makeDiagnostic} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
@@ -18,7 +19,6 @@ import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registr
 import {CompiledClass, DecorationAnalyses} from '../../src/analysis/types';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Migration, MigrationHost} from '../../src/migrations/migration';
-import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
 type DecoratorHandlerWithResolve = DecoratorHandler<unknown, unknown, unknown>&{
@@ -95,7 +95,7 @@ runInEachFileSystem(() => {
         });
         // The "test" compilation result is just the name of the decorator being compiled
         // (suffixed with `(compiled)`)
-        handler.compile.and.callFake((decl: ts.Declaration, analysis: any) => {
+        (handler.compile as any).and.callFake((decl: ts.Declaration, analysis: any) => {
           logs.push(`compile: ${(decl as any).name.text}@${analysis.decoratorName} (resolved: ${
               analysis.resolved})`);
           return `@${analysis.decoratorName} (compiled)`;
@@ -183,7 +183,7 @@ runInEachFileSystem(() => {
         it('should call detect on the decorator handlers with each class from the parsed file',
            () => {
              expect(testHandler.detect).toHaveBeenCalledTimes(5);
-             expect(testHandler.detect.calls.allArgs().map(args => args[1])).toEqual([
+             expect(testHandler.detect.calls.allArgs().map((args: any[]) => args[1])).toEqual([
                null,
                jasmine.arrayContaining([jasmine.objectContaining({name: 'Component'})]),
                jasmine.arrayContaining([jasmine.objectContaining({name: 'Directive'})]),
@@ -313,17 +313,31 @@ runInEachFileSystem(() => {
               contents: `
         import {Component, NgModule} from '@angular/core';
         import {ImportedComponent} from 'other/component';
+        import {NestedDependencyComponent} from 'nested/component';
 
         export class LocalComponent {}
         LocalComponent.decorators = [{type: Component}];
 
         export class MyModule {}
         MyModule.decorators = [{type: NgModule, args: [{
-                    declarations: [ImportedComponent, LocalComponent],
-                    exports: [ImportedComponent, LocalComponent],
+                    declarations: [ImportedComponent, NestedDependencyComponent, LocalComponent],
+                    exports: [ImportedComponent, NestedDependencyComponent, LocalComponent],
                 },] }];
       `
             },
+            // Do not define a `.d.ts` file to ensure that the `.js` file will be part of the TS
+            // program.
+            {
+              name: _('/node_modules/test-package/node_modules/nested/component.js'),
+              contents: `
+        import {Component} from '@angular/core';
+        export class NestedDependencyComponent {}
+        NestedDependencyComponent.decorators = [{type: Component}];
+      `,
+              isRoot: false,
+            },
+            // Do not define a `.d.ts` file to ensure that the `.js` file will be part of the TS
+            // program.
             {
               name: _('/node_modules/other/component.js'),
               contents: `
@@ -333,12 +347,6 @@ runInEachFileSystem(() => {
       `,
               isRoot: false,
             },
-            {
-              name: _('/node_modules/other/component.d.ts'),
-              contents: `
-        import {Component} from '@angular/core';
-        export class ImportedComponent {}`
-            },
           ];
 
           const analyzer = setUpAnalyzer(EXTERNAL_COMPONENT_PROGRAM);
@@ -347,6 +355,12 @@ runInEachFileSystem(() => {
 
         it('should ignore classes from an externally imported file', () => {
           const file = program.getSourceFile(_('/node_modules/other/component.js'))!;
+          expect(result.has(file)).toBe(false);
+        });
+
+        it('should ignore classes from a file imported from a nested `node_modules/`', () => {
+          const file = program.getSourceFile(
+              _('/node_modules/test-package/node_modules/nested/component.js'))!;
           expect(result.has(file)).toBe(false);
         });
       });

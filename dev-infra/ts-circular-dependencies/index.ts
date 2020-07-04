@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,8 @@ import {sync as globSync} from 'glob';
 import {isAbsolute, relative, resolve} from 'path';
 import * as ts from 'typescript';
 import * as yargs from 'yargs';
-import chalk from 'chalk';
+
+import {green, info, error, red, yellow} from '../utils/console';
 
 import {Analyzer, ReferenceChain} from './analyzer';
 import {compareGoldens, convertReferenceChainToGolden, Golden} from './golden';
@@ -66,15 +67,14 @@ export function main(
 
   const actual = convertReferenceChainToGolden(cycles, baseDir);
 
-  console.info(
-      chalk.green(`   Current number of cycles: ${chalk.yellow(cycles.length.toString())}`));
+  info(green(`   Current number of cycles: ${yellow(cycles.length.toString())}`));
 
   if (approve) {
     writeFileSync(goldenFile, JSON.stringify(actual, null, 2));
-    console.info(chalk.green('✅  Updated golden file.'));
+    info(green('✅  Updated golden file.'));
     return 0;
   } else if (!existsSync(goldenFile)) {
-    console.error(chalk.red(`❌  Could not find golden file: ${goldenFile}`));
+    error(red(`❌  Could not find golden file: ${goldenFile}`));
     return 1;
   }
 
@@ -84,17 +84,15 @@ export function main(
   // it's common that third-party modules are not resolved/visited. Also generated files
   // from the View Engine compiler (i.e. factories, summaries) cannot be resolved.
   if (printWarnings && warningsCount !== 0) {
-    console.info(chalk.yellow('⚠  The following imports could not be resolved:'));
-    Array.from(analyzer.unresolvedModules)
-        .sort()
-        .forEach(specifier => console.info(`  • ${specifier}`));
+    info(yellow('⚠  The following imports could not be resolved:'));
+    Array.from(analyzer.unresolvedModules).sort().forEach(specifier => info(`  • ${specifier}`));
     analyzer.unresolvedFiles.forEach((value, key) => {
-      console.info(`  • ${getRelativePath(baseDir, key)}`);
-      value.sort().forEach(specifier => console.info(`      ${specifier}`));
+      info(`  • ${getRelativePath(baseDir, key)}`);
+      value.sort().forEach(specifier => info(`      ${specifier}`));
     });
   } else {
-    console.info(chalk.yellow(`⚠  ${warningsCount} imports could not be resolved.`));
-    console.info(chalk.yellow(`   Please rerun with "--warnings" to inspect unresolved imports.`));
+    info(yellow(`⚠  ${warningsCount} imports could not be resolved.`));
+    info(yellow(`   Please rerun with "--warnings" to inspect unresolved imports.`));
   }
 
   const expected: Golden = JSON.parse(readFileSync(goldenFile, 'utf8'));
@@ -102,25 +100,24 @@ export function main(
   const isMatching = fixedCircularDeps.length === 0 && newCircularDeps.length === 0;
 
   if (isMatching) {
-    console.info(chalk.green('✅  Golden matches current circular dependencies.'));
+    info(green('✅  Golden matches current circular dependencies.'));
     return 0;
   }
 
-  console.error(chalk.red('❌  Golden does not match current circular dependencies.'));
+  error(red('❌  Golden does not match current circular dependencies.'));
   if (newCircularDeps.length !== 0) {
-    console.error(chalk.yellow(`   New circular dependencies which are not allowed:`));
-    newCircularDeps.forEach(c => console.error(`     • ${convertReferenceChainToString(c)}`));
-    console.error();
+    error(yellow(`   New circular dependencies which are not allowed:`));
+    newCircularDeps.forEach(c => error(`     • ${convertReferenceChainToString(c)}`));
+    error();
   }
   if (fixedCircularDeps.length !== 0) {
-    console.error(
-        chalk.yellow(`   Fixed circular dependencies that need to be removed from the golden:`));
-    fixedCircularDeps.forEach(c => console.error(`     • ${convertReferenceChainToString(c)}`));
-    console.error();
+    error(yellow(`   Fixed circular dependencies that need to be removed from the golden:`));
+    fixedCircularDeps.forEach(c => error(`     • ${convertReferenceChainToString(c)}`));
+    error();
     if (approveCommand) {
-      console.info(chalk.yellow(`   Please approve the new golden with: ${approveCommand}`));
+      info(yellow(`   Please approve the new golden with: ${approveCommand}`));
     } else {
-      console.info(chalk.yellow(
+      info(yellow(
           `   Please update the golden. The following command can be ` +
           `run: yarn ts-circular-deps approve ${getRelativePath(process.cwd(), goldenFile)}.`));
     }

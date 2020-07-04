@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,6 +9,7 @@ import * as ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
 import {FileSystem} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analysis/module_with_providers_analyzer';
@@ -22,7 +23,6 @@ import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {UmdReflectionHost} from '../host/umd_host';
-import {Logger} from '../logging/logger';
 import {CommonJsRenderingFormatter} from '../rendering/commonjs_rendering_formatter';
 import {DtsRenderer} from '../rendering/dts_renderer';
 import {Esm5RenderingFormatter} from '../rendering/esm5_rendering_formatter';
@@ -94,7 +94,8 @@ export class Transformer {
     // Transform the source files and source maps.
     const srcFormatter = this.getRenderingFormatter(ngccReflectionHost, bundle);
 
-    const renderer = new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle);
+    const renderer =
+        new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle, this.tsConfig);
     let renderedFiles = renderer.renderProgram(
         decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
 
@@ -147,7 +148,7 @@ export class Transformer {
     const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
 
     const switchMarkerAnalyzer =
-        new SwitchMarkerAnalyzer(reflectionHost, bundle.entryPoint.package);
+        new SwitchMarkerAnalyzer(reflectionHost, bundle.entryPoint.packagePath);
     const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
 
     const diagnostics: ts.Diagnostic[] = [];
@@ -156,8 +157,9 @@ export class Transformer {
         diagnostic => diagnostics.push(diagnostic), this.tsConfig);
     const decorationAnalyses = decorationAnalyzer.analyzeProgram();
 
-    const moduleWithProvidersAnalyzer =
-        new ModuleWithProvidersAnalyzer(reflectionHost, referencesRegistry, bundle.dts !== null);
+    const moduleWithProvidersAnalyzer = new ModuleWithProvidersAnalyzer(
+        reflectionHost, bundle.src.program.getTypeChecker(), referencesRegistry,
+        bundle.dts !== null);
     const moduleWithProvidersAnalyses = moduleWithProvidersAnalyzer &&
         moduleWithProvidersAnalyzer.analyzeProgram(bundle.src.program);
 

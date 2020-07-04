@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -55,7 +55,9 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
     describe('ClassProvider', () => {
       it('works', () => {
         // #docregion ClassProvider
-        abstract class Shape { name !: string; }
+        abstract class Shape {
+          name!: string;
+        }
 
         class Square extends Shape {
           name = 'square';
@@ -92,7 +94,9 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
     describe('StaticClassProvider', () => {
       it('works', () => {
         // #docregion StaticClassProvider
-        abstract class Shape { name !: string; }
+        abstract class Shape {
+          name!: string;
+        }
 
         class Square extends Shape {
           name = 'square';
@@ -200,6 +204,5 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         // #enddocregion
       });
     });
-
   });
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -82,8 +82,12 @@ export class NgccTraitCompiler extends TraitCompiler {
   }
 }
 
-class NoIncrementalBuild implements IncrementalBuild<any> {
+class NoIncrementalBuild implements IncrementalBuild<any, any> {
   priorWorkFor(sf: ts.SourceFile): any[]|null {
+    return null;
+  }
+
+  priorTypeCheckingResultsFor(): null {
     return null;
   }
 }

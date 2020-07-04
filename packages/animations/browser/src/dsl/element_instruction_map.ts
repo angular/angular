@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,7 +28,11 @@ export class ElementInstructionMap {
     existingInstructions.push(...instructions);
   }
 
-  has(element: any): boolean { return this._map.has(element); }
+  has(element: any): boolean {
+    return this._map.has(element);
+  }
 
-  clear() { this._map.clear(); }
+  clear() {
+    this._map.clear();
+  }
 }

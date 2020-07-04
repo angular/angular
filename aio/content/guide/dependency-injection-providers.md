@@ -197,11 +197,11 @@ Like  `EvenBetterLogger`, `HeroService` needs to know if the user is authorized 
 That authorization can change during the course of a single application session,
 as when you log in a different user.
 
-Let's say you don't want to inject `UserService` directly into `HeroService`, because you don't want to complicate that service with security-sensitive information.
+Imagine that you don't want to inject `UserService` directly into `HeroService`, because you don't want to complicate that service with security-sensitive information.
 `HeroService` won't have direct access to the user information to decide
 who is authorized and who isn't.
 
-To resolve this, we give the `HeroService` constructor a boolean flag to control display of secret heroes.
+To resolve this, give the `HeroService` constructor a boolean flag to control display of secret heroes.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.ts" region="internals" header="src/app/heroes/hero.service.ts (excerpt)"></code-example>
 

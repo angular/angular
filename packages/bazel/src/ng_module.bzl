@@ -1,4 +1,4 @@
-# Copyright Google Inc. All Rights Reserved.
+# Copyright Google LLC All Rights Reserved.
 #
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
@@ -7,12 +7,14 @@
 
 load(
     ":external.bzl",
+    "BuildSettingInfo",
     "COMMON_ATTRIBUTES",
     "COMMON_OUTPUTS",
     "DEFAULT_API_EXTRACTOR",
     "DEFAULT_NG_COMPILER",
     "DEFAULT_NG_XI18N",
     "DEPS_ASPECTS",
+    "LinkablePackageInfo",
     "NpmPackageInfo",
     "TsConfigInfo",
     "compile_ts",
@@ -35,6 +37,15 @@ def is_ivy_enabled(ctx):
     Returns:
       Boolean, Whether the ivy compiler should be used.
     """
+
+    # Check the renderer flag to see if Ivy is enabled.
+    # This is intended to support a transition use case for google3 migration.
+    # The `_renderer` attribute will never be set externally, but will always be
+    # set internally as a `string_flag()` with the allowed values of:
+    # "view_engine" or "ivy".
+    if ((hasattr(ctx.attr, "_renderer") and
+         ctx.attr._renderer[BuildSettingInfo].value == "ivy")):
+        return True
 
     # TODO(josephperott): Remove after ~Feb 2020, to allow local script migrations
     if "compile" in ctx.var and ctx.workspace_name == "angular":
@@ -174,6 +185,7 @@ def _expected_outs(ctx):
     devmode_js_files = []
     closure_js_files = []
     declaration_files = []
+    transpilation_infos = []
     summary_files = []
     metadata_files = []
 
@@ -223,11 +235,18 @@ def _expected_outs(ctx):
             continue
 
         filter_summaries = ctx.attr.filter_summaries
-        closure_js = [f.replace(".js", ".mjs") for f in devmode_js if not filter_summaries or not f.endswith(".ngsummary.js")]
         declarations = [f.replace(".js", ".d.ts") for f in devmode_js]
 
-        devmode_js_files += [ctx.actions.declare_file(basename + ext) for ext in devmode_js]
-        closure_js_files += [ctx.actions.declare_file(basename + ext) for ext in closure_js]
+        for devmode_ext in devmode_js:
+            devmode_js_file = ctx.actions.declare_file(basename + devmode_ext)
+            devmode_js_files.append(devmode_js_file)
+
+            if not filter_summaries or not devmode_ext.endswith(".ngsummary.js"):
+                closure_ext = devmode_ext.replace(".js", ".mjs")
+                closure_js_file = ctx.actions.declare_file(basename + closure_ext)
+                closure_js_files.append(closure_js_file)
+                transpilation_infos.append(struct(closure = closure_js_file, devmode = devmode_js_file))
+
         declaration_files += [ctx.actions.declare_file(basename + ext) for ext in declarations]
         summary_files += [ctx.actions.declare_file(basename + ext) for ext in summaries]
         if not _is_bazel():
@@ -270,6 +289,7 @@ def _expected_outs(ctx):
         closure_js = closure_js_files,
         devmode_js = devmode_js_files,
         declarations = declaration_files,
+        transpilation_infos = transpilation_infos,
         summaries = summary_files,
         metadata = metadata_files,
         dts_bundles = dts_bundles,
@@ -630,6 +650,15 @@ def _ng_module_impl(ctx):
         # (JSModuleInfo) and remove legacy "typescript" provider
         # once it is no longer needed.
     ])
+
+    if ctx.attr.module_name:
+        path = "/".join([p for p in [ctx.bin_dir.path, ctx.label.workspace_root, ctx.label.package] if p])
+        ts_providers["providers"].append(LinkablePackageInfo(
+            package_name = ctx.attr.module_name,
+            path = path,
+            files = ts_providers["typescript"]["es5_sources"],
+            _tslibrary = True,
+        ))
 
     return ts_providers_dict_to_struct(ts_providers)
 

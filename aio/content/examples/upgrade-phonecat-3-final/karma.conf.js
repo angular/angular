@@ -31,8 +31,8 @@ module.exports = function(config) {
       'node_modules/core-js/client/shim.js',
 
       // zone.js
-      'node_modules/zone.js/dist/zone.js',
-      'node_modules/zone.js/dist/zone-testing.js',
+      'node_modules/zone.js/bundles/zone.umd.js',
+      'node_modules/zone.js/bundles/zone-testing.umd.js',
 
       // RxJs
       { pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false },

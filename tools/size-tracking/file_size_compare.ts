@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -40,7 +40,7 @@ export function compareFileSizeData(
 
 /** Compares two file size entries and returns an array of size differences. */
 function compareSizeEntry(
-    actual: DirectorySizeEntry | number, expected: DirectorySizeEntry | number, filePath: string,
+    actual: DirectorySizeEntry|number, expected: DirectorySizeEntry|number, filePath: string,
     threshold: Threshold) {
   if (typeof actual !== 'number' && typeof expected !== 'number') {
     return compareDirectorySizeEntry(actual, expected, filePath, threshold);

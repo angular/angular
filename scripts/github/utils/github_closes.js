@@ -2,7 +2,7 @@
 
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,7 +28,7 @@ if (require.main === module) {
 
 function rewriteMsg(msg, prNo) {
   var lines = msg.split(/\n/);
-  lines[0] += ' (#' + prNo +')';
+  lines[0] += ' (#' + prNo + ')';
   lines.push('PR Close #' + prNo);
   return lines.join('\n');
 }

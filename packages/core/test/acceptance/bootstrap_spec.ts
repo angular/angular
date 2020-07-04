@@ -1,23 +1,22 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Component, NgModule, ViewEncapsulation, destroyPlatform} from '@angular/core';
+import {COMPILER_OPTIONS, Component, destroyPlatform, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {onlyInIvy, withBody} from '@angular/private/testing';
 
 describe('bootstrap', () => {
-
   beforeEach(destroyPlatform);
   afterEach(destroyPlatform);
 
   it('should bootstrap using #id selector',
-     withBody('<div>before|</div><button id="my-app"></button>', async() => {
+     withBody('<div>before|</div><button id="my-app"></button>', async () => {
        try {
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(IdSelectorAppModule);
          expect(document.body.textContent).toEqual('before|works!');
@@ -28,7 +27,7 @@ describe('bootstrap', () => {
      }));
 
   it('should bootstrap using one of selectors from the list',
-     withBody('<div>before|</div><div class="bar"></div>', async() => {
+     withBody('<div>before|</div><div class="bar"></div>', async () => {
        try {
          const ngModuleRef =
              await platformBrowserDynamic().bootstrapModule(MultipleSelectorsAppModule);
@@ -41,9 +40,11 @@ describe('bootstrap', () => {
 
   describe('options', () => {
     function createComponentAndModule(
-        options: {encapsulation?: ViewEncapsulation; preserveWhitespaces?: boolean} = {}) {
+        options:
+            {encapsulation?: ViewEncapsulation; preserveWhitespaces?: boolean;
+             selector?: string} = {}) {
       @Component({
-        selector: 'my-app',
+        selector: options.selector || 'my-app',
         styles: [''],
         template: '<span>a    b</span>',
         encapsulation: options.encapsulation,
@@ -66,7 +67,7 @@ describe('bootstrap', () => {
     }
 
     it('should use ViewEncapsulation.Emulated as default',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
@@ -75,7 +76,7 @@ describe('bootstrap', () => {
        }));
 
     it('should allow setting defaultEncapsulation using bootstrap option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(
@@ -86,7 +87,7 @@ describe('bootstrap', () => {
        }));
 
     it('should allow setting defaultEncapsulation using compiler option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef = await platformBrowserDynamic([{
@@ -100,7 +101,7 @@ describe('bootstrap', () => {
        }));
 
     it('should prefer encapsulation on component over bootstrap option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule({encapsulation: ViewEncapsulation.Emulated});
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(
@@ -110,7 +111,7 @@ describe('bootstrap', () => {
        }));
 
     it('should use preserveWhitespaces: false as default',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
@@ -119,7 +120,7 @@ describe('bootstrap', () => {
        }));
 
     it('should allow setting preserveWhitespaces using bootstrap option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(
@@ -129,7 +130,7 @@ describe('bootstrap', () => {
        }));
 
     it('should allow setting preserveWhitespaces using compiler option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef =
@@ -141,7 +142,7 @@ describe('bootstrap', () => {
        }));
 
     it('should prefer preserveWhitespaces on component over bootstrap option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule({preserveWhitespaces: false});
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(
@@ -151,19 +152,22 @@ describe('bootstrap', () => {
        }));
 
     onlyInIvy('options cannot be changed in Ivy').describe('changing bootstrap options', () => {
-      beforeEach(() => { spyOn(console, 'error'); });
+      beforeEach(() => {
+        spyOn(console, 'error');
+      });
 
       it('should log an error when changing defaultEncapsulation bootstrap options',
-         withBody('<my-app></my-app>', async() => {
-           const TestModule = createComponentAndModule();
+         withBody('<my-app-a></my-app-a><my-app-b></my-app-b>', async () => {
            const platformRef = platformBrowserDynamic();
 
-           const ngModuleRef = await platformRef.bootstrapModule(
-               TestModule, {defaultEncapsulation: ViewEncapsulation.None});
-           ngModuleRef.destroy();
+           const TestModuleA = createComponentAndModule({selector: 'my-app-a'});
+           const ngModuleRefA = await platformRef.bootstrapModule(
+               TestModuleA, {defaultEncapsulation: ViewEncapsulation.None});
+           ngModuleRefA.destroy();
 
-           const ngModuleRef2 = await platformRef.bootstrapModule(
-               TestModule, {defaultEncapsulation: ViewEncapsulation.ShadowDom});
+           const TestModuleB = createComponentAndModule({selector: 'my-app-b'});
+           const ngModuleRefB = await platformRef.bootstrapModule(
+               TestModuleB, {defaultEncapsulation: ViewEncapsulation.ShadowDom});
            expect(console.error)
                .toHaveBeenCalledWith(
                    'Provided value for `defaultEncapsulation` can not be changed once it has been set.');
@@ -171,20 +175,21 @@ describe('bootstrap', () => {
            // The options should not have been changed
            expect(document.body.innerHTML).not.toContain('_ngcontent-');
 
-           ngModuleRef2.destroy();
+           ngModuleRefB.destroy();
          }));
 
       it('should log an error when changing preserveWhitespaces bootstrap options',
-         withBody('<my-app></my-app>', async() => {
-           const TestModule = createComponentAndModule();
+         withBody('<my-app-a></my-app-a><my-app-b></my-app-b>', async () => {
            const platformRef = platformBrowserDynamic();
 
-           const ngModuleRef =
-               await platformRef.bootstrapModule(TestModule, {preserveWhitespaces: true});
-           ngModuleRef.destroy();
+           const TestModuleA = createComponentAndModule({selector: 'my-app-a'});
+           const ngModuleRefA =
+               await platformRef.bootstrapModule(TestModuleA, {preserveWhitespaces: true});
+           ngModuleRefA.destroy();
 
-           const ngModuleRef2 =
-               await platformRef.bootstrapModule(TestModule, {preserveWhitespaces: false});
+           const TestModuleB = createComponentAndModule({selector: 'my-app-b'});
+           const ngModuleRefB =
+               await platformRef.bootstrapModule(TestModuleB, {preserveWhitespaces: false});
            expect(console.error)
                .toHaveBeenCalledWith(
                    'Provided value for `preserveWhitespaces` can not be changed once it has been set.');
@@ -192,62 +197,65 @@ describe('bootstrap', () => {
            // The options should not have been changed
            expect(document.body.innerHTML).toContain('a    b');
 
-           ngModuleRef2.destroy();
+           ngModuleRefB.destroy();
          }));
 
       it('should log an error when changing defaultEncapsulation to its default',
-         withBody('<my-app></my-app>', async() => {
-           const TestModule = createComponentAndModule();
+         withBody('<my-app-a></my-app-a><my-app-b></my-app-b>', async () => {
            const platformRef = platformBrowserDynamic();
 
-           const ngModuleRef = await platformRef.bootstrapModule(TestModule);
-           ngModuleRef.destroy();
+           const TestModuleA = createComponentAndModule({selector: 'my-app-a'});
+           const ngModuleRefA = await platformRef.bootstrapModule(TestModuleA);
+           ngModuleRefA.destroy();
 
-           const ngModuleRef2 = await platformRef.bootstrapModule(
-               TestModule, {defaultEncapsulation: ViewEncapsulation.Emulated});
+           const TestModuleB = createComponentAndModule({selector: 'my-app-b'});
+           const ngModuleRefB = await platformRef.bootstrapModule(
+               TestModuleB, {defaultEncapsulation: ViewEncapsulation.Emulated});
            // Although the configured value may be identical to the default, the provided set of
            // options has still been changed compared to the previously provided options.
            expect(console.error)
                .toHaveBeenCalledWith(
                    'Provided value for `defaultEncapsulation` can not be changed once it has been set.');
 
-           ngModuleRef2.destroy();
+           ngModuleRefB.destroy();
          }));
 
       it('should log an error when changing preserveWhitespaces to its default',
-         withBody('<my-app></my-app>', async() => {
-           const TestModule = createComponentAndModule();
+         withBody('<my-app-a></my-app-a><my-app-b></my-app-b>', async () => {
            const platformRef = platformBrowserDynamic();
 
-           const ngModuleRef = await platformRef.bootstrapModule(TestModule);
-           ngModuleRef.destroy();
+           const TestModuleA = createComponentAndModule({selector: 'my-app-a'});
+           const ngModuleRefA = await platformRef.bootstrapModule(TestModuleA);
+           ngModuleRefA.destroy();
 
-           const ngModuleRef2 =
-               await platformRef.bootstrapModule(TestModule, {preserveWhitespaces: false});
+           const TestModuleB = createComponentAndModule({selector: 'my-app-b'});
+           const ngModuleRefB =
+               await platformRef.bootstrapModule(TestModuleB, {preserveWhitespaces: false});
            // Although the configured value may be identical to the default, the provided set of
            // options has still been changed compared to the previously provided options.
            expect(console.error)
                .toHaveBeenCalledWith(
                    'Provided value for `preserveWhitespaces` can not be changed once it has been set.');
 
-           ngModuleRef2.destroy();
+           ngModuleRefB.destroy();
          }));
 
       it('should not log an error when passing identical bootstrap options',
-         withBody('<my-app></my-app>', async() => {
-           const TestModule = createComponentAndModule();
+         withBody('<my-app-a></my-app-a><my-app-b></my-app-b>', async () => {
            const platformRef = platformBrowserDynamic();
 
-           const ngModuleRef1 = await platformRef.bootstrapModule(
-               TestModule,
+           const TestModuleA = createComponentAndModule({selector: 'my-app-a'});
+           const ngModuleRefA = await platformRef.bootstrapModule(
+               TestModuleA,
                {defaultEncapsulation: ViewEncapsulation.None, preserveWhitespaces: true});
-           ngModuleRef1.destroy();
+           ngModuleRefA.destroy();
 
            // Bootstrapping multiple modules using the exact same options should be allowed.
-           const ngModuleRef2 = await platformRef.bootstrapModule(
-               TestModule,
+           const TestModuleB = createComponentAndModule({selector: 'my-app-b'});
+           const ngModuleRefB = await platformRef.bootstrapModule(
+               TestModuleB,
                {defaultEncapsulation: ViewEncapsulation.None, preserveWhitespaces: true});
-           ngModuleRef2.destroy();
+           ngModuleRefB.destroy();
          }));
     });
   });

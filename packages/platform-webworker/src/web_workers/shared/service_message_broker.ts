@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,7 +13,8 @@ import {Serializer, SerializerTypes} from '../shared/serializer';
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 @Injectable()
 export class ServiceMessageBrokerFactory {
@@ -41,7 +42,8 @@ export class ServiceMessageBrokerFactory {
  * If that method returns a promise, the UIMessageBroker returns the result to the worker.
  *
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export class ServiceMessageBroker {
   private _sink: EventEmitter<any>;
@@ -63,7 +65,7 @@ export class ServiceMessageBroker {
       const deserializedArgs = [];
       for (let i = 0; i < numArgs; i++) {
         const serializedArg = serializedArgs[i];
-        deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature ![i]);
+        deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature![i]);
       }
 
       const promise = method(...deserializedArgs);
@@ -75,7 +77,7 @@ export class ServiceMessageBroker {
 
   private _handleMessage(message: ReceivedMessage): void {
     if (this._methods.has(message.method)) {
-      this._methods.get(message.method) !(message);
+      this._methods.get(message.method)!(message);
     }
   }
 
@@ -93,7 +95,8 @@ export class ServiceMessageBroker {
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export interface ReceivedMessage {
   method: string;

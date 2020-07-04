@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -47,7 +47,7 @@ export interface KeyValue<K, V> {
 export class KeyValuePipe implements PipeTransform {
   constructor(private readonly differs: KeyValueDiffers) {}
 
-  private differ !: KeyValueDiffer<any, any>;
+  private differ!: KeyValueDiffer<any, any>;
   private keyValues: Array<KeyValue<any, any>> = [];
 
   transform<K, V>(input: null, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): null;
@@ -90,7 +90,7 @@ export class KeyValuePipe implements PipeTransform {
     if (differChanges) {
       this.keyValues = [];
       differChanges.forEachItem((r: KeyValueChangeRecord<K, V>) => {
-        this.keyValues.push(makeKeyValuePair(r.key, r.currentValue !));
+        this.keyValues.push(makeKeyValuePair(r.key, r.currentValue!));
       });
       this.keyValues.sort(compareFn);
     }

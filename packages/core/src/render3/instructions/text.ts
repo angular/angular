@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -27,9 +27,10 @@ export function ɵɵtext(index: number, value: string = ''): void {
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
 
-  ngDevMode && assertEqual(
-                   getBindingIndex(), tView.bindingStartIndex,
-                   'text nodes should be created before any bindings');
+  ngDevMode &&
+      assertEqual(
+          getBindingIndex(), tView.bindingStartIndex,
+          'text nodes should be created before any bindings');
   ngDevMode && assertDataInRange(lView, adjustedIndex);
 
   const tNode = tView.firstCreatePass ?

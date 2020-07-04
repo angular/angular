@@ -18,7 +18,6 @@
   ],
   "devDependencies": [
     "@angular/compiler-cli",
-    "@angular/platform-server",
     "@types/jasmine",
     "@types/node",
     "jasmine-core",

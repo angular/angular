@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,6 +14,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {NOOP_DEFAULT_IMPORT_RECORDER, Reexport} from '../../../src/ngtsc/imports';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
@@ -26,7 +27,6 @@ import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {Renderer} from '../../src/rendering/renderer';
 import {RedundantDecoratorMap, RenderingFormatter} from '../../src/rendering/rendering_formatter';
-import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
 class TestRenderingFormatter implements RenderingFormatter {
@@ -90,8 +90,8 @@ function createTestRenderer(
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-  const switchMarkerAnalyses =
-      new SwitchMarkerAnalyzer(host, bundle.entryPoint.package).analyzeProgram(bundle.src.program);
+  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath)
+                                   .analyzeProgram(bundle.src.program);
   const privateDeclarationsAnalyses =
       new PrivateDeclarationsAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
   const testFormatter = new TestRenderingFormatter();
@@ -639,6 +639,24 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
                  .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
              expect(mapFile.path).toEqual(_('/node_modules/test-package/src/file.js.map'));
              expect(JSON.parse(mapFile.contents)).toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
+           });
+
+
+        it('should render an internal source map for files whose original file does not have a source map',
+           () => {
+             const sourceFiles: TestFile[] = [JS_CONTENT];
+             const {
+               decorationAnalyses,
+               renderer,
+               switchMarkerAnalyses,
+               privateDeclarationsAnalyses
+             } = createTestRenderer('test-package', sourceFiles, undefined);
+             const [sourceFile, mapFile] = renderer.renderProgram(
+                 decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+             expect(sourceFile.path).toEqual(_('/node_modules/test-package/src/file.js'));
+             expect(sourceFile.contents)
+                 .toEqual(RENDERED_CONTENTS + '\n' + OUTPUT_PROGRAM_MAP.toComment());
+             expect(mapFile).toBeUndefined();
            });
       });
 

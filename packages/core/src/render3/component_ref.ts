@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,15 +21,16 @@ import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider';
 
 import {assertComponentType} from './assert';
-import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
+import {createRootComponent, createRootComponentView, createRootContext, LifecycleHooksFeature} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
 import {assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, renderView} from './instructions/shared';
 import {ComponentDef} from './interfaces/definition';
-import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
-import {RNode, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
+import {domRendererFactory3, RendererFactory3, RNode} from './interfaces/renderer';
 import {LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
+import {assertNodeOfPossibleTypes} from './node_assert';
 import {writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
 import {enterView, leaveView} from './state';
@@ -43,11 +44,13 @@ export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolve
   /**
    * @param ngModule The NgModuleRef to which all resolved factories are bound.
    */
-  constructor(private ngModule?: viewEngine_NgModuleRef<any>) { super(); }
+  constructor(private ngModule?: viewEngine_NgModuleRef<any>) {
+    super();
+  }
 
   resolveComponentFactory<T>(component: Type<T>): viewEngine_ComponentFactory<T> {
     ngDevMode && assertComponentType(component);
-    const componentDef = getComponentDef(component) !;
+    const componentDef = getComponentDef(component)!;
     return new ComponentFactory(componentDef, this.ngModule);
   }
 }
@@ -79,7 +82,7 @@ export const SCHEDULER = new InjectionToken<((fn: () => void) => void)>('SCHEDUL
 
 function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injector): Injector {
   return {
-    get: <T>(token: Type<T>| InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T => {
+    get: <T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T => {
       const value = rootViewInjector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as T, flags);
 
       if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
@@ -152,14 +155,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
-
-    // Check whether this Component needs to be isolated from other components, i.e. whether it
-    // should be placed into its own (empty) root context or existing root context should be used.
-    // Note: this is internal-only convention and might change in the future, so it should not be
-    // relied upon externally.
-    const isIsolated = typeof rootSelectorOrNode === 'string' &&
-        /^#root-ng-internal-isolated-\d+/.test(rootSelectorOrNode);
-
     const rootContext = createRootContext();
 
     // Create the root view. Uses empty TView and ContentTemplate.
@@ -199,14 +194,19 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         }
       }
 
-      tElementNode = getTNode(rootLView[TVIEW], 0) as TElementNode;
+      tElementNode = getTNode(rootTView, 0) as TElementNode;
 
-      if (projectableNodes) {
-        // projectable nodes can be passed as array of arrays or an array of iterables (ngUpgrade
-        // case). Here we do normalize passed data structure to be an array of arrays to avoid
-        // complex checks down the line.
-        tElementNode.projection =
-            projectableNodes.map((nodesforSlot: RNode[]) => { return Array.from(nodesforSlot); });
+      if (projectableNodes !== undefined) {
+        const projection: (TNode|RNode[]|null)[] = tElementNode.projection = [];
+        for (let i = 0; i < this.ngContentSelectors.length; i++) {
+          const nodesforSlot = projectableNodes[i];
+          // Projectable nodes can be passed as array of arrays or an array of iterables (ngUpgrade
+          // case). Here we do normalize passed data structure to be an array of arrays to avoid
+          // complex checks down the line.
+          // We also normalize the length of the passed in projectable nodes (to match the number of
+          // <ng-container> slots defined by a component).
+          projection.push(nodesforSlot != null ? Array.from(nodesforSlot) : null);
+        }
       }
 
       // TODO: should LifecycleHooksFeature and other host features be generated by the compiler and
@@ -224,11 +224,10 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         this.componentType, component,
         createElementRef(viewEngine_ElementRef, tElementNode, rootLView), rootLView, tElementNode);
 
-    if (!rootSelectorOrNode || isIsolated) {
-      // The host element of the internal or isolated root view is attached to the component's host
-      // view node.
-      componentRef.hostView._tViewNode !.child = tElementNode;
-    }
+    // The host element of the internal root view is attached to the component's host view node.
+    ngDevMode && assertNodeOfPossibleTypes(rootTView.node, [TNodeType.View]);
+    rootTView.node!.child = tElementNode;
+
     return componentRef;
   }
 }
@@ -268,11 +267,13 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
     super();
     this.instance = instance;
     this.hostView = this.changeDetectorRef = new RootViewRef<T>(_rootLView);
-    this.hostView._tViewNode = assignTViewNodeToLView(_rootLView[TVIEW], null, -1, _rootLView);
+    assignTViewNodeToLView(_rootLView[TVIEW], null, -1, _rootLView);
     this.componentType = componentType;
   }
 
-  get injector(): Injector { return new NodeInjector(this._tNode, this._rootLView); }
+  get injector(): Injector {
+    return new NodeInjector(this._tNode, this._rootLView);
+  }
 
   destroy(): void {
     if (this.destroyCbs) {

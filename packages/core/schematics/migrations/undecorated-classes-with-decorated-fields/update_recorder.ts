@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,5 +15,6 @@ import {ImportManagerUpdateRecorder} from '../../utils/import_manager';
  */
 export interface UpdateRecorder extends ImportManagerUpdateRecorder {
   addClassDecorator(node: ts.ClassDeclaration, text: string): void;
+  addClassTodo(node: ts.ClassDeclaration, message: string): void;
   commitUpdate(): void;
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,11 +15,15 @@ import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {XmlTranslationParserHint, addParseDiagnostic, addParseError, canParseXml, getAttribute, parseInnerRange} from './translation_utils';
+import {addParseDiagnostic, addParseError, canParseXml, getAttribute, parseInnerRange, XmlTranslationParserHint} from './translation_utils';
 
 
 /**
- * A translation parser that can load XB files.
+ * A translation parser that can load XTB files.
+ *
+ * http://cldr.unicode.org/development/development-process/design-proposals/xmb
+ *
+ * @see XmbTranslationSerializer
  */
 export class XtbTranslationParser implements TranslationParser<XmlTranslationParserHint> {
   canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
@@ -94,7 +98,8 @@ class XtbVisitor extends BaseVisitor {
         } catch (error) {
           if (typeof error === 'string') {
             bundle.diagnostics.warn(
-                `Could not parse message with id "${id}" - perhaps it has an unrecognised ICU format?\n` +
+                `Could not parse message with id "${
+                    id}" - perhaps it has an unrecognised ICU format?\n` +
                 error);
           } else if (error.span && error.msg && error.level) {
             addParseDiagnostic(bundle.diagnostics, error.span, error.msg, error.level);

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,8 +9,8 @@ import {ɵMessageId, ɵParsedTranslation} from '@angular/localize/private';
 import {Diagnostics} from '../../../diagnostics';
 
 /**
-* An object that holds translations that have been parsed from a translation file.
-*/
+ * An object that holds translations that have been parsed from a translation file.
+ */
 export interface ParsedTranslationBundle {
   locale: string|undefined;
   translations: Record<ɵMessageId, ɵParsedTranslation>;

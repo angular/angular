@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,11 +8,11 @@
 
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassMemberKind, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {UmdReflectionHost} from '../../src/host/umd_host';
-import {MockLogger} from '../helpers/mock_logger';
 import {makeTestBundleProgram} from '../helpers/utils';
 
 import {expectTypeValueReferencesForParameters} from './util';
@@ -61,7 +61,7 @@ runInEachFileSystem(() => {
     return SomeDirective;
   }());
   exports.SomeDirective = SomeDirective;
-  
+
   var AliasedDirective$1 = /** @class */ (function () {
     function AliasedDirective() {}
     AliasedDirective = __decorate([

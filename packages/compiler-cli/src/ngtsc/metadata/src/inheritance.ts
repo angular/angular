@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -25,7 +25,7 @@ export function flattenInheritedDirectiveMetadata(
     throw new Error(`Metadata not found for directive: ${dir.debugName}`);
   }
 
-  let inputs: {[key: string]: string | [string, string]} = {};
+  let inputs: {[key: string]: string|[string, string]} = {};
   let outputs: {[key: string]: string} = {};
   let coercedInputFields = new Set<string>();
   let isDynamic = false;

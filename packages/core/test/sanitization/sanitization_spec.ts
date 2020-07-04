@@ -1,7 +1,7 @@
 
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -24,7 +24,9 @@ describe('sanitization', () => {
   afterEach(() => leaveView());
   class Wrap {
     constructor(private value: string) {}
-    toString() { return this.value; }
+    toString() {
+      return this.value;
+    }
   }
   it('should sanitize html', () => {
     expect(ɵɵsanitizeHtml('<div></div>')).toEqual('<div></div>');
@@ -62,8 +64,8 @@ describe('sanitization', () => {
   it('should sanitize style', () => {
     expect(ɵɵsanitizeStyle('red')).toEqual('red');
     expect(ɵɵsanitizeStyle(new Wrap('red'))).toEqual('red');
-    expect(ɵɵsanitizeStyle('url("http://server")')).toEqual('unsafe');
-    expect(ɵɵsanitizeStyle(new Wrap('url("http://server")'))).toEqual('unsafe');
+    expect(ɵɵsanitizeStyle('url("http://server")')).toEqual('url("http://server")');
+    expect(ɵɵsanitizeStyle(new Wrap('url("http://server")'))).toEqual('url("http://server")');
     expect(() => ɵɵsanitizeStyle(bypassSanitizationTrustHtml('url("http://server")')))
         .toThrowError(/Required a safe Style, got a HTML/);
     expect(ɵɵsanitizeStyle(bypassSanitizationTrustStyle('url("http://server")')))
@@ -96,7 +98,7 @@ describe('sanitization', () => {
         contextsByProp.set(prop, contexts);
         // check only in case a prop can be a part of both URL contexts
         if (contexts.size === 2) {
-          expect(getUrlSanitizer(tag, prop)).toEqual(sanitizerNameByContext.get(context) !);
+          expect(getUrlSanitizer(tag, prop)).toEqual(sanitizerNameByContext.get(context)!);
         }
       }
     });

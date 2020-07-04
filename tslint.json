@@ -8,7 +8,10 @@
   "rules": {
     "file-header": [
       true,
-      "Copyright Google Inc\\."
+      {
+        "match": "Copyright Google LLC",
+        "allow-single-line-comments": false
+      }
     ],
     "no-console": [
       true,
@@ -32,7 +35,6 @@
       "packages/core/src/",
       "packages/elements/src/",
       "packages/forms/src/",
-      "packages/http/src/",
       "packages/platform-browser/src/",
       "packages/router/src/"
     ],
@@ -52,7 +54,10 @@
   "jsRules": {
     "file-header": [
       true,
-      "Copyright Google Inc\\."
+      {
+        "match": "Copyright Google LLC",
+        "allow-single-line-comments": false
+      }
     ],
     "no-console": [
       true,

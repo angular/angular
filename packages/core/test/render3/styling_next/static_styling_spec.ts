@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,13 +14,13 @@ import {computeStaticStyling} from '@angular/core/src/render3/styling/static_sty
 
 describe('static styling', () => {
   const mockFirstCreatePassLView: LView = [null, {firstCreatePass: true}] as any;
-  let tNode !: TNode;
+  let tNode!: TNode;
   beforeEach(() => {
     enterView(mockFirstCreatePassLView, null);
-    tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+    tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
   });
   it('should initialize when no attrs', () => {
-    computeStaticStyling(tNode, []);
+    computeStaticStyling(tNode, [], true);
     expect(tNode.classes).toEqual(null);
     expect(tNode.styles).toEqual(null);
   });
@@ -31,7 +31,7 @@ describe('static styling', () => {
       AttributeMarker.Classes, 'my-class',    //
       AttributeMarker.Styles, 'color', 'red'  //
     ];
-    computeStaticStyling(tNode, tAttrs);
+    computeStaticStyling(tNode, tAttrs, true);
     expect(tNode.classes).toEqual('my-class');
     expect(tNode.styles).toEqual('color: red;');
   });
@@ -42,7 +42,7 @@ describe('static styling', () => {
       AttributeMarker.Classes, 'my-class', 'other',             //
       AttributeMarker.Styles, 'color', 'red', 'width', '100px'  //
     ];
-    computeStaticStyling(tNode, tAttrs);
+    computeStaticStyling(tNode, tAttrs, true);
     expect(tNode.classes).toEqual('my-class other');
     expect(tNode.styles).toEqual('color: red; width: 100px;');
   });

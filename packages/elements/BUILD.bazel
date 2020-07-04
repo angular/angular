@@ -19,10 +19,7 @@ ng_module(
 
 ng_package(
     name = "npm_package",
-    srcs = glob([
-        "**/*.externs.js",
-        "**/package.json",
-    ]),
+    srcs = ["package.json"],
     entry_point = ":index.ts",
     nested_packages = [
         "//packages/elements/schematics:npm_package",

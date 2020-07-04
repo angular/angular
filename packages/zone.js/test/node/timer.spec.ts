@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,7 +16,9 @@ describe('node timer', () => {
               expect(value).toEqual('value');
               done();
             },
-            error => { fail(`should not be here with error: ${error}.`); });
+            error => {
+              fail(`should not be here with error: ${error}.`);
+            });
   });
 
   it('util.promisify should work with setImmediate', (done: DoneFn) => {
@@ -26,6 +28,8 @@ describe('node timer', () => {
           expect(value).toEqual('value');
           done();
         },
-        error => { fail(`should not be here with error: ${error}.`); });
+        error => {
+          fail(`should not be here with error: ${error}.`);
+        });
   });
 });

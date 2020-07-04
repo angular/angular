@@ -1,16 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter, ɵglobal as global} from '@angular/core';
+import {GetTestability, setTestabilityGetter, Testability, TestabilityRegistry, ɵglobal as global} from '@angular/core';
 
 export class BrowserGetTestability implements GetTestability {
-  static init() { setTestabilityGetter(new BrowserGetTestability()); }
+  static init() {
+    setTestabilityGetter(new BrowserGetTestability());
+  }
 
   addToWindow(registry: TestabilityRegistry): void {
     global['getAngularTestability'] = (elem: any, findInAncestors: boolean = true) => {

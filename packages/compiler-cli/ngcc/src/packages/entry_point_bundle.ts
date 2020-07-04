@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
-import {PathMappings} from '../utils';
+import {PathMappings} from '../path_mappings';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';
 import {NgccSourcesCompilerHost} from './ngcc_compiler_host';
@@ -47,23 +47,23 @@ export function makeEntryPointBundle(
     mirrorDtsFromSrc: boolean = false,
     enableI18nLegacyMessageIdFormat: boolean = true): EntryPointBundle {
   // Create the TS program and necessary helpers.
-  const rootDir = entryPoint.package;
+  const rootDir = entryPoint.packagePath;
   const options: ts
       .CompilerOptions = {allowJs: true, maxNodeModuleJsDepth: Infinity, rootDir, ...pathMappings};
-  const srcHost = new NgccSourcesCompilerHost(fs, options, entryPoint.path);
+  const srcHost = new NgccSourcesCompilerHost(fs, options, entryPoint.packagePath);
   const dtsHost = new NgtscCompilerHost(fs, options);
 
   // Create the bundle programs, as necessary.
   const absFormatPath = fs.resolve(entryPoint.path, formatPath);
   const typingsPath = fs.resolve(entryPoint.path, entryPoint.typings);
   const src = makeBundleProgram(
-      fs, isCore, entryPoint.package, absFormatPath, 'r3_symbols.js', options, srcHost);
+      fs, isCore, entryPoint.packagePath, absFormatPath, 'r3_symbols.js', options, srcHost);
   const additionalDtsFiles = transformDts && mirrorDtsFromSrc ?
       computePotentialDtsFilesFromJsFiles(fs, src.program, absFormatPath, typingsPath) :
       [];
   const dts = transformDts ? makeBundleProgram(
-                                 fs, isCore, entryPoint.package, typingsPath, 'r3_symbols.d.ts',
-                                 options, dtsHost, additionalDtsFiles) :
+                                 fs, isCore, entryPoint.packagePath, typingsPath, 'r3_symbols.d.ts',
+                                 {...options, allowJs: false}, dtsHost, additionalDtsFiles) :
                              null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 

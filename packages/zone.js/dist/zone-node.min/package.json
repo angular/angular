@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/zone-node.min",
+  "main": "../../bundles/zone-node.umd.min.js",
+  "fesm2015": "../../fesm2015/zone-node.min.js",
+  "es2015": "../../fesm2015/zone-node.min.js",
+  "module": "../../fesm2015/zone-node.min.js"
+}

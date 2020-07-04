@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -41,6 +41,33 @@ describe('ComponentFactoryNgElementStrategy', () => {
     expect(strategyFactory.create(injector)).toBeTruthy();
   });
 
+  describe('before connected', () => {
+    it('should allow subscribing to output events', () => {
+      const events: NgElementStrategyEvent[] = [];
+      strategy.events.subscribe(e => events.push(e));
+
+      // No events before connecting (since `componentRef` is not even on the strategy yet).
+      componentRef.instance.output1.next('output-1a');
+      componentRef.instance.output1.next('output-1b');
+      componentRef.instance.output2.next('output-2a');
+      expect(events).toEqual([]);
+
+      // No events upon connecting (since events are not cached/played back).
+      strategy.connect(document.createElement('div'));
+      expect(events).toEqual([]);
+
+      // Events emitted once connected.
+      componentRef.instance.output1.next('output-1c');
+      componentRef.instance.output1.next('output-1d');
+      componentRef.instance.output2.next('output-2b');
+      expect(events).toEqual([
+        {name: 'templateOutput1', value: 'output-1c'},
+        {name: 'templateOutput1', value: 'output-1d'},
+        {name: 'templateOutput2', value: 'output-2b'},
+      ]);
+    });
+  });
+
   describe('after connected', () => {
     beforeEach(() => {
       // Set up an initial value to make sure it is passed to the component
@@ -53,11 +80,13 @@ describe('ComponentFactoryNgElementStrategy', () => {
       strategy.connect(document.createElement('div'));
     });
 
-    it('should attach the component to the view',
-       () => { expect(applicationRef.attachView).toHaveBeenCalledWith(componentRef.hostView); });
+    it('should attach the component to the view', () => {
+      expect(applicationRef.attachView).toHaveBeenCalledWith(componentRef.hostView);
+    });
 
-    it('should detect changes',
-       () => { expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalled(); });
+    it('should detect changes', () => {
+      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalled();
+    });
 
     it('should listen to output events', () => {
       const events: NgElementStrategyEvent[] = [];
@@ -140,7 +169,9 @@ describe('ComponentFactoryNgElementStrategy', () => {
   });
 
   describe('when inputs change and is connected', () => {
-    beforeEach(() => { strategy.connect(document.createElement('div')); });
+    beforeEach(() => {
+      strategy.connect(document.createElement('div'));
+    });
 
     it('should be set on the component instance', () => {
       strategy.setInputValue('fooFoo', 'fooFoo-1');
@@ -249,7 +280,9 @@ export class FakeComponent {
   // Keep track of the simple changes passed to ngOnChanges
   simpleChanges: SimpleChanges[] = [];
 
-  ngOnChanges(simpleChanges: SimpleChanges) { this.simpleChanges.push(simpleChanges); }
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    this.simpleChanges.push(simpleChanges);
+  }
 }
 
 export class FakeComponentFactory extends ComponentFactory<any> {
@@ -263,9 +296,15 @@ export class FakeComponentFactory extends ComponentFactory<any> {
         jasmine.createSpyObj('changeDetectorRef', ['detectChanges']);
   }
 
-  get selector(): string { return 'fake-component'; }
-  get componentType(): Type<any> { return FakeComponent; }
-  get ngContentSelectors(): string[] { return ['content-1', 'content-2']; }
+  get selector(): string {
+    return 'fake-component';
+  }
+  get componentType(): Type<any> {
+    return FakeComponent;
+  }
+  get ngContentSelectors(): string[] {
+    return ['content-1', 'content-2'];
+  }
   get inputs(): {propName: string; templateName: string}[] {
     return [
       {propName: 'fooFoo', templateName: 'fooFoo'},
@@ -293,8 +332,9 @@ export class FakeComponentFactory extends ComponentFactory<any> {
 }
 
 function expectSimpleChanges(actual: SimpleChanges, expected: SimpleChanges) {
-  Object.keys(actual).forEach(
-      key => { expect(expected[key]).toBeTruthy(`Change included additional key ${key}`); });
+  Object.keys(actual).forEach(key => {
+    expect(expected[key]).toBeTruthy(`Change included additional key ${key}`);
+  });
 
   Object.keys(expected).forEach(key => {
     expect(actual[key]).toBeTruthy(`Change should have included key ${key}`);

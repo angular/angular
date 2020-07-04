@@ -23,7 +23,7 @@ export class GreetingModule {
   // #enddocregion ctor
 
   // #docregion for-root
-  static forRoot(config: UserServiceConfig): ModuleWithProviders {
+  static forRoot(config: UserServiceConfig): ModuleWithProviders<GreetingModule> {
     return {
       ngModule: GreetingModule,
       providers: [

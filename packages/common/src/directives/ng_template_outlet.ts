@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -101,7 +101,7 @@ export class NgTemplateOutlet implements OnChanges {
 
   private _updateExistingContext(ctx: Object): void {
     for (let propName of Object.keys(ctx)) {
-      (<any>this._viewRef !.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
+      (<any>this._viewRef!.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
     }
   }
 }

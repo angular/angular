@@ -1,12 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {dirname, isAbsolute, resolve} from 'path';
+
+import {error} from '../utils/console';
 
 import {ModuleResolver} from './analyzer';
 
@@ -18,7 +20,7 @@ export interface CircularDependenciesTestConfig {
   /** Path to the golden file that is used for checking and approving. */
   goldenFile: string;
   /** Glob that resolves source files which should be checked. */
-  glob: string
+  glob: string;
   /**
    * Optional module resolver function that can be used to resolve modules
    * to absolute file paths.
@@ -52,8 +54,8 @@ export function loadTestConfig(configPath: string): CircularDependenciesTestConf
     }
     return config;
   } catch (e) {
-    console.error('Could not load test configuration file at: ' + configPath);
-    console.error(`Failed with: ${e.message}`);
+    error('Could not load test configuration file at: ' + configPath);
+    error(`Failed with: ${e.message}`);
     process.exit(1);
   }
 }

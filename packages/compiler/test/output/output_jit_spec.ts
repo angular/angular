@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -57,7 +57,7 @@ const anotherModuleUrl = 'somePackage/someOtherPath';
             o.literal('use strict').toStmt(),
           ],
           ctx);
-      const matches = ctx.toSource().match(/'use strict';/g) !;
+      const matches = ctx.toSource().match(/'use strict';/g)!;
       expect(matches.length).toBe(1);
     });
   });

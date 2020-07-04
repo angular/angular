@@ -1,7 +1,7 @@
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
 load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver", "ts_library")
-load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+load("//dev-infra/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 
 ng_module(
     name = "application_lib",
@@ -26,7 +26,7 @@ ts_library(
     srcs = ["expanding_rows.perf-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
-        "//modules/e2e_util",
+        "//dev-infra/benchmark/driver-utilities",
         "@npm//protractor",
     ],
 )
@@ -42,15 +42,15 @@ ng_rollup_bundle(
 
 ts_devserver(
     name = "prodserver",
-    bootstrap = ["//packages/zone.js/dist:zone.js"],
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
     port = 4200,
     static_files = ["index.html"],
-    deps = [":bundle.min_debug.es2015.js"],
+    deps = [":bundle.min_debug.js"],
 )
 
 ts_devserver(
     name = "devserver",
-    bootstrap = ["//packages/zone.js/dist:zone.js"],
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
     entry_module = "angular/modules/benchmarks/src/expanding_rows/index_aot",
     port = 4200,
     scripts = [

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@ export function forceReflow() {
 }
 
 export function makeAnimationEvent(
-    startOrEnd: 'start' | 'end', animationName: string, elapsedTime: number, timestamp?: number) {
+    startOrEnd: 'start'|'end', animationName: string, elapsedTime: number, timestamp?: number) {
   const e = new AnimationEvent('animation' + startOrEnd, {animationName, elapsedTime});
   if (timestamp) {
     (e as any)._ngTestManualTimestamp = timestamp;

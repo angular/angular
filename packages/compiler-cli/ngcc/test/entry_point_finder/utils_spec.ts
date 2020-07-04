@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,8 +8,8 @@
 import {absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {getBasePaths} from '../../src/entry_point_finder/utils';
-import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   let _: typeof absoluteFrom;
@@ -27,7 +27,7 @@ runInEachFileSystem(() => {
       expect(basePaths).toEqual([sourceDirectory]);
     });
 
-    it('should use each path mapping prefix and sort in descending order', () => {
+    it('should use each path mapping prefix', () => {
       const projectDirectory = _('/path/to/project');
       const fs = getFileSystem();
       fs.ensureDir(fs.resolve(projectDirectory, 'dist-1'));
@@ -41,10 +41,27 @@ runInEachFileSystem(() => {
       };
       const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
-        fs.resolve(projectDirectory, 'sub-folder/dist-2'),
         sourceDirectory,
-        fs.resolve(projectDirectory, 'libs'),
         fs.resolve(projectDirectory, 'dist-1'),
+        fs.resolve(projectDirectory, 'libs'),
+        fs.resolve(projectDirectory, 'sub-folder/dist-2'),
+      ]);
+    });
+
+    it('should not be confused by folders that have the same starting string', () => {
+      const projectDirectory = _('/path/to/project');
+      const fs = getFileSystem();
+      fs.ensureDir(fs.resolve(projectDirectory, 'a/b'));
+      fs.ensureDir(fs.resolve(projectDirectory, 'a/b-2'));
+      fs.ensureDir(fs.resolve(projectDirectory, 'a/b/c'));
+
+      const sourceDirectory = _('/path/to/project/node_modules');
+      const pathMappings = {baseUrl: projectDirectory, paths: {'@dist': ['a/b', 'a/b-2', 'a/b/c']}};
+      const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+      expect(basePaths).toEqual([
+        sourceDirectory,
+        fs.resolve(projectDirectory, 'a/b'),
+        fs.resolve(projectDirectory, 'a/b-2'),
       ]);
     });
 
@@ -105,8 +122,8 @@ runInEachFileSystem(() => {
       const pathMappings = {baseUrl: _('/'), paths: {'@dist': ['dist']}};
       const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
-        sourceDirectory,
         fs.resolve('/dist'),
+        sourceDirectory,
       ]);
       expect(logger.logs.warn).toEqual([
         [`The provided pathMappings baseUrl is the root path ${_('/')}.\n` +
@@ -115,7 +132,7 @@ runInEachFileSystem(() => {
       ]);
     });
 
-    it('should discard basePaths that do not exists and log a warning', () => {
+    it('should discard basePaths that do not exists and log a debug message', () => {
       const projectDirectory = _('/path/to/project');
       const fs = getFileSystem();
       fs.ensureDir(fs.resolve(projectDirectory, 'dist-1'));
@@ -131,7 +148,7 @@ runInEachFileSystem(() => {
         sourceDirectory,
         fs.resolve(projectDirectory, 'dist-1'),
       ]);
-      expect(logger.logs.warn).toEqual([
+      expect(logger.logs.debug).toEqual([
         [`The basePath "${
              fs.resolve(projectDirectory, 'sub-folder/dist-2')}" computed from baseUrl "${
              projectDirectory}" and path mapping "sub-folder/dist-2" does not exist in the file-system.\n` +

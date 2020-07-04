@@ -1,15 +1,11 @@
 load(":angular_integration_test.bzl", "angular_integration_test")
 
-exports_files([
-    "_payload-limits.json",
-])
-
 # Some integration ports must be managed manually to be unique and in other
 # cases the tests are able to select a random free port.
 #
 # Where `ng e2e` is used we pass `ng e2e --port 0` which prompts the cli
 # to select a random free port for the the e2e test. The protractor.conf is
-# automaticaly updated to use this port.
+# automatically updated to use this port.
 #
 # Karma automatically finds a free port so no effort is needed there.
 #
@@ -37,28 +33,24 @@ INTEGRATION_TESTS = {
             "no-ivy-aot",
         ],
     },
-    "bazel-schematics": {
-        "tags": [
-            # Bazel-in-bazel tests are resource intensive and should not be over-parallized
-            # as they will complete for the resources of other parallel tests slowing
-            # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
-            "cpu:3",
-            "no-ivy-aot",
-        ],
-    },
     "cli-hello-world": {"commands": "payload_size_tracking"},
     "cli-hello-world-ivy-compat": {"commands": "payload_size_tracking"},
     "cli-hello-world-ivy-i18n": {
         "commands": "payload_size_tracking",
-        "tags": ["no-ivy-aot"],
+        # TODO: (FW-2165) cli-hello-world-ivy-i18n fails on a bundle size check with Ivy bundles
+        "tags": ["fixme-ivy-aot"],
     },
     "cli-hello-world-ivy-minimal": {"commands": "payload_size_tracking"},
     "cli-hello-world-lazy": {
         "commands": "payload_size_tracking",
-        # TODO: cli-hello-world-lazy fails on a bundle size check with Ivy bundles
+        # TODO: (FW-2165) cli-hello-world-lazy fails on a bundle size check with Ivy bundles
+        "tags": ["fixme-ivy-aot"],
+    },
+    "cli-hello-world-lazy-rollup": {
+        "commands": "payload_size_tracking",
+        # TODO: cli-hello-world-lazy-rollup fails on a bundle size check because Ivy and VE sizes are different
         "tags": ["no-ivy-aot"],
     },
-    "cli-hello-world-lazy-rollup": {"commands": "payload_size_tracking"},
     "dynamic-compiler": {"tags": ["no-ivy-aot"]},
     "hello_world__closure": {
         "commands": "payload_size_tracking",
@@ -84,15 +76,9 @@ INTEGRATION_TESTS = {
     "service-worker-schema": {},
     "side-effects": {"tags": ["no-ivy-aot"]},
     "terser": {},
-    "typings_test_ts36": {
-        # Special case for `typings_test_ts36` test as we want to pin
-        # `typescript` at version 3.6.x for that test and not link to the
-        # root @npm//typescript package.
-        "pinned_npm_packages": ["typescript"],
-    },
-    "typings_test_ts37": {
-        # Special case for `typings_test_ts37` test as we want to pin
-        # `typescript` at version 3.7.x for that test and not link to the
+    "typings_test_ts39": {
+        # Special case for `typings_test_ts39` test as we want to pin
+        # `typescript` at version 3.9.x for that test and not link to the
         # root @npm//typescript package.
         "pinned_npm_packages": ["typescript"],
     },

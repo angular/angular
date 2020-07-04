@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,7 +13,7 @@ import {assertStyle, createElement, makeAnimationEvent, supportsAnimationEventCr
 const EMPTY_FN = () => {};
 {
   describe('ElementAnimationStyleHandler', () => {
-    if (isNode || typeof(window as any)['AnimationEvent'] == 'undefined') return;
+    if (isNode || typeof (window as any)['AnimationEvent'] == 'undefined') return;
 
     it('should add and remove an animation on to an element\'s styling', () => {
       const element = createElement();

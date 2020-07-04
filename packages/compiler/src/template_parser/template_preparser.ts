@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,9 +20,9 @@ const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
 
 export function preparseElement(ast: html.Element): PreparsedElement {
-  let selectAttr: string = null !;
-  let hrefAttr: string = null !;
-  let relAttr: string = null !;
+  let selectAttr: string = null!;
+  let hrefAttr: string = null!;
+  let relAttr: string = null!;
   let nonBindable = false;
   let projectAs = '';
   ast.attrs.forEach(attr => {
