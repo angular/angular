@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -57,8 +57,14 @@ export function getClassMembersFromDeclaration(
   return new TypeWrapper(type, {node: source, program, checker}).members();
 }
 
-export function getClassFromStaticSymbol(
-    program: ts.Program, type: StaticSymbol): ts.ClassDeclaration|undefined {
+export function getPipesTable(
+    source: ts.SourceFile, program: ts.Program, checker: ts.TypeChecker,
+    pipes: CompilePipeSummary[]): SymbolTable {
+  return new PipesTable(pipes, {program, checker, node: source});
+}
+
+function getClassFromStaticSymbol(program: ts.Program, type: StaticSymbol): ts.ClassDeclaration|
+    undefined {
   const source = program.getSourceFile(type.filePath);
   if (source) {
     return ts.forEachChild(source, child => {
@@ -72,12 +78,6 @@ export function getClassFromStaticSymbol(
   }
 
   return undefined;
-}
-
-export function getPipesTable(
-    source: ts.SourceFile, program: ts.Program, checker: ts.TypeChecker,
-    pipes: CompilePipeSummary[]): SymbolTable {
-  return new PipesTable(pipes, {program, checker, node: source});
 }
 
 class TypeScriptSymbolQuery implements SymbolQuery {
@@ -123,7 +123,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     return result || this.getBuiltinType(BuiltinType.Any);
   }
 
-  getArrayType(type: Symbol): Symbol {
+  getArrayType(_type: Symbol): Symbol {
     return this.getBuiltinType(BuiltinType.Any);
   }
 
@@ -229,6 +229,28 @@ function selectSignature(type: ts.Type, context: TypeContext, types: Symbol[]): 
   // Consider creating a TypeCheckBlock host in the language service that may also act as a
   // scratchpad for type comparisons.
   const signatures = type.getCallSignatures();
+  const passedInTypes: Array<ts.Type|undefined> = types.map(type => {
+    if (type instanceof TypeWrapper) {
+      return type.tsType;
+    }
+  });
+  // Try to select a matching signature in which all parameter types match.
+  // Note that this is just a best-effort approach, because we're checking for
+  // strict type equality rather than compatibility.
+  // For example, if the signature contains a ReadonlyArray<number> and the
+  // passed parameter type is an Array<number>, this will fail.
+  function allParameterTypesMatch(signature: ts.Signature) {
+    const tc = context.checker;
+    return signature.getParameters().every((parameter: ts.Symbol, i: number) => {
+      const type = tc.getTypeOfSymbolAtLocation(parameter, parameter.valueDeclaration);
+      return type === passedInTypes[i];
+    });
+  }
+  const exactMatch = signatures.find(allParameterTypesMatch);
+  if (exactMatch) {
+    return new SignatureWrapper(exactMatch, context);
+  }
+  // If not, fallback to a naive selection
   return signatures.length ? new SignatureWrapper(signatures[0], context) : undefined;
 }
 
@@ -404,7 +426,7 @@ class SymbolWrapper implements Symbol {
     return selectSignature(this.tsType, this.context, types);
   }
 
-  indexed(argument: Symbol): Symbol|undefined {
+  indexed(_argument: Symbol): Symbol|undefined {
     return undefined;
   }
 
@@ -475,7 +497,7 @@ class DeclaredSymbol implements Symbol {
     return this.type.typeArguments();
   }
 
-  indexed(argument: Symbol): Symbol|undefined {
+  indexed(_argument: Symbol): Symbol|undefined {
     return undefined;
   }
 }
@@ -504,7 +526,7 @@ class SignatureResultOverride implements Signature {
   }
 }
 
-export function toSymbolTableFactory(symbols: ts.Symbol[]): ts.SymbolTable {
+function toSymbolTableFactory(symbols: ts.Symbol[]): ts.SymbolTable {
   // ∀ Typescript version >= 2.2, `SymbolTable` is implemented as an ES6 `Map`
   const result = new Map<string, ts.Symbol>();
   for (const symbol of symbols) {
@@ -548,8 +570,7 @@ class SymbolTableWrapper implements SymbolTable {
    * @param context program context
    * @param type original TypeScript type of entity owning the symbols, if known
    */
-  constructor(
-      symbols: ts.SymbolTable|ts.Symbol[], private context: TypeContext, private type?: ts.Type) {
+  constructor(symbols: ts.SymbolTable|ts.Symbol[], private context: TypeContext, type?: ts.Type) {
     symbols = symbols || [];
 
     if (Array.isArray(symbols)) {
@@ -727,7 +748,7 @@ class PipeSymbol implements Symbol {
     return signature;
   }
 
-  indexed(argument: Symbol): Symbol|undefined {
+  indexed(_argument: Symbol): Symbol|undefined {
     return undefined;
   }
 
@@ -786,10 +807,10 @@ function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.
 
 class EmptyTable implements SymbolTable {
   public readonly size: number = 0;
-  get(key: string): Symbol|undefined {
+  get(_key: string): Symbol|undefined {
     return undefined;
   }
-  has(key: string): boolean {
+  has(_key: string): boolean {
     return false;
   }
   values(): Symbol[] {
@@ -828,7 +849,7 @@ function getTsTypeFromBuiltinType(builtinType: BuiltinType, ctx: TypeContext): t
           `Internal error, unhandled literal kind ${builtinType}:${BuiltinType[builtinType]}`);
   }
   const node = ts.createNode(syntaxKind);
-  node.parent = ctx.node;
+  node.parent = ts.createEmptyStatement();
   return ctx.checker.getTypeAtLocation(node);
 }
 
@@ -898,25 +919,20 @@ function typeKindOf(type: ts.Type|undefined): BuiltinType {
       return BuiltinType.String;
     } else if (type.flags & (ts.TypeFlags.Number | ts.TypeFlags.NumberLike)) {
       return BuiltinType.Number;
+    } else if (type.flags & ts.TypeFlags.Object) {
+      return BuiltinType.Object;
     } else if (type.flags & (ts.TypeFlags.Undefined)) {
       return BuiltinType.Undefined;
     } else if (type.flags & (ts.TypeFlags.Null)) {
       return BuiltinType.Null;
     } else if (type.flags & ts.TypeFlags.Union) {
-      // If all the constituent types of a union are the same kind, it is also that kind.
-      let candidate: BuiltinType|null = null;
       const unionType = type as ts.UnionType;
-      if (unionType.types.length > 0) {
-        candidate = typeKindOf(unionType.types[0]);
-        for (const subType of unionType.types) {
-          if (candidate != typeKindOf(subType)) {
-            return BuiltinType.Other;
-          }
-        }
+      if (unionType.types.length === 0) return BuiltinType.Other;
+      let ty: BuiltinType = 0;
+      for (const subType of unionType.types) {
+        ty |= typeKindOf(subType);
       }
-      if (candidate != null) {
-        return candidate;
-      }
+      return ty;
     } else if (type.flags & ts.TypeFlags.TypeParameter) {
       return BuiltinType.Unbound;
     }

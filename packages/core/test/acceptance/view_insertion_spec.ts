@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, ComponentFactoryResolver, Directive, EmbeddedViewRef, Injector, NgModule, TemplateRef, ViewChild, ViewContainerRef, ViewRef} from '@angular/core';
+import {ChangeDetectorRef, Component, ComponentFactoryResolver, Directive, EmbeddedViewRef, Injector, Input, NgModule, TemplateRef, ViewChild, ViewContainerRef, ViewRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
@@ -33,15 +33,14 @@ describe('view insertion', () => {
       })
       class App {
         @ViewChild('container', {read: ViewContainerRef, static: true})
-        container: ViewContainerRef = null !;
+        container: ViewContainerRef = null!;
 
-        @ViewChild('simple', {read: TemplateRef, static: true})
-        simple: TemplateRef<any> = null !;
+        @ViewChild('simple', {read: TemplateRef, static: true}) simple: TemplateRef<any> = null!;
 
-        view0: EmbeddedViewRef<any> = null !;
-        view1: EmbeddedViewRef<any> = null !;
-        view2: EmbeddedViewRef<any> = null !;
-        view3: EmbeddedViewRef<any> = null !;
+        view0: EmbeddedViewRef<any> = null!;
+        view1: EmbeddedViewRef<any> = null!;
+        view2: EmbeddedViewRef<any> = null!;
+        view3: EmbeddedViewRef<any> = null!;
 
         constructor(public changeDetector: ChangeDetectorRef) {}
 
@@ -90,16 +89,14 @@ describe('view insertion', () => {
             `
       })
       class App {
-        @ViewChild('container', {read: ViewContainerRef})
-        container: ViewContainerRef = null !;
+        @ViewChild('container', {read: ViewContainerRef}) container: ViewContainerRef = null!;
 
-        @ViewChild('empty', {read: TemplateRef})
-        empty: TemplateRef<any> = null !;
+        @ViewChild('empty', {read: TemplateRef}) empty: TemplateRef<any> = null!;
 
-        view0: EmbeddedViewRef<any> = null !;
-        view1: EmbeddedViewRef<any> = null !;
-        view2: EmbeddedViewRef<any> = null !;
-        view3: EmbeddedViewRef<any> = null !;
+        view0: EmbeddedViewRef<any> = null!;
+        view1: EmbeddedViewRef<any> = null!;
+        view2: EmbeddedViewRef<any> = null!;
+        view3: EmbeddedViewRef<any> = null!;
 
         ngAfterViewInit() {
           // insert at the front
@@ -140,16 +137,14 @@ describe('view insertion', () => {
                 `
       })
       class Comp {
-        @ViewChild('container', {read: ViewContainerRef})
-        container: ViewContainerRef = null !;
+        @ViewChild('container', {read: ViewContainerRef}) container: ViewContainerRef = null!;
 
-        @ViewChild('projection', {read: TemplateRef})
-        projection: TemplateRef<any> = null !;
+        @ViewChild('projection', {read: TemplateRef}) projection: TemplateRef<any> = null!;
 
-        view0: EmbeddedViewRef<any> = null !;
-        view1: EmbeddedViewRef<any> = null !;
-        view2: EmbeddedViewRef<any> = null !;
-        view3: EmbeddedViewRef<any> = null !;
+        view0: EmbeddedViewRef<any> = null!;
+        view1: EmbeddedViewRef<any> = null!;
+        view2: EmbeddedViewRef<any> = null!;
+        view3: EmbeddedViewRef<any> = null!;
 
         ngAfterViewInit() {
           // insert at the front
@@ -201,16 +196,14 @@ describe('view insertion', () => {
                 `
       })
       class App {
-        @ViewChild('container', {read: ViewContainerRef})
-        container: ViewContainerRef = null !;
+        @ViewChild('container', {read: ViewContainerRef}) container: ViewContainerRef = null!;
 
-        @ViewChild('subContainer', {read: TemplateRef})
-        subContainer: TemplateRef<any> = null !;
+        @ViewChild('subContainer', {read: TemplateRef}) subContainer: TemplateRef<any> = null!;
 
-        view0: EmbeddedViewRef<any> = null !;
-        view1: EmbeddedViewRef<any> = null !;
-        view2: EmbeddedViewRef<any> = null !;
-        view3: EmbeddedViewRef<any> = null !;
+        view0: EmbeddedViewRef<any> = null!;
+        view1: EmbeddedViewRef<any> = null!;
+        view2: EmbeddedViewRef<any> = null!;
+        view3: EmbeddedViewRef<any> = null!;
 
         constructor(public changeDetectorRef: ChangeDetectorRef) {}
 
@@ -265,9 +258,9 @@ describe('view insertion', () => {
     describe('before embedded view', () => {
       @Component({selector: 'test-cmpt', template: ''})
       class TestCmpt {
-        @ViewChild('before', {static: true}) beforeTpl !: TemplateRef<{}>;
-        @ViewChild('insert', {static: true}) insertTpl !: TemplateRef<{}>;
-        @ViewChild('vi', {static: true}) viewInsertingDir !: ViewInsertingDir;
+        @ViewChild('before', {static: true}) beforeTpl!: TemplateRef<{}>;
+        @ViewChild('insert', {static: true}) insertTpl!: TemplateRef<{}>;
+        @ViewChild('vi', {static: true}) viewInsertingDir!: ViewInsertingDir;
 
         minutes = 10;
 
@@ -288,9 +281,9 @@ describe('view insertion', () => {
 
       function createAndInsertViews(beforeTpl: string): any {
         TestBed.overrideTemplate(TestCmpt, `
-          <ng-template #insert>insert</ng-template>  
+          <ng-template #insert>insert</ng-template>
           <ng-template #before>${beforeTpl}</ng-template>
-          
+
           <div><ng-template #vi="vi" viewInserting></ng-template></div>
         `);
         const fixture = TestBed.createComponent(TestCmpt);
@@ -303,8 +296,9 @@ describe('view insertion', () => {
       }
 
 
-      it('should insert before a view with the text node as the first root node',
-         () => { expect(createAndInsertViews('|before').textContent).toBe('insert|before'); });
+      it('should insert before a view with the text node as the first root node', () => {
+        expect(createAndInsertViews('|before').textContent).toBe('insert|before');
+      });
 
       it('should insert before a view with the element as the first root node', () => {
         expect(createAndInsertViews('<span>|before</span>').textContent).toBe('insert|before');
@@ -336,13 +330,11 @@ describe('view insertion', () => {
       it('should insert before a view with a container as the first root node', () => {
         expect(createAndInsertViews(`<ng-template [ngIf]="true">|before</ng-template>`).textContent)
             .toBe('insert|before');
-
       });
 
       it('should insert before a view with an empty container as the first root node', () => {
         expect(createAndInsertViews(`<ng-template [ngIf]="true"></ng-template>|before`).textContent)
             .toBe('insert|before');
-
       });
 
       onlyInIvy('VE incorrectly inserts views before ng-container content')
@@ -353,7 +345,6 @@ describe('view insertion', () => {
           <ng-template #after>|after</ng-template>
         `).textContent)
                     .toBe('insert|before|after');
-
               });
 
 
@@ -363,7 +354,6 @@ describe('view insertion', () => {
           <ng-template #after>|after</ng-template>
         `).textContent)
             .toBe('insert|before|after');
-
       });
 
       it('should insert before a view with an empty projection as the first root node', () => {
@@ -387,12 +377,12 @@ describe('view insertion', () => {
       it('should insert before a ng-container with a ViewContainerRef on it', () => {
         @Component({
           selector: 'app-root',
-          template: `            
+          template: `
             <div>start|</div>
             <ng-container [ngTemplateOutlet]="insertTpl ? tpl : null"></ng-container>
             <ng-container [ngTemplateOutlet]="tpl"></ng-container>
             <div>|end</div>
-            
+
             <ng-template #tpl>test</ng-template>
           `
         })
@@ -408,17 +398,15 @@ describe('view insertion', () => {
         const fixture = TestBed.createComponent(AppComponent);
         fixture.detectChanges();
 
-        expect(fixture.debugElement.nativeElement.textContent).toBe('start|test|end');
+        expect(fixture.nativeElement.textContent).toBe('start|test|end');
 
         fixture.componentInstance.insertTpl = true;
         fixture.detectChanges();
-        expect(fixture.debugElement.nativeElement.textContent).toBe('start|testtest|end');
+        expect(fixture.nativeElement.textContent).toBe('start|testtest|end');
       });
-
     });
 
     describe('before embedded view with projection', () => {
-
       @Component({
         selector: 'with-content',
         template: `
@@ -428,9 +416,9 @@ describe('view insertion', () => {
         `
       })
       class WithContentCmpt {
-        @ViewChild('insert', {static: true}) insertTpl !: TemplateRef<{}>;
-        @ViewChild('before', {static: true}) beforeTpl !: TemplateRef<{}>;
-        @ViewChild('vi', {static: true}) viewInsertingDir !: ViewInsertingDir;
+        @ViewChild('insert', {static: true}) insertTpl!: TemplateRef<{}>;
+        @ViewChild('before', {static: true}) beforeTpl!: TemplateRef<{}>;
+        @ViewChild('vi', {static: true}) viewInsertingDir!: ViewInsertingDir;
 
         insert() {
           const beforeView = this.beforeTpl.createEmbeddedView({});
@@ -442,7 +430,7 @@ describe('view insertion', () => {
 
       @Component({selector: 'test-cmpt', template: ''})
       class TestCmpt {
-        @ViewChild('wc', {static: true}) withContentCmpt !: WithContentCmpt;
+        @ViewChild('wc', {static: true}) withContentCmpt!: WithContentCmpt;
       }
 
       beforeEach(() => {
@@ -476,7 +464,6 @@ describe('view insertion', () => {
 
         expect(fixture.nativeElement.textContent).toBe('insert|before');
       });
-
     });
 
     describe('before component view', () => {
@@ -498,13 +485,13 @@ describe('view insertion', () => {
         @Component({
           selector: 'test-cmpt',
           template: `
-                <ng-template #insert>insert</ng-template>  
+                <ng-template #insert>insert</ng-template>
                 <div><ng-template #vi="vi" viewInserting></ng-template></div>
               `
         })
         class TestCmpt {
-          @ViewChild('insert', {static: true}) insertTpl !: TemplateRef<{}>;
-          @ViewChild('vi', {static: true}) viewInsertingDir !: ViewInsertingDir;
+          @ViewChild('insert', {static: true}) insertTpl!: TemplateRef<{}>;
+          @ViewChild('vi', {static: true}) viewInsertingDir!: ViewInsertingDir;
 
           constructor(private _cfr: ComponentFactoryResolver, private _injector: Injector) {}
 
@@ -537,16 +524,13 @@ describe('view insertion', () => {
 
         expect(fixture.nativeElement.textContent).toBe('insert|before');
       });
-
     });
   });
 
   describe('non-regression', () => {
-
     // https://github.com/angular/angular/issues/31971
     it('should insert component views into ViewContainerRef injected by querying <ng-container>',
        () => {
-
          @Component({selector: 'dynamic-cmpt', template: 'dynamic'})
          class DynamicComponent {
          }
@@ -562,8 +546,7 @@ describe('view insertion', () => {
         `
          })
          class AppComponent {
-           @ViewChild('container', {read: ViewContainerRef, static: true})
-           vcr !: ViewContainerRef;
+           @ViewChild('container', {read: ViewContainerRef, static: true}) vcr!: ViewContainerRef;
 
            constructor(private _cfr: ComponentFactoryResolver) {}
 
@@ -595,7 +578,6 @@ describe('view insertion', () => {
     // https://github.com/angular/angular/issues/33679
     it('should insert embedded views into ViewContainerRef injected by querying <ng-container>',
        () => {
-
          @Component({
            selector: 'app-root',
            template: `
@@ -608,12 +590,13 @@ describe('view insertion', () => {
         `
          })
          class AppComponent {
-           @ViewChild('container', {read: ViewContainerRef, static: true})
-           vcr !: ViewContainerRef;
+           @ViewChild('container', {read: ViewContainerRef, static: true}) vcr!: ViewContainerRef;
 
            @ViewChild('template', {read: TemplateRef, static: true}) template !: TemplateRef<any>;
 
-           click() { this.vcr.createEmbeddedView(this.template, undefined, 0); }
+           click() {
+             this.vcr.createEmbeddedView(this.template, undefined, 0);
+           }
          }
 
          TestBed.configureTestingModule({
@@ -631,7 +614,7 @@ describe('view insertion', () => {
     it('should properly insert before views in a ViewContainerRef injected on ng-container', () => {
       @Component({
         selector: 'app-root',
-        template: `            
+        template: `
           <ng-template #parameterListItem let-parameter="parameter">
             {{parameter}}
           </ng-template>
@@ -659,6 +642,249 @@ describe('view insertion', () => {
 
       expect(fixture.nativeElement.textContent.trim()).toContain('2  1');
     });
+  });
 
+  describe('create mode error handling', () => {
+    it('should consistently report errors raised a directive constructor', () => {
+      @Directive({
+        selector: '[failInConstructorAlways]',
+      })
+      class FailInConstructorAlways {
+        constructor() {
+          throw new Error('Error in a constructor');
+        }
+      }
+
+      @Component({
+        template: `<div failInConstructorAlways></div>`,
+      })
+      class TestCmpt {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, FailInConstructorAlways],
+      });
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in a constructor');
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in a constructor');
+    });
+
+    it('should render even if a directive constructor throws in the first create pass', () => {
+      let firstRun = true;
+
+      @Directive({
+        selector: '[failInConstructorOnce]',
+      })
+      class FailInConstructorOnce {
+        constructor() {
+          if (firstRun) {
+            firstRun = false;
+            throw new Error('Error in a constructor');
+          }
+        }
+      }
+
+      @Component({
+        template: `<div failInConstructorOnce>OK</div>`,
+      })
+      class TestCmpt {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, FailInConstructorOnce],
+      });
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in a constructor');
+
+      const fixture = TestBed.createComponent(TestCmpt);
+      expect(fixture.nativeElement.textContent).toContain('OK');
+    });
+
+    onlyInIvy('Test depends on static inputs being set during creation')
+        .it('should consistently report errors raised a directive input setter', () => {
+          @Directive({
+            selector: '[failInInputAlways]',
+          })
+          class FailInInputAlways {
+            @Input()
+            set failInInputAlways(_: string) {
+              throw new Error('Error in an input');
+            }
+          }
+
+          @Component({
+            template: `<div failInInputAlways="static"></div>`,
+          })
+          class TestCmpt {
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [TestCmpt, FailInInputAlways],
+          });
+
+          expect(() => {
+            TestBed.createComponent(TestCmpt);
+          }).toThrowError('Error in an input');
+
+          expect(() => {
+            TestBed.createComponent(TestCmpt);
+          }).toThrowError('Error in an input');
+        });
+
+    it('should consistently report errors raised a static query setter', () => {
+      @Directive({
+        selector: '[someDir]',
+      })
+      class SomeDirective {
+      }
+
+      @Component({
+        template: `<div someDir></div>`,
+      })
+      class TestCmpt {
+        @ViewChild(SomeDirective, {static: true})
+        set directive(_: SomeDirective) {
+          throw new Error('Error in static query setter');
+        }
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, SomeDirective],
+      });
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in static query setter');
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in static query setter');
+    });
+
+    it('should match a static query, even if its setter throws in the first create pass', () => {
+      let hasThrown = false;
+
+      @Directive({
+        selector: '[someDir]',
+      })
+      class SomeDirective {
+      }
+
+      @Component({
+        template: `<div someDir></div>`,
+      })
+      class TestCmpt {
+        @ViewChild(SomeDirective, {static: true})
+        get directive() {
+          return this._directive;
+        }
+        set directive(directiveInstance: SomeDirective) {
+          if (!hasThrown) {
+            hasThrown = true;
+            throw new Error('Error in static query setter');
+          }
+
+          this._directive = directiveInstance;
+        }
+
+        private _directive!: SomeDirective;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, SomeDirective],
+      });
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in static query setter');
+
+      const fixture = TestBed.createComponent(TestCmpt);
+
+      expect(fixture.componentInstance.directive).toBeInstanceOf(SomeDirective);
+    });
+
+    it('should render a recursive component if it throws during the first creation pass', () => {
+      let hasThrown = false;
+
+      @Component({
+        selector: 'test',
+        template: `<ng-content></ng-content>OK`,
+      })
+      class TestCmpt {
+        constructor() {
+          if (!hasThrown) {
+            hasThrown = true;
+            throw new Error('Error in a constructor');
+          }
+        }
+      }
+
+      @Component({
+        template: `<test><test><test></test></test></test>`,
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, TestCmpt],
+      });
+
+      expect(() => {
+        TestBed.createComponent(App);
+      }).toThrowError('Error in a constructor');
+
+      const fixture = TestBed.createComponent(App);
+      expect(fixture.nativeElement.textContent).toContain('OKOKOK');
+    });
+
+    it('should continue detecting changes if a directive throws in its constructor', () => {
+      let firstRun = true;
+
+      @Directive({
+        selector: '[failInConstructorOnce]',
+      })
+      class FailInConstructorOnce {
+        constructor() {
+          if (firstRun) {
+            firstRun = false;
+            throw new Error('Error in a constructor');
+          }
+        }
+      }
+
+      @Component({
+        template: `<div failInConstructorOnce>{{value}}</div>`,
+      })
+      class TestCmpt {
+        value = 0;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, FailInConstructorOnce],
+      });
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in a constructor');
+
+      const fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('0');
+
+      fixture.componentInstance.value = 1;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('1');
+
+      fixture.componentInstance.value = 2;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('2');
+    });
   });
 });

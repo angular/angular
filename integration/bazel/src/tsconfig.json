@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "importHelpers": true,
     "experimentalDecorators": true,
     "lib": [
       "dom",

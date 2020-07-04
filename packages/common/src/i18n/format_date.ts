@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FormStyle, FormatWidth, NumberSymbol, Time, TranslationWidth, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleTimeFormat} from './locale_data_api';
+import {FormatWidth, FormStyle, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleTimeFormat, NumberSymbol, Time, TranslationWidth} from './locale_data_api';
 
 export const ISO8601_DATE_REGEX =
     /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
@@ -62,7 +62,7 @@ enum TranslationType {
  * @publicApi
  */
 export function formatDate(
-    value: string | number | Date, format: string, locale: string, timezone?: string): string {
+    value: string|number|Date, format: string, locale: string, timezone?: string): string {
   let date = toDate(value);
   const namedFormat = getNamedFormat(locale, format);
   format = namedFormat || format;
@@ -277,26 +277,40 @@ function getDateTranslation(
       if (extended) {
         const rules = getLocaleExtraDayPeriodRules(locale);
         const dayPeriods = getLocaleExtraDayPeriods(locale, form, width);
-        let result;
-        rules.forEach((rule: Time | [Time, Time], index: number) => {
+        const index = rules.findIndex(rule => {
           if (Array.isArray(rule)) {
             // morning, afternoon, evening, night
-            const {hours: hoursFrom, minutes: minutesFrom} = rule[0];
-            const {hours: hoursTo, minutes: minutesTo} = rule[1];
-            if (currentHours >= hoursFrom && currentMinutes >= minutesFrom &&
-                (currentHours < hoursTo ||
-                 (currentHours === hoursTo && currentMinutes < minutesTo))) {
-              result = dayPeriods[index];
+            const [from, to] = rule;
+            const afterFrom = currentHours >= from.hours && currentMinutes >= from.minutes;
+            const beforeTo =
+                (currentHours < to.hours ||
+                 (currentHours === to.hours && currentMinutes < to.minutes));
+            // We must account for normal rules that span a period during the day (e.g. 6am-9am)
+            // where `from` is less (earlier) than `to`. But also rules that span midnight (e.g.
+            // 10pm - 5am) where `from` is greater (later!) than `to`.
+            //
+            // In the first case the current time must be BOTH after `from` AND before `to`
+            // (e.g. 8am is after 6am AND before 10am).
+            //
+            // In the second case the current time must be EITHER after `from` OR before `to`
+            // (e.g. 4am is before 5am but not after 10pm; and 11pm is not before 5am but it is
+            // after 10pm).
+            if (from.hours < to.hours) {
+              if (afterFrom && beforeTo) {
+                return true;
+              }
+            } else if (afterFrom || beforeTo) {
+              return true;
             }
           } else {  // noon or midnight
-            const {hours, minutes} = rule;
-            if (hours === currentHours && minutes === currentMinutes) {
-              result = dayPeriods[index];
+            if (rule.hours === currentHours && rule.minutes === currentMinutes) {
+              return true;
             }
           }
+          return false;
         });
-        if (result) {
-          return result;
+        if (index !== -1) {
+          return dayPeriods[index];
         }
       }
       // if no rules for the day periods, we use am/pm by default
@@ -368,8 +382,10 @@ function weekGetter(size: number, monthBased = false): DateFormatter {
       const today = date.getDate();
       result = 1 + Math.floor((today + nbDaysBefore1stDayOfMonth) / 7);
     } else {
-      const firstThurs = getFirstThursdayOfYear(date.getFullYear());
       const thisThurs = getThursdayThisWeek(date);
+      // Some days of a year are part of next year according to ISO 8601.
+      // Compute the firstThurs from the year of this week's Thursday
+      const firstThurs = getFirstThursdayOfYear(thisThurs.getFullYear());
       const diff = thisThurs.getTime() - firstThurs.getTime();
       result = 1 + Math.round(diff / 6.048e8);  // 6.048e8 ms per week
     }
@@ -652,7 +668,7 @@ function convertTimezoneToLocal(date: Date, timezone: string, reverse: boolean):
  *
  * Throws if unable to convert to a date.
  */
-export function toDate(value: string | number | Date): Date {
+export function toDate(value: string|number|Date): Date {
   if (isDate(value)) {
     return value;
   }

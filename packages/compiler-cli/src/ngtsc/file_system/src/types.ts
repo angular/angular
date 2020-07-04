@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,7 @@
  * A `string` is not assignable to a `BrandedPath`, but a `BrandedPath` is assignable to a `string`.
  * Two `BrandedPath`s with different brands are not mutually assignable.
  */
-export type BrandedPath<B extends string> = string & {
+export type BrandedPath<B extends string> = string&{
   _brand: B;
 };
 
@@ -37,7 +37,8 @@ export type PathSegment = BrandedPath<'PathSegment'>;
 export interface FileSystem {
   exists(path: AbsoluteFsPath): boolean;
   readFile(path: AbsoluteFsPath): string;
-  writeFile(path: AbsoluteFsPath, data: string, exclusive?: boolean): void;
+  readFileBuffer(path: AbsoluteFsPath): Buffer;
+  writeFile(path: AbsoluteFsPath, data: string|Buffer, exclusive?: boolean): void;
   removeFile(path: AbsoluteFsPath): void;
   symlink(target: AbsoluteFsPath, path: AbsoluteFsPath): void;
   readdir(path: AbsoluteFsPath): PathSegment[];
@@ -63,7 +64,7 @@ export interface FileSystem {
   normalize<T extends PathString>(path: T): T;
 }
 
-export type PathString = string | AbsoluteFsPath | PathSegment;
+export type PathString = string|AbsoluteFsPath|PathSegment;
 
 /**
  * Information about an object in the FileSystem.

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,14 +28,28 @@ export abstract class SummaryResolver<T> {
 export class JitSummaryResolver implements SummaryResolver<Type> {
   private _summaries = new Map<Type, Summary<Type>>();
 
-  isLibraryFile(): boolean { return false; }
-  toSummaryFileName(fileName: string): string { return fileName; }
-  fromSummaryFileName(fileName: string): string { return fileName; }
+  isLibraryFile(): boolean {
+    return false;
+  }
+  toSummaryFileName(fileName: string): string {
+    return fileName;
+  }
+  fromSummaryFileName(fileName: string): string {
+    return fileName;
+  }
   resolveSummary(reference: Type): Summary<Type>|null {
     return this._summaries.get(reference) || null;
   }
-  getSymbolsOf(): Type[] { return []; }
-  getImportAs(reference: Type): Type { return reference; }
-  getKnownModuleName(fileName: string) { return null; }
-  addSummary(summary: Summary<Type>) { this._summaries.set(summary.symbol, summary); }
+  getSymbolsOf(): Type[] {
+    return [];
+  }
+  getImportAs(reference: Type): Type {
+    return reference;
+  }
+  getKnownModuleName(fileName: string) {
+    return null;
+  }
+  addSummary(summary: Summary<Type>) {
+    this._summaries.set(summary.symbol, summary);
+  }
 }

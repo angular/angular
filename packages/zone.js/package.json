@@ -2,14 +2,18 @@
   "name": "zone.js",
   "version": "0.10.3",
   "description": "Zones for JavaScript",
-  "main": "dist/zone-node.js",
-  "browser": "dist/zone.js",
-  "unpkg": "dist/zone.js",
-  "typings": "dist/zone.js.d.ts",
+  "main": "./bundles/zone.umd.js",
+  "module": "./fesm2015/zone.js",
+  "es2015": "./fesm2015/zone.js",
+  "fesm2015": "./fesm2015/zone.js",
   "files": [
-    "lib",
-    "dist"
+    "./zone.js.d.ts",
+    "./zone.api.extensions.ts",
+    "./zone.configurations.api.ts"
   ],
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
   "directories": {
     "lib": "lib",
     "test": "test"
@@ -21,7 +25,7 @@
     "mocha": "^3.1.2",
     "mock-require": "3.0.3",
     "promises-aplus-tests": "^2.1.2",
-    "typescript": "~3.4.2"
+    "typescript": "^3.8.3"
   },
   "scripts": {
     "electrontest": "cd test/extra && node electron.js",

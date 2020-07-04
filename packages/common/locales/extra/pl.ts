@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,11 +14,7 @@ const u = undefined;
 export default [
   [
     ['o półn.', 'w poł.', 'rano', 'przed poł.', 'po poł.', 'wiecz.', 'w nocy'],
-    [
-      'o północy', 'w południe', 'rano', 'przed południem', 'po południu', 'wieczorem',
-      'w nocy'
-    ],
-    u
+    ['o północy', 'w południe', 'rano', 'przed południem', 'po południu', 'wieczorem', 'w nocy'], u
   ],
   [
     ['półn.', 'poł.', 'rano', 'przedpoł.', 'popoł.', 'wiecz.', 'noc'],

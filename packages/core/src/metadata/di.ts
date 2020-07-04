@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -75,7 +75,7 @@ export interface AttributeDecorator {
    * @publicApi
    */
   (name: string): any;
-  new (name: string): Attribute;
+  new(name: string): Attribute;
 }
 
 
@@ -140,7 +140,7 @@ export interface ContentChildrenDecorator {
    *
    * * **selector** - The directive type or the name used for querying.
    * * **descendants** - True to include all descendants, otherwise include only direct children.
-   * * **read** - True to read a different token from the queried elements.
+   * * **read** - Used to read a different token from the queried elements.
    *
    * @usageNotes
    *
@@ -157,8 +157,10 @@ export interface ContentChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): Query;
+  (selector: Type<any>|InjectionToken<unknown>|Function|string,
+   opts?: {descendants?: boolean, read?: any}): any;
+  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
+      opts?: {descendants?: boolean, read?: any}): Query;
 }
 
 /**
@@ -204,7 +206,7 @@ export interface ContentChildDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
-   * * **read** - True to read a different token from the queried element.
+   * * **read** - Used to read a different token from the queried element.
    * * **static** - True to resolve query results before change detection runs,
    * false to resolve after change detection. Defaults to false.
    *
@@ -218,8 +220,10 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ContentChild;
+  (selector: Type<any>|InjectionToken<unknown>|Function|string,
+   opts?: {read?: any, static?: boolean}): any;
+  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
+      opts?: {read?: any, static?: boolean}): ContentChild;
 }
 
 /**
@@ -238,8 +242,9 @@ export type ContentChild = Query;
  * @publicApi
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
-    'ContentChild', (selector?: any, data: any = {}) =>
-                        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
+    'ContentChild',
+    (selector?: any, data: any = {}) =>
+        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
     Query);
 
 /**
@@ -262,7 +267,7 @@ export interface ViewChildrenDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
-   * * **read** - True to read a different token from the queried elements.
+   * * **read** - Used to read a different token from the queried elements.
    *
    * @usageNotes
    *
@@ -274,8 +279,9 @@ export interface ViewChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any}): ViewChildren;
+  (selector: Type<any>|InjectionToken<unknown>|Function|string, opts?: {read?: any}): any;
+  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
+      opts?: {read?: any}): ViewChildren;
 }
 
 /**
@@ -292,8 +298,9 @@ export type ViewChildren = Query;
  * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
-    'ViewChildren', (selector?: any, data: any = {}) =>
-                        ({selector, first: false, isViewQuery: true, descendants: true, ...data}),
+    'ViewChildren',
+    (selector?: any, data: any = {}) =>
+        ({selector, first: false, isViewQuery: true, descendants: true, ...data}),
     Query);
 
 /**
@@ -315,7 +322,7 @@ export interface ViewChildDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
-   * * **read** - True to read a different token from the queried elements.
+   * * **read** - Used to read a different token from the queried elements.
    * * **static** - True to resolve query results before change detection runs,
    * false to resolve after change detection. Defaults to false.
    *
@@ -341,8 +348,10 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ViewChild;
+  (selector: Type<any>|InjectionToken<unknown>|Function|string,
+   opts?: {read?: any, static?: boolean}): any;
+  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
+      opts?: {read?: any, static?: boolean}): ViewChild;
 }
 
 /**
@@ -359,6 +368,7 @@ export type ViewChild = Query;
  * @publicApi
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
-    'ViewChild', (selector: any, data: any) =>
-                     ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
+    'ViewChild',
+    (selector: any, data: any) =>
+        ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
     Query);

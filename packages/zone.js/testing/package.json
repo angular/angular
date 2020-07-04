@@ -1,0 +1,8 @@
+{
+  "name": "zone-testing",
+  "description": "Testing library implemented by zone.js",
+  "main": "../bundles/zone-testing.umd.js",
+  "module": "../fesm2015/zone-testing.js",
+  "es2015": "../fesm2015/zone-testing.js",
+  "fesm2015": "../fesm2015/zone-testing.js"
+}

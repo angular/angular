@@ -11,7 +11,7 @@ The basic building blocks are *NgModules*, which provide a compilation context f
 
 * Components use *services*, which provide specific functionality not directly related to views. Service providers can be *injected* into components as *dependencies*, making your code modular, reusable, and efficient.
 
-Both components and services are simply classes, with *decorators* that mark their type and provide metadata that tells Angular how to use them.
+Modules, components and services are classes that use *decorators*. These decorators mark their type and provide metadata that tells Angular how to use them.
 
 * The metadata for a component class associates it with a *template* that defines a view. A template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before rendering it for display.
 
@@ -19,10 +19,15 @@ Both components and services are simply classes, with *decorators* that mark the
 
 An app's components typically define many views, arranged hierarchically. Angular provides the `Router` service to help you define navigation paths among views. The router provides sophisticated in-browser navigational capabilities.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
   See the [Angular Glossary](guide/glossary) for basic definitions of important Angular terms and usage.
 
+</div>
+
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
 </div>
 
 ## Modules
@@ -147,11 +152,6 @@ Each of these subjects is introduced in more detail in the following pages.
   * [Pipes](guide/architecture-components#pipes)
 
 * [Introduction to services and dependency injection](guide/architecture-services)
-
-<div class="alert is-helpful">
-
-   Note that the code referenced on these pages is available as a <live-example></live-example>.
-</div>
 
 When you're familiar with these fundamental building blocks, you can explore them in more detail in the documentation. To learn about more tools and techniques that are available to help you build and deploy Angular applications, see [Next steps: tools and techniques](guide/architecture-next-steps).
 </div>

@@ -1,25 +1,21 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {AstPath, BoundEventAst, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, identifierName, Identifiers, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, templateVisitAll, visitAll} from '@angular/compiler';
-import * as ts from 'typescript';
+import {AstResult, DiagnosticTemplateInfo, SelectorInfo, Span, Symbol, SymbolQuery} from './types';
 
-import {AstResult, SelectorInfo} from './common';
-import {DiagnosticTemplateInfo} from './expression_diagnostics';
-import {Span, Symbol, SymbolQuery} from './types';
-
-export interface SpanHolder {
+interface SpanHolder {
   sourceSpan: ParseSourceSpan;
   endSourceSpan?: ParseSourceSpan|null;
   children?: SpanHolder[];
 }
 
-export function isParseSourceSpan(value: any): value is ParseSourceSpan {
+function isParseSourceSpan(value: any): value is ParseSourceSpan {
   return value && !!value.start;
 }
 
@@ -79,16 +75,6 @@ export function getSelectors(info: AstResult): SelectorInfo {
     }
   }
   return {selectors: results, map};
-}
-
-export function isTypescriptVersion(low: string, high?: string) {
-  const version = ts.version;
-
-  if (version.substring(0, low.length) < low) return false;
-
-  if (high && (version.substring(0, high.length) > high)) return false;
-
-  return true;
 }
 
 export function diagnosticInfoFromTemplateInfo(info: AstResult): DiagnosticTemplateInfo {
@@ -156,78 +142,6 @@ export function findTemplateAstAt(ast: TemplateAst[], position: number): Templat
   templateVisitAll(visitor, ast);
 
   return new AstPath<TemplateAst>(path, position);
-}
-
-/**
- * Return the node that most tightly encompass the specified `position`.
- * @param node
- * @param position
- */
-export function findTightestNode(node: ts.Node, position: number): ts.Node|undefined {
-  if (node.getStart() <= position && position < node.getEnd()) {
-    return node.forEachChild(c => findTightestNode(c, position)) || node;
-  }
-}
-
-interface DirectiveClassLike {
-  decoratorId: ts.Identifier;  // decorator identifier, like @Component
-  classId: ts.Identifier;
-}
-
-/**
- * Return metadata about `node` if it looks like an Angular directive class.
- * In this case, potential matches are `@NgModule`, `@Component`, `@Directive`,
- * `@Pipe`, etc.
- * These class declarations all share some common attributes, namely their
- * decorator takes exactly one parameter and the parameter must be an object
- * literal.
- *
- * For example,
- *     v---------- `decoratorId`
- * @NgModule({           <
- *   declarations: [],   < classDecl
- * })                    <
- * class AppModule {}    <
- *          ^----- `classId`
- *
- * @param node Potential node that represents an Angular directive.
- */
-export function getDirectiveClassLike(node: ts.Node): DirectiveClassLike|undefined {
-  if (!ts.isClassDeclaration(node) || !node.name || !node.decorators) {
-    return;
-  }
-  for (const d of node.decorators) {
-    const expr = d.expression;
-    if (!ts.isCallExpression(expr) || expr.arguments.length !== 1 ||
-        !ts.isIdentifier(expr.expression)) {
-      continue;
-    }
-    const arg = expr.arguments[0];
-    if (ts.isObjectLiteralExpression(arg)) {
-      return {
-        decoratorId: expr.expression,
-        classId: node.name,
-      };
-    }
-  }
-}
-
-/**
- * Finds the value of a property assignment that is nested in a TypeScript node and is of a certain
- * type T.
- *
- * @param startNode node to start searching for nested property assignment from
- * @param propName property assignment name
- * @param predicate function to verify that a node is of type T.
- * @return node property assignment value of type T, or undefined if none is found
- */
-export function findPropertyValueOfType<T extends ts.Node>(
-    startNode: ts.Node, propName: string, predicate: (node: ts.Node) => node is T): T|undefined {
-  if (ts.isPropertyAssignment(startNode) && startNode.name.getText() === propName) {
-    const {initializer} = startNode;
-    if (predicate(initializer)) return initializer;
-  }
-  return startNode.forEachChild(c => findPropertyValueOfType(c, propName, predicate));
 }
 
 /**

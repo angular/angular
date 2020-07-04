@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,7 +11,7 @@ import {Provider} from '../di';
 import {Type} from '../interface/type';
 import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '../render3/jit/directive';
 import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
-import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
+import {makeDecorator, makePropDecorator, TypeDecorator} from '../util/decorators';
 import {noop} from '../util/noop';
 
 import {ViewEncapsulation} from './view';
@@ -73,7 +73,7 @@ export interface DirectiveDecorator {
   /**
    * See the `Directive` decorator.
    */
-  new (obj?: Directive): Directive;
+  new(obj?: Directive): Directive;
 }
 
 /**
@@ -282,10 +282,10 @@ export interface Directive {
   host?: {[key: string]: string};
 
   /**
-   * If true, this directive/component will be skipped by the AOT compiler and so will always be
-   * compiled using JIT.
-   *
-   * This exists to support future Ivy work and has no effect currently.
+   * When present, this directive/component is ignored by the AOT compiler.
+   * It remains in distributed code, and the JIT compiler attempts to compile it
+   * at run time, in the browser.
+   * To ensure the correct behavior, the app must import `@angular/compiler`.
    */
   jit?: true;
 }
@@ -314,7 +314,8 @@ export interface ComponentDecorator {
    * An Angular app contains a tree of Angular components.
    *
    * Angular components are a subset of directives, always associated with a template.
-   * Unlike other directives, only one component can be instantiated per an element in a template.
+   * Unlike other directives, only one component can be instantiated for a given element in a
+   * template.
    *
    * A component must belong to an NgModule in order for it to be available
    * to another component or application. To make it a member of an NgModule,
@@ -445,7 +446,7 @@ export interface ComponentDecorator {
   /**
    * See the `Component` decorator.
    */
-  new (obj: Component): Component;
+  new(obj: Component): Component;
 }
 
 /**
@@ -598,7 +599,7 @@ export interface PipeDecorator {
   /**
    * See the `Pipe` decorator.
    */
-  new (obj: Pipe): Pipe;
+  new(obj: Pipe): Pipe;
 }
 
 /**
@@ -641,52 +642,52 @@ export const Pipe: PipeDecorator = makeDecorator(
  */
 export interface InputDecorator {
   /**
-  * Decorator that marks a class field as an input property and supplies configuration metadata.
-  * The input property is bound to a DOM property in the template. During change detection,
-  * Angular automatically updates the data property with the DOM property's value.
-  *
-  * @usageNotes
-  *
-  * You can supply an optional name to use in templates when the
-  * component is instantiated, that maps to the
-  * name of the bound property. By default, the original
-  * name of the bound property is used for input binding.
-  *
-  * The following example creates a component with two input properties,
-  * one of which is given a special binding name.
-  *
-  * ```typescript
-  * @Component({
-  *   selector: 'bank-account',
-  *   template: `
-  *     Bank Name: {{bankName}}
-  *     Account Id: {{id}}
-  *   `
-  * })
-  * class BankAccount {
-  *   // This property is bound using its original name.
-  *   @Input() bankName: string;
-  *   // this property value is bound to a different property name
-  *   // when this component is instantiated in a template.
-  *   @Input('account-id') id: string;
-  *
-  *   // this property is not bound, and is not automatically updated by Angular
-  *   normalizedBankName: string;
-  * }
-  *
-  * @Component({
-  *   selector: 'app',
-  *   template: `
-  *     <bank-account bankName="RBC" account-id="4747"></bank-account>
-  *   `
-  * })
-  * class App {}
-  * ```
-  *
-  * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
-  */
+   * Decorator that marks a class field as an input property and supplies configuration metadata.
+   * The input property is bound to a DOM property in the template. During change detection,
+   * Angular automatically updates the data property with the DOM property's value.
+   *
+   * @usageNotes
+   *
+   * You can supply an optional name to use in templates when the
+   * component is instantiated, that maps to the
+   * name of the bound property. By default, the original
+   * name of the bound property is used for input binding.
+   *
+   * The following example creates a component with two input properties,
+   * one of which is given a special binding name.
+   *
+   * ```typescript
+   * @Component({
+   *   selector: 'bank-account',
+   *   template: `
+   *     Bank Name: {{bankName}}
+   *     Account Id: {{id}}
+   *   `
+   * })
+   * class BankAccount {
+   *   // This property is bound using its original name.
+   *   @Input() bankName: string;
+   *   // this property value is bound to a different property name
+   *   // when this component is instantiated in a template.
+   *   @Input('account-id') id: string;
+   *
+   *   // this property is not bound, and is not automatically updated by Angular
+   *   normalizedBankName: string;
+   * }
+   *
+   * @Component({
+   *   selector: 'app',
+   *   template: `
+   *     <bank-account bankName="RBC" account-id="4747"></bank-account>
+   *   `
+   * })
+   * class App {}
+   * ```
+   *
+   * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
+   */
   (bindingPropertyName?: string): any;
-  new (bindingPropertyName?: string): any;
+  new(bindingPropertyName?: string): any;
 }
 
 /**
@@ -715,23 +716,23 @@ export const Input: InputDecorator =
  */
 export interface OutputDecorator {
   /**
-  * Decorator that marks a class field as an output property and supplies configuration metadata.
-  * The DOM property bound to the output property is automatically updated during change detection.
-  *
-  * @usageNotes
-  *
-  * You can supply an optional name to use in templates when the
-  * component is instantiated, that maps to the
-  * name of the bound property. By default, the original
-  * name of the bound property is used for output binding.
-  *
-  * See `Input` decorator for an example of providing a binding name.
-  *
-  * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
-  *
-  */
+   * Decorator that marks a class field as an output property and supplies configuration metadata.
+   * The DOM property bound to the output property is automatically updated during change detection.
+   *
+   * @usageNotes
+   *
+   * You can supply an optional name to use in templates when the
+   * component is instantiated, that maps to the
+   * name of the bound property. By default, the original
+   * name of the bound property is used for output binding.
+   *
+   * See `Input` decorator for an example of providing a binding name.
+   *
+   * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
+   *
+   */
   (bindingPropertyName?: string): any;
-  new (bindingPropertyName?: string): any;
+  new(bindingPropertyName?: string): any;
 }
 
 /**
@@ -741,8 +742,8 @@ export interface OutputDecorator {
  */
 export interface Output {
   /**
-  * The name of the DOM property to which the output property is bound.
-  */
+   * The name of the DOM property to which the output property is bound.
+   */
   bindingPropertyName?: string;
 }
 
@@ -791,7 +792,7 @@ export interface HostBindingDecorator {
    *
    */
   (hostPropertyName?: string): any;
-  new (hostPropertyName?: string): any;
+  new(hostPropertyName?: string): any;
 }
 
 /**
@@ -825,7 +826,7 @@ export interface HostListenerDecorator {
    * and provides a handler method to run when that event occurs.
    */
   (eventName: string, args?: string[]): any;
-  new (eventName: string, args?: string[]): any;
+  new(eventName: string, args?: string[]): any;
 }
 
 /**

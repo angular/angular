@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -452,8 +452,4 @@ export function eventNames(elementName: string): string[] {
 
 export function propertyNames(elementName: string): string[] {
   return SchemaInformation.instance.propertiesOf(elementName);
-}
-
-export function propertyType(elementName: string, propertyName: string): string {
-  return SchemaInformation.instance.typeOf(elementName, propertyName);
 }

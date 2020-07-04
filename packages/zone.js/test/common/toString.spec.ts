@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -32,8 +32,9 @@ describe('global function patch', () => {
   });
 
   describe('isNative', () => {
-    it('ZoneAwareError toString should look like native',
-       () => { expect(Function.prototype.toString.call(Error)).toContain('[native code]'); });
+    it('ZoneAwareError toString should look like native', () => {
+      expect(Function.prototype.toString.call(Error)).toContain('[native code]');
+    });
 
     it('Function toString should look like native', () => {
       expect(Function.prototype.toString.call(Function.prototype.toString))

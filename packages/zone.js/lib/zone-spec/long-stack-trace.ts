@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -88,7 +88,7 @@ function stackTracesEnabled(): boolean {
   return (Error as any).stackTraceLimit > 0;
 }
 
-type LongStackTraceZoneSpec = ZoneSpec & {longStackTraceLimit: number};
+type LongStackTraceZoneSpec = ZoneSpec&{longStackTraceLimit: number};
 
 (Zone as any)['longStackTraceZoneSpec'] = <LongStackTraceZoneSpec>{
   name: 'long-stack-trace',

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,7 +14,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {DiagnosticTemplateInfo} from '../src/expression_diagnostics';
+import {DiagnosticTemplateInfo} from '../src/types';
 import {getClassMembers, getPipesTable, getSymbolQuery} from '../src/typescript_symbols';
 
 const realFiles = new Map<string, string>();

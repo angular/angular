@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {$} from 'protractor';
-import {runBenchmark, verifyNoBrowserErrors} from '../../../e2e_util/perf_util';
+import {runBenchmark, verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 interface Worker {
   id: string;
@@ -24,19 +24,25 @@ const Create1KWorker: Worker = {
 const Delete1KWorker: Worker = {
   id: 'delete1K',
   prepare: () => $('#create1KRows').click(),
-  work: () => { $('#deleteAll').click(); }
+  work: () => {
+    $('#deleteAll').click();
+  }
 };
 
 const UpdateWorker: Worker = {
   id: 'update',
   prepare: () => $('#create1KRows').click(),
-  work: () => { $('#update').click(); }
+  work: () => {
+    $('#update').click();
+  }
 };
 
 const SwapWorker: Worker = {
   id: 'swap',
   prepare: () => $('#create1KRows').click(),
-  work: () => { $('#swap').click(); }
+  work: () => {
+    $('#swap').click();
+  }
 };
 
 // In order to make sure that we don't change the ids of the benchmarks, we need to
@@ -45,15 +51,14 @@ const SwapWorker: Worker = {
 // name. e.g. "largeTable.ng2_switch.createDestroy". We determine the name of the
 // Bazel package where this test runs from the current test target. The Bazel target
 // looks like: "//modules/benchmarks/src/largetable/{pkg_name}:{target_name}".
-const testPackageName = process.env['BAZEL_TARGET'] !.split(':')[0].split('/').pop();
+const testPackageName = process.env['BAZEL_TARGET']!.split(':')[0].split('/').pop();
 
 describe('js-web-frameworks benchmark perf', () => {
-
   afterEach(verifyNoBrowserErrors);
 
   [Create1KWorker, Delete1KWorker, UpdateWorker, SwapWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it(`should run benchmark for ${testPackageName}`, async() => {
+      it(`should run benchmark for ${testPackageName}`, async () => {
         await runTableBenchmark({
           id: `js-web-frameworks.${testPackageName}.${worker.id}`,
           url: '/',

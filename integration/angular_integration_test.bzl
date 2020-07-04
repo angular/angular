@@ -1,4 +1,4 @@
-# Copyright Google Inc. All Rights Reserved.
+# Copyright Google LLC All Rights Reserved.
 #
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
@@ -12,6 +12,7 @@ load("//tools/npm_integration_test:npm_integration_test.bzl", "npm_integration_t
 NPM_PACKAGE_ARCHIVES = [
     "check-side-effects",
     "core-js",
+    "google-closure-compiler",
     "jasmine",
     "typescript",
     "rxjs",
@@ -44,7 +45,6 @@ GENERATED_NPM_PACKAGES = [
     "@angular/core",
     "@angular/elements",
     "@angular/forms",
-    "@angular/http",
     "@angular/language-service",
     "@angular/localize",
     "@angular/platform-browser",
@@ -108,10 +108,10 @@ def _angular_integration_test(name, **kwargs):
     elif commands == "payload_size_tracking":
         commands = DEFAULT_COMMANDS + [
             "$(rootpath @nodejs//:yarn_bin) build",
-            "$(rootpath //:scripts/ci/track-payload-size.sh) %s dist/*.js true ${RUNFILES}/angular/$(rootpath //integration:_payload-limits.json)" % name,
+            "$(rootpath //:scripts/ci/track-payload-size.sh) %s dist/*.js true ${RUNFILES}/angular/$(rootpath //goldens:size-tracking/integration-payloads.json)" % name,
         ]
         data = data + [
-            "//integration:_payload-limits.json",
+            "//goldens:size-tracking/integration-payloads.json",
             "//:scripts/ci/track-payload-size.sh",
             "//:scripts/ci/payload-size.sh",
             "//:scripts/ci/payload-size.js",

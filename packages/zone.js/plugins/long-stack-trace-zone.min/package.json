@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/long-stack-trace-zone.min",
+  "main": "../../bundles/long-stack-trace-zone.umd.min.js",
+  "fesm2015": "../../fesm2015/long-stack-trace-zone.min.js",
+  "es2015": "../../fesm2015/long-stack-trace-zone.min.js",
+  "module": "../../fesm2015/long-stack-trace-zone.min.js"
+}

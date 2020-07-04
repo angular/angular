@@ -1,0 +1,9 @@
+{
+  "description": "Router",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[0-9].*"
+  ],
+  "tags": ["router-tutorial"]
+}

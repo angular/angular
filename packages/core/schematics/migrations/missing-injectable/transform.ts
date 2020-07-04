@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,10 +18,14 @@ import {ResolvedDirective, ResolvedNgModule} from './definition_collector';
 import {ProviderLiteral, ProvidersEvaluator} from './providers_evaluator';
 import {UpdateRecorder} from './update_recorder';
 
-
-
-/** Name of decorators which imply that a given class does not need to be migrated. */
-const NO_MIGRATE_DECORATORS = ['Injectable', 'Directive', 'Component', 'Pipe'];
+/**
+ * Name of decorators which imply that a given class does not need to be migrated.
+ *    - `@Injectable`, `@Directive`, `@Component` and `@Pipe` instruct the compiler
+ *       to generate a factory definition.
+ *    - `@NgModule` instructs the compiler to generate a provider definition that holds
+ *       the factory function.
+ */
+const NO_MIGRATE_DECORATORS = ['Injectable', 'Directive', 'Component', 'Pipe', 'NgModule'];
 
 export interface AnalysisFailure {
   node: ts.Node;
@@ -46,7 +50,9 @@ export class MissingInjectableTransform {
         new TypeScriptReflectionHost(typeChecker), typeChecker, /* dependencyTracker */ null);
   }
 
-  recordChanges() { this.importManager.recordChanges(); }
+  recordChanges() {
+    this.importManager.recordChanges();
+  }
 
   /**
    * Migrates all specified NgModule's by walking through referenced providers
@@ -76,10 +82,9 @@ export class MissingInjectableTransform {
     this._migrateLiteralProviders(literals);
 
     if (!Array.isArray(resolvedValue)) {
-      return [{
-        node: module.providersExpr,
-        message: 'Providers of module are not statically analyzable.'
-      }];
+      return [
+        {node: module.providersExpr, message: 'Providers of module are not statically analyzable.'}
+      ];
     }
 
     return this._visitProviderResolvedValue(resolvedValue, module);
@@ -194,8 +199,9 @@ export class MissingInjectableTransform {
 
       const sourceFile = node.getSourceFile();
       const newObjectLiteral = ts.updateObjectLiteral(
-          node, node.properties.concat(
-                    ts.createPropertyAssignment('useValue', ts.createIdentifier('undefined'))));
+          node,
+          node.properties.concat(
+              ts.createPropertyAssignment('useValue', ts.createIdentifier('undefined'))));
 
       this.getUpdateRecorder(sourceFile)
           .updateObjectLiteral(
@@ -217,11 +223,12 @@ export class MissingInjectableTransform {
       // decorate the class. This is because the class is instantiated through the
       // specified "deps" and the class does not need a factory definition.
       if (value.has('provide') && value.has('useClass') && value.get('deps') == null) {
-        return this._visitProviderResolvedValue(value.get('useClass') !, module);
+        return this._visitProviderResolvedValue(value.get('useClass')!, module);
       }
     } else if (Array.isArray(value)) {
-      return value.reduce((res, v) => res.concat(this._visitProviderResolvedValue(v, module)), [
-      ] as AnalysisFailure[]);
+      return value.reduce(
+          (res, v) => res.concat(this._visitProviderResolvedValue(v, module)),
+          [] as AnalysisFailure[]);
     } else if (value instanceof DynamicValue) {
       return [{node: value.node, message: `Provider is not statically analyzable.`}];
     }

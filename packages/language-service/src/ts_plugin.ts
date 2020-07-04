@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,8 +11,30 @@ import * as tss from 'typescript/lib/tsserverlibrary';
 import {createLanguageService} from './language_service';
 import {TypeScriptServiceHost} from './typescript_host';
 
+// Use a WeakMap to keep track of Project to Host mapping so that when Project
+// is deleted Host could be garbage collected.
+const PROJECT_MAP = new WeakMap<tss.server.Project, TypeScriptServiceHost>();
+
+/**
+ * This function is called by tsserver to retrieve the external (non-TS) files
+ * that should belong to the specified `project`. For Angular, these files are
+ * external templates. This is called once when the project is loaded, then
+ * every time when the program is updated.
+ * @param project Project for which external files should be retrieved.
+ */
+export function getExternalFiles(project: tss.server.Project): string[] {
+  if (!project.hasRoots()) {
+    // During project initialization where there is no root files yet we should
+    // not do any work.
+    return [];
+  }
+  const ngLsHost = PROJECT_MAP.get(project);
+  ngLsHost?.getAnalyzedModules();
+  return ngLsHost?.getExternalTemplates() || [];
+}
+
 export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
-  const {languageService: tsLS, languageServiceHost: tsLSHost, config} = info;
+  const {languageService: tsLS, languageServiceHost: tsLSHost, config, project} = info;
   // This plugin could operate under two different modes:
   // 1. TS + Angular
   //    Plugin augments TS language service to provide additional Angular
@@ -25,6 +47,7 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
   const angularOnly = config ? config.angularOnly === true : false;
   const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
   const ngLS = createLanguageService(ngLSHost);
+  PROJECT_MAP.set(project, ngLSHost);
 
   function getCompletionsAtPosition(
       fileName: string, position: number, options: tss.GetCompletionsAtPositionOptions|undefined) {

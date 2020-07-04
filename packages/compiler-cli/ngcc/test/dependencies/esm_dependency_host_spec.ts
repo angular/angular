@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -27,12 +27,12 @@ runInEachFileSystem(() => {
     });
 
     describe('collectDependencies()', () => {
-      it('should not generate a TS AST if the source does not contain any imports or re-exports',
+      it('should not try to extract import paths if the source does not contain any imports or re-exports',
          () => {
-           spyOn(ts, 'createSourceFile');
+           const extractImportsSpy = spyOn(host as any, 'extractImports');
            host.collectDependencies(
                _('/no/imports/or/re-exports/index.js'), createDependencyInfo());
-           expect(ts.createSourceFile).not.toHaveBeenCalled();
+           expect(extractImportsSpy).not.toHaveBeenCalled();
          });
 
       it('should resolve all the external imports of the source file', () => {
@@ -50,6 +50,17 @@ runInEachFileSystem(() => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
         host.collectDependencies(
             _('/external/re-exports/index.js'), {dependencies, missing, deepImports});
+        expect(dependencies.size).toBe(2);
+        expect(missing.size).toBe(0);
+        expect(deepImports.size).toBe(0);
+        expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
+        expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
+      });
+
+      it('should resolve all the external dynamic imports of the source file', () => {
+        const {dependencies, missing, deepImports} = createDependencyInfo();
+        host.collectDependencies(
+            _('/external/dynamic/index.js'), {dependencies, missing, deepImports});
         expect(dependencies.size).toBe(2);
         expect(missing.size).toBe(0);
         expect(deepImports.size).toBe(0);
@@ -180,13 +191,20 @@ runInEachFileSystem(() => {
         {name: _('/no/imports/or/re-exports/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/external/imports/index.js'),
-          contents: `import {X} from 'lib-1';\nimport {Y} from 'lib-1/sub-1';`
+          contents: `import {\n   X\n} from 'lib-1';\nimport {Y, Z} from 'lib-1/sub-1';`
         },
         {name: _('/external/imports/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/external/imports/index.metadata.json'), contents: 'MOCK METADATA'},
         {
+          name: _('/external/dynamic/index.js'),
+          contents:
+              `async function foo() { await const x = import('lib-1');\n const promise = import('lib-1/sub-1'); }`
+        },
+        {name: _('/external/dynamic/package.json'), contents: '{"esm2015": "./index.js"}'},
+        {name: _('/external/dynamic/index.metadata.json'), contents: 'MOCK METADATA'},
+        {
           name: _('/external/re-exports/index.js'),
-          contents: `export {X} from 'lib-1';\nexport {Y} from 'lib-1/sub-1';`
+          contents: `export {X} from 'lib-1';\nexport {\n   Y,\n   Z\n} from 'lib-1/sub-1';`
         },
         {name: _('/external/re-exports/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/external/re-exports/index.metadata.json'), contents: 'MOCK METADATA'},
@@ -288,20 +306,44 @@ runInEachFileSystem(() => {
     describe('hasImportOrReexportStatements', () => {
       it('should return true if there is an import statement', () => {
         expect(hasImportOrReexportStatements('import {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('import {X} from \'some/x\';')).toBe(true);
         expect(hasImportOrReexportStatements('import * as X from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('import * as X from \'some/x\';')).toBe(true);
         expect(hasImportOrReexportStatements('blah blah\n\n  import {X} from "some/x";\nblah blah'))
             .toBe(true);
+        expect(
+            hasImportOrReexportStatements('blah blah\n\n  import {X} from \'some/x\';\nblah blah'))
+            .toBe(true);
         expect(hasImportOrReexportStatements('\t\timport {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('\t\timport {X} from \'some/x\';')).toBe(true);
+        expect(hasImportOrReexportStatements('\t\timport {\n  X,\n  Y\n} from "some/x";'))
+            .toBe(true);
+        expect(hasImportOrReexportStatements('\t\timport {\n  X,\n  Y\n} from \'some/x\';'))
+            .toBe(true);
+        expect(hasImportOrReexportStatements('\t\timport "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('\t\timport \'some/x\';')).toBe(true);
       });
+
       it('should return true if there is a re-export statement', () => {
         expect(hasImportOrReexportStatements('export {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('export {X} from \'some/x\';')).toBe(true);
         expect(hasImportOrReexportStatements('blah blah\n\n  export {X} from "some/x";\nblah blah'))
             .toBe(true);
+        expect(
+            hasImportOrReexportStatements('blah blah\n\n  export {X} from \'some/x\';\nblah blah'))
+            .toBe(true);
         expect(hasImportOrReexportStatements('\t\texport {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('\t\texport {X} from \'some/x\';')).toBe(true);
+        expect(hasImportOrReexportStatements('export {\n  X,\n  Y\n} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('export {\n  X,\n  Y\n} from \'some/x\';')).toBe(true);
         expect(hasImportOrReexportStatements(
-                   'blah blah\n\n  export * from "@angular/core;\nblah blah'))
+                   'blah blah\n\n  export * from "@angular/core";\nblah blah'))
+            .toBe(true);
+        expect(hasImportOrReexportStatements(
+                   'blah blah\n\n  export * from \'@angular/core\';\nblah blah'))
             .toBe(true);
       });
+
       it('should return false if there is no import nor re-export statement', () => {
         expect(hasImportOrReexportStatements('blah blah')).toBe(false);
         expect(hasImportOrReexportStatements('export function moo() {}')).toBe(false);

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.JsonpCallbackContext
+ * Copyright Google LLC All Rights Reserved.sonpCallbackContext
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -38,11 +38,15 @@ class TestInterceptor implements HttpInterceptor {
 }
 
 class InterceptorA extends TestInterceptor {
-  constructor() { super('A'); }
+  constructor() {
+    super('A');
+  }
 }
 
 class InterceptorB extends TestInterceptor {
-  constructor() { super('B'); }
+  constructor() {
+    super('B');
+  }
 }
 
 @Injectable()
@@ -98,7 +102,9 @@ class ReentrantInterceptor implements HttpInterceptor {
           {provide: HTTP_INTERCEPTORS, useClass: ReentrantInterceptor, multi: true},
         ],
       });
-      injector.get(HttpClient).get('/test').subscribe(() => { done(); });
+      injector.get(HttpClient).get('/test').subscribe(() => {
+        done();
+      });
       injector.get(HttpTestingController).expectOne('/test').flush('ok!');
     });
   });

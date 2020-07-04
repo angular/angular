@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,14 +10,15 @@
 
 import * as cluster from 'cluster';
 
-import {resolve} from '../../../../src/ngtsc/file_system';
-import {Logger} from '../../logging/logger';
+import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
+import {Logger} from '../../../../src/ngtsc/logging';
+import {FileWriter} from '../../writing/file_writer';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
 import {AnalyzeEntryPointsFn} from '../api';
 import {CreateTaskCompletedCallback, Task, TaskCompletedCallback, TaskQueue} from '../tasks/api';
 import {stringifyTask} from '../tasks/utils';
 
-import {MessageFromWorker, TaskCompletedMessage, UpdatePackageJsonMessage} from './api';
+import {MessageFromWorker, TaskCompletedMessage, TransformedFilesMessage, UpdatePackageJsonMessage} from './api';
 import {Deferred, sendMessageToWorker} from './utils';
 
 
@@ -28,17 +29,22 @@ import {Deferred, sendMessageToWorker} from './utils';
 export class ClusterMaster {
   private finishedDeferred = new Deferred<void>();
   private processingStartTime: number = -1;
-  private taskAssignments = new Map<number, Task|null>();
+  private taskAssignments = new Map<number, {task: Task, files?: AbsoluteFsPath[]}|null>();
   private taskQueue: TaskQueue;
   private onTaskCompleted: TaskCompletedCallback;
+  private remainingRespawnAttempts = 3;
 
   constructor(
-      private maxWorkerCount: number, private logger: Logger,
-      private pkgJsonUpdater: PackageJsonUpdater, analyzeEntryPoints: AnalyzeEntryPointsFn,
+      private maxWorkerCount: number, private fileSystem: FileSystem, private logger: Logger,
+      private fileWriter: FileWriter, private pkgJsonUpdater: PackageJsonUpdater,
+      analyzeEntryPoints: AnalyzeEntryPointsFn,
       createTaskCompletedCallback: CreateTaskCompletedCallback) {
     if (!cluster.isMaster) {
       throw new Error('Tried to instantiate `ClusterMaster` on a worker process.');
     }
+
+    // Set the worker entry-point
+    cluster.setupMaster({exec: this.fileSystem.resolve(__dirname, 'worker.js')});
 
     this.taskQueue = analyzeEntryPoints();
     this.onTaskCompleted = createTaskCompletedCallback(this.taskQueue);
@@ -98,7 +104,7 @@ export class ClusterMaster {
       }
 
       // Process the next task on the worker.
-      this.taskAssignments.set(workerId, task);
+      this.taskAssignments.set(workerId, {task});
       sendMessageToWorker(workerId, {type: 'process-task', task});
 
       isWorkerAvailable = false;
@@ -142,24 +148,52 @@ export class ClusterMaster {
     if (worker.exitedAfterDisconnect) return;
 
     // The worker exited unexpectedly: Determine it's status and take an appropriate action.
-    const currentTask = this.taskAssignments.get(worker.id);
+    const assignment = this.taskAssignments.get(worker.id);
+    this.taskAssignments.delete(worker.id);
 
     this.logger.warn(
         `Worker #${worker.id} exited unexpectedly (code: ${code} | signal: ${signal}).\n` +
-        `  Current assignment: ${(currentTask == null) ? '-' : stringifyTask(currentTask)}`);
+        `  Current task: ${(assignment == null) ? '-' : stringifyTask(assignment.task)}\n` +
+        `  Current phase: ${
+            (assignment == null) ? '-' :
+                                   (assignment.files == null) ? 'compiling' : 'writing files'}`);
 
-    if (currentTask == null) {
+    if (assignment == null) {
       // The crashed worker process was not in the middle of a task:
       // Just spawn another process.
       this.logger.debug(`Spawning another worker process to replace #${worker.id}...`);
-      this.taskAssignments.delete(worker.id);
       cluster.fork();
     } else {
+      const {task, files} = assignment;
+
+      if (files != null) {
+        // The crashed worker process was in the middle of writing transformed files:
+        // Revert any changes before re-processing the task.
+        this.logger.debug(`Reverting ${files.length} transformed files...`);
+        this.fileWriter.revertBundle(
+            task.entryPoint, files, task.formatPropertiesToMarkAsProcessed);
+      }
+
       // The crashed worker process was in the middle of a task:
-      // Impossible to know whether we can recover (without ending up with a corrupted entry-point).
-      throw new Error(
-          'Process unexpectedly crashed, while processing format property ' +
-          `${currentTask.formatProperty} for entry-point '${currentTask.entryPoint.path}'.`);
+      // Re-add the task back to the queue.
+      this.taskQueue.markAsUnprocessed(task);
+
+      // The crashing might be a result of increased memory consumption by ngcc.
+      // Do not spawn another process, unless this was the last worker process.
+      const spawnedWorkerCount = Object.keys(cluster.workers).length;
+      if (spawnedWorkerCount > 0) {
+        this.logger.debug(`Not spawning another worker process to replace #${
+            worker.id}. Continuing with ${spawnedWorkerCount} workers...`);
+        this.maybeDistributeWork();
+      } else if (this.remainingRespawnAttempts > 0) {
+        this.logger.debug(`Spawning another worker process to replace #${worker.id}...`);
+        this.remainingRespawnAttempts--;
+        cluster.fork();
+      } else {
+        throw new Error(
+            'All worker processes crashed and attempts to re-spawn them failed. ' +
+            'Please check your system and ensure there is enough memory available.');
+      }
     }
   }
 
@@ -177,6 +211,8 @@ export class ClusterMaster {
         throw new Error(`Error on worker #${workerId}: ${msg.error}`);
       case 'task-completed':
         return this.onWorkerTaskCompleted(workerId, msg);
+      case 'transformed-files':
+        return this.onWorkerTransformedFiles(workerId, msg);
       case 'update-package-json':
         return this.onWorkerUpdatePackageJson(workerId, msg);
       default:
@@ -202,33 +238,56 @@ export class ClusterMaster {
 
   /** Handle a worker's having completed their assigned task. */
   private onWorkerTaskCompleted(workerId: number, msg: TaskCompletedMessage): void {
-    const task = this.taskAssignments.get(workerId) || null;
+    const assignment = this.taskAssignments.get(workerId) || null;
 
-    if (task === null) {
+    if (assignment === null) {
       throw new Error(
           `Expected worker #${workerId} to have a task assigned, while handling message: ` +
           JSON.stringify(msg));
     }
 
-    this.onTaskCompleted(task, msg.outcome, msg.message);
+    this.onTaskCompleted(assignment.task, msg.outcome, msg.message);
 
-    this.taskQueue.markTaskCompleted(task);
+    this.taskQueue.markAsCompleted(assignment.task);
     this.taskAssignments.set(workerId, null);
     this.maybeDistributeWork();
   }
 
-  /** Handle a worker's request to update a `package.json` file. */
-  private onWorkerUpdatePackageJson(workerId: number, msg: UpdatePackageJsonMessage): void {
-    const task = this.taskAssignments.get(workerId) || null;
+  /** Handle a worker's message regarding the files transformed while processing its task. */
+  private onWorkerTransformedFiles(workerId: number, msg: TransformedFilesMessage): void {
+    const assignment = this.taskAssignments.get(workerId) || null;
 
-    if (task === null) {
+    if (assignment === null) {
       throw new Error(
           `Expected worker #${workerId} to have a task assigned, while handling message: ` +
           JSON.stringify(msg));
     }
 
-    const expectedPackageJsonPath = resolve(task.entryPoint.path, 'package.json');
-    const parsedPackageJson = task.entryPoint.packageJson;
+    const oldFiles = assignment.files;
+    const newFiles = msg.files;
+
+    if (oldFiles !== undefined) {
+      throw new Error(
+          `Worker #${workerId} reported transformed files more than once.\n` +
+          `  Old files (${oldFiles.length}): [${oldFiles.join(', ')}]\n` +
+          `  New files (${newFiles.length}): [${newFiles.join(', ')}]\n`);
+    }
+
+    assignment.files = newFiles;
+  }
+
+  /** Handle a worker's request to update a `package.json` file. */
+  private onWorkerUpdatePackageJson(workerId: number, msg: UpdatePackageJsonMessage): void {
+    const assignment = this.taskAssignments.get(workerId) || null;
+
+    if (assignment === null) {
+      throw new Error(
+          `Expected worker #${workerId} to have a task assigned, while handling message: ` +
+          JSON.stringify(msg));
+    }
+
+    const entryPoint = assignment.task.entryPoint;
+    const expectedPackageJsonPath = this.fileSystem.resolve(entryPoint.path, 'package.json');
 
     if (expectedPackageJsonPath !== msg.packageJsonPath) {
       throw new Error(
@@ -244,7 +303,7 @@ export class ClusterMaster {
     //       In other words, task processing should only rely on the info that was there when the
     //       file was initially parsed (during entry-point analysis) and not on the info that might
     //       be added later (during task processing).
-    this.pkgJsonUpdater.writeChanges(msg.changes, msg.packageJsonPath, parsedPackageJson);
+    this.pkgJsonUpdater.writeChanges(msg.changes, msg.packageJsonPath, entryPoint.packageJson);
   }
 
   /** Stop all workers and stop listening on cluster events. */

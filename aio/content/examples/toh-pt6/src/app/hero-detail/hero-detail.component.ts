@@ -33,10 +33,10 @@ export class HeroDetailComponent implements OnInit {
     this.location.back();
   }
 
- // #docregion save
- save(): void {
+  // #docregion save
+  save(): void {
     this.heroService.updateHero(this.hero)
       .subscribe(() => this.goBack());
   }
-// #enddocregion save
+  // #enddocregion save
 }

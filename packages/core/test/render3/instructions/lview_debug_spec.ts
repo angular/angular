@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,13 +21,13 @@ describe('lView_debug', () => {
   afterEach(() => leaveView());
 
   describe('TNode', () => {
-    let tNode !: TNodeDebug;
-    let tView !: TView;
+    let tNode!: TNodeDebug;
+    let tView!: TView;
     beforeEach(() => {
       tView = createTView(TViewType.Component, 0, null, 0, 0, null, null, null, null, null);
-      tNode = createTNode(tView, null !, TNodeType.Element, 0, '', null) as TNodeDebug;
+      tNode = createTNode(tView, null!, TNodeType.Element, 0, '', null) as TNodeDebug;
     });
-    afterEach(() => tNode = tView = null !);
+    afterEach(() => tNode = tView = null!);
 
     describe('styling', () => {
       it('should decode no styling', () => {

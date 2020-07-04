@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -42,6 +42,15 @@ runInEachFileSystem(() => {
         expect(deepImports.size).toBe(0);
         expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
         expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
+      });
+
+      it('should ignore synthetic type imports', () => {
+        const {dependencies, missing, deepImports} = createDependencyInfo();
+        host.collectDependencies(
+            _('/external/synthetic-type-imports/index.d.ts'), {dependencies, missing, deepImports});
+        expect(dependencies.size).toBe(0);
+        expect(missing.size).toBe(0);
+        expect(deepImports.size).toBe(0);
       });
 
       it('should resolve all the external re-exports of the source file', () => {
@@ -165,6 +174,18 @@ runInEachFileSystem(() => {
         },
         {name: _('/external/imports/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/external/imports/index.metadata.json'), contents: 'MOCK METADATA'},
+        {
+          name: _('/external/synthetic-type-imports/index.d.ts'),
+          contents: `const function foo(): Array<import("lib-1").X>;`
+        },
+        {
+          name: _('/external/synthetic-type-imports/package.json'),
+          contents: '{"esm2015": "./index.js"}'
+        },
+        {
+          name: _('/external/synthetic-type-imports/index.metadata.json'),
+          contents: 'MOCK METADATA'
+        },
         {
           name: _('/external/re-exports/index.d.ts'),
           contents: `export {X} from 'lib-1';\nexport {Y} from 'lib-1/sub-1';`

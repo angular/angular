@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {create} from '../src/ts_plugin';
+import {create, getExternalFiles} from '../src/ts_plugin';
 import {CompletionKind} from '../src/types';
 
 import {MockTypescriptHost} from './test_utils';
@@ -57,8 +57,8 @@ describe('plugin', () => {
     const compilerDiags = tsLS.getCompilerOptionsDiagnostics();
     expect(compilerDiags).toEqual([]);
     const sourceFiles = program.getSourceFiles().filter(f => !f.fileName.endsWith('.d.ts'));
-    // there are six .ts files in the test project
-    expect(sourceFiles.length).toBe(6);
+    // there are three .ts files in the test project
+    expect(sourceFiles.length).toBe(3);
     for (const {fileName} of sourceFiles) {
       const syntacticDiags = tsLS.getSyntacticDiagnostics(fileName);
       expect(syntacticDiags).toEqual([]);
@@ -127,6 +127,13 @@ describe('plugin', () => {
         replacementSpan: {start: 182, length: 8},
         insertText: 'children',
       },
+    ]);
+  });
+
+  it('should return external templates when getExternalFiles() is called', () => {
+    const externalTemplates = getExternalFiles(mockProject);
+    expect(externalTemplates).toEqual([
+      '/app/test.ng',
     ]);
   });
 });

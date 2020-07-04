@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,23 +9,22 @@
 
 import {CommonModule} from '@angular/common';
 import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, Input, NgModule, OnInit, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
-import {AfterViewChecked} from '@angular/core/src/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 
 describe('change detection', () => {
-
   describe('embedded views', () => {
-
     @Directive({selector: '[viewManipulation]', exportAs: 'vm'})
     class ViewManipulation {
       constructor(
           private _tplRef: TemplateRef<{}>, public vcRef: ViewContainerRef,
           private _appRef: ApplicationRef) {}
 
-      insertIntoVcRef() { return this.vcRef.createEmbeddedView(this._tplRef); }
+      insertIntoVcRef() {
+        return this.vcRef.createEmbeddedView(this._tplRef);
+      }
 
       insertIntoAppRef(): EmbeddedViewRef<{}> {
         const viewRef = this._tplRef.createEmbeddedView({});
@@ -80,7 +79,9 @@ describe('change detection', () => {
         changeDetection: ChangeDetectionStrategy.OnPush
       })
       class App {
-        increment(counter: 'componentView'|'embeddedView') { counters[counter]++; }
+        increment(counter: 'componentView'|'embeddedView') {
+          counters[counter]++;
+        }
         noop() {}
       }
 
@@ -129,7 +130,9 @@ describe('change detection', () => {
         changeDetection: ChangeDetectionStrategy.OnPush
       })
       class DynamicComp {
-        increment() { counter++; }
+        increment() {
+          counter++;
+        }
         noop() {}
       }
 
@@ -170,13 +173,10 @@ describe('change detection', () => {
 
       expect(counter).toBe(3);
     });
-
   });
 
   describe('markForCheck', () => {
-
     it('should mark OnPush ancestor of dynamically created component views as dirty', () => {
-
       @Component({
         selector: `test-cmpt`,
         template: `{{counter}}|<ng-template #vc></ng-template>`,
@@ -184,7 +184,7 @@ describe('change detection', () => {
       })
       class TestCmpt {
         counter = 0;
-        @ViewChild('vc', {read: ViewContainerRef}) vcRef !: ViewContainerRef;
+        @ViewChild('vc', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
 
         constructor(private _cfr: ComponentFactoryResolver) {}
 
@@ -252,11 +252,13 @@ describe('change detection', () => {
         /**
          * @internal
          */
-        private _input !: number;
+        private _input!: number;
 
         constructor(private cdr: ChangeDetectorRef) {}
 
-        get input() { return this._input; }
+        get input() {
+          return this._input;
+        }
 
         set input(value: number) {
           this._input = value;
@@ -286,18 +288,19 @@ describe('change detection', () => {
       template: `{{ doCheckCount }} - {{ name }} <button (click)="onClick()"></button>`
     })
     class MyComponent implements DoCheck {
-      @Input()
-      name = 'Nancy';
+      @Input() name = 'Nancy';
       doCheckCount = 0;
 
-      ngDoCheck(): void { this.doCheckCount++; }
+      ngDoCheck(): void {
+        this.doCheckCount++;
+      }
 
       onClick() {}
     }
 
     @Component({selector: 'my-app', template: '<my-comp [name]="name"></my-comp>'})
     class MyApp {
-      @ViewChild(MyComponent) comp !: MyComponent;
+      @ViewChild(MyComponent) comp!: MyComponent;
       name: string = 'Nancy';
     }
 
@@ -369,7 +372,7 @@ describe('change detection', () => {
       expect(fixture.componentInstance.comp.doCheckCount).toEqual(1);
       expect(fixture.nativeElement.textContent.trim()).toEqual('1 - Nancy');
 
-      const button = fixture.nativeElement.querySelector('button') !;
+      const button = fixture.nativeElement.querySelector('button')!;
       button.click();
 
       // No ticks should have been scheduled.
@@ -389,7 +392,7 @@ describe('change detection', () => {
         template: '<my-comp></my-comp><button id="parent" (click)="noop()"></button>'
       })
       class ButtonParent {
-        @ViewChild(MyComponent) comp !: MyComponent;
+        @ViewChild(MyComponent) comp!: MyComponent;
         noop() {}
       }
 
@@ -415,16 +418,18 @@ describe('change detection', () => {
         changeDetection: ChangeDetectionStrategy.OnPush
       })
       class ButtonParent implements DoCheck {
-        @ViewChild(MyComponent) comp !: MyComponent;
+        @ViewChild(MyComponent) comp!: MyComponent;
         noop() {}
 
         doCheckCount = 0;
-        ngDoCheck(): void { this.doCheckCount++; }
+        ngDoCheck(): void {
+          this.doCheckCount++;
+        }
       }
 
       @Component({selector: 'my-button-app', template: '<button-parent></button-parent>'})
       class MyButtonApp {
-        @ViewChild(ButtonParent) parent !: ButtonParent;
+        @ViewChild(ButtonParent) parent!: ButtonParent;
       }
 
       TestBed.configureTestingModule({declarations: [MyButtonApp, MyComponent, ButtonParent]});
@@ -456,7 +461,6 @@ describe('change detection', () => {
       expect(comp.doCheckCount).toEqual(2);
       expect(fixture.nativeElement.textContent.trim()).toEqual('3 - 2 - Nancy');
     });
-
   });
 
   describe('ChangeDetectorRef', () => {
@@ -472,18 +476,22 @@ describe('change detection', () => {
 
         constructor(public cdr: ChangeDetectorRef) {}
 
-        ngDoCheck() { this.doCheckCount++; }
+        ngDoCheck() {
+          this.doCheckCount++;
+        }
       }
 
       @Component({selector: 'parent-comp', template: `{{ doCheckCount}} - <my-comp></my-comp>`})
       class ParentComp implements DoCheck {
-        @ViewChild(MyComp) myComp !: MyComp;
+        @ViewChild(MyComp) myComp!: MyComp;
 
         doCheckCount = 0;
 
         constructor(public cdr: ChangeDetectorRef) {}
 
-        ngDoCheck() { this.doCheckCount++; }
+        ngDoCheck() {
+          this.doCheckCount++;
+        }
       }
 
       @Directive({selector: '[dir]'})
@@ -562,8 +570,8 @@ describe('change detection', () => {
       it('should check component view when called by directive on component node', () => {
         @Component({template: '<my-comp dir></my-comp>'})
         class MyApp {
-          @ViewChild(MyComp) myComp !: MyComp;
-          @ViewChild(Dir) dir !: Dir;
+          @ViewChild(MyComp) myComp!: MyComp;
+          @ViewChild(Dir) dir!: Dir;
         }
 
         TestBed.configureTestingModule({declarations: [MyComp, Dir, MyApp]});
@@ -580,8 +588,8 @@ describe('change detection', () => {
       it('should check host component when called by directive on element node', () => {
         @Component({template: '{{ value }}<div dir></div>'})
         class MyApp {
-          @ViewChild(MyComp) myComp !: MyComp;
-          @ViewChild(Dir) dir !: Dir;
+          @ViewChild(MyComp) myComp!: MyComp;
+          @ViewChild(Dir) dir!: Dir;
           value = '';
         }
 
@@ -601,7 +609,7 @@ describe('change detection', () => {
       it('should check the host component when called from EmbeddedViewRef', () => {
         @Component({template: '{{ name }}<div *ngIf="showing" dir></div>'})
         class MyApp {
-          @ViewChild(Dir) dir !: Dir;
+          @ViewChild(Dir) dir!: Dir;
           showing = true;
           name = 'Amelia';
         }
@@ -642,21 +650,30 @@ describe('change detection', () => {
           @Component({template: '<child-comp [inp]="true"></child-comp>'})
           class ParentComp {
             constructor(public cdr: ChangeDetectorRef) {}
-            triggerChangeDetection() { this.cdr.detectChanges(); }
+            triggerChangeDetection() {
+              this.cdr.detectChanges();
+            }
           }
 
           @Component({template: '{{inp}}', selector: 'child-comp'})
           class ChildComp {
-            @Input()
-            inp: any = '';
+            @Input() inp: any = '';
 
             count = 0;
             constructor(public parentComp: ParentComp) {}
 
-            ngOnInit() { this.check('OnInit'); }
-            ngAfterContentInit() { this.check('AfterContentInit'); }
-            ngAfterViewInit() { this.check('AfterViewInit'); }
-            ngOnChanges() { this.check('OnChanges'); }
+            ngOnInit() {
+              this.check('OnInit');
+            }
+            ngAfterContentInit() {
+              this.check('AfterContentInit');
+            }
+            ngAfterViewInit() {
+              this.check('AfterViewInit');
+            }
+            ngOnChanges() {
+              this.check('OnChanges');
+            }
 
             check(h: string) {
               if (h === hook) {
@@ -704,8 +721,7 @@ describe('change detection', () => {
           `
         })
         class App {
-          @ViewChildren('ref')
-          ref !: QueryList<any>;
+          @ViewChildren('ref') ref!: QueryList<any>;
 
           visible = false;
 
@@ -737,13 +753,14 @@ describe('change detection', () => {
       describe('dynamic views', () => {
         @Component({selector: 'structural-comp', template: '{{ value }}'})
         class StructuralComp {
-          @Input()
-          tmp !: TemplateRef<any>;
+          @Input() tmp!: TemplateRef<any>;
           value = 'one';
 
           constructor(public vcr: ViewContainerRef) {}
 
-          create() { return this.vcr.createEmbeddedView(this.tmp, {ctx: this}); }
+          create() {
+            return this.vcr.createEmbeddedView(this.tmp, {ctx: this});
+          }
         }
 
         it('should support ViewRef.detectChanges()', () => {
@@ -752,7 +769,7 @@ describe('change detection', () => {
                 '<ng-template #foo let-ctx="ctx">{{ ctx.value }}</ng-template><structural-comp [tmp]="foo"></structural-comp>'
           })
           class App {
-            @ViewChild(StructuralComp) structuralComp !: StructuralComp;
+            @ViewChild(StructuralComp) structuralComp!: StructuralComp;
           }
 
           TestBed.configureTestingModule({declarations: [App, StructuralComp]});
@@ -781,7 +798,7 @@ describe('change detection', () => {
             template: '<ng-template #foo>Template text</ng-template><structural-comp [tmp]="foo">'
           })
           class App {
-            @ViewChild(StructuralComp) structuralComp !: StructuralComp;
+            @ViewChild(StructuralComp) structuralComp!: StructuralComp;
           }
 
           TestBed.configureTestingModule({declarations: [App, StructuralComp]});
@@ -794,9 +811,7 @@ describe('change detection', () => {
           viewRef.detectChanges();
           expect(fixture.nativeElement.textContent).toEqual('oneTemplate text');
         });
-
       });
-
     });
 
     describe('attach/detach', () => {
@@ -807,12 +822,14 @@ describe('change detection', () => {
 
         constructor(public cdr: ChangeDetectorRef) {}
 
-        ngDoCheck() { this.doCheckCount++; }
+        ngDoCheck() {
+          this.doCheckCount++;
+        }
       }
 
       @Component({template: '<detached-comp></detached-comp>'})
       class MyApp {
-        @ViewChild(DetachedComp) comp !: DetachedComp;
+        @ViewChild(DetachedComp) comp!: DetachedComp;
 
         constructor(public cdr: ChangeDetectorRef) {}
       }
@@ -908,22 +925,20 @@ describe('change detection', () => {
       });
 
       it('should detach OnPush components properly', () => {
-
         @Component({
           selector: 'on-push-comp',
           template: '{{ value }}',
           changeDetection: ChangeDetectionStrategy.OnPush
         })
         class OnPushComp {
-          @Input()
-          value !: string;
+          @Input() value!: string;
 
           constructor(public cdr: ChangeDetectorRef) {}
         }
 
         @Component({template: '<on-push-comp [value]="value"></on-push-comp>'})
         class OnPushApp {
-          @ViewChild(OnPushComp) onPushComp !: OnPushComp;
+          @ViewChild(OnPushComp) onPushComp!: OnPushComp;
           value = '';
         }
 
@@ -946,7 +961,6 @@ describe('change detection', () => {
         fixture.detectChanges();
         expect(fixture.nativeElement.textContent).toEqual('two');
       });
-
     });
 
     describe('markForCheck()', () => {
@@ -962,7 +976,9 @@ describe('change detection', () => {
 
         constructor(public cdr: ChangeDetectorRef) {}
 
-        ngDoCheck() { this.doCheckCount++; }
+        ngDoCheck() {
+          this.doCheckCount++;
+        }
       }
 
       @Component({
@@ -970,7 +986,7 @@ describe('change detection', () => {
         changeDetection: ChangeDetectionStrategy.OnPush
       })
       class OnPushParent {
-        @ViewChild(OnPushComp) comp !: OnPushComp;
+        @ViewChild(OnPushComp) comp!: OnPushComp;
         value = 'one';
       }
 
@@ -1023,7 +1039,6 @@ describe('change detection', () => {
         fixture.componentInstance.comp.cdr.markForCheck();
         fixture.detectChanges();
         expect(fixture.nativeElement.textContent).toEqual('two - one');
-
       });
 
       it('should ensure OnPush components in embedded views are checked', () => {
@@ -1032,7 +1047,7 @@ describe('change detection', () => {
           changeDetection: ChangeDetectionStrategy.OnPush
         })
         class EmbeddedViewParent {
-          @ViewChild(OnPushComp) comp !: OnPushComp;
+          @ViewChild(OnPushComp) comp!: OnPushComp;
           value = 'one';
           showing = true;
         }
@@ -1112,13 +1127,21 @@ describe('change detection', () => {
         contentCheckCount = 0;
         viewCheckCount = 0;
 
-        ngDoCheck() { this.doCheckCount++; }
+        ngDoCheck() {
+          this.doCheckCount++;
+        }
 
-        ngAfterContentChecked() { this.contentCheckCount++; }
+        ngAfterContentChecked() {
+          this.contentCheckCount++;
+        }
 
-        ngAfterViewChecked() { this.viewCheckCount++; }
+        ngAfterViewChecked() {
+          this.viewCheckCount++;
+        }
 
-        constructor(public cdr: ChangeDetectorRef) { comp = this; }
+        constructor(public cdr: ChangeDetectorRef) {
+          comp = this;
+        }
       }
 
       @Component({template: '{{ value }} - <no-changes-comp></no-changes-comp>'})
@@ -1131,7 +1154,9 @@ describe('change detection', () => {
       // Custom error handler that just rethrows all the errors from the
       // view, rather than logging them out. Used to keep our logs clean.
       class RethrowErrorHandler extends ErrorHandler {
-        handleError(error: any) { throw error; }
+        handleError(error: any) {
+          throw error;
+        }
       }
 
       it('should throw if bindings in current view have changed', () => {
@@ -1141,7 +1166,9 @@ describe('change detection', () => {
         });
         const fixture = TestBed.createComponent(NoChangesComp);
 
-        expect(() => { fixture.componentInstance.cdr.checkNoChanges(); })
+        expect(() => {
+          fixture.componentInstance.cdr.checkNoChanges();
+        })
             .toThrowError(
                 /ExpressionChangedAfterItHasBeenCheckedError: .+ Previous value: '.*undefined'. Current value: '.*1'/gi);
       });
@@ -1196,159 +1223,9 @@ describe('change detection', () => {
         expect(comp.contentCheckCount).toEqual(1);
         expect(comp.viewCheckCount).toEqual(1);
       });
-
-    });
-
-  });
-
-  describe('transplanted views', () => {
-    @Component({
-      selector: 'insert-comp',
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      template: `
-        InsertComp({{greeting}})
-        <div *ngIf="true">
-          <!-- Add extra level of embedded view to ensure we can handle nesting -->
-          <ng-container
-              [ngTemplateOutlet]="template"
-              [ngTemplateOutletContext]="{$implicit: greeting}">
-          </ng-container>
-        </div>
-      `
-    })
-    class InsertComp implements DoCheck,
-        AfterViewChecked {
-      get template(): TemplateRef<any> { return declareComp.myTmpl; }
-      greeting: string = 'Hello';
-      constructor(public changeDetectorRef: ChangeDetectorRef) { insertComp = this; }
-      ngDoCheck(): void { logValue = 'Insert'; }
-      ngAfterViewChecked(): void { logValue = null; }
-    }
-
-    @Component({
-      selector: `declare-comp`,
-      template: `
-        DeclareComp({{name}})
-        <ng-template #myTmpl let-greeting>
-          {{greeting}} {{logName()}}!
-        </ng-template>
-      `
-    })
-    class DeclareComp implements DoCheck,
-        AfterViewChecked {
-      @ViewChild('myTmpl')
-      myTmpl !: TemplateRef<any>;
-      name: string = 'world';
-      constructor() { declareComp = this; }
-      ngDoCheck(): void { logValue = 'Declare'; }
-      logName() {
-        // This will log when the embedded view gets CD. The `logValue` will show if the CD was from
-        // `Insert` or from `Declare` component.
-        log.push(logValue !);
-        return this.name;
-      }
-      ngAfterViewChecked(): void { logValue = null; }
-    }
-
-    @Component({
-      template: `
-      <declare-comp *ngIf="showDeclare"></declare-comp>
-      <insert-comp *ngIf="showInsert"></insert-comp>
-      `
-    })
-    class AppComp {
-      showDeclare: boolean = true;
-      showInsert: boolean = true;
-      constructor() { appComp = this; }
-    }
-
-    let log !: string[];
-    let logValue !: string | null;
-    let fixture !: ComponentFixture<AppComp>;
-    let appComp !: AppComp;
-    let insertComp !: InsertComp;
-    let declareComp !: DeclareComp;
-
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        declarations: [InsertComp, DeclareComp, AppComp],
-        imports: [CommonModule],
-      });
-      log = [];
-      fixture = TestBed.createComponent(AppComp);
-    });
-
-    it('should CD with declaration', () => {
-      // NOTE: The CD of VE and Ivy is different and is captured in the assertions:
-      // `expect(log).toEqual(ivyEnabled ? [...] : [...])`
-      //
-      // The reason for this difference is in the algorithm which VE and Ivy use to deal with
-      // transplanted views:
-      // - VE: always runs CD at insertion point. If the insertion component is `OnPush` and the
-      //   transplanted view is `CheckAlways` then the insertion component will be changed to
-      //   `CheckAlways` (defeating the benefit of `OnPush`)
-      // - Ivy: Runs the CD at both the declaration as well as insertion point. The benefit of this
-      //   approach is that each side (declaration/insertion) gets to keep its own semantics (either
-      //   `OnPush` or `CheckAlways`). The implication is that:
-      //   1. The two semantics are slightly different.
-      //   2. Ivy will CD the transplanted view twice under some circumstances. (When both insertion
-      //      and declaration are both dirty.)
-
-      fixture.detectChanges(false);
-      expect(log).toEqual(['Insert']);
-      log.length = 0;
-      expect(trim(fixture.nativeElement.textContent))
-          .toEqual('DeclareComp(world) InsertComp(Hello) Hello world!');
-
-      declareComp.name = 'Angular';
-      fixture.detectChanges(false);
-      expect(log).toEqual(ivyEnabled ? ['Declare'] : ['Insert']);
-      log.length = 0;
-      // Expect transplanted LView to be CD because the declaration is CD.
-      expect(trim(fixture.nativeElement.textContent))
-          .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
-
-      insertComp.greeting = 'Hi';
-      fixture.detectChanges(false);
-      expect(log).toEqual(ivyEnabled ? ['Declare'] : ['Insert']);
-      log.length = 0;
-      // expect no change because it is on push.
-      expect(trim(fixture.nativeElement.textContent))
-          .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
-
-      insertComp.changeDetectorRef.markForCheck();
-      fixture.detectChanges(false);
-      expect(log).toEqual(ivyEnabled ? ['Declare', 'Insert'] : ['Insert']);
-      log.length = 0;
-      expect(trim(fixture.nativeElement.textContent))
-          .toEqual('DeclareComp(Angular) InsertComp(Hi) Hi Angular!');
-
-      // Destroy insertion should also destroy declaration
-      appComp.showInsert = false;
-      insertComp.changeDetectorRef.markForCheck();
-      fixture.detectChanges(false);
-      expect(log).toEqual([]);
-      log.length = 0;
-      expect(trim(fixture.nativeElement.textContent)).toEqual('DeclareComp(Angular)');
-
-      // Restore both
-      appComp.showInsert = true;
-      fixture.detectChanges(false);
-      expect(log).toEqual(['Insert']);
-      log.length = 0;
-      expect(trim(fixture.nativeElement.textContent))
-          .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
-
-      // Destroy declaration, But we should still be able to see updates in insertion
-      appComp.showDeclare = false;
-      insertComp.greeting = 'Hello';
-      insertComp.changeDetectorRef.markForCheck();
-      fixture.detectChanges(false);
-      expect(log).toEqual(['Insert']);
-      log.length = 0;
-      expect(trim(fixture.nativeElement.textContent)).toEqual('InsertComp(Hello) Hello Angular!');
     });
   });
+
 
   describe('OnPush markForCheck in lifecycle hooks', () => {
     describe('with check no changes enabled', () => createOnPushMarkForCheckTests(true));
@@ -1376,16 +1253,16 @@ describe('change detection', () => {
               class OnPushComp {
                 text = 'initial';
 
-                constructor(private _cdRef: ChangeDetectorRef){}
+                constructor(private _cdRef: ChangeDetectorRef) {}
 
-                    [hookName]() {
+                [hookName]() {
                   this._cdRef.markForCheck();
                 }
               }
 
               @Component({template: `<on-push-comp></on-push-comp>`})
               class TestApp {
-                @ViewChild(OnPushComp) onPushComp !: OnPushComp;
+                @ViewChild(OnPushComp) onPushComp!: OnPushComp;
               }
 
               TestBed.configureTestingModule(
@@ -1419,16 +1296,16 @@ describe('change detection', () => {
           class OnPushComp {
             text = 'initial';
 
-            constructor(private _cdRef: ChangeDetectorRef){}
+            constructor(private _cdRef: ChangeDetectorRef) {}
 
-                [hookName]() {
+            [hookName]() {
               this._cdRef.markForCheck();
             }
           }
 
           @Component({template: `<on-push-comp></on-push-comp>`})
           class TestApp {
-            @ViewChild(OnPushComp) onPushComp !: OnPushComp;
+            @ViewChild(OnPushComp) onPushComp!: OnPushComp;
           }
 
           TestBed.configureTestingModule(
@@ -1478,7 +1355,9 @@ describe('change detection', () => {
       return fixture;
     }
 
-    function initWithTemplate(template: string) { return initComponent({template}); }
+    function initWithTemplate(template: string) {
+      return initComponent({template});
+    }
     function initWithHostBindings(bindings: {[key: string]: string}) {
       return initComponent({host: bindings});
     }
@@ -1611,7 +1490,3 @@ describe('change detection', () => {
     // });
   });
 });
-
-function trim(text: string | null): string {
-  return text ? text.replace(/[\s\n]+/gm, ' ').trim() : '';
-}

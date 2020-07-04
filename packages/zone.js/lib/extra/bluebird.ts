@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -80,6 +80,6 @@ Zone.__load_patch('bluebird', (global: any, Zone: ZoneType, api: _ZonePrivate) =
     });
 
     // override global promise
-    global[api.symbol('ZoneAwarePromise')] = Bluebird;
+    global.Promise = Bluebird;
   };
 });

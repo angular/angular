@@ -20,7 +20,7 @@
       "rxjs/*": ["./node_modules/rxjs/*"],
       "@angular/*": ["./packages/*"],
       "zone.js/*": ["./packages/zone.js/*"],
-      "e2e_util/*": ["./modules/e2e_util/*"]
+      "angular-in-memory-web-api": ["./packages/misc/angular-in-memory-web-api/index.ts"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,

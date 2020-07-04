@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,7 +20,7 @@ export function isFunctionLikeDeclaration(node: ts.Node): node is ts.FunctionLik
  * parentheses or as expression. e.g. "(((({exp}))))()". The function should return the
  * TypeScript node referring to the inner expression. e.g "exp".
  */
-export function unwrapExpression(node: ts.Expression | ts.ParenthesizedExpression): ts.Expression {
+export function unwrapExpression(node: ts.Expression|ts.ParenthesizedExpression): ts.Expression {
   if (ts.isParenthesizedExpression(node) || ts.isAsExpression(node)) {
     return unwrapExpression(node.expression);
   } else {

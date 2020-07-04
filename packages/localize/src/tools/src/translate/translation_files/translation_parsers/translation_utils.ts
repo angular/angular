@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -47,8 +47,8 @@ export function parseInnerRange(element: Element): Node[] {
  * @param element The element whose inner range we want to compute.
  */
 function getInnerRange(element: Element): LexerRange {
-  const start = element.startSourceSpan !.end;
-  const end = element.endSourceSpan !.start;
+  const start = element.startSourceSpan!.end;
+  const end = element.endSourceSpan!.start;
   return {
     startPos: start.offset,
     startLine: start.line,

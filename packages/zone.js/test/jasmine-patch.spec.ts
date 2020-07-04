@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -47,20 +47,22 @@ ifEnvSupports(supportJasmineSpec, () => {
     afterEach(() => {
       let zone = Zone.current;
       expect(zone.name).toEqual('ProxyZone');
-      expect(beforeEachZone !.name).toEqual(zone.name);
+      expect(beforeEachZone!.name).toEqual(zone.name);
       expect(itZone).toBe(zone);
     });
 
     afterAll(() => {
       let zone = Zone.current;
       expect(zone.name).toEqual('ProxyZone');
-      expect(beforeAllZone !.name).toEqual(zone.name);
+      expect(beforeAllZone!.name).toEqual(zone.name);
     });
   });
 
   describe('return promise', () => {
     let log: string[];
-    beforeEach(() => { log = []; });
+    beforeEach(() => {
+      log = [];
+    });
 
     it('should wait for promise to resolve', () => {
       return new Promise((res, _) => {
@@ -71,6 +73,18 @@ ifEnvSupports(supportJasmineSpec, () => {
       });
     });
 
-    afterEach(() => { expect(log).toEqual(['resolved']); });
+    afterEach(() => {
+      expect(log).toEqual(['resolved']);
+    });
+  });
+
+  describe('jasmine.createSpyObj', () => {
+    it('createSpyObj with properties should be able to be retrieved from the spy', () => {
+      const spy = jasmine.createSpyObj('obj', ['someFunction'], {prop1: 'foo'});
+      expect(spy.prop1).toEqual('foo');
+      const desc: any = Object.getOwnPropertyDescriptor(spy, 'prop1');
+      expect(desc.enumerable).toBe(true);
+      expect(desc.configurable).toBe(true);
+    });
   });
 })();

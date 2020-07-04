@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -37,7 +37,7 @@ export function getParentInjectorView(location: RelativeInjectorLocation, startV
   // <ng-template> tags or inline views, where the parent injector might live many views
   // above the child injector.
   while (viewOffset > 0) {
-    parentView = parentView[DECLARATION_VIEW] !;
+    parentView = parentView[DECLARATION_VIEW]!;
     viewOffset--;
   }
   return parentView;

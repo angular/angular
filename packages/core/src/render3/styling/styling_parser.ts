@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -244,7 +244,7 @@ export function consumeSeparator(
  * @param startIndex Starting index of character where the scan should start.
  * @param endIndex Ending index of character where the scan should end.
  * @returns Index after last style value character.
-*/
+ */
 export function consumeStyleValue(text: string, startIndex: number, endIndex: number): number {
   let ch1 = -1;  // 1st previous character
   let ch2 = -1;  // 2nd previous character

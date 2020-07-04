@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3PipeMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
+import {getCompilerFacade, R3PipeMetadataFacade} from '../../compiler/compiler_facade';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';

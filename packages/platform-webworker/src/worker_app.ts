@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {CommonModule, DOCUMENT, ViewportScroller, ɵNullViewportScroller as NullViewportScroller, ɵPLATFORM_WORKER_APP_ID as PLATFORM_WORKER_APP_ID} from '@angular/common';
-import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PLATFORM_ID, PlatformRef, RendererFactory2, StaticProvider, createPlatformFactory, platformCore, ɵINJECTOR_SCOPE as INJECTOR_SCOPE} from '@angular/core';
+import {APP_INITIALIZER, ApplicationModule, createPlatformFactory, ErrorHandler, NgModule, NgZone, PLATFORM_ID, platformCore, PlatformRef, RendererFactory2, StaticProvider, ɵINJECTOR_SCOPE as INJECTOR_SCOPE} from '@angular/core';
 import {ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS} from '@angular/platform-browser';
 
 import {ON_WEB_WORKER} from './web_workers/shared/api';
@@ -22,9 +22,10 @@ import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
-export const platformWorkerApp: (extraProviders?: StaticProvider[] | undefined) => PlatformRef =
+export const platformWorkerApp: (extraProviders?: StaticProvider[]|undefined) => PlatformRef =
     createPlatformFactory(
         platformCore, 'workerApp', [{provide: PLATFORM_ID, useValue: PLATFORM_WORKER_APP_ID}]);
 
@@ -56,7 +57,8 @@ export function setupWebWorker(): void {
  * The ng module for the worker app side.
  *
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 @NgModule({
   providers: [

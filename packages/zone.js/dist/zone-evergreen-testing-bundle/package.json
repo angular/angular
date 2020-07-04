@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/zone-evergreen-testing-bundle",
+  "main": "../../fesm2015/zone-testing-bundle.js",
+  "fesm2015": "../../fesm2015/zone-testing-bundle.js",
+  "es2015": "../../fesm2015/zone-testing-bundle.js",
+  "module": "../../fesm2015/zone-testing-bundle.js"
+}

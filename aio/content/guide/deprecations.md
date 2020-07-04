@@ -35,24 +35,24 @@ v9 - v12
 
 | Area                          | API or Feature                                                                | May be removed in |
 | ----------------------------- | ---------------------------------------------------------------------------   | ----------------- |
-| `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v10 |
+| `@angular/bazel`              | [`Bazel builder and schematics`](#bazelbuilder)                               | v10 |
+| `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v11 |
 | `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11 |
-| `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v10 |
-| `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v10 |
-| `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v10 |
-| `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v10 |
-| `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v10 |
-| `@angular/core`               | [`ModuleWithProviders` without a generic](#moduleWithProviders)               | <!--v9--> v10 |
-| `@angular/core`               | [Undecorated base classes that use Angular features](#undecorated-base-classes) | <!--v9--> v10 |
-| `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v10 |
-| `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v10 |
-| `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v10 |
-| `@angular/upgrade`            | [`getAngularLib`](#upgrade-static)                                            | <!--v8--> v10 |
-| `@angular/upgrade`            | [`setAngularLib`](#upgrade-static)                                            | <!--v8--> v10 |
-| `@angular/platform-webworker` | [All entry points](api/platform-webworker)                                    | <!--v8--> v10 |
-| template syntax               | [`<template`>](#template-tag)                                                 | <!--v7--> v10 |
-| polyfills                     | [reflect-metadata](#reflect-metadata)                                         | <!--v8--> v10 |
-| npm package format            | [`esm5` and `fesm5` entry-points in @angular/* npm packages](guide/deprecations#esm5-fesm5) | <!-- v9 --> v10 |
+| `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v11 |
+| `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v11 |
+| `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v11 |
+| `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v11 |
+| `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v11 |
+| `@angular/core`               | [`WrappedValue`](#core)                                                       | <!--v10--> v12 |
+| `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v11 |
+| `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v11 |
+| `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v11 |
+| `@angular/upgrade`            | [`getAngularLib`](#upgrade-static)                                            | <!--v8--> v11 |
+| `@angular/upgrade`            | [`setAngularLib`](#upgrade-static)                                            | <!--v8--> v11 |
+| `@angular/platform-webworker` | [All entry points](api/platform-webworker)                                    | <!--v8--> v11 |
+| template syntax               | [`<template`>](#template-tag)                                                 | <!--v7--> v11 |
+| polyfills                     | [reflect-metadata](#reflect-metadata)                                         | <!--v8--> v11 |
+| npm package format            | [`esm5` and `fesm5` entry-points in @angular/* npm packages](guide/deprecations#esm5-fesm5) | <!-- v9 --> v11 |
 | `@angular/core`               | [`defineInjectable`](#core)                                                   | <!--v8--> v11 |
 | `@angular/core`               | [`entryComponents`](api/core/NgModule#entryComponents)                        | <!--v9--> v11 |
 | `@angular/core`               | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)       | <!--v9--> v11 |
@@ -60,9 +60,9 @@ v9 - v12
 | `@angular/core/testing`       | [`TestBed.get`](#testing)                                                     | <!--v9--> v12 |
 | `@angular/router`             | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
 | template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
+| browser support               | [`IE 9 and 10, IE mobile`](#ie-9-10-and-mobile)                               | <!--v10--> v11 |
 
-
-
+For information about Angular CDK and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/master/CHANGELOG.md).
 
 ## Deprecated APIs
 
@@ -96,9 +96,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
 | [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
 | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
-| `ModuleWithProviders` without a generic |  `ModuleWithProviders` with a generic             | v9 | See [`ModuleWithProviders` section](#moduleWithProviders) |
-| Undecorated base classes that use Angular features | Base classes with `@Directive()` decorator that use Angular features | v9 | See [undecorated base classes section](#undecorated-base-classes) |
-
+| [`WrappedValue`](api/core/WrappedValue) | none | v10 | See [removing `WrappedValue`](#wrapped-value) |
 
 
 
@@ -117,7 +115,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
-| [`ngModel` with reactive forms](#ngmodel-reactive) | See [FormControlDirective usage notes](api/forms/FormControlDirective#use-with-ngmodel) | v6 | none |
+| [`ngModel` with reactive forms](#ngmodel-reactive) | [`FormControlDirective`](api/forms/FormControlDirective) | v6 | none |
 
 {@a router}
 ### @angular/router
@@ -162,7 +160,11 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 This section lists all of the currently-deprecated features, which includes template syntax, configuration options, and any other deprecations not listed in the [Deprecated APIs](#deprecated-apis) section above. It also includes deprecated API usage scenarios or API combinations, to augment the information above.
 
+{@a bazelbuilder}
+### Bazel builder and schematics
 
+Bazel builder and schematics were introduced in Angular Labs to let users try out Bazel without having to manage Bazel version and BUILD files.
+This feature has been deprecated. For more information, please refer to the [migration doc](https://github.com/angular/angular/blob/master/packages/bazel/src/schematics/README.md).
 
 {@a wtf}
 ### Web Tracing Framework integration
@@ -189,9 +191,71 @@ The `<template>` tag was deprecated in v4 to avoid colliding with the DOM's elem
 {@a ngmodel-reactive}
 ### ngModel with reactive forms
 
-Support for using the `ngModel` input property and `ngModelChange` event with reactive form directives was deprecated in version 6.
+Support for using the `ngModel` input property and `ngModelChange` event with reactive
+form directives has been deprecated in Angular v6 and will be removed in a future version
+of Angular.
 
-For more information, see the usage notes for [`FormControlDirective`](api/forms/FormControlDirective#use-with-ngmodel) and [`FormControlName`](api/forms/FormControlName#use-with-ngmodel).
+Now deprecated:
+
+```html
+<input [formControl]="control" [(ngModel)]="value">
+```
+
+```ts
+this.value = 'some value';
+```
+
+This has been deprecated for several reasons. First, developers have found this pattern
+confusing. It seems like the actual `ngModel` directive is being used, but in fact it's
+an input/output property named `ngModel` on the reactive form directive that
+approximates some, but not all, of the directive's behavior.
+It allows getting and setting a value and intercepting value events, but
+some of `ngModel`'s other features, such as
+delaying updates with`ngModelOptions` or exporting the directive, don't work.
+
+In addition, this pattern mixes template-driven and reactive forms strategies, which
+prevents taking advantage of the full benefits of either strategy.
+Setting the value in the template violates the template-agnostic
+principles behind reactive forms, whereas adding a `FormControl`/`FormGroup` layer in
+the class removes the convenience of defining forms in the template.
+
+To update your code before support is removed, you'll want to decide whether to stick
+with reactive form directives (and get/set values using reactive forms patterns) or
+switch over to template-driven directives.
+
+After (choice 1 - use reactive forms):
+
+```html
+<input [formControl]="control">
+```
+
+```ts
+this.control.setValue('some value');
+```
+
+After (choice 2 - use template-driven forms):
+
+```html
+<input [(ngModel)]="value">
+```
+
+```ts
+this.value = 'some value';
+```
+
+By default, when you use this pattern, you will see a deprecation warning once in dev
+mode. You can choose to silence this warning by providing a config for
+`ReactiveFormsModule` at import time:
+
+```ts
+imports: [
+  ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'});
+]
+```
+
+Alternatively, you can choose to surface a separate warning for each instance of this
+pattern with a config value of `"always"`. This may help to track down where in the code
+the pattern is being used as the code is being updated.
 
 
 {@a reflectiveinjector}
@@ -256,6 +320,7 @@ const routes: Routes = [{
 
 
 {@a activatedroute-props}
+
 ### ActivatedRoute params and queryParams properties
 
 [ActivatedRoute](api/router/ActivatedRoute) contains two [properties](api/router/ActivatedRoute#properties) that are less capable than their replacements and may be deprecated in a future Angular version.
@@ -265,7 +330,7 @@ const routes: Routes = [{
 | `params` | `paramMap` |
 | `queryParams` | `queryParamMap` |
 
-For more information see the [Router guide](guide/router#activated-route).
+For more information see the [Getting route information](guide/router#activated-route) section of the [Router guide](guide/router).
 
 
 {@a reflect-metadata}
@@ -312,60 +377,6 @@ However, in practice, Angular simply ignores two-way bindings to template variab
 ```html
 <option *ngFor="let optionName of options" [value]="optionName"></option>
 ```
-
-{@a undecorated-base-classes}
-### Undecorated base classes using Angular features
-
-As of version 9, it's deprecated to have an undecorated base class that:
-
-- uses Angular features
-- is extended by a directive or component
-
-Angular lifecycle hooks or any of the following Angular field decorators are considered Angular features:
-
-- `@Input()`
-- `@Output()`
-- `@HostBinding()`
-- `@HostListener()`
-- `@ViewChild()` / `@ViewChildren()`
-- `@ContentChild()` / `@ContentChildren()`
-
-For example, the following case is deprecated because the base class uses `@Input()` and does not have a class-level decorator:
-
-```ts
-class Base {
-  @Input()
-  foo: string;
-}
-
-@Directive(...)
-class Dir extends Base {
-  ngOnChanges(): void {
-    // notified when bindings to [foo] are updated
-  }
-}
-```
-
-In a future version of Angular, this code will start to throw an error.
-To fix this example, add a selectorless `@Directive()` decorator to the base class:
-
-```ts
-@Directive()
-class Base {
-  @Input()
-  foo: string;
-}
-
-@Directive(...)
-class Dir extends Base {
-  ngOnChanges(): void {
-    // notified when bindings to [foo] are updated
-  }
-}
-```
-
-In version 9, the CLI has an automated migration that will update your code for you when `ng update` is run.
-See [the dedicated migration guide](guide/migration-undecorated-classes) for more information about the change and more examples.
 
 
 
@@ -451,13 +462,104 @@ export class MyModule {
 }
 ```
 
+
+{@a ie-9-10-and-mobile}
+### IE 9, 10, and IE mobile support
+
+Support for IE 9 and 10 has been deprecated, as well as support for IE Mobile. These will be dropped in a future version.
+Supporting outdated browsers like these increases bundle size, code complexity, and test load, and also requires time and effort that could be spent on improvements to the framework.
+For example, fixing issues can be more difficult, as a straightforward fix for modern browsers could break old ones that have quirks due to not receiving updates from vendors.
+
+The final decision was made on three key points:
+* __Vendor support__: Microsoft dropped support of IE 9 and 10 on 1/12/16, meaning they no longer provide security updates or technical support. Additionally, Microsoft dropped support for Windows 10 Mobile in December 2019.
+* __Usage statistics__: We looked at usage trends for IE 9 and 10 (as well as IE Mobile) from various sources and all indicated that usage percentages were extremely small (fractions of 1%).
+* __Feedback from partners__: We also reached out to some of our Angular customers and none expressed concern about dropping IE 9, 10, nor IE Mobile support.
+
+
+{@a wrapped-value}
+###  `WrappedValue` 
+
+The purpose of `WrappedValue` is to allow the same object instance to be treated as different for the purposes of change detection.
+It is commonly used with the `async` pipe in the case where the `Observable` produces the same instance of the value.
+
+Given that this use case is relatively rare and special handling impacts application performance, we have deprecated it in v10.
+No replacement is planned for this deprecation.
+
+If you rely on the behavior that the same object instance should cause change detection, you have two options:
+- Clone the resulting value so that it has a new identity.
+- Explicitly call [`ChangeDetectorRef.detectChanges()`](api/core/ChangeDetectorRef#detectchanges) to force the update. 
+
+{@a deprecated-cli-flags}
+## Deprecated CLI APIs and Options
+
+This section contains a complete list all of the currently deprecated CLI flags.
+
+### @angular-devkit/build-angular
+
+| API/Option                      | May be removed in | Notes                                                                           |
+| ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
+| `i18nFile`                      | <!--v9--> v11     | Specified in the project locale configuration in version 9 and later.           |
+| `i18nFormat`                    | <!--v9--> v11     | Format is now automatically detected.                                           |
+| `i18nLocale`                    | <!--v9--> v11     | New [localization option](/guide/i18n#localize-config) in version 9 and later.  |
+| `lazyModules`                   | <!--v9--> v11     | Used with deprecated SystemJsNgModuleLoader.                                    |
+| `rebaseRootRelativeCssUrls`     | <!--v8--> v11     | Intended only to assist with specific migration issues.                         |
+| `scripts[].lazy`                | <!--v8--> v11     | Renamed to `scripts[].inject`.                                                  |
+| `styles[].lazy`                 | <!--v8--> v11     | Renamed to `styles[].inject`.                                                   |
+| `i18nFormat`                    | <!--v9--> v11     | Renamed to `format` to simplify the user experience.                            |
+| `i18nLocale`                    | <!--v9--> v11     | Redundant with project’s source locale.                                         |
+| `scripts[].lazy`                | <!--v8--> v11     | Renamed to `scripts[].inject`.                                                  |
+| `styles[].lazy`                 | <!--v8--> v11     | Renamed to `styles[].inject`.                                                   |
+| `i18nFile`                      | <!--v9--> v11     | Specified in the project locale configuration in version 9 and later.           |
+| `i18nFormat`                    | <!--v9--> v11     | Format is now automatically detected.                                           |
+| `i18nLocale`                    | <!--v9--> v11     | New [localization option](/guide/i18n#localize-config) in version 9 and later.  |
+| `lazyModules`                   | <!--v9--> v11     | Used with deprecated SystemJsNgModuleLoader.                                    |
+
+### @angular-devkit/core
+
+| API/Option                      | May be removed in | Notes                                                                           |
+| ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
+| `ModuleNotFoundException`       | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
+| `resolve`                       | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
+| `setResolveHook`                | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
+| `ResolveOptions`                | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
+| `terminal`                      | <!--v8--> v10     | Unused implementation of terminal codes (color).                                |
+| `isObservable`                  | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Use `isObservable` function from the `rxjs` package.|
+
+### @ngtools/webpack
+
+| API/Option                      | May be removed in | Notes                                                                           |
+| ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
+| `discoverLazyRoutes`            | <!--v9--> TBD     | Used with deprecated SystemJsNgModuleLoader.                                    |
+| `additionalLazyModules`         | <!--v9--> TBD     | Used with deprecated SystemJsNgModuleLoader.                                    |
+| `additionalLazyModuleResources` | <!--v9--> TBD     | Used with deprecated SystemJsNgModuleLoader.                                    |
+
+### @schematics/angular
+
+| API/Option                      | May be removed in | Notes                                                                           |
+| ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
+| `entryComponent`                | <!--v9--> TBD     | No longer needed with Ivy.                                                      |
+
+{@a removed}
+## Removed APIs
+
+The following APIs have been removed starting with version 10.0.0*:
+
+| Package          | API            | Replacement | Notes |
+| ---------------- | -------------- | ----------- | ----- |
+| `@angular/core`  | Undecorated base classes that use Angular features | Add Angular decorator | See [migration guide](guide/migration-undecorated-classes) for more info |
+| `@angular/core`  | `ModuleWithProviders` without a generic             | `ModuleWithProviders` with a generic | See [migration guide](guide/migration-module-with-providers) for more info |
+| `@angular/core`  | Style Sanitization | no action needed | See [style sanitization API removal](#style-sanitization) for more info
+
+*To see APIs removed in version 9, check out this guide on the [version 9 docs site](https://v9.angular.io/guide/deprecations#removed).
+
+
 {@a esm5-fesm5}
 ### `esm5` and `fesm5` code formats in @angular/* npm packages
 
 As of Angular v8, the CLI primarily consumes the `fesm2015` variant of the code distributed via `@angular/*` npm packages.
 This renders the `esm5` and `fesm5` distributions obsolete and unnecessary, adding bloat to the package size and slowing down npm installations.
 
-The future removal of this distribution will have no impact on CLI users, unless they modified their build configuration to explicitly consume these code distributions.
+This removal has no impact on CLI users, unless they modified their build configuration to explicitly consume these code distributions.
 
 Any application still relying on the `esm5` and `fesm5` as the input to its build system will need to ensure that the build pipeline is capable of accepting JavaScript code conforming to ECMAScript 2015 (ES2015) language specification.
 
@@ -465,7 +567,7 @@ Note that this change doesn't make existing libraries distributed in this format
 The CLI will fall back and consume libraries in less desirable formats if others are not available.
 However, we do recommend that libraries ship their code in ES2015 format in order to make builds faster and build output smaller.
 
-In practical terms, the `package.json` of all `@angular` packages will change in the following way:
+In practical terms, the `package.json` of all `@angular` packages has changed in the following way:
 
 **Before**:
 ```
@@ -499,92 +601,18 @@ In practical terms, the `package.json` of all `@angular` packages will change in
 
 For more information about the npm package format, see the [Angular Package Format spec](https://goo.gl/jB3GVv).
 
-
-
 {@a removed}
 ## Removed APIs
 
-The following APIs have been removed starting with version 9.0.0*:
+The following APIs have been removed starting with version 10.0.0*:
 
 | Package          | API            | Replacement | Notes |
 | ---------------- | -------------- | ----------- | ----- |
-| `@angular/core`  | [`Renderer`](https://v8.angular.io/api/core/Renderer) | [`Renderer2`](https://angular.io/api/core/Renderer2) | [Migration guide](guide/migration-renderer) |
-| `@angular/core`  | [`RootRenderer`](https://v8.angular.io/api/core/RootRenderer) | [`RendererFactory2`](https://angular.io/api/core/RendererFactory2) | none |
-| `@angular/core`  | [`RenderComponentType`](https://v8.angular.io/api/core/RenderComponentType) | [`RendererType2`](https://angular.io/api/core/RendererType2) | none |
-| `@angular/core`  | [`WtfScopeFn`](https://v8.angular.io/api/core/WtfScopeFn) | none | v8 | See [Web Tracing Framework](#wtf) |
-| `@angular/core`  | [`wtfCreateScope`](https://v8.angular.io/api/core/wtfCreateScope) | none | v8 | See [Web Tracing Framework](#wtf) |
-| `@angular/core`  | [`wtfStartTimeRange`](https://v8.angular.io/api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
-| `@angular/core`  | [`wtfEndTimeRange`](https://v8.angular.io/api/core/wtfEndTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
-| `@angular/core`  | [`wtfLeave`](https://v8.angular.io/api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
-| `@angular/common` | `DeprecatedI18NPipesModule` | [`CommonModule`](api/common/CommonModule#pipes) | none |
-| `@angular/common` | `DeprecatedCurrencyPipe` | [`CurrencyPipe`](api/common/CurrencyPipe) | none |
-| `@angular/common` | `DeprecatedDatePipe`     | [`DatePipe`](api/common/DatePipe) | none |
-| `@angular/common` | `DeprecatedDecimalPipe` | [`DecimalPipe`](api/common/DecimalPipe) | none |
-| `@angular/common` | `DeprecatedPercentPipe` | [`PercentPipe`](api/common/PercentPipe) | none |
-| `@angular/forms` | [`NgFormSelectorWarning`](https://v8.angular.io/api/forms/NgFormSelectorWarning) | none | none |
-| `@angular/forms` | `ngForm` element selector | `ng-form` element selector | none |
-| `@angular/service-worker` | `versionedFiles` | `files` | In the service worker configuration file `ngsw-config.json`, replace `versionedFiles` with `files`. See [Service Worker Configuration](guide/service-worker-config#assetgroups). |
+| `@angular/core`  | Undecorated base classes that use Angular features | Add Angular decorator | See [migration guide](guide/migration-undecorated-classes) for more info |
+| `@angular/core`  | `ModuleWithProviders` without a generic             | `ModuleWithProviders` with a generic | See [migration guide](guide/migration-module-with-providers) for more info |
 
-*To see APIs removed in version 8, check out this guide on the [version 8 docs site](https://v8.angular.io/guide/deprecations#removed).
+*To see APIs removed in version 9, check out this guide on the [version 9 docs site](https://v9.angular.io/guide/deprecations#removed).
 
-
-<!-- The following anchor is used by redirects from the removed API pages. Do not change or remove. -->
-{@a http}
-### @angular/http
-
-<!--
-Deprecation announced in version 5
-https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced)
--->
-
-
-The entire [`@angular/http`](http://v7.angular.io/api/http) package has been removed. Use [`@angular/common/http`](api/common/http) instead.
-
-The new API is a smaller, easier, and more powerful way to make HTTP requests in Angular.
-The new API simplifies the default ergonomics: There is no need to map by invoking the `.json()` method.
-It also supports typed return values and interceptors.
-
-To update your apps:
-* Replace `HttpModule` with [`HttpClientModule`](api/common/http/HttpClientModule) (from [`@angular/common/http`](api/common/http)) in each of your modules.
-* Replace the `Http` service with the [`HttpClient`](api/common/http/HttpClient) service.
-* Remove any `map(res => res.json())` calls. They are no longer needed.
-
-For more information about using `@angular/common/http`, see the [HttpClient guide](guide/http "HTTP Client guide").
-
-
-| `@angular/http` | Closest replacement in `@angular/common/http` |
-| ------------- | ------------------------------------------- |
-| `BaseRequestOptions` |  [`HttpRequest`](/api/common/http/HttpRequest) |
-| `BaseResponseOptions` | [`HttpResponse`](/api/common/http/HttpResponse) |
-| `BrowserXhr` |  |
-| `Connection` | [`HttpBackend`](/api/common/http/HttpBackend) |
-| `ConnectionBackend` | [`HttpBackend`](/api/common/http/HttpBackend) |
-| `CookieXSRFStrategy` | [`HttpClientXsrfModule`](/api/common/http/HttpClientXsrfModule) |
-| `Headers` | [`HttpHeaders`](/api/common/http/HttpHeaders) |
-| `Http` | [`HttpClient`](/api/common/http/HttpClient) |
-| `HttpModule` | [`HttpClientModule`](/api/common/http/HttpClientModule) |
-| `Jsonp` | [`HttpClient`](/api/common/http/HttpClient) |
-| `JSONPBackend` | [`JsonpClientBackend`](/api/common/http/JsonpClientBackend) |
-| `JSONPConnection` | [`JsonpClientBackend`](/api/common/http/JsonpClientBackend) |
-| `JsonpModule` | [`HttpClientJsonpModule`](/api/common/http/HttpClientJsonpModule) |
-| `QueryEncoder` | [`HttpUrlEncodingCodec`](/api/common/http/HttpUrlEncodingCodec) |
-| `ReadyState` | [`HttpBackend`](/api/common/http/HttpBackend) |
-| `Request` | [`HttpRequest`](/api/common/http/HttpRequest) |
-| `RequestMethod` | [`HttpClient`](/api/common/http/HttpClient) |
-| `RequestOptions` | [`HttpRequest`](/api/common/http/HttpRequest) |
-| `RequestOptionsArgs` | [`HttpRequest`](/api/common/http/HttpRequest) |
-| `Response` | [`HttpResponse`](/api/common/http/HttpResponse) |
-| `ResponseContentType` | [`HttpClient`](/api/common/http/HttpClient) |
-| `ResponseOptions` | [`HttpResponse`](/api/common/http/HttpResponse) |
-| `ResponseOptionsArgs` | [`HttpResponse`](/api/common/http/HttpResponse) |
-| `ResponseType` | [`HttpClient`](/api/common/http/HttpClient) |
-| `URLSearchParams` | [`HttpParams`](/api/common/http/HttpParams) |
-| `XHRBackend` | [`HttpXhrBackend`](/api/common/http/HttpXhrBackend) |
-| `XHRConnection` | [`HttpXhrBackend`](/api/common/http/HttpXhrBackend) |
-| `XSRFStrategy` | [`HttpClientXsrfModule`](/api/common/http/HttpClientXsrfModule) |
-
-
-| `@angular/http/testing` | Closest replacement in `@angular/common/http/testing` |
-| --------------------- | ------------------------------------------- |
-| `MockBackend` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
-| `MockConnection` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
+{@a style-sanitization}
+### Style Sanitization for `[style]` and `[style.prop]` bindings
+Angular used to sanitize `[style]` and `[style.prop]` bindings to prevent malicious code from being inserted through `javascript:` expressions in CSS `url()` entries. However, most modern browsers no longer support the usage of these expressions, so sanitization was only maintained for the sake of IE 6 and 7. Given that Angular does not support either IE 6 or 7 and sanitization has a performance cost, we will no longer sanitize style bindings as of version 10 of Angular.

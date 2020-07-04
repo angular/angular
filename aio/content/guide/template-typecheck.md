@@ -3,7 +3,7 @@
 ## Overview of template type checking
 
 Just as TypeScript catches type errors in your code, Angular checks the expressions and bindings within the templates of your application and can report any type errors it finds.
-Angular currently has three modes of doing this, depending on the value of the `fullTemplateTypeCheck` and `strictTemplates` flags in the [TypeScript configuration file](guide/typescript-configuration), `tsconfig.json`.
+Angular currently has three modes of doing this, depending on the value of the `fullTemplateTypeCheck` and `strictTemplates` flags in the [TypeScript configuration file](guide/typescript-configuration).
 
 ### Basic mode
 
@@ -107,7 +107,7 @@ There can also be false positives when the typings of an Angular library are eit
 In case of a false positive like these, there are a few options:
 
 * Use the [`$any()` type-cast function](guide/template-syntax#any-type-cast-function) in certain contexts to opt out of type-checking for a part of the expression.
-* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file, `tsconfig.json`.
+* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file.
 * You can disable certain type-checking operations individually, while maintaining strictness in other aspects, by setting a _strictness flag_ to `false`.
 * If you want to use `strictTemplates` and `strictNullChecks` together, you can opt out of strict null type checking specifically for input bindings via `strictNullInputTypes`.
 
@@ -167,6 +167,8 @@ Here, during type checking of the template for `AppComponent`, the `[user]="sele
 Therefore, Angular assigns the `selectedUser` property to `UserDetailComponent.user`, which would result in an error if their types were incompatible.
 TypeScript checks the assignment according to its type system, obeying flags such as `strictNullChecks` as they are configured in the application.
 
+You can avoid run-time type errors by providing more specific in-template type requirements to the template type checker. Make the input type requirements for your own directives as specific as possible by providing template-guard functions in the directive definition. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks), and [Input setter coercion](#input-setter-coercion) in this guide.
+
 
 ### Strict null checks
 
@@ -201,7 +203,7 @@ There are two potential workarounds to the above issues:
 
 As a library author, you can take several measures to provide an optimal experience for your users.
 First, enabling `strictNullChecks` and including `null` in an input's type, as appropriate, communicates to your consumers whether they can provide a nullable value or not.
-Additionally, it is possible to provide type hints that are specific to the template type checker, see the [Input setter coercion](guide/template-typecheck#input-setter-coercion) section of this guide.
+Additionally, it is possible to provide type hints that are specific to the template type checker. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks), and [Input setter coercion](#input-setter-coercion) below.
 
 
 {@a input-setter-coercion}

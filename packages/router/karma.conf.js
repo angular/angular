@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,15 +28,15 @@ module.exports = function(config) {
       // Polyfills.
       'node_modules/core-js/client/core.js',
       'node_modules/reflect-metadata/Reflect.js',
-      'shims_for_IE.js',
+      'third_party/shims_for_IE.js',
 
       // System.js for module loading
       'node_modules/systemjs/dist/system-polyfills.js',
       'node_modules/systemjs/dist/system.src.js',
 
       // Zone.js dependencies
-      'dist/bin/packages/zone.js/npm_package/dist/zone.js',
-      'dist/bin/packages/zone.js/npm_package/dist/zone-testing.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
 
       {pattern: 'node_modules/rxjs/**/*', included: false, watched: false},
 

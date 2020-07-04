@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3FactoryMetadata, compileFactoryFunction} from '@angular/compiler';
+import {compileFactoryFunction, R3FactoryMetadata} from '@angular/compiler';
 
 import {CompileResult} from '../../transform';
 

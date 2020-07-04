@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -43,6 +43,8 @@ export function getModuleFactory__POST_R3__(id: string): NgModuleFactory<any> {
  */
 export const getModuleFactory: (id: string) => NgModuleFactory<any> = getModuleFactory__PRE_R3__;
 
-function noModuleError(id: string, ): Error {
+function noModuleError(
+    id: string,
+    ): Error {
   return new Error(`No module with ID ${id} loaded`);
 }

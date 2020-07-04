@@ -39,7 +39,7 @@ describe('preview-server/utils', () => {
         throwRequestError(505, 'ERROR MESSAGE', request);
       } catch (error) {
         caught = true;
-        expect(error).toEqual(jasmine.any(PreviewServerError));
+        expect(error).toBeInstanceOf(PreviewServerError);
         expect(error.status).toEqual(505);
         expect(error.message).toEqual(`ERROR MESSAGE in request: POST some.domain.com/path "The request body"`);
       }

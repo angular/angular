@@ -251,7 +251,7 @@ You enable these features in the string assigned to `ngFor`, which you write in 
 
 Everything _outside_ the `ngFor` string stays with the host element
 (the `<div>`) as it moves inside the `<ng-template>`.
-In this example, the `[ngClass]="odd"` stays on the `<div>`.
+In this example, the `[class.odd]="odd"` stays on the `<div>`.
 
 
 </div>
@@ -832,6 +832,89 @@ When the `condition` is truthy, the top (A) paragraph is removed and the bottom 
   <img src='generated/images/guide/structural-directives/unless-anim.gif' alt="UnlessDirective in action">
 </div>
 
+{@a directive-type-checks}
+
+## Improving template type checking for custom directives
+
+You can improve template type checking for custom directives by adding template guard properties to your directive definition.
+These properties help the Angular template type checker find mistakes in the template at compile time, which can avoid runtime errors those mistakes can cause.
+
+Use the type-guard properties to inform the template type checker of an expected type, thus improving compile-time type-checking for that template.
+
+* A property `ngTemplateGuard_(someInputProperty)` lets you specify a more accurate type for an input expression within the template.
+* The `ngTemplateContextGuard` static property declares the type of the template context.
+
+This section provides example of both kinds of type-guard property.
+
+<div class="alert is-helpful">
+
+   For more information, see [Template type checking guide](guide/template-typecheck "Template type-checking guide").
+
+</div>
+
+{@a narrowing-input-types}
+
+### Make in-template type requirements more specific with template guards
+
+A structural directive in a template controls whether that template is rendered at run time, based on its input expression.
+To help the compiler catch template type errors, you should specify as closely as possible the required type of a directive's input expression when it occurs inside the template.
+
+A type guard function *narrows* the expected type of an input expression to a subset of types that might be passed to the directive within the template at run time.
+You can provide such a function to help the type-checker infer the proper type for the expression at compile time.
+
+For example, the `NgIf` implementation uses type-narrowing to ensure that the
+template is only instantiated if the input expression to `*ngIf` is truthy.
+To provide the specific type requirement, the `NgIf` directive defines a [static property `ngTemplateGuard_ngIf: 'binding'`](api/common/NgIf#static-properties).
+The `binding` value is a special case for a common kind of type-narrowing where the input expression is evaluated in order to satisfy the type requirement.
+
+To provide a more specific type for an input expression to a directive within the template, add a `ngTemplateGuard_xx` property to the directive, where the suffix to the static property name is the `@Input` field name.
+The value of the property can be either a general type-narrowing function based on its return type, or the string `"binding"` as in the case of `NgIf`.
+
+For example, consider the following structural directive that takes the result of a template expression as an input.
+
+<code-example language="ts" header="IfLoadedDirective">
+export type Loaded<T> = { type: 'loaded', data: T };
+export type Loading = { type: 'loading' };
+export type LoadingState<T> = Loaded<T> | Loading;
+export class IfLoadedDirective<T> {
+    @Input('ifLoaded') set state(state: LoadingState<T>) {}
+    static ngTemplateGuard_state<T>(dir: IfLoadedDirective<T>, expr: LoadingState<T>): expr is Loaded<T> { return true; };
+export interface Person {
+  name: string;
+}
+
+@Component({
+  template: `<div *ifLoaded="state">{{ state.data }}</div>`,
+})
+export class AppComponent {
+  state: LoadingState<Person>;
+}
+</code-example>
+
+In this example, the `LoadingState<T>` type permits either of two states, `Loaded<T>` or `Loading`. The expression used as the directive’s `state` input is of the umbrella type `LoadingState`, as it’s unknown what the loading state is at that point.
+
+The `IfLoadedDirective` definition declares the static field `ngTemplateGuard_state`, which expresses the narrowing behavior.
+Within the `AppComponent` template, the `*ifLoaded` structural directive should render this template only when `state` is actually `Loaded<Person>`.
+The type guard allows the type checker to infer that the acceptable type of `state` within the template is a `Loaded<T>`, and further infer that `T` must be an instance of `Person`.
+
+{@a narrowing-context-type}
+
+### Typing the directive's context
+
+If your structural directive provides a context to the instantiated template, you can properly type it inside the template by providing a static `ngTemplateContextGuard` function.
+The following snippet shows an example of such a function.
+
+<code-example language="ts" header="myDirective.ts">
+@Directive({…})
+export class ExampleDirective {
+    // Make sure the template checker knows the type of the context with which the
+    // template of this directive will be rendered
+    static ngTemplateContextGuard(dir: ExampleDirective, ctx: unknown): ctx is ExampleContext { return true; };
+
+    // …
+}
+</code-example>
+
 
 
 {@a summary}
@@ -879,7 +962,7 @@ Here is the source from the `src/app/` folder.
 
 
 
-You learned
+You learned:
 
 * that structural directives manipulate HTML layout.
 * to use [`<ng-container>`](guide/structural-directives#ngcontainer) as a grouping element when there is no suitable host element.

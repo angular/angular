@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {CompileReflector} from './compile_reflector';
-import {Pipe, Type, createPipe} from './core';
+import {createPipe, Pipe, Type} from './core';
 import {findLast} from './directive_resolver';
 import {resolveForwardRef, stringify} from './util';
 

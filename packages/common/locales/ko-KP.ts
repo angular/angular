@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -25,13 +25,7 @@ export default [
     ['일', '월', '화', '수', '목', '금', '토']
   ],
   u,
-  [
-    [
-      '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월',
-      '12월'
-    ],
-    u, u
-  ],
+  [['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'], u, u],
   u,
   [['BC', 'AD'], u, ['기원전', '서기']],
   1,
@@ -44,13 +38,7 @@ export default [
   'KPW',
   'KPW',
   '조선 민주주의 인민 공화국 원',
-  {
-    'AUD': ['AU$', '$'],
-    'JPY': ['JP¥', '¥'],
-    'RON': [u, 'L'],
-    'TWD': ['NT$'],
-    'USD': ['US$', '$']
-  },
+  {'AUD': ['AU$', '$'], 'JPY': ['JP¥', '¥'], 'RON': [u, 'L'], 'TWD': ['NT$'], 'USD': ['US$', '$']},
   'ltr',
   plural
 ];

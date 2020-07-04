@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, Optional, QueryList, Renderer2, SimpleChanges} from '@angular/core';
+import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, Optional, QueryList, Renderer2, SimpleChanges} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {Event, NavigationEnd} from '../events';
@@ -76,14 +76,12 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
   selector: '[routerLinkActive]',
   exportAs: 'routerLinkActive',
 })
-export class RouterLinkActive implements OnChanges,
-    OnDestroy, AfterContentInit {
+export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
   // TODO(issue/24571): remove '!'.
-  @ContentChildren(RouterLink, {descendants: true})
-  links !: QueryList<RouterLink>;
+  @ContentChildren(RouterLink, {descendants: true}) links!: QueryList<RouterLink>;
   // TODO(issue/24571): remove '!'.
   @ContentChildren(RouterLinkWithHref, {descendants: true})
-  linksWithHrefs !: QueryList<RouterLinkWithHref>;
+  linksWithHrefs!: QueryList<RouterLinkWithHref>;
 
   private classes: string[] = [];
   private subscription: Subscription;
@@ -93,7 +91,7 @@ export class RouterLinkActive implements OnChanges,
 
   constructor(
       private router: Router, private element: ElementRef, private renderer: Renderer2,
-      @Optional() private link?: RouterLink,
+      private readonly cdr: ChangeDetectorRef, @Optional() private link?: RouterLink,
       @Optional() private linkWithHref?: RouterLinkWithHref) {
     this.subscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
@@ -115,8 +113,12 @@ export class RouterLinkActive implements OnChanges,
     this.classes = classes.filter(c => !!c);
   }
 
-  ngOnChanges(changes: SimpleChanges): void { this.update(); }
-  ngOnDestroy(): void { this.subscription.unsubscribe(); }
+  ngOnChanges(changes: SimpleChanges): void {
+    this.update();
+  }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 
   private update(): void {
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
@@ -124,6 +126,7 @@ export class RouterLinkActive implements OnChanges,
       const hasActiveLinks = this.hasActiveLinks();
       if (this.isActive !== hasActiveLinks) {
         (this as any).isActive = hasActiveLinks;
+        this.cdr.markForCheck();
         this.classes.forEach((c) => {
           if (hasActiveLinks) {
             this.renderer.addClass(this.element.nativeElement, c);
@@ -136,7 +139,7 @@ export class RouterLinkActive implements OnChanges,
   }
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
-    return (link: RouterLink | RouterLinkWithHref) =>
+    return (link: RouterLink|RouterLinkWithHref) =>
                router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
   }
 

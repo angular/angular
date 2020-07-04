@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -95,8 +95,8 @@ export function startCli() {
             lines.pop();  // Remove trailing newline
           }
           for (const line of lines) {
-            const chalkMap: {[key: string]:
-                                 any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
+            const chalkMap:
+                {[key: string]: any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
             const chalkFunc = chalkMap[line[0]] || chalk.reset;
             console.log(chalkFunc(line));
           }
@@ -109,7 +109,7 @@ export function startCli() {
         if (bazelTarget) {
           console.error('\n\nIf you modify a public API, you must accept the new golden file.');
           console.error('\n\nTo do so, execute the following Bazel target:');
-          console.error(`  yarn bazel run ${bazelTarget.replace(/_bin$/, "")}.accept`);
+          console.error(`  yarn bazel run ${bazelTarget.replace(/_bin$/, '')}.accept`);
           if (process.env['TEST_WORKSPACE'] === 'angular') {
             console.error('\n\nFor more information, see');
             console.error(

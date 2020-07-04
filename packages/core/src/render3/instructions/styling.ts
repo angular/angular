@@ -1,14 +1,12 @@
 /**
-* @license
-* Copyright Google Inc. All Rights Reserved.
-*
-* Use of this source code is governed by an MIT-style license that can be
-* found in the LICENSE file at https://angular.io/license
-*/
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import {SafeValue, unwrapSafeValue} from '../../sanitization/bypass';
-import {stylePropNeedsSanitization, ɵɵsanitizeStyle} from '../../sanitization/sanitization';
-import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {KeyValueArray, keyValueArrayGet, keyValueArraySet} from '../../util/array_utils';
 import {assertDefined, assertEqual, assertLessThan, assertNotEqual, throwError} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
@@ -18,37 +16,17 @@ import {bindingUpdated} from '../bindings';
 import {DirectiveDef} from '../interfaces/definition';
 import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement, Renderer3} from '../interfaces/renderer';
-import {SanitizerFn} from '../interfaces/sanitization';
-import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '../interfaces/styling';
+import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
 import {HEADER_OFFSET, LView, RENDERER, TData, TView} from '../interfaces/view';
 import {applyStyling} from '../node_manipulation';
-import {getCurrentDirectiveIndex, getCurrentStyleSanitizer, getLView, getSelectedIndex, getTView, incrementBindingIndex, setCurrentStyleSanitizer} from '../state';
+import {getCurrentDirectiveDef, getLView, getSelectedIndex, getTView, incrementBindingIndex} from '../state';
 import {insertTStylingBinding} from '../styling/style_binding_list';
 import {getLastParsedKey, getLastParsedValue, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from '../styling/styling_parser';
 import {NO_CHANGE} from '../tokens';
 import {getNativeByIndex} from '../util/view_utils';
+
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 
-
-/**
- * Sets the current style sanitizer function which will then be used
- * within all follow-up prop and map-based style binding instructions
- * for the given element.
- *
- * Note that once styling has been applied to the element (i.e. once
- * `advance(n)` is executed or the hostBindings/template function exits)
- * then the active `sanitizerFn` will be set to `null`. This means that
- * once styling is applied to another element then a another call to
- * `styleSanitizer` will need to be made.
- *
- * @param sanitizerFn The sanitization function that will be used to
- *       process style prop/value entries.
- *
- * @codeGenApi
- */
-export function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void {
-  setCurrentStyleSanitizer(sanitizer);
-}
 
 /**
  * Update a style binding on an element with the provided value.
@@ -63,8 +41,6 @@ export function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void {
  * @param prop A valid CSS property.
  * @param value New value to write (`null` or an empty string to remove).
  * @param suffix Optional suffix. Used with scalar values to add unit such as `px`.
- *        Note that when a suffix is provided then the underlying sanitizer will
- *        be ignored.
  *
  * Note that this will apply the provided style value to the host element if this function is called
  * within a host binding function.
@@ -72,8 +48,8 @@ export function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void {
  * @codeGenApi
  */
 export function ɵɵstyleProp(
-    prop: string, value: string | number | SafeValue | undefined | null,
-    suffix?: string | null): typeof ɵɵstyleProp {
+    prop: string, value: string|number|SafeValue|undefined|null,
+    suffix?: string|null): typeof ɵɵstyleProp {
   checkStylingProperty(prop, value, suffix, false);
   return ɵɵstyleProp;
 }
@@ -93,8 +69,7 @@ export function ɵɵstyleProp(
  *
  * @codeGenApi
  */
-export function ɵɵclassProp(
-    className: string, value: boolean | undefined | null): typeof ɵɵclassProp {
+export function ɵɵclassProp(className: string, value: boolean|undefined|null): typeof ɵɵclassProp {
   checkStylingProperty(className, value, null, true);
   return ɵɵclassProp;
 }
@@ -119,7 +94,7 @@ export function ɵɵclassProp(
  *
  * @codeGenApi
  */
-export function ɵɵstyleMap(styles: {[styleName: string]: any} | string | undefined | null): void {
+export function ɵɵstyleMap(styles: {[styleName: string]: any}|string|undefined|null): void {
   checkStylingMap(styleKeyValueArraySet, styleStringParser, styles, false);
 }
 
@@ -158,8 +133,8 @@ export function styleStringParser(keyValueArray: KeyValueArray<any>, text: strin
  *
  * @codeGenApi
  */
-export function ɵɵclassMap(
-    classes: {[className: string]: boolean | undefined | null} | string | undefined | null): void {
+export function ɵɵclassMap(classes: {[className: string]: boolean|undefined|null}|string|undefined|
+                           null): void {
   checkStylingMap(keyValueArraySet, classStringParser, classes, true);
 }
 
@@ -183,12 +158,12 @@ export function classStringParser(keyValueArray: KeyValueArray<any>, text: strin
  *
  * @param prop property name.
  * @param value binding value.
- * @param suffixOrSanitizer suffix or sanitization function
+ * @param suffix suffix for the property (e.g. `em` or `px`)
  * @param isClassBased `true` if `class` change (`false` if `style`)
  */
 export function checkStylingProperty(
-    prop: string, value: any | NO_CHANGE,
-    suffixOrSanitizer: SanitizerFn | string | undefined | null, isClassBased: boolean): void {
+    prop: string, value: any|NO_CHANGE, suffix: string|undefined|null,
+    isClassBased: boolean): void {
   const lView = getLView();
   const tView = getTView();
   // Styling instructions use 2 slots per binding.
@@ -199,19 +174,10 @@ export function checkStylingProperty(
     stylingFirstUpdatePass(tView, prop, bindingIndex, isClassBased);
   }
   if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
-    // This is a work around. Once PR#34480 lands the sanitizer is passed explicitly and this line
-    // can be removed.
-    let styleSanitizer: StyleSanitizeFn|null;
-    if (suffixOrSanitizer == null) {
-      if (styleSanitizer = getCurrentStyleSanitizer()) {
-        suffixOrSanitizer = styleSanitizer as any;
-      }
-    }
     const tNode = tView.data[getSelectedIndex() + HEADER_OFFSET] as TNode;
     updateStyling(
         tView, tNode, lView, lView[RENDERER], prop,
-        lView[bindingIndex + 1] = normalizeAndApplySuffixOrSanitizer(value, suffixOrSanitizer),
-        isClassBased, bindingIndex);
+        lView[bindingIndex + 1] = normalizeSuffix(value, suffix), isClassBased, bindingIndex);
   }
 }
 
@@ -219,9 +185,7 @@ export function checkStylingProperty(
  * Common code between `ɵɵclassMap` and `ɵɵstyleMap`.
  *
  * @param keyValueArraySet (See `keyValueArraySet` in "util/array_utils") Gets passed in as a
- * function so that
- *        `style` can pass in version which does sanitization. This is done for tree shaking
- *        purposes.
+ *        function so that `style` can be processed. This is done for tree shaking purposes.
  * @param stringParser Parser used to parse `value` if `string`. (Passed in as `style` and `class`
  *        have different parsers.)
  * @param value bound value from application
@@ -257,7 +221,7 @@ export function checkStylingMap(
       // the binding has removed it. This would confuse `[ngStyle]`/`[ngClass]` to do the wrong
       // thing as it would think that the static portion was removed. For this reason we
       // concatenate it so that `[ngStyle]`/`[ngClass]`  can continue to work on changed.
-      let staticPrefix = isClassBased ? tNode.classes : tNode.styles;
+      let staticPrefix = isClassBased ? tNode.classesWithoutHost : tNode.stylesWithoutHost;
       ngDevMode && isClassBased === false && staticPrefix !== null &&
           assertEqual(
               staticPrefix.endsWith(';'), true, 'Expecting static portion to end with \';\'');
@@ -289,14 +253,14 @@ function isInHostBindings(tView: TView, bindingIndex: number): boolean {
 }
 
 /**
-* Collects the necessary information to insert the binding into a linked list of style bindings
-* using `insertTStylingBinding`.
-*
-* @param tView `TView` where the binding linked list will be stored.
-* @param tStylingKey Property/key of the binding.
-* @param bindingIndex Index of binding associated with the `prop`
-* @param isClassBased `true` if `class` change (`false` if `style`)
-*/
+ * Collects the necessary information to insert the binding into a linked list of style bindings
+ * using `insertTStylingBinding`.
+ *
+ * @param tView `TView` where the binding linked list will be stored.
+ * @param tStylingKey Property/key of the binding.
+ * @param bindingIndex Index of binding associated with the `prop`
+ * @param isClassBased `true` if `class` change (`false` if `style`)
+ */
 function stylingFirstUpdatePass(
     tView: TView, tStylingKey: TStylingKey, bindingIndex: number, isClassBased: boolean): void {
   ngDevMode && assertFirstUpdatePass(tView);
@@ -337,7 +301,7 @@ function stylingFirstUpdatePass(
  */
 export function wrapInStaticStylingKey(
     tData: TData, tNode: TNode, stylingKey: TStylingKey, isClassBased: boolean): TStylingKey {
-  const hostDirectiveDef = getHostDirectiveDef(tData);
+  const hostDirectiveDef = getCurrentDirectiveDef(tData);
   let residual = isClassBased ? tNode.residualClasses : tNode.residualStyles;
   if (hostDirectiveDef === null) {
     // We are in template node.
@@ -477,9 +441,10 @@ function getTemplateHeadTStylingKey(tData: TData, tNode: TNode, isClassBased: bo
 function setTemplateHeadTStylingKey(
     tData: TData, tNode: TNode, isClassBased: boolean, tStylingKey: TStylingKey): void {
   const bindings = isClassBased ? tNode.classBindings : tNode.styleBindings;
-  ngDevMode && assertNotEqual(
-                   getTStylingRangeNext(bindings), 0,
-                   'Expecting to have at least one template styling binding.');
+  ngDevMode &&
+      assertNotEqual(
+          getTStylingRangeNext(bindings), 0,
+          'Expecting to have at least one template styling binding.');
   tData[getTStylingRangePrev(bindings)] = tStylingKey;
 }
 
@@ -523,7 +488,7 @@ function collectResidual(tData: TData, tNode: TNode, isClassBased: boolean): Key
  * @param isClassBased `true` if `class` (`false` if `style`)
  */
 function collectStylingFromDirectives(
-    hostDirectiveDef: DirectiveDef<any>| null, tData: TData, tNode: TNode, stylingKey: TStylingKey,
+    hostDirectiveDef: DirectiveDef<any>|null, tData: TData, tNode: TNode, stylingKey: TStylingKey,
     isClassBased: boolean): TStylingKey {
   // We need to loop because there can be directives which have `hostAttrs` but don't have
   // `hostBindings` so this loop catches up to the current directive..
@@ -559,7 +524,7 @@ function collectStylingFromDirectives(
  * @param isClassBased `true` if `class` (`false` if `style`)
  */
 function collectStylingFromTAttrs(
-    stylingKey: TStylingKey | undefined, attrs: TAttributes | null,
+    stylingKey: TStylingKey|undefined, attrs: TAttributes|null,
     isClassBased: boolean): TStylingKey {
   const desiredMarker = isClassBased ? AttributeMarker.Classes : AttributeMarker.Styles;
   let currentMarker = AttributeMarker.ImplicitAttributes;
@@ -580,17 +545,6 @@ function collectStylingFromTAttrs(
     }
   }
   return stylingKey === undefined ? null : stylingKey;
-}
-
-/**
- * Retrieve the current `DirectiveDef` which is active when `hostBindings` style instruction is
- * being executed (or `null` if we are in `template`.)
- *
- * @param tData Current `TData` where the `DirectiveDef` will be looked up at.
- */
-export function getHostDirectiveDef(tData: TData): DirectiveDef<any>|null {
-  const currentDirectiveIndex = getCurrentDirectiveIndex();
-  return currentDirectiveIndex === -1 ? null : tData[currentDirectiveIndex] as DirectiveDef<any>;
 }
 
 /**
@@ -615,9 +569,8 @@ export function getHostDirectiveDef(tData: TData): DirectiveDef<any>|null {
  * keep additional `Map` to keep track of duplicates or items which have not yet been visited.
  *
  * @param keyValueArraySet (See `keyValueArraySet` in "util/array_utils") Gets passed in as a
- * function so that
- *        `style` can pass in version which does sanitization. This is done for tree shaking
- *        purposes.
+ *        function so that `style` can be processed. This is done
+ *        for tree shaking purposes.
  * @param stringParser The parser is passed in so that it will be tree shakable. See
  *        `styleStringParser` and `classStringParser`
  * @param value The value to parse/convert to `KeyValueArray`
@@ -649,19 +602,16 @@ export function toStylingKeyValueArray(
 }
 
 /**
- * Set a `value` for a `key` taking style sanitization into account.
+ * Set a `value` for a `key`.
  *
  * See: `keyValueArraySet` for details
  *
  * @param keyValueArray KeyValueArray to add to.
- * @param key Style key to add. (This key will be checked if it needs sanitization)
- * @param value The value to set (If key needs sanitization it will be sanitized)
+ * @param key Style key to add.
+ * @param value The value to set.
  */
 export function styleKeyValueArraySet(keyValueArray: KeyValueArray<any>, key: string, value: any) {
-  if (stylePropNeedsSanitization(key)) {
-    value = ɵɵsanitizeStyle(value);
-  }
-  keyValueArraySet(keyValueArray, key, value);
+  keyValueArraySet(keyValueArray, key, unwrapSafeValue(value));
 }
 
 /**
@@ -711,7 +661,7 @@ function updateStylingMap(
         setKey = newKey;
         setValue = newValue;
       }
-    } else if (newKey === null || oldKey !== null && oldKey < newKey !) {
+    } else if (newKey === null || oldKey !== null && oldKey < newKey!) {
       // DELETE: oldKey key is missing or we did not find the oldKey in the newValue
       // (because the keyValueArray is sorted and `newKey` is found later alphabetically).
       // `"background" < "color"` so we need to delete `"background"` because it is not found in the
@@ -754,7 +704,7 @@ function updateStylingMap(
  */
 function updateStyling(
     tView: TView, tNode: TNode, lView: LView, renderer: Renderer3, prop: string,
-    value: string | undefined | null | boolean, isClassBased: boolean, bindingIndex: number) {
+    value: string|undefined|null|boolean, isClassBased: boolean, bindingIndex: number) {
   if (tNode.type !== TNodeType.Element) {
     // It is possible to have styling on non-elements (such as ng-container).
     // This is rare, but it does happen. In such a case, just ignore the binding.
@@ -794,10 +744,7 @@ function updateStyling(
  * NOTE: The styling stores two values.
  * 1. The raw value which came from the application is stored at `index + 0` location. (This value
  *    is used for dirty checking).
- * 2. The normalized value (converted to `KeyValueArray` if map and sanitized) is stored at `index +
- * 1`.
- *    The advantage of storing the sanitized value is that once the value is written we don't need
- *    to worry about sanitizing it later or keeping track of the sanitizer.
+ * 2. The normalized value is stored at `index + 1`.
  *
  * @param tData `TData` used for traversing the priority.
  * @param tNode `TNode` to use for resolving static styling. Also controls search direction.
@@ -811,7 +758,7 @@ function updateStyling(
  * @param isClassBased `true` if `class` (`false` if `style`)
  */
 function findStylingValue(
-    tData: TData, tNode: TNode | null, lView: LView, prop: string, index: number,
+    tData: TData, tNode: TNode|null, lView: LView, prop: string, index: number,
     isClassBased: boolean): any {
   // `TNode` to use for resolving static styling. Also controls search direction.
   //   - `TNode` search next and quit as soon as `isStylingValuePresent(value)` is true.
@@ -856,7 +803,7 @@ function findStylingValue(
     // consult residual styling
     let residual = isClassBased ? tNode.residualClasses : tNode.residualStyles;
     if (residual != null /** OR residual !=== undefined */) {
-      value = keyValueArrayGet(residual !, prop);
+      value = keyValueArrayGet(residual!, prop);
     }
   }
   return value;
@@ -877,22 +824,17 @@ function isStylingValuePresent(value: any): boolean {
 }
 
 /**
- * Sanitizes or adds suffix to the value.
+ * Normalizes and/or adds a suffix to the value.
  *
  * If value is `null`/`undefined` no suffix is added
  * @param value
- * @param suffixOrSanitizer
+ * @param suffix
  */
-function normalizeAndApplySuffixOrSanitizer(
-    value: any, suffixOrSanitizer: SanitizerFn | string | undefined | null): string|null|undefined|
-    boolean {
+function normalizeSuffix(value: any, suffix: string|undefined|null): string|null|undefined|boolean {
   if (value == null /** || value === undefined */) {
     // do nothing
-  } else if (typeof suffixOrSanitizer === 'function') {
-    // sanitize the value.
-    value = suffixOrSanitizer(value);
-  } else if (typeof suffixOrSanitizer === 'string') {
-    value = value + suffixOrSanitizer;
+  } else if (typeof suffix === 'string') {
+    value = value + suffix;
   } else if (typeof value === 'object') {
     value = stringify(unwrapSafeValue(value));
   }

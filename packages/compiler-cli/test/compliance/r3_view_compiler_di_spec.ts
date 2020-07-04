@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -386,8 +386,7 @@ describe('compiler compliance: dependency injection', () => {
 
        expectEmit(source, MyPipeDefs, 'Invalid pipe factory function');
        expectEmit(source, MyOtherPipeDefs, 'Invalid pipe factory function');
-       expect(source.match(/MyPipe\.ɵfac =/g) !.length).toBe(1);
-       expect(source.match(/MyOtherPipe\.ɵfac =/g) !.length).toBe(1);
+       expect(source.match(/MyPipe\.ɵfac =/g)!.length).toBe(1);
+       expect(source.match(/MyOtherPipe\.ɵfac =/g)!.length).toBe(1);
      });
-
 });

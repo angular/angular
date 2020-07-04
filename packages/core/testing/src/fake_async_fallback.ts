@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -27,6 +27,9 @@ let _fakeAsyncTestZoneSpec: any = null;
  * @publicApi
  */
 export function resetFakeAsyncZoneFallback() {
+  if (_fakeAsyncTestZoneSpec) {
+    _fakeAsyncTestZoneSpec.unlockDatePatch();
+  }
   _fakeAsyncTestZoneSpec = null;
   // in node.js testing we may not have ProxyZoneSpec in which case there is nothing to reset.
   ProxyZoneSpec && ProxyZoneSpec.assertPresent().resetDelegate();
@@ -73,6 +76,7 @@ export function fakeAsyncFallback(fn: Function): (...args: any[]) => any {
       let res: any;
       const lastProxyZoneSpec = proxyZoneSpec.getDelegate();
       proxyZoneSpec.setDelegate(_fakeAsyncTestZoneSpec);
+      _fakeAsyncTestZoneSpec.lockDatePatch();
       try {
         res = fn.apply(this, args);
         flushMicrotasksFallback();

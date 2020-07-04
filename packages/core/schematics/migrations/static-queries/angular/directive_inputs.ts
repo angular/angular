@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -24,7 +24,7 @@ export function getInputNamesOfClass(
     }
 
     const inputDecorator =
-        getAngularDecorators(typeChecker, m.decorators !).find(d => d.name === 'Input');
+        getAngularDecorators(typeChecker, m.decorators!).find(d => d.name === 'Input');
 
     if (inputDecorator && hasPropertyNameText(m.name)) {
       resolvedInputSetters.push(m.name.text);

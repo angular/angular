@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,10 +16,8 @@ export class LazyFeatureComponent {
 @NgModule({
   imports: [RouterModule.forChild([
     {path: '', component: LazyFeatureComponent, pathMatch: 'full'},
-    {path: 'feature', loadChildren: './feature.module#FeatureModule'}, {
-      path: 'nested-feature',
-      loadChildren: './lazy-feature-nested.module#LazyFeatureNestedModule'
-    }
+    {path: 'feature', loadChildren: './feature.module#FeatureModule'},
+    {path: 'nested-feature', loadChildren: './lazy-feature-nested.module#LazyFeatureNestedModule'}
   ])],
   declarations: [LazyFeatureComponent]
 })

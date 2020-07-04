@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,7 +16,8 @@ import {FormBuilder} from './form_builder';
  * Exports the required providers and directives for template-driven forms,
  * making them available for import by NgModules that import this module.
  *
- * @see [Forms Guide](/guide/forms)
+ * @see [Forms Overview](/guide/forms-overview)
+ * @see [Template-driven Forms Guide](/guide/forms)
  *
  * @publicApi
  */
@@ -31,9 +32,9 @@ export class FormsModule {
 /**
  * Exports the required infrastructure and directives for reactive forms,
  * making them available for import by NgModules that import this module.
- * @see [Forms](guide/reactive-forms)
  *
- * @see [Reactive Forms Guide](/guide/reactive-forms)
+ * @see [Forms Overview](guide/forms-overview)
+ * @see [Reactive Forms Guide](guide/reactive-forms)
  *
  * @publicApi
  */
@@ -52,14 +53,13 @@ export class ReactiveFormsModule {
    * binding is used with reactive form directives.
    */
   static withConfig(opts: {
-    /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never' | 'once' | 'always'
+    /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never'|'once'|'always'
   }): ModuleWithProviders<ReactiveFormsModule> {
     return {
       ngModule: ReactiveFormsModule,
-      providers: [{
-        provide: NG_MODEL_WITH_FORM_CONTROL_WARNING,
-        useValue: opts.warnOnNgModelWithFormControl
-      }]
+      providers: [
+        {provide: NG_MODEL_WITH_FORM_CONTROL_WARNING, useValue: opts.warnOnNgModelWithFormControl}
+      ]
     };
   }
 }

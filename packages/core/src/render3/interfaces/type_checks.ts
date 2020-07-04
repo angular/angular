@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,10 +15,10 @@ import {FLAGS, LView, LViewFlags} from './view';
 
 
 /**
-* True if `value` is `LView`.
-* @param value wrapped value of `RNode`, `LView`, `LContainer`
-*/
-export function isLView(value: RNode | LView | LContainer | {} | null): value is LView {
+ * True if `value` is `LView`.
+ * @param value wrapped value of `RNode`, `LView`, `LContainer`
+ */
+export function isLView(value: RNode|LView|LContainer|{}|null): value is LView {
   return Array.isArray(value) && typeof value[TYPE] === 'object';
 }
 
@@ -26,7 +26,7 @@ export function isLView(value: RNode | LView | LContainer | {} | null): value is
  * True if `value` is `LContainer`.
  * @param value wrapped value of `RNode`, `LView`, `LContainer`
  */
-export function isLContainer(value: RNode | LView | LContainer | {} | null): value is LContainer {
+export function isLContainer(value: RNode|LView|LContainer|{}|null): value is LContainer {
   return Array.isArray(value) && value[TYPE] === true;
 }
 

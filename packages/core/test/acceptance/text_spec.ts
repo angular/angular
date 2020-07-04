@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {of } from 'rxjs';
+import {of} from 'rxjs';
 
 describe('text instructions', () => {
   it('should handle all flavors of interpolated text', () => {
@@ -66,8 +66,8 @@ describe('text instructions', () => {
       `
     })
     class App {
-      who = of ('Sally');
-      item = of ({
+      who = of('Sally');
+      item = of({
         what: 'seashells',
         where: 'seashore',
       });

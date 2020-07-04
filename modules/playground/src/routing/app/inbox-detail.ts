@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,8 +17,11 @@ export class InboxDetailCmp {
   private ready: boolean = false;
 
   constructor(db: DbService, route: ActivatedRoute) {
-    route.paramMap.forEach(
-        p => { db.email(p.get('id')).then((data) => { this.record.setData(data); }); });
+    route.paramMap.forEach(p => {
+      db.email(p.get('id')).then((data) => {
+        this.record.setData(data);
+      });
+    });
   }
 }
 

@@ -432,7 +432,7 @@ Attributes can be changed by `setAttribute()`, which re-initializes correspondin
 </div>
 
 For more information, see the [MDN Interfaces documentation](https://developer.mozilla.org/en-US/docs/Web/API#Interfaces) which has API docs for all the standard DOM elements and their properties.
-Comparing the [`<td>` attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td) attributes to the [`<td>` properties](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement) provides a helpful example for differentiation.
+Comparing the [`<td>` attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td) to the [`<td>` properties](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement) provides a helpful example for differentiation.
 In particular, you can navigate from the attributes page to the properties via "DOM interface" link, and navigate the inheritance hierarchy up to `HTMLTableCellElement`.
 
 
@@ -473,7 +473,7 @@ To control the state of the button, set the `disabled` *property*,
 
 <div class="alert is-helpful">
 
-Though you could technically set the `[attr.disabled]` attribute binding, the values are different in that the property binding requires to a boolean value, while its corresponding attribute binding relies on whether the value is `null` or not. Consider the following:
+Though you could technically set the `[attr.disabled]` attribute binding, the values are different in that the property binding requires to be a boolean value, while its corresponding attribute binding relies on whether the value is `null` or not. Consider the following:
 
 ```html
 <input [disabled]="condition ? true : false">
@@ -821,8 +821,8 @@ content harmlessly. The following is the browser output
 of the `evilTitle` examples.
 
 <code-example language="bash">
-"Template <script>alert("evil never sleeps")</script> Syntax" is the interpolated evil title.
-"Template alert("evil never sleeps")Syntax" is the property bound evil title.
+"Template &lt;script&gt;alert("evil never sleeps")&lt;/script&gt; Syntax" is the interpolated evil title.
+"Template Syntax" is the property bound evil title.
 </code-example>
 
 <hr/>
@@ -1455,7 +1455,7 @@ Angular provides *value accessors* for all of the basic HTML form elements and t
 
 You can't apply `[(ngModel)]` to a non-form native element or a
 third-party custom component until you write a suitable value accessor. For more information, see
-the API documentation on [DefaultValueAccessor](https://angular.io/api/forms/DefaultValueAccessor).
+the API documentation on [DefaultValueAccessor](api/forms/DefaultValueAccessor).
 
 You don't need a value accessor for an Angular component that
 you write because you can name the value and event properties

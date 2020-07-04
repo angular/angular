@@ -52,7 +52,7 @@ For some platforms and applications, you might also want to use the PWA (Progres
 
 ## Support for the development cycle
 
-The **Development Workflow** section describes the tools and processes you use to compile, test, and  and deploy Angular applications.
+The **Development Workflow** section describes the tools and processes you use to compile, test, and deploy Angular applications.
 
 * [CLI Command Reference](cli): The Angular CLI is a command-line tool that you use to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
 

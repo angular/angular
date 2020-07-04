@@ -74,6 +74,9 @@ interface AssetGroup {
     files?: string[];
     urls?: string[];
   };
+  cacheQueryOptions?: {
+    ignoreSearch?: boolean;
+  };
 }
 ```
 
@@ -110,6 +113,12 @@ This section describes the resources to cache, broken up into the following grou
 * `urls` includes both URLs and URL patterns that will be matched at runtime. These resources are not fetched directly and do not have content hashes, but they will be cached according to their HTTP headers. This is most useful for CDNs such as the Google Fonts service.<br>
   _(Negative glob patterns are not supported and `?` will be matched literally; i.e. it will not match any character other than `?`.)_
 
+### `cacheQueryOptions`
+
+These options are used to modify the matching behavior of requests. They are passed to the browsers `Cache#match` function. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match) for details. Currently, only the following options are supported:
+
+* `ignoreSearch`: Ignore query parameters. Defaults to `false`.
+
 ## `dataGroups`
 
 Unlike asset resources, data requests are not versioned along with the app. They're cached according to manually-configured policies that are more useful for situations such as API requests and other data dependencies.
@@ -126,6 +135,9 @@ export interface DataGroup {
     maxAge: string;
     timeout?: string;
     strategy?: 'freshness' | 'performance';
+  };
+  cacheQueryOptions?: {
+    ignoreSearch?: boolean;
   };
 }
 ```
@@ -180,6 +192,25 @@ The Angular service worker can use either of two caching strategies for data res
 * `performance`, the default, optimizes for responses that are as fast as possible. If a resource exists in the cache, the cached version is used, and no network request is made. This allows for some staleness, depending on the `maxAge`, in exchange for better performance. This is suitable for resources that don't change often; for example, user avatar images.
 
 * `freshness` optimizes for currency of data, preferentially fetching requested data from the network. Only if the network times out, according to `timeout`, does the request fall back to the cache. This is useful for resources that change frequently; for example, account balances.
+
+
+<div class="alert is-helpful">
+
+You can also emulate a third strategy, [staleWhileRevalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate), which returns cached data (if available), but also fetches fresh data from the network in the background for next time.
+To use this strategy set `strategy` to `freshness` and `timeout` to `0u` in `cacheConfig`.
+
+This will essentially do the following:
+
+1. Try to fetch from the network first.
+2. If the network request does not complete after 0ms (i.e. immediately), fall back to the cache (ignoring cache age).
+3. Once the network request completes, update the cache for future requests.
+4. If the resource does not exist in the cache, wait for the network request anyway.
+
+</div>
+
+### `cacheQueryOptions`
+
+See [assetGroups](#assetgroups) for details.
 
 ## `navigationUrls`
 

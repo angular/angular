@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@ import {Expression, ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {UnifiedModulesHost} from '../../core/api';
-import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
+import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 
 import {ImportFlags, ReferenceEmitStrategy} from './emitter';
 import {Reference} from './references';
@@ -203,7 +203,9 @@ export class PrivateExportAliasingHost implements AliasingHost {
    *
    * Thus, `getAliasIn` always returns `null`.
    */
-  getAliasIn(): null { return null; }
+  getAliasIn(): null {
+    return null;
+  }
 }
 
 /**

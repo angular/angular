@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,8 +10,8 @@ import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {escapeRegExp} from '../util';
 
-import {AST, ASTWithSource, AbsoluteSourceSpan, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParseSpan, ParserError, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, VariableBinding} from './ast';
-import {EOF, Lexer, Token, TokenType, isIdentifier, isQuote} from './lexer';
+import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, VariableBinding} from './ast';
+import {EOF, isIdentifier, isQuote, Lexer, Token, TokenType} from './lexer';
 
 export class SplitInterpolation {
   constructor(public strings: string[], public expressions: string[], public offsets: number[]) {}
@@ -253,7 +253,8 @@ export class Parser {
     const parts = input.split(regexp);
     if (parts.length > 1) {
       this._reportError(
-          `Got interpolation (${interpolationConfig.start}${interpolationConfig.end}) where expression was expected`,
+          `Got interpolation (${interpolationConfig.start}${
+              interpolationConfig.end}) where expression was expected`,
           input,
           `at column ${this._findInterpolationErrorColumn(parts, 1, interpolationConfig)} in`,
           location);
@@ -300,25 +301,49 @@ export class _ParseAST {
     return i < this.tokens.length ? this.tokens[i] : EOF;
   }
 
-  get next(): Token { return this.peek(0); }
+  get next(): Token {
+    return this.peek(0);
+  }
 
+  /** Whether all the parser input has been processed. */
+  get atEOF(): boolean {
+    return this.index >= this.tokens.length;
+  }
+
+  /**
+   * Index of the next token to be processed, or the end of the last token if all have been
+   * processed.
+   */
   get inputIndex(): number {
-    return (this.index < this.tokens.length) ? this.next.index + this.offset :
-                                               this.inputLength + this.offset;
+    return this.atEOF ? this.currentEndIndex : this.next.index + this.offset;
+  }
+
+  /**
+   * End index of the last processed token, or the start of the first token if none have been
+   * processed.
+   */
+  get currentEndIndex(): number {
+    if (this.index > 0) {
+      const curToken = this.peek(-1);
+      return curToken.end + this.offset;
+    }
+    // No tokens have been processed yet; return the next token's start or the length of the input
+    // if there is no token.
+    if (this.tokens.length === 0) {
+      return this.inputLength + this.offset;
+    }
+    return this.next.index + this.offset;
   }
 
   /**
    * Returns the absolute offset of the start of the current token.
    */
-  get currentAbsoluteOffset(): number { return this.absoluteOffset + this.inputIndex; }
+  get currentAbsoluteOffset(): number {
+    return this.absoluteOffset + this.inputIndex;
+  }
 
   span(start: number) {
-    // `end` is either the
-    //   - end index of the current token
-    //   - start of the first token (this can happen e.g. when creating an implicit receiver)
-    const curToken = this.peek(-1);
-    const end = this.index > 0 ? curToken.end + this.offset : this.inputIndex;
-    return new ParseSpan(start, end);
+    return new ParseSpan(start, this.currentEndIndex);
   }
 
   sourceSpan(start: number): AbsoluteSourceSpan {
@@ -326,10 +351,12 @@ export class _ParseAST {
     if (!this.sourceSpanCache.has(serial)) {
       this.sourceSpanCache.set(serial, this.span(start).toAbsolute(this.absoluteOffset));
     }
-    return this.sourceSpanCache.get(serial) !;
+    return this.sourceSpanCache.get(serial)!;
   }
 
-  advance() { this.index++; }
+  advance() {
+    this.index++;
+  }
 
   consumeOptionalCharacter(code: number): boolean {
     if (this.next.isCharacter(code)) {
@@ -340,8 +367,12 @@ export class _ParseAST {
     }
   }
 
-  peekKeywordLet(): boolean { return this.next.isKeywordLet(); }
-  peekKeywordAs(): boolean { return this.next.isKeywordAs(); }
+  peekKeywordLet(): boolean {
+    return this.next.isKeywordLet();
+  }
+  peekKeywordAs(): boolean {
+    return this.next.isKeywordAs();
+  }
 
   expectCharacter(code: number) {
     if (this.consumeOptionalCharacter(code)) return;
@@ -428,7 +459,9 @@ export class _ParseAST {
     return result;
   }
 
-  parseExpression(): AST { return this.parseConditional(); }
+  parseExpression(): AST {
+    return this.parseConditional();
+  }
 
   parseConditional(): AST {
     const start = this.inputIndex;
@@ -717,7 +750,9 @@ export class _ParseAST {
 
   parseAccessMemberOrMethodCall(receiver: AST, isSafe: boolean = false): AST {
     const start = receiver.span.start;
+    const nameStart = this.inputIndex;
     const id = this.expectIdentifierOrKeyword();
+    const nameSpan = this.sourceSpan(nameStart);
 
     if (this.consumeOptionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
@@ -726,8 +761,8 @@ export class _ParseAST {
       this.rparensExpected--;
       const span = this.span(start);
       const sourceSpan = this.sourceSpan(start);
-      return isSafe ? new SafeMethodCall(span, sourceSpan, receiver, id, args) :
-                      new MethodCall(span, sourceSpan, receiver, id, args);
+      return isSafe ? new SafeMethodCall(span, sourceSpan, nameSpan, receiver, id, args) :
+                      new MethodCall(span, sourceSpan, nameSpan, receiver, id, args);
 
     } else {
       if (isSafe) {
@@ -735,7 +770,8 @@ export class _ParseAST {
           this.error('The \'?.\' operator cannot be used in the assignment');
           return new EmptyExpr(this.span(start), this.sourceSpan(start));
         } else {
-          return new SafePropertyRead(this.span(start), this.sourceSpan(start), receiver, id);
+          return new SafePropertyRead(
+              this.span(start), this.sourceSpan(start), nameSpan, receiver, id);
         }
       } else {
         if (this.consumeOptionalOperator('=')) {
@@ -745,9 +781,10 @@ export class _ParseAST {
           }
 
           const value = this.parseConditional();
-          return new PropertyWrite(this.span(start), this.sourceSpan(start), receiver, id, value);
+          return new PropertyWrite(
+              this.span(start), this.sourceSpan(start), nameSpan, receiver, id, value);
         } else {
-          return new PropertyRead(this.span(start), this.sourceSpan(start), receiver, id);
+          return new PropertyRead(this.span(start), this.sourceSpan(start), nameSpan, receiver, id);
         }
       }
     }
@@ -984,8 +1021,8 @@ export class _ParseAST {
            (this.rbracesExpected <= 0 || !n.isCharacter(chars.$RBRACE)) &&
            (this.rbracketsExpected <= 0 || !n.isCharacter(chars.$RBRACKET))) {
       if (this.next.isError()) {
-        this.errors.push(new ParserError(
-            this.next.toString() !, this.input, this.locationText(), this.location));
+        this.errors.push(
+            new ParserError(this.next.toString()!, this.input, this.locationText(), this.location));
       }
       this.advance();
       n = this.next;
@@ -1014,9 +1051,13 @@ class SimpleExpressionChecker implements AstVisitor {
 
   visitFunctionCall(ast: FunctionCall, context: any) {}
 
-  visitLiteralArray(ast: LiteralArray, context: any) { this.visitAll(ast.expressions); }
+  visitLiteralArray(ast: LiteralArray, context: any) {
+    this.visitAll(ast.expressions);
+  }
 
-  visitLiteralMap(ast: LiteralMap, context: any) { this.visitAll(ast.values); }
+  visitLiteralMap(ast: LiteralMap, context: any) {
+    this.visitAll(ast.values);
+  }
 
   visitBinary(ast: Binary, context: any) {}
 
@@ -1026,13 +1067,17 @@ class SimpleExpressionChecker implements AstVisitor {
 
   visitConditional(ast: Conditional, context: any) {}
 
-  visitPipe(ast: BindingPipe, context: any) { this.errors.push('pipes'); }
+  visitPipe(ast: BindingPipe, context: any) {
+    this.errors.push('pipes');
+  }
 
   visitKeyedRead(ast: KeyedRead, context: any) {}
 
   visitKeyedWrite(ast: KeyedWrite, context: any) {}
 
-  visitAll(asts: any[]): any[] { return asts.map(node => node.visit(this)); }
+  visitAll(asts: any[]): any[] {
+    return asts.map(node => node.visit(this));
+  }
 
   visitChain(ast: Chain, context: any) {}
 
@@ -1052,5 +1097,7 @@ class IvySimpleExpressionChecker extends SimpleExpressionChecker {
     ast.right.visit(this);
   }
 
-  visitPrefixNot(ast: PrefixNot, context: any) { ast.expression.visit(this); }
+  visitPrefixNot(ast: PrefixNot, context: any) {
+    ast.expression.visit(this);
+  }
 }

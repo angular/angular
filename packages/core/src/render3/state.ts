@@ -1,16 +1,16 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDefined, assertEqual} from '../util/assert';
 import {assertLViewOrUndefined} from './assert';
+import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
-import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW, TView} from './interfaces/view';
+import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TData, TVIEW, TView} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {getTNode} from './util/view_utils';
 
@@ -95,11 +95,6 @@ interface LFrame {
    * Current namespace to be used when creating elements
    */
   currentNamespace: string|null;
-
-  /**
-   * Current sanitizer
-   */
-  currentSanitizer: StyleSanitizeFn|null;
 
 
   /**
@@ -344,7 +339,7 @@ export function setBindingRootForHostBindings(
     bindingRootIndex: number, currentDirectiveIndex: number) {
   const lFrame = instructionState.lFrame;
   lFrame.bindingIndex = lFrame.bindingRootIndex = bindingRootIndex;
-  lFrame.currentDirectiveIndex = currentDirectiveIndex;
+  setCurrentDirectiveIndex(currentDirectiveIndex);
 }
 
 /**
@@ -354,6 +349,26 @@ export function setBindingRootForHostBindings(
  */
 export function getCurrentDirectiveIndex(): number {
   return instructionState.lFrame.currentDirectiveIndex;
+}
+
+/**
+ * Sets an index of a directive whose `hostBindings` are being processed.
+ *
+ * @param currentDirectiveIndex `TData` index where current directive instance can be found.
+ */
+export function setCurrentDirectiveIndex(currentDirectiveIndex: number): void {
+  instructionState.lFrame.currentDirectiveIndex = currentDirectiveIndex;
+}
+
+/**
+ * Retrieve the current `DirectiveDef` which is active when `hostBindings` instruction is being
+ * executed.
+ *
+ * @param tData Current `TData` where the `DirectiveDef` will be looked up at.
+ */
+export function getCurrentDirectiveDef(tData: TData): DirectiveDef<any>|null {
+  const currentDirectiveIndex = instructionState.lFrame.currentDirectiveIndex;
+  return currentDirectiveIndex === -1 ? null : tData[currentDirectiveIndex] as DirectiveDef<any>;
 }
 
 export function getCurrentQueryIndex(): number {
@@ -373,7 +388,7 @@ export function enterDI(newView: LView, tNode: TNode) {
   ngDevMode && assertLViewOrUndefined(newView);
   const newLFrame = allocLFrame();
   instructionState.lFrame = newLFrame;
-  newLFrame.previousOrParentTNode = tNode !;
+  newLFrame.previousOrParentTNode = tNode!;
   newLFrame.lView = newView;
 }
 
@@ -389,7 +404,7 @@ export function enterDI(newView: LView, tNode: TNode) {
  * @param tNode Element to which the View is a child of
  * @returns the previously active lView;
  */
-export function enterView(newView: LView, tNode: TNode | null): void {
+export function enterView(newView: LView, tNode: TNode|null): void {
   ngDevMode && assertLViewOrUndefined(newView);
   const newLFrame = allocLFrame();
   if (ngDevMode) {
@@ -400,16 +415,15 @@ export function enterView(newView: LView, tNode: TNode | null): void {
     assertEqual(newLFrame.elementDepthCount, 0, 'Expected clean LFrame');
     assertEqual(newLFrame.currentDirectiveIndex, -1, 'Expected clean LFrame');
     assertEqual(newLFrame.currentNamespace, null, 'Expected clean LFrame');
-    assertEqual(newLFrame.currentSanitizer, null, 'Expected clean LFrame');
     assertEqual(newLFrame.bindingRootIndex, -1, 'Expected clean LFrame');
     assertEqual(newLFrame.currentQueryIndex, 0, 'Expected clean LFrame');
   }
   const tView = newView[TVIEW];
   instructionState.lFrame = newLFrame;
-  newLFrame.previousOrParentTNode = tNode !;
+  newLFrame.previousOrParentTNode = tNode!;
   newLFrame.lView = newView;
   newLFrame.tView = tView;
-  newLFrame.contextLView = newView !;
+  newLFrame.contextLView = newView!;
   newLFrame.bindingIndex = tView.bindingStartIndex;
 }
 
@@ -423,23 +437,22 @@ function allocLFrame() {
   return newLFrame;
 }
 
-function createLFrame(parent: LFrame | null): LFrame {
+function createLFrame(parent: LFrame|null): LFrame {
   const lFrame: LFrame = {
-    previousOrParentTNode: null !,  //
-    isParent: true,                 //
-    lView: null !,                  //
-    tView: null !,                  //
-    selectedIndex: 0,               //
-    contextLView: null !,           //
-    elementDepthCount: 0,           //
-    currentNamespace: null,         //
-    currentSanitizer: null,         //
-    currentDirectiveIndex: -1,      //
-    bindingRootIndex: -1,           //
-    bindingIndex: -1,               //
-    currentQueryIndex: 0,           //
-    parent: parent !,               //
-    child: null,                    //
+    previousOrParentTNode: null!,  //
+    isParent: true,                //
+    lView: null!,                  //
+    tView: null!,                  //
+    selectedIndex: 0,              //
+    contextLView: null!,           //
+    elementDepthCount: 0,          //
+    currentNamespace: null,        //
+    currentDirectiveIndex: -1,     //
+    bindingRootIndex: -1,          //
+    bindingIndex: -1,              //
+    currentQueryIndex: 0,          //
+    parent: parent!,               //
+    child: null,                   //
   };
   parent !== null && (parent.child = lFrame);  // link the new LFrame for reuse.
   return lFrame;
@@ -457,8 +470,8 @@ function createLFrame(parent: LFrame | null): LFrame {
 function leaveViewLight(): LFrame {
   const oldLFrame = instructionState.lFrame;
   instructionState.lFrame = oldLFrame.parent;
-  oldLFrame.previousOrParentTNode = null !;
-  oldLFrame.lView = null !;
+  oldLFrame.previousOrParentTNode = null!;
+  oldLFrame.lView = null!;
   return oldLFrame;
 }
 
@@ -481,13 +494,12 @@ export const leaveDI: () => void = leaveViewLight;
 export function leaveView() {
   const oldLFrame = leaveViewLight();
   oldLFrame.isParent = true;
-  oldLFrame.tView = null !;
+  oldLFrame.tView = null!;
   oldLFrame.selectedIndex = 0;
-  oldLFrame.contextLView = null !;
+  oldLFrame.contextLView = null!;
   oldLFrame.elementDepthCount = 0;
   oldLFrame.currentDirectiveIndex = -1;
   oldLFrame.currentNamespace = null;
-  oldLFrame.currentSanitizer = null;
   oldLFrame.bindingRootIndex = -1;
   oldLFrame.bindingIndex = -1;
   oldLFrame.currentQueryIndex = 0;
@@ -495,16 +507,17 @@ export function leaveView() {
 
 export function nextContextImpl<T = any>(level: number): T {
   const contextLView = instructionState.lFrame.contextLView =
-      walkUpViews(level, instructionState.lFrame.contextLView !);
+      walkUpViews(level, instructionState.lFrame.contextLView!);
   return contextLView[CONTEXT] as T;
 }
 
 function walkUpViews(nestingLevel: number, currentView: LView): LView {
   while (nestingLevel > 0) {
-    ngDevMode && assertDefined(
-                     currentView[DECLARATION_VIEW],
-                     'Declaration view should be defined if nesting level is greater than 0.');
-    currentView = currentView[DECLARATION_VIEW] !;
+    ngDevMode &&
+        assertDefined(
+            currentView[DECLARATION_VIEW],
+            'Declaration view should be defined if nesting level is greater than 0.');
+    currentView = currentView[DECLARATION_VIEW]!;
     nestingLevel--;
   }
   return currentView;
@@ -579,19 +592,4 @@ export function namespaceHTMLInternal() {
 
 export function getNamespace(): string|null {
   return instructionState.lFrame.currentNamespace;
-}
-
-export function setCurrentStyleSanitizer(sanitizer: StyleSanitizeFn | null) {
-  instructionState.lFrame.currentSanitizer = sanitizer;
-}
-
-export function resetCurrentStyleSanitizer() {
-  setCurrentStyleSanitizer(null);
-}
-
-export function getCurrentStyleSanitizer() {
-  // TODO(misko): This should throw when there is no LView, but it turns out we can get here from
-  // `NodeStyleDebug` hence we return `null`. This should be fixed
-  const lFrame = instructionState.lFrame;
-  return lFrame === null ? null : lFrame.currentSanitizer;
 }

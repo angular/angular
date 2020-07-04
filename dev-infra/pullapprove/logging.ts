@@ -1,30 +1,25 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {info} from '../utils/console';
 import {PullApproveGroupResult} from './group';
 
 /** Create logs for each pullapprove group result. */
-export function logGroup(group: PullApproveGroupResult, matched = true) {
-  const includeConditions = matched ? group.matchedIncludes : group.unmatchedIncludes;
-  const excludeConditions = matched ? group.matchedExcludes : group.unmatchedExcludes;
-  console.groupCollapsed(`[${group.groupName}]`);
-  if (includeConditions.length) {
-    console.group('includes');
-    includeConditions.forEach(
-        matcher => console.info(`${matcher.glob} - ${matcher.matchedFiles.size}`));
-    console.groupEnd();
+export function logGroup(group: PullApproveGroupResult, matched = true, printMessageFn = info) {
+  const conditions = matched ? group.matchedConditions : group.unmatchedConditions;
+  printMessageFn.group(`[${group.groupName}]`);
+  if (conditions.length) {
+    conditions.forEach(matcher => {
+      const count = matcher.matchedFiles.size;
+      printMessageFn(`${count} ${count === 1 ? 'match' : 'matches'} - ${matcher.expression}`);
+    });
+    printMessageFn.groupEnd();
   }
-  if (excludeConditions.length) {
-    console.group('excludes');
-    excludeConditions.forEach(
-        matcher => console.info(`${matcher.glob} - ${matcher.matchedFiles.size}`));
-    console.groupEnd();
-  }
-  console.groupEnd();
 }
 
 /** Logs a header within a text drawn box. */
@@ -36,7 +31,7 @@ export function logHeader(...params: string[]) {
   const rightSpace = fillWidth - leftSpace - headerText.length;
   const fill = (count: number, content: string) => content.repeat(count);
 
-  console.info(`┌${fill(fillWidth, '─')}┐`);
-  console.info(`│${fill(leftSpace, ' ')}${headerText}${fill(rightSpace, ' ')}│`);
-  console.info(`└${fill(fillWidth, '─')}┘`);
+  info(`┌${fill(fillWidth, '─')}┐`);
+  info(`│${fill(leftSpace, ' ')}${headerText}${fill(rightSpace, ' ')}│`);
+  info(`└${fill(fillWidth, '─')}┘`);
 }

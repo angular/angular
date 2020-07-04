@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -86,7 +86,7 @@ export function assertNotDefined<T>(actual: T, msg: string) {
   }
 }
 
-export function assertDefined<T>(actual: T, msg: string) {
+export function assertDefined<T>(actual: T|null|undefined, msg: string): asserts actual is T {
   if (actual == null) {
     throwError(msg, actual, null, '!=');
   }

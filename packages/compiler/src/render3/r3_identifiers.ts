@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -131,8 +131,6 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵstylePropInterpolate8', moduleName: CORE};
   static stylePropInterpolateV:
       o.ExternalReference = {name: 'ɵɵstylePropInterpolateV', moduleName: CORE};
-
-  static containerCreate: o.ExternalReference = {name: 'ɵɵcontainer', moduleName: CORE};
 
   static nextContext: o.ExternalReference = {name: 'ɵɵnextContext', moduleName: CORE};
 
@@ -317,8 +315,6 @@ export class Identifiers {
   // sanitization-related functions
   static sanitizeHtml: o.ExternalReference = {name: 'ɵɵsanitizeHtml', moduleName: CORE};
   static sanitizeStyle: o.ExternalReference = {name: 'ɵɵsanitizeStyle', moduleName: CORE};
-  static defaultStyleSanitizer:
-      o.ExternalReference = {name: 'ɵɵdefaultStyleSanitizer', moduleName: CORE};
   static sanitizeResourceUrl:
       o.ExternalReference = {name: 'ɵɵsanitizeResourceUrl', moduleName: CORE};
   static sanitizeScript: o.ExternalReference = {name: 'ɵɵsanitizeScript', moduleName: CORE};

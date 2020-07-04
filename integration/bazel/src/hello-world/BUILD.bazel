@@ -21,6 +21,7 @@ ng_module(
     deps = [
         "@npm//@angular/core",
         "@npm//@types",
+        "@npm//tslib",
     ],
 )
 
@@ -41,13 +42,14 @@ ts_library(
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
         "@npm//jasmine",
+        "@npm//tslib",
     ],
 )
 
 karma_web_test_suite(
     name = "test",
     bootstrap = [
-        "@npm//:node_modules/zone.js/dist/zone-testing-bundle.js",
+        "@npm//:node_modules/zone.js/bundles/zone-testing-bundle.umd.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     browsers = [

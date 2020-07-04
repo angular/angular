@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,8 +9,9 @@
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
-import {absoluteFrom as _, getFileSystem} from '../../src/ngtsc/file_system';
+import {absoluteFrom as _, getFileSystem, getSourceFileOrError} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
+import {expectCompleteReuse} from '../../src/ngtsc/testing';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
 import {NgtscTestEnvironment} from './env';
@@ -19,7 +20,7 @@ const testFiles = loadStandardTestFiles();
 
 runInEachFileSystem(() => {
   describe('ngtsc type checking', () => {
-    let env !: NgtscTestEnvironment;
+    let env!: NgtscTestEnvironment;
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
@@ -902,8 +903,7 @@ export declare class AnimationEvent {
       expect(diags.length).toBe(1);
       expect(diags[0].messageText)
           .toEqual(`Property 'does_not_exist' does not exist on type '{ name: string; }'.`);
-      expect(diags[0].start).toBe(199);
-      expect(diags[0].length).toBe(19);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
     });
 
     it('should accept an NgFor iteration over an any-typed value', () => {
@@ -1126,8 +1126,7 @@ export declare class AnimationEvent {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toEqual(`Property 'does_not_exist' does not exist on type 'T'.`);
-      expect(diags[0].start).toBe(206);
-      expect(diags[0].length).toBe(19);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
     });
 
     describe('microsyntax variables', () => {
@@ -1502,8 +1501,9 @@ export declare class AnimationEvent {
     });
 
     describe('legacy schema checking with the DOM schema', () => {
-      beforeEach(
-          () => { env.tsconfig({ivyTemplateTypeCheck: true, fullTemplateTypeCheck: false}); });
+      beforeEach(() => {
+        env.tsconfig({ivyTemplateTypeCheck: true, fullTemplateTypeCheck: false});
+      });
 
       it('should check for unknown elements', () => {
         env.write('test.ts', `
@@ -1734,7 +1734,7 @@ export declare class AnimationEvent {
           }
         });
 
-        it('should be correct for direct templates', async() => {
+        it('should be correct for direct templates', async () => {
           env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
 
@@ -1750,11 +1750,11 @@ export declare class AnimationEvent {
 
           const diags = await driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(diags[0].file !.fileName).toBe(_('/test.ts'));
-          expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
+          expect(diags[0].file!.fileName).toBe(_('/test.ts'));
+          expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
         });
 
-        it('should be correct for indirect templates', async() => {
+        it('should be correct for indirect templates', async () => {
           env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
 
@@ -1772,12 +1772,12 @@ export declare class AnimationEvent {
 
           const diags = await driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(diags[0].file !.fileName).toBe(_('/test.ts') + ' (TestCmp template)');
-          expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
-          expect(getSourceCodeForDiagnostic(diags[0].relatedInformation ![0])).toBe('TEMPLATE');
+          expect(diags[0].file!.fileName).toBe(_('/test.ts') + ' (TestCmp template)');
+          expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
+          expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('TEMPLATE');
         });
 
-        it('should be correct for external templates', async() => {
+        it('should be correct for external templates', async () => {
           env.write('template.html', `<p>
           {{user.does_not_exist}}
         </p>`);
@@ -1795,9 +1795,9 @@ export declare class AnimationEvent {
 
           const diags = await driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(diags[0].file !.fileName).toBe(_('/template.html'));
-          expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
-          expect(getSourceCodeForDiagnostic(diags[0].relatedInformation ![0]))
+          expect(diags[0].file!.fileName).toBe(_('/template.html'));
+          expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
+          expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0]))
               .toBe(`'./template.html'`);
         });
       });
@@ -1837,10 +1837,58 @@ export declare class AnimationEvent {
            expect(diags.length).toBe(0);
          });
     });
+
+    describe('stability', () => {
+      beforeEach(() => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '{{expr}}'
+          })
+          export class TestCmp {
+            expr = 'string';
+          }
+        `);
+      });
+
+      // This section tests various scenarios which have more complex ts.Program setups and thus
+      // exercise edge cases of the template type-checker.
+      it('should accept a program with a flat index', () => {
+        // This test asserts that flat indices don't have any negative interactions with the
+        // generation of template type-checking code in the program.
+        env.tsconfig({fullTemplateTypeCheck: true, flatModuleOutFile: 'flat.js'});
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should not leave referencedFiles in a tagged state', () => {
+        env.enableMultipleCompilations();
+
+        env.driveMain();
+        const sf = getSourceFileOrError(env.getTsProgram(), _('/test.ts'));
+        expect(sf.referencedFiles.map(ref => ref.fileName)).toEqual([]);
+      });
+
+      it('should allow for complete program reuse during incremental compilations', () => {
+        env.enableMultipleCompilations();
+
+        env.write('other.ts', `export const VERSION = 1;`);
+
+        env.driveMain();
+        const firstProgram = env.getReuseTsProgram();
+
+        env.write('other.ts', `export const VERSION = 2;`);
+        env.driveMain();
+
+        expectCompleteReuse(firstProgram);
+      });
+    });
   });
 });
 
 function getSourceCodeForDiagnostic(diag: ts.Diagnostic): string {
-  const text = diag.file !.text;
-  return text.substr(diag.start !, diag.length !);
+  const text = diag.file!.text;
+  return text.substr(diag.start!, diag.length!);
 }

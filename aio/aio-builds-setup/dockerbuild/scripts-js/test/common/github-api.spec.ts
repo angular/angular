@@ -118,7 +118,7 @@ describe('GithubApi', () => {
 
 
     it('should return a promise', () => {
-      expect((api as any).getPaginated()).toEqual(jasmine.any(Promise));
+      expect((api as any).getPaginated()).toBeInstanceOf(Promise);
     });
 
 
@@ -131,45 +131,30 @@ describe('GithubApi', () => {
     });
 
 
-    it('should reject if the request fails', done => {
-      (api as any).getPaginated('/foo/bar').catch((err: any) => {
-        expect(err).toBe('Test');
-        done();
-      });
-
+    it('should reject if the request fails', async () => {
+      const responsePromise = (api as any).getPaginated('/foo/bar');
       deferreds[0].reject('Test');
+
+      await expectAsync(responsePromise).toBeRejectedWith('Test');
     });
 
 
-    it('should resolve with the returned items', done => {
+    it('should resolve with the returned items', async () => {
       const items = [{id: 1}, {id: 2}];
-
-      (api as any).getPaginated('/foo/bar').then((data: any) => {
-        expect(data).toEqual(items);
-        done();
-      });
-
+      const responsePromise = (api as any).getPaginated('/foo/bar');
       deferreds[0].resolve(items);
+
+      await expectAsync(responsePromise).toBeResolvedTo(items);
     });
 
 
-    it('should iteratively call \'get()\' to fetch all items', done => {
+    it('should iteratively call \'get()\' to fetch all items', async () => {
       // Create an array or 250 objects.
-      const allItems = '.'.repeat(250).split('').map((_, i) => ({id: i}));
+      const allItems = new Array(250).fill(null).map((_, i) => ({id: i}));
       const apiGetSpy = api.get as jasmine.Spy;
+      const paramsForPage = (page: number) => ({baz: 'qux', page, per_page: 100});
 
-      (api as any).getPaginated('/foo/bar', {baz: 'qux'}).then((data: any) => {
-        const paramsForPage = (page: number) => ({baz: 'qux', page, per_page: 100});
-
-        expect(apiGetSpy).toHaveBeenCalledTimes(3);
-        expect(apiGetSpy.calls.argsFor(0)).toEqual(['/foo/bar', paramsForPage(1)]);
-        expect(apiGetSpy.calls.argsFor(1)).toEqual(['/foo/bar', paramsForPage(2)]);
-        expect(apiGetSpy.calls.argsFor(2)).toEqual(['/foo/bar', paramsForPage(3)]);
-
-        expect(data).toEqual(allItems);
-
-        done();
-      });
+      const responsePromise = (api as any).getPaginated('/foo/bar', {baz: 'qux'});
 
       deferreds[0].resolve(allItems.slice(0, 100));
       setTimeout(() => {
@@ -178,6 +163,13 @@ describe('GithubApi', () => {
           deferreds[2].resolve(allItems.slice(200));
         }, 0);
       }, 0);
+
+      await expectAsync(responsePromise).toBeResolvedTo(allItems);
+
+      expect(apiGetSpy).toHaveBeenCalledTimes(3);
+      expect(apiGetSpy.calls.argsFor(0)).toEqual(['/foo/bar', paramsForPage(1)]);
+      expect(apiGetSpy.calls.argsFor(1)).toEqual(['/foo/bar', paramsForPage(2)]);
+      expect(apiGetSpy.calls.argsFor(2)).toEqual(['/foo/bar', paramsForPage(3)]);
     });
 
   });
@@ -217,8 +209,8 @@ describe('GithubApi', () => {
 
   describe('request()', () => {
     it('should return a promise', () => {
-      nock('https://api.github.com').get('').reply(200);
-      expect((api as any).request()).toEqual(jasmine.any(Promise));
+      nock('https://api.github.com').get('/').reply(200);
+      expect((api as any).request()).toBeInstanceOf(Promise);
     });
 
 
@@ -247,9 +239,8 @@ describe('GithubApi', () => {
       nock('https://api.github.com')
         .intercept('/path', 'method')
         .replyWithError('Test');
-      let message = 'Failed to reject error';
-      await (api as any).request('method', '/path').catch((err: any) => message = err.message);
-      expect(message).toEqual('Test');
+
+      await expectAsync((api as any).request('method', '/path')).toBeRejectedWithError('Test');
     });
 
 
@@ -263,81 +254,69 @@ describe('GithubApi', () => {
     });
 
 
-    it('should reject if response statusCode is <200', done => {
+    it('should reject if response statusCode is <200', async () => {
       const requestHandler = nock('https://api.github.com')
         .intercept('/path', 'method')
         .reply(199);
+      const responsePromise = (api as any).request('method', '/path');
 
-      (api as any).request('method', '/path')
-        .catch((err: string) => {
-          expect(err).toContain('failed');
-          expect(err).toContain('status: 199');
-          done();
-        });
+      await expectAsync(responsePromise).toBeRejectedWith(jasmine.stringMatching('failed'));
+      await expectAsync(responsePromise).toBeRejectedWith(jasmine.stringMatching('status: 199'));
+
       requestHandler.done();
     });
 
 
-    it('should reject if response statusCode is >=400', done => {
+    it('should reject if response statusCode is >=400', async () => {
       const requestHandler = nock('https://api.github.com')
         .intercept('/path', 'method')
         .reply(400);
+      const responsePromise = (api as any).request('method', '/path');
 
-      (api as any).request('method', '/path')
-        .catch((err: string) => {
-          expect(err).toContain('failed');
-          expect(err).toContain('status: 400');
-          done();
-        });
+      await expectAsync(responsePromise).toBeRejectedWith(jasmine.stringMatching('failed'));
+      await expectAsync(responsePromise).toBeRejectedWith(jasmine.stringMatching('status: 400'));
+
       requestHandler.done();
     });
 
 
-    it('should include the response text in the rejection message', done => {
+    it('should include the response text in the rejection message', async () => {
       const requestHandler = nock('https://api.github.com')
         .intercept('/path', 'method')
         .reply(500, 'Test');
+      const responsePromise = (api as any).request('method', '/path');
 
-      (api as any).request('method', '/path')
-        .catch((err: string) => {
-          expect(err).toContain('Test');
-          done();
-        });
+      await expectAsync(responsePromise).toBeRejectedWith(jasmine.stringMatching('Test'));
+
       requestHandler.done();
      });
 
 
-    it('should resolve if returned statusCode is >=200 and <400', done => {
+    it('should resolve if returned statusCode is >=200 and <400', async () => {
       const requestHandler = nock('https://api.github.com')
         .intercept('/path', 'method')
         .reply(200);
 
-      (api as any).request('method', '/path').then(done);
+      await expectAsync((api as any).request('method', '/path')).toBeResolved();
       requestHandler.done();
     });
 
 
-    it('should parse the response body into an object using \'JSON.parse\'', done => {
+    it('should parse the response body into an object using \'JSON.parse\'', async () => {
       const requestHandler = nock('https://api.github.com')
         .intercept('/path', 'method')
         .reply(300, '{"foo": "bar"}');
 
-      (api as any).request('method', '/path').then((data: any) => {
-        expect(data).toEqual({foo: 'bar'});
-        done();
-      });
+      await expectAsync((api as any).request('method', '/path')).toBeResolvedTo({foo: 'bar'});
       requestHandler.done();
     });
 
-    it('should reject if the response text is malformed JSON', done => {
+    it('should reject if the response text is malformed JSON', async () => {
       const requestHandler = nock('https://api.github.com')
         .intercept('/path', 'method')
         .reply(300, '}');
 
-      (api as any).request('method', '/path').catch((err: any) => {
-        expect(err).toEqual(jasmine.any(SyntaxError));
-        done();
-      });
+      await expectAsync((api as any).request('method', '/path')).toBeRejectedWithError(SyntaxError);
       requestHandler.done();
     });
 

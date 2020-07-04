@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,9 +28,11 @@ import {WebDriverAdapter} from './web_driver_adapter';
 export class Sampler {
   static PROVIDERS = <StaticProvider[]>[{
     provide: Sampler,
-    deps: [
-      WebDriverAdapter, Metric, Reporter, Validator, Options.PREPARE, Options.EXECUTE, Options.NOW
-    ]
+    deps:
+        [
+          WebDriverAdapter, Metric, Reporter, Validator, Options.PREPARE, Options.EXECUTE,
+          Options.NOW
+        ]
   }];
   constructor(
       private _driver: WebDriverAdapter, private _metric: Metric, private _reporter: Reporter,

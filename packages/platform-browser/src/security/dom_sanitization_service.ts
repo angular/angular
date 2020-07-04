@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, Injector, Sanitizer, SecurityContext, forwardRef, ɵBypassType as BypassType, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
+import {forwardRef, Inject, Injectable, Injector, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵBypassType as BypassType, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
 
 export {SecurityContext};
 
@@ -149,7 +149,9 @@ export function domSanitizerImplFactory(injector: Injector) {
 
 @Injectable({providedIn: 'root', useFactory: domSanitizerImplFactory, deps: [Injector]})
 export class DomSanitizerImpl extends DomSanitizer {
-  constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
+  constructor(@Inject(DOCUMENT) private _doc: any) {
+    super();
+  }
 
   sanitize(ctx: SecurityContext, value: SafeValue|string|null): string|null {
     if (value == null) return null;
@@ -165,7 +167,7 @@ export class DomSanitizerImpl extends DomSanitizer {
         if (allowSanitizationBypassOrThrow(value, BypassType.Style)) {
           return unwrapSafeValue(value);
         }
-        return _sanitizeStyle(value as string);
+        return value as string;
       case SecurityContext.SCRIPT:
         if (allowSanitizationBypassOrThrow(value, BypassType.Script)) {
           return unwrapSafeValue(value);
@@ -188,12 +190,18 @@ export class DomSanitizerImpl extends DomSanitizer {
     }
   }
 
-  bypassSecurityTrustHtml(value: string): SafeHtml { return bypassSanitizationTrustHtml(value); }
-  bypassSecurityTrustStyle(value: string): SafeStyle { return bypassSanitizationTrustStyle(value); }
+  bypassSecurityTrustHtml(value: string): SafeHtml {
+    return bypassSanitizationTrustHtml(value);
+  }
+  bypassSecurityTrustStyle(value: string): SafeStyle {
+    return bypassSanitizationTrustStyle(value);
+  }
   bypassSecurityTrustScript(value: string): SafeScript {
     return bypassSanitizationTrustScript(value);
   }
-  bypassSecurityTrustUrl(value: string): SafeUrl { return bypassSanitizationTrustUrl(value); }
+  bypassSecurityTrustUrl(value: string): SafeUrl {
+    return bypassSanitizationTrustUrl(value);
+  }
   bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl {
     return bypassSanitizationTrustResourceUrl(value);
   }

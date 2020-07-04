@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,7 +20,9 @@ export function findBaseClassDeclarations(node: ts.ClassDeclaration, typeChecker
       break;
     }
     const symbol = typeChecker.getTypeAtLocation(baseTypes[0]).getSymbol();
-    if (!symbol || !ts.isClassDeclaration(symbol.valueDeclaration)) {
+    // Note: `ts.Symbol#valueDeclaration` can be undefined. TypeScript has an incorrect type
+    // for this: https://github.com/microsoft/TypeScript/issues/24706.
+    if (!symbol || !symbol.valueDeclaration || !ts.isClassDeclaration(symbol.valueDeclaration)) {
       break;
     }
     result.push({identifier: baseTypes[0], node: symbol.valueDeclaration});

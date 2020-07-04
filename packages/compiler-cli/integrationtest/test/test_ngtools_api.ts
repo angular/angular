@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,10 +22,15 @@ import {createProgram, readConfiguration} from '@angular/compiler-cli';
  * properly read and wrote.
  */
 function main() {
-  Promise.resolve().then(() => lazyRoutesTest()).then(() => { process.exit(0); }).catch((err) => {
-    console.error(err.stack);
-    process.exit(1);
-  });
+  Promise.resolve()
+      .then(() => lazyRoutesTest())
+      .then(() => {
+        process.exit(0);
+      })
+      .catch((err) => {
+        console.error(err.stack);
+        process.exit(1);
+      });
 }
 
 function lazyRoutesTest() {
@@ -36,7 +41,8 @@ function lazyRoutesTest() {
   const host = ts.createCompilerHost(config.options, true);
   const program = createProgram({
     rootNames: config.rootNames,
-    options: config.options, host,
+    options: config.options,
+    host,
   });
 
   config.options.basePath = basePath;

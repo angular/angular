@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {PlatformRef} from '@angular/core';
-import {ClientMessageBrokerFactory, FnArg, SerializerTypes, UiArguments, bootstrapWorkerUi} from '@angular/platform-webworker';
+import {bootstrapWorkerUi, ClientMessageBrokerFactory, FnArg, SerializerTypes, UiArguments} from '@angular/platform-webworker';
 
 const ECHO_CHANNEL = 'ECHO';
 

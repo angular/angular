@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -25,7 +25,9 @@ export class By {
    *
    * {@example platform-browser/dom/debug/ts/by/by.ts region='by_all'}
    */
-  static all(): Predicate<DebugNode> { return () => true; }
+  static all(): Predicate<DebugNode> {
+    return () => true;
+  }
 
   /**
    * Match elements by the given CSS selector.
@@ -52,7 +54,7 @@ export class By {
    * {@example platform-browser/dom/debug/ts/by/by.ts region='by_directive'}
    */
   static directive(type: Type<any>): Predicate<DebugNode> {
-    return (debugNode) => debugNode.providerTokens !.indexOf(type) !== -1;
+    return (debugNode) => debugNode.providerTokens!.indexOf(type) !== -1;
   }
 }
 

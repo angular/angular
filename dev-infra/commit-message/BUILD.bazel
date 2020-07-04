@@ -13,12 +13,11 @@ ts_library(
     module_name = "@angular/dev-infra-private/commit-message",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
-        "//dev-infra/utils:config",
+        "//dev-infra/utils",
         "@npm//@types/node",
         "@npm//@types/shelljs",
         "@npm//@types/yargs",
         "@npm//shelljs",
-        "@npm//tslib",
         "@npm//yargs",
     ],
 )
@@ -29,10 +28,11 @@ ts_library(
     srcs = ["validate.spec.ts"],
     deps = [
         ":commit-message",
-        "//dev-infra/utils:config",
+        "//dev-infra/utils",
         "@npm//@types/events",
         "@npm//@types/jasmine",
         "@npm//@types/node",
+        "@npm//inquirer",
     ],
 )
 

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -41,7 +41,9 @@ describe('SyncTestZoneSpec', () => {
                  document.body.appendChild(button);
                  let x = 1;
                  try {
-                   button.addEventListener('click', () => { x++; });
+                   button.addEventListener('click', () => {
+                     x++;
+                   });
 
                    button.click();
                    expect(x).toEqual(2);

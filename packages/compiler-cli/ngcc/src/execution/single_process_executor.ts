@@ -1,14 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Logger} from '../../../src/ngtsc/logging';
 import {AsyncLocker} from '../locking/async_locker';
 import {SyncLocker} from '../locking/sync_locker';
-import {Logger} from '../logging/logger';
 
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './api';
 import {CreateTaskCompletedCallback} from './tasks/api';
@@ -23,7 +23,7 @@ export abstract class SingleProcessorExecutorBase {
 
     const taskQueue = analyzeEntryPoints();
     const onTaskCompleted = this.createTaskCompletedCallback(taskQueue);
-    const compile = createCompileFn(onTaskCompleted);
+    const compile = createCompileFn(() => {}, onTaskCompleted);
 
     // Process all tasks.
     this.logger.debug('Processing tasks...');
@@ -32,7 +32,7 @@ export abstract class SingleProcessorExecutorBase {
     while (!taskQueue.allTasksCompleted) {
       const task = taskQueue.getNextTask()!;
       compile(task);
-      taskQueue.markTaskCompleted(task);
+      taskQueue.markAsCompleted(task);
     }
 
     const duration = Math.round((Date.now() - startTime) / 1000);

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -31,13 +31,17 @@ export class SimpleFormGroup {
     last: new FormControl('Drew'),
   });
 
-  get first(): any { return this.form.get('first'); }
+  get first(): any {
+    return this.form.get('first');
+  }
 
   onSubmit(): void {
     console.log(this.form.value);  // {first: 'Nancy', last: 'Drew'}
   }
 
-  setValue() { this.form.setValue({first: 'Carson', last: 'Drew'}); }
+  setValue() {
+    this.form.setValue({first: 'Carson', last: 'Drew'});
+  }
 }
 
 

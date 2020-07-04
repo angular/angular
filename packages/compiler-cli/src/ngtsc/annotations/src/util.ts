@@ -1,18 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, ReadPropExpr, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {DefaultImportRecorder, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference, isNamedClassDeclaration} from '../../reflection';
+import {ClassDeclaration, CtorParameter, Decorator, Import, isNamedClassDeclaration, ReflectionHost, TypeValueReference} from '../../reflection';
 import {DeclarationData} from '../../scope';
 
 export enum ConstructorDepErrorKind {
@@ -21,8 +21,7 @@ export enum ConstructorDepErrorKind {
 
 export type ConstructorDeps = {
   deps: R3DependencyMetadata[];
-} |
-{
+}|{
   deps: null;
   errors: ConstructorDepError[];
 };
@@ -53,7 +52,7 @@ export function getConstructorDependencies(
     let resolved = R3ResolvedDependencyType.Token;
 
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
-      const name = isCore || dec.import === null ? dec.name : dec.import !.name;
+      const name = isCore || dec.import === null ? dec.name : dec.import!.name;
       if (name === 'Inject') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
@@ -97,7 +96,8 @@ export function getConstructorDependencies(
     if (token === null) {
       errors.push({
         index: idx,
-        kind: ConstructorDepErrorKind.NO_SUITABLE_TOKEN, param,
+        kind: ConstructorDepErrorKind.NO_SUITABLE_TOKEN,
+        param,
       });
     } else {
       deps.push({token, attribute, optional, self, skipSelf, host, resolved});
@@ -122,10 +122,10 @@ export function valueReferenceToExpression(
 export function valueReferenceToExpression(
     valueRef: null, defaultImportRecorder: DefaultImportRecorder): null;
 export function valueReferenceToExpression(
-    valueRef: TypeValueReference | null, defaultImportRecorder: DefaultImportRecorder): Expression|
+    valueRef: TypeValueReference|null, defaultImportRecorder: DefaultImportRecorder): Expression|
     null;
 export function valueReferenceToExpression(
-    valueRef: TypeValueReference | null, defaultImportRecorder: DefaultImportRecorder): Expression|
+    valueRef: TypeValueReference|null, defaultImportRecorder: DefaultImportRecorder): Expression|
     null {
   if (valueRef === null) {
     return null;
@@ -138,7 +138,19 @@ export function valueReferenceToExpression(
     return new WrappedNodeExpr(valueRef.expression);
   } else {
     // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
-    return new ExternalExpr(valueRef as{moduleName: string, name: string});
+    const ref = valueRef as {
+      moduleName: string;
+      importedName: string;
+      nestedPath: string[]|null;
+    };
+    let importExpr: Expression =
+        new ExternalExpr({moduleName: ref.moduleName, name: ref.importedName});
+    if (ref.nestedPath !== null) {
+      for (const property of ref.nestedPath) {
+        importExpr = new ReadPropExpr(importExpr, property);
+      }
+    }
+    return importExpr;
   }
 }
 
@@ -148,7 +160,7 @@ export function valueReferenceToExpression(
  *
  * This is a companion function to `validateConstructorDependencies` which accepts invalid deps.
  */
-export function unwrapConstructorDependencies(deps: ConstructorDeps | null): R3DependencyMetadata[]|
+export function unwrapConstructorDependencies(deps: ConstructorDeps|null): R3DependencyMetadata[]|
     'invalid'|null {
   if (deps === null) {
     return null;
@@ -176,18 +188,19 @@ export function getValidConstructorDependencies(
  * deps.
  */
 export function validateConstructorDependencies(
-    clazz: ClassDeclaration, deps: ConstructorDeps | null): R3DependencyMetadata[]|null {
+    clazz: ClassDeclaration, deps: ConstructorDeps|null): R3DependencyMetadata[]|null {
   if (deps === null) {
     return null;
   } else if (deps.deps !== null) {
     return deps.deps;
   } else {
     // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
-    const {param, index} = (deps as{errors: ConstructorDepError[]}).errors[0];
+    const {param, index} = (deps as {errors: ConstructorDepError[]}).errors[0];
     // There is at least one error.
     throw new FatalDiagnosticError(
         ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
-        `No suitable injection token for parameter '${param.name || index}' of class '${clazz.name.text}'.\n` +
+        `No suitable injection token for parameter '${param.name || index}' of class '${
+            clazz.name.text}'.\n` +
             (param.typeNode !== null ? `Found ${param.typeNode.getText()}` :
                                        'no type or decorator'));
   }
@@ -319,8 +332,7 @@ export function forwardRefResolver(
  */
 export function combineResolvers(resolvers: ForeignFunctionResolver[]): ForeignFunctionResolver {
   return (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-          args: ReadonlyArray<ts.Expression>): ts.Expression |
-      null => {
+          args: ReadonlyArray<ts.Expression>): ts.Expression|null => {
     for (const resolver of resolvers) {
       const resolved = resolver(ref, args);
       if (resolved !== null) {
@@ -396,7 +408,7 @@ export function wrapFunctionExpressionsInParens(expression: ts.Expression): ts.E
  */
 export function makeDuplicateDeclarationError(
     node: ClassDeclaration, data: DeclarationData[], kind: string): ts.Diagnostic {
-  const context: {node: ts.Node; messageText: string;}[] = [];
+  const context: ts.DiagnosticRelatedInformation[] = [];
   for (const decl of data) {
     if (decl.rawDeclarations === null) {
       continue;
@@ -404,11 +416,10 @@ export function makeDuplicateDeclarationError(
     // Try to find the reference to the declaration within the declarations array, to hang the
     // error there. If it can't be found, fall back on using the NgModule's name.
     const contextNode = decl.ref.getOriginForDiagnostics(decl.rawDeclarations, decl.ngModule.name);
-    context.push({
-      node: contextNode,
-      messageText:
-          `'${node.name.text}' is listed in the declarations of the NgModule '${decl.ngModule.name.text}'.`,
-    });
+    context.push(makeRelatedInformation(
+        contextNode,
+        `'${node.name.text}' is listed in the declarations of the NgModule '${
+            decl.ngModule.name.text}'.`));
   }
 
   // Finally, produce the diagnostic.
@@ -441,7 +452,7 @@ export function resolveProvidersRequiringFactory(
     } else if (provider instanceof Reference) {
       tokenClass = provider;
     } else if (provider instanceof Map && provider.has('useClass') && !provider.has('deps')) {
-      const useExisting = provider.get('useClass') !;
+      const useExisting = provider.get('useClass')!;
       if (useExisting instanceof Reference) {
         tokenClass = useExisting;
       }

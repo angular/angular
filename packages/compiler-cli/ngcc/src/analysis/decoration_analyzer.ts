@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,7 @@ import {ParsedConfiguration} from '../../..';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
-import {absoluteFrom, dirname, FileSystem, LogicalFileSystem, resolve} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, absoluteFromSourceFile, dirname, FileSystem, LogicalFileSystem, resolve} from '../../../src/ngtsc/file_system';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
@@ -58,7 +58,7 @@ export class DecorationAnalyzer {
   private host = this.bundle.src.host;
   private typeChecker = this.bundle.src.program.getTypeChecker();
   private rootDirs = this.bundle.rootDirs;
-  private packagePath = this.bundle.entryPoint.package;
+  private packagePath = this.bundle.entryPoint.packagePath;
   private isCore = this.bundle.isCore;
   private compilerOptions = this.tsConfig !== null ? this.tsConfig.options : {};
 
@@ -75,7 +75,8 @@ export class DecorationAnalyzer {
     // TODO(alxhub): there's no reason why ngcc needs the "logical file system" logic here, as ngcc
     // projects only ever have one rootDir. Instead, ngcc should just switch its emitted import
     // based on whether a bestGuessOwningModule is present in the Reference.
-    new LogicalProjectStrategy(this.reflectionHost, new LogicalFileSystem(this.rootDirs)),
+    new LogicalProjectStrategy(
+        this.reflectionHost, new LogicalFileSystem(this.rootDirs, this.host)),
   ]);
   aliasingHost = this.bundle.entryPoint.generateDeepReexports ?
       new PrivateExportAliasingHost(this.reflectionHost) :
@@ -96,14 +97,21 @@ export class DecorationAnalyzer {
         this.scopeRegistry, this.scopeRegistry, this.isCore, this.resourceManager, this.rootDirs,
         !!this.compilerOptions.preserveWhitespaces,
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
-        this.moduleResolver, this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
-        NOOP_DEPENDENCY_TRACKER, this.injectableRegistry, /* annotateForClosureCompiler */ false),
+        /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
+        this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER, NOOP_DEPENDENCY_TRACKER,
+        this.injectableRegistry, !!this.compilerOptions.annotateForClosureCompiler),
     // See the note in ngtsc about why this cast is needed.
     // clang-format off
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
         this.fullMetaReader, NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore,
-        /* annotateForClosureCompiler */ false) as DecoratorHandler<unknown, unknown, unknown>,
+        !!this.compilerOptions.annotateForClosureCompiler,
+        // In ngcc we want to compile undecorated classes with Angular features. As of
+        // version 10, undecorated classes that use Angular features are no longer handled
+        // in ngtsc, but we want to ensure compatibility in ngcc for outdated libraries that
+        // have not migrated to explicit decorators. See: https://hackmd.io/@alx/ryfYYuvzH.
+        /* compileUndecoratedClassesWithAngularFeatures */ true
+    ) as DecoratorHandler<unknown, unknown, unknown>,
     // clang-format on
     // Pipe handler must be before injectable handler in list so pipe factories are printed
     // before injectable factories (so injectable factories can delegate to them)
@@ -118,7 +126,7 @@ export class DecorationAnalyzer {
         this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
         this.refEmitter,
         /* factoryTracker */ null, NOOP_DEFAULT_IMPORT_RECORDER,
-        /* annotateForClosureCompiler */ false, this.injectableRegistry),
+        !!this.compilerOptions.annotateForClosureCompiler, this.injectableRegistry),
   ];
   compiler = new NgccTraitCompiler(this.handlers, this.reflectionHost);
   migrations: Migration[] = [
@@ -140,7 +148,8 @@ export class DecorationAnalyzer {
    */
   analyzeProgram(): DecorationAnalyses {
     for (const sourceFile of this.program.getSourceFiles()) {
-      if (!sourceFile.isDeclarationFile && isWithinPackage(this.packagePath, sourceFile)) {
+      if (!sourceFile.isDeclarationFile &&
+          isWithinPackage(this.packagePath, absoluteFromSourceFile(sourceFile))) {
         this.compiler.analyzeFile(sourceFile);
       }
     }

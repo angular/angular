@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,11 +9,11 @@
 /// <reference types="node" />
 
 import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {SingleProcessExecutorSync} from '../../src/execution/single_process_executor';
 import {Task, TaskQueue} from '../../src/execution/tasks/api';
 import {SyncLocker} from '../../src/locking/sync_locker';
 import {MockLockFile} from '../helpers/mock_lock_file';
-import {MockLogger} from '../helpers/mock_logger';
 
 
 describe('SingleProcessExecutor', () => {
@@ -44,7 +44,7 @@ describe('SingleProcessExecutor', () => {
         tasksCount--;
         return {};
       },
-      markTaskCompleted(_task: Task) {},
+      markAsCompleted(_task: Task) {},
     };
   };
 
@@ -132,14 +132,15 @@ describe('SingleProcessExecutor', () => {
           {allTasksCompleted: true, getNextTask: jasmine.any(Function)})]);
     });
 
-    it('should pass the created TaskCompletedCallback to the createCompileFn', () => {
+    it('should pass the necessary callbacks to createCompileFn', () => {
+      const beforeWritingFiles = jasmine.any(Function);
+      const onTaskCompleted = () => {};
       const createCompileFn =
           jasmine.createSpy('createCompileFn').and.returnValue(function compileFn() {});
-      function onTaskCompleted() {}
       createTaskCompletedCallback.and.returnValue(onTaskCompleted);
       executor.execute(noTasks, createCompileFn);
       expect(createCompileFn).toHaveBeenCalledTimes(1);
-      expect(createCompileFn).toHaveBeenCalledWith(onTaskCompleted);
+      expect(createCompileFn).toHaveBeenCalledWith(beforeWritingFiles, onTaskCompleted);
     });
   });
 });

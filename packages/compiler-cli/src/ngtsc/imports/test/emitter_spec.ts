@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,8 +8,8 @@
 import {ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {LogicalFileSystem, absoluteFrom as _} from '../../file_system';
-import {TestFile, runInEachFileSystem} from '../../file_system/testing';
+import {absoluteFrom as _, LogicalFileSystem} from '../../file_system';
+import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {Declaration, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {AbsoluteModuleStrategy, ImportFlags, LogicalProjectStrategy} from '../src/emitter';
@@ -42,7 +42,7 @@ runInEachFileSystem(() => {
       ]);
       const decl =
           getDeclaration(program, _('/node_modules/external.d.ts'), 'Foo', ts.isClassDeclaration);
-      const context = program.getSourceFile(_('/context.ts')) !;
+      const context = program.getSourceFile(_('/context.ts'))!;
 
       const reference = new Reference(decl);
       const emitted = strategy.emit(reference, context, ImportFlags.None);
@@ -65,7 +65,7 @@ runInEachFileSystem(() => {
       ]);
       const decl =
           getDeclaration(program, _('/node_modules/external.d.ts'), 'Foo', ts.isClassDeclaration);
-      const context = program.getSourceFile(_('/context.ts')) !;
+      const context = program.getSourceFile(_('/context.ts'))!;
 
       const reference = new Reference(decl, {
         specifier: 'external',
@@ -92,7 +92,7 @@ runInEachFileSystem(() => {
       ]);
       const decl = getDeclaration(
           program, _('/node_modules/external.d.ts'), 'Foo', ts.isInterfaceDeclaration);
-      const context = program.getSourceFile(_('/context.ts')) !;
+      const context = program.getSourceFile(_('/context.ts'))!;
 
       const reference = new Reference(decl, {
         specifier: 'external',
@@ -116,7 +116,7 @@ runInEachFileSystem(() => {
       ]);
       const decl = getDeclaration(
           program, _('/node_modules/external.d.ts'), 'Foo', ts.isInterfaceDeclaration);
-      const context = program.getSourceFile(_('/context.ts')) !;
+      const context = program.getSourceFile(_('/context.ts'))!;
 
       const reference =
           new Reference(decl, {specifier: 'external', resolutionContext: context.fileName});
@@ -139,12 +139,14 @@ runInEachFileSystem(() => {
             return null;
           }
           const fakeExports = new Map<string, Declaration>();
-          realExports.forEach((decl, name) => { fakeExports.set(`test${name}`, decl); });
+          realExports.forEach((decl, name) => {
+            fakeExports.set(`test${name}`, decl);
+          });
           return fakeExports;
         }
       }
 
-      const {program} = makeProgram([
+      const {program, host} = makeProgram([
         {
           name: _('/index.ts'),
           contents: `export class Foo {}`,
@@ -155,15 +157,15 @@ runInEachFileSystem(() => {
         }
       ]);
       const checker = program.getTypeChecker();
-      const logicalFs = new LogicalFileSystem([_('/')]);
+      const logicalFs = new LogicalFileSystem([_('/')], host);
       const strategy = new LogicalProjectStrategy(new TestHost(checker), logicalFs);
       const decl = getDeclaration(program, _('/index.ts'), 'Foo', ts.isClassDeclaration);
-      const context = program.getSourceFile(_('/context.ts')) !;
+      const context = program.getSourceFile(_('/context.ts'))!;
       const ref = strategy.emit(new Reference(decl), context);
       expect(ref).not.toBeNull();
 
       // Expect the prefixed name from the TestHost.
-      expect((ref !as ExternalExpr).value.name).toEqual('testFoo');
+      expect((ref! as ExternalExpr).value.name).toEqual('testFoo');
     });
   });
 });

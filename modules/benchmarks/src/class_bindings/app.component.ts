@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -27,12 +27,16 @@ export class AppComponent {
     }
   }
 
-  create() { this.show = true; }
+  create() {
+    this.show = true;
+  }
 
   update() {
     this.msg = this.msg === 'hello' ? 'bye' : 'hello';
     this.list[0].text = this.msg;
   }
 
-  destroy() { this.show = false; }
+  destroy() {
+    this.show = false;
+  }
 }

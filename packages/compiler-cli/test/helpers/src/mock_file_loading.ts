@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 /// <reference types="node" />
-import {readFileSync, readdirSync, statSync} from 'fs';
+import {readdirSync, readFileSync, statSync} from 'fs';
 import {resolve} from 'path';
 
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '..';
@@ -37,7 +37,7 @@ export function loadStandardTestFiles(
     loadFakeCore(tmpFs, basePath);
   } else {
     getAngularPackagesFromRunfiles().forEach(({name, pkgPath}) => {
-      loadTestDirectory(tmpFs, pkgPath, tmpFs.resolve('/node_modules/@angular', name));
+      loadTestDirectory(tmpFs, pkgPath, tmpFs.resolve(basePath, 'node_modules/@angular', name));
     });
   }
 
@@ -66,7 +66,8 @@ export function loadFakeCore(fs: FileSystem, basePath: string = '/') {
  * @param directoryPath the path to the directory we want to load.
  * @param mockPath the path within the mock file-system where the directory is to be loaded.
  */
-function loadTestDirectory(fs: FileSystem, directoryPath: string, mockPath: AbsoluteFsPath): void {
+export function loadTestDirectory(
+    fs: FileSystem, directoryPath: string, mockPath: AbsoluteFsPath): void {
   readdirSync(directoryPath).forEach(item => {
     const srcPath = resolve(directoryPath, item);
     const targetPath = fs.resolve(mockPath, item);

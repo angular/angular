@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, Identifiers, ParseError, ParsedHostBindings, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
+import {compileDirectiveFromMetadata, ConstantPool, Expression, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -14,11 +14,11 @@ import {DefaultImportRecorder, Reference} from '../../imports';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {extractDirectiveGuards} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 
-import {getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
+import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic} from './diagnostics';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
@@ -48,28 +48,20 @@ export class DirectiveDecoratorHandler implements
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private metaReader: MetadataReader, private defaultImportRecorder: DefaultImportRecorder,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
-      private annotateForClosureCompiler: boolean) {}
+      private annotateForClosureCompiler: boolean,
+      private compileUndecoratedClassesWithAngularFeatures: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = DirectiveDecoratorHandler.name;
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null):
       DetectResult<Decorator|null>|undefined {
-    // If the class is undecorated, check if any of the fields have Angular decorators or lifecycle
-    // hooks, and if they do, label the class as an abstract directive.
+    // If a class is undecorated but uses Angular features, we detect it as an
+    // abstract directive. This is an unsupported pattern as of v10, but we want
+    // to still detect these patterns so that we can report diagnostics, or compile
+    // them for backwards compatibility in ngcc.
     if (!decorators) {
-      const angularField = this.reflector.getMembersOfClass(node).find(member => {
-        if (!member.isStatic && member.kind === ClassMemberKind.Method &&
-            LIFECYCLE_HOOKS.has(member.name)) {
-          return true;
-        }
-        if (member.decorators) {
-          return member.decorators.some(
-              decorator => FIELD_DECORATORS.some(
-                  decoratorName => isAngularDecorator(decorator, decoratorName, this.isCore)));
-        }
-        return false;
-      });
+      const angularField = this.findClassFieldWithAngularFeatures(node);
       return angularField ? {trigger: angularField.node, decorator: null, metadata: null} :
                             undefined;
     } else {
@@ -80,6 +72,14 @@ export class DirectiveDecoratorHandler implements
 
   analyze(node: ClassDeclaration, decorator: Readonly<Decorator|null>, flags = HandlerFlags.NONE):
       AnalysisOutput<DirectiveHandlerData> {
+    // Skip processing of the class declaration if compilation of undecorated classes
+    // with Angular features is disabled. Previously in ngtsc, such classes have always
+    // been processed, but we want to enforce a consistent decorator mental model.
+    // See: https://v9.angular.io/guide/migration-undecorated-classes.
+    if (this.compileUndecoratedClassesWithAngularFeatures === false && decorator === null) {
+      return {diagnostics: [getUndecoratedClassWithAngularFeaturesDiagnostic(node)]};
+    }
+
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore,
         flags, this.annotateForClosureCompiler);
@@ -92,7 +92,7 @@ export class DirectiveDecoratorHandler implements
     let providersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
     if (directiveResult !== undefined && directiveResult.decorator.has('providers')) {
       providersRequiringFactory = resolveProvidersRequiringFactory(
-          directiveResult.decorator.get('providers') !, this.reflector, this.evaluator);
+          directiveResult.decorator.get('providers')!, this.reflector, this.evaluator);
     }
 
     return {
@@ -102,7 +102,8 @@ export class DirectiveDecoratorHandler implements
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
-        guards: extractDirectiveGuards(node, this.reflector), providersRequiringFactory
+        guards: extractDirectiveGuards(node, this.reflector),
+        providersRequiringFactory
       }
     };
   }
@@ -120,7 +121,8 @@ export class DirectiveDecoratorHandler implements
       outputs: analysis.meta.outputs,
       queries: analysis.meta.queries.map(query => query.propertyName),
       isComponent: false,
-      baseClass: analysis.baseClass, ...analysis.guards,
+      baseClass: analysis.baseClass,
+      ...analysis.guards,
     });
 
     this.injectableRegistry.registerInjectable(node);
@@ -132,7 +134,7 @@ export class DirectiveDecoratorHandler implements
     if (analysis.providersRequiringFactory !== null &&
         analysis.meta.providers instanceof WrappedNodeExpr) {
       const providerDiagnostics = getProviderDiagnostics(
-          analysis.providersRequiringFactory, analysis.meta.providers !.node,
+          analysis.providersRequiringFactory, analysis.meta.providers!.node,
           this.injectableRegistry);
       diagnostics.push(...providerDiagnostics);
     }
@@ -165,6 +167,27 @@ export class DirectiveDecoratorHandler implements
       }
     ];
   }
+
+  /**
+   * Checks if a given class uses Angular features and returns the TypeScript node
+   * that indicated the usage. Classes are considered using Angular features if they
+   * contain class members that are either decorated with a known Angular decorator,
+   * or if they correspond to a known Angular lifecycle hook.
+   */
+  private findClassFieldWithAngularFeatures(node: ClassDeclaration): ClassMember|undefined {
+    return this.reflector.getMembersOfClass(node).find(member => {
+      if (!member.isStatic && member.kind === ClassMemberKind.Method &&
+          LIFECYCLE_HOOKS.has(member.name)) {
+        return true;
+      }
+      if (member.decorators) {
+        return member.decorators.some(
+            decorator => FIELD_DECORATORS.some(
+                decoratorName => isAngularDecorator(decorator, decoratorName, this.isCore)));
+      }
+      return false;
+    });
+  }
 }
 
 /**
@@ -176,9 +199,8 @@ export class DirectiveDecoratorHandler implements
 export function extractDirectiveMetadata(
     clazz: ClassDeclaration, decorator: Readonly<Decorator|null>, reflector: ReflectionHost,
     evaluator: PartialEvaluator, defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
-    flags: HandlerFlags, annotateForClosureCompiler: boolean,
-    defaultSelector: string | null =
-        null): {decorator: Map<string, ts.Expression>, metadata: R3DirectiveMetadata}|undefined {
+    flags: HandlerFlags, annotateForClosureCompiler: boolean, defaultSelector: string|null = null):
+    {decorator: Map<string, ts.Expression>, metadata: R3DirectiveMetadata}|undefined {
   let directive: Map<string, ts.Expression>;
   if (decorator === null || decorator.args === null || decorator.args.length === 0) {
     directive = new Map<string, ts.Expression>();
@@ -220,9 +242,10 @@ export function extractDirectiveMetadata(
 
   // And outputs.
   const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', evaluator);
-  const outputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), evaluator,
-      resolveOutput) as{[field: string]: string};
+  const outputsFromFields =
+      parseDecoratedFields(
+          filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), evaluator,
+          resolveOutput) as {[field: string]: string};
   // Construct the list of queries.
   const contentChildFromFields = queriesFromFields(
       filterToMembersWithDecorator(decoratedElements, 'ContentChild', coreModule), reflector,
@@ -244,7 +267,7 @@ export function extractDirectiveMetadata(
 
   if (directive.has('queries')) {
     const queriesFromDecorator =
-        extractQueriesFromDecorator(directive.get('queries') !, reflector, evaluator, isCore);
+        extractQueriesFromDecorator(directive.get('queries')!, reflector, evaluator, isCore);
     queries.push(...queriesFromDecorator.content);
     viewQueries.push(...queriesFromDecorator.view);
   }
@@ -252,11 +275,10 @@ export function extractDirectiveMetadata(
   // Parse the selector.
   let selector = defaultSelector;
   if (directive.has('selector')) {
-    const expr = directive.get('selector') !;
+    const expr = directive.get('selector')!;
     const resolved = evaluator.evaluate(expr);
     if (typeof resolved !== 'string') {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `selector must be a string`);
+      throw createValueHasWrongTypeError(expr, resolved, `selector must be a string`);
     }
     // use default selector in case selector is an empty string
     selector = resolved === '' ? defaultSelector : resolved;
@@ -272,8 +294,8 @@ export function extractDirectiveMetadata(
   const providers: Expression|null = directive.has('providers') ?
       new WrappedNodeExpr(
           annotateForClosureCompiler ?
-              wrapFunctionExpressionsInParens(directive.get('providers') !) :
-              directive.get('providers') !) :
+              wrapFunctionExpressionsInParens(directive.get('providers')!) :
+              directive.get('providers')!) :
       null;
 
   // Determine if `ngOnChanges` is a lifecycle hook defined on the component.
@@ -284,11 +306,10 @@ export function extractDirectiveMetadata(
   // Parse exportAs.
   let exportAs: string[]|null = null;
   if (directive.has('exportAs')) {
-    const expr = directive.get('exportAs') !;
+    const expr = directive.get('exportAs')!;
     const resolved = evaluator.evaluate(expr);
     if (typeof resolved !== 'string') {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `exportAs must be a string`);
+      throw createValueHasWrongTypeError(expr, resolved, `exportAs must be a string`);
     }
     exportAs = resolved.split(',').map(part => part.trim());
   }
@@ -312,15 +333,24 @@ export function extractDirectiveMetadata(
 
   const metadata: R3DirectiveMetadata = {
     name: clazz.name.text,
-    deps: ctorDeps, host,
+    deps: ctorDeps,
+    host,
     lifecycle: {
-        usesOnChanges,
+      usesOnChanges,
     },
     inputs: {...inputsFromMeta, ...inputsFromFields},
-    outputs: {...outputsFromMeta, ...outputsFromFields}, queries, viewQueries, selector,
-    fullInheritance: !!(flags & HandlerFlags.FULL_INHERITANCE), type, internalType,
+    outputs: {...outputsFromMeta, ...outputsFromFields},
+    queries,
+    viewQueries,
+    selector,
+    fullInheritance: !!(flags & HandlerFlags.FULL_INHERITANCE),
+    type,
+    internalType,
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
-    typeSourceSpan: createSourceSpan(clazz.name), usesInheritance, exportAs, providers
+    typeSourceSpan: createSourceSpan(clazz.name),
+    usesInheritance,
+    exportAs,
+    providers
   };
   return {decorator: directive, metadata};
 }
@@ -349,8 +379,7 @@ export function extractQueryMetadata(
   } else if (isStringArrayOrDie(arg, `@${name} predicate`, node)) {
     predicate = arg;
   } else {
-    throw new FatalDiagnosticError(
-        ErrorCode.VALUE_HAS_WRONG_TYPE, node, `@${name} predicate cannot be interpreted`);
+    throw createValueHasWrongTypeError(node, arg, `@${name} predicate cannot be interpreted`);
   }
 
   // Extract the read and descendants options.
@@ -366,25 +395,24 @@ export function extractQueryMetadata(
     }
     const options = reflectObjectLiteral(optionsExpr);
     if (options.has('read')) {
-      read = new WrappedNodeExpr(options.get('read') !);
+      read = new WrappedNodeExpr(options.get('read')!);
     }
 
     if (options.has('descendants')) {
-      const descendantsExpr = options.get('descendants') !;
+      const descendantsExpr = options.get('descendants')!;
       const descendantsValue = evaluator.evaluate(descendantsExpr);
       if (typeof descendantsValue !== 'boolean') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, descendantsExpr,
-            `@${name} options.descendants must be a boolean`);
+        throw createValueHasWrongTypeError(
+            descendantsExpr, descendantsValue, `@${name} options.descendants must be a boolean`);
       }
       descendants = descendantsValue;
     }
 
     if (options.has('static')) {
-      const staticValue = evaluator.evaluate(options.get('static') !);
+      const staticValue = evaluator.evaluate(options.get('static')!);
       if (typeof staticValue !== 'boolean') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, node, `@${name} options.static must be a boolean`);
+        throw createValueHasWrongTypeError(
+            node, staticValue, `@${name} options.static must be a boolean`);
       }
       isStatic = staticValue;
     }
@@ -450,9 +478,8 @@ function isStringArrayOrDie(value: any, name: string, node: ts.Expression): valu
 
   for (let i = 0; i < value.length; i++) {
     if (typeof value[i] !== 'string') {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, node,
-          `Failed to resolve ${name} at position ${i} to a string`);
+      throw createValueHasWrongTypeError(
+          node, value[i], `Failed to resolve ${name} at position ${i} to a string`);
     }
   }
   return true;
@@ -466,12 +493,11 @@ export function parseFieldArrayValue(
   }
 
   // Resolve the field of interest from the directive metadata to a string[].
-  const expression = directive.get(field) !;
+  const expression = directive.get(field)!;
   const value = evaluator.evaluate(expression);
   if (!isStringArrayOrDie(value, field, expression)) {
-    throw new FatalDiagnosticError(
-        ErrorCode.VALUE_HAS_WRONG_TYPE, expression,
-        `Failed to resolve @Directive.${field} to a string array`);
+    throw createValueHasWrongTypeError(
+        expression, value, `Failed to resolve @Directive.${field} to a string array`);
   }
 
   return value;
@@ -489,15 +515,13 @@ function parseFieldToPropertyMapping(
     return EMPTY_OBJECT;
   }
 
-  return metaValues.reduce(
-      (results, value) => {
-        // Either the value is 'field' or 'field: property'. In the first case, `property` will
-        // be undefined, in which case the field name should also be used as the property name.
-        const [field, property] = value.split(':', 2).map(str => str.trim());
-        results[field] = property || field;
-        return results;
-      },
-      {} as{[field: string]: string});
+  return metaValues.reduce((results, value) => {
+    // Either the value is 'field' or 'field: property'. In the first case, `property` will
+    // be undefined, in which case the field name should also be used as the property name.
+    const [field, property] = value.split(':', 2).map(str => str.trim());
+    results[field] = property || field;
+    return results;
+  }, {} as {[field: string]: string});
 }
 
 /**
@@ -507,33 +531,32 @@ function parseFieldToPropertyMapping(
 function parseDecoratedFields(
     fields: {member: ClassMember, decorators: Decorator[]}[], evaluator: PartialEvaluator,
     mapValueResolver: (publicName: string, internalName: string) =>
-        string | [string, string]): {[field: string]: string | [string, string]} {
-  return fields.reduce(
-      (results, field) => {
-        const fieldName = field.member.name;
-        field.decorators.forEach(decorator => {
-          // The decorator either doesn't have an argument (@Input()) in which case the property
-          // name is used, or it has one argument (@Output('named')).
-          if (decorator.args == null || decorator.args.length === 0) {
-            results[fieldName] = fieldName;
-          } else if (decorator.args.length === 1) {
-            const property = evaluator.evaluate(decorator.args[0]);
-            if (typeof property !== 'string') {
-              throw new FatalDiagnosticError(
-                  ErrorCode.VALUE_HAS_WRONG_TYPE, Decorator.nodeForError(decorator),
-                  `@${decorator.name} decorator argument must resolve to a string`);
-            }
-            results[fieldName] = mapValueResolver(property, fieldName);
-          } else {
-            // Too many arguments.
-            throw new FatalDiagnosticError(
-                ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
-                `@${decorator.name} can have at most one argument, got ${decorator.args.length} argument(s)`);
-          }
-        });
-        return results;
-      },
-      {} as{[field: string]: string | [string, string]});
+        string | [string, string]): {[field: string]: string|[string, string]} {
+  return fields.reduce((results, field) => {
+    const fieldName = field.member.name;
+    field.decorators.forEach(decorator => {
+      // The decorator either doesn't have an argument (@Input()) in which case the property
+      // name is used, or it has one argument (@Output('named')).
+      if (decorator.args == null || decorator.args.length === 0) {
+        results[fieldName] = fieldName;
+      } else if (decorator.args.length === 1) {
+        const property = evaluator.evaluate(decorator.args[0]);
+        if (typeof property !== 'string') {
+          throw createValueHasWrongTypeError(
+              Decorator.nodeForError(decorator), property,
+              `@${decorator.name} decorator argument must resolve to a string`);
+        }
+        results[fieldName] = mapValueResolver(property, fieldName);
+      } else {
+        // Too many arguments.
+        throw new FatalDiagnosticError(
+            ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
+            `@${decorator.name} can have at most one argument, got ${
+                decorator.args.length} argument(s)`);
+      }
+    });
+    return results;
+  }, {} as {[field: string]: string | [string, string]});
 }
 
 function resolveInput(publicName: string, internalName: string): [string, string] {
@@ -552,7 +575,7 @@ export function queriesFromFields(
     const node = member.node || Decorator.nodeForError(decorator);
 
     // Throw in case of `@Input() @ContentChild('foo') foo: any`, which is not supported in Ivy
-    if (member.decorators !.some(v => v.name === 'Input')) {
+    if (member.decorators!.some(v => v.name === 'Input')) {
       throw new FatalDiagnosticError(
           ErrorCode.DECORATOR_COLLISION, node,
           'Cannot combine @Input decorators with query decorators');
@@ -584,8 +607,8 @@ function evaluateHostExpressionBindings(
     hostExpr: ts.Expression, evaluator: PartialEvaluator): ParsedHostBindings {
   const hostMetaMap = evaluator.evaluate(hostExpr);
   if (!(hostMetaMap instanceof Map)) {
-    throw new FatalDiagnosticError(
-        ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr, `Decorator host metadata must be an object`);
+    throw createValueHasWrongTypeError(
+        hostExpr, hostMetaMap, `Decorator host metadata must be an object`);
   }
   const hostMetadata: StringMap<string|Expression> = {};
   hostMetaMap.forEach((value, key) => {
@@ -595,8 +618,8 @@ function evaluateHostExpressionBindings(
     }
 
     if (typeof key !== 'string') {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr,
+      throw createValueHasWrongTypeError(
+          hostExpr, key,
           `Decorator host metadata must be a string -> string object, but found unparseable key`);
     }
 
@@ -605,8 +628,8 @@ function evaluateHostExpressionBindings(
     } else if (value instanceof DynamicValue) {
       hostMetadata[key] = new WrappedNodeExpr(value.node as ts.Expression);
     } else {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr,
+      throw createValueHasWrongTypeError(
+          hostExpr, value,
           `Decorator host metadata must be a string -> string object, but found unparseable value`);
     }
   });
@@ -626,38 +649,40 @@ function evaluateHostExpressionBindings(
 }
 
 export function extractHostBindings(
-    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string | undefined,
+    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string|undefined,
     metadata?: Map<string, ts.Expression>): ParsedHostBindings {
   let bindings: ParsedHostBindings;
   if (metadata && metadata.has('host')) {
-    bindings = evaluateHostExpressionBindings(metadata.get('host') !, evaluator);
+    bindings = evaluateHostExpressionBindings(metadata.get('host')!, evaluator);
   } else {
     bindings = parseHostBindings({});
   }
 
-  filterToMembersWithDecorator(members, 'HostBinding', coreModule).forEach(({member, decorators}) => {
-    decorators.forEach(decorator => {
-      let hostPropertyName: string = member.name;
-      if (decorator.args !== null && decorator.args.length > 0) {
-        if (decorator.args.length !== 1) {
-          throw new FatalDiagnosticError(
-              ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
-              `@HostBinding can have at most one argument, got ${decorator.args.length} argument(s)`);
-        }
+  filterToMembersWithDecorator(members, 'HostBinding', coreModule)
+      .forEach(({member, decorators}) => {
+        decorators.forEach(decorator => {
+          let hostPropertyName: string = member.name;
+          if (decorator.args !== null && decorator.args.length > 0) {
+            if (decorator.args.length !== 1) {
+              throw new FatalDiagnosticError(
+                  ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
+                  `@HostBinding can have at most one argument, got ${
+                      decorator.args.length} argument(s)`);
+            }
 
-        const resolved = evaluator.evaluate(decorator.args[0]);
-        if (typeof resolved !== 'string') {
-          throw new FatalDiagnosticError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE, Decorator.nodeForError(decorator),
-              `@HostBinding's argument must be a string`);
-        }
+            const resolved = evaluator.evaluate(decorator.args[0]);
+            if (typeof resolved !== 'string') {
+              throw createValueHasWrongTypeError(
+                  Decorator.nodeForError(decorator), resolved,
+                  `@HostBinding's argument must be a string`);
+            }
 
-        hostPropertyName = resolved;
-      }
+            hostPropertyName = resolved;
+          }
 
-      bindings.properties[hostPropertyName] = member.name;
-    });
-  });
+          bindings.properties[hostPropertyName] = member.name;
+        });
+      });
 
   filterToMembersWithDecorator(members, 'HostListener', coreModule)
       .forEach(({member, decorators}) => {
@@ -673,8 +698,8 @@ export function extractHostBindings(
 
             const resolved = evaluator.evaluate(decorator.args[0]);
             if (typeof resolved !== 'string') {
-              throw new FatalDiagnosticError(
-                  ErrorCode.VALUE_HAS_WRONG_TYPE, decorator.args[0],
+              throw createValueHasWrongTypeError(
+                  decorator.args[0], resolved,
                   `@HostListener's event name argument must be a string`);
             }
 
@@ -684,8 +709,8 @@ export function extractHostBindings(
               const expression = decorator.args[1];
               const resolvedArgs = evaluator.evaluate(decorator.args[1]);
               if (!isStringArrayOrDie(resolvedArgs, '@HostListener.args', expression)) {
-                throw new FatalDiagnosticError(
-                    ErrorCode.VALUE_HAS_WRONG_TYPE, decorator.args[1],
+                throw createValueHasWrongTypeError(
+                    decorator.args[1], resolvedArgs,
                     `@HostListener's second argument must be a string array`);
               }
               args = resolvedArgs;

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,29 +12,25 @@ import * as ts from 'typescript';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations';
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {ReferenceGraph, checkForPrivateExports} from '../../entry_point';
-import {LogicalFileSystem, getSourceFileOrError} from '../../file_system';
-import {AbsoluteModuleStrategy, AliasStrategy, AliasingHost, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
-import {IncrementalDriver} from '../../incremental';
-import {IndexedComponent, IndexingContext, generateAnalysis} from '../../indexer';
+import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
+import {getSourceFileOrError, LogicalFileSystem} from '../../file_system';
+import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
+import {IncrementalBuildStrategy, IncrementalDriver} from '../../incremental';
+import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader} from '../../metadata';
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
 import {TypeScriptReflectionHost} from '../../reflection';
-import {HostResourceLoader} from '../../resource';
-import {NgModuleRouteAnalyzer, entryPointKeyFor} from '../../routing';
+import {AdapterResourceLoader} from '../../resource';
+import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
 import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {generatedFactoryTransform} from '../../shims';
 import {ivySwitchTransform} from '../../switch';
-import {DecoratorHandler, DtsTransformRegistry, TraitCompiler, aliasTransformFactory, declarationTransformFactory, ivyTransformFactory} from '../../transform';
-import {TypeCheckContext, TypeCheckingConfig, isTemplateDiagnostic} from '../../typecheck';
+import {aliasTransformFactory, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
+import {isTemplateDiagnostic, TemplateTypeChecker, TypeCheckContext, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
-import {LazyRoute, NgCompilerOptions} from '../api';
-
-import {NgCompilerHost} from './host';
-
-
+import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -53,6 +49,7 @@ interface LazyCompilationState {
   defaultImportTracker: DefaultImportTracker;
   aliasingHost: AliasingHost|null;
   refEmitter: ReferenceEmitter;
+  templateTypeChecker: TemplateTypeChecker;
 }
 
 /**
@@ -90,21 +87,22 @@ export class NgCompiler {
   private diagnostics: ts.Diagnostic[]|null = null;
 
   private closureCompilerEnabled: boolean;
-  private typeCheckFile: ts.SourceFile;
   private nextProgram: ts.Program;
   private entryPoint: ts.SourceFile|null;
   private moduleResolver: ModuleResolver;
-  private resourceManager: HostResourceLoader;
+  private resourceManager: AdapterResourceLoader;
   private cycleAnalyzer: CycleAnalyzer;
   readonly incrementalDriver: IncrementalDriver;
   readonly ignoreForDiagnostics: Set<ts.SourceFile>;
   readonly ignoreForEmit: Set<ts.SourceFile>;
 
   constructor(
-      private host: NgCompilerHost, private options: NgCompilerOptions,
-      private tsProgram: ts.Program, oldProgram: ts.Program|null = null,
+      private adapter: NgCompilerAdapter, private options: NgCompilerOptions,
+      private tsProgram: ts.Program,
+      private typeCheckingProgramStrategy: TypeCheckingProgramStrategy,
+      private incrementalStrategy: IncrementalBuildStrategy, oldProgram: ts.Program|null = null,
       private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER) {
-    this.constructionDiagnostics.push(...this.host.diagnostics);
+    this.constructionDiagnostics.push(...this.adapter.constructionDiagnostics);
     const incompatibleTypeCheckOptionsDiagnostic = verifyCompatibleTypeCheckOptions(this.options);
     if (incompatibleTypeCheckOptionsDiagnostic !== null) {
       this.constructionDiagnostics.push(incompatibleTypeCheckOptionsDiagnostic);
@@ -114,25 +112,31 @@ export class NgCompiler {
     this.closureCompilerEnabled = !!this.options.annotateForClosureCompiler;
 
     this.entryPoint =
-        host.entryPoint !== null ? getSourceFileOrNull(tsProgram, host.entryPoint) : null;
+        adapter.entryPoint !== null ? getSourceFileOrNull(tsProgram, adapter.entryPoint) : null;
 
-    this.typeCheckFile = getSourceFileOrError(tsProgram, host.typeCheckFile);
     const moduleResolutionCache = ts.createModuleResolutionCache(
-        this.host.getCurrentDirectory(), fileName => this.host.getCanonicalFileName(fileName));
+        this.adapter.getCurrentDirectory(),
+        // Note: this used to be an arrow-function closure. However, JS engines like v8 have some
+        // strange behaviors with retaining the lexical scope of the closure. Even if this function
+        // doesn't retain a reference to `this`, if other closures in the constructor here reference
+        // `this` internally then a closure created here would retain them. This can cause major
+        // memory leak issues since the `moduleResolutionCache` is a long-lived object and finds its
+        // way into all kinds of places inside TS internal objects.
+        this.adapter.getCanonicalFileName.bind(this.adapter));
     this.moduleResolver =
-        new ModuleResolver(tsProgram, this.options, this.host, moduleResolutionCache);
-    this.resourceManager = new HostResourceLoader(host, this.options);
+        new ModuleResolver(tsProgram, this.options, this.adapter, moduleResolutionCache);
+    this.resourceManager = new AdapterResourceLoader(adapter, this.options);
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
 
     let modifiedResourceFiles: Set<string>|null = null;
-    if (this.host.getModifiedResourceFiles !== undefined) {
-      modifiedResourceFiles = this.host.getModifiedResourceFiles() || null;
+    if (this.adapter.getModifiedResourceFiles !== undefined) {
+      modifiedResourceFiles = this.adapter.getModifiedResourceFiles() || null;
     }
 
     if (oldProgram === null) {
       this.incrementalDriver = IncrementalDriver.fresh(tsProgram);
     } else {
-      const oldDriver = getIncrementalDriver(oldProgram);
+      const oldDriver = this.incrementalStrategy.getIncrementalDriver(oldProgram);
       if (oldDriver !== null) {
         this.incrementalDriver =
             IncrementalDriver.reconcile(oldProgram, oldDriver, tsProgram, modifiedResourceFiles);
@@ -143,15 +147,12 @@ export class NgCompiler {
         this.incrementalDriver = IncrementalDriver.fresh(tsProgram);
       }
     }
-    setIncrementalDriver(tsProgram, this.incrementalDriver);
+    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, tsProgram);
 
-    this.ignoreForDiagnostics = new Set([
-      this.typeCheckFile,
-      ...host.factoryFiles.map(fileName => getSourceFileOrError(tsProgram, fileName)),
-      ...host.summaryFiles.map(fileName => getSourceFileOrError(tsProgram, fileName)),
-    ]);
+    this.ignoreForDiagnostics =
+        new Set(tsProgram.getSourceFiles().filter(sf => this.adapter.isShim(sf)));
 
-    this.ignoreForEmit = new Set([this.typeCheckFile]);
+    this.ignoreForEmit = this.adapter.ignoreForEmit;
   }
 
   /**
@@ -191,7 +192,9 @@ export class NgCompiler {
   /**
    * Get all setup-related diagnostics for this compilation.
    */
-  getOptionDiagnostics(): ts.Diagnostic[] { return this.constructionDiagnostics; }
+  getOptionDiagnostics(): ts.Diagnostic[] {
+    return this.constructionDiagnostics;
+  }
 
   /**
    * Get the `ts.Program` to use as a starting point when spawning a subsequent incremental
@@ -202,7 +205,9 @@ export class NgCompiler {
    * operation, the consumer's `ts.Program` is no longer usable for starting a new incremental
    * compilation. `getNextProgram` retrieves the `ts.Program` which can be used instead.
    */
-  getNextProgram(): ts.Program { return this.nextProgram; }
+  getNextProgram(): ts.Program {
+    return this.nextProgram;
+  }
 
   /**
    * Perform Angular's analysis step (as a precursor to `getDiagnostics` or `prepareEmit`)
@@ -262,8 +267,8 @@ export class NgCompiler {
 
       // Relative entry paths are disallowed.
       if (entryRoute.startsWith('.')) {
-        throw new Error(
-            `Failed to list lazy routes: Resolution of relative paths (${entryRoute}) is not supported.`);
+        throw new Error(`Failed to list lazy routes: Resolution of relative paths (${
+            entryRoute}) is not supported.`);
       }
 
       // Non-relative entry paths fall into one of the following categories:
@@ -278,7 +283,7 @@ export class NgCompiler {
       const containingFile = this.tsProgram.getRootFileNames()[0];
       const [entryPath, moduleName] = entryRoute.split('#');
       const resolvedModule =
-          resolveModuleName(entryPath, containingFile, this.options, this.host, null);
+          resolveModuleName(entryPath, containingFile, this.options, this.adapter, null);
 
       if (resolvedModule) {
         entryRoute = entryPointKeyFor(resolvedModule.resolvedFileName, moduleName);
@@ -325,8 +330,9 @@ export class NgCompiler {
       afterDeclarations.push(aliasTransformFactory(compilation.traitCompiler.exportStatements));
     }
 
-    if (this.host.factoryTracker !== null) {
-      before.push(generatedFactoryTransform(this.host.factoryTracker.sourceInfo, importRewriter));
+    if (this.adapter.factoryTracker !== null) {
+      before.push(
+          generatedFactoryTransform(this.adapter.factoryTracker.sourceInfo, importRewriter));
     }
     before.push(ivySwitchTransform);
 
@@ -349,7 +355,7 @@ export class NgCompiler {
     if (this.compilation === null) {
       this.analyzeSync();
     }
-    return this.compilation !;
+    return this.compilation!;
   }
 
   private analyzeSync(): void {
@@ -379,28 +385,26 @@ export class NgCompiler {
     this.incrementalDriver.recordSuccessfulAnalysis(traitCompiler);
   }
 
-  private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
-    const host = this.host;
-
+  private get fullTemplateTypeCheck(): boolean {
     // Determine the strictness level of type checking based on compiler options. As
     // `strictTemplates` is a superset of `fullTemplateTypeCheck`, the former implies the latter.
     // Also see `verifyCompatibleTypeCheckOptions` where it is verified that `fullTemplateTypeCheck`
     // is not disabled when `strictTemplates` is enabled.
     const strictTemplates = !!this.options.strictTemplates;
-    const fullTemplateTypeCheck = strictTemplates || !!this.options.fullTemplateTypeCheck;
+    return strictTemplates || !!this.options.fullTemplateTypeCheck;
+  }
 
-    // Skip template type-checking if it's disabled.
-    if (this.options.ivyTemplateTypeCheck === false && !fullTemplateTypeCheck) {
-      return [];
-    }
-
-    const compilation = this.ensureAnalyzed();
-    // Run template type-checking.
+  private getTypeCheckingConfig(): TypeCheckingConfig {
+    // Determine the strictness level of type checking based on compiler options. As
+    // `strictTemplates` is a superset of `fullTemplateTypeCheck`, the former implies the latter.
+    // Also see `verifyCompatibleTypeCheckOptions` where it is verified that `fullTemplateTypeCheck`
+    // is not disabled when `strictTemplates` is enabled.
+    const strictTemplates = !!this.options.strictTemplates;
 
     // First select a type-checking configuration, based on whether full template type-checking is
     // requested.
     let typeCheckingConfig: TypeCheckingConfig;
-    if (fullTemplateTypeCheck) {
+    if (this.fullTemplateTypeCheck) {
       typeCheckingConfig = {
         applyTemplateContextGuards: strictTemplates,
         checkQueries: false,
@@ -479,19 +483,37 @@ export class NgCompiler {
       typeCheckingConfig.strictLiteralTypes = this.options.strictLiteralTypes;
     }
 
+    return typeCheckingConfig;
+  }
+
+  private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
+    // Skip template type-checking if it's disabled.
+    if (this.options.ivyTemplateTypeCheck === false && !this.fullTemplateTypeCheck) {
+      return [];
+    }
+
+    const compilation = this.ensureAnalyzed();
+
     // Execute the typeCheck phase of each decorator in the program.
     const prepSpan = this.perfRecorder.start('typeCheckPrep');
-    const ctx = new TypeCheckContext(
-        typeCheckingConfig, compilation.refEmitter !, compilation.reflector, host.typeCheckFile);
-    compilation.traitCompiler.typeCheck(ctx);
+    const results = compilation.templateTypeChecker.refresh();
+    this.incrementalDriver.recordSuccessfulTypeCheck(results.perFileData);
     this.perfRecorder.stop(prepSpan);
 
     // Get the diagnostics.
     const typeCheckSpan = this.perfRecorder.start('typeCheckDiagnostics');
-    const {diagnostics, program} =
-        ctx.calculateTemplateDiagnostics(this.tsProgram, this.host, this.options);
+    const diagnostics: ts.Diagnostic[] = [];
+    for (const sf of this.tsProgram.getSourceFiles()) {
+      if (sf.isDeclarationFile || this.adapter.isShim(sf)) {
+        continue;
+      }
+
+      diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf));
+    }
+
+    const program = this.typeCheckingProgramStrategy.getProgram();
     this.perfRecorder.stop(typeCheckSpan);
-    setIncrementalDriver(program, this.incrementalDriver);
+    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, program);
     this.nextProgram = program;
 
     return diagnostics;
@@ -505,7 +527,7 @@ export class NgCompiler {
     const recordSpan = this.perfRecorder.start('recordDependencies');
     const depGraph = this.incrementalDriver.depGraph;
 
-    for (const scope of this.compilation !.scopeRegistry !.getCompilationScopes()) {
+    for (const scope of this.compilation!.scopeRegistry!.getCompilationScopes()) {
       const file = scope.declaration.getSourceFile();
       const ngModuleFile = scope.ngModule.getSourceFile();
 
@@ -517,7 +539,7 @@ export class NgCompiler {
       depGraph.addDependency(file, ngModuleFile);
 
       const meta =
-          this.compilation !.metaReader.getDirectiveMetadata(new Reference(scope.declaration));
+          this.compilation!.metaReader.getDirectiveMetadata(new Reference(scope.declaration));
       if (meta !== null && meta.isComponent) {
         // If a component's template changes, it might have affected the import graph, and thus the
         // remote scoping feature which is activated in the event of potential import cycles. Thus,
@@ -537,18 +559,40 @@ export class NgCompiler {
           // pipe's name may have changed.
           depGraph.addTransitiveDependency(file, pipe.ref.node.getSourceFile());
         }
+
+        // Components depend on the entire export scope. In addition to transitive dependencies on
+        // all directives/pipes in the export scope, they also depend on every NgModule in the
+        // scope, as changes to a module may add new directives/pipes to the scope.
+        for (const depModule of scope.ngModules) {
+          // There is a correctness issue here. To be correct, this should be a transitive
+          // dependency on the depModule file, since the depModule's exports might change via one of
+          // its dependencies, even if depModule's file itself doesn't change. However, doing this
+          // would also trigger recompilation if a non-exported component or directive changed,
+          // which causes performance issues for rebuilds.
+          //
+          // Given the rebuild issue is an edge case, currently we err on the side of performance
+          // instead of correctness. A correct and performant design would distinguish between
+          // changes to the depModule which affect its export scope and changes which do not, and
+          // only add a dependency for the former. This concept is currently in development.
+          //
+          // TODO(alxhub): fix correctness issue by understanding the semantics of the dependency.
+          depGraph.addDependency(file, depModule.getSourceFile());
+        }
+      } else {
+        // Directives (not components) and pipes only depend on the NgModule which directly declares
+        // them.
+        depGraph.addDependency(file, ngModuleFile);
       }
     }
     this.perfRecorder.stop(recordSpan);
   }
 
   private scanForMwp(sf: ts.SourceFile): void {
-    this.compilation !.mwpScanner.scan(sf, {
+    this.compilation!.mwpScanner.scan(sf, {
       addTypeReplacement: (node: ts.Declaration, type: Type): void => {
         // Only obtain the return type transform for the source file once there's a type to replace,
         // so that no transform is allocated when there's nothing to do.
-        this.compilation !.dtsTransforms !.getReturnTypeTransform(sf).addTypeReplacement(
-            node, type);
+        this.compilation!.dtsTransforms!.getReturnTypeTransform(sf).addTypeReplacement(node, type);
       }
     });
   }
@@ -561,7 +605,7 @@ export class NgCompiler {
     // Construct the ReferenceEmitter.
     let refEmitter: ReferenceEmitter;
     let aliasingHost: AliasingHost|null = null;
-    if (this.host.unifiedModulesHost === null || !this.options._useHostForImportGeneration) {
+    if (this.adapter.unifiedModulesHost === null || !this.options._useHostForImportGeneration) {
       let localImportStrategy: ReferenceEmitStrategy;
 
       // The strategy used for local, in-project imports depends on whether TS has been configured
@@ -573,8 +617,8 @@ export class NgCompiler {
           (this.options.rootDirs !== undefined && this.options.rootDirs.length > 0)) {
         // rootDirs logic is in effect - use the `LogicalProjectStrategy` for in-project relative
         // imports.
-        localImportStrategy =
-            new LogicalProjectStrategy(reflector, new LogicalFileSystem([...this.host.rootDirs]));
+        localImportStrategy = new LogicalProjectStrategy(
+            reflector, new LogicalFileSystem([...this.adapter.rootDirs], this.adapter));
       } else {
         // Plain relative imports are all that's needed.
         localImportStrategy = new RelativePathStrategy(reflector);
@@ -609,9 +653,9 @@ export class NgCompiler {
         // Then use aliased references (this is a workaround to StrictDeps checks).
         new AliasStrategy(),
         // Then use fileNameToModuleName to emit imports.
-        new UnifiedModulesStrategy(reflector, this.host.unifiedModulesHost),
+        new UnifiedModulesStrategy(reflector, this.adapter.unifiedModulesHost),
       ]);
-      aliasingHost = new UnifiedModulesAliasingHost(this.host.unifiedModulesHost);
+      aliasingHost = new UnifiedModulesAliasingHost(this.adapter.unifiedModulesHost);
     }
 
     const evaluator = new PartialEvaluator(reflector, checker, this.incrementalDriver.depGraph);
@@ -654,17 +698,22 @@ export class NgCompiler {
     const handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
       new ComponentDecoratorHandler(
           reflector, evaluator, metaRegistry, metaReader, scopeReader, scopeRegistry, isCore,
-          this.resourceManager, this.host.rootDirs, this.options.preserveWhitespaces || false,
+          this.resourceManager, this.adapter.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false,
-          this.options.enableI18nLegacyMessageIdFormat !== false, this.moduleResolver,
-          this.cycleAnalyzer, refEmitter, defaultImportTracker, this.incrementalDriver.depGraph,
-          injectableRegistry, this.closureCompilerEnabled),
+          this.options.enableI18nLegacyMessageIdFormat !== false,
+          this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
+          refEmitter, defaultImportTracker, this.incrementalDriver.depGraph, injectableRegistry,
+          this.closureCompilerEnabled),
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
       // clang-format off
         new DirectiveDecoratorHandler(
             reflector, evaluator, metaRegistry, scopeRegistry, metaReader,
-            defaultImportTracker, injectableRegistry, isCore, this.closureCompilerEnabled
+            defaultImportTracker, injectableRegistry, isCore, this.closureCompilerEnabled,
+            // In ngtsc we no longer want to compile undecorated classes with Angular features.
+            // Migrations for these patterns ran as part of `ng update` and we want to ensure
+            // that projects do not regress. See https://hackmd.io/@alx/ryfYYuvzH for more details.
+            /* compileUndecoratedClassesWithAngularFeatures */ false
         ) as Readonly<DecoratorHandler<unknown, unknown, unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
@@ -677,7 +726,7 @@ export class NgCompiler {
           injectableRegistry),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry, isCore,
-          routeAnalyzer, refEmitter, this.host.factoryTracker, defaultImportTracker,
+          routeAnalyzer, refEmitter, this.adapter.factoryTracker, defaultImportTracker,
           this.closureCompilerEnabled, injectableRegistry, this.options.i18nInLocale),
     ];
 
@@ -685,10 +734,24 @@ export class NgCompiler {
         handlers, reflector, this.perfRecorder, this.incrementalDriver,
         this.options.compileNonExportedClasses !== false, dtsTransforms);
 
+    const templateTypeChecker = new TemplateTypeChecker(
+        this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,
+        this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver);
+
     return {
-        isCore,        traitCompiler,        reflector,     scopeRegistry,
-        dtsTransforms, exportReferenceGraph, routeAnalyzer, mwpScanner,
-        metaReader,    defaultImportTracker, aliasingHost,  refEmitter,
+      isCore,
+      traitCompiler,
+      reflector,
+      scopeRegistry,
+      dtsTransforms,
+      exportReferenceGraph,
+      routeAnalyzer,
+      mwpScanner,
+      metaReader,
+      defaultImportTracker,
+      aliasingHost,
+      refEmitter,
+      templateTypeChecker,
     };
   }
 }
@@ -696,7 +759,7 @@ export class NgCompiler {
 /**
  * Determine if the given `Program` is @angular/core.
  */
-function isAngularCorePackage(program: ts.Program): boolean {
+export function isAngularCorePackage(program: ts.Program): boolean {
   // Look for its_just_angular.ts somewhere in the program.
   const r3Symbols = getR3SymbolsFile(program);
   if (r3Symbols === null) {
@@ -735,44 +798,6 @@ function isAngularCorePackage(program: ts.Program): boolean {
  */
 function getR3SymbolsFile(program: ts.Program): ts.SourceFile|null {
   return program.getSourceFiles().find(file => file.fileName.indexOf('r3_symbols.ts') >= 0) || null;
-}
-
-/**
- * Symbol under which the `IncrementalDriver` is stored on a `ts.Program`.
- *
- * The TS model of incremental compilation is based around reuse of a previous `ts.Program` in the
- * construction of a new one. The `NgCompiler` follows this abstraction - passing in a previous
- * `ts.Program` is sufficient to trigger incremental compilation. This previous `ts.Program` need
- * not be from an Angular compilation (that is, it need not have been created from `NgCompiler`).
- *
- * If it is, though, Angular can benefit from reusing previous analysis work. This reuse is managed
- * by the `IncrementalDriver`, which is inherited from the old program to the new program. To
- * support this behind the API of passing an old `ts.Program`, the `IncrementalDriver` is stored on
- * the `ts.Program` under this symbol.
- */
-const SYM_INCREMENTAL_DRIVER = Symbol('NgIncrementalDriver');
-
-/**
- * Get an `IncrementalDriver` from the given `ts.Program` if one is present.
- *
- * See `SYM_INCREMENTAL_DRIVER` for more details.
- */
-function getIncrementalDriver(program: ts.Program): IncrementalDriver|null {
-  const driver = (program as any)[SYM_INCREMENTAL_DRIVER];
-  if (driver === undefined || !(driver instanceof IncrementalDriver)) {
-    return null;
-  }
-  return driver;
-}
-
-/**
- * Save the given `IncrementalDriver` onto the given `ts.Program`, for retrieval in a subsequent
- * incremental compilation.
- *
- * See `SYM_INCREMENTAL_DRIVER` for more details.
- */
-function setIncrementalDriver(program: ts.Program, driver: IncrementalDriver): void {
-  (program as any)[SYM_INCREMENTAL_DRIVER] = driver;
 }
 
 /**

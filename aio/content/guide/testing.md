@@ -93,7 +93,7 @@ Adopt these two conventions in your own projects for _every kind_ of test file.
 
 ## Set up continuous integration
 
-One of the best ways to keep your project bug free is through a test suite, but it's easy to forget to run tests all the time.
+One of the best ways to keep your project bug-free is through a test suite, but it's easy to forget to run tests all the time.
 Continuous integration (CI) servers let you set up your project repository so that your tests run on every commit and pull request.
 
 There are paid CI services like Circle CI and Travis CI, and you can also host your own for free using Jenkins and others.
@@ -1277,7 +1277,7 @@ In this example, we have a new macro task (nested setTimeout), by default, when 
   region="fake-async-test-tick-new-macro-task-async">
 </code-example>
 
-And in some case, we don't want to trigger the new macro task when ticking, we can use `tick(milliseconds, {processNewMacroTasksSynchronously: false})` to not invoke new maco task.
+And in some case, we don't want to trigger the new macro task when ticking, we can use `tick(milliseconds, {processNewMacroTasksSynchronously: false})` to not invoke new macro task.
 
 #### Comparing dates inside fakeAsync()
 
@@ -1958,7 +1958,7 @@ for the `id` to change during its lifetime.
 
 <div class="alert is-helpful">
 
-The [Router](guide/router#route-parameters) guide covers `ActivatedRoute.paramMap` in more detail.
+The [ActivatedRoute in action](guide/router#activated-route-in-action) section of the [Router](guide/router) guide covers `ActivatedRoute.paramMap` in more detail.
 
 </div>
 

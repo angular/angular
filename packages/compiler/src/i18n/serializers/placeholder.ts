@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -106,7 +106,9 @@ export class PlaceholderRegistry {
     return start + strAttrs + end;
   }
 
-  private _hashClosingTag(tag: string): string { return this._hashTag(`/${tag}`, {}, false); }
+  private _hashClosingTag(tag: string): string {
+    return this._hashTag(`/${tag}`, {}, false);
+  }
 
   private _generateUniqueName(base: string): string {
     const seen = this._placeHolderNameCounts.hasOwnProperty(base);

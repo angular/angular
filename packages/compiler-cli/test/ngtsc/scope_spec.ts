@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,7 +20,7 @@ const testFiles = loadStandardTestFiles();
 
 runInEachFileSystem(() => {
   describe('ngtsc module scopes', () => {
-    let env !: NgtscTestEnvironment;
+    let env!: NgtscTestEnvironment;
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
@@ -92,11 +92,11 @@ runInEachFileSystem(() => {
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
           const node = findContainingClass(diagnosticToNode(diags[0], ts.isIdentifier));
-          expect(node.name !.text).toEqual('TestDir');
+          expect(node.name!.text).toEqual('TestDir');
 
-          const relatedNodes = new Set(diags[0].relatedInformation !.map(
+          const relatedNodes = new Set(diags[0].relatedInformation!.map(
               related =>
-                  findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name !.text));
+                  findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name!.text));
           expect(relatedNodes).toContain('ModuleA');
           expect(relatedNodes).toContain('ModuleB');
           expect(relatedNodes.size).toBe(2);
@@ -141,11 +141,11 @@ runInEachFileSystem(() => {
              const diags = env.driveDiagnostics();
              expect(diags.length).toBe(1);
              const node = findContainingClass(diagnosticToNode(diags[0], ts.isIdentifier));
-             expect(node.name !.text).toEqual('TestDir');
+             expect(node.name!.text).toEqual('TestDir');
 
-             const relatedNodes = new Set(diags[0].relatedInformation !.map(
+             const relatedNodes = new Set(diags[0].relatedInformation!.map(
                  related =>
-                     findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name !.text));
+                     findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name!.text));
              expect(relatedNodes).toContain('ModuleA');
              expect(relatedNodes).toContain('ModuleB');
              expect(relatedNodes.size).toBe(2);
@@ -205,8 +205,10 @@ runInEachFileSystem(() => {
         `);
           const [error] = env.driveDiagnostics();
           expect(error).not.toBeUndefined();
-          expect(error.messageText).toContain('IsAModule');
-          expect(error.messageText).toContain('NgModule.imports');
+          const messageText = ts.flattenDiagnosticMessageText(error.messageText, '\n');
+          expect(messageText)
+              .toContain('Value at position 0 in the NgModule.imports of IsAModule is not a class');
+          expect(messageText).toContain('Value is a reference to \'NotAClass\'.');
           expect(error.code).toEqual(ngErrorCode(ErrorCode.VALUE_HAS_WRONG_TYPE));
           expect(diagnosticToNode(error, ts.isIdentifier).text).toEqual('NotAClass');
         });
@@ -386,13 +388,13 @@ runInEachFileSystem(() => {
   });
 
   function diagnosticToNode<T extends ts.Node>(
-      diagnostic: ts.Diagnostic | Diagnostic | ts.DiagnosticRelatedInformation,
+      diagnostic: ts.Diagnostic|Diagnostic|ts.DiagnosticRelatedInformation,
       guard: (node: ts.Node) => node is T): T {
     const diag = diagnostic as ts.Diagnostic | ts.DiagnosticRelatedInformation;
     if (diag.file === undefined) {
       throw new Error(`Expected ts.Diagnostic to have a file source`);
     }
-    const node = getTokenAtPosition(diag.file, diag.start !);
+    const node = getTokenAtPosition(diag.file, diag.start!);
     expect(guard(node)).toBe(true);
     return node as T;
   }

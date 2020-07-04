@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -78,7 +78,7 @@ class _Humanizer implements html.Visitor {
 
   private _appendContext(ast: html.Node, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
-    input.push(ast.sourceSpan !.toString());
+    input.push(ast.sourceSpan!.toString());
     return input;
   }
 }

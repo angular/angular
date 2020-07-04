@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,7 +14,11 @@ const callbacks = [];
 const size = 100000;
 for (let i = 0; i < size; i++) {
   const emitter = new EventEmitter();
-  const callback = (function(i) { return function() { console.log(i); }; })(i);
+  const callback = (function(i) {
+    return function() {
+      console.log(i);
+    };
+  })(i);
   emitters[i] = emitter;
   callbacks[i] = callback;
 }

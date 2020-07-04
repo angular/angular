@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -27,7 +27,7 @@ export function deepEqual(a: any, b: any): boolean {
   }
 }
 
-export function isAnchor(el: (Node & ParentNode) | Element | null): el is HTMLAnchorElement {
+export function isAnchor(el: (Node&ParentNode)|Element|null): el is HTMLAnchorElement {
   return (<HTMLAnchorElement>el).href !== undefined;
 }
 

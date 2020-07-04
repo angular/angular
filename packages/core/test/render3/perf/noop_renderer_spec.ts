@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 
 import {ProceduralRenderer3} from '@angular/core/src/render3/interfaces/renderer';
 
-import {MicroBenchmarkRenderNode, MicroBenchmarkRendererFactory} from './noop_renderer';
+import {MicroBenchmarkRendererFactory, MicroBenchmarkRenderNode} from './noop_renderer';
 
 describe('MicroBenchmarkRenderNode', () => {
   const renderer =

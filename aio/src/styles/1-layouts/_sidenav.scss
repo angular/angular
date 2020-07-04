@@ -177,6 +177,16 @@ button.vertical-menu-item {
   margin: 0;
   padding-left: 32px;
   text-transform: none;
+
+  &.expanded .mat-icon,
+  .level-3.expanded .mat-icon {
+    @include rotate(90deg);
+  }
+
+  &:not(.expanded) .mat-icon,
+  .level-3:not(.expanded) .mat-icon {
+    @include rotate(0deg);
+  }
 }
 
 .level-3 {
@@ -185,6 +195,16 @@ button.vertical-menu-item {
   @include font-size(14);
   margin: 0;
   padding-left: 40px;
+  text-transform: none;
+}
+
+.level-4 {
+  color: $mediumgray;
+  font-family: $main-font;
+  @include font-size(14);
+  margin: 0;
+  padding-left: 48px;
+  text-transform: none;
 }
 
 aio-nav-menu.top-menu {

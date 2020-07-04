@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,15 +8,16 @@
 
 import * as ts from 'typescript';
 
-import {FileSystem, NgtscCompilerHost, absoluteFrom as _, getFileSystem, getSourceFileOrError, setFileSystem} from '../../file_system';
+import {absoluteFrom as _, FileSystem, getFileSystem, getSourceFileOrError, NgtscCompilerHost, setFileSystem} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
+import {NoopIncrementalBuildStrategy} from '../../incremental';
+import {ReusedProgramStrategy} from '../../typecheck/src/augmented_program';
 import {NgCompilerOptions} from '../api';
 import {NgCompiler} from '../src/compiler';
 import {NgCompilerHost} from '../src/host';
 
 
 runInEachFileSystem(() => {
-
   describe('NgCompiler', () => {
     let fs: FileSystem;
 
@@ -44,9 +45,11 @@ runInEachFileSystem(() => {
         strictTemplates: true,
       };
       const baseHost = new NgtscCompilerHost(getFileSystem(), options);
-      const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options);
+      const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
       const program = ts.createProgram({host, options, rootNames: host.inputFiles});
-      const compiler = new NgCompiler(host, options, program);
+      const compiler = new NgCompiler(
+          host, options, program, new ReusedProgramStrategy(program, host, options, []),
+          new NoopIncrementalBuildStrategy());
 
       const diags = compiler.getDiagnostics(getSourceFileOrError(program, COMPONENT));
       expect(diags.length).toBe(1);
