@@ -81,7 +81,7 @@ export const CURRENCIES_EN:
       'KYD': [undefined, '$'],
       'KZT': [undefined, '₸'],
       'LAK': [undefined, '₭', 0],
-      'LBP': [undefined, 'L£', 0],
+      'LBP': [undefined, 'L£', 2],
       'LKR': [undefined, 'Rs'],
       'LRD': [undefined, '$'],
       'LTL': [undefined, 'Lt'],
