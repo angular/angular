@@ -10,7 +10,7 @@ import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {escapeRegExp} from '../util';
 
-import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, VariableBinding} from './ast';
+import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, VariableBinding} from './ast';
 import {EOF, isIdentifier, isQuote, Lexer, Token, TokenType} from './lexer';
 
 export class SplitInterpolation {
@@ -1052,11 +1052,11 @@ class SimpleExpressionChecker implements AstVisitor {
   visitFunctionCall(ast: FunctionCall, context: any) {}
 
   visitLiteralArray(ast: LiteralArray, context: any) {
-    this.visitAll(ast.expressions);
+    this.visitAll(ast.expressions, context);
   }
 
   visitLiteralMap(ast: LiteralMap, context: any) {
-    this.visitAll(ast.values);
+    this.visitAll(ast.values, context);
   }
 
   visitBinary(ast: Binary, context: any) {}
@@ -1075,8 +1075,8 @@ class SimpleExpressionChecker implements AstVisitor {
 
   visitKeyedWrite(ast: KeyedWrite, context: any) {}
 
-  visitAll(asts: any[]): any[] {
-    return asts.map(node => node.visit(this));
+  visitAll(asts: any[], context: any): any[] {
+    return asts.map(node => node.visit(this, context));
   }
 
   visitChain(ast: Chain, context: any) {}
@@ -1085,19 +1085,16 @@ class SimpleExpressionChecker implements AstVisitor {
 }
 
 /**
- * This class extends SimpleExpressionChecker used in View Engine and performs more strict checks to
- * make sure host bindings do not contain pipes. In View Engine, having pipes in host bindings is
+ * This class implements SimpleExpressionChecker used in View Engine and performs more strict checks
+ * to make sure host bindings do not contain pipes. In View Engine, having pipes in host bindings is
  * not supported as well, but in some cases (like `!(value | async)`) the error is not triggered at
  * compile time. In order to preserve View Engine behavior, more strict checks are introduced for
  * Ivy mode only.
  */
-class IvySimpleExpressionChecker extends SimpleExpressionChecker {
-  visitBinary(ast: Binary, context: any) {
-    ast.left.visit(this);
-    ast.right.visit(this);
-  }
+class IvySimpleExpressionChecker extends RecursiveAstVisitor implements SimpleExpressionChecker {
+  errors: string[] = [];
 
-  visitPrefixNot(ast: PrefixNot, context: any) {
-    ast.expression.visit(this);
+  visitPipe() {
+    this.errors.push('pipes');
   }
 }
