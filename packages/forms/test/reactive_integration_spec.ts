@@ -73,6 +73,23 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
         expect(form.value).toEqual({'login': 'updatedValue'});
       });
+
+      it('should clean up the FormControlName directive on destroy', () => {
+        const fixture = initTest(FormGroupComp);
+        const loginControl = new FormControl();
+        fixture.componentInstance.control = loginControl;
+        fixture.componentInstance.form = new FormGroup({login: loginControl});
+        fixture.detectChanges();
+
+        const input = fixture.debugElement.query(By.css('input'));
+        const formControlName = input.injector.get(FormControlName);
+
+        expect(formControlName.control).toBeTruthy();
+
+        fixture.destroy();
+
+        expect(formControlName.control).toBeFalsy();
+      });
     });
 
     describe('re-bound form groups', () => {

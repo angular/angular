@@ -15,7 +15,7 @@ import {ControlContainer} from '../control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
-import {_ngModelWarning, composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
+import {_ngModelWarning, cleanUpControl, composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
@@ -162,6 +162,11 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   ngOnDestroy(): void {
     if (this.formDirective) {
       this.formDirective.removeControl(this);
+    }
+
+    if (this._added && this.control) {
+      cleanUpControl(this.control, this);
+      (this as {control: FormControl | undefined}).control = undefined;
     }
   }
 
