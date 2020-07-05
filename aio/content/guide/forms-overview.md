@@ -117,7 +117,7 @@ As users change values and make selections through the view, the new values must
 Similarly, when the program logic changes values in the data model, those values must be reflected in the view.
 
 Reactive and template-driven forms differ in how they handle data flowing from the user or from programmatic changes.
-The following diagrams illustrate both kinds of data flow for each type of form, using the a favorite-color input field defined above.
+The following diagrams illustrate both kinds of data flow for each type of form, using the favorite-color input field defined above.
 
 ### Data flow in reactive forms
 
