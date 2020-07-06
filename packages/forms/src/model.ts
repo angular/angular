@@ -155,6 +155,94 @@ export abstract class AbstractControl {
   // TODO(issue/24571): remove '!'.
   _updateOn!: FormHooks;
 
+  /**
+   * The template-driven view function that determines the synchronous validity of this control.
+   * Used by setUpControl to set validators from the view.
+   *
+   * @internal
+   */
+  set viewValidator(validator: ValidatorFn|null) {
+    this._viewValidator = validator;
+    this._composedValidator = undefined;
+  }
+  get viewValidator() {
+    return this._viewValidator;
+  }
+  private _viewValidator: ValidatorFn|null = null;
+
+  /**
+   * The template-driven function that determines the asynchronous validity of this control.
+   * Used by setUpControl to set async validators from the view.
+   *
+   * @internal
+   */
+  set viewAsyncValidator(validator: AsyncValidatorFn|null) {
+    this._viewAsyncValidator = validator;
+    this._composedAsyncValidator = undefined;
+  }
+  get viewAsyncValidator() {
+    return this._viewAsyncValidator;
+  }
+  private _viewAsyncValidator: AsyncValidatorFn|null = null;
+
+
+  /**
+   * The reactive-driven function that determines the synchronous validity of this control.
+   */
+  set validator(validator: ValidatorFn|null) {
+    this._validator = validator;
+    this._composedValidator = undefined;
+  }
+  get validator() {
+    return this._validator;
+  }
+  private _validator: ValidatorFn|null = null;
+
+  /**
+   * The reactive-driven function that determines the asynchronous validity of this control.
+   */
+  set asyncValidator(validator: AsyncValidatorFn|null) {
+    this._asyncValidator = validator;
+    this._composedAsyncValidator = undefined;
+  }
+  get asyncValidator() {
+    return this._asyncValidator;
+  }
+  private _asyncValidator: AsyncValidatorFn|null = null;
+
+  /**
+   * Composed validator and viewValidator function used to validate this control.
+   */
+  get composedValidator() {
+    if (this._composedValidator !== undefined) {
+      return this._composedValidator;
+    }
+
+    if (this._validator && this._viewValidator) {
+      return this._composedValidator = composeValidators([this._validator, this._viewValidator]);
+    }
+
+    return this._composedValidator = this._validator || this._viewValidator;
+  }
+  private _composedValidator: ValidatorFn|null|undefined;
+
+  /**
+   * Composed asyncValidator and asyncViewValidator function used to validate this control.
+   */
+  get composedAsyncValidator() {
+    if (this._composedAsyncValidator !== undefined) {
+      return this._composedAsyncValidator;
+    }
+
+    if (this._asyncValidator && this._viewAsyncValidator) {
+      return this._composedAsyncValidator =
+                 composeAsyncValidators([this._asyncValidator, this._viewAsyncValidator]);
+    }
+
+    return this._composedAsyncValidator = this._asyncValidator || this._viewAsyncValidator;
+  }
+  private _composedAsyncValidator: AsyncValidatorFn|null|undefined;
+
   // TODO(issue/24571): remove '!'.
   private _parent!: FormGroup|FormArray;
   private _asyncValidationSubscription: any;
@@ -175,11 +263,16 @@ export abstract class AbstractControl {
   /**
    * Initialize the AbstractControl instance.
    *
-   * @param validator The function that determines the synchronous validity of this control.
-   * @param asyncValidator The function that determines the asynchronous validity of this
+   * @param validator The reactive-driven function that determines the synchronous validity of this
+   *     control.
+   * @param asyncValidator The reactive-driven function that determines the asynchronous validity of
+   *     this
    * control.
    */
-  constructor(public validator: ValidatorFn|null, public asyncValidator: AsyncValidatorFn|null) {}
+  constructor(validator: ValidatorFn|null, asyncValidator: AsyncValidatorFn|null) {
+    this._validator = validator;
+    this._asyncValidator = asyncValidator;
+  }
 
   /**
    * The parent control.
@@ -676,14 +769,16 @@ export abstract class AbstractControl {
   }
 
   private _runValidator(): ValidationErrors|null {
-    return this.validator ? this.validator(this) : null;
+    const composedValidator = this.composedValidator;
+    return composedValidator ? composedValidator(this) : null;
   }
 
   private _runAsyncValidator(emitEvent?: boolean): void {
-    if (this.asyncValidator) {
+    const composedAsyncValidator = this.composedAsyncValidator;
+    if (composedAsyncValidator) {
       (this as {status: string}).status = PENDING;
       this._hasOwnPendingAsyncValidator = true;
-      const obs = toObservable(this.asyncValidator(this));
+      const obs = toObservable(composedAsyncValidator(this));
       this._asyncValidationSubscription = obs.subscribe((errors: ValidationErrors|null) => {
         this._hasOwnPendingAsyncValidator = false;
         // This will trigger the recalculation of the validation status, which depends on

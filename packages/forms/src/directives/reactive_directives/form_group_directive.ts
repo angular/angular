@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
 import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {ReactiveErrors} from '../reactive_errors';
-import {cleanUpControl, composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from '../shared';
+import {cleanUpControl, cleanUpFormContainer, composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from '../shared';
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
@@ -52,7 +52,7 @@ export const formDirectiveProvider: any = {
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   exportAs: 'ngForm'
 })
-export class FormGroupDirective extends ControlContainer implements Form, OnChanges {
+export class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
   /**
    * @description
    * Reports whether the form submission has been triggered.
@@ -95,10 +95,22 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   ngOnChanges(changes: SimpleChanges): void {
     this._checkFormPresent();
     if (changes.hasOwnProperty('form')) {
+      if (this._oldForm) {
+        this._clearValidators(this._oldForm);
+      }
+
       this._updateValidators();
       this._updateDomValue();
       this._updateRegistrations();
     }
+  }
+
+  /**
+   * @description
+   * A lifecycle method called when the directive is destroyed. For internal use only.
+   */
+  ngOnDestroy(): void {
+    this._clearValidators();
   }
 
   /**
@@ -136,7 +148,6 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   addControl(dir: FormControlName): FormControl {
     const ctrl: any = this.form.get(dir.path);
     setUpControl(ctrl, dir);
-    ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
     return ctrl;
   }
@@ -158,6 +169,8 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @param dir The `FormControlName` directive instance.
    */
   removeControl(dir: FormControlName): void {
+    cleanUpControl(dir.control, dir);
+
     removeDir<FormControlName>(this.directives, dir);
   }
 
@@ -169,15 +182,16 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   addFormGroup(dir: FormGroupName): void {
     const ctrl: any = this.form.get(dir.path);
     setUpFormContainer(ctrl, dir);
-    ctrl.updateValueAndValidity({emitEvent: false});
   }
 
   /**
-   * No-op method to remove the form group.
+   * Method to remove the form group.
    *
    * @param dir The `FormGroupName` directive instance.
    */
-  removeFormGroup(dir: FormGroupName): void {}
+  removeFormGroup(dir: FormGroupName): void {
+    cleanUpFormContainer(dir.control, dir);
+  }
 
   /**
    * @description
@@ -197,15 +211,16 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   addFormArray(dir: FormArrayName): void {
     const ctrl: any = this.form.get(dir.path);
     setUpFormContainer(ctrl, dir);
-    ctrl.updateValueAndValidity({emitEvent: false});
   }
 
   /**
-   * No-op method to remove the form array.
+   * Method to remove the form array.
    *
    * @param dir The `FormArrayName` directive instance.
    */
-  removeFormArray(dir: FormArrayName): void {}
+  removeFormArray(dir: FormArrayName): void {
+    cleanUpFormContainer(dir.control, dir);
+  }
 
   /**
    * @description
@@ -268,7 +283,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
       const newCtrl: any = this.form.get(dir.path);
       if (dir.control !== newCtrl) {
         cleanUpControl(dir.control, dir);
-        if (newCtrl) setUpControl(newCtrl, dir);
+        if (newCtrl) setUpControl(newCtrl, dir, false);
         (dir as {control: FormControl}).control = newCtrl;
       }
     });
@@ -284,10 +299,20 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
 
   private _updateValidators() {
     const sync = composeValidators(this._validators);
-    this.form.validator = Validators.compose([this.form.validator!, sync!]);
+    this.form.viewValidator = sync;
 
     const async = composeAsyncValidators(this._asyncValidators);
-    this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator!, async!]);
+    this.form.viewAsyncValidator = async;
+
+    this.form.updateValueAndValidity({emitEvent: false});
+  }
+
+  private _clearValidators(form: FormGroup = this.form) {
+    if (form) {
+      form.viewValidator = null;
+      form.viewAsyncValidator = null;
+      form.updateValueAndValidity({emitEvent: false});
+    }
   }
 
   private _checkFormPresent() {

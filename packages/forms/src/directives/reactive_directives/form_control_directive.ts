@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChange, SimpleChanges} from '@angular/core';
 
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
-import {_ngModelWarning, composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
+import {_ngModelWarning, cleanUpControl, composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 
@@ -52,7 +52,7 @@ export const formControlBinding: any = {
  */
 @Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
 
-export class FormControlDirective extends NgControl implements OnChanges {
+export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
   /**
    * @description
    * Internal reference to the view model value.
@@ -123,16 +123,31 @@ export class FormControlDirective extends NgControl implements OnChanges {
    */
   ngOnChanges(changes: SimpleChanges): void {
     if (this._isControlChanged(changes)) {
+      const previousControl = (changes.form as SimpleChange).previousValue;
+      if (previousControl) {
+        cleanUpControl(previousControl, this);
+      }
+
       setUpControl(this.form, this);
       if (this.control.disabled && this.valueAccessor!.setDisabledState) {
         this.valueAccessor!.setDisabledState!(true);
       }
-      this.form.updateValueAndValidity({emitEvent: false});
     }
+
     if (isPropertyUpdated(changes, this.viewModel)) {
       _ngModelWarning('formControl', FormControlDirective, this, this._ngModelWarningConfig);
       this.form.setValue(this.model);
       this.viewModel = this.model;
+    }
+  }
+
+  /**
+   * @description
+   * A lifecycle method called when the directive is destroyed. For internal use only.
+   */
+  ngOnDestroy(): void {
+    if (this.form) {
+      cleanUpControl(this.form, this);
     }
   }
 

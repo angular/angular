@@ -161,6 +161,28 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         expect(newForm.get('login')!.errors).toEqual({required: true});
       });
 
+      it('should set validator without loosing dir validators from form controls and vice versa',
+         () => {
+           const fixture = initTest(LoginIsEmptyWrapper, LoginIsEmptyValidator);
+           const form = new FormGroup({
+             'login': new FormControl(''),
+             'min': new FormControl(''),
+             'max': new FormControl(''),
+             'pattern': new FormControl('')
+           });
+           fixture.componentInstance.form = form;
+           fixture.detectChanges();
+           expect(form.get('login')!.errors).toEqual({required: true});
+
+           const loginControl = form.get('login');
+           loginControl!.setValidators(ctrl => ({modelError: true}));
+           loginControl!.updateValueAndValidity();
+           expect(form.get('login')!.errors).toEqual({modelError: true, required: true});
+
+           fixture.destroy();
+           expect(form.get('login')!.errors).toEqual({modelError: true});
+         });
+
       it('should pick up dir validators from nested form groups', () => {
         const fixture = initTest(NestedFormGroupComp, LoginIsEmptyValidator);
         const form = new FormGroup({

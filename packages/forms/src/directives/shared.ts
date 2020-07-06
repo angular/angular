@@ -32,12 +32,13 @@ export function controlPath(name: string|null, parent: ControlContainer): string
   return [...parent.path!, name!];
 }
 
-export function setUpControl(control: FormControl, dir: NgControl): void {
+export function setUpControl(
+    control: FormControl, dir: NgControl, updateValidity: boolean = true): void {
   if (!control) _throwError(dir, 'Cannot find control with');
   if (!dir.valueAccessor) _throwError(dir, 'No value accessor for form control with');
 
-  control.validator = Validators.compose([control.validator!, dir.validator]);
-  control.asyncValidator = Validators.composeAsync([control.asyncValidator!, dir.asyncValidator]);
+  control.viewValidator = dir.validator;
+  control.viewAsyncValidator = dir.asyncValidator;
   dir.valueAccessor!.writeValue(control.value);
 
   setUpViewChangePipeline(control, dir);
@@ -61,6 +62,10 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
     if ((<Validator>validator).registerOnValidatorChange)
       (<Validator>validator).registerOnValidatorChange!(() => control.updateValueAndValidity());
   });
+
+  if (updateValidity) {
+    control.updateValueAndValidity({emitEvent: false});
+  }
 }
 
 export function cleanUpControl(control: FormControl, dir: NgControl) {
@@ -79,7 +84,13 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
     }
   });
 
-  if (control) control._clearChangeFns();
+  if (control) {
+    control._clearChangeFns();
+    control.viewValidator = null;
+    control.viewAsyncValidator = null;
+
+    control.updateValueAndValidity({emitEvent: false});
+  }
 }
 
 function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
@@ -121,8 +132,18 @@ function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
 export function setUpFormContainer(
     control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName) {
   if (control == null) _throwError(dir, 'Cannot find control with');
-  control.validator = Validators.compose([control.validator, dir.validator]);
-  control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
+  control.viewValidator = dir.validator;
+  control.viewAsyncValidator = dir.asyncValidator;
+  control.updateValueAndValidity({emitEvent: false});
+}
+
+export function cleanUpFormContainer(
+    control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName) {
+  if (control) {
+    control.viewValidator = null;
+    control.viewAsyncValidator = null;
+    control.updateValueAndValidity({emitEvent: false});
+  }
 }
 
 function _noControlError(dir: NgControl) {

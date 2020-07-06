@@ -306,7 +306,6 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   private _setUpStandalone(): void {
     setUpControl(this.control, this);
-    this.control.updateValueAndValidity({emitEvent: false});
   }
 
   private _checkForErrors(): void {

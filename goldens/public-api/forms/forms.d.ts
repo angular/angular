@@ -1,5 +1,8 @@
 export declare abstract class AbstractControl {
-    asyncValidator: AsyncValidatorFn | null;
+    set asyncValidator(validator: AsyncValidatorFn | null);
+    get asyncValidator(): AsyncValidatorFn | null;
+    get composedAsyncValidator(): AsyncValidatorFn | null;
+    get composedValidator(): ValidatorFn | null;
     get dirty(): boolean;
     get disabled(): boolean;
     get enabled(): boolean;
@@ -15,9 +18,12 @@ export declare abstract class AbstractControl {
     get untouched(): boolean;
     get updateOn(): FormHooks;
     get valid(): boolean;
-    validator: ValidatorFn | null;
+    set validator(validator: ValidatorFn | null);
+    get validator(): ValidatorFn | null;
     readonly value: any;
     readonly valueChanges: Observable<any>;
+    get viewAsyncValidator(): AsyncValidatorFn | null;
+    get viewValidator(): ValidatorFn | null;
     constructor(validator: ValidatorFn | null, asyncValidator: AsyncValidatorFn | null);
     clearAsyncValidators(): void;
     clearValidators(): void;
@@ -234,7 +240,7 @@ export declare class FormControl extends AbstractControl {
     }): void;
 }
 
-export declare class FormControlDirective extends NgControl implements OnChanges {
+export declare class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
     get asyncValidator(): AsyncValidatorFn | null;
     get control(): FormControl;
     form: FormControl;
@@ -246,6 +252,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     viewModel: any;
     constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
     ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
 }
 
@@ -296,7 +303,7 @@ export declare class FormGroup extends AbstractControl {
     }): void;
 }
 
-export declare class FormGroupDirective extends ControlContainer implements Form, OnChanges {
+export declare class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
     get control(): FormGroup;
     directives: FormControlName[];
     form: FormGroup;
@@ -312,6 +319,7 @@ export declare class FormGroupDirective extends ControlContainer implements Form
     getFormArray(dir: FormArrayName): FormArray;
     getFormGroup(dir: FormGroupName): FormGroup;
     ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
     onReset(): void;
     onSubmit($event: Event): boolean;
     removeControl(dir: FormControlName): void;

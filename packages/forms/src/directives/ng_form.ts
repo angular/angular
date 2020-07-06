@@ -16,7 +16,7 @@ import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
-import {composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
+import {cleanUpFormContainer, composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,
@@ -249,6 +249,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       const container = this._findContainer(dir.path);
       if (container) {
         container.removeControl(dir.name);
+        cleanUpFormContainer(container, dir);
       }
     });
   }
