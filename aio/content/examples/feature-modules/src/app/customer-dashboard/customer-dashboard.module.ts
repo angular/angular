@@ -25,10 +25,7 @@ import { CustomerDashboardComponent } from './customer-dashboard/customer-dashbo
   // #enddocregion component-exports
   // #docregion customer-dashboard-component
 })
-
-// #enddocregion customer-dashboard-component
-
 // #docregion customer-dashboard
 export class CustomerDashboardModule { }
-
+// #enddocregion customer-dashboard-component
 // #enddocregion customer-dashboard

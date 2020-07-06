@@ -1,116 +1,221 @@
-# Feature modules
+# Creating a new NgModule
 
-Feature modules are NgModules for the purpose of organizing code.
+This tutorial describes how to create a new [NgModule](guide/glossary#ngmodule "Definition of NgModule") in order to organize your code in a modular structure.
 
-For the final sample app with a feature module that this page describes,
-see the <live-example></live-example>.
+NgModules are a great way to organize an app and keep code related to a specific functionality or feature separate from other code.
+Use NgModules to consolidate [components](guide/glossary#component "Definition of component"), [directives](guide/glossary#directive "Definition of directive"), and [pipes](guide/glossary#pipe "Definition of pipe)") into cohesive blocks of functionality, each focused on a feature area, application business domain, workflow, or common collection of utilities.
+You can also declare [services](guide/glossary#service "Definition of service") that the NgModule can add to your app, including services from outside sources.
 
-<hr>
+For more about NgModules, see [Organizing your app with NgModules](guide/ngmodules "Organizing your app with NgModules").
 
-As your app grows, you can organize code relevant for a specific feature.
-This helps apply clear boundaries for features. With feature modules,
-you can keep code related to a specific functionality or feature
-separate from other code. Delineating areas of your
-app helps with collaboration between developers and teams, separating
-directives, and managing the size of the root module.
+<div class="alert is-helpful">
 
+For the final sample app with the new NgModule that this page describes, see the <live-example></live-example>.
 
-## Feature modules vs. root modules
+</div>
 
-A feature module is an organizational best practice, as opposed to a concept of the core Angular API. A feature module delivers a cohesive set of functionality focused on a
-specific application need such as a user workflow, routing, or forms.
-While you can do everything within the root module, feature modules
-help you partition the app into focused areas. A feature module
-collaborates with the root module and with other modules through
-the services it provides and the components, directives, and
-pipes that it shares.
+## Objectives
 
-## How to make a feature module
+* Create a new NgModule with its own component, which demonstrates how you can keep code related to a specific functionality or feature separate from other code.
+* Import the new NgModule into your app to incorporate the specific functionality or feature with your app.
+* Render the new NgModule component's template so that its markup appears within the app's main view.
 
-Assuming you already have an app that you created with the [Angular CLI](cli), create a feature
-module using the CLI by entering the following command in the
-root project directory. Replace `CustomerDashboard` with the
-name of your module. You can omit the "Module" suffix from the name because the CLI appends it:
+## Prerequisites
+
+To complete this tutorial, you should have a basic understanding of the following:
+
+* [Typescript](guide/glossary#typescript "Definition of Typescript") and HTML5 programming
+* [Templates](guide/glossary#template "Definition of a template") in HTML with CSS styles
+* [Components](guide/glossary#component "Definition of a component")
+* [Angular CLI](cli "Angular CLI")
+
+You might find the [Tour of Heroes tutorial](tutorial "Tour of Heroes") helpful, but it is not required.
+
+## Create an app project
+
+To create an app just like the example for this tutorial, generate a new app workspace and project with the [Angular CLI](cli "Angular CLI").
+
+<div class="alert is-helpful">
+
+You can use an existing app workspace and project such as the one created in the Tour of Heroes (in [Create a new project](tutorial/toh-pt0 "Create a new project")), and skip to the next section, but it won't look exactly like the provided example.
+
+</div>
+
+Follow these steps:
+
+1. Ensure that you are not already in an Angular workspace folder.
+For example, if you have previously created the Getting Started workspace, change to the parent of that folder in order to create a new workspace.
+
+2. Run the CLI command `ng new` and provide the name `feature-modules` as shown:
+
+   <code-example language="sh" class="code-shell">
+       ng new feature-modules
+   </code-example>
+
+   The command displays the request `Would you like to add Angular routing?`
+   Respond by typing **N** (no routing).
+
+   The command then displays a second request: `Which stylesheet format would you like to use?`
+   Press Enter (Return) to accept the default stylesheet.
+
+   This command generates a new workspace with a root folder named `feature-modules` and a skeleton app project in its `src` subfolder.
+
+3. Change the app's title by opening `app.component.ts` in the `src/app` folder and changing the value of the `title` property to `'app works!'`.
+
+4. Open the component template file (`app.component.html`), and
+replace all of the content generated by the Angular CLI with the following HTML markup that uses Angular [interpolation](guide/glossary#interpolation "Definition of interpolation") for the component's `title` property:
+
+   <code-example path="feature-modules/src/app/app.component.html" region="app-component-template-org" header="app.component.html (template)">
+   </code-example>
+
+5. Open the app module in `src/app/app.module.ts` and add the [`HttpClientModule`](api/common/http/HttpClientModule "HttpClientModule API") and [`FormsModule`](api/forms/FormsModule "FormsModule API") imports to the import section (which already includes `NgModule` and `BrowserModule`):
+
+   <code-example path="feature-modules/src/app/app.module.ts" region="app-module-import"
+   header="app.module.ts">
+   </code-example>
+
+   You import `FormsModule` so that Angular recognizes and applies the [`ngModel`](api/forms/NgModel "NgModel directive") directive.
+   You import `HttpClientModule` to make available to your app Angular's [`HttpClient`](api/common/http/HttpClient "HttpClient class") mechanism for [communicating with a remote server over HTTP](guide/http "Communicating with backend services using HTTP").
+   Both are needed for the example app to work, but are not required for creating NgModules.
+
+6. In the same file, add `HttpClientModule` and `FormsModule` to the imports array in the `NgModule` metadata (which already includes `BrowserModule`):
+
+```typescript
+
+imports: [
+    BrowserModule,
+    FormsModule,
+    HttpClientModule
+  ],
+
+```
+
+## Generate the NgModule
+
+Follow these steps:
+
+1. Change to the workspace root folder (`feature-modules`).
+2. Enter the following CLI command, using a name such as `CustomerDashboard` as the name of your new NgModule (omit the `Module` suffix because the CLI automatically appends it to the name):
 
 ```sh
 ng generate module CustomerDashboard
 
 ```
 
+The command displays a request to share anonymous usage data about this project.
+You can enter **Y** for yes, or press Return (Enter) or enter **N** for no.
 
-This causes the CLI to create a folder called `customer-dashboard` with a file inside called `customer-dashboard.module.ts` with the following contents:
+The CLI creates the `customer-dashboard` folder with the `customer-dashboard.module.ts` file inside it containing the following:
 
 ```typescript
+
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
+  declarations: [],
   imports: [
     CommonModule
-  ],
-  declarations: []
+  ]
 })
 export class CustomerDashboardModule { }
+
 ```
 
-The structure of an NgModule is the same whether it is a root module or a feature module. In the CLI generated feature module, there are two JavaScript import statements at the top of the file: the first imports `NgModule`, which, like the root module, lets you use the `@NgModule` decorator; the second imports `CommonModule`, which contributes many common directives such as `ngIf` and `ngFor`. Feature modules import `CommonModule` instead of `BrowserModule`, which is only imported once in the root module. `CommonModule` only contains information for common directives such as `ngIf` and `ngFor` which are needed in most templates, whereas `BrowserModule` configures the Angular app for the browser which needs to be done only once.
+The `customer-dashboard.module.ts` file includes the following import statements at the top:
 
-The `declarations` array is available for you to add declarables, which
-are components, directives, and pipes that belong exclusively to this particular module. To add a component, enter the following command at the command line where `customer-dashboard` is the directory where the CLI generated the feature module and `CustomerDashboard` is the name of the component:
+* `NgModule`, which lets you use the `@NgModule` decorator to define an NgModule.
+* `CommonModule`, which contributes directives such as `ngIf` and `ngFor` that are commonly used in templates.
+
+Note that new NgModules should import `CommonModule` rather than `BrowserModule`, which is  imported only once in the [root NgModule](guide/bootstrapping "Launching your app with a root NgModule") and configures the entire app for the browser.
+
+You use the (now empty) `declarations` array in the `customer-dashboard.module.ts` file to declare the components, directives, and pipes that will belong exclusively to this particular NgModule.
+
+## Generate a new component in the NgModule
+
+To add a component to the new NgModule, enter the following CLI command, specifying the generated folder for the NgModule (`customer-dashboard`) and the component name (`CustomerDashboard`):
 
 ```sh
 ng generate component customer-dashboard/CustomerDashboard
 
 ```
 
-This generates a folder for the new component within the customer-dashboard folder and updates the feature module with the `CustomerDashboardComponent` info:
-
+This command generates a folder for the new component within the `customer-dashboard` folder, and updates the `customer-dashboard.module.ts` file with the `CustomerDashboardComponent` info:
 
 <code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="customer-dashboard-component" header="src/app/customer-dashboard/customer-dashboard.module.ts"></code-example>
 
+The command adds the `CustomerDashboardComponent` to the import list at the top of the `customer-dashboard.module.ts` file, and also adds it to the `declarations` array, which lets Angular know to associate this new component with this NgModule.
 
+If you edit the `declarations` array manually, keep in mind the following:
 
-The `CustomerDashboardComponent` is now in the JavaScript import list at the top and added to the `declarations` array, which lets Angular know to associate this new component with this feature module.
+* Specify only [declarables](guide/glossary#declarable "Definition of a declarable") (component, directives, and pipes) in the `declarations` array.
+* Declare these classes in an NgModule _only if_ they belong to that NgModule.
+* Do _not_ include other NgModules, Javascript modules, service classes, or non-Angular classes and objects such as strings, numbers, functions, entity models, configurations, business logic, and helper classes.
+* Do _not_ add the same declarables to more than one NgModule.
+* Do _not_ declare a class that's already declared in another NgModule, whether it be in the root NgModule, another NgModule, or a third-party NgModule.
+For example, don't declare `FORMS_DIRECTIVES` from `@angular/forms` because the `FormsModule` already declares it.
 
-## Importing a feature module
+Note that the `CustomerDashboardModule` export at the bottom of `customer-dashboard.module.ts` exposes the new NgModule so that other NgModules in your app can retrieve it, as shown in the next section.
 
-To incorporate the feature module into your app, you have to let the root module, `app.module.ts`, know about it. Notice the `CustomerDashboardModule` export at the bottom of `customer-dashboard.module.ts`. This exposes it so that other modules can get to it. To import it into the `AppModule`, add it to the imports in `app.module.ts` and to the `imports` array:
+## Incorporate the NgModule into your app
+
+To incorporate the new NgModule into your app, you have to let the root NgModule, `app.module.ts`, know about it. 
+Add `CustomerDashboardModule` to the imports in `app.module.ts` and to the `imports` array:
 
 <code-example path="feature-modules/src/app/app.module.ts" region="app-module" header="src/app/app.module.ts"></code-example>
 
+Now that the the root `AppModule` knows about the new NgModule, other NgModules in your app can use its implementation even though the new NgModule doesn't expose its components.
+If you add service providers to the new NgModule, `AppModule` would know about those too, so that they can be used by other NgModules.
 
-Now the `AppModule` knows about the feature module. If you were to add any service providers to the feature module, `AppModule` would know about those too, as would any other feature modules. However, NgModules don’t expose their components.
+## Render the new component's template
 
-
-## Rendering a feature module’s component template
-
-When the CLI generated the `CustomerDashboardComponent` for the feature module, it included a template, `customer-dashboard.component.html`, with the following markup:
+When the CLI generated the `CustomerDashboardComponent` for the new NgModule, the component included a template, `customer-dashboard.component.html`, with the following HTML markup:
 
 <code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html" region="feature-template" header="src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html"></code-example>
 
+To display this markup as part of `AppComponent`, follow these steps:
 
-To see this HTML in the `AppComponent`, you first have to export the `CustomerDashboardComponent` in the `CustomerDashboardModule`. In `customer-dashboard.module.ts`, just beneath the `declarations` array, add an `exports` array containing `CustomerDashboardComponent`:
+1. Export the `CustomerDashboardComponent` in the `CustomerDashboardModule`.
+   In `customer-dashboard.module.ts`, just beneath the `declarations` array, add an `exports` array containing `CustomerDashboardComponent`:
 
-<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="component-exports" header="src/app/customer-dashboard/customer-dashboard.module.ts"></code-example>
+   <code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="component-exports" header="src/app/customer-dashboard/customer-dashboard.module.ts"></code-example>
 
+2. In the `AppComponent` template, `app.component.html`, add the  `<app-customer-dashboard>` tag:
 
+   <code-example path="feature-modules/src/app/app.component.html" region="app-component-template" header="src/app/app.component.html"></code-example>
 
-Next, in the `AppComponent`, `app.component.html`, add the tag `<app-customer-dashboard>`:
+3. Run the app.
+For example, use the CLI command `ng serve --open`.
 
-<code-example path="feature-modules/src/app/app.component.html" region="app-component-template" header="src/app/app.component.html"></code-example>
-
-
-Now, in addition to the title that renders by default, the `CustomerDashboardComponent` template renders too:
+As a result, the `CustomerDashboardComponent` template renders along with the title (which renders by default):
 
 <div class="lightbox">
   <img src="generated/images/guide/feature-modules/feature-module.png" alt="feature module component">
 </div>
 
-<hr />
+<div class="alert is-helpful">
 
-## More on NgModules
+For the final sample app with the new NgModule that this page describes, see the <live-example></live-example>.
 
+</div>
+
+## Next steps
+
+This tutorial shows you how to create a new NgModule and incorporate it into your app.
 You may also be interested in the following:
-* [Lazy Loading Modules with the Angular Router](guide/lazy-loading-ngmodules).
-* [Providers](guide/providers).
-* [Types of Feature Modules](guide/module-types).
+
+* For more about NgModules, see [Organizing your app with NgModules](guide/ngmodules "Organizing your app with NgModules").
+* To learn more about the root NgModule, see [Launching an app with a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
+* To learn about frequently used Angular NgModules and how to import them into your app, see [Frequently-used modules](guide/frequent-ngmodules "Frequently-used modules").
+
+If you are expanding your app with features, routing, services, widgets, or other code organized with NgModules, see the following:
+
+* For guidance on how to use NgModules for organizing different areas of your code, see [Guidelines for creating NgModules](guide/module-types "Guidelines for creating NgModules").
+* For a complete description of the NgModule metadata properties, see [Using the NgModule metadata](guide/ngmodule-api "Using the NgModule metadata").
+* To learn how to use shared modules to organize and streamline your code, see [Sharing NgModules in an app](guide/sharing-ngmodules "Sharing NgModules in an app").
+
+If you want to manage NgModule loading and the use of dependencies and services, see the following:
+
+* To learn about loading NgModules eagerly when the app starts, or lazy-loading NgModules asynchronously by the router, see [Lazy-loading feature modules](guide/lazy-loading-ngmodules).
+* To understand how to provide a service or other dependency for your app, see [Providing Dependencies for an NgModule](guide/providers "Providing Dependencies for an NgModule").
+* To learn how to create a singleton service to use in NgModules, see [Making a service a singleton](guide/singleton-services "Making a service a singleton").

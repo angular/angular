@@ -398,11 +398,6 @@
               "tooltip": "All about entry components in Angular."
             },
             {
-              "url": "guide/feature-modules",
-              "title": "Feature Modules",
-              "tooltip": "Create feature modules to organize your code."
-            },
-            {
               "url": "guide/providers",
               "title": "Providing Dependencies",
               "tooltip": "Providing dependencies to NgModules."
@@ -803,6 +798,11 @@
           "url": "guide/forms",
           "title": "Building a Template-driven Form",
           "tooltip": "Create a template-driven form using directives and Angular template syntax."
+        },
+        {
+          "url": "guide/feature-modules",
+          "title": "Creating a New NgModule",
+          "tooltip": "Create a new NgModule in order to organize your code in a modular structure."
         }
       ]
     },
