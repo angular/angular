@@ -7,7 +7,7 @@
  */
 
 import {Adapter, Context} from './adapter';
-import {CacheState, UpdateCacheStatus, UpdateSource, UrlMetadata} from './api';
+import {CacheState, NormalizedUrl, UpdateCacheStatus, UpdateSource, UrlMetadata} from './api';
 import {Database, Table} from './database';
 import {errorToString, SwCriticalError} from './error';
 import {IdleScheduler} from './idle';
@@ -29,7 +29,7 @@ export abstract class AssetGroup {
   /**
    * Normalized resource URLs.
    */
-  protected urls: string[] = [];
+  protected urls: NormalizedUrl[] = [];
 
   /**
    * Regular expression patterns.
@@ -266,7 +266,7 @@ export abstract class AssetGroup {
   /**
    * Lookup all resources currently stored in the cache which have no associated hash.
    */
-  async unhashedResources(): Promise<string[]> {
+  async unhashedResources(): Promise<NormalizedUrl[]> {
     const cache = await this.cache;
     // Start with the set of all cached requests.
     return (await cache.keys())
