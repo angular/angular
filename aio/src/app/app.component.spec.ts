@@ -193,8 +193,8 @@ describe('AppComponent', () => {
         fixture.detectChanges();
       };
 
-      describe('when side-by-side (wide)', () => {
-        beforeEach(() => resizeTo(dockSideNavWidth + 1));  // side-by-side
+      describe('when view is wide', () => {
+        beforeEach(() => resizeTo(dockSideNavWidth + 1));  // wide view
 
         it('should open when navigating to a guide page (guide/pipes)', () => {
           navigateTo('guide/pipes');
@@ -240,8 +240,8 @@ describe('AppComponent', () => {
         });
       });
 
-      describe('when NOT side-by-side (narrow)', () => {
-        beforeEach(() => resizeTo(dockSideNavWidth - 1)); // NOT side-by-side
+      describe('when view is narrow', () => {
+        beforeEach(() => resizeTo(dockSideNavWidth - 1)); // narrow view
 
         it('should be closed when navigating to a guide page (guide/pipes)', () => {
           navigateTo('guide/pipes');
@@ -294,7 +294,7 @@ describe('AppComponent', () => {
         });
       });
 
-      describe('when changing side-by-side (narrow --> wide)', () => {
+      describe('when changing from narrow to wide view', () => {
         const sidenavDocs = ['api/a/b/c/d', 'guide/pipes'];
         const nonSidenavDocs = ['features', 'about'];
 
@@ -351,7 +351,7 @@ describe('AppComponent', () => {
         });
       });
 
-      describe('when changing side-by-side (wide --> narrow)', () => {
+      describe('when changing from wide to narrow view', () => {
         const sidenavDocs = ['api/a/b/c/d', 'guide/pipes'];
         const nonSidenavDocs = ['features', 'about'];
 
@@ -384,7 +384,7 @@ describe('AppComponent', () => {
       async function setupSelectorForTesting(mode?: string) {
         createTestingModule('a/b', mode);
         await initializeTest();
-        component.onResize(dockSideNavWidth + 1); // side-by-side
+        component.onResize(dockSideNavWidth + 1); // wide view
         selectElement = fixture.debugElement.query(By.directive(SelectComponent));
         selectComponent = selectElement.componentInstance;
       }
