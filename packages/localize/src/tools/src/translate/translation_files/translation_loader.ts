@@ -57,11 +57,11 @@ export class TranslationLoader {
   private loadBundle(filePath: AbsoluteFsPath, providedLocale: string|undefined):
       TranslationBundle {
     const fileContents = this.fs.readFile(filePath);
-    const canParseResults = new Map<TranslationParser<any>, ParseAnalysis<any>>();
+    const unusedParsers = new Map<TranslationParser<any>, ParseAnalysis<any>>();
     for (const translationParser of this.translationParsers) {
       const result = translationParser.analyze(filePath, fileContents);
-      canParseResults.set(translationParser, result);
       if (!result.canParse) {
+        unusedParsers.set(translationParser, result);
         continue;
       }
 
@@ -94,7 +94,7 @@ export class TranslationLoader {
     }
 
     const diagnosticsMessages: string[] = [];
-    for (const [parser, result] of canParseResults.entries()) {
+    for (const [parser, result] of unusedParsers.entries()) {
       diagnosticsMessages.push(result.diagnostics.formatDiagnostics(
           `\n${parser.constructor.name} cannot parse translation file.`));
     }

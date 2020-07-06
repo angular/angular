@@ -38,17 +38,30 @@ export class SimpleJsonTranslationParser implements TranslationParser<Object> {
   analyze(filePath: string, contents: string): ParseAnalysis<Object> {
     const diagnostics = new Diagnostics();
     if (extname(filePath) !== '.json') {
+      diagnostics.warn('File does not have .json extension.');
       return {canParse: false, diagnostics};
     }
     try {
       const json = JSON.parse(contents);
-      return {
-        canParse: (typeof json.locale === 'string' && typeof json.translations === 'object'),
-        diagnostics,
-        hint: json
-      };
+      if (json.locale === undefined) {
+        diagnostics.warn('Required "locale" property missing.');
+        return {canParse: false, diagnostics};
+      }
+      if (typeof json.locale !== 'string') {
+        diagnostics.warn('The "locale" property is not a string.');
+        return {canParse: false, diagnostics};
+      }
+      if (json.translations === undefined) {
+        diagnostics.warn('Required "translations" property missing.');
+        return {canParse: false, diagnostics};
+      }
+      if (typeof json.translations !== 'object') {
+        diagnostics.warn('The "translations" is not an object.');
+        return {canParse: false, diagnostics};
+      }
+      return {canParse: true, diagnostics, hint: json};
     } catch (e) {
-      diagnostics.warn('File is not valid JSON');
+      diagnostics.warn('File is not valid JSON.');
       return {canParse: false, diagnostics};
     }
   }
