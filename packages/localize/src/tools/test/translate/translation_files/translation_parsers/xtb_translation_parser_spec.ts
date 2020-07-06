@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵcomputeMsgId, ɵmakeParsedTranslation} from '@angular/localize';
-import {Diagnostics} from '../../../../src/diagnostics';
-import {ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
+import {ParseAnalysis, ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
 import {XtbTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xtb_translation_parser';
 
 describe('XtbTranslationParser', () => {
@@ -23,21 +22,45 @@ describe('XtbTranslationParser', () => {
          expect(parser.canParse('/some/file.xmb', '')).toBe(false);
          expect(parser.canParse('/some/file.xtb', '')).toBe(false);
        });
+  });
 
+  describe('analyze()', () => {
+    it('should return a success object if the file extension is `.xtb` or `.xmb` and it contains the `<translationbundle>` tag',
+       () => {
+         const parser = new XtbTranslationParser();
+         expect(parser.analyze('/some/file.xtb', '<translationbundle>'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.xmb', '<translationbundle>'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.xtb', '<translationbundle lang="en">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.xmb', '<translationbundle lang="en">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+       });
 
-    it('should fill a diagnostics object, if provided, when the file is not a valid format', () => {
-      let diagnostics: Diagnostics;
+    it('should return a failure object if the file is not valid XTB', () => {
+      const parser = new XtbTranslationParser();
+      expect(parser.analyze('/some/file.json', '<translationbundle>'))
+          .toEqual(jasmine.objectContaining({canParse: false}));
+      expect(parser.analyze('/some/file.xmb', '')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+      expect(parser.analyze('/some/file.xtb', '')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+    });
+
+    it('should return a diagnostics object when the file is not a valid format', () => {
+      let results: ParseAnalysis<any>;
       const parser = new XtbTranslationParser();
 
-      diagnostics = new Diagnostics();
-      parser.canParse('/some/file.xtb', '<moo>', diagnostics);
-      expect(diagnostics.messages).toEqual([
+      results = parser.analyze('/some/file.xtb', '<moo>');
+      expect(results.diagnostics.messages).toEqual([
         {type: 'warning', message: 'The XML file does not contain a <translationbundle> root node.'}
       ]);
 
-      diagnostics = new Diagnostics();
-      parser.canParse('/some/file.xtb', '<translationbundle></translation>', diagnostics);
-      expect(diagnostics.messages).toEqual([{
+      results = parser.analyze('/some/file.xtb', '<translationbundle></translation>');
+      expect(results.diagnostics.messages).toEqual([{
         type: 'error',
         message:
             'Unexpected closing tag "translation". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags ("<translationbundle>[ERROR ->]</translation>"): /some/file.xtb@0:19'

@@ -9,7 +9,7 @@ import {AbsoluteFsPath, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_s
 import {DiagnosticHandlingStrategy, Diagnostics} from '../../diagnostics';
 import {TranslationBundle} from '../translator';
 
-import {TranslationParser} from './translation_parsers/translation_parser';
+import {ParseAnalysis, TranslationParser} from './translation_parsers/translation_parser';
 
 /**
  * Use this class to load a collection of translation files from disk.
@@ -57,15 +57,16 @@ export class TranslationLoader {
   private loadBundle(filePath: AbsoluteFsPath, providedLocale: string|undefined):
       TranslationBundle {
     const fileContents = this.fs.readFile(filePath);
-    const canParseDiagnostics = new Diagnostics();
+    const canParseResults = new Map<TranslationParser<any>, ParseAnalysis<any>>();
     for (const translationParser of this.translationParsers) {
-      const result = translationParser.canParse(filePath, fileContents, canParseDiagnostics);
-      if (!result) {
+      const result = translationParser.analyze(filePath, fileContents);
+      canParseResults.set(translationParser, result);
+      if (!result.canParse) {
         continue;
       }
 
       const {locale: parsedLocale, translations, diagnostics} =
-          translationParser.parse(filePath, fileContents, result);
+          translationParser.parse(filePath, fileContents, result.hint);
       if (diagnostics.hasErrors) {
         throw new Error(diagnostics.formatDiagnostics(
             `The translation file "${filePath}" could not be parsed.`));
@@ -92,13 +93,19 @@ export class TranslationLoader {
       return {locale, translations, diagnostics};
     }
 
-    throw new Error(canParseDiagnostics.formatDiagnostics(
-        `There is no "TranslationParser" that can parse this translation file: ${filePath}.`));
+    const diagnosticsMessages: string[] = [];
+    for (const [parser, result] of canParseResults.entries()) {
+      diagnosticsMessages.push(result.diagnostics.formatDiagnostics(
+          `\n${parser.constructor.name} cannot parse translation file.`));
+    }
+    throw new Error(
+        `There is no "TranslationParser" that can parse this translation file: ${filePath}.` +
+        diagnosticsMessages.join('\n'));
   }
 
   /**
-   * There is more than one `filePath` for this locale, so load each as a bundle and then merge them
-   * all together.
+   * There is more than one `filePath` for this locale, so load each as a bundle and then merge
+   * them all together.
    */
   private mergeBundles(filePaths: AbsoluteFsPath[], providedLocale: string|undefined):
       TranslationBundle {

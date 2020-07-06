@@ -8,7 +8,8 @@
 import {ɵMessageId, ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 import {extname} from 'path';
 import {Diagnostics} from '../../../diagnostics';
-import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
+
+import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
 
 /**
  * A translation parser that can parse JSON that has the form:
@@ -26,15 +27,29 @@ import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
  * @see SimpleJsonTranslationSerializer
  */
 export class SimpleJsonTranslationParser implements TranslationParser<Object> {
+  /**
+   * @deprecated
+   */
   canParse(filePath: string, contents: string): Object|false {
+    const result = this.analyze(filePath, contents);
+    return result.canParse && result.hint;
+  }
+
+  analyze(filePath: string, contents: string): ParseAnalysis<Object> {
+    const diagnostics = new Diagnostics();
     if (extname(filePath) !== '.json') {
-      return false;
+      return {canParse: false, diagnostics};
     }
     try {
       const json = JSON.parse(contents);
-      return (typeof json.locale === 'string' && typeof json.translations === 'object') && json;
-    } catch {
-      return false;
+      return {
+        canParse: (typeof json.locale === 'string' && typeof json.translations === 'object'),
+        diagnostics,
+        hint: json
+      };
+    } catch (e) {
+      diagnostics.warn('File is not valid JSON');
+      return {canParse: false, diagnostics};
     }
   }
 

@@ -14,7 +14,7 @@ import {BaseVisitor} from '../base_visitor';
 import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
-import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
+import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
 import {addParseDiagnostic, addParseError, canParseXml, getAttribute, parseInnerRange, XmlTranslationParserHint} from './translation_utils';
 
 
@@ -26,13 +26,22 @@ import {addParseDiagnostic, addParseError, canParseXml, getAttribute, parseInner
  * @see XmbTranslationSerializer
  */
 export class XtbTranslationParser implements TranslationParser<XmlTranslationParserHint> {
-  canParse(filePath: string, contents: string, diagnostics?: Diagnostics): XmlTranslationParserHint|
-      false {
+  /**
+   * @deprecated
+   */
+  canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
+    const result = this.analyze(filePath, contents);
+    return result.canParse && result.hint;
+  }
+
+  analyze(filePath: string, contents: string): ParseAnalysis<XmlTranslationParserHint> {
     const extension = extname(filePath);
     if (extension !== '.xtb' && extension !== '.xmb') {
-      return false;
+      const diagnostics = new Diagnostics();
+      diagnostics.warn('Must have xtb or xmb extension.');
+      return {canParse: false, diagnostics};
     }
-    return canParseXml(filePath, contents, 'translationbundle', {}, diagnostics);
+    return canParseXml(filePath, contents, 'translationbundle', {});
   }
 
   parse(filePath: string, contents: string, hint?: XmlTranslationParserHint):

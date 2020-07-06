@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵcomputeMsgId, ɵmakeParsedTranslation} from '@angular/localize';
-import {Diagnostics} from '../../../../src/diagnostics';
-import {ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
+import {ParseAnalysis, ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
 import {Xliff1TranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xliff1_translation_parser';
 
 describe('Xliff1TranslationParser', () => {
@@ -30,28 +29,55 @@ describe('Xliff1TranslationParser', () => {
          expect(parser.canParse('/some/file.xlf', '')).toBe(false);
          expect(parser.canParse('/some/file.json', '')).toBe(false);
        });
+  });
 
-    it('should fill a diagnostics object, if provided, when the file is not a valid format', () => {
-      let diagnostics: Diagnostics;
+  describe('analyze()', () => {
+    it('should return a success object if the file contains an <xliff> element with version="1.2" attribute',
+       () => {
+         const parser = new Xliff1TranslationParser();
+         expect(parser.analyze('/some/file.xlf', '<xliff version="1.2">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.json', '<xliff version="1.2">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.xliff', '<xliff version="1.2">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.json', '<xliff version="1.2">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+       });
+
+    it('should return a failure object if the file cannot be parsed as XLIFF 1.2', () => {
+      const parser = new Xliff1TranslationParser();
+      expect(parser.analyze('/some/file.xlf', '<xliff>')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+      expect(parser.analyze('/some/file.xlf', '<xliff version="2.0">'))
+          .toEqual(jasmine.objectContaining({canParse: false}));
+      expect(parser.analyze('/some/file.xlf', '')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+      expect(parser.analyze('/some/file.json', '')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+    });
+
+    it('should return a diagnostics object when the file is not a valid format', () => {
+      let result: ParseAnalysis<any>;
       const parser = new Xliff1TranslationParser();
 
-      diagnostics = new Diagnostics();
-      parser.canParse('/some/file.xlf', '<moo>', diagnostics);
-      expect(diagnostics.messages).toEqual([
+      result = parser.analyze('/some/file.xlf', '<moo>');
+      expect(result.diagnostics.messages).toEqual([
         {type: 'warning', message: 'The XML file does not contain a <xliff> root node.'}
       ]);
 
-      diagnostics = new Diagnostics();
-      parser.canParse('/some/file.xlf', '<xliff version="2.0">', diagnostics);
-      expect(diagnostics.messages).toEqual([{
+      result = parser.analyze('/some/file.xlf', '<xliff version="2.0">');
+      expect(result.diagnostics.messages).toEqual([{
         type: 'warning',
         message:
             'The <xliff> node does not have the required attribute: version="1.2". ("[WARNING ->]<xliff version="2.0">"): /some/file.xlf@0:0'
       }]);
 
-      diagnostics = new Diagnostics();
-      parser.canParse('/some/file.xlf', '<xliff version="1.2"></file>', diagnostics);
-      expect(diagnostics.messages).toEqual([{
+      result = parser.analyze('/some/file.xlf', '<xliff version="1.2"></file>');
+      expect(result.diagnostics.messages).toEqual([{
         type: 'error',
         message:
             'Unexpected closing tag "file". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags ("<xliff version="1.2">[ERROR ->]</file>"): /some/file.xlf@0:21'

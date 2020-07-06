@@ -13,7 +13,7 @@ import {BaseVisitor} from '../base_visitor';
 import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
-import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
+import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
 import {addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, parseInnerRange, XmlTranslationParserHint} from './translation_utils';
 
 /**
@@ -25,9 +25,16 @@ import {addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedEle
  * @see Xliff1TranslationSerializer
  */
 export class Xliff1TranslationParser implements TranslationParser<XmlTranslationParserHint> {
-  canParse(filePath: string, contents: string, diagnostics?: Diagnostics): XmlTranslationParserHint|
-      false {
-    return canParseXml(filePath, contents, 'xliff', {version: '1.2'}, diagnostics);
+  /**
+   * @deprecated
+   */
+  canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
+    const result = this.analyze(filePath, contents);
+    return result.canParse && result.hint;
+  }
+
+  analyze(filePath: string, contents: string): ParseAnalysis<XmlTranslationParserHint> {
+    return canParseXml(filePath, contents, 'xliff', {version: '1.2'});
   }
 
   parse(filePath: string, contents: string, hint?: XmlTranslationParserHint):
