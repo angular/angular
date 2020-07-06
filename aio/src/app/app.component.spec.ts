@@ -25,11 +25,9 @@ import { first, mapTo } from 'rxjs/operators';
 import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
-import { AppComponent } from './app.component';
+import { AppComponent, dockSideNavWidth, showFloatingTocWidth, showTopMenuWidth } from './app.component';
 import { AppModule } from './app.module';
 
-const sideBySideBreakPoint = 992;
-const hideToCBreakPoint = 800;
 const startedDelay = 100;
 
 describe('AppComponent', () => {
@@ -58,7 +56,7 @@ describe('AppComponent', () => {
     component = fixture.componentInstance;
 
     fixture.detectChanges();
-    component.onResize(sideBySideBreakPoint + 1); // wide by default
+    component.onResize(showTopMenuWidth + 1); // wide by default
 
     const de = fixture.debugElement;
     const docViewerDe = de.query(By.css('aio-doc-viewer'));
@@ -99,7 +97,7 @@ describe('AppComponent', () => {
       });
 
       it('should be false on narrow screens', () => {
-        component.onResize(hideToCBreakPoint - 1);
+        component.onResize(showFloatingTocWidth - 1);
 
         tocService.tocList.next([{}, {}, {}] as TocItem[]);
         expect(component.hasFloatingToc).toBe(false);
@@ -112,7 +110,7 @@ describe('AppComponent', () => {
       });
 
       it('should be true on wide screens unless the toc is empty', () => {
-        component.onResize(hideToCBreakPoint + 1);
+        component.onResize(showFloatingTocWidth + 1);
 
         tocService.tocList.next([{}, {}, {}] as TocItem[]);
         expect(component.hasFloatingToc).toBe(true);
@@ -127,37 +125,47 @@ describe('AppComponent', () => {
       it('should be false when toc is empty', () => {
         tocService.tocList.next([]);
 
-        component.onResize(hideToCBreakPoint + 1);
+        component.onResize(showFloatingTocWidth + 1);
         expect(component.hasFloatingToc).toBe(false);
 
-        component.onResize(hideToCBreakPoint - 1);
+        component.onResize(showFloatingTocWidth - 1);
         expect(component.hasFloatingToc).toBe(false);
 
-        component.onResize(hideToCBreakPoint + 1);
+        component.onResize(showFloatingTocWidth + 1);
         expect(component.hasFloatingToc).toBe(false);
       });
 
       it('should be true when toc is not empty unless the screen is narrow', () => {
         tocService.tocList.next([{}, {}, {}] as TocItem[]);
 
-        component.onResize(hideToCBreakPoint + 1);
+        component.onResize(showFloatingTocWidth + 1);
         expect(component.hasFloatingToc).toBe(true);
 
-        component.onResize(hideToCBreakPoint - 1);
+        component.onResize(showFloatingTocWidth - 1);
         expect(component.hasFloatingToc).toBe(false);
 
-        component.onResize(hideToCBreakPoint + 1);
+        component.onResize(showFloatingTocWidth + 1);
         expect(component.hasFloatingToc).toBe(true);
       });
     });
 
-    describe('isSideBySide', () => {
+    describe('showTopMenu', () => {
       it('should be updated on resize', () => {
-        component.onResize(sideBySideBreakPoint - 1);
-        expect(component.isSideBySide).toBe(false);
+        component.onResize(showTopMenuWidth - 1);
+        expect(component.showTopMenu).toBe(false);
 
-        component.onResize(sideBySideBreakPoint + 1);
-        expect(component.isSideBySide).toBe(true);
+        component.onResize(showTopMenuWidth + 1);
+        expect(component.showTopMenu).toBe(true);
+      });
+    });
+
+    describe('dockSideNav', () => {
+      it('should be updated on resize', () => {
+        component.onResize(dockSideNavWidth - 1);
+        expect(component.dockSideNav).toBe(false);
+
+        component.onResize(dockSideNavWidth + 1);
+        expect(component.dockSideNav).toBe(true);
       });
     });
 
@@ -186,7 +194,7 @@ describe('AppComponent', () => {
       };
 
       describe('when side-by-side (wide)', () => {
-        beforeEach(() => resizeTo(sideBySideBreakPoint + 1));  // side-by-side
+        beforeEach(() => resizeTo(dockSideNavWidth + 1));  // side-by-side
 
         it('should open when navigating to a guide page (guide/pipes)', () => {
           navigateTo('guide/pipes');
@@ -233,7 +241,7 @@ describe('AppComponent', () => {
       });
 
       describe('when NOT side-by-side (narrow)', () => {
-        beforeEach(() => resizeTo(sideBySideBreakPoint - 1)); // NOT side-by-side
+        beforeEach(() => resizeTo(dockSideNavWidth - 1)); // NOT side-by-side
 
         it('should be closed when navigating to a guide page (guide/pipes)', () => {
           navigateTo('guide/pipes');
@@ -292,24 +300,24 @@ describe('AppComponent', () => {
 
         sidenavDocs.forEach(doc => {
           it(`should open when on a sidenav doc (${doc})`, () => {
-            resizeTo(sideBySideBreakPoint - 1);
+            resizeTo(dockSideNavWidth - 1);
 
             navigateTo(doc);
             expect(sidenav.opened).toBe(false);
 
-            resizeTo(sideBySideBreakPoint + 1);
+            resizeTo(dockSideNavWidth + 1);
             expect(sidenav.opened).toBe(true);
           });
         });
 
         nonSidenavDocs.forEach(doc => {
           it(`should remain closed when on a non-sidenav doc (${doc})`, () => {
-            resizeTo(sideBySideBreakPoint - 1);
+            resizeTo(dockSideNavWidth - 1);
 
             navigateTo(doc);
             expect(sidenav.opened).toBe(false);
 
-            resizeTo(sideBySideBreakPoint + 1);
+            resizeTo(dockSideNavWidth + 1);
             expect(sidenav.opened).toBe(false);
           });
         });
@@ -317,26 +325,26 @@ describe('AppComponent', () => {
         describe('when manually opened', () => {
           sidenavDocs.forEach(doc => {
             it(`should remain opened when on a sidenav doc (${doc})`, () => {
-              resizeTo(sideBySideBreakPoint - 1);
+              resizeTo(dockSideNavWidth - 1);
 
               navigateTo(doc);
               toggleSidenav();
               expect(sidenav.opened).toBe(true);
 
-              resizeTo(sideBySideBreakPoint + 1);
+              resizeTo(dockSideNavWidth + 1);
               expect(sidenav.opened).toBe(true);
             });
           });
 
           nonSidenavDocs.forEach(doc => {
             it(`should close when on a non-sidenav doc (${doc})`, () => {
-              resizeTo(sideBySideBreakPoint - 1);
+              resizeTo(dockSideNavWidth - 1);
 
               navigateTo(doc);
               toggleSidenav();
               expect(sidenav.opened).toBe(true);
 
-              resizeTo(sideBySideBreakPoint + 1);
+              resizeTo(showTopMenuWidth + 1);
               expect(sidenav.opened).toBe(false);
             });
           });
@@ -352,7 +360,7 @@ describe('AppComponent', () => {
             navigateTo(doc);
             expect(sidenav.opened).toBe(true);
 
-            resizeTo(sideBySideBreakPoint - 1);
+            resizeTo(dockSideNavWidth - 1);
             expect(sidenav.opened).toBe(false);
           });
         });
@@ -362,7 +370,7 @@ describe('AppComponent', () => {
             navigateTo(doc);
             expect(sidenav.opened).toBe(false);
 
-            resizeTo(sideBySideBreakPoint - 1);
+            resizeTo(dockSideNavWidth - 1);
             expect(sidenav.opened).toBe(false);
           });
         });
@@ -376,7 +384,7 @@ describe('AppComponent', () => {
       async function setupSelectorForTesting(mode?: string) {
         createTestingModule('a/b', mode);
         await initializeTest();
-        component.onResize(sideBySideBreakPoint + 1); // side-by-side
+        component.onResize(dockSideNavWidth + 1); // side-by-side
         selectElement = fixture.debugElement.query(By.directive(SelectComponent));
         selectComponent = selectElement.componentInstance;
       }
