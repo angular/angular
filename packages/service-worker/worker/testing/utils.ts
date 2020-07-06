@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NormalizedUrl} from '../src/api';
+
+
 /**
  * Get a normalized representation of a URL relative to a provided base URL.
  *
@@ -19,11 +22,11 @@
  *     (This is usually the ServiceWorker's origin or registration scope).
  * @return A normalized representation of the URL.
  */
-export function normalizeUrl(url: string, relativeTo: string): string {
+export function normalizeUrl(url: string, relativeTo: string): NormalizedUrl {
   const {origin, path, search} = parseUrl(url, relativeTo);
   const {origin: relativeToOrigin} = parseUrl(relativeTo);
 
-  return (origin === relativeToOrigin) ? path + search : url;
+  return ((origin === relativeToOrigin) ? path + search : url) as NormalizedUrl;
 }
 
 /**
