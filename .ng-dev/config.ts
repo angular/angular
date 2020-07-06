@@ -3,7 +3,7 @@ import {MergeConfig} from '../dev-infra/pr/merge/config';
 // The configuration for `ng-dev commit-message` commands.
 const commitMessage = {
   'maxLength': 120,
-  'minBodyLength': 100,
+  'minBodyLength': 20,
   'minBodyLengthTypeExcludes': ['docs'],
   'types': [
     'build',
