@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AssetGroupConfig, Manifest} from '../src/manifest';
+import {Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 
 import {MockResponse} from './fetch';
@@ -69,19 +69,38 @@ export class MockFileSystem {
 }
 
 export class MockServerStateBuilder {
+  private rootDir = '/';
   private resources = new Map<string, Response>();
   private errors = new Set<string>();
 
-  withStaticFiles(fs: MockFileSystem): MockServerStateBuilder {
-    fs.list().forEach(path => {
-      const file = fs.lookup(path)!;
-      this.resources.set(path, new MockResponse(file.contents, {headers: file.headers}));
+  withRootDirectory(newRootDir: string): MockServerStateBuilder {
+    // Update existing resources/errors.
+    const oldRootDir = this.rootDir;
+    const updateRootDir = (path: string) =>
+        path.startsWith(oldRootDir) ? joinPaths(newRootDir, path.slice(oldRootDir.length)) : path;
+
+    this.resources = new Map(
+        [...this.resources].map(([path, contents]) => [updateRootDir(path), contents.clone()]));
+    this.errors = new Set([...this.errors].map(url => updateRootDir(url)));
+
+    // Set `rootDir` for future resource/error additions.
+    this.rootDir = newRootDir;
+
+    return this;
+  }
+
+  withStaticFiles(dir: MockFileSystem): MockServerStateBuilder {
+    dir.list().forEach(path => {
+      const file = dir.lookup(path)!;
+      this.resources.set(
+          joinPaths(this.rootDir, path), new MockResponse(file.contents, {headers: file.headers}));
     });
     return this;
   }
 
   withManifest(manifest: Manifest): MockServerStateBuilder {
-    this.resources.set('ngsw.json', new MockResponse(JSON.stringify(manifest)));
+    const manifestPath = joinPaths(this.rootDir, 'ngsw.json');
+    this.resources.set(manifestPath, new MockResponse(JSON.stringify(manifest)));
     return this;
   }
 
@@ -234,14 +253,16 @@ export function tmpManifestSingleAssetGroup(fs: MockFileSystem): Manifest {
 }
 
 export function tmpHashTableForFs(
-    fs: MockFileSystem, breakHashes: {[url: string]: boolean} = {}): {[url: string]: string} {
+    fs: MockFileSystem, breakHashes: {[url: string]: boolean} = {},
+    baseHref = '/'): {[url: string]: string} {
   const table: {[url: string]: string} = {};
-  fs.list().forEach(path => {
-    const file = fs.lookup(path)!;
+  fs.list().forEach(filePath => {
+    const urlPath = joinPaths(baseHref, filePath);
+    const file = fs.lookup(filePath)!;
     if (file.hashThisFile) {
-      table[path] = file.hash;
-      if (breakHashes[path]) {
-        table[path] = table[path].split('').reverse().join('');
+      table[urlPath] = file.hash;
+      if (breakHashes[filePath]) {
+        table[urlPath] = table[urlPath].split('').reverse().join('');
       }
     }
   });
@@ -255,4 +276,12 @@ export function tmpHashTable(manifest: Manifest): Map<string, string> {
     map.set(url, hash);
   });
   return map;
+}
+
+// Helpers
+/**
+ * Join two path segments, ensuring that there is exactly one slash (`/`) between them.
+ */
+function joinPaths(path1: string, path2: string): string {
+  return `${path1.replace(/\/$/, '')}/${path2.replace(/^\//, '')}`;
 }
