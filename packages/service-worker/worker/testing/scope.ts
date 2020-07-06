@@ -81,8 +81,7 @@ export class MockClients implements Clients {
   async claim(): Promise<any> {}
 }
 
-export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context {
-  readonly cacheNamePrefix: string;
+export class SwTestHarness extends Adapter implements ServiceWorkerGlobalScope, Context {
   readonly clients = new MockClients();
   private eventHandlers = new Map<string, Function>();
   private skippedWaiting = true;
@@ -98,7 +97,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
         this.selfMessageQueue.push(msg);
       },
     },
-    scope: this.origin,
+    scope: this.scopeUrl,
     showNotification:
         (title: string, options: Object) => {
           this.notifications.push({title, options});
@@ -125,7 +124,11 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     return url && (typeof url.parse === 'function') && (typeof url.resolve === 'function');
   }
 
-  time: number;
+  get time() {
+    return this.mockTime;
+  }
+
+  private mockTime = Date.now();
 
   private timers: {
     at: number,
@@ -135,10 +138,8 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   }[] = [];
 
   constructor(
-      private server: MockServerState, readonly caches: MockCacheStorage, private origin: string) {
-    const baseHref = this.parseUrl(origin).path;
-    this.cacheNamePrefix = 'ngsw:' + baseHref;
-    this.time = Date.now();
+      private server: MockServerState, readonly caches: MockCacheStorage, scopeUrl: string) {
+    super(scopeUrl);
   }
 
   async resolveSelfMessages(): Promise<void> {
@@ -170,6 +171,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     }
     return skippedWaiting;
   }
+
   updateServerState(server?: MockServerState): void {
     this.server = server || EMPTY_SERVER_STATE;
   }
@@ -281,7 +283,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   timeout(ms: number): Promise<void> {
     const promise = new Promise<void>(resolve => {
       this.timers.push({
-        at: this.time + ms,
+        at: this.mockTime + ms,
         duration: ms,
         fn: resolve,
         fired: false,
@@ -296,9 +298,9 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   }
 
   advance(by: number): void {
-    this.time += by;
+    this.mockTime += by;
     this.timers.filter(timer => !timer.fired)
-        .filter(timer => timer.at <= this.time)
+        .filter(timer => timer.at <= this.mockTime)
         .forEach(timer => {
           timer.fired = true;
           timer.fn();
