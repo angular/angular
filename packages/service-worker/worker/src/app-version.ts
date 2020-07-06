@@ -7,7 +7,7 @@
  */
 
 import {Adapter, Context} from './adapter';
-import {CacheState, UpdateCacheStatus, UpdateSource} from './api';
+import {CacheState, NormalizedUrl, UpdateCacheStatus, UpdateSource} from './api';
 import {AssetGroup, LazyAssetGroup, PrefetchAssetGroup} from './assets';
 import {DataGroup} from './data';
 import {Database} from './database';
@@ -31,10 +31,9 @@ const BACKWARDS_COMPATIBILITY_NAVIGATION_URLS = [
  */
 export class AppVersion implements UpdateSource {
   /**
-   * A Map of absolute URL paths (/foo.txt) to the known hash of their
-   * contents (if available).
+   * A Map of absolute URL paths (`/foo.txt`) to the known hash of their contents (if available).
    */
-  private hashTable = new Map<string, string>();
+  private hashTable = new Map<NormalizedUrl, string>();
 
   /**
    * All of the asset groups active in this version of the app.
@@ -218,7 +217,7 @@ export class AppVersion implements UpdateSource {
   /**
    * Check this version for a given resource with a particular hash.
    */
-  async lookupResourceWithHash(url: string, hash: string): Promise<Response|null> {
+  async lookupResourceWithHash(url: NormalizedUrl, hash: string): Promise<Response|null> {
     // Verify that this version has the requested resource cached. If not,
     // there's no point in trying.
     if (!this.hashTable.has(url)) {
@@ -238,7 +237,7 @@ export class AppVersion implements UpdateSource {
   /**
    * Check this version for a given resource regardless of its hash.
    */
-  lookupResourceWithoutHash(url: string): Promise<CacheState|null> {
+  lookupResourceWithoutHash(url: NormalizedUrl): Promise<CacheState|null> {
     // Limit the search to asset groups, and only scan the cache, don't
     // load resources from the network.
     return this.assetGroups.reduce(async (potentialResponse, group) => {
@@ -256,10 +255,10 @@ export class AppVersion implements UpdateSource {
   /**
    * List all unhashed resources from all asset groups.
    */
-  previouslyCachedResources(): Promise<string[]> {
-    return this.assetGroups.reduce(async (resources, group) => {
-      return (await resources).concat(await group.unhashedResources());
-    }, Promise.resolve<string[]>([]));
+  previouslyCachedResources(): Promise<NormalizedUrl[]> {
+    return this.assetGroups.reduce(
+        async (resources, group) => (await resources).concat(await group.unhashedResources()),
+        Promise.resolve<NormalizedUrl[]>([]));
   }
 
   async recentCacheStatus(url: string): Promise<UpdateCacheStatus> {

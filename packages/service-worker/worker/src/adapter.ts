@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NormalizedUrl} from './api';
+
+
 /**
  * Adapts the service worker to its runtime environment.
  *
@@ -75,16 +78,10 @@ export class Adapter {
    * @param url The raw request URL.
    * @return A normalized representation of the URL.
    */
-  normalizeUrl(url: string): string {
+  normalizeUrl(url: string): NormalizedUrl {
     // Check the URL's origin against the ServiceWorker's.
     const parsed = this.parseUrl(url, this.scopeUrl);
-    if (parsed.origin === this.origin) {
-      // The URL is relative to the SW's origin: Return the path only.
-      return parsed.path;
-    } else {
-      // The URL is not relative to the SW's origin: Return the full URL.
-      return url;
-    }
+    return (parsed.origin === this.origin ? parsed.path : url) as NormalizedUrl;
   }
 
   /**
