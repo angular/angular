@@ -13,7 +13,7 @@ import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 import {clearAllCaches, MockCache} from '../testing/cache';
 import {MockRequest, MockResponse} from '../testing/fetch';
-import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
+import {MockFileSystem, MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
 (function() {
@@ -352,7 +352,7 @@ describe('Driver', () => {
     await scope.resolveSelfMessages();
     scope.autoAdvanceTime = false;
 
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
@@ -364,7 +364,7 @@ describe('Driver', () => {
   it('initializes prefetched content correctly, after a request kicks it off', async () => {
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
     await driver.initialized;
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
@@ -381,7 +381,7 @@ describe('Driver', () => {
     // Making a request initializes the driver (fetches assets).
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
     expect(driver['latestHash']).toEqual(jasmine.any(String));
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
@@ -400,7 +400,7 @@ describe('Driver', () => {
     // Pushing a message initializes the driver (fetches assets).
     await scope.handleMessage({action: 'foo'}, 'someClient');
     expect(driver['latestHash']).toEqual(jasmine.any(String));
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
@@ -466,7 +466,7 @@ describe('Driver', () => {
 
     scope.updateServerState(serverUpdate);
     expect(await driver.checkForUpdate()).toEqual(true);
-    serverUpdate.assertSawRequestFor('ngsw.json');
+    serverUpdate.assertSawRequestFor('/ngsw.json');
     serverUpdate.assertSawRequestFor('/foo.txt');
     serverUpdate.assertSawRequestFor('/redirected.txt');
     serverUpdate.assertNoOtherRequests();
@@ -562,7 +562,7 @@ describe('Driver', () => {
     scope.advance(12000);
     await driver.idle.empty;
 
-    serverUpdate.assertSawRequestFor('ngsw.json');
+    serverUpdate.assertSawRequestFor('/ngsw.json');
     serverUpdate.assertSawRequestFor('/foo.txt');
     serverUpdate.assertSawRequestFor('/redirected.txt');
     serverUpdate.assertNoOtherRequests();
@@ -578,7 +578,7 @@ describe('Driver', () => {
     scope.advance(12000);
     await driver.idle.empty;
 
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
   });
 
   it('does not make concurrent checks for updates on navigation', async () => {
@@ -593,7 +593,7 @@ describe('Driver', () => {
     scope.advance(12000);
     await driver.idle.empty;
 
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
     server.assertNoOtherRequests();
   });
 
@@ -791,70 +791,75 @@ describe('Driver', () => {
   });
 
   it('should bypass serviceworker on ngsw-bypass parameter', async () => {
-    await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': 'true'}});
-    server.assertNoRequestFor('/foo.txt');
+    // NOTE:
+    // Requests that bypass the SW are not handled at all in the mock implementation of `scope`,
+    // therefore no requests reach the server.
 
-    await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': 'anything'}});
-    server.assertNoRequestFor('/foo.txt');
+    await makeRequest(scope, '/some/url', undefined, {headers: {'ngsw-bypass': 'true'}});
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': null!}});
-    server.assertNoRequestFor('/foo.txt');
+    await makeRequest(scope, '/some/url', undefined, {headers: {'ngsw-bypass': 'anything'}});
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/foo.txt', undefined, {headers: {'NGSW-bypass': 'upperCASE'}});
-    server.assertNoRequestFor('/foo.txt');
+    await makeRequest(scope, '/some/url', undefined, {headers: {'ngsw-bypass': null!}});
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypasss': 'anything'}});
-    server.assertSawRequestFor('/foo.txt');
+    await makeRequest(scope, '/some/url', undefined, {headers: {'NGSW-bypass': 'upperCASE'}});
+    server.assertNoRequestFor('/some/url');
 
-    server.clearRequests();
-
-    await makeRequest(scope, '/bar.txt?ngsw-bypass=true');
-    server.assertNoRequestFor('/bar.txt');
-
-    await makeRequest(scope, '/bar.txt?ngsw-bypasss=true');
-    server.assertSawRequestFor('/bar.txt');
+    await makeRequest(scope, '/some/url', undefined, {headers: {'ngsw-bypasss': 'anything'}});
+    server.assertSawRequestFor('/some/url');
 
     server.clearRequests();
 
-    await makeRequest(scope, '/bar.txt?ngsw-bypaSS=something');
-    server.assertNoRequestFor('/bar.txt');
+    await makeRequest(scope, '/some/url?ngsw-bypass=true');
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/bar.txt?testparam=test&ngsw-byPASS=anything');
-    server.assertNoRequestFor('/bar.txt');
-
-    await makeRequest(scope, '/bar.txt?testparam=test&angsw-byPASS=anything');
-    server.assertSawRequestFor('/bar.txt');
+    await makeRequest(scope, '/some/url?ngsw-bypasss=true');
+    server.assertSawRequestFor('/some/url');
 
     server.clearRequests();
 
-    await makeRequest(scope, '/bar&ngsw-bypass=true.txt?testparam=test&angsw-byPASS=anything');
-    server.assertSawRequestFor('/bar&ngsw-bypass=true.txt');
+    await makeRequest(scope, '/some/url?ngsw-bypaSS=something');
+    server.assertNoRequestFor('/some/url');
+
+    await makeRequest(scope, '/some/url?testparam=test&ngsw-byPASS=anything');
+    server.assertNoRequestFor('/some/url');
+
+    await makeRequest(scope, '/some/url?testparam=test&angsw-byPASS=anything');
+    server.assertSawRequestFor('/some/url');
 
     server.clearRequests();
 
-    await makeRequest(scope, '/bar&ngsw-bypass=true.txt');
-    server.assertSawRequestFor('/bar&ngsw-bypass=true.txt');
+    await makeRequest(scope, '/some/url&ngsw-bypass=true.txt?testparam=test&angsw-byPASS=anything');
+    server.assertSawRequestFor('/some/url&ngsw-bypass=true.txt');
+
+    server.clearRequests();
+
+    await makeRequest(scope, '/some/url&ngsw-bypass=true.txt');
+    server.assertSawRequestFor('/some/url&ngsw-bypass=true.txt');
 
     server.clearRequests();
 
     await makeRequest(
-        scope, '/bar&ngsw-bypass=true.txt?testparam=test&ngSW-BYPASS=SOMETHING&testparam2=test');
-    server.assertNoRequestFor('/bar&ngsw-bypass=true.txt');
+        scope,
+        '/some/url&ngsw-bypass=true.txt?testparam=test&ngSW-BYPASS=SOMETHING&testparam2=test');
+    server.assertNoRequestFor('/some/url&ngsw-bypass=true.txt');
 
-    await makeRequest(scope, '/bar?testparam=test&ngsw-bypass');
-    server.assertNoRequestFor('/bar');
+    await makeRequest(scope, '/some/url?testparam=test&ngsw-bypass');
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/bar?testparam=test&ngsw-bypass&testparam2');
-    server.assertNoRequestFor('/bar');
+    await makeRequest(scope, '/some/url?testparam=test&ngsw-bypass&testparam2');
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/bar?ngsw-bypass&testparam2');
-    server.assertNoRequestFor('/bar');
+    await makeRequest(scope, '/some/url?ngsw-bypass&testparam2');
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/bar?ngsw-bypass=&foo=ngsw-bypass');
-    server.assertNoRequestFor('/bar');
+    await makeRequest(scope, '/some/url?ngsw-bypass=&foo=ngsw-bypass');
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/bar?ngsw-byapass&testparam2');
-    server.assertSawRequestFor('/bar');
+    await makeRequest(scope, '/some/url?ngsw-byapass&testparam2');
+    server.assertSawRequestFor('/some/url');
   });
 
   it('unregisters when manifest 404s', async () => {
@@ -922,22 +927,64 @@ describe('Driver', () => {
   });
 
   describe('cache naming', () => {
+    let uid: number;
+
     // Helpers
-    const cacheKeysFor = (baseHref: string) =>
+    const cacheKeysFor = (baseHref: string, manifestHash: string) =>
         [`ngsw:${baseHref}:db:control`,
-         `ngsw:${baseHref}:${manifestHash}:assets:assets:cache`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:assets:meta`,
-         `ngsw:${baseHref}:${manifestHash}:assets:other:cache`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:other:meta`,
-         `ngsw:${baseHref}:${manifestHash}:assets:lazy_prefetch:cache`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:lazy_prefetch:meta`,
+         `ngsw:${baseHref}:${manifestHash}:assets:eager:cache`,
+         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:eager:meta`,
+         `ngsw:${baseHref}:${manifestHash}:assets:lazy:cache`,
+         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:lazy:meta`,
          `ngsw:${baseHref}:42:data:dynamic:api:cache`,
          `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:lru`,
          `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:age`,
-         `ngsw:${baseHref}:43:data:dynamic:api-static:cache`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:43:data:dynamic:api-static:lru`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:43:data:dynamic:api-static:age`,
     ];
+
+    const createManifestWithBaseHref = (baseHref: string, distDir: MockFileSystem): Manifest => ({
+      configVersion: 1,
+      timestamp: 1234567890123,
+      index: `${baseHref}foo.txt`,
+      assetGroups: [
+        {
+          name: 'eager',
+          installMode: 'prefetch',
+          updateMode: 'prefetch',
+          urls: [
+            `${baseHref}foo.txt`,
+            `${baseHref}bar.txt`,
+          ],
+          patterns: [],
+          cacheQueryOptions: {ignoreVary: true},
+        },
+        {
+          name: 'lazy',
+          installMode: 'lazy',
+          updateMode: 'lazy',
+          urls: [
+            `${baseHref}baz.txt`,
+            `${baseHref}qux.txt`,
+          ],
+          patterns: [],
+          cacheQueryOptions: {ignoreVary: true},
+        },
+      ],
+      dataGroups: [
+        {
+          name: 'api',
+          version: 42,
+          maxAge: 3600000,
+          maxSize: 100,
+          strategy: 'freshness',
+          patterns: [
+            '/api/.*',
+          ],
+          cacheQueryOptions: {ignoreVary: true},
+        },
+      ],
+      navigationUrls: processNavigationUrls(baseHref),
+      hashTable: tmpHashTableForFs(distDir, {}, baseHref),
+    });
 
     const getClientAssignments = async (sw: SwTestHarness, baseHref: string) => {
       const cache = await sw.caches.open(`ngsw:${baseHref}:db:control`) as unknown as MockCache;
@@ -945,92 +992,107 @@ describe('Driver', () => {
       return JSON.parse(dehydrated['/assignments'].body!);
     };
 
-    const initializeSwFor =
-        async (baseHref: string, initialCacheState = '{}', serverState = server) => {
+    const initializeSwFor = async (baseHref: string, initialCacheState = '{}') => {
+      const newDistDir = dist.extend().addFile('/foo.txt', `this is foo v${++uid}`).build();
+      const newManifest = createManifestWithBaseHref(baseHref, newDistDir);
+      const newManifestHash = sha1(JSON.stringify(newManifest));
+
+      const serverState = new MockServerStateBuilder()
+                              .withRootDirectory(baseHref)
+                              .withStaticFiles(newDistDir)
+                              .withManifest(newManifest)
+                              .build();
+
       const newScope = new SwTestHarnessBuilder(`http://localhost${baseHref}`)
                            .withCacheState(initialCacheState)
                            .withServerState(serverState)
                            .build();
       const newDriver = new Driver(newScope, newScope, new CacheDatabase(newScope, newScope));
 
-      await makeRequest(newScope, '/foo.txt', baseHref.replace(/\//g, '_'));
+      await makeRequest(newScope, newManifest.index, baseHref.replace(/\//g, '_'));
       await newDriver.initialized;
 
-      return newScope;
+      return [newScope, newManifestHash] as [SwTestHarness, string];
     };
 
-    it('includes the SW scope in all cache names', async () => {
-      // Default SW with scope `/`.
-      await makeRequest(scope, '/foo.txt');
-      await driver.initialized;
-      const cacheNames = await scope.caches.keys();
+    beforeEach(() => {
+      uid = 0;
+    });
 
-      expect(cacheNames).toEqual(cacheKeysFor('/'));
+    it('includes the SW scope in all cache names', async () => {
+      // SW with scope `/`.
+      const [rootScope, rootManifestHash] = await initializeSwFor('/');
+      const cacheNames = await rootScope.caches.keys();
+
+      expect(cacheNames).toEqual(cacheKeysFor('/', rootManifestHash));
       expect(cacheNames.every(name => name.includes('/'))).toBe(true);
 
       // SW with scope `/foo/`.
-      const fooScope = await initializeSwFor('/foo/');
+      const [fooScope, fooManifestHash] = await initializeSwFor('/foo/');
       const fooCacheNames = await fooScope.caches.keys();
 
-      expect(fooCacheNames).toEqual(cacheKeysFor('/foo/'));
+      expect(fooCacheNames).toEqual(cacheKeysFor('/foo/', fooManifestHash));
       expect(fooCacheNames.every(name => name.includes('/foo/'))).toBe(true);
     });
 
     it('does not affect caches from other scopes', async () => {
       // Create SW with scope `/foo/`.
-      const fooScope = await initializeSwFor('/foo/');
+      const [fooScope, fooManifestHash] = await initializeSwFor('/foo/');
       const fooAssignments = await getClientAssignments(fooScope, '/foo/');
 
-      expect(fooAssignments).toEqual({_foo_: manifestHash});
+      expect(fooAssignments).toEqual({_foo_: fooManifestHash});
 
       // Add new SW with different scope.
-      const barScope = await initializeSwFor('/bar/', await fooScope.caches.dehydrate());
+      const [barScope, barManifestHash] =
+          await initializeSwFor('/bar/', await fooScope.caches.dehydrate());
       const barCacheNames = await barScope.caches.keys();
       const barAssignments = await getClientAssignments(barScope, '/bar/');
 
-      expect(barAssignments).toEqual({_bar_: manifestHash});
+      expect(barAssignments).toEqual({_bar_: barManifestHash});
       expect(barCacheNames).toEqual([
-        ...cacheKeysFor('/foo/'),
-        ...cacheKeysFor('/bar/'),
+        ...cacheKeysFor('/foo/', fooManifestHash),
+        ...cacheKeysFor('/bar/', barManifestHash),
       ]);
 
       // The caches for `/foo/` should be intact.
       const fooAssignments2 = await getClientAssignments(barScope, '/foo/');
-      expect(fooAssignments2).toEqual({_foo_: manifestHash});
+      expect(fooAssignments2).toEqual({_foo_: fooManifestHash});
     });
 
     it('updates existing caches for same scope', async () => {
       // Create SW with scope `/foo/`.
-      const fooScope = await initializeSwFor('/foo/');
-      await makeRequest(fooScope, '/foo.txt', '_bar_');
+      const [fooScope, fooManifestHash] = await initializeSwFor('/foo/');
+      await makeRequest(fooScope, '/foo/foo.txt', '_bar_');
       const fooAssignments = await getClientAssignments(fooScope, '/foo/');
 
       expect(fooAssignments).toEqual({
-        _foo_: manifestHash,
-        _bar_: manifestHash,
+        _foo_: fooManifestHash,
+        _bar_: fooManifestHash,
       });
 
-      expect(await makeRequest(fooScope, '/baz.txt', '_foo_')).toBe('this is baz');
-      expect(await makeRequest(fooScope, '/baz.txt', '_bar_')).toBe('this is baz');
+      expect(await makeRequest(fooScope, '/foo/baz.txt', '_foo_')).toBe('this is baz');
+      expect(await makeRequest(fooScope, '/foo/baz.txt', '_bar_')).toBe('this is baz');
 
       // Add new SW with same scope.
-      const fooScope2 =
-          await initializeSwFor('/foo/', await fooScope.caches.dehydrate(), serverUpdate);
+      const [fooScope2, fooManifestHash2] =
+          await initializeSwFor('/foo/', await fooScope.caches.dehydrate());
+
+      // Update client `_foo_` but not client `_bar_`.
       await fooScope2.handleMessage({action: 'CHECK_FOR_UPDATES'}, '_foo_');
       await fooScope2.handleMessage({action: 'ACTIVATE_UPDATE'}, '_foo_');
       const fooAssignments2 = await getClientAssignments(fooScope2, '/foo/');
 
       expect(fooAssignments2).toEqual({
-        _foo_: manifestUpdateHash,
-        _bar_: manifestHash,
+        _foo_: fooManifestHash2,
+        _bar_: fooManifestHash,
       });
 
       // Everything should still work as expected.
-      expect(await makeRequest(fooScope2, '/foo.txt', '_foo_')).toBe('this is foo v2');
-      expect(await makeRequest(fooScope2, '/foo.txt', '_bar_')).toBe('this is foo');
+      expect(await makeRequest(fooScope2, '/foo/foo.txt', '_foo_')).toBe('this is foo v2');
+      expect(await makeRequest(fooScope2, '/foo/foo.txt', '_bar_')).toBe('this is foo v1');
 
-      expect(await makeRequest(fooScope2, '/baz.txt', '_foo_')).toBe('this is baz v2');
-      expect(await makeRequest(fooScope2, '/baz.txt', '_bar_')).toBe('this is baz');
+      expect(await makeRequest(fooScope2, '/foo/baz.txt', '_foo_')).toBe('this is baz');
+      expect(await makeRequest(fooScope2, '/foo/baz.txt', '_bar_')).toBe('this is baz');
     });
   });
 
@@ -1154,7 +1216,7 @@ describe('Driver', () => {
       server.assertNoOtherRequests();
     });
 
-    it('redirects to index on a request to the origin URL request', async () => {
+    it('redirects to index on a request to the scope URL', async () => {
       expect(await navRequest('http://localhost/')).toEqual('this is foo');
       server.assertNoOtherRequests();
     });

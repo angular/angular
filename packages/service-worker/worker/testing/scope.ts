@@ -15,6 +15,7 @@ import {sha1} from '../src/sha1';
 import {MockCacheStorage} from './cache';
 import {MockHeaders, MockRequest, MockResponse} from './fetch';
 import {MockServerState, MockServerStateBuilder} from './mock';
+import {normalizeUrl, parseUrl} from './utils';
 
 const EMPTY_SERVER_STATE = new MockServerStateBuilder().build();
 
@@ -32,10 +33,11 @@ export class MockClient {
 }
 
 export class SwTestHarnessBuilder {
+  private origin = parseUrl(this.scopeUrl).origin;
   private server = EMPTY_SERVER_STATE;
   private caches = new MockCacheStorage(this.origin);
 
-  constructor(private origin = 'http://localhost/') {}
+  constructor(private scopeUrl = 'http://localhost/') {}
 
   withCacheState(cache: string): SwTestHarnessBuilder {
     this.caches = new MockCacheStorage(this.origin, cache);
@@ -48,7 +50,7 @@ export class SwTestHarnessBuilder {
   }
 
   build(): SwTestHarness {
-    return new SwTestHarness(this.server, this.caches, this.origin);
+    return new SwTestHarness(this.server, this.caches, this.scopeUrl);
   }
 }
 
@@ -137,6 +139,8 @@ export class SwTestHarness extends Adapter implements ServiceWorkerGlobalScope, 
     fired: boolean,
   }[] = [];
 
+  parseUrl = parseUrl;
+
   constructor(
       private server: MockServerState, readonly caches: MockCacheStorage, scopeUrl: string) {
     super(scopeUrl);
@@ -176,17 +180,12 @@ export class SwTestHarness extends Adapter implements ServiceWorkerGlobalScope, 
     this.server = server || EMPTY_SERVER_STATE;
   }
 
-  fetch(req: string|Request): Promise<Response> {
+  fetch(req: RequestInfo): Promise<Response> {
     if (typeof req === 'string') {
-      if (req.startsWith(this.origin)) {
-        req = '/' + req.substr(this.origin.length);
-      }
-      return this.server.fetch(new MockRequest(req));
+      return this.server.fetch(new MockRequest(normalizeUrl(req, this.scopeUrl)));
     } else {
       const mockReq = req.clone() as MockRequest;
-      if (mockReq.url.startsWith(this.origin)) {
-        mockReq.url = '/' + mockReq.url.substr(this.origin.length);
-      }
+      mockReq.url = normalizeUrl(mockReq.url, this.scopeUrl);
       return this.server.fetch(mockReq);
     }
   }
@@ -200,7 +199,7 @@ export class SwTestHarness extends Adapter implements ServiceWorkerGlobalScope, 
   }
 
   newRequest(url: string, init: Object = {}): Request {
-    return new MockRequest(url, init);
+    return new MockRequest(normalizeUrl(url, this.scopeUrl), init);
   }
 
   newResponse(body: string, init: Object = {}): Response {
@@ -212,18 +211,6 @@ export class SwTestHarness extends Adapter implements ServiceWorkerGlobalScope, 
       mock.set(name, headers[name]);
       return mock;
     }, new MockHeaders());
-  }
-
-  parseUrl(url: string, relativeTo?: string): {origin: string, path: string, search: string} {
-    const parsedUrl: URL = (typeof URL === 'function') ?
-        (!relativeTo ? new URL(url) : new URL(url, relativeTo)) :
-        require('url').parse(require('url').resolve(relativeTo || '', url));
-
-    return {
-      origin: parsedUrl.origin || `${parsedUrl.protocol}//${parsedUrl.host}`,
-      path: parsedUrl.pathname,
-      search: parsedUrl.search || '',
-    };
   }
 
   async skipWaiting(): Promise<void> {
@@ -409,6 +396,7 @@ class MockPushEvent extends MockExtendableEvent {
     json: () => this._data,
   };
 }
+
 class MockNotificationEvent extends MockExtendableEvent {
   constructor(private _notification: any, readonly action?: string) {
     super();
@@ -417,6 +405,5 @@ class MockNotificationEvent extends MockExtendableEvent {
 }
 
 class MockInstallEvent extends MockExtendableEvent {}
-
 
 class MockActivateEvent extends MockExtendableEvent {}
