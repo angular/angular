@@ -53,6 +53,12 @@ export class AppVersion implements UpdateSource {
   private navigationUrls: {include: RegExp[], exclude: RegExp[]};
 
   /**
+   * The normalized URL to the file that serves as the index page to satisfy navigation requests.
+   * Usually this is `/index.html`.
+   */
+  private indexUrl = this.adapter.normalizeUrl(this.manifest.index);
+
+  /**
    * Tracks whether the manifest has encountered any inconsistencies.
    */
   private _okay = true;
@@ -67,7 +73,7 @@ export class AppVersion implements UpdateSource {
       readonly manifestHash: string) {
     // The hashTable within the manifest is an Object - convert it to a Map for easier lookups.
     Object.keys(this.manifest.hashTable).forEach(url => {
-      this.hashTable.set(url, this.manifest.hashTable[url]);
+      this.hashTable.set(adapter.normalizeUrl(url), this.manifest.hashTable[url]);
     });
 
     // Process each `AssetGroup` declared in the manifest. Each declared group gets an `AssetGroup`
@@ -179,10 +185,10 @@ export class AppVersion implements UpdateSource {
 
     // Next, check if this is a navigation request for a route. Detect circular
     // navigations by checking if the request URL is the same as the index URL.
-    if (req.url !== this.manifest.index && this.isNavigationRequest(req)) {
+    if (this.adapter.normalizeUrl(req.url) !== this.indexUrl && this.isNavigationRequest(req)) {
       // This was a navigation request. Re-enter `handleFetch` with a request for
       // the URL.
-      return this.handleFetch(this.adapter.newRequest(this.manifest.index), context);
+      return this.handleFetch(this.adapter.newRequest(this.indexUrl), context);
     }
 
     return null;

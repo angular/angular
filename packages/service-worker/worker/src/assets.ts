@@ -27,6 +27,11 @@ export abstract class AssetGroup {
   private inFlightRequests = new Map<string, Promise<Response>>();
 
   /**
+   * Normalized resource URLs.
+   */
+  protected urls: string[] = [];
+
+  /**
    * Regular expression patterns.
    */
   protected patterns: RegExp[] = [];
@@ -52,29 +57,33 @@ export abstract class AssetGroup {
       protected idle: IdleScheduler, protected config: AssetGroupConfig,
       protected hashes: Map<string, string>, protected db: Database, protected prefix: string) {
     this.name = config.name;
+
+    // Normalize the config's URLs to take the ServiceWorker's scope into account.
+    this.urls = config.urls.map(url => adapter.normalizeUrl(url));
+
     // Patterns in the config are regular expressions disguised as strings. Breathe life into them.
-    this.patterns = this.config.patterns.map(pattern => new RegExp(pattern));
+    this.patterns = config.patterns.map(pattern => new RegExp(pattern));
 
     // This is the primary cache, which holds all of the cached requests for this group. If a
     // resource
     // isn't in this cache, it hasn't been fetched yet.
-    this.cache = this.scope.caches.open(`${this.prefix}:${this.config.name}:cache`);
+    this.cache = scope.caches.open(`${this.prefix}:${config.name}:cache`);
 
     // This is the metadata table, which holds specific information for each cached URL, such as
     // the timestamp of when it was added to the cache.
-    this.metadata =
-        this.db.open(`${this.prefix}:${this.config.name}:meta`, this.config.cacheQueryOptions);
+    this.metadata = this.db.open(`${this.prefix}:${config.name}:meta`, config.cacheQueryOptions);
   }
 
   async cacheStatus(url: string): Promise<UpdateCacheStatus> {
     const cache = await this.cache;
     const meta = await this.metadata;
-    const res = await cache.match(this.adapter.newRequest(url), this.config.cacheQueryOptions);
+    const req = this.adapter.newRequest(url);
+    const res = await cache.match(req, this.config.cacheQueryOptions);
     if (res === undefined) {
       return UpdateCacheStatus.NOT_CACHED;
     }
     try {
-      const data = await meta.read<UrlMetadata>(url);
+      const data = await meta.read<UrlMetadata>(req.url);
       if (!data.used) {
         return UpdateCacheStatus.CACHED_BUT_UNUSED;
       }
@@ -105,7 +114,7 @@ export abstract class AssetGroup {
     // Either the request matches one of the known resource URLs, one of the patterns for
     // dynamically matched URLs, or neither. Determine which is the case for this request in
     // order to decide how to handle it.
-    if (this.config.urls.indexOf(url) !== -1 || this.patterns.some(pattern => pattern.test(url))) {
+    if (this.urls.indexOf(url) !== -1 || this.patterns.some(pattern => pattern.test(url))) {
       // This URL matches a known resource. Either it's been cached already or it's missing, in
       // which case it needs to be loaded from the network.
 
@@ -235,7 +244,8 @@ export abstract class AssetGroup {
     const metaTable = await this.metadata;
 
     // Lookup the response in the cache.
-    const response = await cache.match(this.adapter.newRequest(url), this.config.cacheQueryOptions);
+    const request = this.adapter.newRequest(url);
+    const response = await cache.match(request, this.config.cacheQueryOptions);
     if (response === undefined) {
       // It's not found, return null.
       return null;
@@ -244,7 +254,7 @@ export abstract class AssetGroup {
     // Next, lookup the cached metadata.
     let metadata: UrlMetadata|undefined = undefined;
     try {
-      metadata = await metaTable.read<UrlMetadata>(url);
+      metadata = await metaTable.read<UrlMetadata>(request.url);
     } catch {
       // Do nothing, not found. This shouldn't happen, but it can be handled.
     }
@@ -258,9 +268,10 @@ export abstract class AssetGroup {
    */
   async unhashedResources(): Promise<string[]> {
     const cache = await this.cache;
-    // Start with the set of all cached URLs.
+    // Start with the set of all cached requests.
     return (await cache.keys())
-        .map(request => request.url)
+        // Normalize their URLs.
+        .map(request => this.adapter.normalizeUrl(request.url))
         // Exclude the URLs which have hashes.
         .filter(url => !this.hashes.has(url));
   }
@@ -307,7 +318,7 @@ export abstract class AssetGroup {
 
         // If the request is not hashed, update its metadata, especially the timestamp. This is
         // needed for future determination of whether this cached response is stale or not.
-        if (!this.hashes.has(req.url)) {
+        if (!this.hashes.has(this.adapter.normalizeUrl(req.url))) {
           // Metadata is tracked for requests that are unhashed.
           const meta: UrlMetadata = {ts: this.adapter.time, used};
           const metaTable = await this.metadata;
@@ -492,7 +503,7 @@ export class PrefetchAssetGroup extends AssetGroup {
     // Cache all known resources serially. As this reduce proceeds, each Promise waits
     // on the last before starting the fetch/cache operation for the next request. Any
     // errors cause fall-through to the final Promise which rejects.
-    await this.config.urls.reduce(async (previous: Promise<void>, url: string) => {
+    await this.urls.reduce(async (previous: Promise<void>, url: string) => {
       // Wait on all previous operations to complete.
       await previous;
 
@@ -527,8 +538,8 @@ export class PrefetchAssetGroup extends AssetGroup {
           // First, narrow down the set of resources to those which are handled by this group.
           // Either it's a known URL, or it matches a given pattern.
           .filter(
-              url => this.config.urls.indexOf(url) !== -1 ||
-                  this.patterns.some(pattern => pattern.test(url)))
+              url =>
+                  this.urls.indexOf(url) !== -1 || this.patterns.some(pattern => pattern.test(url)))
           // Finally, process each resource in turn.
           .reduce(async (previous, url) => {
             await previous;
@@ -552,7 +563,7 @@ export class PrefetchAssetGroup extends AssetGroup {
             // Write it into the cache. It may already be expired, but it can still serve
             // traffic until it's updated (stale-while-revalidate approach).
             await cache.put(req, res.response);
-            await metaTable.write(url, {...res.metadata, used: false} as UrlMetadata);
+            await metaTable.write(req.url, {...res.metadata, used: false} as UrlMetadata);
           }, Promise.resolve());
     }
   }
@@ -570,7 +581,7 @@ export class LazyAssetGroup extends AssetGroup {
     const cache = await this.cache;
 
     // Loop through the listed resources, caching any which are available.
-    await this.config.urls.reduce(async (previous: Promise<void>, url: string) => {
+    await this.urls.reduce(async (previous: Promise<void>, url: string) => {
       // Wait on all previous operations to complete.
       await previous;
 
