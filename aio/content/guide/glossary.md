@@ -407,9 +407,9 @@ modules, which can be imported using the module names `@angular/core` and
 
 ## form control
 
-A instance of `FormControl`, which is a fundamental building block for Angular forms. Together with `FormGroup` and `FormArray`, tracks the value, validation, and status of a form input element.
+An instance of `FormControl`, which is a fundamental building block for Angular forms. Together with `FormGroup` and `FormArray`, tracks the value, validation, and status of a form input element.
 
-Read more forms in the [Introduction to forms in Angular](guide/forms-overview).
+Read more about forms in the [Introduction to forms in Angular](guide/forms-overview).
 
 {@a form-model}
 
