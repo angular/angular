@@ -13,7 +13,7 @@ import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 import {clearAllCaches, MockCache} from '../testing/cache';
 import {MockRequest, MockResponse} from '../testing/fetch';
-import {MockFileSystem, MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
+import {MockFileSystem, MockFileSystemBuilder, MockServerState, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
 (function() {
@@ -1302,6 +1302,162 @@ describe('Driver', () => {
         expect(await navRequest('http://localhost/ignored/file1'))
             .toBe('this is not handled by the SW');
         serverUpdate.assertSawRequestFor('/ignored/file1');
+      });
+    });
+  });
+
+  describe('with relative base href', () => {
+    const createManifestWithRelativeBaseHref = (distDir: MockFileSystem): Manifest => ({
+      configVersion: 1,
+      timestamp: 1234567890123,
+      index: './index.html',
+      assetGroups: [
+        {
+          name: 'eager',
+          installMode: 'prefetch',
+          updateMode: 'prefetch',
+          urls: [
+            './index.html',
+            './main.js',
+            './styles.css',
+          ],
+          patterns: [
+            '/unhashed/.*',
+          ],
+          cacheQueryOptions: {ignoreVary: true},
+        },
+        {
+          name: 'lazy',
+          installMode: 'lazy',
+          updateMode: 'prefetch',
+          urls: [
+            './changed/chunk-1.js',
+            './changed/chunk-2.js',
+            './unchanged/chunk-3.js',
+            './unchanged/chunk-4.js',
+          ],
+          patterns: [
+            '/lazy/unhashed/.*',
+          ],
+          cacheQueryOptions: {ignoreVary: true},
+        }
+      ],
+      navigationUrls: processNavigationUrls('./'),
+      hashTable: tmpHashTableForFs(distDir, {}, './'),
+    });
+
+    const createServerWithBaseHref = (distDir: MockFileSystem): MockServerState =>
+        new MockServerStateBuilder()
+            .withRootDirectory('/base/href')
+            .withStaticFiles(distDir)
+            .withManifest(createManifestWithRelativeBaseHref(distDir))
+            .build();
+
+    const initialDistDir = new MockFileSystemBuilder()
+                               .addFile('/index.html', 'This is index.html')
+                               .addFile('/main.js', 'This is main.js')
+                               .addFile('/styles.css', 'This is styles.css')
+                               .addFile('/changed/chunk-1.js', 'This is chunk-1.js')
+                               .addFile('/changed/chunk-2.js', 'This is chunk-2.js')
+                               .addFile('/unchanged/chunk-3.js', 'This is chunk-3.js')
+                               .addFile('/unchanged/chunk-4.js', 'This is chunk-4.js')
+                               .build();
+
+    const serverWithBaseHref = createServerWithBaseHref(initialDistDir);
+
+    beforeEach(() => {
+      serverWithBaseHref.reset();
+
+      scope = new SwTestHarnessBuilder('http://localhost/base/href/')
+                  .withServerState(serverWithBaseHref)
+                  .build();
+      driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+    });
+
+    it('initializes prefetched content correctly, after a request kicks it off', async () => {
+      expect(await makeRequest(scope, '/base/href/index.html')).toBe('This is index.html');
+      await driver.initialized;
+      serverWithBaseHref.assertSawRequestFor('/base/href/ngsw.json');
+      serverWithBaseHref.assertSawRequestFor('/base/href/index.html');
+      serverWithBaseHref.assertSawRequestFor('/base/href/main.js');
+      serverWithBaseHref.assertSawRequestFor('/base/href/styles.css');
+      serverWithBaseHref.assertNoOtherRequests();
+
+      expect(await makeRequest(scope, '/base/href/main.js')).toBe('This is main.js');
+      expect(await makeRequest(scope, '/base/href/styles.css')).toBe('This is styles.css');
+      serverWithBaseHref.assertNoOtherRequests();
+    });
+
+    it('prefetches updates to lazy cache when set', async () => {
+      // Helper
+      const request = (url: string) => makeRequest(scope, url);
+
+      expect(await request('/base/href/index.html')).toBe('This is index.html');
+      await driver.initialized;
+
+      // Fetch some files from the `lazy` asset group.
+      expect(await request('/base/href/changed/chunk-1.js')).toBe('This is chunk-1.js');
+      expect(await request('/base/href/unchanged/chunk-3.js')).toBe('This is chunk-3.js');
+
+      // Install update.
+      const updatedDistDir = initialDistDir.extend()
+                                 .addFile('/changed/chunk-1.js', 'This is chunk-1.js v2')
+                                 .addFile('/changed/chunk-2.js', 'This is chunk-2.js v2')
+                                 .build();
+      const updatedServer = createServerWithBaseHref(updatedDistDir);
+
+      scope.updateServerState(updatedServer);
+      expect(await driver.checkForUpdate()).toBe(true);
+
+      // Previously requested and changed: Fetch from network.
+      updatedServer.assertSawRequestFor('/base/href/changed/chunk-1.js');
+      // Never requested and changed: Don't fetch.
+      updatedServer.assertNoRequestFor('/base/href/changed/chunk-2.js');
+      // Previously requested and unchanged: Fetch from cache.
+      updatedServer.assertNoRequestFor('/base/href/unchanged/chunk-3.js');
+      // Never requested and unchanged: Don't fetch.
+      updatedServer.assertNoRequestFor('/base/href/unchanged/chunk-4.js');
+
+      updatedServer.clearRequests();
+
+      // Update client.
+      await driver.updateClient(await scope.clients.get('default'));
+
+      // Already cached.
+      expect(await request('/base/href/changed/chunk-1.js')).toBe('This is chunk-1.js v2');
+      updatedServer.assertNoOtherRequests();
+
+      // Not cached: Fetch from network.
+      expect(await request('/base/href/changed/chunk-2.js')).toBe('This is chunk-2.js v2');
+      updatedServer.assertSawRequestFor('/base/href/changed/chunk-2.js');
+
+      // Already cached (copied from old cache).
+      expect(await request('/base/href/unchanged/chunk-3.js')).toBe('This is chunk-3.js');
+      updatedServer.assertNoOtherRequests();
+
+      // Not cached: Fetch from network.
+      expect(await request('/base/href/unchanged/chunk-4.js')).toBe('This is chunk-4.js');
+      updatedServer.assertSawRequestFor('/base/href/unchanged/chunk-4.js');
+
+      updatedServer.assertNoOtherRequests();
+    });
+
+    describe('routing', () => {
+      beforeEach(async () => {
+        expect(await makeRequest(scope, '/base/href/index.html')).toBe('This is index.html');
+        await driver.initialized;
+        serverWithBaseHref.clearRequests();
+      });
+
+      it('redirects to index on a route-like request', async () => {
+        expect(await makeNavigationRequest(scope, '/base/href/baz')).toBe('This is index.html');
+        serverWithBaseHref.assertNoOtherRequests();
+      });
+
+      it('redirects to index on a request to the scope URL', async () => {
+        expect(await makeNavigationRequest(scope, 'http://localhost/base/href/'))
+            .toBe('This is index.html');
+        serverWithBaseHref.assertNoOtherRequests();
       });
     });
   });
