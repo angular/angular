@@ -14,6 +14,9 @@ import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
 const sideNavView = 'SideNav';
+export const showTopMenuWidth = 992;
+export const dockSideNavWidth = 992;
+export const showFloatingTocWidth = 800;
 
 @Component({
   selector: 'aio-shell',
@@ -57,18 +60,17 @@ export class AppComponent implements OnInit {
   isStarting = true;
   isTransitioning = true;
   isFetching = false;
-  isSideBySide = false;
+  showTopMenu = false;
+  dockSideNav = false;
   private isFetchingTimeout: any;
   private isSideNavDoc = false;
 
-  private sideBySideWidth = 992;
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
   topMenuNarrowNodes: NavigationNode[];
 
   hasFloatingToc = false;
   private showFloatingToc = new BehaviorSubject(false);
-  private showFloatingTocWidth = 800;
   tocMaxHeight: string;
   private tocMaxHeightOffset = 0;
 
@@ -76,8 +78,8 @@ export class AppComponent implements OnInit {
 
   private currentUrl: string;
 
-  get isOpened() { return this.isSideBySide && this.isSideNavDoc; }
-  get mode() { return this.isSideBySide ? 'side' : 'over'; }
+  get isOpened() { return this.dockSideNav && this.isSideNavDoc; }
+  get mode() { return this.dockSideNav && (this.isSideNavDoc || this.showTopMenu) ? 'side' : 'over'; }
 
   // Search related properties
   showSearchResults = false;
@@ -239,13 +241,14 @@ export class AppComponent implements OnInit {
 
   @HostListener('window:resize', ['$event.target.innerWidth'])
   onResize(width: number) {
-    this.isSideBySide = width >= this.sideBySideWidth;
-    this.showFloatingToc.next(width > this.showFloatingTocWidth);
+    this.showTopMenu = width >= showTopMenuWidth;
+    this.dockSideNav = width >= dockSideNavWidth;
+    this.showFloatingToc.next(width > showFloatingTocWidth);
 
-    if (this.isSideBySide && !this.isSideNavDoc) {
+    if (this.showTopMenu && !this.isSideNavDoc) {
       // If this is a non-sidenav doc and the screen is wide enough so that we can display menu
       // items in the top-bar, ensure the sidenav is closed.
-      // (This condition can only be met when the resize event changes the value of `isSideBySide`
+      // (This condition can only be met when the resize event changes the value of `showTopMenu`
       //  from `false` to `true` while on a non-sidenav doc.)
       this.sidenav.toggle(false);
     }
@@ -338,7 +341,7 @@ export class AppComponent implements OnInit {
     }
 
     // May be open or closed when wide; always closed when narrow.
-    this.sidenav.toggle(this.isSideBySide && openSideNav);
+    this.sidenav.toggle(this.dockSideNav && openSideNav);
   }
 
   // Dynamically change height of table of contents container
