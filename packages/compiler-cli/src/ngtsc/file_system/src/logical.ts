@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {absoluteFrom, dirname, relative, resolve} from './helpers';
+import {absoluteFrom, dirname, isLocalRelativePath, relative, resolve, toRelativeImport} from './helpers';
 import {AbsoluteFsPath, BrandedPath, PathSegment} from './types';
 import {stripExtension} from './util';
 
@@ -29,11 +29,8 @@ export const LogicalProjectPath = {
    * importing from `to`.
    */
   relativePathBetween: function(from: LogicalProjectPath, to: LogicalProjectPath): PathSegment {
-    let relativePath = relative(dirname(resolve(from)), resolve(to));
-    if (!relativePath.startsWith('../')) {
-      relativePath = ('./' + relativePath) as PathSegment;
-    }
-    return relativePath as PathSegment;
+    const relativePath = relative(dirname(resolve(from)), resolve(to));
+    return toRelativeImport(relativePath) as PathSegment;
   },
 };
 
@@ -122,5 +119,5 @@ export class LogicalFileSystem {
  * E.g. `foo/bar/zee` is within `foo/bar` but not within `foo/car`.
  */
 function isWithinBasePath(base: AbsoluteFsPath, path: AbsoluteFsPath): boolean {
-  return !relative(base, path).startsWith('..');
+  return isLocalRelativePath(relative(base, path));
 }

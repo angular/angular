@@ -193,7 +193,7 @@ export abstract class TracingEntryPointFinder implements EntryPointFinder {
    * Split the given `path` into path segments using an FS independent algorithm.
    * @param path The path to split.
    */
-  private splitPath(path: PathSegment) {
+  private splitPath(path: PathSegment|AbsoluteFsPath) {
     const segments = [];
     while (path !== '.') {
       segments.unshift(this.fs.basename(path));

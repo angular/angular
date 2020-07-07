@@ -214,7 +214,7 @@ export abstract class MockFileSystem implements FileSystem {
   abstract resolve(...paths: string[]): AbsoluteFsPath;
   abstract dirname<T extends string>(file: T): T;
   abstract join<T extends string>(basePath: T, ...paths: string[]): T;
-  abstract relative<T extends PathString>(from: T, to: T): PathSegment;
+  abstract relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath;
   abstract basename(filePath: string, extension?: string): PathSegment;
   abstract isRooted(path: string): boolean;
   abstract normalize<T extends PathString>(path: T): T;
