@@ -12,8 +12,10 @@ today! As a contributor, here are the guidelines we would like you to follow:
  - [Commit Message Guidelines](#commit)
  - [Signing the CLA](#cla)
 
+
 ## <a name="coc"></a> Code of Conduct
 Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct][coc].
+
 
 ## <a name="question"></a> Got a Question or Problem?
 
@@ -29,10 +31,12 @@ To save your and our time, we will systematically close all issues that are requ
 
 If you would like to chat about the question in real-time, you can reach out via [our gitter channel][gitter].
 
+
 ## <a name="issue"></a> Found a Bug?
 If you find a bug in the source code, you can help us by
 [submitting an issue](#submit-issue) to our [GitHub Repository][github]. Even better, you can
 [submit a Pull Request](#submit-pr) with a fix.
+
 
 ## <a name="feature"></a> Missing a Feature?
 You can *request* a new feature by [submitting an issue](#submit-issue) to our GitHub
@@ -47,17 +51,23 @@ Adding a new topic to the documentation, or significantly re-writing a topic, co
 feature.
 * **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
 
+
 ## <a name="submit"></a> Submission Guidelines
+
 
 ### <a name="submit-issue"></a> Submitting an Issue
 
 Before you submit an issue, please search the issue tracker, maybe an issue for your problem already exists and the discussion might inform you of workarounds readily available.
 
-We want to fix all the issues as soon as possible, but before fixing a bug we need to reproduce and confirm it. In order to reproduce bugs, we will systematically ask you to provide a minimal reproduction. Having a minimal reproducible scenario gives us a wealth of important information without going back & forth to you with additional questions.
+We want to fix all the issues as soon as possible, but before fixing a bug we need to reproduce and confirm it.
+In order to reproduce bugs, we will systematically ask you to provide a minimal reproduction.
+Having a minimal reproducible scenario gives us a wealth of important information without going back & forth to you with additional questions.
 
 A minimal reproduction allows us to quickly confirm a bug (or point out a coding problem) as well as confirm that we are fixing the right problem.
 
-We will be insisting on a minimal reproduction scenario in order to save maintainers' time and ultimately be able to fix more bugs. Interestingly, from our experience, users often find coding problems themselves while preparing a minimal reproduction. We understand that sometimes it might be hard to extract essential bits of code from a larger codebase but we really need to isolate the problem before we can fix it.
+We will be insisting on a minimal reproduction scenario in order to save maintainers' time and ultimately be able to fix more bugs.
+Interestingly, from our experience, users often find coding problems themselves while preparing a minimal reproduction.
+We understand that sometimes it might be hard to extract essential bits of code from a larger codebase but we really need to isolate the problem before we can fix it.
 
 Unfortunately, we are not able to investigate / fix bugs without a minimal reproduction, so if we don't hear back from you, we are going to close an issue that doesn't have enough info to be reproduced.
 
@@ -67,8 +77,7 @@ You can file new issues by selecting from our [new issue templates](https://gith
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR
-  that relates to your submission. You don't want to duplicate effort.
+1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR that relates to your submission. You don't want to duplicate effort.
 1. Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
   Discussing the design upfront helps to ensure that we're ready to accept your work.
 1. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
@@ -111,10 +120,10 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 That's it! Thank you for your contribution!
 
+
 #### After your pull request is merged
 
-After your pull request is merged, you can safely delete your branch and pull the changes
-from the main (upstream) repository:
+After your pull request is merged, you can safely delete your branch and pull the changes from the main (upstream) repository:
 
 * Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
 
@@ -140,55 +149,65 @@ from the main (upstream) repository:
     git pull --ff upstream master
     ```
 
+
 ## <a name="rules"></a> Coding Rules
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
 * All features or bug fixes **must be tested** by one or more specs (unit-tests).
 * All public API methods **must be documented**. (Details TBC).
-* We follow [Google's JavaScript Style Guide][js-style-guide], but wrap all code at
-  **100 characters**. An automated formatter is available, see
-  [DEVELOPER.md](docs/DEVELOPER.md#clang-format).
+* We follow [Google's JavaScript Style Guide][js-style-guide], but wrap all code at **100 characters**. An automated formatter is available, see [DEVELOPER.md](docs/DEVELOPER.md#clang-format).
 
-## <a name="commit"></a> Commit Message Guidelines
 
-We have very precise rules over how our git commit messages can be formatted.  This leads to **more
-readable messages** that are easy to follow when looking through the **project history**.  But also,
-we use the git commit messages to **generate the Angular change log**.
+## <a name="commit"></a> Commit Message Format
 
-### Commit Message Format
-Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
-format that includes a **type**, a **scope** and a **subject**:
+*This specification is inspired and supersedes the [AngularJS commit message format][commit-message-format].*
+
+We have very precise rules over how our git commit messages can be formatted.
+This leads to **more readable messages** that are easy to follow when looking through the **project history**.
+But also, we use the git commit messages to **generate the Angular change log**.
+
+Each commit message consists of a **header**, a **body**, and a **footer**.
+
 
 ```
-<type>(<scope>): <subject>
+<header>
 <BLANK LINE>
 <body>
 <BLANK LINE>
 <footer>
 ```
 
-The **header** is mandatory and the **scope** of the header is optional.
+The header is mandatory and must conform to the [Commit Message Header](#commit-header) format.
 
-Any line of the commit message cannot be longer than 100 characters! This allows the message to be easier
-to read on GitHub as well as in various git tools.
+The body is mandatory for all commits except for those of scope "docs".
+When the body is required it must be at least 20 characters long.
 
-The footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
+The footer is optional.
 
-Samples: (even more [samples](https://github.com/angular/angular/commits/master))
+Any line of the commit message cannot be longer than 100 characters.
+
+
+#### <a href="commit-header"></a>Commit Message Header
 
 ```
-docs(changelog): update changelog to beta.5
+<type>(<scope>): <short summary>
+  │       │             │
+  │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
+  │       │
+  │       └─⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
+  │                          elements|forms|http|language-service|localize|platform-browser|
+  │                          platform-browser-dynamic|platform-server|platform-webworker|
+  │                          platform-webworker-dynamic|router|service-worker|upgrade|zone.js|
+  │                          packaging|changelog|dev-infra|docs-infra|migrations|ngcc|ve
+  │
+  └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test
 ```
-```
-fix(release): need to depend on the latest rxjs and zone.js
 
-The version in our package.json gets copied to the one we publish, and users need the latest of these.
-```
+The `<type>` and `<summary>` fields are mandatory, the `(<scope>)` field is optional.
 
-### Revert
-If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body, it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
 
-### Type
+##### Type
+
 Must be one of the following:
 
 * **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
@@ -201,7 +220,8 @@ Must be one of the following:
 * **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 * **test**: Adding missing tests or correcting existing tests
 
-### Scope
+
+##### Scope
 The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages).
 
 The following is the list of supported scopes:
@@ -230,38 +250,58 @@ The following is the list of supported scopes:
 
 There are currently a few exceptions to the "use package name" rule:
 
-* **packaging**: used for changes that change the npm package layout in all of our packages, e.g.
-  public path changes, package.json changes done to all packages, d.ts file/format changes, changes
-  to bundles, etc.
+* **packaging**: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
 * **changelog**: used for updating the release notes in CHANGELOG.md
-* **docs-infra**: used for docs-app (angular.io) related changes within the /aio directory of the
-  repo
 * **dev-infra**: used for dev-infra related changes within the directories /scripts, /tools and /dev-infra
+* **docs-infra**: used for docs-app (angular.io) related changes within the /aio directory of the repo
 * **migrations**: used for changes to the `ng update` migrations.
 * **ngcc**: used for changes to the [Angular Compatibility Compiler](./packages/compiler-cli/ngcc/README.md)
 * **ve**: used for changes specific to ViewEngine (legacy compiler/renderer).
-* none/empty string: useful for `style`, `test` and `refactor` changes that are done across all
-  packages (e.g. `style: add missing semicolons`) and for docs changes that are not related to a
-  specific package (e.g. `docs: fix typo in tutorial`).
+* none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`) and for docs changes that are not related to a specific package (e.g. `docs: fix typo in tutorial`).
 
-### Subject
-The subject contains a succinct description of the change:
+
+##### Summary
+
+The summary contains a succinct description of the change:
 
 * use the imperative, present tense: "change" not "changed" nor "changes"
 * don't capitalize the first letter
 * no dot (.) at the end
 
-### Body
-Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes".
-The body should include the motivation for the change and contrast this with previous behavior.
 
-### Footer
-The footer should contain any information about **Breaking Changes** and is also the place to
-reference GitHub issues that this commit **Closes**.
+#### Commit Message Body
 
-**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
+Just as in the summary, use the imperative, present tense: "fix" not "fixed" nor "fixes".
 
-A detailed explanation can be found in this [document][commit-message-format].
+Explain the motivation for the change in the commit message body. This commit message should explain _why_ you are making the change.
+You can include a comparison of the previous behavior with the new behavior in order to illustrate the impact of the change.
+
+
+#### Commit Message Footer
+
+The footer can contain information about breaking changes and is also the place to reference GitHub issues, Jira tickets, and other PRs that this commit closes or is related to.
+
+```
+BREAKING CHANGE: <breaking change summary>
+<BLANK LINE>
+<breaking change description + migration instructions>
+<BLANK LINE>
+<BLANK LINE>
+Fixes #<issue number>
+```
+
+Breaking Change section should start with the phrase "BREAKING CHANGE: " followed by a summary of the breaking change, a blank line, and a detailed description of the breaking change that also includes migration instructions.
+
+
+### Revert commits
+
+If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit.
+
+The content of the commit message body should contain:
+
+- information about the SHA of the commit being reverted in the following format: `This reverts commit <SHA>`,
+- a clear description of the reason for reverting the commit message.
+
 
 ## <a name="cla"></a> Signing the CLA
 
