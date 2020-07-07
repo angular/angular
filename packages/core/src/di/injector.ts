@@ -67,9 +67,9 @@ export abstract class Injector {
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
   abstract get<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+      token: Type<T>|AbstractType<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   /**
-   * @deprecated from v4.0.0 use Type<T> or InjectionToken<T>
+   * @deprecated from v4.0.0 use Type<T>, AbstractType<T> or InjectionToken<T>
    * @suppress {duplicate}
    */
   abstract get(token: any, notFoundValue?: any): any;
@@ -156,7 +156,8 @@ export class StaticInjector implements Injector {
     this.scope = recursivelyProcessProviders(records, providers);
   }
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  get<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags):
+      T;
   get(token: any, notFoundValue?: any): any;
   get(token: any, notFoundValue?: any, flags: InjectFlags = InjectFlags.Default): any {
     const records = this._records;

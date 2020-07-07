@@ -445,7 +445,7 @@ export declare class InjectionToken<T> {
 }
 
 export declare abstract class Injector {
-    abstract get<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    abstract get<T>(token: Type<T> | AbstractType<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: {};
@@ -676,8 +676,8 @@ export declare function ɵɵdefineInjectable<T>(opts: {
 }): never;
 
 /** @codeGenApi */
-export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>): T;
-export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
+export declare function ɵɵinject<T>(token: Type<T> | AbstractType<T> | InjectionToken<T>): T;
+export declare function ɵɵinject<T>(token: Type<T> | AbstractType<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
 
 /** @codeGenApi */
 export declare interface ɵɵInjectableDef<T> {

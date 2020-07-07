@@ -8,7 +8,7 @@
 
 import {InjectionToken} from '../../di/injection_token';
 import {InjectFlags} from '../../di/interface/injector';
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {assertDefined, assertEqual} from '../../util/assert';
 
 import {TDirectiveHostNode} from './node';
@@ -176,7 +176,8 @@ export class NodeInjectorFactory {
   /**
    * The inject implementation to be activated when using the factory.
    */
-  injectImpl: null|(<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T);
+  injectImpl: null|
+      (<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>, flags?: InjectFlags) => T);
 
   /**
    * Marker set to true during factory invocation to see if we get into recursive loop.
@@ -280,7 +281,7 @@ export class NodeInjectorFactory {
        */
       isViewProvider: boolean,
       injectImplementation: null|
-      (<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T)) {
+      (<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>, flags?: InjectFlags) => T)) {
     ngDevMode && assertDefined(factory, 'Factory not specified');
     ngDevMode && assertEqual(typeof factory, 'function', 'Expected factory function.');
     this.canSeeViewProviders = isViewProvider;
