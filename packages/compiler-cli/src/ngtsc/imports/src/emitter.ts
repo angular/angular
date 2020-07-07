@@ -9,7 +9,7 @@ import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@ang
 import * as ts from 'typescript';
 
 import {UnifiedModulesHost} from '../../core/api';
-import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, PathSegment, relative} from '../../file_system';
+import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, relative, toRelativeImport} from '../../file_system';
 import {stripExtension} from '../../file_system/src/util';
 import {ReflectionHost} from '../../reflection';
 import {getSourceFile, isDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
@@ -269,11 +269,9 @@ export class RelativePathStrategy implements ReferenceEmitStrategy {
 
   emit(ref: Reference<ts.Node>, context: ts.SourceFile): Expression|null {
     const destSf = getSourceFile(ref.node);
-    let moduleName = stripExtension(
-        relative(dirname(absoluteFromSourceFile(context)), absoluteFromSourceFile(destSf)));
-    if (!moduleName.startsWith('../')) {
-      moduleName = ('./' + moduleName) as PathSegment;
-    }
+    const relativePath =
+        relative(dirname(absoluteFromSourceFile(context)), absoluteFromSourceFile(destSf));
+    const moduleName = toRelativeImport(stripExtension(relativePath));
 
     const name = findExportedNameOfNode(ref.node, destSf, this.reflector);
     return new ExternalExpr({moduleName, name});

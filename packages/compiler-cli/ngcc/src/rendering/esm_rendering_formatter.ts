@@ -9,7 +9,7 @@ import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath, dirname, relative} from '../../../src/ngtsc/file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath, dirname, relative, toRelativeImport} from '../../../src/ngtsc/file_system';
 import {NOOP_DEFAULT_IMPORT_RECORDER, Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
@@ -57,8 +57,9 @@ export class EsmRenderingFormatter implements RenderingFormatter {
 
       if (from) {
         const basePath = stripExtension(from);
-        const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
-        exportFrom = entryPointBasePath !== basePath ? ` from '${relativePath}'` : '';
+        const relativePath = relative(dirname(entryPointBasePath), basePath);
+        const relativeImport = toRelativeImport(relativePath);
+        exportFrom = entryPointBasePath !== basePath ? ` from '${relativeImport}'` : '';
       }
 
       const exportStr = `\nexport {${e.identifier}}${exportFrom};`;
@@ -197,10 +198,10 @@ export class EsmRenderingFormatter implements RenderingFormatter {
       const ngModuleName = info.ngModule.node.name.text;
       const declarationFile = absoluteFromSourceFile(info.declaration.getSourceFile());
       const ngModuleFile = absoluteFromSourceFile(info.ngModule.node.getSourceFile());
+      const relativePath = relative(dirname(declarationFile), ngModuleFile);
+      const relativeImport = toRelativeImport(relativePath);
       const importPath = info.ngModule.ownedByModuleGuess ||
-          (declarationFile !== ngModuleFile ?
-               stripExtension(`./${relative(dirname(declarationFile), ngModuleFile)}`) :
-               null);
+          (declarationFile !== ngModuleFile ? stripExtension(relativeImport) : null);
       const ngModule = generateImportString(importManager, importPath, ngModuleName);
 
       if (info.declaration.type) {
