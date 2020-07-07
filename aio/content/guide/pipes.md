@@ -1,7 +1,7 @@
 # Transforming Data Using Pipes
 
-Use [pipes](guide/glossary#pipe "Definition of a pipe") to transform and format strings, currency amounts, dates, and other display data.
-Pipes are simple functions you can use in [template expressions](/guide/glossary#template-expression "Definition of template expression") to accept an input value and return a transformed value.
+Use [pipes](guide/glossary#pipe "Definition of a pipe") to transform strings, currency amounts, dates, and other data for display.
+Pipes are simple functions you can use in [template expressions](/guide/glossary#template-expression "Definition of template expression") to accept an input value and return a transformed value. Pipes are useful because you can use them throughout your application, while only declaring each pipe once.
 For example, you would use a pipe to show a date as **April 15, 1988** rather than the raw string format.
 
 <div class="alert is-helpful">
@@ -63,7 +63,7 @@ function.
 
 {@a parameterizing-a-pipe}
 
-## Formatting data with parameters and chained pipes
+## Transforming data with parameters and chained pipes
 
 Use optional parameters to fine-tune a pipe's output.
 For example, you can use the [`CurrencyPipe`](api/common/CurrencyPipe "API reference") with a country code such as EUR as a parameter.
