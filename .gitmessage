@@ -62,6 +62,9 @@ Fixes #<issue number>
 # If you are not using Angular CLI to build your application or library, and you need to be able to
 # build es5 artifacts, then you will need to downlevel the distributed Angular code to es5 on your
 # own.
+#
+#
+# Fixes #1234
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 #
 #
