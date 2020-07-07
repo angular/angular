@@ -241,6 +241,12 @@
             "logo": "",
             "title": "Protractor",
             "url": "https://protractor.angular.io/"
+          },
+          "scully": {
+            "desc": "Scully (Jamstack Toolchain for Angular) makes building, testing, and deploying Jamstack apps extremely simple.",
+            "title": "Scully",
+            "logo": "https://raw.githubusercontent.com/scullyio/scully/main/assets/logos/PNG/Green/scullyio-logo-green.png",
+            "url": "https://scully.io"
           }
         }
       },
