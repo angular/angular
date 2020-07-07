@@ -57,7 +57,7 @@ export interface FileSystem {
   resolve(...paths: string[]): AbsoluteFsPath;
   dirname<T extends PathString>(file: T): T;
   join<T extends PathString>(basePath: T, ...paths: string[]): T;
-  relative<T extends PathString>(from: T, to: T): PathSegment;
+  relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath;
   basename(filePath: string, extension?: string): PathSegment;
   realpath(filePath: AbsoluteFsPath): AbsoluteFsPath;
   getDefaultLibLocation(): AbsoluteFsPath;

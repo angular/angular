@@ -245,4 +245,13 @@ describe('NodeJSFileSystem', () => {
       expect(fs.isCaseSensitive()).toEqual(isCaseSensitive);
     });
   });
+
+  if (process.platform === 'win32') {
+    // Only relevant on Windows
+    describe('relative', () => {
+      it('should handle Windows paths on different drives', () => {
+        expect(fs.relative('C:\\a\\b\\c', 'D:\\a\\b\\d')).toEqual(absoluteFrom('D:\\a\\b\\d'));
+      });
+    });
+  }
 });

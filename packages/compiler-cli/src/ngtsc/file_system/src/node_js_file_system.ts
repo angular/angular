@@ -93,8 +93,8 @@ export class NodeJSFileSystem implements FileSystem {
   isRooted(path: string): boolean {
     return p.isAbsolute(path);
   }
-  relative<T extends PathString>(from: T, to: T): PathSegment {
-    return relativeFrom(this.normalize(p.relative(from, to)));
+  relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
+    return this.normalize(p.relative(from, to)) as PathSegment | AbsoluteFsPath;
   }
   basename(filePath: string, extension?: string): PathSegment {
     return p.basename(filePath, extension) as PathSegment;

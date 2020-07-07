@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, relative, resolve} from '../../file_system';
+import {dirname, relative, resolve, toRelativeImport} from '../../file_system';
 
 const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
 
@@ -16,12 +16,7 @@ export function relativePathBetween(from: string, to: string): string|null {
     return null;
   }
 
-  // path.relative() does not include the leading './'.
-  if (!relativePath.startsWith('.')) {
-    relativePath = `./${relativePath}`;
-  }
-
-  return relativePath;
+  return toRelativeImport(relativePath);
 }
 
 export function normalizeSeparators(path: string): string {
