@@ -8,7 +8,7 @@
 import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
 import {assertInjectImplementationNotEqual} from '../../di/inject_switch';
 import {ɵɵinject} from '../../di/injector_compatibility';
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {getOrCreateInjectable} from '../di';
 import {TDirectiveHostNode} from '../interfaces/node';
 import {getCurrentTNode, getLView} from '../state';
@@ -37,10 +37,11 @@ import {getCurrentTNode, getLView} from '../state';
  *
  * @codeGenApi
  */
-export function ɵɵdirectiveInject<T>(token: Type<T>|InjectionToken<T>): T;
-export function ɵɵdirectiveInject<T>(token: Type<T>|InjectionToken<T>, flags: InjectFlags): T;
+export function ɵɵdirectiveInject<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>): T;
 export function ɵɵdirectiveInject<T>(
-    token: Type<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
+    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags: InjectFlags): T;
+export function ɵɵdirectiveInject<T>(
+    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
   const lView = getLView();
   // Fall back to inject() if view hasn't been created. This situation can happen in tests
   // if inject utilities are used before bootstrapping.

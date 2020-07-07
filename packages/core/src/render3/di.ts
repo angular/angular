@@ -13,7 +13,7 @@ import {Injector} from '../di/injector';
 import {InjectorMarkers} from '../di/injector_marker';
 import {getInjectorDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
 
@@ -347,7 +347,8 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
 
 
 function notFoundValueOrThrow<T>(
-    notFoundValue: T|null, token: Type<T>|InjectionToken<T>, flags: InjectFlags): T|null {
+    notFoundValue: T|null, token: Type<T>|AbstractType<T>|InjectionToken<T>, flags: InjectFlags): T|
+    null {
   if (flags & InjectFlags.Optional) {
     return notFoundValue;
   } else {
@@ -365,8 +366,8 @@ function notFoundValueOrThrow<T>(
  * @returns the value from the injector or throws an exception
  */
 function lookupTokenUsingModuleInjector<T>(
-    lView: LView, token: Type<T>|InjectionToken<T>, flags: InjectFlags, notFoundValue?: any): T|
-    null {
+    lView: LView, token: Type<T>|AbstractType<T>|InjectionToken<T>, flags: InjectFlags,
+    notFoundValue?: any): T|null {
   if (flags & InjectFlags.Optional && notFoundValue === undefined) {
     // This must be set or the NullInjector will throw for optional deps
     notFoundValue = null;
@@ -408,7 +409,7 @@ function lookupTokenUsingModuleInjector<T>(
  * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 export function getOrCreateInjectable<T>(
-    tNode: TDirectiveHostNode|null, lView: LView, token: Type<T>|InjectionToken<T>,
+    tNode: TDirectiveHostNode|null, lView: LView, token: Type<T>|AbstractType<T>|InjectionToken<T>,
     flags: InjectFlags = InjectFlags.Default, notFoundValue?: any): T|null {
   if (tNode !== null) {
     const bloomHash = bloomHashBitOrFactory(token);
@@ -508,7 +509,7 @@ export function createNodeInjector(): Injector {
 }
 
 function searchTokensOnInjector<T>(
-    injectorIndex: number, lView: LView, token: Type<T>|InjectionToken<T>,
+    injectorIndex: number, lView: LView, token: Type<T>|AbstractType<T>|InjectionToken<T>,
     previousTView: TView|null, flags: InjectFlags, hostTElementNode: TNode|null) {
   const currentTView = lView[TVIEW];
   const tNode = currentTView.data[injectorIndex + NodeInjectorOffset.TNODE] as TNode;
@@ -555,7 +556,7 @@ function searchTokensOnInjector<T>(
  * @returns Index of a found directive or provider, or null when none found.
  */
 export function locateDirectiveOrProvider<T>(
-    tNode: TNode, tView: TView, token: Type<T>|InjectionToken<T>|string,
+    tNode: TNode, tView: TView, token: Type<T>|AbstractType<T>|InjectionToken<T>|string,
     canAccessViewProviders: boolean, isHostSpecialCase: boolean|number): number|null {
   const nodeProviderIndexes = tNode.providerIndexes;
   const tInjectables = tView.data;
@@ -646,8 +647,8 @@ export function getNodeInjectable(
  * @returns the matching bit to check in the bloom filter or `null` if the token is not known.
  *   When the returned value is negative then it represents special values such as `Injector`.
  */
-export function bloomHashBitOrFactory(token: Type<any>|InjectionToken<any>|string): number|Function|
-    undefined {
+export function bloomHashBitOrFactory(token: Type<any>|AbstractType<any>|InjectionToken<any>|
+                                      string): number|Function|undefined {
   ngDevMode && assertDefined(token, 'token must be defined');
   if (typeof token === 'string') {
     return token.charCodeAt(0) || 0;
