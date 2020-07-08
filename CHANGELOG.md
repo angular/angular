@@ -1,3 +1,13 @@
+<a name="9.1.12"></a>
+## [9.1.12](https://github.com/angular/angular/compare/9.1.11...9.1.12) (2020-07-08)
+
+
+### Bug Fixes
+
+* **core:** infinite loop if injectable using inheritance has a custom decorator ([6c1ab47](https://github.com/angular/angular/commit/6c1ab47)), closes [#35733](https://github.com/angular/angular/issues/35733)
+
+
+
 <a name="10.0.2"></a>
 ## [10.0.2](https://github.com/angular/angular/compare/10.0.1...10.0.2) (2020-06-30)
 
