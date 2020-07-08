@@ -64,7 +64,7 @@ function createDedupeWriterOptions() {
 
         // Filter out commit groups which don't have any commits. Commit groups will become
         // empty if we filter out all duplicated commits.
-        return group.commits.length;
+        return group.commits.length !== 0;
       });
 
       return context;
