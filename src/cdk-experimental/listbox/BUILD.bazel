@@ -10,7 +10,8 @@ ng_module(
     ),
     module_name = "@angular/cdk-experimental/listbox",
     deps = [
-        "//src/cdk/coercion",
+        "//src/cdk/a11y",
+        "//src/cdk/keycodes",
     ],
 )
 
@@ -22,6 +23,7 @@ ng_test_library(
     ),
     deps = [
         ":listbox",
+        "//src/cdk/keycodes",
         "//src/cdk/testing/private",
         "@npm//@angular/platform-browser",
     ],
