@@ -1,28 +1,27 @@
 section {
   display: table;
-  margin: 8px;
 }
 
 .example-label {
   display: table-cell;
   font-size: 14px;
   margin-left: 8px;
-  width: 120px;
+  min-width: 120px;
 }
 
 .example-button-row {
   display: table-cell;
+  width: 490px;
 }
 
-.example-button-row button {
-  display: table-cell;
-  margin-right: 8px;
+.example-button-row .mat-button-base {
+  margin: 8px 8px 8px 0;
 }
 
 .example-flex-container {
   display: flex;
   justify-content: space-between;
-  width: 480px;
+  flex-wrap: wrap;
 }
 
 .example-button-container {
