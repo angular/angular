@@ -28,6 +28,7 @@ import {
   SimpleChanges,
   ChangeDetectorRef,
   isDevMode,
+  Self,
 } from '@angular/core';
 import {
   coerceBooleanProperty,
@@ -189,7 +190,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
       private _viewContainerRef: ViewContainerRef,
       @Optional() @Inject(CDK_DRAG_CONFIG) config: DragDropConfig,
       @Optional() private _dir: Directionality, dragDrop: DragDrop,
-      private _changeDetectorRef: ChangeDetectorRef) {
+      private _changeDetectorRef: ChangeDetectorRef,
+      @Optional() @Self() private _selfHandle?: CdkDragHandle) {
     this._dragRef = dragDrop.createDrag(element, {
       dragStartThreshold: config && config.dragStartThreshold != null ?
           config.dragStartThreshold : 5,
@@ -262,6 +264,14 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
             const childHandleElements = handles
               .filter(handle => handle._parentDrag === this)
               .map(handle => handle.element);
+
+            // Usually handles are only allowed to be a descendant of the drag element, but if
+            // the consumer defined a different drag root, we should allow the drag element
+            // itself to be a handle too.
+            if (this._selfHandle && this.rootElementSelector) {
+              childHandleElements.push(this.element);
+            }
+
             this._dragRef.withHandles(childHandleElements);
           }),
           // Listen if the state of any of the handles changes.

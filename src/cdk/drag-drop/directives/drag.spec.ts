@@ -555,6 +555,30 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBeFalsy();
     }));
 
+    it('should be able to set the cdkDrag element as handle if it has a different root element',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableWithAlternateRootAndSelfHandle);
+        fixture.detectChanges();
+
+        const dragRoot = fixture.componentInstance.dragRoot.nativeElement;
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        expect(dragRoot.style.transform).toBeFalsy();
+        expect(dragElement.style.transform).toBeFalsy();
+
+        // Try dragging the root. This should be possible since the drag element is the handle.
+        dragElementViaMouse(fixture, dragRoot, 50, 100);
+
+        expect(dragRoot.style.transform).toBeFalsy();
+        expect(dragElement.style.transform).toBeFalsy();
+
+        // Drag via the drag element which acts as the handle.
+        dragElementViaMouse(fixture, dragElement, 50, 100);
+
+        expect(dragRoot.style.transform).toBe('translate3d(50px, 100px, 0px)');
+        expect(dragElement.style.transform).toBeFalsy();
+      }));
+
     it('should preserve the initial transform if the root element changes', fakeAsync(() => {
       const fixture = createComponent(DraggableWithAlternateRoot);
       fixture.detectChanges();
@@ -6320,6 +6344,25 @@ class DraggableInHorizontalFlexDropZoneWithMatchSizePreview {
   `
 })
 class ConnectedDropZonesWithIntermediateSibling extends ConnectedDropZones {
+}
+
+
+@Component({
+  template: `
+    <div #dragRoot class="alternate-root" style="width: 200px; height: 200px; background: hotpink">
+      <div
+        cdkDrag
+        cdkDragRootElement=".alternate-root"
+        cdkDragHandle
+        #dragElement
+        style="width: 100px; height: 100px; background: red;"></div>
+    </div>
+  `
+})
+class DraggableWithAlternateRootAndSelfHandle {
+  @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
+  @ViewChild('dragRoot') dragRoot: ElementRef<HTMLElement>;
+  @ViewChild(CdkDrag) dragInstance: CdkDrag;
 }
 
 
