@@ -212,7 +212,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of all `HttpEvents` for the reques,
+   * @return An `Observable` of all `HttpEvents` for the request,
    * with the response body of type string.
    */
   request(method: string, url: string, options: {
@@ -402,7 +402,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of the reuested response, wuth body of type `any`.
+   * @return An `Observable` of the requested response, with body of type `any`.
    */
   request(method: string, url: string, options?: {
     body?: any,
@@ -1326,7 +1326,7 @@ export class HttpClient {
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of the `HTTPResponse` for the request,
-   * with a responmse body of the requested type.
+   * with a response body of the requested type.
    */
   head<T>(url: string, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
@@ -1705,7 +1705,7 @@ export class HttpClient {
   /**
    * Constructs an `Observable` that, when subscribed, causes the configured
    * `OPTIONS` request to execute on the server. This method allows the client
-   * to determine the supported HTTP methods and other capabilites of an endpoint,
+   * to determine the supported HTTP methods and other capabilities of an endpoint,
    * without implying a resource action. See the individual overloads for
    * details on the return type.
    */
@@ -1782,7 +1782,7 @@ export class HttpClient {
    * @param body The resources to edit.
    * @param options HTTP options.
    *
-   * @return An `Observable` of all the `HTTPevents` for the request,
+   * @return An `Observable` of all the `HTTPEvents` for the request,
    * with the response body as an `ArrayBuffer`.
    */
 
@@ -1801,7 +1801,7 @@ export class HttpClient {
    * @param body The resources to edit.
    * @param options HTTP options.
    *
-   * @return An `Observable` of all the `HTTPevents` for the request, with the
+   * @return An `Observable` of all the `HTTPEvents` for the request, with the
    * response body as `Blob`.
    */
   patch(url: string, body: any|null, options: {
@@ -1819,7 +1819,7 @@ export class HttpClient {
    * @param body The resources to edit.
    * @param options HTTP options.
    *
-   * @return An `Observable` of all the `HTTPevents`for the request, with a
+   * @return An `Observable` of all the `HTTPEvents`for the request, with a
    * response body of type string.
    */
   patch(url: string, body: any|null, options: {
@@ -1837,7 +1837,7 @@ export class HttpClient {
    * @param body The resources to edit.
    * @param options HTTP options.
    *
-   * @return An `Observable` of all the `HTTPevents` for the request,
+   * @return An `Observable` of all the `HTTPEvents` for the request,
    * with a response body of type `Object`.
    */
   patch(url: string, body: any|null, options: {
@@ -1856,7 +1856,7 @@ export class HttpClient {
    * @param body The resources to edit.
    * @param options HTTP options.
    *
-   * @return An `Observable` of all the `HTTPevents` for the request,
+   * @return An `Observable` of all the `HTTPEvents` for the request,
    *  with a response body in the requested type.
    */
   patch<T>(url: string, body: any|null, options: {
@@ -2038,7 +2038,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
@@ -2056,7 +2056,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the response, with a response body of type string.
    */
@@ -2074,7 +2074,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of all `HttpEvents` for the request,
    * with the response body as an `ArrayBuffer`.
@@ -2092,7 +2092,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of all `HttpEvents` for the request, with the response body as `Blob`.
    */
@@ -2109,7 +2109,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return  An `Observable` of all `HttpEvents` for the request,
    * with a response body of type string.
@@ -2127,7 +2127,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return  An `Observable` of all `HttpEvents` for the request,
    * with a response body of type `Object`.
@@ -2146,7 +2146,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of all `HttpEvents` for the request,
    * with a response body in the requested type.
@@ -2161,11 +2161,11 @@ export class HttpClient {
 
   /**
    * Constructs a POST request that interprets the body as an `ArrayBuffer`
-   *  and returns the full `HTTPresponse`.
+   *  and returns the full `HTTPResponse`.
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return  An `Observable` of the `HTTPResponse` for the request, with the response body as an
    *     `ArrayBuffer`.
@@ -2183,7 +2183,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the `HTTPResponse` for the request,
    * with the response body as a `Blob`.
@@ -2201,7 +2201,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return  An `Observable` of the `HTTPResponse` for the request,
    * with a response body of type string.
@@ -2219,7 +2219,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the `HTTPResponse` for the request, with a response body of type
    * `Object`.
@@ -2239,7 +2239,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the `HTTPResponse` for the request, with a response body in the
    *     requested type.
@@ -2258,7 +2258,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the response, with the response body as a JSON object.
    */
@@ -2277,7 +2277,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return  An `Observable` of the `HTTPResponse` for the request, with a response body in the
    *     requested type.
@@ -2314,7 +2314,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
@@ -2332,7 +2332,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
@@ -2350,7 +2350,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the response, with a response body of type string.
    */
@@ -2368,7 +2368,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of all `HttpEvents` for the request,
    * with the response body as an `ArrayBuffer`.
@@ -2386,7 +2386,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of all `HttpEvents` for the request,
    * with the response body as a `Blob`.
@@ -2404,7 +2404,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of all HttpEvents for the request, with a response body
    * of type string.
@@ -2422,7 +2422,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of all `HttpEvents` for the request, with a response body of
    * type `Object`.
@@ -2441,7 +2441,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of all `HttpEvents` for the request,
    * with a response body in the requested type.
@@ -2458,7 +2458,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the `HTTPResponse` for the request, with the response body as an
    *     `ArrayBuffer`.
@@ -2476,7 +2476,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the `HTTPResponse` for the request,
    * with the response body as a `Blob`.
@@ -2494,7 +2494,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the `HTTPResponse` for the request, with a response body of type
    *     string.
@@ -2512,7 +2512,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the `HTTPResponse` for the request, with a response body
    * of type 'Object`.
@@ -2531,7 +2531,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the `HTTPResponse` for the request,
    * with a response body in the requested type.
@@ -2550,7 +2550,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the response, with the response body as a JSON object.
    */
@@ -2569,7 +2569,7 @@ export class HttpClient {
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
-   * @param options HTTP options
+   * @param options HTTP options.
    *
    * @return An `Observable` of the `HTTPResponse` for the request, with a response body in the
    *     requested type.
