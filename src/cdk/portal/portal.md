@@ -3,7 +3,7 @@ The `portals` package provides a flexible system for rendering dynamic content i
 ### Portals
 A `Portal` is a piece of UI that can be dynamically rendered to an open slot on the page.
 
-The "piece of UI" can be either a `Component` or a `TemplateRef` and the "open slot" is
+The "piece of UI" can be either a `Component`, a `TemplateRef` or a DOM element and the "open slot" is
 a `PortalOutlet`.
 
 Portals and PortalOutlets are low-level building blocks that other concepts, such as overlays, are
@@ -55,7 +55,43 @@ portals, it must be included in the `entryComponents` of its `NgModule`.
 
 Usage:
 ```ts
-this.userSettingsPortal = new ComponentPortal(UserSettingsComponent);
+ngAfterViewInit() {
+  this.userSettingsPortal = new ComponentPortal(UserSettingsComponent);
+}
+```
+
+##### `TemplatePortal`
+You can create a `TemplatePortal` from an `<ng-template>`. `TemplatePortal` allows you to take Angular content within one template and render it somewhere else.
+
+Usage:
+```html
+<ng-template #templatePortalContent>Some content here</ng-template>
+```
+
+```ts
+@ViewChild('templatePortalContent') templatePortalContent: TemplateRef<unknow>;
+
+ngAfterViewInit() {
+  this.templatePortal = new TemplatePortal(
+    this.templatePortalContent,
+    this._viewContainerRef
+  );
+}
+```
+
+##### `DomPortal`
+You can create a `DomPortal` from any native DOM element. `DomPortal` allows you to take any arbitrary DOM content and render it somewhere else. `DomPortal` moves content _as is_, so elements with Angular features like bindings or directives may no longer update if moved via `DomPortal`.
+
+Usage:
+```html
+<div #domPortalContent>Some content here</div>
+```
+
+```ts
+@ViewChild('domPortalContent', {static: false}) domPortalContent: ElementRef<HTMLElement>;
+ngAfterViewInit() {
+  this.domPortal = new DomPortal(this.domPortalContent);
+}
 ```
 
 
