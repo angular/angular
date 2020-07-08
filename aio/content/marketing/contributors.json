@@ -713,9 +713,9 @@
   "santosh": {
     "name": "Santosh Yadav",
     "picture": "santoshyadav.jpg",
-    "twitter": "Santosh19742211",
+    "twitter": "SantoshYadavDev",
     "website": "https://www.santoshyadav.dev",
-    "bio": "Santosh is a GDE for Angular and Web Technologies and loves to contribute to Open Source. He is the creator of ng deploy for netlify and core team member for NestJS Addons. He writes for AngularInDepth, mentors for DotNetTricks, organizes Pune Tech Meetup, and conducts free workshops on Angular.",
+    "bio": "Santosh is a GDE for Angular and loves to contribute to Open Source. He is the creator of ng deploy for netlify and core team member for NestJS Addons. He writes for AngularInDepth, mentors for DotNetTricks, organizes Pune Tech Meetup, and conducts free workshops on Angular.",
     "groups": ["GDE"]
   },
   "josephperrott": {
