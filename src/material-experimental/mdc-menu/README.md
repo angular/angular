@@ -62,7 +62,12 @@ component by following these steps:
 
    $my-primary: mat-palette($mat-indigo);
    $my-accent:  mat-palette($mat-pink, A200, A100, A400);
-   $my-theme:   mat-light-theme($my-primary, $my-accent);
+   $my-theme:   mat-light-theme((
+     color: (
+       primary: $my-primary, 
+       accent: $my-accent
+     )
+   ));
 
    @include mat-mdc-menu-theme($my-theme);
    @include mat-mdc-menu-typography();
