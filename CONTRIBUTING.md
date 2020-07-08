@@ -273,7 +273,7 @@ The summary contains a succinct description of the change:
 
 Just as in the summary, use the imperative, present tense: "fix" not "fixed" nor "fixes".
 
-Explain the motivation for the change in the commit message body. This commit message should explain _why_ you're making the change.
+Explain the motivation for the change in the commit message body. This commit message should explain _why_ you are making the change.
 You can include a comparison of the previous behavior with the new behavior in order to illustrate the impact of the change.
 
 
