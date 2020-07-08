@@ -18,8 +18,7 @@ const bazelManifestPath = /(angular_material|external)\//;
  * List of fields which are mandatory in entry-point "package.json" files and refer
  * to files in the release output.
  */
-const packageJsonPathFields =
-    ['main', 'module', 'typings', 'es2015', 'fesm2015', 'esm2015'];
+const packageJsonPathFields = ['main', 'module', 'typings', 'es2015', 'fesm2015', 'esm2015'];
 
 /**
  * Checks the specified JavaScript file and ensures that it does not
@@ -45,11 +44,11 @@ export function checkJavaScriptOutput(filePath: string): string[] {
 }
 
 /**
- * Checks a "package.json" file by ensuring that common fields which are
+ * Checks an entry-point "package.json" file by ensuring that common fields which are
  * specified in the Angular package format are present. Those fields which
  * resolve to paths are checked so that they do not refer to non-existent files.
  */
-export function checkPackageJsonFile(filePath: string): string[] {
+export function checkEntryPointPackageJsonFile(filePath: string): string[] {
   const fileContent = readFileSync(filePath, 'utf8');
   const parsed = JSON.parse(fileContent);
   const packageJsonDir = dirname(filePath);
@@ -106,6 +105,31 @@ export function checkTypeDefinitionFile(filePath: string): string[] {
     }
 
     nodeQueue.push(...node.getChildren());
+  }
+
+  return failures;
+}
+
+/**
+ * Checks the primary `package.json` file of a release package. Currently we ensure
+ * that the version and migrations are set up correctly.
+ */
+export function checkPrimaryPackageJson(
+    packageJsonPath: string, currentVersion: Version): string[] {
+  const expectedVersion = currentVersion.format();
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+  const failures: string[] = [];
+
+  if (!packageJson.version) {
+    failures.push(`No version set. Expected: ${expectedVersion}`);
+  } else if (packageJson.version !== expectedVersion) {
+    failures.push(
+        `Unexpected package version. Expected: ${expectedVersion} but got: ${packageJson.version}`);
+  }
+
+  if (packageJson['ng-update'] && packageJson['ng-update'].migrations) {
+    failures.push(...checkMigrationCollection(
+        packageJson['ng-update'].migrations, dirname(packageJsonPath), currentVersion));
   }
 
   return failures;

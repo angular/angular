@@ -6,10 +6,10 @@ import {Version} from '../version-name/parse-version';
 
 import {
   checkCdkPackage,
-  checkMaterialPackage,
-  checkPackageJsonFile,
-  checkPackageJsonMigrations,
+  checkEntryPointPackageJsonFile,
   checkJavaScriptOutput,
+  checkMaterialPackage,
+  checkPrimaryPackageJson,
   checkTypeDefinitionFile
 } from './output-validations';
 
@@ -64,7 +64,7 @@ export function checkReleasePackage(
   // Check each "package.json" file in the release output. We want to ensure
   // that there are no invalid file references in the entry-point definitions.
   packageJsonFiles.forEach(filePath => {
-    checkPackageJsonFile(filePath).forEach(message => addFailure(message, filePath));
+    checkEntryPointPackageJsonFile(filePath).forEach(message => addFailure(message, filePath));
   });
 
   // Special release validation checks for the "material" release package.
@@ -82,7 +82,7 @@ export function checkReleasePackage(
     addFailure('No "README.md" file found in package output.');
   }
 
-  checkPackageJsonMigrations(join(packagePath, 'package.json'), currentVersion)
+  checkPrimaryPackageJson(join(packagePath, 'package.json'), currentVersion)
       .forEach(f => addFailure(f));
 
   // In case there are failures for this package, we want to print those
