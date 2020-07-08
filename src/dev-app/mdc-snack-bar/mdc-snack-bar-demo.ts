@@ -8,21 +8,21 @@
 
 import {Directionality} from '@angular/cdk/bidi';
 import {Component, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
+import {MatSnackBar} from '@angular/material-experimental/mdc-snack-bar';
 import {
-  MatSnackBar,
   MatSnackBarConfig,
   MatSnackBarHorizontalPosition,
-  MatSnackBarVerticalPosition,
+  MatSnackBarVerticalPosition
 } from '@angular/material/snack-bar';
 
-
 @Component({
-  selector: 'snack-bar-demo',
-  styleUrls: ['snack-bar-demo.css'],
-  templateUrl: 'snack-bar-demo.html',
+  selector: 'mdc-snack-bar-demo',
+  templateUrl: 'mdc-snack-bar-demo.html',
+  styleUrls: ['mdc-snack-bar-demo.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class SnackBarDemo {
+export class MdcSnackBarDemo {
+
   @ViewChild('template') template: TemplateRef<any>;
   message = 'Snack Bar opened.';
   actionButtonLabel = 'Retry';
