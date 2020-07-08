@@ -366,6 +366,7 @@ groups:
           'aio/content/images/guide/pipes/**',
           'aio/content/guide/providers.md',
           'aio/content/examples/providers/**',
+          'aio/content/images/guide/providers/**',
           'aio/content/guide/singleton-services.md',
           'aio/content/guide/set-document-title.md',
           'aio/content/examples/set-document-title/**',
