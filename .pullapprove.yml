@@ -533,6 +533,7 @@ groups:
           'packages/examples/router/**',
           'aio/content/guide/router.md',
           'aio/content/guide/router-tutorial.md',
+          'aio/content/guide/router-tutorial-toh.md',
           'aio/content/examples/router-tutorial/**',
           'aio/content/examples/router/**',
           'aio/content/images/guide/router/**'
