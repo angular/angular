@@ -3590,6 +3590,25 @@ describe('CdkDrag', () => {
       expect(list.scrollLeft).toBeLessThan(initialScrollDistance);
     }));
 
+    it('should be able to start auto scrolling with a drag boundary', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableHorizontalDropZone);
+      fixture.componentInstance.boundarySelector = '.drop-list';
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+      const listRect = list.getBoundingClientRect();
+
+      expect(list.scrollLeft).toBe(0);
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove', listRect.left + listRect.width,
+        listRect.top + listRect.height / 2);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(list.scrollLeft).toBeGreaterThan(0);
+    }));
+
     it('should stop scrolling if the user moves their pointer away', fakeAsync(() => {
       const fixture = createComponent(DraggableInScrollableVerticalDropZone);
       fixture.detectChanges();
@@ -5555,6 +5574,7 @@ const HORIZONTAL_FIXTURE_TEMPLATE = `
       *ngFor="let item of items"
       [style.width.px]="item.width"
       [style.margin-right.px]="item.margin"
+      [cdkDragBoundary]="boundarySelector"
       cdkDrag>{{item.value}}</div>
   </div>
 `;
@@ -5573,6 +5593,7 @@ class DraggableInHorizontalDropZone {
     {value: 'Two', width: ITEM_WIDTH, margin: 0},
     {value: 'Three', width: ITEM_WIDTH, margin: 0}
   ];
+  boundarySelector: string;
   droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   });
