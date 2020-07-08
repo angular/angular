@@ -350,7 +350,7 @@ mat-action-list {
 // enhancement and not all desktop browsers support this kind of media query, we can't
 // use something like `@media (hover)`.
 @media (hover: none) {
-  .mat-list-option,
+  .mat-list-option:not(.mat-list-single-selected-option),
   .mat-nav-list .mat-list-item,
   .mat-action-list .mat-list-item {
     &:not(.mat-list-item-disabled):hover {
