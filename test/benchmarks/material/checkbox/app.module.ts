@@ -10,6 +10,8 @@ import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 
+/** component: mat-checkbox */
+
 @Component({
   selector: 'app-root',
   template: `

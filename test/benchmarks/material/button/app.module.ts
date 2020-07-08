@@ -10,6 +10,8 @@ import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {MatButtonModule} from '@angular/material/button';
 
+/** component: mat-raised-button */
+
 @Component({
   selector: 'app-root',
   template: `

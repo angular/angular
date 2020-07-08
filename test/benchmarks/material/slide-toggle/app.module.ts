@@ -10,6 +10,8 @@ import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
+/** component: mat-slide-toggle */
+
 @Component({
   selector: 'app-root',
   template: `

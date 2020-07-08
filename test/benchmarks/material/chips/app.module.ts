@@ -10,6 +10,8 @@ import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {MatChipsModule} from '@angular/material/chips';
 
+/** component: mat-chip */
+
 @Component({
   selector: 'app-root',
   template: `
