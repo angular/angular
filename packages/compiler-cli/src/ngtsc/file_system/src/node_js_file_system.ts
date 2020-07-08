@@ -9,7 +9,7 @@
 import * as fs from 'fs';
 import * as fsExtra from 'fs-extra';
 import * as p from 'path';
-import {absoluteFrom, relativeFrom} from './helpers';
+import {absoluteFrom} from './helpers';
 import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from './types';
 
 /**

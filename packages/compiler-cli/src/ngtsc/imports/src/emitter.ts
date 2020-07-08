@@ -270,7 +270,7 @@ export class RelativePathStrategy implements ReferenceEmitStrategy {
   emit(ref: Reference<ts.Node>, context: ts.SourceFile): Expression|null {
     const destSf = getSourceFile(ref.node);
     const relativePath =
-        relative(dirname(absoluteFromSourceFile(context)), absoluteFromSourceFile(destSf))
+        relative(dirname(absoluteFromSourceFile(context)), absoluteFromSourceFile(destSf));
     const moduleName = toRelativeImport(stripExtension(relativePath));
 
     const name = findExportedNameOfNode(ref.node, destSf, this.reflector);
