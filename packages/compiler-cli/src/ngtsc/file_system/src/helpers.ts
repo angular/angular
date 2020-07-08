@@ -106,6 +106,7 @@ export function isLocalRelativePath(relativePath: string): boolean {
  *
  * In other words it adds the `./` to the path if it is locally relative.
  */
-export function toRelativeImport(relativePath: string): string {
-  return isLocalRelativePath(relativePath) ? `./${relativePath}` : relativePath;
+export function toRelativeImport(relativePath: PathSegment|AbsoluteFsPath): PathSegment|
+    AbsoluteFsPath {
+  return isLocalRelativePath(relativePath) ? `./${relativePath}` as PathSegment : relativePath;
 }

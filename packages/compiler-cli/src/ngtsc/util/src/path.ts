@@ -6,17 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {dirname, relative, resolve, toRelativeImport} from '../../file_system';
-
-const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
+import {stripExtension} from '../../file_system/src/util';
 
 export function relativePathBetween(from: string, to: string): string|null {
-  let relativePath = relative(dirname(resolve(from)), resolve(to)).replace(TS_DTS_JS_EXTENSION, '');
-
-  if (relativePath === '') {
-    return null;
-  }
-
-  return toRelativeImport(relativePath);
+  const relativePath = stripExtension(relative(dirname(resolve(from)), resolve(to)));
+  return relativePath !== '' ? toRelativeImport(relativePath) : null;
 }
 
 export function normalizeSeparators(path: string): string {
