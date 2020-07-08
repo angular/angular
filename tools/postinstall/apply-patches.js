@@ -39,7 +39,12 @@ async function main() {
   registry = await readAndValidatePatchMarker();
 
   // Apply all patches synchronously.
-  applyPatches();
+  try {
+    applyPatches();
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
 
   // Write the patch marker file so that we don't accidentally re-apply patches
   // in subsequent Yarn installations.
