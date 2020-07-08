@@ -38,7 +38,7 @@ genrule(
 pkg_npm(
     name = "npm_package",
     srcs = [
-        "BUILD.bazel",
+        "index.bzl",
         "//dev-infra/bazel:files",
         "//dev-infra/benchmark:files",
     ],
