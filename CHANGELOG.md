@@ -1,3 +1,13 @@
+<a name="10.0.3"></a>
+## 10.0.3 (2020-07-08)
+
+
+### Bug Fixes
+
+* **core:** handle spaces after `select` and `plural` ICU keywords ([#37866](https://github.com/angular/angular/issues/37866)) ([790bb94](https://github.com/angular/angular/commit/790bb94))
+
+
+
 <a name="10.0.2"></a>
 ## [10.0.2](https://github.com/angular/angular/compare/10.0.1...10.0.2) (2020-06-30)
 
