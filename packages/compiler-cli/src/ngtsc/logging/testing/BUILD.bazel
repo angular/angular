@@ -4,7 +4,6 @@ package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "testing",
-    testonly = True,
     srcs = glob([
         "**/*.ts",
     ]),
