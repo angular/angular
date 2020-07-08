@@ -96,6 +96,9 @@ export function basename(filePath: PathString, extension?: string): PathSegment 
 
 /**
  * Returns true if the given path is locally relative.
+ *
+ * This is used to work out if the given path is relative (i.e. not absolute) but also is not
+ * escaping the current directory.
  */
 export function isLocalRelativePath(relativePath: string): boolean {
   return !isRooted(relativePath) && !relativePath.startsWith('..');
