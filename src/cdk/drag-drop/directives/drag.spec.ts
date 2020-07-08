@@ -91,6 +91,17 @@ describe('CdkDrag', () => {
         expect(dragElement.getAttribute('transform')).toBe('translate(50 100)');
       }));
 
+      it('should drag an SVG element freely to a particular position in SVG viewBox coordinates',
+        fakeAsync(() => {
+          const fixture = createComponent(StandaloneDraggableSvgWithViewBox);
+          fixture.detectChanges();
+          const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+          expect(dragElement.getAttribute('transform')).toBeFalsy();
+          dragElementViaMouse(fixture, dragElement, 50, 100);
+          expect(dragElement.getAttribute('transform')).toBe('translate(100 200)');
+        }));
+
       it('should drag an element freely to a particular position when the page is scrolled',
         fakeAsync(() => {
           const fixture = createComponent(StandaloneDraggable);
@@ -5327,6 +5338,19 @@ class StandaloneDraggableWithOnPush {
   `
 })
 class StandaloneDraggableSvg {
+  @ViewChild('dragElement') dragElement: ElementRef<SVGElement>;
+}
+
+@Component({
+  template: `
+    <svg width="400px" height="400px" viewBox="0 0 800 800"><g
+      cdkDrag
+      #dragElement>
+      <circle fill="red" r="50" cx="50" cy="50"/>
+    </g></svg>
+  `
+})
+class StandaloneDraggableSvgWithViewBox {
   @ViewChild('dragElement') dragElement: ElementRef<SVGElement>;
 }
 
