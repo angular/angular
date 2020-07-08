@@ -186,7 +186,7 @@ aDialog.content = 123;  // <-- ERROR: TypeScript knows this should be a string.
 aDialog.body = 'News';  // <-- ERROR: TypeScript knows there is no `body` property on `aDialog`.
 ```
 
-This is a good way to quickly get TypeScript features, such as type checking and autocomplete support, for you custom element. But it can get cumbersome if you need it in several places, because you have to cast the return type on every occurrence.
+This is a good way to quickly get TypeScript features, such as type checking and autocomplete support, for your custom element. But it can get cumbersome if you need it in several places, because you have to cast the return type on every occurrence.
 
 An alternative way, that only requires defining each custom element's type once, is augmenting the `HTMLElementTagNameMap`, which TypeScript uses to infer the type of a returned element based on its tag name (for DOM methods such as `document.createElement()`, `document.querySelector()`, etc.):
 
