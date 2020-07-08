@@ -78,6 +78,7 @@ const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
     // the native input element. Otherwise property bindings for those don't work.
     '[attr.id]': 'id',
     '[attr.placeholder]': 'placeholder',
+    '[attr.data-placeholder]': 'placeholder',
     '[disabled]': 'disabled',
     '[required]': 'required',
     '[attr.readonly]': 'readonly && !_isNativeSelect || null',
