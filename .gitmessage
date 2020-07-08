@@ -104,7 +104,7 @@ Fixes #<issue number>
 #   ┃       ┃
 #   ┃       ┗━⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
 #   ┃                          elements|forms|http|language-service|localize|platform-browser|
-#   ┃                          platform-browser-dynamic|platform-server|platform-webworker
+#   ┃                          platform-browser-dynamic|platform-server|platform-webworker|
 #   ┃                          platform-webworker-dynamic|router|service-worker|upgrade|zone.js|
 #   ┃                          packaging|changelog|dev-infra|docs-infra|migrations|ngcc|ve
 #   ┃                          https://github.com/angular/angular/blob/master/CONTRIBUTING.md#scope
@@ -118,9 +118,9 @@ Fixes #<issue number>
 #
 # Just as in the summary, use the imperative, present tense: "fix" not "fixed" nor "fixes".
 #
-# The content of the body should include the motivation for the change (hint: answer the question:
-# "WHY this change?") and if useful to clarify the impact of the change also include the comparison
-# of new vs previous behavior.
+# Explain the motivation for the change in the commit message body. This commit message should
+# explain _why_ you're making the change. You can include a comparison of the previous behavior with
+# the new behavior in order to illustrate the impact of the change.
 #
 #
 # Commit Message Footer

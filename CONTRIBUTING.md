@@ -196,7 +196,7 @@ Any line of the commit message cannot be longer than 100 characters.
   ┃       ┃
   ┃       ┗━⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
   ┃                          elements|forms|http|language-service|localize|platform-browser|
-  ┃                          platform-browser-dynamic|platform-server|platform-webworker
+  ┃                          platform-browser-dynamic|platform-server|platform-webworker|
   ┃                          platform-webworker-dynamic|router|service-worker|upgrade|zone.js|
   ┃                          packaging|changelog|dev-infra|docs-infra|migrations|ngcc|ve
   ┃
@@ -273,7 +273,8 @@ The summary contains a succinct description of the change:
 
 Just as in the summary, use the imperative, present tense: "fix" not "fixed" nor "fixes".
 
-The content of the body should include the motivation for the change (hint: answer the question: "WHY this change?") and if useful to clarify the impact of the change also include the comparison of new vs previous behavior.
+Explain the motivation for the change in the commit message body. This commit message should explain _why_ you're making the change.
+You can include a comparison of the previous behavior with the new behavior in order to illustrate the impact of the change.
 
 
 #### Commit Message Footer
@@ -300,9 +301,6 @@ The content of the commit message body should contain:
 
 - information about the SHA of the commit being reverted in the following format: `This reverts commit <SHA>`,
 - a clear description of the reason for reverting the commit message.
-
-
-**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
 
 
 ## <a name="cla"></a> Signing the CLA
