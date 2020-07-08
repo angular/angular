@@ -440,7 +440,13 @@ jobs:
       # Ensures that we do not push the snapshot artifacts upstream until all previous
       # snapshot build jobs have completed. This helps avoiding conflicts when multiple
       # commits have been pushed (resulting in multiple concurrent snapshot publish jobs).
-      - queue/until_front_of_line
+      # We increase the confidence threshold so that it queries the CircleCI API a second time
+      # after a delay. We do this as the CircleCI API does not refresh immediately when a job
+      # completes/starts, and this will improve stability of the queue step. See source:
+      # https://github.com/eddiewebb/circleci-queue/commit/5d42add5bbcff5e8ac7fe189448a61fea98b0839.
+      - queue/until_front_of_line:
+          confidence: "2"
+
       - run: ./scripts/circleci/publish-snapshots.sh
       - *slack_notify_on_failure
 
