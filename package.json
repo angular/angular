@@ -73,7 +73,7 @@
     "@angular/bazel": "^10.0.0",
     "@angular/benchpress": "^0.2.0",
     "@angular/compiler-cli": "^10.0.0",
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#54a5865a219e89202d6ca128775e6a2489b9dac1",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#0d806013f9c76bfae91d648fb69fc3cb2bf08758",
     "@angular/platform-browser-dynamic": "^10.0.0",
     "@angular/platform-server": "^10.0.0",
     "@angular/router": "^10.0.0",
@@ -171,8 +171,7 @@
     "typescript-3.7": "npm:typescript@~3.7.0",
     "typescript-3.8": "npm:typescript@~3.8.0",
     "vrsource-tslint-rules": "5.1.1",
-    "yaml": "^1.10.0",
-    "yargs": "15.3.0"
+    "yaml": "^1.10.0"
   },
   "resolutions": {
     "dgeni-packages/typescript": "3.9.5",
