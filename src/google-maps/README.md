@@ -109,7 +109,7 @@ export class GoogleMapDemo {
             (mapClick)="addMarker($event)"
             (mapMousemove)="move($event)"
             (mapRightclick)="removeLastMarker()">
-  <map-marker #marker
+  <map-marker #marker="mapMarker"
               *ngFor="let markerPosition of markerPositions"
               [position]="markerPosition"
               [options]="markerOptions"
