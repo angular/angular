@@ -186,6 +186,18 @@ export declare class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<T>;
+    delete<T>(url: string, jsonParser: JsonParser<T>, options?: {
+        headers?: HttpHeaders | {
+            [header: string]: string | string[];
+        };
+        observe?: 'body';
+        params?: HttpParams | {
+            [param: string]: string | string[];
+        };
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<T>;
     get(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -366,6 +378,18 @@ export declare class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<T>;
+    get<T>(url: string, jsonParser: JsonParser<T>, options?: {
+        headers?: HttpHeaders | {
+            [header: string]: string | string[];
+        };
+        observe?: 'body';
+        params?: HttpParams | {
+            [param: string]: string | string[];
+        };
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<T>;
     head(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -535,6 +559,18 @@ export declare class HttpClient {
         withCredentials?: boolean;
     }): Observable<Object>;
     head<T>(url: string, options?: {
+        headers?: HttpHeaders | {
+            [header: string]: string | string[];
+        };
+        observe?: 'body';
+        params?: HttpParams | {
+            [param: string]: string | string[];
+        };
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<T>;
+    head<T>(url: string, jsonParser: JsonParser<T>, options?: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -728,6 +764,18 @@ export declare class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<T>;
+    options<T>(url: string, jsonParser: JsonParser<T>, options?: {
+        headers?: HttpHeaders | {
+            [header: string]: string | string[];
+        };
+        observe?: 'body';
+        params?: HttpParams | {
+            [param: string]: string | string[];
+        };
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<T>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -897,6 +945,18 @@ export declare class HttpClient {
         withCredentials?: boolean;
     }): Observable<Object>;
     patch<T>(url: string, body: any | null, options?: {
+        headers?: HttpHeaders | {
+            [header: string]: string | string[];
+        };
+        observe?: 'body';
+        params?: HttpParams | {
+            [param: string]: string | string[];
+        };
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<T>;
+    patch<T>(url: string, body: any | null, jsonParser: JsonParser<T>, options?: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -1088,6 +1148,18 @@ export declare class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<T>;
+    post<T>(url: string, body: any | null, jsonParser: JsonParser<T>, options?: {
+        headers?: HttpHeaders | {
+            [header: string]: string | string[];
+        };
+        observe?: 'body';
+        params?: HttpParams | {
+            [param: string]: string | string[];
+        };
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<T>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1253,6 +1325,18 @@ export declare class HttpClient {
         withCredentials?: boolean;
     }): Observable<Object>;
     put<T>(url: string, body: any | null, options?: {
+        headers?: HttpHeaders | {
+            [header: string]: string | string[];
+        };
+        observe?: 'body';
+        params?: HttpParams | {
+            [param: string]: string | string[];
+        };
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<T>;
+    put<T>(url: string, body: any | null, jsonParser: JsonParser<T>, options?: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
         };
@@ -1448,6 +1532,19 @@ export declare class HttpClient {
         withCredentials?: boolean;
     }): Observable<Object>;
     request<R>(method: string, url: string, options?: {
+        body?: any;
+        headers?: HttpHeaders | {
+            [header: string]: string | string[];
+        };
+        observe?: 'body';
+        params?: HttpParams | {
+            [param: string]: string | string[];
+        };
+        responseType?: 'json';
+        reportProgress?: boolean;
+        withCredentials?: boolean;
+    }): Observable<R>;
+    request<R>(method: string, url: string, jsonParser: JsonParser<R>, options?: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];

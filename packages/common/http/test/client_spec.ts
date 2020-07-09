@@ -9,7 +9,7 @@
 import {HttpClient} from '@angular/common/http/src/client';
 import {HttpErrorResponse, HttpEventType, HttpResponse} from '@angular/common/http/src/response';
 import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
-import {ddescribe, describe, fit, it} from '@angular/core/testing/src/testing_internal';
+import {describe, it} from '@angular/core/testing/src/testing_internal';
 import {toArray} from 'rxjs/operators';
 
 {
@@ -31,6 +31,23 @@ import {toArray} from 'rxjs/operators';
         });
         backend.expectOne('/test').flush({'data': 'hello world'});
       });
+      it('for parsed JSON data', done => {
+        const jsonParser = {fromJSON: (res: any) => ({data: res.data1 + ' ' + res.data2})};
+        client.get('/test', jsonParser).subscribe(res => {
+          expect((res as any)['data']).toEqual('hello world');
+          done();
+        });
+        backend.expectOne('/test').flush({'data1': 'hello', 'data2': 'world'});
+      });
+      it('for parsed JSON array', done => {
+        const response = [{'data1': 'element', 'data2': 'one'}, {'data1': 'item', 'data2': 'two'}];
+        const jsonParser = {fromJSON: (res: any) => ({data: res.data1 + ' ' + res.data2})};
+        client.get('/test', jsonParser).subscribe(res => {
+          expect(res as any).toEqual([{data: 'element one'}, {data: 'item two'}]);
+          done();
+        });
+        backend.expectOne('/test').flush(response);
+      });
       it('for text data', done => {
         client.get('/test', {responseType: 'text'}).subscribe(res => {
           expect(res).toEqual('hello world');
@@ -43,6 +60,16 @@ import {toArray} from 'rxjs/operators';
         const req = backend.expectOne('/test');
         expect(req.request.headers.get('X-Option')).toEqual('true');
         req.flush({});
+      });
+      it('with headers and JSON parser', done => {
+        const jsonParser = {fromJSON: (res: any) => ({data: res.data1 + ' ' + res.data2})};
+        client.get('/test', jsonParser, {headers: {'X-Option': 'true'}}).subscribe(res => {
+          expect((res as any)['data']).toEqual('hello world');
+          done();
+        });
+        const req = backend.expectOne('/test');
+        expect(req.request.headers.get('X-Option')).toEqual('true');
+        req.flush({'data1': 'hello', 'data2': 'world'});
       });
       it('with params', done => {
         client.get('/test', {params: {'test': 'true'}}).subscribe(() => done());
@@ -113,6 +140,18 @@ import {toArray} from 'rxjs/operators';
         const testReq = backend.expectOne('/test');
         expect(testReq.request.body).toBe(body);
         testReq.flush('hello world');
+      });
+      it('with json data and parsed json response', done => {
+        const body = {data: 'json body'};
+        const jsonParser = {fromJSON: (res: any) => ({data: res.data1 + ' ' + res.data2})};
+        client.post('/test', body, jsonParser, {observe: 'body', responseType: 'json'})
+            .subscribe(res => {
+              expect((res as any)['data']).toEqual('hello world');
+              done();
+            });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(body);
+        testReq.flush({data1: 'hello', data2: 'world'});
       });
       it('with a json body of false', done => {
         client.post('/test', false, {observe: 'response', responseType: 'text'}).subscribe(res => {

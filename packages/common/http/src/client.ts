@@ -50,6 +50,17 @@ function addBody<T>(
 
 export type HttpObserve = 'body'|'events'|'response';
 
+type JsonParser<T> = {
+  // The return type of this function is T when T is not an array
+  // or the element type (U) of the array (T = U[]) otherwise.
+  fromJSON(object: any): T extends(infer U)[] ? U : T
+};
+
+// Type guard for JsonParser
+function isJsonParser<T>(obj: any): obj is JsonParser<T> {
+  return typeof obj.fromJSON === 'function';
+}
+
 /**
  * Performs HTTP requests.
  * This service is available as an injectable class, with methods to perform HTTP requests.
@@ -396,6 +407,30 @@ export class HttpClient {
   }): Observable<R>;
 
   /**
+   * Constructs a request which interprets the body as a JSON object
+   * with the response body of the requested type and uses the fromJSON
+   * method/function in the jsonParser parameter to convert the JSON object
+   * into the parsed object returned.
+   *
+   * @param method      The HTTP method.
+   * @param url         The endpoint URL.
+   * @param jsonParser  The class with the fromJSON static method (or object
+   *     with the fromJSON function) to parse the JSON response.
+   * @param options     The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the parsed object of type `R`.
+   */
+  request<R>(method: string, url: string, jsonParser: JsonParser<R>, options?: {
+    body?: any,
+    headers?: HttpHeaders|{[header: string]: string | string[]},
+    observe?: 'body',
+    params?: HttpParams|{[param: string]: string | string[]},
+    responseType?: 'json',
+    reportProgress?: boolean,
+    withCredentials?: boolean,
+  }): Observable<R>;
+
+  /**
    * Constructs a request where response type and requested observable are not known statically.
    *
    * @param method  The HTTP method.
@@ -423,7 +458,9 @@ export class HttpClient {
    * the call returns an observable of the raw `HttpEvent` stream.
    *
    * Alternatively you can pass an HTTP method as the first parameter,
-   * a URL string as the second, and an options hash containing the request body as the third.
+   * a URL string as the second, a class with the fromJSON static method (or object
+   * with the fromJSON function) as optionally the third, and an options hash containing the request
+   * body as the third (when the class with the fromJSON static method is not given) or fourth.
    * See `addBody()`. In this case, the specified `responseType` and `observe` options determine the
    * type of returned observable.
    *   * The `responseType` value determines how a successful response body is parsed.
@@ -439,16 +476,31 @@ export class HttpClient {
    * parameter.
    *   * An `observe` value of body returns an observable of `<T>` with the same `T` body type.
    *
+   * When `responseType` is `json` and `observe` is `body`, the third parameter can be a class or
+   * object holding the fromJSON static method (or function) that will parse the JSON object
+   * response into an object of type `<T>`. Then, an observable of `<T>` is returned.
    */
-  request(first: string|HttpRequest<any>, url?: string, options: {
-    body?: any,
-    headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
-    params?: HttpParams|{[param: string]: string | string[]},
-    reportProgress?: boolean,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-  } = {}): Observable<any> {
+  request(
+      first: string|HttpRequest<any>, url?: string, third: JsonParser<any>|{
+        body?: any,
+        headers?: HttpHeaders|{[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {},
+      fourth: {
+        body?: any,
+        headers?: HttpHeaders|{[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {}): Observable<any> {
+    const [jsonParser, options] = isJsonParser(third) ? [third, fourth] : [undefined, third];
+
     let req: HttpRequest<any>;
     // First, check whether the primary argument is an instance of `HttpRequest`.
     if (first instanceof HttpRequest) {
@@ -545,7 +597,17 @@ export class HttpClient {
           case 'json':
           default:
             // No validation needed for JSON responses, as they can be of any type.
-            return res$.pipe(map((res: HttpResponse<any>) => res.body));
+            if (jsonParser !== undefined) {
+              // Parsed object from JSON response
+              return res$.pipe(
+                  // Parse a single JSON object or an array of objects
+                  map((res: HttpResponse<any>) => Array.isArray(res.body) ?
+                          res.body.map(item => jsonParser.fromJSON(item)) :
+                          jsonParser.fromJSON(res.body)));
+            } else {
+              // Plain JSON response
+              return res$.pipe(map((res: HttpResponse<any>) => res.body));
+            }
         }
       case 'response':
         // The response stream was requested directly, so return it.
@@ -815,23 +877,57 @@ export class HttpClient {
   }): Observable<T>;
 
   /**
+   * Constructs a DELETE request that interprets the body as a JSON object and
+   * uses the fromJSON method/function in the jsonParser parameter to convert
+   * the JSON object into another parsed object.
+   *
+   * @param url         The endpoint URL.
+   * @param jsonParser  The class with the fromJSON static method (or object
+   *     with the fromJSON function) to parse the JSON response.
+   * @param options     The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the parsed object of type `R`.
+   */
+  delete<T>(url: string, jsonParser: JsonParser<T>, options?: {
+    headers?: HttpHeaders|{[header: string]: string | string[]},
+    observe?: 'body',
+    params?: HttpParams|{[param: string]: string | string[]},
+    reportProgress?: boolean,
+    responseType?: 'json',
+    withCredentials?: boolean,
+  }): Observable<T>;
+
+  /**
    * Constructs an observable that, when subscribed, causes the configured
    * `DELETE` request to execute on the server. See the individual overloads for
    * details on the return type.
    *
    * @param url     The endpoint URL.
-   * @param options The HTTP options to send with the request.
-   *
+   * @param second  The JSON parser or the HTTP options to send with the request.
+   * @param third   The HTTP options to send with the request or undefined.
    */
-  delete(url: string, options: {
-    headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
-    params?: HttpParams|{[param: string]: string | string[]},
-    reportProgress?: boolean,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-  } = {}): Observable<any> {
-    return this.request<any>('DELETE', url, options as any);
+  delete(
+      url: string, second: JsonParser<any>|{
+        headers?: HttpHeaders | {[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {},
+      third: {
+        headers?: HttpHeaders|{[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {}): Observable<any> {
+    if (isJsonParser(second)) {
+      return this.request<any>('DELETE', url, second, third as any);
+    } else {
+      return this.request<any>('DELETE', url, second as any);
+    }
   }
 
 
@@ -1094,21 +1190,57 @@ export class HttpClient {
   }): Observable<T>;
 
   /**
+   * Constructs a `GET` request that interprets the body as a JSON object and
+   * uses the fromJSON method/function in the jsonParser parameter to convert
+   * the JSON object into another parsed object.
+   *
+   * @param url         The endpoint URL.
+   * @param jsonParser  The class with the fromJSON static method (or object
+   *     with the fromJSON function) to parse the JSON response.
+   * @param options     The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the parsed object of type `R`.
+   */
+  get<T>(url: string, jsonParser: JsonParser<T>, options?: {
+    headers?: HttpHeaders|{[header: string]: string | string[]},
+    observe?: 'body',
+    params?: HttpParams|{[param: string]: string | string[]},
+    reportProgress?: boolean,
+    responseType?: 'json',
+    withCredentials?: boolean,
+  }): Observable<T>;
+
+  /**
    * Constructs an observable that, when subscribed, causes the configured
    * `GET` request to execute on the server. See the individual overloads for
    * details on the return type.
+   *
+   * @param url     The endpoint URL.
+   * @param second  The JSON parser or the HTTP options to send with the request.
+   * @param third   The HTTP options to send with the request or undefined.
    */
-  get(url: string, options: {
-    headers?: HttpHeaders|{[header: string]: string | string[]},
+  get(url: string, second: JsonParser<any>|{
+    headers?: HttpHeaders | {[header: string]: string | string[]},
     observe?: HttpObserve,
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
-  } = {}): Observable<any> {
-    return this.request<any>('GET', url, options as any);
+  } = {},
+      third: {
+        headers?: HttpHeaders|{[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {}): Observable<any> {
+    if (isJsonParser(second)) {
+      return this.request<any>('GET', url, second, third as any);
+    } else {
+      return this.request<any>('GET', url, second as any);
+    }
   }
-
 
   /**
    * Constructs a `HEAD` request that interprets the body as an `ArrayBuffer` and
@@ -1374,21 +1506,59 @@ export class HttpClient {
   }): Observable<T>;
 
   /**
+   * Constructs a `HEAD` request that interprets the body as a JSON object and
+   * uses the fromJSON method/function in the jsonParser parameter to convert
+   * the JSON object into another parsed object.
+   *
+   * @param url         The endpoint URL.
+   * @param jsonParser  The class with the fromJSON static method (or object
+   *     with the fromJSON function) to parse the JSON response.
+   * @param options     The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the parsed object of type `R`.
+   */
+  head<T>(url: string, jsonParser: JsonParser<T>, options?: {
+    headers?: HttpHeaders|{[header: string]: string | string[]},
+    observe?: 'body',
+    params?: HttpParams|{[param: string]: string | string[]},
+    reportProgress?: boolean,
+    responseType?: 'json',
+    withCredentials?: boolean,
+  }): Observable<T>;
+
+  /**
    * Constructs an observable that, when subscribed, causes the configured
    * `HEAD` request to execute on the server. The `HEAD` method returns
    * meta information about the resource without transferring the
    * resource itself. See the individual overloads for
    * details on the return type.
+   *
+   * @param url     The endpoint URL.
+   * @param second  The JSON parser or the HTTP options to send with the request.
+   * @param third   The HTTP options to send with the request or undefined.
    */
-  head(url: string, options: {
-    headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
-    params?: HttpParams|{[param: string]: string | string[]},
-    reportProgress?: boolean,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-  } = {}): Observable<any> {
-    return this.request<any>('HEAD', url, options as any);
+  head(
+      url: string, second: JsonParser<any>|{
+        headers?: HttpHeaders | {[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {},
+      third: {
+        headers?: HttpHeaders|{[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {}): Observable<any> {
+    if (isJsonParser(second)) {
+      return this.request<any>('HEAD', url, second, third as any);
+    } else {
+      return this.request<any>('HEAD', url, second as any);
+    }
   }
 
   /**
@@ -1703,21 +1873,59 @@ export class HttpClient {
   }): Observable<T>;
 
   /**
+   * Constructs an `OPTIONS` request that interprets the body as a JSON object
+   * and uses the fromJSON method/function in the jsonParser parameter to convert
+   * the JSON object into another parsed object.
+   *
+   * @param url         The endpoint URL.
+   * @param jsonParser  The class with the fromJSON static method (or object
+   *     with the fromJSON function) to parse the JSON response.
+   * @param options     HTTP options.
+   *
+   * @return An `Observable` of the parsed object of type `R`.
+   */
+  options<T>(url: string, jsonParser: JsonParser<T>, options?: {
+    headers?: HttpHeaders|{[header: string]: string | string[]},
+    observe?: 'body',
+    params?: HttpParams|{[param: string]: string | string[]},
+    reportProgress?: boolean,
+    responseType?: 'json',
+    withCredentials?: boolean,
+  }): Observable<T>;
+
+  /**
    * Constructs an `Observable` that, when subscribed, causes the configured
    * `OPTIONS` request to execute on the server. This method allows the client
    * to determine the supported HTTP methods and other capabilities of an endpoint,
    * without implying a resource action. See the individual overloads for
    * details on the return type.
+   *
+   * @param url     The endpoint URL.
+   * @param second  The JSON parser or the HTTP options to send with the request.
+   * @param third   The HTTP options to send with the request or undefined.
    */
-  options(url: string, options: {
-    headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
-    params?: HttpParams|{[param: string]: string | string[]},
-    reportProgress?: boolean,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-  } = {}): Observable<any> {
-    return this.request<any>('OPTIONS', url, options as any);
+  options(
+      url: string, second: JsonParser<any>|{
+        headers?: HttpHeaders | {[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {},
+      third: {
+        headers?: HttpHeaders|{[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {}): Observable<any> {
+    if (isJsonParser(second)) {
+      return this.request<any>('OPTIONS', url, second, third as any);
+    } else {
+      return this.request<any>('OPTIONS', url, second as any);
+    }
   }
 
   /**
@@ -1999,19 +2207,59 @@ export class HttpClient {
   }): Observable<T>;
 
   /**
+   * Constructs a `PATCH` request that interprets the body as a JSON object
+   * and uses the fromJSON method/function in the jsonParser parameter to convert
+   * the JSON object into another parsed object.
+   *
+   * @param url         The endpoint URL.
+   * @param body        The resources to edit.
+   * @param jsonParser  The class with the fromJSON static method (or object
+   *     with the fromJSON function) to parse the JSON response.
+   * @param options     HTTP options.
+   *
+   * @return  An `Observable` of the parsed object of type `R`.
+   */
+  patch<T>(url: string, body: any|null, jsonParser: JsonParser<T>, options?: {
+    headers?: HttpHeaders|{[header: string]: string | string[]},
+    observe?: 'body',
+    params?: HttpParams|{[param: string]: string | string[]},
+    reportProgress?: boolean,
+    responseType?: 'json',
+    withCredentials?: boolean,
+  }): Observable<T>;
+
+  /**
    * Constructs an observable that, when subscribed, causes the configured
    * `PATCH` request to execute on the server. See the individual overloads for
    * details on the return type.
+   *
+   * @param url     The endpoint URL.
+   * @param body    The request body.
+   * @param third   The JSON parser or the HTTP options to send with the request.
+   * @param fourth  The HTTP options to send with the request or undefined.
    */
-  patch(url: string, body: any|null, options: {
-    headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
-    params?: HttpParams|{[param: string]: string | string[]},
-    reportProgress?: boolean,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-  } = {}): Observable<any> {
-    return this.request<any>('PATCH', url, addBody(options, body));
+  patch(
+      url: string, body: any|null, third: JsonParser<any>|{
+        headers?: HttpHeaders | {[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {},
+      fourth: {
+        headers?: HttpHeaders|{[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {}): Observable<any> {
+    if (isJsonParser(third)) {
+      return this.request<any>('PATCH', url, third, addBody(fourth, body));
+    } else {
+      return this.request<any>('PATCH', url, addBody(third, body));
+    }
   }
 
   /**
@@ -2292,20 +2540,60 @@ export class HttpClient {
   }): Observable<T>;
 
   /**
+   * Constructs a `POST` request that interprets the body as a JSON object
+   * and uses the fromJSON method/function in the jsonParser parameter to convert
+   * the JSON object into another parsed object.
+   *
+   * @param url         The endpoint URL.
+   * @param body        The content to replace with.
+   * @param jsonParser  The class with the fromJSON static method (or object
+   *     with the fromJSON function) to parse the JSON response.
+   * @param options     HTTP options.
+   *
+   * @return  An `Observable` of the parsed object of type `R`.
+   */
+  post<T>(url: string, body: any|null, jsonParser: JsonParser<T>, options?: {
+    headers?: HttpHeaders|{[header: string]: string | string[]},
+    observe?: 'body',
+    params?: HttpParams|{[param: string]: string | string[]},
+    reportProgress?: boolean,
+    responseType?: 'json',
+    withCredentials?: boolean,
+  }): Observable<T>;
+
+  /**
    * Constructs an observable that, when subscribed, causes the configured
    * `POST` request to execute on the server. The server responds with the location of
    * the replaced resource. See the individual overloads for
    * details on the return type.
+   *
+   * @param url     The endpoint URL.
+   * @param body    The request body.
+   * @param third   The JSON parser or the HTTP options to send with the request.
+   * @param fourth  The HTTP options to send with the request or undefined.
    */
-  post(url: string, body: any|null, options: {
-    headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
-    params?: HttpParams|{[param: string]: string | string[]},
-    reportProgress?: boolean,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-  } = {}): Observable<any> {
-    return this.request<any>('POST', url, addBody(options, body));
+  post(
+      url: string, body: any|null, third: JsonParser<any>|{
+        headers?: HttpHeaders | {[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {},
+      fourth: {
+        headers?: HttpHeaders|{[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {}): Observable<any> {
+    if (isJsonParser(third)) {
+      return this.request<any>('POST', url, third, addBody(fourth, body));
+    } else {
+      return this.request<any>('POST', url, addBody(third, body));
+    }
   }
 
   /**
@@ -2584,19 +2872,58 @@ export class HttpClient {
   }): Observable<T>;
 
   /**
+   * Constructs a `PUT` request that interprets the body as a JSON object
+   * and uses the fromJSON method/function in the jsonParser parameter to convert
+   * the JSON object into another parsed object.
+   *
+   * @param url         The endpoint URL.
+   * @param body        The resources to add/update.
+   * @param jsonParser  The class with the fromJSON static method (or object
+   *     with the fromJSON function) to parse the JSON response.
+   * @param options     HTTP options.
+   *
+   * @return An `Observable` of the parsed object of type `R`.
+   */
+  put<T>(url: string, body: any|null, jsonParser: JsonParser<T>, options?: {
+    headers?: HttpHeaders|{[header: string]: string | string[]},
+    observe?: 'body',
+    params?: HttpParams|{[param: string]: string | string[]},
+    reportProgress?: boolean,
+    responseType?: 'json',
+    withCredentials?: boolean,
+  }): Observable<T>;
+
+  /**
    * Constructs an observable that, when subscribed, causes the configured
    * `PUT` request to execute on the server. The `PUT` method replaces an existing resource
    * with a new set of values.
    * See the individual overloads for details on the return type.
+   *
+   * @param url     The endpoint URL.
+   * @param body    The request body.
+   * @param third   The JSON parser or the HTTP options to send with the request.
+   * @param fourth  The HTTP options to send with the request or undefined.
    */
-  put(url: string, body: any|null, options: {
-    headers?: HttpHeaders|{[header: string]: string | string[]},
+  put(url: string, body: any|null, third: JsonParser<any>|{
+    headers?: HttpHeaders | {[header: string]: string | string[]},
     observe?: HttpObserve,
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
-  } = {}): Observable<any> {
-    return this.request<any>('PUT', url, addBody(options, body));
+  } = {},
+      fourth: {
+        headers?: HttpHeaders|{[header: string]: string | string[]},
+        observe?: HttpObserve,
+        params?: HttpParams|{[param: string]: string | string[]},
+        reportProgress?: boolean,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      } = {}): Observable<any> {
+    if (isJsonParser(third)) {
+      return this.request<any>('PUT', url, third, addBody(fourth, body));
+    } else {
+      return this.request<any>('PUT', url, addBody(third, body));
+    }
   }
 }
