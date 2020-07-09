@@ -206,17 +206,17 @@ Any line of the commit message cannot be longer than 100 characters.
 #### <a href="commit-header"></a>Commit Message Header
 
 ```
-<type>(<scope>): <summary>
-  ┃       ┃          ┃
-  ┃       ┃          ┗━⫸ Summary in present tense. Not capitalized. No period at the end.
-  ┃       ┃
-  ┃       ┗━⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
-  ┃                          elements|forms|http|language-service|localize|platform-browser|
-  ┃                          platform-browser-dynamic|platform-server|platform-webworker|
-  ┃                          platform-webworker-dynamic|router|service-worker|upgrade|zone.js|
-  ┃                          packaging|changelog|dev-infra|docs-infra|migrations|ngcc|ve
-  ┃
-  ┗━⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test
+<type>(<scope>): <short summary>
+  │       │             │
+  │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
+  │       │
+  │       └─⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
+  │                          elements|forms|http|language-service|localize|platform-browser|
+  │                          platform-browser-dynamic|platform-server|platform-webworker|
+  │                          platform-webworker-dynamic|router|service-worker|upgrade|zone.js|
+  │                          packaging|changelog|dev-infra|docs-infra|migrations|ngcc|ve
+  │
+  └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test
 ```
 
 The `<type>` and `<summary>` fields are mandatory, the `(<scope>)` field is optional.
