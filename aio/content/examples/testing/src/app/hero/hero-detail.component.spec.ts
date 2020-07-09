@@ -3,7 +3,7 @@ import { ComponentFixture, fakeAsync, inject, TestBed, tick, waitForAsync } from
 import { Router } from '@angular/router';
 
 import {
-  ActivatedRoute, ActivatedRouteStub, asyncData, click, newEvent
+  ActivatedRoute, ActivatedRouteStub, asyncData, click
 } from '../../testing';
 
 import { Hero } from '../model/hero';
@@ -99,7 +99,10 @@ function overrideSetup() {
        const newName = 'New Name';
 
        page.nameInput.value = newName;
-       page.nameInput.dispatchEvent(newEvent('input'));  // tell Angular
+
+       // In older browsers, such as IE, you might need a CustomEvent instead. See
+       // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+       page.nameInput.dispatchEvent(new Event('input')); // tell Angular
 
        expect(component.hero.name).toBe(newName, 'component hero has new name');
        expect(hdsSpy.testHero.name).toBe(origName, 'service hero unchanged before save');
@@ -197,9 +200,10 @@ function heroModuleSetup() {
       // simulate user entering a new name into the input box
       nameInput.value = 'quick BROWN  fOx';
 
-      // dispatch a DOM event so that Angular learns of input value change.
-      // use newEvent utility function (not provided by Angular) for better browser compatibility
-      nameInput.dispatchEvent(newEvent('input'));
+      // Dispatch a DOM event so that Angular learns of input value change.
+      // In older browsers, such as IE, you might need a CustomEvent instead. See
+      // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+      nameInput.dispatchEvent(new Event('input'));
 
       // Tell Angular to update the display binding through the title pipe
       fixture.detectChanges();
