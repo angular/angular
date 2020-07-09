@@ -173,8 +173,7 @@ export class RouterLink {
   }
 
   /**
-   * @param commands An array of commands to pass to {@link Router#createUrlTree
-   *     Router#createUrlTree}.
+   * Commands to pass to {@link Router#createUrlTree Router#createUrlTree}.
    *   - **array**: commands to pass to {@link Router#createUrlTree Router#createUrlTree}.
    *   - **string**: shorthand for array of commands with just the string, i.e. `['/route']`
    *   - **null|undefined**: shorthand for an empty array of commands, i.e. `[]`
@@ -306,8 +305,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   /**
-   * @param commands An array of commands to pass to {@link Router#createUrlTree
-   *     Router#createUrlTree}.
+   * Commands to pass to {@link Router#createUrlTree Router#createUrlTree}.
    *   - **array**: commands to pass to {@link Router#createUrlTree Router#createUrlTree}.
    *   - **string**: shorthand for array of commands with just the string, i.e. `['/route']`
    *   - **null|undefined**: shorthand for an empty array of commands, i.e. `[]`
