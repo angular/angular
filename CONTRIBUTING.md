@@ -1,7 +1,7 @@
 # Contributing to Angular
 
-We would love for you to contribute to Angular and help make it even better than it is
-today! As a contributor, here are the guidelines we would like you to follow:
+We would love for you to contribute to Angular and help make it even better than it is today!
+As a contributor, here are the guidelines we would like you to follow:
 
  - [Code of Conduct](#coc)
  - [Question or Problem?](#question)
@@ -14,12 +14,15 @@ today! As a contributor, here are the guidelines we would like you to follow:
 
 
 ## <a name="coc"></a> Code of Conduct
-Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct][coc].
+
+Help us keep Angular open and inclusive.
+Please read and follow our [Code of Conduct][coc].
 
 
 ## <a name="question"></a> Got a Question or Problem?
 
-Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests. You've got much better chances of getting your question answered on [Stack Overflow](https://stackoverflow.com/questions/tagged/angular) where the questions should be tagged with tag `angular`.
+Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests.
+You've got much better chances of getting your question answered on [Stack Overflow](https://stackoverflow.com/questions/tagged/angular) where the questions should be tagged with tag `angular`.
 
 Stack Overflow is a much better place to ask questions since:
 
@@ -33,22 +36,20 @@ If you would like to chat about the question in real-time, you can reach out via
 
 
 ## <a name="issue"></a> Found a Bug?
-If you find a bug in the source code, you can help us by
-[submitting an issue](#submit-issue) to our [GitHub Repository][github]. Even better, you can
-[submit a Pull Request](#submit-pr) with a fix.
+
+If you find a bug in the source code, you can help us by [submitting an issue](#submit-issue) to our [GitHub Repository][github].
+Even better, you can[submit a Pull Request](#submit-pr) with a fix.
 
 
 ## <a name="feature"></a> Missing a Feature?
-You can *request* a new feature by [submitting an issue](#submit-issue) to our GitHub
-Repository. If you would like to *implement* a new feature, please submit an issue with
-a proposal for your work first, to be sure that we can use it.
-Please consider what kind of change it is:
+You can *request* a new feature by [submitting an issue](#submit-issue) to our GitHub Repository.
+If you would like to *implement* a new feature, please consider the size of the change in order to determine the right steps to proceed:
 
-* For a **Major Feature**, first open an issue and outline your proposal so that it can be
-discussed. This will also allow us to better coordinate our efforts, prevent duplication of work,
-and help you to craft the change so that it is successfully accepted into the project. **Note**:
-Adding a new topic to the documentation, or significantly re-writing a topic, counts as a major
-feature.
+* For a **Major Feature**, first open an issue and outline your proposal so that it can be discussed.
+  This will also allow us to better coordinate our efforts, prevent duplication of work, and help you to craft the change so that it is successfully accepted into the project.
+
+  **Note**: Adding a new topic to the documentation, or significantly re-writing a topic, counts as a major feature.
+
 * **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
 
 
@@ -75,14 +76,21 @@ You can file new issues by selecting from our [new issue templates](https://gith
 
 
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
+
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR that relates to your submission. You don't want to duplicate effort.
+1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR that relates to your submission.
+   You don't want to duplicate effort.
+
 1. Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
   Discussing the design upfront helps to ensure that we're ready to accept your work.
+
 1. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
-  We cannot accept code without this. Make sure you sign with the primary email address of the Git identity that has been granted access to the Angular repository.
+  We cannot accept code without this.
+  Make sure you sign with the primary email address of the Git identity that has been granted access to the Angular repository.
+
 1. Fork the angular/angular repo.
+
 1. Make your changes in a new git branch:
 
      ```shell
@@ -90,11 +98,15 @@ Before you submit your Pull Request (PR) consider the following guidelines:
      ```
 
 1. Create your patch, **including appropriate test cases**.
+
 1. Follow our [Coding Rules](#rules).
+
 1. Run the full Angular test suite, as described in the [developer documentation][dev-doc],
   and ensure that all tests pass.
+
 1. Commit your changes using a descriptive commit message that follows our
-  [commit message conventions](#commit). Adherence to these conventions is necessary because release notes are automatically generated from these messages.
+  [commit message conventions](#commit).
+  Adherence to these conventions is necessary because release notes are automatically generated from these messages.
 
      ```shell
      git commit -a
@@ -108,15 +120,17 @@ Before you submit your Pull Request (PR) consider the following guidelines:
     ```
 
 1. In GitHub, send a pull request to `angular:master`.
-* If we suggest changes then:
-  * Make the required updates.
-  * Re-run the Angular test suites to ensure tests are still passing.
-  * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
 
-    ```shell
-    git rebase master -i
-    git push -f
-    ```
+   If we suggest changes then:
+
+   * Make the required updates.
+   * Re-run the Angular test suites to ensure tests are still passing.
+   * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
+
+      ```shell
+      git rebase master -i
+      git push -f
+      ```
 
 That's it! Thank you for your contribution!
 
@@ -154,8 +168,10 @@ After your pull request is merged, you can safely delete your branch and pull th
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
 * All features or bug fixes **must be tested** by one or more specs (unit-tests).
-* All public API methods **must be documented**. (Details TBC).
-* We follow [Google's JavaScript Style Guide][js-style-guide], but wrap all code at **100 characters**. An automated formatter is available, see [DEVELOPER.md](docs/DEVELOPER.md#clang-format).
+* All public API methods **must be documented**.
+* We follow [Google's JavaScript Style Guide][js-style-guide], but wrap all code at **100 characters**.
+
+   An automated formatter is available, see [DEVELOPER.md](docs/DEVELOPER.md#clang-format).
 
 
 ## <a name="commit"></a> Commit Message Format
@@ -177,12 +193,12 @@ Each commit message consists of a **header**, a **body**, and a **footer**.
 <footer>
 ```
 
-The header is mandatory and must conform to the [Commit Message Header](#commit-header) format.
+The `header` is mandatory and must conform to the [Commit Message Header](#commit-header) format.
 
-The body is mandatory for all commits except for those of scope "docs".
+The `body` is mandatory for all commits except for those of scope "docs".
 When the body is required it must be at least 20 characters long.
 
-The footer is optional.
+The `footer` is optional.
 
 Any line of the commit message cannot be longer than 100 characters.
 
@@ -226,43 +242,50 @@ The scope should be the name of the npm package affected (as perceived by the pe
 
 The following is the list of supported scopes:
 
-* **animations**
-* **bazel**
-* **benchpress**
-* **common**
-* **compiler**
-* **compiler-cli**
-* **core**
-* **elements**
-* **forms**
-* **http**
-* **language-service**
-* **localize**
-* **platform-browser**
-* **platform-browser-dynamic**
-* **platform-server**
-* **platform-webworker**
-* **platform-webworker-dynamic**
-* **router**
-* **service-worker**
-* **upgrade**
-* **zone.js**
+* `animations`
+* `bazel`
+* `benchpress`
+* `common`
+* `compiler`
+* `compiler-cli`
+* `core`
+* `elements`
+* `forms`
+* `http`
+* `language-service`
+* `localize`
+* `platform-browser`
+* `platform-browser-dynamic`
+* `platform-server`
+* `platform-webworker`
+* `platform-webworker-dynamic`
+* `router`
+* `service-worker`
+* `upgrade`
+* `zone.js`
 
 There are currently a few exceptions to the "use package name" rule:
 
-* **packaging**: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
-* **changelog**: used for updating the release notes in CHANGELOG.md
-* **dev-infra**: used for dev-infra related changes within the directories /scripts, /tools and /dev-infra
-* **docs-infra**: used for docs-app (angular.io) related changes within the /aio directory of the repo
-* **migrations**: used for changes to the `ng update` migrations.
-* **ngcc**: used for changes to the [Angular Compatibility Compiler](./packages/compiler-cli/ngcc/README.md)
-* **ve**: used for changes specific to ViewEngine (legacy compiler/renderer).
+* `packaging`: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
+
+* `changelog`: used for updating the release notes in CHANGELOG.md
+
+* `dev-infra`: used for dev-infra related changes within the directories /scripts, /tools and /dev-infra
+
+* `docs-infra`: used for docs-app (angular.io) related changes within the /aio directory of the repo
+
+* `migrations`: used for changes to the `ng update` migrations.
+
+* `ngcc`: used for changes to the [Angular Compatibility Compiler](./packages/compiler-cli/ngcc/README.md)
+
+* `ve`: used for changes specific to ViewEngine (legacy compiler/renderer).
+
 * none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`) and for docs changes that are not related to a specific package (e.g. `docs: fix typo in tutorial`).
 
 
 ##### Summary
 
-The summary contains a succinct description of the change:
+Use the summary field to provide a succinct description of the change:
 
 * use the imperative, present tense: "change" not "changed" nor "changes"
 * don't capitalize the first letter
@@ -312,18 +335,17 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 * For corporations, we'll need you to
   [print, sign and one of scan+email, fax or mail the form][corporate-cla].
 
-<hr>
+If you have more than one GitHub accounts, or multiple email addresses associated with a single GitHub account, you must sign the CLA using the primary email address of the GitHub account used to author Git commits and send pull requests.
 
-  If you have more than one Git identity, you must make sure that you sign the CLA using the primary email address associated with the ID that has been granted access to the Angular repository. Git identities can be associated with more than one email address, and only one is primary. Here are some links to help you sort out multiple Git identities and email addresses:
+The following documents can help you sort out issues with GitHub accounts and multiple email addresses:
 
   * https://help.github.com/articles/setting-your-commit-email-address-in-git/
   * https://stackoverflow.com/questions/37245303/what-does-usera-committed-with-userb-13-days-ago-on-github-mean
   * https://help.github.com/articles/about-commit-email-addresses/
   * https://help.github.com/articles/blocking-command-line-pushes-that-expose-your-personal-email-address/
 
-  Note that if you have more than one Git identity, it is important to verify that you are logged in with the same ID with which you signed the CLA before you commit changes. If not, your PR will fail the CLA check.
 
-<hr>
+
 
 [angular-group]: https://groups.google.com/forum/#!forum/angular
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
