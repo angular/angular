@@ -22,12 +22,12 @@ sh.set('-e');
 const MIN_SCORES_PER_PAGE = {
   '': 100,
   'api': 100,
-  'api/core/Directive': 90,
-  'cli': 91,
-  'cli/add': 91,
+  'api/core/Directive': 98,
+  'cli': 98,
+  'cli/add': 98,
   'docs': 100,
-  'guide/docs-style-guide': 88,
-  'start': 90,
+  'guide/docs-style-guide': 95,
+  'start': 97,
 };
 
 // Run
