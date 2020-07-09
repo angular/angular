@@ -83,11 +83,11 @@ Before you submit your Pull Request (PR) consider the following guidelines:
    You don't want to duplicate effort.
 
 1. Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
-  Discussing the design upfront helps to ensure that we're ready to accept your work.
+   Discussing the design upfront helps to ensure that we're ready to accept your work.
 
 1. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
-  We cannot accept code without this.
-  Make sure you sign with the primary email address of the Git identity that has been granted access to the Angular repository.
+   We cannot accept code without this.
+   Make sure you sign with the primary email address of the Git identity that has been granted access to the Angular repository.
 
 1. Fork the angular/angular repo.
 
@@ -101,12 +101,10 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 1. Follow our [Coding Rules](#rules).
 
-1. Run the full Angular test suite, as described in the [developer documentation][dev-doc],
-  and ensure that all tests pass.
+1. Run the full Angular test suite, as described in the [developer documentation][dev-doc], and ensure that all tests pass.
 
-1. Commit your changes using a descriptive commit message that follows our
-  [commit message conventions](#commit).
-  Adherence to these conventions is necessary because release notes are automatically generated from these messages.
+1. Commit your changes using a descriptive commit message that follows our [commit message conventions](#commit).
+   Adherence to these conventions is necessary because release notes are automatically generated from these messages.
 
      ```shell
      git commit -a
@@ -119,9 +117,9 @@ Before you submit your Pull Request (PR) consider the following guidelines:
     git push origin my-fix-branch
     ```
 
-1. In GitHub, send a pull request to `angular:master`.
+2. In GitHub, send a pull request to `angular:master`.
 
-   If we suggest changes then:
+   If we ask for changes via code reviews then:
 
    * Make the required updates.
    * Re-run the Angular test suites to ensure tests are still passing.
