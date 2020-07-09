@@ -11174,14 +11174,10 @@ ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
-tsickle@^0.35.0:
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.35.0.tgz#59235df45937c0ec5d072c616c26d2d97fba54b9"
-  integrity sha512-irsZLX4293YUl9TuwNC5Fy020eLSc4bC3LfKnxnx1oq5wmZD9zSP8qvNNTiwRmf2/rxH+58JINcTARDjuvn+oQ==
-  dependencies:
-    minimist "^1.2.0"
-    mkdirp "^0.5.1"
-    source-map "^0.7.3"
+tsickle@^0.39.0:
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.39.1.tgz#7ccf672cde5b430f5dd0b281ee49e170ef390ff9"
+  integrity sha512-CCc9cZhZbKoNizVM+K3Uqgit/go8GacjpqTv1cpwG/n2P0gB9GMoWZbxrUULDE9Wz26Lh86CGf6QyIPUVV1lnQ==
 
 tslib@2.0.0, tslib@^2.0.0:
   version "2.0.0"
