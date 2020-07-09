@@ -19,14 +19,14 @@ Fixes #<issue number>
 # ─────────────────────────────────────────────────────────────────────────────────────────────────┤
 
 
-# ━━━ Example: Simple docs change ─────────────────────────────────────────────────────────────────┤
+# ─── Example: Simple docs change ─────────────────────────────────────────────────────────────────┤
 # docs: clarify the service limitation in providers.md guide
 #
 # Fixes #36332
 # ─────────────────────────────────────────────────────────────────────────────────────────────────┤
 
 
-# ━━━ Example: A bug fix ──────────────────────────────────────────────────────────────────────────┤
+# ─── Example: A bug fix ──────────────────────────────────────────────────────────────────────────┤
 # fix(ngcc): ensure lockfile is removed when `analyzeFn` fails
 #
 # Previously an error thrown in the `analyzeFn` would cause the ngcc process to exit immediately
