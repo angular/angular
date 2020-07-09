@@ -89,7 +89,7 @@
     "todomvc-app-css": "^2.3.0",
     "todomvc-common": "^1.0.5",
     "ts-node": "~8.10.0",
-    "tsickle": "^0.35.0",
+    "tsickle": "^0.39.0",
     "tslint": "~5.20.0",
     "typescript": "~3.9.2",
     "wait-on": "^5.0.0",
