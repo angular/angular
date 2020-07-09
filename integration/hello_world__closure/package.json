@@ -22,18 +22,28 @@
     "lite-server": "2.2.2",
     "protractor": "file:../../node_modules/protractor",
     "puppeteer": "file:../../node_modules/puppeteer",
-    "tsickle": "file:../../node_modules/tsickle"
+    "tsickle": "file:../../node_modules/tsickle",
+    "rollup": "file:../../node_modules/rollup",
+    "rollup-plugin-node-resolve": "file:../../node_modules/rollup-plugin-node-resolve",
+    "@rollup/plugin-inject": "file:../../node_modules/@rollup/plugin-inject",
+    "@rollup/plugin-replace": "file:../../node_modules/@rollup/plugin-replace",
+    "shelljs": "file:../../node_modules/shelljs",
+    "rimraf": "file:../../node_modules/rimraf"
   },
   "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
   "resolutions": {
     "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
   },
   "scripts": {
-    "closure": "google-closure-compiler --flagfile closure.conf",
-    "build": "cd .",
-    "test": "ngc && yarn run closure && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
+    "rollup": "rollup -c",
+    "closure": "./minify-with-closure.js",
+    "prebuild": "cd . &&  rimraf dist/",
+    "build": "yarn ngc && yarn rollup && yarn closure",
+    "test": "yarn build && yarn e2e",
     "serve": "lite-server -c e2e/browser.config.json",
     "preprotractor": "tsc -p e2e",
-    "protractor": "protractor e2e/protractor.config.js"
+    "protractor": "protractor e2e/protractor.config.js",
+    "e2e": "concurrently \"yarn serve\" \"yarn protractor\" --kill-others --success first",
+    "postinstall": "ngcc --properties es2015 --use-program-dependencies"
   }
 }
