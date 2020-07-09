@@ -31,7 +31,7 @@ import {toArray} from 'rxjs/operators';
         });
         backend.expectOne('/test').flush({'data': 'hello world'});
       });
-      it('for JSON(boolean) data', (done: DoneFn) => {
+      it('should allow flushing requests with a boolean value', (done: DoneFn) => {
         client.get('/test').subscribe(res => {
           expect((res as any)).toEqual(true);
           done();
