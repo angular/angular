@@ -1,31 +1,32 @@
 <type>(<scope>): <summary>
 
-<Describe the motivation behind this change - explain WHY you are making this change.>
+<Describe the motivation behind this change - explain WHY you are making this change. Wrap all lines
+at 100 characters.>
 
 Fixes #<issue number>
 
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100 chars ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+# ────────────────────────────────────────── 100 chars ────────────────────────────────────────────┤
 
 
 # Example Commit Messages
 # =======================
 
-# ━━━ Example: Simple refactor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+
+# ─── Example: Simple refactor ────────────────────────────────────────────────────────────────────┤
 # refactor(core): rename refreshDynamicEmbeddedViews to refreshEmbeddedViews
 #
 # Improve code readability. The original name no longer matches how the function is used.
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+# ─────────────────────────────────────────────────────────────────────────────────────────────────┤
 
 
-# ━━━ Example: Simple docs change ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+# ━━━ Example: Simple docs change ─────────────────────────────────────────────────────────────────┤
 # docs: clarify the service limitation in providers.md guide
 #
 # Fixes #36332
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+# ─────────────────────────────────────────────────────────────────────────────────────────────────┤
 
 
-# ━━━ Example: A bug fix ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+# ━━━ Example: A bug fix ──────────────────────────────────────────────────────────────────────────┤
 # fix(ngcc): ensure lockfile is removed when `analyzeFn` fails
 #
 # Previously an error thrown in the `analyzeFn` would cause the ngcc process to exit immediately
@@ -33,10 +34,10 @@ Fixes #<issue number>
 # spawned resulting in the lockfile being orphaned and left behind.
 #
 # Now we catch these errors and remove the lockfile as needed.
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+# ─────────────────────────────────────────────────────────────────────────────────────────────────┤
 
 
-# ━━━ Example: Breaking change ━━━━━━━━━━━━━━━━---━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+# ─── Example: Breaking change ────────────────────────────────────────────────────────────────────┤
 # feat(bazel): simplify ng_package by dropping esm5 and fesm5
 #
 # esm5 and fesm5 distributions are no longer needed and have been deprecated in the past.
@@ -65,10 +66,10 @@ Fixes #<issue number>
 #
 #
 # Fixes #1234
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-#
-#
-#
+# ─────────────────────────────────────────────────────────────────────────────────────────────────┤
+
+
+
 # Angular Commit Message Format
 # =============================
 #
@@ -99,17 +100,17 @@ Fixes #<issue number>
 # ---------------------
 #
 # <type>(<scope>): <short summary>
-#   ┃       ┃             ┃
-#   ┃       ┃             ┗━⫸ Summary in present tense. Not capitalized. No period at the end.
-#   ┃       ┃
-#   ┃       ┗━⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
-#   ┃                          elements|forms|http|language-service|localize|platform-browser|
-#   ┃                          platform-browser-dynamic|platform-server|platform-webworker|
-#   ┃                          platform-webworker-dynamic|router|service-worker|upgrade|zone.js|
-#   ┃                          packaging|changelog|dev-infra|docs-infra|migrations|ngcc|ve
-#   ┃                          https://github.com/angular/angular/blob/master/CONTRIBUTING.md#scope
-#   ┃
-#   ┗━⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test
+#   │       │             │
+#   │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
+#   │       │
+#   │       └─⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
+#   │                          elements|forms|http|language-service|localize|platform-browser|
+#   │                          platform-browser-dynamic|platform-server|platform-webworker|
+#   │                          platform-webworker-dynamic|router|service-worker|upgrade|zone.js|
+#   │                          packaging|changelog|dev-infra|docs-infra|migrations|ngcc|ve
+#   │                          https://github.com/angular/angular/blob/master/CONTRIBUTING.md#scope
+#   │
+#   └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test
 #                     https://github.com/angular/angular/blob/master/CONTRIBUTING.md#type
 #
 #
