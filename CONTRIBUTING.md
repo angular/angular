@@ -22,7 +22,7 @@ Please read and follow our [Code of Conduct][coc].
 ## <a name="question"></a> Got a Question or Problem?
 
 Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests.
-You've got much better chances of getting your question answered on [Stack Overflow](https://stackoverflow.com/questions/tagged/angular) where the questions should be tagged with tag `angular`.
+Instead, we recommend using [Stack Overflow](https://stackoverflow.com/questions/tagged/angular) to ask support-related questions. When creating a new question on Stack Overflow, make sure to add the `angular` tag.
 
 Stack Overflow is a much better place to ask questions since:
 
@@ -38,7 +38,7 @@ If you would like to chat about the question in real-time, you can reach out via
 ## <a name="issue"></a> Found a Bug?
 
 If you find a bug in the source code, you can help us by [submitting an issue](#submit-issue) to our [GitHub Repository][github].
-Even better, you can[submit a Pull Request](#submit-pr) with a fix.
+Even better, you can [submit a Pull Request](#submit-pr) with a fix.
 
 
 ## <a name="feature"></a> Missing a Feature?
@@ -46,7 +46,7 @@ You can *request* a new feature by [submitting an issue](#submit-issue) to our G
 If you would like to *implement* a new feature, please consider the size of the change in order to determine the right steps to proceed:
 
 * For a **Major Feature**, first open an issue and outline your proposal so that it can be discussed.
-  This will also allow us to better coordinate our efforts, prevent duplication of work, and help you to craft the change so that it is successfully accepted into the project.
+  This process allows us to better coordinate our efforts, prevent duplication of work, and help you to craft the change so that it is successfully accepted into the project.
 
   **Note**: Adding a new topic to the documentation, or significantly re-writing a topic, counts as a major feature.
 
@@ -61,13 +61,13 @@ If you would like to *implement* a new feature, please consider the size of the 
 Before you submit an issue, please search the issue tracker, maybe an issue for your problem already exists and the discussion might inform you of workarounds readily available.
 
 We want to fix all the issues as soon as possible, but before fixing a bug we need to reproduce and confirm it.
-In order to reproduce bugs, we will systematically ask you to provide a minimal reproduction.
-Having a minimal reproducible scenario gives us a wealth of important information without going back & forth to you with additional questions.
+In order to reproduce bugs, we require that you provide a minimal reproduction.
+Having a minimal reproducible scenario gives us a wealth of important information without going back and forth to you with additional questions.
 
 A minimal reproduction allows us to quickly confirm a bug (or point out a coding problem) as well as confirm that we are fixing the right problem.
 
-We will be insisting on a minimal reproduction scenario in order to save maintainers' time and ultimately be able to fix more bugs.
-Interestingly, from our experience, users often find coding problems themselves while preparing a minimal reproduction.
+We require a minimal reproduction to save maintainers' time and ultimately be able to fix more bugs.
+Often, developers find coding problems themselves while preparing a minimal reproduction.
 We understand that sometimes it might be hard to extract essential bits of code from a larger codebase but we really need to isolate the problem before we can fix it.
 
 Unfortunately, we are not able to investigate / fix bugs without a minimal reproduction, so if we don't hear back from you, we are going to close an issue that doesn't have enough info to be reproduced.
@@ -80,30 +80,30 @@ You can file new issues by selecting from our [new issue templates](https://gith
 Before you submit your Pull Request (PR) consider the following guidelines:
 
 1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR that relates to your submission.
-   You don't want to duplicate effort.
+   You don't want to duplicate existing efforts.
 
-1. Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
+2. Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
    Discussing the design upfront helps to ensure that we're ready to accept your work.
 
-1. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
-   We cannot accept code without this.
-   Make sure you sign with the primary email address of the Git identity that has been granted access to the Angular repository.
+3. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
+   We cannot accept code without a signed CLA.
+   Make sure you author all contributed Git commits with email address associated with your CLA signature.
 
-1. Fork the angular/angular repo.
+4. Fork the angular/angular repo.
 
-1. Make your changes in a new git branch:
+5. Make your changes in a new git branch:
 
      ```shell
      git checkout -b my-fix-branch master
      ```
 
-1. Create your patch, **including appropriate test cases**.
+6. Create your patch, **including appropriate test cases**.
 
-1. Follow our [Coding Rules](#rules).
+7. Follow our [Coding Rules](#rules).
 
-1. Run the full Angular test suite, as described in the [developer documentation][dev-doc], and ensure that all tests pass.
+8. Run the full Angular test suite, as described in the [developer documentation][dev-doc], and ensure that all tests pass.
 
-1. Commit your changes using a descriptive commit message that follows our [commit message conventions](#commit).
+9. Commit your changes using a descriptive commit message that follows our [commit message conventions](#commit).
    Adherence to these conventions is necessary because release notes are automatically generated from these messages.
 
      ```shell
@@ -111,13 +111,13 @@ Before you submit your Pull Request (PR) consider the following guidelines:
      ```
     Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
 
-1. Push your branch to GitHub:
+10. Push your branch to GitHub:
 
     ```shell
     git push origin my-fix-branch
     ```
 
-2. In GitHub, send a pull request to `angular:master`.
+11. In GitHub, send a pull request to `angular:master`.
 
    If we ask for changes via code reviews then:
 
@@ -176,9 +176,8 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 
 *This specification is inspired and supersedes the [AngularJS commit message format][commit-message-format].*
 
-We have very precise rules over how our git commit messages can be formatted.
-This leads to **more readable messages** that are easy to follow when looking through the **project history**.
-But also, we use the git commit messages to **generate the Angular change log**.
+We have very precise rules over how our Git commit messages must be formatted.
+This format leads to **easier to read commit history**.
 
 Each commit message consists of a **header**, a **body**, and a **footer**.
 
