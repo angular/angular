@@ -111,7 +111,7 @@ Let's assume that we are routing from the *Home => About*.
 
 The animation code does the following after styling the views:
 
-* `query(':enter style({ left: '-100%'})` matches the view that is added and hides the newly added view by positioning it to the far left.
+* `query(':enter', style({ left: '-100%' }))` matches the view that is added and hides the newly added view by positioning it to the far left.
 * Calls `animateChild()` on the view that is leaving, to run its child animations.
 * Uses `group()` function to make the inner animations run in parallel.
 * Within the `group()` function:
