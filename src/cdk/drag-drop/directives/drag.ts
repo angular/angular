@@ -191,7 +191,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
       @Optional() @Inject(CDK_DRAG_CONFIG) config: DragDropConfig,
       @Optional() private _dir: Directionality, dragDrop: DragDrop,
       private _changeDetectorRef: ChangeDetectorRef,
-      @Optional() @Self() private _selfHandle?: CdkDragHandle) {
+      @Optional() @Self() @Inject(CDK_DRAG_HANDLE) private _selfHandle?: CdkDragHandle) {
     this._dragRef = dragDrop.createDrag(element, {
       dragStartThreshold: config && config.dragStartThreshold != null ?
           config.dragStartThreshold : 5,
