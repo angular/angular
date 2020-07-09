@@ -186,7 +186,7 @@ For library projects generated with the CLI, the dev configuration default is `t
 
 When `true` (recommended), reports an error for a supplied parameter whose injection type cannot be determined. When `false` (currently the default), constructor parameters of classes marked with `@Injectable` whose type cannot be resolved produce a warning.
 
-When you use the CLI command `ng new`, it is set to `true` by default in the generated project's configuration.
+When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 ### `strictTemplates`
 
@@ -194,6 +194,7 @@ When `true`, enables [strict template type checking](guide/template-typecheck#st
 
 Additional strictness flags allow you to enable and disable specific types of strict template type checking. See [troubleshooting template errors](guide/template-typecheck#troubleshooting-template-errors).
 
+When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 ### `trace`
 
