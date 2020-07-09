@@ -48,7 +48,7 @@ pkg_npm(
         "//dev-infra/": "@npm_angular_dev_infra_private//",
         "//packages/benchpress": "@npm//@angular/benchpress",
         "//packages/bazel/": "@npm_angular_bazel//",
-        "//packages/zone.js/dist:zone.js": "@npm//:node_modules/zone.js/dist/zone.js",
+        "//packages/zone.js/bundles:zone.umd.js": "@npm//:node_modules/zone.js/dist/zone.js",
         "//packages/core": "@npm//@angular/core",
         "//packages/platform-browser": "@npm//@angular/platform-browser",
 
