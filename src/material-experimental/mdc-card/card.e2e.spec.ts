@@ -1,1 +1,11 @@
-// TODO: copy tests from existing mat-card, update as necessary to fix.
+import {browser, by, element} from 'protractor';
+
+describe('mat-card', () => {
+
+  beforeEach(async () => await browser.get('/mdc-card'));
+
+  it('should show a card', async () => {
+    expect(await element(by.tagName('mat-card')).isPresent()).toBe(true);
+  });
+
+});

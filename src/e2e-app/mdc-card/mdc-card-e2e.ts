@@ -10,8 +10,7 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'mdc-card-e2e',
-  templateUrl: 'mdc-card-e2e.html',
+  template: `<mdc-card-fancy-example></mdc-card-fancy-example>`,
 })
 export class MdcCardE2e {
-  // TODO: copy implementation from existing mat-card e2e page.
 }

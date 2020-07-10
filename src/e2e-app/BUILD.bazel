@@ -31,6 +31,7 @@ ng_module(
         "//src/cdk/overlay",
         "//src/cdk/scrolling",
         "//src/cdk/testing/tests:test_components",
+        "//src/components-examples/material-experimental/mdc-card",
         "//src/components-examples/private",
         "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-card",
