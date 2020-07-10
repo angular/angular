@@ -112,6 +112,7 @@ export interface ParsedConfiguration {
   project: string;
   options: api.CompilerOptions;
   rootNames: string[];
+  projectReferences?: readonly ts.ProjectReference[]|undefined;
   emitFlags: api.EmitFlags;
   errors: Diagnostics;
 }
@@ -197,6 +198,7 @@ export function readConfiguration(
     const parsed = ts.parseJsonConfigFileContent(
         config, parseConfigHost, basePath, existingOptions, configFileName);
     const rootNames = parsed.fileNames;
+    const projectReferences = parsed.projectReferences;
 
     const options = createNgCompilerOptions(basePath, config, parsed.options);
     let emitFlags = api.EmitFlags.Default;
@@ -206,7 +208,14 @@ export function readConfiguration(
     if (options.skipTemplateCodegen) {
       emitFlags = emitFlags & ~api.EmitFlags.Codegen;
     }
-    return {project: projectFile, rootNames, options, errors: parsed.errors, emitFlags};
+    return {
+      project: projectFile,
+      rootNames,
+      projectReferences,
+      options,
+      errors: parsed.errors,
+      emitFlags
+    };
   } catch (e) {
     const errors: Diagnostics = [{
       category: ts.DiagnosticCategory.Error,
