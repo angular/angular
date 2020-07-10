@@ -616,18 +616,8 @@
           "children": [
             {
               "url": "guide/testing",
-              "title": "Intro to Testing",
+              "title": "Testing your application",
               "tooltip": "Introduction to testing an Angular app."
-            },
-            {
-              "url": "guide/testing-code-coverage",
-              "title": "Code Coverage",
-              "tooltip": "Determine how much of your code is tested."
-            },
-            {
-              "url": "guide/testing-services",
-              "title": "Testing Services",
-              "tooltip": "How to test services."
             },
             {
               "url": "guide/testing-components-basics",
@@ -650,9 +640,19 @@
               "tooltip": "Writing tests for pipes."
             },
             {
+              "url": "guide/testing-services",
+              "title": "Testing Services",
+              "tooltip": "How to test services."
+            },
+            {
               "url": "guide/test-debugging",
               "title": "Debugging Tests",
               "tooltip": "How to debug tests."
+            },
+            {
+              "url": "guide/testing-code-coverage",
+              "title": "Code Coverage",
+              "tooltip": "Determine how much of your code is tested."
             },
             {
               "url": "guide/testing-utility-apis",
@@ -803,6 +803,11 @@
           "url": "guide/forms",
           "title": "Building a Template-driven Form",
           "tooltip": "Create a template-driven form using directives and Angular template syntax."
+        },
+        {
+          "url": "guide/continuous-integration",
+          "title": "Setting up Continuous Integration",
+          "tooltip": "Configure continuous integration in your app."
         }
       ]
     },

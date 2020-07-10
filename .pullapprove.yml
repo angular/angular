@@ -633,6 +633,7 @@ groups:
           'aio/content/guide/testing-code-coverage.md',
           'aio/content/guide/testing-components-basics.md',
           'aio/content/guide/testing-components-scenarios.md',
+          'aio/content/guide/continuous-integration.md',
           'aio/content/guide/testing-pipes.md',
           'aio/content/guide/testing-services.md',
           'aio/content/guide/testing-utility-apis.md',
