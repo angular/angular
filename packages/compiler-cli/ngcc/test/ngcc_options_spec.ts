@@ -74,12 +74,12 @@ runInEachFileSystem(() => {
         `The inferred tsconfig file "${
             pathToProjectTsConfig}" appears to be "solution-style" since it contains no root files but does contain project references.\n` +
         `This is probably not wanted, since ngcc is unable to infer settings like "paths" mappings from such a file.\n` +
-        `Perhaps you should have explicitly specified one of the referenced projects using the --tsconfig option. For example:\n` +
-        `ngcc ... --tsconfig "tsconfig.app.json"\n` +
-        `ngcc ... --tsconfig "tsconfig.test.json"\n` +
-        `Find out more about solution-style tsconfig at https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig.\n` +
-        `If you did intend to use this file, then you can hide this warning by providing it explicitly:\n` +
-        `ngcc ... --tsconfig tsconfig.json`
+        `Perhaps you should have explicitly specified one of the referenced projects using the --tsconfig option. For example:\n\n` +
+        `  ngcc ... --tsconfig "tsconfig.app.json"\n` +
+        `  ngcc ... --tsconfig "tsconfig.test.json"\n` +
+        `\nFind out more about solution-style tsconfig at https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig.\n` +
+        `If you did intend to use this file, then you can hide this warning by providing it explicitly:\n\n` +
+        `  ngcc ... --tsconfig "tsconfig.json"`
       ]]);
     });
 
