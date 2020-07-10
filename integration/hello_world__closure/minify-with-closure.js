@@ -8,8 +8,9 @@ shell.exec(_`./node_modules/.bin/google-closure-compiler
     --strict_mode_input
   # output format
     --compilation_level=SIMPLE
-    --isolation_mode=IIFE
-    --language_out=ECMASCRIPT_2015
+    --assume_function_wrapper=true
+    --language_out=NO_TRANSPILE
+    --create_source_map=dist/bundle.js.map
     --js_output_file=dist/bundle.js
     --output_manifest=dist/manifest.MF
     --variable_renaming_report=dist/variable_renaming_report

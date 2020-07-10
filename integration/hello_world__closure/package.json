@@ -28,7 +28,8 @@
     "@rollup/plugin-inject": "file:../../node_modules/@rollup/plugin-inject",
     "@rollup/plugin-replace": "file:../../node_modules/@rollup/plugin-replace",
     "shelljs": "file:../../node_modules/shelljs",
-    "rimraf": "file:../../node_modules/rimraf"
+    "rimraf": "file:../../node_modules/rimraf",
+    "@ampproject/rollup-plugin-closure-compiler": "0.26.0"
   },
   "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
   "resolutions": {

@@ -3,11 +3,14 @@ const inject = require('@rollup/plugin-inject');
 const replace = require('@rollup/plugin-replace');
 const path = require('path');
 
+const closure = require('@ampproject/rollup-plugin-closure-compiler');
+const useClosurePlugin = false;
+
 export default {
   input: 'dist/_0-ngc-out/src/main.js',
   output: {
-    dir: 'dist/_1-rollup-out',
-    format: 'es'
+    dir: useClosurePlugin ? 'dist/bundle.js' : 'dist/_1-rollup-out',
+    format: 'iife'
   },
   plugins: [
     nodeResolve(),
@@ -22,5 +25,8 @@ export default {
       Console: 'Console_',
       Location: 'Location_',
     }),
+    useClosurePlugin && closure({
+      //formatting: 'PRETTY_PRINT'
+    })
   ]
 };
