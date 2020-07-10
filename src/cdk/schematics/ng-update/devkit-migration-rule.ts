@@ -87,11 +87,18 @@ export function createMigrationSchematicRule(
         logger.warn(`Could not find TypeScript project for project: ${projectName}`);
         continue;
       }
+
+      // In some applications, developers will have global stylesheets which are not
+      // specified in any Angular component. Therefore we glob up all CSS and SCSS files
+      // in the project and migrate them if needed.
+      // TODO: rework this to collect global stylesheets from the workspace config. COMP-280.
+      const additionalStylesheetPaths = findStylesheetFiles(tree, project.root);
+
       if (buildTsconfigPath !== null) {
-        runMigrations(project, projectName, buildTsconfigPath, false);
+        runMigrations(project, projectName, buildTsconfigPath, additionalStylesheetPaths, false);
       }
       if (testTsconfigPath !== null) {
-        runMigrations(project, projectName, testTsconfigPath, true);
+        runMigrations(project, projectName, testTsconfigPath, additionalStylesheetPaths, true);
       }
     }
 
@@ -120,7 +127,8 @@ export function createMigrationSchematicRule(
 
     /** Runs the migrations for the specified workspace project. */
     function runMigrations(project: WorkspaceProject, projectName: string,
-                           tsconfigPath: WorkspacePath, isTestTarget: boolean) {
+                           tsconfigPath: WorkspacePath, additionalStylesheetPaths: string[],
+                           isTestTarget: boolean) {
       const program = UpdateProject.createProgramFromTsconfig(tsconfigPath, fileSystem);
       const updateContext: DevkitContext = {
         isTestTarget,
@@ -137,13 +145,8 @@ export function createMigrationSchematicRule(
         context.logger,
       );
 
-      // In some applications, developers will have global stylesheets which are not
-      // specified in any Angular component. Therefore we glob up all CSS and SCSS files
-      // in the project and migrate them if needed.
-      // TODO: rework this to collect global stylesheets from the workspace config. COMP-280.
-      const additionalStylesheets = findStylesheetFiles(tree, project.root);
       const result =
-        updateProject.migrate(migrations, targetVersion, upgradeData, additionalStylesheets);
+        updateProject.migrate(migrations, targetVersion, upgradeData, additionalStylesheetPaths);
 
       // Commit all recorded edits in the update recorder. We apply the edits after all
       // migrations ran because otherwise offsets in the TypeScript program would be
