@@ -40,18 +40,18 @@ export class AstType implements AstVisitor {
 
   visitUnary(ast: Unary): Symbol {
     // Visit the child to produce diagnostics.
-    ast.right.visit(this);
+    ast.expr.visit(this);
 
     // The unary plus and minus operator are always of type number.
     // https://github.com/Microsoft/TypeScript/blob/v1.8.10/doc/spec.md#4.18
-    switch (ast.operation) {
+    switch (ast.operator) {
       case '-':
       case '+':
         return this.query.getBuiltinType(BuiltinType.Number);
     }
 
     this.diagnostics.push(
-        createDiagnostic(refinedSpan(ast), Diagnostic.unrecognized_operator, ast.operation));
+        createDiagnostic(refinedSpan(ast), Diagnostic.unrecognized_operator, ast.operator));
     return this.anyType;
   }
 

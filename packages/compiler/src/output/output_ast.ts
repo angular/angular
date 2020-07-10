@@ -760,14 +760,14 @@ export class FunctionExpr extends Expression {
 
 export class UnaryOperatorExpr extends Expression {
   constructor(
-      public operator: UnaryOperator, public rhs: Expression, type?: Type|null,
+      public operator: UnaryOperator, public expr: Expression, type?: Type|null,
       sourceSpan?: ParseSourceSpan|null, public parens: boolean = true) {
     super(type || NUMBER_TYPE, sourceSpan);
   }
 
   isEquivalent(e: Expression): boolean {
     return e instanceof UnaryOperatorExpr && this.operator === e.operator &&
-        this.rhs.isEquivalent(e.rhs);
+        this.expr.isEquivalent(e.expr);
   }
 
   isConstant() {
@@ -1323,7 +1323,7 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
   visitUnaryOperatorExpr(ast: UnaryOperatorExpr, context: any): any {
     return this.transformExpr(
         new UnaryOperatorExpr(
-            ast.operator, ast.rhs.visitExpression(this, context), ast.type, ast.sourceSpan),
+            ast.operator, ast.expr.visitExpression(this, context), ast.type, ast.sourceSpan),
         context);
   }
 
@@ -1553,7 +1553,7 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     return this.visitExpression(ast, context);
   }
   visitUnaryOperatorExpr(ast: UnaryOperatorExpr, context: any): any {
-    ast.rhs.visitExpression(this, context);
+    ast.expr.visitExpression(this, context);
     return this.visitExpression(ast, context);
   }
   visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: any): any {

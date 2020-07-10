@@ -434,7 +434,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     }
     if (ast.parens) ctx.print(ast, `(`);
     ctx.print(ast, opStr);
-    ast.rhs.visitExpression(this, ctx);
+    ast.expr.visitExpression(this, ctx);
     if (ast.parens) ctx.print(ast, `)`);
     return null;
   }

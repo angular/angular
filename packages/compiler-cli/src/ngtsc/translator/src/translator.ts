@@ -371,7 +371,7 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
       throw new Error(`Unknown unary operator: ${UnaryOperator[ast.operator]}`);
     }
     return ts.createPrefix(
-        UNARY_OPERATORS.get(ast.operator)!, ast.rhs.visitExpression(this, context));
+        UNARY_OPERATORS.get(ast.operator)!, ast.expr.visitExpression(this, context));
   }
 
   visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: Context): ts.Expression {

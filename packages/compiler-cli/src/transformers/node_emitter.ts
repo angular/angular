@@ -635,7 +635,7 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       default:
         throw new Error(`Unknown operator: ${expr.operator}`);
     }
-    const binary = ts.createPrefix(unaryOperator, expr.rhs.visitExpression(this, null));
+    const binary = ts.createPrefix(unaryOperator, expr.expr.visitExpression(this, null));
     return this.record(expr, expr.parens ? ts.createParen(binary) : binary);
   }
 

@@ -36,8 +36,8 @@ class Unparser implements AstVisitor {
   }
 
   visitUnary(ast: Unary, context: any) {
-    this._expression += ast.operation;
-    this._visit(ast.right);
+    this._expression += ast.operator;
+    this._visit(ast.expr);
   }
 
   visitBinary(ast: Binary, context: any) {

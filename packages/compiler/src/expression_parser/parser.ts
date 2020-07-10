@@ -594,10 +594,13 @@ export class _ParseAST {
       let result: AST;
       switch (operator) {
         case '+':
+          this.advance();
+          result = this.parsePrefix();
+          return Unary.createPlus(this.span(start), this.sourceSpan(start), result);
         case '-':
           this.advance();
           result = this.parsePrefix();
-          return new Unary(this.span(start), this.sourceSpan(start), operator, result);
+          return Unary.createMinus(this.span(start), this.sourceSpan(start), result);
         case '!':
           this.advance();
           result = this.parsePrefix();

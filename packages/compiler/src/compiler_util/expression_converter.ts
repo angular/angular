@@ -325,7 +325,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   visitUnary(ast: cdAst.Unary, mode: _Mode): any {
     let op: o.UnaryOperator;
-    switch (ast.operation) {
+    switch (ast.operator) {
       case '+':
         op = o.UnaryOperator.Plus;
         break;
@@ -333,13 +333,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         op = o.UnaryOperator.Minus;
         break;
       default:
-        throw new Error(`Unsupported operation ${ast.operation}`);
+        throw new Error(`Unsupported operator ${ast.operator}`);
     }
 
     return convertToStatementIfNeeded(
         mode,
         new o.UnaryOperatorExpr(
-            op, this._visit(ast.right, _Mode.Expression), undefined,
+            op, this._visit(ast.expr, _Mode.Expression), undefined,
             this.convertSourceSpan(ast.span)));
   }
 
@@ -801,7 +801,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     };
     return ast.visit({
       visitUnary(ast: cdAst.Unary): boolean {
-        return visit(this, ast.right);
+        return visit(this, ast.expr);
       },
       visitBinary(ast: cdAst.Binary): boolean {
         return visit(this, ast.left) || visit(this, ast.right);

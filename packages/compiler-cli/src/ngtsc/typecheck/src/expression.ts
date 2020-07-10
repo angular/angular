@@ -80,12 +80,12 @@ class AstTranslator implements AstVisitor {
   }
 
   visitUnary(ast: Unary): ts.Expression {
-    const rhs = this.translate(ast.right);
-    const op = UNARY_OPS.get(ast.operation);
+    const expr = this.translate(ast.expr);
+    const op = UNARY_OPS.get(ast.operator);
     if (op === undefined) {
-      throw new Error(`Unsupported Binary.operation: ${ast.operation}`);
+      throw new Error(`Unsupported Unary.operator: ${ast.operator}`);
     }
-    const node = wrapForDiagnostics(ts.createPrefix(op, rhs));
+    const node = wrapForDiagnostics(ts.createPrefix(op, expr));
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -331,7 +331,7 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   }
 
   visitUnary(ast: Unary): boolean {
-    return ast.right.visit(this);
+    return ast.expr.visit(this);
   }
   visitBinary(ast: Binary): boolean {
     return ast.left.visit(this) || ast.right.visit(this);

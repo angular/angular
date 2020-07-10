@@ -254,7 +254,7 @@ runInEachFileSystem(() => {
       }`);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 31): Argument of type '-2' is not assignable to parameter of type '1 | -1'.`,
+        `TestComponent.html(1, 31): Argument of type '-2' is not assignable to parameter of type '1 | -1'.`,
       ]);
     });
 
