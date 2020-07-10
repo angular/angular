@@ -199,20 +199,17 @@ export abstract class MatInteractiveListBase extends MatListBase
   }
 
   private _initItems() {
-    this._subscriptions.add(
-        this._items.changes.pipe(startWith(null))
-            .subscribe(() => this._itemsArr = this._items.toArray()));
-    for (let i = 0; this._itemsArr.length; i++) {
+    this._subscriptions.add(this._items.changes.pipe(startWith(null)).subscribe(() => {
+      this._itemsArr = this._items.toArray();
+    }));
+
+    for (let i = 0; i < this._itemsArr.length; i++) {
       this._itemsArr[i]._initDefaultTabIndex(i === 0 ? 0 : -1);
     }
   }
 
-  private _itemAtIndex(index: number): MatListItemBase {
-    return this._itemsArr[index];
-  }
-
   private _elementAtIndex(index: number): HTMLElement {
-    return this._itemAtIndex(index)._elementRef.nativeElement;
+    return this._itemsArr[index]._elementRef.nativeElement;
   }
 
   private _indexForElement(element: Element | null) {
