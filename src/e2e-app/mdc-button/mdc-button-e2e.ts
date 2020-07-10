@@ -13,5 +13,8 @@ import {Component} from '@angular/core';
   templateUrl: 'mdc-button-e2e.html',
 })
 export class MdcButtonE2e {
-  // TODO: copy implementation from existing mat-button e2e page.
+  isDisabled: boolean = false;
+  clickCounter: number = 0;
 }
+
+

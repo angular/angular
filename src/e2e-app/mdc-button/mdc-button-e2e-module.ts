@@ -8,10 +8,14 @@
 
 import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatIconModule} from '@angular/material/icon';
 import {MdcButtonE2e} from './mdc-button-e2e';
 
 @NgModule({
-  imports: [MatButtonModule],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+  ],
   declarations: [MdcButtonE2e],
 })
 export class MdcButtonE2eModule {
