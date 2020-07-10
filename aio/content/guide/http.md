@@ -1137,3 +1137,49 @@ Alternatively, you can call `request.error()` with an `ErrorEvent`.
   path="http/src/testing/http-client.spec.ts"
   region="network-error">
 </code-example>
+
+### Testing for real response
+
+Now you can write a test that get a real response and make your expect for it.
+
+Imgagine we need to get a `post` from `https://jsonplaceholder.typicode.com`
+Then we need to have an interface for every post `post.ts` like this:
+
+`export interface Post {
+  userId: number;
+  id: number;
+  title: string;
+  body: string;
+}`
+
+And our service `post.service.ts` will use `HttpClient` to get this post fro the server like this:
+
+`export class PostService {
+  constructor(private http: HttpClient) {}
+  getPost(postId: number): Observable<Post> {
+    return this.http.get<Post>(
+      `https://jsonplaceholder.typicode.com/posts/${postId}`
+    );
+  }
+}`
+
+Let's make our expect in `post.service.spec.ts`:
+
+`describe('AuthService', () => {
+  let service: AuthService;
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+     // Using HttpClientModule instead of HttpClientTestingModule
+      imports: [HttpClientModule],
+    });
+    // Inject our service
+    service = TestBed.inject(AuthService);
+  });
+  it('should get the data successfully', (done: DoneFn) => {
+    service.getPost(1).subscribe((post: Post) => {
+      expect(post.id).toEqual(1);
+      // done is used to make the testing waiting for this ajax call to complete then run the test
+      done();
+    });
+  });
+});`
