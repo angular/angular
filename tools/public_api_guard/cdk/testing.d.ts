@@ -54,6 +54,7 @@ export declare abstract class HarnessEnvironment<E> implements HarnessLoader, Lo
     locatorFor<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T>>;
     locatorForAll<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T>[]>;
     locatorForOptional<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T> | null>;
+    rootHarnessLoader(): Promise<HarnessLoader>;
     abstract waitForTasksOutsideAngular(): Promise<void>;
 }
 
@@ -88,6 +89,7 @@ export interface LocatorFactory {
     locatorFor<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T>>;
     locatorForAll<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T>[]>;
     locatorForOptional<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T> | null>;
+    rootHarnessLoader(): Promise<HarnessLoader>;
     waitForTasksOutsideAngular(): Promise<void>;
 }
 
