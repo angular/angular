@@ -25,6 +25,7 @@ import {
 } from '@angular/core';
 import {MatSnackBarConfig, _SnackBarContainer} from '@angular/material/snack-bar';
 import {MDCSnackbarAdapter, MDCSnackbarFoundation} from '@material/snackbar';
+import {Platform} from '@angular/cdk/platform';
 import {Observable, Subject} from 'rxjs';
 
 /**
@@ -101,7 +102,8 @@ export class MatSnackBarContainer extends BasePortalOutlet
 
   constructor(
       private _elementRef: ElementRef<HTMLElement>,
-      public snackBarConfig: MatSnackBarConfig) {
+      public snackBarConfig: MatSnackBarConfig,
+      private _platform: Platform) {
     super();
 
     // Based on the ARIA spec, `alert` and `status` roles have an
@@ -136,7 +138,10 @@ export class MatSnackBarContainer extends BasePortalOutlet
   }
 
   enter() {
-    this._mdcFoundation.open();
+    // MDC uses some browser APIs that will throw during server-side rendering.
+    if (this._platform.isBrowser) {
+      this._mdcFoundation.open();
+    }
   }
 
   exit(): Observable<void> {

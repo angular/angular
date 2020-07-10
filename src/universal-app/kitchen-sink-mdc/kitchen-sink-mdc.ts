@@ -12,6 +12,7 @@ import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-tog
 import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
 import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
 import {MatIconModule} from '@angular/material/icon';
+import {MatSnackBarModule, MatSnackBar} from '@angular/material-experimental/mdc-snack-bar';
 
 @Component({
   selector: 'kitchen-sink-mdc',
@@ -35,6 +36,7 @@ export class KitchenSinkMdc {
     MatSliderModule,
     MatTabsModule,
     MatProgressBarModule,
+    MatSnackBarModule,
   ],
   declarations: [KitchenSinkMdc],
   exports: [KitchenSinkMdc],
@@ -47,6 +49,9 @@ export class KitchenSinkMdc {
   }]
 })
 export class KitchenSinkMdcModule {
+  constructor(snackBar: MatSnackBar) {
+    snackBar.open('Hello there');
+  }
 }
 
 export function ERROR_HANDLER(error: Error) {
