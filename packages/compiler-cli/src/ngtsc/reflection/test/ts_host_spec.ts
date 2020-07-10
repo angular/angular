@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {getDeclaration, makeProgram} from '../../testing';
-import {ClassMember, ClassMemberKind, CtorParameter} from '../src/host';
+import {ClassMember, ClassMemberKind, CtorParameter, TypeValueReferenceKind} from '../src/host';
 import {TypeScriptReflectionHost} from '../src/typescript';
 import {isNamedClassDeclaration} from '../src/util';
 
@@ -178,7 +178,7 @@ runInEachFileSystem(() => {
         const args = host.getConstructorParameters(clazz)!;
         expect(args.length).toBe(1);
         const param = args[0].typeValueReference;
-        if (param === null || !param.local) {
+        if (param === null || param.kind !== TypeValueReferenceKind.LOCAL) {
           return fail('Expected local parameter');
         }
         expect(param).not.toBeNull();
@@ -548,17 +548,20 @@ runInEachFileSystem(() => {
     if (type === undefined) {
       expect(param.typeValueReference).toBeNull();
     } else {
-      if (param.typeValueReference === null) {
+      if (param.typeValueReference.kind === TypeValueReferenceKind.UNAVAILABLE) {
         return fail(`Expected parameter ${name} to have a typeValueReference`);
       }
-      if (param.typeValueReference.local && typeof type === 'string') {
+      if (param.typeValueReference.kind === TypeValueReferenceKind.LOCAL &&
+          typeof type === 'string') {
         expect(argExpressionToString(param.typeValueReference.expression)).toEqual(type);
-      } else if (!param.typeValueReference.local && typeof type !== 'string') {
+      } else if (
+          param.typeValueReference.kind === TypeValueReferenceKind.IMPORTED &&
+          typeof type !== 'string') {
         expect(param.typeValueReference.moduleName).toEqual(type.moduleName);
         expect(param.typeValueReference.importedName).toEqual(type.name);
       } else {
         return fail(`Mismatch between typeValueReference and expected type: ${param.name} / ${
-            param.typeValueReference.local}`);
+            param.typeValueReference.kind}`);
       }
     }
     if (decorator !== undefined) {

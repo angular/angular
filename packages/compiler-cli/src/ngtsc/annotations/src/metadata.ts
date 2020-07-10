@@ -10,7 +10,7 @@ import {Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr,
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder} from '../../imports';
-import {CtorParameter, Decorator, ReflectionHost} from '../../reflection';
+import {CtorParameter, Decorator, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
 import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './util';
 
@@ -105,7 +105,7 @@ function ctorParameterToMetadata(
     isCore: boolean): Expression {
   // Parameters sometimes have a type that can be referenced. If so, then use it, otherwise
   // its type is undefined.
-  const type = param.typeValueReference !== null ?
+  const type = param.typeValueReference.kind !== TypeValueReferenceKind.UNAVAILABLE ?
       valueReferenceToExpression(param.typeValueReference, defaultImportRecorder) :
       new LiteralExpr(undefined);
 
