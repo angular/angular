@@ -59,13 +59,12 @@ export class AttributeSelectorsMigration extends Migration<UpgradeData> {
     }
 
     const literalText = literal.getText();
-    const filePath = literal.getSourceFile().fileName;
+    const filePath = this.fileSystem.resolve(literal.getSourceFile().fileName);
 
     this.data.forEach(selector => {
       findAllSubstringIndices(literalText, selector.replace)
           .map(offset => literal.getStart() + offset)
-          .forEach(start => this._replaceSelector(
-              this.fileSystem.resolve(filePath), start, selector));
+          .forEach(start => this._replaceSelector(filePath, start, selector));
     });
   }
 

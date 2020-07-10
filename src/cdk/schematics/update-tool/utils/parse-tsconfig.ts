@@ -7,17 +7,14 @@
  */
 
 import * as ts from 'typescript';
+import {FileSystem, WorkspacePath} from '../file-system';
+import {FileSystemHost} from './virtual-host';
+import {dirname} from 'path';
 
-export function parseTsconfigFile(tsconfigPath: string, basePath: string): ts.ParsedCommandLine {
-  const {config} = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
-  const parseConfigHost = {
-    useCaseSensitiveFileNames: ts.sys.useCaseSensitiveFileNames,
-    fileExists: ts.sys.fileExists,
-    readDirectory: ts.sys.readDirectory,
-    readFile: ts.sys.readFile,
-  };
-
-
-
-  return ts.parseJsonConfigFileContent(config, parseConfigHost, basePath, {});
+export function parseTsconfigFile(tsconfigPath: WorkspacePath,
+                                  fileSystem: FileSystem): ts.ParsedCommandLine {
+  const {config} = ts.readConfigFile(tsconfigPath,
+      p => fileSystem.read(fileSystem.resolve(p))!);
+  return ts.parseJsonConfigFileContent(config, new FileSystemHost(fileSystem),
+      dirname(tsconfigPath), {});
 }

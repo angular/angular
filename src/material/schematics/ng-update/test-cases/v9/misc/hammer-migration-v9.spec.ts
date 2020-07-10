@@ -13,7 +13,6 @@ describe('v9 HammerJS removal', () => {
   let tree: UnitTestTree;
   let writeFile: (filePath: string, text: string) => void;
   let runMigration: () => Promise<{logOutput: string}>;
-  let cleanupTest: () => void;
 
   beforeEach(async () => {
     const testSetup = await createTestCaseSetup('migration-v9', MIGRATION_PATH, []);
@@ -22,10 +21,7 @@ describe('v9 HammerJS removal', () => {
     tree = testSetup.appTree;
     runMigration = testSetup.runFixers;
     writeFile = testSetup.writeFile;
-    cleanupTest = testSetup.removeTempDir;
   });
-
-  afterEach(() => cleanupTest());
 
   function appendContent(filePath: string, text: string) {
     writeFile(filePath, text + tree.readContent(filePath))

@@ -17,8 +17,6 @@ export type DevkitContext = {
   projectName: string;
   /** Workspace project the migrations run against. */
   project: WorkspaceProject,
-  /** Absolute file system path to the workspace */
-  workspaceFsPath: string,
   /** Whether the migrations run for a test target. */
   isTestTarget: boolean,
 };

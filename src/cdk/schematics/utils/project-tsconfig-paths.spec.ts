@@ -1,5 +1,6 @@
 import {HostTree} from '@angular-devkit/schematics';
 import {UnitTestTree} from '@angular-devkit/schematics/testing';
+import {WorkspacePath} from '../update-tool/file-system';
 import {getTargetTsconfigPath, getWorkspaceConfigGracefully} from './project-tsconfig-paths';
 
 describe('project tsconfig paths', () => {
@@ -17,7 +18,7 @@ describe('project tsconfig paths', () => {
     const config = getWorkspaceConfigGracefully(testTree);
     expect(config).not.toBeNull();
     expect(getTargetTsconfigPath(config!.projects['my_name'], 'build'))
-      .toEqual('my-custom-config.json');
+      .toEqual('my-custom-config.json' as WorkspacePath);
   });
 
   it('should be able to read workspace configuration which is using JSON5 features', () => {
@@ -40,7 +41,7 @@ describe('project tsconfig paths', () => {
     const config = getWorkspaceConfigGracefully(testTree);
     expect(config).not.toBeNull();
     expect(getTargetTsconfigPath(config!.projects['with_tests'], 'build'))
-      .toEqual('my-build-config.json');
+      .toEqual('my-build-config.json' as WorkspacePath);
   });
 
   it('should detect test tsconfig path inside of angular.json file', () => {
@@ -52,7 +53,7 @@ describe('project tsconfig paths', () => {
     const config = getWorkspaceConfigGracefully(testTree);
     expect(config).not.toBeNull();
     expect(getTargetTsconfigPath(config!.projects['my_name'], 'test'))
-      .toEqual('my-test-config.json');
+      .toEqual('my-test-config.json' as WorkspacePath);
   });
 
   it('should detect test tsconfig path inside of .angular.json file', () => {
@@ -65,6 +66,6 @@ describe('project tsconfig paths', () => {
     const config = getWorkspaceConfigGracefully(testTree);
     expect(config).not.toBeNull();
     expect(getTargetTsconfigPath(config!.projects['with_tests'], 'test'))
-      .toEqual('my-test-config.json');
+      .toEqual('my-test-config.json' as WorkspacePath);
   });
 });

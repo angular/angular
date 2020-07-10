@@ -4,7 +4,7 @@ import {MIGRATION_PATH} from '../../../index.spec';
 describe('class inheritance misc checks', () => {
   describe('v6 class which extends MatFormFieldControl', () => {
     it('should report if class does not declare "shouldLabelFloat"', async () => {
-      const {removeTempDir, runFixers} = await createTestCaseSetup(
+      const {runFixers} = await createTestCaseSetup(
           'migration-v6', MIGRATION_PATH,
           [resolveBazelPath(__dirname, './class-inheritance_input.ts')]);
 
@@ -14,8 +14,6 @@ describe('class inheritance misc checks', () => {
           /Found class "WithoutLabelProp".*extends "MatFormFieldControl.*must define "shouldLabelFloat"/);
       expect(logOutput).not.toMatch(
           /Found class "WithLabelProp".*extends "MatFormFieldControl".*must define "shouldLabelFloat"/);
-
-      removeTempDir();
     });
   });
 });

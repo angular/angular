@@ -9,17 +9,16 @@
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';
-import {sync as globSync} from 'glob';
-import {join} from 'path';
 
 import {UpdateProject} from '../update-tool';
+import {WorkspacePath} from '../update-tool/file-system';
 import {MigrationCtor} from '../update-tool/migration';
 import {TargetVersion} from '../update-tool/target-version';
-import {WorkspacePath} from '../update-tool/file-system';
 import {getTargetTsconfigPath, getWorkspaceConfigGracefully} from '../utils/project-tsconfig-paths';
 
 import {DevkitFileSystem} from './devkit-file-system';
 import {DevkitContext, DevkitMigration, DevkitMigrationCtor} from './devkit-migration';
+import {findStylesheetFiles} from './find-stylesheets';
 import {AttributeSelectorsMigration} from './migrations/attribute-selectors';
 import {ClassInheritanceMigration} from './migrations/class-inheritance';
 import {ClassNamesMigration} from './migrations/class-names';
@@ -74,9 +73,7 @@ export function createMigrationSchematicRule(
     // necessary because multiple TypeScript projects can contain the same source file and
     // we don't want to check these again, as this would result in duplicated failure messages.
     const analyzedFiles = new Set<WorkspacePath>();
-    // The CLI uses the working directory as the base directory for the virtual file system tree.
-    const workspaceFsPath = process.cwd();
-    const fileSystem = new DevkitFileSystem(tree, workspaceFsPath);
+    const fileSystem = new DevkitFileSystem(tree);
     const projectNames = Object.keys(workspace.projects);
     const migrations: NullableDevkitMigration[] = [...cdkMigrations, ...extraMigrations];
     let hasFailures = false;
@@ -123,12 +120,9 @@ export function createMigrationSchematicRule(
 
     /** Runs the migrations for the specified workspace project. */
     function runMigrations(project: WorkspaceProject, projectName: string,
-                           tsconfigPath: string, isTestTarget: boolean) {
-      const projectRootFsPath = join(workspaceFsPath, project.root);
-      const tsconfigFsPath = join(workspaceFsPath, tsconfigPath);
-      const program = UpdateProject.createProgramFromTsconfig(tsconfigFsPath, fileSystem);
+                           tsconfigPath: WorkspacePath, isTestTarget: boolean) {
+      const program = UpdateProject.createProgramFromTsconfig(tsconfigPath, fileSystem);
       const updateContext: DevkitContext = {
-        workspaceFsPath,
         isTestTarget,
         projectName,
         project,
@@ -145,13 +139,9 @@ export function createMigrationSchematicRule(
 
       // In some applications, developers will have global stylesheets which are not
       // specified in any Angular component. Therefore we glob up all CSS and SCSS files
-      // outside of node_modules and dist. The files will be read by the individual
-      // stylesheet rules and checked.
+      // in the project and migrate them if needed.
       // TODO: rework this to collect global stylesheets from the workspace config. COMP-280.
-      const additionalStylesheets = globSync(
-        '!(node_modules|dist)/**/*.+(css|scss)',
-        {absolute: true, cwd: projectRootFsPath, nodir: true});
-
+      const additionalStylesheets = findStylesheetFiles(tree, project.root);
       const result =
         updateProject.migrate(migrations, targetVersion, upgradeData, additionalStylesheets);
 

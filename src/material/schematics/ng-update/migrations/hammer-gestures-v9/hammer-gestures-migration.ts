@@ -7,10 +7,10 @@
  */
 
 import {
-  join as devkitJoin,
-  normalize as devkitNormalize,
+  join,
   Path,
-  Path as DevkitPath
+  relative,
+  dirname
 } from '@angular-devkit/core';
 import {SchematicContext, Tree} from '@angular-devkit/schematics';
 import {
@@ -25,11 +25,10 @@ import {
   MigrationFailure,
   PostMigrationAction,
   ResolvedResource,
-  TargetVersion
+  TargetVersion,
 } from '@angular/cdk/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {readFileSync} from 'fs';
-import {dirname, relative, resolve} from 'path';
 import * as ts from 'typescript';
 
 import {findHammerScriptImportElements} from './find-hammer-script-tags';
@@ -241,9 +240,9 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
    */
   private _setupHammerWithCustomEvents() {
     const project = this.context.project;
-    const sourceRoot = devkitNormalize(project.sourceRoot || project.root);
+    const sourceRoot = this.fileSystem.resolve(project.sourceRoot || project.root);
     const newConfigPath =
-        devkitJoin(sourceRoot, this._getAvailableGestureConfigFileName(sourceRoot));
+        join(sourceRoot, this._getAvailableGestureConfigFileName(sourceRoot));
 
     // Copy gesture config template into the CLI project.
     this.fileSystem.create(
@@ -251,10 +250,11 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
 
     // Replace all Material gesture config references to resolve to the
     // newly copied gesture config.
-    this._gestureConfigReferences.forEach(
-        i => this._replaceGestureConfigReference(
-            i, GESTURE_CONFIG_CLASS_NAME,
-            getModuleSpecifier(newConfigPath, i.node.getSourceFile().fileName)));
+    this._gestureConfigReferences.forEach(i => {
+      const filePath = this.fileSystem.resolve(i.node.getSourceFile().fileName);
+      return this._replaceGestureConfigReference(i, GESTURE_CONFIG_CLASS_NAME,
+        getModuleSpecifier(newConfigPath, filePath));
+    });
 
     // Setup the gesture config provider and the "HammerModule" in the root module
     // if not done already. The "HammerModule" is needed in v9 since it enables the
@@ -478,14 +478,14 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
    * Determines an available file name for the gesture config which should
    * be stored in the specified file path.
    */
-  private _getAvailableGestureConfigFileName(sourceRoot: DevkitPath) {
-    if (!this.fileSystem.exists(devkitJoin(sourceRoot, `${GESTURE_CONFIG_FILE_NAME}.ts`))) {
+  private _getAvailableGestureConfigFileName(sourceRoot: Path) {
+    if (!this.fileSystem.exists(join(sourceRoot, `${GESTURE_CONFIG_FILE_NAME}.ts`))) {
       return `${GESTURE_CONFIG_FILE_NAME}.ts`;
     }
 
     let possibleName = `${GESTURE_CONFIG_FILE_NAME}-`;
     let index = 1;
-    while (this.fileSystem.exists(devkitJoin(sourceRoot, `${possibleName}-${index}.ts`))) {
+    while (this.fileSystem.exists(join(sourceRoot, `${possibleName}-${index}.ts`))) {
       index++;
     }
     return `${possibleName + index}.ts`;
@@ -639,8 +639,8 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   }
 
   /** Sets up the Hammer gesture config in the root module if needed. */
-  private _setupNewGestureConfigInRootModule(gestureConfigPath: string) {
-    const {workspaceFsPath, project} = this.context;
+  private _setupNewGestureConfigInRootModule(gestureConfigPath: Path) {
+    const {project} = this.context;
     const mainFilePath = getProjectMainFile(project);
     const rootModuleSymbol = this._getRootModuleSymbol(mainFilePath);
 
@@ -654,7 +654,6 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     }
 
     const sourceFile = rootModuleSymbol.valueDeclaration.getSourceFile();
-    const relativePath = relative(workspaceFsPath, sourceFile.fileName);
     const metadata = getDecoratorMetadata(sourceFile, 'NgModule', '@angular/core') as
         ts.ObjectLiteralExpression[];
 
@@ -663,13 +662,14 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
       return;
     }
 
-    const recorder = this.fileSystem.edit(this.fileSystem.resolve(sourceFile.fileName));
+    const filePath = this.fileSystem.resolve(sourceFile.fileName);
+    const recorder = this.fileSystem.edit(filePath);
     const providersField = getMetadataField(metadata[0], 'providers')[0];
     const providerIdentifiers =
         providersField ? findMatchingChildNodes(providersField, ts.isIdentifier) : null;
     const gestureConfigExpr = this._importManager.addImportToSourceFile(
         sourceFile, GESTURE_CONFIG_CLASS_NAME,
-        getModuleSpecifier(gestureConfigPath, sourceFile.fileName), false,
+        getModuleSpecifier(gestureConfigPath, filePath), false,
         this._getGestureConfigIdentifiersOfFile(sourceFile));
     const hammerConfigTokenExpr = this._importManager.addImportToSourceFile(
         sourceFile, HAMMER_CONFIG_TOKEN_NAME, HAMMER_CONFIG_TOKEN_MODULE);
@@ -684,13 +684,13 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     if (!providerIdentifiers ||
         !(this._hammerConfigTokenReferences.some(r => providerIdentifiers.includes(r.node)) &&
           this._gestureConfigReferences.some(r => providerIdentifiers.includes(r.node)))) {
-      addSymbolToNgModuleMetadata(
-          sourceFile, relativePath, 'providers', this._printNode(newProviderNode, sourceFile), null)
-          .forEach(change => {
-            if (change instanceof InsertChange) {
-              recorder.insertRight(change.pos, change.toAdd);
-            }
-          });
+      const symbolName = this._printNode(newProviderNode, sourceFile);
+      addSymbolToNgModuleMetadata(sourceFile, sourceFile.fileName, 'providers', symbolName, null)
+        .forEach(change => {
+          if (change instanceof InsertChange) {
+            recorder.insertRight(change.pos, change.toAdd);
+          }
+        });
     }
   }
 
@@ -699,8 +699,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
    * bootstrap expression in the specified source file.
    */
   private _getRootModuleSymbol(mainFilePath: Path): ts.Symbol|null {
-    const mainFile = this.program.getSourceFile(resolve(
-        this.context.workspaceFsPath, mainFilePath));
+    const mainFile = this.program.getSourceFile(mainFilePath);
     if (!mainFile) {
       return null;
     }
@@ -719,7 +718,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
 
   /** Sets up the "HammerModule" in the root module of the current project. */
   private _setupHammerModuleInRootModule() {
-    const {workspaceFsPath, project} = this.context;
+    const {project} = this.context;
     const mainFilePath = getProjectMainFile(project);
     const rootModuleSymbol = this._getRootModuleSymbol(mainFilePath);
 
@@ -733,7 +732,6 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     }
 
     const sourceFile = rootModuleSymbol.valueDeclaration.getSourceFile();
-    const relativePath = relative(workspaceFsPath, sourceFile.fileName);
     const metadata = getDecoratorMetadata(sourceFile, 'NgModule', '@angular/core') as
         ts.ObjectLiteralExpression[];
     if (!metadata.length) {
@@ -751,13 +749,13 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     // by adding it to the "imports" field of the app module.
     if (!importIdentifiers ||
         !this._hammerModuleReferences.some(r => importIdentifiers.includes(r.node))) {
-      addSymbolToNgModuleMetadata(
-          sourceFile, relativePath, 'imports', this._printNode(hammerModuleExpr, sourceFile), null)
-          .forEach(change => {
-            if (change instanceof InsertChange) {
-              recorder.insertRight(change.pos, change.toAdd);
-            }
-          });
+      const symbolName = this._printNode(hammerModuleExpr, sourceFile);
+      addSymbolToNgModuleMetadata(sourceFile, sourceFile.fileName, 'imports', symbolName, null)
+        .forEach(change => {
+          if (change instanceof InsertChange) {
+            recorder.insertRight(change.pos, change.toAdd);
+          }
+        });
     }
   }
 
@@ -886,7 +884,7 @@ function unwrapExpression(node: ts.Node): ts.Node {
  * Converts the specified path to a valid TypeScript module specifier which is
  * relative to the given containing file.
  */
-function getModuleSpecifier(newPath: string, containingFile: string) {
+function getModuleSpecifier(newPath: Path, containingFile: Path) {
   let result = relative(dirname(containingFile), newPath).replace(/\\/g, '/').replace(/\.ts$/, '');
   if (!result.startsWith('.')) {
     result = `./${result}`;

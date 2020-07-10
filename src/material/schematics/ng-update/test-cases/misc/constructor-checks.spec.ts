@@ -3,7 +3,7 @@ import {MIGRATION_PATH} from '../../../index.spec';
 
 describe('constructor checks', () => {
   it('should properly report invalid constructor expression signatures', async () => {
-    const {removeTempDir, runFixers} = await createTestCaseSetup(
+    const {runFixers} = await createTestCaseSetup(
         'migration-v6', MIGRATION_PATH,
         [resolveBazelPath(__dirname, './constructor-checks_input.ts')]);
 
@@ -41,7 +41,5 @@ describe('constructor checks', () => {
 
     expect(logOutput).toMatch(/Found "ExtendedDateAdapter".*super.*: super\(string, Platform\)/);
     expect(logOutput).toMatch(/Found "ExtendedDateAdapter".*: new \w+\(string, Platform\)/);
-
-    removeTempDir();
   });
 });

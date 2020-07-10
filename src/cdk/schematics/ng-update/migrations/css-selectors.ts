@@ -61,7 +61,7 @@ export class CssSelectorsMigration extends Migration<UpgradeData> {
     }
 
     const textContent = node.getText();
-    const filePath = node.getSourceFile().fileName;
+    const filePath = this.fileSystem.resolve(node.getSourceFile().fileName);
 
     this.data.forEach(data => {
       if (data.whitelist && !data.whitelist.strings) {
@@ -70,7 +70,7 @@ export class CssSelectorsMigration extends Migration<UpgradeData> {
 
       findAllSubstringIndices(textContent, data.replace)
           .map(offset => node.getStart() + offset)
-          .forEach(start => this._replaceSelector(this.fileSystem.resolve(filePath), start, data));
+          .forEach(start => this._replaceSelector(filePath, start, data));
     });
   }
 

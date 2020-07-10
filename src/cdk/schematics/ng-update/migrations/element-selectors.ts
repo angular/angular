@@ -53,13 +53,12 @@ export class ElementSelectorsMigration extends Migration<UpgradeData> {
     }
 
     const textContent = node.getText();
-    const filePath = node.getSourceFile().fileName;
+    const filePath = this.fileSystem.resolve(node.getSourceFile().fileName);
 
     this.data.forEach(selector => {
       findAllSubstringIndices(textContent, selector.replace)
           .map(offset => node.getStart() + offset)
-          .forEach(start => this._replaceSelector(
-              this.fileSystem.resolve(filePath), start, selector));
+          .forEach(start => this._replaceSelector(filePath, start, selector));
     });
   }
 

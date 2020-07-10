@@ -9,12 +9,14 @@
 import {JsonParseMode, normalize, parseJson} from '@angular-devkit/core';
 import {Tree} from '@angular-devkit/schematics';
 import {WorkspaceProject, WorkspaceSchema} from '@schematics/angular/utility/workspace-models';
+import {WorkspacePath} from '../update-tool/file-system';
 
 /** Name of the default Angular CLI workspace configuration files. */
 const defaultWorkspaceConfigPaths = ['/angular.json', '/.angular.json'];
 
 /** Gets the tsconfig path from the given target within the specified project. */
-export function getTargetTsconfigPath(project: WorkspaceProject, targetName: string): string|null {
+export function getTargetTsconfigPath(project: WorkspaceProject,
+                                      targetName: string): WorkspacePath|null {
   if (project.targets && project.targets[targetName] && project.targets[targetName].options &&
       project.targets[targetName].options.tsConfig) {
     return normalize(project.targets[targetName].options.tsConfig);

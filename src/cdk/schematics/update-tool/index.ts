@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {dirname} from 'path';
 import * as ts from 'typescript';
 
 import {ComponentResourceCollector} from './component-resource-collector';
@@ -15,6 +14,7 @@ import {defaultLogger, UpdateLogger} from './logger';
 import {Migration, MigrationCtor, MigrationFailure} from './migration';
 import {TargetVersion} from './target-version';
 import {parseTsconfigFile} from './utils/parse-tsconfig';
+import {createFileSystemCompilerHost} from './utils/virtual-host';
 
 /**
  * An update project that can be run against individual migrations. An update project
@@ -26,10 +26,18 @@ import {parseTsconfigFile} from './utils/parse-tsconfig';
 export class UpdateProject<Context> {
   private readonly _typeChecker: ts.TypeChecker = this._program.getTypeChecker();
 
-  constructor(private _context: Context,
+  constructor(/** Context provided to all migrations. */
+              private _context: Context,
+              /** TypeScript program using workspace paths. */
               private _program: ts.Program,
+              /** File system used for reading, writing and editing files. */
               private _fileSystem: FileSystem,
+              /**
+               * Set of analyzed files. Used for avoiding multiple migration runs if
+               * files overlap between targets.
+               */
               private _analyzedFiles: Set<WorkspacePath> = new Set(),
+              /** Logger used for printing messages. */
               private _logger: UpdateLogger = defaultLogger) {}
 
   /**
@@ -154,18 +162,11 @@ export class UpdateProject<Context> {
 
   /**
    * Creates a program form the specified tsconfig and patches the host
-   * to read files through the given file system.
+   * to read files and directories through the given file system.
    */
-  static createProgramFromTsconfig(tsconfigFsPath: string, fs: FileSystem): ts.Program {
-    const parsed = parseTsconfigFile(tsconfigFsPath, dirname(tsconfigFsPath));
-    const host = ts.createCompilerHost(parsed.options, true);
-    // Patch the host to read files through the specified file system.
-    host.readFile = fileName => {
-      const fileContent = fs.read(fs.resolve(fileName));
-      // Strip BOM as otherwise TSC methods (e.g. "getWidth") will return an offset which
-      // which breaks the CLI UpdateRecorder. https://github.com/angular/angular/pull/30719
-      return fileContent !== null ? fileContent.replace(/^\uFEFF/, '') : undefined;
-    };
+  static createProgramFromTsconfig(tsconfigPath: WorkspacePath, fs: FileSystem): ts.Program {
+    const parsed = parseTsconfigFile(fs.resolve(tsconfigPath), fs);
+    const host = createFileSystemCompilerHost(parsed.options, fs);
     return ts.createProgram(parsed.fileNames, parsed.options, host);
   }
 }

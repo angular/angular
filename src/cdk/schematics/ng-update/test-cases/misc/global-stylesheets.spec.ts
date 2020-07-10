@@ -6,7 +6,7 @@ import {createTestCaseSetup} from '../../../testing';
 describe('global stylesheets migration', () => {
 
   it('should not check stylesheet twice if referenced in component', async () => {
-    const {runFixers, writeFile, removeTempDir, appTree} = await createTestCaseSetup(
+    const {runFixers, writeFile, appTree} = await createTestCaseSetup(
       'migration-v6', MIGRATION_PATH,
       [resolveBazelPath(__dirname, './global-stylesheets_input.ts')]);
 
@@ -25,12 +25,10 @@ describe('global stylesheets migration', () => {
     // the same replacements were recorded for the same source file.
     expect(appTree.readContent(testStylesheetPath))
         .toBe(`[cdkPortalOutlet] {\n  color: red;\n}\n`);
-
-    removeTempDir();
   });
 
   it('should not check stylesheets outside of project target', async () => {
-    const {runFixers, writeFile, removeTempDir, appTree} = await createTestCaseSetup(
+    const {runFixers, writeFile, appTree} = await createTestCaseSetup(
       'migration-v6', MIGRATION_PATH, []);
     const subProjectStylesheet = '[cdkPortalHost] {\n  color: red;\n}\n';
 
@@ -43,7 +41,5 @@ describe('global stylesheets migration', () => {
     // if the external stylesheet that is not of a project target would have been checked
     // by accident, the stylesheet would differ from the original file content.
     expect(appTree.readContent('/sub_project/assets/test.css')).toBe(subProjectStylesheet);
-
-    removeTempDir();
   });
 });

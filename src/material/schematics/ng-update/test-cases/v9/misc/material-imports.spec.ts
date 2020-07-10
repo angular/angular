@@ -4,7 +4,7 @@ import {MIGRATION_PATH} from '../../../../index.spec';
 describe('v9 material imports', () => {
   it('should re-map top-level material imports to the proper entry points when top-level ' +
     '@angular/material package does not exist', async () => {
-      const {runFixers, appTree, removeTempDir} = await createTestCaseSetup(
+      const {runFixers, appTree} = await createTestCaseSetup(
           'migration-v9', MIGRATION_PATH,
           [resolveBazelPath(__dirname, './material-imports_input.ts')]);
 
@@ -15,7 +15,5 @@ describe('v9 material imports', () => {
       expect(appTree.readContent('/projects/cdk-testing/src/test-cases/material-imports_input.ts'))
           .toBe(readFileContent(
               resolveBazelPath(__dirname, './material-imports_expected_output.ts')));
-
-      removeTempDir();
     });
 });
