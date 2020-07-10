@@ -41,6 +41,7 @@ import {
   FocusEscapeNotifierFactory
 } from './focus-escape-notifier';
 import {closest} from './polyfill';
+import {EditRef} from './edit-ref';
 
 /**
  * Describes the number of columns before and after the originating cell that the
@@ -69,7 +70,7 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
 
   constructor(
       protected readonly elementRef: ElementRef,
-      protected readonly editEventDispatcher: EditEventDispatcher,
+      protected readonly editEventDispatcher: EditEventDispatcher<EditRef<unknown>>,
       protected readonly focusDispatcher: FocusDispatcher, protected readonly ngZone: NgZone) {}
 
   ngAfterViewInit(): void {
@@ -487,7 +488,7 @@ export class CdkRowHoverContent implements AfterViewInit, OnDestroy {
 export class CdkEditOpen {
   constructor(
       protected readonly elementRef: ElementRef<HTMLElement>,
-      protected readonly editEventDispatcher: EditEventDispatcher) {
+      protected readonly editEventDispatcher: EditEventDispatcher<EditRef<unknown>>) {
 
     const nativeElement = elementRef.nativeElement;
 

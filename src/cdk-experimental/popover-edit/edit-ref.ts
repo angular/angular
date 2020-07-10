@@ -32,7 +32,7 @@ export class EditRef<FormValue> implements OnDestroy {
 
   constructor(
       @Self() private readonly _form: ControlContainer,
-      private readonly _editEventDispatcher: EditEventDispatcher,
+      private readonly _editEventDispatcher: EditEventDispatcher<EditRef<FormValue>>,
       private readonly _ngZone: NgZone) {
     this._editEventDispatcher.setActiveEditRef(this);
   }

@@ -22,7 +22,6 @@ import {
 
 import {CELL_SELECTOR, ROW_SELECTOR} from './constants';
 import {closest} from './polyfill';
-import {EditRef} from './edit-ref';
 
 /** The delay applied to mouse events before hiding or showing hover content. */
 const MOUSE_EVENT_DELAY_MS = 40;
@@ -42,11 +41,15 @@ export const enum HoverContentState {
   ON,
 }
 
+// Note: this class is generic, rather than referencing EditRef directly, in order to avoid
+// circular imports. If we were to reference it here, importing the registry into the
+// class that is registering itself will introduce a circular import.
+
 /**
  * Service for sharing delegated events and state for triggering table edits.
  */
 @Injectable()
-export class EditEventDispatcher {
+export class EditEventDispatcher<R> {
   /** A subject that indicates which table cell is currently editing (unless it is disabled). */
   readonly editing = new Subject<Element|null>();
 
@@ -70,10 +73,10 @@ export class EditEventDispatcher {
   readonly disabledCells = new WeakMap<Element, boolean>();
 
   /** The EditRef for the currently active edit lens (if any). */
-  get editRef(): EditRef<any>|null {
+  get editRef(): R|null {
     return this._editRef;
   }
-  private _editRef: EditRef<any>|null = null;
+  private _editRef: R|null = null;
 
   // Optimization: Precompute common pipeable operators used per row/cell.
   private readonly _distinctUntilChanged =
@@ -181,12 +184,12 @@ export class EditEventDispatcher {
   }
 
   /** Sets the currently active EditRef. */
-  setActiveEditRef(ref: EditRef<any>) {
+  setActiveEditRef(ref: R) {
     this._editRef = ref;
   }
 
   /** Unsets the currently active EditRef, if the specified editRef is active. */
-  unsetActiveEditRef(ref: EditRef<any>) {
+  unsetActiveEditRef(ref: R) {
     if (this._editRef !== ref) {
       return;
     }

@@ -15,6 +15,7 @@ import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
 import {EditEventDispatcher} from './edit-event-dispatcher';
 import {FocusDispatcher} from './focus-dispatcher';
 import {PopoverEditPositionStrategyFactory} from './popover-edit-position-strategy-factory';
+import {EditRef} from './edit-ref';
 
 /**
  * Optimization
@@ -26,7 +27,8 @@ import {PopoverEditPositionStrategyFactory} from './popover-edit-position-strate
 export class EditServices {
   constructor(
       readonly directionality: Directionality,
-      readonly editEventDispatcher: EditEventDispatcher, readonly focusDispatcher: FocusDispatcher,
+      readonly editEventDispatcher: EditEventDispatcher<EditRef<unknown>>,
+      readonly focusDispatcher: FocusDispatcher,
       readonly focusTrapFactory: FocusTrapFactory, readonly ngZone: NgZone,
       readonly overlay: Overlay, readonly positionFactory: PopoverEditPositionStrategyFactory,
       readonly scrollDispatcher: ScrollDispatcher, readonly viewportRuler: ViewportRuler) {}

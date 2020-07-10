@@ -4,10 +4,6 @@
     "src/cdk-experimental/dialog/dialog-container.ts"
   ],
   [
-    "src/cdk-experimental/popover-edit/edit-event-dispatcher.ts",
-    "src/cdk-experimental/popover-edit/edit-ref.ts"
-  ],
-  [
     "src/cdk/drag-drop/directives/drag.ts",
     "src/cdk/drag-drop/directives/drop-list.ts"
   ],
