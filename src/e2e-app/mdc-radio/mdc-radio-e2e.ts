@@ -13,5 +13,6 @@ import {Component} from '@angular/core';
   templateUrl: 'mdc-radio-e2e.html',
 })
 export class MdcRadioE2e {
-  // TODO: copy implementation from existing mat-radio e2e page.
+  isGroupDisabled: boolean = false;
+  groupValue: string;
 }
