@@ -48,7 +48,6 @@ export function getRtlScrollAxisType(): RtlScrollAxisType {
     const scrollContainer = document.createElement('div');
     const containerStyle = scrollContainer.style;
     scrollContainer.dir = 'rtl';
-    containerStyle.height = '1px';
     containerStyle.width = '1px';
     containerStyle.overflow = 'auto';
     containerStyle.visibility = 'hidden';
