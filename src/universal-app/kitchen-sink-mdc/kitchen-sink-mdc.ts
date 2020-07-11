@@ -11,6 +11,7 @@ import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
 import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
 import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
 import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
+import {MatTableModule} from '@angular/material-experimental/mdc-table';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material-experimental/mdc-snack-bar';
 
@@ -35,6 +36,7 @@ export class KitchenSinkMdc {
     MatSlideToggleModule,
     MatSliderModule,
     MatTabsModule,
+    MatTableModule,
     MatProgressBarModule,
     MatSnackBarModule,
   ],

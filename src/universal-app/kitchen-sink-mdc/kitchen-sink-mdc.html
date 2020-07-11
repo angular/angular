@@ -116,6 +116,24 @@
  <a mat-tab-link href="https://google.com" [active]="true">Also Google</a>
 </nav>
 
+<h2>MDC Table</h2>
+<table mat-table [dataSource]="[1, 2, 3]">
+  <ng-container matColumnDef="first-column">
+    <th mat-header-cell *matHeaderCellDef> First </th>
+    <td mat-cell *matCellDef="let data"> {{data}} </td>
+  </ng-container>
+  <ng-container matColumnDef="second-column">
+    <th mat-header-cell *matHeaderCellDef> Second </th>
+    <td mat-cell *matCellDef="let data"> {{data}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="['first-column', 'second-column']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['first-column', 'second-column'];"></tr>
+</table>
+
+
+
+
 <h2>MDC Progress bar</h2>
 <mat-progress-bar [value]="25"></mat-progress-bar>
 <mat-progress-bar mode="buffer" [value]="25" [bufferValue]="60"></mat-progress-bar>
