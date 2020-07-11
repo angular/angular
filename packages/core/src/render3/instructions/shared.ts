@@ -12,7 +12,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../me
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
-import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertNotEqual, assertNotSame, assertSame} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertLessThan, assertNotEqual, assertNotSame, assertSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
@@ -100,6 +100,10 @@ export function setHostBindingsByExecutingExpandoInstructions(tView: TView, lVie
         } else {
           // If it's not a number, it's a host binding function that needs to be executed.
           if (instruction !== null) {
+            ngDevMode &&
+                assertLessThan(
+                    currentDirectiveIndex, TNodeProviderIndexes.CptViewProvidersCountShifter,
+                    'Reached the max number of host bindings');
             setBindingRootForHostBindings(bindingRootIndex, currentDirectiveIndex);
             const hostCtx = lView[currentDirectiveIndex];
             instruction(RenderFlags.Update, hostCtx);
