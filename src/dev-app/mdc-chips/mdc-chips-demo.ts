@@ -9,7 +9,7 @@
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
-import {MatChipInputEvent} from '@angular/material-experimental/mdc-chips';
+import {MatChipInputEvent, MatChipEditedEvent} from '@angular/material-experimental/mdc-chips';
 
 export interface Person {
   name: string;
@@ -32,6 +32,7 @@ export class MdcChipsDemo {
   addOnBlur = true;
   disabledListboxes = false;
   disableInputs = false;
+  editable = false;
   message = '';
 
   // Enter, comma, semi-colon
@@ -79,6 +80,18 @@ export class MdcChipsDemo {
     if (index >= 0) {
       this.people.splice(index, 1);
     }
+  }
+
+  edit(person: Person, event: MatChipEditedEvent): void {
+    if (!event.value.trim().length) {
+      this.remove(person);
+      return;
+    }
+
+    const index = this.people.indexOf(person);
+    const newPeople = this.people.slice();
+    newPeople[index] = {...newPeople[index], name: event.value};
+    this.people = newPeople;
   }
 
   toggleVisible(): void {

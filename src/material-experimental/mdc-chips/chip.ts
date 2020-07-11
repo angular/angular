@@ -288,9 +288,16 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
           // Make it `display: none` so users can't tab into it.
           this._elementRef.nativeElement.style.display = 'none';
         },
-    // Noop for now since we don't support editable chips yet.
-    notifyEditStart: () => {},
-    notifyEditFinish: () => {},
+    notifyEditStart:
+        () => {
+          this._onEditStart();
+          this._changeDetectorRef.markForCheck();
+        },
+    notifyEditFinish:
+        () => {
+          this._onEditFinish();
+          this._changeDetectorRef.markForCheck();
+        },
     getComputedStyleValue:
         propertyName => {
           // This function is run when a chip is removed so it might be
@@ -430,7 +437,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   }
 
   /** Forwards interaction events to the MDC chip foundation. */
-  _handleInteraction(event: MouseEvent | KeyboardEvent) {
+  _handleInteraction(event: MouseEvent | KeyboardEvent | FocusEvent) {
     if (this.disabled) {
       return;
     }
@@ -440,9 +447,21 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
       return;
     }
 
+    if (event.type === 'dblclick') {
+      this._chipFoundation.handleDoubleClick();
+    }
+
     if (event.type === 'keydown') {
       this._chipFoundation.handleKeydown(event as KeyboardEvent);
       return;
+    }
+
+    if (event.type === 'focusout') {
+      this._chipFoundation.handleFocusOut(event as FocusEvent);
+    }
+
+    if (event.type === 'focusin') {
+      this._chipFoundation.handleFocusIn(event as FocusEvent);
     }
   }
 
@@ -459,6 +478,12 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     // TODO: This is a new feature added by MDC. Consider exposing it to users
     // in the future.
   }
+
+  /** Overridden by MatChipRow. */
+  protected _onEditStart() {}
+
+  /** Overridden by MatChipRow. */
+  protected _onEditFinish() {}
 
   static ngAcceptInputType_disabled: BooleanInput;
   static ngAcceptInputType_removable: BooleanInput;

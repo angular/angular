@@ -73,7 +73,7 @@
 .mat-mdc-chip-disabled.mat-mdc-chip {
   opacity: 0.4;
 
-  .mat-mdc-chip-trailing-icon, .mat-chip-row-focusable-text-content {
+  .mat-mdc-chip-trailing-icon, .mat-mdc-chip-row-focusable-text-content {
     pointer-events: none;
   }
 
@@ -127,6 +127,40 @@ $mat-mdc-chip-margin: 4px;
 }
 
 // Needed for the focus indicator.
-.mat-chip-row-focusable-text-content {
+.mat-mdc-chip-row-focusable-text-content {
   position: relative;
+}
+
+.mat-mdc-chip-row-focusable-text-content,
+.mat-mdc-chip-remove-icon {
+  display: flex;
+  align-items: center;
+}
+
+.mat-mdc-chip-content {
+  display: inline-flex;
+}
+
+.mdc-chip--editing {
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+
+  .mat-mdc-chip-content {
+    pointer-events: none;
+    height: 0;
+    overflow: hidden;
+  }
+}
+
+.mat-chip-edit-input {
+  cursor: text;
+  display: inline-block;
+}
+
+.mat-mdc-chip-edit-input-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }

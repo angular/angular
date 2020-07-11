@@ -191,7 +191,7 @@ describe('MDC-based MatChipGrid', () => {
 
           // Focus and blur the middle item
           midItem.focus();
-          midItem._focusout();
+          (document.activeElement as HTMLElement).blur();
           tick();
           zone.simulateZoneExit();
 
@@ -244,7 +244,7 @@ describe('MDC-based MatChipGrid', () => {
 
       it('should have a focus indicator', () => {
         const focusableTextNativeElements = Array.from(chipGridNativeElement
-            .querySelectorAll('.mat-chip-row-focusable-text-content'));
+            .querySelectorAll('.mat-mdc-chip-row-focusable-text-content'));
 
         expect(focusableTextNativeElements
             .every(element => element.classList.contains('mat-mdc-focus-indicator'))).toBe(true);
@@ -502,6 +502,32 @@ describe('MDC-based MatChipGrid', () => {
         expect(manager.activeColumnIndex).toBe(0);
       });
 
+      it('should ignore all non-tab navigation keyboard events from an editing chip', () => {
+        setupStandardGrid();
+        manager = chipGridInstance._keyManager;
+        testComponent.editable = true;
+        fixture.detectChanges();
+
+        const array = chips.toArray();
+        const firstItem = array[0];
+        firstItem.focus();
+        firstItem._keydown(createKeyboardEvent('keydown', ENTER, 'Enter', document.activeElement!));
+        fixture.detectChanges();
+
+        const activeRowIndex = manager.activeRowIndex;
+        const activeColumnIndex = manager.activeColumnIndex;
+
+        const KEYS_TO_IGNORE = [HOME, END, LEFT_ARROW, RIGHT_ARROW];
+        for (const key of KEYS_TO_IGNORE) {
+          const event: KeyboardEvent =
+              createKeyboardEvent('keydown', key, undefined, document.activeElement!);
+          chipGridInstance._keydown(event);
+          fixture.detectChanges();
+
+          expect(manager.activeRowIndex).toBe(activeRowIndex);
+          expect(manager.activeColumnIndex).toBe(activeColumnIndex);
+        }
+      });
     });
   });
 
@@ -991,7 +1017,8 @@ describe('MDC-based MatChipGrid', () => {
 @Component({
   template: `
     <mat-chip-grid [tabIndex]="tabIndex" #chipGrid>
-      <mat-chip-row *ngFor="let i of chips">
+      <mat-chip-row *ngFor="let i of chips"
+                    [editable]="editable">
         {{name}} {{i + 1}}
       </mat-chip-row>
     </mat-chip-grid>
@@ -1001,6 +1028,7 @@ class StandardChipGrid {
   name: string = 'Test';
   tabIndex: number = 0;
   chips = [0, 1, 2, 3, 4];
+  editable = false;
 }
 
 @Component({

@@ -128,12 +128,18 @@
        {{disableInputs ? "Enable" : "Disable"}}
       </button>
 
+      <button mat-button (click)="editable = !editable">
+        {{editable ? "Disable editing" : "Enable editing"}}
+      </button>
+
       <h4>Input is last child of chip grid</h4>
 
       <mat-form-field class="demo-has-chip-list">
         <mat-chip-grid #chipGrid1 [(ngModel)]="selectedPeople" required [disabled]="disableInputs">
           <mat-chip-row *ngFor="let person of people"
-                   (removed)="remove(person)">
+                   [editable]="editable"
+                   (removed)="remove(person)"
+                   (edited)="edit(person, $event)">
             {{person.name}}
             <mat-icon matChipRemove>cancel</mat-icon>
           </mat-chip-row>

@@ -12,6 +12,7 @@ import {NgModule} from '@angular/core';
 import {ErrorStateMatcher, MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatChip, MatChipCssInternalOnly} from './chip';
 import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
+import {MatChipEditInput} from './chip-edit-input';
 import {MatChipGrid} from './chip-grid';
 import {MatChipAvatar, MatChipRemove, MatChipTrailingIcon} from './chip-icons';
 import {MatChipInput} from './chip-input';
@@ -25,6 +26,7 @@ const CHIP_DECLARATIONS = [
   MatChip,
   MatChipAvatar,
   MatChipCssInternalOnly,
+  MatChipEditInput,
   MatChipGrid,
   MatChipInput,
   MatChipListbox,

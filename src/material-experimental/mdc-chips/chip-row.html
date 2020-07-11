@@ -1,19 +1,32 @@
-<span class="mdc-chip__ripple"></span>
+<ng-container *ngIf="!_isEditing()">
+  <span class="mdc-chip__ripple"></span>
 
-<span matRipple class="mat-mdc-chip-ripple"
-     [matRippleAnimation]="_rippleAnimation"
-     [matRippleDisabled]="_isRippleDisabled()"
-     [matRippleCentered]="_isRippleCentered"
-     [matRippleTrigger]="_elementRef.nativeElement"></span>
+  <span matRipple class="mat-mdc-chip-ripple"
+       [matRippleAnimation]="_rippleAnimation"
+       [matRippleDisabled]="_isRippleDisabled()"
+       [matRippleCentered]="_isRippleCentered"
+       [matRippleTrigger]="_elementRef.nativeElement"></span>
+</ng-container>
 
-<div role="gridcell">
-  <div #chipContent tabindex="-1"
-       class="mat-chip-row-focusable-text-content mat-mdc-focus-indicator">
-  	 <ng-content select="mat-chip-avatar, [matChipAvatar]"></ng-content>
-  	 <span class="mdc-chip__text"><ng-content></ng-content></span>
-  	 <ng-content select="mat-chip-trailing-icon,[matChipTrailingIcon]"></ng-content>
+<div class="mat-mdc-chip-content">
+  <div role="gridcell">
+    <div #chipContent tabindex="-1"
+         class="mat-mdc-chip-row-focusable-text-content mat-mdc-focus-indicator mdc-chip__primary-action"
+         [attr.role]="editable ? 'button' : null">
+      <ng-content select="mat-chip-avatar, [matChipAvatar]"></ng-content>
+      <span class="mdc-chip__text"><ng-content></ng-content></span>
+      <ng-content select="mat-chip-trailing-icon,[matChipTrailingIcon]"></ng-content>
+    </div>
+  </div>
+  <div role="gridcell" *ngIf="removeIcon" class="mat-mdc-chip-remove-icon">
+    <ng-content select="[matChipRemove]"></ng-content>
   </div>
 </div>
-<div role="gridcell" *ngIf="removeIcon">
-  <ng-content select="[matChipRemove]"></ng-content>
+
+<div *ngIf="_isEditing()" role="gridcell" class="mat-mdc-chip-edit-input-container">
+  <ng-content *ngIf="contentEditInput; else defaultMatChipEditInput"
+              select="[matChipEditInput]"></ng-content>
+  <ng-template #defaultMatChipEditInput>
+    <span matChipEditInput></span>
+  </ng-template>
 </div>
