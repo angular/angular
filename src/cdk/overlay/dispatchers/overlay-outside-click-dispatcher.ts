@@ -67,6 +67,8 @@ export class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher {
 
   /** Click event listener that will be attached to the body propagate phase. */
   private _clickListener = (event: MouseEvent) => {
+    // Get the target through the `composedPath` if possible to account for shadow DOM.
+    const target = event.composedPath ? event.composedPath()[0] : event.target;
     const overlays = this._attachedOverlays;
 
     // Dispatch the mouse event to the top overlay which has subscribers to its mouse events.
@@ -81,7 +83,7 @@ export class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher {
 
       const config = overlayRef.getConfig();
       const excludeElements = [...config.excludeFromOutsideClick!, overlayRef.overlayElement];
-      const isInsideClick: boolean = excludeElements.some(e => e.contains(event.target as Node));
+      const isInsideClick: boolean = excludeElements.some(e => e.contains(target));
 
       // If it is inside click just break - we should do nothing
       // If it is outside click dispatch the mouse event, and proceed with the next overlay
