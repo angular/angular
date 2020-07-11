@@ -1,4 +1,4 @@
-import {DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, TAB, UP_ARROW} from '@angular/cdk/keycodes';
+import {DOWN_ARROW, END, HOME, LEFT_ARROW, RIGHT_ARROW, TAB, UP_ARROW} from '@angular/cdk/keycodes';
 import {createKeyboardEvent} from '@angular/cdk/testing/private';
 import {QueryList} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
@@ -51,6 +51,8 @@ describe('Key managers', () => {
     leftArrow: KeyboardEvent,
     rightArrow: KeyboardEvent,
     tab: KeyboardEvent,
+    home: KeyboardEvent,
+    end: KeyboardEvent,
     unsupported: KeyboardEvent
   };
 
@@ -62,6 +64,8 @@ describe('Key managers', () => {
       leftArrow: createKeyboardEvent('keydown', LEFT_ARROW),
       rightArrow: createKeyboardEvent('keydown', RIGHT_ARROW),
       tab: createKeyboardEvent('keydown', TAB),
+      home: createKeyboardEvent('keydown', HOME),
+      end: createKeyboardEvent('keydown', END),
       unsupported: createKeyboardEvent('keydown', 192) // corresponds to the tilde character (~)
     };
   });
@@ -205,6 +209,30 @@ describe('Key managers', () => {
 
         expect(keyManager.activeItemIndex).toBe(0);
         expect(fakeKeyEvents.downArrow.defaultPrevented).toBe(false);
+      });
+
+      describe('withHomeAndEnd', () => {
+        beforeEach(() => {
+          keyManager.withHomeAndEnd();
+        });
+
+        it('should focus the first item when Home is pressed', () => {
+          keyManager.setActiveItem(1);
+          expect(keyManager.activeItemIndex).toBe(1);
+
+          keyManager.onKeydown(fakeKeyEvents.home);
+
+          expect(keyManager.activeItemIndex).toBe(0);
+        });
+
+        it('should focus the last item when End is pressed', () => {
+          keyManager.setActiveItem(0);
+          expect(keyManager.activeItemIndex).toBe(0);
+
+          keyManager.onKeydown(fakeKeyEvents.end);
+
+          expect(keyManager.activeItemIndex).toBe(itemList.items.length - 1);
+        });
       });
 
       describe('with `vertical` direction', function(this: KeyEventTestContext) {

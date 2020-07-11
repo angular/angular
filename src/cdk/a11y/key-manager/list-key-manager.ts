@@ -19,6 +19,8 @@ import {
   ZERO,
   NINE,
   hasModifierKey,
+  HOME,
+  END,
 } from '@angular/cdk/keycodes';
 import {debounceTime, filter, map, tap} from 'rxjs/operators';
 
@@ -47,6 +49,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   private _vertical = true;
   private _horizontal: 'ltr' | 'rtl' | null;
   private _allowedModifierKeys: ListKeyManagerModifierKey[] = [];
+  private _homeAndEnd = false;
 
   /**
    * Predicate function that can be used to check whether an item should be skipped
@@ -175,6 +178,15 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   }
 
   /**
+   * Configures the key manager to focus the first and last items
+   * respectively when the Home key and End Key are pressed.
+   */
+  withHomeAndEnd(): this {
+    this._homeAndEnd = true;
+    return this;
+  }
+
+  /**
    * Sets the active item to the item at the index specified.
    * @param index The index of the item to be set as active.
    */
@@ -239,6 +251,22 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
       case LEFT_ARROW:
         if (this._horizontal && isModifierAllowed) {
           this._horizontal === 'rtl' ? this.setNextItemActive() : this.setPreviousItemActive();
+          break;
+        } else {
+          return;
+        }
+
+      case HOME:
+        if (this._homeAndEnd && isModifierAllowed) {
+          this.setFirstItemActive();
+          break;
+        } else {
+          return;
+        }
+
+      case END:
+        if (this._homeAndEnd && isModifierAllowed) {
+          this.setLastItemActive();
           break;
         } else {
           return;
