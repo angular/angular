@@ -74,7 +74,7 @@ export declare class CdkScrollableModule {
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkScrollableModule, [typeof i1.CdkScrollable], never, [typeof i1.CdkScrollable]>;
 }
 
-export declare class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy {
+export declare class CdkVirtualForOf<T> implements CdkVirtualScrollRepeater<T>, CollectionViewer, DoCheck, OnDestroy {
     _cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;
     get cdkVirtualForOf(): DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;
     set cdkVirtualForOf(value: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined);
@@ -107,6 +107,11 @@ export declare type CdkVirtualForOfContext<T> = {
     odd: boolean;
 };
 
+export interface CdkVirtualScrollRepeater<T> {
+    dataStream: Observable<T[] | ReadonlyArray<T>>;
+    measureRangeSize(range: ListRange, orientation: 'horizontal' | 'vertical'): number;
+}
+
 export declare class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, OnDestroy {
     _contentWrapper: ElementRef<HTMLElement>;
     _totalContentHeight: string;
@@ -118,7 +123,7 @@ export declare class CdkVirtualScrollViewport extends CdkScrollable implements O
     scrolledIndexChange: Observable<number>;
     constructor(elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, ngZone: NgZone, _scrollStrategy: VirtualScrollStrategy, dir: Directionality, scrollDispatcher: ScrollDispatcher,
     viewportRuler?: ViewportRuler);
-    attach(forOf: CdkVirtualForOf<any>): void;
+    attach(forOf: CdkVirtualScrollRepeater<any>): void;
     checkViewportSize(): void;
     detach(): void;
     getDataLength(): number;

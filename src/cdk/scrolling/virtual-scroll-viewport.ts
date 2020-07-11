@@ -34,9 +34,9 @@ import {
 import {auditTime, startWith, takeUntil} from 'rxjs/operators';
 import {ScrollDispatcher} from './scroll-dispatcher';
 import {CdkScrollable, ExtendedScrollToOptions} from './scrollable';
-import {CdkVirtualForOf} from './virtual-for-of';
 import {VIRTUAL_SCROLL_STRATEGY, VirtualScrollStrategy} from './virtual-scroll-strategy';
 import {ViewportRuler} from './viewport-ruler';
+import {CdkVirtualScrollRepeater} from './virtual-scroll-repeater';
 
 /** Checks if the given ranges are equal. */
 function rangesEqual(r1: ListRange, r2: ListRange): boolean {
@@ -131,8 +131,8 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   /** The size of the viewport (in pixels). */
   private _viewportSize = 0;
 
-  /** the currently attached CdkVirtualForOf. */
-  private _forOf: CdkVirtualForOf<any> | null;
+  /** the currently attached CdkVirtualScrollRepeater. */
+  private _forOf: CdkVirtualScrollRepeater<any> | null;
 
   /** The last rendered content offset that was set. */
   private _renderedContentOffset = 0;
@@ -215,8 +215,8 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
     super.ngOnDestroy();
   }
 
-  /** Attaches a `CdkVirtualForOf` to this viewport. */
-  attach(forOf: CdkVirtualForOf<any>) {
+  /** Attaches a `CdkVirtualScrollRepeater` to this viewport. */
+  attach(forOf: CdkVirtualScrollRepeater<any>) {
     if (this._forOf) {
       throw Error('CdkVirtualScrollViewport is already attached.');
     }
