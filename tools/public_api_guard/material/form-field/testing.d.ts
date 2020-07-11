@@ -13,6 +13,8 @@ export declare class MatFormFieldHarness extends ComponentHarness {
     getHarnessLoaderForPrefix(): Promise<TestElement | null>;
     getHarnessLoaderForSuffix(): Promise<TestElement | null>;
     getLabel(): Promise<string | null>;
+    getPrefixText(): Promise<string>;
+    getSuffixText(): Promise<string>;
     getTextErrors(): Promise<string[]>;
     getTextHints(): Promise<string[]>;
     getThemeColor(): Promise<'primary' | 'accent' | 'warn'>;

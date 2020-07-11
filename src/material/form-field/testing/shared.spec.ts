@@ -188,20 +188,16 @@ export function runHarnessTests(
     expect(await formFields[1].getTextHints()).toEqual([]);
   });
 
-  it('should be able to get prefix container of form-field', async () => {
+  it('should be able to get the prefix text of a form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    const prefixContainers = await Promise.all(formFields.map(f => f.getHarnessLoaderForPrefix()));
-    expect(prefixContainers[0]).not.toBe(null);
-    expect(await prefixContainers[0]!.text()).toBe('prefix_textprefix_text_2');
-    expect(prefixContainers[1]).toBe(null);
+    const prefixTexts = await Promise.all(formFields.map(f => f.getPrefixText()));
+    expect(prefixTexts).toEqual(['prefix_textprefix_text_2', '', '', '', '']);
   });
 
-  it('should be able to get suffix container of form-field', async () => {
+  it('should be able to get the suffix text of a form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    const suffixContainer = await Promise.all(formFields.map(f => f.getHarnessLoaderForSuffix()));
-    expect(suffixContainer[0]).not.toBe(null);
-    expect(await suffixContainer[0]!.text()).toBe('suffix_text');
-    expect(suffixContainer[1]).toBe(null);
+    const suffixTexts = await Promise.all(formFields.map(f => f.getSuffixText()));
+    expect(suffixTexts).toEqual(['suffix_text', '', '', '', '']);
   });
 
   it('should be able to check if form field has been touched', async () => {
