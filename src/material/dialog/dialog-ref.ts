@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusOrigin} from '@angular/cdk/a11y';
 import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {GlobalPositionStrategy, OverlayRef} from '@angular/cdk/overlay';
 import {Observable, Subject} from 'rxjs';
@@ -92,14 +93,14 @@ export class MatDialogRef<T, R = any> {
       }))
       .subscribe(event => {
         event.preventDefault();
-        this.close();
+        _closeDialogVia(this, 'keyboard');
       });
 
     _overlayRef.backdropClick().subscribe(() => {
       if (this.disableClose) {
         this._containerInstance._recaptureFocus();
       } else {
-        this.close();
+        _closeDialogVia(this, 'mouse');
       }
     });
   }
@@ -234,4 +235,19 @@ export class MatDialogRef<T, R = any> {
   private _getPositionStrategy(): GlobalPositionStrategy {
     return this._overlayRef.getConfig().positionStrategy as GlobalPositionStrategy;
   }
+}
+
+/**
+ * Closes the dialog with the specified interaction type. This is currently not part of
+ * `MatDialogRef` as that would conflict with custom dialog ref mocks provided in tests.
+ * More details. See: https://github.com/angular/components/pull/9257#issuecomment-651342226.
+ */
+// TODO: TODO: Move this back into `MatDialogRef` when we provide an official mock dialog ref.
+export function _closeDialogVia<R>(ref: MatDialogRef<R>, interactionType: FocusOrigin, result?: R) {
+  // Some mock dialog ref instances in tests do not have the `_containerInstance` property.
+  // For those, we keep the behavior as is and do not deal with the interaction type.
+  if (ref._containerInstance !== undefined) {
+    ref._containerInstance._closeInteractionType = interactionType;
+  }
+  return ref.close(result);
 }

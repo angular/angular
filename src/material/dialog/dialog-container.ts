@@ -29,7 +29,7 @@ import {
   TemplatePortal,
   DomPortal
 } from '@angular/cdk/portal';
-import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
+import {FocusTrap, FocusMonitor, FocusOrigin, FocusTrapFactory} from '@angular/cdk/a11y';
 import {MatDialogConfig} from './dialog-config';
 
 
@@ -82,6 +82,13 @@ export class MatDialogContainer extends BasePortalOutlet {
   /** Element that was focused before the dialog was opened. Save this to restore upon close. */
   private _elementFocusedBeforeDialogWasOpened: HTMLElement | null = null;
 
+  /**
+   * Type of interaction that led to the dialog being closed. This is used to determine
+   * whether the focus style will be applied when returning focus to its original location
+   * after the dialog is closed.
+   */
+  _closeInteractionType: FocusOrigin|null = null;
+
   /** State of the dialog animation. */
   _state: 'void' | 'enter' | 'exit' = 'enter';
 
@@ -100,7 +107,8 @@ export class MatDialogContainer extends BasePortalOutlet {
     private _changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(DOCUMENT) _document: any,
     /** The dialog configuration. */
-    public _config: MatDialogConfig) {
+    public _config: MatDialogConfig,
+    private _focusMonitor?: FocusMonitor) {
 
     super();
     this._ariaLabelledBy = _config.ariaLabelledBy || null;
@@ -178,10 +186,11 @@ export class MatDialogContainer extends BasePortalOutlet {
 
   /** Restores focus to the element that was focused before the dialog opened. */
   private _restoreFocus() {
-    const toFocus = this._elementFocusedBeforeDialogWasOpened;
+    const previousElement = this._elementFocusedBeforeDialogWasOpened;
 
     // We need the extra check, because IE can set the `activeElement` to null in some cases.
-    if (this._config.restoreFocus && toFocus && typeof toFocus.focus === 'function') {
+    if (this._config.restoreFocus && previousElement &&
+        typeof previousElement.focus === 'function') {
       const activeElement = this._document.activeElement;
       const element = this._elementRef.nativeElement;
 
@@ -190,8 +199,13 @@ export class MatDialogContainer extends BasePortalOutlet {
       // the consumer moved it themselves before the animation was done, in which case we shouldn't
       // do anything.
       if (!activeElement || activeElement === this._document.body || activeElement === element ||
-        element.contains(activeElement)) {
-        toFocus.focus();
+          element.contains(activeElement)) {
+        if (this._focusMonitor) {
+          this._focusMonitor.focusVia(previousElement, this._closeInteractionType);
+          this._closeInteractionType = null;
+        } else {
+          previousElement.focus();
+        }
       }
     }
 

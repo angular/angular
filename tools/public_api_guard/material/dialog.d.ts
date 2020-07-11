@@ -1,3 +1,5 @@
+export declare function _closeDialogVia<R>(ref: MatDialogRef<R>, interactionType: FocusOrigin, result?: R): void;
+
 export interface DialogPosition {
     bottom?: string;
     left?: string;
@@ -54,6 +56,7 @@ export declare class MatDialogClose implements OnInit, OnChanges {
     dialogResult: any;
     type: 'submit' | 'button' | 'reset';
     constructor(dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
+    _onButtonClick(event: MouseEvent): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDialogClose, "[mat-dialog-close], [matDialogClose]", ["matDialogClose"], { "ariaLabel": "aria-label"; "type": "type"; "dialogResult": "mat-dialog-close"; "_matDialogClose": "matDialogClose"; }, {}, never>;
@@ -90,13 +93,14 @@ export declare class MatDialogConfig<D = any> {
 export declare class MatDialogContainer extends BasePortalOutlet {
     _animationStateChanged: EventEmitter<AnimationEvent>;
     _ariaLabelledBy: string | null;
+    _closeInteractionType: FocusOrigin | null;
     _config: MatDialogConfig;
     _id: string;
     _portalOutlet: CdkPortalOutlet;
     _state: 'void' | 'enter' | 'exit';
     attachDomPortal: (portal: DomPortal) => void;
     constructor(_elementRef: ElementRef, _focusTrapFactory: FocusTrapFactory, _changeDetectorRef: ChangeDetectorRef, _document: any,
-    _config: MatDialogConfig);
+    _config: MatDialogConfig, _focusMonitor?: FocusMonitor | undefined);
     _onAnimationDone(event: AnimationEvent): void;
     _onAnimationStart(event: AnimationEvent): void;
     _recaptureFocus(): void;
@@ -104,7 +108,7 @@ export declare class MatDialogContainer extends BasePortalOutlet {
     attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
     attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDialogContainer, "mat-dialog-container", never, {}, {}, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDialogContainer, [null, null, null, { optional: true; }, null]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDialogContainer, [null, null, null, { optional: true; }, null, null]>;
 }
 
 export declare class MatDialogContent {

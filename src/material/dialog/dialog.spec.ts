@@ -1,3 +1,4 @@
+import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {
   ComponentFixture,
   fakeAsync,
@@ -31,7 +32,9 @@ import {A, ESCAPE} from '@angular/cdk/keycodes';
 import {
   dispatchKeyboardEvent,
   createKeyboardEvent,
-  dispatchEvent
+  dispatchEvent,
+  patchElementFocus,
+  dispatchMouseEvent
 } from '@angular/cdk/testing/private';
 import {
   MAT_DIALOG_DATA,
@@ -43,12 +46,12 @@ import {
 } from './index';
 import {Subject} from 'rxjs';
 
-
 describe('MatDialog', () => {
   let dialog: MatDialog;
   let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let scrolledSubject = new Subject();
+  let focusMonitor: FocusMonitor;
 
   let testViewContainerRef: ViewContainerRef;
   let viewContainerFixture: ComponentFixture<ComponentWithChildViewContainer>;
@@ -68,13 +71,14 @@ describe('MatDialog', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([MatDialog, Location, OverlayContainer],
-    (d: MatDialog, l: Location, oc: OverlayContainer) => {
+  beforeEach(inject([MatDialog, Location, OverlayContainer, FocusMonitor],
+    (d: MatDialog, l: Location, oc: OverlayContainer, fm: FocusMonitor) => {
       dialog = d;
       mockLocation = l as SpyLocation;
       overlayContainer = oc;
       overlayContainerElement = oc.getContainerElement();
-    }));
+      focusMonitor = fm;
+  }));
 
   afterEach(() => {
     overlayContainer.ngOnDestroy();
@@ -1145,6 +1149,148 @@ describe('MatDialog', () => {
       document.body.removeChild(button);
     }));
 
+    it('should re-focus the trigger via keyboard when closed via escape key', fakeAsync(() => {
+      const button = document.createElement('button');
+      let lastFocusOrigin: FocusOrigin = null;
+
+      focusMonitor.monitor(button, false)
+        .subscribe(focusOrigin => lastFocusOrigin = focusOrigin);
+
+      document.body.appendChild(button);
+      button.focus();
+
+      // Patch the element focus after the initial and real focus, because otherwise the
+      // `activeElement` won't be set, and the dialog won't be able to restore focus to an element.
+      patchElementFocus(button);
+
+      dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+
+      tick(500);
+      viewContainerFixture.detectChanges();
+
+      expect(lastFocusOrigin!).toBeNull('Expected the trigger button to be blurred');
+
+      dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
+
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      tick(500);
+
+      expect(lastFocusOrigin!)
+        .toBe('keyboard', 'Expected the trigger button to be focused via keyboard');
+
+      focusMonitor.stopMonitoring(button);
+      document.body.removeChild(button);
+    }));
+
+    it('should re-focus the trigger via mouse when backdrop has been clicked', fakeAsync(() => {
+      const button = document.createElement('button');
+      let lastFocusOrigin: FocusOrigin = null;
+
+      focusMonitor.monitor(button, false)
+        .subscribe(focusOrigin => lastFocusOrigin = focusOrigin);
+
+      document.body.appendChild(button);
+      button.focus();
+
+      // Patch the element focus after the initial and real focus, because otherwise the
+      // `activeElement` won't be set, and the dialog won't be able to restore focus to an element.
+      patchElementFocus(button);
+
+      dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+
+      tick(500);
+      viewContainerFixture.detectChanges();
+
+      const backdrop = overlayContainerElement
+          .querySelector('.cdk-overlay-backdrop') as HTMLElement;
+
+      backdrop.click();
+      viewContainerFixture.detectChanges();
+      tick(500);
+
+      expect(lastFocusOrigin!)
+        .toBe('mouse', 'Expected the trigger button to be focused via mouse');
+
+      focusMonitor.stopMonitoring(button);
+      document.body.removeChild(button);
+    }));
+
+    it('should re-focus via keyboard if the close button has been triggered through keyboard',
+        fakeAsync(() => {
+
+      const button = document.createElement('button');
+      let lastFocusOrigin: FocusOrigin = null;
+
+      focusMonitor.monitor(button, false)
+        .subscribe(focusOrigin => lastFocusOrigin = focusOrigin);
+
+      document.body.appendChild(button);
+      button.focus();
+
+      // Patch the element focus after the initial and real focus, because otherwise the
+      // `activeElement` won't be set, and the dialog won't be able to restore focus to an element.
+      patchElementFocus(button);
+
+      dialog.open(ContentElementDialog, {viewContainerRef: testViewContainerRef});
+
+      tick(500);
+      viewContainerFixture.detectChanges();
+
+      const closeButton = overlayContainerElement
+        .querySelector('button[mat-dialog-close]') as HTMLElement;
+
+      // Fake the behavior of pressing the SPACE key on a button element. Browsers fire a `click`
+      // event with a MouseEvent, which has coordinates that are out of the element boundaries.
+      dispatchMouseEvent(closeButton, 'click', 0, 0);
+
+      viewContainerFixture.detectChanges();
+      tick(500);
+
+      expect(lastFocusOrigin!)
+        .toBe('keyboard', 'Expected the trigger button to be focused via keyboard');
+
+      focusMonitor.stopMonitoring(button);
+      document.body.removeChild(button);
+    }));
+
+    it('should re-focus via mouse if the close button has been clicked', fakeAsync(() => {
+      const button = document.createElement('button');
+      let lastFocusOrigin: FocusOrigin = null;
+
+      focusMonitor.monitor(button, false)
+        .subscribe(focusOrigin => lastFocusOrigin = focusOrigin);
+
+      document.body.appendChild(button);
+      button.focus();
+
+      // Patch the element focus after the initial and real focus, because otherwise the
+      // `activeElement` won't be set, and the dialog won't be able to restore focus to an element.
+      patchElementFocus(button);
+
+      dialog.open(ContentElementDialog, {viewContainerRef: testViewContainerRef});
+
+      tick(500);
+      viewContainerFixture.detectChanges();
+
+      const closeButton = overlayContainerElement
+        .querySelector('button[mat-dialog-close]') as HTMLElement;
+
+      // The dialog close button detects the focus origin by inspecting the click event. If
+      // coordinates of the click are not present, it assumes that the click has been triggered
+      // by keyboard.
+      dispatchMouseEvent(closeButton, 'click', 10, 10);
+
+      viewContainerFixture.detectChanges();
+      tick(500);
+
+      expect(lastFocusOrigin!)
+        .toBe('mouse', 'Expected the trigger button to be focused via mouse');
+
+      focusMonitor.stopMonitoring(button);
+      document.body.removeChild(button);
+    }));
+
     it('should allow the consumer to shift focus in afterClosed', fakeAsync(() => {
       // Create a element that has focus before the dialog is opened.
       let button = document.createElement('button');
@@ -1167,7 +1313,7 @@ describe('MatDialog', () => {
 
       tick(500);
       viewContainerFixture.detectChanges();
-      flushMicrotasks();
+      flush();
 
       expect(document.activeElement!.id).toBe('input-to-be-focused',
           'Expected that the trigger was refocused after the dialog is closed.');
