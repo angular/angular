@@ -169,6 +169,18 @@ describe('GoogleMap', () => {
     expect(mapSpy.setOptions).toHaveBeenCalledWith({...options, heading: 170});
   });
 
+  it('should set a default center if the custom options do not provide one', () => {
+    const options = {zoom: 7};
+    mapSpy = createMapSpy(options);
+    mapConstructorSpy = createMapConstructorSpy(mapSpy).and.callThrough();
+
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.componentInstance.options = options;
+    fixture.detectChanges();
+
+    expect(mapConstructorSpy.calls.mostRecent()?.args[1].center).toBeTruthy();
+  });
+
   it('gives precedence to center and zoom over options', () => {
     const inputOptions = {center: {lat: 3, lng: 5}, zoom: 7, heading: 170};
     const correctedOptions = {

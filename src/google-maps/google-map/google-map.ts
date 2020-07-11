@@ -455,7 +455,9 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
         .pipe(map(([options, center, zoom]) => {
           const combinedOptions: google.maps.MapOptions = {
             ...options,
-            center: center || options.center,
+            // It's important that we set **some** kind of `center`, otherwise
+            // Google Maps will render a blank rectangle which looks broken.
+            center: center || options.center || DEFAULT_OPTIONS.center,
             zoom: zoom !== undefined ? zoom : options.zoom,
             mapTypeId: this.mapTypeId
           };
