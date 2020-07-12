@@ -6,78 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 
+import {asyncValidator, asyncValidatorReturningObservable, currentStateOf, simpleAsyncValidator} from './util';
+
 
 (function() {
 function simpleValidator(c: AbstractControl): ValidationErrors|null {
   return c.get('one')!.value === 'correct' ? null : {'broken': true};
-}
-
-function asyncValidator(expected: string, timeouts = {}) {
-  return (c: AbstractControl) => {
-    let resolve: (result: any) => void = undefined!;
-    const promise = new Promise<ValidationErrors|null>(res => {
-      resolve = res;
-    });
-    const t = (timeouts as any)[c.value] != null ? (timeouts as any)[c.value] : 0;
-    const res = c.value != expected ? {'async': true} : null;
-
-    if (t == 0) {
-      resolve(res);
-    } else {
-      setTimeout(() => {
-        resolve(res);
-      }, t);
-    }
-
-    return promise;
-  };
-}
-
-function simpleAsyncValidator({
-  timeout = 0,
-  shouldFail,
-  customError =
-  {
-    async: true
-  }
-}: {timeout?: number, shouldFail: boolean, customError?: any}) {
-  return (c: AbstractControl) => {
-    const res = shouldFail ? customError : null;
-
-    if (timeout === 0) {
-      return of(res);
-    }
-
-    let resolve: (result: any) => void = undefined!;
-    const promise = new Promise<ValidationErrors|null>(res => {
-      resolve = res;
-    });
-
-    setTimeout(() => {
-      resolve(res);
-    }, timeout);
-
-    return promise;
-  };
-}
-
-function currentStateOf(controls: AbstractControl[]):
-    {errors: any; pending: boolean; status: string;}[] {
-  return controls.map(c => ({errors: c.errors, pending: c.pending, status: c.status}));
-}
-
-function asyncValidatorReturningObservable(c: AbstractControl) {
-  const e = new EventEmitter();
-  Promise.resolve(null).then(() => {
-    e.emit({'async': true});
-  });
-  return e;
 }
 
 function otherObservableValidator() {
