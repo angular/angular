@@ -6,43 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {FormArray} from '@angular/forms/src/model';
+import {asyncValidator, asyncValidatorReturningObservable} from './util';
 
 (function() {
-function asyncValidator(expected: string, timeouts = {}): AsyncValidatorFn {
-  return (c: AbstractControl) => {
-    let resolve: (result: any) => void = undefined!;
-    const promise = new Promise<ValidationErrors|null>(res => {
-      resolve = res;
-    });
-    const t = (timeouts as any)[c.value] != null ? (timeouts as any)[c.value] : 0;
-    const res = c.value != expected ? {'async': true} : null;
-
-    if (t == 0) {
-      resolve(res);
-    } else {
-      setTimeout(() => {
-        resolve(res);
-      }, t);
-    }
-
-    return promise;
-  };
-}
-
-function asyncValidatorReturningObservable(c: AbstractControl) {
-  const e = new EventEmitter<Record<string, boolean>>();
-  Promise.resolve(null).then(() => {
-    e.emit({'async': true});
-  });
-  return e;
-}
-
 function otherAsyncValidator() {
   return Promise.resolve({'other': true});
 }

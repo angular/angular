@@ -11,29 +11,9 @@ import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/cor
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {Validators} from '@angular/forms/src/validators';
 import {of} from 'rxjs';
+import {asyncValidator} from './util';
 
 (function() {
-function asyncValidator(expected: string, timeouts = {}) {
-  return (c: AbstractControl) => {
-    let resolve: (result: any) => void = undefined!;
-    const promise = new Promise<ValidationErrors|null>(res => {
-      resolve = res;
-    });
-    const t = (timeouts as any)[c.value] != null ? (timeouts as any)[c.value] : 0;
-    const res = c.value != expected ? {'async': true} : null;
-
-    if (t == 0) {
-      resolve(res);
-    } else {
-      setTimeout(() => {
-        resolve(res);
-      }, t);
-    }
-
-    return promise;
-  };
-}
-
 describe('FormArray', () => {
   describe('adding/removing', () => {
     let a: FormArray;
