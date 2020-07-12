@@ -12,6 +12,7 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
 import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, ValidationErrors, Validator, Validators} from '@angular/forms';
 import {composeValidators, selectValueAccessor} from '@angular/forms/src/directives/shared';
 import {SpyNgControl, SpyValueAccessor} from './spies';
+import {asyncValidator} from './util';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue: any;
@@ -28,24 +29,6 @@ class CustomValidatorDirective implements Validator {
   validate(c: FormControl): ValidationErrors {
     return {'custom': true};
   }
-}
-
-function asyncValidator(expected: any, timeout = 0) {
-  return (c: AbstractControl): any => {
-    let resolve: (result: any) => void = undefined!;
-    const promise = new Promise(res => {
-      resolve = res;
-    });
-    const res = c.value != expected ? {'async': true} : null;
-    if (timeout == 0) {
-      resolve(res);
-    } else {
-      setTimeout(() => {
-        resolve(res);
-      }, timeout);
-    }
-    return promise;
-  };
 }
 
 {
