@@ -61,13 +61,13 @@ export declare function getLocaleDateFormat(locale: string, width: FormatWidth):
 
 export declare function getLocaleDateTimeFormat(locale: string, width: FormatWidth): string;
 
-export declare function getLocaleDayNames(locale: string, formStyle: FormStyle, width: TranslationWidth): string[];
+export declare function getLocaleDayNames(locale: string, formStyle: FormStyle, width: TranslationWidth): ReadonlyArray<string>;
 
-export declare function getLocaleDayPeriods(locale: string, formStyle: FormStyle, width: TranslationWidth): [string, string];
+export declare function getLocaleDayPeriods(locale: string, formStyle: FormStyle, width: TranslationWidth): Readonly<[string, string]>;
 
 export declare function getLocaleDirection(locale: string): 'ltr' | 'rtl';
 
-export declare function getLocaleEraNames(locale: string, width: TranslationWidth): [string, string];
+export declare function getLocaleEraNames(locale: string, width: TranslationWidth): Readonly<[string, string]>;
 
 export declare function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Time])[];
 
@@ -77,7 +77,7 @@ export declare function getLocaleFirstDayOfWeek(locale: string): WeekDay;
 
 export declare function getLocaleId(locale: string): string;
 
-export declare function getLocaleMonthNames(locale: string, formStyle: FormStyle, width: TranslationWidth): string[];
+export declare function getLocaleMonthNames(locale: string, formStyle: FormStyle, width: TranslationWidth): ReadonlyArray<string>;
 
 export declare function getLocaleNumberFormat(locale: string, type: NumberFormatStyle): string;
 
