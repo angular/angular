@@ -60,31 +60,7 @@ RxJS provides many operators, but only a handful are used frequently. For a list
 | Utility | `tap` |
 | Multicasting | `share` |
 
-## Error handling
 
-In addition to the `error()` handler that you provide on subscription, RxJS provides the `catchError` operator that lets you handle known errors in the observable recipe.
-
-For instance, suppose you have an observable that makes an API request and maps to the response from the server. If the server returns an error or the value doesn’t exist, an error is produced. If you catch this error and supply a default value, your stream continues to process values rather than erroring out.
-
-Here's an example of using the `catchError` operator to do this:
-
-<code-example path="rx-library/src/error-handling.ts" header="catchError operator"></code-example>
-
-### Retry failed observable
-
-Where the `catchError` operator provides a simple path of recovery, the `retry` operator lets you retry a failed request.
-
-Use the `retry` operator before the `catchError` operator. It resubscribes to the original source observable, which can then re-run the full sequence of actions that resulted in the error. If this includes an HTTP request, it will retry that HTTP request.
-
-The following converts the previous example to retry the request before catching the error:
-
-<code-example path="rx-library/src/retry-on-error.ts" header="retry operator"></code-example>
-
-<div class="alert is-helpful">
-
-   Do not retry **authentication** requests, since these should only be initiated by user action. We don't want to lock out user accounts with repeated login requests that the user has not initiated.
-
-</div>
 
 ## Naming conventions for observables
 
