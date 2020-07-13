@@ -12,8 +12,8 @@ import * as ts from 'typescript';
 import {ImportFlags, NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateType} from '../../translator';
+import {TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from '../api';
 
-import {TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from './api';
 import {tsDeclareVariable} from './ts_util';
 import {generateTypeCtorDeclarationFn, requiresInlineTypeCtor} from './type_constructor';
 import {TypeParameterEmitter} from './type_parameter_emitter';

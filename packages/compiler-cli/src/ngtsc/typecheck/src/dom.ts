@@ -10,8 +10,8 @@ import {DomElementSchemaRegistry, ParseSourceSpan, SchemaMetadata, TmplAstElemen
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
+import {TemplateId} from '../api';
 
-import {TemplateId} from './api';
 import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
 
 const REGISTRY = new DomElementSchemaRegistry();
