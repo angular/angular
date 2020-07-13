@@ -19,37 +19,10 @@ $dark-primary: mat-palette($mat-pink, 700, 500, 900);
 $dark-accent: mat-palette($mat-blue-grey, A200, A100, A400);
 $dark-theme: mat-dark-theme($dark-primary, $dark-accent);
 
-.dark {
-  @include angular-material-theme($dark-theme);
-  .webtreemap-node {
-    background: #424242;
-  }
-  .webtreemap-node:hover {
-    background: #303030;
-  }
-  .webtreemap-caption {
-    color: #ffffff;
-  }
-  .filter-input {
-    background-color: #424242;
-    color: #ffffff;
-  }
-  .bar {
-    color: #424242 !important;
-  }
-  .label {
-    color: #424242 !important;
-  }
-  .property-list {
-    .name {
-      color: #ffffff !important;
-    }
-    .value {
-      color: #ffffff40 !important;
-    }
-  }
+.light-theme {
+  @include angular-material-theme($light-theme);
 }
 
-.light {
-  @include angular-material-theme($light-theme);
+.dark-theme {
+  @include angular-material-theme($dark-theme);
 }

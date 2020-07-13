@@ -9,6 +9,7 @@
     display: flex;
     align-items: center;
     padding-right: 5px;
+    margin-left: 5px;
 
     .icon {
       width: 16px;
@@ -26,7 +27,6 @@
     font-size: 12px;
     font-family: inherit;
     font-weight: inherit;
-    color: inherit;
     height: 30px;
     outline: none;
     color: rgba(0, 0, 0, 0.87);
@@ -55,5 +55,12 @@
         }
       }
     }
+  }
+}
+
+:host-context(.dark-theme) {
+  .filter-input {
+    background-color: #424242;
+    color: #ffffff;
   }
 }
