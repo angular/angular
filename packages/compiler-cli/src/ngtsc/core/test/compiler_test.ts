@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {absoluteFrom as _, FileSystem, getFileSystem, getSourceFileOrError, NgtscCompilerHost, setFileSystem} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {NoopIncrementalBuildStrategy} from '../../incremental';
-import {ReusedProgramStrategy} from '../../typecheck/src/augmented_program';
+import {ReusedProgramStrategy} from '../../typecheck';
 import {NgCompilerOptions} from '../api';
 import {NgCompiler} from '../src/compiler';
 import {NgCompilerHost} from '../src/host';

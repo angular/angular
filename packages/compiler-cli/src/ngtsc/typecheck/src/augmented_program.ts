@@ -10,8 +10,8 @@ import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {retagAllTsFiles, untagAllTsFiles} from '../../shims';
+import {TypeCheckingProgramStrategy, UpdateMode} from '../api';
 
-import {TypeCheckingProgramStrategy, UpdateMode} from './api';
 import {TypeCheckProgramHost} from './host';
 import {TypeCheckShimGenerator} from './shim';
 

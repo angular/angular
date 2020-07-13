@@ -9,8 +9,8 @@
 import * as ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {TypeCtorMetadata} from '../api';
 
-import {TypeCtorMetadata} from './api';
 import {TypeParameterEmitter} from './type_parameter_emitter';
 
 export function generateTypeCtorDeclarationFn(

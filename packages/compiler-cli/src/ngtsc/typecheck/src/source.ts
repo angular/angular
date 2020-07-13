@@ -8,8 +8,8 @@
 
 import {AbsoluteSourceSpan, ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
+import {TemplateId, TemplateSourceMapping} from '../api';
 
-import {TemplateId, TemplateSourceMapping} from './api';
 import {TemplateSourceResolver} from './diagnostics';
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
 
@@ -54,6 +54,10 @@ export class TemplateSourceManager implements TemplateSourceResolver {
    * diagnostics produced for TCB code to their source location in the template.
    */
   private templateSources = new Map<TemplateId, TemplateSource>();
+
+  getTemplateId(node: ts.ClassDeclaration): TemplateId {
+    return getTemplateId(node);
+  }
 
   captureSource(node: ts.ClassDeclaration, mapping: TemplateSourceMapping, file: ParseSourceFile):
       TemplateId {
