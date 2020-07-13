@@ -11,7 +11,8 @@ import {CompilerOptions} from '@angular/compiler-cli';
 import {NgCompiler, NgCompilerHost} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {PatchedProgramIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
-import {TypeCheckingProgramStrategy, TypeCheckShimGenerator, UpdateMode} from '@angular/compiler-cli/src/ngtsc/typecheck';
+import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
+import {TypeCheckingProgramStrategy, UpdateMode} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {makeCompilerHostFromProject} from './compiler_host';

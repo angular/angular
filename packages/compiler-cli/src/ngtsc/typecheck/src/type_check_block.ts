@@ -11,8 +11,8 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
+import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
-import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from './api';
 import {addParseSpanInfo, addTemplateId, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';

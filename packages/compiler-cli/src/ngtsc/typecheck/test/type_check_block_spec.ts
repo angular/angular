@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TypeCheckingConfig} from '../src/api';
+import {TypeCheckingConfig} from '../api';
 
 import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from './test_utils';
 

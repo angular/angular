@@ -21,7 +21,7 @@ import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
-import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck';
+import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck/api';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
@@ -426,10 +426,10 @@ export class ComponentDecoratorHandler implements
       schemas = scope.schemas;
     }
 
-    const bound = new R3TargetBinder(matcher).bind({template: meta.template.diagNodes});
+    const binder = new R3TargetBinder(matcher);
     ctx.addTemplate(
-        new Reference(node), bound, pipes, schemas, meta.template.sourceMapping,
-        meta.template.file);
+        new Reference(node), binder, meta.template.diagNodes, pipes, schemas,
+        meta.template.sourceMapping, meta.template.file);
   }
 
   resolve(node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>):

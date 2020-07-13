@@ -90,4 +90,6 @@ class NoIncrementalBuild implements IncrementalBuild<any, any> {
   priorTypeCheckingResultsFor(): null {
     return null;
   }
+
+  recordSuccessfulTypeCheck(): void {}
 }

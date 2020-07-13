@@ -13,7 +13,6 @@ import {AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
 import {TemplateGuardMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
-import {ComponentToShimMappingStrategy} from './context';
 
 
 /**
@@ -276,6 +275,25 @@ export interface ExternalTemplateSourceMapping {
   node: ts.Expression;
   template: string;
   templateUrl: string;
+}
+
+/**
+ * Abstracts the operation of determining which shim file will host a particular component's
+ * template type-checking code.
+ *
+ * Different consumers of the type checking infrastructure may choose different approaches to
+ * optimize for their specific use case (for example, the command-line compiler optimizes for
+ * efficient `ts.Program` reuse in watch mode).
+ */
+export interface ComponentToShimMappingStrategy {
+  /**
+   * Given a component, determine a path to the shim file into which that component's type checking
+   * code will be generated.
+   *
+   * A major constraint is that components in different input files must not share the same shim
+   * file. The behavior of the template type-checking system is undefined if this is violated.
+   */
+  shimPathForComponent(node: ts.ClassDeclaration): AbsoluteFsPath;
 }
 
 /**
