@@ -10,8 +10,8 @@ import {BindingPipe, PropertyWrite, TmplAstReference, TmplAstVariable} from '@an
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
+import {TemplateId} from '../api';
 
-import {TemplateId} from './api';
 import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
 
 

@@ -27,6 +27,12 @@ export interface IncrementalBuild<AnalysisT, FileTypeCheckDataT> {
    * Retrieve the prior type-checking work, if any, that's been done for the given source file.
    */
   priorTypeCheckingResultsFor(fileSf: ts.SourceFile): FileTypeCheckDataT|null;
+
+  /**
+   * Reports that template type-checking has completed successfully, with a map of type-checking
+   * data for each user file which can be reused in a future incremental iteration.
+   */
+  recordSuccessfulTypeCheck(results: Map<AbsoluteFsPath, FileTypeCheckDataT>): void;
 }
 
 /**
