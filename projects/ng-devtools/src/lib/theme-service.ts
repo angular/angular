@@ -12,7 +12,8 @@ export class ThemeService {
 
   constructor(private _rendererFactory: RendererFactory2) {
     this.renderer = this._rendererFactory.createRenderer(null, null);
-    this.toggleDarkMode(false);
+    this.toggleDarkMode(this._prefersDarkMode);
+    this._initializeThemeWatcher();
   }
 
   toggleDarkMode(isDark: boolean): void {
@@ -21,5 +22,15 @@ export class ThemeService {
     this.renderer.removeClass(document.body, removeClass);
     this.renderer.addClass(document.body, addClass);
     this.currentTheme.next(addClass);
+  }
+
+  private _initializeThemeWatcher(): void {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      this.toggleDarkMode(this._prefersDarkMode);
+    });
+  }
+
+  private get _prefersDarkMode(): boolean {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   }
 }
