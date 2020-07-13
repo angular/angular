@@ -13,7 +13,7 @@ import {Reexport} from '../../imports';
 import {IndexingContext} from '../../indexer';
 import {ClassDeclaration, Decorator} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {TypeCheckContext} from '../../typecheck';
+import {TypeCheckContext} from '../../typecheck/api';
 
 export enum HandlerPrecedence {
   /**

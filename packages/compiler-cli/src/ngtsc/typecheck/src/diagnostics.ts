@@ -9,8 +9,8 @@ import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {getTokenAtPosition} from '../../util/src/typescript';
+import {ExternalTemplateSourceMapping, TemplateId, TemplateSourceMapping} from '../api';
 
-import {ExternalTemplateSourceMapping, TemplateId, TemplateSourceMapping} from './api';
 
 /**
  * A `ts.Diagnostic` with additional information about the diagnostic related to template
@@ -28,6 +28,8 @@ export interface TemplateDiagnostic extends ts.Diagnostic {
  * in a TCB and map them back to original locations in the template.
  */
 export interface TemplateSourceResolver {
+  getTemplateId(node: ts.ClassDeclaration): TemplateId;
+
   /**
    * For the given template id, retrieve the original source mapping which describes how the offsets
    * in the template should be interpreted.
@@ -138,6 +140,15 @@ export function translateDiagnostic(
   const mapping = resolver.getSourceMapping(sourceLocation.id);
   return makeTemplateDiagnostic(
       mapping, span, diagnostic.category, diagnostic.code, diagnostic.messageText);
+}
+
+export function findTypeCheckBlock(file: ts.SourceFile, id: TemplateId): ts.Node|null {
+  for (const stmt of file.statements) {
+    if (ts.isFunctionDeclaration(stmt) && getTemplateId(stmt, file) === id) {
+      return stmt;
+    }
+  }
+  return null;
 }
 
 /**
