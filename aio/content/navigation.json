@@ -369,8 +369,8 @@
           "children": [
             {
               "url": "guide/ngmodules",
-              "title": "NgModules Introduction",
-              "tooltip": "Use NgModules to make your apps efficient."
+              "title": "Organize your app with NgModules",
+              "tooltip": "Use NgModules to keep the related code separate from other code."
             },
             {
               "url": "guide/ngmodule-vs-jsmodule",
