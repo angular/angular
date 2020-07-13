@@ -429,6 +429,12 @@
             "desc": "Jigsaw provides a set of web components based on Angular. It is supporting the development of all applications of Big Data Product of ZTE (https://www.zte.com.cn).",
             "title": "Awade Jigsaw (Chinese)",
             "url": "https://jigsaw-zte.gitee.io"
+          },
+          "material-dayjs-adapter": {
+            "desc": "A DayJS implementation of @angular/material's DateAdapter that results in smaller bundle sizes than its MomentJS counterpart.",
+            "rev": true,
+            "title": "material-dayjs-adapter",
+            "url": "https://www.npmjs.com/package/@tabuckner/material-dayjs-adapter"
           }
         }
       }
