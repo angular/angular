@@ -85,6 +85,13 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
            expect(pipe.transform('2012-12-30T00:00:00', 'w')).toEqual('1');
            expect(pipe.transform('2012-12-31T00:00:00', 'w')).toEqual('1');
          });
+
+
+      it('should round milliseconds down to the nearest millisecond', () => {
+        expect(pipe.transform('2020-08-01T23:59:59.999', 'yyyy-MM-dd')).toEqual('2020-08-01');
+        expect(pipe.transform('2020-08-01T23:59:59.9999', 'yyyy-MM-dd, h:mm:ss SSS'))
+            .toEqual('2020-08-01, 11:59:59 999');
+      });
     });
   });
 }

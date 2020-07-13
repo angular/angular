@@ -734,7 +734,10 @@ export function isoStringToDate(match: RegExpMatchArray): Date {
   const h = Number(match[4] || 0) - tzHour;
   const m = Number(match[5] || 0) - tzMin;
   const s = Number(match[6] || 0);
-  const ms = Math.round(parseFloat('0.' + (match[7] || 0)) * 1000);
+  // The ECMAScript specification (https://www.ecma-international.org/ecma-262/5.1/#sec-15.9.1.11)
+  // defines that `DateTime` milliseconds should always be rounded down, so that `999.9ms`
+  // becomes `999ms`.
+  const ms = Math.floor(parseFloat('0.' + (match[7] || 0)) * 1000);
   timeSetter.call(date, h, m, s, ms);
   return date;
 }
