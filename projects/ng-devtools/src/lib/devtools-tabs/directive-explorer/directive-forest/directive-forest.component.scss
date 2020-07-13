@@ -108,7 +108,6 @@
     font-size: 20px;
     font-family: inherit;
     font-weight: inherit;
-    color: inherit;
     line-height: 1.4em;
     padding: 12px 6px;
   }
@@ -140,4 +139,23 @@
   padding-left: 8px;
   opacity: 0.4;
   font-style: italic;
+}
+
+:host-context(.dark-theme) {
+  .tree-node .mat-icon {
+    color: #ccc;
+  }
+
+  .tree-node .angular-element {
+    color: #7e7eff;
+  }
+
+  .tree-node.selected .angular-element {
+    color: blue;
+  }
+
+  .tree-node:hover .mat-icon,
+  .tree-node.selected .mat-icon {
+    color: #000;
+  }
 }

@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs';
 import { Injectable, RendererFactory2, Renderer2 } from '@angular/core';
 
-export type Themes = 'dark' | 'light';
+export type Themes = 'dark-theme' | 'light-theme';
 
 @Injectable({
   providedIn: 'root',
@@ -17,8 +17,8 @@ export class ThemeService {
   }
 
   toggleDarkMode(isDark: boolean): void {
-    const removeClass = isDark ? 'light' : 'dark';
-    const addClass = !isDark ? 'light' : 'dark';
+    const removeClass = isDark ? 'light-theme' : 'dark-theme';
+    const addClass = !isDark ? 'light-theme' : 'dark-theme';
     this.renderer.removeClass(document.body, removeClass);
     this.renderer.addClass(document.body, addClass);
     this.currentTheme.next(addClass);

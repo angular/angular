@@ -29,3 +29,9 @@
   height: 100%;
   display: block;
 }
+
+:host-context(.dark-theme) {
+  .bar {
+    color: #424242 !important;
+  }
+}

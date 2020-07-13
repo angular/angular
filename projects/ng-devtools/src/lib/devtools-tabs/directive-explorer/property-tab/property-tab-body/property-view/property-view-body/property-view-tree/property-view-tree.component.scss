@@ -41,6 +41,17 @@
   }
 }
 
+:host-context(.dark-theme) {
+  .property-list {
+    .name {
+      color: #ffffff !important;
+    }
+    .value {
+      color: #ffffff40 !important;
+    }
+  }
+}
+
 .property-list mat-tree-node.disabled .name,
 .disabled {
   color: #333;
