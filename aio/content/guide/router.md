@@ -133,7 +133,7 @@ The order of routes is important because the `Router` uses a first-match wins st
 List routes with a static path first, followed by an empty path route, which matches the default route.
 The [wildcard route](guide/router#setting-up-wildcard-routes) comes last because it matches every URL and the `Router`  selects it only if no other routes match first.
 
-{@a activated-route}
+{@a getting-route-information}
 
 ## Getting route information
 
