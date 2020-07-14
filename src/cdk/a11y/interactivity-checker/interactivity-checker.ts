@@ -72,23 +72,15 @@ export class InteractivityChecker {
     const frameElement = getFrameElement(getWindow(element));
 
     if (frameElement) {
-      const frameType = frameElement && frameElement.nodeName.toLowerCase();
-
       // Frame elements inherit their tabindex onto all child elements.
       if (getTabIndexValue(frameElement) === -1) {
         return false;
       }
 
-      // Webkit and Blink consider anything inside of an <object> element as non-tabbable.
-      if ((this._platform.BLINK || this._platform.WEBKIT) && frameType === 'object') {
+      // Browsers disable tabbing to an element inside of an invisible frame.
+      if (!this.isVisible(frameElement)) {
         return false;
       }
-
-      // Webkit and Blink disable tabbing to an element inside of an invisible frame.
-      if ((this._platform.BLINK || this._platform.WEBKIT) && !this.isVisible(frameElement)) {
-        return false;
-      }
-
     }
 
     let nodeName = element.nodeName.toLowerCase();
@@ -98,40 +90,46 @@ export class InteractivityChecker {
       return tabIndexValue !== -1;
     }
 
-    if (nodeName === 'iframe') {
-      // The frames may be tabbable depending on content, but it's not possibly to reliably
-      // investigate the content of the frames.
+    if (nodeName === 'iframe' || nodeName === 'object') {
+      // The frame or object's content may be tabbable depending on the content, but it's
+      // not possibly to reliably detect the content of the frames. We always consider such
+      // elements as non-tabbable.
+      return false;
+    }
+
+    // In iOS, the browser only considers some specific elements as tabbable.
+    if (this._platform.WEBKIT && this._platform.IOS && !isPotentiallyTabbableIOS(element)) {
       return false;
     }
 
     if (nodeName === 'audio') {
+      // Audio elements without controls enabled are never tabbable, regardless
+      // of the tabindex attribute explicitly being set.
       if (!element.hasAttribute('controls')) {
-        // By default an <audio> element without the controls enabled is not tabbable.
         return false;
-      } else if (this._platform.BLINK) {
-        // In Blink <audio controls> elements are always tabbable.
-        return true;
       }
+      // Audio elements with controls are by default tabbable unless the
+      // tabindex attribute is set to `-1` explicitly.
+      return tabIndexValue !== -1;
     }
 
     if (nodeName === 'video') {
-      if (!element.hasAttribute('controls') && this._platform.TRIDENT) {
-        // In Trident a <video> element without the controls enabled is not tabbable.
+      // For all video elements, if the tabindex attribute is set to `-1`, the video
+      // is not tabbable. Note: We cannot rely on the default `HTMLElement.tabIndex`
+      // property as that one is set to `-1` in Chrome, Edge and Safari v13.1. The
+      // tabindex attribute is the source of truth here.
+      if (tabIndexValue === -1) {
         return false;
-      } else if (this._platform.BLINK || this._platform.FIREFOX) {
-        // In Chrome and Firefox <video controls> elements are always tabbable.
+      }
+      // If the tabindex is explicitly set, and not `-1` (as per check before), the
+      // video element is always tabbable (regardless of whether it has controls or not).
+      if (tabIndexValue !== null) {
         return true;
       }
-    }
-
-    if (nodeName === 'object' && (this._platform.BLINK || this._platform.WEBKIT)) {
-      // In all Blink and WebKit based browsers <object> elements are never tabbable.
-      return false;
-    }
-
-    // In iOS the browser only considers some specific elements as tabbable.
-    if (this._platform.WEBKIT && this._platform.IOS && !isPotentiallyTabbableIOS(element)) {
-      return false;
+      // Otherwise (when no explicit tabindex is set), a video is only tabbable if it
+      // has controls enabled. Firefox is special as videos are always tabbable regardless
+      // of whether there are controls or not.
+      return this._platform.FIREFOX || element.hasAttribute('controls');
     }
 
     return element.tabIndex >= 0;

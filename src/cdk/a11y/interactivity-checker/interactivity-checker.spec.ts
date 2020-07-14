@@ -1,4 +1,5 @@
 import {Platform} from '@angular/cdk/platform';
+import {PLATFORM_ID} from '@angular/core';
 import {inject} from '@angular/core/testing';
 import {InteractivityChecker, IsFocusableConfig} from './interactivity-checker';
 
@@ -7,11 +8,11 @@ describe('InteractivityChecker', () => {
   let testContainerElement: HTMLElement;
   let checker: InteractivityChecker;
 
-  beforeEach(inject([Platform, InteractivityChecker], (p: Platform, i: InteractivityChecker) => {
+  beforeEach(inject([PLATFORM_ID], (platformId: Object) => {
     testContainerElement = document.createElement('div');
     document.body.appendChild(testContainerElement);
-    platform = p;
-    checker = i;
+    platform = new Platform(platformId);
+    checker = new InteractivityChecker(platform);
   }));
 
   afterEach(() => {
@@ -253,38 +254,6 @@ describe('InteractivityChecker', () => {
 
   describe('isTabbable', () => {
 
-    it('should respect the tabindex for video elements with controls', () => {
-      // Do not run for Blink, Firefox and iOS because those treat video elements
-      // with controls different and are covered in other tests.
-      if (platform.BLINK || platform.FIREFOX || platform.IOS) {
-        return;
-      }
-
-      const video = createFromTemplate('<video controls>', true);
-
-      expect(checker.isTabbable(video)).toBe(true);
-
-      video.tabIndex = -1;
-
-      expect(checker.isTabbable(video)).toBe(false);
-    });
-
-    it('should always mark video elements with controls as tabbable (BLINK & FIREFOX)', () => {
-      // Only run this spec for Blink and Firefox, because those always treat video
-      // elements with controls as tabbable.
-      if (!platform.BLINK && !platform.FIREFOX) {
-        return;
-      }
-
-      const video = createFromTemplate('<video controls>', true);
-
-      expect(checker.isTabbable(video)).toBe(true);
-
-      video.tabIndex = -1;
-
-      expect(checker.isTabbable(video)).toBe(true);
-    });
-
     // Some tests should not run inside of iOS browsers, because those only allow specific
     // elements to be tabbable and cause the tests to always fail.
     describe('for non-iOS browsers', () => {
@@ -292,6 +261,41 @@ describe('InteractivityChecker', () => {
 
       beforeEach(() => {
         shouldSkip = platform.IOS;
+      });
+
+      it('should by default treat video elements with controls as tabbable', () => {
+        if (shouldSkip) {
+          return;
+        }
+
+        const video = createFromTemplate('<video controls>', true);
+        expect(checker.isTabbable(video)).toBe(true);
+      });
+
+      it('should respect the tabindex for video elements with controls', () => {
+        if (shouldSkip) {
+          return;
+        }
+
+        const video = createFromTemplate('<video controls>', true);
+        expect(checker.isTabbable(video)).toBe(true);
+
+        video.tabIndex = -1;
+        expect(checker.isTabbable(video)).toBe(false);
+      });
+
+      // Firefox always makes video elements (regardless of the controls) as tabbable, unless
+      // explicitly opted-out by setting the tabindex.
+      it('should by default treat video elements without controls as tabbable in firefox', () => {
+        if (!platform.FIREFOX) {
+          return;
+        }
+
+        const video = createFromTemplate('<video>', true);
+        expect(checker.isTabbable(video)).toBe(true);
+
+        video.tabIndex = -1;
+        expect(checker.isTabbable(video)).toBe(false);
       });
 
       it('should mark form controls and anchors without tabindex attribute as tabbable', () => {
@@ -424,39 +428,25 @@ describe('InteractivityChecker', () => {
         }
       });
 
-      it('should always mark audio elements without controls as not tabbable', () => {
+      it('should detect audio elements with controls as tabbable', () => {
         if (!shouldSkip) {
-          const audio = createFromTemplate('<audio>', true);
-
+          const audio = createFromTemplate('<audio controls>', true);
+          expect(checker.isTabbable(audio)).toBe(true);
+          audio.tabIndex = -1;
           expect(checker.isTabbable(audio)).toBe(false);
         }
       });
 
-    });
+      it('should always detect audio elements without controls as non-tabbable', () => {
+        if (!shouldSkip) {
+          const audio = createFromTemplate('<audio>', true);
+          expect(checker.isTabbable(audio)).toBe(false);
 
-    describe('for Blink and Webkit browsers', () => {
-      let shouldSkip: boolean;
-
-      beforeEach(() => {
-        shouldSkip = !platform.BLINK && !platform.WEBKIT;
-      });
-
-      it('should not mark elements inside of object frames as tabbable', () => {
-        if (shouldSkip) {
-          return;
+          // Setting a `tabindex` has no effect. The audio element is expected
+          // to be still not tabbable.
+          audio.tabIndex = 0;
+          expect(checker.isTabbable(audio)).toBe(false);
         }
-
-        const objectEl = createFromTemplate('<object>', true) as HTMLObjectElement;
-        const button = createFromTemplate('<button tabindex="0">Not Tabbable</button>');
-
-        appendElements([objectEl]);
-
-        // This creates an empty contentDocument for the frame element.
-        objectEl.type = 'text/html';
-        objectEl.contentDocument!.body.appendChild(button);
-
-        expect(checker.isTabbable(objectEl)).toBe(false);
-        expect(checker.isTabbable(button)).toBe(false);
       });
 
       it('should not mark elements inside of invisible frames as tabbable', () => {
@@ -482,57 +472,6 @@ describe('InteractivityChecker', () => {
           expect(checker.isTabbable(objectEl)).toBe(false);
         }
       });
-
-    });
-
-    describe('for Blink browsers', () => {
-      let shouldSkip: boolean;
-
-      beforeEach(() => {
-        shouldSkip = !platform.BLINK;
-      });
-
-      it('should always mark audio elements with controls as tabbable', () => {
-        if (shouldSkip) {
-          return;
-        }
-
-        const audio = createFromTemplate('<audio controls>', true);
-
-        expect(checker.isTabbable(audio)).toBe(true);
-
-        audio.tabIndex = -1;
-
-        // The audio element will be still tabbable because Blink always
-        // considers them as tabbable.
-        expect(checker.isTabbable(audio)).toBe(true);
-      });
-
-    });
-
-    describe('for Internet Explorer', () => {
-      let shouldSkip: boolean;
-
-      beforeEach(() => {
-        shouldSkip = !platform.TRIDENT;
-      });
-
-      it('should never mark video elements without controls as tabbable', () => {
-        if (shouldSkip) {
-          return;
-        }
-
-        // In Internet Explorer video elements without controls are never tabbable.
-        const video = createFromTemplate('<video>', true);
-
-        expect(checker.isTabbable(video)).toBe(false);
-
-        video.tabIndex = 0;
-
-        expect(checker.isTabbable(video)).toBe(false);
-
-      });
-
     });
 
     describe('for iOS browsers', () => {
