@@ -9,7 +9,8 @@
 import {BindingPipe, PropertyWrite, TmplAstReference, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
+import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
+import {ClassDeclaration} from '../../reflection';
 import {TemplateId} from '../api';
 
 import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
@@ -61,6 +62,10 @@ export interface OutOfBandDiagnosticRecorder {
    */
   duplicateTemplateVar(
       templateId: TemplateId, variable: TmplAstVariable, firstDecl: TmplAstVariable): void;
+
+  requiresInlineTcb(node: ClassDeclaration): void;
+
+  requiresInlineTypeConstructors(node: ClassDeclaration, directives: ClassDeclaration[]): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -132,5 +137,27 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
           text: `The variable '${firstDecl.name}' was first declared here.`,
           span: firstDecl.sourceSpan,
         }));
+  }
+
+  requiresInlineTcb(node: ClassDeclaration): void {
+    this._diagnostics.push(makeDiagnostic(
+        ErrorCode.INLINE_TCB_REQUIRED, node.name,
+        `This component requires inline template type-checking, which is not supported by the current environment.`));
+  }
+
+  requiresInlineTypeConstructors(node: ClassDeclaration, directives: ClassDeclaration[]): void {
+    let message: string;
+    if (directives.length > 1) {
+      message =
+          `This component uses directives which require inline type constructors, which are not supported by the current environment.`;
+    } else {
+      message =
+          `This component uses a directive which requires an inline type constructor, which is not supported by the current environment.`;
+    }
+
+    this._diagnostics.push(makeDiagnostic(
+        ErrorCode.INLINE_TYPE_CTOR_REQUIRED, node.name, message,
+        directives.map(
+            dir => makeRelatedInformation(dir.name, `Requires an inline type constructor.`))));
   }
 }
