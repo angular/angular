@@ -21,7 +21,7 @@ This sample application is much like the one in the [_Tour of Heroes_ tutorial](
 
 <div class="alert is-helpful">
 
-  For the sample app that the testing guides describe, see the <live-example embedded-style noDownload>sample app</live-example>.
+  For the sample app that the testing guides describe, see the <live-example noDownload>sample app</live-example>.
 
   For the tests features in the testing guides, see <live-example stackblitz="specs" noDownload>tests</live-example>.
 
