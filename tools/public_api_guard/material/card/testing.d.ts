@@ -4,11 +4,7 @@ export interface CardHarnessFilters extends BaseHarnessFilters {
     title?: string | RegExp;
 }
 
-export declare class MatCardHarness extends ComponentHarness implements HarnessLoader {
-    getAllChildLoaders(selector: string): Promise<HarnessLoader[]>;
-    getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]>;
-    getChildLoader(selector: string): Promise<HarnessLoader>;
-    getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T>;
+export declare class MatCardHarness extends ContentContainerComponentHarness<MatCardSection> {
     getSubtitleText(): Promise<string>;
     getText(): Promise<string>;
     getTitleText(): Promise<string>;

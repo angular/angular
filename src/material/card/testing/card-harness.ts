@@ -6,12 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  ComponentHarness,
-  HarnessLoader,
-  HarnessPredicate,
-  HarnessQuery
-} from '@angular/cdk/testing';
+import {HarnessPredicate, ContentContainerComponentHarness} from '@angular/cdk/testing';
 import {CardHarnessFilters} from './card-harness-filters';
 
 /** Selectors for different sections of the mat-card that can container user content. */
@@ -23,7 +18,7 @@ export const enum MatCardSection {
 }
 
 /** Harness for interacting with a standard mat-card in tests. */
-export class MatCardHarness extends ComponentHarness implements HarnessLoader {
+export class MatCardHarness extends ContentContainerComponentHarness<MatCardSection> {
   /** The selector for the host element of a `MatCard` instance. */
   static hostSelector = 'mat-card';
 
@@ -60,21 +55,5 @@ export class MatCardHarness extends ComponentHarness implements HarnessLoader {
   /** Gets the cards's subtitle text. */
   async getSubtitleText(): Promise<string> {
     return (await this._subtitle())?.text() ?? '';
-  }
-
-  async getChildLoader(selector: string): Promise<HarnessLoader> {
-    return (await this.locatorFactory.rootHarnessLoader()).getChildLoader(selector);
-  }
-
-  async getAllChildLoaders(selector: string): Promise<HarnessLoader[]> {
-    return (await this.locatorFactory.rootHarnessLoader()).getAllChildLoaders(selector);
-  }
-
-  async getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T> {
-    return (await this.locatorFactory.rootHarnessLoader()).getHarness(query);
-  }
-
-  async getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]> {
-    return (await this.locatorFactory.rootHarnessLoader()).getAllHarnesses(query);
   }
 }
