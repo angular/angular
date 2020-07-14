@@ -424,10 +424,12 @@ xdescribe('MDC-based MatSlider', () => {
       // pixel will be a tick.
       const ticksPerTrackPercentage = (tickInterval * step);
       // iOS evaluates the "background" expression for the ticks to the exact number,
-      // Firefox, Edge, Safari evaluate to a percentage value, and Chrome evaluates to
-      // a rounded five-digit decimal number.
+      // Firefox, Edge, Safari 12.1 evaluate to a percentage value. Chrome evaluates to
+      // a rounded five-digit decimal number and Safari 13.1 evaluates to a decimal
+      // representing the percentage.
       const expectationRegex = new RegExp(
-          `(${sizeOfTick}|${ticksPerTrackPercentage}%|${sizeOfTick.toFixed(5)})`);
+          `(${sizeOfTick}|${ticksPerTrackPercentage}%|${sizeOfTick.toFixed(5)}|` +
+          `${ticksPerTrackPercentage / 100})`);
       expect(ticksContainerElement.style.background)
         .toMatch(expectationRegex);
     });
@@ -1239,10 +1241,13 @@ function flushRequestAnimationFrame() {
   tick(16);
 }
 
-// Disable animations and make the slider an even 100px, so that we get nice
-// round values in tests.
+// Disable animations and make the slider an even 100px, so that we get
+// nice round values in tests.
 const styles = `
-  .mat-mdc-slider { min-width: 100px !important; }
+  .mat-mdc-slider {
+    min-width: 100px !important;
+    width: 100px;
+  }
 `;
 
 @Component({
