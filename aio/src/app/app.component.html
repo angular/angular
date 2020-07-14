@@ -23,14 +23,16 @@
       <img *ngSwitchDefault src="assets/images/logos/angular/shield-large.svg" width="37" height="40" title="Home" alt="Home">
     </a>
     <aio-top-menu *ngIf="showTopMenu" [nodes]="topMenuNodes" [currentNode]="currentNodes?.TopBar"></aio-top-menu>
-    <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
-    <div class="toolbar-external-icons-container">
-      <a href="https://twitter.com/angular" title="Twitter" aria-label="Angular on twitter">
-        <mat-icon svgIcon="logos:twitter"></mat-icon>
-      </a>
-      <a href="https://github.com/angular/angular" title="GitHub" aria-label="Angular on github">
-        <mat-icon svgIcon="logos:github"></mat-icon>
-      </a>
+    <div class="right-container">
+      <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
+      <div class="toolbar-external-icons-container">
+        <a href="https://twitter.com/angular" title="Twitter" aria-label="Angular on twitter">
+          <mat-icon svgIcon="logos:twitter"></mat-icon>
+        </a>
+        <a href="https://github.com/angular/angular" title="GitHub" aria-label="Angular on github">
+          <mat-icon svgIcon="logos:github"></mat-icon>
+        </a>
+      </div>
     </div>
   </mat-toolbar-row>
 </mat-toolbar>
