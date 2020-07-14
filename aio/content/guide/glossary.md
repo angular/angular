@@ -210,6 +210,7 @@ An Angular component class is responsible for exposing data and handling most of
 
 Read more about component classes, templates, and views in [Introduction to Angular concepts](guide/architecture).
 
+
 ## configuration
 
 See  [workspace configuration](#cli-config)
@@ -578,7 +579,6 @@ Angular calls these hook methods in the following order:
 
 To learn more, see [Lifecycle Hooks](guide/lifecycle-hooks).
 
-
 {@a M}
 
 {@a module}
@@ -738,6 +738,26 @@ When using reactive forms:
 * The associated Angular directives are prefixed with `form`, such as `formControl`, `formGroup`, and `formControlName`.
 
 The alternative is a template-driven form. For an introduction and comparison of both forms approaches, see [Introduction to Angular Forms](guide/forms-overview).
+
+{@a resolver}
+
+## resolver
+
+A class that implements the [Resolve](api/router/Resolve "API reference") interface (or a function with the same signature as the [resolve() method](api/router/Resolve#resolve "API reference")) that you use to produce or retrieve data that is needed before navigation to a requested route can be completed.
+
+Resolvers run after all [route guards](#route-guard "Definition") for a route tree have been executed and have succeeded.
+
+See an example of using a [resolve guard](guide/router-tutorial-toh#resolve-guard "Routing techniques tutorial") to retrieve dynamic data.
+
+{@a route-guard}
+
+## route guard
+
+A method that controls navigation to a requested route in a routing application.
+Guards determine whether a route can be activated or deactivated, and whether a lazy-loaded module can be loaded.
+
+Learn more in the [Routing and Navigation](guide/router#preventing-unauthorized-access "Examples") guide.
+
 
 {@a router}
 {@a router-module}
