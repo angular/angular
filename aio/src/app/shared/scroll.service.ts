@@ -1,7 +1,7 @@
-import { DOCUMENT, Location, PlatformLocation, PopStateEvent, ViewportScroller } from '@angular/common';
-import { Injectable, Inject, OnDestroy } from '@angular/core';
-import { fromEvent, Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import {DOCUMENT, Location, PlatformLocation, PopStateEvent, ViewportScroller} from '@angular/common';
+import {Inject, Injectable, OnDestroy} from '@angular/core';
+import {fromEvent, Subject} from 'rxjs';
+import {debounceTime, takeUntil} from 'rxjs/operators';
 
 type ScrollPosition = [number, number];
 interface ScrollPositionPopStateEvent extends PopStateEvent {
@@ -15,18 +15,17 @@ export const topMargin = 16;
  */
 @Injectable()
 export class ScrollService implements OnDestroy {
-
-  private _topOffset: number | null;
+  private _topOffset: number|null;
   private _topOfPageElement: Element;
   private onDestroy = new Subject<void>();
   private storage: Storage;
 
   // The scroll position which has to be restored, after a `popstate` event.
-  poppedStateScrollPosition: ScrollPosition | null = null;
+  poppedStateScrollPosition: ScrollPosition|null = null;
   // Whether the browser supports the necessary features for manual scroll restoration.
-  supportManualScrollRestoration: boolean =
-      !!window && ('scrollTo' in window) && ('scrollX' in window) && ('scrollY' in window) &&
-      !!history && ('scrollRestoration' in history);
+  supportManualScrollRestoration: boolean = !!window && ('scrollTo' in window) &&
+      ('scrollX' in window) && ('scrollY' in window) && !!history &&
+      ('scrollRestoration' in history);
 
   // Offset from the top of the document to bottom of any static elements
   // at the top (e.g. toolbar) + some margin
@@ -46,10 +45,8 @@ export class ScrollService implements OnDestroy {
   }
 
   constructor(
-      @Inject(DOCUMENT) private document: any,
-      private platformLocation: PlatformLocation,
-      private viewportScroller: ViewportScroller,
-      private location: Location) {
+      @Inject(DOCUMENT) private document: any, private platformLocation: PlatformLocation,
+      private viewportScroller: ViewportScroller, private location: Location) {
     try {
       this.storage = window.sessionStorage;
     } catch {
@@ -118,9 +115,7 @@ export class ScrollService implements OnDestroy {
    */
   scroll() {
     const hash = this.getCurrentHash();
-    const element: HTMLElement = hash
-        ? this.document.getElementById(hash)
-        : this.topOfPageElement;
+    const element: HTMLElement = hash ? this.document.getElementById(hash) : this.topOfPageElement;
     this.scrollToElement(element);
   }
 
@@ -132,8 +127,8 @@ export class ScrollService implements OnDestroy {
   }
 
   /**
-   * When we load a document, we have to scroll to the correct position depending on whether this is a new location,
-   * a back/forward in the history, or a refresh
+   * When we load a document, we have to scroll to the correct position depending on whether this is
+   * a new location, a back/forward in the history, or a refresh
    * @param delay before we scroll to the good position
    */
   scrollAfterRender(delay: number) {
@@ -208,19 +203,22 @@ export class ScrollService implements OnDestroy {
   updateScrollPositionInHistory() {
     if (this.supportManualScrollRestoration) {
       const currentScrollPosition = this.viewportScroller.getScrollPosition();
-      this.location.replaceState(this.location.path(true), undefined, {scrollPosition: currentScrollPosition});
+      this.location.replaceState(
+          this.location.path(true), undefined, {scrollPosition: currentScrollPosition});
       this.storage.setItem('scrollPosition', currentScrollPosition.join(','));
     }
   }
 
-  getStoredScrollLocationHref(): string | null {
+  getStoredScrollLocationHref(): string|null {
     const href = this.storage.getItem('scrollLocationHref');
     return href || null;
   }
 
-  getStoredScrollPosition(): ScrollPosition | null {
+  getStoredScrollPosition(): ScrollPosition|null {
     const position = this.storage.getItem('scrollPosition');
-    if (!position) { return null; }
+    if (!position) {
+      return null;
+    }
 
     const [x, y] = position.split(',');
     return [+x, +y];
