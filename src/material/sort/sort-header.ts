@@ -22,6 +22,7 @@ import {
 } from '@angular/core';
 import {CanDisable, CanDisableCtor, mixinDisabled} from '@angular/material/core';
 import {FocusMonitor} from '@angular/cdk/a11y';
+import {ENTER, SPACE} from '@angular/cdk/keycodes';
 import {merge, Subscription} from 'rxjs';
 import {MatSort, MatSortable} from './sort';
 import {matSortAnimations} from './sort-animations';
@@ -78,6 +79,7 @@ interface MatSortHeaderColumnDef {
   host: {
     'class': 'mat-sort-header',
     '(click)': '_handleClick()',
+    '(keydown)': '_handleKeydown($event)',
     '(mouseenter)': '_setIndicatorHintVisible(true)',
     '(mouseleave)': '_setIndicatorHintVisible(false)',
     '[attr.aria-sort]': '_getAriaSortAttribute()',
@@ -233,8 +235,7 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
   }
 
   /** Triggers the sort on this sort header and removes the indicator hint. */
-  _handleClick() {
-    if (this._isDisabled()) { return; }
+  _toggleOnInteraction() {
 
     this._sort.sort(this);
 
@@ -251,6 +252,19 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
     this._setAnimationTransitionState(viewState);
 
     this._showIndicatorHint = false;
+  }
+
+  _handleClick() {
+    if (!this._isDisabled()) {
+      this._toggleOnInteraction();
+    }
+  }
+
+  _handleKeydown(event: KeyboardEvent) {
+    if (!this._isDisabled() && (event.keyCode === SPACE || event.keyCode === ENTER)) {
+      event.preventDefault();
+      this._toggleOnInteraction();
+    }
   }
 
   /** Whether this MatSortHeader is currently sorted in either ascending or descending order. */
@@ -297,7 +311,9 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
    * ensures this is true.
    */
   _getAriaSortAttribute() {
-    if (!this._isSorted()) { return null; }
+    if (!this._isSorted()) {
+      return 'none';
+    }
 
     return this._sort.direction == 'asc' ? 'ascending' : 'descending';
   }

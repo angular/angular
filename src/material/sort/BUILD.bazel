@@ -21,6 +21,7 @@ ng_module(
     deps = [
         "//src/cdk/a11y",
         "//src/cdk/coercion",
+        "//src/cdk/keycodes",
         "//src/material/core",
         "@npm//@angular/animations",
         "@npm//@angular/common",

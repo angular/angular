@@ -65,15 +65,17 @@ export declare class MatSortHeader extends _MatSortHeaderMixinBase implements Ca
     id: string;
     start: 'asc' | 'desc';
     constructor(_intl: MatSortHeaderIntl, changeDetectorRef: ChangeDetectorRef, _sort: MatSort, _columnDef: MatSortHeaderColumnDef, _focusMonitor: FocusMonitor, _elementRef: ElementRef<HTMLElement>);
-    _getAriaSortAttribute(): "ascending" | "descending" | null;
+    _getAriaSortAttribute(): "none" | "ascending" | "descending";
     _getArrowDirectionState(): string;
     _getArrowViewState(): string;
     _handleClick(): void;
+    _handleKeydown(event: KeyboardEvent): void;
     _isDisabled(): boolean;
     _isSorted(): boolean;
     _renderArrow(): boolean;
     _setAnimationTransitionState(viewState: ArrowViewStateTransition): void;
     _setIndicatorHintVisible(visible: boolean): void;
+    _toggleOnInteraction(): void;
     _updateArrowDirection(): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;

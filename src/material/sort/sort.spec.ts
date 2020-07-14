@@ -7,16 +7,15 @@ import {
   wrappedErrorMessage,
 } from '@angular/cdk/testing/private';
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
+import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {By} from '@angular/platform-browser';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {MatTableModule} from '../table/index';
 import {
   MatSort,
   MatSortHeader,
-  MatSortHeaderIntl,
   MatSortModule,
   Sort,
   SortDirection
@@ -220,27 +219,27 @@ describe('MatSort', () => {
   });
 
   it('should allow for the cycling the sort direction to be disabled per column', () => {
-    const button = fixture.nativeElement.querySelector('#defaultA button');
+    const container = fixture.nativeElement.querySelector('#defaultA .mat-sort-header-container');
 
     component.sort('defaultA');
     expect(component.matSort.direction).toBe('asc');
-    expect(button.getAttribute('disabled')).toBeFalsy();
+    expect(container.getAttribute('tabindex')).toBe('0');
 
     component.disabledColumnSort = true;
     fixture.detectChanges();
 
     component.sort('defaultA');
     expect(component.matSort.direction).toBe('asc');
-    expect(button.getAttribute('disabled')).toBe('true');
+    expect(container.getAttribute('tabindex')).toBeFalsy();
   });
 
   it('should allow for the cycling the sort direction to be disabled for all columns', () => {
-    const button = fixture.nativeElement.querySelector('#defaultA button');
+    const container = fixture.nativeElement.querySelector('#defaultA .mat-sort-header-container');
 
     component.sort('defaultA');
     expect(component.matSort.active).toBe('defaultA');
     expect(component.matSort.direction).toBe('asc');
-    expect(button.getAttribute('disabled')).toBeFalsy();
+    expect(container.getAttribute('tabindex')).toBe('0');
 
     component.disableAllSort = true;
     fixture.detectChanges();
@@ -248,12 +247,12 @@ describe('MatSort', () => {
     component.sort('defaultA');
     expect(component.matSort.active).toBe('defaultA');
     expect(component.matSort.direction).toBe('asc');
-    expect(button.getAttribute('disabled')).toBe('true');
+    expect(container.getAttribute('tabindex')).toBeFalsy();
 
     component.sort('defaultB');
     expect(component.matSort.active).toBe('defaultA');
     expect(component.matSort.direction).toBe('asc');
-    expect(button.getAttribute('disabled')).toBe('true');
+    expect(container.getAttribute('tabindex')).toBeFalsy();
   });
 
   it('should reset sort direction when a different column is sorted', () => {
@@ -301,14 +300,9 @@ describe('MatSort', () => {
         fixture, ['asc', 'desc'], 'overrideDisableClear');
   });
 
-  it('should apply the aria-labels to the button', () => {
-    const button = fixture.nativeElement.querySelector('#defaultA button');
-    expect(button.getAttribute('aria-label')).toBe('Change sorting for defaultA');
-  });
-
   it('should toggle indicator hint on button focus/blur and hide on click', () => {
     const header = fixture.componentInstance.defaultA;
-    const button = fixture.nativeElement.querySelector('#defaultA button');
+    const container = fixture.nativeElement.querySelector('#defaultA .mat-sort-header-container');
     const focusEvent = createFakeEvent('focus');
     const blurEvent = createFakeEvent('blur');
 
@@ -316,14 +310,14 @@ describe('MatSort', () => {
     expect(header._showIndicatorHint).toBeFalsy();
 
     // Focusing the button should show the hint, blurring should hide it
-    button.dispatchEvent(focusEvent);
+    container.dispatchEvent(focusEvent);
     expect(header._showIndicatorHint).toBeTruthy();
 
-    button.dispatchEvent(blurEvent);
+    container.dispatchEvent(blurEvent);
     expect(header._showIndicatorHint).toBeFalsy();
 
     // Show the indicator hint. On click the hint should be hidden
-    button.dispatchEvent(focusEvent);
+    container.dispatchEvent(focusEvent);
     expect(header._showIndicatorHint).toBeTruthy();
 
     header._handleClick();
@@ -356,7 +350,7 @@ describe('MatSort', () => {
 
   it('should apply the aria-sort label to the header when sorted', () => {
     const sortHeaderElement = fixture.nativeElement.querySelector('#defaultA');
-    expect(sortHeaderElement.getAttribute('aria-sort')).toBe(null);
+    expect(sortHeaderElement.getAttribute('aria-sort')).toBe('none');
 
     component.sort('defaultA');
     fixture.detectChanges();
@@ -368,21 +362,8 @@ describe('MatSort', () => {
 
     component.sort('defaultA');
     fixture.detectChanges();
-    expect(sortHeaderElement.getAttribute('aria-sort')).toBe(null);
+    expect(sortHeaderElement.getAttribute('aria-sort')).toBe('none');
   });
-
-  it('should re-render when the i18n labels have changed',
-    inject([MatSortHeaderIntl], (intl: MatSortHeaderIntl) => {
-      const header = fixture.debugElement.query(By.directive(MatSortHeader))!.nativeElement;
-      const button = header.querySelector('.mat-sort-header-button');
-
-      intl.sortButtonLabel = () => 'Sort all of the things';
-      intl.changes.next();
-      fixture.detectChanges();
-
-      expect(button.getAttribute('aria-label')).toBe('Sort all of the things');
-    })
-  );
 
   it('should not render the arrow if sorting is disabled for that column', fakeAsync(() => {
     const sortHeaderElement = fixture.nativeElement.querySelector('#defaultA');
@@ -412,9 +393,9 @@ describe('MatSort', () => {
   it('should have a focus indicator', () => {
     const headerNativeElement =
         fixture.debugElement.query(By.directive(MatSortHeader))!.nativeElement;
-    const buttonNativeElement = headerNativeElement.querySelector('.mat-sort-header-button');
+    const container = headerNativeElement.querySelector('.mat-sort-header-container');
 
-    expect(buttonNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
+    expect(container.classList.contains('mat-focus-indicator')).toBe(true);
   });
 
 });

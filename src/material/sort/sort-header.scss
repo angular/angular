@@ -11,26 +11,11 @@ $mat-sort-header-arrow-hint-opacity: 0.38;
   display: flex;
   cursor: pointer;
   align-items: center;
+  letter-spacing: normal;
 
-  .mat-sort-header-disabled & {
-    cursor: default;
-  }
-}
-
-.mat-sort-header-position-before {
-  flex-direction: row-reverse;
-}
-
-.mat-sort-header-button {
-  border: none;
-  background: 0 0;
-  display: flex;
-  align-items: center;
-  padding: 0;
-  cursor: inherit;
+  // Needs to be reset since we don't want an outline around the inner
+  // div which is focusable. We have our own alternate focus styling.
   outline: 0;
-  font: inherit;
-  color: currentColor;
 
   // Usually we could rely on the arrow showing up to be focus indication, but if a header is
   // active, the arrow will always be shown so the user has no way of telling the difference.
@@ -39,12 +24,19 @@ $mat-sort-header-arrow-hint-opacity: 0.38;
     border-bottom: solid 1px currentColor;
   }
 
-  // The `outline: 0` from above works on all browsers, however Firefox also
-  // adds a special `focus-inner` which we have to disable explicitly. See:
-  // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#Firefox
-  &::-moz-focus-inner {
-    border: 0;
+  .mat-sort-header-disabled & {
+    cursor: default;
   }
+}
+
+.mat-sort-header-content {
+  text-align: center;
+  display: flex;
+  align-items: center;
+}
+
+.mat-sort-header-position-before {
+  flex-direction: row-reverse;
 }
 
 .mat-sort-header-arrow {

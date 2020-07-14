@@ -1,11 +1,28 @@
-<div class="mat-sort-header-container"
+<!--
+  We set the `tabindex` on an element inside the table header, rather than the header itself,
+  because of a bug in NVDA where having a `tabindex` on a `th` breaks keyboard navigation in the
+  table (see https://github.com/nvaccess/nvda/issues/7718). This allows for the header to both
+  be focusable, and have screen readers read out its `aria-sort` state. We prefer this approach
+  over having a button with an `aria-label` inside the header, because the button's `aria-label`
+  will be read out as the user is navigating the table's cell (see #13012).
+
+  The approach is based off of: https://dequeuniversity.com/library/aria/tables/sf-sortable-grid
+-->
+<div class="mat-sort-header-container mat-focus-indicator"
      [class.mat-sort-header-sorted]="_isSorted()"
-     [class.mat-sort-header-position-before]="arrowPosition == 'before'">
-  <button class="mat-sort-header-button mat-focus-indicator" type="button"
-          [attr.disabled]="_isDisabled() || null"
-          [attr.aria-label]="_intl.sortButtonLabel(id)">
+     [class.mat-sort-header-position-before]="arrowPosition == 'before'"
+     [attr.tabindex]="_isDisabled() ? null : 0"
+     role="button">
+
+  <!--
+    TODO(crisbeto): this div isn't strictly necessary, but we have to keep it due to a large
+    number of screenshot diff failures. It should be removed eventually. Note that the difference
+    isn't visible with a shorter header, but once it breaks up into multiple lines, this element
+    causes it to be center-aligned, whereas removing it will keep the text to the left.
+  -->
+  <div class="mat-sort-header-content">
     <ng-content></ng-content>
-  </button>
+  </div>
 
   <!-- Disable animations while a current animation is running -->
   <div class="mat-sort-header-arrow"

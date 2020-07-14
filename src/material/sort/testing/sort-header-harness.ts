@@ -13,7 +13,7 @@ import {SortHeaderHarnessFilters} from './sort-harness-filters';
 /** Harness for interacting with a standard Angular Material sort header in tests. */
 export class MatSortHeaderHarness extends ComponentHarness {
   static hostSelector = '.mat-sort-header';
-  private _button = this.locatorFor('.mat-sort-header-button');
+  private _container = this.locatorFor('.mat-sort-header-container');
 
   /**
    * Gets a `HarnessPredicate` that can be used to
@@ -30,7 +30,7 @@ export class MatSortHeaderHarness extends ComponentHarness {
 
   /** Gets the label of the sort header. */
   async getLabel(): Promise<string> {
-    return (await this._button()).text();
+    return (await this._container()).text();
   }
 
   /** Gets the sorting direction of the header. */
@@ -47,9 +47,13 @@ export class MatSortHeaderHarness extends ComponentHarness {
     return '';
   }
 
-  /** Gets the aria-label of the sort header. */
+  /**
+   * Gets the aria-label of the sort header.
+   * @deprecated The sort header no longer has an `aria-label`. This method will be removed.
+   * @breaking-change 11.0.0
+   */
   async getAriaLabel(): Promise<string|null> {
-    return (await this._button()).getAttribute('aria-label');
+    return (await this._container()).getAttribute('aria-label');
   }
 
   /** Gets whether the sort header is currently being sorted by. */
@@ -59,8 +63,7 @@ export class MatSortHeaderHarness extends ComponentHarness {
 
   /** Whether the sort header is disabled. */
   async isDisabled(): Promise<boolean> {
-    const button = await this._button();
-    return (await button.getAttribute('disabled')) != null;
+    return (await this.host()).hasClass('mat-sort-header-disabled');
   }
 
   /** Clicks the header to change its sorting direction. Only works if the header is enabled. */

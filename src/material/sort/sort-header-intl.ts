@@ -21,7 +21,11 @@ export class MatSortHeaderIntl {
    */
   readonly changes: Subject<void> = new Subject<void>();
 
-  /** ARIA label for the sorting button. */
+  /**
+   * ARIA label for the sorting button.
+   * @deprecated Not used anymore. To be removed.
+   * @breaking-change 8.0.0
+   */
   sortButtonLabel = (id: string) => {
     return `Change sorting for ${id}`;
   }

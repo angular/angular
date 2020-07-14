@@ -41,7 +41,7 @@
   .mat-focus-indicator.mat-fab::before,
   .mat-focus-indicator.mat-mini-fab::before,
   .mat-focus-indicator.mat-chip::before,
-  .mat-focus-indicator.mat-sort-header-button::before {
+  .mat-focus-indicator.mat-sort-header-container::before {
     margin: -($border-width + 2px);
   }
 

@@ -69,20 +69,6 @@ export function runHarnessTests(
     expect(labels).toEqual(['Dessert', 'Calories', 'Fat', 'Carbs', 'Protein']);
   });
 
-  it('should be able to get the aria-label of a header', async () => {
-    const sort = await loader.getHarness(sortHarness);
-    const headers = await sort.getSortHeaders();
-    const labels = await Promise.all(headers.map(header => header.getAriaLabel()));
-
-    expect(labels).toEqual([
-      'Change sorting for name',
-      'Change sorting for calories',
-      'Change sorting for fat',
-      'Change sorting for carbs',
-      'Change sorting for protein'
-    ]);
-  });
-
   it('should get the disabled state of a header', async () => {
     const sort = await loader.getHarness(sortHarness);
     const thirdHeader = (await sort.getSortHeaders())[2];
