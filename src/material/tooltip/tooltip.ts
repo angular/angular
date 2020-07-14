@@ -144,6 +144,7 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
   private _disabled: boolean = false;
   private _tooltipClass: string|string[]|Set<string>|{[key: string]: any};
   private _scrollStrategy: () => ScrollStrategy;
+  private _viewInitialized = false;
 
   /** Allows the user to define the position of the tooltip relative to the parent element */
   @Input('matTooltipPosition')
@@ -173,6 +174,8 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
     // If tooltip is disabled, hide immediately.
     if (this._disabled) {
       this.hide(0);
+    } else {
+      this._setupPointerEvents();
     }
   }
 
@@ -202,7 +205,9 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
   @Input('matTooltip')
   get message() { return this._message; }
   set message(value: string) {
-    this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message);
+    if (this._message) {
+      this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message);
+    }
 
     // If the message is not a string (e.g. number), convert it to a string and trim it.
     this._message = value != null ? `${value}`.trim() : '';
@@ -210,6 +215,7 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
     if (!this._message && this._isTooltipVisible()) {
       this.hide(0);
     } else {
+      this._setupPointerEvents();
       this._updateTooltipMessage();
       this._ngZone.runOutsideAngular(() => {
         // The `AriaDescriber` has some functionality that avoids adding a description if it's the
@@ -276,6 +282,7 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     // This needs to happen after view init so the initial values for all inputs have been set.
+    this._viewInitialized = true;
     this._setupPointerEvents();
 
     this._focusMonitor.monitor(this._elementRef)
@@ -543,6 +550,12 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
 
   /** Binds the pointer events to the tooltip trigger. */
   private _setupPointerEvents() {
+    // Optimization: Defer hooking up events if there's no message or the tooltip is disabled.
+    if (this._disabled || !this.message || !this._viewInitialized ||
+        this._passiveListeners.size) {
+      return;
+    }
+
     // The mouse events shouldn't be bound on mobile devices, because they can prevent the
     // first tap from firing its click event or can cause the tooltip to open for clicks.
     if (!this._platform.IOS && !this._platform.ANDROID) {
