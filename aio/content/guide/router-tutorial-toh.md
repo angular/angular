@@ -311,7 +311,7 @@ In this app, the router should select the route to the `HeroListComponent` only 
   Remember to restore the redirect to `pathMatch = 'full'`.
 
   Learn more in Victor Savkin's
-  [post on redirects](http://vsavkin.tumblr.com/post/146722301646/  angular-router-empty-paths-componentless-routes).
+  [post on redirects](http://vsavkin.tumblr.com/post/146722301646/angular-router-empty-paths-componentless-routes).
 
 </div>
 
