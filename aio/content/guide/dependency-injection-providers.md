@@ -262,7 +262,7 @@ For example, when bootstrapping an application, you can register many initialize
 
 ```
 export const APP_TOKENS = [
- { provide: PLATFORM_INITIALIZER, useFactory: platformInitialized, multi: true    },
+ { provide: PLATFORM_INITIALIZER, useFactory: platformInitialized, multi: true },
  { provide: APP_INITIALIZER, useFactory: delayBootstrapping, multi: true },
  { provide: APP_BOOTSTRAP_LISTENER, useFactory: appBootstrapped, multi: true },
 ];
@@ -283,6 +283,23 @@ the [ROUTES](api/router/ROUTES) token combines all the different provided sets o
 Search for [Constants in API documentation](api?type=const) to find more built-in tokens.
 
 </div>
+
+<div class="alert is-helpful">
+
+Note that the reference to the array returned for a `multi` provider is shared between all the
+places where the token is injected. We recommend avoiding mutations of the array (especially for
+predefined tokens) as it may lead to unexpected behavior in other parts of the app that inject
+the same token. You can prevent the value from being mutated by setting its type to `ReadonlyArray`.
+
+</div>
+
+You can use `ReadonlyArray` to type your `multi` provider, so TypeScript triggers an error in case
+of unwanted array mutations:
+
+```
+constructor(@Inject(MULTI_PROVIDER) multiProvider: ReadonlyArray<MultiProvider>) {
+}
+```
 
 {@a tree-shakable-provider}
 {@a tree-shakable-providers}
