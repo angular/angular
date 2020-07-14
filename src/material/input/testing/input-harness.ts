@@ -71,8 +71,12 @@ export class MatInputHarness extends MatFormFieldControlHarness {
 
   /** Gets the placeholder of the input. */
   async getPlaceholder(): Promise<string> {
-    // The "placeholder" property of the native input is never undefined.
-    return (await (await this.host()).getProperty('placeholder'))!;
+    const host = await this.host();
+    const [nativePlaceholder, fallback] = await Promise.all([
+      host.getProperty('placeholder'),
+      host.getAttribute('data-placeholder')
+    ]);
+    return nativePlaceholder || fallback || '';
   }
 
   /** Gets the id of the input. */
