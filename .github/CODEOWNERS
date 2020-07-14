@@ -234,6 +234,7 @@
 /src/e2e-app/mdc-menu/**                           @crisbeto
 /src/e2e-app/mdc-progress-bar/**                   @crisbeto
 /src/e2e-app/mdc-radio/**                          @mmalerba
+/src/e2e-app/mdc-slider/**                         @andrewseguin
 /src/e2e-app/mdc-slide-toggle/**                   @crisbeto
 /src/e2e-app/mdc-tabs/**                           @crisbeto
 /src/e2e-app/mdc-table/**                          @andrewseguin
