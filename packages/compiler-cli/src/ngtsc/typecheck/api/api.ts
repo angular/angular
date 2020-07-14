@@ -305,6 +305,12 @@ export interface ComponentToShimMappingStrategy {
  */
 export interface TypeCheckingProgramStrategy extends ComponentToShimMappingStrategy {
   /**
+   * Whether this strategy supports modifying user files (inline modifications) in addition to
+   * modifying type-checking shims.
+   */
+  readonly supportsInlineOperations: boolean;
+
+  /**
    * Retrieve the latest version of the program, containing all the updates made thus far.
    */
   getProgram(): ts.Program;

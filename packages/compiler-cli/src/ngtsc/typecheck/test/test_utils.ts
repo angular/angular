@@ -17,7 +17,6 @@ import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} fro
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckContext} from '../api';
-
 import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, UpdateMode} from '../api/api';
 import {ReusedProgramStrategy} from '../src/augmented_program';
 import {TemplateTypeCheckerImpl} from '../src/checker';
@@ -278,6 +277,7 @@ export interface TypeCheckingTarget {
 export function setup(targets: TypeCheckingTarget[], overrides: {
   config?: Partial<TypeCheckingConfig>,
   options?: ts.CompilerOptions,
+  inlining?: boolean,
 } = {}): {
   templateTypeChecker: TemplateTypeChecker,
   program: ts.Program,
@@ -378,6 +378,10 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
   });
 
   const programStrategy = new ReusedProgramStrategy(program, host, options, ['ngtypecheck']);
+  if (overrides.inlining !== undefined) {
+    (programStrategy as any).supportsInlineOperations = overrides.inlining;
+  }
+
   const templateTypeChecker = new TemplateTypeCheckerImpl(
       program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
       NOOP_INCREMENTAL_BUILD);
@@ -501,4 +505,6 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   missingPipe(): void {}
   illegalAssignmentToTemplateVar(): void {}
   duplicateTemplateVar(): void {}
+  requiresInlineTcb(): void {}
+  requiresInlineTypeConstructors(): void {}
 }
