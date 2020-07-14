@@ -34,7 +34,7 @@
       "name": "IVY:packages/core/test/acceptance",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/node_modules/.bin/bazel",
+      "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
         "--config=ivy",
@@ -51,7 +51,7 @@
       "name": "IVY:packages/core/test/render3",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/node_modules/.bin/bazel",
+      "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
         "--config=ivy",
@@ -68,7 +68,7 @@
       "name": "IVY:packages/core/test",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/node_modules/.bin/bazel",
+      "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
         "--config=ivy",

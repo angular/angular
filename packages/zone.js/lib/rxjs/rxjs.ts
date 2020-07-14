@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@ import {Observable, Subscriber, Subscription} from 'rxjs';
 
 type ZoneSubscriberContext = {
   _zone: Zone
-} & Subscriber<any>;
+}&Subscriber<any>;
 
 (Zone as any).__load_patch('rxjs', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const symbol: (symbolString: string) => string = (Zone as any).__symbol__;
@@ -31,7 +31,9 @@ type ZoneSubscriberContext = {
       _zoneSubscribe: {value: null, writable: true, configurable: true},
       source: {
         configurable: true,
-        get: function(this: Observable<any>) { return (this as any)._zoneSource; },
+        get: function(this: Observable<any>) {
+          return (this as any)._zoneSource;
+        },
         set: function(this: Observable<any>, source: any) {
           (this as any)._zone = Zone.current;
           (this as any)._zoneSource = source;
@@ -50,26 +52,34 @@ type ZoneSubscriberContext = {
         },
         set: function(this: Observable<any>, subscribe: any) {
           (this as any)._zone = Zone.current;
-          (this as any)._zoneSubscribe = function(this: ZoneSubscriberContext) {
-            if (this._zone && this._zone !== Zone.current) {
-              const tearDown = this._zone.run(subscribe, this, arguments as any);
-              if (tearDown && typeof tearDown === 'function') {
-                const zone = this._zone;
-                return function(this: ZoneSubscriberContext) {
-                  if (zone !== Zone.current) {
-                    return zone.run(tearDown, this, arguments as any);
-                  }
-                  return tearDown.apply(this, arguments);
-                };
+          if (!subscribe) {
+            (this as any)._zoneSubscribe = subscribe;
+          } else {
+            (this as any)._zoneSubscribe = function(this: ZoneSubscriberContext) {
+              if (this._zone && this._zone !== Zone.current) {
+                const tearDown = this._zone.run(subscribe, this, arguments as any);
+                if (typeof tearDown === 'function') {
+                  const zone = this._zone;
+                  return function(this: ZoneSubscriberContext) {
+                    if (zone !== Zone.current) {
+                      return zone.run(tearDown, this, arguments as any);
+                    }
+                    return tearDown.apply(this, arguments);
+                  };
+                } else {
+                  return tearDown;
+                }
+              } else {
+                return subscribe.apply(this, arguments);
               }
-              return tearDown;
-            }
-            return subscribe.apply(this, arguments);
-          };
+            };
+          }
         }
       },
       subjectFactory: {
-        get: function() { return (this as any)._zoneSubjectFactory; },
+        get: function() {
+          return (this as any)._zoneSubjectFactory;
+        },
         set: function(factory: any) {
           const zone = this._zone;
           this._zoneSubjectFactory = function() {
@@ -113,12 +123,17 @@ type ZoneSubscriberContext = {
         },
         set: function(this: Subscription, unsubscribe: any) {
           (this as any)._zone = Zone.current;
-          (this as any)._zoneUnsubscribe = function() {
-            if (this._zone && this._zone !== Zone.current) {
-              return this._zone.run(unsubscribe, this, arguments);
-            }
-            return unsubscribe.apply(this, arguments);
-          };
+          if (!unsubscribe) {
+            (this as any)._zoneUnsubscribe = unsubscribe;
+          } else {
+            (this as any)._zoneUnsubscribe = function() {
+              if (this._zone && this._zone !== Zone.current) {
+                return this._zone.run(unsubscribe, this, arguments);
+              } else {
+                return unsubscribe.apply(this, arguments);
+              }
+            };
+          }
         }
       }
     });
@@ -131,7 +146,9 @@ type ZoneSubscriberContext = {
 
     Object.defineProperty(Subscriber.prototype, 'destination', {
       configurable: true,
-      get: function(this: Subscriber<any>) { return (this as any)._zoneDestination; },
+      get: function(this: Subscriber<any>) {
+        return (this as any)._zoneDestination;
+      },
       set: function(this: Subscriber<any>, destination: any) {
         (this as any)._zone = Zone.current;
         (this as any)._zoneDestination = destination;

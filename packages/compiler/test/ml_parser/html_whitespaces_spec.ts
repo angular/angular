@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,7 +15,6 @@ import {humanizeDom} from './ast_spec_utils';
 
 {
   describe('removeWhitespaces', () => {
-
     function parseAndRemoveWS(template: string, options?: TokenizeOptions): any[] {
       return humanizeDom(removeWhitespaces(new HtmlParser().parse(template, 'TestComp', options)));
     }

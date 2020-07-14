@@ -1,18 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CustomTransformers, Program, defaultGatherDiagnostics} from '@angular/compiler-cli';
+import {CustomTransformers, defaultGatherDiagnostics, Program} from '@angular/compiler-cli';
 import * as api from '@angular/compiler-cli/src/transformers/api';
 import * as ts from 'typescript';
 
 import {createCompilerHost, createProgram} from '../../index';
 import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
-import {AbsoluteFsPath, FileSystem, NgtscCompilerHost, absoluteFrom, getFileSystem} from '../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, NgtscCompilerHost} from '../../src/ngtsc/file_system';
 import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
 import {IndexedComponent} from '../../src/ngtsc/indexer';
 import {NgtscProgram} from '../../src/ngtsc/program';
@@ -57,7 +57,9 @@ export class NgtscTestEnvironment {
         "noEmitOnError": true,
         "strictNullChecks": true,
         "outDir": "built",
+        "rootDir": ".",
         "baseUrl": ".",
+        "allowJs": true,
         "declaration": true,
         "target": "es5",
         "newLine": "lf",
@@ -115,15 +117,31 @@ export class NgtscTestEnvironment {
     if (this.multiCompileHostExt === null) {
       throw new Error(`Not tracking written files - call enableMultipleCompilations()`);
     }
-    this.changedResources !.clear();
+    this.changedResources!.clear();
     this.multiCompileHostExt.flushWrittenFileTracking();
+  }
+
+  getTsProgram(): ts.Program {
+    if (this.oldProgram === null) {
+      throw new Error('No ts.Program has been created yet.');
+    }
+    return this.oldProgram.getTsProgram();
+  }
+
+  getReuseTsProgram(): ts.Program {
+    if (this.oldProgram === null) {
+      throw new Error('No ts.Program has been created yet.');
+    }
+    return (this.oldProgram as NgtscProgram).getReuseTsProgram();
   }
 
   /**
    * Older versions of the CLI do not provide the `CompilerHost.getModifiedResourceFiles()` method.
    * This results in the `changedResources` set being `null`.
    */
-  simulateLegacyCLICompilerHost() { this.changedResources = null; }
+  simulateLegacyCLICompilerHost() {
+    this.changedResources = null;
+  }
 
   getFilesWrittenSinceLastFlush(): Set<string> {
     if (this.multiCompileHostExt === null) {
@@ -142,7 +160,7 @@ export class NgtscTestEnvironment {
     const absFilePath = this.fs.resolve(this.basePath, fileName);
     if (this.multiCompileHostExt !== null) {
       this.multiCompileHostExt.invalidate(absFilePath);
-      this.changedResources !.add(absFilePath);
+      this.changedResources!.add(absFilePath);
     }
     this.fs.ensureDir(this.fs.dirname(absFilePath));
     this.fs.writeFile(absFilePath, content);
@@ -156,12 +174,16 @@ export class NgtscTestEnvironment {
     this.multiCompileHostExt.invalidate(absFilePath);
   }
 
-  tsconfig(extraOpts: {[key: string]: string | boolean | null} = {}, extraRootDirs?: string[]):
-      void {
+  tsconfig(
+      extraOpts: {[key: string]: string|boolean|null} = {}, extraRootDirs?: string[],
+      files?: string[]): void {
     const tsconfig: {[key: string]: any} = {
       extends: './tsconfig-base.json',
       angularCompilerOptions: {...extraOpts, enableIvy: true},
     };
+    if (files !== undefined) {
+      tsconfig['files'] = files;
+    }
     if (extraRootDirs !== undefined) {
       tsconfig.compilerOptions = {
         rootDirs: ['.', ...extraRootDirs],
@@ -179,7 +201,7 @@ export class NgtscTestEnvironment {
    */
   driveMain(customTransformers?: CustomTransformers): void {
     const errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    let reuseProgram: {program: Program | undefined}|undefined = undefined;
+    let reuseProgram: {program: Program|undefined}|undefined = undefined;
     if (this.multiCompileHostExt !== null) {
       reuseProgram = {
         program: this.oldProgram || undefined,
@@ -191,7 +213,7 @@ export class NgtscTestEnvironment {
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
     if (this.multiCompileHostExt !== null) {
-      this.oldProgram = reuseProgram !.program !;
+      this.oldProgram = reuseProgram!.program!;
     }
   }
 
@@ -200,7 +222,7 @@ export class NgtscTestEnvironment {
    */
   driveDiagnostics(): ReadonlyArray<ts.Diagnostic> {
     // ngtsc only produces ts.Diagnostic messages.
-    let reuseProgram: {program: Program | undefined}|undefined = undefined;
+    let reuseProgram: {program: Program|undefined}|undefined = undefined;
     if (this.multiCompileHostExt !== null) {
       reuseProgram = {
         program: this.oldProgram || undefined,
@@ -212,7 +234,7 @@ export class NgtscTestEnvironment {
 
 
     if (this.multiCompileHostExt !== null) {
-      this.oldProgram = reuseProgram !.program !;
+      this.oldProgram = reuseProgram!.program!;
     }
 
     // In ngtsc, only `ts.Diagnostic`s are produced.
@@ -245,7 +267,7 @@ export class NgtscTestEnvironment {
 }
 
 class AugmentedCompilerHost extends NgtscCompilerHost {
-  delegate !: ts.CompilerHost;
+  delegate!: ts.CompilerHost;
 }
 
 const ROOT_PREFIX = 'root/';
@@ -283,7 +305,7 @@ class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.Co
       fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void,
       shouldCreateNewSourceFile?: boolean): ts.SourceFile|undefined {
     if (this.cache.has(fileName)) {
-      return this.cache.get(fileName) !;
+      return this.cache.get(fileName)!;
     }
     const sf = super.getSourceFile(fileName, languageVersion);
     if (sf !== undefined) {
@@ -292,7 +314,9 @@ class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.Co
     return sf;
   }
 
-  flushWrittenFileTracking(): void { this.writtenFiles.clear(); }
+  flushWrittenFileTracking(): void {
+    this.writtenFiles.clear();
+  }
 
   writeFile(
       fileName: string, data: string, writeByteOrderMark: boolean,
@@ -302,9 +326,13 @@ class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.Co
     this.writtenFiles.add(fileName);
   }
 
-  getFilesWrittenSinceLastFlush(): Set<string> { return this.writtenFiles; }
+  getFilesWrittenSinceLastFlush(): Set<string> {
+    return this.writtenFiles;
+  }
 
-  invalidate(fileName: string): void { this.cache.delete(fileName); }
+  invalidate(fileName: string): void {
+    this.cache.delete(fileName);
+  }
 }
 
 class ResourceLoadingCompileHost extends AugmentedCompilerHost implements api.CompilerHost {
@@ -323,7 +351,7 @@ function makeWrapHost(wrapped: AugmentedCompilerHost): (host: ts.CompilerHost) =
     return new Proxy(delegate, {
       get: (target: ts.CompilerHost, name: string): any => {
         if ((wrapped as any)[name] !== undefined) {
-          return (wrapped as any)[name] !.bind(wrapped);
+          return (wrapped as any)[name]!.bind(wrapped);
         }
         return (target as any)[name];
       }

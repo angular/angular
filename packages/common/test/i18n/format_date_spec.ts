@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,35 +12,50 @@ import localeEnExtra from '@angular/common/locales/extra/en';
 import localeHu from '@angular/common/locales/hu';
 import localeSr from '@angular/common/locales/sr';
 import localeTh from '@angular/common/locales/th';
-import {isDate, toDate, formatDate} from '@angular/common/src/i18n/format_date';
-import {ɵDEFAULT_LOCALE_ID, ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
+import {formatDate, isDate, toDate} from '@angular/common/src/i18n/format_date';
+import {ɵDEFAULT_LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
 describe('Format date', () => {
   describe('toDate', () => {
-    it('should support date', () => { expect(isDate(toDate(new Date()))).toBeTruthy(); });
+    it('should support date', () => {
+      expect(isDate(toDate(new Date()))).toBeTruthy();
+    });
 
-    it('should support int', () => { expect(isDate(toDate(123456789))).toBeTruthy(); });
+    it('should support int', () => {
+      expect(isDate(toDate(123456789))).toBeTruthy();
+    });
 
-    it('should support numeric strings',
-       () => { expect(isDate(toDate('123456789'))).toBeTruthy(); });
+    it('should support numeric strings', () => {
+      expect(isDate(toDate('123456789'))).toBeTruthy();
+    });
 
-    it('should support decimal strings',
-       () => { expect(isDate(toDate('123456789.11'))).toBeTruthy(); });
+    it('should support decimal strings', () => {
+      expect(isDate(toDate('123456789.11'))).toBeTruthy();
+    });
 
-    it('should support ISO string',
-       () => { expect(isDate(toDate('2015-06-15T21:43:11Z'))).toBeTruthy(); });
+    it('should support ISO string', () => {
+      expect(isDate(toDate('2015-06-15T21:43:11Z'))).toBeTruthy();
+    });
 
-    it('should throw for empty string', () => { expect(() => toDate('')).toThrow(); });
+    it('should throw for empty string', () => {
+      expect(() => toDate('')).toThrow();
+    });
 
-    it('should throw for alpha numeric strings',
-       () => { expect(() => toDate('123456789 hello')).toThrow(); });
+    it('should throw for alpha numeric strings', () => {
+      expect(() => toDate('123456789 hello')).toThrow();
+    });
 
-    it('should throw for NaN', () => { expect(() => toDate(Number.NaN)).toThrow(); });
+    it('should throw for NaN', () => {
+      expect(() => toDate(Number.NaN)).toThrow();
+    });
 
-    it('should support ISO string without time',
-       () => { expect(isDate(toDate('2015-01-01'))).toBeTruthy(); });
+    it('should support ISO string without time', () => {
+      expect(isDate(toDate('2015-01-01'))).toBeTruthy();
+    });
 
-    it('should throw for objects', () => { expect(() => toDate({} as any)).toThrow(); });
+    it('should throw for objects', () => {
+      expect(() => toDate({} as any)).toThrow();
+    });
   });
 
   describe('formatDate', () => {
@@ -49,7 +64,7 @@ describe('Format date', () => {
     let date: Date;
 
     // Check the transformation of a date into a pattern
-    function expectDateFormatAs(date: Date | string, pattern: any, output: string): void {
+    function expectDateFormatAs(date: Date|string, pattern: any, output: string): void {
       expect(formatDate(date, pattern, ɵDEFAULT_LOCALE_ID))
           .toEqual(output, `pattern: "${pattern}"`);
     }
@@ -65,7 +80,9 @@ describe('Format date', () => {
 
     afterAll(() => ɵunregisterLocaleData());
 
-    beforeEach(() => { date = new Date(2015, 5, 15, 9, 3, 1, 550); });
+    beforeEach(() => {
+      date = new Date(2015, 5, 15, 9, 3, 1, 550);
+    });
 
     it('should format each component correctly', () => {
       const dateFixtures: any = {
@@ -185,12 +202,30 @@ describe('Format date', () => {
         BBBBB: 'mi',
       };
 
+      const midnightCrossingPeriods: any = {
+        b: 'night',
+        bb: 'night',
+        bbb: 'night',
+        bbbb: 'night',
+        bbbbb: 'night',
+        B: 'at night',
+        BB: 'at night',
+        BBB: 'at night',
+        BBBB: 'at night',
+        BBBBB: 'at night',
+      };
+
       Object.keys(dateFixtures).forEach((pattern: string) => {
         expectDateFormatAs(date, pattern, dateFixtures[pattern]);
       });
 
       Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
         expectDateFormatAs(isoStringWithoutTime, pattern, isoStringWithoutTimeFixtures[pattern]);
+      });
+
+      const nightTime = new Date(2015, 5, 15, 2, 3, 1, 550);
+      Object.keys(midnightCrossingPeriods).forEach(pattern => {
+        expectDateFormatAs(nightTime, pattern, midnightCrossingPeriods[pattern]);
       });
     });
 
@@ -293,7 +328,7 @@ describe('Format date', () => {
     });
 
     it('should remove bidi control characters',
-       () => expect(formatDate(date, 'MM/dd/yyyy', ɵDEFAULT_LOCALE_ID) !.length).toEqual(10));
+       () => expect(formatDate(date, 'MM/dd/yyyy', ɵDEFAULT_LOCALE_ID)!.length).toEqual(10));
 
     it(`should format the date correctly in various locales`, () => {
       expect(formatDate(date, 'short', 'de')).toEqual('15.06.15, 09:03');

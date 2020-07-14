@@ -170,7 +170,6 @@ Angular는 일정한 주기로 릴리즈됩니다. 많은 개발자들이 버전
 -->
 ## 관리 정책과 일정
 
-<!--
 All of our major releases are supported for 18 months.
 
 * 6 months of *active support*, during which regularly-scheduled updates and patches are released.
@@ -182,25 +181,11 @@ The following table provides the status for Angular versions under support.
 
 Version | Status | Released     | Active Ends  | LTS Ends
 ------- | ------ | ------------ | ------------ | ------------
-^8.0.0  | Active | May 28, 2019 | Nov 28, 2019 | Nov 28, 2020
-^7.0.0  | LTS    | Oct 18, 2018 | Apr 18, 2019 | Apr 18, 2020
+^10.0.0 | Active | Jun 24, 2020 | Dec 24, 2020 | Dec 24, 2021
+^9.0.0  | Active | Feb 06, 2020 | Aug 06, 2020 | Aug 06, 2021
+^8.0.0  | LTS    | May 28, 2019 | Nov 28, 2019 | Nov 28, 2020
 
-Angular versions ^4.0.0, ^5.0.0 and ^6.0.0 are no longer under support.
--->
-메이저 버전은 18개월동안 관리됩니다.
-
-* 첫 6개월은 *적극적인 지원(active support)* 기간입니다. 이 기간중에는 정기적으로 업데이트되고 패치도 배포됩니다.
-
-* 다음 12개월은 *장기 지원(long-term support, LTS)* 기간입니다. 이 기간 중에는 꼭 수정되어야 하는 버그나 보안에 대한 패치만 배포됩니다.
-
-그래서 Angular 5.0.0 이후 버전은 다음과 같은 일정으로 관리되고 있습니다.
-
-버전 | 단계 | 릴리즈     | 적극적인 지원 종료  | LTS 종료
-------- | ------ | ------------ | ------------ | ------------ 
-^8.0.0  | Active | 2019. 5. 28 | 2019. 11. 28 | 2020. 11. 28
-^7.0.0  | LTS    | 2018. 10. 18 | 2019. 4. 18 | 2020. 4. 18
-
-Angular ^4.0.0 버전과 ^5.0.0 버전, ^6.0.0 버전에 대한 지원은 종료되었습니다.
+Angular versions ^4.0.0, ^5.0.0, ^6.0.0 and ^7.0.0 are no longer under support.
 
 {@a deprecation}
 {@a deprecation-practices}

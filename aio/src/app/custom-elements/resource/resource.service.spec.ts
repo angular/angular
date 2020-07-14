@@ -96,13 +96,11 @@ function getTestResources() {
           "resources": {
             "Cat3 SubCat1 Res1": {
               "desc": "Meetup in Barcelona, Spain. ",
-              "rev": true,
               "title": "Angular Beers",
               "url": "http://www.meetup.com/AngularJS-Beers/"
             },
             "Cat3 SubCat1 Res2": {
               "desc": "Angular Camps in Barcelona, Spain.",
-              "rev": true,
               "title": "Angular Camp",
               "url": "http://angularcamp.org/"
             }
@@ -113,7 +111,6 @@ function getTestResources() {
           "resources": {
             "Cat3 SubCat2 Res1": {
               "desc": "A community index of components and libraries",
-              "rev": true,
               "title": "Catalog of Angular Components & Libraries",
               "url": "https://a/b/c"
             }
@@ -129,19 +126,16 @@ function getTestResources() {
           "resources": {
             "S S S": {
               "desc": "SSS",
-              "rev": true,
               "title": "Sssss",
               "url": "http://s/s/s"
             },
             "A A A": {
              "desc": "AAA",
-              "rev": true,
               "title": "Aaaa",
               "url": "http://a/a/a"
             },
             "Z Z Z": {
              "desc": "ZZZ",
-              "rev": true,
               "title": "Zzzzz",
               "url": "http://z/z/z"
             }

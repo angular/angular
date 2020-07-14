@@ -3,6 +3,7 @@
 # Variables
 readonly projectDir=$(realpath "$(dirname ${BASH_SOURCE[0]})/..")
 readonly envHelpersPath="$projectDir/.circleci/env-helpers.inc.sh";
+readonly bashEnvCachePath="$projectDir/.circleci/bash_env_cache";
 
 # Load helpers and make them available everywhere (through `$BASH_ENV`).
 source $envHelpersPath;
@@ -14,23 +15,23 @@ echo "source $envHelpersPath;" >> $BASH_ENV;
 ####################################################################################################
 # See https://circleci.com/docs/2.0/env-vars/#built-in-environment-variables for more info.
 ####################################################################################################
+setPublicVar CI "$CI"
 setPublicVar PROJECT_ROOT "$projectDir";
 setPublicVar CI_AIO_MIN_PWA_SCORE "95";
 # This is the branch being built; e.g. `pull/12345` for PR builds.
 setPublicVar CI_BRANCH "$CIRCLE_BRANCH";
 setPublicVar CI_BUILD_URL "$CIRCLE_BUILD_URL";
-# ChromeDriver version compatible with the Chrome version included in the docker image used in
-# `.circleci/config.yml`. See http://chromedriver.chromium.org/downloads for a list of versions.
-# This variable is intended to be passed as an arg to the `webdriver-manager update` command (e.g.
-# `"postinstall": "webdriver-manager update $CI_CHROMEDRIVER_VERSION_ARG"`).
-setPublicVar CI_CHROMEDRIVER_VERSION_ARG "--versions.chrome 79.0.3945.130";
 setPublicVar CI_COMMIT "$CIRCLE_SHA1";
 # `CI_COMMIT_RANGE` is only used on push builds (a.k.a. non-PR, non-scheduled builds and rerun
 # workflows of such builds).
+setPublicVar CI_GIT_BASE_REVISION "${CIRCLE_GIT_BASE_REVISION}";
+setPublicVar CI_GIT_REVISION "${CIRCLE_GIT_REVISION}";
 setPublicVar CI_COMMIT_RANGE "$CIRCLE_GIT_BASE_REVISION..$CIRCLE_GIT_REVISION";
 setPublicVar CI_PULL_REQUEST "${CIRCLE_PR_NUMBER:-false}";
 setPublicVar CI_REPO_NAME "$CIRCLE_PROJECT_REPONAME";
 setPublicVar CI_REPO_OWNER "$CIRCLE_PROJECT_USERNAME";
+setPublicVar CI_PR_REPONAME "$CIRCLE_PR_REPONAME";
+setPublicVar CI_PR_USERNAME "$CIRCLE_PR_USERNAME";
 
 
 ####################################################################################################
@@ -73,7 +74,7 @@ setPublicVar COMPONENTS_REPO_TMP_DIR "/tmp/angular-components-repo"
 setPublicVar COMPONENTS_REPO_URL "https://github.com/angular/components.git"
 setPublicVar COMPONENTS_REPO_BRANCH "master"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
-setPublicVar COMPONENTS_REPO_COMMIT "2ec7254f88c4865e0de251f74c27e64c9d00d40a"
+setPublicVar COMPONENTS_REPO_COMMIT "f428c00465dfcf8a020237f22532480eedbd2cb6"
 
 
 ####################################################################################################
@@ -86,6 +87,22 @@ openssl aes-256-cbc -d -in "${projectDir}/.circleci/gcp_token" \
 # Set bazel configuration for CircleCI runs.
 ####################################################################################################
 cp "${projectDir}/.circleci/bazel.linux.rc" "$HOME/.bazelrc";
+
+####################################################################################################
+# Create shell script in /tmp for Bazel actions to access CI envs without
+# busting the cache. Used by payload-size.sh script in integration tests.
+####################################################################################################
+readonly bazelVarEnv="/tmp/bazel-ci-env.sh"
+echo "# Setup by /.circle/env.sh" > $bazelVarEnv
+echo "export PROJECT_ROOT=\"${PROJECT_ROOT}\";" >> $bazelVarEnv
+echo "export CI_BRANCH=\"${CI_BRANCH}\";" >> $bazelVarEnv
+echo "export CI_BUILD_URL=\"${CI_BUILD_URL}\";" >> $bazelVarEnv
+echo "export CI_COMMIT=\"${CI_COMMIT}\";" >> $bazelVarEnv
+echo "export CI_COMMIT_RANGE=\"${CI_COMMIT_RANGE}\";" >> $bazelVarEnv
+echo "export CI_PULL_REQUEST=\"${CI_PULL_REQUEST}\";" >> $bazelVarEnv
+echo "export CI_REPO_NAME=\"${CI_REPO_NAME}\";" >> $bazelVarEnv
+echo "export CI_REPO_OWNER=\"${CI_REPO_OWNER}\";" >> $bazelVarEnv
+echo "export CI_SECRET_PAYLOAD_FIREBASE_TOKEN=\"${CI_SECRET_PAYLOAD_FIREBASE_TOKEN}\";" >> $bazelVarEnv
 
 ####################################################################################################
 ####################################################################################################

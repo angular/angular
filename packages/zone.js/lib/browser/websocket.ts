@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 
 // we have to patch the instance since the proto is non-configurable
 export function apply(api: _ZonePrivate, _global: any) {
-  const {ADD_EVENT_LISTENER_STR, REMOVE_EVENT_LISTENER_STR} = api.getGlobalObjects() !;
+  const {ADD_EVENT_LISTENER_STR, REMOVE_EVENT_LISTENER_STR} = api.getGlobalObjects()!;
   const WS = (<any>_global).WebSocket;
   // On Safari window.EventTarget doesn't exist so need to patch WS add/removeEventListener
   // On older Chrome, no need since EventTarget was already patched

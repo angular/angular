@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,7 +21,9 @@ export function $injectorFactory() {
 
 @NgModule({providers: [{provide: $INJECTOR, useFactory: $injectorFactory}]})
 export class AngularTestingModule {
-  constructor(i: Injector) { injector = i; }
+  constructor(i: Injector) {
+    injector = i;
+  }
 }
 
 /**

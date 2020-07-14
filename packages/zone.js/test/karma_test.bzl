@@ -11,25 +11,14 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
     rollup_bundle(
         name = name + "_env_rollup",
         testonly = True,
+        sourcemap = "false",
         entry_point = env_entry_point,
+        silent = True,
         deps = [
             ":" + name + "_env",
             "@npm//rollup-plugin-commonjs",
             "@npm//rollup-plugin-node-resolve",
         ],
-    )
-    native.genrule(
-        name = name + "_env_trim_map",
-        testonly = True,
-        srcs = [
-            ":" + name + "_env_rollup.umd",
-        ],
-        outs = [
-            name + "_env_rollup_trim_map.js",
-        ],
-        cmd = " && ".join([
-            "cp $(@D)/" + name + "_env_rollup.umd.js $@",
-        ]),
     )
     ts_library(
         name = name + "_test",
@@ -40,6 +29,8 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
     rollup_bundle(
         name = name + "_rollup",
         testonly = True,
+        silent = True,
+        sourcemap = "false",
         entry_point = test_entry_point,
         config_file = "//packages/zone.js:rollup-es5.config.js",
         deps = [
@@ -47,19 +38,6 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
             "@npm//rollup-plugin-commonjs",
             "@npm//rollup-plugin-node-resolve",
         ],
-    )
-    native.genrule(
-        name = name + "_trim_map",
-        testonly = True,
-        srcs = [
-            ":" + name + "_rollup.umd",
-        ],
-        outs = [
-            name + "_rollup_trim_map.js",
-        ],
-        cmd = " && ".join([
-            "cp $(@D)/" + name + "_rollup.umd.js $@",
-        ]),
     )
 
 def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point, bootstraps, ci):
@@ -71,15 +49,16 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
             first = False
             karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point)
         _karma_test_required_dist_files = [
-            "//packages/zone.js/dist:task-tracking-dist-dev-test",
-            "//packages/zone.js/dist:wtf-dist-dev-test",
-            "//packages/zone.js/dist:webapis-notification-dist-dev-test",
-            "//packages/zone.js/dist:webapis-media-query-dist-dev-test",
-            "//packages/zone.js/dist:zone-patch-canvas-dist-dev-test",
-            "//packages/zone.js/dist:zone-patch-fetch-dist-dev-test",
-            "//packages/zone.js/dist:zone-patch-resize-observer-dist-dev-test",
-            "//packages/zone.js/dist:zone-patch-user-media-dist-dev-test",
-            ":" + name + "_trim_map",
+            "//packages/zone.js/bundles:task-tracking.umd.js",
+            "//packages/zone.js/bundles:wtf.umd.js",
+            "//packages/zone.js/bundles:webapis-notification.umd.js",
+            "//packages/zone.js/bundles:webapis-media-query.umd.js",
+            "//packages/zone.js/bundles:zone-patch-canvas.umd.js",
+            "//packages/zone.js/bundles:zone-patch-fetch.umd.js",
+            "//packages/zone.js/bundles:zone-patch-resize-observer.umd.js",
+            "//packages/zone.js/bundles:zone-patch-message-port.umd.js",
+            "//packages/zone.js/bundles:zone-patch-user-media.umd.js",
+            ":" + name + "_rollup.umd",
         ]
 
         karma_web_test_suite(
@@ -88,10 +67,10 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                 "fake_entry.js",
             ],
             bootstrap = [
-                            ":" + name + "_env_trim_map",
+                            ":" + name + "_env_rollup.umd",
                         ] + bootstrap +
                         _karma_test_required_dist_files,
-            browsers = ["//tools/browsers:chromium"],
+            browsers = ["//dev-infra/browsers:chromium"],
             static_files = [
                 ":assets/sample.json",
                 ":assets/worker.js",
@@ -111,10 +90,10 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                 ],
                 bootstrap = [
                     ":saucelabs.js",
-                    ":" + name + "_env_trim_map",
-                    "//packages/zone.js/dist:zone-testing-bundle-dist-test",
+                    ":" + name + "_env_rollup.umd",
+                    "//packages/zone.js/bundles:zone-testing-bundle.umd.min.js",
                 ] + _karma_test_required_dist_files,
-                browsers = ["//tools/browsers:chromium"],
+                browsers = ["//dev-infra/browsers:chromium"],
                 config_file = "//:karma-js.conf.js",
                 configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
                 data = [

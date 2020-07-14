@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,13 +14,13 @@ import {tsSourceMapBug29300Fixed} from '../../src/ngtsc/util/src/ts_source_map_b
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
 import {NgtscTestEnvironment} from './env';
-import {SegmentMapping, getMappedSegments} from './sourcemap_utils';
+import {getMappedSegments, SegmentMapping} from './sourcemap_utils';
 
 const testFiles = loadStandardTestFiles();
 
 runInEachFileSystem((os) => {
   describe('template source-mapping', () => {
-    let env !: NgtscTestEnvironment;
+    let env!: NgtscTestEnvironment;
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
@@ -176,9 +176,9 @@ runInEachFileSystem((os) => {
           expect(mappings).toContain(
               {source: 'items.push(', generated: 'ctx.items.push(', sourceUrl: '../test.ts'});
           expect(mappings).toContain(
-              {source: `'item' `, generated: `"item"`, sourceUrl: '../test.ts'});
+              {source: `'item'`, generated: `"item"`, sourceUrl: '../test.ts'});
           expect(mappings).toContain({
-            source: '+ items.length)',
+            source: ' + items.length)',
             generated: ' + ctx.items.length)',
             sourceUrl: '../test.ts'
           });
@@ -323,7 +323,6 @@ runInEachFileSystem((os) => {
 
           expect(mappings).toContain(
               {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
-
         });
 
         it('should map ng-template [ngFor] scenario', () => {
@@ -518,7 +517,7 @@ runInEachFileSystem((os) => {
       });
     }
 
-    function compileAndMap(template: string, templateUrl: string | null = null) {
+    function compileAndMap(template: string, templateUrl: string|null = null) {
       const templateConfig = templateUrl ? `templateUrl: '${templateUrl}'` :
                                            ('template: `' + template.replace(/`/g, '\\`') + '`');
       env.tsconfig({sourceMap: true});

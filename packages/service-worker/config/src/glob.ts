@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -29,7 +29,7 @@ export function globToRegex(glob: string, literalQuestionMark = false): string {
   const segments = glob.split('/').reverse();
   let regex: string = '';
   while (segments.length > 0) {
-    const segment = segments.pop() !;
+    const segment = segments.pop()!;
     if (segment === '**') {
       if (segments.length > 0) {
         regex += WILD_OPEN;

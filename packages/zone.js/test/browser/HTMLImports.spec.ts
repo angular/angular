@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -30,7 +30,7 @@ describe('HTML Imports', ifEnvSupports(supportsImports, function() {
                });
              });
 
-             document.head.appendChild(link !);
+             document.head.appendChild(link!);
            });
 
            function supportsOnEvents() {
@@ -56,7 +56,7 @@ describe('HTML Imports', ifEnvSupports(supportsImports, function() {
                  };
                });
 
-               document.head.appendChild(link !);
+               document.head.appendChild(link!);
              });
 
              it('should work with onload', function(done) {
@@ -73,7 +73,7 @@ describe('HTML Imports', ifEnvSupports(supportsImports, function() {
                  };
                });
 
-               document.head.appendChild(link !);
+               document.head.appendChild(link!);
              });
            });
          }));

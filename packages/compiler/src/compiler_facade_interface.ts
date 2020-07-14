@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,16 +13,18 @@
  *
  * This file has two copies. Please ensure that they are in sync:
  *  - packages/compiler/src/compiler_facade_interface.ts             (master)
- *  - packages/core/src/render3/jit/compiler_facade_interface.ts     (copy)
+ *  - packages/core/src/compiler/compiler_facade_interface.ts     (copy)
  *
  * Please ensure that the two files are in sync using this command:
  * ```
  * cp packages/compiler/src/compiler_facade_interface.ts \
- *    packages/core/src/render3/jit/compiler_facade_interface.ts
+ *    packages/core/src/compiler/compiler_facade_interface.ts
  * ```
  */
 
-export interface ExportedCompilerFacade { ɵcompilerFacade: CompilerFacade; }
+export interface ExportedCompilerFacade {
+  ɵcompilerFacade: CompilerFacade;
+}
 
 export interface CompilerFacade {
   compilePipe(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3PipeMetadataFacade):
@@ -44,13 +46,15 @@ export interface CompilerFacade {
 
   R3ResolvedDependencyType: typeof R3ResolvedDependencyType;
   R3FactoryTarget: typeof R3FactoryTarget;
-  ResourceLoader: {new (): ResourceLoader};
+  ResourceLoader: {new(): ResourceLoader};
 }
 
-export interface CoreEnvironment { [name: string]: Function; }
+export interface CoreEnvironment {
+  [name: string]: Function;
+}
 
 export type ResourceLoader = {
-  get(url: string): Promise<string>| string;
+  get(url: string): Promise<string>|string;
 };
 
 export type StringMap = {
@@ -58,7 +62,7 @@ export type StringMap = {
 };
 
 export type StringMapWithRename = {
-  [key: string]: string | [string, string];
+  [key: string]: string|[string, string];
 };
 
 export type Provider = any;

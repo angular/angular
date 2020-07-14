@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -405,7 +405,6 @@ describe('compiler compliance: bindings', () => {
 
       expectEmit(result.source, template, 'Incorrect template');
     });
-
   });
 
   describe('attribute bindings', () => {
@@ -640,13 +639,13 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-        consts: [["target", "_blank", "aria-label", "link", ${AttributeMarker.Bindings}, "title", "id", "customEvent"]],
+        consts: [["target", "_blank", "aria-label", "link", ${
+          AttributeMarker.Bindings}, "title", "id", "customEvent"]],
         …
       `;
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect attribute array');
     });
-
   });
 
   describe('host bindings', () => {
@@ -850,12 +849,15 @@ describe('compiler compliance: bindings', () => {
         HostAttributeComp.ɵcmp = $r3$.ɵɵdefineComponent({
           type: HostAttributeComp,
           selectors: [["my-host-attribute-component"]],
-          hostAttrs: ["title", "hello there from component", ${AttributeMarker.Styles}, "opacity", "1"],
+          hostAttrs: ["title", "hello there from component", ${
+          AttributeMarker.Styles}, "opacity", "1"],
         …
         HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
-          hostAttrs: ["title", "hello there from directive", ${AttributeMarker.Classes}, "one", "two", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+          hostAttrs: ["title", "hello there from directive", ${
+          AttributeMarker.Classes}, "one", "two", ${
+          AttributeMarker.Styles}, "width", "200px", "height", "500px"],
           hostVars: 4,
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx) {
             …
@@ -1138,7 +1140,7 @@ describe('compiler compliance: bindings', () => {
           …
           hostBindings: function MyDirective_HostBindings(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵlistener("mousedown", function MyDirective_mousedown_HostBindingHandler($event) { return ctx.mousedown(); })("mouseup", function MyDirective_mouseup_HostBindingHandler($event) { return ctx.mouseup(); })("click", function MyDirective_click_HostBindingHandler($event) { return ctx.click(); });
+              $r3$.ɵɵlistener("mousedown", function MyDirective_mousedown_HostBindingHandler() { return ctx.mousedown(); })("mouseup", function MyDirective_mouseup_HostBindingHandler() { return ctx.mouseup(); })("click", function MyDirective_click_HostBindingHandler() { return ctx.click(); });
             }
           }
         `;
@@ -1171,7 +1173,7 @@ describe('compiler compliance: bindings', () => {
           …
           hostBindings: function MyComponent_HostBindings(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵcomponentHostSyntheticListener("@animation.done", function MyComponent_animation_animation_done_HostBindingHandler($event) { return ctx.done(); })("@animation.start", function MyComponent_animation_animation_start_HostBindingHandler($event) { return ctx.start(); });
+              $r3$.ɵɵcomponentHostSyntheticListener("@animation.done", function MyComponent_animation_animation_done_HostBindingHandler() { return ctx.done(); })("@animation.start", function MyComponent_animation_animation_start_HostBindingHandler() { return ctx.start(); });
             }
           }
         `;
@@ -1209,14 +1211,13 @@ describe('compiler compliance: bindings', () => {
         …
         hostBindings: function MyComponent_HostBindings(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵcomponentHostSyntheticListener("@animation.done", function MyComponent_animation_animation_done_HostBindingHandler($event) { return ctx.done(); })("@animation.start", function MyComponent_animation_animation_start_HostBindingHandler($event) { return ctx.start(); });
-            $r3$.ɵɵlistener("mousedown", function MyComponent_mousedown_HostBindingHandler($event) { return ctx.mousedown(); })("mouseup", function MyComponent_mouseup_HostBindingHandler($event) { return ctx.mouseup(); })("click", function MyComponent_click_HostBindingHandler($event) { return ctx.click(); });
+            $r3$.ɵɵcomponentHostSyntheticListener("@animation.done", function MyComponent_animation_animation_done_HostBindingHandler() { return ctx.done(); })("@animation.start", function MyComponent_animation_animation_start_HostBindingHandler() { return ctx.start(); });
+            $r3$.ɵɵlistener("mousedown", function MyComponent_mousedown_HostBindingHandler() { return ctx.mousedown(); })("mouseup", function MyComponent_mouseup_HostBindingHandler() { return ctx.mouseup(); })("click", function MyComponent_click_HostBindingHandler() { return ctx.click(); });
           }
         }
       `;
       expectEmit(result.source, template, 'Incorrect template');
     });
-
   });
 
   describe('non bindable behavior', () => {
@@ -1420,7 +1421,5 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect handling of elements with no children');
     });
-
   });
-
 });

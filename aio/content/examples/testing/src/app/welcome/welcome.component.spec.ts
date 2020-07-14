@@ -58,7 +58,7 @@ describe('WelcomeComponent', () => {
   let el: HTMLElement; // the DOM element with the welcome message
 
   // #docregion setup, user-service-stub
-    let userServiceStub: Partial<UserService>;
+  let userServiceStub: Partial<UserService>;
 
   // #enddocregion user-service-stub
   beforeEach(() => {
@@ -66,7 +66,7 @@ describe('WelcomeComponent', () => {
     // #docregion user-service-stub
     userServiceStub = {
       isLoggedIn: true,
-      user: { name: 'Test User'}
+      user: { name: 'Test User' },
     };
     // #enddocregion user-service-stub
 
@@ -74,10 +74,10 @@ describe('WelcomeComponent', () => {
     TestBed.configureTestingModule({
        declarations: [ WelcomeComponent ],
     // #enddocregion setup
-    // providers:    [ UserService ]  // NO! 프로바이더에 실제 서비스 클래스를 등록하면 안됩니다!
-                                      // 목 서비스를 등록하세요.
+    // providers: [ UserService ],  // NO! 프로바이더에 실제 서비스 클래스를 등록하면 안됩니다!
+                                    // 목 서비스를 등록하세요.
     // #docregion setup
-       providers:    [ {provide: UserService, useValue: userServiceStub } ]
+       providers: [ { provide: UserService, useValue: userServiceStub } ],
     });
     // #enddocregion config-test-module
 
@@ -85,7 +85,7 @@ describe('WelcomeComponent', () => {
     comp    = fixture.componentInstance;
 
     // #enddocregion setup
-   // #docregion injected-service
+    // #docregion injected-service
     // 컴포넌트에 주입된 UserService를 가져옵니다.
     userService = fixture.debugElement.injector.get(UserService);
     // #enddocregion injected-service
@@ -132,14 +132,4 @@ describe('WelcomeComponent', () => {
   it('TestBed and Component UserService should be the same', () => {
     expect(userService === componentUserService).toBe(true);
   });
-
-  // #docregion stub-not-injected
-  it('stub object and injected UserService should not be the same', () => {
-    expect(userServiceStub === userService).toBe(false);
-
-    // 목 객체의 프로퍼티 값을 변경해도 의존성으로 주입된 서비스에는 반영되지 않습니다.
-    userServiceStub.isLoggedIn = false;
-    expect(userService.isLoggedIn).toBe(true);
-  });
-  // #enddocregion stub-not-injected
 });

@@ -1,21 +1,20 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Inject, Injectable, InjectionToken, Injector, NgModule, Optional, forwardRef} from '@angular/core';
-import {TestBed, async, inject} from '@angular/core/testing';
+import {CommonModule} from '@angular/common';
+import {Component, Directive, forwardRef, Inject, Injectable, InjectionToken, Injector, NgModule, Optional} from '@angular/core';
+import {async, inject, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
+import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 describe('providers', () => {
-
   describe('inheritance', () => {
-
     it('should NOT inherit providers', () => {
       const SOME_DIRS = new InjectionToken('someDirs');
 
@@ -52,7 +51,6 @@ describe('providers', () => {
       expect(otherDir.dirs.length).toEqual(1);
       expect(otherDir.dirs[0] instanceof SubDirective).toBe(true);
     });
-
   });
 
   describe('lifecycles', () => {
@@ -61,7 +59,9 @@ describe('providers', () => {
 
       @Injectable()
       class SuperInjectableWithDestroyHook {
-        ngOnDestroy() { logs.push('OnDestroy'); }
+        ngOnDestroy() {
+          logs.push('OnDestroy');
+        }
       }
 
       @Injectable()
@@ -86,7 +86,9 @@ describe('providers', () => {
 
       @Injectable()
       class InjectableWithDestroyHook {
-        ngOnDestroy() { logs.push('OnDestroy'); }
+        ngOnDestroy() {
+          logs.push('OnDestroy');
+        }
       }
 
       @Component({template: '', providers: [InjectableWithDestroyHook]})
@@ -106,7 +108,9 @@ describe('providers', () => {
 
       @Injectable()
       class InjectableWithDestroyHook {
-        ngOnDestroy() { logs.push('OnDestroy'); }
+        ngOnDestroy() {
+          logs.push('OnDestroy');
+        }
       }
 
       @Component({selector: 'my-cmp', template: ''})
@@ -137,7 +141,9 @@ describe('providers', () => {
 
       @Injectable()
       class InjectableWithDestroyHook {
-        ngOnDestroy() { logs.push('OnDestroy'); }
+        ngOnDestroy() {
+          logs.push('OnDestroy');
+        }
       }
 
       @Component({
@@ -162,12 +168,16 @@ describe('providers', () => {
 
           @Injectable()
           class InjectableWithDestroyHookToken {
-            ngOnDestroy() { logs.push('OnDestroy Token'); }
+            ngOnDestroy() {
+              logs.push('OnDestroy Token');
+            }
           }
 
           @Injectable()
           class InjectableWithDestroyHookValue {
-            ngOnDestroy() { logs.push('OnDestroy Value'); }
+            ngOnDestroy() {
+              logs.push('OnDestroy Value');
+            }
           }
 
           @Component({
@@ -193,21 +203,23 @@ describe('providers', () => {
 
       @Injectable()
       class InjectableWithDestroyHookToken {
-        ngOnDestroy() { logs.push('OnDestroy Token'); }
+        ngOnDestroy() {
+          logs.push('OnDestroy Token');
+        }
       }
 
       @Injectable()
       class InjectableWithDestroyHookExisting {
-        ngOnDestroy() { logs.push('OnDestroy Existing'); }
+        ngOnDestroy() {
+          logs.push('OnDestroy Existing');
+        }
       }
 
       @Component({
         template: '',
         providers: [
-          InjectableWithDestroyHookExisting, {
-            provide: InjectableWithDestroyHookToken,
-            useExisting: InjectableWithDestroyHookExisting
-          }
+          InjectableWithDestroyHookExisting,
+          {provide: InjectableWithDestroyHookToken, useExisting: InjectableWithDestroyHookExisting}
         ]
       })
       class App {
@@ -223,10 +235,322 @@ describe('providers', () => {
       expect(logs).toEqual(['OnDestroy Existing']);
     });
 
+    it('should invoke ngOnDestroy with the correct context when providing a type provider multiple times on the same node',
+       () => {
+         const resolvedServices: (DestroyService|undefined)[] = [];
+         const destroyContexts: (DestroyService|undefined)[] = [];
+         let parentService: DestroyService|undefined;
+         let childService: DestroyService|undefined;
+
+         @Injectable()
+         class DestroyService {
+           constructor() {
+             resolvedServices.push(this);
+           }
+           ngOnDestroy() {
+             destroyContexts.push(this);
+           }
+         }
+
+         @Directive({selector: '[dir-one]', providers: [DestroyService]})
+         class DirOne {
+           constructor(service: DestroyService) {
+             childService = service;
+           }
+         }
+
+         @Directive({selector: '[dir-two]', providers: [DestroyService]})
+         class DirTwo {
+           constructor(service: DestroyService) {
+             childService = service;
+           }
+         }
+
+         @Component({template: '<div dir-one dir-two></div>', providers: [DestroyService]})
+         class App {
+           constructor(service: DestroyService) {
+             parentService = service;
+           }
+         }
+
+         TestBed.configureTestingModule({declarations: [App, DirOne, DirTwo]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         fixture.destroy();
+
+         expect(parentService).toBeDefined();
+         expect(childService).toBeDefined();
+         expect(parentService).not.toBe(childService);
+         expect(resolvedServices).toEqual([parentService, childService]);
+         expect(destroyContexts).toEqual([parentService, childService]);
+       });
+
+    onlyInIvy('Destroy hook of useClass provider is invoked correctly')
+        .it('should invoke ngOnDestroy with the correct context when providing a class provider multiple times on the same node',
+            () => {
+              const resolvedServices: (DestroyService|undefined)[] = [];
+              const destroyContexts: (DestroyService|undefined)[] = [];
+              const token = new InjectionToken<any>('token');
+              let parentService: DestroyService|undefined;
+              let childService: DestroyService|undefined;
+
+              @Injectable()
+              class DestroyService {
+                constructor() {
+                  resolvedServices.push(this);
+                }
+                ngOnDestroy() {
+                  destroyContexts.push(this);
+                }
+              }
+
+              @Directive(
+                  {selector: '[dir-one]', providers: [{provide: token, useClass: DestroyService}]})
+              class DirOne {
+                constructor(@Inject(token) service: DestroyService) {
+                  childService = service;
+                }
+              }
+
+              @Directive(
+                  {selector: '[dir-two]', providers: [{provide: token, useClass: DestroyService}]})
+              class DirTwo {
+                constructor(@Inject(token) service: DestroyService) {
+                  childService = service;
+                }
+              }
+
+              @Component({
+                template: '<div dir-one dir-two></div>',
+                providers: [{provide: token, useClass: DestroyService}]
+              })
+              class App {
+                constructor(@Inject(token) service: DestroyService) {
+                  parentService = service;
+                }
+              }
+
+              TestBed.configureTestingModule({declarations: [App, DirOne, DirTwo]});
+              const fixture = TestBed.createComponent(App);
+              fixture.detectChanges();
+              fixture.destroy();
+
+              expect(parentService).toBeDefined();
+              expect(childService).toBeDefined();
+              expect(parentService).not.toBe(childService);
+              expect(resolvedServices).toEqual([parentService, childService]);
+              expect(destroyContexts).toEqual([parentService, childService]);
+            });
+
+
+    onlyInIvy('ngOnDestroy hooks for multi providers were not supported in ViewEngine')
+        .describe('ngOnDestroy on multi providers', () => {
+          it('should invoke ngOnDestroy on multi providers with the correct context', () => {
+            const destroyCalls: any[] = [];
+            const SERVICES = new InjectionToken<any>('SERVICES');
+
+            @Injectable()
+            class DestroyService {
+              ngOnDestroy() {
+                destroyCalls.push(this);
+              }
+            }
+
+            @Injectable()
+            class OtherDestroyService {
+              ngOnDestroy() {
+                destroyCalls.push(this);
+              }
+            }
+
+            @Component({
+              template: '<div></div>',
+              providers: [
+                {provide: SERVICES, useClass: DestroyService, multi: true},
+                {provide: SERVICES, useClass: OtherDestroyService, multi: true},
+              ]
+            })
+            class App {
+              constructor(@Inject(SERVICES) s: any) {}
+            }
+
+            TestBed.configureTestingModule({declarations: [App]});
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+            fixture.destroy();
+
+            expect(destroyCalls).toEqual([
+              jasmine.any(DestroyService), jasmine.any(OtherDestroyService)
+            ]);
+          });
+
+          it('should invoke destroy hooks on multi providers with the correct context, if only some have a destroy hook',
+             () => {
+               const destroyCalls: any[] = [];
+               const SERVICES = new InjectionToken<any>('SERVICES');
+
+               @Injectable()
+               class Service1 {
+               }
+
+               @Injectable()
+               class Service2 {
+                 ngOnDestroy() {
+                   destroyCalls.push(this);
+                 }
+               }
+
+               @Injectable()
+               class Service3 {
+               }
+
+               @Injectable()
+               class Service4 {
+                 ngOnDestroy() {
+                   destroyCalls.push(this);
+                 }
+               }
+
+               @Component({
+                 template: '<div></div>',
+                 providers: [
+                   {provide: SERVICES, useClass: Service1, multi: true},
+                   {provide: SERVICES, useClass: Service2, multi: true},
+                   {provide: SERVICES, useClass: Service3, multi: true},
+                   {provide: SERVICES, useClass: Service4, multi: true},
+                 ]
+               })
+               class App {
+                 constructor(@Inject(SERVICES) s: any) {}
+               }
+
+               TestBed.configureTestingModule({declarations: [App]});
+               const fixture = TestBed.createComponent(App);
+               fixture.detectChanges();
+               fixture.destroy();
+
+               expect(destroyCalls).toEqual([jasmine.any(Service2), jasmine.any(Service4)]);
+             });
+
+          it('should not invoke ngOnDestroy on multi providers created via useFactory', () => {
+            let destroyCalls = 0;
+            const SERVICES = new InjectionToken<any>('SERVICES');
+
+            @Injectable()
+            class DestroyService {
+              ngOnDestroy() {
+                destroyCalls++;
+              }
+            }
+
+            @Injectable()
+            class OtherDestroyService {
+              ngOnDestroy() {
+                destroyCalls++;
+              }
+            }
+
+            @Component({
+              template: '<div></div>',
+              providers: [
+                {provide: SERVICES, useFactory: () => new DestroyService(), multi: true},
+                {provide: SERVICES, useFactory: () => new OtherDestroyService(), multi: true},
+              ]
+            })
+            class App {
+              constructor(@Inject(SERVICES) s: any) {}
+            }
+
+            TestBed.configureTestingModule({declarations: [App]});
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+            fixture.destroy();
+
+            expect(destroyCalls).toBe(0);
+          });
+        });
+
+    modifiedInIvy('ViewEngine did not support destroy hooks on multi providers')
+        .it('should not invoke ngOnDestroy on multi providers', () => {
+          let destroyCalls = 0;
+          const SERVICES = new InjectionToken<any>('SERVICES');
+
+          @Injectable()
+          class DestroyService {
+            ngOnDestroy() {
+              destroyCalls++;
+            }
+          }
+
+          @Injectable()
+          class OtherDestroyService {
+            ngOnDestroy() {
+              destroyCalls++;
+            }
+          }
+
+          @Component({
+            template: '<div></div>',
+            providers: [
+              {provide: SERVICES, useClass: DestroyService, multi: true},
+              {provide: SERVICES, useClass: OtherDestroyService, multi: true},
+            ]
+          })
+          class App {
+            constructor(@Inject(SERVICES) s: any) {}
+          }
+
+          TestBed.configureTestingModule({declarations: [App]});
+          const fixture = TestBed.createComponent(App);
+          fixture.detectChanges();
+          fixture.destroy();
+
+          expect(destroyCalls).toBe(0);
+        });
+
+    it('should call ngOnDestroy if host component is destroyed', () => {
+      const logs: string[] = [];
+
+      @Injectable()
+      class InjectableWithDestroyHookToken {
+        ngOnDestroy() {
+          logs.push('OnDestroy Token');
+        }
+      }
+
+      @Component({
+        selector: 'comp-with-provider',
+        template: '',
+        providers: [InjectableWithDestroyHookToken],
+      })
+      class CompWithProvider {
+        constructor(token: InjectableWithDestroyHookToken) {}
+      }
+
+      @Component({
+        selector: 'app',
+        template: '<comp-with-provider *ngIf="condition"></comp-with-provider>',
+      })
+      class App {
+        condition = true;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, CompWithProvider],
+        imports: [CommonModule],
+      });
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.componentInstance.condition = false;
+      fixture.detectChanges();
+
+      expect(logs).toEqual(['OnDestroy Token']);
+    });
   });
 
   describe('components and directives', () => {
-
     class MyService {
       value = 'some value';
     }
@@ -286,7 +610,6 @@ describe('providers', () => {
   });
 
   describe('forward refs', () => {
-
     it('should support forward refs in provider deps', () => {
       class MyService {
         constructor(public dep: {value: string}) {}
@@ -321,7 +644,6 @@ describe('providers', () => {
     });
 
     it('should support forward refs in useClass when impl version is also provided', () => {
-
       @Injectable({providedIn: 'root', useClass: forwardRef(() => SomeProviderImpl)})
       abstract class SomeProvider {
       }
@@ -344,34 +666,32 @@ describe('providers', () => {
     });
 
 
-    onlyInIvy('VE bug (see FW-1454)')
-        .it('should support forward refs in useClass when token is provided', () => {
+    it('should support forward refs in useClass when token is provided', () => {
+      @Injectable({providedIn: 'root'})
+      abstract class SomeProvider {
+      }
 
-          @Injectable({providedIn: 'root', useClass: forwardRef(() => SomeProviderImpl)})
-          abstract class SomeProvider {
-          }
+      @Injectable()
+      class SomeProviderImpl extends SomeProvider {
+      }
 
-          @Injectable()
-          class SomeProviderImpl extends SomeProvider {
-          }
+      @Component({selector: 'my-app', template: ''})
+      class App {
+        constructor(public foo: SomeProvider) {}
+      }
 
-          @Component({selector: 'my-app', template: ''})
-          class App {
-            constructor(public foo: SomeProvider) {}
-          }
+      TestBed.configureTestingModule({
+        declarations: [App],
+        providers: [{provide: SomeProvider, useClass: forwardRef(() => SomeProviderImpl)}]
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
 
-          TestBed.configureTestingModule(
-              {declarations: [App], providers: [{provide: SomeProvider, useClass: SomeProvider}]});
-          const fixture = TestBed.createComponent(App);
-          fixture.detectChanges();
-
-          expect(fixture.componentInstance.foo).toBeAnInstanceOf(SomeProviderImpl);
-        });
-
+      expect(fixture.componentInstance.foo).toBeAnInstanceOf(SomeProviderImpl);
+    });
   });
 
   describe('flags', () => {
-
     class MyService {
       constructor(public value: OtherService|null) {}
     }
@@ -389,6 +709,71 @@ describe('providers', () => {
       const injector = Injector.create([{provide: MyService, deps: [[Optional, OtherService]]}]);
 
       expect(injector.get(MyService).value).toBe(null);
+    });
+  });
+
+  describe('view providers', () => {
+    it('should have access to viewProviders within the same component', () => {
+      @Component({
+        selector: 'comp',
+        template: '{{s}}-{{n}}',
+        providers: [
+          {provide: Number, useValue: 1, multi: true},
+        ],
+        viewProviders: [
+          {provide: String, useValue: 'bar'},
+          {provide: Number, useValue: 2, multi: true},
+        ]
+      })
+      class Comp {
+        constructor(private s: String, private n: Number) {}
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp]});
+
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('bar-1,2');
+    });
+
+    it('should have access to viewProviders of the host component', () => {
+      @Component({
+        selector: 'repeated',
+        template: '[{{s}}-{{n}}]',
+      })
+      class Repeated {
+        constructor(private s: String, private n: Number) {}
+      }
+
+      @Component({
+        template: `
+          <div>
+            <ng-container *ngFor="let item of items">
+              <repeated></repeated>
+            </ng-container>
+          </div>
+        `,
+        providers: [
+          {provide: Number, useValue: 1, multi: true},
+        ],
+        viewProviders: [
+          {provide: String, useValue: 'foo'},
+          {provide: Number, useValue: 2, multi: true},
+        ],
+      })
+      class ComponentWithProviders {
+        items = [1, 2, 3];
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [ComponentWithProviders, Repeated],
+        imports: [CommonModule],
+      });
+
+      const fixture = TestBed.createComponent(ComponentWithProviders);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('[foo-1,2][foo-1,2][foo-1,2]');
     });
   });
 });

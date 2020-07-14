@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
+    tmpDir = join(process.env['TEST_TMPDIR']!, 'google3-test');
     shx.mkdir('-p', tmpDir);
     writeFile('tsconfig.json', JSON.stringify({compilerOptions: {module: 'es2015'}}));
   });
@@ -30,11 +30,10 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     const linter = new Linter({fix, rulesDirectory: [rulesDirectory]}, program);
     const config = Configuration.parseConfigFile({
       rules: {'undecorated-classes-with-decorated-fields': true},
-      linterOptions: {typeCheck: true}
     });
 
     program.getRootFileNames().forEach(fileName => {
-      linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);
+      linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);
     });
 
     return linter;
@@ -44,7 +43,9 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     writeFileSync(join(tmpDir, fileName), content);
   }
 
-  function getFile(fileName: string) { return readFileSync(join(tmpDir, fileName), 'utf8'); }
+  function getFile(fileName: string) {
+    return readFileSync(join(tmpDir, fileName), 'utf8');
+  }
 
   it('should flag undecorated classes with decorated fields', () => {
     writeFile('/index.ts', `
@@ -65,7 +66,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
 
     expect(failures.length).toBe(1);
     expect(failures[0])
-        .toBe('Classes with decorated fields must have an Angular decorator as well.');
+        .toBe('Class needs to be decorated with "@Directive()" because it uses Angular features.');
   });
 
   it(`should add an import for Directive if there isn't one already`, () => {
@@ -98,6 +99,28 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     expect(getFile('/index.ts')).toContain(`import { Directive, Input } from '@angular/core';`);
   });
 
+  it('should not generate conflicting imports there is a different `Directive` symbol',
+     async () => {
+       writeFile('/index.ts', `
+      import { HostBinding } from '@angular/core';
+
+      export class Directive {
+        // Simulates a scenario where a library defines a class named "Directive".
+        // We don't want to generate a conflicting import.
+      }
+
+      export class MyLibrarySharedBaseClass {
+        @HostBinding('class.active') isActive: boolean;
+      }
+    `);
+
+       runTSLint(true);
+       const fileContent = getFile('/index.ts');
+       expect(fileContent)
+           .toContain(`import { HostBinding, Directive as Directive_1 } from '@angular/core';`);
+       expect(fileContent).toMatch(/@Directive_1\(\)\s+export class MyLibrarySharedBaseClass/);
+     });
+
   it('should add @Directive to undecorated classes that have @Input', () => {
     writeFile('/index.ts', `
       import { Input } from '@angular/core';
@@ -113,24 +136,36 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
 
   it('should not change decorated classes', () => {
     writeFile('/index.ts', `
-      import { Input, Component, Output, EventEmitter } from '@angular/core';
+      import { Input, Component, Directive, Pipe, Injectable } from '@angular/core';
 
       @Component({})
-      export class Base {
+      export class MyComp {
+        @Input() isActive: boolean;
+      }
+      
+      @Directive({selector: 'dir'})
+      export class MyDir {
         @Input() isActive: boolean;
       }
 
-      export class Child extends Base {
-        @Output() clicked = new EventEmitter<void>();
+      @Injectable()
+      export class MyService {
+        ngOnDestroy() {}
+      }
+      
+      @Pipe({name: 'my-pipe'})
+      export class MyPipe {
+        ngOnDestroy() {}
       }
     `);
 
     runTSLint(true);
     const content = getFile('/index.ts');
-    expect(content).toContain(
-        `import { Input, Component, Output, EventEmitter, Directive } from '@angular/core';`);
-    expect(content).toContain(`@Component({})\n      export class Base {`);
-    expect(content).toContain(`@Directive()\nexport class Child extends Base {`);
+    expect(content).toMatch(/@Component\({}\)\s+export class MyComp {/);
+    expect(content).toMatch(/@Directive\({selector: 'dir'}\)\s+export class MyDir {/);
+    expect(content).toMatch(/@Injectable\(\)\s+export class MyService {/);
+    expect(content).toMatch(/@Pipe\({name: 'my-pipe'}\)\s+export class MyPipe {/);
+    expect(content).not.toContain('TODO');
   });
 
   it('should add @Directive to undecorated classes that have @Output', () => {
@@ -230,4 +265,35 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
+  it('should add @Directive to undecorated derived classes of a migrated class', async () => {
+    writeFile('/index.ts', `
+      import { Input, Directive, NgModule } from '@angular/core';
+
+      export class Base {
+        @Input() isActive: boolean;
+      }
+
+      export class DerivedA extends Base {}
+      export class DerivedB extends DerivedA {}
+      export class DerivedC extends DerivedB {}
+
+      @Directive({selector: 'my-comp'})
+      export class MyComp extends DerivedC {}
+
+      export class MyCompWrapped extends MyComp {}
+
+      @NgModule({declarations: [MyComp, MyCompWrapped]})
+      export class AppModule {}
+    `);
+
+    runTSLint(true);
+    const fileContent = getFile('/index.ts');
+    expect(fileContent).toContain(`import { Input, Directive, NgModule } from '@angular/core';`);
+    expect(fileContent).toMatch(/@Directive\(\)\s+export class Base/);
+    expect(fileContent).toMatch(/@Directive\(\)\s+export class DerivedA/);
+    expect(fileContent).toMatch(/@Directive\(\)\s+export class DerivedB/);
+    expect(fileContent).toMatch(/@Directive\(\)\s+export class DerivedC/);
+    expect(fileContent).toMatch(/}\s+@Directive\(\{selector: 'my-comp'}\)\s+export class MyComp/);
+    expect(fileContent).toMatch(/}\s+export class MyCompWrapped/);
+  });
 });

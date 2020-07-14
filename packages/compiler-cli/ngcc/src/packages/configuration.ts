@@ -1,32 +1,64 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {createHash} from 'crypto';
 import {satisfies} from 'semver';
 import * as vm from 'vm';
-import {AbsoluteFsPath, FileSystem, dirname, join, resolve} from '../../../src/ngtsc/file_system';
+
+import {AbsoluteFsPath, dirname, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
+
 import {PackageJsonFormatPropertiesMap} from './entry_point';
 
 /**
  * The format of a project level configuration file.
  */
-export interface NgccProjectConfig<T = NgccPackageConfig> { packages: {[packagePath: string]: T}; }
+export interface NgccProjectConfig<T = RawNgccPackageConfig> {
+  /**
+   * The packages that are configured by this project config.
+   */
+  packages?: {[packagePath: string]: T|undefined};
+  /**
+   * Options that control how locking the process is handled.
+   */
+  locking?: ProcessLockingConfiguration;
+}
 
 /**
- * The format of a package level configuration file.
+ * Options that control how locking the process is handled.
  */
-export interface NgccPackageConfig {
+export interface ProcessLockingConfiguration {
+  /**
+   * The number of times the AsyncLocker will attempt to lock the process before failing.
+   * Defaults to 500.
+   */
+  retryAttempts?: number;
+  /**
+   * The number of milliseconds between attempts to lock the process.
+   * Defaults to 500ms.
+   * */
+  retryDelay?: number;
+}
+
+/**
+ * The raw format of a package level configuration (as it appears in configuration files).
+ */
+export interface RawNgccPackageConfig {
   /**
    * The entry-points to configure for this package.
    *
-   * In the config file the keys can be paths relative to the package path;
-   * but when being read back from the `NgccConfiguration` service, these paths
-   * will be absolute.
+   * In the config file the keys are paths relative to the package path.
    */
-  entryPoints: {[entryPointPath: string]: NgccEntryPointConfig;};
+  entryPoints?: {[entryPointPath: string]: NgccEntryPointConfig};
+
+  /**
+   * A collection of regexes that match deep imports to ignore, for this package, rather than
+   * displaying a warning.
+   */
+  ignorableDeepImportMatchers?: RegExp[];
 }
 
 /**
@@ -38,6 +70,7 @@ export interface NgccPackageConfig {
 export interface NgccEntryPointConfig {
   /** Do not process (or even acknowledge the existence of) this entry-point, if true. */
   ignore?: boolean;
+
   /**
    * This property, if provided, holds values that will override equivalent properties in an
    * entry-point's package.json file.
@@ -58,6 +91,12 @@ export interface NgccEntryPointConfig {
    */
   generateDeepReexports?: boolean;
 }
+
+interface VersionedPackageConfig extends RawNgccPackageConfig {
+  versionRange: string;
+}
+
+type PartiallyProcessedConfig = Required<NgccProjectConfig<VersionedPackageConfig[]>>;
 
 /**
  * The default configuration for ngcc.
@@ -91,6 +130,19 @@ export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
     //   },
     // },
 
+    // The package does not contain any `.metadata.json` files in the root directory but only inside
+    // `dist/`. Without this config, ngcc does not realize this is a ViewEngine-built Angular
+    // package that needs to be compiled to Ivy.
+    'angular2-highcharts': {
+      entryPoints: {
+        '.': {
+          override: {
+            main: './index.js',
+          },
+        },
+      },
+    },
+
     // The `dist/` directory has a duplicate `package.json` pointing to the same files, which (under
     // certain configurations) can causes ngcc to try to process the files twice and fail.
     // Ignore the `dist/` entry-point.
@@ -100,13 +152,53 @@ export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
       },
     },
   },
+  locking: {
+    retryDelay: 500,
+    retryAttempts: 500,
+  }
 };
 
-interface VersionedPackageConfig extends NgccPackageConfig {
-  versionRange: string;
-}
-
 const NGCC_CONFIG_FILENAME = 'ngcc.config.js';
+
+/**
+ * The processed package level configuration as a result of processing a raw package level config.
+ */
+export class ProcessedNgccPackageConfig implements Omit<RawNgccPackageConfig, 'entryPoints'> {
+  /**
+   * The absolute path to this instance of the package.
+   * Note that there may be multiple instances of a package inside a project in nested
+   * `node_modules/`. For example, one at `<project-root>/node_modules/some-package/` and one at
+   * `<project-root>/node_modules/other-package/node_modules/some-package/`.
+   */
+  packagePath: AbsoluteFsPath;
+
+  /**
+   * The entry-points to configure for this package.
+   *
+   * In contrast to `RawNgccPackageConfig`, the paths are absolute and take the path of the specific
+   * instance of the package into account.
+   */
+  entryPoints: Map<AbsoluteFsPath, NgccEntryPointConfig>;
+
+  /**
+   * A collection of regexes that match deep imports to ignore, for this package, rather than
+   * displaying a warning.
+   */
+  ignorableDeepImportMatchers: RegExp[];
+
+  constructor(packagePath: AbsoluteFsPath, {
+    entryPoints = {},
+    ignorableDeepImportMatchers = [],
+  }: RawNgccPackageConfig) {
+    const absolutePathEntries: [AbsoluteFsPath, NgccEntryPointConfig][] =
+        Object.entries(entryPoints).map(([relativePath,
+                                          config]) => [resolve(packagePath, relativePath), config]);
+
+    this.packagePath = packagePath;
+    this.entryPoints = new Map(absolutePathEntries);
+    this.ignorableDeepImportMatchers = ignorableDeepImportMatchers;
+  }
+}
 
 /**
  * Ngcc has a hierarchical configuration system that lets us "fix up" packages that do not
@@ -133,30 +225,56 @@ const NGCC_CONFIG_FILENAME = 'ngcc.config.js';
  * configuration for a package is returned.
  */
 export class NgccConfiguration {
-  private defaultConfig: NgccProjectConfig<VersionedPackageConfig[]>;
-  private projectConfig: NgccProjectConfig<VersionedPackageConfig[]>;
+  private defaultConfig: PartiallyProcessedConfig;
+  private projectConfig: PartiallyProcessedConfig;
   private cache = new Map<string, VersionedPackageConfig>();
+  readonly hash: string;
 
   constructor(private fs: FileSystem, baseDir: AbsoluteFsPath) {
-    this.defaultConfig = this.processProjectConfig(baseDir, DEFAULT_NGCC_CONFIG);
-    this.projectConfig = this.processProjectConfig(baseDir, this.loadProjectConfig(baseDir));
+    this.defaultConfig = this.processProjectConfig(DEFAULT_NGCC_CONFIG);
+    this.projectConfig = this.processProjectConfig(this.loadProjectConfig(baseDir));
+    this.hash = this.computeHash();
+  }
+
+  /**
+   * Get the configuration options for locking the ngcc process.
+   */
+  getLockingConfig(): Required<ProcessLockingConfiguration> {
+    let {retryAttempts, retryDelay} = this.projectConfig.locking;
+    if (retryAttempts === undefined) {
+      retryAttempts = this.defaultConfig.locking.retryAttempts!;
+    }
+    if (retryDelay === undefined) {
+      retryDelay = this.defaultConfig.locking.retryDelay!;
+    }
+    return {retryAttempts, retryDelay};
   }
 
   /**
    * Get a configuration for the given `version` of a package at `packagePath`.
    *
+   * @param packageName The name of the package whose config we want.
    * @param packagePath The path to the package whose config we want.
    * @param version The version of the package whose config we want, or `null` if the package's
    * package.json did not exist or was invalid.
    */
-  getConfig(packagePath: AbsoluteFsPath, version: string|null): VersionedPackageConfig {
-    const cacheKey = packagePath + (version !== null ? `@${version}` : '');
+  getPackageConfig(packageName: string, packagePath: AbsoluteFsPath, version: string|null):
+      ProcessedNgccPackageConfig {
+    const rawPackageConfig = this.getRawPackageConfig(packageName, packagePath, version);
+    return new ProcessedNgccPackageConfig(packagePath, rawPackageConfig);
+  }
+
+  private getRawPackageConfig(
+      packageName: string, packagePath: AbsoluteFsPath,
+      version: string|null): VersionedPackageConfig {
+    const cacheKey = packageName + (version !== null ? `@${version}` : '');
     if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey) !;
+      return this.cache.get(cacheKey)!;
     }
 
-    const projectLevelConfig =
-        findSatisfactoryVersion(this.projectConfig.packages[packagePath], version);
+    const projectLevelConfig = this.projectConfig.packages ?
+        findSatisfactoryVersion(this.projectConfig.packages[packageName], version) :
+        null;
     if (projectLevelConfig !== null) {
       this.cache.set(cacheKey, projectLevelConfig);
       return projectLevelConfig;
@@ -168,29 +286,36 @@ export class NgccConfiguration {
       return packageLevelConfig;
     }
 
-    const defaultLevelConfig =
-        findSatisfactoryVersion(this.defaultConfig.packages[packagePath], version);
+    const defaultLevelConfig = this.defaultConfig.packages ?
+        findSatisfactoryVersion(this.defaultConfig.packages[packageName], version) :
+        null;
     if (defaultLevelConfig !== null) {
       this.cache.set(cacheKey, defaultLevelConfig);
       return defaultLevelConfig;
     }
 
-    return {versionRange: '*', entryPoints: {}};
+    return {versionRange: '*'};
   }
 
-  private processProjectConfig(baseDir: AbsoluteFsPath, projectConfig: NgccProjectConfig):
-      NgccProjectConfig<VersionedPackageConfig[]> {
-    const processedConfig: NgccProjectConfig<VersionedPackageConfig[]> = {packages: {}};
-    for (const packagePathAndVersion in projectConfig.packages) {
-      const packageConfig = projectConfig.packages[packagePathAndVersion];
+  private processProjectConfig(projectConfig: NgccProjectConfig): PartiallyProcessedConfig {
+    const processedConfig: PartiallyProcessedConfig = {packages: {}, locking: {}};
+
+    // locking configuration
+    if (projectConfig.locking !== undefined) {
+      processedConfig.locking = projectConfig.locking;
+    }
+
+    // packages configuration
+    for (const packageNameAndVersion in projectConfig.packages) {
+      const packageConfig = projectConfig.packages[packageNameAndVersion];
       if (packageConfig) {
-        const [packagePath, versionRange = '*'] = this.splitPathAndVersion(packagePathAndVersion);
-        const absPackagePath = resolve(baseDir, 'node_modules', packagePath);
-        const entryPoints = this.processEntryPoints(absPackagePath, packageConfig);
-        processedConfig.packages[absPackagePath] = processedConfig.packages[absPackagePath] || [];
-        processedConfig.packages[absPackagePath].push({versionRange, entryPoints});
+        const [packageName, versionRange = '*'] = this.splitNameAndVersion(packageNameAndVersion);
+        const packageConfigs =
+            processedConfig.packages[packageName] || (processedConfig.packages[packageName] = []);
+        packageConfigs!.push({...packageConfig, versionRange});
       }
     }
+
     return processedConfig;
   }
 
@@ -212,9 +337,10 @@ export class NgccConfiguration {
     const configFilePath = join(packagePath, NGCC_CONFIG_FILENAME);
     if (this.fs.exists(configFilePath)) {
       try {
+        const packageConfig = this.evalSrcFile(configFilePath);
         return {
+          ...packageConfig,
           versionRange: version || '*',
-          entryPoints: this.processEntryPoints(packagePath, this.evalSrcFile(configFilePath)),
         };
       } catch (e) {
         throw new Error(`Invalid package configuration file at "${configFilePath}": ` + e.message);
@@ -229,7 +355,8 @@ export class NgccConfiguration {
     const theExports = {};
     const sandbox = {
       module: {exports: theExports},
-      exports: theExports, require,
+      exports: theExports,
+      require,
       __dirname: dirname(srcPath),
       __filename: srcPath
     };
@@ -237,33 +364,25 @@ export class NgccConfiguration {
     return sandbox.module.exports;
   }
 
-  private processEntryPoints(packagePath: AbsoluteFsPath, packageConfig: NgccPackageConfig):
-      {[entryPointPath: string]: NgccEntryPointConfig;} {
-    const processedEntryPoints: {[entryPointPath: string]: NgccEntryPointConfig;} = {};
-    for (const entryPointPath in packageConfig.entryPoints) {
-      // Change the keys to be absolute paths
-      processedEntryPoints[resolve(packagePath, entryPointPath)] =
-          packageConfig.entryPoints[entryPointPath];
-    }
-    return processedEntryPoints;
-  }
-
-  private splitPathAndVersion(packagePathAndVersion: string): [string, string|undefined] {
-    const versionIndex = packagePathAndVersion.lastIndexOf('@');
+  private splitNameAndVersion(packageNameAndVersion: string): [string, string|undefined] {
+    const versionIndex = packageNameAndVersion.lastIndexOf('@');
     // Note that > 0 is because we don't want to match @ at the start of the line
     // which is what you would have with a namespaced package, e.g. `@angular/common`.
     return versionIndex > 0 ?
         [
-          packagePathAndVersion.substring(0, versionIndex),
-          packagePathAndVersion.substring(versionIndex + 1)
+          packageNameAndVersion.substring(0, versionIndex),
+          packageNameAndVersion.substring(versionIndex + 1),
         ] :
-        [packagePathAndVersion, undefined];
+        [packageNameAndVersion, undefined];
+  }
+
+  private computeHash(): string {
+    return createHash('md5').update(JSON.stringify(this.projectConfig)).digest('hex');
   }
 }
 
-function findSatisfactoryVersion(
-    configs: VersionedPackageConfig[] | undefined, version: string | null): VersionedPackageConfig|
-    null {
+function findSatisfactoryVersion(configs: VersionedPackageConfig[]|undefined, version: string|null):
+    VersionedPackageConfig|null {
   if (configs === undefined) {
     return null;
   }
@@ -273,5 +392,7 @@ function findSatisfactoryVersion(
     // So just return the first config that matches the package name.
     return configs[0];
   }
-  return configs.find(config => satisfies(version, config.versionRange)) || null;
+  return configs.find(
+             config => satisfies(version, config.versionRange, {includePrerelease: true})) ||
+      null;
 }

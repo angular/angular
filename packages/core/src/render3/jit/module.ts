@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3InjectorMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
+import {getCompilerFacade, R3InjectorMetadataFacade} from '../../compiler/compiler_facade';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {NG_INJ_DEF} from '../../di/interface/defs';
 import {reflectDependencies} from '../../di/jit/util';
@@ -70,7 +70,7 @@ export function flushModuleScopingQueueAsMuchAsPossible() {
  * an array of declarations, it will recurse to check each declaration in that array
  * (which may also be arrays).
  */
-function isResolvedDeclaration(declaration: any[] | Type<any>): boolean {
+function isResolvedDeclaration(declaration: any[]|Type<any>): boolean {
   if (Array.isArray(declaration)) {
     return declaration.every(isResolvedDeclaration);
   }
@@ -144,8 +144,9 @@ export function compileNgModuleDefs(
   Object.defineProperty(moduleType, NG_INJ_DEF, {
     get: () => {
       if (ngInjectorDef === null) {
-        ngDevMode && verifySemanticsOfNgModuleDef(
-                         moduleType as any as NgModuleType, allowDuplicateDeclarationsInRoot);
+        ngDevMode &&
+            verifySemanticsOfNgModuleDef(
+                moduleType as any as NgModuleType, allowDuplicateDeclarationsInRoot);
         const meta: R3InjectorMetadataFacade = {
           name: moduleType.name,
           type: moduleType,
@@ -174,10 +175,10 @@ function verifySemanticsOfNgModuleDef(
   moduleType = resolveForwardRef(moduleType);
   let ngModuleDef: NgModuleDef<any>;
   if (importingModule) {
-    ngModuleDef = getNgModuleDef(moduleType) !;
+    ngModuleDef = getNgModuleDef(moduleType)!;
     if (!ngModuleDef) {
-      throw new Error(
-          `Unexpected value '${moduleType.name}' imported by the module '${importingModule.name}'. Please add an @NgModule annotation.`);
+      throw new Error(`Unexpected value '${moduleType.name}' imported by the module '${
+          importingModule.name}'. Please add an @NgModule annotation.`);
     }
   } else {
     ngModuleDef = getNgModuleDef(moduleType, true);
@@ -222,8 +223,8 @@ function verifySemanticsOfNgModuleDef(
     type = resolveForwardRef(type);
     const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
     if (!def) {
-      errors.push(
-          `Unexpected value '${stringifyForError(type)}' declared by the module '${stringifyForError(moduleType)}'. Please add a @Pipe/@Directive/@Component annotation.`);
+      errors.push(`Unexpected value '${stringifyForError(type)}' declared by the module '${
+          stringifyForError(moduleType)}'. Please add a @Pipe/@Directive/@Component annotation.`);
     }
   }
 
@@ -244,8 +245,8 @@ function verifySemanticsOfNgModuleDef(
       // Modules don't need to be declared or imported.
       if (combinedDeclarations.lastIndexOf(type) === -1) {
         // We are exporting something which we don't explicitly declare or import.
-        errors.push(
-            `Can't export ${kind} ${stringifyForError(type)} from ${stringifyForError(moduleType)} as it was neither declared nor imported!`);
+        errors.push(`Can't export ${kind} ${stringifyForError(type)} from ${
+            stringifyForError(moduleType)} as it was neither declared nor imported!`);
       }
     }
   }
@@ -257,9 +258,13 @@ function verifySemanticsOfNgModuleDef(
       if (!suppressErrors) {
         const modules = [existingModule, moduleType].map(stringifyForError).sort();
         errors.push(
-            `Type ${stringifyForError(type)} is part of the declarations of 2 modules: ${modules[0]} and ${modules[1]}! ` +
-            `Please consider moving ${stringifyForError(type)} to a higher module that imports ${modules[0]} and ${modules[1]}. ` +
-            `You can also create a new NgModule that exports and includes ${stringifyForError(type)} then import that NgModule in ${modules[0]} and ${modules[1]}.`);
+            `Type ${stringifyForError(type)} is part of the declarations of 2 modules: ${
+                modules[0]} and ${modules[1]}! ` +
+            `Please consider moving ${stringifyForError(type)} to a higher module that imports ${
+                modules[0]} and ${modules[1]}. ` +
+            `You can also create a new NgModule that exports and includes ${
+                stringifyForError(
+                    type)} then import that NgModule in ${modules[0]} and ${modules[1]}.`);
       }
     } else {
       // Mark type as having owner.
@@ -271,8 +276,9 @@ function verifySemanticsOfNgModuleDef(
     type = resolveForwardRef(type);
     const existingModule = ownerNgModule.get(type);
     if (!existingModule) {
-      errors.push(
-          `Component ${stringifyForError(type)} is not part of any NgModule or the module has not been imported into your module.`);
+      errors.push(`Component ${
+          stringifyForError(
+              type)} is not part of any NgModule or the module has not been imported into your module.`);
     }
   }
 
@@ -298,19 +304,19 @@ function verifySemanticsOfNgModuleDef(
     type = resolveForwardRef(type);
 
     if (getComponentDef(type) || getDirectiveDef(type)) {
-      throw new Error(
-          `Unexpected directive '${type.name}' imported by the module '${importingModule.name}'. Please add an @NgModule annotation.`);
+      throw new Error(`Unexpected directive '${type.name}' imported by the module '${
+          importingModule.name}'. Please add an @NgModule annotation.`);
     }
 
     if (getPipeDef(type)) {
-      throw new Error(
-          `Unexpected pipe '${type.name}' imported by the module '${importingModule.name}'. Please add an @NgModule annotation.`);
+      throw new Error(`Unexpected pipe '${type.name}' imported by the module '${
+          importingModule.name}'. Please add an @NgModule annotation.`);
     }
   }
 }
 
-function unwrapModuleWithProvidersImports(
-    typeOrWithProviders: NgModuleType<any>| {ngModule: NgModuleType<any>}): NgModuleType<any> {
+function unwrapModuleWithProvidersImports(typeOrWithProviders: NgModuleType<any>|
+                                          {ngModule: NgModuleType<any>}): NgModuleType<any> {
   typeOrWithProviders = resolveForwardRef(typeOrWithProviders);
   return (typeOrWithProviders as any).ngModule || typeOrWithProviders;
 }
@@ -321,7 +327,7 @@ function getAnnotation<T>(type: any, name: string): T|null {
   collect(type.decorators);
   return annotation;
 
-  function collect(annotations: any[] | null) {
+  function collect(annotations: any[]|null) {
     if (annotations) {
       annotations.forEach(readAnnotation);
     }
@@ -391,7 +397,7 @@ function setScopeOnDeclaredComponents(moduleType: Type<any>, ngModule: NgModule)
     if (declaration.hasOwnProperty(NG_COMP_DEF)) {
       // A `ɵcmp` field exists - go ahead and patch the component directly.
       const component = declaration as Type<any>& {ɵcmp: ComponentDef<any>};
-      const componentDef = getComponentDef(component) !;
+      const componentDef = getComponentDef(component)!;
       patchComponentDefWithScope(componentDef, transitiveScopes);
     } else if (
         !declaration.hasOwnProperty(NG_DIR_DEF) && !declaration.hasOwnProperty(NG_PIPE_DEF)) {
@@ -410,11 +416,11 @@ export function patchComponentDefWithScope<C>(
   componentDef.directiveDefs = () =>
       Array.from(transitiveScopes.compilation.directives)
           .map(
-              dir =>
-                  dir.hasOwnProperty(NG_COMP_DEF) ? getComponentDef(dir) ! : getDirectiveDef(dir) !)
+              dir => dir.hasOwnProperty(NG_COMP_DEF) ? getComponentDef(dir)! : getDirectiveDef(dir)!
+              )
           .filter(def => !!def);
   componentDef.pipeDefs = () =>
-      Array.from(transitiveScopes.compilation.pipes).map(pipe => getPipeDef(pipe) !);
+      Array.from(transitiveScopes.compilation.pipes).map(pipe => getPipeDef(pipe)!);
   componentDef.schemas = transitiveScopes.schemas;
 
   // Since we avoid Components/Directives/Pipes recompiling in case there are no overrides, we
@@ -427,25 +433,19 @@ export function patchComponentDefWithScope<C>(
 /**
  * Compute the pair of transitive scopes (compilation scope and exported scope) for a given module.
  *
- * By default this operation is memoized and the result is cached on the module's definition. You
- * can avoid memoization and previously stored results (if available) by providing the second
- * argument with the `true` value (forcing transitive scopes recalculation).
- *
- * This function can be called on modules with components that have not fully compiled yet, but the
- * result should not be used until they have.
+ * This operation is memoized and the result is cached on the module's definition. This function can
+ * be called on modules with components that have not fully compiled yet, but the result should not
+ * be used until they have.
  *
  * @param moduleType module that transitive scope should be calculated for.
- * @param forceRecalc flag that indicates whether previously calculated and memoized values should
- * be ignored and transitive scope to be fully recalculated.
  */
-export function transitiveScopesFor<T>(
-    moduleType: Type<T>, forceRecalc: boolean = false): NgModuleTransitiveScopes {
+export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveScopes {
   if (!isNgModule(moduleType)) {
     throw new Error(`${moduleType.name} does not have a module def (ɵmod property)`);
   }
-  const def = getNgModuleDef(moduleType) !;
+  const def = getNgModuleDef(moduleType)!;
 
-  if (!forceRecalc && def.transitiveCompileScopes !== null) {
+  if (def.transitiveCompileScopes !== null) {
     return def.transitiveCompileScopes;
   }
 
@@ -461,19 +461,6 @@ export function transitiveScopesFor<T>(
     },
   };
 
-  maybeUnwrapFn(def.declarations).forEach(declared => {
-    const declaredWithDefs = declared as Type<any>& { ɵpipe?: any; };
-
-    if (getPipeDef(declaredWithDefs)) {
-      scopes.compilation.pipes.add(declared);
-    } else {
-      // Either declared has a ɵcmp or ɵdir, or it's a component which hasn't
-      // had its template compiled yet. In either case, it gets added to the compilation's
-      // directives.
-      scopes.compilation.directives.add(declared);
-    }
-  });
-
   maybeUnwrapFn(def.imports).forEach(<I>(imported: Type<I>) => {
     const importedType = imported as Type<I>& {
       // If imported is an @NgModule:
@@ -486,9 +473,24 @@ export function transitiveScopesFor<T>(
 
     // When this module imports another, the imported module's exported directives and pipes are
     // added to the compilation scope of this module.
-    const importedScope = transitiveScopesFor(importedType, forceRecalc);
+    const importedScope = transitiveScopesFor(importedType);
     importedScope.exported.directives.forEach(entry => scopes.compilation.directives.add(entry));
     importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
+  });
+
+  maybeUnwrapFn(def.declarations).forEach(declared => {
+    const declaredWithDefs = declared as Type<any>& {
+      ɵpipe?: any;
+    };
+
+    if (getPipeDef(declaredWithDefs)) {
+      scopes.compilation.pipes.add(declared);
+    } else {
+      // Either declared has a ɵcmp or ɵdir, or it's a component which hasn't
+      // had its template compiled yet. In either case, it gets added to the compilation's
+      // directives.
+      scopes.compilation.directives.add(declared);
+    }
   });
 
   maybeUnwrapFn(def.exports).forEach(<E>(exported: Type<E>) => {
@@ -505,7 +507,7 @@ export function transitiveScopesFor<T>(
     if (isNgModule(exportedType)) {
       // When this module exports another, the exported module's exported directives and pipes are
       // added to both the compilation and exported scopes of this module.
-      const exportedScope = transitiveScopesFor(exportedType, forceRecalc);
+      const exportedScope = transitiveScopesFor(exportedType);
       exportedScope.exported.directives.forEach(entry => {
         scopes.compilation.directives.add(entry);
         scopes.exported.directives.add(entry);
@@ -521,13 +523,11 @@ export function transitiveScopesFor<T>(
     }
   });
 
-  if (!forceRecalc) {
-    def.transitiveCompileScopes = scopes;
-  }
+  def.transitiveCompileScopes = scopes;
   return scopes;
 }
 
-function expandModuleWithProviders(value: Type<any>| ModuleWithProviders<{}>): Type<any> {
+function expandModuleWithProviders(value: Type<any>|ModuleWithProviders<{}>): Type<any> {
   if (isModuleWithProviders(value)) {
     return value.ngModule;
   }
@@ -535,7 +535,7 @@ function expandModuleWithProviders(value: Type<any>| ModuleWithProviders<{}>): T
 }
 
 function isModuleWithProviders(value: any): value is ModuleWithProviders<{}> {
-  return (value as{ngModule?: any}).ngModule !== undefined;
+  return (value as {ngModule?: any}).ngModule !== undefined;
 }
 
 function isNgModule<T>(value: Type<T>): value is Type<T>&{ɵmod: NgModuleDef<T>} {

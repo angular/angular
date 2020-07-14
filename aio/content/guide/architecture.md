@@ -4,7 +4,7 @@
 # Angular 개요
 
 <!--
-Angular is a platform and framework for building single-page client applications in HTML and TypeScript.
+Angular is a platform and framework for building single-page client applications using HTML and TypeScript.
 Angular is written in TypeScript.
 It implements core and optional functionality as a set of TypeScript libraries that you import into your apps.
 
@@ -12,6 +12,16 @@ The architecture of an Angular application relies on certain fundamental concept
 The basic building blocks are *NgModules*, which provide a compilation context for *components*. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.
 
 * Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data.
+
+* Components use *services*, which provide specific functionality not directly related to views. Service providers can be *injected* into components as *dependencies*, making your code modular, reusable, and efficient.
+
+Modules, components and services are classes that use *decorators*. These decorators mark their type and provide metadata that tells Angular how to use them.
+
+* The metadata for a component class associates it with a *template* that defines a view. A template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before rendering it for display.
+
+* The metadata for a service class provides the information Angular needs to make it available to components through *dependency injection (DI)*.
+
+An app's components typically define many views, arranged hierarchically. Angular provides the `Router` service to help you define navigation paths among views. The router provides sophisticated in-browser navigational capabilities.
 -->
 Angular는 HTML과 TypeScript로 클라이언트 애플리케이션을 개발할 때 사용하는 플랫폼이자 프레임워크입니다.
 Angular 자체도 TypeScript로 개발되었습니다.
@@ -22,29 +32,14 @@ Angular 애플리케이션의 구성 요소 중 가장 중요한 것은 *컴포�
 
 * 컴포넌트는 *뷰*를 정의하는데, 화면에 어떤 엘리먼트가 어떤 데이터를 표시할지 지정합니다.
 
-<!--
-* Components use *services*, which provide specific functionality not directly related to views. Service providers can be *injected* into components as *dependencies*, making your code modular, reusable, and efficient.
--->
 * 컴포넌트는 *서비스*를 활용합니다. 뷰와 직접 관련있지 않은 기능은 컴포넌트에 있을 필요가 없으며, 이런 로직은 서비스에 정의하고 컴포넌트에 *의존성*으로 *주입* 해서 사용하면 코드를 모듈 단위로 관리할 수 있기 때문에 재사용하기 편하고 훨씬 효율적입니다.
 
-<!--
-Both components and services are simply classes, with *decorators* that mark their type and provide metadata that tells Angular how to use them.
--->
-컴포넌트와 서비스는 단순한 클래스지만, *데코레이터*와 메타데이터를 사용해서 이 클래스가 Angular에서 어떤 역할을 할지 지정할 수 있습니다.
+모듈, 컴포넌트, 서비스는 단순하게 *데코레이터*가 붙은 클래스일 뿐입니다. 하지만 이 데코레이터를 지정했기 때문에 이 클래스가 어떤 역할을 하는지 Angular가 알 수 있습니다.
 
-<!--
-* The metadata for a component class associates it with a *template* that defines a view. A template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before rendering it for display.
--->
 * 컴포넌트 클래스에 메타데이터를 지정하면 *템플릿*을 뷰로 지정할 수 있습니다. 템플릿은 일반적인 HTML 문법을 바탕으로 Angular가 제공하는 *디렉티브*와 *바인딩 마크업*을 사용합니다. 이 템플릿은 Angular에서 처리한 후에 화면에 렌더링됩니다.
 
-<!--
-* The metadata for a service class provides the information Angular needs to make it available to components through *dependency injection (DI)*.
--->
 * 서비스 클래스에 메타데이터를 지정하면 Angular 컴포넌트에 *의존성으로 주입(DI)*할 수 있습니다.
 
-<!--
-An app's components typically define many views, arranged hierarchically. Angular provides the `Router` service to help you define navigation paths among views. The router provides sophisticated in-browser navigational capabilities.
--->
 Angular 애플리케이션에서는 여러가지 뷰를 계층으로 구성합니다. 그리고 `Router` 서비스를 사용하면 이 뷰들을 전환하면서 페이지를 이동할 수 있습니다. 라우터 서비스는 브라우저의 페이지 전환 로직을 활용하면서 정교하게 동작합니다.
 
 <div class="alert is-helpful">
@@ -54,6 +49,11 @@ Angular 애플리케이션에서는 여러가지 뷰를 계층으로 구성합�
   -->
   Angular 용어에 대해 더 알아보려면 [찾아보기](guide/glossary) 문서를 참고하세요.
 
+</div>
+
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
 </div>
 
 {@a modules}
@@ -314,16 +314,8 @@ Each of these subjects is introduced in more detail in the following pages.
 
 * [서비스와 의존성 주입](guide/architecture-services)
 
-<div class="alert is-helpful">
-<!--
-   Note that the code referenced on these pages is available as a <live-example></live-example>.
--->
- 이 문서에서 다룬 코드는 <live-example></live-example>에서도 확인할 수 있습니다.
-</div>
-
 <!--
 When you're familiar with these fundamental building blocks, you can explore them in more detail in the documentation. To learn about more tools and techniques that are available to help you build and deploy Angular applications, see [Next steps: tools and techniques](guide/architecture-next-steps).
 -->
 Angular 애플리케이션의 기본 요소에 이미 익숙하다면 각각을 좀 더 깊이 있게 다루는 문서를 확인해 보는 것도 좋습니다. 그리고 애플리케이션 개발이나 배포에 사용하는 툴이나 테크닉을 먼저 알아보려면 [이 문서](guide/architecture-next-steps)를 확인해 보세요.
 
-</div>

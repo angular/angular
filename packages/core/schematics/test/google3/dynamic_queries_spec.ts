@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,7 @@ describe('Google3 dynamic queries TSLint rule', () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
+    tmpDir = join(process.env['TEST_TMPDIR']!, 'google3-test');
     shx.mkdir('-p', tmpDir);
 
     writeFile('tsconfig.json', JSON.stringify({compilerOptions: {module: 'es2015'}}));
@@ -28,11 +28,10 @@ describe('Google3 dynamic queries TSLint rule', () => {
   function runTSLint(fix = true) {
     const program = Linter.createProgram(join(tmpDir, 'tsconfig.json'));
     const linter = new Linter({fix, rulesDirectory: [rulesDirectory]}, program);
-    const config = Configuration.parseConfigFile(
-        {rules: {'dynamic-queries': true}, linterOptions: {typeCheck: true}});
+    const config = Configuration.parseConfigFile({rules: {'dynamic-queries': true}});
 
     program.getRootFileNames().forEach(fileName => {
-      linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);
+      linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);
     });
 
     return linter;
@@ -42,7 +41,9 @@ describe('Google3 dynamic queries TSLint rule', () => {
     writeFileSync(join(tmpDir, fileName), content);
   }
 
-  function getFile(fileName: string) { return readFileSync(join(tmpDir, fileName), 'utf8'); }
+  function getFile(fileName: string) {
+    return readFileSync(join(tmpDir, fileName), 'utf8');
+  }
 
   it('should flag dynamic queries', () => {
     writeFile('/index.ts', `
@@ -173,5 +174,4 @@ describe('Google3 dynamic queries TSLint rule', () => {
     expect(content).toContain(`@ContentChild('child') set child(c: any) {}`);
     expect(content).toContain(`@ViewChild('otherChild') set otherChild(c: any) {}`);
   });
-
 });

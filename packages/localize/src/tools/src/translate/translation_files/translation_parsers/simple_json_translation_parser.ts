@@ -1,12 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵMessageId, ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 import {extname} from 'path';
+import {Diagnostics} from '../../../diagnostics';
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
 
 /**
@@ -21,17 +22,29 @@ import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
  *   }
  * }
  * ```
+ *
+ * @see SimpleJsonTranslationSerializer
  */
-export class SimpleJsonTranslationParser implements TranslationParser {
-  canParse(filePath: string, _contents: string): boolean { return (extname(filePath) === '.json'); }
+export class SimpleJsonTranslationParser implements TranslationParser<Object> {
+  canParse(filePath: string, contents: string): Object|false {
+    if (extname(filePath) !== '.json') {
+      return false;
+    }
+    try {
+      const json = JSON.parse(contents);
+      return (typeof json.locale === 'string' && typeof json.translations === 'object') && json;
+    } catch {
+      return false;
+    }
+  }
 
-  parse(_filePath: string, contents: string): ParsedTranslationBundle {
-    const {locale: parsedLocale, translations} = JSON.parse(contents);
+  parse(_filePath: string, contents: string, json?: Object): ParsedTranslationBundle {
+    const {locale: parsedLocale, translations} = json || JSON.parse(contents);
     const parsedTranslations: Record<ɵMessageId, ɵParsedTranslation> = {};
     for (const messageId in translations) {
       const targetMessage = translations[messageId];
       parsedTranslations[messageId] = ɵparseTranslation(targetMessage);
     }
-    return {locale: parsedLocale, translations: parsedTranslations};
+    return {locale: parsedLocale, translations: parsedTranslations, diagnostics: new Diagnostics()};
   }
 }

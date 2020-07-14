@@ -1,0 +1,67 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
+
+ts_library(
+    name = "cli",
+    srcs = [
+        "cli.ts",
+    ],
+    module_name = "@angular/dev-infra-private",
+    deps = [
+        "//dev-infra/commit-message",
+        "//dev-infra/format",
+        "//dev-infra/pr",
+        "//dev-infra/pullapprove",
+        "//dev-infra/release",
+        "//dev-infra/ts-circular-dependencies",
+        "//dev-infra/utils",
+        "@npm//@types/node",
+        "@npm//@types/yargs",
+        "@npm//yargs",
+    ],
+)
+
+genrule(
+    name = "package-json",
+    srcs = [
+        "tmpl-package.json",
+        "//:package.json",
+    ],
+    outs = ["package.json"],
+    cmd = """
+        $(execpath //tools:inline-package-json-deps) $(execpath tmpl-package.json) \
+            $(execpath //:package.json) $@
+    """,
+    tools = ["//tools:inline-package-json-deps"],
+)
+
+pkg_npm(
+    name = "npm_package",
+    srcs = [
+        "BUILD.bazel",
+        "//dev-infra/benchmark:files",
+    ],
+    substitutions = {
+        # angular/angular should not consume it's own packages, so we use
+        # substitutions to replace these in the published version of dev-infra.
+        "//dev-infra/": "@npm_angular_dev_infra_private//",
+        "//packages/benchpress": "@npm//@angular/benchpress",
+        "//packages/bazel/": "@npm_angular_bazel//",
+        "//packages/zone.js/dist:zone.js": "@npm//:node_modules/zone.js/dist/zone.js",
+        "//packages/core": "@npm//@angular/core",
+        "//packages/platform-browser": "@npm//@angular/platform-browser",
+
+        # This substitution is particularly verbose because we need to make sure
+        # that only things available via Angular Bazel are imported from
+        # tools/defaults.bzl.
+        "load\(\"//tools:defaults.bzl\", \"ng_module\"\)": "load(\"@npm_angular_bazel//:index.bzl\", \"ng_module\")",
+    },
+    visibility = ["//visibility:public"],
+    deps = [
+        ":cli",
+        ":package-json",
+        "//dev-infra/benchmark/driver-utilities",
+        "//dev-infra/commit-message",
+        "//dev-infra/ts-circular-dependencies",
+    ],
+)

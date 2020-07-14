@@ -67,10 +67,15 @@ aio-search-results {
       }
     }
 
-    .not-found {
+    .no-results {
       color: $white;
       text-align: center;
       margin: 16px;
+    }
+
+    a {
+      color: $white;
+      font-weight: 500;
     }
 
     @media (max-width: 600px) {
@@ -101,8 +106,12 @@ aio-search-results {
         }
       }
 
-      .not-found {
+      .no-results {
         color: $darkgray;
+      }
+
+      a {
+        color: $blue;
       }
     }
   }

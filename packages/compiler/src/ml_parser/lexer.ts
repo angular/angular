@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -48,7 +48,9 @@ export class TokenError extends ParseError {
 }
 
 export class TokenizeResult {
-  constructor(public tokens: Token[], public errors: TokenError[]) {}
+  constructor(
+      public tokens: Token[], public errors: TokenError[],
+      public nonNormalizedIcuExpressions: Token[]) {}
 }
 
 export interface LexerRange {
@@ -96,6 +98,15 @@ export interface TokenizeOptions {
    */
   escapedString?: boolean;
   /**
+   * If this text is stored in an external template (e.g. via `templateUrl`) then we need to decide
+   * whether or not to normalize the line-endings (from `\r\n` to `\n`) when processing ICU
+   * expressions.
+   *
+   * If `true` then we will normalize ICU expression line endings.
+   * The default is `false`, but this will be switched in a future major release.
+   */
+  i18nNormalizeLineEndingsInICUs?: boolean;
+  /**
    * An array of characters that should be considered as leading trivia.
    * Leading trivia are characters that are not important to the developer, and so should not be
    * included in source-map segments.  A common example is whitespace.
@@ -110,7 +121,10 @@ export interface TokenizeOptions {
 export function tokenize(
     source: string, url: string, getTagDefinition: (tagName: string) => TagDefinition,
     options: TokenizeOptions = {}): TokenizeResult {
-  return new _Tokenizer(new ParseSourceFile(source, url), getTagDefinition, options).tokenize();
+  const tokenizer = new _Tokenizer(new ParseSourceFile(source, url), getTagDefinition, options);
+  tokenizer.tokenize();
+  return new TokenizeResult(
+      mergeTextTokens(tokenizer.tokens), tokenizer.errors, tokenizer.nonNormalizedIcuExpressions);
 }
 
 const _CR_OR_CRLF_REGEXP = /\r\n?/g;
@@ -139,8 +153,11 @@ class _Tokenizer {
   private _expansionCaseStack: TokenType[] = [];
   private _inInterpolation: boolean = false;
   private readonly _preserveLineEndings: boolean;
+  private readonly _escapedString: boolean;
+  private readonly _i18nNormalizeLineEndingsInICUs: boolean;
   tokens: Token[] = [];
   errors: TokenError[] = [];
+  nonNormalizedIcuExpressions: Token[] = [];
 
   /**
    * @param _file The html source file being tokenized.
@@ -159,6 +176,8 @@ class _Tokenizer {
     this._cursor = options.escapedString ? new EscapedCharacterCursor(_file, range) :
                                            new PlainCharacterCursor(_file, range);
     this._preserveLineEndings = options.preserveLineEndings || false;
+    this._escapedString = options.escapedString || false;
+    this._i18nNormalizeLineEndingsInICUs = options.i18nNormalizeLineEndingsInICUs || false;
     try {
       this._cursor.init();
     } catch (e) {
@@ -177,7 +196,7 @@ class _Tokenizer {
     return content.replace(_CR_OR_CRLF_REGEXP, '\n');
   }
 
-  tokenize(): TokenizeResult {
+  tokenize(): void {
     while (this._cursor.peek() !== chars.$EOF) {
       const start = this._cursor.clone();
       try {
@@ -204,7 +223,6 @@ class _Tokenizer {
     }
     this._beginToken(TokenType.EOF);
     this._endToken([]);
-    return new TokenizeResult(mergeTextTokens(this.tokens), this.errors);
   }
 
   /**
@@ -608,7 +626,19 @@ class _Tokenizer {
 
     this._beginToken(TokenType.RAW_TEXT);
     const condition = this._readUntil(chars.$COMMA);
-    this._endToken([condition]);
+    const normalizedCondition = this._processCarriageReturns(condition);
+    if (this._escapedString || this._i18nNormalizeLineEndingsInICUs) {
+      // Either the template is inline or,
+      // we explicitly want to normalize line endings for this text.
+      this._endToken([normalizedCondition]);
+    } else {
+      // The expression is in an external template and, for backward compatibility,
+      // we are not normalizing line endings.
+      const conditionToken = this._endToken([condition]);
+      if (normalizedCondition !== condition) {
+        this.nonNormalizedIcuExpressions.push(conditionToken);
+      }
+    }
     this._requireCharCode(chars.$COMMA);
     this._attemptCharCodeUntilFn(isNotWhitespace);
 
@@ -747,7 +777,7 @@ function isNamedEntityEnd(code: number): boolean {
 }
 
 function isExpansionCaseStart(peek: number): boolean {
-  return peek === chars.$EQ || chars.isAsciiLetter(peek) || chars.isDigit(peek);
+  return peek !== chars.$RBRACE;
 }
 
 function compareCharCodeCaseInsensitive(code1: number, code2: number): boolean {
@@ -764,7 +794,7 @@ function mergeTextTokens(srcTokens: Token[]): Token[] {
   for (let i = 0; i < srcTokens.length; i++) {
     const token = srcTokens[i];
     if (lastDstToken && lastDstToken.type == TokenType.TEXT && token.type == TokenType.TEXT) {
-      lastDstToken.parts[0] ! += token.parts[0];
+      lastDstToken.parts[0]! += token.parts[0];
       lastDstToken.sourceSpan.end = token.sourceSpan.end;
     } else {
       lastDstToken = token;
@@ -849,15 +879,27 @@ class PlainCharacterCursor implements CharacterCursor {
     }
   }
 
-  clone(): PlainCharacterCursor { return new PlainCharacterCursor(this); }
+  clone(): PlainCharacterCursor {
+    return new PlainCharacterCursor(this);
+  }
 
-  peek() { return this.state.peek; }
-  charsLeft() { return this.end - this.state.offset; }
-  diff(other: this) { return this.state.offset - other.state.offset; }
+  peek() {
+    return this.state.peek;
+  }
+  charsLeft() {
+    return this.end - this.state.offset;
+  }
+  diff(other: this) {
+    return this.state.offset - other.state.offset;
+  }
 
-  advance(): void { this.advanceState(this.state); }
+  advance(): void {
+    this.advanceState(this.state);
+  }
 
-  init(): void { this.updatePeek(this.state); }
+  init(): void {
+    this.updatePeek(this.state);
+  }
 
   getSpan(start?: this, leadingTriviaCodePoints?: number[]): ParseSourceSpan {
     start = start || this;
@@ -880,7 +922,9 @@ class PlainCharacterCursor implements CharacterCursor {
     return this.input.substring(start.state.offset, this.state.offset);
   }
 
-  charAt(pos: number): number { return this.input.charCodeAt(pos); }
+  charAt(pos: number): number {
+    return this.input.charCodeAt(pos);
+  }
 
   protected advanceState(state: CursorState) {
     if (state.offset >= this.end) {
@@ -913,7 +957,7 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
       super(fileOrCursor);
       this.internalState = {...fileOrCursor.internalState};
     } else {
-      super(fileOrCursor, range !);
+      super(fileOrCursor, range!);
       this.internalState = this.state;
     }
   }
@@ -929,7 +973,9 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
     this.processEscapeSequence();
   }
 
-  clone(): EscapedCharacterCursor { return new EscapedCharacterCursor(this); }
+  clone(): EscapedCharacterCursor {
+    return new EscapedCharacterCursor(this);
+  }
 
   getChars(start: this): string {
     const cursor = start.clone();

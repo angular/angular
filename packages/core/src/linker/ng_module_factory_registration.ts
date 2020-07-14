@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -32,7 +32,7 @@ export function registerModuleFactory(id: string, factory: NgModuleFactory<any>)
   modules.set(id, factory);
 }
 
-function assertSameOrNotExisting(id: string, type: Type<any>| null, incoming: Type<any>): void {
+function assertSameOrNotExisting(id: string, type: Type<any>|null, incoming: Type<any>): void {
   if (type && type !== incoming) {
     throw new Error(
         `Duplicate module registered for ${id} - ${stringify(type)} vs ${stringify(type.name)}`);

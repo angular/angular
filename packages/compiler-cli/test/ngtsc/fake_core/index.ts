@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,19 +8,19 @@
 
 interface FnWithArg<T> {
   (...args: any[]): T;
-  new (...args: any[]): T;
+  new(...args: any[]): T;
 }
 
 function callableClassDecorator(): FnWithArg<(clazz: any) => any> {
-  return null !;
+  return null!;
 }
 
 function callableParamDecorator(): FnWithArg<(a: any, b: any, c: any) => void> {
-  return null !;
+  return null!;
 }
 
 function callablePropDecorator(): FnWithArg<(a: any, b: any) => any> {
-  return null !;
+  return null!;
 }
 
 export const Component = callableClassDecorator();
@@ -34,6 +34,7 @@ export const Inject = callableParamDecorator();
 export const Self = callableParamDecorator();
 export const SkipSelf = callableParamDecorator();
 export const Optional = callableParamDecorator();
+export const Host = callableParamDecorator();
 
 export const ContentChild = callablePropDecorator();
 export const ContentChildren = callablePropDecorator();
@@ -57,14 +58,21 @@ export class ɵNgModuleFactory<T> {
   constructor(public clazz: T) {}
 }
 
+export class InjectionToken<T> {
+  constructor(description: string) {}
+}
+
 export function forwardRef<T>(fn: () => T): T {
   return fn();
 }
 
-export interface SimpleChanges { [propName: string]: any; }
+export interface SimpleChanges {
+  [propName: string]: any;
+}
 
 export type ɵɵNgModuleDefWithMeta<ModuleT, DeclarationsT, ImportsT, ExportsT> = any;
-export type ɵɵDirectiveDefWithMeta<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> = any;
+export type ɵɵDirectiveDefWithMeta<
+    DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT, NgContentSelectorsT> = any;
 export type ɵɵPipeDefWithMeta<PipeT, NameT> = any;
 
 export enum ViewEncapsulation {
@@ -83,11 +91,15 @@ export const CUSTOM_ELEMENTS_SCHEMA: any = false;
 export const NO_ERRORS_SCHEMA: any = false;
 
 export class EventEmitter<T> {
-  subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown { return null; }
+  subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown {
+    return null;
+  }
 }
 
-export interface QueryList<T>/* implements Iterable<T> */ { [Symbol.iterator]: () => Iterator<T>; }
+export interface QueryList<T>/* implements Iterable<T> */ {
+  [Symbol.iterator]: () => Iterator<T>;
+}
 
-export type NgIterable<T> = Array<T>| Iterable<T>;
+export type NgIterable<T> = Array<T>|Iterable<T>;
 
 export class NgZone {}

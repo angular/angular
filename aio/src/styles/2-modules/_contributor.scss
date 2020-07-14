@@ -1,12 +1,12 @@
 aio-contributor-list {
   @media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 900px) {
-    .grid-fluid{
+    .grid-fluid {
       width: auto;
     }
   }
 
   @media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 900px) {
-    .grid-fluid{
+    .grid-fluid {
       margin-left: 20px;
       margin-right: 20px;
       float: none;
@@ -18,6 +18,14 @@ aio-contributor-list {
 
 .group-buttons {
   margin: 32px auto;
+
+  @media (max-width: 480px) {
+    .filter-button.button {
+      font-size: 1.2rem;
+      padding: 0;
+      margin: 0;
+    }
+  }
 
   a {
     &.selected {
@@ -44,16 +52,18 @@ aio-contributor {
   transition: all .3s;
   perspective: 800px;
 
-  &:hover {
-    transform: translate3d(0,-3px,0);
-    box-shadow: 0 8px 8px rgba(10, 16, 20, 0.24), 0 0 8px rgba(10, 16, 20, 0.12);
+  @media (hover) {
+    &:hover {
+      transform: translate3d(0,-3px,0);
+      box-shadow: 0 8px 8px rgba(10, 16, 20, 0.24), 0 0 8px rgba(10, 16, 20, 0.12);
 
-    .contributor-image {
-      transform: scale(1.05);
-    }
+      .contributor-image {
+        transform: scale(1.05);
+      }
 
-    .contributor-info {
-      opacity: 1;
+      .contributor-info {
+        opacity: 1;
+      }
     }
   }
 

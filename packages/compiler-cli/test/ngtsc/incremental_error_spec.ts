@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,7 +16,7 @@ const testFiles = loadStandardTestFiles();
 
 runInEachFileSystem(() => {
   describe('ngtsc incremental compilation with errors', () => {
-    let env !: NgtscTestEnvironment;
+    let env!: NgtscTestEnvironment;
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
@@ -66,7 +66,7 @@ runInEachFileSystem(() => {
       `);
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].file !.fileName).toBe(_('/other.ts'));
+      expect(diags[0].file!.fileName).toBe(_('/other.ts'));
       expectToHaveWritten([]);
 
       // Remove the error. /other.js should now be emitted again.
@@ -92,7 +92,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].file !.fileName).toBe(_('/other.ts'));
+      expect(diags[0].file!.fileName).toBe(_('/other.ts'));
       expectToHaveWritten([]);
 
       // Remove the error. All files should be emitted.
@@ -118,7 +118,7 @@ runInEachFileSystem(() => {
 
       env.write('cmp.ts', `
         import {Component} from '@angular/core';
-        
+
         @Component({selector: 'test-cmp', template: '...'})
         export class TestCmp {}
       `);
@@ -128,7 +128,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].file !.fileName).toBe(_('/other.ts'));
+      expect(diags[0].file!.fileName).toBe(_('/other.ts'));
       expectToHaveWritten([]);
 
       // Remove the error. All files should be emitted.
@@ -144,7 +144,7 @@ runInEachFileSystem(() => {
       env.write('cmp.ts', `
         import {Component} from '@angular/core';
         import {SELECTOR} from './selector';
-        
+
         @Component({selector: SELECTOR, template: '...'})
         export class TestCmp {}
       `);
@@ -165,7 +165,7 @@ runInEachFileSystem(() => {
 
       env.write('cmp.ts', `
         import {Component} from '@angular/core';
-        
+
         @Component({selector: 'test-cmp', template: '...'})
         export class TestCmp {}
       `);
@@ -175,7 +175,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].file !.fileName).toBe(_('/other.ts'));
+      expect(diags[0].file!.fileName).toBe(_('/other.ts'));
       expectToHaveWritten([]);
 
       // Remove the error. All files should be emitted.
@@ -410,7 +410,7 @@ runInEachFileSystem(() => {
         // Update ACmp to have a different selector, isn't matched in BCmp's template.
         env.write('a.ts', `
           import {Component} from '@angular/core';
-      
+
           @Component({selector: 'not-a-cmp', template: '...'})
           export class ACmp {}
        `);

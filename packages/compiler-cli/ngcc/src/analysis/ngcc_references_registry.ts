@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -45,5 +45,7 @@ export class NgccReferencesRegistry implements ReferencesRegistry {
    * Create and return a mapping for the registered resolved references.
    * @returns A map of reference identifiers to reference declarations.
    */
-  getDeclarationMap(): Map<ts.Identifier, ConcreteDeclaration> { return this.map; }
+  getDeclarationMap(): Map<ts.Identifier, ConcreteDeclaration> {
+    return this.map;
+  }
 }

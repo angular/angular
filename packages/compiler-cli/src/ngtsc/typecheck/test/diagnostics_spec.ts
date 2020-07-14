@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,10 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {TestFile, runInEachFileSystem} from '../../file_system/testing';
+import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {TypeCheckingConfig} from '../src/api';
 
-import {TestDeclaration, ngForDeclaration, ngForDts, typecheck} from './test_utils';
+import {ngForDeclaration, ngForDts, TestDeclaration, typecheck} from './test_utils';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
@@ -130,7 +130,7 @@ runInEachFileSystem(() => {
           [ngForDeclaration()], [ngForDts()]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 40): Property 'namme' does not exist on type '{ name: string; }'. Did you mean 'name'?`,
+        `synthetic.html(1, 47): Property 'namme' does not exist on type '{ name: string; }'. Did you mean 'name'?`,
       ]);
     });
 
@@ -329,7 +329,7 @@ runInEachFileSystem(() => {
           };
         }`);
 
-        expect(messages).toEqual([`synthetic.html(1, 26): Object is possibly 'undefined'.`]);
+        expect(messages).toEqual([`synthetic.html(1, 41): Object is possibly 'undefined'.`]);
       });
 
       it('does not produce diagnostic for checked property access', () => {
@@ -367,6 +367,85 @@ class TestComponent {
       ]);
     });
   });
+
+  describe('method call spans', () => {
+    it('reports invalid method name on method name span', () => {
+      const messages = diagnose(`{{ person.getNName() }}`, `
+        export class TestComponent {
+          person: {
+            getName(): string;
+          };
+        }`);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 11): Property 'getNName' does not exist on type '{ getName(): string; }'. Did you mean 'getName'?`
+      ]);
+    });
+
+    it('reports invalid method call signature on parameter span', () => {
+      const messages = diagnose(`{{ person.getName('abcd') }}`, `
+        export class TestComponent {
+          person: {
+            getName(): string;
+          };
+        }`);
+
+      expect(messages).toEqual([`synthetic.html(1, 19): Expected 0 arguments, but got 1.`]);
+    });
+  });
+
+  describe('safe method call spans', () => {
+    it('reports invalid method name on method name span', () => {
+      const messages = diagnose(`{{ person?.getNName() }}`, `
+        export class TestComponent {
+          person?: {
+            getName(): string;
+          };
+        }`);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 12): Property 'getNName' does not exist on type '{ getName(): string; }'. Did you mean 'getName'?`
+      ]);
+    });
+
+    it('reports invalid method call signature on parameter span', () => {
+      const messages = diagnose(`{{ person?.getName('abcd') }}`, `
+        export class TestComponent {
+          person?: {
+            getName(): string;
+          };
+        }`);
+
+      expect(messages).toEqual([`synthetic.html(1, 20): Expected 0 arguments, but got 1.`]);
+    });
+  });
+
+  describe('property write spans', () => {
+    it('reports invalid receiver property access on property access name span', () => {
+      const messages = diagnose(`<div (click)="person.nname = 'jacky'"></div>`, `
+        export class TestComponent {
+          person: {
+            name: string;
+          };
+        }`);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 22): Property 'nname' does not exist on type '{ name: string; }'. Did you mean 'name'?`
+      ]);
+    });
+
+    it('reports unassignable value on property write span', () => {
+      const messages = diagnose(`<div (click)="person.name = 2"></div>`, `
+        export class TestComponent {
+          person: {
+            name: string;
+          };
+        }`);
+
+      expect(messages).toEqual(
+          [`synthetic.html(1, 15): Type '2' is not assignable to type 'string'.`]);
+    });
+  });
 });
 
 function diagnose(
@@ -377,8 +456,8 @@ function diagnose(
   return diagnostics.map(diag => {
     const text =
         typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;
-    const fileName = diag.file !.fileName;
-    const {line, character} = ts.getLineAndCharacterOfPosition(diag.file !, diag.start !);
+    const fileName = diag.file!.fileName;
+    const {line, character} = ts.getLineAndCharacterOfPosition(diag.file!, diag.start!);
     return `${fileName}(${line + 1}, ${character + 1}): ${text}`;
   });
 }

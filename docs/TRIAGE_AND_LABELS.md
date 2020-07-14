@@ -21,6 +21,7 @@ The components have a clear piece of source code associated with it within the `
   browser-platforms are very intertwined, we will be treating them as one
 * `comp: ivy` - a subset of core representing the new Ivy renderer.
 * `comp: ngcc` - a subset of ivy representing the [Angular Compatibility Compiler](../packages/compiler-cli/ngcc/README.md)
+* `comp: ve` - a subset of `core & compiler` representing changes specific to ViewEngine (legacy compiler/renderer).
 * `comp: docs-infra` - the angular.io application and docs-related tooling
 * `comp: elements`
 * `comp: forms`
@@ -41,6 +42,7 @@ They don't have a clear location in the source tree.
 We will treat them as a component even thought no specific source tree is associated with them.
 
 * `comp: build & ci` - build and CI infrastructure for the angular/angular repo
+* `comp: dev-infra` - angular's common internal developer infrastructure scripting and tooling
 * `comp: docs` - documentation, including API docs, guides, tutorial
 * `comp: packaging` - packaging format of @angular/* npm packages
 * `comp: performance`

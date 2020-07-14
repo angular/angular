@@ -22,7 +22,7 @@ For a sample app using the app-wide singleton service that this page describes, 
 <!--
 There are two ways to make a service a singleton in Angular:
 
-* Declare `root` for the value of the `@Injectable()` `providedIn` property
+* Set the `providedIn` property of the `@Injectable()` to `"root"`.
 * Include the service in the `AppModule` or in a module that is only imported by the `AppModule`
 -->
 Angular에서 서비스를 싱글턴으로 사용하는 방법은 두 가지가 있습니다:
@@ -143,6 +143,7 @@ with `providers` and child modules without `providers`.
 <code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="for-root" header="src/app/greeting/greeting.module.ts"></code-example>
 
 {@a forRoot-router}
+{@a forroot-and-the-router}
 
 <!--
 ### `forRoot()` and the `Router`

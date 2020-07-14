@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,12 +8,13 @@
 import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
+
 import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
+import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {CompiledClass} from '../analysis/types';
 import {SwitchableVariableDeclaration} from '../host/ngcc_host';
-import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
 
 /**
  * The collected decorators that have become redundant after the compilation

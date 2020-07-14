@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,7 +15,9 @@ import {TestComponentRenderer} from '@angular/core/testing';
  */
 @Injectable()
 export class DOMTestComponentRenderer extends TestComponentRenderer {
-  constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
+  constructor(@Inject(DOCUMENT) private _doc: any) {
+    super();
+  }
 
   insertRootElement(rootElId: string) {
     const template = getDOM().getDefaultDocument().createElement('template');

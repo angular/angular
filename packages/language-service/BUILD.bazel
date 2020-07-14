@@ -9,13 +9,25 @@ ts_library(
             "*.ts",
             "src/**/*.ts",
         ],
+        exclude = [
+            "src/ts_utils.ts",
+        ],
     ),
     deps = [
+        ":ts_utils",
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/core",
         "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "ts_utils",
+    srcs = ["src/ts_utils.ts"],
+    deps = [
         "@npm//typescript",
     ],
 )
@@ -28,10 +40,13 @@ pkg_npm(
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//visibility:private"],
+    visibility = [
+        "//integration:__pkg__",
+    ],
     deps = [
         ":language-service",
         # min bundle is not used at the moment; omit from package to speed up build
         "//packages/language-service/bundles:language-service.umd.js",
+        "//packages/language-service/bundles:ivy.umd.js",
     ],
 )

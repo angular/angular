@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -71,6 +71,25 @@ export class Identifiers {
 
   static styleMap: o.ExternalReference = {name: 'ɵɵstyleMap', moduleName: CORE};
 
+  static styleMapInterpolate1:
+      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate1', moduleName: CORE};
+  static styleMapInterpolate2:
+      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate2', moduleName: CORE};
+  static styleMapInterpolate3:
+      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate3', moduleName: CORE};
+  static styleMapInterpolate4:
+      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate4', moduleName: CORE};
+  static styleMapInterpolate5:
+      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate5', moduleName: CORE};
+  static styleMapInterpolate6:
+      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate6', moduleName: CORE};
+  static styleMapInterpolate7:
+      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate7', moduleName: CORE};
+  static styleMapInterpolate8:
+      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate8', moduleName: CORE};
+  static styleMapInterpolateV:
+      o.ExternalReference = {name: 'ɵɵstyleMapInterpolateV', moduleName: CORE};
+
   static classMap: o.ExternalReference = {name: 'ɵɵclassMap', moduleName: CORE};
 
   static classMapInterpolate1:
@@ -112,8 +131,6 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵstylePropInterpolate8', moduleName: CORE};
   static stylePropInterpolateV:
       o.ExternalReference = {name: 'ɵɵstylePropInterpolateV', moduleName: CORE};
-
-  static containerCreate: o.ExternalReference = {name: 'ɵɵcontainer', moduleName: CORE};
 
   static nextContext: o.ExternalReference = {name: 'ɵɵnextContext', moduleName: CORE};
 
@@ -298,8 +315,6 @@ export class Identifiers {
   // sanitization-related functions
   static sanitizeHtml: o.ExternalReference = {name: 'ɵɵsanitizeHtml', moduleName: CORE};
   static sanitizeStyle: o.ExternalReference = {name: 'ɵɵsanitizeStyle', moduleName: CORE};
-  static defaultStyleSanitizer:
-      o.ExternalReference = {name: 'ɵɵdefaultStyleSanitizer', moduleName: CORE};
   static sanitizeResourceUrl:
       o.ExternalReference = {name: 'ɵɵsanitizeResourceUrl', moduleName: CORE};
   static sanitizeScript: o.ExternalReference = {name: 'ɵɵsanitizeScript', moduleName: CORE};

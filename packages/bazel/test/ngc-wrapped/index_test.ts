@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,7 +11,6 @@ import * as path from 'path';
 import {setup} from './test_support';
 
 describe('ngc_wrapped', () => {
-
   it('should work', () => {
     const {read, write, runOneBuild, writeConfig, shouldExist, basePath, typesRoots} = setup();
 

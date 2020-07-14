@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -40,7 +40,7 @@ export interface Location {
 /**
  * A defnition location(s).
  */
-export type Definition = Location[] | undefined;
+export type Definition = Location[]|undefined;
 
 /**
  * A symbol describing a language element that can be referenced by expressions
@@ -192,42 +192,47 @@ export enum BuiltinType {
   /**
    * The type is a type that can hold any other type.
    */
-  Any,
+  Any = -1,  // equivalent to b11..11 = String | Union | ...
+
+  /** Unknown types are functionally identical to any. */
+  Unknown = -1,
 
   /**
    * The type of a string literal.
    */
-  String,
+  String = 1 << 0,
 
   /**
    * The type of a numeric literal.
    */
-  Number,
+  Number = 1 << 1,
 
   /**
    * The type of the `true` and `false` literals.
    */
-  Boolean,
+  Boolean = 1 << 2,
 
   /**
    * The type of the `undefined` literal.
    */
-  Undefined,
+  Undefined = 1 << 3,
 
   /**
    * the type of the `null` literal.
    */
-  Null,
+  Null = 1 << 4,
 
   /**
    * the type is an unbound type parameter.
    */
-  Unbound,
+  Unbound = 1 << 5,
 
   /**
    * Not a built-in type.
    */
-  Other
+  Other = 1 << 6,
+
+  Object = 1 << 7,
 }
 
 /**
@@ -235,8 +240,8 @@ export enum BuiltinType {
  *
  * @publicApi
  */
-export type DeclarationKind = 'attribute' | 'html attribute' | 'component' | 'element' | 'entity' |
-    'key' | 'method' | 'pipe' | 'property' | 'type' | 'reference' | 'variable';
+export type DeclarationKind = 'attribute'|'html attribute'|'component'|'element'|'entity'|'key'|
+    'method'|'pipe'|'property'|'type'|'reference'|'variable';
 
 /**
  * Describes a symbol to type binding used to build a symbol table.
@@ -287,7 +292,7 @@ export interface PipeInfo {
  *
  * @publicApi
  */
-export type Pipes = PipeInfo[] | undefined;
+export type Pipes = PipeInfo[]|undefined;
 
 /**
  * Describes the language context in which an Angular expression is evaluated.

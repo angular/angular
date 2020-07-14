@@ -130,7 +130,7 @@ service-setup-command() {
     @fail "sc binary not found at ${SAUCE_CONNECT}"
   fi
 
-  echo "{ \"SAUCE_USERNAME\": \"${SAUCE_USERNAME}\", \"SAUCE_ACCESS_KEY\": \"${SAUCE_ACCESS_KEY}\", \"SAUCE_TUNNEL_IDENTIFIER\": \"${SAUCE_TUNNEL_IDENTIFIER}\", \"SAUCE_LOCALHOST_ALIAS_DOMAIN\": \"${SAUCE_LOCALHOST_ALIAS_DOMAIN}\" }" > ${SAUCE_PARAMS_JSON_FILE}
+  echo "{ \"SAUCE_USERNAME\": \"${SAUCE_USERNAME}\", \"SAUCE_ACCESS_KEY\": \"${SAUCE_ACCESS_KEY}\", \"SAUCE_TUNNEL_IDENTIFIER\": \"${SAUCE_TUNNEL_IDENTIFIER}\", \"SAUCE_LOCALHOST_ALIAS_DOMAIN\": \"${SAUCE_LOCALHOST_ALIAS_DOMAIN:-}\" }" > ${SAUCE_PARAMS_JSON_FILE}
 
   # Command arguments that will be passed to sauce-connect.
   # By default we disable SSL bumping for all requests. This is because SSL bumping is
@@ -148,7 +148,7 @@ service-setup-command() {
     # Don't add the --api-key here so we don't echo it out in service-pre-start
   )
 
-  if [[ -n "${SAUCE_LOCALHOST_ALIAS_DOMAIN}" ]]; then
+  if [[ -n "${SAUCE_LOCALHOST_ALIAS_DOMAIN:-}" ]]; then
     # Ensures that requests to the localhost alias domain are always resolved through the tunnel.
     # This environment variable is usually configured on CI, and refers to a domain that has been
     # locally configured in the current machine's hosts file (e.g. `/etc/hosts`). The domain should
@@ -191,16 +191,32 @@ service-pre-start() {
 
 # Called after service is started
 service-post-start() {
-  @wait_for "Waiting for Sauce Connect Proxy process" "${SAUCE_PID_FILE}"
+  if [[ ! -f "${SAUCE_PID_FILE}" ]]; then
+    printf "# Waiting for Sauce Connect Proxy process (${SAUCE_PID_FILE})"
+    while [[ ! -f "${SAUCE_PID_FILE}" ]]; do
+      if ! @serviceStatus >/dev/null 2>&1; then
+        printf "\n"
+        @serviceStop
+        @echo "Service failed to start!"
+        service-failed-setup
+        exit 1
+      fi
+      printf "."
+      sleep 0.5
+    done
+    printf "\n"
+  fi
   @echo "Sauce Connect Proxy started (pid $(cat "${SAUCE_PID_FILE}"))"
 }
 
 # Called if service fails to start
 service-failed-setup() {
   if [[ -f "${SERVICE_LOG_FILE}" ]]; then
-    echo "================================================================================"
-    echo "${SERVICE_LOG_FILE}:"
-    echo $(cat "${SERVICE_LOG_FILE}")
+    @echo "tail ${SERVICE_LOG_FILE}:"
+    echo "--------------------------------------------------------------------------------"
+    tail "${SERVICE_LOG_FILE}"
+    echo "--------------------------------------------------------------------------------"
+    echo "^^^^^ ${SERVICE_LOG_FILE} ^^^^^"
   fi
 }
 
@@ -359,6 +375,8 @@ service-post-stop() {
     return 0
   else
     @warn "Service is not running"
+    @remove "${SERVICE_PID_FILE}"
+    @remove "${SERVICE_START_FILE}"
     service-post-stop
   fi
 }
@@ -378,7 +396,16 @@ service-post-stop() {
 }
 
 @serviceTail() {
+  @echo "tail ${SERVICE_LOG_FILE}:"
   tail -f "${SERVICE_LOG_FILE}"
+}
+
+@serviceLog() {
+  @echo "cat ${SERVICE_LOG_FILE}:"
+  echo "--------------------------------------------------------------------------------"
+  cat "${SERVICE_LOG_FILE}"
+  echo "--------------------------------------------------------------------------------"
+  echo "^^^^^ ${SERVICE_LOG_FILE} ^^^^^"
 }
 
 case "${1:-}" in
@@ -418,6 +445,9 @@ case "${1:-}" in
       fi
       ${SERVICE_COMMAND}
     )
+    ;;
+  log)
+    @serviceLog
     ;;
   tail)
     @serviceTail

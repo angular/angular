@@ -234,7 +234,7 @@ export class SettingsMenu extends BaseMenu {}
 ## Cannot Bind to `value` property of `<select>` with `*ngFor`
 
 
-### Basic example of change 
+### Basic example of change
 
 
 ```html
@@ -243,15 +243,15 @@ export class SettingsMenu extends BaseMenu {}
 </select>
 ```
 
-In the View Engine runtime, the above code would set the initial value of the `<select>` as expected. 
+In the View Engine runtime, the above code would set the initial value of the `<select>` as expected.
 In Ivy, the initial value would not be set at all in this case.
 
 
 ### Background
 
-Prior to Ivy, directive input bindings were always executed in their own change detection pass before any DOM bindings were processed. 
+Prior to Ivy, directive input bindings were always executed in their own change detection pass before any DOM bindings were processed.
 This was an implementation detail that supported the use case in question:
-    
+
 ```html
 <select [value]="someValue">
   <option *ngFor="let option of options" [value]="option"> {{ option }} <option>
@@ -259,13 +259,13 @@ This was an implementation detail that supported the use case in question:
 ```
 
 It happened to work because the `*ngFor` would be checked first, during the directive input binding pass, and thus create the options first.
-Then the DOM binding pass would run, which would check the `value` binding. 
-At this time, it would be able to match the value against one of the existing options, and set the value of the `<select>` element in the DOM to display that option. 
+Then the DOM binding pass would run, which would check the `value` binding.
+At this time, it would be able to match the value against one of the existing options, and set the value of the `<select>` element in the DOM to display that option.
 
 In Ivy, bindings are checked in the order they are defined in the template, regardless of whether they are directive input bindings or DOM bindings.
 This change makes change detection easier to reason about for debugging purposes, since bindings will be checked in depth-first order as declared in the template.
 
-In this case, it means that the `value` binding will be checked before the `*ngFor` is checked, as it is declared above the `*ngFor` in the template. 
+In this case, it means that the `value` binding will be checked before the `*ngFor` is checked, as it is declared above the `*ngFor` in the template.
 Consequently, the value of the `<select>` element will be set before any options are created, and it won't be able to match and display the correct option in the DOM.
 
 ### Example of error
@@ -291,4 +291,60 @@ To fix this problem, we recommend binding to the `selected` property on the `<op
     {{ option }}
   <option>
 </select>
+```
+
+{@a forward-refs-directive-inputs}
+## Forward references to directive inputs accessed through local refs are no longer supported.
+
+
+### Basic example of change
+
+
+```ts
+@Directive({
+  selector: '[myDir]',
+  exportAs: 'myDir'
+})
+export class MyDir {
+  @Input() message: string;
+}
+```
+
+```html
+{{ myDir.name }}
+<div myDir #myDir="myDir" [name]="myName"></div>
+```
+
+In the View Engine runtime, the above code would print out the name without any errors.
+In Ivy, the `myDir.name` binding will throw an `ExpressionChangedAfterItHasBeenCheckedError`.
+
+
+### Background
+
+In the ViewEngine runtime, directive input bindings and element bindings were executed in different stages. Angular would process the template one full time to check directive inputs only (e.g. `[name]`), then process the whole template again to check element and text bindings only (e.g.`{{ myDir.name }}`). This meant that the `name` directive input would be checked before the `myDir.name` text binding despite their relative order in the template, which some users felt to be counterintuitive.
+
+In contrast, Ivy processes the template in just one pass, so that bindings are checked in the same order that they are written in the template. In this case, it means that the `myDir.name` binding will be checked before the `name` input sets the property on the directive (and thus it will be `undefined`). Since the `myDir.name` property will be set by the time the next change detection pass runs, a change detection error is thrown.
+
+### Example of error
+
+Assuming that the value for `myName` is `Angular`, you should see an error that looks like
+
+```
+Error: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'undefined'. Current value: 'Angular'.
+```
+
+### Recommended fix
+
+To fix this problem, we recommend either getting the information for the binding directly from the host component (e.g. the `myName` property from our example) or to move the data binding after the directive has been declared so that the initial value is available on the first pass.
+
+*Before*
+```html
+{{ myDir.name }}
+<div myDir #myDir="myDir" [name]="myName"></div>
+```
+
+*After*
+```html
+{{ myName }}
+<div myDir [name]="myName"></div>
 ```

@@ -1,21 +1,24 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, ParseSourceFile, ParseSourceSpan, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, TmplAstReference, Type, parseTemplate} from '@angular/compiler';
+import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, TmplAstReference, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath, LogicalFileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
-import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
+import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
+import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {TemplateId, TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
+import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, UpdateMode} from '../src/api';
+import {ReusedProgramStrategy} from '../src/augmented_program';
+import {ProgramTypeCheckAdapter, TemplateTypeChecker} from '../src/checker';
 import {TypeCheckContext} from '../src/context';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
@@ -92,7 +95,7 @@ export function angularCoreDts(): TestFile {
     export declare class EventEmitter<T> {
       subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown;
     }
-    
+
     export declare type NgIterable<T> = Array<T> | Iterable<T>;
   `
   };
@@ -164,26 +167,24 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   checkTypeOfPipes: true,
   strictSafeNavigationTypes: true,
   useContextGenericType: true,
+  strictLiteralTypes: true,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
-export type TestDirective =
-    Partial<Pick<
-        TypeCheckableDirectiveMeta,
-        Exclude<keyof TypeCheckableDirectiveMeta, 'ref'|'coercedInputFields'>>>&
-    {
-      selector: string,
-      name: string, file?: AbsoluteFsPath,
-      type: 'directive', coercedInputFields?: string[],
-    };
+export type TestDirective = Partial<Pick<
+    TypeCheckableDirectiveMeta,
+    Exclude<keyof TypeCheckableDirectiveMeta, 'ref'|'coercedInputFields'>>>&{
+  selector: string,
+  name: string,
+  file?: AbsoluteFsPath, type: 'directive',
+  coercedInputFields?: string[],
+};
 export type TestPipe = {
   name: string,
-  file?: AbsoluteFsPath,
-  pipeName: string,
-  type: 'pipe',
+  file?: AbsoluteFsPath, pipeName: string, type: 'pipe',
 };
 
-export type TestDeclaration = TestDirective | TestPipe;
+export type TestDeclaration = TestDirective|TestPipe;
 
 export function tcb(
     template: string, declarations: TestDeclaration[] = [], config?: TypeCheckingConfig,
@@ -219,6 +220,7 @@ export function tcb(
     checkTemplateBodies: true,
     strictSafeNavigationTypes: true,
     useContextGenericType: true,
+    strictLiteralTypes: true,
   };
   options = options || {
     emitSpans: false,
@@ -233,11 +235,19 @@ export function tcb(
   return res.replace(/\s+/g, ' ');
 }
 
-export function typecheck(
-    template: string, source: string, declarations: TestDeclaration[] = [],
-    additionalSources: {name: AbsoluteFsPath; contents: string}[] = [],
-    config: Partial<TypeCheckingConfig> = {}, opts: ts.CompilerOptions = {}): ts.Diagnostic[] {
-  const typeCheckFilePath = absoluteFrom('/_typecheck_.ts');
+export interface TemplateTestEnvironment {
+  sf: ts.SourceFile;
+  program: ts.Program;
+  templateTypeChecker: TemplateTypeChecker;
+  programStrategy: ReusedProgramStrategy;
+}
+
+function setupTemplateTypeChecking(
+    source: string, additionalSources: {name: AbsoluteFsPath; contents: string}[],
+    config: Partial<TypeCheckingConfig>, opts: ts.CompilerOptions,
+    makeTypeCheckAdapterFn: (program: ts.Program, sf: ts.SourceFile) =>
+        ProgramTypeCheckAdapter): TemplateTestEnvironment {
+  const typeCheckFilePath = absoluteFrom('/main.ngtypecheck.ts');
   const files = [
     typescriptLibDts(),
     angularCoreDts(),
@@ -250,9 +260,9 @@ export function typecheck(
   ];
   const {program, host, options} =
       makeProgram(files, {strictNullChecks: true, noImplicitAny: true, ...opts}, undefined, false);
-  const sf = program.getSourceFile(absoluteFrom('/main.ts')) !;
+  const sf = program.getSourceFile(absoluteFrom('/main.ts'))!;
   const checker = program.getTypeChecker();
-  const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
+  const logicalFs = new LogicalFileSystem(getRootDirs(host, options), host);
   const reflectionHost = new TypeScriptReflectionHost(checker);
   const moduleResolver =
       new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
@@ -262,41 +272,77 @@ export function typecheck(
         program, checker, moduleResolver, new TypeScriptReflectionHost(checker)),
     new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
-  const ctx = new TypeCheckContext(
-      {...ALL_ENABLED_CONFIG, ...config}, emitter, reflectionHost, typeCheckFilePath);
+  const fullConfig = {...ALL_ENABLED_CONFIG, ...config};
 
-  const templateUrl = 'synthetic.html';
-  const templateFile = new ParseSourceFile(template, templateUrl);
-  const {nodes, errors} = parseTemplate(template, templateUrl);
-  if (errors !== undefined) {
-    throw new Error('Template parse errors: \n' + errors.join('\n'));
-  }
+  const checkAdapter = makeTypeCheckAdapterFn(program, sf);
+  const programStrategy = new ReusedProgramStrategy(program, host, options, []);
+  const templateTypeChecker = new TemplateTypeChecker(
+      program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
+      NOOP_INCREMENTAL_BUILD);
 
-  const {matcher, pipes} = prepareDeclarations(declarations, decl => {
-    let declFile = sf;
-    if (decl.file !== undefined) {
-      declFile = program.getSourceFile(decl.file) !;
-      if (declFile === undefined) {
-        throw new Error(`Unable to locate ${decl.file} for ${decl.type} ${decl.name}`);
+  return {program, sf, templateTypeChecker, programStrategy};
+}
+
+export function typecheck(
+    template: string, source: string, declarations: TestDeclaration[] = [],
+    additionalSources: {name: AbsoluteFsPath; contents: string}[] = [],
+    config: Partial<TypeCheckingConfig> = {}, opts: ts.CompilerOptions = {}): ts.Diagnostic[] {
+  const {sf, templateTypeChecker} =
+      setupTemplateTypeChecking(source, additionalSources, config, opts, (program, sf) => {
+        const templateUrl = 'synthetic.html';
+        const templateFile = new ParseSourceFile(template, templateUrl);
+        const {nodes, errors} = parseTemplate(template, templateUrl);
+        if (errors !== undefined) {
+          throw new Error('Template parse errors: \n' + errors.join('\n'));
+        }
+
+        const {matcher, pipes} = prepareDeclarations(declarations, decl => {
+          let declFile = sf;
+          if (decl.file !== undefined) {
+            declFile = program.getSourceFile(decl.file)!;
+            if (declFile === undefined) {
+              throw new Error(`Unable to locate ${decl.file} for ${decl.type} ${decl.name}`);
+            }
+          }
+          return getClass(declFile, decl.name);
+        });
+        const binder = new R3TargetBinder(matcher);
+        const boundTarget = binder.bind({template: nodes});
+        const clazz = new Reference(getClass(sf, 'TestComponent'));
+
+        const sourceMapping: TemplateSourceMapping = {
+          type: 'external',
+          template,
+          templateUrl,
+          componentClass: clazz.node,
+          // Use the class's name for error mappings.
+          node: clazz.node.name,
+        };
+
+        return createTypeCheckAdapter((ctx: TypeCheckContext) => {
+          ctx.addTemplate(clazz, boundTarget, pipes, [], sourceMapping, templateFile);
+        });
+      });
+
+  templateTypeChecker.refresh();
+  return templateTypeChecker.getDiagnosticsForFile(sf);
+}
+
+export function createProgramWithNoTemplates(): TemplateTestEnvironment {
+  return setupTemplateTypeChecking(
+      'export const NOT_A_COMPONENT = true;', [], {}, {}, () => createTypeCheckAdapter(() => {}));
+}
+
+function createTypeCheckAdapter(fn: (ctx: TypeCheckContext) => void): ProgramTypeCheckAdapter {
+  let called = false;
+  return {
+    typeCheck: (sf: ts.SourceFile, ctx: TypeCheckContext) => {
+      if (!called) {
+        fn(ctx);
       }
-    }
-    return getClass(declFile, decl.name);
-  });
-  const binder = new R3TargetBinder(matcher);
-  const boundTarget = binder.bind({template: nodes});
-  const clazz = new Reference(getClass(sf, 'TestComponent'));
-
-  const sourceMapping: TemplateSourceMapping = {
-    type: 'external',
-    template,
-    templateUrl,
-    componentClass: clazz.node,
-    // Use the class's name for error mappings.
-    node: clazz.node.name,
+      called = true;
+    },
   };
-
-  ctx.addTemplate(clazz, boundTarget, pipes, [], sourceMapping, templateFile);
-  return ctx.calculateTemplateDiagnostics(program, host, options).diagnostics;
 }
 
 function prepareDeclarations(
@@ -354,7 +400,9 @@ class FakeEnvironment /* implements Environment */ {
     return ts.createParen(ts.createAsExpression(ts.createNull(), this.referenceType(ref)));
   }
 
-  declareOutputHelper(): ts.Expression { return ts.createIdentifier('_outputHelper'); }
+  declareOutputHelper(): ts.Expression {
+    return ts.createIdentifier('_outputHelper');
+  }
 
   reference(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
     return ref.node.name;
@@ -377,7 +425,9 @@ class FakeEnvironment /* implements Environment */ {
     return ts.createTypeReferenceNode(qName, typeArgs.length > 0 ? typeArgs : undefined);
   }
 
-  getPreludeStatements(): ts.Statement[] { return []; }
+  getPreludeStatements(): ts.Statement[] {
+    return [];
+  }
 
   static newFake(config: TypeCheckingConfig): Environment {
     return new FakeEnvironment(config) as Environment;
@@ -385,7 +435,9 @@ class FakeEnvironment /* implements Environment */ {
 }
 
 export class NoopSchemaChecker implements DomSchemaChecker {
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return []; }
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+    return [];
+  }
 
   checkElement(id: string, element: TmplAstElement, schemas: SchemaMetadata[]): void {}
   checkProperty(
@@ -394,8 +446,11 @@ export class NoopSchemaChecker implements DomSchemaChecker {
 }
 
 export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return []; }
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+    return [];
+  }
   missingReferenceTarget(): void {}
   missingPipe(): void {}
   illegalAssignmentToTemplateVar(): void {}
+  duplicateTemplateVar(): void {}
 }

@@ -4,7 +4,7 @@ Currently all changes to Ivy are validated against the test suite of the
 `angular/components` repository. In order to debug the `components-repo-unit-tests` CI
 job, the following steps can be used:
 
-1\) Build the Ivy package output by running `node ./scripts/build-ivy-npm-packages.js` in
+1\) Build the Ivy package output by running `node ./scripts/build/build-ivy-npm-packages.js` in
 the `angular/angular` repo.
 
 2\) Clone the `angular/components` repository if not done yet ([quick link to repo](https://github.com/angular/components)).

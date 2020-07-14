@@ -5,7 +5,7 @@
 
 <!--
 When you create an Angular library, you can provide and package it with schematics that integrate it with the Angular CLI.
-With your schematics, your users can use  `ng add` to install an initial version of your library,
+With your schematics, your users can use `ng add` to install an initial version of your library,
 `ng generate` to create artifacts defined in your library, and `ng update` to adjust their project for a new version of your library that introduces breaking changes.
 
 All three types of schematics can be part of a collection that you package with your library.
@@ -235,10 +235,10 @@ When you add a schematic to the collection, you have to point to it in the colle
 <code-example header="projects/my-lib/schematics/my-service/schema.json (Schematic JSON Schema)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/schema.json">
 </code-example>
 
-  * *id* : A unique id for the schema in the collection.
-  * *title* : A human-readable description of the schema.
-  * *type* : A descriptor for the type provided by the properties.
-  * *properties* : An object that defines the available options for the schematic.
+  * *id*: A unique id for the schema in the collection.
+  * *title*: A human-readable description of the schema.
+  * *type*: A descriptor for the type provided by the properties.
+  * *properties*: An object that defines the available options for the schematic.
 
   Each option associates key with a type, description, and optional alias.
   The type defines the shape of the value you expect, and the description is displayed when the user requests usage help for your schematic.
@@ -250,9 +250,9 @@ When you add a schematic to the collection, you have to point to it in the colle
 <code-example header="projects/my-lib/schematics/my-service/schema.ts (Schematic Interface)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/schema.ts">
 </code-example>
 
-  * *name* : The name you want to provide for the created service.
-  * *path* : Overrides the path provided to the schematic. The default path value is based on the current working directory.
-  * *project* : Provides a specific project to run the schematic on. In the schematic, you can provide a default if the option is not provided by the user.
+  * *name*: The name you want to provide for the created service.
+  * *path*: Overrides the path provided to the schematic. The default path value is based on the current working directory.
+  * *project*: Provides a specific project to run the schematic on. In the schematic, you can provide a default if the option is not provided by the user.
 -->
 컬렉션에 스키매틱을 추가하고 나면 컬렉션 스키마에 이 스키매틱을 추가해야 합니다.
 그리고나서 사용자로 부터 받을 입력값을 스키마 파일로 정의해야 합니다.
@@ -269,10 +269,10 @@ When you add a schematic to the collection, you have to point to it in the colle
 <code-example header="projects/my-lib/schematics/my-service/schema.json (스키매틱 JSON 스키마)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/schema.json">
 </code-example>
 
-  * *id* : 콜렉션 안에서 스키마를 구분하는 ID입니다.
-  * *title* : 스키마를 설명하는 문구를 작성합니다.
-  * *type* : 프로퍼티 타입을 지정합니다.
-  * *properties* : 스키매틱 입력값의 형식을 객체 형태로 정의합니다.
+  * *id*: 콜렉션 안에서 스키마를 구분하는 ID입니다.
+  * *title*: 스키마를 설명하는 문구를 작성합니다.
+  * *type*: 프로퍼티 타입을 지정합니다.
+  * *properties*: 스키매틱 입력값의 형식을 객체 형태로 정의합니다.
 
   개별 입력값은 각각 `type`, `description`, `alias`(생략 가능)로 구성합니다.
   이 때 `type`은 입력값의 형식을 의미하며, `description`은 사용자가 스키매틱을 실행할 때 확인하는 문구입니다.
@@ -358,10 +358,9 @@ The Schematics framework provides a file templating system, which supports both 
 The system operates on placeholders defined inside files or paths that loaded in the input `Tree`.
 It fills these in using values passed into the `Rule`.
 
-For details of these data structure and syntax, see the [Schematics README](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/schematics/README.md).
+For details of these data structures and syntax, see the [Schematics README](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/schematics/README.md).
 
-
-1. Create the main file, `index.ts` and add the source code for your schematic factory function.
+1. Create the main file `index.ts` and add the source code for your schematic factory function.
 
 1. First, import the schematics definitions you will need. The Schematics framework offers many utility functions to create and use rules when running a schematic.
 
@@ -524,7 +523,7 @@ A `Rule` can use external template files, transform them, and return another `Ru
   * The `url()` method reads source files from your filesystem, relative to the schematic.
   * The `applyTemplates()` method receives an argument of methods and properties you want make available to the schematic template and the schematic filenames. It returns a `Rule`. This is where you define the `classify()` and `dasherize()` methods, and the `name` property.
   * The `classify()` method takes a value and returns the value in title case. For example, if the provided name is `my service`, it is returned as `MyService`
-  * The `dasherize()` method takes a value and returns the value in dashed and lowercase. For example, if the provided name is MyService, it is returned as `my-service.
+  * The `dasherize()` method takes a value and returns the value in dashed and lowercase. For example, if the provided name is MyService, it is returned as `my-service`.
   * The `move` method moves the provided source files to their destination when the schematic is applied.
 
 1. Finally, the rule factory must return a rule.
@@ -585,7 +584,6 @@ After you build your library and schematics, you can install the schematics coll
 -->
 라이브러리와 스키매틱을 빌드하고 나면 이제 Angular 프로젝트에 스키매틱 컬렉션을 설치할 수 있습니다.
 이제부터는 지금까지 구현한 스키매틱을 사용해서 서비스를 생성하는 방법에 대해 알아봅시다.
-
 
 <!--
 ### Build your library and schematics

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,17 +20,17 @@ import {CssSelector, SelectorMatcher} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
 import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
-import {OutputContext, error} from '../../util';
+import {error, OutputContext} from '../../util';
 import {BoundEvent} from '../r3_ast';
-import {R3FactoryTarget, compileFactoryFunction} from '../r3_factory';
+import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget, R3ResolvedDependencyType} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
-import {BindingScope, TemplateDefinitionBuilder, ValueConverter, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
-import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
+import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
+import {asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getQueryPredicate, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -65,9 +65,10 @@ function baseDirectiveFields(
 
   // e.g. `hostBindings: (rf, ctx) => { ... }
   definitionMap.set(
-      'hostBindings', createHostBindingsFunction(
-                          meta.host, meta.typeSourceSpan, bindingParser, constantPool,
-                          meta.selector || '', meta.name, definitionMap));
+      'hostBindings',
+      createHostBindingsFunction(
+          meta.host, meta.typeSourceSpan, bindingParser, constantPool, meta.selector || '',
+          meta.name, definitionMap));
 
   // e.g 'inputs: {a: 'a'}`
   definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs, true));
@@ -85,9 +86,8 @@ function baseDirectiveFields(
 /**
  * Add features to the definition map.
  */
-function addFeatures(
-    definitionMap: DefinitionMap, meta: R3DirectiveMetadata | R3ComponentMetadata) {
-  // e.g. `features: [NgOnChangesFeature()]`
+function addFeatures(definitionMap: DefinitionMap, meta: R3DirectiveMetadata|R3ComponentMetadata) {
+  // e.g. `features: [NgOnChangesFeature]`
   const features: o.Expression[] = [];
 
   const providers = meta.providers;
@@ -107,7 +107,7 @@ function addFeatures(
     features.push(o.importExpr(R3.CopyDefinitionFeature));
   }
   if (meta.lifecycle.usesOnChanges) {
-    features.push(o.importExpr(R3.NgOnChangesFeature).callFn(EMPTY_ARRAY));
+    features.push(o.importExpr(R3.NgOnChangesFeature));
   }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
@@ -124,7 +124,9 @@ export function compileDirectiveFromMetadata(
   addFeatures(definitionMap, meta);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
 
-  const type = createTypeForDef(meta, R3.DirectiveDefWithMeta);
+  const typeParams = createDirectiveTypeParams(meta);
+  const type = o.expressionType(o.importExpr(R3.DirectiveDefWithMeta, typeParams));
+
   return {expression, type};
 }
 
@@ -146,10 +148,11 @@ export function compileComponentFromMetadata(
     const selectorAttributes = firstSelector.getAttrs();
     if (selectorAttributes.length) {
       definitionMap.set(
-          'attrs', constantPool.getConstLiteral(
-                       o.literalArr(selectorAttributes.map(
-                           value => value != null ? o.literal(value) : o.literal(undefined))),
-                       /* forceShared */ true));
+          'attrs',
+          constantPool.getConstLiteral(
+              o.literalArr(selectorAttributes.map(
+                  value => value != null ? o.literal(value) : o.literal(undefined))),
+              /* forceShared */ true));
     }
   }
 
@@ -174,7 +177,7 @@ export function compileComponentFromMetadata(
 
   const template = meta.template;
   const templateBuilder = new TemplateDefinitionBuilder(
-      constantPool, BindingScope.ROOT_SCOPE, 0, templateTypeName, null, null, templateName,
+      constantPool, BindingScope.createRootScope(), 0, templateTypeName, null, null, templateName,
       directiveMatcher, directivesUsed, meta.pipes, pipesUsed, R3.namespaceHTML,
       meta.relativeContextFilePath, meta.i18nUseExternalIds);
 
@@ -252,7 +255,11 @@ export function compileComponentFromMetadata(
   }
 
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
-  const type = createTypeForDef(meta, R3.ComponentDefWithMeta);
+
+
+  const typeParams = createDirectiveTypeParams(meta);
+  typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
+  const type = o.expressionType(o.importExpr(R3.ComponentDefWithMeta, typeParams));
 
   return {expression, type};
 }
@@ -267,7 +274,7 @@ export function compileComponentFromMetadata(
 export function compileDirectiveFromRender2(
     outputCtx: OutputContext, directive: CompileDirectiveMetadata, reflector: CompileReflector,
     bindingParser: BindingParser) {
-  const name = identifierName(directive.type) !;
+  const name = identifierName(directive.type)!;
   name || error(`Cannot resolver the name of ${directive.type}`);
 
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Directive);
@@ -300,7 +307,7 @@ export function compileComponentFromRender2(
     outputCtx: OutputContext, component: CompileDirectiveMetadata, render3Ast: Render3ParseResult,
     reflector: CompileReflector, bindingParser: BindingParser, directiveTypeBySel: Map<string, any>,
     pipeTypeByName: Map<string, any>) {
-  const name = identifierName(component.type) !;
+  const name = identifierName(component.type)!;
   name || error(`Cannot resolver the name of ${component.type}`);
 
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Component);
@@ -311,7 +318,7 @@ export function compileComponentFromRender2(
   const meta: R3ComponentMetadata = {
     ...directiveMetadataFromGlobalMetadata(component, outputCtx, reflector),
     selector: component.selector,
-    template: {nodes: render3Ast.nodes},
+    template: {nodes: render3Ast.nodes, ngContentSelectors: render3Ast.ngContentSelectors},
     directives: [],
     pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
     viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
@@ -366,7 +373,8 @@ function queriesFromGlobalMetadata(
       propertyName: query.propertyName,
       first: query.first,
       predicate: selectorsFromGlobalMetadata(query.selectors, outputCtx),
-      descendants: query.descendants, read,
+      descendants: query.descendants,
+      read,
       static: !!query.static
     };
   });
@@ -458,7 +466,7 @@ function stringAsType(str: string): o.Type {
   return o.expressionType(o.literal(str));
 }
 
-function stringMapAsType(map: {[key: string]: string | string[]}): o.Type {
+function stringMapAsType(map: {[key: string]: string|string[]}): o.Type {
   const mapValues = Object.keys(map).map(key => {
     const value = Array.isArray(map[key]) ? map[key][0] : map[key];
     return {
@@ -470,24 +478,24 @@ function stringMapAsType(map: {[key: string]: string | string[]}): o.Type {
   return o.expressionType(o.literalMap(mapValues));
 }
 
-function stringArrayAsType(arr: string[]): o.Type {
+function stringArrayAsType(arr: ReadonlyArray<string|null>): o.Type {
   return arr.length > 0 ? o.expressionType(o.literalArr(arr.map(value => o.literal(value)))) :
                           o.NONE_TYPE;
 }
 
-function createTypeForDef(meta: R3DirectiveMetadata, typeBase: o.ExternalReference): o.Type {
+function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
   const selectorForType = meta.selector !== null ? meta.selector.replace(/\n/g, '') : null;
 
-  return o.expressionType(o.importExpr(typeBase, [
+  return [
     typeWithParameters(meta.type.type, meta.typeArgumentCount),
     selectorForType !== null ? stringAsType(selectorForType) : o.NONE_TYPE,
     meta.exportAs !== null ? stringArrayAsType(meta.exportAs) : o.NONE_TYPE,
     stringMapAsType(meta.inputs),
     stringMapAsType(meta.outputs),
     stringArrayAsType(meta.queries.map(q => q.propertyName)),
-  ]));
+  ];
 }
 
 // Define and update any view queries
@@ -717,7 +725,7 @@ function convertStylingCall(
 function getBindingNameAndInstruction(binding: ParsedProperty):
     {bindingName: string, instruction: o.ExternalReference, isAttribute: boolean} {
   let bindingName = binding.name;
-  let instruction !: o.ExternalReference;
+  let instruction!: o.ExternalReference;
 
   // Check to see if this is an attr binding or a property binding
   const attrMatches = bindingName.match(ATTR_REGEX);
@@ -811,8 +819,7 @@ export interface ParsedHostBindings {
   specialAttributes: {styleAttr?: string; classAttr?: string;};
 }
 
-export function parseHostBindings(host: {[key: string]: string | o.Expression}):
-    ParsedHostBindings {
+export function parseHostBindings(host: {[key: string]: string|o.Expression}): ParsedHostBindings {
   const attributes: {[key: string]: o.Expression} = {};
   const listeners: {[key: string]: string} = {};
   const properties: {[key: string]: string} = {};
@@ -887,5 +894,7 @@ export function verifyHostBindings(
 
 function compileStyles(styles: string[], selector: string, hostSelector: string): string[] {
   const shadowCss = new ShadowCss();
-  return styles.map(style => { return shadowCss !.shimCssText(style, selector, hostSelector); });
+  return styles.map(style => {
+    return shadowCss!.shimCssText(style, selector, hostSelector);
+  });
 }

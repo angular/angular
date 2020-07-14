@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -251,8 +251,10 @@ runInEachFileSystem(() => {
         exportNames.map(e => `  exports.${e.replace(/.+\./, '')} = ${e};`).join('\n');
     return `
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports${commonJsRequires}) :
-  typeof define === 'function' && define.amd ? define('${moduleName}', ['exports'${amdDeps}], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports${
+        commonJsRequires}) :
+  typeof define === 'function' && define.amd ? define('${moduleName}', ['exports'${
+        amdDeps}], factory) :
   (factory(global.${moduleName}${globalParams}));
 }(this, (function (exports${params}) { 'use strict';
 ${exportStatements}

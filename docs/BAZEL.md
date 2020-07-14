@@ -13,7 +13,7 @@ In order to ensure that everyone builds Angular in a _consistent_ way, Bazel
 will be installed through NPM and therefore it's not necessary to install Bazel
 manually.
 
-The binaries for Bazel will be provided by the [`@bazel/bazel`](https://github.com/bazelbuild/rules_nodejs/tree/master/packages)
+The binaries for Bazel will be provided by the [`@bazel/bazelisk`](https://github.com/bazelbuild/bazelisk)
 NPM package and its platform-specific dependencies.
 
 You can access Bazel with the `yarn bazel` command
@@ -64,7 +64,7 @@ See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc
 - `--config=debug`: build and launch in debug mode (see [debugging](#debugging) instructions below)
 - `--test_arg=--node_options=--inspect=9228`: change the inspector port.
 - `--config=ivy` Enables ivy mode if present, otherwise ViewEngine is used. This switches which compiler is used (ngc or ngtsc)
-- `--config=view-engine` Enables ViewEngine mode if present, currentl this the default mode. This switches which compiler is used (ngc or ngtsc)
+- `--config=view-engine` Enables ViewEngine mode if present, currently this the default mode. This switches which compiler is used (ngc or ngtsc)
 - `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config of your rules in any given `BUILD.bazel`.
     - `no-ivy-aot`: Useful for excluding build and test targets that are not meant to be executed in Ivy AOT mode (`--config=ivy`).
     - `ivy-only`: Useful for excluding all Ivy build and tests targets with `--config=view-engine`.
@@ -203,7 +203,7 @@ yarn bazel analyze-profile filename_name.profile
 
 This will show the phase summary, individual phase information and critical path.
 
-You can also list all individual tasks and the time they took using `--task_tree`. 
+You can also list all individual tasks and the time they took using `--task_tree`.
 ```
 yarn bazel analyze-profile filename_name.profile --task_tree ".*"
 ```

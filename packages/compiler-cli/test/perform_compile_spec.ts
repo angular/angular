@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@ import * as path from 'path';
 
 import {readConfiguration} from '../src/perform_compile';
 
-import {TestSupport, setup} from './test_support';
+import {setup, TestSupport} from './test_support';
 
 describe('perform_compile', () => {
   let support: TestSupport;

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,6 +19,19 @@ export function createNgcProgram(
   // the default. This breaks the assumption that "createProgram" from compiler-cli returns the
   // NGC program. In order to ensure that the migration runs properly, we set "enableIvy" to false.
   options.enableIvy = false;
+
+  // Libraries which have been generated with CLI versions past v6.2.0, explicitly set the
+  // flat-module options in their tsconfig files. This is problematic because by default,
+  // those tsconfig files do not specify explicit source files which can be considered as
+  // entry point for the flat-module bundle. Therefore the `@angular/compiler-cli` is unable
+  // to determine the flat module entry point and throws a compile error. This is not an issue
+  // for the libraries built with `ng-packagr`, because the tsconfig files are modified in-memory
+  // to specify an explicit flat module entry-point. Our migrations don't distinguish between
+  // libraries and applications, and also don't run `ng-packagr`. To ensure that such libraries
+  // can be successfully migrated, we remove the flat-module options to eliminate the flat module
+  // entry-point requirement. More context: https://github.com/angular/angular/issues/34985.
+  options.flatModuleId = undefined;
+  options.flatModuleOutFile = undefined;
 
   const host = createHost(options);
 

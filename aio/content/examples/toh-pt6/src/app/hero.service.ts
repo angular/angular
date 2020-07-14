@@ -36,7 +36,7 @@ export class HeroService {
   // #docregion getHeroes, getHeroes-1
   /** GET: 서버에서 히어로 목록 가져오기 */
   // #docregion getHeroes-2
-  getHeroes (): Observable<Hero[]> {
+  getHeroes(): Observable<Hero[]> {
     return this.http.get<Hero[]>(this.heroesUrl)
   // #enddocregion getHeroes-1
       .pipe(
@@ -98,7 +98,7 @@ export class HeroService {
 
   // #docregion addHero
   /** POST: 서버에 새로운 히어로를 추가합니다. */
-  addHero (hero: Hero): Observable<Hero> {
+  addHero(hero: Hero): Observable<Hero> {
     return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
       tap((newHero: Hero) => this.log(`added hero w/ id=${newHero.id}`)),
       catchError(this.handleError<Hero>('addHero'))
@@ -108,7 +108,7 @@ export class HeroService {
 
   // #docregion deleteHero
   /** DELETE: 서버에서 히어로를 제거합니다. */
-  deleteHero (hero: Hero | number): Observable<Hero> {
+  deleteHero(hero: Hero | number): Observable<Hero> {
     const id = typeof hero === 'number' ? hero : hero.id;
     const url = `${this.heroesUrl}/${id}`;
 
@@ -121,7 +121,7 @@ export class HeroService {
 
   // #docregion updateHero
   /** PUT: 서버에 저장된 히어로 데이터를 변경합니다. */
-  updateHero (hero: Hero): Observable<any> {
+  updateHero(hero: Hero): Observable<any> {
     return this.http.put(this.heroesUrl, hero, this.httpOptions).pipe(
       tap(_ => this.log(`updated hero id=${hero.id}`)),
       catchError(this.handleError<any>('updateHero'))
@@ -136,7 +136,7 @@ export class HeroService {
    * @param operation - 실패한 동작의 이름
    * @param result - 기본값으로 반환할 객체
    */
-  private handleError<T> (operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: 리모트 서버로 에러 메시지 보내기

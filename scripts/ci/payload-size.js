@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 'use strict';
 
 // Imports
@@ -27,7 +35,7 @@ for (const compressionType in limitSizes) {
         failed = true;
         // An expected compression type/file combination is missing. Maybe the file was renamed or
         // removed. Report it as an error, so the user updates the corresponding limit file.
-        console.log(
+        console.error(
             `ERROR: Commit ${commit} ${compressionType} ${filename} measurement is missing. ` +
             'Maybe the file was renamed or removed.');
       } else {
@@ -42,11 +50,14 @@ for (const compressionType in limitSizes) {
           const operator = actualSize > expectedSize ? 'exceeded' : 'fell below';
 
           failureMessages.push(
-            `FAIL: Commit ${commit} ${compressionType} ${filename} ${operator} expected size by 500 bytes or >1% ` +
-            `(expected: ${expectedSize}, actual: ${actualSize}).`);
+              `FAIL: Commit ${commit} ${compressionType} ${filename} ${
+                  operator} expected size by 500 bytes or >1% ` +
+              `(expected: ${expectedSize}, actual: ${actualSize}).`);
         } else {
-          successMessages.push(`SUCCESS: Commit ${commit} ${compressionType} ${filename} did NOT cross size threshold of 500 bytes or >1% ` +
-            `(expected: ${expectedSize}, actual: ${actualSize}).`);
+          successMessages.push(
+              `SUCCESS: Commit ${commit} ${compressionType} ${
+                  filename} did NOT cross size threshold of 500 bytes or >1% ` +
+              `(expected: ${expectedSize}, actual: ${actualSize}).`);
         }
       }
     }
@@ -54,11 +65,12 @@ for (const compressionType in limitSizes) {
 }
 
 // Group failure messages separately from success messages so they are easier to find.
-successMessages.concat(failureMessages).forEach(message => console.log(message));
+successMessages.concat(failureMessages).forEach(message => console.error(message));
 
 if (failed) {
-  console.log(`If this is a desired change, please update the size limits in file '${limitFile}'.`);
+  console.info(
+      `If this is a desired change, please update the size limits in file '${limitFile}'.`);
   process.exit(1);
 } else {
-  console.log(`Payload size check passed. All diffs are less than 1% or 500 bytes.`);
+  console.info(`Payload size check passed. All diffs are less than 1% or 500 bytes.`);
 }

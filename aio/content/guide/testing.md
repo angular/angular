@@ -177,7 +177,7 @@ Adopt these two conventions in your own projects for _every kind_ of test file.
 ## 지속적인 통합환경 구성하기
 
 <!--
-One of the best ways to keep your project bug free is through a test suite, but it's easy to forget to run tests all the time.
+One of the best ways to keep your project bug-free is through a test suite, but it's easy to forget to run tests all the time.
 Continuous integration (CI) servers let you set up your project repository so that your tests run on every commit and pull request.
 
 There are paid CI services like Circle CI and Travis CI, and you can also host your own for free using Jenkins and others.
@@ -857,16 +857,21 @@ Consider this `LightswitchComponent` which toggles a light on and off
 You might decide only to test that the `clicked()` method
 toggles the light's _on/off_ state and sets the message appropriately.
 
-This component class has no dependencies.
-To test a service with no dependencies, you create it with `new`, poke at its API,
-and assert expectations on its public state.
-Do the same with the component class.
+This component class has no dependencies. To test these types of classes, follow the same steps as you would for a service that has no dependencies:
+
+1. Create a component using the new keyword.
+2. Poke at its API.
+3. Assert expectations on its public state.
 -->
 이 컴포넌트를 테스트한다면 조명을 _켜거나/끄는_ 동작을 하는 `clicked()` 메소드를 테스트하는 것이 가장 합리적입니다.
 조명이 켜진 상태는 화면에 표시된 메시지로 체크하면 됩니다.
 
 이 클래스에는 의존성으로 주입되는 객체가 없습니다.
 그러면 의존성이 없는 서비스를 테스트했던 것과 마찬가지로, `new` 키워드로 컴포넌트 인스턴스를 생성하고, API를 직접 실행한 후에, public 프로퍼티를 검사하면 됩니다.
+
+1. Create a component using the new keyword.
+2. Poke at its API.
+3. Assert expectations on its public state.
 
 <!--
 <code-example
@@ -1517,8 +1522,7 @@ In production, change detection kicks in automatically
 when Angular creates a component or the user enters a keystroke or
 an asynchronous activity (e.g., AJAX) completes.
 
-The `TestBed.createComponent` does _not_ trigger change detection.
-a fact confirmed in the revised test:
+The `TestBed.createComponent` does _not_ trigger change detection; a fact confirmed in the revised test:
 -->
 프로퍼티 바인딩은 Angular가 **변화감지 동작**을 실행할 때 발생합니다.
 
@@ -1786,8 +1790,7 @@ attempt to reach an authentication server.
 These behaviors can be hard to intercept.
 It is far easier and safer to create and register a test double in place of the real `UserService`.
 
-This particular test suite supplies a minimal mock of the `UserService` that satisfies the needs of the `WelcomeComponent`
-and its tests:
+This particular test suite supplies a minimal mock of the `UserService` that satisfies the needs of the `WelcomeComponent` and its tests:
 -->
 컴포넌트를 테스트하기 위해 실제 서비스를 의존성으로 등록할 필요는 없습니다.
 이런 경우에는 보통 목(mocks, doubles, stubs, fakes, spies) 서비스를 사용하는 것이 더 좋습니다.
@@ -1881,26 +1884,6 @@ explains when and why you must get the service from the component's injector ins
 서비스 인스턴스는 컴포넌트의 인젝터에서 가져와야 할 수도 있습니다.
 
 </div>
-
-{@a service-from-injector}
-
-<!--
-#### Always get the service from an injector
--->
-#### 서비스 인스턴스는 반드시 인젝터에서 가져오세요.
-
-<!--
-Do _not_ reference the `userServiceStub` object
-that's provided to the testing module in the body of your test.
-**It does not work!**
-The `userService` instance injected into the component is a completely _different_ object,
-a clone of the provided `userServiceStub`.
--->
-테스트 스펙을 작성할 때 모듈에 등록한 `userServiceStub` 객체를 직접 _참조하지 마세요_.
-**이렇게 하면 동작하지 않습니다!**
-`userServiceStub`은 모듈에 등록될 때 한 번 복제되기 때문에, 모듈에 등록한 `userService` 객체의 인스턴스와 컴포넌트에 주입된 인스턴스는 _다릅니다_.
-
-<code-example path="testing/src/app/welcome/welcome.component.spec.ts" region="stub-not-injected" header="app/welcome/welcome.component.spec.ts"></code-example>
 
 {@a welcome-spec-setup}
 
@@ -2130,7 +2113,7 @@ Note that the `it()` function receives an argument of the following form.
 
 <!--
 ```javascript
-fakeAsync(() => { /* test body */ })`
+fakeAsync(() => { /* test body */ })
 ```
 -->
 ```javascript
@@ -2171,15 +2154,14 @@ You do have to call [tick()](api/core/testing/tick) to advance the (virtual) clo
 Calling [tick()](api/core/testing/tick) simulates the passage of time until all pending asynchronous activities finish.
 In this case, it waits for the error handler's `setTimeout()`.
 
-The [tick()](api/core/testing/tick) function accepts milliseconds as a parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
+The [tick()](api/core/testing/tick) function accepts milliseconds and tickOptions as parameters, the millisecond (defaults to 0 if not provided) parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback. The tickOptions is an optional parameter with a property called `processNewMacroTasksSynchronously` (defaults to true) represents whether to invoke new generated macro tasks when ticking.
 -->
 [tick()](api/core/testing/tick) 함수는 테스트 환경에서 동작하는 가상의 시계를 빠르게 돌리기 위해 사용합니다.
 
 [tick()](api/core/testing/tick) 함수를 실행하면 그동안 대기중이던 비동기 작업들이 종료되는 시점까지 시간을 빠르게 돌립니다.
 그래서 이 함수를 사용하면 `TwainComponent.getQuote()` 메소드 안에 있는 `setTimeout()`이 종료된 이후에 실행되는 로직을 테스트하는 코드도 작성할 수 있습니다.
 
-`tick()` 함수에 인자를 전달하면 밀리초 단위로 시간을 빠르게 돌릴 수 있으며, 이 인자의 기본값은 0입니다.
-그래서 `fakeAsync()` 테스트 존 안에서 `setTimeout(fn, 100)`이라는 타이머를 정의하고 `tick(100)`을 실행하면 이 타이머가 종료된 시점의 상태를 확인할 수 있습니다.
+The [tick()](api/core/testing/tick) function accepts milliseconds and tickOptions as parameters, the millisecond (defaults to 0 if not provided) parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback. The tickOptions is an optional parameter with a property called `processNewMacroTasksSynchronously` (defaults to true) represents whether to invoke new generated macro tasks when ticking.
 
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
@@ -2192,6 +2174,23 @@ It's a companion to `fakeAsync()` and you can only call it within a `fakeAsync()
 -->
 [tick()](api/core/testing/tick) 함수는 Angular가 제공하는 테스트 유틸리티 중 하나이며, `TestBed`가 제공되는 `@angular/core/testing` 패키지로 제공됩니다.
 그리고 `tick()` 함수는 `fakeAsync()` 함수와 함께 사용해야 제대로 동작하며, `fakeAsync()` 테스트 존 안에서 필요할 때마다 한번씩 실행해주기만 하면 됩니다.
+
+#### tickOptions
+
+<code-example
+  path="testing/src/app/demo/async-helper.spec.ts"
+  region="fake-async-test-tick-new-macro-task-sync">
+</code-example>
+
+In this example, we have a new macro task (nested setTimeout), by default, when we `tick`, the setTimeout `outside` and `nested` will both be triggered.
+
+<code-example
+  path="testing/src/app/demo/async-helper.spec.ts"
+  region="fake-async-test-tick-new-macro-task-async">
+</code-example>
+
+And in some case, we don't want to trigger the new macro task when ticking, we can use `tick(milliseconds, {processNewMacroTasksSynchronously: false})` to not invoke new macro task.
+
 
 <!--
 #### Comparing dates inside fakeAsync()
@@ -2261,65 +2260,46 @@ You can also use RxJS scheduler in `fakeAsync()` just like using `setTimeout()` 
 -->
 #### 매크로태스크(macroTasks) 활용하기
 
-<!--
-By default `fakeAsync()` supports the following `macroTasks`.
+By default, `fakeAsync()` supports the following macro tasks.
 
-- setTimeout
-- setInterval
-- requestAnimationFrame
-- webkitRequestAnimationFrame
-- mozRequestAnimationFrame
+- `setTimeout`
+- `setInterval`
+- `requestAnimationFrame`
+- `webkitRequestAnimationFrame`
+- `mozRequestAnimationFrame`
 
-If you run other `macroTask` such as `HTMLCanvasElement.toBlob()`, `Unknown macroTask scheduled in fake async test` error will be thrown.
--->
-기본적으로 `fakeAsync()`는 다음과 같은 매크로태스크를 지원합니다.
-
-- setTimeout
-- setInterval
-- requestAnimationFrame
-- webkitRequestAnimationFrame
-- mozRequestAnimationFrame
-
-이 목록 외에 `HTMLCanvasElement.toBlob()`과 같은 매크로태스크를 사용하면 `Unknown macroTask scheduled in fake async test` 에러가 발생합니다.
+If you run other macro tasks such as `HTMLCanvasElement.toBlob()`, an _"Unknown macroTask scheduled in fake async test"_ error will be thrown.
 
 <code-tabs>
   <code-pane
+    header="src/app/shared/canvas.component.spec.ts (failing)"
     path="testing/src/app/shared/canvas.component.spec.ts"
-    header="src/app/shared/canvas.component.spec.ts">
+    region="without-toBlob-macrotask">
   </code-pane>
   <code-pane
+    header="src/app/shared/canvas.component.ts"
     path="testing/src/app/shared/canvas.component.ts"
-    header="src/app/shared/canvas.component.ts">
+    region="main">
   </code-pane>
 </code-tabs>
 
-<!--
-If you want to support such a case, you need to define the `macroTask` you want to support in `beforeEach()`.
+If you want to support such a case, you need to define the macro task you want to support in `beforeEach()`.
 For example:
--->
-그래서 Angular가 기본으로 지원하지 않는 매크로태스크를 사용하려면 `beforeEach()` 안에 해당 매크로태스크를 직접 정의해야 합니다.
 
-```javascript
-beforeEach(() => {
-  window['__zone_symbol__FakeAsyncTestMacroTask'] = [
-    {
-      source: 'HTMLCanvasElement.toBlob',
-      callbackArgs: [{ size: 200 }]
-    }
-  ];
-});
+<code-example
+  header="src/app/shared/canvas.component.spec.ts (excerpt)"
+  path="testing/src/app/shared/canvas.component.spec.ts"
+  region="enable-toBlob-macrotask">
+</code-example>
 
-it('toBlob should be able to run in fakeAsync', fakeAsync(() => {
-    const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
-    let blob = null;
-    canvas.toBlob(function(b) {
-      blob = b;
-    });
-    tick();
-    expect(blob.size).toBe(200);
-  })
-);
-```
+Note that in order to make the `<canvas>` element Zone.js-aware in your app, you need to import the `zone-patch-canvas` patch (either in `polyfills.ts` or in the specific file that uses `<canvas>`):
+
+<code-example
+  header="src/polyfills.ts or src/app/shared/canvas.component.ts"
+  path="testing/src/app/shared/canvas.component.ts"
+  region="import-canvas-patch">
+</code-example>
+
 
 <!--
 #### Async observables
@@ -3392,10 +3372,7 @@ for the `id` to change during its lifetime.
 
 <div class="alert is-helpful">
 
-<!--
-The [Router](guide/router#route-parameters) guide covers `ActivatedRoute.paramMap` in more detail.
--->
-`ActivatedRoute.paramMap`은 [Router](guide/router#route-parameters) 문서에서 자세하게 다룹니다.
+The [ActivatedRoute in action](guide/router#activated-route-in-action) section of the [Router](guide/router) guide covers `ActivatedRoute.paramMap` in more detail.
 
 </div>
 
@@ -6100,7 +6077,7 @@ next to their corresponding helper files.
 
 <!--
 [Component class testing](#component-class-testing) should be kept very clean and simple.
-It should test only a single unit. On a first glance, you should be able to understand 
+It should test only a single unit. On a first glance, you should be able to understand
 what the test is testing. If it's doing more, then it doesn't belong here.
 -->
 [컴포넌트 클래스를 테스트하는 코드](#component-class-testing)는 간결한 것이 좋습니다.

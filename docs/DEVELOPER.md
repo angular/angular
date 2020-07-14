@@ -69,14 +69,14 @@ yarn install
 To build Angular run:
 
 ```shell
-node ./scripts/build-packages-dist.js
+node ./scripts/build/build-packages-dist.js
 ```
 
 * Results are put in the `dist/packages-dist` folder.
 
 ## Running Tests Locally
 
-Bazel is used as the primary tool for building and testing Angular. Building and testing is
+Bazel is used as the primary tool for building and testing Angular. Building and testing are
 incremental with Bazel, and it's possible to only run tests for an individual package instead
 of for all packages. Read more about this in the [BAZEL.md](./BAZEL.md) document.
 
@@ -89,15 +89,18 @@ benefit from Bazel's capability to do incremental builds.
 All the tests are executed on our Continuous Integration infrastructure. PRs can only be
 merged if the code is formatted properly and all tests are passing.
 
+<a name="formatting-your-source-code">
 <a name="clang-format"></a>
+
 ## Formatting your source code
 
 Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code.
 If the source code is not properly formatted, the CI will fail and the PR cannot be merged.
 
 You can automatically format your code by running:
-- `yarn gulp format`: re-format only edited source code.
-- `yarn gulp format:all`: format _all_ source code
+- `yarn ng-dev format changed [shaOrRef]`: format only files changed since the provided sha/ref. `shaOrRef` defaults to `master`.
+- `yarn ng-dev format all`: format _all_ source code
+- `yarn ng-dev format files <files..>`: format only provided files
 
 A better way is to set up your IDE to format the changed file on each file save.
 
@@ -129,7 +132,7 @@ where `$ANGULAR_PATH` is an environment variable of the absolute path of your An
 You can check that your code is properly formatted and adheres to coding style by running:
 
 ``` shell
-$ yarn gulp lint
+$ yarn lint
 ```
 
 ## Publishing Snapshot Builds
@@ -187,10 +190,10 @@ a. Any transitive dependencies of the copied packages will not be automatically 
 b. The packages need to be copied over every time `npm/yarn install` is run.
 c. Some package managers (such as `pnpm` or `yarn pnp`) might not work correctly.
 
-### Publishing to GitHub repos
+### Publishing to GitHub Repos
 You can also manually publish `*-builds` snapshots just like our CircleCI build does for upstream
 builds. Before being able to publish the packages, you need to build them locally by running the
-`./scripts/build-packages-dist.js` script.
+`./scripts/build/build-packages-dist.js` script.
 
 First time, you need to create the GitHub repositories:
 

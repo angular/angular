@@ -12,7 +12,7 @@ import { Component } from '@angular/core';
 })
 // #docregion class
 export class HeroBirthday2Component {
-  birthday = new Date(1988, 3, 15); // April 15, 1988
+  birthday = new Date(1988, 3, 15); // April 15, 1988 -- 월은 0부터 시작합니다.
   toggle = true; // 기본 형식을 shortDate로 지정하기 위해 true 값을 할당합니다.
 
   get format()   { return this.toggle ? 'shortDate' : 'fullDate'; }

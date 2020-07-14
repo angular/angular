@@ -907,12 +907,14 @@ of multiple words. In Angular, you would bind these attributes using camelCase:
 
 <code-example format="">
   [myHero]="hero"
+  (heroDeleted)="handleHeroDeleted($event)"
 </code-example>
 
 But when using them from AngularJS templates, you must use kebab-case:
 
 <code-example format="">
   [my-hero]="hero"
+  (hero-deleted)="handleHeroDeleted($event)"
 </code-example>
 
 </div>
@@ -998,12 +1000,14 @@ Angular 컴포넌트를 다운그레이드해서 사용할 때 어트리뷰트 �
 
 <code-example format="">
   [myHero]="hero"
+  (heroDeleted)="handleHeroDeleted($event)"
 </code-example>
 
 하지만 AngularJS 템플릿에서는 케밥 케이스를 사용해야 합니다:
 
 <code-example format="">
   [my-hero]="hero"
+  (hero-deleted)="handleHeroDeleted($event)"
 </code-example>
 
 </div>
@@ -1768,13 +1772,14 @@ angular.module('myHybridApp', [...])
 이렇게 구현하고 나면 AngularJS와 Angular의 Location 서비스를 Angular 라우터가 통합해서 처리합니다.
 그러면서 Angular와 AngularJS 각 영역에서 이 서비스를 단일 소스로 활용할 수 있습니다.
 
-
 <!--
-## Using Ahead-of-time compilation with hybrid apps
--->
-## 하이브리드 앱에 AOT 컴파일 적용하기
+TODO:
+Correctly document how to use AOT with SystemJS-based `ngUpgrade` apps (or better yet update the
+`ngUpgrade` examples/guides to use `@angular/cli`).
+See https://github.com/angular/angular/issues/35989.
 
-<!---
+## Using Ahead-of-time compilation with hybrid apps
+
 You can take advantage of Ahead-of-time (AOT) compilation on hybrid apps just like on any other
 Angular application.
 The setup for a hybrid app is mostly the same as described in
@@ -1793,19 +1798,6 @@ bootstrap the hybrid app:
 
 And that's all you need do to get the full benefit of AOT for Angular apps!
 -->
-보통 Angular 애플리케이션과 마찬가지로 하이브리드 앱에도 AOT(Ahead-of-time) 컴파일을 적용할 수 있습니다.
-설정 방법은 [AOT 컴파일러](guide/aot-compiler) 문서에서 설명하는 내용과 거의 비슷하며 `index.html` 파일과 `main-aot.ts` 파일만 조금 다릅니다.
-
-지금 만드는 `index.html` 파일에는 AngularJS 파일들을 로드하는 스크립트 태그가 들어가야 하기 때문에 AOT용 `index.html` 파일에도 이 내용이 있어야 합니다.
-`copy-dist-files.js`와 같은 파일을 만들어서 실행하는 것이 가장 간단합니다.
-
-그리고 하이브리드 앱을 부트스트랩 하려면 `AppModule` 대신 `AppModuleFactory`를 사용해야 합니다:
-
-<code-example path="upgrade-phonecat-2-hybrid/app/main-aot.ts" header="app/main-aot.ts">
-</code-example>
-
-여기까지 구현하면 이제 AOT 컴파일러를 자유롭게 사용할 수 있습니다!
-
 
 <!--
 ## PhoneCat Upgrade Tutorial
@@ -2022,11 +2014,19 @@ Begin by installing TypeScript to the project.
 </code-example>
 
 Install type definitions for the existing libraries that
-you're using but that don't come with prepackaged types: AngularJS and the
+you're using but that don't come with prepackaged types: AngularJS, AngularJS Material, and the
 Jasmine unit test framework.
 
+For the PhoneCat app, we can install the necessary type definitions by running the following command:
+
 <code-example format="">
-  npm install @types/jasmine @types/angular @types/angular-animate @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
+  npm install @types/jasmine @types/angular @types/angular-animate @types/angular-aria @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
+</code-example>
+
+If you are using AngularJS Material, you can install the type definitions via:
+
+<code-example format="">
+  npm install @types/angular-material --save-dev
 </code-example>
 
 You should also configure the TypeScript compiler with a `tsconfig.json` in the project directory
@@ -2106,11 +2106,20 @@ Angular는 TypeScript로 구현하기 때문에 AngularJS 앱을 업그레이드
   npm i typescript --save-dev
 </code-example>
 
-설치하는 의존성 패키지에 타입 정의 파일이 있다면 그대로 사용할 수 없지만 패키지가 제공하지 않는 경우에는 추가로 타입 정의 패키지를 설치해야 합니다.
-다음 명령을 실행해서 AngularJS 프레임워크와 Jasmine 유닛 테스트 프레임워크의 타입 정의 패키지를 설치합니다.
+Install type definitions for the existing libraries that
+you're using but that don't come with prepackaged types: AngularJS, AngularJS Material, and the
+Jasmine unit test framework.
+
+For the PhoneCat app, we can install the necessary type definitions by running the following command:
 
 <code-example format="">
-  npm install @types/jasmine @types/angular @types/angular-animate @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
+  npm install @types/jasmine @types/angular @types/angular-animate @types/angular-aria @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
+</code-example>
+
+If you are using AngularJS Material, you can install the type definitions via:
+
+<code-example format="">
+  npm install @types/angular-material --save-dev
 </code-example>
 
 필요한 패키지를 설치하고 나면 [TypeScript 환경 설정](guide/typescript-configuration) 가이드 문서에 따라 `tsconfig.json` TypeScript 컴파일러 환경 설정 파일을 프로젝트에 생성해야 합니다.
@@ -2332,7 +2341,7 @@ You also need to make a couple of adjustments
 to the `systemjs.config.js` file installed during [upgrade setup](guide/upgrade-setup).
 
 Point the browser to the project root when loading things through SystemJS,
-instead of using the  `<base>` URL.
+instead of using the `<base>` URL.
 
 Install the `upgrade` package via `npm install @angular/upgrade --save`
 and add a mapping for the `@angular/upgrade/static` package.

@@ -2,6 +2,26 @@
 
 set -eu -o pipefail
 
+# statc makes `stat -c` work on both Linux & OSX
+function statc () {
+  case $(uname) in
+    Darwin*) format='-f%z' ;;
+    *) format='-c%s' ;;
+  esac
+
+  stat ${format} $@
+}
+
+# sedr makes `sed -r` work on both Linux & OSX
+function sedr () {
+  case $(uname) in
+    Darwin*) flag='-E' ;;
+    *) flag='-r' ;;
+  esac
+
+  sed ${flag} "$@"
+}
+
 readonly PROJECT_NAME="angular-payload-size"
 NODE_MODULES_BIN=$PROJECT_ROOT/node_modules/.bin/
 
@@ -15,7 +35,7 @@ getGzipSize() {
   local size=-1
 
   gzip -c -$compLevel "$filePath" >> "$compPath"
-  size=$(stat -c%s "$compPath")
+  size=$(statc "$compPath")
   rm "$compPath"
 
   echo $size
@@ -26,7 +46,7 @@ getGzipSize() {
 calculateSize() {
   label=$(echo "$filename" | sed "s/.*\///" | sed "s/\..*//")
 
-  rawSize=$(stat -c%s "$filename")
+  rawSize=$(statc $filename)
   gzip7Size=$(getGzipSize "$filename" 7)
   gzip9Size=$(getGzipSize "$filename" 9)
 
@@ -48,7 +68,7 @@ checkSize() {
 
   # In non-PR builds, `CI_BRANCH` is the branch being built (e.g. `pull/12345`), not the targeted branch.
   # Thus, PRs will fall back to using the size limits for `master`.
-  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name $CI_BRANCH $CI_COMMIT
+  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name ${CI_BRANCH:-} ${CI_COMMIT:-}
 }
 
 # Write timestamp to global variable `$payloadData`.
@@ -75,7 +95,7 @@ addMessage() {
   # Grab the set of SHAs for the message. This can fail when you force push or do initial build
   # because $CI_COMMIT_RANGE may contain the previous SHA which will not be in the
   # force push or commit, hence we default to last commit.
-  message=$(git log --oneline $commitRange -- || git log --oneline -n1)
+  message=$(git --git-dir ${PROJECT_ROOT}/.git log --oneline $commitRange -- || git --git-dir ${PROJECT_ROOT}/.git log --oneline -n1)
   message=$(echo $message | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
   payloadData="$payloadData\"message\": \"$message\", "
 }
@@ -83,7 +103,7 @@ addMessage() {
 # Convert the current `payloadData` value to a JSON string.
 # (Basically remove trailing `,` and wrap in `{...}`.)
 payloadToJson() {
-  echo "{$(sed -r 's|, *$||' <<< $payloadData)}"
+  echo "{$(sedr 's|, *$||' <<< $payloadData)}"
 }
 
 # Upload data to firebase database if it's commit, print out data for pull requests.
@@ -123,7 +143,7 @@ trackPayloadSize() {
   echo "$(payloadToJson)" > /tmp/current.log
 
   # If this is a non-PR build, upload the data to firebase.
-  if [[ "$CI_PULL_REQUEST" == "false" ]]; then
+  if [[ "${CI_PULL_REQUEST:-}" == "false" ]]; then
     echo "Uploading data for '$name'..."
     addTimestamp
     addBuildUrl $CI_BUILD_URL

@@ -50,9 +50,9 @@ Angular는 대부분의 브라우저를 지원합니다. 좀 더 자세하게 �
 
     <td>
       <!--
-      latest
+      latest and extended support release (ESR)
       -->
-      최신 버전
+      최신버전과 ESR(extended support release) 버전
     </td>
   </tr>
 
@@ -74,16 +74,18 @@ Angular는 대부분의 브라우저를 지원합니다. 좀 더 자세하게 �
       IE
     </td>
     <td>
-      11, 10, 9 ("compatibility view" mode not supported)
+      <div> 11, 10*, 9* ("compatibility view" mode not supported) </div>
+      <div>*deprecated in v10, see the {@link guide/deprecations#ie-9-10-and-mobile deprecations guide}.</div>
     </td>
   </tr>
  <tr>
    <tr>
     <td>
-      IE Mobile
+      IE Mobile*
     </td>
     <td>
       11
+      <div>*deprecated in v10, see the {@link guide/deprecations#ie-9-10-and-mobile deprecations guide}.</div>
     </td>
   </tr>
  <tr>
@@ -396,7 +398,7 @@ Angular 기능 중 일부는 폴리필을 추가로 적용해야 하는 것이 �
     <td>
 
       [Router](guide/router) when using
-      [hash-based routing](guide/router#appendix-locationstrategy-and-browser-url-styles)
+      [hash-based routing](guide/router#location-strategy)
     </td>
 
     <td>
@@ -634,10 +636,10 @@ For example:
      */
     // __Zone_enable_cross_context_check = true;
   &lt;/script>
-  &lt;!-- zone.js required by Angular --&gt;
-  &lt;script src="node_modules/zone.js/dist/zone.js">&lt;/script>
+  &lt;!-- zone.js required by Angular -->
+  &lt;script src="node_modules/zone.js/bundles/zone.umd.js">&lt;/script>
 
-  &lt;!-- application polyfills --&gt;
+  &lt;!-- application polyfills -->
 </code-example>
 -->
 <code-example header="src/index.html" language="html">
@@ -660,7 +662,7 @@ For example:
     // __Zone_enable_cross_context_check = true;
   &lt;/script>
   &lt;!-- Angular에는 zone.js이 필요합니다. --&gt;
-  &lt;script src="node_modules/zone.js/dist/zone.js">&lt;/script>
+  &lt;script src="node_modules/zone.js/bundles/zone.js">&lt;/script>
 
   &lt;!-- 애플리케이션 폴리필 --&gt;
 </code-example>

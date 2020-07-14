@@ -1,26 +1,28 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
-import {LockFile} from '../../src/execution/lock_file';
+import {FileSystem} from '../../../src/ngtsc/file_system';
+import {LockFile} from '../../src/locking/lock_file';
 
-export class MockLockFile extends LockFile {
-  log: string[] = [];
-  constructor(private options: {throwOnCreate?: boolean, throwOnRemove?: boolean} = {}) {
-    // This `MockLockFile` is not used in tests that are run via `runInEachFileSystem()`
-    // So we cannot use `getFileSystem()` but instead just instantiate a mock file-system.
-    super(new MockFileSystemNative());
+/**
+ * A mock implementation of `LockFile` that just logs its calls.
+ */
+export class MockLockFile implements LockFile {
+  constructor(
+      fs: FileSystem, private log: string[] = [], public path = fs.resolve('/lockfile'),
+      private pid = '1234') {}
+  write() {
+    this.log.push('write()');
   }
-  create() {
-    this.log.push('create()');
-    if (this.options.throwOnCreate) throw new Error('LockFile.create() error');
+  read(): string {
+    this.log.push('read()');
+    return this.pid;
   }
   remove() {
     this.log.push('remove()');
-    if (this.options.throwOnRemove) throw new Error('LockFile.remove() error');
   }
 }

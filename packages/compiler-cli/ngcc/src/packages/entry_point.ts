@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,30 +8,37 @@
 import {relative} from 'canonical-path';
 import {basename} from 'path';
 import * as ts from 'typescript';
+
 import {AbsoluteFsPath, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {parseStatementForUmdModule} from '../host/umd_host';
-import {Logger} from '../logging/logger';
 import {resolveFileWithPostfixes} from '../utils';
+
 import {NgccConfiguration, NgccEntryPointConfig} from './configuration';
 
 /**
  * The possible values for the format of an entry-point.
  */
-export type EntryPointFormat = 'esm5' | 'esm2015' | 'umd' | 'commonjs';
+export type EntryPointFormat = 'esm5'|'esm2015'|'umd'|'commonjs';
 
 /**
  * An object containing information about an entry-point, including paths
  * to each of the possible entry-point formats.
  */
 export interface EntryPoint extends JsonObject {
-  /** The name of the package (e.g. `@angular/core`). */
+  /** The name of the entry-point (e.g. `@angular/core` or `@angular/common/http`). */
   name: string;
-  /** The parsed package.json file for this entry-point. */
-  packageJson: EntryPointPackageJson;
-  /** The path to the package that contains this entry-point. */
-  package: AbsoluteFsPath;
   /** The path to this entry point. */
   path: AbsoluteFsPath;
+  /**
+   * The name of the package that contains this entry-point (e.g. `@angular/core` or
+   * `@angular/common`).
+   */
+  packageName: string;
+  /** The path to the package that contains this entry-point. */
+  packagePath: AbsoluteFsPath;
+  /** The parsed package.json file for this entry-point. */
+  packageJson: EntryPointPackageJson;
   /** The path to a typings (.d.ts) file for this entry-point. */
   typings: AbsoluteFsPath;
   /** Is this EntryPoint compiled with the Angular View Engine compiler? */
@@ -42,12 +49,15 @@ export interface EntryPoint extends JsonObject {
   generateDeepReexports: boolean;
 }
 
-export type JsonPrimitive = string | number | boolean | null;
-export type JsonValue = JsonPrimitive | JsonArray | JsonObject | undefined;
+export type JsonPrimitive = string|number|boolean|null;
+export type JsonValue = JsonPrimitive|JsonArray|JsonObject|undefined;
 export interface JsonArray extends Array<JsonValue> {}
-export interface JsonObject { [key: string]: JsonValue; }
+export interface JsonObject {
+  [key: string]: JsonValue;
+}
 
 export interface PackageJsonFormatPropertiesMap {
+  browser?: string;
   fesm2015?: string;
   fesm5?: string;
   es2015?: string;  // if exists then it is actually FESM2015
@@ -66,6 +76,7 @@ export type PackageJsonFormatProperties = keyof PackageJsonFormatPropertiesMap;
  */
 export interface EntryPointPackageJson extends JsonObject, PackageJsonFormatPropertiesMap {
   name: string;
+  version?: string;
   scripts?: Record<string, string>;
   __processed_by_ivy_ngcc__?: Record<string, string>;
 }
@@ -73,43 +84,93 @@ export interface EntryPointPackageJson extends JsonObject, PackageJsonFormatProp
 export type EntryPointJsonProperty = Exclude<PackageJsonFormatProperties, 'types'|'typings'>;
 // We need to keep the elements of this const and the `EntryPointJsonProperty` type in sync.
 export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
-    ['fesm2015', 'fesm5', 'es2015', 'esm2015', 'esm5', 'main', 'module'];
+    ['fesm2015', 'fesm5', 'es2015', 'esm2015', 'esm5', 'main', 'module', 'browser'];
+
+
+/**
+ * The path does not represent an entry-point, i.e. there is no package.json at the path and there
+ * is no config to force an entry-point.
+ */
+export const NO_ENTRY_POINT = 'no-entry-point';
+
+/**
+ * The path represents an entry-point that is `ignored` by an ngcc config.
+ */
+export const IGNORED_ENTRY_POINT = 'ignored-entry-point';
+
+/**
+ * The path has a package.json, but it is not a valid entry-point for ngcc processing.
+ */
+export const INCOMPATIBLE_ENTRY_POINT = 'incompatible-entry-point';
+
+/**
+ * The result of calling `getEntryPointInfo()`.
+ *
+ * This will be an `EntryPoint` object if an Angular entry-point was identified;
+ * Otherwise it will be a flag indicating one of:
+ * * NO_ENTRY_POINT - the path is not an entry-point or ngcc is configured to ignore it
+ * * INCOMPATIBLE_ENTRY_POINT - the path was a non-processable entry-point that should be searched
+ * for sub-entry-points
+ */
+export type GetEntryPointResult =
+    EntryPoint|typeof IGNORED_ENTRY_POINT|typeof INCOMPATIBLE_ENTRY_POINT|typeof NO_ENTRY_POINT;
+
 
 /**
  * Try to create an entry-point from the given paths and properties.
  *
  * @param packagePath the absolute path to the containing npm package
  * @param entryPointPath the absolute path to the potential entry-point.
- * @returns An entry-point if it is valid, `null` otherwise.
+ * @returns
+ * - An entry-point if it is valid and not ignored.
+ * - `NO_ENTRY_POINT` when there is no package.json at the path and there is no config to force an
+ *   entry-point,
+ * - `IGNORED_ENTRY_POINT` when the entry-point is ignored by an ngcc config.
+ * - `INCOMPATIBLE_ENTRY_POINT` when there is a package.json but it is not a valid Angular compiled
+ *   entry-point.
  */
 export function getEntryPointInfo(
     fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
-    entryPointPath: AbsoluteFsPath): EntryPoint|null {
-  const packageJsonPath = resolve(entryPointPath, 'package.json');
-  const packageVersion = getPackageVersion(fs, packageJsonPath);
-  const entryPointConfig =
-      config.getConfig(packagePath, packageVersion).entryPoints[entryPointPath];
-  if (entryPointConfig === undefined && !fs.exists(packageJsonPath)) {
-    return null;
+    entryPointPath: AbsoluteFsPath): GetEntryPointResult {
+  const packagePackageJsonPath = resolve(packagePath, 'package.json');
+  const entryPointPackageJsonPath = resolve(entryPointPath, 'package.json');
+  const loadedPackagePackageJson = loadPackageJson(fs, packagePackageJsonPath);
+  const loadedEntryPointPackageJson = (packagePackageJsonPath === entryPointPackageJsonPath) ?
+      loadedPackagePackageJson :
+      loadPackageJson(fs, entryPointPackageJsonPath);
+  const {packageName, packageVersion} = getPackageNameAndVersion(
+      fs, packagePath, loadedPackagePackageJson, loadedEntryPointPackageJson);
+
+  const packageConfig = config.getPackageConfig(packageName, packagePath, packageVersion);
+  const entryPointConfig = packageConfig.entryPoints.get(entryPointPath);
+  let entryPointPackageJson: EntryPointPackageJson;
+
+  if (entryPointConfig === undefined) {
+    if (!fs.exists(entryPointPackageJsonPath)) {
+      // No `package.json` and no config.
+      return NO_ENTRY_POINT;
+    } else if (loadedEntryPointPackageJson === null) {
+      // `package.json` exists but could not be parsed and there is no redeeming config.
+      logger.warn(`Failed to read entry point info from invalid 'package.json' file: ${
+          entryPointPackageJsonPath}`);
+
+      return INCOMPATIBLE_ENTRY_POINT;
+    } else {
+      entryPointPackageJson = loadedEntryPointPackageJson;
+    }
+  } else if (entryPointConfig.ignore === true) {
+    // Explicitly ignored entry-point.
+    return IGNORED_ENTRY_POINT;
+  } else {
+    entryPointPackageJson = mergeConfigAndPackageJson(
+        loadedEntryPointPackageJson, entryPointConfig, packagePath, entryPointPath);
   }
 
-  if (entryPointConfig !== undefined && entryPointConfig.ignore === true) {
-    return null;
-  }
-
-  const loadedEntryPointPackageJson =
-      loadEntryPointPackage(fs, logger, packageJsonPath, entryPointConfig !== undefined);
-  const entryPointPackageJson = mergeConfigAndPackageJson(
-      loadedEntryPointPackageJson, entryPointConfig, packagePath, entryPointPath);
-  if (entryPointPackageJson === null) {
-    return null;
-  }
-
-  // We must have a typings property
   const typings = entryPointPackageJson.typings || entryPointPackageJson.types ||
       guessTypingsFromPackageJson(fs, entryPointPath, entryPointPackageJson);
   if (typeof typings !== 'string') {
-    return null;
+    // Missing the required `typings` property
+    return INCOMPATIBLE_ENTRY_POINT;
   }
 
   // An entry-point is assumed to be compiled by Angular if there is either:
@@ -120,10 +181,12 @@ export function getEntryPointInfo(
 
   const entryPointInfo: EntryPoint = {
     name: entryPointPackageJson.name,
-    packageJson: entryPointPackageJson,
-    package: packagePath,
     path: entryPointPath,
-    typings: resolve(entryPointPath, typings), compiledByAngular,
+    packageName,
+    packagePath,
+    packageJson: entryPointPackageJson,
+    typings: resolve(entryPointPath, typings),
+    compiledByAngular,
     ignoreMissingDependencies:
         entryPointConfig !== undefined ? !!entryPointConfig.ignoreMissingDependencies : false,
     generateDeepReexports:
@@ -131,6 +194,11 @@ export function getEntryPointInfo(
   };
 
   return entryPointInfo;
+}
+
+export function isEntryPoint(result: GetEntryPointResult): result is EntryPoint {
+  return result !== NO_ENTRY_POINT && result !== INCOMPATIBLE_ENTRY_POINT &&
+      result !== IGNORED_ENTRY_POINT;
 }
 
 /**
@@ -153,14 +221,28 @@ export function getEntryPointFormat(
       return 'esm2015';
     case 'esm5':
       return 'esm5';
+    case 'browser':
+      const browserFile = entryPoint.packageJson['browser'];
+      if (typeof browserFile !== 'string') {
+        return undefined;
+      }
+      return sniffModuleFormat(fs, join(entryPoint.path, browserFile));
     case 'main':
       const mainFile = entryPoint.packageJson['main'];
       if (mainFile === undefined) {
         return undefined;
       }
-      const pathToMain = join(entryPoint.path, mainFile);
-      return isUmdModule(fs, pathToMain) ? 'umd' : 'commonjs';
+      return sniffModuleFormat(fs, join(entryPoint.path, mainFile));
     case 'module':
+      const moduleFilePath = entryPoint.packageJson['module'];
+      // As of version 10, the `module` property in `package.json` should point to
+      // the ESM2015 format output as per Angular Package format specification. This
+      // means that the `module` property captures multiple formats, as old libraries
+      // built with the old APF can still be processed. We detect the format by checking
+      // the paths that should be used as per APF specification.
+      if (typeof moduleFilePath === 'string' && moduleFilePath.includes('esm2015')) {
+        return `esm2015`;
+      }
       return 'esm5';
     default:
       return undefined;
@@ -168,52 +250,48 @@ export function getEntryPointFormat(
 }
 
 /**
- * Parses the JSON from a package.json file.
- * @param packageJsonPath the absolute path to the package.json file.
- * @returns JSON from the package.json file if it is valid, `null` otherwise.
+ * Parse the JSON from a `package.json` file.
+ * @param packageJsonPath the absolute path to the `package.json` file.
+ * @returns JSON from the `package.json` file if it is valid, `null` otherwise.
  */
-function loadEntryPointPackage(
-    fs: FileSystem, logger: Logger, packageJsonPath: AbsoluteFsPath,
-    hasConfig: boolean): EntryPointPackageJson|null {
+function loadPackageJson(fs: FileSystem, packageJsonPath: AbsoluteFsPath): EntryPointPackageJson|
+    null {
   try {
     return JSON.parse(fs.readFile(packageJsonPath));
-  } catch (e) {
-    if (!hasConfig) {
-      // We may have run into a package.json with unexpected symbols
-      logger.warn(`Failed to read entry point info from ${packageJsonPath} with error ${e}.`);
-    }
+  } catch {
     return null;
   }
 }
 
-function isUmdModule(fs: FileSystem, sourceFilePath: AbsoluteFsPath): boolean {
+function sniffModuleFormat(fs: FileSystem, sourceFilePath: AbsoluteFsPath): EntryPointFormat|
+    undefined {
   const resolvedPath = resolveFileWithPostfixes(fs, sourceFilePath, ['', '.js', '/index.js']);
   if (resolvedPath === null) {
-    return false;
+    return undefined;
   }
+
   const sourceFile =
       ts.createSourceFile(sourceFilePath, fs.readFile(resolvedPath), ts.ScriptTarget.ES5);
-  return sourceFile.statements.length > 0 &&
-      parseStatementForUmdModule(sourceFile.statements[0]) !== null;
+  if (sourceFile.statements.length === 0) {
+    return undefined;
+  }
+  if (ts.isExternalModule(sourceFile)) {
+    return 'esm5';
+  } else if (parseStatementForUmdModule(sourceFile.statements[0]) !== null) {
+    return 'umd';
+  } else {
+    return 'commonjs';
+  }
 }
 
 function mergeConfigAndPackageJson(
-    entryPointPackageJson: EntryPointPackageJson | null,
-    entryPointConfig: NgccEntryPointConfig | undefined, packagePath: AbsoluteFsPath,
-    entryPointPath: AbsoluteFsPath): EntryPointPackageJson|null {
+    entryPointPackageJson: EntryPointPackageJson|null, entryPointConfig: NgccEntryPointConfig,
+    packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath): EntryPointPackageJson {
   if (entryPointPackageJson !== null) {
-    if (entryPointConfig === undefined) {
-      return entryPointPackageJson;
-    } else {
-      return {...entryPointPackageJson, ...entryPointConfig.override};
-    }
+    return {...entryPointPackageJson, ...entryPointConfig.override};
   } else {
-    if (entryPointConfig === undefined) {
-      return null;
-    } else {
-      const name = `${basename(packagePath)}/${relative(packagePath, entryPointPath)}`;
-      return {name, ...entryPointConfig.override};
-    }
+    const name = `${basename(packagePath)}/${relative(packagePath, entryPointPath)}`;
+    return {name, ...entryPointConfig.override};
   }
 }
 
@@ -236,18 +314,44 @@ function guessTypingsFromPackageJson(
 }
 
 /**
- * Find the version of the package at `packageJsonPath`.
+ * Find or infer the name and version of a package.
  *
- * @returns the version string or `null` if the package.json does not exist or is invalid.
+ * - The name is computed based on the `name` property of the package's or the entry-point's
+ *   `package.json` file (if available) or inferred from the package's path.
+ * - The version is read off of the `version` property of the package's `package.json` file (if
+ *   available).
+ *
+ * @param fs The `FileSystem` instance to use for parsing `packagePath` (if needed).
+ * @param packagePath the absolute path to the package.
+ * @param packagePackageJson the parsed `package.json` of the package (if available).
+ * @param entryPointPackageJson the parsed `package.json` of an entry-point (if available).
+ * @returns the computed name and version of the package.
  */
-function getPackageVersion(fs: FileSystem, packageJsonPath: AbsoluteFsPath): string|null {
-  try {
-    if (fs.exists(packageJsonPath)) {
-      const packageJson = JSON.parse(fs.readFile(packageJsonPath));
-      return packageJson['version'] || null;
-    }
-  } catch {
-    // Do nothing
+function getPackageNameAndVersion(
+    fs: FileSystem, packagePath: AbsoluteFsPath, packagePackageJson: EntryPointPackageJson|null,
+    entryPointPackageJson: EntryPointPackageJson|
+    null): {packageName: string, packageVersion: string|null} {
+  let packageName: string;
+
+  if (packagePackageJson !== null) {
+    // We have a valid `package.json` for the package: Get the package name from that.
+    packageName = packagePackageJson.name;
+  } else if (entryPointPackageJson !== null) {
+    // We have a valid `package.json` for the entry-point: Get the package name from that.
+    // This might be a secondary entry-point, so make sure we only keep the main package's name
+    // (e.g. only keep `@angular/common` from `@angular/common/http`).
+    packageName = /^(?:@[^/]+\/)?[^/]*/.exec(entryPointPackageJson.name)![0];
+  } else {
+    // We don't have a valid `package.json`: Infer the package name from the package's path.
+    const lastSegment = fs.basename(packagePath);
+    const secondLastSegment = fs.basename(fs.dirname(packagePath));
+
+    packageName =
+        secondLastSegment.startsWith('@') ? `${secondLastSegment}/${lastSegment}` : lastSegment;
   }
-  return null;
+
+  return {
+    packageName,
+    packageVersion: packagePackageJson?.version ?? null,
+  };
 }

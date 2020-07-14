@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,6 @@ import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 describe('compiler compliance: directives', () => {
-
   const angularFiles = setup({
     compileAngular: false,
     compileAnimations: false,
@@ -18,7 +17,6 @@ describe('compiler compliance: directives', () => {
   });
 
   describe('matching', () => {
-
     it('should not match directives on i18n attribute', () => {
       const files = {
         app: {
@@ -114,7 +112,6 @@ describe('compiler compliance: directives', () => {
     });
 
     it('should match directives on element bindings', () => {
-
       const files = {
         app: {
           'spec.ts': `
@@ -273,7 +270,6 @@ describe('compiler compliance: directives', () => {
     });
 
     it('should match directives on ng-template bindings', () => {
-
       const files = {
         app: {
           'spec.ts': `
@@ -321,7 +317,6 @@ describe('compiler compliance: directives', () => {
     });
 
     it('should match structural directives', () => {
-
       const files = {
         app: {
           'spec.ts': `
@@ -362,11 +357,9 @@ describe('compiler compliance: directives', () => {
       const source = result.source;
 
       expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
-
     });
 
     it('should match directives on element outputs', () => {
-
       const files = {
         app: {
           'spec.ts': `
@@ -398,7 +391,7 @@ describe('compiler compliance: directives', () => {
             template: function MyComponent_Template(rf, ctx) {
                 if (rf & 1) {
                     $r3$.ɵɵelementStart(0, "div", 0);
-                    $r3$.ɵɵlistener("someDirective", function MyComponent_Template_div_someDirective_0_listener($event) { return ctx.noop(); });
+                    $r3$.ɵɵlistener("someDirective", function MyComponent_Template_div_someDirective_0_listener() { return ctx.noop(); });
                     $r3$.ɵɵelementEnd();
                 }
             },
@@ -413,6 +406,5 @@ describe('compiler compliance: directives', () => {
 
       expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
     });
-
   });
 });

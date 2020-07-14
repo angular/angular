@@ -87,7 +87,7 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   }
 
   & .mat-icon {
-    color: white;
+    color: $white;
     position: inherit;
   }
 }
@@ -96,7 +96,17 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
 .nav-link.home {
   cursor: pointer;
   margin: 0 16px 0 0;
-  padding: 21px 0;
+  padding: 8px 0;
+
+  &:focus {
+    // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
+    outline: 1px solid $focus-outline-ondark;
+    outline-offset: 4px;
+  }
+
+  @media screen and (max-width: 991px) {
+    padding: 4px 0;
+  }
 
   @media screen and (max-width: 480px) {
     margin-right: 8px;
@@ -108,7 +118,7 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
     top: 12px;
     height: 40px;
 
-    @media (max-width: 992px) {
+    @media (max-width: 991px) {
       &:hover {
         transform: scale(1.1);
       }
@@ -136,32 +146,47 @@ aio-top-menu {
       list-style-type: none;
       cursor: pointer;
 
-      &:hover {
-        opacity: 0.7;
-      }
-
       &:focus {
-        background-color: $accentblue;
         outline: none;
       }
-    }
-  }
 
-  a.nav-link {
-    margin: 0;
-    padding: 24px 0px;
-    cursor: pointer;
+      a.nav-link {
+        margin: 0 4px;
+        padding: 0px;
+        cursor: pointer;
 
-    .nav-link-inner {
-      padding: 8px 16px;
-    }
+        .nav-link-inner {
+          border-radius: 4px;
+          padding: 8px 16px;
 
-    &:focus {
-      outline: none;
+          &:hover {
+            background: rgba($white, 0.15);
+          }
+        }
 
-      .nav-link-inner {
-        background: rgba($white, 0.15);
-        border-radius: 4px;
+        &:focus {
+          outline: none;
+
+          .nav-link-inner {
+            background: rgba($white, 0.15);
+            border-radius: 1px;
+            box-shadow: 0 0 1px 2px $focus-outline-ondark;
+          }
+        }
+
+        &:active {
+          .nav-link-inner {
+            background: rgba($white, 0.15);
+          }
+        }
+      }
+
+      &.selected {
+        a.nav-link {
+          .nav-link-inner {
+            background: rgba($white, 0.15);
+          }
+        }
       }
     }
   }
@@ -175,6 +200,7 @@ aio-search-box.search-container {
   width: 100%;
   min-width: 150px;
   height: 100%;
+  margin-right: 16px;
 
   input {
     color: $darkgray;
@@ -220,10 +246,18 @@ aio-search-box.search-container {
     a {
       display: flex;
       align-items: center;
-      margin-left: 16px;
+      padding: 24px;
+      margin: 0 -16px;
+
+      &:focus {
+        // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
+        outline: 1px solid $focus-outline-ondark;
+        outline-offset: -16px;
+      }
 
       @media screen and (max-width: 480px) {
-        margin-left: 8px;
+        margin: 0 0 0 8px;
+        padding: 0;
       }
 
       &:hover {

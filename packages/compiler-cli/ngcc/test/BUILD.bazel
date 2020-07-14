@@ -1,3 +1,4 @@
+load("@npm//@babel/cli:index.bzl", "babel")
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
@@ -11,12 +12,14 @@ ts_library(
     ),
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli",
         "//packages/compiler-cli/ngcc",
         "//packages/compiler-cli/ngcc/test/helpers",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/testing",
@@ -27,7 +30,9 @@ ts_library(
         "@npm//convert-source-map",
         "@npm//dependency-graph",
         "@npm//magic-string",
+        "@npm//sourcemap-codec",
         "@npm//typescript",
+        "@npm//yargs",
     ],
 )
 
@@ -53,10 +58,33 @@ ts_library(
         "//packages/compiler-cli/ngcc/test/helpers",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/test/helpers",
         "@npm//rxjs",
         "@npm//typescript",
+    ],
+)
+
+# As of version 10, the release packages do not contain esm5 output anymore. The ngcc integration
+# tests intend to test ES5 features though, so we downlevel the flat esm2015 file to ES5 using
+# Babel. We can then link that into the mock file system as if the Angular core package is still
+# built with previous APF versions where esm5 output was shipped. This allows us to ensure that ngcc
+# properly processes libraries with esm5 output.
+# **Note**: We are using Babel instead of `tsc` as TypeScript does not allow us to downlevel the
+# file without setting the module resolution to either `amd` or `system`. We want to preserve ES
+# modules.
+babel(
+    name = "fesm5_angular_core",
+    outs = ["fesm5_angular_core.js"],
+    args = [
+        "$(execpath //packages/core:npm_package)/fesm2015/core.js",
+        "--presets @babel/preset-env",
+        "--out-file $(execpath fesm5_angular_core.js)",
+    ],
+    data = [
+        "//packages/core:npm_package",
+        "@npm//@babel/preset-env",
     ],
 )
 
@@ -65,6 +93,7 @@ jasmine_node_test(
     timeout = "long",
     bootstrap = ["//tools/testing:node_no_angular_es5"],
     data = [
+        ":fesm5_angular_core",
         "//packages/common:npm_package",
         "//packages/core:npm_package",
         "@npm//rxjs",

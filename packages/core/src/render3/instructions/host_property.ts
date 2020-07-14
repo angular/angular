@@ -1,14 +1,16 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
+import {RENDERER} from '../interfaces/view';
+import {getCurrentDirectiveDef, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
+
 import {elementPropertyInternal, loadComponentRenderer, storePropertyBindingMetadata} from './shared';
 
 /**
@@ -26,21 +28,21 @@ import {elementPropertyInternal, loadComponentRenderer, storePropertyBindingMeta
  * @codeGenApi
  */
 export function ɵɵhostProperty<T>(
-    propName: string, value: T, sanitizer?: SanitizerFn | null): typeof ɵɵhostProperty {
+    propName: string, value: T, sanitizer?: SanitizerFn|null): typeof ɵɵhostProperty {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
-    const nodeIndex = getSelectedIndex();
     const tView = getTView();
-    elementPropertyInternal(tView, lView, nodeIndex, propName, value, sanitizer, true);
-    ngDevMode && storePropertyBindingMetadata(tView.data, nodeIndex, propName, bindingIndex);
+    const tNode = getSelectedTNode();
+    elementPropertyInternal(tView, tNode, lView, propName, value, lView[RENDERER], sanitizer, true);
+    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵhostProperty;
 }
 
 
 /**
- * Updates a synthetic host binding (e.g. `[@foo]`) on a component.
+ * Updates a synthetic host binding (e.g. `[@foo]`) on a component or directive.
  *
  * This instruction is for compatibility purposes and is designed to ensure that a
  * synthetic host binding (e.g. `@HostBinding('@foo')`) properly gets rendered in
@@ -61,16 +63,17 @@ export function ɵɵhostProperty<T>(
  * @codeGenApi
  */
 export function ɵɵupdateSyntheticHostBinding<T>(
-    propName: string, value: T | NO_CHANGE,
-    sanitizer?: SanitizerFn | null): typeof ɵɵupdateSyntheticHostBinding {
+    propName: string, value: T|NO_CHANGE,
+    sanitizer?: SanitizerFn|null): typeof ɵɵupdateSyntheticHostBinding {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
-    const nodeIndex = getSelectedIndex();
     const tView = getTView();
-    elementPropertyInternal(
-        tView, lView, nodeIndex, propName, value, sanitizer, true, loadComponentRenderer);
-    ngDevMode && storePropertyBindingMetadata(tView.data, nodeIndex, propName, bindingIndex);
+    const tNode = getSelectedTNode();
+    const currentDef = getCurrentDirectiveDef(tView.data);
+    const renderer = loadComponentRenderer(currentDef, tNode, lView);
+    elementPropertyInternal(tView, tNode, lView, propName, value, renderer, sanitizer, true);
+    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵupdateSyntheticHostBinding;
 }

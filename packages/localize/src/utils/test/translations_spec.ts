@@ -1,11 +1,11 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ParsedTranslation, TargetMessage, computeMsgId, makeTemplateObject, parseTranslation, translate} from '..';
+import {computeMsgId, makeTemplateObject, ParsedTranslation, parseTranslation, TargetMessage, translate} from '..';
 
 describe('utils', () => {
   describe('makeTemplateObject', () => {
@@ -80,17 +80,27 @@ describe('utils', () => {
 
   describe('translate', () => {
     it('should throw an error if there is no matching translation', () => {
-      expect(() => doTranslate({}, parts `abc`))
+      expect(() => doTranslate({}, parts`abc`))
           .toThrowError('No translation found for "2674653928643152084" ("abc").');
-      expect(() => doTranslate({}, parts `:meaning|:abc`))
+      expect(() => doTranslate({}, parts`:@@customId:abc`))
+          .toThrowError('No translation found for "customId" ("abc").');
+      expect(
+          () => doTranslate(
+              {}, parts`:␟d42e3c2d3aa340581d42f53c46eb49ecb3d3beb4␟3896949568605777881:abc`))
+          .toThrowError(
+              'No translation found for "2674653928643152084" ["d42e3c2d3aa340581d42f53c46eb49ecb3d3beb4", "3896949568605777881"] ("abc").');
+      expect(() => doTranslate({}, parts`:meaning|:abc`))
           .toThrowError('No translation found for "1071947593002928768" ("abc" - "meaning").');
     });
 
     it('should throw an error if the translation contains placeholders that are not in the message',
        () => {
-         expect(() => doTranslate({'abc': 'a{$PH}bc'}, parts `abc`))
+         expect(
+             () => doTranslate(
+                 {'abc{$INTERPOLATION}def': 'a{$PH}bc'}, parts`abc${1 + 2}:INTERPOLATION:def`))
              .toThrowError(
-                 'No placeholder found with name PH in message "2674653928643152084" ("abc").');
+                 `There is a placeholder name mismatch with the translation provided for the message "8986527425650846693" ("abc{$INTERPOLATION}def").\n` +
+                 `The translation contains a placeholder with name PH, which does not exist in the message.`);
        });
 
     it('(with identity translations) should render template literals as-is', () => {
@@ -101,15 +111,15 @@ describe('utils', () => {
         'abc{$PH}def{$PH_1}': 'abc{$PH}def{$PH_1}',
         'Hello, {$PH}!': 'Hello, {$PH}!',
       };
-      expect(doTranslate(translations, parts `abc`)).toEqual(parts `abc`);
-      expect(doTranslate(translations, parts `abc${1 + 2 + 3}`)).toEqual(parts `abc${1 + 2 + 3}`);
-      expect(doTranslate(translations, parts `abc${1 + 2 + 3}def`))
-          .toEqual(parts `abc${1 + 2 + 3}def`);
-      expect(doTranslate(translations, parts `abc${1 + 2 + 3}def${4 + 5 + 6}`))
-          .toEqual(parts `abc${1 + 2 + 3}def${4 + 5 + 6}`);
+      expect(doTranslate(translations, parts`abc`)).toEqual(parts`abc`);
+      expect(doTranslate(translations, parts`abc${1 + 2 + 3}`)).toEqual(parts`abc${1 + 2 + 3}`);
+      expect(doTranslate(translations, parts`abc${1 + 2 + 3}def`))
+          .toEqual(parts`abc${1 + 2 + 3}def`);
+      expect(doTranslate(translations, parts`abc${1 + 2 + 3}def${4 + 5 + 6}`))
+          .toEqual(parts`abc${1 + 2 + 3}def${4 + 5 + 6}`);
       const getName = () => 'World';
-      expect(doTranslate(translations, parts `Hello, ${getName()}!`))
-          .toEqual(parts `Hello, ${'World'}!`);
+      expect(doTranslate(translations, parts`Hello, ${getName()}!`))
+          .toEqual(parts`Hello, ${'World'}!`);
     });
 
     it('(with upper-casing translations) should render template literals with messages upper-cased',
@@ -121,16 +131,15 @@ describe('utils', () => {
            'abc{$PH}def{$PH_1}': 'ABC{$PH}DEF{$PH_1}',
            'Hello, {$PH}!': 'HELLO, {$PH}!',
          };
-         expect(doTranslate(translations, parts `abc`)).toEqual(parts `ABC`);
-         expect(doTranslate(translations, parts `abc${1 + 2 + 3}`))
-             .toEqual(parts `ABC${1 + 2 + 3}`);
-         expect(doTranslate(translations, parts `abc${1 + 2 + 3}def`))
-             .toEqual(parts `ABC${1 + 2 + 3}DEF`);
-         expect(doTranslate(translations, parts `abc${1 + 2 + 3}def${4 + 5 + 6}`))
-             .toEqual(parts `ABC${1 + 2 + 3}DEF${4 + 5 + 6}`);
+         expect(doTranslate(translations, parts`abc`)).toEqual(parts`ABC`);
+         expect(doTranslate(translations, parts`abc${1 + 2 + 3}`)).toEqual(parts`ABC${1 + 2 + 3}`);
+         expect(doTranslate(translations, parts`abc${1 + 2 + 3}def`))
+             .toEqual(parts`ABC${1 + 2 + 3}DEF`);
+         expect(doTranslate(translations, parts`abc${1 + 2 + 3}def${4 + 5 + 6}`))
+             .toEqual(parts`ABC${1 + 2 + 3}DEF${4 + 5 + 6}`);
          const getName = () => 'World';
-         expect(doTranslate(translations, parts `Hello, ${getName()}!`))
-             .toEqual(parts `HELLO, ${'World'}!`);
+         expect(doTranslate(translations, parts`Hello, ${getName()}!`))
+             .toEqual(parts`HELLO, ${'World'}!`);
        });
 
     it('(with translations to reverse expressions) should render template literals with expressions reversed',
@@ -140,8 +149,8 @@ describe('utils', () => {
          };
          const getName = () => 'World';
          expect(doTranslate(
-                    translations, parts `abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`))
-             .toEqual(parts `abc${'World'}def${4 + 5 + 6} - Hello, ${1 + 2 + 3}!`);
+                    translations, parts`abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`))
+             .toEqual(parts`abc${'World'}def${4 + 5 + 6} - Hello, ${1 + 2 + 3}!`);
        });
 
     it('(with translations to remove expressions) should render template literals with expressions removed',
@@ -151,8 +160,8 @@ describe('utils', () => {
          };
          const getName = () => 'World';
          expect(doTranslate(
-                    translations, parts `abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`))
-             .toEqual(parts `abc${1 + 2 + 3} - Hello, ${'World'}!`);
+                    translations, parts`abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`))
+             .toEqual(parts`abc${1 + 2 + 3} - Hello, ${'World'}!`);
        });
 
     function parts(messageParts: TemplateStringsArray, ...substitutions: any[]):
@@ -164,7 +173,6 @@ describe('utils', () => {
         Record<string, ParsedTranslation> {
       const parsedTranslations: Record<string, ParsedTranslation> = {};
       Object.keys(translations).forEach(key => {
-
         parsedTranslations[computeMsgId(key, '')] = parseTranslation(translations[key]);
       });
       return parsedTranslations;

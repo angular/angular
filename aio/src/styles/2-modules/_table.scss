@@ -113,3 +113,9 @@ table {
     }
   }
 }
+
+.events-container {
+  tr > td, tr > th {
+    width: 33%;
+  }
+}

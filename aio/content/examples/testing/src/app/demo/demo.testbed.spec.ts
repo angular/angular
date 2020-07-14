@@ -110,7 +110,7 @@ describe('demo (with TestBed):', () => {
       });
       // 서비스의 인스턴스와 목 객체의 인스턴스를 가져옵니다.
       masterService = TestBed.inject(MasterService);
-      valueServiceSpy = TestBed.inject(ValueService);
+      valueServiceSpy = TestBed.inject(ValueService) as jasmine.SpyObj<ValueService>;
     });
     // #enddocregion master-service-before-each
 
@@ -373,14 +373,14 @@ describe('demo (with TestBed):', () => {
 
       expect(el.context).toBe(childComp, 'context is the child component');
 
-      expect(el.attributes['account']).toBe(childComp.id, 'account attribute');
-      expect(el.attributes['bank']).toBe(childComp.bank, 'bank attribute');
+      expect(el.attributes.account).toBe(childComp.id, 'account attribute');
+      expect(el.attributes.bank).toBe(childComp.bank, 'bank attribute');
 
-      expect(el.classes['closed']).toBe(true, 'closed class');
-      expect(el.classes['open']).toBe(false, 'open class');
+      expect(el.classes.closed).toBe(true, 'closed class');
+      expect(el.classes.open).toBeFalsy('open class');
 
-      expect(el.styles['color']).toBe(comp.color, 'color style');
-      expect(el.styles['width']).toBe(comp.width + 'px', 'width style');
+      expect(el.styles.color).toBe(comp.color, 'color style');
+      expect(el.styles.width).toBe(comp.width + 'px', 'width style');
     // #enddocregion dom-attributes
 
       // Removed on 12/02/2016 when ceased public discussion of the `Renderer`. Revive in future?

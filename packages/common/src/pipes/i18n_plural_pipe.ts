@@ -1,13 +1,15 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {NgLocalization, getPluralCategory} from '../i18n/localization';
+
+import {getPluralCategory, NgLocalization} from '../i18n/localization';
+
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 const _INTERPOLATION_REGEXP: RegExp = /#/g;

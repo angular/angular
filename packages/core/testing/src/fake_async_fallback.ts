@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -118,8 +118,11 @@ function _getFakeAsyncZoneSpec(): any {
  *
  * @publicApi
  */
-export function tickFallback(millis: number = 0): void {
-  _getFakeAsyncZoneSpec().tick(millis);
+export function tickFallback(
+    millis: number = 0, tickOptions: {processNewMacroTasksSynchronously: boolean} = {
+      processNewMacroTasksSynchronously: true
+    }): void {
+  _getFakeAsyncZoneSpec().tick(millis, null, tickOptions);
 }
 
 /**

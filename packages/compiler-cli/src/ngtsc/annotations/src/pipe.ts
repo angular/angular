@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Identifiers, R3FactoryTarget, R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
+import {compilePipeFromMetadata, Identifiers, R3FactoryTarget, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -16,6 +16,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
+import {createValueHasWrongTypeError} from './diagnostics';
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
@@ -79,20 +80,18 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
       throw new FatalDiagnosticError(
           ErrorCode.PIPE_MISSING_NAME, meta, `@Pipe decorator is missing name field`);
     }
-    const pipeNameExpr = pipe.get('name') !;
+    const pipeNameExpr = pipe.get('name')!;
     const pipeName = this.evaluator.evaluate(pipeNameExpr);
     if (typeof pipeName !== 'string') {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, pipeNameExpr, `@Pipe.name must be a string`);
+      throw createValueHasWrongTypeError(pipeNameExpr, pipeName, `@Pipe.name must be a string`);
     }
 
     let pure = true;
     if (pipe.has('pure')) {
-      const expr = pipe.get('pure') !;
+      const expr = pipe.get('pure')!;
       const pureValue = this.evaluator.evaluate(expr);
       if (typeof pureValue !== 'boolean') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `@Pipe.pure must be a boolean`);
+        throw createValueHasWrongTypeError(expr, pureValue, `@Pipe.pure must be a boolean`);
       }
       pure = pureValue;
     }
@@ -103,7 +102,8 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
           name,
           type,
           internalType,
-          typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0, pipeName,
+          typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0,
+          pipeName,
           deps: getValidConstructorDependencies(
               clazz, this.reflector, this.defaultImportRecorder, this.isCore),
           pure,

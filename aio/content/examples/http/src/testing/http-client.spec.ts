@@ -27,8 +27,8 @@ describe('HttpClient testing', () => {
     });
 
     // http 서비스와 테스트 컨트롤러를 각 테스트 케이스에 주입합니다.
-    httpClient = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
   });
   // #enddocregion setup
   // #docregion afterEach

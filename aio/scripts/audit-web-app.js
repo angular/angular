@@ -27,10 +27,10 @@
  */
 
 // Imports
-const puppeteer = require('puppeteer');
 const lighthouse = require('lighthouse');
 const printer = require('lighthouse/lighthouse-cli/printer');
 const logger = require('lighthouse-logger');
+const puppeteer = require('puppeteer');
 
 // Constants
 const AUDIT_CATEGORIES = ['accessibility', 'best-practices', 'performance', 'pwa', 'seo'];
@@ -83,10 +83,8 @@ function formatScore(score) {
 }
 
 async function launchChromeAndRunLighthouse(url, flags, config) {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--remote-debugging-port=9222']});
-  flags.port = browser.port;
+  const browser = await puppeteer.launch();
+  flags.port = (new URL(browser.wsEndpoint())).port;
 
   try {
     return await lighthouse(url, flags, config);

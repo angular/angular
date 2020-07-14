@@ -1,12 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {DirectiveMeta, PipeMeta} from '../../metadata';
+import {ClassDeclaration} from '../../reflection';
 
 
 /**
@@ -22,6 +23,11 @@ export interface ScopeData {
    * Pipes in the exported scope of the module.
    */
   pipes: PipeMeta[];
+
+  /**
+   * NgModules which contributed to the scope of the module.
+   */
+  ngModules: ClassDeclaration[];
 }
 
 /**

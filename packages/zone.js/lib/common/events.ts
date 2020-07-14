@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@
  * @suppress {missingRequire}
  */
 
-import {ADD_EVENT_LISTENER_STR, FALSE_STR, ObjectGetPrototypeOf, REMOVE_EVENT_LISTENER_STR, TRUE_STR, ZONE_SYMBOL_PREFIX, attachOriginToPatched, isNode, zoneSymbol} from './utils';
+import {ADD_EVENT_LISTENER_STR, attachOriginToPatched, FALSE_STR, isNode, ObjectGetPrototypeOf, REMOVE_EVENT_LISTENER_STR, TRUE_STR, ZONE_SYMBOL_PREFIX, zoneSymbol} from './utils';
 
 
 /** @internal **/
@@ -23,9 +23,11 @@ let passiveSupported = false;
 
 if (typeof window !== 'undefined') {
   try {
-    const options =
-        Object.defineProperty({}, 'passive', {get: function() { passiveSupported = true; }});
-
+    const options = Object.defineProperty({}, 'passive', {
+      get: function() {
+        passiveSupported = true;
+      }
+    });
     window.addEventListener('test', options, options);
     window.removeEventListener('test', options, options);
   } catch (err) {
@@ -245,16 +247,30 @@ export function patchEventTarget(
           proto[patchOptions.prepend];
     }
 
-    function checkIsPassive(task: Task) {
-      if (!passiveSupported && typeof taskData.options !== 'boolean' &&
-          typeof taskData.options !== 'undefined' && taskData.options !== null) {
-        // options is a non-null non-undefined object
-        // passive is not supported
-        // don't pass options as object
-        // just pass capture as a boolean
-        (task as any).options = !!taskData.options.capture;
-        taskData.options = (task as any).options;
+    /**
+     * This util function will build an option object with passive option
+     * to handle all possible input from the user.
+     */
+    function buildEventListenerOptions(options: any, passive: boolean) {
+      if (!passiveSupported && typeof options === 'object' && options) {
+        // doesn't support passive but user want to pass an object as options.
+        // this will not work on some old browser, so we just pass a boolean
+        // as useCapture parameter
+        return !!options.capture;
       }
+      if (!passiveSupported || !passive) {
+        return options;
+      }
+      if (typeof options === 'boolean') {
+        return {capture: options, passive: true};
+      }
+      if (!options) {
+        return {passive: true};
+      }
+      if (typeof options === 'object' && options.passive !== false) {
+        return {...options, passive: true};
+      }
+      return options;
     }
 
     const customScheduleGlobal = function(task: Task) {
@@ -263,7 +279,6 @@ export function patchEventTarget(
       if (taskData.isExisting) {
         return;
       }
-      checkIsPassive(task);
       return nativeAddEventListener.call(
           taskData.target, taskData.eventName,
           taskData.capture ? globalZoneAwareCaptureCallback : globalZoneAwareCallback,
@@ -311,7 +326,6 @@ export function patchEventTarget(
     };
 
     const customScheduleNonGlobal = function(task: Task) {
-      checkIsPassive(task);
       return nativeAddEventListener.call(
           taskData.target, taskData.eventName, task.invoke, taskData.options);
     };
@@ -338,6 +352,7 @@ export function patchEventTarget(
         (patchOptions && patchOptions.diff) ? patchOptions.diff : compareTaskCallbackVsDelegate;
 
     const blackListedEvents: string[] = (Zone as any)[zoneSymbol('BLACK_LISTED_EVENTS')];
+    const passiveEvents: string[] = _global[zoneSymbol('PASSIVE_EVENTS')];
 
     const makeAddListener = function(
         nativeListener: any, addSource: string, customScheduleFn: any, customCancelFn: any,
@@ -372,29 +387,25 @@ export function patchEventTarget(
           return;
         }
 
-        const options = arguments[2];
+        const passive =
+            passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
+        const options = buildEventListenerOptions(arguments[2], passive);
 
         if (blackListedEvents) {
           // check black list
           for (let i = 0; i < blackListedEvents.length; i++) {
             if (eventName === blackListedEvents[i]) {
-              return nativeListener.apply(this, arguments);
+              if (passive) {
+                return nativeListener.call(target, eventName, delegate, options);
+              } else {
+                return nativeListener.apply(this, arguments);
+              }
             }
           }
         }
 
-        let capture;
-        let once = false;
-        if (options === undefined) {
-          capture = false;
-        } else if (options === true) {
-          capture = true;
-        } else if (options === false) {
-          capture = false;
-        } else {
-          capture = options ? !!options.capture : false;
-          once = options ? !!options.once : false;
-        }
+        const capture = !options ? false : typeof options === 'boolean' ? true : options.capture;
+        const once = options && typeof options === 'object' ? options.once : false;
 
         const zone = Zone.current;
         let symbolEventNames = zoneSymbolEventNames[eventName];
@@ -508,17 +519,7 @@ export function patchEventTarget(
       }
       const options = arguments[2];
 
-      let capture;
-      if (options === undefined) {
-        capture = false;
-      } else if (options === true) {
-        capture = true;
-      } else if (options === false) {
-        capture = false;
-      } else {
-        capture = options ? !!options.capture : false;
-      }
-
+      const capture = !options ? false : typeof options === 'boolean' ? true : options.capture;
       const delegate = arguments[1];
       if (!delegate) {
         return nativeRemoveEventListener.apply(this, arguments);

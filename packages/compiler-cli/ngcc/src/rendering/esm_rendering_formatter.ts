@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,17 +8,19 @@
 import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-import {relative, dirname, AbsoluteFsPath, absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
+
+import {absoluteFromSourceFile, AbsoluteFsPath, dirname, relative} from '../../../src/ngtsc/file_system';
 import {NOOP_DEFAULT_IMPORT_RECORDER, Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
-import {CompiledClass} from '../analysis/types';
-import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
 import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
-import {RenderingFormatter, RedundantDecoratorMap} from './rendering_formatter';
+import {CompiledClass} from '../analysis/types';
+import {getContainingStatement, isAssignment} from '../host/esm2015_host';
+import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
+
+import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter';
 import {stripExtension} from './utils';
-import {isAssignment} from '../host/esm2015_host';
 
 /**
  * A RenderingFormatter that works with ECMAScript Module import and export statements.
@@ -102,7 +104,8 @@ export class EsmRenderingFormatter implements RenderingFormatter {
     if (!classSymbol) {
       throw new Error(`Compiled class does not have a valid symbol: ${compiledClass.name}`);
     }
-    const declarationStatement = getDeclarationStatement(classSymbol.declaration.valueDeclaration);
+    const declarationStatement =
+        getContainingStatement(classSymbol.implementation.valueDeclaration);
     const insertionPoint = declarationStatement.getEnd();
     output.appendLeft(insertionPoint, '\n' + definitions);
   }
@@ -194,7 +197,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
       const ngModuleName = info.ngModule.node.name.text;
       const declarationFile = absoluteFromSourceFile(info.declaration.getSourceFile());
       const ngModuleFile = absoluteFromSourceFile(info.ngModule.node.getSourceFile());
-      const importPath = info.ngModule.viaModule ||
+      const importPath = info.ngModule.ownedByModuleGuess ||
           (declarationFile !== ngModuleFile ?
                stripExtension(`./${relative(dirname(declarationFile), ngModuleFile)}`) :
                null);
@@ -226,7 +229,8 @@ export class EsmRenderingFormatter implements RenderingFormatter {
             info.declaration.getEnd();
         outputText.appendLeft(
             insertPoint,
-            `: ${generateImportString(importManager, '@angular/core', 'ModuleWithProviders')}<${ngModule}>`);
+            `: ${generateImportString(importManager, '@angular/core', 'ModuleWithProviders')}<${
+                ngModule}>`);
       }
     });
   }
@@ -274,17 +278,6 @@ export class EsmRenderingFormatter implements RenderingFormatter {
   }
 }
 
-function getDeclarationStatement(node: ts.Node): ts.Statement {
-  let statement = node;
-  while (statement) {
-    if (ts.isVariableStatement(statement) || ts.isClassDeclaration(statement)) {
-      return statement;
-    }
-    statement = statement.parent;
-  }
-  throw new Error(`Class is not defined in a declaration statement: ${node.getText()}`);
-}
-
 function findStatement(node: ts.Node): ts.Statement|undefined {
   while (node) {
     if (ts.isExpressionStatement(node) || ts.isReturnStatement(node)) {
@@ -296,7 +289,7 @@ function findStatement(node: ts.Node): ts.Statement|undefined {
 }
 
 function generateImportString(
-    importManager: ImportManager, importPath: string | null, importName: string) {
+    importManager: ImportManager, importPath: string|null, importName: string) {
   const importAs = importPath ? importManager.generateNamedImport(importPath, importName) : null;
   return importAs ? `${importAs.moduleImport}.${importAs.symbol}` : `${importName}`;
 }

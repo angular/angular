@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,10 +8,12 @@
 import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
+
 import {NOOP_DEFAULT_IMPORT_RECORDER} from '../../../src/ngtsc/imports';
 import {ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {CompiledClass} from '../analysis/types';
-import {getIifeBody} from '../host/esm5_host';
+import {getContainingStatement} from '../host/esm2015_host';
+
 import {EsmRenderingFormatter} from './esm_rendering_formatter';
 
 /**
@@ -20,19 +22,32 @@ import {EsmRenderingFormatter} from './esm_rendering_formatter';
  */
 export class Esm5RenderingFormatter extends EsmRenderingFormatter {
   /**
-   * Add the definitions inside the IIFE of each decorated class
+   * Add the definitions, directly before the return statement, inside the IIFE of each decorated
+   * class.
    */
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void {
-    const iifeBody = getIifeBody(compiledClass.declaration);
-    if (!iifeBody) {
+    const classSymbol = this.host.getClassSymbol(compiledClass.declaration);
+    if (!classSymbol) {
       throw new Error(
-          `Compiled class declaration is not inside an IIFE: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
+          `Compiled class "${compiledClass.name}" in "${
+              compiledClass.declaration.getSourceFile()
+                  .fileName}" does not have a valid syntax.\n` +
+          `Expected an ES5 IIFE wrapped function. But got:\n` +
+          compiledClass.declaration.getText());
+    }
+    const declarationStatement =
+        getContainingStatement(classSymbol.implementation.valueDeclaration);
+
+    const iifeBody = declarationStatement.parent;
+    if (!iifeBody || !ts.isBlock(iifeBody)) {
+      throw new Error(`Compiled class declaration is not inside an IIFE: ${compiledClass.name} in ${
+          compiledClass.declaration.getSourceFile().fileName}`);
     }
 
     const returnStatement = iifeBody.statements.find(ts.isReturnStatement);
     if (!returnStatement) {
-      throw new Error(
-          `Compiled class wrapper IIFE does not have a return statement: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
+      throw new Error(`Compiled class wrapper IIFE does not have a return statement: ${
+          compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
     }
 
     const insertionPoint = returnStatement.getFullStart();

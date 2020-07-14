@@ -5,10 +5,10 @@
 
 <!--
 When building Angular applications you can take advantage of sophisticated first-party libraries, such as [Angular Material](https://material.angular.io/), as well as rich ecosystem of third-party libraries.
-See the [Angular Resources](https://angular.io/resources) page for links to the most popular ones.
+See the [Angular Resources](resources) page for links to the most popular ones.
 -->
 Angular 애플리케이션을 만들 때 [Angular Material](https://material.angular.io/)과 같은 서드 파티 라이브러리를 활용하면 훌륭하지만 직접 구현하기에는 복잡한 기능을 손쉽게 도입할 수 있습니다.
-활용할 수 있는 리소스 목록을 확인하려면 [Angular Resources](https://angular.kr/resources) 문서를 참고하세요.
+활용할 수 있는 리소스 목록을 확인하려면 [Angular Resources](resources) 문서를 참고하세요.
 
 
 <!--

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,8 +8,10 @@
 
 import {assertDefined} from '../../util/assert';
 import {assertLView} from '../assert';
+import {LContainer} from '../interfaces/container';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, RootContext} from '../interfaces/view';
+import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT, PARENT, RootContext} from '../interfaces/view';
+
 import {readPatchedLView} from './view_utils';
 
 
@@ -21,7 +23,7 @@ import {readPatchedLView} from './view_utils';
 export function getLViewParent(lView: LView): LView|null {
   ngDevMode && assertLView(lView);
   const parent = lView[PARENT];
-  return isLContainer(parent) ? parent[PARENT] ! : parent;
+  return isLContainer(parent) ? parent[PARENT]! : parent;
 }
 
 /**
@@ -30,11 +32,11 @@ export function getLViewParent(lView: LView): LView|null {
  *
  * @param componentOrLView any component or `LView`
  */
-export function getRootView(componentOrLView: LView | {}): LView {
+export function getRootView(componentOrLView: LView|{}): LView {
   ngDevMode && assertDefined(componentOrLView, 'component');
-  let lView = isLView(componentOrLView) ? componentOrLView : readPatchedLView(componentOrLView) !;
+  let lView = isLView(componentOrLView) ? componentOrLView : readPatchedLView(componentOrLView)!;
   while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
-    lView = getLViewParent(lView) !;
+    lView = getLViewParent(lView)!;
   }
   ngDevMode && assertLView(lView);
   return lView;
@@ -47,9 +49,31 @@ export function getRootView(componentOrLView: LView | {}): LView {
  *
  * @param viewOrComponent the `LView` or component to get the root context for.
  */
-export function getRootContext(viewOrComponent: LView | {}): RootContext {
+export function getRootContext(viewOrComponent: LView|{}): RootContext {
   const rootView = getRootView(viewOrComponent);
   ngDevMode &&
       assertDefined(rootView[CONTEXT], 'RootView has no context. Perhaps it is disconnected?');
   return rootView[CONTEXT] as RootContext;
+}
+
+
+/**
+ * Gets the first `LContainer` in the LView or `null` if none exists.
+ */
+export function getFirstLContainer(lView: LView): LContainer|null {
+  return getNearestLContainer(lView[CHILD_HEAD]);
+}
+
+/**
+ * Gets the next `LContainer` that is a sibling of the given container.
+ */
+export function getNextLContainer(container: LContainer): LContainer|null {
+  return getNearestLContainer(container[NEXT]);
+}
+
+function getNearestLContainer(viewOrContainer: LContainer|LView|null) {
+  while (viewOrContainer !== null && !isLContainer(viewOrContainer)) {
+    viewOrContainer = viewOrContainer[NEXT];
+  }
+  return viewOrContainer;
 }

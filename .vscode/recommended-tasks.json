@@ -6,7 +6,7 @@
     {
       "label": "IVY:packages/core/test/...",
       "type": "shell",
-      "command": "${workspaceFolder}/node_modules/.bin/bazel",
+      "command": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
         "--config=ivy",
@@ -23,7 +23,7 @@
     {
       "label": "VE:packages/core/test/...",
       "type": "shell",
-      "command": "${workspaceFolder}/node_modules/.bin/bazel",
+      "command": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
         "packages/core/test",
@@ -39,7 +39,7 @@
     {
       "label": "IVY:packages/core/test/acceptance",
       "type": "shell",
-      "command": "${workspaceFolder}/node_modules/.bin/bazel",
+      "command": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
         "--config=ivy",
@@ -54,7 +54,7 @@
     {
       "label": "VE:packages/core/test/acceptance",
       "type": "shell",
-      "command": "${workspaceFolder}/node_modules/.bin/bazel",
+      "command": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
         "packages/core/test/acceptance",
@@ -68,7 +68,7 @@
     {
       "label": "IVY:packages/core/test",
       "type": "shell",
-      "command": "${workspaceFolder}/node_modules/.bin/bazel",
+      "command": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
         "--config=ivy",
@@ -83,7 +83,7 @@
     {
       "label": "VE:packages/core/test",
       "type": "shell",
-      "command": "${workspaceFolder}/node_modules/.bin/bazel",
+      "command": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
         "packages/core/test",
@@ -97,7 +97,7 @@
     {
       "label": "IVY:packages/core/test/render3",
       "type": "shell",
-      "command": "${workspaceFolder}/node_modules/.bin/bazel",
+      "command": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
         "--config=ivy",

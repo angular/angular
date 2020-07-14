@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,7 +22,7 @@ export function getAngularPackagesFromRunfiles() {
   const runfilesManifestPath = process.env.RUNFILES_MANIFEST_FILE;
 
   if (!runfilesManifestPath) {
-    const packageRunfilesDir = path.join(process.env.RUNFILES !, 'angular/packages');
+    const packageRunfilesDir = path.join(process.env.RUNFILES!, 'angular/packages');
 
     return fs.readdirSync(packageRunfilesDir)
         .map(name => ({name, pkgPath: path.join(packageRunfilesDir, name, 'npm_package/')}))

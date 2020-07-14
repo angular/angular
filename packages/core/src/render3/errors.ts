@@ -1,7 +1,7 @@
 
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -47,7 +47,8 @@ export function throwErrorIfNoChangesMode(
     creationMode: boolean, oldValue: any, currValue: any, propName?: string): never|void {
   const field = propName ? ` for '${propName}'` : '';
   let msg =
-      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${field}: '${oldValue}'. Current value: '${currValue}'.`;
+      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${
+          field}: '${oldValue}'. Current value: '${currValue}'.`;
   if (creationMode) {
     msg +=
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +
@@ -55,8 +56,6 @@ export function throwErrorIfNoChangesMode(
   }
   // TODO: include debug context, see `viewDebugError` function in
   // `packages/core/src/view/errors.ts` for reference.
-  // tslint:disable-next-line
-  debugger;  // Left intentionally for better debugger experience.
   throw new Error(msg);
 }
 

@@ -2,24 +2,19 @@
   "name": "@angular/service-worker",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - service worker tooling!",
-  "main": "./bundles/service-worker.umd.js",
-  "module": "./fesm5/service-worker.js",
-  "es2015": "./fesm2015/service-worker.js",
-  "esm5": "./esm5/service-worker.js",
-  "esm2015": "./esm2015/service-worker.js",
-  "fesm5": "./fesm5/service-worker.js",
-  "fesm2015": "./fesm2015/service-worker.js",
-  "typings": "./service-worker.d.ts",
   "author": "angular",
   "license": "MIT",
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
-    "@angular/common": "0.0.0-PLACEHOLDER",
-    "tslib": "^1.10.0"
+    "@angular/common": "0.0.0-PLACEHOLDER"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/angular.git"
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/service-worker"
   },
   "bin": {
     "ngsw-config": "./ngsw-config.js"

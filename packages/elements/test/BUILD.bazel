@@ -1,5 +1,6 @@
 load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
 load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+load("//tools:utils.bzl", "transpile_js_to_es5")
 
 circular_dependency_test(
     name = "circular_deps_test",
@@ -25,15 +26,23 @@ ts_library(
     ],
 )
 
+# This file is shipped as es2015 to npm. We have to transpile
+# it to es5 in order to run the tests against older browsers.
+transpile_js_to_es5(
+    name = "custom_elements_native_shim",
+    js_file = "@npm//:node_modules/@webcomponents/custom-elements/src/native-shim.js",
+)
+
 filegroup(
     name = "elements_test_bootstrap_scripts",
     testonly = True,
     # do not sort
     srcs = [
-        "@npm//:node_modules/@webcomponents/custom-elements/src/native-shim.js",
+        "@npm//:node_modules/core-js/client/core.js",
+        ":custom_elements_native_shim",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
-        "//packages/zone.js/dist:zone.js",
-        "//packages/zone.js/dist:zone-testing.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:zone-testing.umd.js",
     ],
 )
 
@@ -42,7 +51,6 @@ karma_web_test_suite(
     bootstrap = [
         ":elements_test_bootstrap_scripts",
     ],
-    # do not sort
     deps = [
         ":test_lib",
     ],

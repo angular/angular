@@ -44,7 +44,8 @@ import { InMemoryDataService } from './in-memory-data.service';
     AboutComponent,
     BannerComponent,
     TwainComponent,
-    WelcomeComponent ],
+    WelcomeComponent,
+  ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

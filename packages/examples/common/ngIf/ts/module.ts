@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -60,16 +60,16 @@ export class NgIfThenElse implements OnInit {
   thenBlock: TemplateRef<any>|null = null;
   show: boolean = true;
 
-  @ViewChild('primaryBlock', {static: true})
-  primaryBlock: TemplateRef<any>|null = null;
-  @ViewChild('secondaryBlock', {static: true})
-  secondaryBlock: TemplateRef<any>|null = null;
+  @ViewChild('primaryBlock', {static: true}) primaryBlock: TemplateRef<any>|null = null;
+  @ViewChild('secondaryBlock', {static: true}) secondaryBlock: TemplateRef<any>|null = null;
 
   switchPrimary() {
     this.thenBlock = this.thenBlock === this.primaryBlock ? this.secondaryBlock : this.primaryBlock;
   }
 
-  ngOnInit() { this.thenBlock = this.primaryBlock; }
+  ngOnInit() {
+    this.thenBlock = this.primaryBlock;
+  }
 }
 // #enddocregion
 

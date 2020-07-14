@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -54,7 +54,7 @@ describe('compiler compliance: template', () => {
         if (rf & 1) {
           const $s$ = $i0$.ɵɵgetCurrentView();
           $i0$.ɵɵelementStart(0, "div", 2);
-          $i0$.ɵɵlistener("click", function MyComponent_ul_0_li_1_div_1_Template_div_click_0_listener($event){
+          $i0$.ɵɵlistener("click", function MyComponent_ul_0_li_1_div_1_Template_div_click_0_listener(){
             $i0$.ɵɵrestoreView($s$);
             const $inner$ = ctx.$implicit;
             const $middle$ = $i0$.ɵɵnextContext().$implicit;
@@ -103,7 +103,10 @@ describe('compiler compliance: template', () => {
         }
       }
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "title", "click", ${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "title", "click"]],
+      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
+        AttributeMarker.Bindings}, "title", "click", ${
+        AttributeMarker.Template}, "ngFor", "ngForOf"], [${
+        AttributeMarker.Bindings}, "title", "click"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_ul_0_Template, 2, 1, "ul", 0);
@@ -146,7 +149,7 @@ describe('compiler compliance: template', () => {
           if (rf & 1) {
             const $s$ = $r3$.ɵɵgetCurrentView();
             $r3$.ɵɵelementStart(0, "div", 1);
-            $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener($event) {
+            $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener() {
               $r3$.ɵɵrestoreView($s$);
               const $d$ = ctx.$implicit;
               const $i$ = ctx.index;
@@ -157,7 +160,8 @@ describe('compiler compliance: template', () => {
           }
         }
         // ...
-        consts: [[${AttributeMarker.Bindings}, "click", ${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "click"]],
+        consts: [[${AttributeMarker.Bindings}, "click", ${
+        AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", 0);
@@ -201,7 +205,7 @@ describe('compiler compliance: template', () => {
         if (rf & 1) {
           const $_r2$ = i0.ɵɵgetCurrentView();
           $r3$.ɵɵelementStart(0, "div", 2);
-          $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener($event) {
+          $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener() {
             i0.ɵɵrestoreView($_r2$);
             const $ctx_r1$ = i0.ɵɵnextContext();
             return $ctx_r1$.greet($ctx_r1$);
@@ -329,7 +333,8 @@ describe('compiler compliance: template', () => {
       }
 
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Template}, "ngIf"]],
+      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
+        AttributeMarker.Template}, "ngIf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", 0);
@@ -472,7 +477,6 @@ describe('compiler compliance: template', () => {
   });
 
   it('should support local refs on <ng-template>', () => {
-
     const files = {
       app: {
         'spec.ts': `
@@ -511,7 +515,6 @@ describe('compiler compliance: template', () => {
   });
 
   it('should support directive outputs on <ng-template>', () => {
-
     const files = {
       app: {
         'spec.ts': `
@@ -545,8 +548,96 @@ describe('compiler compliance: template', () => {
     const result = compile(files, angularFiles);
 
     expectEmit(result.source, template, 'Incorrect template');
-
   });
+
+  it('should allow directive inputs as an interpolated prop on <ng-template>', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Component, Directive, Input} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          class WithInput {
+            @Input() dir: string = '';
+          }
+
+          @Component({
+            selector: 'my-app',
+            template: '<ng-template dir="{{ message }}"></ng-template>',
+          })
+          export class TestComp {
+            message = 'Hello';
+          }
+        `
+      }
+    };
+    const result = compile(files, angularFiles);
+    const expectedTemplate = `
+      consts: [[${AttributeMarker.Bindings}, "dir"]],
+      template: function TestComp_Template(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵɵtemplate(0, $TestComp_ng_template_0_Template$, 0, 0, "ng-template", 0);
+        }
+        if (rf & 2) {
+          $i0$.ɵɵpropertyInterpolate("dir", ctx.message);
+        }
+      },
+    `;
+    expectEmit(result.source, expectedTemplate, 'Incorrect template');
+  });
+
+  it('should allow directive inputs as an interpolated prop on <ng-template> (with structural directives)',
+     () => {
+       const files = {
+         app: {
+           'spec.ts': `
+              import {Component, Directive, Input} from '@angular/core';
+
+              @Directive({selector: '[dir]'})
+              class WithInput {
+                @Input() dir: string = '';
+              }
+
+              @Component({
+                selector: 'my-app',
+                template: '<ng-template *ngIf="true" dir="{{ message }}"></ng-template>',
+              })
+              export class TestComp {
+                message = 'Hello';
+              }
+            `
+         }
+       };
+       const result = compile(files, angularFiles);
+
+       // Expect that `ɵɵpropertyInterpolate` is generated in the inner template function.
+       const expectedInnerTemplate = `
+          function $TestComp_0_Template$(rf, ctx) {
+            if (rf & 1) {
+              $i0$.ɵɵtemplate(0, $TestComp_0_ng_template_0_Template$, 0, 0, "ng-template", 1);
+            }
+            if (rf & 2) {
+              const $ctx_r0$ = i0.ɵɵnextContext();
+              $i0$.ɵɵpropertyInterpolate("dir", $ctx_r0$.message);
+            }
+          }
+        `;
+       expectEmit(result.source, expectedInnerTemplate, 'Incorrect template');
+
+       // Main template should just contain *ngIf property.
+       const expectedMainTemplate = `
+          consts: [[4, "ngIf"], [3, "dir"]],
+          template: function TestComp_Template(rf, ctx) {
+            if (rf & 1) {
+              $i0$.ɵɵtemplate(0, $TestComp_0_Template$, 1, 1, undefined, 0);
+            }
+            if (rf & 2) {
+              $i0$.ɵɵproperty("ngIf", true);
+            }
+          },
+        `;
+       expectEmit(result.source, expectedMainTemplate, 'Incorrect template');
+     });
 
   it('should create unique template function names even for similar nested template structures',
      () => {

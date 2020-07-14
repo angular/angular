@@ -13,14 +13,12 @@ ts_library(
             "main.ts",
         ],
     ),
-    tsconfig = ":tsconfig.json",
     deps = ["@npm//@types/node"],
 )
 
 ts_library(
     name = "main",
     srcs = ["main.ts"],
-    tsconfig = ":tsconfig.json",
     deps = [":worker"],
 )
 

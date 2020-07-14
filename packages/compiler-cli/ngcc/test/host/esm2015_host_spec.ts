@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,19 +9,21 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {ClassMemberKind, CtorParameter, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
+import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
+import {walkForDeclaration} from '../../../src/ngtsc/testing/src/utils';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
+import {DelegatingReflectionHost} from '../../src/host/delegating_host';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {MockLogger} from '../helpers/mock_logger';
+import {BundleProgram} from '../../src/packages/bundle_program';
 import {getRootFiles, makeTestBundleProgram, makeTestDtsBundleProgram} from '../helpers/utils';
 
 import {expectTypeValueReferencesForParameters} from './util';
 
 runInEachFileSystem(() => {
   describe('Esm2015ReflectionHost', () => {
-
     let _: typeof absoluteFrom;
 
     let SOME_DIRECTIVE_FILE: TestFile;
@@ -29,6 +31,7 @@ runInEachFileSystem(() => {
     let ACCESSORS_FILE: TestFile;
     let SIMPLE_CLASS_FILE: TestFile;
     let CLASS_EXPRESSION_FILE: TestFile;
+    let WRAPPED_CLASS_EXPRESSION_FILE: TestFile;
     let FOO_FUNCTION_FILE: TestFile;
     let INVALID_DECORATORS_FILE: TestFile;
     let INVALID_DECORATOR_ARGS_FILE: TestFile;
@@ -44,9 +47,14 @@ runInEachFileSystem(() => {
     let ARITY_CLASSES: TestFile[];
     let TYPINGS_SRC_FILES: TestFile[];
     let TYPINGS_DTS_FILES: TestFile[];
-    let MODULE_WITH_PROVIDERS_PROGRAM: TestFile[];
     let NAMESPACED_IMPORT_FILE: TestFile;
     let INDEX_SIGNATURE_PROP_FILE: TestFile;
+
+    // Helpers
+    const createHost = (bundle: BundleProgram, ngccHost: Esm2015ReflectionHost) => {
+      const tsHost = new TypeScriptReflectionHost(bundle.program.getTypeChecker());
+      return new DelegatingReflectionHost(tsHost, ngccHost);
+    };
 
     beforeEach(() => {
       _ = absoluteFrom;
@@ -126,6 +134,14 @@ runInEachFileSystem(() => {
     class NoDecoratorConstructorClass {
       constructor(foo) {}
     }
+    let SimpleWrappedClass = /** @class */ (() => {
+      class SimpleWrappedClassInner {}
+      return SimpleWrappedClassInner;
+    })();
+    let AliasedWrappedClass = /** @class */ (() => {
+      let AliasedWrappedClassAdjacent = class AliasedWrappedClassInner {};
+      return AliasWrappedClassAdjacent;
+    })();
   `,
       };
 
@@ -140,6 +156,38 @@ runInEachFileSystem(() => {
       { type: Directive, args: [{ selector: '[someDirective]' },] }
     ];
     let usageOfAliasedClass = AliasedClass_1;
+  `,
+      };
+
+      WRAPPED_CLASS_EXPRESSION_FILE = {
+        name: _('/wrapped_class_expression.js'),
+        contents: `
+    import {Directive} from '@angular/core';
+    var AliasedWrappedClass_1;
+    let SimpleWrappedClass = /** @class */ (() => {
+      class SimpleWrappedClass {}
+      return SimpleWrappedClass;
+    })();
+    let AliasedWrappedClass = AliasedWrappedClass_1 = /** @class */ (() => {
+      class AliasedWrappedClass {}
+      AliasedWrappedClass.decorators = [
+        { type: Directive, args: [{ selector: '[someDirective]' },] }
+      ];
+      return AliasedWrappedClass;
+    })();
+    let usageOfWrappedClass = AliasedWrappedClass_1;
+    let DecoratedWrappedClass = /** @class */ (() => {
+      var DecoratedWrappedClass_1;
+      let AdjacentDecoratedWrappedClass = DecoratedWrappedClass_1 = class InnerDecoratedWrappedClass {
+          static forRoot() {
+              return new DecoratedWrappedClass_1();
+          }
+      };
+      AdjacentDecoratedWrappedClass = DecoratedWrappedClass_1 = __decorate([
+          Decorator()
+      ], AdjacentDecoratedWrappedClass);
+      return AdjacentDecoratedWrappedClass;
+  })();
   `,
       };
 
@@ -507,7 +555,27 @@ runInEachFileSystem(() => {
       { type: Directive, args: [{ selector: '[b]' }] }
     ];
     class C {}
-    export { A, x, C };
+    var AliasedClass_1;
+    let AliasedClass = AliasedClass_1 = class AliasedClass {}
+    AliasedClass.decorators = [
+      { type: Directive, args: [{ selector: '[aliased]' },] }
+    ];
+    let Wrapped1 = /** @class */ (() => {
+      let Wrapped1 = class Wrapped1 {
+      };
+      Wrapped1 = __decorate([
+          Directive({selector: '[wrapped-1]'})
+      ], Wrapped1);
+      return Wrapped1;
+    })();
+    let Wrapped2 = /** @class */ (() => {
+      class Wrapped2 {}
+      Wrapped2.decorators = [
+        { type: Directive, args: [{ selector: '[wrapped-2]' },] }
+      ];
+      return Wrapped2;
+    })();
+    export { A, x, C, AliasedClass, Wrapped1, Wrapped2 };
     `
         },
         {
@@ -622,77 +690,6 @@ runInEachFileSystem(() => {
         {name: _('/an_external_lib/index.d.ts'), contents: 'export declare class ShadowClass {}'},
       ];
 
-      MODULE_WITH_PROVIDERS_PROGRAM = [
-        {
-          name: _('/src/index.js'),
-          contents: `
-        import * as functions from './functions';
-        import * as methods from './methods';
-        import * as aliased_class from './aliased_class';
-        `
-        },
-        {
-          name: _('/src/functions.js'),
-          contents: `
-    import {ExternalModule} from './module';
-    import * as mod from './module';
-    export class SomeService {}
-    export class InternalModule {}
-    export function aNumber() { return 42; }
-    export function aString() { return 'foo'; }
-    export function emptyObject() { return {}; }
-    export function ngModuleIdentifier() { return { ngModule: InternalModule }; }
-    export function ngModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
-    export function ngModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
-    export function onlyProviders() { return { providers: [SomeService] }; }
-    export function ngModuleNumber() { return { ngModule: 42 }; }
-    export function ngModuleString() { return { ngModule: 'foo' }; }
-    export function ngModuleObject() { return { ngModule: { foo: 42 } }; }
-    export function externalNgModule() { return { ngModule: ExternalModule }; }
-    export function namespacedExternalNgModule() { return { ngModule: mod.ExternalModule }; }
-    `
-        },
-        {
-          name: _('/src/methods.js'),
-          contents: `
-    import {ExternalModule} from './module';
-    import * as mod from './module';
-    export class SomeService {}
-    export class InternalModule {
-      static aNumber() { return 42; }
-      static aString() { return 'foo'; }
-      static emptyObject() { return {}; }
-      static ngModuleIdentifier() { return { ngModule: InternalModule }; }
-      static ngModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
-      static ngModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
-      static onlyProviders() { return { providers: [SomeService] }; }
-      static ngModuleNumber() { return { ngModule: 42 }; }
-      static ngModuleString() { return { ngModule: 'foo' }; }
-      static ngModuleObject() { return { ngModule: { foo: 42 } }; }
-      static externalNgModule() { return { ngModule: ExternalModule }; }
-      static namespacedExternalNgModule() { return { ngModule: mod.ExternalModule }; }
-
-      instanceNgModuleIdentifier() { return { ngModule: InternalModule }; }
-      instanceNgModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
-      instanceNgModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
-      instanceExternalNgModule() { return { ngModule: ExternalModule }; }
-      instanceNamespacedExternalNgModule() { return { ngModule: mod.ExternalModule }; }
-    }
-    `
-        },
-        {
-          name: _('/src/aliased_class.js'),
-          contents: `
-    var AliasedModule_1;
-    let AliasedModule = AliasedModule_1 = class AliasedModule {
-      static forRoot() { return { ngModule: AliasedModule_1 }; }
-    };
-    export { AliasedModule };
-    `
-        },
-        {name: _('/src/module.js'), contents: 'export class ExternalModule {}'},
-      ];
-
       NAMESPACED_IMPORT_FILE = {
         name: _('/some_directive.js'),
         contents: `
@@ -720,10 +717,10 @@ runInEachFileSystem(() => {
       it('should find the decorators on a class', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
-        const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+        const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators).toBeDefined();
         expect(decorators.length).toEqual(1);
@@ -731,7 +728,7 @@ runInEachFileSystem(() => {
         const decorator = decorators[0];
         expect(decorator.name).toEqual('Directive');
         expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-        expect(decorator.args !.map(arg => arg.getText())).toEqual([
+        expect(decorator.args!.map(arg => arg.getText())).toEqual([
           '{ selector: \'[someDirective]\' }',
         ]);
       });
@@ -739,10 +736,10 @@ runInEachFileSystem(() => {
       it('should find the decorators on an aliased class', () => {
         loadTestFiles([CLASS_EXPRESSION_FILE]);
         const bundle = makeTestBundleProgram(CLASS_EXPRESSION_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, CLASS_EXPRESSION_FILE.name, 'AliasedClass', isNamedVariableDeclaration);
-        const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+        const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators).toBeDefined();
         expect(decorators.length).toEqual(1);
@@ -750,7 +747,27 @@ runInEachFileSystem(() => {
         const decorator = decorators[0];
         expect(decorator.name).toEqual('Directive');
         expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-        expect(decorator.args !.map(arg => arg.getText())).toEqual([
+        expect(decorator.args!.map(arg => arg.getText())).toEqual([
+          '{ selector: \'[someDirective]\' }',
+        ]);
+      });
+
+      it('should find the decorators on an aliased wrapped class', () => {
+        loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+        const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const classNode = getDeclaration(
+            bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'AliasedWrappedClass',
+            isNamedVariableDeclaration);
+        const decorators = host.getDecoratorsOfDeclaration(classNode)!;
+
+        expect(decorators).not.toBe(null!);
+        expect(decorators.length).toEqual(1);
+
+        const decorator = decorators[0];
+        expect(decorator.name).toEqual('Directive');
+        expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+        expect(decorator.args!.map(arg => arg.getText())).toEqual([
           '{ selector: \'[someDirective]\' }',
         ]);
       });
@@ -758,7 +775,7 @@ runInEachFileSystem(() => {
       it('should return null if the symbol is not a class', () => {
         loadTestFiles([FOO_FUNCTION_FILE]);
         const bundle = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const functionNode = getDeclaration(
             bundle.program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(functionNode);
@@ -768,7 +785,7 @@ runInEachFileSystem(() => {
       it('should return null if there are no decorators', () => {
         loadTestFiles([SIMPLE_CLASS_FILE]);
         const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode);
@@ -778,7 +795,7 @@ runInEachFileSystem(() => {
       it('should ignore `decorators` if it is not an array literal', () => {
         loadTestFiles([INVALID_DECORATORS_FILE]);
         const bundle = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, INVALID_DECORATORS_FILE.name, 'NotArrayLiteral',
             isNamedClassDeclaration);
@@ -789,11 +806,11 @@ runInEachFileSystem(() => {
       it('should ignore decorator elements that are not object literals', () => {
         loadTestFiles([INVALID_DECORATORS_FILE]);
         const bundle = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, INVALID_DECORATORS_FILE.name, 'NotObjectLiteral',
             isNamedClassDeclaration);
-        const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+        const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators.length).toBe(1);
         expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
@@ -802,11 +819,11 @@ runInEachFileSystem(() => {
       it('should ignore decorator elements that have no `type` property', () => {
         loadTestFiles([INVALID_DECORATORS_FILE]);
         const bundle = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, INVALID_DECORATORS_FILE.name, 'NoTypeProperty',
             isNamedClassDeclaration);
-        const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+        const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators.length).toBe(1);
         expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
@@ -815,10 +832,10 @@ runInEachFileSystem(() => {
       it('should ignore decorator elements whose `type` value is not an identifier', () => {
         loadTestFiles([INVALID_DECORATORS_FILE]);
         const bundle = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, INVALID_DECORATORS_FILE.name, 'NotIdentifier', isNamedClassDeclaration);
-        const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+        const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators.length).toBe(1);
         expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
@@ -827,10 +844,10 @@ runInEachFileSystem(() => {
       it('should have import information on decorators', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
-        const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+        const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators.length).toEqual(1);
         expect(decorators[0].import).toEqual({name: 'Directive', from: '@angular/core'});
@@ -840,11 +857,12 @@ runInEachFileSystem(() => {
         it('should be an empty array if decorator has no `args` property', () => {
           loadTestFiles([INVALID_DECORATOR_ARGS_FILE]);
           const bundle = makeTestBundleProgram(INVALID_DECORATOR_ARGS_FILE.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, INVALID_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
               isNamedClassDeclaration);
-          const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+          const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0].name).toBe('Directive');
@@ -854,11 +872,12 @@ runInEachFileSystem(() => {
         it('should be an empty array if decorator\'s `args` has no property assignment', () => {
           loadTestFiles([INVALID_DECORATOR_ARGS_FILE]);
           const bundle = makeTestBundleProgram(INVALID_DECORATOR_ARGS_FILE.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, INVALID_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
               isNamedClassDeclaration);
-          const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+          const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0].name).toBe('Directive');
@@ -868,11 +887,12 @@ runInEachFileSystem(() => {
         it('should be an empty array if `args` property value is not an array literal', () => {
           loadTestFiles([INVALID_DECORATOR_ARGS_FILE]);
           const bundle = makeTestBundleProgram(INVALID_DECORATOR_ARGS_FILE.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, INVALID_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
               isNamedClassDeclaration);
-          const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+          const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0].name).toBe('Directive');
@@ -885,43 +905,43 @@ runInEachFileSystem(() => {
       it('should find decorated properties on a class', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
 
-        const input1 = members.find(member => member.name === 'input1') !;
+        const input1 = members.find(member => member.name === 'input1')!;
         expect(input1.kind).toEqual(ClassMemberKind.Property);
         expect(input1.isStatic).toEqual(false);
-        expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
-        expect(input1.decorators ![0].import).toEqual({name: 'Input', from: '@angular/core'});
+        expect(input1.decorators!.map(d => d.name)).toEqual(['Input']);
+        expect(input1.decorators![0].import).toEqual({name: 'Input', from: '@angular/core'});
 
-        const input2 = members.find(member => member.name === 'input2') !;
+        const input2 = members.find(member => member.name === 'input2')!;
         expect(input2.kind).toEqual(ClassMemberKind.Property);
         expect(input2.isStatic).toEqual(false);
-        expect(input2.decorators !.map(d => d.name)).toEqual(['Input']);
-        expect(input2.decorators ![0].import).toEqual({name: 'Input', from: '@angular/core'});
+        expect(input2.decorators!.map(d => d.name)).toEqual(['Input']);
+        expect(input2.decorators![0].import).toEqual({name: 'Input', from: '@angular/core'});
       });
 
       it('should find non decorated properties on a class', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
 
-        const instanceProperty = members.find(member => member.name === 'instanceProperty') !;
+        const instanceProperty = members.find(member => member.name === 'instanceProperty')!;
         expect(instanceProperty.kind).toEqual(ClassMemberKind.Property);
         expect(instanceProperty.isStatic).toEqual(false);
-        expect(ts.isBinaryExpression(instanceProperty.implementation !)).toEqual(true);
-        expect(instanceProperty.value !.getText()).toEqual(`'instance'`);
+        expect(ts.isBinaryExpression(instanceProperty.implementation!)).toEqual(true);
+        expect(instanceProperty.value!.getText()).toEqual(`'instance'`);
       });
 
       it('should handle equally named getter/setter pairs correctly', () => {
         loadTestFiles([ACCESSORS_FILE]);
         const bundle = makeTestBundleProgram(ACCESSORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, ACCESSORS_FILE.name, 'SomeDirective', isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
@@ -930,50 +950,50 @@ runInEachFileSystem(() => {
             members.filter(member => member.name === 'setterAndGetter');
         expect(combinedSetter.kind).toEqual(ClassMemberKind.Setter);
         expect(combinedSetter.isStatic).toEqual(false);
-        expect(ts.isSetAccessor(combinedSetter.implementation !)).toEqual(true);
+        expect(ts.isSetAccessor(combinedSetter.implementation!)).toEqual(true);
         expect(combinedSetter.value).toBeNull();
-        expect(combinedSetter.decorators !.map(d => d.name)).toEqual(['Input']);
+        expect(combinedSetter.decorators!.map(d => d.name)).toEqual(['Input']);
         expect(combinedGetter.kind).toEqual(ClassMemberKind.Getter);
         expect(combinedGetter.isStatic).toEqual(false);
-        expect(ts.isGetAccessor(combinedGetter.implementation !)).toEqual(true);
+        expect(ts.isGetAccessor(combinedGetter.implementation!)).toEqual(true);
         expect(combinedGetter.value).toBeNull();
-        expect(combinedGetter.decorators !.map(d => d.name)).toEqual([]);
+        expect(combinedGetter.decorators!.map(d => d.name)).toEqual([]);
       });
 
       it('should find static methods on a class', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
 
-        const staticMethod = members.find(member => member.name === 'staticMethod') !;
+        const staticMethod = members.find(member => member.name === 'staticMethod')!;
         expect(staticMethod.kind).toEqual(ClassMemberKind.Method);
         expect(staticMethod.isStatic).toEqual(true);
-        expect(ts.isMethodDeclaration(staticMethod.implementation !)).toEqual(true);
+        expect(ts.isMethodDeclaration(staticMethod.implementation!)).toEqual(true);
       });
 
       it('should find static properties on a class', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
 
-        const staticProperty = members.find(member => member.name === 'staticProperty') !;
+        const staticProperty = members.find(member => member.name === 'staticProperty')!;
         expect(staticProperty.kind).toEqual(ClassMemberKind.Property);
         expect(staticProperty.isStatic).toEqual(true);
-        expect(ts.isPropertyAccessExpression(staticProperty.implementation !)).toEqual(true);
-        expect(staticProperty.value !.getText()).toEqual(`'static'`);
+        expect(ts.isPropertyAccessExpression(staticProperty.implementation!)).toEqual(true);
+        expect(staticProperty.value!.getText()).toEqual(`'static'`);
       });
 
       it('should ignore index signature properties', () => {
         loadTestFiles([INDEX_SIGNATURE_PROP_FILE]);
         const logger = new MockLogger();
         const bundle = makeTestBundleProgram(INDEX_SIGNATURE_PROP_FILE.name);
-        const host = new Esm2015ReflectionHost(logger, false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(logger, false, bundle));
         const classNode = getDeclaration(
             bundle.program, INDEX_SIGNATURE_PROP_FILE.name, 'IndexSignatureClass',
             isNamedClassDeclaration);
@@ -986,7 +1006,7 @@ runInEachFileSystem(() => {
       it('should throw if the symbol is not a class', () => {
         loadTestFiles([FOO_FUNCTION_FILE]);
         const bundle = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const functionNode = getDeclaration(
             bundle.program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
         expect(() => {
@@ -997,7 +1017,7 @@ runInEachFileSystem(() => {
       it('should return an empty array if there are no prop decorators', () => {
         loadTestFiles([SIMPLE_CLASS_FILE]);
         const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
@@ -1009,7 +1029,8 @@ runInEachFileSystem(() => {
          () => {
            loadTestFiles([INVALID_PROP_DECORATORS_FILE]);
            const bundle = makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
            const classNode = getDeclaration(
                bundle.program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteral',
                isNamedClassDeclaration);
@@ -1021,13 +1042,13 @@ runInEachFileSystem(() => {
       it('should ignore prop decorator elements that are not object literals', () => {
         loadTestFiles([INVALID_PROP_DECORATORS_FILE]);
         const bundle = makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteralProp',
             isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
-        const prop = members.find(m => m.name === 'prop') !;
-        const decorators = prop.decorators !;
+        const prop = members.find(m => m.name === 'prop')!;
+        const decorators = prop.decorators!;
 
         expect(decorators.length).toBe(1);
         expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Input'}));
@@ -1036,13 +1057,13 @@ runInEachFileSystem(() => {
       it('should ignore prop decorator elements that have no `type` property', () => {
         loadTestFiles([INVALID_PROP_DECORATORS_FILE]);
         const bundle = makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, INVALID_PROP_DECORATORS_FILE.name, 'NoTypeProperty',
             isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
-        const prop = members.find(m => m.name === 'prop') !;
-        const decorators = prop.decorators !;
+        const prop = members.find(m => m.name === 'prop')!;
+        const decorators = prop.decorators!;
 
         expect(decorators.length).toBe(1);
         expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Input'}));
@@ -1051,13 +1072,13 @@ runInEachFileSystem(() => {
       it('should ignore prop decorator elements whose `type` value is not an identifier', () => {
         loadTestFiles([INVALID_PROP_DECORATORS_FILE]);
         const bundle = makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, INVALID_PROP_DECORATORS_FILE.name, 'NotIdentifier',
             isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
-        const prop = members.find(m => m.name === 'prop') !;
-        const decorators = prop.decorators !;
+        const prop = members.find(m => m.name === 'prop')!;
+        const decorators = prop.decorators!;
 
         expect(decorators.length).toBe(1);
         expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Input'}));
@@ -1067,13 +1088,14 @@ runInEachFileSystem(() => {
         it('should be an empty array if prop decorator has no `args` property', () => {
           loadTestFiles([INVALID_PROP_DECORATOR_ARGS_FILE]);
           const bundle = makeTestBundleProgram(INVALID_PROP_DECORATOR_ARGS_FILE.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
               isNamedClassDeclaration);
           const members = host.getMembersOfClass(classNode);
-          const prop = members.find(m => m.name === 'prop') !;
-          const decorators = prop.decorators !;
+          const prop = members.find(m => m.name === 'prop')!;
+          const decorators = prop.decorators!;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0].name).toBe('Input');
@@ -1084,13 +1106,14 @@ runInEachFileSystem(() => {
            () => {
              loadTestFiles([INVALID_PROP_DECORATOR_ARGS_FILE]);
              const bundle = makeTestBundleProgram(INVALID_PROP_DECORATOR_ARGS_FILE.name);
-             const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+             const host =
+                 createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
              const classNode = getDeclaration(
                  bundle.program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
                  isNamedClassDeclaration);
              const members = host.getMembersOfClass(classNode);
-             const prop = members.find(m => m.name === 'prop') !;
-             const decorators = prop.decorators !;
+             const prop = members.find(m => m.name === 'prop')!;
+             const decorators = prop.decorators!;
 
              expect(decorators.length).toBe(1);
              expect(decorators[0].name).toBe('Input');
@@ -1100,13 +1123,14 @@ runInEachFileSystem(() => {
         it('should be an empty array if `args` property value is not an array literal', () => {
           loadTestFiles([INVALID_PROP_DECORATOR_ARGS_FILE]);
           const bundle = makeTestBundleProgram(INVALID_PROP_DECORATOR_ARGS_FILE.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
               isNamedClassDeclaration);
           const members = host.getMembersOfClass(classNode);
-          const prop = members.find(m => m.name === 'prop') !;
-          const decorators = prop.decorators !;
+          const prop = members.find(m => m.name === 'prop')!;
+          const decorators = prop.decorators!;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0].name).toBe('Input');
@@ -1120,10 +1144,10 @@ runInEachFileSystem(() => {
         loadFakeCore(getFileSystem());
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
-        const parameters = host.getConstructorParameters(classNode) !;
+        const parameters = host.getConstructorParameters(classNode)!;
 
         expect(parameters).toBeDefined();
         expect(parameters.map(parameter => parameter.name)).toEqual([
@@ -1136,11 +1160,11 @@ runInEachFileSystem(() => {
       it('should accept `ctorParameters` as an array', () => {
         loadTestFiles([CTOR_DECORATORS_ARRAY_FILE]);
         const bundle = makeTestBundleProgram(CTOR_DECORATORS_ARRAY_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, CTOR_DECORATORS_ARRAY_FILE.name, 'CtorDecoratedAsArray',
             isNamedClassDeclaration);
-        const parameters = host.getConstructorParameters(classNode) !;
+        const parameters = host.getConstructorParameters(classNode)!;
 
         expect(parameters).toBeDefined();
         expect(parameters.map(parameter => parameter.name)).toEqual(['arg1']);
@@ -1150,10 +1174,12 @@ runInEachFileSystem(() => {
       it('should throw if the symbol is not a class', () => {
         loadTestFiles([FOO_FUNCTION_FILE]);
         const bundle = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const functionNode = getDeclaration(
             bundle.program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
-        expect(() => { host.getConstructorParameters(functionNode); })
+        expect(() => {
+          host.getConstructorParameters(functionNode);
+        })
             .toThrowError(
                 'Attempted to get constructor parameters of a non-class: "function foo() {}"');
       });
@@ -1161,7 +1187,7 @@ runInEachFileSystem(() => {
       it('should return `null` if there is no constructor', () => {
         loadTestFiles([SIMPLE_CLASS_FILE]);
         const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
         const parameters = host.getConstructorParameters(classNode);
@@ -1171,11 +1197,11 @@ runInEachFileSystem(() => {
       it('should return an array even if there are no decorators', () => {
         loadTestFiles([SIMPLE_CLASS_FILE]);
         const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'NoDecoratorConstructorClass',
             isNamedClassDeclaration);
-        const parameters = host.getConstructorParameters(classNode) !;
+        const parameters = host.getConstructorParameters(classNode)!;
 
         expect(parameters).toEqual(jasmine.any(Array));
         expect(parameters.length).toEqual(1);
@@ -1186,7 +1212,7 @@ runInEachFileSystem(() => {
       it('should return an empty array if there are no constructor parameters', () => {
         loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
         const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NoParameters',
             isNamedClassDeclaration);
@@ -1198,11 +1224,11 @@ runInEachFileSystem(() => {
       it('should ignore decorators that are not imported from core', () => {
         loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
         const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NotFromCore',
             isNamedClassDeclaration);
-        const parameters = host.getConstructorParameters(classNode) !;
+        const parameters = host.getConstructorParameters(classNode)!;
 
         expect(parameters.length).toBe(1);
         expect(parameters[0]).toEqual(jasmine.objectContaining<CtorParameter>({
@@ -1214,11 +1240,11 @@ runInEachFileSystem(() => {
       it('should ignore `ctorParameters` if it is not an arrow function', () => {
         loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
         const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NotArrowFunction',
             isNamedClassDeclaration);
-        const parameters = host.getConstructorParameters(classNode) !;
+        const parameters = host.getConstructorParameters(classNode)!;
 
         expect(parameters.length).toBe(1);
         expect(parameters[0]).toEqual(jasmine.objectContaining<CtorParameter>({
@@ -1230,11 +1256,11 @@ runInEachFileSystem(() => {
       it('should ignore `ctorParameters` if it does not return an array literal', () => {
         loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
         const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NotArrayLiteral',
             isNamedClassDeclaration);
-        const parameters = host.getConstructorParameters(classNode) !;
+        const parameters = host.getConstructorParameters(classNode)!;
 
         expect(parameters.length).toBe(1);
         expect(parameters[0]).toEqual(jasmine.objectContaining<CtorParameter>({
@@ -1257,7 +1283,8 @@ runInEachFileSystem(() => {
 
           loadTestFiles([file]);
           const bundle = makeTestBundleProgram(file.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode =
               getDeclaration(bundle.program, file.name, 'TestClass', isNamedClassDeclaration);
           return host.getConstructorParameters(classNode);
@@ -1279,7 +1306,7 @@ runInEachFileSystem(() => {
             super(arguments);
           }`);
 
-          expect(parameters !.length).toBe(0);
+          expect(parameters!.length).toBe(0);
         });
 
         it('does not consider constructors with parameters as synthesized', () => {
@@ -1288,7 +1315,7 @@ runInEachFileSystem(() => {
             super(...arguments);
           }`);
 
-          expect(parameters !.length).toBe(1);
+          expect(parameters!.length).toBe(1);
         });
 
         it('does not consider manual super calls as synthesized', () => {
@@ -1297,7 +1324,7 @@ runInEachFileSystem(() => {
             super();
           }`);
 
-          expect(parameters !.length).toBe(0);
+          expect(parameters!.length).toBe(0);
         });
 
         it('does not consider empty constructors as synthesized', () => {
@@ -1305,7 +1332,7 @@ runInEachFileSystem(() => {
           constructor() {
           }`);
 
-          expect(parameters !.length).toBe(0);
+          expect(parameters!.length).toBe(0);
         });
       });
 
@@ -1313,18 +1340,19 @@ runInEachFileSystem(() => {
         it('should ignore param decorator elements that are not object literals', () => {
           loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
           const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NotObjectLiteral',
               isNamedClassDeclaration);
           const parameters = host.getConstructorParameters(classNode);
 
-          expect(parameters !.length).toBe(2);
-          expect(parameters ![0]).toEqual(jasmine.objectContaining<CtorParameter>({
+          expect(parameters!.length).toBe(2);
+          expect(parameters![0]).toEqual(jasmine.objectContaining<CtorParameter>({
             name: 'arg1',
             decorators: null,
           }));
-          expect(parameters ![1]).toEqual(jasmine.objectContaining<CtorParameter>({
+          expect(parameters![1]).toEqual(jasmine.objectContaining<CtorParameter>({
             name: 'arg2',
             decorators: jasmine.any(Array) as any
           }));
@@ -1333,12 +1361,13 @@ runInEachFileSystem(() => {
         it('should ignore param decorator elements that have no `type` property', () => {
           loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
           const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NoTypeProperty',
               isNamedClassDeclaration);
           const parameters = host.getConstructorParameters(classNode);
-          const decorators = parameters ![0].decorators !;
+          const decorators = parameters![0].decorators!;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Inject'}));
@@ -1347,12 +1376,13 @@ runInEachFileSystem(() => {
         it('should ignore param decorator elements whose `type` value is not an identifier', () => {
           loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
           const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NotIdentifier',
               isNamedClassDeclaration);
           const parameters = host.getConstructorParameters(classNode);
-          const decorators = parameters ![0].decorators !;
+          const decorators = parameters![0].decorators!;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Inject'}));
@@ -1361,11 +1391,12 @@ runInEachFileSystem(() => {
         it('should have import information on decorators', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
           const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
-          const parameters = host.getConstructorParameters(classNode) !;
-          const decorators = parameters[2].decorators !;
+          const parameters = host.getConstructorParameters(classNode)!;
+          const decorators = parameters[2].decorators!;
 
           expect(decorators.length).toEqual(1);
           expect(decorators[0].import).toEqual({name: 'Inject', from: '@angular/core'});
@@ -1376,13 +1407,14 @@ runInEachFileSystem(() => {
         it('should be an empty array if param decorator has no `args` property', () => {
           loadTestFiles([INVALID_CTOR_DECORATOR_ARGS_FILE]);
           const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATOR_ARGS_FILE.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
               isNamedClassDeclaration);
           const parameters = host.getConstructorParameters(classNode);
-          expect(parameters !.length).toBe(1);
-          const decorators = parameters ![0].decorators !;
+          expect(parameters!.length).toBe(1);
+          const decorators = parameters![0].decorators!;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0].name).toBe('Inject');
@@ -1393,12 +1425,13 @@ runInEachFileSystem(() => {
            () => {
              loadTestFiles([INVALID_CTOR_DECORATOR_ARGS_FILE]);
              const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATOR_ARGS_FILE.name);
-             const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+             const host =
+                 createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
              const classNode = getDeclaration(
                  bundle.program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
                  isNamedClassDeclaration);
              const parameters = host.getConstructorParameters(classNode);
-             const decorators = parameters ![0].decorators !;
+             const decorators = parameters![0].decorators!;
 
              expect(decorators.length).toBe(1);
              expect(decorators[0].name).toBe('Inject');
@@ -1408,12 +1441,13 @@ runInEachFileSystem(() => {
         it('should be an empty array if `args` property value is not an array literal', () => {
           loadTestFiles([INVALID_CTOR_DECORATOR_ARGS_FILE]);
           const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATOR_ARGS_FILE.name);
-          const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+          const host =
+              createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
               isNamedClassDeclaration);
           const parameters = host.getConstructorParameters(classNode);
-          const decorators = parameters ![0].decorators !;
+          const decorators = parameters![0].decorators!;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0].name).toBe('Inject');
@@ -1427,61 +1461,62 @@ runInEachFileSystem(() => {
          () => {
            loadTestFiles([FUNCTION_BODY_FILE]);
            const bundle = makeTestBundleProgram(FUNCTION_BODY_FILE.name);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
 
            const fooNode = getDeclaration(
-               bundle.program, FUNCTION_BODY_FILE.name, 'foo', isNamedFunctionDeclaration) !;
-           const fooDef = host.getDefinitionOfFunction(fooNode) !;
+               bundle.program, FUNCTION_BODY_FILE.name, 'foo', isNamedFunctionDeclaration)!;
+           const fooDef = host.getDefinitionOfFunction(fooNode)!;
            expect(fooDef.node).toBe(fooNode);
-           expect(fooDef.body !.length).toEqual(1);
-           expect(fooDef.body ![0].getText()).toEqual(`return x;`);
+           expect(fooDef.body!.length).toEqual(1);
+           expect(fooDef.body![0].getText()).toEqual(`return x;`);
            expect(fooDef.parameters.length).toEqual(1);
            expect(fooDef.parameters[0].name).toEqual('x');
            expect(fooDef.parameters[0].initializer).toBe(null);
 
            const barNode = getDeclaration(
-               bundle.program, FUNCTION_BODY_FILE.name, 'bar', isNamedFunctionDeclaration) !;
-           const barDef = host.getDefinitionOfFunction(barNode) !;
+               bundle.program, FUNCTION_BODY_FILE.name, 'bar', isNamedFunctionDeclaration)!;
+           const barDef = host.getDefinitionOfFunction(barNode)!;
            expect(barDef.node).toBe(barNode);
-           expect(barDef.body !.length).toEqual(1);
-           expect(ts.isReturnStatement(barDef.body ![0])).toBeTruthy();
-           expect(barDef.body ![0].getText()).toEqual(`return x + y;`);
+           expect(barDef.body!.length).toEqual(1);
+           expect(ts.isReturnStatement(barDef.body![0])).toBeTruthy();
+           expect(barDef.body![0].getText()).toEqual(`return x + y;`);
            expect(barDef.parameters.length).toEqual(2);
            expect(barDef.parameters[0].name).toEqual('x');
            expect(fooDef.parameters[0].initializer).toBe(null);
            expect(barDef.parameters[1].name).toEqual('y');
-           expect(barDef.parameters[1].initializer !.getText()).toEqual('42');
+           expect(barDef.parameters[1].initializer!.getText()).toEqual('42');
 
            const bazNode = getDeclaration(
-               bundle.program, FUNCTION_BODY_FILE.name, 'baz', isNamedFunctionDeclaration) !;
-           const bazDef = host.getDefinitionOfFunction(bazNode) !;
+               bundle.program, FUNCTION_BODY_FILE.name, 'baz', isNamedFunctionDeclaration)!;
+           const bazDef = host.getDefinitionOfFunction(bazNode)!;
            expect(bazDef.node).toBe(bazNode);
-           expect(bazDef.body !.length).toEqual(3);
+           expect(bazDef.body!.length).toEqual(3);
            expect(bazDef.parameters.length).toEqual(1);
            expect(bazDef.parameters[0].name).toEqual('x');
            expect(bazDef.parameters[0].initializer).toBe(null);
 
            const quxNode = getDeclaration(
-               bundle.program, FUNCTION_BODY_FILE.name, 'qux', isNamedFunctionDeclaration) !;
-           const quxDef = host.getDefinitionOfFunction(quxNode) !;
+               bundle.program, FUNCTION_BODY_FILE.name, 'qux', isNamedFunctionDeclaration)!;
+           const quxDef = host.getDefinitionOfFunction(quxNode)!;
            expect(quxDef.node).toBe(quxNode);
-           expect(quxDef.body !.length).toEqual(2);
+           expect(quxDef.body!.length).toEqual(2);
            expect(quxDef.parameters.length).toEqual(1);
            expect(quxDef.parameters[0].name).toEqual('x');
            expect(quxDef.parameters[0].initializer).toBe(null);
 
            const mooNode = getDeclaration(
-               bundle.program, FUNCTION_BODY_FILE.name, 'moo', isNamedFunctionDeclaration) !;
-           const mooDef = host.getDefinitionOfFunction(mooNode) !;
+               bundle.program, FUNCTION_BODY_FILE.name, 'moo', isNamedFunctionDeclaration)!;
+           const mooDef = host.getDefinitionOfFunction(mooNode)!;
            expect(mooDef.node).toBe(mooNode);
-           expect(mooDef.body !.length).toEqual(3);
+           expect(mooDef.body!.length).toEqual(3);
            expect(mooDef.parameters).toEqual([]);
 
            const juuNode = getDeclaration(
-               bundle.program, FUNCTION_BODY_FILE.name, 'juu', isNamedFunctionDeclaration) !;
-           const juuDef = host.getDefinitionOfFunction(juuNode) !;
+               bundle.program, FUNCTION_BODY_FILE.name, 'juu', isNamedFunctionDeclaration)!;
+           const juuDef = host.getDefinitionOfFunction(juuNode)!;
            expect(juuDef.node).toBe(juuNode);
-           expect(juuDef.body !.length).toEqual(2);
+           expect(juuDef.body!.length).toEqual(2);
            expect(juuDef.parameters).toEqual([]);
          });
     });
@@ -1490,7 +1525,7 @@ runInEachFileSystem(() => {
       it('should find the import of an identifier', () => {
         loadTestFiles(IMPORTS_FILES);
         const bundle = makeTestBundleProgram(_('/index.js'));
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const variableNode =
             getDeclaration(bundle.program, _('/b.js'), 'b', isNamedVariableDeclaration);
         const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
@@ -1501,7 +1536,7 @@ runInEachFileSystem(() => {
       it('should find the name by which the identifier was exported, not imported', () => {
         loadTestFiles(IMPORTS_FILES);
         const bundle = makeTestBundleProgram(_('/index.js'));
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const variableNode =
             getDeclaration(bundle.program, _('/b.js'), 'c', isNamedVariableDeclaration);
         const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
@@ -1512,7 +1547,7 @@ runInEachFileSystem(() => {
       it('should return null if the identifier was not imported', () => {
         loadTestFiles(IMPORTS_FILES);
         const bundle = makeTestBundleProgram(_('/index.js'));
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const variableNode =
             getDeclaration(bundle.program, _('/b.js'), 'd', isNamedVariableDeclaration);
         const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
@@ -1526,61 +1561,64 @@ runInEachFileSystem(() => {
         loadFakeCore(getFileSystem());
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
         const actualDeclaration = host.getDeclarationOfIdentifier(classNode.name);
         expect(actualDeclaration).not.toBe(null);
-        expect(actualDeclaration !.node).toBe(classNode);
-        expect(actualDeclaration !.viaModule).toBe(null);
+        expect(actualDeclaration!.node).toBe(classNode);
+        expect(actualDeclaration!.viaModule).toBe(null);
+        expect((actualDeclaration as ConcreteDeclaration).identity).toBe(null);
       });
 
       it('should return the declaration of an externally defined identifier', () => {
         loadFakeCore(getFileSystem());
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
-        const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
-        const identifierOfDirective = ((classDecorators[0].node as ts.ObjectLiteralExpression)
-                                           .properties[0] as ts.PropertyAssignment)
-                                          .initializer as ts.Identifier;
+        const classDecorators = host.getDecoratorsOfDeclaration(classNode)!;
+        const identifierOfDirective =
+            ((classDecorators[0].node as ts.ObjectLiteralExpression).properties[0] as
+             ts.PropertyAssignment)
+                .initializer as ts.Identifier;
 
         const expectedDeclarationNode = getDeclaration(
             bundle.program, _('/node_modules/@angular/core/index.d.ts'), 'Directive',
             isNamedVariableDeclaration);
         const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective);
         expect(actualDeclaration).not.toBe(null);
-        expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
-        expect(actualDeclaration !.viaModule).toBe('@angular/core');
+        expect(actualDeclaration!.node).toBe(expectedDeclarationNode);
+        expect(actualDeclaration!.viaModule).toBe('@angular/core');
       });
 
       it('should return the source-file of an import namespace', () => {
         loadFakeCore(getFileSystem());
         loadTestFiles([NAMESPACED_IMPORT_FILE]);
         const bundle = makeTestBundleProgram(NAMESPACED_IMPORT_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
             bundle.program, NAMESPACED_IMPORT_FILE.name, 'SomeDirective', ts.isClassDeclaration);
-        const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
-        const identifier = (((classDecorators[0].node as ts.ObjectLiteralExpression)
-                                 .properties[0] as ts.PropertyAssignment)
-                                .initializer as ts.PropertyAccessExpression)
-                               .expression as ts.Identifier;
+        const classDecorators = host.getDecoratorsOfDeclaration(classNode)!;
+        const identifier =
+            (((classDecorators[0].node as ts.ObjectLiteralExpression).properties[0] as
+              ts.PropertyAssignment)
+                 .initializer as ts.PropertyAccessExpression)
+                .expression as ts.Identifier;
 
         const expectedDeclarationNode =
             getSourceFileOrError(bundle.program, _('/node_modules/@angular/core/index.d.ts'));
         const actualDeclaration = host.getDeclarationOfIdentifier(identifier);
         expect(actualDeclaration).not.toBe(null);
-        expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
-        expect(actualDeclaration !.viaModule).toBe('@angular/core');
+        expect(actualDeclaration!.node).toBe(expectedDeclarationNode);
+        expect(actualDeclaration!.viaModule).toBe('@angular/core');
       });
 
       it('should return the original declaration of an aliased class', () => {
         loadTestFiles([CLASS_EXPRESSION_FILE]);
         const bundle = makeTestBundleProgram(CLASS_EXPRESSION_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classDeclaration = getDeclaration(
             bundle.program, CLASS_EXPRESSION_FILE.name, 'AliasedClass', ts.isVariableDeclaration);
         const usageOfAliasedClass = getDeclaration(
@@ -1588,8 +1626,182 @@ runInEachFileSystem(() => {
             ts.isVariableDeclaration);
         const aliasedClassIdentifier = usageOfAliasedClass.initializer as ts.Identifier;
         expect(aliasedClassIdentifier.text).toBe('AliasedClass_1');
-        expect(host.getDeclarationOfIdentifier(aliasedClassIdentifier) !.node)
+        expect(host.getDeclarationOfIdentifier(aliasedClassIdentifier)!.node)
             .toBe(classDeclaration);
+      });
+
+      it('should return the original declaration of a wrapped aliased class', () => {
+        loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+        const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const classDeclaration = getDeclaration(
+            bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'AliasedWrappedClass',
+            ts.isVariableDeclaration);
+        const usageOfWrappedClass = getDeclaration(
+            bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'usageOfWrappedClass',
+            ts.isVariableDeclaration);
+        const aliasedClassIdentifier = usageOfWrappedClass.initializer as ts.Identifier;
+        expect(aliasedClassIdentifier.text).toBe('AliasedWrappedClass_1');
+        expect(host.getDeclarationOfIdentifier(aliasedClassIdentifier)!.node)
+            .toBe(classDeclaration);
+      });
+
+      it('should return the correct declaration for an inner class identifier inside an IIFE',
+         () => {
+           loadTestFiles([SIMPLE_CLASS_FILE]);
+           const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+
+           const outerDeclaration = getDeclaration(
+               bundle.program, SIMPLE_CLASS_FILE.name, 'SimpleWrappedClass',
+               isNamedVariableDeclaration);
+           const innerDeclaration =
+               ((((outerDeclaration.initializer as ts.CallExpression).expression as
+                  ts.ParenthesizedExpression)
+                     .expression as ts.ArrowFunction)
+                    .body as ts.Block)
+                   .statements[0] as ts.ClassDeclaration;
+
+           const outerIdentifier = outerDeclaration.name as ts.Identifier;
+           const innerIdentifier = innerDeclaration.name as ts.Identifier;
+
+           expect(host.getDeclarationOfIdentifier(outerIdentifier)!.node).toBe(outerDeclaration);
+           expect(host.getDeclarationOfIdentifier(innerIdentifier)!.node).toBe(outerDeclaration);
+         });
+
+      it('should return the correct declaration for an aliased class identifier inside an IIFE',
+         () => {
+           loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+           const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const classDeclaration = getDeclaration(
+               bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
+               ts.isVariableDeclaration);
+           const innerClassDeclaration =
+               walkForDeclaration('InnerDecoratedWrappedClass', classDeclaration);
+           if (innerClassDeclaration === null) {
+             throw new Error('Expected InnerDecoratedWrappedClass to exist');
+           }
+           const aliasedClassIdentifier =
+               (innerClassDeclaration.parent as ts.BinaryExpression).left as ts.Identifier;
+           expect(aliasedClassIdentifier.text).toBe('DecoratedWrappedClass_1');
+           const d = host.getDeclarationOfIdentifier(aliasedClassIdentifier);
+           expect(d!.node).toBe(classDeclaration);
+         });
+
+      it('should recognize enum declarations with string values', () => {
+        const testFile: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `
+          export var Enum;
+          (function (Enum) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })(Enum || (Enum = {}));
+
+          var value = Enum;`
+        };
+        loadTestFiles([testFile]);
+        const bundle = makeTestBundleProgram(testFile.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const valueDecl = getDeclaration(
+            bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+            ts.isVariableDeclaration);
+        const declaration = host.getDeclarationOfIdentifier(
+                                valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+        expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+
+        const enumMembers = (declaration.identity as DownleveledEnum).enumMembers;
+        expect(enumMembers!.length).toBe(2);
+        expect(enumMembers![0].name.getText()).toBe('"ValueA"');
+        expect(enumMembers![0].initializer!.getText()).toBe('"1"');
+        expect(enumMembers![1].name.getText()).toBe('"ValueB"');
+        expect(enumMembers![1].initializer!.getText()).toBe('"2"');
+      });
+
+      it('should recognize enum declarations with numeric values', () => {
+        const testFile: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `
+          export var Enum;
+          (function (Enum) {
+              Enum[Enum["ValueA"] = "1"] = "ValueA";
+              Enum[Enum["ValueB"] = "2"] = "ValueB";
+          })(Enum || (Enum = {}));
+
+          var value = Enum;`
+        };
+        loadTestFiles([testFile]);
+        const bundle = makeTestBundleProgram(testFile.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const valueDecl = getDeclaration(
+            bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+            ts.isVariableDeclaration);
+        const declaration = host.getDeclarationOfIdentifier(
+                                valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+        const enumMembers = (declaration.identity as DownleveledEnum).enumMembers;
+        expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+        expect(enumMembers!.length).toBe(2);
+        expect(enumMembers![0].name.getText()).toBe('"ValueA"');
+        expect(enumMembers![0].initializer!.getText()).toBe('"1"');
+        expect(enumMembers![1].name.getText()).toBe('"ValueB"');
+        expect(enumMembers![1].initializer!.getText()).toBe('"2"');
+      });
+
+      it('should not consider IIFEs that do no assign members to the parameter as an enum declaration',
+         () => {
+           const testFile: TestFile = {
+             name: _('/node_modules/test-package/some/file.js'),
+             contents: `
+          export var Enum;
+          (function (E) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })(Enum || (Enum = {}));
+
+          var value = Enum;`
+           };
+           loadTestFiles([testFile]);
+           const bundle = makeTestBundleProgram(testFile.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const valueDecl = getDeclaration(
+               bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+               ts.isVariableDeclaration);
+           const declaration = host.getDeclarationOfIdentifier(
+                                   valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+           expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+           expect(declaration.identity).toBe(null);
+         });
+
+      it('should not consider IIFEs without call argument as an enum declaration', () => {
+        const testFile: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `
+          export var Enum;
+          (function (Enum) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })();
+
+          var value = Enum;`
+        };
+        loadTestFiles([testFile]);
+        const bundle = makeTestBundleProgram(testFile.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const valueDecl = getDeclaration(
+            bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+            ts.isVariableDeclaration);
+        const declaration = host.getDeclarationOfIdentifier(
+                                valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+        expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+        expect(declaration.identity).toBe(null);
       });
     });
 
@@ -1598,11 +1810,11 @@ runInEachFileSystem(() => {
         loadFakeCore(getFileSystem());
         loadTestFiles(EXPORTS_FILES);
         const bundle = makeTestBundleProgram(_('/index.js'));
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const file = getSourceFileOrError(bundle.program, _('/b.js'));
         const exportDeclarations = host.getExportsOfModule(file);
         expect(exportDeclarations).not.toBe(null);
-        expect(Array.from(exportDeclarations !.keys())).toEqual([
+        expect(Array.from(exportDeclarations!.keys())).toEqual([
           'Directive',
           'a',
           'b',
@@ -1614,8 +1826,8 @@ runInEachFileSystem(() => {
         ]);
 
         const values =
-            Array.from(exportDeclarations !.values())
-                .map(declaration => [declaration.node !.getText(), declaration.viaModule]);
+            Array.from(exportDeclarations!.values())
+                .map(declaration => [declaration.node!.getText(), declaration.viaModule]);
         expect(values).toEqual([
           [`Directive: FnWithArg<(clazz: any) => any>`, null],
           [`a = 'a'`, null],
@@ -1633,21 +1845,23 @@ runInEachFileSystem(() => {
       it('should return the class symbol for an ES2015 class', () => {
         loadTestFiles([SIMPLE_CLASS_FILE]);
         const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const node = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
         const classSymbol = host.getClassSymbol(node);
 
         expect(classSymbol).toBeDefined();
-        expect(classSymbol !.declaration.valueDeclaration).toBe(node);
-        expect(classSymbol !.implementation.valueDeclaration).toBe(node);
+        expect(classSymbol!.declaration.valueDeclaration).toBe(node);
+        expect(classSymbol!.implementation.valueDeclaration).toBe(node);
+        expect(classSymbol!.adjacent).toBeUndefined();
       });
 
       it('should return the class symbol for a class expression (outer variable declaration)',
          () => {
            loadTestFiles([CLASS_EXPRESSION_FILE]);
            const bundle = makeTestBundleProgram(CLASS_EXPRESSION_FILE.name);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
            const outerNode = getDeclaration(
                bundle.program, CLASS_EXPRESSION_FILE.name, 'EmptyClass',
                isNamedVariableDeclaration);
@@ -1655,36 +1869,222 @@ runInEachFileSystem(() => {
            const classSymbol = host.getClassSymbol(outerNode);
 
            expect(classSymbol).toBeDefined();
-           expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
-           expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
+           expect(classSymbol!.declaration.valueDeclaration).toBe(outerNode);
+           expect(classSymbol!.implementation.valueDeclaration).toBe(innerNode);
+           expect(classSymbol!.adjacent).toBeUndefined();
          });
 
       it('should return the class symbol for a class expression (inner class expression)', () => {
         loadTestFiles([CLASS_EXPRESSION_FILE]);
         const bundle = makeTestBundleProgram(CLASS_EXPRESSION_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const outerNode = getDeclaration(
             bundle.program, CLASS_EXPRESSION_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
         const innerNode = (outerNode.initializer as ts.ClassExpression);
         const classSymbol = host.getClassSymbol(innerNode);
 
         expect(classSymbol).toBeDefined();
-        expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
-        expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
+        expect(classSymbol!.declaration.valueDeclaration).toBe(outerNode);
+        expect(classSymbol!.implementation.valueDeclaration).toBe(innerNode);
+        expect(classSymbol!.adjacent).toBeUndefined();
       });
 
       it('should return the same class symbol (of the outer declaration) for outer and inner declarations',
          () => {
            loadTestFiles([CLASS_EXPRESSION_FILE]);
            const bundle = makeTestBundleProgram(CLASS_EXPRESSION_FILE.name);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
            const outerNode = getDeclaration(
                bundle.program, CLASS_EXPRESSION_FILE.name, 'EmptyClass',
                isNamedVariableDeclaration);
            const innerNode = (outerNode.initializer as ts.ClassExpression);
 
-           const innerSymbol = host.getClassSymbol(innerNode) !;
-           const outerSymbol = host.getClassSymbol(outerNode) !;
+           const innerSymbol = host.getClassSymbol(innerNode)!;
+           const outerSymbol = host.getClassSymbol(outerNode)!;
+           expect(innerSymbol.declaration).toBe(outerSymbol.declaration);
+           expect(innerSymbol.implementation).toBe(outerSymbol.implementation);
+         });
+
+      it('should return the class symbol for a wrapped class expression (outer variable declaration)',
+         () => {
+           loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+           const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const outerNode = getDeclaration(
+               bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'SimpleWrappedClass',
+               isNamedVariableDeclaration);
+           const classSymbol = host.getClassSymbol(outerNode);
+
+           if (classSymbol === undefined) {
+             return fail('Expected classSymbol to be defined');
+           }
+           expect(classSymbol.name).toEqual('SimpleWrappedClass');
+           expect(classSymbol.declaration.valueDeclaration).toBe(outerNode);
+           if (!isNamedClassDeclaration(classSymbol.implementation.valueDeclaration)) {
+             return fail('Expected a named class declaration');
+           }
+           expect(classSymbol.implementation.valueDeclaration.name.text).toBe('SimpleWrappedClass');
+           expect(classSymbol.adjacent).toBeUndefined();
+         });
+
+      it('should return the class symbol for a wrapped class expression (inner class expression)',
+         () => {
+           loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+           const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const outerNode = getDeclaration(
+               bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'SimpleWrappedClass',
+               isNamedVariableDeclaration);
+           const innerNode = ((outerNode as any).initializer.expression.expression.body as ts.Block)
+                                 .statements[0];
+           const classSymbol = host.getClassSymbol(innerNode);
+
+           if (classSymbol === undefined) {
+             return fail('Expected classSymbol to be defined');
+           }
+           expect(classSymbol.name).toEqual('SimpleWrappedClass');
+           expect(classSymbol.declaration.valueDeclaration).toBe(outerNode);
+           if (!isNamedClassDeclaration(classSymbol.implementation.valueDeclaration)) {
+             return fail('Expected a named class declaration');
+           }
+           expect(classSymbol.implementation.valueDeclaration.name.text).toBe('SimpleWrappedClass');
+           expect(classSymbol.adjacent).toBeUndefined();
+         });
+
+      it('should return the same class symbol (of the outer declaration) for wrapped outer and inner declarations',
+         () => {
+           loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+           const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const outerNode = getDeclaration(
+               bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'SimpleWrappedClass',
+               isNamedVariableDeclaration);
+           const innerNode = ((outerNode as any).initializer.expression.expression.body as ts.Block)
+                                 .statements[0];
+
+           const innerSymbol = host.getClassSymbol(innerNode)!;
+           const outerSymbol = host.getClassSymbol(outerNode)!;
+           expect(innerSymbol.declaration).toBe(outerSymbol.declaration);
+           expect(innerSymbol.implementation).toBe(outerSymbol.implementation);
+         });
+
+      it('should return the class symbol for a decorated wrapped class expression (from the outer variable declaration)',
+         () => {
+           loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+           const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const outerNode = getDeclaration(
+               bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
+               isNamedVariableDeclaration);
+           const classSymbol = host.getClassSymbol(outerNode);
+
+           if (classSymbol === undefined) {
+             return fail('Expected classSymbol to be defined');
+           }
+           expect(classSymbol.name).toEqual('DecoratedWrappedClass');
+           expect(classSymbol.declaration.valueDeclaration).toBe(outerNode);
+
+           if (!ts.isClassExpression(classSymbol.implementation.valueDeclaration)) {
+             return fail('Expected a named class declaration');
+           }
+           expect(classSymbol.implementation.valueDeclaration.name!.text)
+               .toBe('InnerDecoratedWrappedClass');
+
+           if (classSymbol.adjacent === undefined ||
+               !isNamedVariableDeclaration(classSymbol.adjacent.valueDeclaration)) {
+             return fail('Expected a named variable declaration for the adjacent symbol');
+           }
+           expect(classSymbol.adjacent.valueDeclaration.name.text)
+               .toBe('AdjacentDecoratedWrappedClass');
+         });
+
+      it('should return the class symbol for a decorated wrapped class expression (from the inner class expression)',
+         () => {
+           loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+           const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const outerNode = getDeclaration(
+               bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
+               isNamedVariableDeclaration);
+           const innerNode = walkForDeclaration('InnerDecoratedWrappedClass', outerNode);
+           if (innerNode === null) {
+             throw new Error('Expected to find InnerDecoratedWrappedClass');
+           }
+           const classSymbol = host.getClassSymbol(innerNode);
+
+           if (classSymbol === undefined) {
+             return fail('Expected classSymbol to be defined');
+           }
+           expect(classSymbol.name).toEqual('DecoratedWrappedClass');
+           expect(classSymbol.declaration.valueDeclaration).toBe(outerNode);
+           expect(classSymbol.implementation.valueDeclaration).toBe(innerNode);
+
+           if (classSymbol.adjacent === undefined ||
+               !isNamedVariableDeclaration(classSymbol.adjacent.valueDeclaration)) {
+             return fail('Expected a named variable declaration for the adjacent symbol');
+           }
+           expect(classSymbol.adjacent.valueDeclaration.name.text)
+               .toBe('AdjacentDecoratedWrappedClass');
+         });
+
+
+      it('should return the class symbol for a decorated wrapped class expression (from the adjacent class expression)',
+         () => {
+           loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+           const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const outerNode = getDeclaration(
+               bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
+               isNamedVariableDeclaration);
+           const innerNode = walkForDeclaration('InnerDecoratedWrappedClass', outerNode);
+           if (innerNode === null) {
+             throw new Error('Expected to find InnerDecoratedWrappedClass');
+           }
+           const adjacentNode: ts.ClassExpression =
+               (outerNode as any)
+                   .initializer.expression.expression.body.statements[0]
+                   .declarationList.declarations[0]
+                   .name;
+           const classSymbol = host.getClassSymbol(adjacentNode);
+
+           if (classSymbol === undefined) {
+             return fail('Expected classSymbol to be defined');
+           }
+           expect(classSymbol.name).toEqual('DecoratedWrappedClass');
+           expect(classSymbol.declaration.valueDeclaration).toBe(outerNode);
+           expect(classSymbol.implementation.valueDeclaration).toBe(innerNode);
+
+           if (classSymbol.adjacent === undefined ||
+               !isNamedVariableDeclaration(classSymbol.adjacent.valueDeclaration)) {
+             return fail('Expected a named variable declaration for the adjacent symbol');
+           }
+           expect(classSymbol.adjacent.valueDeclaration.name.text)
+               .toBe('AdjacentDecoratedWrappedClass');
+         });
+
+      it('should return the same class symbol (of the outer declaration) for decorated wrapped outer and inner declarations',
+         () => {
+           loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+           const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const outerNode = getDeclaration(
+               bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
+               isNamedVariableDeclaration);
+           const innerNode = walkForDeclaration('InnerDecoratedWrappedClass', outerNode);
+           if (innerNode === null) {
+             throw new Error('Expected to find InnerDecoratedWrappedClass');
+           }
+
+           const innerSymbol = host.getClassSymbol(innerNode)!;
+           const outerSymbol = host.getClassSymbol(outerNode)!;
            expect(innerSymbol.declaration).toBe(outerSymbol.declaration);
            expect(innerSymbol.implementation).toBe(outerSymbol.implementation);
          });
@@ -1692,7 +2092,7 @@ runInEachFileSystem(() => {
       it('should return undefined if node is not a class', () => {
         loadTestFiles([FOO_FUNCTION_FILE]);
         const bundle = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const node = getDeclaration(
             bundle.program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
         const classSymbol = host.getClassSymbol(node);
@@ -1700,7 +2100,7 @@ runInEachFileSystem(() => {
         expect(classSymbol).toBeUndefined();
       });
 
-      it('should return undefined if variable declaration is not initialized using a class expression',
+      it('should return undefined if variable declaration is not initialized to a valid class definition',
          () => {
            const testFile = {
              name: _('/test.js'),
@@ -1708,7 +2108,8 @@ runInEachFileSystem(() => {
            };
            loadTestFiles([testFile]);
            const bundle = makeTestBundleProgram(testFile.name);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
            const node =
                getDeclaration(bundle.program, testFile.name, 'MyClass', isNamedVariableDeclaration);
            const classSymbol = host.getClassSymbol(node);
@@ -1721,7 +2122,7 @@ runInEachFileSystem(() => {
       it('should return true if a given node is a TS class declaration', () => {
         loadTestFiles([SIMPLE_CLASS_FILE]);
         const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const node = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
         expect(host.isClass(node)).toBe(true);
@@ -1731,7 +2132,8 @@ runInEachFileSystem(() => {
          () => {
            loadTestFiles([CLASS_EXPRESSION_FILE]);
            const bundle = makeTestBundleProgram(CLASS_EXPRESSION_FILE.name);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
            const node = getDeclaration(
                bundle.program, CLASS_EXPRESSION_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
            expect(host.isClass(node)).toBe(true);
@@ -1741,7 +2143,8 @@ runInEachFileSystem(() => {
          () => {
            loadTestFiles([CLASS_EXPRESSION_FILE]);
            const bundle = makeTestBundleProgram(CLASS_EXPRESSION_FILE.name);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
            const node = getDeclaration(
                bundle.program, CLASS_EXPRESSION_FILE.name, 'AliasedClass',
                ts.isVariableDeclaration);
@@ -1751,7 +2154,7 @@ runInEachFileSystem(() => {
       it('should return false if a given node is a TS function declaration', () => {
         loadTestFiles([FOO_FUNCTION_FILE]);
         const bundle = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const node = getDeclaration(
             bundle.program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
         expect(host.isClass(node)).toBe(false);
@@ -1766,7 +2169,7 @@ runInEachFileSystem(() => {
         };
         loadTestFiles([file]);
         const bundle = makeTestBundleProgram(file.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode =
             getDeclaration(bundle.program, file.name, 'TestClass', isNamedClassDeclaration);
         expect(host.hasBaseClass(classNode)).toBe(false);
@@ -1781,7 +2184,7 @@ runInEachFileSystem(() => {
         };
         loadTestFiles([file]);
         const bundle = makeTestBundleProgram(file.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode =
             getDeclaration(bundle.program, file.name, 'TestClass', isNamedClassDeclaration);
         expect(host.hasBaseClass(classNode)).toBe(true);
@@ -1797,7 +2200,7 @@ runInEachFileSystem(() => {
         };
         loadTestFiles([file]);
         const bundle = makeTestBundleProgram(file.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode =
             getDeclaration(bundle.program, file.name, 'TestClass', isNamedVariableDeclaration);
         expect(host.hasBaseClass(classNode)).toBe(true);
@@ -1812,7 +2215,7 @@ runInEachFileSystem(() => {
         };
         loadTestFiles([file]);
         const bundle = makeTestBundleProgram(file.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode =
             getDeclaration(bundle.program, file.name, 'TestClass', isNamedClassDeclaration);
         expect(host.getBaseClassExpression(classNode)).toBe(null);
@@ -1827,10 +2230,10 @@ runInEachFileSystem(() => {
         };
         loadTestFiles([file]);
         const bundle = makeTestBundleProgram(file.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode =
             getDeclaration(bundle.program, file.name, 'TestClass', isNamedClassDeclaration);
-        const baseIdentifier = host.getBaseClassExpression(classNode) !;
+        const baseIdentifier = host.getBaseClassExpression(classNode)!;
         if (!ts.isIdentifier(baseIdentifier)) {
           throw new Error(`Expected ${baseIdentifier.getText()} to be an identifier.`);
         }
@@ -1847,10 +2250,10 @@ runInEachFileSystem(() => {
         };
         loadTestFiles([file]);
         const bundle = makeTestBundleProgram(file.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classNode =
             getDeclaration(bundle.program, file.name, 'TestClass', isNamedVariableDeclaration);
-        const baseIdentifier = host.getBaseClassExpression(classNode) !;
+        const baseIdentifier = host.getBaseClassExpression(classNode)!;
         if (!ts.isIdentifier(baseIdentifier)) {
           throw new Error(`Expected ${baseIdentifier.getText()} to be an identifier.`);
         }
@@ -1868,10 +2271,11 @@ runInEachFileSystem(() => {
            };
            loadTestFiles([file]);
            const bundle = makeTestBundleProgram(file.name);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
            const classNode =
                getDeclaration(bundle.program, file.name, 'TestClass', isNamedClassDeclaration);
-           const baseExpression = host.getBaseClassExpression(classNode) !;
+           const baseExpression = host.getBaseClassExpression(classNode)!;
            expect(baseExpression.getText()).toEqual('foo()');
          });
     });
@@ -1881,7 +2285,8 @@ runInEachFileSystem(() => {
         loadTestFiles(ARITY_CLASSES);
         const bundle = makeTestBundleProgram(ARITY_CLASSES[0].name);
         const dts = makeTestBundleProgram(ARITY_CLASSES[1].name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+        const host =
+            createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts));
         const noTypeParamClass = getDeclaration(
             bundle.program, _('/src/class.js'), 'NoTypeParam', isNamedClassDeclaration);
         expect(host.getGenericArityOfClass(noTypeParamClass)).toBe(0);
@@ -1899,10 +2304,11 @@ runInEachFileSystem(() => {
          () => {
            loadTestFiles([MARKER_FILE]);
            const bundle = makeTestBundleProgram(MARKER_FILE.name);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
            const file = getSourceFileOrError(bundle.program, MARKER_FILE.name);
            const declarations = host.getSwitchableDeclarations(file);
-           expect(declarations.map(d => [d.name.getText(), d.initializer !.getText()])).toEqual([
+           expect(declarations.map(d => [d.name.getText(), d.initializer!.getText()])).toEqual([
              ['compileNgModuleFactory', 'compileNgModuleFactory__PRE_R3__']
            ]);
          });
@@ -1912,13 +2318,14 @@ runInEachFileSystem(() => {
       it('should return an array of all classes in the given source file', () => {
         loadTestFiles(DECORATED_FILES);
         const bundle = makeTestBundleProgram(getRootFiles(DECORATED_FILES)[0]);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const primaryFile = getSourceFileOrError(bundle.program, DECORATED_FILES[0].name);
         const secondaryFile = getSourceFileOrError(bundle.program, DECORATED_FILES[1].name);
 
         const classSymbolsPrimary = host.findClassSymbols(primaryFile);
-        expect(classSymbolsPrimary.length).toEqual(3);
-        expect(classSymbolsPrimary.map(c => c.name)).toEqual(['A', 'B', 'C']);
+        expect(classSymbolsPrimary.map(c => c.name)).toEqual([
+          'A', 'B', 'C', 'AliasedClass', 'Wrapped1', 'Wrapped2'
+        ]);
 
         const classSymbolsSecondary = host.findClassSymbols(secondaryFile);
         expect(classSymbolsSecondary.length).toEqual(1);
@@ -1930,31 +2337,35 @@ runInEachFileSystem(() => {
       it('should return decorators of class symbol', () => {
         loadTestFiles(DECORATED_FILES);
         const bundle = makeTestBundleProgram(getRootFiles(DECORATED_FILES)[0]);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const primaryFile = getSourceFileOrError(bundle.program, DECORATED_FILES[0].name);
         const secondaryFile = getSourceFileOrError(bundle.program, DECORATED_FILES[1].name);
 
         const classSymbolsPrimary = host.findClassSymbols(primaryFile);
         const classDecoratorsPrimary = classSymbolsPrimary.map(s => host.getDecoratorsOfSymbol(s));
-        expect(classDecoratorsPrimary.length).toEqual(3);
-        expect(classDecoratorsPrimary[0] !.map(d => d.name)).toEqual(['Directive']);
-        expect(classDecoratorsPrimary[1] !.map(d => d.name)).toEqual(['Directive']);
+
+        expect(classDecoratorsPrimary.length).toEqual(6);
+        expect(classDecoratorsPrimary[0]!.map(d => d.name)).toEqual(['Directive']);
+        expect(classDecoratorsPrimary[1]!.map(d => d.name)).toEqual(['Directive']);
         expect(classDecoratorsPrimary[2]).toBe(null);
+        expect(classDecoratorsPrimary[3]!.map(d => d.name)).toEqual(['Directive']);
+        expect(classDecoratorsPrimary[4]!.map(d => d.name)).toEqual(['Directive']);
+        expect(classDecoratorsPrimary[5]!.map(d => d.name)).toEqual(['Directive']);
 
         const classSymbolsSecondary = host.findClassSymbols(secondaryFile);
         const classDecoratorsSecondary =
             classSymbolsSecondary.map(s => host.getDecoratorsOfSymbol(s));
         expect(classDecoratorsSecondary.length).toEqual(1);
-        expect(classDecoratorsSecondary[0] !.map(d => d.name)).toEqual(['Directive']);
+        expect(classDecoratorsSecondary[0]!.map(d => d.name)).toEqual(['Directive']);
       });
 
       it('should return a cloned array on each invocation', () => {
         loadTestFiles(DECORATED_FILES);
         const bundle = makeTestBundleProgram(getRootFiles(DECORATED_FILES)[0]);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const classDecl =
-            getDeclaration(bundle.program, DECORATED_FILES[0].name, 'A', ts.isClassDeclaration) !;
-        const classSymbol = host.getClassSymbol(classDecl) !;
+            getDeclaration(bundle.program, DECORATED_FILES[0].name, 'A', ts.isClassDeclaration)!;
+        const classSymbol = host.getClassSymbol(classDecl)!;
 
         const firstResult = host.getDecoratorsOfSymbol(classSymbol);
         const secondResult = host.getDecoratorsOfSymbol(classSymbol);
@@ -1972,10 +2383,11 @@ runInEachFileSystem(() => {
            const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
            const class1 = getDeclaration(
                bundle.program, _('/ep/src/class1.js'), 'Class1', isNamedClassDeclaration);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts));
 
            const dtsDeclaration = host.getDtsDeclaration(class1);
-           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/ep/typings/class1.d.ts'));
+           expect(dtsDeclaration!.getSourceFile().fileName).toEqual(_('/ep/typings/class1.d.ts'));
          });
 
       it('should find the dts declaration for exported functions', () => {
@@ -1985,10 +2397,11 @@ runInEachFileSystem(() => {
         const dts = makeTestDtsBundleProgram(_('/ep/typings/func1.d.ts'), _('/'));
         const mooFn = getDeclaration(
             bundle.program, _('/ep/src/func1.js'), 'mooFn', isNamedFunctionDeclaration);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+        const host =
+            createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts));
 
         const dtsDeclaration = host.getDtsDeclaration(mooFn);
-        expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/ep/typings/func1.d.ts'));
+        expect(dtsDeclaration!.getSourceFile().fileName).toEqual(_('/ep/typings/func1.d.ts'));
       });
 
       it('should return null if there is no matching class in the matching dts file', () => {
@@ -1999,7 +2412,8 @@ runInEachFileSystem(() => {
         const missingClass = getDeclaration(
             bundle.program, _('/ep/src/missing-class.js'), 'MissingClass2',
             isNamedClassDeclaration);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+        const host =
+            createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts));
 
         expect(host.getDtsDeclaration(missingClass)).toBe(null);
       });
@@ -2012,7 +2426,8 @@ runInEachFileSystem(() => {
         const missingClass = getDeclaration(
             bundle.program, _('/ep/src/missing-class.js'), 'MissingClass2',
             isNamedClassDeclaration);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+        const host =
+            createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts));
 
         expect(host.getDtsDeclaration(missingClass)).toBe(null);
       });
@@ -2026,9 +2441,10 @@ runInEachFileSystem(() => {
             getRootFiles(TYPINGS_DTS_FILES)[0], false, [_('/ep/typings/shadow-class.d.ts')]);
         const shadowClass = getDeclaration(
             bundle.program, _('/ep/src/shadow-class.js'), 'ShadowClass', isNamedClassDeclaration);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+        const host =
+            createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts));
 
-        const dtsDecl = host.getDtsDeclaration(shadowClass) !;
+        const dtsDecl = host.getDtsDeclaration(shadowClass)!;
         expect(dtsDecl).not.toBeNull();
         expect(dtsDecl.getSourceFile().fileName).toEqual(_('/ep/typings/shadow-class.d.ts'));
       });
@@ -2054,7 +2470,8 @@ runInEachFileSystem(() => {
         const missingClass = getDeclaration(
             bundle.program, _('/ep/src/missing-class.js'), 'MissingClass2',
             isNamedClassDeclaration);
-        const host = new TestEsm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+        const host =
+            createHost(bundle, new TestEsm2015ReflectionHost(new MockLogger(), false, bundle, dts));
 
         expect(host.getDtsDeclaration(missingClass)).toBeNull();
       });
@@ -2067,10 +2484,11 @@ runInEachFileSystem(() => {
            const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
            const class1 = getDeclaration(
                bundle.program, _('/ep/src/flat-file.js'), 'Class1', isNamedClassDeclaration);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts));
 
            const dtsDeclaration = host.getDtsDeclaration(class1);
-           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/ep/typings/class1.d.ts'));
+           expect(dtsDeclaration!.getSourceFile().fileName).toEqual(_('/ep/typings/class1.d.ts'));
          });
 
       it('should find aliased exports', () => {
@@ -2080,7 +2498,8 @@ runInEachFileSystem(() => {
         const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
         const sourceClass = getDeclaration(
             bundle.program, _('/ep/src/flat-file.js'), 'SourceClass', isNamedClassDeclaration);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+        const host =
+            createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts));
 
         const dtsDeclaration = host.getDtsDeclaration(sourceClass);
         if (dtsDeclaration === null) {
@@ -2102,11 +2521,11 @@ runInEachFileSystem(() => {
            const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
            const internalClass = getDeclaration(
                bundle.program, _('/ep/src/internal.js'), 'InternalClass', isNamedClassDeclaration);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts));
 
            const dtsDeclaration = host.getDtsDeclaration(internalClass);
-           expect(dtsDeclaration !.getSourceFile().fileName)
-               .toEqual(_('/ep/typings/internal.d.ts'));
+           expect(dtsDeclaration!.getSourceFile().fileName).toEqual(_('/ep/typings/internal.d.ts'));
          });
 
       it('should match publicly and internal exported classes correctly, even if they have the same name',
@@ -2115,91 +2534,87 @@ runInEachFileSystem(() => {
            loadTestFiles(TYPINGS_DTS_FILES);
            const bundle = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
            const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts));
 
            const class2 = getDeclaration(
                bundle.program, _('/ep/src/class2.js'), 'Class2', isNamedClassDeclaration);
            const class2DtsDeclaration = host.getDtsDeclaration(class2);
-           expect(class2DtsDeclaration !.getSourceFile().fileName)
+           expect(class2DtsDeclaration!.getSourceFile().fileName)
                .toEqual(_('/ep/typings/class2.d.ts'));
 
            const internalClass2 = getDeclaration(
                bundle.program, _('/ep/src/internal.js'), 'Class2', isNamedClassDeclaration);
            const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
-           expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
+           expect(internalClass2DtsDeclaration!.getSourceFile().fileName)
                .toEqual(_('/ep/typings/internal.d.ts'));
          });
     });
 
     describe('getInternalNameOfClass()', () => {
-      it('should return the name of the class (there is no separate inner class in ES2015)', () => {
+      it('should return the name of the class (if there is no separate inner class)', () => {
         loadTestFiles([SIMPLE_CLASS_FILE]);
         const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const node = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
         expect(host.getInternalNameOfClass(node).text).toEqual('EmptyClass');
       });
+
+      it('should return the name of the inner class (if there is an IIFE)', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const node = getDeclaration(
+            bundle.program, SIMPLE_CLASS_FILE.name, 'SimpleWrappedClass',
+            isNamedVariableDeclaration);
+        expect(host.getInternalNameOfClass(node).text).toEqual('SimpleWrappedClassInner');
+      });
+
+      it('should return the name of the inner variable declaration (if there is an aliased class in an IIFE)',
+         () => {
+           loadTestFiles([SIMPLE_CLASS_FILE]);
+           const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const node = getDeclaration(
+               bundle.program, SIMPLE_CLASS_FILE.name, 'AliasedWrappedClass',
+               isNamedVariableDeclaration);
+           expect(host.getInternalNameOfClass(node).text).toEqual('AliasedWrappedClassInner');
+         });
     });
 
     describe('getAdjacentNameOfClass()', () => {
-      it('should return the name of the class (there is no separate inner class in ES2015)', () => {
+      it('should return the name of the class (if there is no separate inner class)', () => {
         loadTestFiles([SIMPLE_CLASS_FILE]);
         const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
         const node = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
         expect(host.getAdjacentNameOfClass(node).text).toEqual('EmptyClass');
       });
-    });
 
-    describe('getModuleWithProvidersFunctions()', () => {
-      it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
-           const file = getSourceFileOrError(bundle.program, _('/src/functions.js'));
-           const fns = host.getModuleWithProvidersFunctions(file);
-           expect(fns.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
-               .toEqual([
-                 ['ngModuleIdentifier', 'InternalModule'],
-                 ['ngModuleWithEmptyProviders', 'InternalModule'],
-                 ['ngModuleWithProviders', 'InternalModule'],
-                 ['externalNgModule', 'ExternalModule'],
-                 ['namespacedExternalNgModule', 'ExternalModule'],
-               ]);
-         });
-
-      it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
-           const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
-           const file = getSourceFileOrError(bundle.program, _('/src/methods.js'));
-           const fn = host.getModuleWithProvidersFunctions(file);
-           expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
-               .toEqual([
-                 ['ngModuleIdentifier', 'InternalModule'],
-                 ['ngModuleWithEmptyProviders', 'InternalModule'],
-                 ['ngModuleWithProviders', 'InternalModule'],
-                 ['externalNgModule', 'ExternalModule'],
-                 ['namespacedExternalNgModule', 'ExternalModule'],
-               ]);
-         });
-
-      // https://github.com/angular/angular/issues/29078
-      it('should resolve aliased module references to their original declaration', () => {
-        loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-        const bundle = makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
-        const file = getSourceFileOrError(bundle.program, _('/src/aliased_class.js'));
-        const fn = host.getModuleWithProvidersFunctions(file);
-        expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
-            .toEqual([
-              ['forRoot', 'AliasedModule'],
-            ]);
+      it('should return the name of the inner class (if there is an IIFE)', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const node = getDeclaration(
+            bundle.program, SIMPLE_CLASS_FILE.name, 'SimpleWrappedClass',
+            isNamedVariableDeclaration);
+        expect(host.getAdjacentNameOfClass(node).text).toEqual('SimpleWrappedClassInner');
       });
+
+      it('should return the name of the inner variable declaration (if there is an aliased class in an IIFE)',
+         () => {
+           loadTestFiles([SIMPLE_CLASS_FILE]);
+           const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const node = getDeclaration(
+               bundle.program, SIMPLE_CLASS_FILE.name, 'AliasedWrappedClass',
+               isNamedVariableDeclaration);
+           expect(host.getAdjacentNameOfClass(node).text).toEqual('AliasedWrappedClassAdjacent');
+         });
     });
 
     describe('getEndOfClass()', () => {
@@ -2224,8 +2639,8 @@ runInEachFileSystem(() => {
         };
         loadTestFiles([testFile]);
         const bundle = makeTestBundleProgram(testFile.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
-        const classSymbol = host.findClassSymbols(bundle.program.getSourceFile(testFile.name) !)[0];
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const classSymbol = host.findClassSymbols(bundle.program.getSourceFile(testFile.name)!)[0];
         const endOfClass = host.getEndOfClass(classSymbol);
         expect(endOfClass.getText())
             .toEqual(
@@ -2247,8 +2662,8 @@ runInEachFileSystem(() => {
         };
         loadTestFiles([testFile]);
         const bundle = makeTestBundleProgram(testFile.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle);
-        const classSymbol = host.findClassSymbols(bundle.program.getSourceFile(testFile.name) !)[0];
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const classSymbol = host.findClassSymbols(bundle.program.getSourceFile(testFile.name)!)[0];
         const endOfClass = host.getEndOfClass(classSymbol);
         expect(endOfClass.getText())
             .toEqual(

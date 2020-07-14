@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -53,7 +53,7 @@ Zone.__load_patch('fetch', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     const signal = options && options.signal;
     return new Promise((res, rej) => {
       const task = Zone.current.scheduleMacroTask(
-          'fetch', placeholder, { fetchArgs: args } as FetchTaskData,
+          'fetch', placeholder, {fetchArgs: args} as FetchTaskData,
           () => {
             let fetchPromise;
             let zone = Zone.current;

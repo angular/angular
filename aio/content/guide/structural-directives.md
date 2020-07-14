@@ -13,12 +13,11 @@
 <!--
 This guide looks at how Angular manipulates the DOM with **structural directives** and
 how you can write your own structural directives to do the same thing.
+
+Try the <live-example></live-example>.
 -->
 이 문서는 Angular에서 **구조 디렉티브**가 DOM을 어떻게 조작하는지 알아봅니다. 그리고 커스텀 구조 디렉티브는 어떻게 구현하는지 알아봅니다.
 
-<!--
-Try the <live-example></live-example>.
--->
 이 문서에서 다루는 예제는 <live-example></live-example>에서 바로 확인하거나 다운받을 수 있습니다.
 
 
@@ -33,50 +32,47 @@ Try the <live-example></live-example>.
 Structural directives are responsible for HTML layout.
 They shape or reshape the DOM's _structure_, typically by adding, removing, or manipulating
 elements.
+
+As with other directives, you apply a structural directive to a _host element_.
+The directive then does whatever it's supposed to do with that host element and its descendants.
+
+Structural directives are easy to recognize.
+An asterisk (*) precedes the directive attribute name as in this example.
 -->
 구조 디렉티브는 HTML 문서의 레이아웃과 관계가 있습니다.
 구조 디렉티브는 엘리먼트를 DOM에 추가하거나 제거하면서  DOM의 _구조_ 를 조작합니다.
 
-<!--
-As with other directives, you apply a structural directive to a _host element_.
-The directive then does whatever it's supposed to do with that host element and its descendants.
--->
 다른 디렉티브와 마찬가지로 구조 디렉티브도 _호스트 엘리먼트_ 에 지정합니다.
 그러면 디렉티브 로직에 따라 호스트 엘리먼트나 자식 엘리먼트를 조작합니다.
 
-<!--
-Structural directives are easy to recognize.
-An asterisk (*) precedes the directive attribute name as in this example.
--->
 구조 디렉티브가 사용된 것은 확인하기 쉽습니다.
 이 디렉티브는 아래 예제처럼 별표(`*`)로 시작하는 어트리뷰트 이름으로 적용합니다.
+
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif)" region="ngif"></code-example>
 
 
 <!--
 No brackets. No parentheses. Just `*ngIf` set to a string.
--->
-구조 디렉티브에는 괄호(`(`, `)`)도 없고 대괄호(`[`, `]`)도 없습니다. `*ngIf`는 단순하게 문자열일 뿐입니다.
 
-<!--
 You'll learn in this guide that the [asterisk (*) is a convenience notation](guide/structural-directives#asterisk)
 and the string is a [_microsyntax_](guide/structural-directives#microsyntax) rather than the usual
 [template expression](guide/template-syntax#template-expressions).
 Angular desugars this notation into a marked-up `<ng-template>` that surrounds the
 host element and its descendents.
 Each structural directive does something different with that template.
--->
-아래 부분에서 좀 더 자세히 설명하겠지만, [별표(`*`)는 구조 디렉티브를 사용하기 편하게 만드는](guide/structural-directives#asterisk) 문법 테크닉이며, 이런 문법은 [템플릿 표현식](guide/template-syntax#template-expressions)이라기 보다는 [_세부 문법(microsyntax)_](guide/structural-directives#microsyntax)이라고 하는 것이 더 적합합니다.
-Angular가 애플리케이션을 빌드하면 이 문법 테크닉은 호스트 엘리먼트와 자식 엘리먼트 사이에 `<ng-template>` 계층의 마크업을 구성하면서 사라집니다.
-이 때 구조 디렉티브를 템플릿에서 어떻게 사용했느냐에 따라 다른 결과물이 될 수도 있습니다.
 
-<!--
 Three of the common, built-in structural directives&mdash;[NgIf](guide/template-syntax#ngIf),
 [NgFor](guide/template-syntax#ngFor), and [NgSwitch...](guide/template-syntax#ngSwitch)&mdash;are
 described in the [_Template Syntax_](guide/template-syntax) guide and seen in samples throughout the Angular documentation.
 Here's an example of them in a template:
 -->
+구조 디렉티브에는 괄호(`(`, `)`)도 없고 대괄호(`[`, `]`)도 없습니다. `*ngIf`는 단순하게 문자열일 뿐입니다.
+
+아래 부분에서 좀 더 자세히 설명하겠지만, [별표(`*`)는 구조 디렉티브를 사용하기 편하게 만드는](guide/structural-directives#asterisk) 문법 테크닉이며, 이런 문법은 [템플릿 표현식](guide/template-syntax#template-expressions)이라기 보다는 [_세부 문법(microsyntax)_](guide/structural-directives#microsyntax)이라고 하는 것이 더 적합합니다.
+Angular가 애플리케이션을 빌드하면 이 문법 테크닉은 호스트 엘리먼트와 자식 엘리먼트 사이에 `<ng-template>` 계층의 마크업을 구성하면서 사라집니다.
+이 때 구조 디렉티브를 템플릿에서 어떻게 사용했느냐에 따라 다른 결과물이 될 수도 있습니다.
+
 Angular의 기본 구조 디렉티브 중 가장 많이 사용하는 것은 [NgIf](guide/template-syntax#ngIf), [NgFor](guide/template-syntax#ngFor), [NgSwitch...](guide/template-syntax#ngSwitch) 이렇게 3가지 입니다. 각각은 [_템플릿 문법_](guide/template-syntax) 문서에서 자세하게 다루며, 예제도 함께 확인할 수 있습니다.
 이 문서에서는 예제와 함께 간단하게만 알아봅시다.
 
@@ -89,71 +85,71 @@ and how to [write your own](guide/structural-directives#unless) structural direc
 -->
 각각의 디렉티브를 _어떻게 사용하는지_ 에 대해서는 이 문서에서 다루지 않습니다. 대신, 디렉티브가 _어떻게 동작하며_, 커스텀 구조 디렉티브는 [어떻게 만드는지](guide/structural-directives#unless) 알아봅니다.
 
+<!--
 <div class="callout is-helpful">
 
-
-
 <header>
-  <!--
   Directive spelling
-  -->
-  디렉티브의 대소문자 구분
 </header>
 
-
-<!--
 Throughout this guide, you'll see a directive spelled in both _UpperCamelCase_ and _lowerCamelCase_.
 Already you've seen `NgIf` and `ngIf`.
 There's a reason. `NgIf` refers to the directive _class_;
 `ngIf` refers to the directive's _attribute name_.
--->
-이 문서에서는 디렉티브를 _대문자 캐멀 케이스(UpperCamelCase)_ 로 언급하기도 하고 _소문자 캐멀 케이스(lowerCamelCase)_ 로 언급하기도 합니다.
-지금까지의 설명에서도 `NgIf`라고 하기도 했고 `ngIf`라고 하기도 했죠.
-이렇게 사용하는 이유가 있습니다. `NgIf`는 디렉티브 _클래스_ 자체를 가리키며, `ngIf`는 디렉티브를 적용할 때 사용하는 _어트리뷰트 이름_ 을 가리킵니다.
 
-<!--
 A directive _class_ is spelled in _UpperCamelCase_ (`NgIf`).
 A directive's _attribute name_ is spelled in _lowerCamelCase_ (`ngIf`).
 The guide refers to the directive _class_ when talking about its properties and what the directive does.
 The guide refers to the _attribute name_ when describing how
 you apply the directive to an element in the HTML template.
+
+</div>
 -->
+<div class="callout is-helpful">
+
+<header>
+  디렉티브의 대소문자 구분
+</header>
+
+이 문서에서는 디렉티브를 _대문자 캐멀 케이스(UpperCamelCase)_ 로 언급하기도 하고 _소문자 캐멀 케이스(lowerCamelCase)_ 로 언급하기도 합니다.
+지금까지의 설명에서도 `NgIf`라고 하기도 했고 `ngIf`라고 하기도 했죠.
+이렇게 사용하는 이유가 있습니다. `NgIf`는 디렉티브 _클래스_ 자체를 가리키며, `ngIf`는 디렉티브를 적용할 때 사용하는 _어트리뷰트 이름_ 을 가리킵니다.
+
 디렉티브의 프로퍼티나 디렉티브의 동작을 설명할 때는 `NgIf`와 같이 _대문자 캐멀 케이스_ 로 정의하는 디렉티브 _클래스_ 자체를 가리킵니다.
 그리고 디렉티브를 HTML 템플릿에 있는 엘리먼트에 적용하는 것을 설명할 때는 `ngIf`와 같이 _소문자 캐멀 케이스_ 로 정의하는 _어트리뷰트 이름_ 을 가리킵니다.
 
 </div>
 
 
-
+<!--
 <div class="alert is-helpful">
 
-
-<!--
 There are two other kinds of Angular directives, described extensively elsewhere:
 (1)&nbsp;components and (2)&nbsp;attribute directives.
--->
-다른 문서에서도 언급한 것처럼 Angular의 디렉티브는 크게 두 종류입니다. 그 중 하나는 (1) 컴포넌트이고, 다른 하나는 (2) 어트리뷰트 디렉티브 입니다.
 
-<!--
 A *component* manages a region of HTML in the manner of a native HTML element.
 Technically it's a directive with a template.
--->
-*컴포넌트*는 네이티브 HTML 엘리먼트를 사용해서 HTML 문서의 한 부분을 담당합니다.
-문법적으로는 디렉티브에 템플릿이 추가된 것이 컴포넌트입니다.
 
-<!--
 An [*attribute* directive](guide/attribute-directives) changes the appearance or behavior
 of an element, component, or another directive.
 For example, the built-in [`NgStyle`](guide/template-syntax#ngStyle) directive
 changes several element styles at the same time.
+
+You can apply many _attribute_ directives to one host element.
+You can [only apply one](guide/structural-directives#one-per-element) _structural_ directive to a host element.
+
+</div>
 -->
+<div class="alert is-helpful">
+
+다른 문서에서도 언급한 것처럼 Angular의 디렉티브는 크게 두 종류입니다. 그 중 하나는 (1) 컴포넌트이고, 다른 하나는 (2) 어트리뷰트 디렉티브 입니다.
+
+*컴포넌트*는 네이티브 HTML 엘리먼트를 사용해서 HTML 문서의 한 부분을 담당합니다.
+문법적으로는 디렉티브에 템플릿이 추가된 것이 컴포넌트입니다.
+
 [*어트리뷰트* 디렉티브](guide/attribute-directives)는 엘리먼트나 컴포넌트, 디렉티브의 모습이나 동작을 변경합니다.
 예를 들어 보면, [`NgStyle`](guide/template-syntax#ngStyle) 디렉티브는 엘리먼트에 여러 엘리먼트 스타일을 동시에 지정할 수 있습니다.
 
-<!--
-You can apply many _attribute_ directives to one host element.
-You can [only apply one](guide/structural-directives#one-per-element) _structural_ directive to a host element.
--->
 호스트 엘리먼트에는 여러 개의 _어트리뷰트_ 디렉티브를 지정할 수도 있습니다.
 하지만 구조 디렉티브는 호스트 엘리먼트에 [하나만](guide/structural-directives#one-per-element) 적용할 수 있습니다.
 
@@ -194,17 +190,17 @@ Confirm that fact using browser developer tools to inspect the DOM.
 <!--
 The top paragraph is in the DOM. The bottom, disused paragraph is not;
 in its place is a comment about "bindings" (more about that [later](guide/structural-directives#asterisk)).
--->
-위에 있는 `<p>` 엘리먼트는 DOM에 존재하는 엘리먼트입니다. 그리고 아래에 있는 `<p>` 엘리먼트는 DOM에 존재하지 않습니다. 이 엘리먼트는 `ngIf` 디렉티브에 의해 처리되고 주석으로만 존재합니다. 이 내용은 [아래](guide/structural-directives#asterisk)에서 좀 더 자세하게 설명합니다.
 
-<!--
 When the condition is false, `NgIf` removes its host element from the DOM,
 detaches it from DOM events (the attachments that it made),
 detaches the component from Angular change detection, and destroys it.
 The component and DOM nodes can be garbage-collected and free up memory.
 -->
+위에 있는 `<p>` 엘리먼트는 DOM에 존재하는 엘리먼트입니다. 그리고 아래에 있는 `<p>` 엘리먼트는 DOM에 존재하지 않습니다. 이 엘리먼트는 `ngIf` 디렉티브에 의해 처리되고 주석으로만 존재합니다. 이 내용은 [아래](guide/structural-directives#asterisk)에서 좀 더 자세하게 설명합니다.
+
 평가식의 값이 `false`이면 `NgIf` 디렉티브는 호스트 엘리먼트를 DOM에서 완전히 제거하고 DOM 이벤트 대상에서도 제외합니다. 그리고 Angular의 변화 감지 대상에서도 제외한 후에 디렉티브를 종료합니다.
 따라서 이 디렉티브와 DOM 노드 조각은 가비지 콜렉션의 대상이 되어 메모리에서도 완전히 제거됩니다.
+
 
 <!--
 ### Why *remove* rather than *hide*?
@@ -236,42 +232,38 @@ Such a component's behavior continues even when hidden.
 The component stays attached to its DOM element. It keeps listening to events.
 Angular keeps checking for changes that could affect data bindings.
 Whatever the component was doing, it keeps doing.
+
+Although invisible, the component&mdash;and all of its descendant components&mdash;tie up resources.
+The performance and memory burden can be substantial, responsiveness can degrade, and the user sees nothing.
+
+On the positive side, showing the element again is quick.
+The component's previous state is preserved and ready to display.
+The component doesn't re-initialize&mdash;an operation that could be expensive.
+So hiding and showing is sometimes the right thing to do.
+
+But in the absence of a compelling reason to keep them around,
+your preference should be to remove DOM elements that the user can't see
+and recover the unused resources with a structural directive like `NgIf` .
+
+**These same considerations apply to every structural directive, whether built-in or custom.**
+Before applying a structural directive, you might want to pause for a moment
+to consider the consequences of adding and removing elements and of creating and destroying components.
 -->
 `ngIf`가 조작하는 엘리먼트가 간단하다면 숨기든 제거하든 큰 문제가 되지 않을 수도 있습니다.
 하지만 복잡한 경우에는 문제가 될 수 있는데, 컴포넌트가 화면에는 보이지 않더라도 이 컴포넌트는 계속 동작하기 때문입니다.
 DOM에 여전히 남아있으면서 이벤트도 계속 받고, 바인딩 된 데이터가 변경되면 변화 감지 로직도 동작합니다.
 컴포넌트는 원래 동작하던 대로 계속 동작할 것입니다.
 
-<!--
-Although invisible, the component&mdash;and all of its descendant components&mdash;tie up resources.
-The performance and memory burden can be substantial, responsiveness can degrade, and the user sees nothing.
--->
 컴포넌트가 보이지 않는 상황에서도 이 컴포넌트와 컴포넌트의 자식 컴포넌트 들은 리소스를 계속 사용합니다.
 애플리케이션 성능은 저하되고 가용 메모리는 줄어들 것이며, 사용자의 반응성은 떨어질 것이지만 사용자는 이 컴포넌트를 여전히 볼 수 없습니다.
 
-<!--
-On the positive side, showing the element again is quick.
-The component's previous state is preserved and ready to display.
-The component doesn't re-initialize&mdash;an operation that could be expensive.
-So hiding and showing is sometimes the right thing to do.
--->
 장점이 하나 있다면, 이 엘리먼트를 다시 표시하는 것은 빠릅니다.
 컴포넌트의 이전 상태가 계속 유지되며 화면에 표시될 준비도 이미 끝났기 때문입니다.
 그리고 복잡할수도 있는 컴포넌트 초기화 동작은 이미 실행되었기 때문에 다시 실행되지 않습니다.
 그래서 어떤 경우에는 DOM에서 제거하지 않고 감추기만 하는 것이 좋을 수도 있습니다.
 
-<!--
-But in the absence of a compelling reason to keep them around,
-your preference should be to remove DOM elements that the user can't see
-and recover the unused resources with a structural directive like `NgIf` .
--->
 하지만 굳이 이런 경우가 아니라면, 사용자에게 표시될 필요가 없는 컴포넌트는 DOM에서 완전히 제거하고 사용하던 자원도 반환하는 것이 좋습니다.
 
-<!--
-**These same considerations apply to every structural directive, whether built-in or custom.**
-Before applying a structural directive, you might want to pause for a moment
-to consider the consequences of adding and removing elements and of creating and destroying components.
--->
 **이 개념은 Angular 기본 디렉티브는 물론이고 커스텀 디렉티브에도 적용됩니다.**
 구조 디렉티브를 템플릿에 적용하기 전에, 이 디렉티브를 생성하고 종료하는 비용, 엘리먼트를 DOM에 추가하고 제거하는 비용이 얼마나 필요한지 꼭 고민해 보세요.
 
@@ -287,12 +279,11 @@ to consider the consequences of adding and removing elements and of creating and
 <!--
 Surely you noticed the asterisk (*) prefix to the directive name
 and wondered why it is necessary and what it does.
+
+Here is `*ngIf` displaying the hero's name if `hero` exists.
 -->
 지금까지 설명한 예제처럼 디렉티브 이름에는 별표(`*`) 접두사를 사용하는데, 왜 이 접두사가 필요한지 궁금할 수 있습니다.
 
-<!--
-Here is `*ngIf` displaying the hero's name if `hero` exists.
--->
 아래 코드는 `hero` 프로퍼티에 객체가 할당되었을 때 히어로의 이름을 표시하는 예제입니다.
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (asterisk)" region="asterisk"></code-example>
@@ -311,13 +302,12 @@ Angular가 `*ngIf` _어트리뷰트_ 를 내부적으로 처리할 때는 `ngIf`
 <!--
 * The `*ngIf` directive moved to the `<ng-template>` element where it became a property binding,`[ngIf]`.
 * The rest of the `<div>`, including its class attribute, moved inside the `<ng-template>` element.
+
+The first form is not actually rendered, only the finished product ends up in the DOM.
 -->
 * `*ngIf` 디렉티브는 호스트 엘리먼트 대신 `<ng-template>` 엘리먼트로 옮겨지며, 프로퍼티 바인딩 형태인 `[ngIf]`로 변환됩니다.
 * 그리고 호스트 엘리먼트 `<div>`는 나머지 어트리뷰트를 그대로 갖고 `<ng-template>` 엘리먼트 안으로 이동합니다.
 
-<!--
-The first form is not actually rendered, only the finished product ends up in the DOM.
--->
 DOM에는 원래 엘리먼트 대신 변환된 엘리먼트가 적용됩니다.
 
 <div class="lightbox">
@@ -328,14 +318,12 @@ DOM에는 원래 엘리먼트 대신 변환된 엘리먼트가 적용됩니다.
 <!--
 Angular consumed the `<ng-template>` content during its actual rendering and
 replaced the `<ng-template>` with a diagnostic comment.
+
+The [`NgFor`](guide/structural-directives#ngFor) and [`NgSwitch...`](guide/structural-directives#ngSwitch) directives follow the same pattern.
 -->
 그리고 이 호스트 엘리먼트가 렌더링될 때는 `<ng-template>`가 제거되고 디버깅 주석과 안쪽 내용물만 렌더링 됩니다.
 
-<!--
-The [`NgFor`](guide/structural-directives#ngFor) and [`NgSwitch...`](guide/structural-directives#ngSwitch) directives follow the same pattern.
--->
 이 과정은 [`NgFor`](guide/structural-directives#ngFor)나 [`NgSwitch...`](guide/structural-directives#ngSwitch)에서도 비슷합니다.
-
 
 {@a ngFor}
 
@@ -347,12 +335,11 @@ The [`NgFor`](guide/structural-directives#ngFor) and [`NgSwitch...`](guide/struc
 
 <!--
 Angular transforms the `*ngFor` in similar fashion from asterisk (*) syntax to `<ng-template>` _element_.
+
+Here's a full-featured application of `NgFor`, written both ways:
 -->
 별표(`*`) 접두사가 붙는 `*ngFor`도 이와 비슷하게 `<ng-template>` _엘리먼트_ 를 활용합니다.
 
-<!--
-Here's a full-featured application of `NgFor`, written both ways:
--->
 `NgFor` 디렉티브의 기능이 다양하게 활용된 예제를 확인해 봅시다:
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (inside-ngfor)" region="inside-ngfor"></code-example>
@@ -362,14 +349,14 @@ Here's a full-featured application of `NgFor`, written both ways:
 This is manifestly more complicated than `ngIf` and rightly so.
 The `NgFor` directive has more features, both required and optional, than the `NgIf` shown in this guide.
 At minimum `NgFor` needs a looping variable (`let hero`) and a list (`heroes`).
+
+You enable these features in the string assigned to `ngFor`, which you write in Angular's [microsyntax](guide/structural-directives#microsyntax).
 -->
 이 예제는 `NgIf` 때보다 복잡해 보이고, 실제로도 복잡합니다.
 `NgFor`는 `NgIf`보다 기능이 많습니다. `NgFor`를 최소한으로 사용하려면 배열(`heroes`)과 변수(`let hero`)만 있으면 되지만요.
 
-<!--
-You enable these features in the string assigned to `ngFor`, which you write in Angular's [microsyntax](guide/structural-directives#microsyntax).
--->
-`NgFor`의 기능은 `ngFor`에 적용되는 문자열이 어떻게 구성되느냐에 따라 달라집니다. 이 내용은 [세부 문법](guide/structural-directives#microsyntax)에서 자세하게 확인해 보세요.
+`NgFor`의 기능은 `ngFor`에 적용되는 문자열이 어떻게 구성되느냐에 따라 달라집니다.
+이 내용은 [세부 문법](guide/structural-directives#microsyntax)에서 자세하게 확인해 보세요.
 
 <div class="alert is-helpful">
 
@@ -377,10 +364,10 @@ You enable these features in the string assigned to `ngFor`, which you write in 
 <!--
 Everything _outside_ the `ngFor` string stays with the host element
 (the `<div>`) as it moves inside the `<ng-template>`.
-In this example, the `[ngClass]="odd"` stays on the `<div>`.
+In this example, the `[class.odd]="odd"` stays on the `<div>`.
 -->
 `ngFor`에 적용되는 문자열 이외에는 모두 호스트 엘리먼트 `<div>`에 남아 있으며, `<ng-template>` 내부로 호스트 엘리먼트가 이동할 때 함께 움직입니다.
-이 예제로 보면 `[ngClass]="odd"`는 `<div>` 엘리먼트에 그대로 적용되는 것을 확인할 수 있습니다.
+이 예제로 보면 `[class.odd]="odd"`는 `<div>` 엘리먼트에 그대로 적용되는 것을 확인할 수 있습니다.
 
 </div>
 
@@ -446,6 +433,7 @@ describes additional `NgFor` directive properties and context properties.
 
 * `NgForOf` 디렉티브는 `NgFor` 디렉티블르 기반으로 만들어졌습니다. `NgForOf` 디렉티브의 프로퍼티와 컨텍스트 프로퍼티에 대해 더 알아보려면 [NgForOf API 문서](api/common/NgForOf)를 참고하세요.
 
+
 <!--
 ### Writing your own structural directives
 -->
@@ -462,6 +450,7 @@ and translation of microsyntax.
 그래서 `<ng-template ngFor let-item [ngForOf]="items"><div>{{item}}</div></ng-template>` 라고 작성하지 않고 `<div *ngFor="let item of items">{{item}}</div>`처럼 작성해도 됩니다.
 다음 섹션에서는 세부문법의 제약사항, 문법, 변환결과에 대해 자세하게 알아봅시다.
 
+
 <!--
 ### Constraints
 -->
@@ -477,6 +466,7 @@ Microsyntax must meet the following requirements:
 - 세부문법은 문자열이기 때문에 IDE가 제대로 처리하지 못할 수 있습니다. 어떤 디렉티브가 사용되었는지 개발자가 충분히 알고 있어야 합니다.
 - DOM에서 키-값 어트리뷰트로 변환되어야 합니다.
 
+
 <!--
 ### Grammar
 -->
@@ -484,6 +474,12 @@ Microsyntax must meet the following requirements:
 
 <!--
 When you write your own structural directives, use the following grammar:
+
+```
+*:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )*"
+```
+
+The following tables describe each portion of the microsyntax grammar.
 -->
 커스텀 구조 디렉티브를 만들었다면 이렇게 사용해야 합니다:
 
@@ -491,9 +487,6 @@ When you write your own structural directives, use the following grammar:
 *:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )*"
 ```
 
-<!--
-The following tables describe each portion of the microsyntax grammar.
--->
 세부문법의 각 부분에 대해 자세하게 알아봅시다.
 
 <!-- What should I put in the table headers? -->
@@ -505,23 +498,38 @@ The following tables describe each portion of the microsyntax grammar.
   </tr>
   <tr>
     <td><code>prefix</code></td>
-    <td><!--HTML attribute key-->HTML 어트리뷰트 키</td>
+    <!--
+    <td>HTML attribute key</td>
+    -->
+    <td>HTML 어트리뷰트 키</td>
   </tr>
   <tr>
     <td><code>key</code></td>
-    <td><!--HTML attribute key-->HTML 어트리뷰트 키</td>
+    <!--
+    <td>HTML attribute key</td>
+    -->
+    <td>HTML 어트리뷰트 키</td>
   </tr>
   <tr>
     <td><code>local</code></td>
-    <td><!--local variable name used in the template-->템플릿에 있는 로벌 변수 이름</td>
+    <!--
+    <td>local variable name used in the template</td>
+    -->
+    <td>템플릿에 있는 로벌 변수 이름</td>
   </tr>
   <tr>
     <td><code>export</code></td>
-    <td><!--value exported by the directive under a given name-->디렉티브 외부로 공개되는 값</td>
+    <!--
+    <td>value exported by the directive under a given name</td>
+    -->
+    <td>디렉티브 외부로 공개되는 값</td>
   </tr>
   <tr>
     <td><code>expression</code></td>
-    <td><!--standard Angular expression-->일반적인 Angular 표현식</td>
+    <!--
+    <td>standard Angular expression</td>
+    -->
+    <td>일반적인 Angular 표현식</td>
   </tr>
 </table>
 
@@ -553,25 +561,17 @@ A microsyntax is translated to the normal binding syntax as follows:
 세부문법이 파서로 처리되면 다음과 같이 변환됩니다:
 
 <!-- What to put in the table headers below? Are these correct?-->
+<!--
 <table>
   <tr>
-    <!--
     <th>Microsyntax</th>
     <th>Translation</th>
-    -->
-    <th>세부문법</th>
-    <th>변환결과</th>
   </tr>
   <tr>
-    <!--
     <td><code>prefix</code> and naked <code>expression</code></td>
     <td><code>[prefix]="expression"</code></td>
-    -->
-    <td><code>prefix</code>, <code>expression</code></td>
-    <td><code>[prefix]="expression"</code></td>
   </tr>
   <tr>
-    <!--
     <td><code>keyExp</code></td>
     <td><code>[prefixKey] "expression"
     (let-prefixKey="export")</code>
@@ -579,7 +579,23 @@ A microsyntax is translated to the normal binding syntax as follows:
     Notice that the <code>prefix</code>
     is added to the <code>key</code>
     </td>
-    -->
+  </tr>
+  <tr>
+    <td><code>let</code></td>
+    <td><code>let-local="export"</code></td>
+  </tr>
+</table>
+-->
+<table>
+  <tr>
+    <th>세부문법</th>
+    <th>변환결과</th>
+  </tr>
+  <tr>
+    <td><code>prefix</code>, <code>expression</code></td>
+    <td><code>[prefix]="expression"</code></td>
+  </tr>
+  <tr>
     <td><code>keyExp</code></td>
     <td><code>[prefixKey] "expression"
     (let-prefixKey="export")</code>
@@ -593,6 +609,7 @@ A microsyntax is translated to the normal binding syntax as follows:
   </tr>
 </table>
 
+
 <!--
 ### Microsyntax examples
 -->
@@ -600,15 +617,40 @@ A microsyntax is translated to the normal binding syntax as follows:
 
 <!--
 The following table demonstrates how Angular desugars microsyntax.
+
+<table>
+  <tr>
+    <th>Microsyntax</th>
+    <th>Desugared</th>
+  </tr>
+  <tr>
+    <td><code>*ngFor="let item of [1,2,3]"</code></td>
+    <td><code>&lt;ng-template ngFor let-item [ngForOf]="[1,2,3]"&gt;</code></td>
+  </tr>
+  <tr>
+    <td><code>*ngFor="let item of [1,2,3] as items; trackBy: myTrack; index as i"</code></td>
+    <td><code>&lt;ng-template ngFor let-item [ngForOf]="[1,2,3]" let-items="ngForOf" [ngForTrackBy]="myTrack" let-i="index"&gt;</code>
+    </td>
+  </tr>
+  <tr>
+    <td><code>*ngIf="exp"</code></td>
+    <td><code>&lt;ng-template [ngIf]="exp"&gt;</code></td>
+  </tr>
+  <tr>
+    <td><code>*ngIf="exp as value"</code></td>
+    <td><code>&lt;ng-template [ngIf]="exp" let-value="ngIf"&gt;</code></td>
+  </tr>
+</table>
+
+Studying the
+[source code for `NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
+and [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")
+is a great way to learn more.
 -->
 Angular가 세부문법의 문법 설탕을 제거하고나면(desugar) 다음과 같이 변환됩니다.
 
 <table>
   <tr>
-    <!--
-    <th>Microsyntax</th>
-    <th>Desugared</th>
-    -->
     <th>세부문법</th>
     <th>변환결과</th>
   </tr>
@@ -631,12 +673,6 @@ Angular가 세부문법의 문법 설탕을 제거하고나면(desugar) 다음�
   </tr>
 </table>
 
-<!--
-Studying the
-[source code for `NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
-and [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")
-is a great way to learn more.
--->
 세부문법에 대해 더 자세하게 알아보려면 [`NgIf` 소스 코드](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")나 [`NgForOf` 소스 코드](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")를 참고하는 것도 좋습니다.
 
 
@@ -652,42 +688,39 @@ is a great way to learn more.
 A _template input variable_ is a variable whose value you can reference _within_ a single instance of the template.
 There are several such variables in this example: `hero`, `i`, and `odd`.
 All are preceded by the keyword `let`.
+
+A _template input variable_ is **_not_** the same as a
+[template _reference_ variable](guide/template-syntax#ref-vars),
+neither _semantically_ nor _syntactically_.
+
+You declare a template _input_ variable using the `let` keyword (`let hero`).
+The variable's scope is limited to a _single instance_ of the repeated template.
+You can use the same variable name again in the definition of other structural directives.
+
+You declare a template _reference_ variable by prefixing the variable name with `#` (`#var`).
+A _reference_ variable refers to its attached element, component or directive.
+It can be accessed _anywhere_ in the _entire template_.
+
+Template _input_ and _reference_ variable names have their own namespaces. The `hero` in `let hero` is never the same
+variable as the `hero` declared as `#hero`.
 -->
 _템플릿 입력 변수_ 는 템플릿 인스턴스 _안에서_ 참조할 수 있는 변수입니다.
 위에서 살펴본 예제에서는 `hero`, `i`, `odd`가 템플릿 입력 변수이며, `let` 키워드를 사용해서 선언합니다.
 
-<!--
-A _template input variable_ is **_not_** the same as a
-[template _reference_ variable](guide/template-syntax#ref-vars),
-neither _semantically_ nor _syntactically_.
--->
 _템플릿 입력 변수_ 는 _용도_ 나 _문법_ 측면에서 봤을 때 [템플릿 _참조_ 변수](guide/template-syntax#ref-vars)와는 **_다릅니다_**.
 
-<!--
-You declare a template _input_ variable using the `let` keyword (`let hero`).
-The variable's scope is limited to a _single instance_ of the repeated template.
-You can use the same variable name again in the definition of other structural directives.
--->
 템플릿 _입력_ 변수는 `let hero`와 같이 `let` 키워드를 사용해서 선언합니다.
 이 변수의 스코프는 반복되는 템플릿 _인스턴스 하나_ 로만 제한되며, 템플릿 안에 있는 다른 구조 디렉티브에도 같은 이름의 변수를 사용할 수 있습니다.
 
-<!--
-You declare a template _reference_ variable by prefixing the variable name with `#` (`#var`).
-A _reference_ variable refers to its attached element, component or directive.
-It can be accessed _anywhere_ in the _entire template_.
--->
 반면에 템플릿 _참조_ 변수는 `#var`와 같이 `#` 접두사를 붙여 선언합니다.
 이 변수는 템플릿 참조 변수가 붙은 엘리먼트나 컴포넌트, 디렉티브를 가리키며, _템플릿 전체_ 범위에서 이 엘리먼트를 자유롭게 참조할 수 있습니다.
 
-<!--
-Template _input_ and _reference_ variable names have their own namespaces. The `hero` in `let hero` is never the same
-variable as the `hero` declared as `#hero`.
--->
-템플릿 _입력_ 변수와 _참조_ 변수의 이름은 각각의 네임스페이스 안에 존재합니다. 그래서 `let hero`라고 선언했을 때의 `hero`와 `#hero`라고 선언했을 때의 `hero`는 다른 변수입니다.
+템플릿 _입력_ 변수와 _참조_ 변수의 이름은 각각의 네임스페이스 안에 존재합니다.
+그래서 `let hero`라고 선언했을 때의 `hero`와 `#hero`라고 선언했을 때의 `hero`는 다른 변수입니다.
 
 {@a one-per-element}
-{@a one-structural-directive-per-host-element}
 
+{@a one-structural-directive-per-host-element}
 <!--
 ## One structural directive per host element
 -->
@@ -697,32 +730,29 @@ variable as the `hero` declared as `#hero`.
 Someday you'll want to repeat a block of HTML but only when a particular condition is true.
 You'll _try_ to put both an `*ngFor` and an `*ngIf` on the same host element.
 Angular won't let you. You may apply only one _structural_ directive to an element.
+
+The reason is simplicity. Structural directives can do complex things with the host element and its descendents.
+When two directives lay claim to the same host element, which one takes precedence?
+Which should go first, the `NgIf` or the `NgFor`? Can the `NgIf` cancel the effect of the `NgFor`?
+If so (and it seems like it should be so), how should Angular generalize the ability to cancel for other structural directives?
+
+There are no easy answers to these questions. Prohibiting multiple structural directives makes them moot.
+There's an easy solution for this use case: put the `*ngIf` on a container element that wraps the `*ngFor` element.
+One or both elements can be an [`ng-container`](guide/structural-directives#ngcontainer) so you don't have to introduce extra levels of HTML.
 -->
 `ngFor`로 순회하는 배열의 각 항목이 특정 조건일때만 이 항목을 화면에 사용하도록 하려고 합니다.
 그러면 호스트 엘리먼트에 `*ngFor`를 사용하면서 `*ngIf`를 함께 사용하는 것이 맞다고 생각할 수 있습니다.
 하지만 이 문법은 동작하지 않습니다. _구조_ 디렉티브는 한 엘리먼트에 하나만 적용할 수 있습니다.
 
-<!--
-The reason is simplicity. Structural directives can do complex things with the host element and its descendents.
-When two directives lay claim to the same host element, which one takes precedence?
-Which should go first, the `NgIf` or the `NgFor`? Can the `NgIf` cancel the effect of the `NgFor`?
-If so (and it seems like it should be so), how should Angular generalize the ability to cancel for other structural directives?
--->
 이유는 단순합니다. 구조 디렉티브를 다른 구조 디렉티브와 함께 사용하는 로직은 간단하게 일반화 할 수 없습니다.
 하나의 호스트 엘리먼트에 구조 디렉티브가 여러개 적용되면 어떻게 될까요?
 `NgIf`와 `NgFor`중 어떤 것이 먼저 처리되어야 할까요? `NgFor` 전체에 대해 `NgIf`가 적용되는 것이 맞을까요?
 `NgFor`이외의 구조 디렉티브에도 이 정책을 적용하는 것이 맞을까요?
 
-<!--
-There are no easy answers to these questions. Prohibiting multiple structural directives makes them moot.
-There's an easy solution for this use case: put the `*ngIf` on a container element that wraps the `*ngFor` element.
-One or both elements can be an [`ng-container`](guide/structural-directives#ngcontainer) so you don't have to introduce extra levels of HTML.
--->
 답을 내리기는 쉽지 않습니다. 구조 디렉티브가 동시에 여러개 사용된다면 각각의 경우를 모두 따져봐야 합니다.
 하지만 `*ngFor`를 적용한 엘리먼트 안에 또 다른 엘리먼트를 두고 이 엘리먼트에 `*ngIf`를 적용하는 경우라면 간단합니다.
-<!--
 하나 또는 두 개의 엘리먼트는 [`ng-container`](guide/structural-directives#ngcontainer)의 대상이 될 수 있기 때문에, 기존에 활용하던 HTML에서 크게 벗어나지 않습니다.
--->
+
 
 {@a ngSwitch}
 
@@ -734,12 +764,11 @@ One or both elements can be an [`ng-container`](guide/structural-directives#ngco
 
 <!--
 The Angular _NgSwitch_ is actually a set of cooperating directives: `NgSwitch`, `NgSwitchCase`, and `NgSwitchDefault`.
+
+Here's an example.
 -->
 Angular 기본 디렉티브인 _NgSwitch_ 를 사용한다는 것은 사실 `NgSwitch`, `NgSwitchCase`, `NgSwitchDefault` 디렉티브를 함께 사용하는 것을 의미합니다.
 
-<!--
-Here's an example.
--->
 예제를 확인해 봅시다.
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngswitch)" region="ngswitch"></code-example>
@@ -748,24 +777,23 @@ Here's an example.
 <!--
 The switch value assigned to `NgSwitch` (`hero.emotion`) determines which
 (if any) of the switch cases are displayed.
--->
-`NgSwitch`는 적용되는 값에 해당되는 템플릿을 화면에 표시합니다. 위 예제의 경우에는 `hero.emotion`에 의해 결정됩니다.
 
-<!--
 `NgSwitch` itself is not a structural directive.
 It's an _attribute_ directive that controls the behavior of the other two switch directives.
 That's why you write `[ngSwitch]`, never `*ngSwitch`.
--->
-`NgSwitch` 디렉티브 자체는 구조 디렉티브가 아닙니다.
-`NgSwitch` 디렉티브는 _어트리뷰트_ 디렉티브이며, 다른 두 디렉티브의 동작을 조절합니다.
-그래서 `*ngSwitch`와 같이 지정하지 않고 `[ngSwitch]`로 지정합니다.
 
-<!--
 `NgSwitchCase` and `NgSwitchDefault` _are_ structural directives.
 You attach them to elements using the asterisk (*) prefix notation.
 An `NgSwitchCase` displays its host element when its value matches the switch value.
 The `NgSwitchDefault` displays its host element when no sibling `NgSwitchCase` matches the switch value.
 -->
+`NgSwitch`는 적용되는 값에 해당되는 템플릿을 화면에 표시합니다. 위 예제의 경우에는 `hero.emotion`에 의해 결정됩니다.
+
+-->
+`NgSwitch` 디렉티브 자체는 구조 디렉티브가 아닙니다.
+`NgSwitch` 디렉티브는 _어트리뷰트_ 디렉티브이며, 다른 두 디렉티브의 동작을 조절합니다.
+그래서 `*ngSwitch`와 같이 지정하지 않고 `[ngSwitch]`로 지정합니다.
+
 `NgSwitchCase`와 `NgSwitchDefault`는 구조 디렉티브입니다.
 그래서 이 디렉티브들은 별표(`*`)를 사용하면서 엘리먼트에 지정합니다.
 그러면 지정된 값에 해당하는 `NgSwitchCase`가 화면에 표시되고, 아무 값도 해당되지 않으면 `NgSwitchDefault`가 화면에 표시됩니다.
@@ -832,15 +860,14 @@ You'll refer to the `<ng-template>` when you [write your own structural directiv
 The &lt;ng-template&gt; is an Angular element for rendering HTML.
 It is never displayed directly.
 In fact, before rendering the view, Angular _replaces_ the `<ng-template>` and its contents with a comment.
--->
-`<ng-template>`은 Angular가 HTML을 렌더링할 때 사용하는 엘리먼트이며, 화면에 직접 노출되지는 않습니다.
-그리고 `<ng-template>` 안에 있는 내용은 Angular가 뷰를 렌더링하기 전에 주석으로 변경됩니다.
 
-<!--
 If there is no structural directive and you merely wrap some elements in a `<ng-template>`,
 those elements disappear.
 That's the fate of the middle "Hip!" in the phrase "Hip! Hip! Hooray!".
 -->
+`<ng-template>`은 Angular가 HTML을 렌더링할 때 사용하는 엘리먼트이며, 화면에 직접 노출되지는 않습니다.
+그리고 `<ng-template>` 안에 있는 내용은 Angular가 뷰를 렌더링하기 전에 주석으로 변경됩니다.
+
 구조 디렉티브를 하나도 사용하지 않고 엘리먼트를 `<ng-template>`으로 감싸기만 하면, 이 엘리먼트는 화면에 표시되지 않습니다.
 그래서 다음 "Hip! Hip! Hooray!" 문단들 중 두 번째 문단인 "Hip!"은 표시되지 않습니다.
 
@@ -897,15 +924,14 @@ such as a `<div>`, and attach the directive to that wrapper.
 Introducing another container element&mdash;typically a `<span>` or `<div>`&mdash;to
 group the elements under a single _root_ is usually harmless.
 _Usually_ ... but not _always_.
--->
-호스트 엘리먼트 하나 밑에 `<span>`이나 `<div>` 엘리먼트를 사용하는 것은 일반적으로 문제가 없습니다.
-_보통은_ 그렇죠. 하지만 _항상_ 그런 것은 아닙니다.
 
-<!--
 The grouping element may break the template appearance because CSS styles
 neither expect nor accommodate the new layout.
 For example, suppose you have the following paragraph layout.
 -->
+호스트 엘리먼트 하나 밑에 `<span>`이나 `<div>` 엘리먼트를 사용하는 것은 일반적으로 문제가 없습니다.
+_보통은_ 그렇죠. 하지만 _항상_ 그런 것은 아닙니다.
+
 엘리먼트를 묶으면 이 엘리먼트가 템플릿의 어떤 자리에 위치하는지에 따라서 CSS 스타일이 잘못 지정되거나 레이아웃 자체가 틀어질 수 있습니다.
 예를 들어 다음과 같은 문단이 있다고 합시다.
 
@@ -932,21 +958,19 @@ The constructed paragraph renders strangely.
 
 <!--
 The `p span` style, intended for use elsewhere, was inadvertently applied here.
--->
-`p span` 스타일은 전역에 사용하려고 선언했지만, 이곳에는 적용되지 않는 것이 더 나은 것 같습니다.
 
-<!--
 Another problem: some HTML elements require all immediate children to be of a specific type.
 For example, the `<select>` element requires `<option>` children.
 You can't wrap the _options_ in a conditional `<div>` or a `<span>`.
+
+When you try this,
 -->
+`p span` 스타일은 전역에 사용하려고 선언했지만, 이곳에는 적용되지 않는 것이 더 나은 것 같습니다.
+
 그리고 또 다른 문제도 있습니다. 일부 엘리먼트는 바로 밑 자식 엘리먼트에 특정한 형태를 요구하는 경우도 있습니다.
 예를 들면 `<select>` 엘리먼트 안에 `<option>` 엘리먼트를 구성해야 하는 경우가 그렇습니다.
 `<div>`나 `<span>` 엘리먼트에는 `<option>` 엘리먼트를 사용하는 것이 적합하지 않습니다.
 
-<!--
-When you try this,
--->
 다음 코드를 봅시다.
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (select-span)" region="select-span"></code-example>
@@ -967,6 +991,7 @@ The browser won't display an `<option>` within a `<span>`.
 -->
 브라우저는 `<span>` 안에 있는 `<option>`을 처리하지 않습니다.
 
+
 <!--
 ### &lt;ng-container&gt; to the rescue
 -->
@@ -975,13 +1000,13 @@ The browser won't display an `<option>` within a `<span>`.
 <!--
 The Angular `<ng-container>` is a grouping element that doesn't interfere with styles or layout
 because Angular _doesn't put it in the DOM_.
--->
-Angular가 제공하는 `<ng-container>`를 사용하면 스타일이나 레이아웃을 그대로 유지하면서 여러 엘리먼트를 한 그룹으로 묶을 수 있습니다. 왜냐하면 Angular는 이 엘리먼트를 _DOM에 직접 추가하지 않기 때문_ 입니다.
 
-<!--
 Here's the conditional paragraph again, this time using `<ng-container>`.
 -->
+`<ng-container>`를 사용하면 스타일이나 레이아웃을 그대로 유지하면서 여러 엘리먼트를 한 그룹으로 묶을 수 있습니다. 왜냐하면 Angular는 이 엘리먼트를 _DOM에 직접 추가하지 않기 때문_ 입니다.
+
 `ngIf`를 사용하는 `<p>` 엘리먼트를 생각해 봅시다. 이 엘리먼트는 `<ng-container>`를 사용합니다.
+
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif-ngcontainer)" region="ngif-ngcontainer"></code-example>
 
@@ -1094,6 +1119,7 @@ Here's how you might begin:
 
 이렇게 작성하면 다음과 비슷한 코드가 될 것입니다:
 
+
 <code-example path="structural-directives/src/app/unless.directive.ts" header="src/app/unless.directive.ts (skeleton)" region="skeleton"></code-example>
 
 
@@ -1101,27 +1127,27 @@ Here's how you might begin:
 The directive's _selector_ is typically the directive's **attribute name** in square brackets, `[appUnless]`.
 The brackets define a CSS
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors" title="MDN: Attribute selectors">attribute selector</a>.
--->
-디렉티브의 _셀렉터_ 는 일반적으로 디렉티브의 **어트리뷰트 이름**을 대괄호로 감싼 형태가 되기 때문에 이 예제에서는 `[appUnless]`를 지정했습니다.
-대괄호는 CSS <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors" title="MDN: Attribute selectors">어트리뷰트 셀렉터</a>를 의미합니다.
 
-<!--
 The directive _attribute name_ should be spelled in _lowerCamelCase_ and begin with a prefix.
 Don't use `ng`. That prefix belongs to Angular.
 Pick something short that fits you or your company.
 In this example, the prefix is `app`.
+
+
+The directive _class_ name ends in `Directive` per the [style guide](guide/styleguide#02-03 "Angular Style Guide").
+Angular's own directives do not.
 -->
+디렉티브의 _셀렉터_ 는 일반적으로 디렉티브의 **어트리뷰트 이름**을 대괄호로 감싼 형태가 되기 때문에 이 예제에서는 `[appUnless]`를 지정했습니다.
+대괄호는 CSS <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors" title="MDN: Attribute selectors">어트리뷰트 셀렉터</a>를 의미합니다.
+
 디렉티브의 _어트리뷰트 이름_ 은 애플리케이션에서 정의한 접두사로 시작하며 _소문자 캐멀 케이스_ 로 지정합니다.
 이 때 `ng`는 Angular가 내부적으로 사용하고 있기 때문에 접두사로 사용하면 안됩니다.
 개발 환경이나 회사에 적합한 접두사를 사용하세요.
 이 예제에서는 `app`을 접두사로 사용했습니다.
 
-<!--
-The directive _class_ name ends in `Directive` per the [style guide](guide/styleguide#02-03 "Angular Style Guide").
-Angular's own directives do not.
--->
 그리고 [코딩 가이드](guide/styleguide#02-03 "Angular Style Guide")에 따라 디렉티브 _클래스_ 이름은 `Directive`로 끝나도록 정의했습니다.
 참고로 Angular 기본 디렉티브는 `Directive`로 끝나지 않습니다.
+
 
 <!--
 ### _TemplateRef_ and _ViewContainerRef_
@@ -1134,20 +1160,21 @@ A simple structural directive like this one creates an
 from the Angular-generated `<ng-template>` and inserts that view in a
 [_view container_](api/core/ViewContainerRef "API: ViewContainerRef")
 adjacent to the directive's original `<p>` host element.
--->
-구조 디렉티브는 `<ng-template>`을 사용하는 [_내장 뷰_](api/core/EmbeddedViewRef "API: EmbeddedViewRef")를 생성하고, 이 뷰를 [_뷰 컨테이너_](api/core/ViewContainerRef "API: ViewContainerRef") 로 감싼 후에 호스트 엘리먼트인 `<p>` 옆에 추가합니다.
 
-<!--
 You'll acquire the `<ng-template>` contents with a
 [`TemplateRef`](api/core/TemplateRef "API: TemplateRef")
 and access the _view container_ through a
 [`ViewContainerRef`](api/core/ViewContainerRef "API: ViewContainerRef").
+
+You inject both in the directive constructor as private variables of the class.
+
+
+<code-example path="structural-directives/src/app/unless.directive.ts" header="src/app/unless.directive.ts (ctor)" region="ctor"></code-example>
 -->
+구조 디렉티브는 `<ng-template>`을 사용하는 [_내장 뷰_](api/core/EmbeddedViewRef "API: EmbeddedViewRef")를 생성하고, 이 뷰를 [_뷰 컨테이너_](api/core/ViewContainerRef "API: ViewContainerRef") 로 감싼 후에 호스트 엘리먼트인 `<p>` 옆에 추가합니다.
+
 그러면 `<ng-template>`의 내용은 [`TemplateRef`](api/core/TemplateRef "API: TemplateRef")로 참조할 수 있고, _뷰 컨테이너_ 는 [`ViewContainerRef`](api/core/ViewContainerRef "API: ViewContainerRef")로 참조할 수 있습니다.
 
-<!--
-You inject both in the directive constructor as private variables of the class.
--->
 두 객체를 클래스에서 참조할 수 있도록 디렉티브 생성자에 두 심볼을 의존성으로 주입합니다.
 
 <code-example path="structural-directives/src/app/unless.directive.ts" header="src/app/unless.directive.ts (ctor)" region="ctor"></code-example>
@@ -1157,6 +1184,7 @@ You inject both in the directive constructor as private variables of the class.
 ### The _appUnless_ property
 -->
 ### _appUnless_ 프로퍼티
+
 
 <!--
 The directive consumer expects to bind a true/false condition to `[appUnless]`.
@@ -1231,6 +1259,90 @@ When the `condition` is truthy, the top (A) paragraph is removed and the bottom 
   <img src='generated/images/guide/structural-directives/unless-anim.gif' alt="UnlessDirective in action">
 </div>
 
+{@a directive-type-checks}
+
+## Improving template type checking for custom directives
+
+You can improve template type checking for custom directives by adding template guard properties to your directive definition.
+These properties help the Angular template type checker find mistakes in the template at compile time, which can avoid runtime errors those mistakes can cause.
+
+Use the type-guard properties to inform the template type checker of an expected type, thus improving compile-time type-checking for that template.
+
+* A property `ngTemplateGuard_(someInputProperty)` lets you specify a more accurate type for an input expression within the template.
+* The `ngTemplateContextGuard` static property declares the type of the template context.
+
+This section provides example of both kinds of type-guard property.
+
+<div class="alert is-helpful">
+
+   For more information, see [Template type checking guide](guide/template-typecheck "Template type-checking guide").
+
+</div>
+
+{@a narrowing-input-types}
+
+### Make in-template type requirements more specific with template guards
+
+A structural directive in a template controls whether that template is rendered at run time, based on its input expression.
+To help the compiler catch template type errors, you should specify as closely as possible the required type of a directive's input expression when it occurs inside the template.
+
+A type guard function *narrows* the expected type of an input expression to a subset of types that might be passed to the directive within the template at run time.
+You can provide such a function to help the type-checker infer the proper type for the expression at compile time.
+
+For example, the `NgIf` implementation uses type-narrowing to ensure that the
+template is only instantiated if the input expression to `*ngIf` is truthy.
+To provide the specific type requirement, the `NgIf` directive defines a [static property `ngTemplateGuard_ngIf: 'binding'`](api/common/NgIf#static-properties).
+The `binding` value is a special case for a common kind of type-narrowing where the input expression is evaluated in order to satisfy the type requirement.
+
+To provide a more specific type for an input expression to a directive within the template, add a `ngTemplateGuard_xx` property to the directive, where the suffix to the static property name is the `@Input` field name.
+The value of the property can be either a general type-narrowing function based on its return type, or the string `"binding"` as in the case of `NgIf`.
+
+For example, consider the following structural directive that takes the result of a template expression as an input.
+
+<code-example language="ts" header="IfLoadedDirective">
+export type Loaded<T> = { type: 'loaded', data: T };
+export type Loading = { type: 'loading' };
+export type LoadingState<T> = Loaded<T> | Loading;
+export class IfLoadedDirective<T> {
+    @Input('ifLoaded') set state(state: LoadingState<T>) {}
+    static ngTemplateGuard_state<T>(dir: IfLoadedDirective<T>, expr: LoadingState<T>): expr is Loaded<T> { return true; };
+export interface Person {
+  name: string;
+}
+
+@Component({
+  template: `<div *ifLoaded="state">{{ state.data }}</div>`,
+})
+export class AppComponent {
+  state: LoadingState<Person>;
+}
+</code-example>
+
+In this example, the `LoadingState<T>` type permits either of two states, `Loaded<T>` or `Loading`. The expression used as the directive’s `state` input is of the umbrella type `LoadingState`, as it’s unknown what the loading state is at that point.
+
+The `IfLoadedDirective` definition declares the static field `ngTemplateGuard_state`, which expresses the narrowing behavior.
+Within the `AppComponent` template, the `*ifLoaded` structural directive should render this template only when `state` is actually `Loaded<Person>`.
+The type guard allows the type checker to infer that the acceptable type of `state` within the template is a `Loaded<T>`, and further infer that `T` must be an instance of `Person`.
+
+{@a narrowing-context-type}
+
+### Typing the directive's context
+
+If your structural directive provides a context to the instantiated template, you can properly type it inside the template by providing a static `ngTemplateContextGuard` function.
+The following snippet shows an example of such a function.
+
+<code-example language="ts" header="myDirective.ts">
+@Directive({…})
+export class ExampleDirective {
+    // Make sure the template checker knows the type of the context with which the
+    // template of this directive will be rendered
+    static ngTemplateContextGuard(dir: ExampleDirective, ctx: unknown): ctx is ExampleContext { return true; };
+
+    // …
+}
+</code-example>
+
+
 
 {@a summary}
 
@@ -1241,13 +1353,13 @@ When the `condition` is truthy, the top (A) paragraph is removed and the bottom 
 
 <!--
 You can both try and download the source code for this guide in the <live-example></live-example>.
+
+Here is the source from the `src/app/` folder.
 -->
 이 문서에서 설명하는 예제는 <live-example></live-example>에서 직접 확인하거나 다운받을 수 있습니다.
 
-<!--
-Here is the source from the `src/app/` folder.
--->
 그리고 소스 코드 `src/app/` 폴더의 내용은 다음과 같습니다.
+
 
 <code-tabs>
 
@@ -1283,7 +1395,7 @@ Here is the source from the `src/app/` folder.
 
 
 <!--
-You learned
+You learned:
 -->
 이 문서에서는 다음 내용에 대해 다뤘습니다.
 

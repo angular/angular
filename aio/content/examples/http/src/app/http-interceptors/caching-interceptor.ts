@@ -13,13 +13,13 @@ import { searchUrl } from '../package-search/package-search.service';
 
 
 /**
- * If request is cachable (e.g., package search) and
+ * If request is cacheable (e.g., package search) and
  * response is in cache return the cached response as observable.
  * If has 'x-refresh' header that is true,
  * then also re-run the package search, using response from next(),
  * returning an observable that emits the cached response first.
  *
- * If not in cache or not cachable,
+ * If not in cache or not cacheable,
  * pass request through to next()
  */
 // #docregion v1
@@ -29,7 +29,7 @@ export class CachingInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     // 캐싱 대상이 아니면 그대로 진행합니다.
-    if (!isCachable(req)) { return next.handle(req); }
+    if (!isCacheable(req)) { return next.handle(req); }
 
     const cachedResponse = this.cache.get(req);
     // #enddocregion v1
@@ -51,11 +51,11 @@ export class CachingInterceptor implements HttpInterceptor {
 // #enddocregion v1
 
 
-/** Is this request cachable? */
-function isCachable(req: HttpRequest<any>) {
-  // Only GET requests are cachable
+/** Is this request cacheable? */
+function isCacheable(req: HttpRequest<any>) {
+  // Only GET requests are cacheable
   return req.method === 'GET' &&
-    // Only npm package search is cachable in this app
+    // Only npm package search is cacheable in this app
     -1 < req.url.indexOf(searchUrl);
 }
 

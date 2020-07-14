@@ -37,6 +37,20 @@ sh_binary(
     data = ["@npm//sauce-connect"],
 )
 
+sh_binary(
+    name = "sauce_service_tail",
+    srcs = ["sauce-service.sh"],
+    args = ["tail"],
+    data = ["@npm//sauce-connect"],
+)
+
+sh_binary(
+    name = "sauce_service_log",
+    srcs = ["sauce-service.sh"],
+    args = ["log"],
+    data = ["@npm//sauce-connect"],
+)
+
 nodejs_binary(
     name = "karma-saucelabs",
     data = [
@@ -46,5 +60,5 @@ nodejs_binary(
         "@npm//shelljs",
     ],
     entry_point = "karma-saucelabs.js",
-    templated_args = ["$(location sauce-service.sh)"],
+    templated_args = ["$(rootpath sauce-service.sh)"],
 )

@@ -202,18 +202,25 @@ See also [Schematics CLI](#schematics-cli).
 
 ## component
 
-A class with the `@Component()` [decorator](#decorator) that associates it with a companion [template](#template). Together, the component and template define a [view](#view).
+A class with the `@Component()` [decorator](#decorator) that associates it with a companion [template](#template). Together, the component class and template define a [view](#view).
 A component is a special type of [directive](#directive).
 The `@Component()` decorator extends the `@Directive()` decorator with template-oriented features.
 
 An Angular component class is responsible for exposing data and handling most of the view's display and user-interaction logic through [data binding](#data-binding).
 
-Read more about components, templates, and views in [Architecture Overview](guide/architecture).
+Read more about component classes, templates, and views in [Introduction to Angular concepts](guide/architecture).
 
 ## configuration
 
 See  [workspace configuration](#cli-config)
 
+{@a content-projection}
+
+## content projection
+
+A way to insert DOM content from outside a component into the component's view in a designated spot.
+
+For more information, see [Responding to changes in content](guide/lifecycle-hooks#content-projection).
 
 {@a custom-element}
 
@@ -594,7 +601,7 @@ Compare to [NgModule](#ngmodule).
 ## ngcc
 
 Angular compatibility compiler.
-If you build your app using [Ivy](#ivy), but it depends on libraries have not been compiled with Ivy, the CLI uses `ngcc` to automatically update the dependent libraries to use Ivy.
+If you build your app using [Ivy](#ivy), but it depends on libraries that have not been compiled with Ivy, the CLI uses `ngcc` to automatically update the dependent libraries to use Ivy.
 
 
 {@a ngmodule}
@@ -878,13 +885,13 @@ You can also define a custom builder, and add a target to the project configurat
 
 ## template
 
-Code associated with a component that defines how to render the component's [view](#view).
+Code that defines how to render a component's [view](#view).
 
 A template combines straight HTML with Angular [data-binding](#data-binding) syntax, [directives](#directive),
 and [template expressions](#template-expression) (logical constructs).
-The Angular elements insert or calculate values that modify the HTML elements before the page is displayed.
+The Angular elements insert or calculate values that modify the HTML elements before the page is displayed. Learn more about Angular template language in the [Template Syntax](guide/template-syntax) guide.
 
-A template is associated with a [component](#component) class through the `@Component()` [decorator](#decorator). The HTML can be provided inline, as the value of the `template` property, or in a separate HTML file linked through the `templateUrl` property.
+A template is associated with a [component class](#component) through the `@Component()` [decorator](#decorator). The template code can be provided inline, as the value of the `template` property, or in a separate HTML file linked through the `templateUrl` property.
 
 Additional templates, represented by `TemplateRef` objects, can define alternative or *embedded* views, which can be referenced from multiple components.
 
@@ -943,8 +950,25 @@ Many code editors and IDEs support TypeScript either natively or with plug-ins.
 TypeScript is the preferred language for Angular development.
 Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org/).
 
+## TypeScript configuration file
+
+A file specifies the root files and the compiler options required to compile a TypeScript project. For more information, see [TypeScript configuration](/guide/typescript-configuration).
+
 
 {@a U}
+
+{@a unidirectional-data-flow}
+
+## unidirectional data flow
+
+A data flow model where the component tree is always checked for changes in one direction (parent to child), which prevents cycles in the change detection graph.
+
+In practice, this means that data in Angular flows downward during change detection.
+A parent component can easily change values in its child components because the parent is checked first.
+A failure could occur, however, if a child component tries to change a value in its parent during change detection (inverting the expected data flow), because the parent component has already been rendered.
+In development mode, Angular throws the `ExpressionChangedAfterItHasBeenCheckedError` error if your app attempts to do this, rather than silently failing to render the new value.
+
+To avoid this error, a [lifecycle hook](guide/lifecycle-hooks) method that seeks to make such a change should trigger a new change detection run. The new run follows the same direction as before, but succeeds in picking up the new value.
 
 {@a universal}
 
@@ -963,11 +987,11 @@ To learn more, see [Angular Universal: server-side rendering](guide/universal).
 ## view
 
 The smallest grouping of display elements that can be created and destroyed together.
-Angular renders a view under the control of one or more [directives](#directive),
-especially [component](#component) directives and their companion [templates](#template).
+Angular renders a view under the control of one or more [directives](#directive).
 
-A view is specifically represented by a `ViewRef` instance associated with the component.
-A view that belongs to a component is called a *host view*.
+A [component](#component) class and its associated [template](#template) define a view.
+A view is specifically represented by a `ViewRef` instance associated with a component.
+A view that belongs immediately to a component is called a *host view*.
 Views are typically collected into [view hierarchies](#view-tree).
 
 Properties of elements in a view can change dynamically, in response to user actions;

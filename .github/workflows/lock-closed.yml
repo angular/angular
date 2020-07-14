@@ -7,6 +7,7 @@ on:
 
 jobs:
   lock_closed:
+    if: github.repository == 'angular/angular'
     runs-on: ubuntu-latest
     steps:
       - uses: angular/dev-infra/github-actions/lock-closed@66462f6

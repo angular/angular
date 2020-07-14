@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -30,8 +30,9 @@ describe('r3_transform_spec', () => {
         .toContain('static someMethod(v) { return v; }');
   });
 
-  it('should be able to generate a static field declaration',
-     () => { expect(emitStaticField(o.literal(10))).toContain('SomeClass.someField = 10'); });
+  it('should be able to generate a static field declaration', () => {
+    expect(emitStaticField(o.literal(10))).toContain('SomeClass.someField = 10');
+  });
 
   it('should be able to import a symbol', () => {
     expect(emitStaticMethod(new o.ReturnStatement(
@@ -40,14 +41,16 @@ describe('r3_transform_spec', () => {
   });
 
   it('should be able to modify multiple classes in the same module', () => {
-    const result = emit(getAngularClassTransformerFactory([{
-      fileName: someGenFileName,
-      statements: [
-        classMethod(new o.ReturnStatement(o.variable('v')), ['v'], 'someMethod', 'SomeClass'),
-        classMethod(
-            new o.ReturnStatement(o.variable('v')), ['v'], 'someOtherMethod', 'SomeOtherClass')
-      ]
-    }]));
+    const result = emit(getAngularClassTransformerFactory(
+        [{
+          fileName: someGenFileName,
+          statements: [
+            classMethod(new o.ReturnStatement(o.variable('v')), ['v'], 'someMethod', 'SomeClass'),
+            classMethod(
+                new o.ReturnStatement(o.variable('v')), ['v'], 'someOtherMethod', 'SomeOtherClass')
+          ]
+        }],
+        false));
     expect(result).toContain('static someMethod(v) { return v; }');
     expect(result).toContain('static someOtherMethod(v) { return v; }');
   });
@@ -88,13 +91,13 @@ describe('r3_transform_spec', () => {
   }
 
   function emitStaticMethod(
-      stmt: o.Statement | o.Statement[], parameters: string[] = [],
-      methodName: string = 'someMethod', className: string = 'SomeClass'): string {
+      stmt: o.Statement|o.Statement[], parameters: string[] = [], methodName: string = 'someMethod',
+      className: string = 'SomeClass'): string {
     const module: PartialModule = {
       fileName: someGenFileName,
       statements: [classMethod(stmt, parameters, methodName, className)]
     };
-    return emit(getAngularClassTransformerFactory([module]));
+    return emit(getAngularClassTransformerFactory([module], false));
   }
 
   function emitStaticField(
@@ -104,7 +107,7 @@ describe('r3_transform_spec', () => {
       fileName: someGenFileName,
       statements: [classField(initializer, fieldName, className)]
     };
-    return emit(getAngularClassTransformerFactory([module]));
+    return emit(getAngularClassTransformerFactory([module], false));
   }
 });
 
@@ -120,7 +123,7 @@ const FILES: Directory = {
 };
 
 function classMethod(
-    stmt: o.Statement | o.Statement[], parameters: string[] = [], methodName: string = 'someMethod',
+    stmt: o.Statement|o.Statement[], parameters: string[] = [], methodName: string = 'someMethod',
     className: string = 'SomeClass'): o.ClassStmt {
   const statements = Array.isArray(stmt) ? stmt : [stmt];
   return new o.ClassStmt(

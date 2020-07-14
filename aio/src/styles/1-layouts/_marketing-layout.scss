@@ -132,7 +132,7 @@ section#intro {
   box-sizing: border-box;
   transition: all 0.3s ease-in;
 
-  @media (max-width: 992px) {
+  @media (max-width: 991px) {
     flex-direction: column;
     text-align: center;
     padding: 32px 16px;

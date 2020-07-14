@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@
 import {ExternalExpr, SchemaMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode, makeDiagnostic} from '../../diagnostics';
+import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {AliasingHost, Reexport, Reference, ReferenceEmitter} from '../../imports';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
@@ -143,7 +143,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null|'error' {
     const scope = !this.declarationToModule.has(clazz) ?
         null :
-        this.getScopeOfModule(this.declarationToModule.get(clazz) !.ngModule);
+        this.getScopeOfModule(this.declarationToModule.get(clazz)!.ngModule);
     return scope;
   }
 
@@ -159,7 +159,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
       return null;
     }
 
-    return Array.from(this.duplicateDeclarations.get(node) !.values());
+    return Array.from(this.duplicateDeclarations.get(node)!.values());
   }
 
   /**
@@ -172,7 +172,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    */
   getScopeOfModule(clazz: ClassDeclaration): LocalModuleScope|'error'|null {
     const scope = this.moduleToRef.has(clazz) ?
-        this.getScopeOfModuleReference(this.moduleToRef.get(clazz) !) :
+        this.getScopeOfModuleReference(this.moduleToRef.get(clazz)!) :
         null;
     // If the NgModule class is marked as tainted, consider it an error.
     if (this.taintedModules.has(clazz)) {
@@ -193,7 +193,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     this.getScopeOfModule(clazz);
 
     if (this.scopeErrors.has(clazz)) {
-      return this.scopeErrors.get(clazz) !;
+      return this.scopeErrors.get(clazz)!;
     } else {
       return null;
     }
@@ -218,21 +218,22 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
       rawDeclarations: ts.Expression|null): void {
     const declData: DeclarationData = {
       ngModule,
-      ref: decl, rawDeclarations,
+      ref: decl,
+      rawDeclarations,
     };
 
     // First, check for duplicate declarations of the same directive/pipe.
     if (this.duplicateDeclarations.has(decl.node)) {
       // This directive/pipe has already been identified as being duplicated. Add this module to the
       // map of modules for which a duplicate declaration exists.
-      this.duplicateDeclarations.get(decl.node) !.set(ngModule, declData);
+      this.duplicateDeclarations.get(decl.node)!.set(ngModule, declData);
     } else if (
         this.declarationToModule.has(decl.node) &&
-        this.declarationToModule.get(decl.node) !.ngModule !== ngModule) {
+        this.declarationToModule.get(decl.node)!.ngModule !== ngModule) {
       // This directive/pipe is already registered as declared in another module. Mark it as a
       // duplicate instead.
       const duplicateDeclMap = new Map<ClassDeclaration, DeclarationData>();
-      const firstDeclData = this.declarationToModule.get(decl.node) !;
+      const firstDeclData = this.declarationToModule.get(decl.node)!;
 
       // Mark both modules as tainted, since their declarations are missing a component.
       this.taintedModules.add(firstDeclData.ngModule);
@@ -277,6 +278,11 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
       return null;
     }
 
+    // Modules which contributed to the compilation scope of this module.
+    const compilationModules = new Set<ClassDeclaration>([ngModule.ref.node]);
+    // Modules which contributed to the export scope of this module.
+    const exportedModules = new Set<ClassDeclaration>([ngModule.ref.node]);
+
     // Errors produced during computation of the scope are recorded here. At the end, if this array
     // isn't empty then `undefined` will be cached and returned to indicate this scope is invalid.
     const diagnostics: ts.Diagnostic[] = [];
@@ -296,9 +302,10 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     const exportPipes = new Map<ts.Declaration, PipeMeta>();
 
     // The algorithm is as follows:
-    // 1) Add directives/pipes declared in the NgModule to the compilation scope.
-    // 2) Add all of the directives/pipes from each NgModule imported into the current one to the
-    //    compilation scope. At this point, the compilation scope is complete.
+    // 1) Add all of the directives/pipes from each NgModule imported into the current one to the
+    //    compilation scope.
+    // 2) Add directives/pipes declared in the NgModule to the compilation scope. At this point, the
+    //    compilation scope is complete.
     // 3) For each entry in the NgModule's exports:
     //    a) Attempt to resolve it as an NgModule with its own exported directives/pipes. If it is
     //       one, add them to the export scope of this NgModule.
@@ -307,31 +314,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     //    c) If it's neither an NgModule nor a directive/pipe in the compilation scope, then this
     //       is an error.
 
-    // 1) add declarations.
-    for (const decl of ngModule.declarations) {
-      const directive = this.localReader.getDirectiveMetadata(decl);
-      const pipe = this.localReader.getPipeMetadata(decl);
-      if (directive !== null) {
-        compilationDirectives.set(decl.node, {...directive, ref: decl});
-      } else if (pipe !== null) {
-        compilationPipes.set(decl.node, {...pipe, ref: decl});
-      } else {
-        this.taintedModules.add(ngModule.ref.node);
-
-        const errorNode = decl.getOriginForDiagnostics(ngModule.rawDeclarations !);
-        diagnostics.push(makeDiagnostic(
-            ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
-            `The class '${decl.node.name.text}' is listed in the declarations of the NgModule '${ngModule.ref.node.name.text}', but is not a directive, a component, or a pipe.
-
-Either remove it from the NgModule's declarations, or add an appropriate Angular decorator.`,
-            [{node: decl.node.name, messageText: `'${decl.node.name.text}' is declared here.`}]));
-        continue;
-      }
-
-      declared.add(decl.node);
-    }
-
-    // 2) process imports.
+    // 1) process imports.
     for (const decl of ngModule.imports) {
       const importScope = this.getExportedScope(decl, diagnostics, ref.node, 'import');
       if (importScope === null) {
@@ -351,6 +334,36 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
       for (const pipe of importScope.exported.pipes) {
         compilationPipes.set(pipe.ref.node, pipe);
       }
+      for (const importedModule of importScope.exported.ngModules) {
+        compilationModules.add(importedModule);
+      }
+    }
+
+    // 2) add declarations.
+    for (const decl of ngModule.declarations) {
+      const directive = this.localReader.getDirectiveMetadata(decl);
+      const pipe = this.localReader.getPipeMetadata(decl);
+      if (directive !== null) {
+        compilationDirectives.set(decl.node, {...directive, ref: decl});
+      } else if (pipe !== null) {
+        compilationPipes.set(decl.node, {...pipe, ref: decl});
+      } else {
+        this.taintedModules.add(ngModule.ref.node);
+
+        const errorNode = decl.getOriginForDiagnostics(ngModule.rawDeclarations!);
+        diagnostics.push(makeDiagnostic(
+            ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
+            `The class '${decl.node.name.text}' is listed in the declarations ` +
+                `of the NgModule '${
+                    ngModule.ref.node.name
+                        .text}', but is not a directive, a component, or a pipe. ` +
+                `Either remove it from the NgModule's declarations, or add an appropriate Angular decorator.`,
+            [makeRelatedInformation(
+                decl.node.name, `'${decl.node.name.text}' is declared here.`)]));
+        continue;
+      }
+
+      declared.add(decl.node);
     }
 
     // 3) process exports.
@@ -375,13 +388,16 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
         for (const pipe of importScope.exported.pipes) {
           exportPipes.set(pipe.ref.node, pipe);
         }
+        for (const exportedModule of importScope.exported.ngModules) {
+          exportedModules.add(exportedModule);
+        }
       } else if (compilationDirectives.has(decl.node)) {
         // decl is a directive or component in the compilation scope of this NgModule.
-        const directive = compilationDirectives.get(decl.node) !;
+        const directive = compilationDirectives.get(decl.node)!;
         exportDirectives.set(decl.node, directive);
       } else if (compilationPipes.has(decl.node)) {
         // decl is a pipe in the compilation scope of this NgModule.
-        const pipe = compilationPipes.get(decl.node) !;
+        const pipe = compilationPipes.get(decl.node)!;
         exportPipes.set(decl.node, pipe);
       } else {
         // decl is an unknown export.
@@ -398,6 +414,7 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
     const exported = {
       directives: Array.from(exportDirectives.values()),
       pipes: Array.from(exportPipes.values()),
+      ngModules: Array.from(exportedModules),
     };
 
     const reexports = this.getReexports(ngModule, ref, declared, exported, diagnostics);
@@ -420,6 +437,7 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
       compilation: {
         directives: Array.from(compilationDirectives.values()),
         pipes: Array.from(compilationPipes.values()),
+        ngModules: Array.from(compilationModules),
       },
       exported,
       reexports,
@@ -432,7 +450,9 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
   /**
    * Check whether a component requires remote scoping.
    */
-  getRequiresRemoteScope(node: ClassDeclaration): boolean { return this.remoteScoping.has(node); }
+  getRequiresRemoteScope(node: ClassDeclaration): boolean {
+    return this.remoteScoping.has(node);
+  }
 
   /**
    * Set a component as requiring remote scoping.
@@ -465,7 +485,8 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
                                          ErrorCode.NGMODULE_INVALID_EXPORT;
         diagnostics.push(makeDiagnostic(
             code, identifierOfNode(ref.node) || ref.node,
-            `Appears in the NgModule.${type}s of ${nodeNameForError(ownerForErrors)}, but could not be resolved to an NgModule`));
+            `Appears in the NgModule.${type}s of ${
+                nodeNameForError(ownerForErrors)}, but could not be resolved to an NgModule`));
         return undefined;
       }
       return this.dependencyScopeReader.resolve(ref);
@@ -495,16 +516,16 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
         return;
       }
       const isReExport = !declared.has(exportRef.node);
-      const exportName = this.aliasingHost !.maybeAliasSymbolAs(
+      const exportName = this.aliasingHost!.maybeAliasSymbolAs(
           exportRef, sourceFile, ngModule.ref.node.name.text, isReExport);
       if (exportName === null) {
         return;
       }
       if (!reexportMap.has(exportName)) {
         if (exportRef.alias && exportRef.alias instanceof ExternalExpr) {
-          reexports !.push({
-            fromModule: exportRef.alias.value.moduleName !,
-            symbolName: exportRef.alias.value.name !,
+          reexports!.push({
+            fromModule: exportRef.alias.value.moduleName!,
+            symbolName: exportRef.alias.value.name!,
             asAlias: exportName,
           });
         } else {
@@ -513,7 +534,7 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
               expr.value.name === null) {
             throw new Error('Expected ExternalExpr');
           }
-          reexports !.push({
+          reexports!.push({
             fromModule: expr.value.moduleName,
             symbolName: expr.value.name,
             asAlias: exportName,
@@ -522,7 +543,7 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
         reexportMap.set(exportName, exportRef);
       } else {
         // Another re-export already used this name. Produce a diagnostic.
-        const prevRef = reexportMap.get(exportName) !;
+        const prevRef = reexportMap.get(exportName)!;
         diagnostics.push(reexportCollision(ngModuleRef.node, prevRef, exportRef));
       }
     };
@@ -547,13 +568,37 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
  */
 function invalidRef(
     clazz: ts.Declaration, decl: Reference<ts.Declaration>,
-    type: 'import' | 'export'): ts.Diagnostic {
+    type: 'import'|'export'): ts.Diagnostic {
   const code =
       type === 'import' ? ErrorCode.NGMODULE_INVALID_IMPORT : ErrorCode.NGMODULE_INVALID_EXPORT;
   const resolveTarget = type === 'import' ? 'NgModule' : 'NgModule, Component, Directive, or Pipe';
-  return makeDiagnostic(
-      code, identifierOfNode(decl.node) || decl.node,
-      `Appears in the NgModule.${type}s of ${nodeNameForError(clazz)}, but could not be resolved to an ${resolveTarget} class`);
+  let message =
+      `Appears in the NgModule.${type}s of ${
+          nodeNameForError(clazz)}, but could not be resolved to an ${resolveTarget} class.` +
+      '\n\n';
+  const library = decl.ownedByModuleGuess !== null ? ` (${decl.ownedByModuleGuess})` : '';
+  const sf = decl.node.getSourceFile();
+
+  // Provide extra context to the error for the user.
+  if (!sf.isDeclarationFile) {
+    // This is a file in the user's program.
+    const annotationType = type === 'import' ? '@NgModule' : 'Angular';
+    message += `Is it missing an ${annotationType} annotation?`;
+  } else if (sf.fileName.indexOf('node_modules') !== -1) {
+    // This file comes from a third-party library in node_modules.
+    message +=
+        `This likely means that the library${library} which declares ${decl.debugName} has not ` +
+        'been processed correctly by ngcc, or is not compatible with Angular Ivy. Check if a ' +
+        'newer version of the library is available, and update if so. Also consider checking ' +
+        'with the library\'s authors to see if the library is expected to be compatible with Ivy.';
+  } else {
+    // This is a monorepo style local dependency. Unfortunately these are too different to really
+    // offer much more advice than this.
+    message += `This likely means that the dependency${library} which declares ${
+        decl.debugName} has not been processed correctly by ngcc.`;
+  }
+
+  return makeDiagnostic(code, identifierOfNode(decl.node) || decl.node, message);
 }
 
 /**
@@ -561,7 +606,7 @@ function invalidRef(
  */
 function invalidTransitiveNgModuleRef(
     clazz: ts.Declaration, decl: Reference<ts.Declaration>,
-    type: 'import' | 'export'): ts.Diagnostic {
+    type: 'import'|'export'): ts.Diagnostic {
   const code =
       type === 'import' ? ErrorCode.NGMODULE_INVALID_IMPORT : ErrorCode.NGMODULE_INVALID_EXPORT;
   return makeDiagnostic(
@@ -576,7 +621,8 @@ function invalidTransitiveNgModuleRef(
 function invalidReexport(clazz: ts.Declaration, decl: Reference<ts.Declaration>): ts.Diagnostic {
   return makeDiagnostic(
       ErrorCode.NGMODULE_INVALID_REEXPORT, identifierOfNode(decl.node) || decl.node,
-      `Present in the NgModule.exports of ${nodeNameForError(clazz)} but neither declared nor imported`);
+      `Present in the NgModule.exports of ${
+          nodeNameForError(clazz)} but neither declared nor imported`);
 }
 
 /**
@@ -585,19 +631,21 @@ function invalidReexport(clazz: ts.Declaration, decl: Reference<ts.Declaration>)
 function reexportCollision(
     module: ClassDeclaration, refA: Reference<ClassDeclaration>,
     refB: Reference<ClassDeclaration>): ts.Diagnostic {
-  const childMessageText =
-      `This directive/pipe is part of the exports of '${module.name.text}' and shares the same name as another exported directive/pipe.`;
+  const childMessageText = `This directive/pipe is part of the exports of '${
+      module.name.text}' and shares the same name as another exported directive/pipe.`;
   return makeDiagnostic(
-      ErrorCode.NGMODULE_REEXPORT_NAME_COLLISION, module.name, `
-    There was a name collision between two classes named '${refA.node.name.text}', which are both part of the exports of '${module.name.text}'.
+      ErrorCode.NGMODULE_REEXPORT_NAME_COLLISION, module.name,
+      `
+    There was a name collision between two classes named '${
+          refA.node.name.text}', which are both part of the exports of '${module.name.text}'.
 
     Angular generates re-exports of an NgModule's exported directives/pipes from the module's source file in certain cases, using the declared name of the class. If two classes of the same name are exported, this automatic naming does not work.
 
     To fix this problem please re-export one or both classes directly from this file.
   `.trim(),
       [
-        {node: refA.node.name, messageText: childMessageText},
-        {node: refB.node.name, messageText: childMessageText},
+        makeRelatedInformation(refA.node.name, childMessageText),
+        makeRelatedInformation(refB.node.name, childMessageText),
       ]);
 }
 

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -37,8 +37,8 @@ export function absoluteFromSourceFile(sf: ts.SourceFile): AbsoluteFsPath {
 }
 
 /**
-* Convert the path `path` to a `PathSegment`, throwing an error if it's not a relative path.
-*/
+ * Convert the path `path` to a `PathSegment`, throwing an error if it's not a relative path.
+ */
 export function relativeFrom(path: string): PathSegment {
   const normalized = normalizeSeparators(path);
   if (fs.isRooted(normalized)) {
@@ -71,6 +71,13 @@ export function resolve(basePath: string, ...paths: string[]): AbsoluteFsPath {
 /** Returns true when the path provided is the root path. */
 export function isRoot(path: AbsoluteFsPath): boolean {
   return fs.isRoot(path);
+}
+
+/**
+ * Static access to `isRooted`.
+ */
+export function isRooted(path: string): boolean {
+  return fs.isRooted(path);
 }
 
 /**

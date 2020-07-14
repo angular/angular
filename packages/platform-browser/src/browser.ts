@@ -1,13 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {CommonModule, DOCUMENT, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, Sanitizer, SkipSelf, StaticProvider, Testability, createPlatformFactory, platformCore, ɵConsole as Console, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵsetDocument} from '@angular/core';
+import {APP_ID, ApplicationModule, createPlatformFactory, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, RendererFactory2, Sanitizer, SkipSelf, StaticProvider, Testability, ɵConsole as Console, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵsetDocument} from '@angular/core';
+
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
 import {BrowserGetTestability} from './browser/testability';
@@ -19,6 +20,21 @@ import {HAMMER_PROVIDERS} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
+
+export function initDomAdapter() {
+  BrowserDomAdapter.makeCurrent();
+  BrowserGetTestability.init();
+}
+
+export function errorHandler(): ErrorHandler {
+  return new ErrorHandler();
+}
+
+export function _document(): any {
+  // Tell ivy about the global document
+  ɵsetDocument(document);
+  return document;
+}
 
 export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
@@ -42,25 +58,13 @@ export const BROWSER_SANITIZATION_PROVIDERS__POST_R3__ = [];
 export const BROWSER_SANITIZATION_PROVIDERS = BROWSER_SANITIZATION_PROVIDERS__PRE_R3__;
 
 /**
+ * A factory function that returns a `PlatformRef` instance associated with browser service
+ * providers.
+ *
  * @publicApi
  */
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
-
-export function initDomAdapter() {
-  BrowserDomAdapter.makeCurrent();
-  BrowserGetTestability.init();
-}
-
-export function errorHandler(): ErrorHandler {
-  return new ErrorHandler();
-}
-
-export function _document(): any {
-  // Tell ivy about the global document
-  ɵsetDocument(document);
-  return document;
-}
 
 export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   BROWSER_SANITIZATION_PROVIDERS,

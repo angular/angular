@@ -31,6 +31,42 @@ During development, you typically use the `ng serve` command to build, watch, an
 When you are ready to deploy, however, you must use the `ng build` command to build the app and deploy the build artifacts elsewhere.
 
 Both `ng build` and `ng serve` clear the output folder before they build the project, but only the `ng build` command writes the generated build artifacts to the output folder.
+
+<div class="alert is-helpful">
+
+The output folder is  `dist/project-name/` by default.
+To output to a different folder, change the `outputPath` in `angular.json`.
+
+</div>
+
+As you near the end of the development process, serving the contents of your output folder from a local web server can give you a better idea of how your application will behave when it is deployed to a remote server.
+You will need two terminals to get the live-reload experience.
+
+* On the first terminal, run the [`ng build` command](cli/build) in *watch* mode to compile the application to the `dist` folder.
+
+  <code-example language="none" class="code-shell">
+
+   ng build --watch
+
+  </code-example>
+
+  Like the `ng serve` command, this regenerates output files when source files change.
+
+* On the second terminal, install a web server (such as [lite-server](https://github.com/johnpapa/lite-server)), and run it against the output folder. For example:
+
+  <code-example language="none" class="code-shell">
+
+   lite-server --baseDir="dist/project-name"
+
+  </code-example>
+
+   The server will automatically reload your browser when new files are output.
+
+<div class="alert is-critical">
+
+This method is for development and testing only, and is not a supported or secure way of deploying an application.
+
+</div>
 -->
 앱을 개발하는 단계에서는 보통 `ng serve` 명령을 실행해서 코드가 변경되는 것을 감지하는 모드로 앱을 빌드하는데, 이렇게 빌드한 애플리케이션은 로컬 메모리에서 실행되는 [webpack-dev-server](https://webpack.js.org/guides/development/#webpack-dev-server)로 띄워볼 수 있습니다.
 하지만 제대로 배포하려면 이 명령 대신 `ng build` 명령을 실행해서 애플리케이션 빌드 결과물을 로컬 환경에 파일로 생성해야 합니다.
@@ -39,21 +75,11 @@ Both `ng build` and `ng serve` clear the output folder before they build the pro
 
 <div class="alert is-helpful">
 
-<!--
-The output folder is  `dist/project-name/` by default.
-To output to a different folder, change the `outputPath` in `angular.json`.
--->
 따로 수정하지 않았다면 빌드 결과물이 생성되는 위치는 `dist/프로젝트-이름` 폴더입니다.
 이 위치를 변경하려면 `angular.json` 파일에 지정된 `outputPath` 옵션을 변경하면 됩니다.
 
 </div>
 
-<!--
-As you near the end of the development process, serving the contents of your output folder from a local web server can give you a better idea of how your application will behave when it is deployed to a remote server.
-You will need two terminals to get the live-reload experience.
-
-* On the first terminal, run the [`ng build` command](cli/build) in *watch* mode to compile the application to the `dist` folder.
--->
 개발 단계를 마무리할 때쯤 되었을 때 `ng build` 명령을 실행해서 애플리케이션을 빌드해보면, 빌드 결과물이 실제로 로컬 환경에 생성되기 때문에 리모트 서버에 이 파일들을 어떻게 둬야 하는지 생각해 볼 수 있습니다.
 이 과정은 다음과 같은 방법으로 확인할 수도 있습니다.
 
@@ -64,12 +90,7 @@ You will need two terminals to get the live-reload experience.
    ng build --watch
 
   </code-example>
-
-<!--
-  Like the `ng serve` command, this regenerates output files when source files change.
-
-* On the second terminal, install a web server (such as [lite-server](https://github.com/johnpapa/lite-server)), and run it against the output folder. For example:
--->
+  
 * 아니면 [lite-server](https://github.com/johnpapa/lite-server)와 같은 웹 서버를 실행해서 빌드 결과물이 위치한 폴더를 직접 띄워볼 수도 있습니다. 보통 이렇게 실행합니다:
 
   <code-example language="none" class="code-shell">
@@ -77,19 +98,15 @@ You will need two terminals to get the live-reload experience.
    lite-server --baseDir="dist/project-name"
 
   </code-example>
-<!--
-   The server will automatically reload your browser when new files are output.
--->
-   이 방법도 이전과 마찬가지로 빌드 결과물 파일이 변경되면 브라우저에도 새로운 파일의 내용이 반영됩니다.
-
+  
+  이 방법도 이전과 마찬가지로 빌드 결과물 파일이 변경되면 브라우저에도 새로운 파일의 내용이 반영됩니다.
+  
 <div class="alert is-critical">
 
-<!--
-This method is for development and testing only, and is not a supported or secure way of deploying an application.
--->
 위에서 설명한 방법은 애플리케이션을 개발하거나 테스트하는 용도로만 사용하세요. 이 방법은 애플리케이션을 온전히 배포하는 방법은 아닙니다.
 
 </div>
+
 
 <!--
 ### Automatic deployment with the CLI
@@ -97,7 +114,7 @@ This method is for development and testing only, and is not a supported or secur
 ### Angular CLI로 자동 배포하기
 
 <!--
-The Angular CLI command `ng deploy` (introduced in version 8.3.0) executes the `deploy` [CLI builder](https://angular.io/guide/cli-builder) associated with your project. A number of third-party builders implement deployment capabilities to different platforms. You can add any of them to your project by running `ng add [package name]`.
+The Angular CLI command `ng deploy` (introduced in version 8.3.0) executes the `deploy` [CLI builder](guide/cli-builder) associated with your project. A number of third-party builders implement deployment capabilities to different platforms. You can add any of them to your project by running `ng add [package name]`.
 
 When you add a package with deployment capability, it'll automatically update your workspace configuration (`angular.json` file) with a `deploy` section for the selected project. You can then use the `ng deploy` command to deploy that project.
 
@@ -122,6 +139,7 @@ In the table below, you can find a list of packages which implement deployment f
 | [Netlify](https://www.netlify.com/)                           | [`@netlify-builder/deploy`](https://npmjs.org/package/@netlify-builder/deploy) |
 | [GitHub pages](https://pages.github.com/)                     | [`angular-cli-ghpages`](https://npmjs.org/package/angular-cli-ghpages)         |
 | [NPM](https://npmjs.com/)                                     | [`ngx-deploy-npm`](https://npmjs.org/package/ngx-deploy-npm)                   |
+| [Amazon Cloud S3](https://aws.amazon.com/s3/?nc2=h_ql_prod_st_s3) | [`@jefiozie/ngx-aws-deploy`](https://www.npmjs.com/package/@jefiozie/ngx-aws-deploy) |
 
 If you're deploying to a self-managed server or there's no builder for your favorite cloud platform, you can either create a builder that allows you to use the `ng deploy` command, or read through this guide to learn how to manually deploy your app.
 -->
@@ -155,6 +173,7 @@ ng deploy
 | [Netlify](https://www.netlify.com/)                           | [`@netlify-builder/deploy`](https://npmjs.org/package/@netlify-builder/deploy) |
 | [GitHub pages](https://pages.github.com/)                     | [`angular-cli-ghpages`](https://npmjs.org/package/angular-cli-ghpages)         |
 | [NPM](https://npmjs.com/)                                     | [`ngx-deploy-npm`](https://npmjs.org/package/ngx-deploy-npm)                   |
+| [Amazon Cloud S3](https://aws.amazon.com/s3/?nc2=h_ql_prod_st_s3) | [`@jefiozie/ngx-aws-deploy`](https://www.npmjs.com/package/@jefiozie/ngx-aws-deploy) |
 
 직접 관리하는 서버에 배포하거나 사용하는 클라우드 플랫폼에 맞는 빌더가 없다면 `ng deploy` 명령에 활용할 빌더를 직접 만들어도 됩니다.
 아니면 이 문서를 더 읽어보면서 수동으로 배포하는 방법에 대해서도 알아보세요.
@@ -167,13 +186,8 @@ ng deploy
 
 <!--
 For the simplest deployment, create a production build and copy the output directory to a web server.
--->
-애플리케이션을 배포하는 방법중 가장 간단한 것은 애플리케이션을 운영용으로 빌드한 후에 생성되는 빌드 결과물을 웹 서버로 복사하는 것입니다.
 
-<!--
 1. Start with the production build:
--->
-1. 애플리케이션을 운영용으로 빌드합니다.
 
   <code-example language="none" class="code-shell">
 
@@ -182,21 +196,30 @@ For the simplest deployment, create a production build and copy the output direc
   </code-example>
 
 
-<!--
 2. Copy _everything_ within the output folder (`dist/` by default) to a folder on the server.
--->
-2. 빌드 결과물이 생성된 폴더(기본 위치는 `dist/`)에 있는 _모든 파일_ 을 서버로 복사합니다.
 
-<!--
 3. Configure the server to redirect requests for missing files to `index.html`.
 Learn more about server-side redirects [below](#fallback).
 
 This is the simplest production-ready deployment of your application.
 -->
+애플리케이션을 배포하는 방법중 가장 간단한 것은 애플리케이션을 운영용으로 빌드한 후에 생성되는 빌드 결과물을 웹 서버로 복사하는 것입니다.
+
+1. 애플리케이션을 운영용으로 빌드합니다.
+
+  <code-example language="none" class="code-shell">
+
+    ng build --prod
+
+  </code-example>
+  
+2. 빌드 결과물이 생성된 폴더(기본 위치는 `dist/`)에 있는 _모든 파일_ 을 서버로 복사합니다.
+
 3. 서버로 오는 요청 중에서 실제로 존재하지 않는 파일에 대한 요청은 `index.html`로 리다이렉트하도록 합니다.
 자세한 내용은 [아래](#fallback)에서 다룹니다.
 
 이 방법이 애플리케이션을 배포하는 방법 중 가장 간단한 방법입니다.
+
 
 {@a deploy-to-github}
 
@@ -212,6 +235,26 @@ Another simple way to deploy your Angular app is to use [GitHub Pages](https://h
 Make a note of the user name and project name in GitHub.
 
 1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
+
+  <code-example language="none" class="code-shell">
+
+    ng build --prod --output-path docs --base-href /&lt;project_name&gt;/
+
+  </code-example>
+
+1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
+
+1. Commit your changes and push.
+
+1. On the GitHub project page, configure it to [publish from the docs folder](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch).
+
+You can see your deployed page at `https://<user_name>.github.io/<project_name>/`.
+
+<div class="alert is-helpful">
+
+Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
+
+</div>
 -->
 또 다른 방법은 Angular 앱을 [GitHub Pages](https://help.github.com/articles/what-is-github-pages/)에 배포하는 것입니다.
 
@@ -224,17 +267,8 @@ Make a note of the user name and project name in GitHub.
     ng build --prod --output-path docs --base-href /&lt;project_name&gt;/
 
   </code-example>
-
-<!--
-1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
-
-1. Commit your changes and push.
-
-1. On the GitHub project page, configure it to [publish from the docs folder](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch).
-
-You can see your deployed page at `https://<user_name>.github.io/<project_name>/`.
--->
-3. 빌드가 끝나면 `docs/index.html` 파일을 복사해서 `docs/404.html` 파일을 생성합니다.
+  
+1. 빌드가 끝나면 `docs/index.html` 파일을 복사해서 `docs/404.html` 파일을 생성합니다.
 
 1. 변경사항을 커밋하고 레파지토리에 푸시합니다.
 
@@ -244,9 +278,6 @@ You can see your deployed page at `https://<user_name>.github.io/<project_name>/
 
 <div class="alert is-helpful">
 
-<!--
-Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
--->
 [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages)도 확인해 보세요.
 이 프로젝트를 활용하면 Angular CLI를 사용하는 환경에서 GitHub 페이지 설정을 더 간단하고 다양하게 할 수 있습니다.
 
@@ -272,6 +303,7 @@ This section covers changes you may have to make to the server or to files deplo
 ### Routed apps must fallback to `index.html`
 -->
 ### Angular 앱이 동작해야 하는 경우는 모두 `index.html`로 보내야 합니다.
+
 
 <!--
 Angular apps are perfect candidates for serving with a simple static HTML server.
@@ -328,15 +360,26 @@ Angular 라우터가 이 URL을 확인하면 해당 페이지로 이동하고 �
 There is no single configuration that works for every server.
 The following sections describe configurations for some of the most popular servers.
 The list is by no means exhaustive, but should provide you with a good starting point.
-
-* [Apache](https://httpd.apache.org/): add a
-[rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html) to the `.htaccess` file as shown
-  (https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/):
 -->
 모든 서버에 동일하게 적용할 수 있는 만능 설정은 없습니다.
 그래서 이제부터는 개발자들이 많이 사용하는 서버를 대상으로 폴백을 어떻게 설정할 수 있는지 알아봅시다.
 이 문서에서 모든 서버를 다루지는 않지만, 이렇게 사용한다는 것을 참고하면 설명하지 않은 서버를 설정할 때도 도움이 될 것입니다.
 
+<!--
+* [Apache](https://httpd.apache.org/): add a
+[rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html) to the `.htaccess` file as shown
+  (https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/):
+
+  <code-example>
+    RewriteEngine On
+    &#35 If an existing asset or directory is requested go to it as it is
+    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
+    RewriteRule ^ - [L]<br>
+    &#35 If the requested resource doesn't exist, use index.html
+    RewriteRule ^ /index.html
+  </code-example>
+-->
 * [Apache](https://httpd.apache.org/): `.htaccess` 파일에 [rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html)을 추가합니다. ([참고](https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/))
 
   <code-example>
@@ -349,11 +392,14 @@ The list is by no means exhaustive, but should provide you with a good starting 
     RewriteRule ^ /index.html
   </code-example>
 
-
 <!--
 * [Nginx](http://nginx.org/): use `try_files`, as described in
 [Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps),
 modified to serve `index.html`:
+
+  ```
+  try_files $uri $uri/ /index.html;
+  ```
 -->
 * [Nginx](http://nginx.org/): [Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps)에서 설명하는 대로 `try_files`를 사용해서 `index.html`을 보내도록 설정합니다.
 
@@ -398,10 +444,26 @@ modified to serve `index.html`:
   end
   ```
 
-
 <!--
 * [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
 [here](http://stackoverflow.com/a/26152011/2116927):
+
+  <code-example format='.' language="xml">
+    &lt;system.webServer&gt;
+      &lt;rewrite&gt;
+        &lt;rules&gt;
+          &lt;rule name="Angular Routes" stopProcessing="true"&gt;
+            &lt;match url=".*" /&gt;
+            &lt;conditions logicalGrouping="MatchAll"&gt;
+              &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /&gt;
+              &lt;add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /&gt;
+            &lt;/conditions&gt;
+            &lt;action type="Rewrite" url="/index.html" /&gt;
+          &lt;/rule&gt;
+        &lt;/rules&gt;
+      &lt;/rewrite&gt;
+    &lt;/system.webServer&gt;
+  </code-example>
 -->
 * [IIS](https://www.iis.net/): [이 글](http://stackoverflow.com/a/26152011/2116927)에서 설명한 것과 비슷하게 `web.config`에 rewrite rule을 추가합니다.
 
@@ -421,7 +483,7 @@ modified to serve `index.html`:
       &lt;/rewrite&gt;
     &lt;/system.webServer&gt;
   </code-example>
-
+  
 <!--
 * [GitHub Pages](https://pages.github.com/): you can't
 [directly configure](https://github.com/isaacs/github/issues/408)
@@ -442,6 +504,13 @@ and to
 <!--
 * [Firebase hosting](https://firebase.google.com/docs/hosting/): add a
 [rewrite rule](https://firebase.google.com/docs/hosting/url-redirects-rewrites#section-rewrites).
+
+  <code-example language="json">
+    "rewrites": [ {
+      "source": "**",
+      "destination": "/index.html"
+    } ]
+  </code-example>
 -->
 * [Firebase hosting](https://firebase.google.com/docs/hosting/): [rewrite rule](https://firebase.google.com/docs/hosting/url-redirects-rewrites#section-rewrites)을 다음과 같이 추가합니다.
 
@@ -490,17 +559,18 @@ Angular 애플리케이션을 개발하다보면 애플리케이션이 호스팅
 
 <!--
 The `--prod` _meta-flag_ engages the following build optimization features.
--->
-`--prod` _메타 플래그_ 를 사용하면 Angular 애플리케이션을 운영용으로 최적화해서 빌드할 수 있습니다.
 
-<!--
 * [Ahead-of-Time (AOT) Compilation](guide/aot-compiler): pre-compiles Angular component templates.
 * [Production mode](#enable-prod-mode): deploys the production environment which enables _production mode_.
 * Bundling: concatenates your many application and library files into a few bundles.
 * Minification: removes excess whitespace, comments, and optional tokens.
 * Uglification: rewrites code to use short, cryptic variable and function names.
 * Dead code elimination: removes unreferenced modules and much unused code.
+
+See [`ng build`](cli/build) for more about CLI build options and what they do.
 -->
+`--prod` _메타 플래그_ 를 사용하면 Angular 애플리케이션을 운영용으로 최적화해서 빌드할 수 있습니다.
+
 * [AOT 컴파일러](guide/aot-compiler) 사용: Angular 컴포넌트의 템플릿을 미리 컴파일합니다.
 * [운영 모드](#enable-prod-mode) 활성화: 애플리케이션이 동작하는 환경을 _운영 모드_ 로 변경합니다.
 * 번들링(Bundling): 애플리케이션 파일과 라이브러리 파일들을 묶어서 몇개의 번들링 파일로 생성합니다.
@@ -508,9 +578,6 @@ The `--prod` _meta-flag_ engages the following build optimization features.
 * 난독화(Uglification): 변수와 함수 이름을 난독화하고 길이도 짧게 줄입니다.
 * 데드 코드 제거: 사용하지 않는 모듈과 코드를 제거합니다.
 
-<!--
-See [`ng build`](cli/build) for more about CLI build options and what they do.
--->
 이 때 활용할 수 있는 Angular CLI 빌드 옵션은 [`ng build`](cli/build) 문서를 참고하세요.
 
 
@@ -523,25 +590,30 @@ See [`ng build`](cli/build) for more about CLI build options and what they do.
 
 <!--
 In addition to build optimizations, Angular also has a runtime production mode. Angular apps run in development mode by default, as you can see by the following message on the browser console:
+
+<code-example format="nocode">
+
+  Angular is running in development mode. Call enableProdMode() to enable production mode.
+
+</code-example>
+
+Switching to _production mode_ makes it run faster by disabling development specific checks such as the dual change detection cycles.
+
+When you enable production builds via `--prod` command line flag, the runtime production mode is enabled as well.
 -->
 빌드 최적화와 함께 Angular에도 운영 모드가 존재합니다.
 Angular 애플리케이션은 기본적으로 개발모드로 동작하며, 이 모드에서는 브라우저 콘솔에 다음과 같은 메시지가 출력됩니다:
 
 <code-example format="nocode">
 
-  Angular is running in the development mode. Call enableProdMode() to enable the production mode.
+  Angular is running in development mode. Call enableProdMode() to enable production mode.
 
 </code-example>
 
-<!--
-Switching to _production mode_ makes it run faster by disabling development specific checks such as the dual change detection cycles.
--->
 애플리케이션이 동작하는 환경을 _운영 모드_ 로 변경하면 개발 모드에서 동작하는 이중 변화 감지 로직이 생략되기 때문에 애플리케이션 실행속도가 조금 더 빨라집니다.
 
-<!--
-When you enable production builds via `--prod` command line flag, the runtime production mode is enabled as well.
--->
 Angular 애플리케이션을 빌드할 때 `--prod` 플래그를 사용하면 Angular 실행 환경이 자동으로 운영 모드로 변경됩니다.
+
 
 {@a lazy-loading}
 
@@ -553,25 +625,16 @@ Angular 애플리케이션을 빌드할 때 `--prod` 플래그를 사용하면 A
 <!--
 You can dramatically reduce launch time by only loading the application modules that
 absolutely must be present when the app starts.
--->
-전체 모듈 중에서 애플리케이션 초기 실행에 필요한 모듈만 로딩하면 애플리케이션 초기 실행 속도를 더 빠르게 만들 수 있습니다.
 
-<!--
 Configure the Angular Router to defer loading of all other modules (and their associated code), either by
 [waiting until the app has launched](guide/router#preloading  "Preloading")
-or by [_lazy loading_](guide/router#asynchronous-routing "Lazy loading")
+or by [_lazy loading_](guide/router#lazy-loading "Lazy loading")
 them on demand.
--->
-그리고 애플리케이션 초기 실행과 관련되지 않은 모듈은 Angular 라우터로 지연로딩하거나 [애플리케이션이 시작된 직후에](guide/router#preloading  "Preloading") 로딩할 수 있습니다.
 
 <div class="callout is-helpful">
 
-<!--
 <header>Don't eagerly import something from a lazy-loaded module</header>
--->
-<header>지연로딩하는 모듈에 있는 심볼을 즉시로딩하지 마세요.</header>
 
-<!--
 If you mean to lazy-load a module, be careful not import it
 in a file that's eagerly loaded when the app starts (such as the root `AppModule`).
 If you do that, the module will be loaded immediately.
@@ -580,7 +643,21 @@ The bundling configuration must take lazy loading into consideration.
 Because lazy-loaded modules aren't imported in JavaScript, bundlers exclude them by default.
 Bundlers don't know about the router configuration and can't create separate bundles for lazy-loaded modules.
 You would have to create these bundles manually.
+
+The CLI runs the
+[Angular Ahead-of-Time Webpack Plugin](https://github.com/angular/angular-cli/tree/master/packages/ngtools/webpack)
+which automatically recognizes lazy-loaded `NgModules` and creates separate bundles for them.
+
+</div>
 -->
+전체 모듈 중에서 애플리케이션 초기 실행에 필요한 모듈만 로딩하면 애플리케이션 초기 실행 속도를 더 빠르게 만들 수 있습니다.
+
+그리고 애플리케이션 초기 실행과 관련되지 않은 모듈은 Angular 라우터로 지연로딩하거나 [애플리케이션이 시작된 직후에](guide/router#preloading  "Preloading") 로딩할 수 있으며 [_지연 로딩_](guide/router#lazy-loading "Lazy loading")할 수도 있습니다.
+
+<div class="callout is-helpful">
+
+<header>지연로딩하는 모듈에 있는 심볼을 즉시로딩하지 마세요.</header>
+
 지연로딩하는 모듈이 있다면 애플리케이션이 시작할 때 즉시 로드되는 모듈(ex. `AppModule`)에서 지연로딩되는 모듈의 구성요소를 로드하지 않도록 주의해야 합니다.
 이런 경우에는 모듈이 지연로딩되지 않고 즉시 로드됩니다.
 
@@ -589,14 +666,8 @@ You would have to create these bundles manually.
 하지만 번들러는 라우터 설정이나 지연로딩되는 모듈을 스스로 인식해서 가장 효율적인 방법으로 번들링하지는 않습니다.
 이런 설정은 개발자가 직접 해줘야 합니다.
 
-<!--
-The CLI runs the
-[Angular Ahead-of-Time Webpack Plugin](https://github.com/angular/angular-cli/tree/master/packages/ngtools/webpack)
-which automatically recognizes lazy-loaded `NgModules` and creates separate bundles for them.
--->
-Angular CLI는 [Angular AoT Webpack 플러그인](https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack)을 사용하기 때문에 지연로딩되는 `NgModule`을 자동으로 인식하고 번들링 파일을 생성합니다.
+Angular CLI는 [Angular AoT Webpack 플러그인](https://github.com/angular/angular-cli/tree/master/packages/ngtools/webpack)을 사용하기 때문에 지연로딩되는 `NgModule`을 자동으로 인식하고 번들링 파일을 생성합니다.
 
-</div>
 
 {@a measure}
 
@@ -611,24 +682,23 @@ what's making the application slow.
 The cause may not be what you think it is.
 You can waste a lot of time and money optimizing something that has no tangible benefit or even makes the app slower.
 You should measure the app's actual behavior when running in the environments that are important to you.
+
+The
+<a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" title="Chrome DevTools Network Performance">
+Chrome DevTools Network Performance page</a> is a good place to start learning about measuring performance.
+
+The [WebPageTest](https://www.webpagetest.org/) tool is another good choice
+that can also help verify that your deployment was successful.
 -->
 애플리케이션의 동작 성능을 최적화하려면 애플리케이션의 어떤 부분을 어떻게 수정해야 하는지 정확하게 알고 있는 것이 좋습니다.
 하지만 애플리케이션을 잘 알고 있다고 해도 예상치 못한 결과는 언제든지 생길 수 있습니다.
 수많은 시간과 자금을 들여 애플리케이션을 최적화했는데 이전과 크게 차이나지 않거나 오히려 더 느려질 수도 있습니다.
 그래서 애플리케이션을 최적화 할 때는 실제로 동작하는 환경에서 어떻게 동작하는지 측정해야 합니다.
 
-<!--
-The
-<a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" title="Chrome DevTools Network Performance">
-Chrome DevTools Network Performance page</a> is a good place to start learning about measuring performance.
--->
 애플리케이션의 성능을 측정할 때는 <a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" title="Chrome DevTools Network Performance">Chrome 개발자도구의 네트워크 퍼포먼트 페이지</a>를 사용하는 것이 좋습니다.
 
-<!--
-The [WebPageTest](https://www.webpagetest.org/) tool is another good choice
-that can also help verify that your deployment was successful.
--->
 그리고 이미 배포된 애플리케이션은 [WebPageTest](https://www.webpagetest.org/)과 같은 툴로 성능을 측정할 수 있습니다.
+
 
 {@a inspect-bundle}
 
@@ -640,12 +710,51 @@ that can also help verify that your deployment was successful.
 <!--
 The <a href="https://github.com/danvk/source-map-explorer/blob/master/README.md">source-map-explorer</a>
 tool is a great way to inspect the generated JavaScript bundles after a production build.
+
+Install `source-map-explorer`:
+
+<code-example language="none" class="code-shell">
+
+  npm install source-map-explorer --save-dev
+
+</code-example>
+
+Build your app for production _including the source maps_
+
+<code-example language="none" class="code-shell">
+
+  ng build --prod --source-map
+
+</code-example>
+
+List the generated bundles in the `dist/` folder.
+
+<code-example language="none" class="code-shell">
+
+  ls dist/*.bundle.js
+
+</code-example>
+
+Run the explorer to generate a graphical representation of one of the bundles.
+The following example displays the graph for the _main_ bundle.
+
+<code-example language="none" class="code-shell">
+
+  node_modules/.bin/source-map-explorer dist/main.*.bundle.js
+
+</code-example>
+
+The `source-map-explorer` analyzes the source map generated with the bundle and draws a map of all dependencies,
+showing exactly which classes are included in the bundle.
+
+Here's the output for the _main_ bundle of an example app called `cli-quickstart`.
+
+<div class="lightbox">
+  <img src="generated/images/guide/deployment/quickstart-sourcemap-explorer.png" alt="quickstart sourcemap explorer">
+</div>
 -->
 애플리케이션을 운영용으로 빌드한 후라면 <a href="https://github.com/danvk/source-map-explorer/blob/master/README.md">source-map-explorer</a>를 사용해서 JavaScript로 번들링 된 파일을 분석할 수 있습니다.
 
-<!--
-Install `source-map-explorer`:
--->
 `source-map-explorer`는 다음 명령을 실행해서 설치합니다:
 
 <code-example language="none" class="code-shell">
@@ -654,9 +763,6 @@ Install `source-map-explorer`:
 
 </code-example>
 
-<!--
-Build your app for production _including the source maps_
--->
 그리고 애플리케이션을 운영용으로 빌드할 때 _소스 맵_ 을 함께 생성하도록 다음과 같이 실행합니다.
 
 <code-example language="none" class="code-shell">
@@ -665,9 +771,6 @@ Build your app for production _including the source maps_
 
 </code-example>
 
-<!--
-List the generated bundles in the `dist/` folder.
--->
 빌드가 끝나면 `dist/` 폴더의 내용을 확인해 봅시다.
 
 <code-example language="none" class="code-shell">
@@ -676,10 +779,6 @@ List the generated bundles in the `dist/` folder.
 
 </code-example>
 
-<!--
-Run the explorer to generate a graphical representation of one of the bundles.
-The following example displays the graph for the _main_ bundle.
--->
 이제 `source-map-explorer`로 번들링 파일을 로드하면 번들링 파일의 구조를 시각화해볼 수 있습니다.
 예를 들어 _main_ 파일이 번들링된 결과물을 분석하려면 다음과 같이 실행합니다.
 
@@ -689,15 +788,8 @@ The following example displays the graph for the _main_ bundle.
 
 </code-example>
 
-<!--
-The `source-map-explorer` analyzes the source map generated with the bundle and draws a map of all dependencies,
-showing exactly which classes are included in the bundle.
--->
 그러면 `source-map-explorer`가 번들링 결과물과 소스 맵을 처리해서 이 번들링 파일에 어떤 클래스가 포함되어 있는지 분석할 수 있는 정보를 제공합니다.
 
-<!--
-Here's the output for the _main_ bundle of an example app called `cli-quickstart`.
--->
 `cli-quickstart` 프로젝트의 _main_ 파일을 번들링한 결과로 이 프로그램을 실행시켜보면 다음과 같은 결과를 확인할 수 있습니다.
 
 <div class="lightbox">
@@ -717,6 +809,22 @@ specifies a base path for resolving relative URLs to assets such as images, scri
 For example, given the `<base href="/my/app/">`, the browser resolves a URL such as `some/place/foo.jpg`
 into a server request for `my/app/some/place/foo.jpg`.
 During navigation, the Angular router uses the _base href_ as the base path to component, template, and module files.
+
+<div class="alert is-helpful">
+
+See also the [*APP_BASE_HREF*](api/common/APP_BASE_HREF "API: APP_BASE_HREF") alternative.
+
+</div>
+
+In development, you typically start the server in the folder that holds `index.html`.
+That's the root folder and you'd add `<base href="/">` near the top of `index.html` because `/` is the root of the app.
+
+But on the shared or production server, you might serve the app from a subfolder.
+For example, when the URL to load the app is something like `http://www.mysite.com/my/app/`,
+the subfolder is `my/app/` and you should add `<base href="/my/app/">` to the server version of the `index.html`.
+
+When the `base` tag is mis-configured, the app fails to load and the browser console displays `404 - Not Found` errors
+for the missing files. Look at where it _tried_ to find those files and adjust the base tag appropriately.
 -->
 이미지 파일이나 스크립트 파일, 스타일 시트는 상대 URL로 참조하는데, 상대 URL이 시작하는 위치는 HTML 문서에 [_&lt;base href="..."/&gt;_](/guide/router)로 지정합니다.
 그래서 예를 들어 `<base href="/my/app/">`라고 지정된 HTML 문서가 있고 `some/place/foo.jpg` 경로의 이미지 파일을 참조한다고 하면, 결과적으로 `my/app/some/place/foo.jpg` 경로에 요청을 보내게 됩니다.
@@ -724,32 +832,16 @@ During navigation, the Angular router uses the _base href_ as the base path to c
 
 <div class="alert is-helpful">
 
-<!--
-See also the [*APP_BASE_HREF*](api/common/APP_BASE_HREF "API: APP_BASE_HREF") alternative.
--->
 [*APP_BASE_HREF*](api/common/APP_BASE_HREF "API: APP_BASE_HREF")를 사용하면 이 설정을 대체할 수 있습니다.
 
 </div>
 
-<!--
-In development, you typically start the server in the folder that holds `index.html`.
-That's the root folder and you'd add `<base href="/">` near the top of `index.html` because `/` is the root of the app.
--->
 개발 중에는 일반적으로 `index.html`이 있는 폴더를 서버로 띄웁니다.
 이 경우에는 `index.html` 파일 위쪽에 `<base href="/">`를 지정하면 애플리케이션 최상위 주소를 `/`로 연결할 수 있습니다.
 
-<!--
-But on the shared or production server, you might serve the app from a subfolder.
-For example, when the URL to load the app is something like `http://www.mysite.com/my/app/`,
-the subfolder is `my/app/` and you should add `<base href="/my/app/">` to the server version of the `index.html`.
--->
 하지만 다른 앱과 함께 사용하는 서버라면 애플리케이션을 서브 폴더에 두어야 하는 경우도 생깁니다.
 그래서 애플리케이션이 시작되는 위치가 `http://www.mysite.com/my/app/`이고 이 애플리케이션이 위치하는 폴더가 `my/app/`이라면 `index.html` 파일에서 기본 주소를 `<base href="/my/app/">`으로 지정해야 합니다.
 
-<!--
-When the `base` tag is mis-configured, the app fails to load and the browser console displays `404 - Not Found` errors
-for the missing files. Look at where it _tried_ to find those files and adjust the base tag appropriately.
--->
 `base` 태그가 잘못된 값으로 설정되면 애플리케이션 파일을 찾을 수 없기 때문에 애플리케이션을 실행할 수 없어서 브라우저 콘솔에 `404 - Not Found` 에러가 출력됩니다.
 이 에러가 발생하면 `base` 태그값을 바꿔보면서 정확한 위치를 지정해야 합니다.
 
@@ -770,23 +862,35 @@ When targeting older browsers, [polyfills](guide/browser-support#polyfills) can 
 
 To maximize compatibility, you could ship a single bundle that includes all your compiled code, plus any polyfills that may be needed.
 Users with modern browsers, however, shouldn't have to pay the price of increased bundle size that comes with polyfills they don't need.
-Differential loading, which is supported by default in Angular CLI version 8 and higher, solves this problem.
+Differential loading, which is supported in Angular CLI version 8 and higher, can help solve this problem.
 
-Differential loading is a strategy that allows your web application to support multiple browsers, but only load the necessary code that the browser needs. When differential loading is enabled (which is the default) the CLI builds two separate bundles as part of your deployed application.
+Differential loading is a strategy that allows your web application to support multiple browsers, but only load the necessary code that the browser needs. When differential loading is enabled the CLI builds two separate bundles as part of your deployed application.
 
-* The first bundle contains modern ES2015 syntax, takes advantage of built-in support in modern browsers, ships fewer polyfills, and results in a smaller bundle size.
+* The first bundle contains modern ES2015 syntax. This bundle takes advantage of built-in support in modern browsers, ships fewer polyfills, and results in a smaller bundle size.
 
-* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This results in a larger bundle size, but supports older browsers.
+* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This second bundle is larger, but supports older browsers.
 -->
-애플리케이션은 결국 더 많은 브라우저에서 정상적으로 실행되는지가 가장 중요합니다. 하지만 JavaScript 자체도 새로운 기능을 도입하면서 끊임없이 진보하기 때문에 모든 브라우저들이 JavaScript 표준에 있는 기능을 같은 수준으로 지원하지는 않습니다. 그래서 해결책으로 컴파일이라는 과정과 [폴리필(polyfills)](guide/browser-support#polyfills)이라는 개념이 등장했습니다. 이제는 개발자가 TypeScript로 작성한 코드가 컴파일 단계를 거쳐 브라우저에서 원활하게 실행되는 ES5 코드로 변환됩니다. 그리고 이 과정에서 JavaScript 문법으로 새로 추가되어 브라우저가 아직 지원하지 않는 기능은 폴리필을 활용해서 지원하기도 합니다.
+애플리케이션은 결국 더 많은 브라우저에서 정상적으로 실행되는지가 가장 중요합니다.
+하지만 JavaScript 자체도 새로운 기능을 도입하면서 끊임없이 진보하기 때문에 모든 브라우저들이 JavaScript 표준에 있는 기능을 같은 수준으로 지원하지는 않습니다.
+그래서 해결책으로 컴파일이라는 과정과 [폴리필(polyfills)](guide/browser-support#polyfills)이라는 개념이 등장했습니다.
+이제는 개발자가 TypeScript로 작성한 코드가 컴파일 단계를 거쳐 브라우저에서 원활하게 실행되는 ES5 코드로 변환됩니다.
+그리고 이 과정에서 JavaScript 문법으로 새로 추가되어 브라우저가 아직 지원하지 않는 기능은 폴리필을 활용해서 지원하기도 합니다.
 
-브라우저 호환성을 신경쓰다보면 번들 결과물의 크기가 점점 커질 수 있습니다. 최근에 나온 브라우저들은 보통 ES2015나 이후 버전을 지원하지만 그렇지 못한 브라우저를 사용하는 사용자가 있을 수 있고, 이런 사용자들을 위해 개발자가 작성한 코드 이외에 폴리필을 추가로 넣어야 하기 때문입니다. 하지만 최신 JavaScript 문법을 지원하는 브라우저를 사용하는 사용자는 이 증가분이 필요없습니다. 그래서 증분 로딩이 등장했습니다.
+브라우저 호환성을 신경쓰다보면 번들 결과물의 크기가 점점 커질 수 있습니다.
+최근에 나온 브라우저들은 보통 ES2015나 이후 버전을 지원하지만 그렇지 못한 브라우저를 사용하는 사용자가 있을 수 있고, 이런 사용자들을 위해 개발자가 작성한 코드 이외에 폴리필을 추가로 넣어야 하기 때문입니다.
+하지만 최신 JavaScript 문법을 지원하는 브라우저를 사용하는 사용자는 이 증가분이 필요없습니다.
+그래서 증분 로딩이 등장했습니다.
 
-증분 로딩은 Angular CLI로 애플리케이션을 빌드할 때 이 애플리케이션의 빌드 결과물을 두 벌로 생성하는 방식입니다. 첫번째 세트에는 최신 JavaScript 문법을 지원하는 코드가 들어갑니다. 이 결과물에는 폴리필이 최소한으로 들어가기 때문에 번들 결과물의 크기도 상대적으로 작습니다. 그리고 두번째 세트에는 조금 더 낮은 JavaScript 버전으로 빌드된 코드와 오래된 브라우저에서 지원하지 않는 문법을 실행하기 위한 폴리필이 모두 포함되는데, 따라서 번들 결과물의 크기는 상대적으로 좀 더 큽니다. 증분 로딩 방식을 사용하면 애플리케이션이 동작하는 브라우저를 더 확보할 수 있으면서도, 브라우저에 꼭 필요한 코드만 로딩할 수 있습니다.
+증분 로딩은 Angular CLI로 애플리케이션을 빌드할 때 이 애플리케이션의 빌드 결과물을 두 벌로 생성하는 방식입니다.
+첫번째 세트에는 최신 JavaScript 문법을 지원하는 코드가 들어갑니다.
+이 결과물에는 폴리필이 최소한으로 들어가기 때문에 번들 결과물의 크기도 상대적으로 작습니다.
+그리고 두번째 세트에는 조금 더 낮은 JavaScript 버전으로 빌드된 코드와 오래된 브라우저에서 지원하지 않는 문법을 실행하기 위한 폴리필이 모두 포함되는데, 따라서 번들 결과물의 크기는 상대적으로 좀 더 큽니다.
+증분 로딩 방식을 사용하면 애플리케이션이 동작하는 브라우저를 더 확보할 수 있으면서도, 브라우저에 꼭 필요한 코드만 로딩할 수 있습니다.
 
 * 첫번째 빌드 결과물에는 최신 ES2015 문법이 사용됩니다. 이 문법을 활용하면 최신 브라우저가 지원하는 훌륭한 내장 기능을 폴리필없이 사용할 수 있기 때문에 번들 결과물 크기도 작습니다.
 
 * 두번째 빌드 결과물에는 ES5 문법이 사용되며, 폴리필이 필요하면 폴릴필도 함께 포함됩니다. 빌드 결과물은 ES2015 문법이 사용된 것보다 조금 더 크지만 오래된 브라우저도 지원할 수 있습니다.
+
 
 <!--
 ### Differential builds
@@ -799,13 +903,13 @@ The [`ng build` CLI command](cli/build) queries the browser configuration and th
 
 The following configurations determine your requirements.
 
-* Browsers list
+* Browserslist
 
-   The `browserslist` configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports. See the [Browserslist spec](https://github.com/browserslist/browserslist) for complete configuration options.
+   The Browserslist configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports. See the [Browserslist spec](https://github.com/browserslist/browserslist) for complete configuration options.
 
 * TypeScript configuration
 
-   In the TypeScript configuration file, `tsconfig.json`, the "target" option in the `compilerOptions` section determines the ECMAScript target version that the code is compiled to.
+   In the TypeScript configuration file, the "target" option in the `compilerOptions` section determines the ECMAScript target version that the code is compiled to.
    Modern browsers support ES2015 natively, while ES5 is more commonly used to support legacy browsers.
 
 <div class="alert is-helpful">
@@ -850,7 +954,7 @@ Angular CLI로 빌드한 것을 배포할 때는 언제/어떻게 증분 로딩�
 
 * 지원 브라우저 목록
 
-   [프로젝트 구조](guide/file-structure#application-configuration-files) 문서에서 설명한 것처럼 프로젝트에는 `browserlist` 환경설정 파일이 존재합니다.
+   [프로젝트 구조](guide/file-structure#application-configuration-files) 문서에서 설명한 것처럼 프로젝트에는 Browserlist 환경설정 파일이 존재합니다.
    이 파일은 애플리케이션이 지원할 브라우저 목록을 지정하는 파일입니다.
    설정방법에 대해 자세하게 알아보려면 [Browserlist 스펙 문서](https://github.com/browserslist/browserslist)를 참고하세요.
 
@@ -901,28 +1005,32 @@ Angular CLI로 빌드한 것을 배포할 때는 언제/어떻게 증분 로딩�
 
 </div>
 
-
 <!--
 ### Configuring differential loading
 -->
 ### 증분 로딩 활성화하기
 
-<!--
-Differential loading is supported by default with version 8 and later of the Angular CLI.
-For each application project in your workspace, you can configure how builds are produced based on the `browserslist` and `tsconfig.json` configuration files in your application project.
+To include differential loading in your application builds, you must configure the Browserslist and TypeScript configuration files in your application project.
 
-For a newly created Angular application, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015.
--->
-증분 로딩 설정은 Angular CLI 8 버전부터 이미 지원하고 있습니다.
-워크스페이스에 있는 애플리케이션 프로젝트를 보면 `browserlist` 파일과 `tsconfig.json` 파일이 존재하는데, 지원하는 브라우저 목록은 이 파일에서 지정합니다.
+The following examples show a `browserlistrc` and `tsconfig.json` file for a newly created Angular application. In this configuration, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015.
 
-최근 정책을 따르면 IE 9-11와 같이 오래된 브라우저는 지원하지 않으며 빌드 결과물은 ES2015 문법으로 생성합니다.
+<code-example language="none" header="browserslistrc">
+# This file is used by the build system to adjust CSS and JS output to support the specified browsers below.
+# For additional information regarding the format and rule options, please see:
+# https://github.com/browserslist/browserslist#queries
 
-<code-example language="none" header="browserslist">
-> 0.5%
-last 2 versions
+# For the full list of supported browsers by the Angular framework, please see:
+# https://angular.io/guide/browser-support
+
+# You can see what browsers were selected by your queries by running:
+#   npx browserslist
+
+last 1 Chrome version
+last 1 Firefox version
+last 2 Edge major versions
+last 2 Safari major version
+last 2 iOS major versions
 Firefox ESR
-not dead
 not IE 9-11 # For IE 9-11 support, remove 'not'.
 </code-example>
 
@@ -953,66 +1061,23 @@ not IE 9-11 # For IE 9-11 support, remove 'not'.
 
 </code-example>
 
-<!--
-The default configuration creates two builds, with differential loading enabled.
--->
-그리고 기본적으로 증분 로딩을 활성화하기 때문에 빌드 결과물은 두 벌 생성합니다.
-
 <div class="alert is-important">
 
-   <!--
-   To see which browsers are supported with the default configuration and determine which settings meet to your browser support requirements, see the [Browserslist compatibility page](https://browserl.ist/?q=%3E+0.5%25%2C+last+2+versions%2C+Firefox+ESR%2C+not+dead%2C+not+IE+9-11).
-   -->
-   기본 설정에서 어떤 브라우저를 지원하는지, 이 목록을 어떻게 수정하는지 알아보려면 [Browserslist 호환성 페이지](https://browserl.ist/?q=%3E+0.5%25%2C+last+2+versions%2C+Firefox+ESR%2C+not+dead%2C+not+IE+9-11)를 참고하세요.
+   To see which browsers are supported and determine which settings meet to your browser support requirements, see the [Browserslist compatibility page](https://browserl.ist/?q=%3E+0.5%25%2C+last+2+versions%2C+Firefox+ESR%2C+not+dead%2C+not+IE+9-11).
 
 </div>
 
-<!--
-The `browserslist` configuration allows you to ignore browsers without ES2015 support. In this case, a single build is produced.
+The Browserslist configuration allows you to ignore browsers without ES2015 support. In this case, a single build is produced.
 
-If your `browserslist` configuration includes support for any legacy browsers, the build target in the TypeScript configuration determines whether the build will support differential loading.
--->
-`browserslist` 설정을 수정하면 ES2015를 지원하지 않는 브라우저는 애플리케이션 실행 대상에서 제외할 수 있습니다.
-이 경우에는 빌드 결과물이 한 벌만 생성됩니다.
-
-그리고 `browserlist` 환경설정에서 설정하는 지원 브라우저 대상과 TypeScript 환경설정에서 지정하는 ES 문법에 따라 증분 로딩용 빌드 결과물이 추가로 생성될 수 있습니다.
-
+If your Browserslist configuration includes support for any legacy browsers, the build target in the TypeScript configuration determines whether the build will support differential loading.
 
 {@a configuration-table }
 
-<!--
-| browserslist | ES target | Build result |
+| Browserslist | ES target | Build result |
 | -------- | -------- | -------- |
 | ES5 support disabled | es2015  | Single build, ES5 not required |
 | ES5 support enabled  | es5     | Single build w/conditional polyfills for ES5 only |
 | ES5 support enabled  | es2015  | Differential loading (two builds w/conditional polyfills) |
--->
-| Browserslist 지원대상 | ES 문법 | 빌드 결과물 |
-| -------- | -------- | -------- |
-| 지원하지 않음 | es5     | 1벌 |
-| 지원  | es5     | 1벌 + 폴리필 |
-| 지원하지 않음 | es2015  | 1벌 |
-| 지원  | es2015  | 증분 빌드 (2벌 + 폴리필)
-
-<!--
-### Opting out of differential loading
--->
-### 증분 로딩 비활성화하기
-
-<!--
-Differential loading can be explicitly disabled if it causes unexpected issues, or if you need to target ES5 specifically for legacy browser support.
-
-To explicitly disable differential loading and create an ES5 build:
-
-- Enable the `dead` or `IE` browsers in the `browserslist` configuration file by removing the `not` keyword in front of them.
-- To create a single ES5 build, set the target in the `compilerOptions` to `es5`.
--->
-예상하지 못한 이슈가 있거나 오래된 브라우저를 확실하게 지원하기 위해 ES5 문법으로 빌드한다면 증분 로딩을 명시적으로 비활성화할 수 있습니다.
-
-이렇게 설정하면 됩니다:
-
-- `browserlist` 파일에서 `dead`나 `IE` 앞에 설정된 `not` 키워드를 제거합니다.
-- `compilerOptions` 중 `target` 옵션을 `es5`로 지정합니다.
 
 {@a test-and-serve}
 

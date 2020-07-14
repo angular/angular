@@ -607,8 +607,8 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="router-link"></code-example>
 
 
-      For more information on routing, see the [RouterLink binding](guide/router#router-link)
-      section of the [Routing & Navigation](guide/router) page.
+      For more information on routing, see [Defining a basic route](guide/router#basic-route)
+      in the [Routing & Navigation](guide/router) page.
       -->
       ### `href` 프로퍼티 바인딩
 
@@ -624,7 +624,8 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="router-link"></code-example>
 
-      더 자세한 내용은 [라우팅 & 네비게이션](guide/router) 문서의 [RouterLink 바인딩](guide/router#router-link) 섹션을 참고하세요.
+      For more information on routing, see [Defining a basic route](guide/router#basic-route)
+      in the [Routing & Navigation](guide/router) page.
 
     </td>
 

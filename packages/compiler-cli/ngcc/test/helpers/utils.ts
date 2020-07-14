@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, NgtscCompilerHost, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {TestFile} from '../../../src/ngtsc/file_system/testing';
 import {BundleProgram, makeBundleProgram} from '../../src/packages/bundle_program';
 import {NgccEntryPointConfig} from '../../src/packages/configuration';
@@ -21,9 +21,10 @@ export function makeTestEntryPoint(
     entryPointName: string, packageName: string = entryPointName, config?: TestConfig): EntryPoint {
   return {
     name: entryPointName,
-    packageJson: {name: entryPointName},
-    package: absoluteFrom(`/node_modules/${packageName}`),
     path: absoluteFrom(`/node_modules/${entryPointName}`),
+    packageName,
+    packagePath: absoluteFrom(`/node_modules/${packageName}`),
+    packageJson: {name: entryPointName},
     typings: absoluteFrom(`/node_modules/${entryPointName}/index.d.ts`),
     compiledByAngular: true,
     ignoreMissingDependencies: false,
@@ -43,13 +44,19 @@ export function makeTestEntryPointBundle(
     enableI18nLegacyMessageIdFormat = false): EntryPointBundle {
   const entryPoint = makeTestEntryPoint(packageName, packageName, config);
   const src = makeTestBundleProgram(srcRootNames[0], isCore);
-  const dts =
-      dtsRootNames ? makeTestDtsBundleProgram(dtsRootNames[0], entryPoint.package, isCore) : null;
+  const dts = dtsRootNames ?
+      makeTestDtsBundleProgram(dtsRootNames[0], entryPoint.packagePath, isCore) :
+      null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
   return {
     entryPoint,
     format,
-    rootDirs: [absoluteFrom('/')], src, dts, isCore, isFlatCore, enableI18nLegacyMessageIdFormat
+    rootDirs: [absoluteFrom('/')],
+    src,
+    dts,
+    isCore,
+    isFlatCore,
+    enableI18nLegacyMessageIdFormat
   };
 }
 

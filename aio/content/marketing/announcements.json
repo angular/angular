@@ -10,10 +10,10 @@
   {
     "startDate": "2020-04-01",
     "endDate": "2020-04-03",
-    "!message": "Watch ng-conf live stream <br/>April 1st-3rd, 2020",
-    "message": "ng-conf 라이브 영상을 확인해 보세요.<br/>2020. 4. 1 ~ 3",
+    "!message": "ng-conf: Hardwired is happening! <br/>April 1st-3rd, 2020",
+    "message": "ng-conf: Hardwired 행사가 진행되었습니다! <br/>2020. 4. 1 ~ 3",
     "imageUrl": "generated/images/marketing/home/ng-conf.png",
-    "linkUrl": "https://www.ng-conf.org/livestream/?utm_source=angular.io&utm_medium=referral"
+    "linkUrl": "https://www.ng-conf.org"
   },
   {
     "startDate": "2019-05-03",

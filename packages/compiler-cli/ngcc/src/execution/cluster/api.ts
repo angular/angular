@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {JsonObject} from '../../packages/entry_point';
 import {PackageJsonChange} from '../../writing/package_json_updater';
-import {Task, TaskProcessingOutcome} from '../api';
+import {Task, TaskProcessingOutcome} from '../tasks/api';
 
 
 /** A message reporting that an unrecoverable error occurred. */
@@ -33,6 +33,13 @@ export interface ProcessTaskMessage extends JsonObject {
 export interface TaskCompletedMessage extends JsonObject {
   type: 'task-completed';
   outcome: TaskProcessingOutcome;
+  message: string|null;
+}
+
+/** A message listing the paths to transformed files about to be written to disk. */
+export interface TransformedFilesMessage extends JsonObject {
+  type: 'transformed-files';
+  files: AbsoluteFsPath[];
 }
 
 /** A message requesting the update of a `package.json` file. */
@@ -43,7 +50,8 @@ export interface UpdatePackageJsonMessage extends JsonObject {
 }
 
 /** The type of messages sent from cluster workers to the cluster master. */
-export type MessageFromWorker = ErrorMessage | TaskCompletedMessage | UpdatePackageJsonMessage;
+export type MessageFromWorker =
+    ErrorMessage|TaskCompletedMessage|TransformedFilesMessage|UpdatePackageJsonMessage;
 
 /** The type of messages sent from the cluster master to cluster workers. */
 export type MessageToWorker = ProcessTaskMessage;

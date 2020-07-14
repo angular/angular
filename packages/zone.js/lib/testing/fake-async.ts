@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -117,7 +117,9 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
    *
    * @experimental
    */
-  function tick(millis: number = 0): void { _getFakeAsyncZoneSpec().tick(millis); }
+  function tick(millis: number = 0, ignoreNestedTimeout = false): void {
+    _getFakeAsyncZoneSpec().tick(millis, null, ignoreNestedTimeout);
+  }
 
   /**
    * Simulates the asynchronous passage of time for the timers in the fakeAsync zone by
@@ -129,7 +131,9 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
    *
    * @experimental
    */
-  function flush(maxTurns?: number): number { return _getFakeAsyncZoneSpec().flush(maxTurns); }
+  function flush(maxTurns?: number): number {
+    return _getFakeAsyncZoneSpec().flush(maxTurns);
+  }
 
   /**
    * Discard all remaining periodic tasks.
@@ -147,7 +151,9 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
    *
    * @experimental
    */
-  function flushMicrotasks(): void { _getFakeAsyncZoneSpec().flushMicrotasks(); }
-  (Zone as any)[api.symbol('fakeAsyncTest')] = {
-      resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync};
+  function flushMicrotasks(): void {
+    _getFakeAsyncZoneSpec().flushMicrotasks();
+  }
+  (Zone as any)[api.symbol('fakeAsyncTest')] =
+      {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync};
 });

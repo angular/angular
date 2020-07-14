@@ -76,6 +76,13 @@ When you create a library project with `ng generate library`, the library projec
 
 </div>
 
+
+## Strict mode
+
+When you create new workspaces and projects, you have the option to use Angular's strict mode, which can help you write better, more maintainable code.
+For more information, see [Strict mode](/guide/strict-mode).
+
+
 <!--
 ## Project configuration options
 -->

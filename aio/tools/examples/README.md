@@ -32,12 +32,12 @@ Currently you will find the next project types:
 * cli - For CLI based examples. This is the default one, to be used in the majority of the examples.
 * getting-started - CLI-based with its own set of styles.
 * i18n - CLI-based with additional scripts for internationalization.
-* ivy - CLI-based with additional configuration for running the examples with the Ivy renderer and ngstc compiler.
 * schematics - CLI-based with additional scripts for building schematics.
 * service-worker - CLI-based with additional packages and configuration for service workers.
 * systemjs - Currently in deprecation, only used in a few examples.
 * testing - CLI-based with additional styles for jasmine testing.
 * universal - CLI-based with an extra server target.
+* viewengine - Additional configuration for running CLI-/SystemJS-based examples with `ViewEngine` (the pre-Ivy compiler/renderer).
 
 There is also a `common` folder that contains files used in all different examples.
 

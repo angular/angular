@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -34,15 +34,14 @@ export default [
       'de set.', 'd’oct.', 'de nov.', 'de des.'
     ],
     [
-      'de gener', 'de febrer', 'de març', 'd’abril', 'de maig', 'de juny', 'de juliol',
-      'd’agost', 'de setembre', 'd’octubre', 'de novembre', 'de desembre'
+      'de gener', 'de febrer', 'de març', 'd’abril', 'de maig', 'de juny', 'de juliol', 'd’agost',
+      'de setembre', 'd’octubre', 'de novembre', 'de desembre'
     ]
   ],
   [
     ['GN', 'FB', 'MÇ', 'AB', 'MG', 'JN', 'JL', 'AG', 'ST', 'OC', 'NV', 'DS'],
     [
-      'gen.', 'febr.', 'març', 'abr.', 'maig', 'juny', 'jul.', 'ag.', 'set.', 'oct.', 'nov.',
-      'des.'
+      'gen.', 'febr.', 'març', 'abr.', 'maig', 'juny', 'jul.', 'ag.', 'set.', 'oct.', 'nov.', 'des.'
     ],
     [
       'gener', 'febrer', 'març', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre', 'octubre',

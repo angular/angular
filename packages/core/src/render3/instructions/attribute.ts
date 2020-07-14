@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
+import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {elementAttributeInternal, storePropertyBindingMetadata} from './shared';
 
 
@@ -26,15 +26,15 @@ import {elementAttributeInternal, storePropertyBindingMetadata} from './shared';
  * @codeGenApi
  */
 export function ɵɵattribute(
-    name: string, value: any, sanitizer?: SanitizerFn | null,
+    name: string, value: any, sanitizer?: SanitizerFn|null,
     namespace?: string): typeof ɵɵattribute {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
-    const nodeIndex = getSelectedIndex();
     const tView = getTView();
-    elementAttributeInternal(nodeIndex, name, value, tView, lView, sanitizer, namespace);
-    ngDevMode && storePropertyBindingMetadata(tView.data, nodeIndex, 'attr.' + name, bindingIndex);
+    const tNode = getSelectedTNode();
+    elementAttributeInternal(tNode, lView, name, value, sanitizer, namespace);
+    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'attr.' + name, bindingIndex);
   }
   return ɵɵattribute;
 }

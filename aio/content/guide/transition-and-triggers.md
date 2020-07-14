@@ -334,9 +334,10 @@ You can define more than one animation trigger for a component. You can attach a
 ### 부모-자식 애니메이션
 
 <!--
-Each time an animation is triggered in Angular, the parent animation always get priority and child animations are blocked. In order for a child animation to run, the parent animation must query each of the elements containing child animations and then allow the animations to run using the [`animateChild()`](https://angular.io/api/animations/animateChild) function.
+Each time an animation is triggered in Angular, the parent animation always get priority and child animations are blocked. In order for a child animation to run, the parent animation must query each of the elements containing child animations and then allow the animations to run using the [`animateChild()`](api/animations/animateChild) function.
 -->
-Angular에서 애니메이션이 시작되면 부모 애니메이션이 항상 우선권을 가지며 자식 애니메이션은 중단됩니다. 그래서 자식 애니메이션을 시작하려면 부모 애니메이션이 각각의 자식 애니메이션을 찾아서 [`animateChild()`](https://angular.io/api/animations/animateChild)으로 실행해줘야 합니다.
+Angular에서 애니메이션이 시작되면 부모 애니메이션이 항상 우선권을 가지며 자식 애니메이션은 중단됩니다.
+그래서 자식 애니메이션을 시작하려면 부모 애니메이션이 각각의 자식 애니메이션을 찾아서 [`animateChild()`](api/animations/animateChild)으로 실행해줘야 합니다.
 
 <!--
 #### Disabling an animation on an HTML element
@@ -371,7 +372,7 @@ You can't selectively disable multiple animations on a single element.
 
 However, selective child animations can still be run on a disabled parent in one of the following ways:
 
-* A parent animation can use the [`query()`](https://angular.io/api/animations/query) function to collect inner elements located in disabled areas of the HTML template.
+* A parent animation can use the [`query()`](api/animations/query) function to collect inner elements located in disabled areas of the HTML template.
 Those elements can still animate.
 
 * A subanimation can be queried by a parent and then later animated with the `animateChild()` function.
@@ -383,7 +384,7 @@ Those elements can still animate.
 
 그런데 부모 엘리먼트의 애니메이션은 비활성화하고 자식 엘리먼트의 애니메이션만 실행할 수 있는 방법이 있습니다:
 
-* 부모 애니메이션에서 [`query()`](https://angular.io/api/animations/query) 함수를 실행해서 자식 엘리먼트의 애니메이션을 모은 후에 직접 시작할 수 있습니다.
+* 부모 애니메이션에서 [`query()`](api/animations/query) 함수를 실행해서 자식 엘리먼트의 애니메이션을 모은 후에 직접 시작할 수 있습니다.
 
 * 서브 애니메이션도 쿼리한 후에 `animateChild()` 함수로 시작할 수 있습니다.
 

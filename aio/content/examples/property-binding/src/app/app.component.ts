@@ -15,7 +15,7 @@ export class AppComponent {
   // #enddocregion parent-data-type
 
   // #docregion pass-object
-  currentItem = [{
+  currentItems = [{
     id: 21,
     name: 'phone'
   }];

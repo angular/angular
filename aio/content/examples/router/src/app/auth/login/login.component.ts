@@ -1,8 +1,7 @@
 // #docregion
-import { Component }        from '@angular/core';
-import { Router,
-         NavigationExtras } from '@angular/router';
-import { AuthService }      from '../auth.service';
+import { Component } from '@angular/core';
+import { NavigationExtras, Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -26,9 +25,9 @@ export class LoginComponent {
     this.authService.login().subscribe(() => {
       this.setMessage();
       if (this.authService.isLoggedIn) {
-        // Get the redirect URL from our auth service
-        // If no redirect has been set, use the default
-        let redirect = this.authService.redirectUrl ? this.router.parseUrl(this.authService.redirectUrl) : '/admin';
+        // 보통은 AuthService에서 리다이렉트할 URL을 가져옵니다.
+        // 하지만 예제를 간단하게 구성하기 위해 `/admin`으로 리다이렉트 합시다.
+        const redirectUrl = '/admin';
 
         // #docregion preserve
         // 전역 쿼리 파라미터와 프래그먼트를 NavigationExtras 객체타입으로 전달합니다.
@@ -38,7 +37,7 @@ export class LoginComponent {
         };
 
         // 리다이렉트 합니다.
-        this.router.navigateByUrl(redirect, navigationExtras);
+        this.router.navigate([redirectUrl], navigationExtras);
         // #enddocregion preserve
       }
     });

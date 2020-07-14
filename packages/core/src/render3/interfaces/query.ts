@@ -1,13 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectionToken} from '../../di/injection_token';
 import {Type} from '../../interface/type';
-import {QueryList} from '../../linker';
+import {QueryList} from '../../linker/query_list';
 
 import {TNode} from './node';
 import {TView} from './view';
@@ -16,7 +17,7 @@ import {TView} from './view';
  * An object representing query metadata extracted from query annotations.
  */
 export interface TQueryMetadata {
-  predicate: Type<any>|string[];
+  predicate: Type<any>|InjectionToken<unknown>|string[];
   descendants: boolean;
   read: any;
   isStatic: boolean;
@@ -145,7 +146,7 @@ export interface TQueries {
   template(tView: TView, tNode: TNode): void;
 
   /**
-  * A proxy method that iterates over all the TQueries in a given TView and calls the corresponding
+   * A proxy method that iterates over all the TQueries in a given TView and calls the corresponding
    * `embeddedTView` on each and every TQuery.
    * @param tNode
    */

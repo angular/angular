@@ -266,7 +266,7 @@ You can also configure the `serve` command to use the targeted build configurati
 
 {@a size-budgets}
 {@a configure-size-budgets}
-
+{@a configuring-size-budgets}
 <!--
 ## Configuring size budgets
 -->
@@ -446,6 +446,33 @@ Each budget entry is a JSON object with the following properties:
   </tr>
 </table>
 
+{@a commonjs }
+## Configuring CommonJS dependencies
+
+<div class="alert is-important">
+
+It is recommended that you avoid depending on CommonJS modules in your Angular applications.
+Depending on CommonJS modules can prevent bundlers and minifiers from optimizing your application, which results in larger bundle sizes.
+Instead, it is recommended that you use [ECMAScript modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) in your entire application.
+For more information, see [How CommonJS is making your bundles larger](https://web.dev/commonjs-larger-bundles/).
+
+</div>
+
+The Angular CLI outputs warnings if it detects that your browser application depends on CommonJS modules.
+To disable these warnings, you can add the CommonJS module name to `allowedCommonJsDependencies` option in the `build` options located in `angular.json` file.
+
+<code-example lang="json">
+"build": {
+  "builder": "@angular-devkit/build-angular:browser",
+  "options": {
+     "allowedCommonJsDependencies": [
+        "lodash"
+     ]
+     ...
+   }
+   ...
+},
+</code-example>
 
 {@a browser-compat}
 
@@ -540,7 +567,7 @@ IE10/11 환경에서 CSS 그리드를 사용하려면 `autoplace` 옵션을 사�
 전역 스타일 파일 제일 위쪽에 다음 코드를 추가하면 됩니다.
 
 ```
-/* autoprefixer grid: autoplace /
+/* autoprefixer grid: autoplace */
 ```
 
 <!--
@@ -549,7 +576,7 @@ or
 또는
 
 ```
-/ autoprefixer grid: no-autoplace */
+/* autoprefixer grid: no-autoplace */
 ```
 
 <!--

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -95,9 +95,11 @@ export function checkForPrivateExports(
         const diagnostic: ts.Diagnostic = {
           category: ts.DiagnosticCategory.Error,
           code: ngErrorCode(ErrorCode.SYMBOL_NOT_EXPORTED),
-          file: transitiveReference.getSourceFile(), ...getPosOfDeclaration(transitiveReference),
-          messageText:
-              `Unsupported private ${descriptor} ${name}. This ${descriptor} is visible to consumers via ${visibleVia}, but is not exported from the top-level library entrypoint.`,
+          file: transitiveReference.getSourceFile(),
+          ...getPosOfDeclaration(transitiveReference),
+          messageText: `Unsupported private ${descriptor} ${name}. This ${
+              descriptor} is visible to consumers via ${
+              visibleVia}, but is not exported from the top-level library entrypoint.`,
         };
 
         diagnostics.push(diagnostic);

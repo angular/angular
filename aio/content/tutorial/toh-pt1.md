@@ -7,9 +7,22 @@
 The application now has a basic title.
 Next you will create a new component to display hero information
 and place that component in the application shell.
+
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
 -->
 이전 튜토리얼에서는 애플리케이션의 제목을 수정해 봤습니다.
 이번 튜토리얼에서는 히어로의 정보를 표시하는 컴포넌트를 생성하고 이 컴포넌트를 애플리케이션 셸에 추가해 봅시다.
+
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
 
 <!--
 ## Create the heroes component
@@ -18,6 +31,28 @@ and place that component in the application shell.
 
 <!--
 Using the Angular CLI, generate a new component named `heroes`.
+
+<code-example language="sh" class="code-shell">
+  ng generate component heroes
+</code-example>
+
+The CLI creates a new folder, `src/app/heroes/`, and generates
+the three files of the  `HeroesComponent` along with a test file.
+
+The `HeroesComponent` class file is as follows:
+
+<code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="v1" header="app/heroes/heroes.component.ts (initial version)"></code-example>
+
+You always import the `Component` symbol from the Angular core library
+and annotate the component class with `@Component`.
+
+`@Component` is a decorator function that specifies the Angular metadata for the component.
+
+The CLI generated three metadata properties:
+
+1. `selector`&mdash; the component's CSS element selector
+1. `templateUrl`&mdash; the location of the component's template file.
+1. `styleUrls`&mdash; the location of the component's private CSS styles.
 -->
 다음 명령을 실행해서 Angular CLI로 `heroes` 컴포넌트를 생성합니다.
 
@@ -25,67 +60,44 @@ Using the Angular CLI, generate a new component named `heroes`.
   ng generate component heroes
 </code-example>
 
-<!--
-The CLI creates a new folder, `src/app/heroes/`, and generates
-the three files of the  `HeroesComponent` along with a test file.
--->
 그러면 CLI가 `src/app/heroes/`폴더를 생성하고 `HeroesComponent`를 구성하는 파일 3개와 테스트 파일을 생성합니다.
 
-<!--
-The `HeroesComponent` class file is as follows:
--->
 자동으로 생성된 `HeroesComponent` 클래스 파일의 내용은 다음과 같습니다.
 
-<!--
 <code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="v1" header="app/heroes/heroes.component.ts (initial version)"></code-example>
--->
-<code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="v1" header="app/heroes/heroes.component.ts (초기 버전)"></code-example>
 
-<!--
-You always import the `Component` symbol from the Angular core library
-and annotate the component class with `@Component`.
--->
 Angular 컴포넌트를 선언하려면 반드시 Angular 코어 라이브러리에서 `Component` 심볼을 로드하고 컴포넌트 클래스에 `@Component` 와 같이 지정해야 합니다.
 
-<!--
-`@Component` is a decorator function that specifies the Angular metadata for the component.
--->
 이 때 `@Component`는 클래스에 메타데이터를 지정해서 Angular 컴포넌트로 선언하는 데코레이터 함수입니다.
 
-<!--
-The CLI generated three metadata properties:
--->
 Angular CLI는 기본적으로 3개의 메타데이터 프로퍼티를 생성합니다.
 
-<!--
-1. `selector`&mdash; the component's CSS element selector
-1. `templateUrl`&mdash; the location of the component's template file.
-1. `styleUrls`&mdash; the location of the component's private CSS styles.
--->
 1. `selector`&mdash; 컴포넌트의 CSS 엘리먼트 셀럭터
 1. `templateUrl`&mdash; 컴포넌트 템플릿 파일의 위치
 1. `styleUrls`&mdash; 컴포넌트 CSS 스타일 파일의 위치
+
+
 {@a selector}
 
 <!--
 The [CSS element selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors),
 `'app-heroes'`, matches the name of the HTML element that identifies this component within a parent component's template.
--->
-`'app-heroes'`는 [CSS 엘리먼트 셀렉터](https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors)입니다. 엘리먼트 셀렉터는 DOM 트리에서 이 컴포넌트를 표현하는 이름이며, 부모 컴포넌트의 템플릿에 사용합니다.
 
-<!--
-The `ngOnInit()` is a [lifecycle hook](guide/lifecycle-hooks#oninit). 
+The `ngOnInit()` is a [lifecycle hook](guide/lifecycle-hooks#oninit).
 Angular calls `ngOnInit()` shortly after creating a component.
 It's a good place to put initialization logic.
+
+Always `export` the component class so you can `import` it elsewhere ... like in the `AppModule`.
 -->
+`'app-heroes'`는 [CSS 엘리먼트 셀렉터](https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors)입니다.
+엘리먼트 셀렉터는 DOM 트리에서 이 컴포넌트를 표현하는 이름이며, 부모 컴포넌트의 템플릿에 사용합니다.
+
 `ngOnInit`은 [라이프싸이클 후킹 함수](guide/lifecycle-hooks#oninit) 입니다.
 Angular는 컴포넌트를 생성한 직후에 `ngOnInit`를 호출합니다.
 그래서 컴포넌트를 초기화하는 로직은 이 메소드에 작성하는 것이 좋습니다.
 
-<!--
-Always `export` the component class so you can `import` it elsewhere ... like in the `AppModule`.
--->
 컴포넌트는 반드시 `export` 해야 `AppModule`와 같은 다른 모듈에서 `import` 할 수 있습니다.
+
 
 <!--
 ### Add a `hero` property
@@ -94,13 +106,13 @@ Always `export` the component class so you can `import` it elsewhere ... like in
 
 <!--
 Add a `hero` property to the `HeroesComponent` for a hero named "Windstorm."
+
+<code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="add-hero" header="heroes.component.ts (hero property)"></code-example>
 -->
 `HeroesComponent`에 `hero` 프로퍼티를 추가하고 이 값을 히어로의 이름 "Windstorm"로 할당하세요.
 
-<!--
-<code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="add-hero" header="heroes.component.ts (hero property)"></code-example>
--->
 <code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="add-hero" header="heroes.component.ts (hero 프로퍼티)"></code-example>
+
 
 <!--
 ### Show the hero
@@ -117,6 +129,7 @@ replace it with a data binding to the new `hero` property.
 
 <code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" header="heroes.component.html" region="show-hero-1"></code-example>
 
+
 <!--
 ## Show the `HeroesComponent` view
 -->
@@ -124,23 +137,25 @@ replace it with a data binding to the new `hero` property.
 
 <!--
 To display the `HeroesComponent`, you must add it to the template of the shell `AppComponent`.
+
+Remember that `app-heroes` is the [element selector](#selector) for the `HeroesComponent`.
+So add an `<app-heroes>` element to the `AppComponent` template file, just below the title.
+
+<code-example path="toh-pt1/src/app/app.component.html" header="src/app/app.component.html"></code-example>
+
+Assuming that the CLI `ng serve` command is still running,
+the browser should refresh and display both the application title and the hero name.
 -->
 `HeroesComponent`를 표시하려면 이 컴포넌트를 `AppComponent` 셸의 템플릿에 추가해야 합니다.
 
-<!--
-Remember that `app-heroes` is the [element selector](#selector) for the `HeroesComponent`.
-So add an `<app-heroes>` element to the `AppComponent` template file, just below the title.
--->
 이전 단계에서 `HeroesComponent`의 [엘리먼트 셀렉터](#selector)는 `app-heroes`로 선언했습니다.
 `<app-heroes>` 엘리먼트를 `AppComponent` 템플릿 파일에서 타이틀 바로 밑에 추가하세요.
 
 <code-example path="toh-pt1/src/app/app.component.html" header="src/app/app.component.html"></code-example>
 
-<!--
-Assuming that the CLI `ng serve` command is still running,
-the browser should refresh and display both the application title and the hero name.
--->
-Angular CLI 명령 `ng serve`가 실행되고 있는 상태라면 브라우저는 자동으로 화면을 갱신합니다. 변경된 화면에서 애플리케이션 이름과 히어로 이름이 표시되는 것을 확인해 보세요.
+Angular CLI 명령 `ng serve`가 실행되고 있는 상태라면 브라우저는 자동으로 화면을 갱신합니다.
+변경된 화면에서 애플리케이션 이름과 히어로 이름이 표시되는 것을 확인해 보세요.
+
 
 <!--
 ## Create a Hero interface
@@ -149,41 +164,40 @@ Angular CLI 명령 `ng serve`가 실행되고 있는 상태라면 브라우저�
 
 <!--
 A real hero is more than a name.
+
+Create a `Hero` interface in its own file in the `src/app` folder.
+Give it `id` and `name` properties.
+
+<code-example path="toh-pt1/src/app/hero.ts"  header="src/app/hero.ts"></code-example>
+
+Return to the `HeroesComponent` class and import the `Hero` interface.
+
+Refactor the component's `hero` property to be of type `Hero`.
+Initialize it with an `id` of `1` and the name `Windstorm`.
+
+The revised `HeroesComponent` class file should look like this:
+
+<code-example path="toh-pt1/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts"></code-example>
+
+The page no longer displays properly because you changed the hero from a string to an object.
 -->
 실제 데이터를 생각해보면 히어로를 표현하는 객체는 이름 외에 다른 정보도 있을 수 있습니다.
 
-<!--
-Create a `Hero` interface in its own file in the `src/app` folder.
-Give it `id` and `name` properties.
--->
 `src/app`폴더에 `Hero` 인터페이스를 생성하고 이 클래스에 `id`와 `name` 프로퍼티를 추가합니다.
 
 <code-example path="toh-pt1/src/app/hero.ts"  header="src/app/hero.ts"></code-example>
 
-<!--
-Return to the `HeroesComponent` class and import the `Hero` interface.
--->
 그리고 `HeroesComponent` 클래스로 돌아가서 `Hero` 인터페이스를 로드합니다.
 
-
-<!--
-Refactor the component's `hero` property to be of type `Hero`.
-Initialize it with an `id` of `1` and the name `Windstorm`.
--->
 컴포넌트의 `hero`프로퍼티를 `Hero` 타입으로 리팩토링합니다.
 이 때 `id`를 `1`로, 이름을 `Windstorm`으로 초기화합니다.
 
-<!--
-The revised `HeroesComponent` class file should look like this:
--->
 수정된 `HeroesComponent` 클래스 파일은 아래와 같습니다.
 
 <code-example path="toh-pt1/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts"></code-example>
 
-<!--
-The page no longer displays properly because you changed the hero from a string to an object.
--->
 이제 화면을 확인해보면 히어로가 제대로 표시되지 않는 것을 확인할 수 있습니다. 왜냐하면 히어로 프로퍼티 값을 문자열 타입에서 객체 타입으로 변경했기 때문입니다.
+
 
 <!--
 ## Show the hero object
@@ -193,18 +207,17 @@ The page no longer displays properly because you changed the hero from a string 
 <!--
 Update the binding in the template to announce the hero's name
 and show both `id` and `name` in a details layout like this:
+
+<code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" region="show-hero-2" header="heroes.component.html (HeroesComponent's template)"></code-example>
+
+The browser refreshes and displays the hero's information.
 -->
 히어로의 이름이 제대로 표시되도록 템플릿을 수정합시다. 상세정보를 표시하는 레이아웃에 다음과 같이 `id`와 `name`을 바인딩합니다.
 
-<!--
-<code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" region="show-hero-2" header="heroes.component.html (HeroesComponent's template)"></code-example>
--->
 <code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" region="show-hero-2" header="heroes.component.html (HeroesComponent 템플릿)"></code-example>
 
-<!--
-The browser refreshes and displays the hero's information.
--->
 이제 브라우저가 갱신되면 히어로의 정보가 제대로 표시됩니다.
+
 
 <!--
 ## Format with the _UppercasePipe_
@@ -213,29 +226,29 @@ The browser refreshes and displays the hero's information.
 
 <!--
 Modify the `hero.name` binding like this.
+<code-example path="toh-pt1/src/app/heroes/heroes.component.html" header="src/app/heroes/heroes.component.html" region="pipe">
+</code-example>
+
+The browser refreshes and now the hero's name is displayed in capital letters.
+
+The word `uppercase` in the interpolation binding,
+right after the pipe operator ( | ),
+activates the built-in `UppercasePipe`.
+
+[Pipes](guide/pipes) are a good way to format strings, currency amounts, dates and other display data.
+Angular ships with several built-in pipes and you can create your own.
 -->
 다음과 같이 `hero.name` 바인딩 문법을 수정합니다.
 
 <code-example path="toh-pt1/src/app/heroes/heroes.component.html" header="src/app/heroes/heroes.component.html" region="pipe">
 </code-example>
 
-<!--
-The browser refreshes and now the hero's name is displayed in capital letters.
--->
 이제 브라우저가 갱신되면 히어로의 이름이 대문자로 표시됩니다.
 
-<!--
-The word `uppercase` in the interpolation binding,
-right after the pipe operator ( | ),
-activates the built-in `UppercasePipe`.
--->
 문자열 바인딩(interpolation binding)에서 파이프 연산자(|) 바로 뒤에 있는 `uppercase` 는 Angluar의 기본 파이프인 `UppercasePipe`를 가리킵니다.
 
-<!--
-[Pipes](guide/pipes) are a good way to format strings, currency amounts, dates and other display data.
-Angular ships with several built-in pipes and you can create your own.
--->
 [파이프](guide/pipes)는 문자열의 형식을 지정하거나, 통화 단위를 변경하고, 날짜나 데이터가 표시되는 형식을 변경할 때 사용합니다.
+
 
 <!--
 ## Edit the hero
@@ -244,22 +257,21 @@ Angular ships with several built-in pipes and you can create your own.
 
 <!--
 Users should be able to edit the hero name in an `<input>` textbox.
--->
-`<input>` 텍스트박스를 사용해서 사용자가 히어로의 이름을 수정하게 하려고 합니다.
 
-<!--
 The textbox should both _display_ the hero's `name` property
 and _update_ that property as the user types.
 That means data flows from the component class _out to the screen_ and
 from the screen _back to the class_.
+
+To automate that data flow, setup a two-way data binding between the `<input>` form element and the `hero.name` property.
 -->
+`<input>` 텍스트박스를 사용해서 사용자가 히어로의 이름을 수정하게 하려고 합니다.
+
 텍스트박스는 히어로의 `name` 프로퍼티를 화면에 _표시하면서_, 동시에 유저가 입력한 값으로 프로퍼티를 _업데이트_ 해야합니다.
 이 말은 데이터가 컴포넌트 클래스에서 _화면으로_, 그리고 반대 방향인 _화면에서_ 클래스로 전달되어야 한다는 것을 의미합니다.
 
-<!--
-To automate that data flow, setup a two-way data binding between the `<input>` form element and the `hero.name` property.
--->
 이 데이터 흐름을 자동화하려면 `<input>` 엘리먼트와 `hero.name` 프로퍼티를 양방향 바인딩으로 연결하면 됩니다.
+
 
 <!--
 ### Two-way binding
@@ -268,23 +280,21 @@ To automate that data flow, setup a two-way data binding between the `<input>` f
 
 <!--
 Refactor the details area in the `HeroesComponent` template so it looks like this:
+
+<code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" region="name-input" header="src/app/heroes/heroes.component.html (HeroesComponent's template)"></code-example>
+
+**[(ngModel)]** is Angular's two-way data binding syntax.
+
+Here it binds the `hero.name` property to the HTML textbox so that data can flow _in both directions:_ from the `hero.name` property to the textbox, and from the textbox back to the `hero.name`.
 -->
 `HeroesComponent` 템플릿에서 상세 화면 영역을 아래 코드와 같이 리팩토링합니다.
 
-<!--
-<code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" region="name-input" header="src/app/heroes/heroes.component.html (HeroesComponent's template)"></code-example>
--->
 <code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" region="name-input" header="src/app/heroes/heroes.component.html (HeroesComponent 템플릿)"></code-example>
 
-<!--
-**[(ngModel)]** is Angular's two-way data binding syntax.
--->
 **[(ngModel)]** 는 Angular의 양방향 바인딩 문법입니다.
 
-<!--
-Here it binds the `hero.name` property to the HTML textbox so that data can flow _in both directions:_ from the `hero.name` property to the textbox, and from the textbox back to the `hero.name`.
--->
 이렇게 작성하면 `hero.name` 프로퍼티가 HTML 텍스트박스와 양방향 바인딩 되기 때문에, `hero.name` 프로퍼티 값이 텍스트 박스로, 텍스트박스의 값이 다시 `hero.name` 프로퍼티로 전달될 수 있습니다.
+
 
 <!--
 ### The missing _FormsModule_
@@ -293,13 +303,21 @@ Here it binds the `hero.name` property to the HTML textbox so that data can flow
 
 <!--
 Notice that the app stopped working when you added `[(ngModel)]`.
+
+To see the error, open the browser development tools and look in the console
+for a message like
+
+<code-example language="sh" class="code-shell">
+Template parse errors:
+Can't bind to 'ngModel' since it isn't a known property of 'input'.
+</code-example>
+
+Although `ngModel` is a valid Angular directive, it isn't available by default.
+
+It belongs to the optional `FormsModule` and you must _opt-in_ to using it.
 -->
 하지만 `[(ngModel)]`를 추가했기 때문에 이 앱은 이제 동작하지 않습니다.
 
-<!--
-To see the error, open the browser development tools and look in the console
-for a message like
--->
 이 때 브라우저에서 개발자도구를 열어 콘솔을 확인하면 다음과 같은 에러가 표시되는 것을 확인할 수 있습니다.
 
 <code-example language="sh" class="code-shell">
@@ -307,15 +325,10 @@ Template parse errors:
 Can't bind to 'ngModel' since it isn't a known property of 'input'.
 </code-example>
 
-<!--
-Although `ngModel` is a valid Angular directive, it isn't available by default.
--->
 `ngModel`은 Angular에서 제공하는 디렉티브지만, 아무것도 설정하지 않은 상태에서 이 디렉티브를 바로 사용할 수는 없습니다.
 
-<!--
-It belongs to the optional `FormsModule` and you must _opt-in_ to using it.
--->
 이 디렉티브는 `FormsModule`에서 제공하는 디렉티브이기 때문에 이 디렉티브를 사용하려면 명시적으로 `FormsModule`을 로드해야 합니다.
+
 
 ## _AppModule_
 
@@ -323,28 +336,26 @@ It belongs to the optional `FormsModule` and you must _opt-in_ to using it.
 Angular needs to know how the pieces of your application fit together
 and what other files and libraries the app requires.
 This information is called _metadata_.
+
+Some of the metadata is in the `@Component` decorators that you added to your component classes.
+Other critical metadata is in [`@NgModule`](guide/ngmodules) decorators.
+
+The most important `@NgModule` decorator annotates the top-level **AppModule** class.
+
+The Angular CLI generated an `AppModule` class in `src/app/app.module.ts` when it created the project.
+This is where you _opt-in_ to the `FormsModule`.
 -->
 개발자가 만든 Angular 구성요소나 서드파티 파일, 라이브러리를 Angular가 조합할 때는 이 구성요소들에 대한 정보가 필요합니다.
 이런 정보를 _메타데이터 (metadata)_ 라고 합니다.
 
-<!--
-Some of the metadata is in the `@Component` decorators that you added to your component classes.
-Other critical metadata is in [`@NgModule`](guide/ngmodules) decorators.
--->
 컴포넌트 클래스에 지정해야 하는 메타데이터는 `@Component` 데코레이터에 지정합니다.
 그리고 애플리케이션 동작에 필요한 메타데이터는 보통 [`@NgModule`](guide/ngmodules) 데코레이터에 지정합니다.
 
-<!--
-The most important `@NgModule` decorator annotates the top-level **AppModule** class.
--->
 이 중에서 가장 중요한 데코레이터는 애플리케이션 최상위 모듈인 **AppModule** 클래스에 지정하는 `@NgModule` 데코레이터입니다.
 
-<!--
-The Angular CLI generated an `AppModule` class in `src/app/app.module.ts` when it created the project.
-This is where you _opt-in_ to the `FormsModule`.
--->
 Angular CLI로 프로젝트를 생성하면 `src/app/app.module.ts` 파일에 `AppModule` 클래스가 생성됩니다.
 `FormsModule`은 이 모듈에 등록합니다.
+
 
 <!--
 ### Import _FormsModule_
@@ -353,34 +364,34 @@ Angular CLI로 프로젝트를 생성하면 `src/app/app.module.ts` 파일에 `A
 
 <!--
 Open `AppModule` (`app.module.ts`) and import the `FormsModule` symbol from the `@angular/forms` library.
+
+<code-example path="toh-pt1/src/app/app.module.ts" header="app.module.ts (FormsModule symbol import)"
+ region="formsmodule-js-import">
+</code-example>
+
+Then add `FormsModule` to the `@NgModule` metadata's `imports` array, which contains a list of external modules that the app needs.
+
+<code-example path="toh-pt1/src/app/app.module.ts" header="app.module.ts (@NgModule imports)"
+region="ng-imports">
+</code-example>
+
+When the browser refreshes, the app should work again. You can edit the hero's name and see the changes reflected immediately in the `<h2>` above the textbox.
 -->
 `AppModule` (`app.module.ts`)를 열고 `@angular/forms` 라이브러리에서 제공하는 `FormsModule` 심볼을 로드합니다.
 
-<!--
-<code-example path="toh-pt1/src/app/app.module.ts" header="app.module.ts (FormsModule symbol import)"
- region="formsmodule-js-import">
--->
 <code-example path="toh-pt1/src/app/app.module.ts" header="app.module.ts (FormsModule 심볼 로드하기)"
  region="formsmodule-js-import">
 </code-example>
 
-<!--
-Then add `FormsModule` to the `@NgModule` metadata's `imports` array, which contains a list of external modules that the app needs.
--->
 그리고나서 이 `FormsModule`을 `@NgModule` 메타데이터의 `imports` 배열에 추가합니다. 이 배열에는 애플리케이션이 동작할 때 필요한 외부 모듈을 등록합니다.
 
-<!--
-<code-example path="toh-pt1/src/app/app.module.ts" header="app.module.ts (@NgModule imports)"
-region="ng-imports">
--->
-<code-example path="toh-pt1/src/app/app.module.ts" header="app.module.ts ( @NgModule 로드하기)"
+<code-example path="toh-pt1/src/app/app.module.ts" header="app.module.ts (@NgModule 로드하기)"
 region="ng-imports">
 </code-example>
 
-<!--
-When the browser refreshes, the app should work again. You can edit the hero's name and see the changes reflected immediately in the `<h2>` above the textbox.
--->
-이제 브라우저를 새로고침하면 앱이 제대로 동작합니다. 화면에서 히어로의 이름을 변경할 수 있으며 이렇게 변경된 이름이 텍스트박스 위에 있는 `<h2>`태그에 바로 반영되는 것도 확인할 수 있습니다.
+이제 브라우저를 새로고침하면 앱이 제대로 동작합니다.
+화면에서 히어로의 이름을 변경할 수 있으며 이렇게 변경된 이름이 텍스트박스 위에 있는 `<h2>`태그에 바로 반영되는 것도 확인할 수 있습니다.
+
 
 <!--
 ### Declare `HeroesComponent`
@@ -389,41 +400,41 @@ When the browser refreshes, the app should work again. You can edit the hero's n
 
 <!--
 Every component must be declared in _exactly one_ [NgModule](guide/ngmodules).
+
+_You_ didn't declare the `HeroesComponent`.
+So why did the application work?
+
+It worked because the Angular CLI declared `HeroesComponent` in the `AppModule` when it generated that component.
+
+Open `src/app/app.module.ts` and find `HeroesComponent` imported near the top.
+<code-example path="toh-pt1/src/app/app.module.ts" header="src/app/app.module.ts" region="heroes-import" >
+</code-example>
+
+The `HeroesComponent` is declared in the `@NgModule.declarations` array.
+<code-example path="toh-pt1/src/app/app.module.ts" header="src/app/app.module.ts" region="declarations">
+</code-example>
+
+Note that `AppModule`  declares both application components, `AppComponent` and `HeroesComponent`.
 -->
 컴포넌트는 반드시 [NgModule](guide/ngmodules)중 하나에 등록되어야 합니다.
 
-<!--
-_You_ didn't declare the `HeroesComponent`.
-So why did the application work?
--->
 하지만 `HeroesComponent` 는 어디에도 등록하지 않았습니다.
 그런데 왜 애플리케이션이 동작할까요?
 
-<!--
-It worked because the Angular CLI declared `HeroesComponent` in the `AppModule` when it generated that component.
--->
 이 애플리케이션이 동작하는 이유는 Angular CLI로 `HeroesComponent`를 생성할 때 Angular CLI가 이 컴포넌트를 `AppModule`에 자동으로 등록했기 때문입니다.
 
-<!--
-Open `src/app/app.module.ts` and find `HeroesComponent` imported near the top.
--->
 `src/app/app.module.ts` 파일을 열어서 `HeroesComponent`가 로드되는 것을 확인해 보세요.
 
 <code-example path="toh-pt1/src/app/app.module.ts" header="src/app/app.module.ts" region="heroes-import" >
 </code-example>
 
-<!--
-The `HeroesComponent` is declared in the `@NgModule.declarations` array.
--->
 이렇게 로드한 컴포넌트는 `HeroesComponent`는 `@NgModule.declarations` 배열에 등록되어 있습니다.
 
 <code-example path="toh-pt1/src/app/app.module.ts" header="src/app/app.module.ts" region="declarations">
 </code-example>
 
-<!--
-Note that `AppModule`  declares both application components, `AppComponent` and `HeroesComponent`.
--->
 이 코드에서 `AppModule`에는 `AppComponent`와 `HeroesComponent`가 등록되어 있습니다.
+
 
 <!--
 ## Final code review
@@ -431,9 +442,9 @@ Note that `AppModule`  declares both application components, `AppComponent` and 
 ## 최종 코드 리뷰
 
 <!--
-Your app should look like this <live-example></live-example>. Here are the code files discussed on this page.
+Here are the code files discussed on this page.
 -->
-앱이 동작하는 것은 <live-example></live-example>에서 확인할 수 있습니다. 이번 튜토리얼에서 다룬 코드의 내용을 확인해 보세요.
+이번 튜토리얼에서 다룬 코드의 내용을 확인해 보세요.
 
 <code-tabs>
 
@@ -458,6 +469,7 @@ Your app should look like this <live-example></live-example>. Here are the code 
   </code-pane>
 
 </code-tabs>
+
 
 <!--
 ## Summary

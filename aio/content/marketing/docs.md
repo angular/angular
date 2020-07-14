@@ -4,10 +4,36 @@
 <h1 class="no-toc">Angular 가이드문서 소개</h1>
 
 <!--
-Angular is an app-design framework and development platform for creating efficient and sophisticated single-page apps.
+Angular is an application design framework and development platform for creating efficient and sophisticated single-page apps.
 
-These Angular docs help you learn and use the Angular framework and development platform, from your first app to optimizing complex single-page apps for enterprises.
+These Angular docs help you learn and use the Angular framework and development platform, from your first application to optimizing complex single-page apps for enterprises.
 Tutorials and guides include downloadable examples to accelerate your projects.
+
+<div class="card-container">
+  <a href="guide/setup-local" class="docs-card"
+    title="Angular Local Environment Setup">
+      <section>Get Started</section>
+      <p>Set up your local environment for development with the Angular CLI.</p>
+      <p class="card-footer">Local setup</p>
+  </a>
+  <a href="guide/architecture" class="docs-card" title="Angular Concepts">
+      <section>Learn and Explore</section>
+      <p>Learn about the fundamental design concepts and architecture of Angular apps.</p>
+      <p class="card-footer">Introduction to Angular concepts</p>
+  </a>
+  <a href="start" class="docs-card" title="Try out Angular">
+      <section>Take a Look</section>
+      <p>Examine and work with a small ready-made Angular app, without any setup.</p>
+      <p class="card-footer">Try it now</p>
+  </a>
+  <a href="tutorial" class="docs-card" title="Create an app">
+      <section>Hello World</section>
+      <p>Work through a full tutorial to create your first app.</p>
+      <p class="card-footer">Tour of Heroes tutorial</p>
+  </a>
+
+
+</div>
 -->
 Angular는 단일 페이지 애플리케이션을 효율적이고 체계적으로 만들기 위해 개발된 프레임워크이자 개발 플랫폼입니다.
 
@@ -15,44 +41,29 @@ Angular 가이드 문서는 프로토타입부터 대규모 기업용 앱에도 
 튜토리얼과 가이드문서에서 설명하는 예제 코드는 다운받아 로컬 환경에서 직접 실행해 볼 수 있습니다.
 
 <div class="card-container">
-  <!--
-  <a href="start" class="docs-card" title="Angular Getting Started">
-      <section>Learn</section>
-      <p>Play with and extend a small ready-made Angular app, without any setup</p>
-      <p class="card-footer">Getting Started</p>
-  </a>
-  -->
-  <a href="start" class="docs-card" title="Angular 시작하기">
-      <section>일단 해보기</section>
-      <p>간단하게 Angular 앱을 만들어 보세요.</p>
-      <p class="card-footer">시작하기</p> 
-  </a>
-  <!--
-  <a href="guide/setup-local" class="docs-card"
-    title="Angular Local Environment Setup">
-      <section>Start Working</section>
-      <p>Set up your local environment with the Angular CLI</p>
-      <p class="card-footer">Local Setup</p>
-  </a>
-  -->
   <a href="guide/setup-local" class="docs-card"
     title="Angular 로컬 개발환경 설정하기">
       <section>개발 시작하기</section>
       <p>Angular CLI로 로컬 개발환경을 설정해 보세요.</p>
       <p class="card-footer">로컬 개발환경 설정</p>
   </a>
-  <!--
-  <a href="guide/architecture" class="docs-card" title="Angular App Architecture">
-      <section>Explore</section>
-      <p>Learn about the fundamental design concepts and architecture of Angular apps</p>
+  <a href="guide/architecture" class="docs-card" title="Angular Concepts">
+      <section>Learn and Explore</section>
+      <p>Learn about the fundamental design concepts and architecture of Angular apps.</p>
       <p class="card-footer">Introduction to Angular concepts</p>
   </a>
-  -->
-  <a href="guide/architecture" class="docs-card" title="Angular 앱 아키텍처">
-      <section>자세히 알아보기</section>
-      <p>Angular 프레임워크가 제공하는 기능에 대해 자세하게 알아보세요.</p>
-      <p class="card-footer">아키텍처</p>
+  <a href="start" class="docs-card" title="Try out Angular">
+      <section>Take a Look</section>
+      <p>Examine and work with a small ready-made Angular app, without any setup.</p>
+      <p class="card-footer">Try it now</p>
   </a>
+  <a href="tutorial" class="docs-card" title="Create an app">
+      <section>Hello World</section>
+      <p>Work through a full tutorial to create your first app.</p>
+      <p class="card-footer">Tour of Heroes tutorial</p>
+  </a>
+
+
 </div>
 
 <!--

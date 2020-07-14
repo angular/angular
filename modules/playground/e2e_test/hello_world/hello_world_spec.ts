@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,10 +8,9 @@
 
 import {browser} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 describe('hello world', function() {
-
   afterEach(verifyNoBrowserErrors);
 
   describe('hello world app', function() {
@@ -30,7 +29,6 @@ describe('hello world', function() {
       expect(getComponentText('hello-app', '.greeting')).toEqual('howdy world!');
     });
   });
-
 });
 
 function getComponentText(selector: string, innerSelector: string) {

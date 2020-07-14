@@ -1,7 +1,7 @@
 <!--
-# Schematics
+# Generating code using schematics
 -->
-# 스키매틱(Schematics)
+# 스키매틱(schematic)으로 코드 생성하기
 
 <!--
 A schematic is a template-based code generator that supports complex logic.

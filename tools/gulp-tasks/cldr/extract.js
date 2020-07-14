@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -34,7 +34,7 @@ const EMPTY_RULE = 'function anonymous(n) {\n\n}';
 const WEEK_DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const HEADER = `/**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -91,13 +91,13 @@ module.exports = (gulp, done) => {
         `${RELATIVE_I18N_GLOBAL_FOLDER}/${locale}.js`,
         generateGlobalLocale(
             locale, locale === 'en' ? new cldrJs('en') : localeData, baseCurrencies));
-
   });
   console.log(`${LOCALES.length} locale files generated.`);
 
   console.log(`All i18n cldr files have been generated, formatting files..."`);
   shelljs.exec(
-      `yarn clang-format -i ${I18N_DATA_FOLDER}/**/*.ts ${I18N_DATA_FOLDER}/*.ts ${I18N_FOLDER}/currencies.ts ${I18N_CORE_FOLDER}/locale_en.ts ${I18N_GLOBAL_FOLDER}/*.js`,
+      `yarn clang-format -i ${I18N_DATA_FOLDER}/**/*.ts ${I18N_DATA_FOLDER}/*.ts ${
+          I18N_FOLDER}/currencies.ts ${I18N_CORE_FOLDER}/locale_en.ts ${I18N_GLOBAL_FOLDER}/*.js`,
       {silent: true});
   done();
 };
@@ -278,7 +278,8 @@ function generateCurrenciesFile() {
 export type CurrenciesSymbols = [string] | [string | undefined, string];
 
 /** @internal */
-export const CURRENCIES_EN: {[code: string]: CurrenciesSymbols | [string | undefined, string | undefined, number]} = ${stringify(baseCurrencies, true)};
+export const CURRENCIES_EN: {[code: string]: CurrenciesSymbols | [string | undefined, string | undefined, number]} = ${
+      stringify(baseCurrencies, true)};
 `;
 }
 

@@ -135,6 +135,9 @@ interface AssetGroup {
     versionedFiles?: string[];
     urls?: string[];
   };
+  cacheQueryOptions?: {
+    ignoreSearch?: boolean;
+  };
 }
 ```
 
@@ -200,6 +203,12 @@ This section describes the resources to cache, broken up into the following grou
 * `urls`에는 실행시점에 매칭될 URL이나 URL패턴을 지정합니다. 이 리소스들은 즉시 다운로드되지 않을 수 있고 해시값이 존재하지 않을 수 있지만, HTTP 헤더를 사용하는 방식으로 캐싱됩니다. 이 방식은 Google Fonts 서비스와 같이 CDN을 활용하는 부분에 적용하면 좋습니다.<br>
   _(이 방식에서는 glob 패턴을 반전하는 방식(`!`)이 동작하지 않으며, `?` 문자도 와일드카드로 동작하지 않습니다. `?` 문자는 `?` 문자 하나에만 매칭됩니다.)_
 
+### `cacheQueryOptions`
+
+These options are used to modify the matching behavior of requests. They are passed to the browsers `Cache#match` function. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match) for details. Currently, only the following options are supported:
+
+* `ignoreSearch`: Ignore query parameters. Defaults to `false`.
+
 ## `dataGroups`
 
 <!--
@@ -221,6 +230,9 @@ export interface DataGroup {
     maxAge: string;
     timeout?: string;
     strategy?: 'freshness' | 'performance';
+  };
+  cacheQueryOptions?: {
+    ignoreSearch?: boolean;
   };
 }
 ```
@@ -325,6 +337,25 @@ Angular 서비스 워커는 캐싱하는 데이터 리소스를 대상으로 두
 * 기본 정책은 `performance`이며, 이 정책은 가장 빠르게 응답하도록 최적화된 정책입니다. 캐싱된 리소스가 있으면 그 리소스를 그대로 사용하며, `maxAge`와 같은 필드의 영향으로 만료되더라도 성능을 위해 만료된 데이터를 그대로 사용하기도 합니다. 이 정책은 사용자의 아바타 이미지와 같이 자주 변경되지 않는 리소스에 적합합니다.
 
 * 네트워크를 통해 자주 요청되며 최신 데이터가 중요하다면 `freshness` 정책을 사용할 수 있습니다. 이 정책을 사용하면 `timeout` 필드의 영향으로 네트워크가 타임아웃 되어야만 캐싱된 데이터를 사용합니다. 이 정책은 자산의 잔액과 같이 자주 변경되는 리소스에 적합합니다.
+
+
+<div class="alert is-helpful">
+
+You can also emulate a third strategy, [staleWhileRevalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate), which returns cached data (if available), but also fetches fresh data from the network in the background for next time.
+To use this strategy set `strategy` to `freshness` and `timeout` to `0u` in `cacheConfig`.
+
+This will essentially do the following:
+
+1. Try to fetch from the network first.
+2. If the network request does not complete after 0ms (i.e. immediately), fall back to the cache (ignoring cache age).
+3. Once the network request completes, update the cache for future requests.
+4. If the resource does not exist in the cache, wait for the network request anyway.
+
+</div>
+
+### `cacheQueryOptions`
+
+See [assetGroups](#assetgroups) for details.
 
 ## `navigationUrls`
 

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -33,6 +33,7 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//integration:__pkg__",
         "//packages/bazel/test/ng_package:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler-cli/ngcc/test:__pkg__",
@@ -49,4 +50,14 @@ ng_package(
         "//packages/common/testing",
         "//packages/common/upgrade",
     ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "common_api",
+    actualDir = "angular/packages/common/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/common",
 )

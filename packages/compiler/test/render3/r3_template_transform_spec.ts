@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -75,13 +75,21 @@ class R3AstHumanizer implements t.Visitor<void> {
     ]);
   }
 
-  visitText(text: t.Text) { this.result.push(['Text', text.value]); }
+  visitText(text: t.Text) {
+    this.result.push(['Text', text.value]);
+  }
 
-  visitBoundText(text: t.BoundText) { this.result.push(['BoundText', unparse(text.value)]); }
+  visitBoundText(text: t.BoundText) {
+    this.result.push(['BoundText', unparse(text.value)]);
+  }
 
-  visitIcu(icu: t.Icu) { return null; }
+  visitIcu(icu: t.Icu) {
+    return null;
+  }
 
-  private visitAll(nodes: t.Node[][]) { nodes.forEach(node => t.visitAll(this, node)); }
+  private visitAll(nodes: t.Node[][]) {
+    nodes.forEach(node => t.visitAll(this, node));
+  }
 }
 
 function expectFromHtml(html: string) {
@@ -97,13 +105,14 @@ function expectFromR3Nodes(nodes: t.Node[]) {
 
 function expectSpanFromHtml(html: string) {
   const {nodes} = parse(html);
-  return expect(nodes[0] !.sourceSpan.toString());
+  return expect(nodes[0]!.sourceSpan.toString());
 }
 
 describe('R3 template transform', () => {
   describe('ParseSpan on nodes toString', () => {
-    it('should create valid text span on Element with adjacent start and end tags',
-       () => { expectSpanFromHtml('<div></div>').toBe('<div></div>'); });
+    it('should create valid text span on Element with adjacent start and end tags', () => {
+      expectSpanFromHtml('<div></div>').toBe('<div></div>');
+    });
   });
 
   describe('Nodes without binding', () => {
@@ -290,6 +299,24 @@ describe('R3 template transform', () => {
 
   describe('inline templates', () => {
     it('should support attribute and bound attributes', () => {
+      // Desugared form is
+      // <ng-template ngFor [ngForOf]="items" let-item>
+      //   <div></div>
+      // </ng-template>
+      expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
+        ['Template'],
+        ['TextAttribute', 'ngFor', ''],
+        ['BoundAttribute', BindingType.Property, 'ngForOf', 'items'],
+        ['Variable', 'item', '$implicit'],
+        ['Element', 'div'],
+      ]);
+
+      // Note that this test exercises an *incorrect* usage of the ngFor
+      // directive. There is a missing 'let' in the beginning of the expression
+      // which causes the template to be desugared into
+      // <ng-template [ngFor]="item" [ngForOf]="items">
+      //   <div></div>
+      // </ng-template>
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
         ['Template'],
         ['BoundAttribute', BindingType.Property, 'ngFor', 'item'],

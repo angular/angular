@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -44,6 +44,11 @@ module.exports = new Package('angular-base', [
 
   .factory(require('./post-processors/add-image-dimensions'))
   .factory(require('./post-processors/auto-link-code'))
+
+  // Configure jsdoc-style tag parsing
+  .config(function(inlineTagProcessor) {
+    inlineTagProcessor.inlineTagDefinitions.push(require('./inline-tag-defs/custom-search-defs/'));
+  })
 
   .config(function(checkAnchorLinksProcessor) {
     // This is disabled here to prevent false negatives for the `docs-watch` task.

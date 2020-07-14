@@ -20,9 +20,9 @@ Angular [Ahead-of-time (AOT) 컴파일러](guide/glossary#aot)는 브라우저�
 <div class="alert is-helpful">
 
   <!--
-  <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular compiler</a> at AngularConnect 2016.
+  <a href="https://www.youtube.com/watch?v=anphffaCZrQ">Watch Alex Rickabaugh explain the Angular compiler</a> at AngularConnect 2019.
   -->
-  컴파일러를 개발한 Tobias Bosch가 <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">AngularConnect 2016에서 발표한 내용</a>도 확인해 보세요.
+  Alex Rickabaugh가 <a href="https://www.youtube.com/watch?v=anphffaCZrQ">AngularConnect 2019에서 발표한 내용</a>도 확인해 보세요.
 
 </div>
 
@@ -86,46 +86,15 @@ Angular offers two ways to compile your application:
 Angular는 두 종류의 컴파일 방식을 제공합니다:
 
 <!--
-* **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime.
-* **_Ahead-of-Time_ (AOT)**, which compiles your app at build time.
+* **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime. This was the default until Angular 8.
+* **_Ahead-of-Time_ (AOT)**, which compiles your app and libraries at build time. This is the default since Angular 9.
 -->
-* **_Just-in-Time_ (JIT)**: 브라우저에서 애플리케이션을 실행하면서 코드를 직접 컴파일하는 방식입니다.
-* **_Ahead-of-Time_ (AOT)**: 브라우저에 애플리케이션 코드를 보내기 전에 미리 컴파일하는 방식입니다.
+* **_Just-in-Time_ (JIT)**: 브라우저에서 애플리케이션을 실행하면서 코드를 직접 컴파일하는 방식입니다. Angular 8까지는 기본 컴파일러였습니다.
+* **_Ahead-of-Time_ (AOT)**: 브라우저에 애플리케이션 코드를 보내기 전에 미리 컴파일하는 방식입니다. Angular 9부터 기본 컴파일러입니다.
 
-<!--
-JIT compilation is the default when you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve)  (build and serve locally) CLI commands:
--->
-Angular CLI로 [`ng build`](cli/build) 명령이나 [`ng serve`](cli/serve) 명령을 실행하면 기본적으로 JIT 컴파일러가 실행됩니다:
-
-<code-example language="sh" class="code-shell">
-  ng build
-  ng serve
-</code-example>
-
-{@a compile}
-
-<!--
-For AOT compilation, include the `--aot` option with the `ng build` or `ng serve` command:
--->
-그리고 AOT 컴파일러를 사용하려면 `ng build` 명령이나 `ng serve` 명령을 실행할 때 `--aot` 옵션을 사용하면 됩니다:
-
-<code-example language="sh" class="code-shell">
-  ng build --aot
-  ng serve --aot
-</code-example>
-
-<div class="alert is-helpful">
-
-<!--
-The `ng build` command with the `--prod` meta-flag (`ng build --prod`) compiles with AOT by default.
+When you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve) (build and serve locally) CLI commands, the type of compilation (JIT or AOT) depends on the value of the `aot` property in your build configuration specified in `angular.json`. By default, `aot` is set to `true` for new CLI apps.
 
 See the [CLI command reference](cli) and [Building and serving Angular apps](guide/build) for more information.
--->
-`ng build` 명령을 실행할 때 `--prod` 옵션을 사용하면 AOT 컴파일러가 기본으로 실행됩니다.
-
-더 자세한 내용은 [Angular CLI](cli) 문서와 [Angular 앱 빌드하고 실행하기](guide/build) 문서를 참고하세요.
-
-</div>
 
 <!--
 ## How AOT works
@@ -231,9 +200,9 @@ AOT 컴파일 과정 중 발생하는 에러의 원인은 일반적으로 컴파
 ### AOT 컴파일 설정하기
 
 <!--
-You can provide options in the `tsconfig.json` [TypeScript configuration file](guide/typescript-configuration) that control the compilation process. See [Angular compiler options](guide/angular-compiler-options) for a complete list of available options.
+You can provide options in the [TypeScript configuration file](guide/typescript-configuration) that controls the compilation process. See [Angular compiler options](guide/angular-compiler-options) for a complete list of available options.
 -->
-컴파일 옵션은 [TypeScript 환경 설정 파일](guide/typescript-configuration)인 `tsconfig.json` 파일에 지정합니다. 사용할 수 있는 옵션 목록은 [Angular 컴파일러 옵션](guide/angular-compiler-options) 문서를 참고하세요.
+컴파일 옵션은 [TypeScript 환경 설정 파일](guide/typescript-configuration)에 지정합니다. 사용할 수 있는 옵션 목록은 [Angular 컴파일러 옵션](guide/angular-compiler-options) 문서를 참고하세요.
 
 <!--
 ## Phase 1: Code analysis
@@ -438,9 +407,9 @@ The compiler later reports the error if it needs that piece of metadata to gener
 <div class="alert is-helpful">
 
 <!--
- If you want `ngc` to report syntax errors immediately rather than produce a `.metadata.json` file with errors, set the `strictMetadataEmit` option in the TypeScript configuration file, `tsconfig.json`.
+ If you want `ngc` to report syntax errors immediately rather than produce a `.metadata.json` file with errors, set the `strictMetadataEmit` option in the TypeScript configuration file.
 -->
-`.metadata.json` 파일에 에러를 출력하는 대신 `ngc`에서 직접 문법 에러가 발생하게 하려면 TypeScript 설정 파일인 `tsconfig.json` 파일에 `strictMetadataEmit` 옵션을 다음과 같이 설정하세요.
+`.metadata.json` 파일에 에러를 출력하는 대신 `ngc`에서 직접 문법 에러가 발생하게 하려면 TypeScript 설정 파일에 `strictMetadataEmit` 옵션을 다음과 같이 설정하세요.
 
 ```
   "angularCompilerOptions": {
@@ -1012,14 +981,14 @@ It does not, however, rewrite the `.d.ts` file, so TypeScript doesn't recognize 
 One of the Angular compiler's most helpful features is the ability to type-check expressions within templates, and catch any errors before they cause crashes at runtime.
 In the template type-checking phase, the Angular template compiler uses the TypeScript compiler to validate the binding expressions in templates.
 
-Enable this phase explicitly by adding the compiler option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's `tsconfig.json`
+Enable this phase explicitly by adding the compiler option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's TypeScript configuration file
 (see [Angular Compiler Options](guide/angular-compiler-options)).
 -->
 템플릿 표현식에 사용된 코드의 타입을 체크하는 기능은 Angular 컴파일러가 제공하는 기능 중 가장 훌륭한 기능이라고도 할 수 있습니다.
 이 기능을 활용하면 실행 시점에 발생하는 문제로 앱이 종료되는 것을 미리 방지할 수 있기 때문입니다.
 이 단계에서는 Angular 템플릿 컴파일러가 TypeScript 컴파일러를 활용해서 템플릿에 사용된 바인딩 표현식의 유효성을 검증합니다.
 
-이 단계는 프로젝트의 환경설정 파일 `tsconfig.json`의 컴파일러 옵션 섹션인 `"angularCompilerOptions"`에 `"fullTemplateTypeCheck"` 옵션을 지정하면 명시적으로 활성화할 수 있습니다.
+이 단계는 프로젝트의 환경설정 파일의 컴파일러 옵션 섹션인 `"angularCompilerOptions"`에 `"fullTemplateTypeCheck"` 옵션을 지정하면 명시적으로 활성화할 수 있습니다.
 자세한 내용은 [Angular 컴파일러 옵션](guide/angular-compiler-options) 문서를 참고하세요.
 
 <div class="alert is-helpful">
@@ -1031,6 +1000,8 @@ As a result, templates that previously compiled under View Engine can fail type 
 
 This stricter type checking is not enabled by default in version 9, but can be enabled by setting the `strictTemplates` configuration option.
 We do expect to make strict type checking the default in the future.
+
+For more information about type-checking options, and about improvements to template type checking in version 9 and above, see [Template type checking](guide/template-typecheck).
 -->
 [Angular Ivy](guide/ivy)에 사용된 템플릿 타입 체커는 이전 버전보다 강력한 룰을 적용할 수 있도록 완전히 새로 작성되었습니다.
 이제는 이전 버전에서 발견하지 못했던 에러도 확실하게 검출할 수 있습니다.
@@ -1041,7 +1012,7 @@ We do expect to make strict type checking the default in the future.
 Angular 9버전의 기본 설정은 좀 더 깐깐한 타입 체크 기능을 사용하지 않는 것입니다.
 아직까지는 컴파일러 설정 파일에 `strictTemplates` 옵션을 지정해야 활성화할 수 있지만, 언젠가는 이 방식이 기본이 되기를 바랍니다.
 
-<!-- For more information about type-checking options, and about improvements to template type checking in version 9 and above, see [Template type checking](guide/template-type-checking). -->
+For more information about type-checking options, and about improvements to template type checking in version 9 and above, see [Template type checking](guide/template-typecheck).
 
 </div>
 
@@ -1135,25 +1106,7 @@ Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in 
 -->
 `*ngIf`를 사용하면 TypeScript 컴파일러가 `person` 객체의 타입을 추론할 수 있기 때문에 이 객체가 `undefined`라면 바인딩 표현식도 실행되지 않습니다.
 
-<!--
-#### Custom `ngIf` like directives
--->
-#### 커스텀 `ngIf` 디렉티브
-
-<!--
-Directives that behave like `*ngIf` can declare that they want the same treatment by including a static member marker that is a signal to the template compiler to treat them like `*ngIf`. This static member for `*ngIf` is:
--->
-`*ngIf`와 비슷한 역할을 하는 디렉티브를 만들어서 활용할 수도 있는데, 이런 디렉티브를 사용하면 템플릿 컴파일러가 템플릿을 처리할 때 좀 더 많은 정보를 제공할 수 있습니다.
-`*ngIf` 디렉티브의 정적 멤버 중에는 이런 것이 있습니다:
-
-```typescript
-    public static ngIfUseIfTypeGuard: void;
-```
-
-<!--
-This declares that the input property `ngIf` of the `NgIf` directive should be treated as a guard to the use of its template, implying that the template will only be instantiated if the `ngIf` input property is true.
--->
-`ngIf`를 사용하면 `ngIf`의 입력 프로퍼티에 해당하는 값이 참으로 평가될 때만 관련 코드가 동작하기 때문에 템플릿 안에서 가드(guard)처럼 활용할 수 있습니다.
+For more information about input type narrowing, see [Input setter coercion](guide/template-typecheck#input-setter-coercion) and [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks).
 
 <!--
 ### Non-null type assertion operator

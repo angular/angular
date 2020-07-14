@@ -11,6 +11,17 @@
 
 .resources-container {
   position: relative;
+
+  .group-buttons {
+
+    @media (max-width: 480px) {
+      .button {
+        font-size: 1.2rem;
+        padding: 0;
+        margin: 0;
+      }
+    }
+  }
 }
 
 .grid-fixed:after, .grid-fixed:before {
@@ -53,11 +64,11 @@
 
 @media handheld and (max-width: 900px), screen and (max-width: 900px) {
   /* line 6, ../scss/_responsive.scss */
-  .grid-fixed{
+  .grid-fixed {
     margin: 0 auto;
     *zoom: 1;
   }
-  .grid-fixed:after, .grid-fixed:before, {
+  .grid-fixed:after, .grid-fixed:before {
     content: '.';
     clear: both;
     display: block;
@@ -169,7 +180,7 @@ aio-resource-list {
     flex-direction: column;
   }
 
-  .align-items-center{
+  .align-items-center {
     align-items: center;
   }
 
@@ -219,7 +230,7 @@ aio-resource-list {
     transform: translateY(-2px);
   }
 
-  @media(max-width: 900px) {
+  @media (max-width: 900px) {
     .c-resource-nav {
       display: none;
     }

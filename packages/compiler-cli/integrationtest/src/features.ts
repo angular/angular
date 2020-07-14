@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import * as common from '@angular/common';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, EventEmitter, Inject, InjectionToken, NgModule, Output, forwardRef} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, Directive, EventEmitter, forwardRef, Inject, InjectionToken, NgModule, Output} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {wrapInArray} from './funcs';
@@ -62,7 +62,9 @@ export class CompUsingCustomElements {
 })
 export class CompConsumingEvents {
   handleDomEventVoid(e: any): void {}
-  handleDomEventPreventDefault(e: any): boolean { return false; }
+  handleDomEventPreventDefault(e: any): boolean {
+    return false;
+  }
   handleDirEvent(e: any): void {}
 }
 
@@ -70,8 +72,7 @@ export class CompConsumingEvents {
   selector: '[dirEvent]',
 })
 export class DirPublishingEvents {
-  @Output('dirEvent')
-  dirEvent: Observable<string> = new EventEmitter();
+  @Output('dirEvent') dirEvent: Observable<string> = new EventEmitter();
 }
 
 @NgModule({schemas: [CUSTOM_ELEMENTS_SCHEMA], declarations: wrapInArray(CompUsingCustomElements)})

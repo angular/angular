@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,7 @@ import * as ts from 'typescript';
  * Metadata extracted from an instance of a decorator on another declaration, or synthesized from
  * other information about a class.
  */
-export type Decorator = ConcreteDecorator | SyntheticDecorator;
+export type Decorator = ConcreteDecorator|SyntheticDecorator;
 
 export interface BaseDecorator {
   /**
@@ -28,11 +28,11 @@ export interface BaseDecorator {
    */
   identifier: DecoratorIdentifier|null;
 
-  /**
-   * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
-   * if the decorator was declared in the same module and not imported.
-   */
-  import : Import | null;
+/**
+ * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
+ * if the decorator was declared in the same module and not imported.
+ */
+import: Import|null;
 
   /**
    * TypeScript reference to the decorator itself, or `null` if the decorator is synthesized (e.g.
@@ -87,11 +87,15 @@ export const Decorator = {
  * A decorator is identified by either a simple identifier (e.g. `Decorator`) or, in some cases,
  * a namespaced property access (e.g. `core.Decorator`).
  */
-export type DecoratorIdentifier = ts.Identifier | NamespacedIdentifier;
-export type NamespacedIdentifier = ts.PropertyAccessExpression & {expression: ts.Identifier};
+export type DecoratorIdentifier = ts.Identifier|NamespacedIdentifier;
+export type NamespacedIdentifier = ts.PropertyAccessExpression&{
+  expression: ts.Identifier;
+  name: ts.Identifier
+};
 export function isDecoratorIdentifier(exp: ts.Expression): exp is DecoratorIdentifier {
   return ts.isIdentifier(exp) ||
-      ts.isPropertyAccessExpression(exp) && ts.isIdentifier(exp.expression);
+      ts.isPropertyAccessExpression(exp) && ts.isIdentifier(exp.expression) &&
+      ts.isIdentifier(exp.name);
 }
 
 /**
@@ -109,7 +113,7 @@ export function isDecoratorIdentifier(exp: ts.Expression): exp is DecoratorIdent
  * For `ReflectionHost` purposes, a class declaration should always have a `name` identifier,
  * because we need to be able to reference it in other parts of the program.
  */
-export type ClassDeclaration<T extends ts.Declaration = ts.Declaration> = T & {name: ts.Identifier};
+export type ClassDeclaration<T extends ts.Declaration = ts.Declaration> = T&{name: ts.Identifier};
 
 /**
  * An enumeration of possible kinds of class members.
@@ -237,11 +241,26 @@ export interface ClassMember {
  */
 export type TypeValueReference = {
   local: true; expression: ts.Expression; defaultImportStatement: ts.ImportDeclaration | null;
-} |
-{
+}|{
   local: false;
-  name: string;
+
+  /**
+   * The module specifier from which the `importedName` symbol should be imported.
+   */
   moduleName: string;
+
+  /**
+   * The name of the top-level symbol that is imported from `moduleName`. If `nestedPath` is also
+   * present, a nested object is being referenced from the top-level symbol.
+   */
+  importedName: string;
+
+  /**
+   * If present, represents the symbol names that are referenced from the top-level import.
+   * When `null` or empty, the `importedName` itself is the symbol being referenced.
+   */
+  nestedPath: string[]|null;
+
   valueDeclaration: ts.Declaration;
 };
 
@@ -317,43 +336,34 @@ export interface FunctionDefinition {
   body: ts.Statement[]|null;
 
   /**
-   * The type of tslib helper function, if the function is determined to represent a tslib helper
-   * function. Otherwise, this will be null.
-   */
-  helper: TsHelperFn|null;
-
-  /**
    * Metadata regarding the function's parameters, including possible default value expressions.
    */
   parameters: Parameter[];
 }
 
 /**
- * Possible functions from TypeScript's helper library.
- */
-export enum TsHelperFn {
-  /**
-   * Indicates the `__assign` function.
-   */
-  Assign,
-  /**
-   * Indicates the `__spread` function.
-   */
-  Spread,
-  /**
-   * Indicates the `__spreadArrays` function.
-   */
-  SpreadArrays,
-}
-
-/**
- * Possible declarations which are known.
+ * Possible declarations of known values, such as built-in objects/functions or TypeScript helpers.
  */
 export enum KnownDeclaration {
   /**
    * Indicates the JavaScript global `Object` class.
    */
   JsGlobalObject,
+
+  /**
+   * Indicates the `__assign` TypeScript helper function.
+   */
+  TsHelperAssign,
+
+  /**
+   * Indicates the `__spread` TypeScript helper function.
+   */
+  TsHelperSpread,
+
+  /**
+   * Indicates the `__spreadArrays` TypeScript helper function.
+   */
+  TsHelperSpreadArrays,
 }
 
 /**
@@ -395,6 +405,22 @@ export interface Import {
 }
 
 /**
+ * A single enum member extracted from JavaScript when no `ts.EnumDeclaration` is available.
+ */
+export interface EnumMember {
+  /**
+   * The name of the enum member.
+   */
+  name: ts.PropertyName;
+
+  /**
+   * The initializer expression of the enum member. Unlike in TypeScript, this is always available
+   * in emitted JavaScript.
+   */
+  initializer: ts.Expression;
+}
+
+/**
  * Base type for all `Declaration`s.
  */
 export interface BaseDeclaration<T extends ts.Declaration = ts.Declaration> {
@@ -424,6 +450,28 @@ export interface BaseDeclaration<T extends ts.Declaration = ts.Declaration> {
 export interface ConcreteDeclaration<T extends ts.Declaration = ts.Declaration> extends
     BaseDeclaration<T> {
   node: T;
+
+  /**
+   * Optionally represents a special identity of the declaration, or `null` if the declaration
+   * does not have a special identity.
+   */
+  identity: SpecialDeclarationIdentity|null;
+}
+
+export type SpecialDeclarationIdentity = DownleveledEnum;
+
+export const enum SpecialDeclarationKind {
+  DownleveledEnum,
+}
+
+/**
+ * A special declaration identity that represents an enum. This is used in downleveled forms where
+ * a `ts.EnumDeclaration` is emitted in an alternative form, e.g. an IIFE call that declares all
+ * members.
+ */
+export interface DownleveledEnum {
+  kind: SpecialDeclarationKind.DownleveledEnum;
+  enumMembers: EnumMember[];
 }
 
 /**
@@ -452,7 +500,7 @@ export interface InlineDeclaration extends BaseDeclaration {
  * downlevelings to a `ts.Expression` instead.
  */
 export type Declaration<T extends ts.Declaration = ts.Declaration> =
-    ConcreteDeclaration<T>| InlineDeclaration;
+    ConcreteDeclaration<T>|InlineDeclaration;
 
 /**
  * Abstracts reflection operations on a TypeScript AST.

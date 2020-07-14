@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,9 +14,24 @@ const chalk = require('chalk');
 import * as minimist from 'minimist';
 import * as path from 'path';
 
-import {SerializationOptions, generateGoldenFile, verifyAgainstGoldenFile} from './main';
+import {SerializationOptions, generateGoldenFile, verifyAgainstGoldenFile, discoverAllEntrypoints} from './main';
 
+/** Name of the CLI */
 const CMD = 'ts-api-guardian';
+
+/** Name of the Bazel workspace that runs the CLI. */
+const bazelWorkspaceName = process.env.BAZEL_WORKSPACE;
+/**
+ * Path to the Bazel workspace directory. Only set if the CLI is run with `bazel run`.
+ * https://docs.bazel.build/versions/master/user-manual.html#run.
+ */
+const bazelWorkspaceDirectory = process.env.BUILD_WORKSPACE_DIRECTORY;
+/**
+ * Regular expression that matches Bazel manifest paths that start with the
+ * current Bazel workspace, followed by a path delimiter.
+ */
+const bazelWorkspaceManifestPathRegex =
+    bazelWorkspaceName ? new RegExp(`^${bazelWorkspaceName}[/\\\\]`) : null;
 
 export function startCli() {
   const {argv, mode, errors} = parseArguments(process.argv.slice(2));
@@ -46,6 +61,15 @@ export function startCli() {
     };
   }
 
+  // In autoDiscoverEntrypoints mode we set the inputed files as the discovered entrypoints
+  // for the rootDir
+  let entrypoints: string[];
+  if (argv['autoDiscoverEntrypoints']) {
+    entrypoints = discoverAllEntrypoints(argv['rootDir']);
+  } else {
+    entrypoints = argv._.slice();
+  }
+
   for (const error of errors) {
     console.warn(error);
   }
@@ -53,7 +77,7 @@ export function startCli() {
   if (mode === 'help') {
     printUsageAndExit(!!errors.length);
   } else {
-    const targets = resolveFileNamePairs(argv, mode);
+    const targets = resolveFileNamePairs(argv, mode, entrypoints);
 
     if (mode === 'out') {
       for (const {entrypoint, goldenFile} of targets) {
@@ -71,8 +95,8 @@ export function startCli() {
             lines.pop();  // Remove trailing newline
           }
           for (const line of lines) {
-            const chalkMap: {[key: string]:
-                                 any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
+            const chalkMap:
+                {[key: string]: any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
             const chalkFunc = chalkMap[line[0]] || chalk.reset;
             console.log(chalkFunc(line));
           }
@@ -85,7 +109,7 @@ export function startCli() {
         if (bazelTarget) {
           console.error('\n\nIf you modify a public API, you must accept the new golden file.');
           console.error('\n\nTo do so, execute the following Bazel target:');
-          console.error(`  yarn bazel run ${bazelTarget.replace(/_bin$/, "")}.accept`);
+          console.error(`  yarn bazel run ${bazelTarget.replace(/_bin$/, '')}.accept`);
           if (process.env['TEST_WORKSPACE'] === 'angular') {
             console.error('\n\nFor more information, see');
             console.error(
@@ -110,7 +134,7 @@ export function parseArguments(input: string[]):
       'allowModuleIdentifiers'
     ],
     boolean: [
-      'help', 'useAngularTagRules',
+      'help', 'useAngularTagRules', 'autoDiscoverEntrypoints',
       // Options used by chalk automagically
       'color', 'no-color'
     ],
@@ -147,15 +171,26 @@ export function parseArguments(input: string[]):
     modes.push('verify');
   }
 
-  if (!argv._.length) {
-    errors.push('No input file specified.');
-    modes = ['help'];
-  } else if (modes.length !== 1) {
-    errors.push('Specify either --out[Dir] or --verify[Dir]');
-    modes = ['help'];
-  } else if (argv._.length > 1 && !argv['outDir'] && !argv['verifyDir']) {
-    errors.push(`More than one input specified. Use --${modes[0]}Dir instead.`);
-    modes = ['help'];
+  if (argv['autoDiscoverEntrypoints']) {
+    if (!argv['rootDir']) {
+      errors.push(`--rootDir must be provided with --autoDiscoverEntrypoints.`);
+      modes = ['help'];
+    }
+    if (!argv['outDir'] && !argv['verifyDir']) {
+      errors.push(`--outDir or --verifyDir must be used with --autoDiscoverEntrypoints.`);
+      modes = ['help'];
+    }
+  } else {
+    if (!argv._.length) {
+      errors.push('No input file specified.');
+      modes = ['help'];
+    } else if (modes.length !== 1) {
+      errors.push('Specify either --out[Dir] or --verify[Dir]');
+      modes = ['help'];
+    } else if (argv._.length > 1 && !argv['outDir'] && !argv['verifyDir']) {
+      errors.push(`More than one input specified. Use --${modes[0]}Dir instead.`);
+      modes = ['help'];
+    }
   }
 
   return {argv, mode: modes[0], errors};
@@ -184,42 +219,63 @@ Options:
         --useAngularTagRules <boolean>  Whether the Angular specific tag rules should be used.
         --stripExportPattern <regexp>   Do not output exports matching the pattern
         --allowModuleIdentifiers <identifier>
-                                        Allow identifier for "* as foo" imports`);
+                                        Allow identifier for "* as foo" imports
+        --autoDiscoverEntrypoints       Automatically find all entrypoints .d.ts files in the rootDir`);
   process.exit(error ? 1 : 0);
 }
 
 /**
- * Resolves a given path to the associated relative path if the current process runs within
- * Bazel. We need to use the wrapped NodeJS resolve logic in order to properly handle the given
- * runfiles files which are only part of the runfile manifest on Windows.
+ * Resolves a given path in the file system. If `ts-api-guardian` runs with Bazel, file paths
+ * are resolved through runfiles. Additionally in Bazel, this method handles the case where
+ * manifest file paths are not existing, but need to resolve to the Bazel workspace directory.
+ * This happens commonly when goldens are approved, but the golden file does not exist yet.
  */
-function resolveBazelFilePath(fileName: string): string {
-  // If the CLI has been launched through the NodeJS Bazel rules, we need to resolve the
-  // actual file paths because otherwise this script won't work on Windows where runfiles
-  // are not available in the working directory. In order to resolve the real path for the
-  // runfile, we need to use `require.resolve` which handles runfiles properly on Windows.
-  if (process.env['BAZEL_TARGET']) {
-    return path.relative(process.cwd(), require.resolve(fileName));
+function resolveFilePath(fileName: string): string {
+  // If an absolute path is specified, the path is already resolved.
+  if (path.isAbsolute(fileName)) {
+    return fileName;
   }
-
-  return fileName;
+  // Outside of Bazel, file paths are resolved based on the current working directory.
+  if (!bazelWorkspaceName) {
+    return path.resolve(fileName);
+  }
+  // In Bazel, we first try to resolve the file through the runfiles. We do this by calling
+  // the `require.resolve` function that is patched by the Bazel NodeJS rules. Note that we
+  // need to catch errors because files inside tree artifacts cannot be resolved through
+  // runfile manifests. Hence, we need to have alternative resolution logic when resolving
+  // file paths. Additionally, it could happen that manifest paths which aren't part of the
+  // runfiles are specified (i.e. golden is approved but does not exist in the workspace yet).
+  try {
+    return require.resolve(fileName);
+  } catch {
+  }
+  // This handles cases where file paths cannot be resolved through runfiles. This happens
+  // commonly when goldens are approved while the golden does not exist in the workspace yet.
+  // In those cases, we want to build up a relative path based on the manifest path, and join
+  // it with the absolute bazel workspace directory (which is only set in `bazel run`).
+  // e.g. `angular/goldens/<..>/common` should become `{workspace_dir}/goldens/<...>/common`.
+  if (bazelWorkspaceManifestPathRegex !== null && bazelWorkspaceDirectory &&
+      bazelWorkspaceManifestPathRegex.test(fileName)) {
+    return path.join(bazelWorkspaceDirectory, fileName.substr(bazelWorkspaceName.length + 1));
+  }
+  throw Error(`Could not resolve file path in runfiles: ${fileName}`);
 }
 
-function resolveFileNamePairs(
-    argv: minimist.ParsedArgs, mode: string): {entrypoint: string, goldenFile: string}[] {
+function resolveFileNamePairs(argv: minimist.ParsedArgs, mode: string, entrypoints: string[]):
+    {entrypoint: string, goldenFile: string}[] {
   if (argv[mode]) {
     return [{
-      entrypoint: resolveBazelFilePath(argv._[0]),
-      goldenFile: resolveBazelFilePath(argv[mode]),
+      entrypoint: resolveFilePath(entrypoints[0]),
+      goldenFile: resolveFilePath(argv[mode]),
     }];
   } else {  // argv[mode + 'Dir']
     let rootDir = argv['rootDir'] || '.';
     const goldenDir = argv[mode + 'Dir'];
 
-    return argv._.map((fileName: string) => {
+    return entrypoints.map((fileName: string) => {
       return {
-        entrypoint: resolveBazelFilePath(fileName),
-        goldenFile: resolveBazelFilePath(path.join(goldenDir, path.relative(rootDir, fileName))),
+        entrypoint: resolveFilePath(fileName),
+        goldenFile: resolveFilePath(path.join(goldenDir, path.relative(rootDir, fileName))),
       };
     });
   }

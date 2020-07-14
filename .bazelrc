@@ -33,6 +33,11 @@ build --incompatible_strict_action_env
 run --incompatible_strict_action_env
 test --incompatible_strict_action_env
 
+# Do not build runfile trees by default. If an execution strategy relies on runfile
+# symlink teee, the tree is created on-demand. See: https://github.com/bazelbuild/bazel/issues/6627
+# and https://github.com/bazelbuild/bazel/commit/03246077f948f2790a83520e7dccc2625650e6df
+build --nobuild_runfile_links
+
 ###############################
 # Release support             #
 # Turn on these settings with #
@@ -42,7 +47,7 @@ test --incompatible_strict_action_env
 # Releases should always be stamped with version control info
 # This command assumes node on the path and is a workaround for
 # https://github.com/bazelbuild/bazel/issues/4802
-build:release --workspace_status_command="node ./tools/bazel_stamp_vars.js"
+build:release --workspace_status_command="yarn -s ng-dev release build-env-stamp"
 build:release --stamp
 
 ###############################
@@ -61,6 +66,16 @@ test --test_output=errors
 ################################
 
 # Bazel flags for CircleCI are in /.circleci/bazel.linux.rc and /.circleci/bazel.windows.rc
+
+##################################
+# Settings for integration tests #
+##################################
+
+# Trick bazel into treating BUILD files under integration/bazel as being regular files
+# This lets us glob() up all the files inside this integration test to make them inputs to tests
+# (Note, we cannot use common --deleted_packages because the bazel version command doesn't support it)
+build --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/test/e2e
+query --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/test/e2e
 
 ################################
 # Temporary Settings for Ivy   #
@@ -100,7 +115,6 @@ build:remote --javabase=@rbe_ubuntu1604_angular//java:jdk
 build:remote --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
 build:remote --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
 build:remote --crosstool_top=@rbe_ubuntu1604_angular//cc:toolchain
-build:remote --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 build:remote --extra_toolchains=@rbe_ubuntu1604_angular//config:cc-toolchain
 build:remote --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
 build:remote --host_platform=//tools:rbe_ubuntu1604-angular

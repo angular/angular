@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -25,8 +25,11 @@ describe('shadydom', () => {
       const target = t.target;
       const zone = Zone.current.fork({name: 'zone'});
       const logs: string[] = [];
-      zone.run(
-          () => { target.addEventListener('click', () => { logs.push(Zone.current.name); }); });
+      zone.run(() => {
+        target.addEventListener('click', () => {
+          logs.push(Zone.current.name);
+        });
+      });
       const event = document.createEvent('MouseEvent');
       event.initEvent('click', true, true);
       target.dispatchEvent(event);

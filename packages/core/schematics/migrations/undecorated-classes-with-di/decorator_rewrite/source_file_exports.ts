@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -39,7 +39,7 @@ export function getExportSymbolsOfFile(
       }
     } else if (ts.isExportDeclaration(node)) {
       const {moduleSpecifier, exportClause} = node;
-      if (!moduleSpecifier && exportClause) {
+      if (!moduleSpecifier && exportClause && ts.isNamedExports(exportClause)) {
         exportClause.elements.forEach(el => exports.push({
           exportName: el.name.text,
           identifier: el.propertyName ? el.propertyName : el.name

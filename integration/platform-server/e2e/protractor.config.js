@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,8 @@ exports.config = {
     }
   },
   directConnect: true,
-  baseUrl: 'http://localhost:9876/',
+  // Port comes from express config `/src/server.ts` `app.listen(4206,...`
+  baseUrl: 'http://localhost:4206/',
   framework: 'jasmine',
   useAllAngular2AppRoots: true
 };

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test", "ts_api_guardian_test_npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -25,7 +25,7 @@ ng_module(
 
 ng_package(
     name = "npm_package",
-    srcs = glob(["**/*.externs.js"]) + [
+    srcs = [
         "package.json",
         "//packages/core/testing:package.json",
     ],
@@ -39,6 +39,7 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//integration:__pkg__",
         "//packages/bazel/test/ng_package:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler-cli/ngcc/test:__pkg__",
@@ -52,4 +53,24 @@ ng_package(
         ":core",
         "//packages/core/testing",
     ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "core_api",
+    actualDir = "angular/packages/core/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/core",
+)
+
+ts_api_guardian_test(
+    name = "ng_global_utils_api",
+    actual = "angular/packages/core/src/render3/global_utils_api.d.ts",
+    data = [
+        "//goldens:public-api",
+        "//packages/core",
+    ],
+    golden = "angular/goldens/public-api/core/global_utils.d.ts",
 )

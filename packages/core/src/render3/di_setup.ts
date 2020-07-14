@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,6 +10,7 @@
 import {resolveForwardRef} from '../di/forward_ref';
 import {ClassProvider, Provider} from '../di/interface/provider';
 import {isClassProvider, isTypeProvider, providerToFactory} from '../di/r3_injector';
+import {assertDefined} from '../util/assert';
 
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from './di';
 import {ɵɵdirectiveInject} from './instructions/all';
@@ -17,7 +18,7 @@ import {DirectiveDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNodeProviderIndexes} from './interfaces/node';
 import {isComponentDef} from './interfaces/type_checks';
-import {LView, TData, TVIEW, TView} from './interfaces/view';
+import {DestroyHookData, LView, TData, TVIEW, TView} from './interfaces/view';
 import {getLView, getPreviousOrParentTNode, getTView} from './state';
 
 
@@ -81,26 +82,18 @@ function resolveProvider(
     const cptViewProvidersCount =
         tNode.providerIndexes >> TNodeProviderIndexes.CptViewProvidersCountShift;
 
-    if (isClassProvider(provider) || isTypeProvider(provider)) {
-      const prototype = ((provider as ClassProvider).useClass || provider).prototype;
-      const ngOnDestroy = prototype.ngOnDestroy;
-
-      if (ngOnDestroy) {
-        (tView.destroyHooks || (tView.destroyHooks = [])).push(tInjectables.length, ngOnDestroy);
-      }
-    }
-
     if (isTypeProvider(provider) || !provider.multi) {
       // Single provider case: the factory is created and pushed immediately
       const factory = new NodeInjectorFactory(providerFactory, isViewProvider, ɵɵdirectiveInject);
       const existingFactoryIndex = indexOf(
           token, tInjectables, isViewProvider ? beginIndex : beginIndex + cptViewProvidersCount,
           endIndex);
-      if (existingFactoryIndex == -1) {
+      if (existingFactoryIndex === -1) {
         diPublicInInjector(
             getOrCreateNodeInjectorForNode(
                 tNode as TElementNode | TContainerNode | TElementContainerNode, lView),
             tView, token);
+        registerDestroyHooksIfSupported(tView, provider, tInjectables.length);
         tInjectables.push(token);
         tNode.directiveStart++;
         tNode.directiveEnd++;
@@ -157,6 +150,7 @@ function resolveProvider(
         if (!isViewProvider && doesViewProvidersFactoryExist) {
           lInjectablesBlueprint[existingViewProvidersFactoryIndex].providerFactory = factory;
         }
+        registerDestroyHooksIfSupported(tView, provider, tInjectables.length, 0);
         tInjectables.push(token);
         tNode.directiveStart++;
         tNode.directiveEnd++;
@@ -167,12 +161,55 @@ function resolveProvider(
         lView.push(factory);
       } else {
         // Cases 1.b and 2.b
-        multiFactoryAdd(
-            lInjectablesBlueprint ![isViewProvider ? existingViewProvidersFactoryIndex : existingProvidersFactoryIndex],
+        const indexInFactory = multiFactoryAdd(
+            lInjectablesBlueprint!
+                [isViewProvider ? existingViewProvidersFactoryIndex :
+                                  existingProvidersFactoryIndex],
             providerFactory, !isViewProvider && isComponent);
+        registerDestroyHooksIfSupported(
+            tView, provider,
+            existingProvidersFactoryIndex > -1 ? existingProvidersFactoryIndex :
+                                                 existingViewProvidersFactoryIndex,
+            indexInFactory);
       }
       if (!isViewProvider && isComponent && doesViewProvidersFactoryExist) {
-        lInjectablesBlueprint[existingViewProvidersFactoryIndex].componentProviders !++;
+        lInjectablesBlueprint[existingViewProvidersFactoryIndex].componentProviders!++;
+      }
+    }
+  }
+}
+
+/**
+ * Registers the `ngOnDestroy` hook of a provider, if the provider supports destroy hooks.
+ * @param tView `TView` in which to register the hook.
+ * @param provider Provider whose hook should be registered.
+ * @param contextIndex Index under which to find the context for the hook when it's being invoked.
+ * @param indexInFactory Only required for `multi` providers. Index of the provider in the multi
+ * provider factory.
+ */
+function registerDestroyHooksIfSupported(
+    tView: TView, provider: Exclude<Provider, any[]>, contextIndex: number,
+    indexInFactory?: number) {
+  const providerIsTypeProvider = isTypeProvider(provider);
+  if (providerIsTypeProvider || isClassProvider(provider)) {
+    const prototype = ((provider as ClassProvider).useClass || provider).prototype;
+    const ngOnDestroy = prototype.ngOnDestroy;
+    if (ngOnDestroy) {
+      const hooks = tView.destroyHooks || (tView.destroyHooks = []);
+
+      if (!providerIsTypeProvider && ((provider as ClassProvider)).multi) {
+        ngDevMode &&
+            assertDefined(
+                indexInFactory, 'indexInFactory when registering multi factory destroy hook');
+        const existingCallbacksIndex = hooks.indexOf(contextIndex);
+
+        if (existingCallbacksIndex === -1) {
+          hooks.push(contextIndex, [indexInFactory, ngOnDestroy]);
+        } else {
+          (hooks[existingCallbacksIndex + 1] as DestroyHookData).push(indexInFactory!, ngOnDestroy);
+        }
+      } else {
+        hooks.push(contextIndex, ngOnDestroy);
       }
     }
   }
@@ -180,13 +217,14 @@ function resolveProvider(
 
 /**
  * Add a factory in a multi factory.
+ * @returns Index at which the factory was inserted.
  */
 function multiFactoryAdd(
-    multiFactory: NodeInjectorFactory, factory: () => any, isComponentProvider: boolean): void {
-  multiFactory.multi !.push(factory);
+    multiFactory: NodeInjectorFactory, factory: () => any, isComponentProvider: boolean): number {
   if (isComponentProvider) {
-    multiFactory.componentProviders !++;
+    multiFactory.componentProviders!++;
   }
+  return multiFactory.multi!.push(factory) - 1;
 }
 
 /**
@@ -205,7 +243,7 @@ function indexOf(item: any, arr: any[], begin: number, end: number) {
 function multiProvidersFactoryResolver(
     this: NodeInjectorFactory, _: undefined, tData: TData, lData: LView,
     tNode: TDirectiveHostNode): any[] {
-  return multiResolve(this.multi !, []);
+  return multiResolve(this.multi!, []);
 }
 
 /**
@@ -216,12 +254,12 @@ function multiProvidersFactoryResolver(
 function multiViewProvidersFactoryResolver(
     this: NodeInjectorFactory, _: undefined, tData: TData, lView: LView,
     tNode: TDirectiveHostNode): any[] {
-  const factories = this.multi !;
+  const factories = this.multi!;
   let result: any[];
   if (this.providerFactory) {
-    const componentCount = this.providerFactory.componentProviders !;
+    const componentCount = this.providerFactory.componentProviders!;
     const multiProviders =
-        getNodeInjectable(lView, lView[TVIEW], this.providerFactory !.index !, tNode);
+        getNodeInjectable(lView, lView[TVIEW], this.providerFactory!.index!, tNode);
     // Copy the section of the array which contains `multi` `providers` from the component
     result = multiProviders.slice(0, componentCount);
     // Insert the `viewProvider` instances.
@@ -243,7 +281,7 @@ function multiViewProvidersFactoryResolver(
  */
 function multiResolve(factories: Array<() => any>, result: any[]): any[] {
   for (let i = 0; i < factories.length; i++) {
-    const factory = factories[i] !as() => null;
+    const factory = factories[i]! as () => null;
     result.push(factory());
   }
   return result;

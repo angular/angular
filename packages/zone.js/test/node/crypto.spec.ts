@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,7 +21,9 @@ describe('crypto test', () => {
     const zoneASpec = {
       name: 'A',
       onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-                          Task => { return delegate.scheduleTask(targetZone, task); }
+          Task => {
+            return delegate.scheduleTask(targetZone, task);
+          }
     };
     const zoneA = Zone.current.fork(zoneASpec);
     spyOn(zoneASpec, 'onScheduleTask').and.callThrough();
@@ -41,10 +43,12 @@ describe('crypto test', () => {
       done();
       return;
     }
-    const zoneASpec: ZoneSpec = {
+    const zoneASpec = {
       name: 'A',
       onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-                          Task => { return delegate.scheduleTask(targetZone, task); }
+          Task => {
+            return delegate.scheduleTask(targetZone, task);
+          }
     };
     const zoneA = Zone.current.fork(zoneASpec);
     spyOn(zoneASpec, 'onScheduleTask').and.callThrough();

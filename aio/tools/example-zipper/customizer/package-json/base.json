@@ -13,13 +13,11 @@
     "@angular/router",
     "@angular/upgrade",
     "angular-in-memory-web-api",
-    "core-js",
     "rxjs",
     "zone.js"
   ],
   "devDependencies": [
     "@angular/compiler-cli",
-    "@angular/platform-server",
     "@types/jasmine",
     "@types/node",
     "jasmine-core",

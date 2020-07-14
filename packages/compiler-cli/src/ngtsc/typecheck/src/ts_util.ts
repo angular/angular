@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -134,7 +134,8 @@ export function checkIfClassIsExported(node: ClassDeclaration): boolean {
 
 function checkIfFileHasExport(sf: ts.SourceFile, name: string): boolean {
   for (const stmt of sf.statements) {
-    if (ts.isExportDeclaration(stmt) && stmt.exportClause !== undefined) {
+    if (ts.isExportDeclaration(stmt) && stmt.exportClause !== undefined &&
+        ts.isNamedExports(stmt.exportClause)) {
       for (const element of stmt.exportClause.elements) {
         if (element.propertyName === undefined && element.name.text === name) {
           // The named declaration is directly exported.

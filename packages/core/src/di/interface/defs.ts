@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -140,13 +140,14 @@ export interface InjectorTypeWithProviders<T> {
  */
 export function ɵɵdefineInjectable<T>(opts: {
   token: unknown,
-  providedIn?: Type<any>| 'root' | 'platform' | 'any' | null,
-  factory: () => T,
+  providedIn?: Type<any>|'root'|'platform'|'any'|null, factory: () => T,
 }): never {
   return ({
-    token: opts.token, providedIn: opts.providedIn as any || null, factory: opts.factory,
-        value: undefined,
-  } as ɵɵInjectableDef<T>) as never;
+           token: opts.token,
+           providedIn: opts.providedIn as any || null,
+           factory: opts.factory,
+           value: undefined,
+         } as ɵɵInjectableDef<T>) as never;
 }
 
 /**
@@ -179,8 +180,10 @@ export const defineInjectable = ɵɵdefineInjectable;
 export function ɵɵdefineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
     never {
   return ({
-    factory: options.factory, providers: options.providers || [], imports: options.imports || [],
-  } as ɵɵInjectorDef<any>) as never;
+           factory: options.factory,
+           providers: options.providers || [],
+           imports: options.imports || [],
+         } as ɵɵInjectorDef<any>) as never;
 }
 
 /**
@@ -214,21 +217,24 @@ function getOwnDefinition<T>(type: any, def: ɵɵInjectableDef<T>): ɵɵInjectab
  *
  * @param type A type which may have `ɵprov`, via inheritance.
  *
- * @deprecated Will be removed in v10, where an error will occur in the scenario if we find the
- * `ɵprov` on an ancestor only.
+ * @deprecated Will be removed in a future version of Angular, where an error will occur in the
+ *     scenario if we find the `ɵprov` on an ancestor only.
  */
 export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
   // See `jit/injectable.ts#compileInjectable` for context on NG_PROV_DEF_FALLBACK.
-  const def = type && (type[NG_PROV_DEF] || type[NG_INJECTABLE_DEF] ||
-                       (type[NG_PROV_DEF_FALLBACK] && type[NG_PROV_DEF_FALLBACK]()));
+  const def = type &&
+      (type[NG_PROV_DEF] || type[NG_INJECTABLE_DEF] ||
+       (type[NG_PROV_DEF_FALLBACK] && type[NG_PROV_DEF_FALLBACK]()));
 
   if (def) {
     const typeName = getTypeName(type);
     // TODO(FW-1307): Re-add ngDevMode when closure can handle it
     // ngDevMode &&
     console.warn(
-        `DEPRECATED: DI is instantiating a token "${typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
-        `This will become an error in v10. Please add @Injectable() to the "${typeName}" class.`);
+        `DEPRECATED: DI is instantiating a token "${
+            typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
+        `This will become an error in a future version of Angular. Please add @Injectable() to the "${
+            typeName}" class.`);
     return def;
   } else {
     return null;

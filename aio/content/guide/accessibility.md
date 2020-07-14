@@ -20,6 +20,12 @@ work well for all users, including those who rely on assistive technologies.
 
 이 문서에서는 애플리케이션의 접근성 이슈에 대해 살펴보고 개선할 수 있는 테크닉도 함께 알아봅시다. Google이 제공하는 [Web Fundamentals](https://developers.google.com/web/fundamentals/) 문서에서 [Accessibility](https://developers.google.com/web/fundamentals/accessibility/#what_is_accessibility)을 참고하는 것도 좋습니다.
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
 
 <!--
 ## Accessibility attributes
@@ -32,7 +38,7 @@ to provide semantic meaning where it might otherwise be missing.
 Use [attribute binding](guide/template-syntax#attribute-binding) template syntax to control the values of accessibility-related attributes.
 
 When binding to ARIA attributes in Angular, you must use the `attr.` prefix, as the ARIA
-specification depends specifically on HTML attributes rather than properties on DOM elements.
+specification depends specifically on HTML attributes rather than properties of DOM elements.
 
 ```html
 <!- Use attr. when binding to an ARIA attribute ->
@@ -43,7 +49,7 @@ Note that this syntax is only necessary for attribute _bindings_.
 Static ARIA attributes require no extra syntax.
 
 ```html
-<!- Static ARIA attributes require no extra syntax ->
+&lt;!-- Static ARIA attributes require no extra syntax --&gt;
 <button aria-label="Save document">...</button>
 ```
 
@@ -56,7 +62,7 @@ ARIA 어트리뷰트를 바인딩하려면 `attr.` 접두사를 꼭 붙여야 �
 ARIA 스펙은 DOM 엘리먼트에 있는 프로퍼티가 아니라 HTML 어트리뷰트 스펙으로 정의되어 있습니다.
 
 ```html
-<!-- ARIA 어트리뷰트를 바인딩하려면 attr. 을 붙여야 합니다. -->
+&lt;!-- ARIA 어트리뷰트를 바인딩하려면 attr. 을 붙여야 합니다. --&gt;
 <button [attr.aria-label]="myActionLabel">...</button>
 ```
 
@@ -65,7 +71,7 @@ ARIA 스펙은 DOM 엘리먼트에 있는 프로퍼티가 아니라 HTML 어트�
 
 
 ```html
-<!-- 정적 ARIA 어트리뷰트는 바인딩하지 않아도 됩니다. -->
+&lt;!-- 정적 ARIA 어트리뷰트는 바인딩하지 않아도 됩니다. --&gt;
 <button aria-label="Save document">...</button>
 ```
 
@@ -76,11 +82,11 @@ ARIA 스펙은 DOM 엘리먼트에 있는 프로퍼티가 아니라 HTML 어트�
    <!--
    By convention, HTML attributes use lowercase names (`tabindex`), while properties use camelCase names (`tabIndex`).
 
-   See the [Template Syntax](https://angular.io/guide/template-syntax#html-attribute-vs-dom-property) guide for more background on the difference between attributes and properties.
+   See the [Template Syntax](guide/template-syntax#html-attribute-vs-dom-property) guide for more background on the difference between attributes and properties.
    -->
    일반적으로 HTML 어트리뷰트 이름은 소문자로 사용하며(`tabindex`), 프로퍼티 이름은 캐멀-케이스로 사용합니다(`tabIndex`).
 
-   어트리뷰트와 프로퍼티가 어떻게 다른지 알아보려면 [템플릿 문법](https://angular.io/guide/template-syntax#html-attribute-vs-dom-property) 가이드 문서를 참고하세요.
+   어트리뷰트와 프로퍼티가 어떻게 다른지 알아보려면 [템플릿 문법](guide/template-syntax#html-attribute-vs-dom-property) 가이드 문서를 참고하세요.
 
 </div>
 
@@ -177,7 +183,6 @@ The following example shows how to make a simple progress bar accessible by usin
    <code-example path="accessibility/src/app/app.component.html" header="src/app/app.component.html" region="template"></code-example>
 
 
-To see the progress bar in a working example app, refer to the <live-example></live-example>.
 -->
 진행률을 표시하는 UI를 간단하게 만들어보면서 접근성 관련 어트리뷰트를 제어하는 호스트 바인딩에 대해 알아봅시다.
 
@@ -188,8 +193,6 @@ To see the progress bar in a working example app, refer to the <live-example></l
 * 템플릿에 `aria-label` 어트리뷰트를 사용해서 스크린 리더 사용자 지원 기능을 추가합니다.
 
    <code-example path="accessibility/src/app/app.component.html" header="src/app/app.component.html" region="template"></code-example>
-
-이 진행률 표시 UI가 동작하는 것을 확인하려면 <live-example></live-example>를 참고하세요.
 
 
 <!--

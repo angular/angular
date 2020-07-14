@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -33,11 +33,12 @@ export class TypeCheckFile extends Environment {
   private tcbStatements: ts.Statement[] = [];
 
   constructor(
-      private fileName: string, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
-      reflector: ReflectionHost) {
+      readonly fileName: AbsoluteFsPath, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
+      reflector: ReflectionHost, compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>) {
     super(
         config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter, reflector,
-        ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, true));
+        ts.createSourceFile(
+            compilerHost.getCanonicalFileName(fileName), '', ts.ScriptTarget.Latest, true));
   }
 
   addTypeCheckBlock(
@@ -48,8 +49,8 @@ export class TypeCheckFile extends Environment {
     this.tcbStatements.push(fn);
   }
 
-  render(): ts.SourceFile {
-    let source: string = this.importManager.getAllImports(this.fileName)
+  render(): string {
+    let source: string = this.importManager.getAllImports(this.contextFile.fileName)
                              .map(i => `import * as ${i.qualifier} from '${i.specifier}';`)
                              .join('\n') +
         '\n\n';
@@ -74,11 +75,12 @@ export class TypeCheckFile extends Environment {
     // is somehow more expensive than the initial parse.
     source += '\nexport const IS_A_MODULE = true;\n';
 
-    return ts.createSourceFile(
-        this.fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+    return source;
   }
 
-  getPreludeStatements(): ts.Statement[] { return []; }
+  getPreludeStatements(): ts.Statement[] {
+    return [];
+  }
 }
 
 export function typeCheckFilePath(rootDirs: AbsoluteFsPath[]): AbsoluteFsPath {

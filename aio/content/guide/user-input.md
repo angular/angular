@@ -14,6 +14,7 @@ Run the <live-example></live-example>.
 DOM 이벤트는 사용자가 링크를 클릭하거나 버튼을 클릭할 때, 그리고 텍스트를 입력할 때 발생합니다.
 이 문서는 이렇게 일어나는 이벤트를 컴포넌트와 이벤트 바인딩하고, 컴포넌트 이벤트 핸들러가 이벤트를 어떻게 처리하는지 알아봅니다.
 
+
 <!--
 ## Binding to user input events
 -->
@@ -24,22 +25,23 @@ You can use [Angular event bindings](guide/template-syntax#event-binding)
 to respond to any [DOM event](https://developer.mozilla.org/en-US/docs/Web/Events).
 Many DOM events are triggered by user input. Binding to these events provides a way to
 get input from the user.
+
+To bind to a DOM event, surround the DOM event name in parentheses and assign a quoted
+[template statement](guide/template-syntax#template-statements) to it.
+
+The following example shows an event binding that implements a click handler:
+
+<code-example path="user-input/src/app/click-me.component.ts" region="click-me-button" header="src/app/click-me.component.ts"></code-example>
 -->
 [DOM에서 발생하는 이벤트](https://developer.mozilla.org/en-US/docs/Web/Events)는 [Angular 이벤트 바인딩](guide/template-syntax#event-binding) 문법을 사용해서 반응할 수 있습니다.
 DOM에서 일어나는 이벤트는 대부분 사용자의 행동에 의해 발생합니다. 그래서 이 이벤트를 확인하면 사용자가 어떤 동작을 하고 있는지 알 수 있습니다.
 
-<!--
-To bind to a DOM event, surround the DOM event name in parentheses and assign a quoted
-[template statement](guide/template-syntax#template-statements) to it.
--->
 DOM 이벤트를 바인딩 하려면 이벤트 이름을 괄호(`(`, `)`)로 감싸고 [템플릿 실행문](guide/template-syntax#template-statements)을 연결하면 됩니다.
 
-<!--
-The following example shows an event binding that implements a click handler:
--->
 아래 예제는 클릭 이벤트에 `onClickMe()` 핸들러를 바인딩하는 예제 코드입니다.
 
 <code-example path="user-input/src/app/click-me.component.ts" region="click-me-button" header="src/app/click-me.component.ts"></code-example>
+
 
 {@a click}
 
@@ -48,16 +50,22 @@ The `(click)` to the left of the equals sign identifies the button's click event
 The text in quotes to the right of the equals sign
 is the **template statement**, which responds
 to the click event by calling the component's `onClickMe` method.
--->
-**바인딩 대상**은 등호(`=`) 왼쪽에 사용된 `(click)`이며, 버튼이 클릭되었을 때 발생하는 이벤트를 뜻합니다.
-그리고 등호 오른쪽에 있는 문자열은 **템플릿 실행문**이며, 클릭 이벤트가 발생했을 때 `onClickMe` 메소드를 실행하도록 작성했습니다.
 
-<!--
 When writing a binding, be aware of a template statement's **execution context**.
 The identifiers in a template statement belong to a specific context object,
 usually the Angular component controlling the template.
 The example above shows a single line of HTML, but that HTML belongs to a larger component:
+
+
+<code-example path="user-input/src/app/click-me.component.ts" region="click-me-component" header="src/app/click-me.component.ts"></code-example>
+
+
+
+When the user clicks the button, Angular calls the `onClickMe` method from `ClickMeComponent`.
 -->
+**바인딩 대상**은 등호(`=`) 왼쪽에 사용된 `(click)`이며, 버튼이 클릭되었을 때 발생하는 이벤트를 뜻합니다.
+그리고 등호 오른쪽에 있는 문자열은 **템플릿 실행문**이며, 클릭 이벤트가 발생했을 때 `onClickMe` 메소드를 실행하도록 작성했습니다.
+
 이벤트를 바인딩 할 때는 템플릿 실행문이 **실행되는 컨텍스트**가 유효한지 확인해야 합니다.
 템플릿 실행문의 컨텍스트는 보통 그 템플릿을 조작하는 컴포넌트로 제한되어 있습니다.
 이 예제를 컴포넌트 클래스 코드와 함께 확인해 봅시다:
@@ -65,10 +73,8 @@ The example above shows a single line of HTML, but that HTML belongs to a larger
 <code-example path="user-input/src/app/click-me.component.ts" region="click-me-component" header="src/app/click-me.component.ts"></code-example>
 
 
-<!--
-When the user clicks the button, Angular calls the `onClickMe` method from `ClickMeComponent`.
--->
 사용자가 버튼을 클릭하면 Angular가 `ClickMeComponent`에 있는 `onClickMe` 메소드를 실행합니다.
+
 
 <!--
 ## Get user input from the $event object
@@ -100,35 +106,33 @@ DOM event object in the `$event` variable which this code passes as a parameter 
 
 <!--
 The properties of an `$event` object vary depending on the type of DOM event. For example,
-a mouse event includes different information than a input box editing event.
--->
-`$event` 객체의 프로퍼티는 발생하는 DOM 이벤트에 따라 달라집니다.
-그래서 마우스 이벤트와 입력 필드에서 발생하는 이벤트의 구성은 다릅니다.
+a mouse event includes different information than an input box editing event.
 
-<!--
 All [standard DOM event objects](https://developer.mozilla.org/en-US/docs/Web/API/Event)
 have a `target` property, a reference to the element that raised the event.
 In this case, `target` refers to the [`<input>` element](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement) and
 `event.target.value` returns the current contents of that element.
--->
-[표준 DOM 이벤트 객체](https://developer.mozilla.org/en-US/docs/Web/API/Event)에는 이벤트가 발생한 엘리먼트를 가리키는 `target` 프로퍼티가 있습니다.
-이 예제에서는 `target` 프로퍼티가 [`<input>` 엘리먼트](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement)를 가리키며, 이 입력 필드의 현재값은 `event.target.value` 프로퍼티를 참조해서 확인할 수 있습니다.
 
-<!--
 After each call, the `onKey()` method appends the contents of the input box value to the list
 in the component's `values` property, followed by a separator character (|).
 The [interpolation](guide/template-syntax#interpolation)
 displays the accumulating input box changes from the `values` property.
--->
-`onKey()` 메소드가 실행될 때마다 변하는 값을 컴포넌트의 `values` 프로퍼티에 할당해서 화면에 표시해 봅시다.
-위 코드는 이벤트가 발생할 때마다 현재값에 구분 기호(|)를 붙여서 계속 연결하며, 템플릿에는 [문자열 바인딩](guide/template-syntax#interpolation)으로 연결했습니다.
 
-<!--
 Suppose the user enters the letters "abc", and then backspaces to remove them one by one.
 Here's what the UI displays:
 -->
+`$event` 객체의 프로퍼티는 발생하는 DOM 이벤트에 따라 달라집니다.
+그래서 마우스 이벤트와 입력 필드에서 발생하는 이벤트의 구성은 다릅니다.
+
+[표준 DOM 이벤트 객체](https://developer.mozilla.org/en-US/docs/Web/API/Event)에는 이벤트가 발생한 엘리먼트를 가리키는 `target` 프로퍼티가 있습니다.
+이 예제에서는 `target` 프로퍼티가 [`<input>` 엘리먼트](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement)를 가리키며, 이 입력 필드의 현재값은 `event.target.value` 프로퍼티를 참조해서 확인할 수 있습니다.
+
+`onKey()` 메소드가 실행될 때마다 변하는 값을 컴포넌트의 `values` 프로퍼티에 할당해서 화면에 표시해 봅시다.
+위 코드는 이벤트가 발생할 때마다 현재값에 구분 기호(|)를 붙여서 계속 연결하며, 템플릿에는 [문자열 바인딩](guide/template-syntax#interpolation)으로 연결했습니다.
+
 사용자가 "abc"를 차례대로 입력한 이후에 백스페이스로 모두 지웠다고 합시다.
 그러면 화면에는 다음과 같이 표시됩니다:
+
 
 <code-example>
   a | ab | abc | ab | a | |
@@ -177,6 +181,14 @@ There is no type information
 that could reveal properties of the event object and prevent silly mistakes.
 
 The following example rewrites the method with types:
+
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-class" header="src/app/keyup.components.ts (class v.1 - typed )"></code-example>
+
+
+
+The `$event` is now a specific `KeyboardEvent`.
+Not all elements have a `value` property so it casts `target` to an input element.
+The `OnKey` method more clearly expresses what it expects from the template and how it interprets the event.
 -->
 위에서 살펴본 예제에서는 `$event` 객체를 `any` 타입으로 사용했습니다.
 이렇게 사용하면 코드가 간단해지기는 하지만, 이벤트 객체의 타입을 특정할 수 없기 때문에 이벤트 객체의 정보를 활용할 수 없고 코딩 실수를 할 가능성도 있습니다.
@@ -186,14 +198,10 @@ The following example rewrites the method with types:
 <code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-class" header="src/app/keyup.components.ts (class v.1 - typed )"></code-example>
 
 
-<!--
-The `$event` is now a specific `KeyboardEvent`.
-Not all elements have a `value` property so it casts `target` to an input element.
-The `OnKey` method more clearly expresses what it expects from the template and how it interprets the event.
--->
 이제 `$event` 객체는 `KeyboardEvent` 타입으로 지정했습니다.
 그래서 모든 엘리먼트가 `value` 프로퍼티를 갖기는 하지만, 이 이벤트의 `target` 프로퍼티는 입력 필드라는 것이 명확해졌습니다.
 결국 `onKey` 메소드는 템플릿에서 어떤 타입의 인자를 받아야 하는지 좀 더 활실해졌고, 이 인자를 어떻게 활용할 수 있는지에 대해서도 더 많은 정보를 제공할 수 있습니다.
+
 
 <!--
 ### Passing _$event_ is a dubious practice
@@ -215,6 +223,7 @@ The next section shows how to use template reference variables to address this p
 
 이번에는 템플릿 참조 변수를 활용해서 이 문제를 어떻게 해결할 수 있는지 알아봅시다.
 
+
 <!--
 ## Get user input from a template reference variable
 -->
@@ -228,6 +237,25 @@ To declare a template reference variable, precede an identifier with a hash (or 
 
 The following example uses a template reference variable
 to implement a keystroke loopback in a simple template.
+
+<code-example path="user-input/src/app/loop-back.component.ts" region="loop-back-component" header="src/app/loop-back.component.ts"></code-example>
+
+
+
+The template reference variable named `box`, declared on the `<input>` element,
+refers to the `<input>` element itself.
+The code uses the `box` variable to get the input element's `value` and display it
+with interpolation between `<p>` tags.
+
+The template is completely self contained. It doesn't bind to the component,
+and the component does nothing.
+
+Type something in the input box, and watch the display update with each keystroke.
+
+
+<div class="lightbox">
+  <img src='generated/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back">
+</div>
 -->
 Angular에서 제공하는 [**템플릿 참조 변수**](guide/template-syntax#ref-vars)를 사용해서 사용자가 입력한 데이터를 확인해 봅시다.
 이 방법을 사용하면 템플릿 안에서 엘리먼트에 직접 접근할 수 있습니다.
@@ -238,17 +266,6 @@ Angular에서 제공하는 [**템플릿 참조 변수**](guide/template-syntax#r
 <code-example path="user-input/src/app/loop-back.component.ts" region="loop-back-component" header="src/app/loop-back.component.ts"></code-example>
 
 
-<!--
-The template reference variable named `box`, declared on the `<input>` element,
-refers to the `<input>` element itself.
-The code uses the `box` variable to get the input element's `value` and display it
-with interpolation between `<p>` tags.
-
-The template is completely self contained. It doesn't bind to the component,
-and the component does nothing.
-
-Type something in the input box, and watch the display update with each keystroke.
--->
 이 예제에서 `<input>` 엘리먼트에 선언된 템플릿 참조 변수 `box`는 `<input>` 엘리먼트를 자체를 가리킵니다.
 그리고 템플릿 안에서 `box` 변수의 `value` 프로퍼티를 참조하면 템플릿 안에서 입력 필드의 현재값을 참조할 수 있으며, 이 코드에서는 입력 필드의 현재값을 `<p>` 태그 안에 표시합니다.
 
@@ -259,7 +276,6 @@ Type something in the input box, and watch the display update with each keystrok
 <div class="lightbox">
   <img src='generated/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back">
 </div>
-
 
 
 <div class="alert is-helpful">
@@ -289,16 +305,19 @@ Angular는 키입력과 같은 비동기 이벤트가 발생할 때만 바인딩
 It's easier to get to the input box with the template reference
 variable than to go through the `$event` object. Here's a rewrite of the previous
 `keyup` example that uses a template reference variable to get the user's input.
+
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-2" header="src/app/keyup.components.ts (v2)"></code-example>
+
+
+
+A nice aspect of this approach is that the component gets clean data values from the view.
+It no longer requires knowledge of the `$event` and its structure.
 -->
 템플릿 참조 변수는 `$event` 객체를 직접 활용하는 방법이 더 간단합니다. 위에서 살펴본 `keyup` 예제를 더 나은 방식으로 개선하면 다음과 같이 활용할 수 있습니다.
 
 <code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-2" header="src/app/keyup.components.ts (v2)"></code-example>
 
 
-<!--
-A nice aspect of this approach is that the component gets clean data values from the view.
-It no longer requires knowledge of the `$event` and its structure.
--->
 이 방식은 컴포넌트에서도 다른 것은 신경쓰지 않고 입력 필드의 데이터만 받을 수 있기 때문에 좋습니다.
 컴포넌트는 더이상 템플릿의 구조나 `$event` 객체의 타입을 신경쓸 필요가 없습니다.
 
@@ -317,6 +336,16 @@ One way to reduce the noise would be to examine every `$event.keyCode` and take 
 
 There's an easier way: bind to Angular's `keyup.enter` pseudo-event.
 Then Angular calls the event handler only when the user presses _Enter_.
+
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-3" header="src/app/keyup.components.ts (v3)"></code-example>
+
+
+
+Here's how it works.
+
+<div class="lightbox">
+  <img src='generated/images/guide/user-input/keyup3-anim.gif' alt="key up 3">
+</div>
 -->
 `(keyup)` 이벤트 바인딩은 *모든 키 입력*에 반응합니다.
 하지만 사용자가 입력을 끝내는 _엔터 키_ 에만 반응하고 싶다면, 키 이벤트를 바인딩 할 때 `$event.keyCode`를 사용해서 _엔터 키_ 만 반응하도록 필터링할 수 있습니다.
@@ -326,15 +355,11 @@ Then Angular calls the event handler only when the user presses _Enter_.
 <code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-3" header="src/app/keyup.components.ts (v3)"></code-example>
 
 
-<!--
-Here's how it works.
--->
 이 예제는 다음과 같이 동작합니다.
 
 <div class="lightbox">
   <img src='generated/images/guide/user-input/keyup3-anim.gif' alt="key up 3">
 </div>
-
 
 
 <!--
@@ -349,6 +374,9 @@ without first pressing _Enter_.
 The component's `value` property is updated only when the user presses _Enter_.
 
 To fix this issue, listen to both the _Enter_ key and the _blur_ event.
+
+
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-4" header="src/app/keyup.components.ts (v4)"></code-example>
 -->
 위에서 살펴본 예제에서는 사용자가 입력 필드 밖을 마우스로 클릭하면 _엔터 키_ 를 입력하지 않아도 포커스를 잃어버리며, `<p>` 엘리먼트의 값도 갱신되지 않습니다.
 이 예제는 _엔터 키_ 가 입력되었을 때만 `value` 프로퍼티를 갱신하기 때문입니다.
@@ -356,7 +384,6 @@ To fix this issue, listen to both the _Enter_ key and the _blur_ event.
 이 문제를 해결하기 위해 _엔터 키_ 와 _blur_ 이벤트 모두 반응하는 방식으로 바꿔봅시다.
 
 <code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-4" header="src/app/keyup.components.ts (v4)"></code-example>
-
 
 
 <!--
@@ -372,6 +399,18 @@ Now, put it all together in a micro-app
 that can display a list of heroes and add new heroes to the list.
 The user can add a hero by typing the hero's name in the input box and
 clicking **Add**.
+
+
+<div class="lightbox">
+  <img src='generated/images/guide/user-input/little-tour-anim.gif' alt="Little Tour of Heroes">
+</div>
+
+
+
+Below is the "Little Tour of Heroes"  component.
+
+
+<code-example path="user-input/src/app/little-tour.component.ts" region="little-tour" header="src/app/little-tour.component.ts"></code-example>
 -->
 이전 가이드에서는 [데이터를 어떻게 화면에 표시하는지](guide/displaying-data) 알아봤고,
 이 문서에서는 이벤트 바인딩 테크닉에 대해 알아봤습다.
@@ -384,9 +423,6 @@ clicking **Add**.
 </div>
 
 
-<!--
-Below is the "Little Tour of Heroes"  component.
--->
 그리고 다음 코드는 "Little Tour of Heroes"에서 사용한 컴포넌트입니다.
 
 
@@ -402,25 +438,25 @@ Below is the "Little Tour of Heroes"  component.
 * **Use template variables to refer to elements** &mdash;
 The `newHero` template variable refers to the `<input>` element.
 You can reference `newHero` from any sibling or child of the `<input>` element.
--->
-* **엘리먼트 대신 템플릿 변수를 활용하세요.** &mdash; 템플릿 변수 `newHero`는 `<input>` 엘리먼트를 가리킵니다. 템플릿 변수를 활용하면 엘리먼트를 간단하게 참조할 수 있습니다.
 
-<!--
 * **Pass values, not elements** &mdash;
 Instead of passing the `newHero` into the component's `addHero` method,
 get the input box value and pass *that* to `addHero`.
--->
-* **엘리먼트를 전달하지 말고 값을 전달하세요.** &mdash; 컴포넌트의 `addHero` 메소드에는 `newHero` 변수를 그대로 전달하지 말고, `addHero` 메소드에서 필요한 입력 필드의 값만 전달하는 것이 좋습니다.
 
-<!--
 * **Keep template statements simple** &mdash;
 The `(blur)` event is bound to two JavaScript statements.
 The first statement calls `addHero`. The second statement, `newHero.value=''`,
 clears the input box after a new hero is added to the list.
 -->
+* **엘리먼트 대신 템플릿 변수를 활용하세요.** &mdash; 템플릿 변수 `newHero`는 `<input>` 엘리먼트를 가리킵니다.
+템플릿 변수를 활용하면 엘리먼트를 간단하게 참조할 수 있습니다.
+
+* **엘리먼트를 전달하지 말고 값을 전달하세요.** &mdash; 컴포넌트의 `addHero` 메소드에는 `newHero` 변수를 그대로 전달하지 말고, `addHero` 메소드에서 필요한 입력 필드의 값만 전달하는 것이 좋습니다.
+
 * **템플릿 실행문은 간단하게 작성하세요.** &mdash;
 이 코드에서 `(blur)` 이벤트는 JavaScript 실행문 2개를 실행합니다.
 하나는 `addHero` 메소드를 실행하는 것이고, 다른 하나는 히어로가 배열에 추가된 이후에 입력 필드에 입력된 값을 지우기 위해 `newHero.value=''`를 실행하는 것입니다.
+
 
 <!--
 ## Source code
@@ -452,6 +488,24 @@ Following is all the code discussed in this page.
 
 </code-tabs>
 
+
+Angular also supports passive event listeners. For example, you can use the following steps to make the scroll event passive.
+
+1. Create a file `zone-flags.ts` under `src` directory.
+2. Add the following line into this file.
+
+```
+(window as any)['__zone_symbol__PASSIVE_EVENTS'] = ['scroll'];
+```
+
+3. In the `src/polyfills.ts` file, before importing zone.js, import the newly created `zone-flags`.
+
+```
+import './zone-flags';
+import 'zone.js/dist/zone';  // Included with Angular CLI.
+```
+
+After those steps, if you add event listeners for the `scroll` event, the listeners will be `passive`.
 
 
 <!--

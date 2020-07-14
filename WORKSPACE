@@ -8,29 +8,16 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "b6670f9f43faa66e3009488bbd909bc7bc46a5a9661a33f6bc578068d1837f37",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/1.3.0/rules_nodejs-1.3.0.tar.gz"],
+    sha256 = "84abf7ac4234a70924628baa9a73a5a5cbad944c4358cf9abdb4aab29c9a5b77",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/1.7.0/rules_nodejs-1.7.0.tar.gz"],
 )
 
-# Check the bazel version and download npm dependencies
-load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "check_rules_nodejs_version", "node_repositories", "yarn_install")
+# Check the rules_nodejs version and download npm dependencies
+# Note: bazel (version 2 and after) will check the .bazelversion file so we don't need to
+# assert on that.
+load("@build_bazel_rules_nodejs//:index.bzl", "check_rules_nodejs_version", "node_repositories", "yarn_install")
 
-# Bazel version must be at least the following version because:
-#   - 0.26.0 managed_directories feature added which is required for nodejs rules 0.30.0
-#   - 0.27.0 has a fix for managed_directories after `rm -rf node_modules`
-#   - 2.1.0 feature added to honor .bazelignore in external repositories
-check_bazel_version(
-    message = """
-You no longer need to install Bazel on your machine.
-Angular has a dependency on the @bazel/bazel package which supplies it.
-Try running `yarn bazel` instead.
-    (If you did run that, check that you've got a fresh `yarn install`)
-
-""",
-    minimum_bazel_version = "2.1.0",
-)
-
-check_rules_nodejs_version(minimum_version_string = "1.3.0")
+check_rules_nodejs_version(minimum_version_string = "1.7.0")
 
 # Setup the Node.js toolchain
 node_repositories(
@@ -43,8 +30,11 @@ node_repositories(
     package_json = ["//:package.json"],
 )
 
+load("//integration:angular_integration_test.bzl", "npm_package_archives")
+
 yarn_install(
     name = "npm",
+    manual_build_file_contents = npm_package_archives(),
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",
 )
@@ -74,7 +64,7 @@ load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories"
 
 web_test_repositories()
 
-load("//tools/browsers:browser_repositories.bzl", "browser_repositories")
+load("//dev-infra/browsers:browser_repositories.bzl", "browser_repositories")
 
 browser_repositories()
 
@@ -101,17 +91,18 @@ rbe_autoconfig(
     # Need to specify a base container digest in order to ensure that we can use the checked-in
     # platform configurations for the "ubuntu16_04" image. Otherwise the autoconfig rule would
     # need to pull the image and run it in order determine the toolchain configuration. See:
-    # https://github.com/bazelbuild/bazel-toolchains/blob/1.1.2/configs/ubuntu16_04_clang/versions.bzl
-    base_container_digest = "sha256:1ab40405810effefa0b2f45824d6d608634ccddbf06366760c341ef6fbead011",
+    # https://github.com/bazelbuild/bazel-toolchains/blob/3.2.0/configs/ubuntu16_04_clang/versions.bzl
+    base_container_digest = "sha256:5e750dd878df9fcf4e185c6f52b9826090f6e532b097f286913a428290622332",
     # Note that if you change the `digest`, you might also need to update the
     # `base_container_digest` to make sure marketplace.gcr.io/google/rbe-ubuntu16-04-webtest:<digest>
     # and marketplace.gcr.io/google/rbe-ubuntu16-04:<base_container_digest> have
     # the same Clang and JDK installed. Clang is needed because of the dependency on
     # @com_google_protobuf. Java is needed for the Bazel's test executor Java tool.
-    digest = "sha256:0b8fa87db4b8e5366717a7164342a029d1348d2feea7ecc4b18c780bc2507059",
+    digest = "sha256:f743114235a43355bf8324e2ba0fa6a597236fe06f7bc99aaa9ac703631c306b",
     env = clang_env(),
     registry = "marketplace.gcr.io",
     # We can't use the default "ubuntu16_04" RBE image provided by the autoconfig because we need
     # a specific Linux kernel that comes with "libx11" in order to run headless browser tests.
     repository = "google/rbe-ubuntu16-04-webtest",
+    use_checked_in_confs = "Force",
 )

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,8 +9,7 @@
 import {Injector} from '../di/injector';
 import {INJECTOR} from '../di/injector_compatibility';
 import {InjectFlags} from '../di/interface/injector';
-import {StaticProvider} from '../di/interface/provider';
-import {R3Injector, createInjector} from '../di/r3_injector';
+import {createInjectorWithoutInjectorInstances, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -24,13 +23,9 @@ import {getNgLocaleIdDef, getNgModuleDef} from './definition';
 import {setLocaleId} from './i18n';
 import {maybeUnwrapFn} from './util/misc_utils';
 
-export interface NgModuleType<T = any> extends Type<T> { ɵmod: NgModuleDef<T>; }
-
-const COMPONENT_FACTORY_RESOLVER: StaticProvider = {
-  provide: viewEngine_ComponentFactoryResolver,
-  useClass: ComponentFactoryResolver,
-  deps: [viewEngine_NgModuleRef],
-};
+export interface NgModuleType<T = any> extends Type<T> {
+  ɵmod: NgModuleDef<T>;
+}
 
 export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T> {
   // tslint:disable-next-line:require-internal-with-underscore
@@ -41,28 +36,39 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   instance: T;
   destroyCbs: (() => void)[]|null = [];
 
+  // When bootstrapping a module we have a dependency graph that looks like this:
+  // ApplicationRef -> ComponentFactoryResolver -> NgModuleRef. The problem is that if the
+  // module being resolved tries to inject the ComponentFactoryResolver, it'll create a
+  // circular dependency which will result in a runtime error, because the injector doesn't
+  // exist yet. We work around the issue by creating the ComponentFactoryResolver ourselves
+  // and providing it, rather than letting the injector resolve it.
+  readonly componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryResolver(this);
+
   constructor(ngModuleType: Type<T>, public _parent: Injector|null) {
     super();
     const ngModuleDef = getNgModuleDef(ngModuleType);
-    ngDevMode && assertDefined(
-                     ngModuleDef,
-                     `NgModule '${stringify(ngModuleType)}' is not a subtype of 'NgModuleType'.`);
+    ngDevMode &&
+        assertDefined(
+            ngModuleDef,
+            `NgModule '${stringify(ngModuleType)}' is not a subtype of 'NgModuleType'.`);
 
     const ngLocaleIdDef = getNgLocaleIdDef(ngModuleType);
-    if (ngLocaleIdDef) {
-      setLocaleId(ngLocaleIdDef);
-    }
+    ngLocaleIdDef && setLocaleId(ngLocaleIdDef);
+    this._bootstrapComponents = maybeUnwrapFn(ngModuleDef!.bootstrap);
+    this._r3Injector = createInjectorWithoutInjectorInstances(
+                           ngModuleType, _parent,
+                           [
+                             {provide: viewEngine_NgModuleRef, useValue: this}, {
+                               provide: viewEngine_ComponentFactoryResolver,
+                               useValue: this.componentFactoryResolver
+                             }
+                           ],
+                           stringify(ngModuleType)) as R3Injector;
 
-    this._bootstrapComponents = maybeUnwrapFn(ngModuleDef !.bootstrap);
-    const additionalProviders: StaticProvider[] = [
-      {
-        provide: viewEngine_NgModuleRef,
-        useValue: this,
-      },
-      COMPONENT_FACTORY_RESOLVER
-    ];
-    this._r3Injector = createInjector(
-        ngModuleType, _parent, additionalProviders, stringify(ngModuleType)) as R3Injector;
+    // We need to resolve the injector types separately from the injector creation, because
+    // the module might be trying to use this ref in its contructor for DI which will cause a
+    // circular error that will eventually error out, because the injector isn't created yet.
+    this._r3Injector._resolveInjectorDefTypes();
     this.instance = this.get(ngModuleType);
   }
 
@@ -74,20 +80,16 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     return this._r3Injector.get(token, notFoundValue, injectFlags);
   }
 
-  get componentFactoryResolver(): viewEngine_ComponentFactoryResolver {
-    return this.get(viewEngine_ComponentFactoryResolver);
-  }
-
   destroy(): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     const injector = this._r3Injector;
     !injector.destroyed && injector.destroy();
-    this.destroyCbs !.forEach(fn => fn());
+    this.destroyCbs!.forEach(fn => fn());
     this.destroyCbs = null;
   }
   onDestroy(callback: () => void): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
-    this.destroyCbs !.push(callback);
+    this.destroyCbs!.push(callback);
   }
 }
 

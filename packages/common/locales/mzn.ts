@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -24,8 +24,8 @@ export default [
   [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     [
-      'ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه',
-      'اوت', 'سپتامبر', 'اکتبر', 'نوامبر', 'دسامبر'
+      'ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر',
+      'نوامبر', 'دسامبر'
     ],
     u
   ],

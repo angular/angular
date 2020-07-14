@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,7 @@ describe('Google3 missing injectable tslint rule', () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
+    tmpDir = join(process.env['TEST_TMPDIR']!, 'google3-test');
     shx.mkdir('-p', tmpDir);
 
     writeFile('tsconfig.json', JSON.stringify({compilerOptions: {module: 'es2015'}}));
@@ -29,11 +29,10 @@ describe('Google3 missing injectable tslint rule', () => {
   function runTSLint(fix = true) {
     const program = Linter.createProgram(join(tmpDir, 'tsconfig.json'));
     const linter = new Linter({fix, rulesDirectory: [rulesDirectory]}, program);
-    const config = Configuration.parseConfigFile(
-        {rules: {'no-missing-injectable': true}, linterOptions: {typeCheck: true}});
+    const config = Configuration.parseConfigFile({rules: {'no-missing-injectable': true}});
 
     program.getRootFileNames().forEach(fileName => {
-      linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);
+      linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);
     });
 
     return linter;
@@ -43,7 +42,9 @@ describe('Google3 missing injectable tslint rule', () => {
     writeFileSync(join(tmpDir, fileName), content);
   }
 
-  function getFile(fileName: string) { return readFileSync(join(tmpDir, fileName), 'utf8'); }
+  function getFile(fileName: string) {
+    return readFileSync(join(tmpDir, fileName), 'utf8');
+  }
 
   describe('NgModule', () => createTests('NgModule', 'providers'));
   describe('Directive', () => createTests('Directive', 'providers'));
@@ -57,10 +58,10 @@ describe('Google3 missing injectable tslint rule', () => {
        () => {
          writeFile('/index.ts', `
           import {Component} from '@angular/core';
-        
+
           export class MyService {}
           export class MySecondService {}
-              
+
           @Component({
             providers: [MyService],
             viewProviders: [MySecondService],
@@ -78,13 +79,13 @@ describe('Google3 missing injectable tslint rule', () => {
   });
 
   function createTests(
-      type: 'NgModule' | 'Directive' | 'Component', propName: 'providers' | 'viewProviders') {
+      type: 'NgModule'|'Directive'|'Component', propName: 'providers'|'viewProviders') {
     it('should create proper failures for missing injectable providers', () => {
       writeFile('index.ts', `
         import { ${type} } from '@angular/core';
-  
+
         export class A {}
-  
+
         @${type}({${propName}: [A]})
         export class TestClass {}
       `);
@@ -104,16 +105,16 @@ describe('Google3 missing injectable tslint rule', () => {
     it('should update provider classes which need to be migrated in Ivy', () => {
       writeFile('/index.ts', `
         import {Pipe, Directive, Component, NgModule} from '@angular/core';
-      
+
         @Pipe()
         export class WithPipe {}
-        
+
         @Directive()
         export class WithDirective {}
-        
+
         @Component()
         export class WithComponent {}
-        
+
         export class MyServiceA {}
         export class MyServiceB {}
         export class MyServiceC {}
@@ -122,7 +123,7 @@ describe('Google3 missing injectable tslint rule', () => {
         export class MyServiceF {}
         export class MyServiceG {}
         export class MyServiceH {}
-            
+
         @${type}({${propName}: [
           WithPipe,
           [
@@ -163,9 +164,9 @@ describe('Google3 missing injectable tslint rule', () => {
     it(`should migrate provider once if referenced in multiple ${type} definitions`, () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
-      
+
         export class ServiceA {}
-                  
+
         @${type}({${propName}: [ServiceA]})
         export class TestClass {}
       `);
@@ -173,9 +174,9 @@ describe('Google3 missing injectable tslint rule', () => {
       writeFile('/second.ts', `
         import {${type}} from '@angular/core';
         import {ServiceA} from './index';
-        
+
         export class ServiceB {}
-        
+
         @${type}({${propName}: [ServiceA, ServiceB]})
         export class TestClass2 {}
       `);
@@ -192,7 +193,7 @@ describe('Google3 missing injectable tslint rule', () => {
     it('should warn if a referenced provider could not be resolved', () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
-        
+
         @${type}({${propName}: [NotPresent]})
         export class TestClass {}
       `);
@@ -209,7 +210,7 @@ describe('Google3 missing injectable tslint rule', () => {
     it(`should warn if the "${propName}" value could not be resolved`, () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
-        
+
         @${type}({${propName}: NOT_ANALYZABLE)
         export class TestClass {}
       `);
@@ -227,13 +228,13 @@ describe('Google3 missing injectable tslint rule', () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
         import {MyService, MySecondService} from './service';
-                      
+
         @${type}({${propName}: [MyService, MySecondService]})
         export class TestClass {}
       `);
 
       writeFile('/service.ts', `export class MyService {}
-      
+
         export class MySecondService {}
       `);
 
@@ -248,14 +249,14 @@ describe('Google3 missing injectable tslint rule', () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
         import {MyService} from './service';
-               
+
         @${type}({${propName}: [MyService]})
         export class TestClass {}
       `);
 
       writeFile('/service.ts', `
         import {Inject} from '@angular/core';
-      
+
         @Inject()
         export class MyService {}
       `);
@@ -267,6 +268,4 @@ describe('Google3 missing injectable tslint rule', () => {
           .toMatch(/import { Inject, Injectable } from '@angular\/core';/);
     });
   }
-
-
 });

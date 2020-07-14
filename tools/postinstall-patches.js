@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,14 +16,14 @@ try {
   // is introduced in node 10.2.0
   console.warn(
       `Running postinstall-patches.js script in an external repository requires --preserve-symlinks-main node flag introduced in node 10.2.0. ` +
-      `Current node version is ${process.version}. Node called with '${process.argv.join(" ")}'.`);
+      `Current node version is ${process.version}. Node called with '${process.argv.join(' ')}'.`);
   process.exit(0);
 }
 
 const {set, cd, sed, echo, ls, rm} = require('shelljs');
 const {readFileSync} = require('fs');
 const path = require('path');
-const log = console.log;
+const log = console.info;
 
 // COMMENTED OUT BECAUSE WE CURRENTLY REQUIRE NO PATCHES
 // UNCOMMENT TO REENABLE PATCHING AND LOG OUTPUT

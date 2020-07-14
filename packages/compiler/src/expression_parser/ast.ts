@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -31,8 +31,19 @@ export class AST {
        * Absolute location of the expression AST in a source code file.
        */
       public sourceSpan: AbsoluteSourceSpan) {}
-  visit(visitor: AstVisitor, context: any = null): any { return null; }
-  toString(): string { return 'AST'; }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return null;
+  }
+  toString(): string {
+    return 'AST';
+  }
+}
+
+export abstract class ASTWithName extends AST {
+  constructor(
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan) {
+    super(span, sourceSpan);
+  }
 }
 
 /**
@@ -54,8 +65,12 @@ export class Quote extends AST {
       public uninterpretedExpression: string, public location: any) {
     super(span, sourceSpan);
   }
-  visit(visitor: AstVisitor, context: any = null): any { return visitor.visitQuote(this, context); }
-  toString(): string { return 'Quote'; }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitQuote(this, context);
+  }
+  toString(): string {
+    return 'Quote';
+  }
 }
 
 export class EmptyExpr extends AST {
@@ -77,7 +92,9 @@ export class Chain extends AST {
   constructor(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public expressions: any[]) {
     super(span, sourceSpan);
   }
-  visit(visitor: AstVisitor, context: any = null): any { return visitor.visitChain(this, context); }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitChain(this, context);
+  }
 }
 
 export class Conditional extends AST {
@@ -91,31 +108,33 @@ export class Conditional extends AST {
   }
 }
 
-export class PropertyRead extends AST {
+export class PropertyRead extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public name: string) {
-    super(span, sourceSpan);
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
+      public receiver: AST, public name: string) {
+    super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitPropertyRead(this, context);
   }
 }
 
-export class PropertyWrite extends AST {
+export class PropertyWrite extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public name: string,
-      public value: AST) {
-    super(span, sourceSpan);
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
+      public receiver: AST, public name: string, public value: AST) {
+    super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitPropertyWrite(this, context);
   }
 }
 
-export class SafePropertyRead extends AST {
+export class SafePropertyRead extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public name: string) {
-    super(span, sourceSpan);
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
+      public receiver: AST, public name: string) {
+    super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitSafePropertyRead(this, context);
@@ -142,13 +161,15 @@ export class KeyedWrite extends AST {
   }
 }
 
-export class BindingPipe extends AST {
+export class BindingPipe extends ASTWithName {
   constructor(
       span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public exp: AST, public name: string,
-      public args: any[], public nameSpan: AbsoluteSourceSpan) {
-    super(span, sourceSpan);
+      public args: any[], nameSpan: AbsoluteSourceSpan) {
+    super(span, sourceSpan, nameSpan);
   }
-  visit(visitor: AstVisitor, context: any = null): any { return visitor.visitPipe(this, context); }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitPipe(this, context);
+  }
 }
 
 export class LiteralPrimitive extends AST {
@@ -224,22 +245,22 @@ export class NonNullAssert extends AST {
   }
 }
 
-export class MethodCall extends AST {
+export class MethodCall extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public name: string,
-      public args: any[]) {
-    super(span, sourceSpan);
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
+      public receiver: AST, public name: string, public args: any[]) {
+    super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitMethodCall(this, context);
   }
 }
 
-export class SafeMethodCall extends AST {
+export class SafeMethodCall extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public name: string,
-      public args: any[]) {
-    super(span, sourceSpan);
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
+      public receiver: AST, public name: string, public args: any[]) {
+    super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitSafeMethodCall(this, context);
@@ -280,13 +301,63 @@ export class ASTWithSource extends AST {
     }
     return this.ast.visit(visitor, context);
   }
-  toString(): string { return `${this.source} in ${this.location}`; }
+  toString(): string {
+    return `${this.source} in ${this.location}`;
+  }
 }
 
-export class TemplateBinding {
+/**
+ * TemplateBinding refers to a particular key-value pair in a microsyntax
+ * expression. A few examples are:
+ *
+ *   |---------------------|--------------|---------|--------------|
+ *   |     expression      |     key      |  value  | binding type |
+ *   |---------------------|--------------|---------|--------------|
+ *   | 1. let item         |    item      |  null   |   variable   |
+ *   | 2. of items         |   ngForOf    |  items  |  expression  |
+ *   | 3. let x = y        |      x       |    y    |   variable   |
+ *   | 4. index as i       |      i       |  index  |   variable   |
+ *   | 5. trackBy: func    | ngForTrackBy |   func  |  expression  |
+ *   | 6. *ngIf="cond"     |     ngIf     |   cond  |  expression  |
+ *   |---------------------|--------------|---------|--------------|
+ *
+ * (6) is a notable exception because it is a binding from the template key in
+ * the LHS of a HTML attribute to the expression in the RHS. All other bindings
+ * in the example above are derived solely from the RHS.
+ */
+export type TemplateBinding = VariableBinding|ExpressionBinding;
+
+export class VariableBinding {
+  /**
+   * @param sourceSpan entire span of the binding.
+   * @param key name of the LHS along with its span.
+   * @param value optional value for the RHS along with its span.
+   */
   constructor(
-      public span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public key: string,
-      public keyIsVar: boolean, public name: string, public expression: ASTWithSource|null) {}
+      public readonly sourceSpan: AbsoluteSourceSpan,
+      public readonly key: TemplateBindingIdentifier,
+      public readonly value: TemplateBindingIdentifier|null) {}
+}
+
+export class ExpressionBinding {
+  /**
+   * @param sourceSpan entire span of the binding.
+   * @param key binding name, like ngForOf, ngForTrackBy, ngIf, along with its
+   * span. Note that the length of the span may not be the same as
+   * `key.source.length`. For example,
+   * 1. key.source = ngFor, key.span is for "ngFor"
+   * 2. key.source = ngForOf, key.span is for "of"
+   * 3. key.source = ngForTrackBy, key.span is for "trackBy"
+   * @param value optional expression for the RHS.
+   */
+  constructor(
+      public readonly sourceSpan: AbsoluteSourceSpan,
+      public readonly key: TemplateBindingIdentifier, public readonly value: ASTWithSource|null) {}
+}
+
+export interface TemplateBindingIdentifier {
+  source: string;
+  span: AbsoluteSourceSpan;
 }
 
 export interface AstVisitor {
@@ -311,113 +382,101 @@ export interface AstVisitor {
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any;
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
+  /**
+   * This function is optionally defined to allow classes that implement this
+   * interface to selectively decide if the specified `ast` should be visited.
+   * @param ast node to visit
+   * @param context context that gets passed to the node and all its children
+   */
   visit?(ast: AST, context?: any): any;
 }
 
-export class NullAstVisitor implements AstVisitor {
-  visitBinary(ast: Binary, context: any): any {}
-  visitChain(ast: Chain, context: any): any {}
-  visitConditional(ast: Conditional, context: any): any {}
-  visitFunctionCall(ast: FunctionCall, context: any): any {}
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any): any {}
-  visitInterpolation(ast: Interpolation, context: any): any {}
-  visitKeyedRead(ast: KeyedRead, context: any): any {}
-  visitKeyedWrite(ast: KeyedWrite, context: any): any {}
-  visitLiteralArray(ast: LiteralArray, context: any): any {}
-  visitLiteralMap(ast: LiteralMap, context: any): any {}
-  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any {}
-  visitMethodCall(ast: MethodCall, context: any): any {}
-  visitPipe(ast: BindingPipe, context: any): any {}
-  visitPrefixNot(ast: PrefixNot, context: any): any {}
-  visitNonNullAssert(ast: NonNullAssert, context: any): any {}
-  visitPropertyRead(ast: PropertyRead, context: any): any {}
-  visitPropertyWrite(ast: PropertyWrite, context: any): any {}
-  visitQuote(ast: Quote, context: any): any {}
-  visitSafeMethodCall(ast: SafeMethodCall, context: any): any {}
-  visitSafePropertyRead(ast: SafePropertyRead, context: any): any {}
-}
-
 export class RecursiveAstVisitor implements AstVisitor {
-  visitBinary(ast: Binary, context: any): any {
-    ast.left.visit(this, context);
-    ast.right.visit(this, context);
-    return null;
+  visit(ast: AST, context?: any): any {
+    // The default implementation just visits every node.
+    // Classes that extend RecursiveAstVisitor should override this function
+    // to selectively visit the specified node.
+    ast.visit(this, context);
   }
-  visitChain(ast: Chain, context: any): any { return this.visitAll(ast.expressions, context); }
+  visitBinary(ast: Binary, context: any): any {
+    this.visit(ast.left, context);
+    this.visit(ast.right, context);
+  }
+  visitChain(ast: Chain, context: any): any {
+    this.visitAll(ast.expressions, context);
+  }
   visitConditional(ast: Conditional, context: any): any {
-    ast.condition.visit(this, context);
-    ast.trueExp.visit(this, context);
-    ast.falseExp.visit(this, context);
-    return null;
+    this.visit(ast.condition, context);
+    this.visit(ast.trueExp, context);
+    this.visit(ast.falseExp, context);
   }
   visitPipe(ast: BindingPipe, context: any): any {
-    ast.exp.visit(this, context);
+    this.visit(ast.exp, context);
     this.visitAll(ast.args, context);
-    return null;
   }
   visitFunctionCall(ast: FunctionCall, context: any): any {
-    ast.target !.visit(this, context);
+    if (ast.target) {
+      this.visit(ast.target, context);
+    }
     this.visitAll(ast.args, context);
-    return null;
   }
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any): any { return null; }
+  visitImplicitReceiver(ast: ImplicitReceiver, context: any): any {}
   visitInterpolation(ast: Interpolation, context: any): any {
-    return this.visitAll(ast.expressions, context);
+    this.visitAll(ast.expressions, context);
   }
   visitKeyedRead(ast: KeyedRead, context: any): any {
-    ast.obj.visit(this, context);
-    ast.key.visit(this, context);
-    return null;
+    this.visit(ast.obj, context);
+    this.visit(ast.key, context);
   }
   visitKeyedWrite(ast: KeyedWrite, context: any): any {
-    ast.obj.visit(this, context);
-    ast.key.visit(this, context);
-    ast.value.visit(this, context);
-    return null;
+    this.visit(ast.obj, context);
+    this.visit(ast.key, context);
+    this.visit(ast.value, context);
   }
   visitLiteralArray(ast: LiteralArray, context: any): any {
-    return this.visitAll(ast.expressions, context);
+    this.visitAll(ast.expressions, context);
   }
-  visitLiteralMap(ast: LiteralMap, context: any): any { return this.visitAll(ast.values, context); }
-  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any { return null; }
+  visitLiteralMap(ast: LiteralMap, context: any): any {
+    this.visitAll(ast.values, context);
+  }
+  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any {}
   visitMethodCall(ast: MethodCall, context: any): any {
-    ast.receiver.visit(this, context);
-    return this.visitAll(ast.args, context);
+    this.visit(ast.receiver, context);
+    this.visitAll(ast.args, context);
   }
   visitPrefixNot(ast: PrefixNot, context: any): any {
-    ast.expression.visit(this, context);
-    return null;
+    this.visit(ast.expression, context);
   }
   visitNonNullAssert(ast: NonNullAssert, context: any): any {
-    ast.expression.visit(this, context);
-    return null;
+    this.visit(ast.expression, context);
   }
   visitPropertyRead(ast: PropertyRead, context: any): any {
-    ast.receiver.visit(this, context);
-    return null;
+    this.visit(ast.receiver, context);
   }
   visitPropertyWrite(ast: PropertyWrite, context: any): any {
-    ast.receiver.visit(this, context);
-    ast.value.visit(this, context);
-    return null;
+    this.visit(ast.receiver, context);
+    this.visit(ast.value, context);
   }
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any {
-    ast.receiver.visit(this, context);
-    return null;
+    this.visit(ast.receiver, context);
   }
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any {
-    ast.receiver.visit(this, context);
-    return this.visitAll(ast.args, context);
+    this.visit(ast.receiver, context);
+    this.visitAll(ast.args, context);
   }
+  visitQuote(ast: Quote, context: any): any {}
+  // This is not part of the AstVisitor interface, just a helper method
   visitAll(asts: AST[], context: any): any {
-    asts.forEach(ast => ast.visit(this, context));
-    return null;
+    for (const ast of asts) {
+      this.visit(ast, context);
+    }
   }
-  visitQuote(ast: Quote, context: any): any { return null; }
 }
 
 export class AstTransformer implements AstVisitor {
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST { return ast; }
+  visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST {
+    return ast;
+  }
 
   visitInterpolation(ast: Interpolation, context: any): AST {
     return new Interpolation(ast.span, ast.sourceSpan, ast.strings, this.visitAll(ast.expressions));
@@ -428,31 +487,36 @@ export class AstTransformer implements AstVisitor {
   }
 
   visitPropertyRead(ast: PropertyRead, context: any): AST {
-    return new PropertyRead(ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.name);
+    return new PropertyRead(
+        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name);
   }
 
   visitPropertyWrite(ast: PropertyWrite, context: any): AST {
     return new PropertyWrite(
-        ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.name, ast.value.visit(this));
+        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name,
+        ast.value.visit(this));
   }
 
   visitSafePropertyRead(ast: SafePropertyRead, context: any): AST {
-    return new SafePropertyRead(ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.name);
+    return new SafePropertyRead(
+        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name);
   }
 
   visitMethodCall(ast: MethodCall, context: any): AST {
     return new MethodCall(
-        ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.name, this.visitAll(ast.args));
+        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name,
+        this.visitAll(ast.args));
   }
 
   visitSafeMethodCall(ast: SafeMethodCall, context: any): AST {
     return new SafeMethodCall(
-        ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.name, this.visitAll(ast.args));
+        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name,
+        this.visitAll(ast.args));
   }
 
   visitFunctionCall(ast: FunctionCall, context: any): AST {
     return new FunctionCall(
-        ast.span, ast.sourceSpan, ast.target !.visit(this), this.visitAll(ast.args));
+        ast.span, ast.sourceSpan, ast.target!.visit(this), this.visitAll(ast.args));
   }
 
   visitLiteralArray(ast: LiteralArray, context: any): AST {
@@ -518,7 +582,9 @@ export class AstTransformer implements AstVisitor {
 // A transformer that only creates new nodes if the transformer makes a change or
 // a change is made a child node.
 export class AstMemoryEfficientTransformer implements AstVisitor {
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST { return ast; }
+  visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST {
+    return ast;
+  }
 
   visitInterpolation(ast: Interpolation, context: any): Interpolation {
     const expressions = this.visitAll(ast.expressions);
@@ -527,12 +593,14 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     return ast;
   }
 
-  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): AST { return ast; }
+  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): AST {
+    return ast;
+  }
 
   visitPropertyRead(ast: PropertyRead, context: any): AST {
     const receiver = ast.receiver.visit(this);
     if (receiver !== ast.receiver) {
-      return new PropertyRead(ast.span, ast.sourceSpan, receiver, ast.name);
+      return new PropertyRead(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name);
     }
     return ast;
   }
@@ -541,7 +609,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const receiver = ast.receiver.visit(this);
     const value = ast.value.visit(this);
     if (receiver !== ast.receiver || value !== ast.value) {
-      return new PropertyWrite(ast.span, ast.sourceSpan, receiver, ast.name, value);
+      return new PropertyWrite(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name, value);
     }
     return ast;
   }
@@ -549,7 +617,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
   visitSafePropertyRead(ast: SafePropertyRead, context: any): AST {
     const receiver = ast.receiver.visit(this);
     if (receiver !== ast.receiver) {
-      return new SafePropertyRead(ast.span, ast.sourceSpan, receiver, ast.name);
+      return new SafePropertyRead(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name);
     }
     return ast;
   }
@@ -558,7 +626,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const receiver = ast.receiver.visit(this);
     const args = this.visitAll(ast.args);
     if (receiver !== ast.receiver || args !== ast.args) {
-      return new MethodCall(ast.span, ast.sourceSpan, receiver, ast.name, args);
+      return new MethodCall(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name, args);
     }
     return ast;
   }
@@ -567,7 +635,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const receiver = ast.receiver.visit(this);
     const args = this.visitAll(ast.args);
     if (receiver !== ast.receiver || args !== ast.args) {
-      return new SafeMethodCall(ast.span, ast.sourceSpan, receiver, ast.name, args);
+      return new SafeMethodCall(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name, args);
     }
     return ast;
   }
@@ -680,71 +748,10 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     return ast;
   }
 
-  visitQuote(ast: Quote, context: any): AST { return ast; }
-}
-
-export function visitAstChildren(ast: AST, visitor: AstVisitor, context?: any) {
-  function visit(ast: AST) {
-    visitor.visit && visitor.visit(ast, context) || ast.visit(visitor, context);
+  visitQuote(ast: Quote, context: any): AST {
+    return ast;
   }
-
-  function visitAll<T extends AST>(asts: T[]) { asts.forEach(visit); }
-
-  ast.visit({
-    visitBinary(ast) {
-      visit(ast.left);
-      visit(ast.right);
-    },
-    visitChain(ast) { visitAll(ast.expressions); },
-    visitConditional(ast) {
-      visit(ast.condition);
-      visit(ast.trueExp);
-      visit(ast.falseExp);
-    },
-    visitFunctionCall(ast) {
-      if (ast.target) {
-        visit(ast.target);
-      }
-      visitAll(ast.args);
-    },
-    visitImplicitReceiver(ast) {},
-    visitInterpolation(ast) { visitAll(ast.expressions); },
-    visitKeyedRead(ast) {
-      visit(ast.obj);
-      visit(ast.key);
-    },
-    visitKeyedWrite(ast) {
-      visit(ast.obj);
-      visit(ast.key);
-      visit(ast.obj);
-    },
-    visitLiteralArray(ast) { visitAll(ast.expressions); },
-    visitLiteralMap(ast) {},
-    visitLiteralPrimitive(ast) {},
-    visitMethodCall(ast) {
-      visit(ast.receiver);
-      visitAll(ast.args);
-    },
-    visitPipe(ast) {
-      visit(ast.exp);
-      visitAll(ast.args);
-    },
-    visitPrefixNot(ast) { visit(ast.expression); },
-    visitNonNullAssert(ast) { visit(ast.expression); },
-    visitPropertyRead(ast) { visit(ast.receiver); },
-    visitPropertyWrite(ast) {
-      visit(ast.receiver);
-      visit(ast.value);
-    },
-    visitQuote(ast) {},
-    visitSafeMethodCall(ast) {
-      visit(ast.receiver);
-      visitAll(ast.args);
-    },
-    visitSafePropertyRead(ast) { visit(ast.receiver); },
-  });
 }
-
 
 // Bindings
 
@@ -778,12 +785,18 @@ export class ParsedEvent {
   // Animation events have a phase
   constructor(
       public name: string, public targetOrPhase: string, public type: ParsedEventType,
-      public handler: AST, public sourceSpan: ParseSourceSpan,
+      public handler: ASTWithSource, public sourceSpan: ParseSourceSpan,
       public handlerSpan: ParseSourceSpan) {}
 }
 
+/**
+ * ParsedVariable represents a variable declaration in a microsyntax expression.
+ */
 export class ParsedVariable {
-  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public readonly name: string, public readonly value: string,
+      public readonly sourceSpan: ParseSourceSpan, public readonly keySpan: ParseSourceSpan,
+      public readonly valueSpan?: ParseSourceSpan) {}
 }
 
 export const enum BindingType {
@@ -802,6 +815,6 @@ export const enum BindingType {
 export class BoundElementProperty {
   constructor(
       public name: string, public type: BindingType, public securityContext: SecurityContext,
-      public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan,
+      public value: ASTWithSource, public unit: string|null, public sourceSpan: ParseSourceSpan,
       public valueSpan?: ParseSourceSpan) {}
 }

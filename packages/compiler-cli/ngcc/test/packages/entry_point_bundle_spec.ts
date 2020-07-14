@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,7 +13,6 @@ import {makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 
 runInEachFileSystem(() => {
   describe('entry point bundle', () => {
-
     function setupMockFileSystem(): void {
       const _ = absoluteFrom;
       loadTestFiles([
@@ -168,9 +167,10 @@ runInEachFileSystem(() => {
          const fs = getFileSystem();
          const entryPoint: EntryPoint = {
            name: 'test',
-           packageJson: {name: 'test'},
-           package: absoluteFrom('/node_modules/test'),
            path: absoluteFrom('/node_modules/test'),
+           packageName: 'test',
+           packagePath: absoluteFrom('/node_modules/test'),
+           packageJson: {name: 'test'},
            typings: absoluteFrom('/node_modules/test/index.d.ts'),
            compiledByAngular: true,
            ignoreMissingDependencies: false,
@@ -196,7 +196,7 @@ runInEachFileSystem(() => {
                '/node_modules/other/index.d.ts',
              ].map(p => absoluteFrom(p).toString())));
 
-         expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
+         expect(esm5bundle.dts!.program.getSourceFiles().map(sf => sf.fileName))
              .toEqual(jasmine.arrayWithExactContents([
                // All modules in the dts program should be declaration files
                '/node_modules/test/index.d.ts',
@@ -218,9 +218,10 @@ runInEachFileSystem(() => {
             const fs = getFileSystem();
             const entryPoint: EntryPoint = {
               name: 'test',
-              packageJson: {name: 'test'},
-              package: absoluteFrom('/node_modules/test'),
               path: absoluteFrom('/node_modules/test'),
+              packageName: 'test',
+              packagePath: absoluteFrom('/node_modules/test'),
+              packageJson: {name: 'test'},
               typings: absoluteFrom('/node_modules/test/index.d.ts'),
               compiledByAngular: true,
               ignoreMissingDependencies: false,
@@ -231,7 +232,7 @@ runInEachFileSystem(() => {
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/test/internal.js'));
-            expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
+            expect(esm5bundle.dts!.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/test/internal.d.ts'));
           });
 
@@ -240,9 +241,10 @@ runInEachFileSystem(() => {
             const fs = getFileSystem();
             const entryPoint: EntryPoint = {
               name: 'internal',
-              packageJson: {name: 'internal'},
-              package: absoluteFrom('/node_modules/internal'),
               path: absoluteFrom('/node_modules/internal'),
+              packageName: 'internal',
+              packagePath: absoluteFrom('/node_modules/internal'),
+              packageJson: {name: 'internal'},
               typings: absoluteFrom('/node_modules/internal/index.d.ts'),
               compiledByAngular: true,
               ignoreMissingDependencies: false,
@@ -253,7 +255,7 @@ runInEachFileSystem(() => {
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/internal/esm2015/src/internal.js'));
-            expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
+            expect(esm5bundle.dts!.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/internal/src/internal.d.ts'));
           });
 
@@ -262,9 +264,10 @@ runInEachFileSystem(() => {
             const fs = getFileSystem();
             const entryPoint: EntryPoint = {
               name: 'test',
-              packageJson: {name: 'test'},
-              package: absoluteFrom('/node_modules/test'),
               path: absoluteFrom('/node_modules/test'),
+              packageName: 'test',
+              packagePath: absoluteFrom('/node_modules/test'),
+              packageJson: {name: 'test'},
               typings: absoluteFrom('/node_modules/test/index.d.ts'),
               compiledByAngular: true,
               ignoreMissingDependencies: false,
@@ -275,7 +278,7 @@ runInEachFileSystem(() => {
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ false);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/test/internal.js'));
-            expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
+            expect(esm5bundle.dts!.program.getSourceFiles().map(sf => sf.fileName))
                 .not.toContain(absoluteFrom('/node_modules/test/internal.d.ts'));
           });
         });
@@ -285,9 +288,10 @@ runInEachFileSystem(() => {
       const fs = getFileSystem();
       const entryPoint: EntryPoint = {
         name: 'secondary',
-        packageJson: {name: 'secondary'},
-        package: absoluteFrom('/node_modules/primary'),
         path: absoluteFrom('/node_modules/primary/secondary'),
+        packageName: 'primary',
+        packagePath: absoluteFrom('/node_modules/primary'),
+        packageJson: {name: 'secondary'},
         typings: absoluteFrom('/node_modules/primary/secondary/index.d.ts'),
         compiledByAngular: true,
         ignoreMissingDependencies: false,

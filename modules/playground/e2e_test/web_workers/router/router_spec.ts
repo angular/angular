@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 
 import {browser, by, element, protractor} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../../dev-infra/benchmark/driver-utilities';
 
 describe('WebWorker Router', () => {
   beforeEach(() => {
@@ -69,7 +69,9 @@ describe('WebWorker Router', () => {
     browser.wait(() => {
       const deferred = protractor.promise.defer();
       const elem = element(by.css(contentSelector));
-      elem.getText().then((text: string) => { return deferred.fulfill(text === expected); });
+      elem.getText().then((text: string) => {
+        return deferred.fulfill(text === expected);
+      });
       return deferred.promise;
     }, 5000);
   }
@@ -77,8 +79,9 @@ describe('WebWorker Router', () => {
   function waitForUrl(regex: RegExp): void {
     browser.wait(() => {
       const deferred = protractor.promise.defer();
-      browser.getCurrentUrl().then(
-          (url: string) => { return deferred.fulfill(url.match(regex) !== null); });
+      browser.getCurrentUrl().then((url: string) => {
+        return deferred.fulfill(url.match(regex) !== null);
+      });
       return deferred.promise;
     }, 5000);
   }

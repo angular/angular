@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -32,8 +32,18 @@ ng_package(
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//visibility:private"],
+    visibility = ["//integration:__pkg__"],
     deps = [
         ":platform-webworker",
     ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "platform-webworker_api",
+    actualDir = "angular/packages/platform-webworker/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/platform-webworker",
 )

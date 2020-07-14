@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -306,7 +306,7 @@ export function ɵɵtextInterpolate8(
  *  'suffix']);
  * ```
  *.
- * @param values The a collection of values and the strings in between those values, beginning with
+ * @param values The collection of values and the strings in between those values, beginning with
  * a string prefix and ending with a string suffix.
  * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
  *

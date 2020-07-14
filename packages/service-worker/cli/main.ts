@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -23,7 +23,7 @@ const configParsed = JSON.parse(fs.readFileSync(config).toString());
 const filesystem = new NodeFilesystem(distDir);
 const gen = new Generator(filesystem, baseHref);
 
-(async() => {
+(async () => {
   const control = await gen.process(configParsed);
   await filesystem.write('/ngsw.json', JSON.stringify(control, null, 2));
 })();

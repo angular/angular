@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,8 +10,8 @@ import {BehaviorSubject} from 'rxjs';
 
 import {createUrlTree} from '../src/create_url_tree';
 import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute} from '../src/router_state';
-import {PRIMARY_OUTLET, Params} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
+import {Params, PRIMARY_OUTLET} from '../src/shared';
+import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 
 describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
@@ -68,7 +68,21 @@ describe('createUrlTree', () => {
     expect(params[1].path).toEqual('11');
   });
 
-  it('should support first segments contaings slashes', () => {
+  it('should work if command = null', () => {
+    const p = serializer.parse('/a/b');
+    const t = createRoot(p, [null]);
+    const params = t.root.children[PRIMARY_OUTLET].segments;
+    expect(params[0].path).toEqual('null');
+  });
+
+  it('should work if command is undefined', () => {
+    const p = serializer.parse('/a/b');
+    const t = createRoot(p, [undefined]);
+    const params = t.root.children[PRIMARY_OUTLET].segments;
+    expect(params[0].path).toEqual('undefined');
+  });
+
+  it('should support first segments containing slashes', () => {
     const p = serializer.parse('/');
     const t = createRoot(p, [{segmentPath: '/one'}, 'two/three']);
     expect(serializer.serialize(t)).toEqual('/%2Fone/two%2Fthree');
@@ -126,6 +140,12 @@ describe('createUrlTree', () => {
     const p = serializer.parse('/a(right:b)');
     const t = createRoot(p, [{outlets: {right: null}}]);
     expect(serializer.serialize(t)).toEqual('/a');
+  });
+
+  it('should support removing parenthesis for primary segment on second path element', () => {
+    const p = serializer.parse('/a/(b//right:c)');
+    const t = createRoot(p, ['a', {outlets: {right: null}}]);
+    expect(serializer.serialize(t)).toEqual('/a/b');
   });
 
   it('should update matrix parameters', () => {
@@ -240,6 +260,29 @@ describe('createUrlTree', () => {
     const t = createRoot(p, [], {}, 'fragment');
     expect(t.fragment).toEqual('fragment');
   });
+
+  it('should support pathless route', () => {
+    const p = serializer.parse('/a');
+    const t = create(p.root.children[PRIMARY_OUTLET], -1, p, ['b']);
+    expect(serializer.serialize(t)).toEqual('/b');
+  });
+
+  it('should support pathless route with ../ at root', () => {
+    const p = serializer.parse('/a');
+    const t = create(p.root.children[PRIMARY_OUTLET], -1, p, ['../b']);
+    expect(serializer.serialize(t)).toEqual('/b');
+  });
+
+  it('should support pathless child of pathless root', () => {
+    // i.e. routes = {path: '', loadChildren: () => import('child')...}
+    // forChild: {path: '', component: Comp}
+    const p = serializer.parse('');
+    const empty = new UrlSegmentGroup([], {});
+    p.root.children[PRIMARY_OUTLET] = empty;
+    empty.parent = p.root;
+    const t = create(empty, -1, p, ['lazy']);
+    expect(serializer.serialize(t)).toEqual('/lazy');
+  });
 });
 
 function createRoot(tree: UrlTree, commands: any[], queryParams?: Params, fragment?: string) {
@@ -247,10 +290,10 @@ function createRoot(tree: UrlTree, commands: any[], queryParams?: Params, fragme
       [], <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null, tree.root, -1,
       <any>null);
   const a = new (ActivatedRoute as any)(
-      new BehaviorSubject(null !), new BehaviorSubject(null !), new BehaviorSubject(null !),
-      new BehaviorSubject(null !), new BehaviorSubject(null !), PRIMARY_OUTLET, 'someComponent', s);
+      new BehaviorSubject(null!), new BehaviorSubject(null!), new BehaviorSubject(null!),
+      new BehaviorSubject(null!), new BehaviorSubject(null!), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
-  return createUrlTree(a, tree, commands, queryParams !, fragment !);
+  return createUrlTree(a, tree, commands, queryParams!, fragment!);
 }
 
 function create(
@@ -260,11 +303,11 @@ function create(
     expect(segment).toBeDefined();
   }
   const s = new (ActivatedRouteSnapshot as any)(
-      [], <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null, <any>segment,
-      startIndex, <any>null);
+      segment.segments, <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null,
+      <any>segment, startIndex, <any>null);
   const a = new (ActivatedRoute as any)(
-      new BehaviorSubject(null !), new BehaviorSubject(null !), new BehaviorSubject(null !),
-      new BehaviorSubject(null !), new BehaviorSubject(null !), PRIMARY_OUTLET, 'someComponent', s);
+      new BehaviorSubject(null!), new BehaviorSubject(null!), new BehaviorSubject(null!),
+      new BehaviorSubject(null!), new BehaviorSubject(null!), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
-  return createUrlTree(a, tree, commands, queryParams !, fragment !);
+  return createUrlTree(a, tree, commands, queryParams!, fragment!);
 }

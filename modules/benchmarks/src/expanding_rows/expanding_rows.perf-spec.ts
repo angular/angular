@@ -1,17 +1,16 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {$, browser} from 'protractor';
-import {runBenchmark} from '../../../e2e_util/perf_util';
+import {runBenchmark} from '../../../../dev-infra/benchmark/driver-utilities';
 
 describe('benchmarks', () => {
-
-  it('should work for create', async() => {
+  it('should work for create', async () => {
     browser.rootEl = '#root';
     await runBenchmark({
       id: 'create',
@@ -22,5 +21,4 @@ describe('benchmarks', () => {
       work: () => $('#init').click()
     });
   });
-
 });

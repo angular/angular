@@ -1,7 +1,7 @@
 {
   "scripts": [
     { "name": "ng", "command": "ng" },
-    { "name": "build", "command": "ng build --prod" },
+    { "name": "build", "command": "ng build" },
     { "name": "start", "command": "ng serve" },
     { "name": "test", "command": "ng test" },
     { "name": "lint", "command": "ng lint" },

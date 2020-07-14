@@ -1,26 +1,26 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, STRING_TYPE, SchemaMetadata, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
+import {compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue, ResolvedValueArray} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
-import {FactoryTracker} from '../../shims';
+import {FactoryTracker} from '../../shims/api';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
 
-import {getProviderDiagnostics} from './diagnostics';
+import {createValueHasWrongTypeError, getProviderDiagnostics} from './diagnostics';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
@@ -40,7 +40,9 @@ export interface NgModuleAnalysis {
   providers: ts.Expression|null;
 }
 
-export interface NgModuleResolution { injectorImports: Expression[]; }
+export interface NgModuleResolution {
+  injectorImports: Expression[];
+}
 
 /**
  * Compiles @NgModule annotations to ngModuleDef fields.
@@ -116,7 +118,7 @@ export class NgModuleDecoratorHandler implements
     let declarationRefs: Reference<ClassDeclaration>[] = [];
     let rawDeclarations: ts.Expression|null = null;
     if (ngModule.has('declarations')) {
-      rawDeclarations = ngModule.get('declarations') !;
+      rawDeclarations = ngModule.get('declarations')!;
       const declarationMeta = this.evaluator.evaluate(rawDeclarations, forwardRefResolver);
       declarationRefs =
           this.resolveTypeList(rawDeclarations, declarationMeta, name, 'declarations');
@@ -128,11 +130,11 @@ export class NgModuleDecoratorHandler implements
 
           diagnostics.push(makeDiagnostic(
               ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
-              `Cannot declare '${ref.node.name.text}' in an NgModule as it's not a part of the current compilation.`,
-              [{
-                node: ref.node.name,
-                messageText: `'${ref.node.name.text}' is declared here.`,
-              }]));
+              `Cannot declare '${
+                  ref.node.name
+                      .text}' in an NgModule as it's not a part of the current compilation.`,
+              [makeRelatedInformation(
+                  ref.node.name, `'${ref.node.name.text}' is declared here.`)]));
         }
       }
     }
@@ -144,45 +146,42 @@ export class NgModuleDecoratorHandler implements
     let importRefs: Reference<ClassDeclaration>[] = [];
     let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
-      rawImports = ngModule.get('imports') !;
+      rawImports = ngModule.get('imports')!;
       const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
       importRefs = this.resolveTypeList(rawImports, importsMeta, name, 'imports');
     }
     let exportRefs: Reference<ClassDeclaration>[] = [];
     let rawExports: ts.Expression|null = null;
     if (ngModule.has('exports')) {
-      rawExports = ngModule.get('exports') !;
+      rawExports = ngModule.get('exports')!;
       const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
       exportRefs = this.resolveTypeList(rawExports, exportsMeta, name, 'exports');
       this.referencesRegistry.add(node, ...exportRefs);
     }
     let bootstrapRefs: Reference<ClassDeclaration>[] = [];
     if (ngModule.has('bootstrap')) {
-      const expr = ngModule.get('bootstrap') !;
+      const expr = ngModule.get('bootstrap')!;
       const bootstrapMeta = this.evaluator.evaluate(expr, forwardRefResolver);
       bootstrapRefs = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap');
     }
 
     const schemas: SchemaMetadata[] = [];
     if (ngModule.has('schemas')) {
-      const rawExpr = ngModule.get('schemas') !;
+      const rawExpr = ngModule.get('schemas')!;
       const result = this.evaluator.evaluate(rawExpr);
       if (!Array.isArray(result)) {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr, `NgModule.schemas must be an array`);
+        throw createValueHasWrongTypeError(rawExpr, result, `NgModule.schemas must be an array`);
       }
 
       for (const schemaRef of result) {
         if (!(schemaRef instanceof Reference)) {
-          throw new FatalDiagnosticError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr,
-              'NgModule.schemas must be an array of schemas');
+          throw createValueHasWrongTypeError(
+              rawExpr, result, 'NgModule.schemas must be an array of schemas');
         }
         const id = schemaRef.getIdentityIn(schemaRef.node.getSourceFile());
         if (id === null || schemaRef.ownedByModuleGuess !== '@angular/core') {
-          throw new FatalDiagnosticError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr,
-              'NgModule.schemas must be an array of schemas');
+          throw createValueHasWrongTypeError(
+              rawExpr, result, 'NgModule.schemas must be an array of schemas');
         }
         // Since `id` is the `ts.Identifer` within the schema ref's declaration file, it's safe to
         // use `id.text` here to figure out which schema is in use. Even if the actual reference was
@@ -195,15 +194,14 @@ export class NgModuleDecoratorHandler implements
             schemas.push(NO_ERRORS_SCHEMA);
             break;
           default:
-            throw new FatalDiagnosticError(
-                ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr,
-                `'${schemaRef.debugName}' is not a valid NgModule schema`);
+            throw createValueHasWrongTypeError(
+                rawExpr, schemaRef, `'${schemaRef.debugName}' is not a valid NgModule schema`);
         }
       }
     }
 
     const id: Expression|null =
-        ngModule.has('id') ? new WrappedNodeExpr(ngModule.get('id') !) : null;
+        ngModule.has('id') ? new WrappedNodeExpr(ngModule.get('id')!) : null;
     const valueContext = node.getSourceFile();
 
     let typeContext = valueContext;
@@ -220,7 +218,7 @@ export class NgModuleDecoratorHandler implements
     const exports = exportRefs.map(exp => this._toR3Reference(exp, valueContext, typeContext));
 
     const isForwardReference = (ref: R3Reference) =>
-        isExpressionForwardReference(ref.value, node.name !, valueContext);
+        isExpressionForwardReference(ref.value, node.name!, valueContext);
     const containsForwardDecls = bootstrap.some(isForwardReference) ||
         declarations.some(isForwardReference) || imports.some(isForwardReference) ||
         exports.some(isForwardReference);
@@ -244,7 +242,7 @@ export class NgModuleDecoratorHandler implements
       schemas: [],
     };
 
-    const rawProviders = ngModule.has('providers') ? ngModule.get('providers') ! : null;
+    const rawProviders = ngModule.has('providers') ? ngModule.get('providers')! : null;
     const wrapperProviders = rawProviders !== null ?
         new WrappedNodeExpr(
             this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawProviders) :
@@ -256,7 +254,7 @@ export class NgModuleDecoratorHandler implements
     // and pipes from the module exports.
     const injectorImports: WrappedNodeExpr<ts.Expression>[] = [];
     if (ngModule.has('imports')) {
-      injectorImports.push(new WrappedNodeExpr(ngModule.get('imports') !));
+      injectorImports.push(new WrappedNodeExpr(ngModule.get('imports')!));
     }
 
     if (this.routeAnalyzer !== null) {
@@ -279,7 +277,8 @@ export class NgModuleDecoratorHandler implements
         schemas: schemas,
         mod: ngModuleDef,
         inj: ngInjectorDef,
-        declarations: declarationRefs, rawDeclarations,
+        declarations: declarationRefs,
+        rawDeclarations,
         imports: importRefs,
         exports: exportRefs,
         providers: rawProviders,
@@ -326,7 +325,7 @@ export class NgModuleDecoratorHandler implements
 
     if (analysis.providersRequiringFactory !== null) {
       const providerDiagnostics = getProviderDiagnostics(
-          analysis.providersRequiringFactory, analysis.providers !, this.injectableRegistry);
+          analysis.providersRequiringFactory, analysis.providers!, this.injectableRegistry);
       diagnostics.push(...providerDiagnostics);
     }
 
@@ -396,7 +395,7 @@ export class NgModuleDecoratorHandler implements
         const pipes = scope.compilation.pipes.map(pipe => this.refEmitter.emit(pipe.ref, context));
         const directiveArray = new LiteralArrayExpr(directives);
         const pipesArray = new LiteralArrayExpr(pipes);
-        const declExpr = this.refEmitter.emit(decl, context) !;
+        const declExpr = this.refEmitter.emit(decl, context)!;
         const setComponentScope = new ExternalExpr(R3Identifiers.setComponentScope);
         const callExpr =
             new InvokeFunctionExpr(setComponentScope, [declExpr, directiveArray, pipesArray]);
@@ -472,8 +471,9 @@ export class NgModuleDecoratorHandler implements
       return null;
     }
 
-    const typeName = type && (ts.isIdentifier(type.typeName) && type.typeName ||
-                              ts.isQualifiedName(type.typeName) && type.typeName.right) ||
+    const typeName = type &&
+            (ts.isIdentifier(type.typeName) && type.typeName ||
+             ts.isQualifiedName(type.typeName) && type.typeName.right) ||
         null;
     if (typeName === null) {
       return null;
@@ -550,8 +550,8 @@ export class NgModuleDecoratorHandler implements
       arrayName: string): Reference<ClassDeclaration>[] {
     const refList: Reference<ClassDeclaration>[] = [];
     if (!Array.isArray(resolvedList)) {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
+      throw createValueHasWrongTypeError(
+          expr, resolvedList,
           `Expected array when reading the NgModule.${arrayName} of ${className}`);
     }
 
@@ -559,7 +559,7 @@ export class NgModuleDecoratorHandler implements
       // Unwrap ModuleWithProviders for modules that are locally declared (and thus static
       // resolution was able to descend into the function and return an object literal, a Map).
       if (entry instanceof Map && entry.has('ngModule')) {
-        entry = entry.get('ngModule') !;
+        entry = entry.get('ngModule')!;
       }
 
       if (Array.isArray(entry)) {
@@ -567,16 +567,18 @@ export class NgModuleDecoratorHandler implements
         refList.push(...this.resolveTypeList(expr, entry, className, arrayName));
       } else if (isDeclarationReference(entry)) {
         if (!this.isClassDeclarationReference(entry)) {
-          throw new FatalDiagnosticError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE, entry.node,
-              `Value at position ${idx} in the NgModule.${arrayName} of ${className} is not a class`);
+          throw createValueHasWrongTypeError(
+              entry.node, entry,
+              `Value at position ${idx} in the NgModule.${arrayName} of ${
+                  className} is not a class`);
         }
         refList.push(entry);
       } else {
         // TODO(alxhub): Produce a better diagnostic here - the array index may be an inner array.
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `Value at position ${idx} in the NgModule.${arrayName} of ${className} is not a reference: ${entry}`);
+        throw createValueHasWrongTypeError(
+            expr, entry,
+            `Value at position ${idx} in the NgModule.${arrayName} of ${
+                className} is not a reference`);
       }
     });
 

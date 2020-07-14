@@ -1,52 +1,51 @@
-<!--
-# Getting Started with Angular: Your First App
--->
-# Angular 시작하기: 첫번째 앱 만들기
+# Part 1: Getting started with a basic Angular app
 
 <!--
 Welcome to Angular!
 
 This tutorial introduces you to the essentials of Angular by walking you through a simple e-commerce site with a catalog, shopping cart, and check-out form.
-To help you get started right away, this guide uses a simple ready-made application that you can examine and play with interactively.
+To help you get started right away, this guide uses a simple ready-made application that you can examine and modify interactively (without having to [set up a local work environment](guide/setup-local "Setup guide")).
+
+<div class="callout is-helpful">
+<header>New to web development?</header>
+
+ There are many resources to complement the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codecademy](https://www.codecademy.com/ "Codecademy online courses"), also cover web development basics.
+
+</div>
+
 -->
 Angular의 세계에 오신 것을 환영합니다!
 
 이 가이드 문서는 상품 목록, 쇼핑 카트, 주문 폼을 구성된 온라인 주문 애플리케이션을 Angular로 간단하게 만들어보면서 Angular의 기본 개념에 대해 소개합니다.
 이 애플리케이션이 실제로 어떻게 동작하는지, 미리 만들어 둔 예제 애플리케이션 코드도 함께 확인해 보세요.
+이 과정은 [로컬 개발환경 설정](guide/setup-local "Setup guide")이 필요 없습니다.
 
 <div class="callout is-helpful">
-<!--
-<header>New to web development?</header>
--->
 <header>웹 개발이 처음인가요?</header>
 
-
-<!--
- There are many resources to complement the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codecademy](https://www.codecademy.com/ "Codecademy online courses"), also cover web development basics.
--->
- Angular 공식 가이드 문서 외에도 Angular 개발에 도움이 되는 자료는 많습니다. Mozilla MDN에서 [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials")과 [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript")에 대한 자료를 찾아볼 수 있으며, [TypeScript 문서](https://www.typescriptlang.org/docs/home.html "TypeScript documentation")에 있는 5분 튜토리얼도 참고할 만 합니다. [Udemy](http://www.udemy.com "Udemy online courses")나 [Codecademy](https://www.codecademy.com/ "Codecademy online courses")와 같은 온라인 교육 플랫폼에서 웹 개발과 관련된 기본 지식도 활용하면 좋습니다.
+ Angular 공식 가이드 문서 외에도 Angular 개발에 도움이 되는 자료는 많습니다.
+ Mozilla MDN에서 [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials")과 [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript")에 대한 자료를 찾아볼 수 있으며, [TypeScript 문서](https://www.typescriptlang.org/docs/home.html "TypeScript documentation")에 있는 5분 튜토리얼도 참고할 만 합니다.
+ [Udemy](http://www.udemy.com "Udemy online courses")나 [Codecademy](https://www.codecademy.com/ "Codecademy online courses")와 같은 온라인 교육 플랫폼에서 웹 개발과 관련된 기본 지식도 활용하면 좋습니다.
 
 </div>
 
 
 {@a new-project}
-<!--
-## Create a new project
--->
-## 프로젝트 생성하기
 
-<h4>
 <!--
-<live-example name="getting-started-v0" noDownload>Click here to create the ready-made sample project in StackBlitz.</live-example>
+## Create the sample project
 -->
-<live-example name="getting-started-v0" noDownload>샘플 프로젝트를 생성하려면 StackBlitz 사이트를 활용하세요.</live-example>
+## 샘플 프로젝트 생성하기
+
+<!--
+<h4>
+<live-example name="getting-started-v0" noDownload>Click here to create the ready-made sample project in StackBlitz.</live-example>
 </h4>
 
 <div class="lightbox">
   <img src="generated/images/guide/start/new-app-all.gif" alt="Starter online store app">
 </div>
 
-<!--
 * The preview pane on the right shows the starting state of the sample Angular app.
 It defines a frame with a top bar (containing the store name and checkout icon) and the title for a product list (which will be populated and dynamically updated with data from the application).
 
@@ -54,23 +53,10 @@ It defines a frame with a top bar (containing the store name and checkout icon) 
 
 Before going into the source structure, the next section shows how to fill out the HTML *template* for the product list, using the provided sample data.
 This should give you an idea how easy it is to modify and update the page dynamically.
--->
-* 오른쪽에 있는 미리보기 탭을 보면 샘플 Angular 앱이 어떻게 동작하는지 확인할 수 있습니다.
-이 앱은 최상단 바에 상점 이름과 주문 아이콘이 있고, 그 아래에는 상품 목록이 표시됩니다. 이 목록은 애플리케이션 로직이 동작하면서 동적으로 표시될 것입니다.
-
-* 왼쪽에 있는 프로젝트 탭에는 애플리케이션을 구성하는 소스 파일들을 확인할 수 있습니다.
-프로젝트 환경을 구성하는 파일과 애플리케이션 코드가 이 영역에 표시되며, 파일을 선택하면 가운데에 있는 에디터 탭에 파일의 내용이 표시됩니다.
-
-소스 파일의 구조를 확인하기 전에, 샘플 데이터를 사용해서 HTML *템플릿*에 상품 목록을 어떻게 표시할 수 있는지 알아봅시다.
-이 과정을 통해 화면을 수정하고 동적으로 갱신하는 것이 얼마나 편한지 느낄 수 있을 것입니다.
 
 <div class="callout is-helpful">
-<!--
 <header>StackBlitz tips</header>
--->
-<header>StackBlitz 팁</header>
 
-<!--
 * Log into StackBlitz so you can save and resume your work.
 If you have a GitHub account, you can log into StackBlitz
 with that account. In order to save your progress, first
@@ -90,7 +76,37 @@ accompany the tutorials, StackBlitz creates the starter
 files and mock data for you. The files you'll use throughout
 the tutorials are in the `src` folder of the StackBlitz
 example apps.
+
+</div>
+
+<div class="alert is-important">
+
+If you go directly to the [StackBlitz online development environment](https://stackblitz.com/) and choose to [start a new Angular workspace](https://stackblitz.com/fork/angular), you get a generic stub application, rather than this [illustrative sample](#new-project). Once you have been introduced to the basic concepts here, this can be helpful for working interactively while you are learning Angular.
+
+In actual development you will typically use the [Angular CLI](guide/glossary#command-line-interface-cli "Definition of CLI"), a powerful command-line tool that lets you generate and modify applications. For a full step-by-step guide that shows how to use the CLI to create a new project and all of its parts, see [Tutorial: Tour of Heroes](tutorial).
+
+</div>
 -->
+<h4>
+<live-example name="getting-started-v0" noDownload>샘플 프로젝트를 생성하려면 StackBlitz 사이트를 활용하세요.</live-example>
+</h4>
+
+<div class="lightbox">
+  <img src="generated/images/guide/start/new-app-all.gif" alt="Starter online store app">
+</div>
+
+* 오른쪽에 있는 미리보기 탭을 보면 샘플 Angular 앱이 어떻게 동작하는지 확인할 수 있습니다.
+이 앱은 최상단 바에 상점 이름과 주문 아이콘이 있고, 그 아래에는 상품 목록이 표시됩니다. 이 목록은 애플리케이션 로직이 동작하면서 동적으로 표시될 것입니다.
+
+* 왼쪽에 있는 프로젝트 탭에는 애플리케이션을 구성하는 소스 파일들을 확인할 수 있습니다.
+프로젝트 환경을 구성하는 파일과 애플리케이션 코드가 이 영역에 표시되며, 파일을 선택하면 가운데에 있는 에디터 탭에 파일의 내용이 표시됩니다.
+
+소스 파일의 구조를 확인하기 전에, 샘플 데이터를 사용해서 HTML *템플릿*에 상품 목록을 어떻게 표시할 수 있는지 알아봅시다.
+이 과정을 통해 화면을 수정하고 동적으로 갱신하는 것이 얼마나 편한지 느낄 수 있을 것입니다.
+
+<div class="callout is-helpful">
+<header>StackBlitz 팁</header>
+
 * StackBlitz에 로그인하면 작업한 내용을 저장했다가 다시 불러올 수 있습니다.
 그리고 이 때 GitHub 계정을 사용해서 로그인 할 수도 있습니다.
 최상단 왼쪽의 Fork 버튼을 눌러서 프로젝트를 포크하고 나면, Save 버튼을 눌러서 프로젝트를 저장할 수 있습니다.
@@ -100,13 +116,8 @@ example apps.
 
 </div>
 
-<div class="alert is-helpful">
+<div class="alert is-important">
 
-<!--
-If you go directly to the [StackBlitz online development environment](https://stackblitz.com/) and choose to [start a new Angular workspace](https://stackblitz.com/fork/angular), you get a generic stub application, rather than this [illustrative sample](#new-project). Once you have been introduced to the basic concepts here, this can be helpful for working interactively while you are learning Angular.
-
-In actual development you will typically use the [Angular CLI](guide/glossary#command-line-interface-cli), a powerful command-line tool that lets you generate and modify applications. For more information, see the [CLI Overview](cli).
--->
 [StackBlitz 온라인 개발 환경](https://stackblitz.com/)에 직접 들어가서 [start a new Angular workspace](https://stackblitz.com/fork/angular)를 선택하면, 기본 틀이 갖춰진 애플리케이션을 생성할 수 있습니다.
 [프로젝트 생성하기](#new-project)에서 설명한 내용을 다 이해하고 Angular 자체를 테스트 해보려면 이 방식을 활용하는 것이 더 좋습니다.
 
@@ -289,10 +300,9 @@ In the process, you've learned to use five common features of Angular's template
 <div class="alert is-helpful">
 
 <!--
-For more information about the full capabilities of Angular's
-template syntax, see [Template Syntax](guide/template-syntax "Template Syntax").
+For a fuller introduction to Angular's template syntax, see [Introduction to components and templates](guide/architecture-components#template-syntax "Template Syntax").
 -->
-Angular의 템플릿 문법은 정말 다양하게 활용할 수 있습니다. [템플릿 문법](guide/template-syntax "Template Syntax") 문서를 참고하세요.
+Angular의 템플릿 문법은 정말 다양하게 활용할 수 있습니다. [템플릿 문법](guide/architecture-components#template-syntax "Template Syntax") 문서를 참고하세요.
 
 </div>
 
@@ -364,7 +374,7 @@ The next section expands the app's capabilities by adding a new component&mdash;
 
 <div class="alert is-helpful">
 
-For more information about components and how they interact with templates, see [Introduction to Components](guide/architecture-components "Architecture > Introduction to Components").
+For more information about components and how they interact with templates, see [Introduction to Components](guide/architecture-components "Concepts > Introduction to Components and Templates").
 
 </div>
 -->
@@ -377,7 +387,7 @@ For more information about components and how they interact with templates, see 
 
 <div class="alert is-helpful">
 
-컴포넌트에 대한 내용과 컴포넌트끼리 템플릿에서 상호작용하는 방법에 대해 더 알아보려면 [컴포넌트 소개](guide/architecture-components "Architecture > Introduction to Components") 문서를 참고하세요.
+컴포넌트에 대한 내용과 컴포넌트끼리 템플릿에서 상호작용하는 방법에 대해 더 알아보려면 [컴포넌트 소개](guide/architecture-components "Concepts > Introduction to Components") 문서를 참고하세요.
 
 </div>
 
@@ -636,8 +646,8 @@ You've learned about the foundation of Angular: components and template syntax.
 You've also learned how the component class and template interact, and how components communicate with each other.
 
 To continue exploring Angular, choose either of the following options:
-* [Continue to the "Routing" section](start/routing "Getting Started: Routing") to create a product details page that can be accessed by clicking a product name and that has its own URL pattern.
-* [Skip ahead to the "Deployment" section](start/deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+* [Continue to the "In-app navigation" section](start/start-routing "Try it: In-app navigation") to create a product details page that can be accessed by clicking a product name and that has its own URL pattern.
+* [Skip ahead to the "Deployment" section](start/start-deployment "Try it: Deployment") to move to local development, or deploy your app to Firebase or your own server.
 -->
 축하합니다! 첫번째 Angular 앱을 완성했습니다!
 

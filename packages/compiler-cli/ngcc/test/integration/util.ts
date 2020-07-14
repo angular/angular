@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,8 +20,8 @@ export type PackageSources = {
 /**
  * Instead of writing packaged code by hand, and manually describing the layout of the package, this
  * function transpiles the TypeScript sources into a flat file structure using the ES5 format. In
- * this package layout, all compiled sources are at the root of the package, with .d.ts files next
- * to the .js files. Each .js also has a corresponding .metadata.js file alongside with it.
+ * this package layout, all compiled sources are at the root of the package, with `.d.ts` files next
+ * to the `.js` files. Each `.js` also has a corresponding `.metadata.json` file alongside with it.
  *
  * All generated code is written into the `node_modules` in the top-level filesystem, ready for use
  * in testing ngcc.
@@ -33,6 +33,28 @@ export function compileIntoFlatEs5Package(pkgName: string, sources: PackageSourc
   compileIntoFlatPackage(pkgName, sources, {
     target: ts.ScriptTarget.ES5,
     module: ts.ModuleKind.ESNext,
+    formatProperty: 'esm5',
+  });
+}
+
+/**
+ * Instead of writing packaged code by hand, and manually describing the layout of the package,
+ * this function transpiles the TypeScript sources into a flat file structure using the ES2015
+ * format. In this package layout, all compiled sources are at the root of the package, with
+ * `.d.ts` files next to the `.js` files. Each `.js` also has a corresponding `.metadata.json`
+ * file alongside with it.
+ *
+ * All generated code is written into the `node_modules` in the top-level filesystem, ready for use
+ * in testing ngcc.
+ *
+ * @param pkgName The name of the package to compile.
+ * @param sources The TypeScript sources to compile.
+ */
+export function compileIntoFlatEs2015Package(pkgName: string, sources: PackageSources): void {
+  compileIntoFlatPackage(pkgName, sources, {
+    target: ts.ScriptTarget.ES2015,
+    module: ts.ModuleKind.ESNext,
+    formatProperty: 'esm2015',
   });
 }
 
@@ -46,13 +68,18 @@ export interface FlatLayoutOptions {
    * The module kind to use in the compiled result.
    */
   module: ts.ModuleKind;
+
+  /**
+   * The name of the property in package.json that refers to the root source file.
+   */
+  formatProperty: string;
 }
 
 /**
  * Instead of writing packaged code by hand, and manually describing the layout of the package, this
  * function transpiles the TypeScript sources into a flat file structure using a single format. In
- * this package layout, all compiled sources are at the root of the package, with .d.ts files next
- * to the .js files. Each .js also has a corresponding .metadata.js file alongside with it.
+ * this package layout, all compiled sources are at the root of the package, with `.d.ts` files next
+ * to the `.js` files. Each `.js` also has a corresponding `.metadata.json` file alongside with it.
  *
  * All generated code is written into the `node_modules` in the top-level filesystem, ready for use
  * in testing ngcc.
@@ -90,7 +117,7 @@ function compileIntoFlatPackage(
   const pkgJson: unknown = {
     name: pkgName,
     version: '0.0.1',
-    main: './index.js',
+    [options.formatProperty]: './index.js',
     typings: './index.d.ts',
   };
 
@@ -178,7 +205,7 @@ export function compileIntoApf(
     version: '0.0.1',
     esm5: './esm5/index.js',
     esm2015: './esm2015/index.js',
-    module: './esm5/index.js',
+    module: './esm2015/index.js',
     typings: './index.d.ts',
   };
 
@@ -228,11 +255,21 @@ class MockCompilerHost implements ts.CompilerHost {
     this.fs.writeFile(this.fs.resolve(fileName), data);
   }
 
-  getCurrentDirectory(): string { return this.fs.pwd(); }
-  getCanonicalFileName(fileName: string): string { return fileName; }
-  useCaseSensitiveFileNames(): boolean { return true; }
-  getNewLine(): string { return '\n'; }
-  fileExists(fileName: string): boolean { return this.fs.exists(this.fs.resolve(fileName)); }
+  getCurrentDirectory(): string {
+    return this.fs.pwd();
+  }
+  getCanonicalFileName(fileName: string): string {
+    return fileName;
+  }
+  useCaseSensitiveFileNames(): boolean {
+    return true;
+  }
+  getNewLine(): string {
+    return '\n';
+  }
+  fileExists(fileName: string): boolean {
+    return this.fs.exists(this.fs.resolve(fileName));
+  }
   readFile(fileName: string): string|undefined {
     const abs = this.fs.resolve(fileName);
     return this.fs.exists(abs) ? this.fs.readFile(abs) : undefined;

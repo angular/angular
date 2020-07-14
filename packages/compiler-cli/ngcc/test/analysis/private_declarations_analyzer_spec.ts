@@ -1,21 +1,21 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, absoluteFrom} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {absoluteFrom, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {Reference} from '../../../src/ngtsc/imports';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers/src/mock_file_loading';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
 runInEachFileSystem(() => {
@@ -192,6 +192,6 @@ runInEachFileSystem(() => {
       program: ts.Program, registry: NgccReferencesRegistry, fileName: AbsoluteFsPath,
       componentName: string) {
     const declaration = getDeclaration(program, fileName, componentName, ts.isClassDeclaration);
-    registry.add(null !, new Reference(declaration));
+    registry.add(null!, new Reference(declaration));
   }
 });

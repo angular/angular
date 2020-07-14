@@ -4,44 +4,106 @@
 # 기능모듈 지연로딩 하기
 
 <!--
-## High level view
--->
-## 개요
-
-<!--
 By default, NgModules are eagerly loaded, which means that as soon as the app loads, so do all the NgModules, whether or not they are immediately necessary. For large apps with lots of routes, consider lazy loading&mdash;a design pattern that loads NgModules as needed. Lazy loading helps keep initial
 bundle sizes smaller, which in turn helps decrease load times.
+
+<div class="alert is-helpful">
 
 For the final sample app with two lazy-loaded modules that this page describes, see the
 <live-example></live-example>.
 
-There are two main steps to setting up a lazy-loaded feature module:
-
-1. Create the feature module with the CLI, using the `--route` flag.
-1. Configure the routes.
+</div>
 -->
 기본적으로 NgModule은 즉시 로드 됩니다. 이 말은 앱이 로드되면 사용여부와 관계없이 앱에 있는 NgModule이 모두 로드된다는 것을 의미합니다.
 이 때 앱 구조가 복잡해서 라우팅 규칙도 복잡하다면 지연 로딩(lazy-loading)을 활용해서 당장 사용하지 않는 모듈을 나중에 로드하는 방법을 고려해볼 수 있습니다.
 지연 로딩을 활용하면 앱 초기 실행에 필요한 빌드 결과물 크기가 작아지기 때문에 앱 초기 실행 시간을 줄일 수 있습니다.
 
-이 문서에서는 모듈 2개를 지연로딩해 봅니다. 동작하는 예제는 <live-example></live-example>에서 직접 확인할 수 있습니다.
+<div class="alert is-helpful">
+
+For the final sample app with two lazy-loaded modules that this page describes, see the
+<live-example></live-example>.
+
+</div>
 
 
+{@a lazy-loading}
+
+## Lazy loading basics
+
+This section introduces the basic procedure for configuring a lazy-loaded route.
+For a step-by-step example, see the [step-by-step setup](#step-by-step) section on this page.
+
+To lazy load Angular modules, use `loadchildren` (instead of `component`) in your `AppRoutingModule` `routes` configuration as follows.
+
+<code-example header="AppRoutingModule (excerpt)">
+
+const routes: Routes = [
+  {
+    path: 'items',
+    loadChildren: () => import('./items/items.module').then(m => m.ItemsModule)
+  }
+];
+
+</code-example>
+
+In the lazy-loaded module's routing module, add a route for the component.
+
+<code-example header="Routing module for lazy loaded module (excerpt)">
+
+const routes: Routes = [
+  {
+    path: '',
+    component: ItemsComponent
+  }
+];
+
+</code-example>
+
+Also be sure to remove the `ItemsModule` from the `AppModule`.
+For step-by-step instructions on lazy loading modules, continue with the following sections of this page.
+
+{@a step-by-step}
+
+## Step-by-step setup
+
+<!--
+There are two main steps to setting up a lazy-loaded feature module:
+
+1. Create the feature module with the CLI, using the `--route` flag.
+1. Configure the routes.
+-->
 기능 모듈을 지연 로딩 하는 것은 세 단계로 진행합니다.
 
 1. Angular CLI로 모듈을 생성하면서 `--route` 플래그를 붙여줍니다.
 1. 라우팅 규칙을 설정합니다.
 
+
 <!--
-## Set up an app
+### Set up an app
 -->
-## 앱 생성하기
+### 앱 생성하기
 
 <!--
 If you don’t already have an app, you can follow the steps below to
 create one with the CLI. If you already have an app, skip to
 [Configure the routes](#config-routes). Enter the following command
 where `customer-app` is the name of your app:
+
+<code-example language="bash">
+ng new customer-app --routing
+</code-example>
+
+This creates an app called `customer-app` and the `--routing` flag
+generates a file called `app-routing.module.ts`, which is one of
+the files you need for setting up lazy loading for your feature module.
+Navigate into the project by issuing the command `cd customer-app`.
+
+<div class="alert is-helpful">
+
+The `--routing` option requires Angular/CLI version 8.1 or higher.
+See [Keeping Up to Date](guide/updating).
+
+</div>
 -->
 아직 프로젝트를 만들지 않았다면 Angular CLI를 사용해서 새로운 애플리케이션을 생성합니다. 이미 있는 앱을 활용하려면 [라우터 설정하기](#config-routes) 부분으로 넘어가세요.
 애플리케이션은 다음 명령을 실행해서 생성합니다:
@@ -50,30 +112,21 @@ where `customer-app` is the name of your app:
 ng new customer-app --routing
 </code-example>
 
-<!--
-This creates an app called `customer-app` and the `--routing` flag
-generates a file called `app-routing.module.ts`, which is one of
-the files you need for setting up lazy loading for your feature module.
-Navigate into the project by issuing the command `cd customer-app`.
--->
 이 명령을 실행하면 `customer-app` 이라는 이름으로 애플리케이션이 생성되는데, 이 때 옵션으로 `--routing` 플래그를 설정했기 때문에 `app-routing.module.ts` 파일이 함께 생성됩니다. 이 파일은 기능 모듈을 지연 로딩하도록 설정할 때 사용합니다.
 애플리케이션이 생성되고 나면 `cd customer-app` 명령을 실행해서 프로젝트 폴더로 이동합니다.
 
 <div class="alert is-helpful">
 
-<!--
-The `--routing` option requires Angular/CLI version 8.1 or higher.
-See [Keeping Up to Date](guide/updating).
--->
 Angular/CLI 8.1 이상 버전에서는 `--routing` 옵션이 꼭 필요합니다.
 [최신버전 유지하기](guide/updating) 문서를 참고하세요.
 
 </div>
 
+
 <!--
-## Create a feature module with routing
+### Create a feature module with routing
 -->
-## 기능 모듈 생성하면서 라우팅 설정하기
+### 기능 모듈 생성하면서 라우팅 설정하기
 
 <!--
 Next, you’ll need a feature module with a component to route to.
@@ -121,9 +174,9 @@ ng generate module customers --route customers --module app.module
 
 
 <!--
-### Add another feature module
+#### Add another feature module
 -->
-## 기능 모듈 하나 더 생성하기
+#### 기능 모듈 하나 더 생성하기
 
 <!--
 Use the same command to create a second lazy-loaded feature module with routing, along with its stub component.
@@ -158,15 +211,14 @@ ng generate module orders --route orders --module app.module
 
 
 <!--
-## Set up the UI
+### Set up the UI
 -->
-## 화면 구성하기
+### 화면 구성하기
 
 <!--
 Though you can type the URL into the address bar, a navigation UI is easier for the user and more common.
 Replace the default placeholder markup in `app.component.html` with a custom nav
 so you can easily navigate to your modules in the browser:
-
 
 <code-example path="lazy-loading-ngmodules/src/app/app.component.html" header="app.component.html" region="app-component-template" header="src/app/app.component.html"></code-example>
 
@@ -207,8 +259,11 @@ ng serve
 {@a config-routes}
 
 <!--
-## Imports and route configuration
+### Imports and route configuration
+-->
+### 라우팅 규칙 설정하고 로드하기
 
+<!--
 The CLI automatically added each feature module to the routes map at the application level.
 Finish this off by adding the default route. In the `app-routing.module.ts` file, update the `routes` array with the following:
 
@@ -217,8 +272,6 @@ Finish this off by adding the default route. In the `app-routing.module.ts` file
 The first two paths are the routes to the `CustomersModule` and the `OrdersModule`.
 The final entry defines a default route. The empty path matches everything that doesn't match an earlier path.
 -->
-## 라우팅 규칙 설정하고 로드하기
-
 Angular CLI로 기능 모듈을 생성하면 애플리케이션 계층에 자동으로 라우팅 규칙을 추가합니다.
 `app-routing.module.ts` 파일에 기본 라우팅 규칙을 추가해서 설정을 마무리 합시다:
 
@@ -231,7 +284,7 @@ Angular CLI로 기능 모듈을 생성하면 애플리케이션 계층에 자동
 <!--
 ### Inside the feature module
 -->
-## 기능 모듈 안에서 라우팅하기
+### 기능 모듈 안에서 라우팅하기
 
 <!--
 Next, take a look at the `customers.module.ts` file. If you’re using the CLI and following the steps outlined in this page, you don’t have to do anything here.
@@ -277,41 +330,63 @@ The other feature module's routing module is configured similarly.
 
 
 <!--
-## Confirm it’s working
+### Verify lazy loading
 -->
-## 동작 확인하기
+### 지연로딩 동작 확인하기
 
 <!--
 You can check to see that a module is indeed being lazy loaded with the Chrome developer tools. In Chrome, open the dev tools by pressing `Cmd+Option+i` on a Mac or `Ctrl+Shift+j` on a PC and go to the Network Tab.
--->
-Chrome 개발자 도구를 활용하면 모듈이 정말 지연 로딩되었는지 확인할 수 있습니다. Chrome 브라우저에서 개발자 도구를 열고 네트워크 탭으로 이동합니다. Mac에서는 `Cmd+Option+i`, Windows에서는 `Ctrl+Shift+j`를 누르면 됩니다.
 
 <div class="lightbox">
   <img src="generated/images/guide/lazy-loading-ngmodules/network-tab.png" width="600" alt="lazy loaded modules diagram">
 </div>
 
-<!--
+
 Click on the Orders or Customers button. If you see a chunk appear, everything is wired up properly and the feature module is being lazy loaded. A chunk should appear for Orders and for Customers but will only appear once for each.
--->
-그리고 이제 Orders나 Customers 버튼을 클릭해 봅시다. 그러면 애플리케이션 패키지 파일과 별개의 청크(chunk) 파일로 패키징된 지연 로딩 모듈이 로드되는 것을 확인할 수 있습니다. 이 파일은 `OrdersModule`이나 `CustomersModule`에 접근할 때 한 번씩만 로드됩니다.
+
 
 <div class="lightbox">
   <img src="generated/images/guide/lazy-loading-ngmodules/chunk-arrow.png" width="600" alt="lazy loaded modules diagram">
 </div>
 
-<!--
+
 To see it again, or to test after working in the project, clear everything out by clicking the circle with a line through it in the upper left of the Network Tab:
+
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/clear.gif" width="200" alt="lazy loaded modules diagram">
+</div>
+
+
+Then reload with `Cmd+r` or `Ctrl+r`, depending on your platform.
 -->
+Chrome 개발자 도구를 활용하면 모듈이 정말 지연 로딩되었는지 확인할 수 있습니다.
+Chrome 브라우저에서 개발자 도구를 열고 네트워크 탭으로 이동합니다.
+Mac에서는 `Cmd+Option+i`, Windows에서는 `Ctrl+Shift+j`를 누르면 됩니다.
+
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/network-tab.png" width="600" alt="lazy loaded modules diagram">
+</div>
+
+
+그리고 이제 Orders나 Customers 버튼을 클릭해 봅시다.
+그러면 애플리케이션 패키지 파일과 별개의 청크(chunk) 파일로 패키징된 지연 로딩 모듈이 로드되는 것을 확인할 수 있습니다.
+이 파일은 `OrdersModule`이나 `CustomersModule`에 접근할 때 한 번씩만 로드됩니다.
+
+
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/chunk-arrow.png" width="600" alt="lazy loaded modules diagram">
+</div>
+
+
 이 과정을 다시 확인하려면 브라우저에 애플리케이션을 다시 실행해야 합니다. 먼저, 네트워크 탭에서 Clear 버튼을 눌러서 네트워크 기록을 초기화합니다:
 
 <div class="lightbox">
   <img src="generated/images/guide/lazy-loading-ngmodules/clear.gif" width="200" alt="lazy loaded modules diagram">
 </div>
 
-<!--
-Then reload with `Cmd+r` or `Ctrl+r`, depending on your platform.
--->
+
 그리고 페이지를 새로고침하면 애플리케이션이 다시 실행될 것입니다.
+
 
 <!--
 ## `forRoot()` and `forChild()`
@@ -345,6 +420,106 @@ Angular CLI로 생성한 `app-routing.module.ts` 파일을 보면, `imports` 배
 그리고 `forChild()` 메소드는 인젝터를 설정하지 않습니다.
 이 메소드는 단순하게 `RouterOutlet`이나 `RouterLink` 같은 디렉티브만 제공합니다.
 더 자세한 내용은 [싱글턴 서비스](guide/singleton-services) 가이드 문서의 [`forRoot()` 패턴](guide/singleton-services#forRoot) 섹션을 참고하세요.
+
+
+{@a preloading}
+
+## Preloading
+
+Preloading improves UX by loading parts of your app in the background.
+You can preload modules or component data.
+
+### Preloading modules
+
+Preloading modules improves UX by loading parts of your app in the background so users don't have to wait for the elements to download when they activate a route.
+
+To enable preloading of all lazy loaded modules, import the `PreloadAllModules` token from the Angular `router`.
+
+<code-example header="AppRoutingModule (excerpt)">
+
+import { PreloadAllModules } from '@angular/router';
+
+</code-example>
+
+Still in the `AppRoutingModule`, specify your preloading strategy in `forRoot()`.
+
+<code-example header="AppRoutingModule (excerpt)">
+
+RouterModule.forRoot(
+  appRoutes,
+  {
+    preloadingStrategy: PreloadAllModules
+  }
+)
+
+</code-example>
+
+### Preloading component data
+
+To preload component data, you can use a `resolver`.
+Resolvers improve UX by blocking the page load until all necessary data is available to fully display the page.
+
+#### Resolvers
+
+Create a resolver service.
+With the CLI, the command to generate a service is as follows:
+
+
+<code-example language="none" class="code-shell">
+  ng generate service <service-name>
+</code-example>
+
+In your service, import the following router members, implement `Resolve`, and inject the `Router` service:
+
+<code-example header="Resolver service (excerpt)">
+
+import { Resolve } from '@angular/router';
+
+...
+
+export class CrisisDetailResolverService implements Resolve<> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<> {
+    // your logic goes here
+  }
+}
+
+</code-example>
+
+Import this resolver into your module's routing module.
+
+<code-example header="Feature module's routing module (excerpt)">
+
+import { YourResolverService }    from './your-resolver.service';
+
+</code-example>
+
+Add a `resolve` object to the component's `route` configuration.
+
+<code-example header="Feature module's routing module (excerpt)">
+{
+  path: '/your-path',
+  component: YourComponent,
+  resolve: {
+    crisis: YourResolverService
+  }
+}
+</code-example>
+
+
+In the component, use an `Observable` to get the data from the `ActivatedRoute`.
+
+
+<code-example header="Component (excerpt)">
+ngOnInit() {
+  this.route.data
+    .subscribe((your-parameters) => {
+      // your data-specific code goes here
+    });
+}
+</code-example>
+
+For more information with a working example, see the [routing tutorial section on preloading](guide/router#preloading-background-loading-of-feature-areas).
+
 
 <hr>
 

@@ -23,7 +23,7 @@
 {% block header %}
 <header class="api-header">
   <h1>{$ doc.name $}</h1>
-  <label class="api-type-label {$ doc.docType $}">{$ doc.docType $}</label>
+  {% if doc.isPrimaryPackage %}<label class="api-type-label package">package</label>{% else %}<label class="api-type-label {$ entry-point $}">entry-point</label>{% endif %}
   {% if doc.packageDeprecated or (not doc.isPrimaryPackage and doc.deprecated !== undefined) %}<label class="api-status-label deprecated">deprecated</label>{% endif %}
   {% if doc.security !== undefined %}<label class="api-status-label security">security</label>{% endif %}
   {% if doc.pipeOptions.pure === 'false' %}<label class="api-status-label impure-pipe">impure</label>{% endif %}

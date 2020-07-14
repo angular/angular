@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -65,14 +65,14 @@ export class TemplateSourceManager implements TemplateSourceResolver {
     if (!this.templateSources.has(id)) {
       throw new Error(`Unexpected unknown template ID: ${id}`);
     }
-    return this.templateSources.get(id) !.mapping;
+    return this.templateSources.get(id)!.mapping;
   }
 
   toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan|null {
     if (!this.templateSources.has(id)) {
       return null;
     }
-    const templateSource = this.templateSources.get(id) !;
+    const templateSource = this.templateSources.get(id)!;
     return templateSource.toParseSourceSpan(span.start, span.end);
   }
 }

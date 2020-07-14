@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3InjectableMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
+import {getCompilerFacade, R3InjectableMetadataFacade} from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
 import {NG_FACTORY_DEF} from '../../render3/fields';
 import {getClosureSafeProperty} from '../../util/property';
@@ -46,7 +46,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
     // undecorated parent class. We work around it by defining a method which should be used
     // as a fallback. This should only be a problem in JIT mode, because in AOT TypeScript
     // seems to have a workaround for static properties. When inheriting from an undecorated
-    // parent is no longer supported in v10, this can safely be removed.
+    // parent is no longer supported (v11 or later), this can safely be removed.
     if (!type.hasOwnProperty(NG_PROV_DEF_FALLBACK)) {
       (type as any)[NG_PROV_DEF_FALLBACK] = () => (type as any)[NG_PROV_DEF];
     }
@@ -65,7 +65,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
             typeArgumentCount: metadata.typeArgumentCount,
             deps: reflectDependencies(type),
             injectFn: 'inject',
-            target: compiler.R3FactoryTarget.Pipe
+            target: compiler.R3FactoryTarget.Injectable
           });
         }
         return ngFactoryDef;
@@ -76,7 +76,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
   }
 }
 
-type UseClassProvider = Injectable & ClassSansProvider & {deps?: any[]};
+type UseClassProvider = Injectable&ClassSansProvider&{deps?: any[]};
 
 const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});

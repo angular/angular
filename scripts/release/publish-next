@@ -2,13 +2,17 @@
 
 set -u -e -o pipefail
 
+# Runs the pre-check before performing the publish to ensure
+# the version is valid for release.
+sh "$(dirname "$0")/pre-check";
+
 # Use for BETA and RC releases
 # Query Bazel for npm_package and ng_package rules with tags=["release-with-framework"]
 # Publish them to npm (tagged next)
 
 # We need to resolve the Bazel binary in the node modules because running Bazel
-# through `yarn bazel` causes additional output that throws off the command stdout.
-BAZEL_BIN=$(yarn bin)/bazel
+# through `yarn bazelisk` causes additional output that throws off the command stdout.
+BAZEL_BIN=$(yarn bin)/bazelisk
 # Build into a distinct output location so that artifacts from previous builds are not reused
 BAZEL_OUTPUT_BASE=$(mktemp -d -t angular-release-next.XXXXXXX)
 BAZEL="$BAZEL_BIN --output_base=$BAZEL_OUTPUT_BASE"

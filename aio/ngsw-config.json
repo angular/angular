@@ -94,6 +94,7 @@
     "!/api/testing/**",
     "!/docs/?*",
     "!/docs/*/**",
+    "!/guide/bazel",
     "!/guide/change-log",
     "!/getting-started",
     "!/getting-started.html",
@@ -131,9 +132,22 @@
     "!/news",
     "!/news.html",
     "!/news/",
+    "!/start/data",
+    "!/start/data/",
+    "!/start/data.html",
+    "!/start/deployment",
+    "!/start/deployment/",
+    "!/start/deployment.html",
+    "!/start/forms",
+    "!/start/forms/",
+    "!/start/forms.html",
+    "!/start/routing",
+    "!/start/routing/",
+    "!/start/routing.html",
     "!/styleguide",
     "!/styleguide/**",
     "!/testing",
-    "!/testing/**"
+    "!/testing/**",
+    "!/config/**"
   ]
 }

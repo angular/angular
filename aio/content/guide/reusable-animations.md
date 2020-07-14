@@ -25,7 +25,7 @@ The [AnimationOptions](https://angular.io/api/animations/AnimationOptions) inter
 
 <hr>
 
-애니메이션을 정의해두고 여러 컴포넌트에서 사용하려면 [AnimationOptions](https://angular.io/api/animations/AnimationOptions) 인터페이스를 사용해서 애니메이션을 정의하면 됩니다.
+애니메이션을 정의해두고 여러 컴포넌트에서 사용하려면 [AnimationOptions](api/animations/AnimationOptions) 인터페이스를 사용해서 애니메이션을 정의하면 됩니다.
 
 
 <!--
@@ -49,7 +49,7 @@ You can import the reusable `transAnimation` variable in your component class an
 
 <code-example path="animations/src/app/open-close.component.3.ts" header="src/app/open-close.component.ts" region="reusable" language="typescript"></code-example>
 -->
-애니메이션을 재사용하려면 [`animation()`](https://angular.io/api/animations/animation) 함수를 사용해서 애니메이션만 `.ts` 파일에 따로 정의하고 이 애니메이션을 상수(`const`)로 선언한 후에 파일 외부로 공개해야 합니다. 그러면 컴포넌트 메타데이터에서 [`useAnimation()`](https://angular.io/api/animations/useAnimation) API로 이 애니메이션을 불러와서 적용할 수 있습니다. 
+애니메이션을 재사용하려면 [`animation()`](api/animations/animation) 함수를 사용해서 애니메이션만 `.ts` 파일에 따로 정의하고 이 애니메이션을 상수(`const`)로 선언한 후에 파일 외부로 공개해야 합니다. 그러면 컴포넌트 메타데이터에서 [`useAnimation()`](https://angular.io/api/animations/useAnimation) API로 이 애니메이션을 불러와서 적용할 수 있습니다. 
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="reusable" language="typescript"></code-example>
 

@@ -6,7 +6,8 @@ import {
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
   CanActivateChild,
-  NavigationExtras
+  NavigationExtras,
+  UrlTree
 }                           from '@angular/router';
 import { AuthService }      from './auth.service';
 
@@ -16,17 +17,17 @@ import { AuthService }      from './auth.service';
 export class AuthGuard implements CanActivate, CanActivateChild {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): true|UrlTree {
     let url: string = state.url;
 
     return this.checkLogin(url);
   }
 
-  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): true|UrlTree {
     return this.canActivate(route, state);
   }
 
-  checkLogin(url: string): boolean {
+  checkLogin(url: string): true|UrlTree {
     if (this.authService.isLoggedIn) { return true; }
 
     // 리다이렉트할 URL을 저장해 둡니다.
@@ -42,7 +43,6 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     };
 
     // 로그인 페이지로 이동하면서 인자를 함께 전달합니다.
-    this.router.navigate(['/login'], navigationExtras);
-    return false;
+    return this.router.createUrlTree(['/login'], navigationExtras);
   }
 }

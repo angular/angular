@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -145,7 +145,7 @@ export abstract class Renderer2 {
    * This is used as a performance optimization for production mode.
    */
   // TODO(issue/24571): remove '!'.
-  destroyNode !: ((node: any) => void) | null;
+  destroyNode!: ((node: any) => void)|null;
   /**
    * Appends a child to a given parent node in the host element DOM.
    * @param parent The parent node.
@@ -157,7 +157,7 @@ export abstract class Renderer2 {
    * in the host element DOM.
    * @param parent The parent node.
    * @param newChild The new child nodes.
-   * @param refChild The existing child node that should precede the new node.
+   * @param refChild The existing child node before which `newChild` is inserted.
    */
   abstract insertBefore(parent: any, newChild: any, refChild: any): void;
   /**

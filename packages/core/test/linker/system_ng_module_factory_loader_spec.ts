@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -32,12 +32,15 @@ describe('SystemJsNgModuleLoader', () => {
         'prefixed/test/suffixed': {'NamedNgFactory': 'test module factory'}
       });
     });
-    afterEach(() => { global['System'] = oldSystem; });
+    afterEach(() => {
+      global['System'] = oldSystem;
+    });
 
     it('loads a default factory by appending the factory suffix', async(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());
-         loader.load('test').then(
-             contents => { expect(contents).toBe('test module factory' as any); });
+         loader.load('test').then(contents => {
+           expect(contents).toBe('test module factory' as any);
+         });
        }));
     it('loads a named factory by appending the factory suffix', async(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());
@@ -63,12 +66,15 @@ describe('SystemJsNgModuleLoader', () => {
         'test': {'default': 'test module', 'NamedModule': 'test NamedModule'},
       });
     });
-    afterEach(() => { global['System'] = oldSystem; });
+    afterEach(() => {
+      global['System'] = oldSystem;
+    });
 
     it('loads a default module', async(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());
-         loader.load('test').then(
-             contents => { expect(contents.moduleType).toBe('test module' as any); });
+         loader.load('test').then(contents => {
+           expect(contents.moduleType).toBe('test module' as any);
+         });
        }));
     it('loads a named module', async(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());

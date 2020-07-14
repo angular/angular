@@ -1,17 +1,16 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Type, Writable} from '../../interface/type';
-import {assertEqual} from '../../util/assert';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
-import {AttributeMarker, TAttributes} from '../interfaces/node';
+import {TAttributes} from '../interfaces/node';
 import {isComponentDef} from '../interfaces/type_checks';
 import {mergeHostAttrs} from '../util/attrs_utils';
 
@@ -28,7 +27,7 @@ type WritableDef = Writable<DirectiveDef<any>|ComponentDef<any>>;
  *
  * @codeGenApi
  */
-export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
+export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
   let shouldInheritFields = true;
   const inheritanceChain: WritableDef[] = [definition];
@@ -70,6 +69,15 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
         fillProperties(definition.inputs, superDef.inputs);
         fillProperties(definition.declaredInputs, superDef.declaredInputs);
         fillProperties(definition.outputs, superDef.outputs);
+
+        // Merge animations metadata.
+        // If `superDef` is a Component, the `data` field is present (defaults to an empty object).
+        if (isComponentDef(superDef) && superDef.data.animation) {
+          // If super def is a Component, the `definition` is also a Component, since Directives can
+          // not inherit Components (we throw an error above and cannot reach this code).
+          const defData = (definition as ComponentDef<any>).data;
+          defData.animation = (defData.animation || []).concat(superDef.data.animation);
+        }
 
         // Inherit hooks
         // Assume super class inheritance feature has already run.

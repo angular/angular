@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -309,9 +309,9 @@ export function ɵɵclassMapInterpolate8(
 }
 
 /**
- * Update an interpolated class on an element with 8 or more bound values surrounded by text.
+ * Update an interpolated class on an element with 9 or more bound values surrounded by text.
  *
- * Used when the number of interpolated values exceeds 7.
+ * Used when the number of interpolated values exceeds 8.
  *
  * ```html
  * <div
@@ -326,7 +326,7 @@ export function ɵɵclassMapInterpolate8(
  *  'suffix']);
  * ```
  *.
- * @param values The a collection of values and the strings in-between those values, beginning with
+ * @param values The collection of values and the strings in-between those values, beginning with
  * a string prefix and ending with a string suffix.
  * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
  * @codeGenApi

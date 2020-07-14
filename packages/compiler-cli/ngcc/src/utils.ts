@@ -1,12 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem, absoluteFrom} from '../../src/ngtsc/file_system';
+
+import {absoluteFrom, AbsoluteFsPath, FileSystem, isRooted} from '../../src/ngtsc/file_system';
+import {KnownDeclaration} from '../../src/ngtsc/reflection';
 
 /**
  * A list (`Array`) of partially ordered `T` items.
@@ -36,11 +38,11 @@ export function getOriginalSymbol(checker: ts.TypeChecker): (symbol: ts.Symbol) 
   };
 }
 
-export function isDefined<T>(value: T | undefined | null): value is T {
+export function isDefined<T>(value: T|undefined|null): value is T {
   return (value !== undefined) && (value !== null);
 }
 
-export function getNameText(name: ts.PropertyName | ts.BindingName): string {
+export function getNameText(name: ts.PropertyName|ts.BindingName): string {
   return ts.isIdentifier(name) || ts.isLiteralExpression(name) ? name.text : name.getText();
 }
 
@@ -75,18 +77,14 @@ export function hasNameIdentifier(declaration: ts.Declaration): declaration is t
   return namedDeclaration.name !== undefined && ts.isIdentifier(namedDeclaration.name);
 }
 
-export type PathMappings = {
-  baseUrl: string,
-  paths: {[key: string]: string[]}
-};
-
 /**
  * Test whether a path is "relative".
  *
- * Relative paths start with `/`, `./` or `../`; or are simply `.` or `..`.
+ * Relative paths start with `/`, `./` or `../` (or the Windows equivalents); or are simply `.` or
+ * `..`.
  */
 export function isRelativePath(path: string): boolean {
-  return /^\/|^\.\.?($|\/)/.test(path);
+  return isRooted(path) || /^\.\.?(\/|\\|$)/.test(path);
 }
 
 /**
@@ -110,10 +108,12 @@ export class FactoryMap<K, V> {
       this.internalMap.set(key, this.factory(key));
     }
 
-    return this.internalMap.get(key) !;
+    return this.internalMap.get(key)!;
   }
 
-  set(key: K, value: V): void { this.internalMap.set(key, value); }
+  set(key: K, value: V): void {
+    this.internalMap.set(key, value);
+  }
 }
 
 /**
@@ -130,6 +130,40 @@ export function resolveFileWithPostfixes(
     }
   }
   return null;
+}
+
+/**
+ * Determine whether a function declaration corresponds with a TypeScript helper function, returning
+ * its kind if so or null if the declaration does not seem to correspond with such a helper.
+ */
+export function getTsHelperFnFromDeclaration(decl: ts.Declaration): KnownDeclaration|null {
+  if (!ts.isFunctionDeclaration(decl) && !ts.isVariableDeclaration(decl)) {
+    return null;
+  }
+
+  if (decl.name === undefined || !ts.isIdentifier(decl.name)) {
+    return null;
+  }
+
+  return getTsHelperFnFromIdentifier(decl.name);
+}
+
+/**
+ * Determine whether an identifier corresponds with a TypeScript helper function (based on its
+ * name), returning its kind if so or null if the identifier does not seem to correspond with such a
+ * helper.
+ */
+export function getTsHelperFnFromIdentifier(id: ts.Identifier): KnownDeclaration|null {
+  switch (stripDollarSuffix(id.text)) {
+    case '__assign':
+      return KnownDeclaration.TsHelperAssign;
+    case '__spread':
+      return KnownDeclaration.TsHelperSpread;
+    case '__spreadArrays':
+      return KnownDeclaration.TsHelperSpreadArrays;
+    default:
+      return null;
+  }
 }
 
 /**

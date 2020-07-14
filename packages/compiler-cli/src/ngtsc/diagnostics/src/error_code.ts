@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -37,6 +37,12 @@ export enum ErrorCode {
    * decorator.
    */
   DIRECTIVE_INHERITS_UNDECORATED_CTOR = 2006,
+
+  /**
+   * Raised when an undecorated class that is using Angular features
+   * has been discovered.
+   */
+  UNDECORATED_CLASS_USING_ANGULAR_FEATURES = 2007,
 
   SYMBOL_NOT_EXPORTED = 3001,
   SYMBOL_EXPORTED_UNDER_DIFFERENT_NAME = 3002,
@@ -121,6 +127,16 @@ export enum ErrorCode {
    * Template variables are read-only.
    */
   WRITE_TO_READ_ONLY_VARIABLE = 8005,
+
+  /**
+   * A template variable was declared twice. For example:
+   *
+   * ```html
+   * <div *ngFor="let i of items; let i = index">
+   * </div>
+   * ```
+   */
+  DUPLICATE_VARIABLE_DECLARATION = 8006,
 
   /**
    * An injectable already has a `ɵprov` property.

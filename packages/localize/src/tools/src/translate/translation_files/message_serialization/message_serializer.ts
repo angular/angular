@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@ import {Element, Expansion, ExpansionCase, Node, Text, visitAll} from '@angular/
 
 import {BaseVisitor} from '../base_visitor';
 import {TranslationParseError} from '../translation_parsers/translation_parse_error';
-import {getAttrOrThrow, getAttribute} from '../translation_parsers/translation_utils';
+import {getAttribute, getAttrOrThrow} from '../translation_parsers/translation_utils';
 
 import {MessageRenderer} from './message_renderer';
 
@@ -55,7 +55,9 @@ export class MessageSerializer<T> extends BaseVisitor {
     }
   }
 
-  visitText(text: Text): void { this.renderer.text(text.value); }
+  visitText(text: Text): void {
+    this.renderer.text(text.value);
+  }
 
   visitExpansion(expansion: Expansion): void {
     this.renderer.startIcu();
@@ -109,6 +111,6 @@ export class MessageSerializer<T> extends BaseVisitor {
   }
 
   private isPlaceholderContainer(node: Node): boolean {
-    return node instanceof Element && node.name === this.config.placeholderContainer !.elementName;
+    return node instanceof Element && node.name === this.config.placeholderContainer!.elementName;
   }
 }

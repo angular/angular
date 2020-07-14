@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,7 +16,6 @@ import {compile, expectEmit} from './mock_compile';
  * test in compiler_canonical_spec.ts should have a corresponding test here.
  */
 describe('compiler compliance', () => {
-
   const angularFiles = setup({
     compileAngular: false,
     compileAnimations: false,
@@ -49,7 +48,8 @@ describe('compiler compliance', () => {
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
         …
-        consts: [["title", "Hello", ${AttributeMarker.Classes}, "my-app"], ["cx", "20", "cy", "30", "r", "50"]],
+        consts: [["title", "Hello", ${
+          AttributeMarker.Classes}, "my-app"], ["cx", "20", "cy", "30", "r", "50"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -536,7 +536,6 @@ describe('compiler compliance', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect template');
     });
-
   });
 
   describe('components & directives', () => {
@@ -867,7 +866,6 @@ describe('compiler compliance', () => {
     });
 
     describe('value composition', () => {
-
       it('should support array literals', () => {
         const files = {
           app: {
@@ -1143,7 +1141,6 @@ describe('compiler compliance', () => {
     });
 
     describe('content projection', () => {
-
       it('should support content projection in root template', () => {
         const files = {
           app: {
@@ -1319,7 +1316,8 @@ describe('compiler compliance', () => {
           }
           const $_c4$ = [[["span", "title", "tofirst"]], "*"];
           …
-          consts: [["id", "second", ${AttributeMarker.Template}, "ngIf"], ["id", "third", ${AttributeMarker.Template}, "ngIf"], ["id", "second"], ["id", "third"]],
+          consts: [["id", "second", ${AttributeMarker.Template}, "ngIf"], ["id", "third", ${
+            AttributeMarker.Template}, "ngIf"], ["id", "second"], ["id", "third"]],
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵprojectionDef($_c4$);
@@ -1534,7 +1532,8 @@ describe('compiler compliance', () => {
             decls: 1,
             vars: 1,
             consts: [
-                ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"], ${AttributeMarker.Template}, "ngIf"],
+                ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"], ${
+            AttributeMarker.Template}, "ngIf"],
                 ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"]]
             ],
             template: function MyApp_Template(rf, ctx) {
@@ -1552,7 +1551,6 @@ describe('compiler compliance', () => {
         const result = compile(files, angularFiles);
         expectEmit(result.source, SimpleComponentDefinition, 'Incorrect MyApp definition');
       });
-
     });
 
     describe('queries', () => {
@@ -2044,9 +2042,7 @@ describe('compiler compliance', () => {
     });
 
     describe('pipes', () => {
-
       it('should render pipes', () => {
-
         const files = {
           app: {
             'spec.ts': `
@@ -2217,7 +2213,6 @@ describe('compiler compliance', () => {
 
       it('should generate the proper instruction when injecting ChangeDetectorRef into a pipe',
          () => {
-
            const files = {
              app: {
                'spec.ts': `
@@ -2282,7 +2277,6 @@ describe('compiler compliance', () => {
            expectEmit(source, MyOtherPipeDefinition, 'Invalid alternate pipe definition');
            expectEmit(source, MyOtherPipeFactory, 'Invalid alternate pipe factory function');
          });
-
     });
 
     it('local reference', () => {
@@ -2477,7 +2471,8 @@ describe('compiler compliance', () => {
       }
 
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], ["foo", ""], [${AttributeMarker.Template}, "ngIf"]],
+      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], ["foo", ""], [${
+          AttributeMarker.Template}, "ngIf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 1, "div", 0);
@@ -2542,7 +2537,7 @@ describe('compiler compliance', () => {
             type: LifecycleComp,
             selectors: [["lifecycle-comp"]],
             inputs: {nameMin: ["name", "nameMin"]},
-            features: [$r3$.ɵɵNgOnChangesFeature()],
+            features: [$r3$.ɵɵNgOnChangesFeature],
             decls: 0,
             vars: 0,
             template:  function LifecycleComp_Template(rf, ctx) {},
@@ -2662,7 +2657,7 @@ describe('compiler compliance', () => {
               ForOfDirective.ɵdir = $r3$.ɵɵdefineDirective({
                 type: ForOfDirective,
                 selectors: [["", "forOf", ""]],
-                features: [$r3$.ɵɵNgOnChangesFeature()],
+                features: [$r3$.ɵɵNgOnChangesFeature],
                 inputs: {forOf: "forOf"}
               });
             `;
@@ -2742,7 +2737,7 @@ describe('compiler compliance', () => {
           ForOfDirective.ɵdir = $r3$.ɵɵdefineDirective({
             type: ForOfDirective,
             selectors: [["", "forOf", ""]],
-            features: [$r3$.ɵɵNgOnChangesFeature()],
+            features: [$r3$.ɵɵNgOnChangesFeature],
             inputs: {forOf: "forOf"}
           });
         `;
@@ -3128,575 +3123,157 @@ describe('compiler compliance', () => {
       expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
     });
 
-  });
-
-  describe('inherited base classes', () => {
-    const directive = {
-      'some.directive.ts': `
-        import {Directive} from '@angular/core';
-
-        @Directive({
-          selector: '[someDir]',
-        })
-        export class SomeDirective { }
-      `
-    };
-
-    it('should add an abstract directive if one or more @Input is present', () => {
+    it('should not share pure functions between null and object literals', () => {
       const files = {
         app: {
           'spec.ts': `
-            import {Component, NgModule, Input} from '@angular/core';
-            export class BaseClass {
-              @Input()
-              input1 = 'test';
+              import {Component, NgModule} from '@angular/core';
 
-              @Input('alias2')
-              input2 = 'whatever';
-            }
+              @Component({
+                template: \`
+                  <div [dir]="{foo: null}"></div>
+                  <div [dir]="{foo: {}}"></div>
+                \`
+              })
+              export class MyApp {}
 
-            @Component({
-              selector: 'my-component',
-              template: \`<div>{{input1}} {{input2}}</div>\`
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent]
-            })
-            export class MyModule {}
+              @NgModule({declarations: [MyApp]})
+              export class MyModule {}
           `
         }
       };
-      const expectedOutput = `
-      // ...
-      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass,
-        inputs: {
-          input1: "input1",
-          input2: ["alias2", "input2"]
-        }
-      });
-      // ...
+
+      const MyAppDeclaration = `
+        const $c0$ = function () { return { foo: null }; };
+        const $c1$ = function () { return {}; };
+        const $c2$ = function (a0) { return { foo: a0 }; };
+        …
+        MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: MyApp,
+          selectors: [["ng-component"]],
+          decls: 2,
+          vars: 6,
+          consts: [[${AttributeMarker.Bindings}, "dir"]],
+          template:  function MyApp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelement(0, "div", 0);
+              $r3$.ɵɵelement(1, "div", 0);
+            }
+            if (rf & 2) {
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));
+              $r3$.ɵɵadvance(1);
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(4, $c2$, $r3$.ɵɵpureFunction0(3, $c1$)));
+            }
+          },
+         encapsulation: 2
+        });
       `;
+
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
+      expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
     });
 
-    it('should add an abstract directive if one or more @Output is present', () => {
+    it('should not share pure functions between null and array literals', () => {
       const files = {
         app: {
           'spec.ts': `
-            import {Component, NgModule, Output, EventEmitter} from '@angular/core';
-            export class BaseClass {
-              @Output()
-              output1 = new EventEmitter<string>();
+              import {Component, NgModule} from '@angular/core';
 
-              @Output()
-              output2 = new EventEmitter<string>();
+              @Component({
+                template: \`
+                  <div [dir]="{foo: null}"></div>
+                  <div [dir]="{foo: []}"></div>
+                \`
+              })
+              export class MyApp {}
 
-              clicked() {
-                this.output1.emit('test');
-                this.output2.emit('test');
+              @NgModule({declarations: [MyApp]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDeclaration = `
+        const $c0$ = function () { return { foo: null }; };
+        const $c1$ = function () { return []; };
+        const $c2$ = function (a0) { return { foo: a0 }; };
+        …
+        MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: MyApp,
+          selectors: [["ng-component"]],
+          decls: 2,
+          vars: 6,
+          consts: [[${AttributeMarker.Bindings}, "dir"]],
+          template:  function MyApp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelement(0, "div", 0);
+              $r3$.ɵɵelement(1, "div", 0);
+            }
+            if (rf & 2) {
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));
+              $r3$.ɵɵadvance(1);
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(4, $c2$, $r3$.ɵɵpureFunction0(3, $c1$)));
+            }
+          },
+         encapsulation: 2
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
+    });
+
+    it('should not share pure functions between null and function calls', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                template: \`
+                  <div [dir]="{foo: null}"></div>
+                  <div [dir]="{foo: getFoo()}"></div>
+                \`
+              })
+              export class MyApp {
+                getFoo() {
+                  return 'foo!';
+                }
               }
-            }
 
-            @Component({
-              selector: 'my-component',
-              template: \`<button (click)="clicked()">Click Me</button>\`
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent]
-            })
-            export class MyModule {}
+              @NgModule({declarations: [MyApp]})
+              export class MyModule {}
           `
         }
       };
-      const expectedOutput = `
-      // ...
-      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass,
-        outputs: {
-          output1: "output1",
-          output2: "output2"
-        }
-      });
-      // ...
+
+      const MyAppDeclaration = `
+        const $c0$ = function () { return { foo: null }; };
+        const $c1$ = function (a0) { return { foo: a0 }; };
+        …
+        MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: MyApp,
+          selectors: [["ng-component"]],
+          decls: 2,
+          vars: 5,
+          consts: [[${AttributeMarker.Bindings}, "dir"]],
+          template:  function MyApp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelement(0, "div", 0);
+              $r3$.ɵɵelement(1, "div", 0);
+            }
+            if (rf & 2) {
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));
+              $r3$.ɵɵadvance(1);
+              $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(3, $c1$, ctx.getFoo()));
+            }
+          },
+         encapsulation: 2
+        });
       `;
+
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
-    });
-
-    it('should add an abstract directive if a mixture of @Input and @Output props are present',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
-            import {Component, NgModule, Input, Output, EventEmitter} from '@angular/core';
-            export class BaseClass {
-              @Output()
-              output1 = new EventEmitter<string>();
-
-              @Output()
-              output2 = new EventEmitter<string>();
-
-              @Input()
-              input1 = 'test';
-
-              @Input('whatever')
-              input2 = 'blah';
-
-              clicked() {
-                this.output1.emit('test');
-                this.output2.emit('test');
-              }
-            }
-
-            @Component({
-              selector: 'my-component',
-              template: \`<button (click)="clicked()">Click Me</button>\`
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent]
-            })
-            export class MyModule {}
-          `
-           }
-         };
-         const expectedOutput = `
-      // ...
-      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass,
-        inputs: {
-          input1: "input1",
-          input2: ["whatever", "input2"]
-        },
-        outputs: {
-          output1: "output1",
-          output2: "output2"
-        }
-      });
-      // ...
-      `;
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, expectedOutput, 'Invalid directive definition');
-       });
-
-    it('should add an abstract directive if a ViewChild query is present', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, NgModule, ViewChild} from '@angular/core';
-            export class BaseClass {
-              @ViewChild('something') something: any;
-            }
-
-            @Component({
-              selector: 'my-component',
-              template: ''
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent]
-            })
-            export class MyModule {}
-          `
-        }
-      };
-      const expectedOutput = `
-      const $e0_attrs$ = ["something"];
-      // ...
-      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass,
-        viewQuery: function BaseClass_Query(rf, ctx) {
-          if (rf & 1) {
-            $r3$.ɵɵviewQuery($e0_attrs$, true);
-          }
-          if (rf & 2) {
-            var $tmp$;
-            $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.something = $tmp$.first);
-          }
-        }
-      });
-      // ...
-      `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
-    });
-
-    it('should add an abstract directive if a ViewChildren query is present', () => {
-      const files = {
-        app: {
-          ...directive,
-          'spec.ts': `
-            import {Component, NgModule, ViewChildren} from '@angular/core';
-            import {SomeDirective} from './some.directive';
-
-            export class BaseClass {
-              @ViewChildren(SomeDirective) something: QueryList<SomeDirective>;
-            }
-
-            @Component({
-              selector: 'my-component',
-              template: ''
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent, SomeDirective]
-            })
-            export class MyModule {}
-          `
-        }
-      };
-      const expectedOutput = `
-      // ...
-      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass,
-        viewQuery: function BaseClass_Query(rf, ctx) {
-          if (rf & 1) {
-            $r3$.ɵɵviewQuery(SomeDirective, true);
-          }
-          if (rf & 2) {
-            var $tmp$;
-            $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.something = $tmp$);
-          }
-        }
-      });
-      // ...
-      `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
-    });
-
-    it('should add an abstract directive if a ContentChild query is present', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, NgModule, ContentChild} from '@angular/core';
-            export class BaseClass {
-              @ContentChild('something') something: any;
-            }
-
-            @Component({
-              selector: 'my-component',
-              template: ''
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent]
-            })
-            export class MyModule {}
-          `
-        }
-      };
-      const expectedOutput = `
-      const $e0_attrs$ = ["something"];
-      // ...
-      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass,
-        contentQueries: function BaseClass_ContentQueries(rf, ctx, dirIndex) {
-          if (rf & 1) {
-            $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true);
-          }
-          if (rf & 2) {
-            var $tmp$;
-            $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.something = $tmp$.first);
-          }
-        }
-      });
-      // ...
-      `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
-    });
-
-    it('should add an abstract directive if a ContentChildren query is present', () => {
-      const files = {
-        app: {
-          ...directive,
-          'spec.ts': `
-            import {Component, NgModule, ContentChildren} from '@angular/core';
-            import {SomeDirective} from './some.directive';
-
-            export class BaseClass {
-              @ContentChildren(SomeDirective) something: QueryList<SomeDirective>;
-            }
-
-            @Component({
-              selector: 'my-component',
-              template: ''
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent, SomeDirective]
-            })
-            export class MyModule {}
-          `
-        }
-      };
-      const expectedOutput = `
-      // ...
-      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass,
-        contentQueries: function BaseClass_ContentQueries(rf, ctx, dirIndex) {
-          if (rf & 1) {
-            $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false);
-          }
-          if (rf & 2) {
-            var $tmp$;
-            $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.something = $tmp$);
-          }
-        }
-      });
-      // ...
-      `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
-    });
-
-    it('should add an abstract directive if a host binding is present', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, NgModule, HostBinding} from '@angular/core';
-            export class BaseClass {
-              @HostBinding('attr.tabindex')
-              tabindex = -1;
-            }
-
-            @Component({
-              selector: 'my-component',
-              template: ''
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent]
-            })
-            export class MyModule {}
-          `
-        }
-      };
-      const expectedOutput = `
-      // ...
-      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass,
-        hostVars: 1,
-        hostBindings: function BaseClass_HostBindings(rf, ctx) {
-          if (rf & 2) {
-            $r3$.ɵɵattribute("tabindex", ctx.tabindex);
-          }
-        }
-      });
-      // ...
-      `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
-    });
-
-    it('should add an abstract directive if a host listener is present', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, NgModule, HostListener} from '@angular/core';
-            export class BaseClass {
-              @HostListener('mousedown', ['$event'])
-              handleMousedown(event: any) {}
-            }
-
-            @Component({
-              selector: 'my-component',
-              template: ''
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent]
-            })
-            export class MyModule {}
-          `
-        }
-      };
-      const expectedOutput = `
-      // ...
-      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass,
-        hostBindings: function BaseClass_HostBindings(rf, ctx) {
-          if (rf & 1) {
-            $r3$.ɵɵlistener("mousedown", function BaseClass_mousedown_HostBindingHandler($event) {
-              return ctx.handleMousedown($event);
-            });
-          }
-        }
-      });
-      // ...
-      `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
-    });
-
-    it('should add an abstract directive when using any lifecycle hook', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, NgModule, Input} from '@angular/core';
-            export class BaseClass {
-              ngAfterContentChecked() {}
-            }
-
-            @Component({
-              selector: 'my-component',
-              template: \`<div>{{input1}} {{input2}}</div>\`
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent]
-            })
-            export class MyModule {}
-          `
-        }
-      };
-      const expectedOutput = `
-      // ...
-      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass
-      });
-      // ...
-      `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
-    });
-
-
-    it('should add an abstract directive when using ngOnChanges', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, NgModule, Input} from '@angular/core';
-            export class BaseClass {
-              ngOnChanges() {}
-            }
-
-            @Component({
-              selector: 'my-component',
-              template: \`<div>{{input1}} {{input2}}</div>\`
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent]
-            })
-            export class MyModule {}
-          `
-        }
-      };
-      const expectedOutput = `
-      // ...
-      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass,
-        features: [$r3$.ɵɵNgOnChangesFeature()]
-      });
-      // ...
-      `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
-    });
-
-    it('should NOT add an abstract directive if @Component is present', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, NgModule, Output, EventEmitter} from '@angular/core';
-            @Component({
-              selector: 'whatever',
-              template: '<button (click)="clicked()">Click {{input1}}</button>'
-            })
-            export class BaseClass {
-              @Output()
-              output1 = new EventEmitter<string>();
-
-              @Input()
-              input1 = 'whatever';
-
-              clicked() {
-                this.output1.emit('test');
-              }
-            }
-
-            @Component({
-              selector: 'my-component',
-              template: \`<div>What is this developer doing?</div>\`
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent]
-            })
-            export class MyModule {}
-          `
-        }
-      };
-      const result = compile(files, angularFiles);
-      expect(result.source).not.toContain('ɵdir');
-    });
-
-    it('should NOT add an abstract directive if @Directive is present', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, Directive, NgModule, Output, EventEmitter} from '@angular/core';
-            @Directive({
-              selector: 'whatever',
-            })
-            export class BaseClass {
-              @Output()
-              output1 = new EventEmitter<string>();
-
-              @Input()
-              input1 = 'whatever';
-
-              clicked() {
-                this.output1.emit('test');
-              }
-            }
-
-            @Component({
-              selector: 'my-component',
-              template: '<button (click)="clicked()">Click {{input1}}</button>'
-            })
-            export class MyComponent extends BaseClass {
-            }
-
-            @NgModule({
-              declarations: [MyComponent]
-            })
-            export class MyModule {}
-          `
-        }
-      };
-      const result = compile(files, angularFiles);
-      expect(result.source.match(/ɵdir/g) !.length).toBe(1);
+      expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
     });
   });
 });

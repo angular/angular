@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -23,7 +23,7 @@ export function init(moduleRef: NgModuleRef<StylingModule>) {
   const componentRef = appRef.components[0];
   const component = componentRef.instance;
   const componentHostEl = componentRef.location.nativeElement;
-  const select = document.querySelector('#scenario-select') !as HTMLSelectElement;
+  const select = document.querySelector('#scenario-select')! as HTMLSelectElement;
 
   function create(tplRefIdx: number) {
     component.tplRefIdx = tplRefIdx;
@@ -41,7 +41,9 @@ export function init(moduleRef: NgModuleRef<StylingModule>) {
     appRef.tick();
   }
 
-  function detectChanges() { appRef.tick(); }
+  function detectChanges() {
+    appRef.tick();
+  }
 
   function modifyExternally() {
     const buttonEls = componentHostEl.querySelectorAll('button') as HTMLButtonElement[];

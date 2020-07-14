@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -49,10 +49,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵProvidersFeature': r3.ɵɵProvidersFeature,
        'ɵɵCopyDefinitionFeature': r3.ɵɵCopyDefinitionFeature,
        'ɵɵInheritDefinitionFeature': r3.ɵɵInheritDefinitionFeature,
-       'ɵɵcontainer': r3.ɵɵcontainer,
        'ɵɵnextContext': r3.ɵɵnextContext,
-       'ɵɵcontainerRefreshStart': r3.ɵɵcontainerRefreshStart,
-       'ɵɵcontainerRefreshEnd': r3.ɵɵcontainerRefreshEnd,
        'ɵɵnamespaceHTML': r3.ɵɵnamespaceHTML,
        'ɵɵnamespaceMathML': r3.ɵɵnamespaceMathML,
        'ɵɵnamespaceSVG': r3.ɵɵnamespaceSVG,
@@ -117,6 +114,15 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵclassMapInterpolate8': r3.ɵɵclassMapInterpolate8,
        'ɵɵclassMapInterpolateV': r3.ɵɵclassMapInterpolateV,
        'ɵɵstyleMap': r3.ɵɵstyleMap,
+       'ɵɵstyleMapInterpolate1': r3.ɵɵstyleMapInterpolate1,
+       'ɵɵstyleMapInterpolate2': r3.ɵɵstyleMapInterpolate2,
+       'ɵɵstyleMapInterpolate3': r3.ɵɵstyleMapInterpolate3,
+       'ɵɵstyleMapInterpolate4': r3.ɵɵstyleMapInterpolate4,
+       'ɵɵstyleMapInterpolate5': r3.ɵɵstyleMapInterpolate5,
+       'ɵɵstyleMapInterpolate6': r3.ɵɵstyleMapInterpolate6,
+       'ɵɵstyleMapInterpolate7': r3.ɵɵstyleMapInterpolate7,
+       'ɵɵstyleMapInterpolate8': r3.ɵɵstyleMapInterpolate8,
+       'ɵɵstyleMapInterpolateV': r3.ɵɵstyleMapInterpolateV,
        'ɵɵstyleProp': r3.ɵɵstyleProp,
        'ɵɵstylePropInterpolate1': r3.ɵɵstylePropInterpolate1,
        'ɵɵstylePropInterpolate2': r3.ɵɵstylePropInterpolate2,
@@ -127,7 +133,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵstylePropInterpolate7': r3.ɵɵstylePropInterpolate7,
        'ɵɵstylePropInterpolate8': r3.ɵɵstylePropInterpolate8,
        'ɵɵstylePropInterpolateV': r3.ɵɵstylePropInterpolateV,
-       'ɵɵstyleSanitizer': r3.ɵɵstyleSanitizer,
        'ɵɵclassProp': r3.ɵɵclassProp,
        'ɵɵselect': r3.ɵɵselect,
        'ɵɵadvance': r3.ɵɵadvance,
@@ -143,8 +148,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵtextInterpolate7': r3.ɵɵtextInterpolate7,
        'ɵɵtextInterpolate8': r3.ɵɵtextInterpolate8,
        'ɵɵtextInterpolateV': r3.ɵɵtextInterpolateV,
-       'ɵɵembeddedViewStart': r3.ɵɵembeddedViewStart,
-       'ɵɵembeddedViewEnd': r3.ɵɵembeddedViewEnd,
        'ɵɵi18n': r3.ɵɵi18n,
        'ɵɵi18nAttributes': r3.ɵɵi18nAttributes,
        'ɵɵi18nExp': r3.ɵɵi18nExp,
@@ -160,7 +163,6 @@ export const angularCoreEnv: {[name: string]: Function} =
 
        'ɵɵsanitizeHtml': sanitization.ɵɵsanitizeHtml,
        'ɵɵsanitizeStyle': sanitization.ɵɵsanitizeStyle,
-       'ɵɵdefaultStyleSanitizer': sanitization.ɵɵdefaultStyleSanitizer,
        'ɵɵsanitizeResourceUrl': sanitization.ɵɵsanitizeResourceUrl,
        'ɵɵsanitizeScript': sanitization.ɵɵsanitizeScript,
        'ɵɵsanitizeUrl': sanitization.ɵɵsanitizeUrl,

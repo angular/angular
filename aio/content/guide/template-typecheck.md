@@ -10,10 +10,10 @@
 
 <!--
 Just as TypeScript catches type errors in your code, Angular checks the expressions and bindings within the templates of your application and can report any type errors it finds.
-Angular currently has three modes of doing this, depending on the value of the `fullTemplateTypeCheck` and `strictTemplates` flags in the [TypeScript configuration file](guide/typescript-configuration), `tsconfig.json`.
+Angular currently has three modes of doing this, depending on the value of the `fullTemplateTypeCheck` and `strictTemplates` flags in the [TypeScript configuration file](guide/typescript-configuration).
 -->
 TypeScript 컴파일러가 TypeScript 코드에서 타입 에러를 찾아내는 것과 마찬가지로, Angular 컴파일러도 템플릿에 사용된 표현식이나 바인딩 문법에서 에러를 찾아냅니다.
-현재 Angular가 제공하는 타입 검사 모드는 3종류인데, [TypeScript 환경설정 파일](guide/typescript-configuration) `tsconfig.json` 파일에서 `fullTemplateTypeCheck`, `strictTemplates` 플래그로 지정합니다.
+현재 Angular가 제공하는 타입 검사 모드는 3종류인데, [TypeScript 환경설정 파일](guide/typescript-configuration)에서 `fullTemplateTypeCheck`, `strictTemplates` 플래그로 지정합니다.
 
 <!--
 ### Basic mode
@@ -189,7 +189,7 @@ There can also be false positives when the typings of an Angular library are eit
 In case of a false positive like these, there are a few options:
 
 * Use the [`$any()` type-cast function](guide/template-syntax#any-type-cast-function) in certain contexts to opt out of type-checking for a part of the expression.
-* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file, `tsconfig.json`.
+* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file.
 * You can disable certain type-checking operations individually, while maintaining strictness in other aspects, by setting a _strictness flag_ to `false`.
 * If you want to use `strictTemplates` and `strictNullChecks` together, you can opt out of strict null type checking specifically for input bindings via `strictNullInputTypes`.
 
@@ -203,6 +203,7 @@ In case of a false positive like these, there are a few options:
 |`strictOutputEventTypes`|Whether `$event` will have the correct type for event bindings to component/directive an `@Output()`, or to animation events. If disabled, it will be `any`.|
 |`strictDomEventTypes`|Whether `$event` will have the correct type for event bindings to DOM events. If disabled, it will be `any`.|
 |`strictContextGenerics`|Whether the type parameters of generic components will be inferred correctly (including any generic bounds). If disabled, any type parameters will be `any`.|
+|`strictLiteralTypes`|Whether object and array literals declared in the template will have their type inferred. If disabled, the type of such literals will be `any`.|
 
 
 If you still have issues after troubleshooting with these flags, you can fall back to full mode by disabling `strictTemplates`.
@@ -226,7 +227,7 @@ Angular 9버전부터 도입된 엄격한 타입 검사 모드를 활성화하�
 이런 경우는 다음과 같은 방법으로 해결할 수 있습니다:
 
 * 표현식의 일부분을 검사하지 않으려면 [`$any()` 타입 캐스팅 함수](guide/template-syntax#any-type-cast-function)를 사용하세요.
-* 애플리케이션 TypeScript 환경설정 파일 `tsconfig.json` 파일에서 `strictTemplates` 값을 `false`로 설정해서 엄격한 타입 검사 모드를 비활성화 하세요.
+* 애플리케이션 TypeScript 환경설정 파일에서 `strictTemplates` 값을 `false`로 설정해서 엄격한 타입 검사 모드를 비활성화 하세요.
 * 특정 규칙만 비활성화할 수 있습니다. 해당 _strictness flag_를 `false`로 설정하면 됩니다.
 * `strictTemplates` 옵션과 `strictNullChecks` 옵션을 그대로 사용하려면 `strictNullInputTypes` 옵션을 추가로 사용해서 입력 프로퍼티로 바인딩되는 객체의 타입 검사 옵션을 조정할 수 있습니다.
 
@@ -240,6 +241,7 @@ Angular 9버전부터 도입된 엄격한 타입 검사 모드를 활성화하�
 |`strictOutputEventTypes`|컴포넌트/디렉티브가 `@Output()`으로 보내는 `$event`의 타입과 애니메이션 이벤트의 타입을 검사할지 지정합니다. `false`로 설정하면 이벤트를 `any` 타입으로 처리합니다.|
 |`strictDomEventTypes`|이벤트 바인딩으로 연결한 DOM 이벤트의 타입을 검사할지 지정합니다. `false`로 설정하면 이벤트 객체를 `any` 타입으로 처리합니다.|
 |`strictContextGenerics`|제네릭 컴포넌트에 사용되는 인자 타입을 검사할지 지정합니다. `false`로 설정하면 `any`로 처리합니다.|
+|`strictLiteralTypes`|Whether object and array literals declared in the template will have their type inferred. If disabled, the type of such literals will be `any`.|
 
 
 플래그를 조정하더라도 문제가 계속 발생하면 언제라도 `strictTemplates`를 비활성화해서 전체검사 모드로 변경할 수 있습니다.
@@ -290,6 +292,8 @@ export class AppComponent {
 Here, during type checking of the template for `AppComponent`, the `[user]="selectedUser"` binding corresponds with the `UserDetailComponent.user` input.
 Therefore, Angular assigns the `selectedUser` property to `UserDetailComponent.user`, which would result in an error if their types were incompatible.
 TypeScript checks the assignment according to its type system, obeying flags such as `strictNullChecks` as they are configured in the application.
+
+You can avoid run-time type errors by providing more specific in-template type requirements to the template type checker. Make the input type requirements for your own directives as specific as possible by providing template-guard functions in the directive definition. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks), and [Input setter coercion](#input-setter-coercion) in this guide.
 -->
 Angular 9버전부터는 템플릿 타입 검사 로직이 바인딩 표현식 결과값의 타입과 디렉티브 입력 프로퍼티의 타입이 적절한지 검사합니다.
 다음과 같은 컴포넌트가 있다고 합시다:
@@ -323,6 +327,8 @@ export class AppComponent {
 이제 `AppComponent`를 대상으로 타입 검사 로직이 동작하면 템플릿에 사용된 `[user]="selectedUser"`와 `UserDetailComponent.user` 프로퍼티의 타입이 적절한지 검사합니다.
 그런데 이 예제 코드에서는 `AppComponent`의 `selectedUser` 프로퍼티가 `UserDetailComponent`의 `user` 타입과 맞지 않기 때문에 에러가 발생합니다.
 이 때 실행되는 타입 검사 로직은 `strictNullChecks`와 같은 플래그의 영향을 받습니다.
+
+You can avoid run-time type errors by providing more specific in-template type requirements to the template type checker. Make the input type requirements for your own directives as specific as possible by providing template-guard functions in the directive definition. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks), and [Input setter coercion](#input-setter-coercion) in this guide.
 
 
 <!--
@@ -393,14 +399,13 @@ There are two potential workarounds to the above issues:
 <!--
 As a library author, you can take several measures to provide an optimal experience for your users.
 First, enabling `strictNullChecks` and including `null` in an input's type, as appropriate, communicates to your consumers whether they can provide a nullable value or not.
-Additionally, it is possible to provide type hints that are specific to the template type checker, see the [Input setter coercion](guide/template-typecheck#input-setter-coercion) section of this guide.
+Additionally, it is possible to provide type hints that are specific to the template type checker. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks), and [Input setter coercion](#input-setter-coercion) below.
 -->
 라이브러리 개발자라면 라이브러리 사용자의 편의를 위해 검토할 수 있는 내용이 있습니다.
 먼저, `strictNullChecks` 옵션을 활성화하고 입력으로 받을 수 있는 타입에 `null`을 추가하세요.
 라이브러리 사용자가 `null` 값을 입력값으로 전달하더라도 문제가 생기지 않을 것입니다.
 템플릿 타입 검사 로직에 힌트를 제공할 수도 있습니다.
-아래 [입력값 보정하기](guide/template-typecheck#input-setter-coercion) 섹션을 참고하세요.
-
+See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks), and [Input setter coercion](#input-setter-coercion) below.
 
 {@a input-setter-coercion}
 

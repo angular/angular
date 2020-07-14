@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,7 +16,7 @@ const testFiles = loadStandardTestFiles();
 
 runInEachFileSystem(() => {
   describe('monorepos', () => {
-    let env !: NgtscTestEnvironment;
+    let env!: NgtscTestEnvironment;
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles, absoluteFrom('/app'));
@@ -106,11 +106,9 @@ runInEachFileSystem(() => {
 
       env.driveMain();
 
-      // Look for index.js, not app/index.js, because of TypeScript's behavior of stripping off the
-      // common prefix of all input files.
-      const jsContents = env.getContents('index.js');
+      const jsContents = env.getContents('app/index.js');
 
-      // The real goal of this test was to check that the relative import has the leading './'.
+      // Check that the relative import has the leading './'.
       expect(jsContents).toContain(`import * as i1 from "./target";`);
     });
   });

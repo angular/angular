@@ -7,7 +7,7 @@
 After you understand the basic Angular building blocks, you can learn more
 about the features and tools that can help you develop and deliver Angular applications.
 
-* Work through the [Tour of Heroes](tutorial/index) tutorial to get a feel for how to fit the basic building blocks together to create a well-designed application.
+* Work through the [Tour of Heroes](tutorial) tutorial to get a feel for how to fit the basic building blocks together to create a well-designed application.
 
 * Check out the [Glossary](guide/glossary) to understand Angular-specific terms and usage.
 
@@ -15,11 +15,12 @@ about the features and tools that can help you develop and deliver Angular appli
 -->
 Angular의 기본 구성요소들에 대해 이해하고 나면 Angular 애플리케이션을 개발하는 데에 도움이 되는 기능과 툴에 대해 알아보는 것도 좋습니다.
 
-* 기본 구성요소들이 어떻게 조합되는지, 애플리케이션을 어떻게 디자인하는 것이 좋은지 알아보려면 [히어로들의 여행](tutorial/index) 튜토리얼을 참고하는 것이 좋습니다.
+* 기본 구성요소들이 어떻게 조합되는지, 애플리케이션을 어떻게 디자인하는 것이 좋은지 알아보려면 [히어로들의 여행](tutorial) 튜토리얼을 참고하는 것이 좋습니다.
 
 * Angular에서 사용하는 용어에 대해 알아보려면 [찾아보기](guide/glossary) 문서를 참고하세요.
 
 * 애플리케이션을 개발하면서 그때 그때 필요한 내용이 있다면 Angular의 각 기능에 대해 깊이있게 알아보는 것도 좋습니다.
+
 
 
 <!--
@@ -28,20 +29,23 @@ Angular의 기본 구성요소들에 대해 이해하고 나면 Angular 애플�
 ## 애플리케이션 아키텍처
 
 <!--
+* The [Components and templates](guide/displaying-data) guide explains how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application.
+
 * The [NgModules](guide/ngmodules) guide provides in-depth information on the modular structure of an Angular application.
 
 * The [Routing and navigation](guide/router) guide provides in-depth information on how to construct applications that allow a user to navigate to different [views](guide/glossary#view) within your single-page app.
 
 * The [Dependency injection](guide/dependency-injection) guide provides in-depth information on how to construct an application such that each component class can acquire the services and objects it needs to perform its function.
 -->
+* The [Components and templates](guide/displaying-data) guide explains how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application.
+
 * Angular 애플리케이션을 모듈 단위로 구성하는 방법에 대해 알아보려면 [NgModule](guide/ngmodules) 문서를 참고하세요.
 
 * 단일 페이지 앱에서 사용자가 여러 [뷰](guide/glossary#view)를 전환하는 방법에 대해 알아보려면 [라우팅과 네비게이션](guide/router) 문서를 참고하세요.
 
 * 컴포넌트 클래스가 서비스를 활용하는 방법에 대해 알아보려면 [의존성 주입](guide/dependency-injection) 문서를 참고하세요.
 
-
-<!---
+<!--
 ## Responsive programming
 -->
 ## 반응형 프로그래밍
@@ -112,8 +116,7 @@ Angular는 단일 페이지 애플리케이션을 만들때 사용하는 프레�
 -->
 ## 개발 단계에서 활용할 수 있는 팁
 
-<!--
-The **Development Workflow** section describes the tools and processes you use to compile, test, and  and deploy Angular applications.
+The **Development Workflow** section describes the tools and processes you use to compile, test, and deploy Angular applications.
 
 * [CLI Command Reference](cli): The Angular CLI is a command-line tool that you use to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
 
