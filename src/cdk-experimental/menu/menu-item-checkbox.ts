@@ -8,6 +8,7 @@
 
 import {Directive} from '@angular/core';
 import {CdkMenuItemSelectable} from './menu-item-selectable';
+import {CdkMenuItem} from './menu-item';
 
 /**
  * A directive providing behavior for the "menuitemcheckbox" ARIA role, which behaves similarly to a
@@ -23,7 +24,10 @@ import {CdkMenuItemSelectable} from './menu-item-selectable';
     '[attr.aria-checked]': 'checked || null',
     '[attr.aria-disabled]': 'disabled || null',
   },
-  providers: [{provide: CdkMenuItemSelectable, useExisting: CdkMenuItemCheckbox}],
+  providers: [
+    {provide: CdkMenuItemSelectable, useExisting: CdkMenuItemCheckbox},
+    {provide: CdkMenuItem, useExisting: CdkMenuItemSelectable},
+  ],
 })
 export class CdkMenuItemCheckbox extends CdkMenuItemSelectable {
   trigger() {

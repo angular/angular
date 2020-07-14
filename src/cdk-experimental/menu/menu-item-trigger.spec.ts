@@ -117,7 +117,7 @@ describe('MenuItemTrigger', () => {
       detectChanges();
 
       expect(menus.length).toEqual(1);
-      expect(menus[0] as Menu).toEqual(triggers[0]._menuPanel!._menu!);
+      expect(menus[0] as Menu).toEqual(triggers[0].getMenu()!);
     });
 
     it('should not open the menu when menu item disabled', () => {
@@ -175,7 +175,7 @@ describe('MenuItemTrigger', () => {
       detectChanges();
 
       expect(menus.length).withContext('first level menu should stay open').toEqual(1);
-      expect(triggers[0]._menuPanel!._menu).toEqual(menus[0]);
+      expect(triggers[0].getMenu()).toEqual(menus[0]);
     });
 
     it('should emit request to open event on menu open', () => {

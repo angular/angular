@@ -4,6 +4,8 @@ import {By} from '@angular/platform-browser';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {CdkMenuModule} from './menu-module';
 import {CdkMenuItemRadio} from './menu-item-radio';
+import {CDK_MENU} from './menu-interface';
+import {CdkMenu} from './menu';
 
 describe('MenuItemRadio', () => {
   let fixture: ComponentFixture<SimpleRadioButton>;
@@ -16,7 +18,10 @@ describe('MenuItemRadio', () => {
     TestBed.configureTestingModule({
       imports: [CdkMenuModule],
       declarations: [SimpleRadioButton],
-      providers: [{provide: UniqueSelectionDispatcher, useValue: selectionDispatcher}],
+      providers: [
+        {provide: UniqueSelectionDispatcher, useValue: selectionDispatcher},
+        {provide: CDK_MENU, useClass: CdkMenu},
+      ],
     }).compileComponents();
   }));
 

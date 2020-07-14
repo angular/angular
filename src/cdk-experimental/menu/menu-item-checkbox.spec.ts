@@ -3,6 +3,8 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {CdkMenuModule} from './menu-module';
 import {CdkMenuItemCheckbox} from './menu-item-checkbox';
+import {CDK_MENU} from './menu-interface';
+import {CdkMenu} from './menu';
 
 describe('MenuItemCheckbox', () => {
   let fixture: ComponentFixture<SingleCheckboxButton>;
@@ -13,6 +15,7 @@ describe('MenuItemCheckbox', () => {
     TestBed.configureTestingModule({
       imports: [CdkMenuModule],
       declarations: [SingleCheckboxButton],
+      providers: [{provide: CDK_MENU, useClass: CdkMenu}],
     }).compileComponents();
   }));
 

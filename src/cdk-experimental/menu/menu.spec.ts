@@ -1,9 +1,12 @@
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {CdkMenu} from './menu';
 import {CdkMenuModule} from './menu-module';
 import {CdkMenuItemCheckbox} from './menu-item-checkbox';
+import {CdkMenuItem} from './menu-item';
+import {CdkMenuPanel} from './menu-panel';
+import {MenuStack} from './menu-stack';
 
 describe('Menu', () => {
   describe('as checkbox group', () => {
@@ -17,6 +20,10 @@ describe('Menu', () => {
       }).compileComponents();
 
       fixture = TestBed.createComponent(MenuCheckboxGroup);
+      fixture.detectChanges();
+
+      fixture.componentInstance.panel._menuStack = new MenuStack();
+      fixture.componentInstance.trigger.getMenuTrigger()?.toggle();
       fixture.detectChanges();
 
       menuItems = fixture.debugElement
@@ -51,6 +58,10 @@ describe('Menu', () => {
       fixture = TestBed.createComponent(MenuCheckboxGroup);
       fixture.detectChanges();
 
+      fixture.componentInstance.panel._menuStack = new MenuStack();
+      fixture.componentInstance.trigger.getMenuTrigger()?.toggle();
+      fixture.detectChanges();
+
       menuItems = fixture.debugElement
         .queryAll(By.directive(CdkMenuItemCheckbox))
         .map(element => element.injector.get(CdkMenuItemCheckbox));
@@ -79,6 +90,10 @@ describe('Menu', () => {
       }).compileComponents();
 
       fixture = TestBed.createComponent(MenuWithNestedGroup);
+      fixture.detectChanges();
+
+      fixture.componentInstance.panel._menuStack = new MenuStack();
+      fixture.componentInstance.trigger.getMenuTrigger()?.toggle();
       fixture.detectChanges();
 
       menu = fixture.debugElement.query(By.directive(CdkMenu)).injector.get(CdkMenu);
@@ -120,6 +135,10 @@ describe('Menu', () => {
       fixture = TestBed.createComponent(MenuWithConditionalGroup);
       fixture.detectChanges();
 
+      fixture.componentInstance.panel._menuStack = new MenuStack();
+      fixture.componentInstance.trigger.getMenuTrigger()?.toggle();
+      fixture.detectChanges();
+
       menu = fixture.debugElement.query(By.directive(CdkMenu)).injector.get(CdkMenu);
       menuItems = getMenuItems();
     }));
@@ -143,7 +162,10 @@ describe('Menu', () => {
 
 @Component({
   template: `
-    <ng-template #template cdkMenuPanel #panel="cdkMenuPanel">
+    <div cdkMenuBar>
+      <button cdkMenuItem [cdkMenuTriggerFor]="panel"></button>
+    </div>
+    <ng-template cdkMenuPanel #panel="cdkMenuPanel">
       <ul cdkMenu [cdkMenuPanel]="panel">
         <li role="none">
           <button checked="true" cdkMenuItemCheckbox>
@@ -157,14 +179,19 @@ describe('Menu', () => {
         </li>
       </ul>
     </ng-template>
-    <ng-container *ngTemplateOutlet="template"></ng-container>
   `,
 })
-class MenuCheckboxGroup {}
+class MenuCheckboxGroup {
+  @ViewChild(CdkMenuItem) readonly trigger: CdkMenuItem;
+  @ViewChild(CdkMenuPanel) readonly panel: CdkMenuPanel;
+}
 
 @Component({
   template: `
-    <ng-template #template cdkMenuPanel #panel="cdkMenuPanel">
+    <div cdkMenuBar>
+      <button cdkMenuItem [cdkMenuTriggerFor]="panel"></button>
+    </div>
+    <ng-template cdkMenuPanel #panel="cdkMenuPanel">
       <ul cdkMenu [cdkMenuPanel]="panel">
         <li>
           <ul cdkMenuGroup>
@@ -173,14 +200,19 @@ class MenuCheckboxGroup {}
         </li>
       </ul>
     </ng-template>
-    <ng-container *ngTemplateOutlet="template"></ng-container>
   `,
 })
-class MenuWithNestedGroup {}
+class MenuWithNestedGroup {
+  @ViewChild(CdkMenuItem) readonly trigger: CdkMenuItem;
+  @ViewChild(CdkMenuPanel) readonly panel: CdkMenuPanel;
+}
 
 @Component({
   template: `
-    <ng-template #template cdkMenuPanel #panel="cdkMenuPanel">
+    <div cdkMenuBar>
+      <button cdkMenuItem [cdkMenuTriggerFor]="panel"></button>
+    </div>
+    <ng-template cdkMenuPanel #panel="cdkMenuPanel">
       <ul cdkMenu [cdkMenuPanel]="panel">
         <li><button cdkMenuItemCheckbox>first</button></li>
         <div *ngIf="renderInnerGroup">
@@ -190,9 +222,10 @@ class MenuWithNestedGroup {}
         </div>
       </ul>
     </ng-template>
-    <ng-container *ngTemplateOutlet="template"></ng-container>
   `,
 })
 class MenuWithConditionalGroup {
   renderInnerGroup = false;
+  @ViewChild(CdkMenuItem) readonly trigger: CdkMenuItem;
+  @ViewChild(CdkMenuPanel) readonly panel: CdkMenuPanel;
 }

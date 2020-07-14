@@ -10,9 +10,11 @@ ng_module(
     ),
     module_name = "@angular/cdk-experimental/menu",
     deps = [
+        "//src/cdk/a11y",
         "//src/cdk/bidi",
         "//src/cdk/coercion",
         "//src/cdk/collections",
+        "//src/cdk/keycodes",
         "//src/cdk/overlay",
         "@npm//@angular/core",
         "@npm//rxjs",
@@ -28,6 +30,8 @@ ng_test_library(
     deps = [
         ":menu",
         "//src/cdk/collections",
+        "//src/cdk/keycodes",
+        "//src/cdk/testing/private",
         "@npm//@angular/platform-browser",
     ],
 )
