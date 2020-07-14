@@ -57,10 +57,12 @@ export class CustomIconRegistry extends MatIconRegistry {
   }
 
   private loadSvgElements(svgIcons: SvgIconInfo[]) {
-    const div = document.createElement('DIV');
     svgIcons.forEach(icon => {
       const ns = icon.namespace || DEFAULT_NS;
       const nsIconMap = this.preloadedSvgElements[ns] || (this.preloadedSvgElements[ns] = {});
+
+      // Creating a new `<div>` per icon is necessary for the SVGs to work correctly in IE11.
+      const div = document.createElement('DIV');
 
       // SECURITY: the source for the SVG icons is provided in code by trusted developers
       div.innerHTML = icon.svgSource;
