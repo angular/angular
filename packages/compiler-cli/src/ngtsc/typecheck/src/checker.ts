@@ -16,7 +16,7 @@ import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
 import {ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
 
-import {ShimTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from './context';
+import {InliningMode, ShimTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from './context';
 import {findTypeCheckBlock, shouldReportDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
 import {TemplateSourceManager} from './source';
 
@@ -145,9 +145,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   private newContext(host: TypeCheckingHost): TypeCheckContextImpl {
+    const inlining = this.typeCheckingStrategy.supportsInlineOperations ? InliningMode.InlineOps :
+                                                                          InliningMode.Error;
     return new TypeCheckContextImpl(
         this.config, this.compilerHost, this.typeCheckingStrategy, this.refEmitter, this.reflector,
-        host);
+        host, inlining);
   }
 
   private updateFromContext(ctx: TypeCheckContextImpl): void {

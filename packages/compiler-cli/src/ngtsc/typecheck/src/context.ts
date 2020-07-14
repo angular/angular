@@ -114,6 +114,20 @@ export interface TypeCheckingHost {
   recordComplete(sfPath: AbsoluteFsPath): void;
 }
 
+/**
+ * How a type-checking context should handle operations which would require inlining.
+ */
+export enum InliningMode {
+  /**
+   * Use inlining operations when required.
+   */
+  InlineOps,
+
+  /**
+   * Produce diagnostics if an operation would require inlining.
+   */
+  Error,
+}
 
 /**
  * A template type checking context for a program.
@@ -129,7 +143,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
       private componentMappingStrategy: ComponentToShimMappingStrategy,
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
-      private host: TypeCheckingHost) {}
+      private host: TypeCheckingHost, private inlining: InliningMode) {}
 
   /**
    * A `Map` of `ts.SourceFile`s that the context has seen to the operations (additions of methods
@@ -161,6 +175,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       return;
     }
 
+    // Accumulate a list of any directives which could not have type constructors generated due to
+    // unsupported inlining operations.
+    let missingInlines: ClassDeclaration[] = [];
+
     const fileData = this.dataForFile(ref.node.getSourceFile());
     const shimData = this.pendingShimForComponent(ref.node);
     const boundTarget = binder.bind({template});
@@ -169,6 +187,11 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
       const dirNode = dirRef.node;
       if (requiresInlineTypeCtor(dirNode, this.reflector)) {
+        if (this.inlining === InliningMode.Error) {
+          missingInlines.push(dirNode);
+          continue;
+        }
+
         // Add a type constructor operation for the directive.
         this.addInlineTypeCtor(fileData, dirNode.getSourceFile(), dirRef, {
           fnName: 'ngTypeCtor',
@@ -186,13 +209,34 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       }
     }
 
+    const tcbRequiresInline = requiresInlineTypeCheckBlock(ref.node);
+
+    // If inlining is not supported, but is required for either the TCB or one of its directive
+    // dependencies, then exit here with an error.
+    if (this.inlining === InliningMode.Error && (tcbRequiresInline || missingInlines.length > 0)) {
+      // This template cannot be supported because the underlying strategy does not support inlining
+      // and inlining would be required.
+
+      // Record diagnostics to indicate the issues with this template.
+      if (tcbRequiresInline) {
+        shimData.oobRecorder.requiresInlineTcb(ref.node);
+      }
+
+      if (missingInlines.length > 0) {
+        shimData.oobRecorder.requiresInlineTypeConstructors(ref.node, missingInlines);
+      }
+
+      // Checking this template would be unsupported, so don't try.
+      return;
+    }
+
     const meta = {
       id: fileData.sourceManager.captureSource(ref.node, sourceMapping, file),
       boundTarget,
       pipes,
       schemas,
     };
-    if (requiresInlineTypeCheckBlock(ref.node)) {
+    if (tcbRequiresInline) {
       // This class didn't meet the requirements for external type checking, so generate an inline
       // TCB for the class.
       this.addInlineTypeCheckBlock(fileData, shimData, ref, meta);

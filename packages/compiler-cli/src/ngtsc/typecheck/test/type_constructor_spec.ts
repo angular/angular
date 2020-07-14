@@ -15,7 +15,7 @@ import {getDeclaration, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {ComponentToShimMappingStrategy, UpdateMode} from '../api';
 import {ReusedProgramStrategy} from '../src/augmented_program';
-import {PendingFileTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from '../src/context';
+import {InliningMode, PendingFileTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from '../src/context';
 import {TemplateSourceManager} from '../src/source';
 import {TypeCheckFile} from '../src/type_check_file';
 
@@ -74,7 +74,7 @@ TestClass.ngTypeCtor({value: 'test'});
         ]);
         const ctx = new TypeCheckContextImpl(
             ALL_ENABLED_CONFIG, host, new TestMappingStrategy(), emitter, reflectionHost,
-            new TestTypeCheckingHost());
+            new TestTypeCheckingHost(), InliningMode.InlineOps);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         const pendingFile = makePendingFile();
@@ -113,7 +113,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const pendingFile = makePendingFile();
         const ctx = new TypeCheckContextImpl(
             ALL_ENABLED_CONFIG, host, new TestMappingStrategy(), emitter, reflectionHost,
-            new TestTypeCheckingHost());
+            new TestTypeCheckingHost(), InliningMode.InlineOps);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(
@@ -158,7 +158,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const pendingFile = makePendingFile();
         const ctx = new TypeCheckContextImpl(
             ALL_ENABLED_CONFIG, host, new TestMappingStrategy(), emitter, reflectionHost,
-            new TestTypeCheckingHost());
+            new TestTypeCheckingHost(), InliningMode.InlineOps);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(

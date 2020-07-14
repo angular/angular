@@ -139,6 +139,18 @@ export enum ErrorCode {
   DUPLICATE_VARIABLE_DECLARATION = 8006,
 
   /**
+   * The template type-checking engine would need to generate an inline type check block for a
+   * component, but the current type-checking environment doesn't support it.
+   */
+  INLINE_TCB_REQUIRED = 8900,
+
+  /**
+   * The template type-checking engine would need to generate an inline type constructor for a
+   * directive or component, but the current type-checking environment doesn't support it.
+   */
+  INLINE_TYPE_CTOR_REQUIRED = 8901,
+
+  /**
    * An injectable already has a `ɵprov` property.
    */
   INJECTABLE_DUPLICATE_PROV = 9001,

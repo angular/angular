@@ -76,6 +76,7 @@ export class Compiler {
 function createTypeCheckingProgramStrategy(project: ts.server.Project):
     TypeCheckingProgramStrategy {
   return {
+    supportsInlineOperations: false,
     shimPathForComponent(component: ts.ClassDeclaration): AbsoluteFsPath {
       return TypeCheckShimGenerator.shimFor(absoluteFromSourceFile(component.getSourceFile()));
     },
