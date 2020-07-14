@@ -105,6 +105,40 @@ runInEachFileSystem(() => {
         expect(components).toEqual(new Set([CmpA, CmpC]));
       });
     });
+
+    describe('getResourceDependencies', () => {
+      it('should return resource dependencies of a component source file', () => {
+        const COMPONENT = _('/cmp.ts');
+        fs.writeFile(COMPONENT, `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'test-cmp',
+            templateUrl: './template.html',
+            styleUrls: ['./style.css'],
+          })
+          export class Cmp {}
+        `);
+        fs.writeFile(_('/template.html'), `<h1>Resource</h1>`);
+        fs.writeFile(_('/style.css'), `h1 { }`);
+
+        const options: NgCompilerOptions = {
+          strictTemplates: true,
+        };
+        const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+        const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
+        const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+        const compiler = new NgCompiler(
+            host, options, program, new ReusedProgramStrategy(program, host, options, []),
+            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false);
+
+        const deps = compiler.getResourceDependencies(getSourceFileOrError(program, COMPONENT));
+        expect(deps.length).toBe(2);
+        expect(deps).toEqual(jasmine.arrayContaining([
+          jasmine.stringMatching(/\/template.html$/),
+          jasmine.stringMatching(/\/style.css$/),
+        ]));
+      });
+    });
   });
 });
 
