@@ -34,7 +34,7 @@ filegroup(
 filegroup(
     name = "angularjs_scripts",
     srcs = [
-        # We also declare the unminfied AngularJS files since these can be used for
+        # We also declare the unminified AngularJS files since these can be used for
         # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
         "@npm//:node_modules/angular/angular.js",
         "@npm//:node_modules/angular/angular.min.js",
