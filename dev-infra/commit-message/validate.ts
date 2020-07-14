@@ -148,12 +148,12 @@ export function validateCommitMessage(
   // Checking commit body //
   //////////////////////////
 
-  if (!config.minBodyLengthTypeExcludes?.includes(commit.type) &&
-      commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
-    printError(`The commit message body does not meet the minimum length of ${
-        config.minBodyLength} characters`);
-    return false;
-  }
+  // if (!config.minBodyLengthTypeExcludes?.includes(commit.type) &&
+  //     commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
+  //   printError(`The commit message body does not meet the minimum length of ${
+  //       config.minBodyLength} characters`);
+  //   return false;
+  // }
 
   const bodyByLine = commit.body.split('\n');
   if (bodyByLine.some(line => line.length > config.maxLineLength)) {
