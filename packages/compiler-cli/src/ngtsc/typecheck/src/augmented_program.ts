@@ -34,6 +34,8 @@ export class ReusedProgramStrategy implements TypeCheckingProgramStrategy {
       private originalProgram: ts.Program, private originalHost: ts.CompilerHost,
       private options: ts.CompilerOptions, private shimExtensionPrefixes: string[]) {}
 
+  readonly supportsInlineOperations = true;
+
   getProgram(): ts.Program {
     return this.program;
   }
