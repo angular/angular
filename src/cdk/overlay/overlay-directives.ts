@@ -111,6 +111,8 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _flexibleDimensions = false;
   private _push = false;
   private _backdropSubscription = Subscription.EMPTY;
+  private _attachSubscription = Subscription.EMPTY;
+  private _detachSubscription = Subscription.EMPTY;
   private _offsetX: number;
   private _offsetY: number;
   private _position: FlexibleConnectedPositionStrategy;
@@ -249,11 +251,13 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   }
 
   ngOnDestroy() {
+    this._attachSubscription.unsubscribe();
+    this._detachSubscription.unsubscribe();
+    this._backdropSubscription.unsubscribe();
+
     if (this._overlayRef) {
       this._overlayRef.dispose();
     }
-
-    this._backdropSubscription.unsubscribe();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -282,9 +286,10 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       this.positions = defaultPositionList;
     }
 
-    this._overlayRef = this._overlay.create(this._buildConfig());
-
-    this._overlayRef.keydownEvents().subscribe((event: KeyboardEvent) => {
+    const overlayRef = this._overlayRef = this._overlay.create(this._buildConfig());
+    this._attachSubscription = overlayRef.attachments().subscribe(() => this.attach.emit());
+    this._detachSubscription = overlayRef.detachments().subscribe(() => this.detach.emit());
+    overlayRef.keydownEvents().subscribe((event: KeyboardEvent) => {
       this.overlayKeydown.next(event);
 
       if (event.keyCode === ESCAPE && !hasModifierKey(event)) {
@@ -380,7 +385,6 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
 
     if (!this._overlayRef.hasAttached()) {
       this._overlayRef.attach(this._templatePortal);
-      this.attach.emit();
     }
 
     if (this.hasBackdrop) {
@@ -396,7 +400,6 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _detachOverlay() {
     if (this._overlayRef) {
       this._overlayRef.detach();
-      this.detach.emit();
     }
 
     this._backdropSubscription.unsubscribe();
