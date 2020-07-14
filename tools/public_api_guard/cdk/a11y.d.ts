@@ -10,7 +10,8 @@ export declare class ActiveDescendantKeyManager<T> extends ListKeyManager<Highli
 }
 
 export declare class AriaDescriber implements OnDestroy {
-    constructor(_document: any);
+    constructor(_document: any,
+    _platform?: Platform | undefined);
     describe(hostElement: Element, message: string | HTMLElement): void;
     ngOnDestroy(): void;
     removeDescription(hostElement: Element, message: string | HTMLElement): void;
