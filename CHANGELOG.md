@@ -1,3 +1,23 @@
+<a name="10.0.4"></a>
+## 10.0.4 (2020-07-15)
+
+
+### Bug Fixes
+
+* **bazel:** ng_module rule does not expose flat module information in Ivy ([#36971](https://github.com/angular/angular/issues/36971)) ([b76a2dc](https://github.com/angular/angular/commit/b76a2dc))
+* **compiler:** check more cases for pipe usage inside host bindings ([#37883](https://github.com/angular/angular/issues/37883)) ([a94383f](https://github.com/angular/angular/commit/a94383f)), closes [#34655](https://github.com/angular/angular/issues/34655) [#37610](https://github.com/angular/angular/issues/37610)
+* **language-service:** non-existent module format in package output ([#37778](https://github.com/angular/angular/issues/37778)) ([12f1773](https://github.com/angular/angular/commit/12f1773))
+* **language-service:** remove completion for string ([#37983](https://github.com/angular/angular/issues/37983)) ([387e838](https://github.com/angular/angular/commit/387e838))
+* **ngcc:** report a warning if ngcc tries to use a solution-style tsconfig ([#38003](https://github.com/angular/angular/issues/38003)) ([e3b8010](https://github.com/angular/angular/commit/e3b8010)), closes [#36386](https://github.com/angular/angular/issues/36386)
+* **service-worker:** correctly handle relative base href ([#37922](https://github.com/angular/angular/issues/37922)) ([b186db7](https://github.com/angular/angular/commit/b186db7)), closes [#25055](https://github.com/angular/angular/issues/25055) [#25055](https://github.com/angular/angular/issues/25055)
+* **service-worker:** correctly serve `ngsw/state` with a non-root SW scope ([#37922](https://github.com/angular/angular/issues/37922)) ([dc42c97](https://github.com/angular/angular/commit/dc42c97)), closes [#30505](https://github.com/angular/angular/issues/30505)
+
+
+### Features
+
+* **bazel:** provide LinkablePackageInfo from ng_module ([#37778](https://github.com/angular/angular/issues/37778)) ([6cd10a1](https://github.com/angular/angular/commit/6cd10a1)), closes [/github.com/bazelbuild/rules_nodejs/blob/9a5de3728b05bf1647bbb87ad99f54e626604705/internal/linker/link_node_modules.bzl#L144-L146](https://github.com//github.com/bazelbuild/rules_nodejs/blob/9a5de3728b05bf1647bbb87ad99f54e626604705/internal/linker/link_node_modules.bzl/issues/L144-L146)
+
+
 <a name="10.1.0-next.1"></a>
 # 10.1.0-next.1 (2020-07-15)
 
