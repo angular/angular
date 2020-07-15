@@ -576,6 +576,13 @@
     "picture": "cexbrayat.jpg",
     "bio": "Author of `Become a ninja with Angular (2+)` https://books.ninja-squad.com/angular - Angular trainer and @Ninja-Squad co-founder"
   },
+  "ajitsinghkaler": {
+    "name": "Ajit Singh",
+    "groups": ["Collaborators"],
+    "picture": "ajitsinghkaler.jpg",
+    "twitter": "ajitsinghkaler",
+    "bio": "Software Engineer in Bangalore, India who loves to learn something new and is interested in front end technologies"
+  },
   "CaerusKaru": {
     "name": "Adam Plumer",
     "groups": ["Collaborators"],
