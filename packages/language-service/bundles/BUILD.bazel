@@ -1,8 +1,10 @@
-load("//packages/language-service/bundles:index.bzl", "ls_rollup_bundle")
+load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", "ng_rollup_bundle")
 
-ls_rollup_bundle(
+ng_rollup_bundle(
     name = "language-service",
+    build_optimizer = False,
     entry_point = "//packages/language-service:index.ts",
+    format = "amd",
     globals = {
         "fs": "fs",
         "path": "path",
@@ -18,9 +20,11 @@ ls_rollup_bundle(
     ],
 )
 
-ls_rollup_bundle(
+ng_rollup_bundle(
     name = "ivy",
+    build_optimizer = False,
     entry_point = "//packages/language-service/ivy:ts_plugin.ts",
+    format = "amd",
     globals = {
         "fs": "fs",
         "path": "path",
