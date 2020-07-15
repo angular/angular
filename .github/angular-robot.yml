@@ -154,6 +154,14 @@ triage:
     -
       - "type: RFC / Discussion / question"
       - "comp: *"
+    -
+      - "type: confusing"
+      - "freq*"
+      - "comp: *"
+    -
+      - "type: use-case"
+      - "freq*"
+      - "comp: *"
 
 # options for the triage PR plugin
 triagePR:
