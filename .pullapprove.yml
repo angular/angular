@@ -1141,9 +1141,10 @@ groups:
           ])
     reviewers:
       users:
-        - alxhub
         - IgorMinar
+        - alxhub
         - jelbourn
+        - petebacondarwin
         - pkozlowski-opensource
     reviews:
       request: -1   # request reviews from everyone
@@ -1164,9 +1165,10 @@ groups:
           ])
     reviewers:
       users:
-        - alxhub
         - IgorMinar
+        - alxhub
         - jelbourn
+        - petebacondarwin
         - pkozlowski-opensource
     reviews:
       request: -1   # request reviews from everyone
@@ -1190,6 +1192,7 @@ groups:
         - IgorMinar
         - jelbourn
         - josephperrott
+        - petebacondarwin
         - pkozlowski-opensource
 
 
@@ -1211,6 +1214,9 @@ groups:
     reviewers:
       users:
         - IgorMinar
+        - jelbourn
+        - josephperrott
+        - mhevery
 
 
   # ====================================================
