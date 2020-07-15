@@ -28,7 +28,8 @@ ng_rollup_bundle(
     globals = {
         "fs": "fs",
         "path": "path",
-        "typescript/lib/tsserverlibrary": "ts",
+        "typescript": "ts",
+        "typescript/lib/tsserverlibrary": "tss",
     },
     license_banner = ":banner",
     visibility = ["//packages/language-service:__pkg__"],
