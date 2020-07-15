@@ -209,5 +209,114 @@ runInEachFileSystem(() => {
         expect(absoluteFromSourceFile(diags[0].relatedInformation![0].file!)).toBe(dirFile);
       });
     });
+
+    describe('template overrides', () => {
+      it('should override a simple template', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {program, templateTypeChecker} = setup([{
+          fileName,
+          templates: {'Cmp': '<div></div>'},
+        }]);
+
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        const tcbReal = templateTypeChecker.getTypeCheckBlock(cmp)!;
+        expect(tcbReal.getText()).toContain('div');
+
+        templateTypeChecker.overrideComponentTemplate(cmp, '<span></span>');
+        const tcbOverridden = templateTypeChecker.getTypeCheckBlock(cmp);
+        expect(tcbOverridden).not.toBeNull();
+        expect(tcbOverridden!.getText()).not.toContain('div');
+        expect(tcbOverridden!.getText()).toContain('span');
+      });
+
+      it('should clear overrides on request', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {program, templateTypeChecker} = setup([{
+          fileName,
+          templates: {'Cmp': '<div></div>'},
+        }]);
+
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        templateTypeChecker.overrideComponentTemplate(cmp, '<span></span>');
+        const tcbOverridden = templateTypeChecker.getTypeCheckBlock(cmp)!;
+        expect(tcbOverridden.getText()).not.toContain('div');
+        expect(tcbOverridden.getText()).toContain('span');
+
+        templateTypeChecker.resetOverrides();
+
+        // The template should be back to the original, which has <div> and not <span>.
+        const tcbReal = templateTypeChecker.getTypeCheckBlock(cmp)!;
+        expect(tcbReal.getText()).toContain('div');
+        expect(tcbReal.getText()).not.toContain('span');
+      });
+
+      it('should override a template and make use of previously unused directives', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const {program, templateTypeChecker} = setup(
+            [
+              {
+                fileName,
+                source: `export class Cmp {}`,
+                templates: {'Cmp': '<div></div>'},
+                declarations: [{
+                  name: 'TestDir',
+                  selector: '[dir]',
+                  file: dirFile,
+                  type: 'directive',
+                }]
+              },
+              {
+                fileName: dirFile,
+                source: `export class TestDir {}`,
+                templates: {},
+              }
+            ],
+            {inlining: false});
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        // TestDir is initially unused. Note that this checks the entire text of the ngtypecheck
+        // file, to ensure it captures not just the TCB function but also any inline type
+        // constructors.
+        const tcbReal = templateTypeChecker.getTypeCheckBlock(cmp)!;
+        expect(tcbReal.getSourceFile().text).not.toContain('TestDir');
+
+        templateTypeChecker.overrideComponentTemplate(cmp, '<div dir></div>');
+
+        const tcbOverridden = templateTypeChecker.getTypeCheckBlock(cmp);
+        expect(tcbOverridden).not.toBeNull();
+        expect(tcbOverridden!.getSourceFile().text).toContain('TestDir');
+      });
+
+      it('should not invalidate other templates when an override is requested', () => {
+        const file1 = absoluteFrom('/file1.ts');
+        const file2 = absoluteFrom('/file2.ts');
+        const {program, templateTypeChecker, programStrategy} = setup([
+          {fileName: file1, templates: {'Cmp1': '<div></div>'}},
+          {fileName: file2, templates: {'Cmp2': '<span></span>'}}
+        ]);
+
+        const cmp1 = getClass(getSourceFileOrError(program, file1), 'Cmp1');
+        const cmp2 = getClass(getSourceFileOrError(program, file2), 'Cmp2');
+
+        // To test this scenario, Cmp1's type check block will be captured, then Cmp2's template
+        // will be overridden. Cmp1's type check block should not change as a result.
+        const originalTcb = templateTypeChecker.getTypeCheckBlock(cmp1)!;
+
+        templateTypeChecker.overrideComponentTemplate(cmp2, '<p></p>');
+
+        // Trigger generation of the TCB for Cmp2.
+        templateTypeChecker.getTypeCheckBlock(cmp2);
+
+        // Verify that Cmp1's TCB has not changed.
+        const currentTcb = templateTypeChecker.getTypeCheckBlock(cmp1)!;
+        expect(currentTcb).toBe(originalTcb);
+      });
+    });
   });
 });
