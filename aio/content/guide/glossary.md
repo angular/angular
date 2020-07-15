@@ -211,6 +211,7 @@ An Angular component class is responsible for exposing data and handling most of
 Read more about component classes, templates, and views in [Introduction to Angular concepts](guide/architecture).
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 {@a componentless-route}
 
@@ -221,6 +222,8 @@ In configuring the [Angular router](#router), a container `Route` for a set of r
 Read more about nested routes in the [Routing and Navigation](guide/router) guide.
 >>>>>>> docs: separate router tutorial from router guide
 
+=======
+>>>>>>> fixup! docs: separate router tutorial from router guide
 ## configuration
 
 See  [workspace configuration](#cli-config)
@@ -589,6 +592,7 @@ Angular calls these hook methods in the following order:
 
 To learn more, see the [Lifecycle Hooks](guide/lifecycle-hooks) guide.
 
+<<<<<<< HEAD
 {@a link-parameters-array}
 
 <<<<<<< HEAD
@@ -600,6 +604,8 @@ In the Angular [router service](#router), an array which contains an object that
 To learn more, see the [Routing and Navigation](guide/router#link-parameters-array) guide.
 
 >>>>>>> docs: separate router tutorial from router guide
+=======
+>>>>>>> fixup! docs: separate router tutorial from router guide
 {@a M}
 
 {@a module}
@@ -760,7 +766,6 @@ When using reactive forms:
 
 The alternative is a template-driven form. For an introduction and comparison of both forms approaches, see [Introduction to Angular Forms](guide/forms-overview).
 
-<<<<<<< HEAD
 {@a resolver}
 
 ## resolver
@@ -771,13 +776,10 @@ Resolvers run after all [route guards](#route-guard "Definition") for a route tr
 
 See an example of using a [resolve guard](guide/router-tutorial-toh#resolve-guard "Routing techniques tutorial") to retrieve dynamic data.
 
-=======
->>>>>>> docs: separate router tutorial from router guide
 {@a route-guard}
 
 ## route guard
 
-<<<<<<< HEAD
 A method that controls navigation to a requested route in a routing application.
 Guards determine whether a route can be activated or deactivated, and whether a lazy-loaded module can be loaded.
 
@@ -818,12 +820,6 @@ A [directive](#directive) that acts as a placeholder in a routing component's te
 An Angular [component](#component) with a `RouterOutlet` directive in its template that displays views based on router navigations.
 
 For more information, see [Routing and Navigation](guide/router).
-
-{@a routing-module}
-
-## routing module
-
-An NgModule that contains an application's routing configuration. A dedicated routing module does not declare components, but serves to separate routing concerns from other application concerns. It provides a well-known location for routing service providers such as guards and resolvers. A routing module is also easy to replace or remove when testing the application.
 
 {@a rule}
 

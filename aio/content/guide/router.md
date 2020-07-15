@@ -771,9 +771,9 @@ If a guard function returns an observable, the observable must also complete. If
 
 </div>
 
-### Predefined route guards
+### Guard function types
 
-Angular provides the following pre-defined route guard functions:
+Route guard functions implement the following interfaces:
 
 * [`CanActivate`](api/router/CanActivate)
 * [`CanActivateChild`](api/router/CanActivateChild)
@@ -787,7 +787,7 @@ Then it checks the `CanActivate` guards from the top down to the deepest child r
 If the feature module is loaded asynchronously, the `CanLoad` guard is checked before the module is loaded.
 If _any_ guard returns false, pending guards that have not completed are canceled, and the entire navigation is canceled.
 
-Consider using [componentless routes](api/router/Route#componentless-routes) to more easily control access to child routes.
+Consider using [componentless routes](#nesting-routes) to more easily control access to child routes.  A componentless route is a `Route` object that has a base path but no component; it serves as a container for a set of related child routes.
 
 ### Creating a guard service
 
