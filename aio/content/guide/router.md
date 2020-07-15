@@ -96,10 +96,10 @@ When the browser's URL changes, that router looks for a corresponding `Route` fr
 
 ### Structuring an application for routing
 
-An application that supports navigation should have a dedicated [routing module](guide/glossary#routing-module "Definition of routing module") that imports `RouterModule` and `Routes`.
-When you create a new project with the CLI `--routing` option, the application includes a routing module named `AppRoutingModule` and imports it into the root module.
+An application that supports navigation can have dedicated NgModules for the routing configuration.
+When you create a new project with the CLI `--routing` option, the application includes a routing module named `AppRoutingModule` and imports it into the root module. The routing module imports `RouterModule` and `Routes`.
 
-A routing module is an NgModule that contains an application's routing configuration. A dedicated routing module does not declare components, but serves to separate routing concerns from other application concerns. It provides a well-known location for routing service providers such as guards and resolvers. A routing module is also easy to replace or remove when testing the application.
+A dedicated routing module does not declare components, but serves to separate routing concerns from other application concerns. It provides a well-known location for routing service providers such as guards and resolvers. A routing module is also easy to replace or remove when testing the application.
 
 <div class="alert is-helpful">
 
@@ -924,7 +924,7 @@ The following table lists and defines key API elements provided by the Angular r
 | [`Routes`](api/router/Routes) | An array of `Route` objects, each mapping a URL path to a component. |
 | [`Route`](api/router/Route) | An object that defines how the router should navigate to a component based on a URL pattern. Most routes consist of a *path* and a *component* type. |
 | [`RouterOutlet`](api/router/RouterOutlet) | A directive (<code>&lt;router-outlet></code>) that marks where the router displays a view. A component whose template contains a `routerOutlet` directive is a [routing component](guide/glossary#routing-component "Definition of routing component"). |
-| [`RouterLink`](api/router/RouterLink) | A directive that binds a clickable HTML element to a route. A user triggers navigation by clicking an element with a <code>[routerLink]</code> directive that is bound to a simple route path string, or a [link parameters array](guide/glossary#link-parameters-array "Definition"). You can also initiate navigation programmatically by passing a link parameters array to the [Router.navigate()](api/router/Router#navigate) method. |
+| [`RouterLink`](api/router/RouterLink) | A directive that binds a clickable HTML element to a route. A user triggers navigation by clicking an element with a <code>[routerLink]</code> directive that is bound to a simple route path string, or a [link parameters array](#link-parameters-array "Definition"). You can also initiate navigation programmatically by passing a link parameters array to the [Router.navigate()](api/router/Router#navigate) method. |
 | [`RouterLinkActive`](api/router/RouterLinkActive) | A directive for adding or removing CSS classes on an HTML element when the route for an associated `routerLink` contained on or inside the element becomes active or inactive. |
 | [`ActivatedRoute`](api/router/ActivatedRoute) | A service that is provided to each route component, which contains route-specific information such as route parameters, static data, resolve data, global query parameters, and the global fragment. |
 | [`RouterState`](api/router/RouterState) | Represents the current state of the router, including a tree of the currently activated routes together with convenience methods for traversing the route tree. |
