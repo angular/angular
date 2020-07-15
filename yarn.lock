@@ -128,12 +128,13 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#0d806013f9c76bfae91d648fb69fc3cb2bf08758":
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#0612a30aaf7a7e7eb2a4a5a9fa0f58622ce59590":
   version "0.0.0"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#0d806013f9c76bfae91d648fb69fc3cb2bf08758"
+  resolved "https://github.com/angular/dev-infra-private-builds.git#0612a30aaf7a7e7eb2a4a5a9fa0f58622ce59590"
   dependencies:
     "@angular/benchpress" "0.2.0"
     "@octokit/graphql" "^4.3.1"
+    "@octokit/types" "^5.0.1"
     brotli "^1.3.2"
     chalk "^2.3.1"
     cli-progress "^3.7.0"
@@ -1198,6 +1199,13 @@
   version "2.16.2"
   resolved "https://registry.yarnpkg.com/@octokit/types/-/types-2.16.2.tgz#4c5f8da3c6fecf3da1811aef678fda03edac35d2"
   integrity sha512-O75k56TYvJ8WpAakWwYRN8Bgu60KrmX0z1KqFp1kNiFNkgW+JW+9EBKZ+S33PU6SLvbihqd+3drvPxKK68Ee8Q==
+  dependencies:
+    "@types/node" ">= 8"
+
+"@octokit/types@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@octokit/types/-/types-5.0.1.tgz#5459e9a5e9df8565dcc62c17a34491904d71971e"
+  integrity sha512-GorvORVwp244fGKEt3cgt/P+M0MGy4xEDbckw+K5ojEezxyMDgCaYPKVct+/eWQfZXOT7uq0xRpmrl/+hliabA==
   dependencies:
     "@types/node" ">= 8"
 
