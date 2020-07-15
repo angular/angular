@@ -28,9 +28,7 @@ export function aliasTransformFactory(exportStatements: Map<string, Map<string, 
         statements.push(stmt);
       });
 
-      file = ts.getMutableClone(file);
-      file.statements = ts.createNodeArray(statements);
-      return file;
+      return ts.updateSourceFileNode(file, statements);
     };
   };
 }

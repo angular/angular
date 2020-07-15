@@ -445,7 +445,7 @@ class TestComponent {
         }`);
 
       expect(messages).toEqual(
-          [`TestComponent.html(1, 15): Type '2' is not assignable to type 'string'.`]);
+          [`TestComponent.html(1, 15): Type 'number' is not assignable to type 'string'.`]);
     });
   });
 });

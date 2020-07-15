@@ -787,7 +787,7 @@ describe('ng type checker', () => {
     it('should report an invalid call to a pipe', () => {
       rejectOnlyWithFullTemplateTypeCheck(
           '<div>{{"hello" | aPipe}}</div>',
-          `Argument of type '"hello"' is not assignable to parameter of type 'number'.`, '0:5');
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`, '0:5');
     });
     it('should report an invalid property on an exportAs directive', () => {
       rejectOnlyWithFullTemplateTypeCheck(

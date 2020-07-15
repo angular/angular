@@ -50,7 +50,7 @@ describe('plugin', () => {
     const diags = plugin.getSemanticDiagnostics(fileName);
     expect(diags.length).toBe(1);
     expect(diags[0].messageText)
-        .toBe(`Argument of type '"hello"' is not assignable to parameter of type 'number'.`);
+        .toBe(`Argument of type 'string' is not assignable to parameter of type 'number'.`);
   });
 
   it('should not report TypeScript errors on tour of heroes', () => {

@@ -128,8 +128,6 @@ function transformFactorySourceFile(
 
   const {moduleSymbols, sourceFilePath} = factoryMap.get(file.fileName)!;
 
-  file = ts.getMutableClone(file);
-
   // Not every exported factory statement is valid. They were generated before the program was
   // analyzed, and before ngtsc knew which symbols were actually NgModules. factoryMap contains
   // that knowledge now, so this transform filters the statement list and removes exported factories
@@ -221,7 +219,8 @@ function transformFactorySourceFile(
     // satisfy closure compiler.
     transformedStatements.push(nonEmptyExport);
   }
-  file.statements = ts.createNodeArray(transformedStatements);
+
+  file = ts.updateSourceFileNode(file, transformedStatements);
 
   // If any imports to @angular/core were detected and rewritten (which happens when compiling
   // @angular/core), go through the SourceFile and rewrite references to symbols imported from core.

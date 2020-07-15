@@ -216,7 +216,7 @@ export declare class NgComponentOutlet implements OnChanges, OnDestroy {
 }
 
 export declare class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
-    set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null);
+    set ngForOf(ngForOf: U & NgIterable<T> | undefined | null);
     set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>);
     set ngForTrackBy(fn: TrackByFunction<T>);
     get ngForTrackBy(): TrackByFunction<T>;
