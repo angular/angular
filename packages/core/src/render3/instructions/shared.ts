@@ -979,7 +979,7 @@ export function elementPropertyInternal<T>(
 
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
-      if (!validateProperty(tView, lView, element, propName, tNode)) {
+      if (!validateProperty(tView, element, propName, tNode)) {
         // Return here since we only log warnings for unknown properties.
         logUnknownPropertyError(propName, tNode);
         return;
@@ -996,10 +996,10 @@ export function elementPropertyInternal<T>(
       (element as RElement).setProperty ? (element as any).setProperty(propName, value) :
                                           (element as any)[propName] = value;
     }
-  } else if (tNode.type === TNodeType.Container) {
+  } else if (tNode.type === TNodeType.Container || tNode.type === TNodeType.ElementContainer) {
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
-    if (ngDevMode && !matchingSchemas(tView, lView, tNode.tagName)) {
+    if (ngDevMode && !matchingSchemas(tView, tNode.tagName)) {
       logUnknownPropertyError(propName, tNode);
     }
   }
@@ -1057,8 +1057,7 @@ export function setNgReflectProperties(
 }
 
 function validateProperty(
-    tView: TView, lView: LView, element: RElement|RComment, propName: string,
-    tNode: TNode): boolean {
+    tView: TView, element: RElement|RComment, propName: string, tNode: TNode): boolean {
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
   // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
   // defined as an array (as an empty array in case `schemas` field is not defined) and we should
@@ -1067,8 +1066,7 @@ function validateProperty(
 
   // The property is considered valid if the element matches the schema, it exists on the element
   // or it is synthetic, and we are in a browser context (web worker nodes should be skipped).
-  if (matchingSchemas(tView, lView, tNode.tagName) || propName in element ||
-      isAnimationProp(propName)) {
+  if (matchingSchemas(tView, tNode.tagName) || propName in element || isAnimationProp(propName)) {
     return true;
   }
 
@@ -1077,7 +1075,7 @@ function validateProperty(
   return typeof Node === 'undefined' || Node === null || !(element instanceof Node);
 }
 
-export function matchingSchemas(tView: TView, lView: LView, tagName: string|null): boolean {
+export function matchingSchemas(tView: TView, tagName: string|null): boolean {
   const schemas = tView.schemas;
 
   if (schemas !== null) {

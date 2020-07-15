@@ -233,10 +233,10 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       // TODO(pk): test for this case
       parsedElement = new t.Template(
-          (parsedElement as t.Element).name, hoistedAttrs.attributes, hoistedAttrs.inputs,
-          hoistedAttrs.outputs, templateAttrs, [parsedElement], [/* no references */],
-          templateVariables, element.sourceSpan, element.startSourceSpan, element.endSourceSpan,
-          i18n);
+          (parsedElement as t.Element | t.Content).name, hoistedAttrs.attributes,
+          hoistedAttrs.inputs, hoistedAttrs.outputs, templateAttrs, [parsedElement],
+          [/* no references */], templateVariables, element.sourceSpan, element.startSourceSpan,
+          element.endSourceSpan, i18n);
     }
     if (isI18nRootElement) {
       this.inI18nBlock = false;
