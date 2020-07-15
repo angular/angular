@@ -1510,7 +1510,7 @@ Here are the relevant files for this version of the sample application.
 
 {@a milestone-4}
 
-
+{@a relative-routing}
 
 ## Milestone 4: Crisis center feature
 
@@ -2527,6 +2527,8 @@ Add an `anchor` element so you can jump to a certain point on the page.
 Add the `NavigationExtras` object to the `router.navigate()` method that navigates you to the `/login` route.
 
 <code-example path="router/src/app/auth/auth.guard.4.ts" header="src/app/auth/auth.guard.ts (v3)"></code-example>
+
+{@a preserve-params}
 
 You can also preserve query parameters and fragments across navigations without having to provide them again when navigating.
 In the `LoginComponent`, you'll add an *object* as the second argument in the `router.navigateUrl()` function and provide the `queryParamsHandling` and `preserveFragment` to pass along the current query parameters and fragment to the next route.

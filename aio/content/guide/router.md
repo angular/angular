@@ -533,7 +533,7 @@ The URL for a secondary route uses the following syntax to specify both the prim
 
 </code-example>
 
-For an example of a named outlet and secondary route configuration, see the [Routing Techniques](guide/router-tutorial-toh#named-outlets-example) tutorial.
+For an example of a named outlet and secondary route configuration, see the [Routing Techniques](guide/router-tutorial-toh#named-outlets) tutorial.
 
 {@a secondary-route-navigation}
 
