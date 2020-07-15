@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {TypeCheckingConfig} from '../api';
+import {OptimizeFor, TypeCheckingConfig} from '../api';
 
 import {ngForDeclaration, ngForDts, setup, TestDeclaration} from './test_utils';
 
@@ -472,7 +472,7 @@ function diagnose(
       ],
       {config, options});
   const sf = getSourceFileOrError(program, sfPath);
-  const diagnostics = templateTypeChecker.getDiagnosticsForFile(sf);
+  const diagnostics = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
   return diagnostics.map(diag => {
     const text =
         typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;
