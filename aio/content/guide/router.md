@@ -1,33 +1,86 @@
 # In-app navigation: routing to views
 
 In a single-page app, you change what the user sees by showing or hiding portions of the display that correspond to particular components, rather than going out to the server to get a new page.
-As users perform application tasks, they need to move between the different [views](guide/glossary#view "Definition of view") that you have defined.
-To implement this kind of navigation within the single page of your app, you use the Angular **`Router`**.
+As users perform application tasks, they need to move between the different [views](guide/glossary#view "Definition of view") defined by your components.
 
-To handle the navigation from one [view](guide/glossary#view) to the next, you use the Angular _router_.
-The router enables navigation by interpreting a browser URL as an instruction to change the view.
+To handle navigation from one view to another, you use the Angular [Router service](api/router/RouterModule). The Router service enables navigation by interpreting a browser URL as an instruction to change the view. A user can initiate a request for navigation interactively from the UI, or you can navigate programmatically.
 
-To explore a sample app featuring the router's primary features, see the <live-example></live-example>.
+To explore a sample app that demonstrates the router's primary features, see the <live-example></live-example>.
+
+<hr />
 
 ## Prerequisites
 
-Before creating a route, you should be familiar with the following:
+Before creating an application capable of view navigation, you should be familiar with the following:
 
 * [Basics of components](guide/architecture-components)
 * [Basics of templates](guide/glossary#template)
 * An Angular app&mdash;you can generate a basic Angular app using the [Angular CLI](cli).
 
-For an introduction to Angular with a ready-made app, see [Getting Started](start).
-For a more in-depth experience of building an Angular app, see the [Tour of Heroes](tutorial) tutorial. Both guide you through using component classes and templates.
+For an introduction to Angular with a ready-made app, see [Getting Started](start "Try it now without setup").
+For a more in-depth experience of building an Angular app, see the [Tour of Heroes](tutorial "Full tutorial") tutorial. Both guide you through using component classes and templates.
+
+**Routing tutorials**: The [Tour of Heroes tutorial](tutorial "Full tutorial") walks you through adding navigation to the sample app.
+Additional tutorials use the same domain to introduce [basic routing](guide/router-tutorial "Using Angular routes in a single-page app") and provide examples of more advanced [navigation techniques](guide/router-tutorial-toh "Taking advantage of routing features").
 
 <hr />
 
+## How routing works
+
+The Angular router intercepts the browser's address bar, interpreting a new URL as an instruction to activate a specific component and show its view in the current page, rather than opening a new page.
+Routing is initiated whenever the URL changes, either by entering it directly in the address bar, by the user clicking a page element with a `routerLink` directive, or in a call to a method such as `Router.navigate()` triggered by program logic.
+
+The router selects a component by matching the new URL with a path in the route configuration.
+It instantiates the component if needed, and displays the associated view in a *router outlet*.
+The `[router-outlet]` directive acts as a placeholder for the new component's template within another template.
+
+A template can have more than one router outlet, allowing the router to display secondary, or auxiliary views.
+You can nest related routes, creating a hierarchy of parent and child routes to any depth.
+You pass data between components using *route parameters*.
+
+You can retrieve the current navigation state and respond to routing events to enhance the user experience with styling and animation that helps a user keep track of where they are in your application as the display changes.
+
+You can define *route guard* functions to control access to parts of your application, and *resolver* functions to optimize your application by preloading data needed to resolve routes.
+
+{@a route-parameters}
+
+### Resolving route parameters
+
+The router composes a URL for a particular view by combining a base path with a set of parameters. Parameters in a route definition can be specified as literal values, or can be tokens or expressions that the router resolves.
+For example, in the following route definition, the route to `HeroDetailComponent` has an `:id` token in the path.
+
+<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" header="src/app/heroes/heroes-routing.module.ts (excerpt)" region="hero-detail-route"></code-example>
+
+The `:id` token creates a slot in the path for a route parameter.
+The router resolves the parameter to create a final URL to the component's view by inserting the value of the hero's `id` property into the route path:
+
+<code-example format="nocode">
+  localhost:4200/hero/15
+
+</code-example>
+
+If a user enters that URL into the browser address bar, the router displays the "Magneta" detail view.
+
+The following example navigates to the detail view for a hero by passing a _link parameters array_ to the `router.navigate()` method.
+
+   <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array"></code-example>
+
+The link parameters array here contains two items: the routing _path_ and the required _route parameter_ that specifies the `id` of the selected hero.
+The router composes the destination URL from the array: `localhost:4200/hero/15`.
+
+[See more about link parameters arrays and optional parameters](#link-parameters-array).
+
 {@a basics}
 
-## Generate an app with routing enabled
+## Set up an application to use the routing service
 
-The following command uses the Angular CLI to generate a basic Angular app with an app routing module, called `AppRoutingModule`, which is an NgModule where you can configure your routes.
-The app name in the following example is `routing-app`.
+The Angular router is an optional service that presents a particular component view for a given URL.
+It is provided in its own library package, `@angular/router`.
+Import the `RouterModule` and required elements from the package as you would from any other Angular package.
+
+<code-example path="router/src/app/app.module.1.ts" header="src/app/app.module.ts (import)" region="import-router"></code-example>
+
+The following command uses the Angular CLI to generate a basic Angular app that supports navigation with the router service.
 
 <code-example language="none" class="code-shell">
   ng new routing-app --routing
@@ -36,117 +89,278 @@ The app name in the following example is `routing-app`.
 When generating a new app, the CLI prompts you to select CSS or a CSS preprocessor.
 For this example, accept the default of `CSS`.
 
-### Adding components for routing
+A routed Angular application has one singleton instance of the `Router` service.
+When the browser's URL changes, that router looks for a corresponding `Route` from which it can determine the component to display.
 
-To use the Angular router, an app needs to have at least two components so that it can navigate from one to the other. To create a component using the CLI, enter the following at the command line where `first` is the name of your component:
+{@a app-structure}
 
-<code-example language="none" class="code-shell">
-  ng generate component first
-</code-example>
+### Structuring an application for routing
 
-Repeat this step for a second component but give it a different name.
-Here, the new name is `second`.
+An application that supports navigation can have dedicated NgModules for the routing configuration.
+When you create a new project with the CLI `--routing` option, the application includes a routing module named `AppRoutingModule` and imports it into the root module. The routing module imports `RouterModule` and `Routes`.
 
-<code-example language="none" class="code-shell">
-  ng generate component second
-</code-example>
-
-The CLI automatically appends `Component`, so if you were to write `first-component`, your component would be `FirstComponentComponent`.
-
-{@a basics-base-href}
+A dedicated routing module does not declare components, but serves to separate routing concerns from other application concerns. It provides a well-known location for routing service providers such as guards and resolvers. A routing module is also easy to replace or remove when testing the application.
 
 <div class="alert is-helpful">
 
-  #### `<base href>`
+  **Manual Setup**: The examples in this guide work with a CLI-generated Angular app.
+  If you are working manually, you should create your own routing module that imports `RouterModule` and `Routes`, and import it into your root module.
 
-  This guide works with a CLI-generated Angular app.
-  If you are working manually, make sure that you have `<base href="/">` in the `<head>` of your index.html file.
-  This assumes that the `app` folder is the application root, and uses `"/"`.
-
-  </code-example>
+  The CLI also sets a *base URL* for a routing application.
+  If you are working manually, set a base `<base href="/">` in the `<head>` of your `index.html` file   (assuming that the `app` folder is the application root, and uses `"/"`).
 
 </div>
 
+As your application grows more complex, you can generate additional feature modules with the `--routing` flag, and register them with the root module. When you do so, each additional routing module configures a parent of child routes in a [route hierarchy](#route-trees "Read more about nested routes").
 
-### Importing your new components
+{@a lazy-loading}
 
-To use your new components, import them into `AppRoutingModule` at the top of the file, as follows:
+<div class="callout is-helpful">
 
-<code-example header="AppRoutingModule (excerpt)">
+<header>Optimizing performance with lazy-loading and pre-loading</header>
 
-import { FirstComponent } from './first/first.component';
-import { SecondComponent } from './second/second.component';
+In an application that supports navigation, some views are not shown at launch, and might not ever be shown at all unless the user follows a particular path to them. A module that defines such a view might not need to be part of the initial bundle.
+You can configure your routes so that Angular only loads modules as needed, rather than loading all modules when the app launches. This is called [lazy loading](guide/glossary#lazy-loading "Definition of lazy loading").
 
-</code-example>
+You can also improve the user experience by using a [resolve guard](/guide/router-tutorial-toh#resolve-guard "See example of `ResolveGuard`") to pre-load data in the background, when you know it will be needed to resolve routes.
+For more information on lazy-loading and pre-loading modules, see the dedicated guide [Lazy loading NgModules](guide/lazy-loading-ngmodules "Lazy-loading guide").
 
+</div>
+
+{@a example-config}
 {@a basic-route}
 
-## Defining a basic route
+### Configuring routes
 
-There are three fundamental building blocks to creating a route.
+To use navigation, you need to configure your application to use the  router service, and define at least two [routing components](guide/glossary#routing-component "Definition of routing component") so that you can navigate between their views.
 
-Import the `AppRoutingModule` into `AppModule` and add it to the `imports` array.
+The router has no routes until you configure it with route definitions.
+The following example creates five route definitions, configures the router via the `RouterModule.forRoot()` method, and adds the result to the root module's `imports` array.
 
-The Angular CLI performs this step for you.
-However, if you are creating an app manually or working with an existing, non-CLI app, verify that the imports and configuration are correct.
-The following is the default `AppModule` using the CLI with the `--routing` flag.
+<code-example path="router/src/app/app.module.0.ts" header="src/app/app.module.ts (excerpt)"></code-example>
 
-  <code-example path="router/src/app/app.module.8.ts" header="Default CLI AppModule with routing">
+The `appRoutes` variable in this example contains an array of routes that describes how to navigate.
+You pass it to the `RouterModule.forRoot()` method in the module `imports` to configure the router.
+The example also shows one of the [additional configuration options](api/router/ExtraOptions "API reference for router config options") that you can pass to the router.
 
-  </code-example>
+Each item in a `Routes` array is a [`Route`](api/router/Route "API reference") object.
 
-  1. Import `RouterModule` and `Routes` into your routing module.
+* Each `Route` maps a URL `path` to a component. There are no leading slashes in the path.
+   The router service parses and builds the final URL for you, which allows you to use both relative and absolute paths when navigating between application views.
 
-  The Angular CLI performs this step automatically.
-  The CLI also sets up a `Routes` array for your routes and configures the `imports` and `exports` arrays for `@NgModule()`.
+* The `:id` in the second route is a token for a *route parameter*. In a URL such as `/hero/42`, "42" is the value of the `id` parameter.
+   The corresponding `HeroDetailComponent` uses that value to find and present the hero whose `id` is 42.
 
-  <code-example path="router/src/app/app-routing.module.7.ts" header="CLI app routing module">
+* The `data` property in the third route is a place to store arbitrary data associated with this specific route. The data property is accessible within each activated route. Use it to store items such as page titles, breadcrumb text, and other read-only, static data.
+   You can use a [resolve guard](/guide/router-tutorial-toh#resolve-guard "See example of `ResolveGuard`") to retrieve dynamic data.
 
-  </code-example>
-
-1. Define your routes in your `Routes` array.
-
-  Each route in this array is a JavaScript object that contains two properties.
-  The first property, `path`, defines the URL path for the route.
-  The second property, `component`, defines the component Angular should use for the corresponding path.
-
-  <code-example path="router/src/app/app-routing.module.8.ts" region="routes" header="AppRoutingModule (excerpt)">
-
-  </code-example>
-
-  1. Add your routes to your application.
-
-  Now that you have defined your routes, you can add them to your application.
-  First, add links to the two components.
-  Assign the anchor tag that you want to add the route to the `routerLink` attribute.
-  Set the value of the attribute to the component to show when a user clicks on each link.
-  Next, update your component template to include `<router-outlet>`.
-  This element informs Angular to update the application view with the component for the selected route.
-
-  <code-example path="router/src/app/app.component.7.html" header="Template with routerLink and router-outlet"></code-example>
+The empty path in the fourth route represents the default path for the application&mdash;the place to go when the path in the URL is empty, as it typically is at the start.
+This default route redirects to the route for the `/heroes` URL and, therefore, displays the `HeroesListComponent`.
 
 {@a route-order}
 
-### Route order
+## Prevent navigation failures with route ordering and special syntax
 
-The order of routes is important because the `Router` uses a first-match wins strategy when matching routes, so more specific routes should be placed above less specific routes.
+Your routing configuration, application design, and ordering of routes all affect navigation.
+The order of routes in the configuration is particularly important. The router service activates the first matching route it comes to, so more specific routes should be placed above less specific routes.
+
 List routes with a static path first, followed by an empty path route, which matches the default route.
-The [wildcard route](guide/router#setting-up-wildcard-routes) comes last because it matches every URL and the `Router`  selects it only if no other routes match first.
+The *wildcard* route comes last because it matches every URL and the router selects it only if no other routes match first.
 
+You can [handle navigation errors](#404-page-how-to) by defining a "path not found" view, and avoid navigation errors caused by terminology changes by [defining route redirects](#redirects).
+
+See more examples of routing techniques in the [Route](api/router/Route#usage-notes) reference documentation.
+
+{@a wildcard}
+
+### Using wildcard routes
+
+A well-functioning application should gracefully handle when users attempt to navigate to a part of your application that does not exist.
+To add this functionality to your application, you set up a wildcard route.
+The Angular router selects this route any time the requested URL doesn't match any router paths.
+
+To set up a wildcard route, add the following code to your `routes` definition.
+
+<code-example header="AppRoutingModule (excerpt)">
+
+{ path: '**', component: <component-name> }
+
+</code-example>
+
+The two asterisks, `**`, indicate to Angular that this `routes` definition is a wildcard route.
+For the component property, you can define any component in your application.
+Common choices include an application-specific `PageNotFoundComponent`, which you can define to [display a 404 page](#404-page-how-to) to your users; or a redirect to your application's main component.
+A wildcard route is the last route because it matches any URL.
+For more detail on why order matters for routes, see [Route order](#route-order).
+
+{@a redirects}
+
+### Defining redirects
+
+To set up a redirect, configure a route with the `path` you want to redirect from, the `component` you want to redirect to, and a `pathMatch` value that tells the router how to match the URL.
+
+<code-example path="router/src/app/app-routing.module.8.ts" region="redirect" header="AppRoutingModule (excerpt)">
+
+</code-example>
+
+In this example, the third route is a redirect so that the router defaults to the `first-component` route.
+Notice that this redirect precedes the wildcard route.
+Here, `path: ''` means to use the initial relative URL (the empty string `''`).
+
+{@a pathmatch}
+
+<div class="callout is-helpful">
+
+  <header>Path matching</header>
+
+  Technically, `pathMatch = 'full'` results in a route hit when the *remaining* unmatched  segments of the URL match `''`.
+  If the redirect is in a top level route, the remaining URL is the same as the  *entire* URL. The other possible `pathMatch` value is `'prefix'` which tells the router to match the  redirect route when the remaining URL begins with the redirect route's prefix  path.
+
+  You can share a route prefix between components by making them children of a [componentless route](api/router/Route#componentless-routes "Example of sharing parameters"); that is, a route that has a `path` and `children`, but no `component` value. The parent's path is used as the prefix for the child routes.
+
+  Learn more in Victor Savkin's
+  [post on redirects](http://vsavkin.tumblr.com/post/146722301646/angular-router-empty-paths-componentless-routes "Empty paths, componentless routes, and redirects").
+
+</div>
+
+{@a 404-page-how-to}
+
+### Handling unfound views
+
+To display the equivalent of a "404 Not Found" page, set up a [wildcard route](#wildcard) with the `component` property set to the component you'd like to use for your 404 page as follows.
+
+<code-example path="router/src/app/app-routing.module.8.ts" region="routes-with-wildcard" header="AppRoutingModule (excerpt)">
+
+</code-example>
+
+The last route with the `path` of `**` is a wildcard route.
+The router service selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
+
+## Enabling interactive navigation
+
+A template that enables navigation for users needs two things:
+
+* An *outlet*, a placeholder in the page where a component's view is to be inserted.
+* Links to the routing components that allow users to trigger navigation.
+
+{@a basics-router-outlet}
+
+### Placing a view in a template
+
+The `RouterOutlet` is a directive from the router library that is used like a component.
+It acts as a placeholder that marks the spot in the template where the router should
+display the component views for that outlet.
+
+A `<router-outlet>` element in the template for the root component tells Angular to update the application view with the component for the selected route.
+
+<code-example language="html">
+  &lt;router-outlet>&lt;/router-outlet>
+  &lt;!-- Routed components go here -->
+
+</code-example>
+
+Given the configuration above, when the browser URL for this application becomes `/heroes`, the router matches that URL to the route path `/heroes` and displays the `HeroListComponent` as a sibling element to the `RouterOutlet` that you've placed in the host component's template.
+
+{@a basics-router-links}
+{@a router-link}
+
+### Initiating interactive navigation
+
+Your app can initiate navigation programmatically, or a user can trigger a request for navigation by typing a URL in the address bar or clicking a link.
+To navigate as a result of a user action such as a click, include the [`RouterLink` directive](api/router/RouterLink "API reference") in the template.
+
+For example, the following template creates a link to a routing component in a `<nav>` container by using an anchor tag with the `routerLink` attribute.
+
+<code-example path="router/src/app/app.component.1.html" header="src/app/app.component.html"></code-example>
+
+This code assigns the anchor tag to the element that will initiate navigation, and sets the value of that attribute to the component to show when a user clicks on that link.
+
+The `RouterLink` directives on the anchor tags give the router control over those elements.
+The navigation paths are fixed, so you can assign a path string to the `routerLink` (a "one-time" binding).
+
+For a more dynamic navigation path, you can bind the router link to a template expression that returns a [link parameters array](guide/router#link-parameters-array). This array contains an object which associates a route path string with one or more required, optional, or query parameters. The router service resolves that array into a complete URL.
+
+To initiate navigation programmatically, pass a router URL string or link parameters array to the [Router.navigate() method](api/router/Router#navigate).
+
+{@a basics-router-state}
+{@a activated-route}
+{@a router-link-active}
+
+## Tracking navigation state
+
+When the router matches a path and displays a new view, the selected route becomes *active*.
+An active route is represented by an [ActivatedRoute](api/router/ActivatedRoute "API reference") object.
+After the end of each successful navigation cycle, the router builds a tree of `ActivatedRoute` objects that make up the current navigation state.
+Access the navigation state through the [Router.routerState](api/router/Router#routerState "API reference") property.
+
+Each `ActivatedRoute` in the `RouterState` provides the route path and parameters, as well as methods to traverse up and down the route tree to get information from parent, child and sibling routes.
+See the API reference for the many useful properties of an [ActivatedRoute](api/router/ActivatedRoute "API reference documentation") object.
+
+### Style views according to navigation state
+
+You can style views according to the navigation state. For example, you might want to highlight the currently selected tab in a set of tabbed panes, to keep the user oriented.
+
+You can use the [RouterLinkActive](api/router/RouterLinkActive "API reference") directive on an element to toggle CSS classes for active `RouterLink` bindings based on the current `RouterState`.
+
+On each anchor tag, you see a [property binding](guide/template-syntax#property-binding) to the `RouterLinkActive` directive that looks like `routerLinkActive="..."`, as in the following example.
+
+<code-example header="src/app/app.component.html" path="router-tutorial/src/app/app.component.html" region="routeractivelink"></code-example>
+
+You can bind the `routerLinkActive` directive to a space-delimited string of CSS classes such as `[routerLinkActive]="'active fluffy'"`, or bind it to a component property that returns such a string.
+The router automatically adds these classes to the tag when the linked route is activated, and removes them when the route becomes inactive.
+
+When you have [nested routes](#nesting-routes "Complex routing structure"), active routes cascade down through each level of the route tree, so parent and child routes can be active at the same time.
+To distinguish between specific linked routes, you can modify the `RouterLinkActive` directive with the `[routerLinkActiveOptions]={ exact: true }` input binding ([see example](api/router/RouterLinkActive#description "API reference")). This reports the linked route as active only when its URL is an exact match to the current URL.
+
+### Router event order
+
+During each navigation, the router service emits navigation events through the `Router.events` property.
+These events occur when the navigation starts and ends and many points in between.
+
+If you need to see what events are happening during the navigation lifecycle, you can set the `enableTracing` option as part of the router's default configuration.
+This outputs each router event that took place during each navigation lifecycle to the browser console.
+Use `enableTracing` only for debugging purposes.
+Set the `enableTracing: true` option in the object passed as the second argument to the `RouterModule.forRoot()` method.
+
+<!-- this table is moved into API doc in another PR (TBD) - when that lands, replace it with a link -->
+
+The following table lists the router event types in the order in which they can occur. The properties of each event are listed in the [API reference documentation](api/router/Event "Router event types").
+
+| Router Event | Trigger |
+| :----------- | :------- |
+| [NavigationStart](api/router/NavigationStart) | Navigation starts. |
+| [RouteConfigLoadStart](api/router/RouteConfigLoadStart) | Before the router [lazy loads](/guide/router-tutorial-toh#asynchronous-routing) a route configuration. |
+| [RouteConfigLoadEnd](api/router/RouteConfigLoadEnd) | After a route has been lazy loaded. |
+| [RoutesRecognized](api/router/RoutesRecognized) | When the router parses the URL and the routes are recognized. |
+| [GuardsCheckStart](api/router/GuardsCheckStart) | When the router begins the *guards* phase of routing. |
+| [ChildActivationStart](api/router/ChildActivationStart) | When the router begins activating a route's children. |
+| [ActivationStart](api/router/ActivationStart)| When the router begins activating a route. |
+| [GuardsCheckEnd](api/router/GuardsCheckEnd) | When the router finishes the *guards* phase of routing successfully. |
+| [ResolveStart](api/router/ResolveStart) | When the router begins the *resolve* phase of routing. |
+| [ResolveEnd](api/router/ResolveEnd) | When the router finishes the *resolve* phase of routing successfuly. |
+| [ChildActivationEnd](api/router/ChildActivationEnd) | When the router finishes activating a route's children. |
+| [ActivationEnd](api/router/ActivationStart) | When the router finishes activating a route. |
+| [NavigationEnd](api/router/NavigationEnd) | When navigation ends successfully. |
+| [NavigationCancel](api/router/NavigationCancel) | When navigation is canceled. This can happen when a [route guard](/guide/router-tutorial-toh#guards) returns false during navigation, or redirects by returning a `UrlTree`. |
+| [NavigationError](api/router/NavigationError) | When navigation fails due to an unexpected error. |
+| [Scroll](api/router/Scroll) | When the user scrolls. |
+
+When you set the `enableTracing` option, Angular logs these events to the console.
+For an example of filtering router navigation events, see the [router section](guide/observables-in-angular#router) of the [Observables in Angular](guide/observables-in-angular) guide.
+
+{@a activated-route}
 {@a getting-route-information}
 
-## Getting route information
+## Passing values between components
 
-Often, as a user navigates your application, you want to pass information from one component to another.
+As a user navigates your application, you need to pass route information from one component to another.
 For example, consider an application that displays a shopping list of grocery items.
-Each item in the list has a unique `id`.
 To edit an item, users click an Edit button, which opens an `EditGroceryItem` component.
-You want that component to retrieve the `id` for the grocery item so it can display the right information to the user.
+For the new component to display the right item, it must retrieve the unique identifier of the selected item from the previously displayed shopping-list component.
 
-You can use a route to pass this type of information to your application components.
-To do so, you use the [ActivatedRoute](api/router/ActivatedRoute) interface.
+To pass route parameters between your application components, use the [ActivatedRoute](api/router/ActivatedRoute "API reference") interface together with the [`ngOnInit()` lifecycle hook method](guide/lifecycle-hooks "Hooking into the component lifecycle").
 
-To get information from a route:
+To get parameter information from an active or previously active route, use the following steps.
 
   1. Import `ActivatedRoute` and `ParamMap` to your component.
 
@@ -165,7 +379,8 @@ To get information from a route:
     <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.ts" region="activated-route" header="In the component class (excerpt)">
     </code-example>
 
-  1. Update the `ngOnInit()` method to access the `ActivatedRoute` and track the `id` parameter:
+  1. Update the `ngOnInit()` method to access the `ActivatedRoute` and track it using an identifying parameter.
+  The following example uses a variable, `name`, and assigns it the value based on the `name` parameter.
 
       <code-example header="In the component (excerpt)">
         ngOnInit() {
@@ -175,76 +390,78 @@ To get information from a route:
         }
       </code-example>
 
-    Note: The preceding example uses a variable, `name`, and assigns it the value based on the `name` parameter.
+{@a param-maps}
 
-{@a wildcard-route-how-to}
+### Retrieving parameters from parameter maps
 
-## Setting up wildcard routes
+When you activate a route, the router stores the parameters that were passed to in that activation operation in a *parameter map*. Both route parameters and query parameters are stored in a `ParamMap` object.
+The [ParamMap interface](api/router/ParamMap "ParamMap API reference") is based on the [URLSearchParams interface](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams).
 
-A well-functioning application should gracefully handle when users attempt to navigate to a part of your application that does not exist.
-To add this functionality to your application, you set up a wildcard route.
-The Angular router selects this route any time the requested URL doesn't match any router paths.
+The [ActivatedRoute](api/router/ActivatedRoute "ActivatedRoute API reference") methods give you access to both the route parameters (`paramMap`) and query parameters (`queryParamMap`) with which the route was activated.
+A parameter map provides methods to handle parameter access.
+You can check for the existence of a parameter name, retrieve the value of one or all parameters, and list all parameter names.
 
-To set up a wildcard route, add the following code to your `routes` definition.
+{@a reuse}
 
-<code-example header="AppRoutingModule (excerpt)">
+Notice that the `ActivatedRoute` methods return parameter maps from an `Observable`.
+This is because the parameters can change during the lifetime of an activated component.
+By default, the router re-uses a component instance when it re-navigates to the same component type
+without visiting a different component first. The route parameters could change with each navigation operation.
 
-{ path: '**', component: <component-name> }
+Suppose, for example, a parent component navigation bar has "forward" and "back" buttons
+that scroll through a list of items to retrieve details of a selected item.
+Each click navigates imperatively to the component with the next or previous `id`.
 
-</code-example>
+It would not be efficient to remove the current item-detail instance from the DOM only to re-create it for the next `id`, which would require Angular to re-render the view.
+Instead, the router re-uses the same component instance and updates the parameter.
 
+The `ngOnInit()` method is only called once per component instantiation, so if you use that method to activate a route, the route parameters can change when the same component is reactivated through another means, such as a "back" button. You can detect when the route parameters change from _within the same instance_ using the observable `paramMap` property.
 
-The two asterisks, `**`, indicate to Angular that this `routes` definition is a wildcard route.
-For the component property, you can define any component in your application.
-Common choices include an application-specific `PageNotFoundComponent`, which you can define to [display a 404 page](guide/router#404-page-how-to) to your users; or a redirect to your application's main component.
-A wildcard route is the last route because it matches any URL.
-For more detail on why order matters for routes, see [Route order](guide/router#route-order).
+<!--Bug related to how automatic unsubscribe doesn't actually seem to work: #16261
+removing this note so we aren't recommending something that causes a memory leak.
 
+<div class="alert is-helpful">
 
-{@a 404-page-how-to}
+When subscribing to an observable in a component, you almost always unsubscribe when the component is destroyed.
+However, `ActivatedRoute` observables are among the exceptions because `ActivatedRoute` and its observables are insulated from the `Router` itself.
+The router service is responsible for destroying a routed component when it is no longer needed along with the injected `ActivatedRoute`.
 
-## Displaying a 404 page
+</div> -->
 
-To display a 404 page, set up a [wildcard route](guide/router#wildcard-route-how-to) with the `component` property set to the component you'd like to use for your 404 page as follows:
+{@a snapshot}
 
-<code-example path="router/src/app/app-routing.module.8.ts" region="routes-with-wildcard" header="AppRoutingModule (excerpt)">
+### Use snapshots as an alternative to observables
 
-</code-example>
+You can design an application such that there is only one way to activate a route, so you know that it will create a new component instance on every activation.
 
-The last route with the `path` of `**` is a wildcard route.
-The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
+In this case, when you know the instance will never be re-used, you can use `activatedRoute.snapshot` to retrieve the initial value of the route parameter map directly from a cached [ActivatedRouteSnapshot](api/router/ActivatedRouteSnapshot "ActivatedRouteSnapshot API reference") object.
+The snapshot gives you direct access the initial parameters, without subscribing or adding observable operators, as in the following example.
 
-## Setting up redirects
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.2.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit snapshot)" region="snapshot"></code-example>
 
-To set up a redirect, configure a route with the `path` you want to redirect from, the `component` you want to redirect to, and a `pathMatch` value that tells the router how to match the URL.
-
-<code-example path="router/src/app/app-routing.module.8.ts" region="redirect" header="AppRoutingModule (excerpt)">
-
-</code-example>
-
-In this example, the third route is a redirect so that the router defaults to the `first-component` route.
-Notice that this redirect precedes the wildcard route.
-Here, `path: ''` means to use the initial relative URL (`''`).
-
-For more details on `pathMatch` see [Spotlight on `pathMatch`](guide/router-tutorial-toh#pathmatch).
 
 {@a nesting-routes}
+{@a route-trees}
+## Creating complex routing structures
 
-## Nesting routes
+As your application grows more complex, you can create routes that are relative to a component other than your root component.
+In addition to the `<router-outlet>` in the root application's template, you can place `<router-outlet>` elements in the templates of other components, resulting in a nested structure of parent and child routes.
+You can [use relative paths to traverse the route tree](#using-relative-paths).
 
-As your application grows more complex, you may want to create routes that are relative to a component other than your root component.
-These types of nested routes are called child routes.
-This means you're adding a second `<router-outlet>` to your app, because it is in addition to the `<router-outlet>` in `AppComponent`.
+The Angular router provides direct access to route path strings.
+You can [access and manipulate query parameters and URL fragments](#access-params), and [set required and optional route parameters](#link-parameters-array) for routing hierarchies of any depth.
 
-In this example, there are two additional child components, `child-a`, and `child-b`.
+
+### Create a navigation tree with nested routes
+
+In the following example, there are two additional child components, `child-a`, and `child-b`.
 Here, `FirstComponent` has its own `<nav>` and a second `<router-outlet>` in addition to the one in `AppComponent`.
 
 <code-example path="router/src/app/app.component.8.html" region="child-routes" header="In the template">
 
 </code-example>
 
-A child route is like any other route, in that it needs both a `path` and a `component`.
-The one difference is that you place child routes in a `children` array within the parent route.
+You place child routes in a `children` array within the parent route. The child route itself, like any other route, needs both a `path` and a `component`.
 
 <code-example path="router/src/app/app-routing.module.9.ts" region="child-routes" header="AppRoutingModule (excerpt)">
 
@@ -252,42 +469,118 @@ The one difference is that you place child routes in a `children` array within t
 
 {@a using-relative-paths}
 
-## Using relative paths
+### Using relative paths to traverse the route tree
 
-Relative paths allow you to define paths that are relative to the current URL segment.
-The following example shows a relative route to another component, `second-component`.
-`FirstComponent` and `SecondComponent` are at the same level in the tree, however, the link to `SecondComponent` is situated within the `FirstComponent`, meaning that the router has to go up a level and then into the second directory to find the `SecondComponent`.
-Rather than writing out the whole path to get to `SecondComponent`, you can use the `../` notation to go up a level.
+Relative paths allow you to define paths in a link parameters list that are relative to the current URL segment.
+Relative route paths use standard path notation: use `../` to specify a route relative to the current level's parent, and use `./` or no leading slash to specify a route relative to the current level.
+
+You can combine relative navigation syntax with an ancestor path.
+To navigate to a sibling route, you can use the `../<sibling>` convention to go up
+one level, then over and down the sibling route path.
+
+Consider a route tree in which `FirstComponent` and `SecondComponent` are at the same level in the route tree, and the `FirstComponent` template contains a link to `SecondComponent`.
+The router has to go up a level and into the second directory to find the `SecondComponent`.
+
+The link in the `FirstComponent` template can provide an absolute path to `SecondComponent`, or it can use relative path notation to go up a level, as in the following example.
 
 <code-example path="router/src/app/app.component.8.html" region="relative-route" header="In the template">
 
 </code-example>
 
-In addition to `../`, you can use `./` or no leading slash to specify the current level.
+The [NavigationExtras configuration object](api/router/NavigationExtras "API reference") allows you to configure specific routing-strategy options for a navigation operation.
+To specify a relative route, pass a configuration object to the `Router.navigate()` call.
+The configuration object sets the `relativeTo` property to a base route.
 
-### Specifying a relative route
+In the following example, the `navigate()` arguments configure the router to use the current route as a base URL upon which to append `items`.
 
-To specify a relative route, use the `NavigationExtras` `relativeTo` property.
-In the component class, import `NavigationExtras` from the `@angular/router`.
+<code-example path="router/src/app/app.component.4.ts" region="relative-to" header="Set a base route"></code-example>
 
-Then use `relativeTo` in your navigation method.
-After the link parameters array, which here contains `items`, add an object with the `relativeTo` property set to the `ActivatedRoute`, which is `this.route`.
 
-<code-example path="router/src/app/app.component.4.ts" region="relative-to" header="RelativeTo">
+* The first argument is a link parameters array, which here contains `items`. The second is a configuration-options object with the `relativeTo` property set to the current `ActivatedRoute`, which is `this.route`.
 
-The `navigate()` arguments configure the router to use the current route as a basis upon which to append `items`.
+* The `goToItems()` method interprets the destination URI as relative to the activated route and navigates from there to the `items` route.
+
+Note that you can only use this configuration with the router's `navigate()` method. You must always specify the complete absolute path when calling router's `navigateByUrl()` method.
+
+<div class="alert is-helpful">
+
+When you initiate navigation from a `RouterLink` directive (rather than calling the `Router.navigate()` method), you use the same link parameters array, but without the configuration object.
+The `ActivatedRoute` is implicit in a `RouterLink` directive.
+
+</div>
+
+{@a define-secondary-routes}
+
+### Define secondary outlets and routes
+
+The router supports only one primary, unnamed outlet per template.
+However, a template can also have any number of named *secondary* outlets.
+Each named outlet has its own set of routes with their own components.
+Multiple outlets can display different content, determined by different routes, all at the same time.
+
+Named outlets are the targets of  _secondary routes_.
+The route configuration for a secondary route has a third property, `outlet: <target_outlet_name>`.
+
+Secondary routes are independent of each other, but work in combination with other routes.
+Using named outlets and secondary routes, you can target multiple outlets with multiple routes in the same `RouterLink` directive.
+
+The router keeps track of separate branches in a navigation tree for each named outlet.
+It generates a representation of that tree in the URL.
+The URL for a secondary route uses the following syntax to specify both the primary and secondary routes at the same time:
+
+<code-example>
+  http://base-path/primary-route-path(outlet-name:route-path)
 
 </code-example>
 
-The `goToItems()` method interprets the destination URI as relative to the activated route and navigates to the `items` route.
+For an example of a named outlet and secondary route configuration, see the [Routing Techniques](guide/router-tutorial-toh#named-outlets-example) tutorial.
 
-## Accessing query parameters and fragments
+{@a secondary-route-navigation}
 
-Sometimes, a feature of your application requires accessing a part of a route, such as a query parameter or a fragment. The Tour of Heroes app at this stage in the tutorial uses a list view in which you can click on a hero to see details. The router uses an `id` to show the correct hero's details.
+### Merging routes during navigation
 
-First, import the following members in the component you want to navigate from.
+In the tutorial example, when you navigate to the _Crisis Center_ and click "Contact".
+you should see something like the following URL in the browser address bar.
 
-<code-example header="Component import statements (excerpt)">
+<code-example>
+  http://.../crisis-center(popup:compose)
+
+</code-example>
+
+The relevant part of the URL follows the base path, represented here by `...`.
+The `crisis-center` is the route path for the view displayed in the primary outlet.
+In parentheses, the secondary route consists of an outlet name (`popup`), a `colon` separator, and the secondary route path (`compose`).
+
+Like regular outlets, secondary outlets persists until you navigate away to a new component.
+Each secondary outlet has its own navigation, independent of the navigation driving the primary outlet.
+Changing a current route that displays in the primary outlet has no effect on the popup outlet.
+
+You can add more outlets and routes, at the top level and in nested levels, creating a navigation tree with many branches. The router generates the URLs to go with it.
+You can tell the router to navigate an entire tree at once by filling out the `outlets` object and then pass that object inside a link parameters array to the `router.navigate` method.
+
+
+### Clearing secondary routes
+
+To navigate imperatively to one or more secondary routes, pass the `Router.navigate()` method an array of objects.
+Each object associates an outlet name with a route path.
+
+* To display a view in the outlet, set that outlet's value to the route path for that view.
+
+* To clear the outlet, set the route path for the named outlet to the special value `null`. For example:
+
+   <code-example path="router/src/app/compose-message/compose-message.component.ts" header="src/app/compose-message/compose-message.component.ts (clear the secondary outlet)" region="closePopup"></code-example>
+
+---
+
+{@a access-params}
+
+## Access query parameters and fragments
+
+Sometimes, a feature of your application requires accessing a part of a route, such as a query parameter or a fragment. In the Tour of Heroes sample app, for example, you can click on a hero in a list to see details. The router service depends on the value of the selected hero's `id` property to show the correct hero's details.
+
+Passing the `id` value to the router requires that you import the following members in the component you want to navigate *from*.
+
+<code-example header="Component imports for passing parameters">
 
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -295,16 +588,16 @@ import { switchMap } from 'rxjs/operators';
 
 </code-example>
 
-Next inject the activated route service:
+The component must inject the activated route service.
 
-<code-example header="Component (excerpt)">
+<code-example header="Component (inject service)">
 constructor(private route: ActivatedRoute) {}
 </code-example>
 
-Configure the class so that you have an observable, `heroes$`, a `selectedId` to hold the `id` number of the hero, and the heroes in the `ngOnInit()`, add the following code to get the `id` of the selected hero.
-This code snippet assumes that you have a heroes list, a hero service, a function to get your heroes, and the HTML to render your list and details, just as in the Tour of Heroes example.
+The following snippet configures the class with an observable `heroes$`, and a `selectedId` variable to hold the `id` number of the hero.
+The `ngOnInit()` method gets the `id` of the selected hero.
 
-<code-example header="Component 1 (excerpt)">
+<code-example header="Component 1 (retrieve Hero ID)">
 heroes$: Observable<Hero[]>;
 selectedId: number;
 heroes = HEROES;
@@ -320,20 +613,18 @@ ngOnInit() {
 
 </code-example>
 
+The component that you want to navigate *to* must import the following members.
 
-Next, in the component that you want to navigate to, import the following members.
-
-<code-example header="Component 2 (excerpt)">
+<code-example header="Component 2 (Component imports for receiving parameters)">
 
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 
 </code-example>
 
-Inject `ActivatedRoute` and `Router` in the constructor of the component class so they are available to this component:
+The following snippet injects `ActivatedRoute` and `Router` in the constructor of the component class so they are available to this component. The `ngOnInit()` method saves a parameter from the currently active route, and the `navigate()` call uses that stored value to activate the next route.
 
-
-<code-example header="Component 2 (excerpt)">
+<code-example header="Component 2 (Retrieving a stored route parameter)">
 
   item$: Observable<Item>;
 
@@ -355,30 +646,160 @@ Inject `ActivatedRoute` and `Router` in the constructor of the component class s
 
 </code-example>
 
-{@a lazy-loading}
+{@a link-parameters-array}
 
-## Lazy loading
+### Passing optional route parameters
 
-You can configure your routes to lazy load modules, which means that Angular only loads modules as needed, rather than loading all modules when the app launches.
-Additionally, you can preload parts of your app in the background to improve the user experience.
+A link parameters array holds the following ingredients for router navigation:
 
-For more information on lazy loading and preloading see the dedicated guide [Lazy loading NgModules](guide/lazy-loading-ngmodules).
+* The path of the route to the destination component.
+* Required and optional route parameters that go into the route URL.
 
-## Preventing unauthorized access
+For interactive links, you can bind the `RouterLink` directive to such an array as in the following example:
 
-Use route guards to prevent users from navigating to parts of an app without authorization.
-The following route guards are available in Angular:
+<code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (Heroes link anchor)" region="h-anchor"></code-example>
+
+When you initiate navigation programmatically, you can pass a link parameters array to the [Router.navigate() method](api/router/Router#navigate "API reference").
+
+The following is a two-element array that specifies a required route parameter:
+
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (Hero detail link with route parameter)" region="nav-to-detail"></code-example>
+
+The router supports navigation with *optional* parameters, as well as required route parameters.
+You can include optional information in a route request by including expressions in the link parameters array.
+Optional parameters aren't involved in pattern matching and afford flexibility of expression.
+For example:
+
+* Use wildcard formations to create loosely structured search criteria; for example, `name='wind*'`.
+
+* Specify ranges or multiple values, such as `after='12/31/2015' & before='1/1/2017'` or `during='currentYear'`.
+
+Use optional parameters to convey arbitrarily complex information during navigation, when that information doesn't fit easily in a URL path.
+
+In general, use a required route parameter when the value is mandatory (for example, if necessary to distinguish one route path from another); and an optional parameter when the value is optional, complex, and/or multivariate.
+Define optional parameters in a separate object _after_ you define the required route parameters.
+
+You can provide optional route parameters in an object, as in `{ foo: 'foo' }`:
+
+<code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (cc-query-params)" region="cc-query-params"></code-example>
+
+These three examples cover the needs of an app with one level of routing.
+The link parameters array affords the flexibility to represent any routing depth and any legal sequence of route paths, required route parameters, and optional route parameter objects.
+This allows you to write applications with several levels of routing within a navigation hierarchy.
+
+With a child router, such as in the [crisis center in the tutorial example](guide/router-tutorial-toh#relative-routing), you create new link array possibilities.
+The following minimal `RouterLink` example builds upon a specified [default child route](/guide/router-tutorial-toh#crisis-child-routes) for the crisis center.
+
+<code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (cc-anchor-w-default)" region="cc-anchor-w-default"></code-example>
+
+Note the following:
+
+* The first item in the array identifies the parent route (`/crisis-center`).
+* There are no parameters for this parent route.
+* There is no default for the child route so you need to pick one.
+* You're navigating to the `CrisisListComponent`, whose route path is `/`, but you don't need to explicitly add the slash.
+
+Consider the following router link that navigates from the root of the application down to the Dragon Crisis:
+
+<code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (Dragon-anchor)" region="Dragon-anchor"></code-example>
+
+* The first item in the array identifies the parent route (`/crisis-center`).
+* There are no parameters for this parent route.
+* The second item identifies the child route details about a particular crisis (`/:id`).
+* The details child route requires an `id` route parameter.
+* You added the `id` of the Dragon Crisis as the second item in the array (`1`).
+* The resulting path is `/crisis-center/1`.
+
+You could also redefine the `AppComponent` template with Crisis Center routes exclusively:
+
+<code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
+
+### Persisting query parameters and fragments
+
+You can preserve query parameters and fragments across navigations without having to provide them again when navigating.
+You can use these persistent bits of information for things that need to be provided across pages like authentication tokens or session ids.
+
+The [`NavigationExtras` configuration object](api/router/NavigationExtras "API reference"), which you can use to configure a navigation request, provides `queryParamsHandling` and `preserveFragment` configuration options.
+For example:
+
+``` ts
+this.router.navigate([redirectUrl], {queryParamsHandling: 'preserve', preserveFragment: 'true'});
+```
+
+See an example in the [Routing techniques tutorial](guide/router-tutorial-toh#preserve-params "Preserve and share query parameters").
+
+You can also configure a routing request to both preserve parameters and combine them with new ones (`queryParamsHandling: 'merge'`).
+
+---
+<!---  NEW PAGE?  -->
+
+{@a route-guards}
+{@a guards}
+
+## Controlling view access with route guards
+
+There are times when you need to to control access to different parts of your application.
+For instance:
+
+* A user is not authorized to navigate to the target component.
+* The user must login (authenticate) first.
+* You need to fetch some data before you display the target component.
+* You need to save pending changes before leaving a component.
+* You need to ask the user if it's OK to discard pending changes rather than save them.
+
+You can add *guard functions* to the route configuration to handle these scenarios.
+A guard function's return value controls the router's behavior:
+
+* If it returns `true`, the navigation process continues.
+* If it returns `false`, the navigation process stops and the user stays put.
+* If it returns a `UrlTree`, the current navigation cancels and a new navigation is initiated to the `UrlTree` returned.
+
+<div class="alert is-helpful">
+
+A guard function can also tell the router to navigate elsewhere, effectively canceling the current navigation.
+When doing so inside a guard, the guard should return `false`;
+
+</div>
+
+Guard functions can be asynchronous.
+You can use an ansychronous function to, for example, ask the user a question, save changes to the server, or fetch fresh data.
+If a guard function returns an `Observable<boolean>` or a `Promise<boolean>`, Angular waits for the observable to resolve to `true` or `false`.
+
+<div class="alert is-important">
+
+If a guard function returns an observable, the observable must also complete. If the observable does not complete, the navigation does not continue.
+
+</div>
+
+### Guard function types
+
+Route guard functions implement the following interfaces:
 
 * [`CanActivate`](api/router/CanActivate)
 * [`CanActivateChild`](api/router/CanActivateChild)
 * [`CanDeactivate`](api/router/CanDeactivate)
-* [`Resolve`](api/router/Resolve)
 * [`CanLoad`](api/router/CanLoad)
+* [`Resolve`](api/router/Resolve)
 
-To use route guards, consider using component-less routes as this facilitates guarding child routes.
+You can have multiple guards at every level of a navigation hierarchy.
+The router checks the `CanDeactivate` and `CanActivateChild` guards first, from the deepest child route to the top.
+Then it checks the `CanActivate` guards from the top down to the deepest child route.
+If the feature module is loaded asynchronously, the `CanLoad` guard is checked before the module is loaded.
+If _any_ guard returns false, pending guards that have not completed are canceled, and the entire navigation is canceled.
+
+If you specify both guards and resolvers for any routes, all guards must run and succeed for a given route hierarchy before the resolvers run.
+For example, consider a route configuration with route A, child of route A, route B, and child of route B.
+The order of execution is: A(guards), A child(guards), A(resolvers), B(guards), B child(guards), B(resolvers).
+
+<div class="alert is-helpful">
+
+Consider using [componentless routes](#nesting-routes) to more easily control access to child routes.  A componentless route is a `Route` object that has a base path but no component; it serves as a container for a set of related child routes.
+
+</div>
+
+### Creating a guard service
 
 Create a service for your guard:
-
 
 <code-example language="none" class="code-shell">
   ng generate guard your-guard
@@ -408,90 +829,43 @@ Here, `canActivate` tells the router to mediate navigation to this particular ro
 }
 </code-example>
 
-For more information with a working example, see the [routing tutorial section on route guards](guide/router-tutorial-toh#milestone-5-route-guards).
+For more about the various types of route guards and their usage, see these [additional route guards examples](/guide/router-tutorial-toh#guards "Route guard examples").
 
-## Link parameters array
+---
 
-A link parameters array holds the following ingredients for router navigation:
-
-* The path of the route to the destination component.
-* Required and optional route parameters that go into the route URL.
-
-You can bind the `RouterLink` directive to such an array like this:
-
-<code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (h-anchor)" region="h-anchor"></code-example>
-
-The following is a two-element array when specifying a route parameter:
-
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (nav-to-detail)" region="nav-to-detail"></code-example>
-
-You can provide optional route parameters in an object, as in `{ foo: 'foo' }`:
-
-<code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (cc-query-params)" region="cc-query-params"></code-example>
-
-These three examples cover the needs of an app with one level of routing.
-However, with a child router, such as in the crisis center, you create new link array possibilities.
-
-The following minimal `RouterLink` example builds upon a specified [default child route](guide/router-tutorial-toh#a-crisis-center-with-child-routes) for the crisis center.
-
-<code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (cc-anchor-w-default)" region="cc-anchor-w-default"></code-example>
-
-Note the following:
-
-* The first item in the array identifies the parent route (`/crisis-center`).
-* There are no parameters for this parent route.
-* There is no default for the child route so you need to pick one.
-* You're navigating to the `CrisisListComponent`, whose route path is `/`, but you don't need to explicitly add the slash.
-
-Consider the following router link that navigates from the root of the application down to the Dragon Crisis:
-
-<code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (Dragon-anchor)" region="Dragon-anchor"></code-example>
-
-* The first item in the array identifies the parent route (`/crisis-center`).
-* There are no parameters for this parent route.
-* The second item identifies the child route details about a particular crisis (`/:id`).
-* The details child route requires an `id` route parameter.
-* You added the `id` of the Dragon Crisis as the second item in the array (`1`).
-* The resulting path is `/crisis-center/1`.
-
-You could also redefine the `AppComponent` template with Crisis Center routes exclusively:
-
-<code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
-
-In summary, you can write applications with one, two or more levels of routing.
-The link parameters array affords the flexibility to represent any routing depth and any legal sequence of route paths, (required) router parameters, and (optional) route parameter objects.
+<!--- ROuTER CONFIGURATION PAGE?  -->
 
 {@a browser-url-styles}
 
 {@a location-strategy}
 
-## `LocationStrategy` and browser URL styles
+## Browser URL styles and path location strategies
 
 When the router navigates to a new component view, it updates the browser's location and history with a URL for that view.
-As this is a strictly local URL the browser won't send this URL to the server and will not reload the page.
+As this is a strictly local URL the browser does not send this URL to the server and does not reload the page.
 
 Modern HTML5 browsers support <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>, a technique that changes a browser's location and history without triggering a server page request.
-The router can compose a "natural" URL that is indistinguishable from one that would otherwise require a page load.
+The router service can compose a "natural" URL that is indistinguishable from one that would otherwise require a page load.
 
-Here's the Crisis Center URL in this "HTML5 pushState" style:
+For example, the following URL uses the HTML5 "pushState" style for the Crisis Center URL:
 
 <code-example format="nocode">
   localhost:3002/crisis-center/
 
 </code-example>
 
-Older browsers send page requests to the server when the location URL changes unless the change occurs after a "#" (called the "hash").
+Older browsers send page requests to the server when the location URL changes unless the change occurs after a hash mark (#).
 Routers can take advantage of this exception by composing in-application route URLs with hashes.
-Here's a "hash URL" that routes to the Crisis Center.
+For example, the following hash URL routes to the Crisis Center.
 
 <code-example format="nocode">
   localhost:3002/src/#/crisis-center/
 
 </code-example>
 
-The router supports both styles with two `LocationStrategy` providers:
+The `Router` service supports both styles with two `LocationStrategy` providers:
 
-1. `PathLocationStrategy`&mdash;the default "HTML5 pushState" style.
+1. `PathLocationStrategy`&mdash;the default "pushState" or HTML5 URL style.
 1. `HashLocationStrategy`&mdash;the "hash URL" style.
 
 The `RouterModule.forRoot()` function sets the `LocationStrategy` to the `PathLocationStrategy`, which makes it the default strategy.
@@ -499,15 +873,14 @@ You also have the option of switching to the `HashLocationStrategy` with an over
 
 <div class="alert is-helpful">
 
-For more information on providers and the bootstrap process, see [Dependency Injection](guide/dependency-injection#bootstrap).
+For more information on providers and the bootstrap process, see  the [Dependency Injection guide](guide/dependency-injection#bootstrap "Providers and bootstrapping").
 
 </div>
 
-## Choosing a routing strategy
+### Choosing a location strategy
 
-You must choose a routing strategy early in the development of you project because once the application is in production, visitors to your site use and depend on application URL references.
-
-Almost all Angular projects should use the default HTML5 style.
+You must choose a location strategy early in the development of you project because once the application is in production, visitors to your site use and depend on application URL references.
+Almost all Angular projects should use the HTML5 style, which is the default.
 It produces URLs that are easier for users to understand and it preserves the option to do server-side rendering.
 
 Rendering critical pages on the server is a technique that can greatly improve perceived responsiveness when the app first loads.
@@ -515,22 +888,13 @@ An app that would otherwise take ten or more seconds to start could be rendered 
 
 This option is only available if application URLs look like normal web URLs without hashes (#) in the middle.
 
-## `<base href>`
+{@a base-href}
 
-The router uses the browser's <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a> for navigation.
-`pushState` allows you to customize in-app URL paths; for example, `localhost:4200/crisis-center`.
-The in-app URLs can be indistinguishable from server URLs.
+### Setting a base location for the push-state strategy
 
-Modern HTML5 browsers were the first to support `pushState` which is why many people refer to these URLs as "HTML5 style" URLs.
+While the router uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a> style by default, you must configure that strategy by setting a base location.
 
-<div class="alert is-helpful">
-
-HTML5 style navigation is the router default.
-In the [LocationStrategy and browser URL styles](#browser-url-styles) section, learn why HTML5 style is preferable, how to adjust its behavior, and how to switch to the older hash (#) style, if necessary.
-
-</div>
-
-You must add a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a> to the app's `index.html` for `pushState` routing to work.
+For `pushState` routing to work, you must add a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a> to the app's `index.html`
 The browser uses the `<base href>` value to prefix relative URLs when referencing CSS files, scripts, and images.
 
 Add the `<base>` element just after the  `<head>` tag.
@@ -539,643 +903,37 @@ set the `href` value in `index.html` as shown here.
 
 <code-example path="router/src/index.html" header="src/index.html (base-href)" region="base-href"></code-example>
 
-### HTML5 URLs and the  `<base href>`
-
-While the router uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a> style by default, you must configure that strategy with a `<base href>`.
-
-The preferred way to configure the strategy is to add a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a> tag in the `<head>` of the `index.html`.
-
-<code-example path="router/src/index.html" header="src/index.html (base-href)" region="base-href"></code-example>
-
 Without that tag, the browser may not be able to load resources
 (images, CSS, scripts) when "deep linking" into the app.
 
-Some developers may not be able to add the `<base>` element, perhaps because they don't have access to `<head>` or the `index.html`.
-
-Those developers may still use HTML5 URLs by taking the following two steps:
+You might not be able to add the `<base>` element if, for example, you don't have access to `<head>` or the `index.html`.
+You can still use HTML5 URLs by taking the following steps:
 
 1. Provide the router with an appropriate [APP_BASE_HREF][] value.
 1. Use root URLs for all web resources: CSS, images, scripts, and template HTML files.
 
 {@a hashlocationstrategy}
 
-### `HashLocationStrategy`
+### Using the hash-URL location strategy
 
 You can use `HashLocationStrategy` by providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot()` in the `AppModule`.
 
 <code-example path="router/src/app/app.module.6.ts" header="src/app/app.module.ts (hash URL strategy)"></code-example>
 
-## Router Reference
 
-The folllowing sections highlight some core router concepts.
-
-{@a basics-router-imports}
-
-### Router imports
-
-The Angular Router is an optional service that presents a particular component view for a given URL.
-It is not part of the Angular core and thus is in its own library package, `@angular/router`.
-
-Import what you need from it as you would from any other Angular package.
-
-<code-example path="router/src/app/app.module.1.ts" header="src/app/app.module.ts (import)" region="import-router"></code-example>
-
-
-<div class="alert is-helpful">
-
-For more on browser URL styles, see [`LocationStrategy` and browser URL styles](#browser-url-styles).
-
-</div>
-
-{@a basics-config}
-
-### Configuration
-
-A routed Angular application has one singleton instance of the `Router` service.
-When the browser's URL changes, that router looks for a corresponding `Route` from which it can determine the component to display.
-
-A router has no routes until you configure it.
-The following example creates five route definitions, configures the router via the `RouterModule.forRoot()` method, and adds the result to the `AppModule`'s `imports` array.
-
-<code-example path="router/src/app/app.module.0.ts" header="src/app/app.module.ts (excerpt)"></code-example>
-
-{@a example-config}
-
-The `appRoutes` array of routes describes how to navigate.
-Pass it to the `RouterModule.forRoot()` method in the module `imports` to configure the router.
-
-Each `Route` maps a URL `path` to a component.
-There are no leading slashes in the path.
-The router parses and builds the final URL for you, which allows you to use both relative and absolute paths when navigating between application views.
-
-The `:id` in the second route is a token for a route parameter.
-In a URL such as `/hero/42`, "42" is the value of the `id` parameter.
-The corresponding `HeroDetailComponent` uses that value to find and present the hero whose `id` is 42.
-
-The `data` property in the third route is a place to store arbitrary data associated with
-this specific route.
-The data property is accessible within each activated route. Use it to store items such as page titles, breadcrumb text, and other read-only, static data.
-You can use the [resolve guard](guide/router-tutorial-toh#resolve-guard) to retrieve dynamic data.
-
-The empty path in the fourth route represents the default path for the application&mdash;the place to go when the path in the URL is empty, as it typically is at the start.
-This default route redirects to the route for the `/heroes` URL and, therefore, displays the `HeroesListComponent`.
-
-If you need to see what events are happening during the navigation lifecycle, there is the `enableTracing` option as part of the router's default configuration.
-This outputs each router event that took place during each navigation lifecycle to the browser console.
-Use `enableTracing` only for debugging purposes.
-You set the `enableTracing: true` option in the object passed as the second argument to the `RouterModule.forRoot()` method.
-
-{@a basics-router-outlet}
-
-### Router outlet
-
-The `RouterOutlet` is a directive from the router library that is used like a component.
-It acts as a placeholder that marks the spot in the template where the router should
-display the components for that outlet.
-
-<code-example language="html">
-  &lt;router-outlet>&lt;/router-outlet>
-  &lt;!-- Routed components go here -->
-
-</code-example>
-
-Given the configuration above, when the browser URL for this application becomes `/heroes`, the router matches that URL to the route path `/heroes` and displays the `HeroListComponent` as a sibling element to the `RouterOutlet` that you've placed in the host component's template.
-
-{@a basics-router-links}
-
-{@a router-link}
-
-### Router links
-
-To navigate as a result of some user action such as the click of an anchor tag, use `RouterLink`.
-
-Consider the following template:
-
-<code-example path="router/src/app/app.component.1.html" header="src/app/app.component.html"></code-example>
-
-The `RouterLink` directives on the anchor tags give the router control over those elements.
-The navigation paths are fixed, so you can assign a string to the `routerLink` (a "one-time" binding).
-
-Had the navigation path been more dynamic, you could have bound to a template expression that returned an array of route link parameters; that is, the [link parameters array](guide/router#link-parameters-array).
-The router resolves that array into a complete URL.
-
-{@a router-link-active}
-
-### Active router links
-
-The `RouterLinkActive` directive toggles CSS classes for active `RouterLink` bindings based on the current `RouterState`.
-
-On each anchor tag, you see a [property binding](guide/property-binding) to the `RouterLinkActive` directive that looks like `routerLinkActive="..."`.
-
-The template expression to the right of the equal sign, `=`, contains a space-delimited string of CSS classes that the Router adds when this link is active (and removes when the link is inactive).
-You set the `RouterLinkActive` directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component property that returns such a string.
-
-Active route links cascade down through each level of the route tree, so parent and child router links can be active at the same time.
-To override this behavior, you can bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression. By using `{ exact: true }`, a given `RouterLink` will only be active if its URL is an exact match to the current URL.
-
-{@a basics-router-state}
-
-### Router state
-
-After the end of each successful navigation lifecycle, the router builds a tree of `ActivatedRoute` objects that make up the current state of the router. You can access the current `RouterState` from anywhere in the application using the `Router` service and the `routerState` property.
-
-Each `ActivatedRoute` in the `RouterState` provides methods to traverse up and down the route tree to get information from parent, child and sibling routes.
-
-{@a activated-route}
-
-### Activated route
-
-The route path and parameters are available through an injected router service called the [ActivatedRoute](api/router/ActivatedRoute).
-It has a great deal of useful information including:
-
-<table>
-  <tr>
-    <th>
-      Property
-    </th>
-
-    <th>
-      Description
-    </th>
-  </tr>
-
-  <tr>
-    <td>
-      <code>url</code>
-    </td>
-    <td>
-
-    An `Observable` of the route path(s), represented as an array of strings for each part of the route path.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>data</code>
-    </td>
-    <td>
-
-    An `Observable` that contains the `data` object provided for the route.
-    Also contains any resolved values from the [resolve guard](guide/router-tutorial-toh#resolve-guard).
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>paramMap</code>
-    </td>
-    <td>
-
-    An `Observable` that contains a [map](api/router/ParamMap) of the required and [optional parameters](guide/router-tutorial-toh#optional-route-parameters) specific to the route.
-    The map supports retrieving single and multiple values from the same parameter.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>queryParamMap</code>
-    </td>
-    <td>
-
-    An `Observable` that contains a [map](api/router/ParamMap) of the [query parameters](guide/router-tutorial-toh#query-parameters) available to all routes.
-    The map supports retrieving single and multiple values from the query parameter.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>fragment</code>
-    </td>
-    <td>
-
-    An `Observable` of the URL [fragment](guide/router-tutorial-toh#fragment) available to all routes.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>outlet</code>
-    </td>
-    <td>
-
-    The name of the `RouterOutlet` used to render the route.
-    For an unnamed outlet, the outlet name is primary.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>routeConfig</code>
-    </td>
-    <td>
-
-    The route configuration used for the route that contains the origin path.
-
-    </td>
-  </tr>
-
-    <tr>
-    <td>
-      <code>parent</code>
-    </td>
-    <td>
-
-    The route's parent `ActivatedRoute` when this route is a [child route](guide/router-tutorial-toh#child-routing-component).
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>firstChild</code>
-    </td>
-    <td>
-
-    Contains the first `ActivatedRoute` in the list of this route's child routes.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>children</code>
-    </td>
-    <td>
-
-    Contains all the [child routes](guide/router-tutorial-toh#child-routing-component) activated under the current route.
-
-    </td>
-  </tr>
-</table>
-
-<div class="alert is-helpful">
-
-Two older properties are still available, however, their replacements are preferable as they may be deprecated in a future Angular version.
-
-* `params`: An `Observable` that contains the required and [optional parameters](guide/router-tutorial-toh#optional-route-parameters) specific to the route. Use `paramMap` instead.
-
-* `queryParams`: An `Observable` that contains the [query parameters](guide/router-tutorial-toh#query-parameters) available to all routes.
-Use `queryParamMap` instead.
-
-</div>
-
-### Router events
-
-During each navigation, the `Router` emits navigation events through the `Router.events` property.
-These events range from when the navigation starts and ends to many points in between. The full list of navigation events is displayed in the table below.
-
-<table>
-  <tr>
-    <th>
-      Router Event
-    </th>
-
-    <th>
-      Description
-    </th>
-  </tr>
-
-  <tr>
-    <td>
-      <code>NavigationStart</code>
-    </td>
-    <td>
-
-      An [event](api/router/NavigationStart) triggered when navigation starts.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>RouteConfigLoadStart</code>
-    </td>
-    <td>
-
-      An [event](api/router/RouteConfigLoadStart) triggered before the `Router`
-      [lazy loads](guide/router-tutorial-toh#asynchronous-routing) a route configuration.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>RouteConfigLoadEnd</code>
-    </td>
-    <td>
-
-      An [event](api/router/RouteConfigLoadEnd) triggered after a route has been lazy loaded.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>RoutesRecognized</code>
-    </td>
-    <td>
-
-      An [event](api/router/RoutesRecognized) triggered when the Router parses the URL and the routes are recognized.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>GuardsCheckStart</code>
-    </td>
-    <td>
-
-      An [event](api/router/GuardsCheckStart) triggered when the Router begins the Guards phase of routing.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>ChildActivationStart</code>
-    </td>
-    <td>
-
-      An [event](api/router/ChildActivationStart) triggered when the Router begins activating a route's children.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>ActivationStart</code>
-    </td>
-    <td>
-
-      An [event](api/router/ActivationStart) triggered when the Router begins activating a route.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>GuardsCheckEnd</code>
-    </td>
-    <td>
-
-      An [event](api/router/GuardsCheckEnd) triggered when the Router finishes the Guards phase of routing successfully.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>ResolveStart</code>
-    </td>
-    <td>
-
-      An [event](api/router/ResolveStart) triggered when the Router begins the Resolve phase of routing.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>ResolveEnd</code>
-    </td>
-    <td>
-
-      An [event](api/router/ResolveEnd) triggered when the Router finishes the Resolve phase of routing successfuly.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>ChildActivationEnd</code>
-    </td>
-    <td>
-
-      An [event](api/router/ChildActivationEnd) triggered when the Router finishes activating a route's children.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>ActivationEnd</code>
-    </td>
-    <td>
-
-      An [event](api/router/ActivationStart) triggered when the Router finishes activating a route.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>NavigationEnd</code>
-    </td>
-    <td>
-
-      An [event](api/router/NavigationEnd) triggered when navigation ends successfully.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>NavigationCancel</code>
-    </td>
-    <td>
-
-      An [event](api/router/NavigationCancel) triggered when navigation is canceled.
-      This can happen when a [Route Guard](guide/router-tutorial-toh#guards) returns false during navigation,
-      or redirects by returning a `UrlTree`.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>NavigationError</code>
-    </td>
-    <td>
-
-      An [event](api/router/NavigationError) triggered when navigation fails due to an unexpected error.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>Scroll</code>
-    </td>
-    <td>
-
-      An [event](api/router/Scroll) that represents a scrolling event.
-
-    </td>
-  </tr>
-</table>
-
-When you enable the `enableTracing` option, Angular logs these events to the console.
-For an example of filtering router navigation events, see the [router section](guide/observables-in-angular#router) of the [Observables in Angular](guide/observables-in-angular) guide.
-
-### Router terminology
-
-Here are the key `Router` terms and their meanings:
-
-<table>
-
-  <tr>
-
-    <th>
-      Router Part
-    </th>
-
-    <th>
-      Meaning
-    </th>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>Router</code>
-    </td>
-
-    <td>
-      Displays the application component for the active URL.
-      Manages navigation from one component to the next.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>RouterModule</code>
-    </td>
-
-    <td>
-      A separate NgModule that provides the necessary service providers
-      and directives for navigating through application views.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>Routes</code>
-    </td>
-
-    <td>
-      Defines an array of Routes, each mapping a URL path to a component.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>Route</code>
-    </td>
-
-    <td>
-      Defines how the router should navigate to a component based on a URL pattern.
-      Most routes consist of a path and a component type.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>RouterOutlet</code>
-    </td>
-
-    <td>
-      The directive (<code>&lt;router-outlet></code>) that marks where the router displays a view.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>RouterLink</code>
-    </td>
-
-    <td>
-      The directive for binding a clickable HTML element to a route. Clicking an element with a <code>routerLink</code> directive that is bound to a <i>string</i> or a <i>link parameters array</i> triggers a navigation.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>RouterLinkActive</code>
-    </td>
-
-    <td>
-      The directive for adding/removing classes from an HTML element when an associated <code>routerLink</code> contained on or inside the element becomes active/inactive.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>ActivatedRoute</code>
-    </td>
-
-    <td>
-      A service that is provided to each route component that contains route specific information such as route parameters, static data, resolve data, global query params, and the global fragment.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>RouterState</code>
-    </td>
-
-    <td>
-      The current state of the router including a tree of the currently activated routes together with convenience methods for traversing the route tree.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <b><i>Link parameters array</i></b>
-    </td>
-
-    <td>
-      An array that the router interprets as a routing instruction.
-      You can bind that array to a <code>RouterLink</code> or pass the array as an argument to the <code>Router.navigate</code> method.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <b><i>Routing component</i></b>
-    </td>
-
-    <td>
-      An Angular component with a <code>RouterOutlet</code> that displays views based on router navigations.
-    </td>
-
-  </tr>
-
-</table>
+## Router API summary
+
+The following table lists and defines key API elements provided by the Angular router service.
+
+| Router term | Meaning |
+| :---------- | :------- |
+| [`RouterModule`](api/router/RouterModule) | A separate NgModule that provides the necessary service providers and directives for navigating through application views. |
+| [`Router`](api/router/Router) | The service class that manages navigation from one component to the next and displays the application component for the active URL. |
+| [`Routes`](api/router/Routes) | An array of `Route` objects, each mapping a URL path to a component. |
+| [`Route`](api/router/Route) | An object that defines how the router should navigate to a component based on a URL pattern. Most routes consist of a *path* and a *component* type. |
+| [`RouterOutlet`](api/router/RouterOutlet) | A directive (<code>&lt;router-outlet></code>) that marks where the router displays a view. A component whose template contains a `routerOutlet` directive is a [routing component](guide/glossary#routing-component "Definition of routing component"). |
+| [`RouterLink`](api/router/RouterLink) | A directive that binds a clickable HTML element to a route. A user triggers navigation by clicking an element with a <code>[routerLink]</code> directive that is bound to a simple route path string, or a [link parameters array](#link-parameters-array "Definition"). You can also initiate navigation programmatically by passing a link parameters array to the [Router.navigate()](api/router/Router#navigate) method. |
+| [`RouterLinkActive`](api/router/RouterLinkActive) | A directive for adding or removing CSS classes on an HTML element when the route for an associated `routerLink` contained on or inside the element becomes active or inactive. |
+| [`ActivatedRoute`](api/router/ActivatedRoute) | A service that is provided to each route component, which contains route-specific information such as route parameters, static data, resolve data, global query parameters, and the global fragment. |
+| [`RouterState`](api/router/RouterState) | Represents the current state of the router, including a tree of the currently activated routes together with convenience methods for traversing the route tree. |
+| [`NavigationExtras`](api/router/NavigationExtras) | A configuration options object that you can pass to a `Router.navigate()` call to control how the URL is constructed for that operation. |
