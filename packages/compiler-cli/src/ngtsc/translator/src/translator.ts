@@ -526,7 +526,11 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
 
   visitLiteralExpr(ast: LiteralExpr, context: Context): ts.TypeNode {
     if (ast.value === null) {
-      return ts.createKeywordTypeNode(ts.SyntaxKind.NullKeyword);
+      // TODO(alan-agius4): Remove when we no longer support TS 3.9
+      // Use: return ts.createLiteralTypeNode(ts.createNull()) directly.
+      return ts.versionMajorMinor.charAt(0) === '4' ?
+          ts.createLiteralTypeNode(ts.createNull() as any) :
+          ts.createKeywordTypeNode(ts.SyntaxKind.NullKeyword as any);
     } else if (ast.value === undefined) {
       return ts.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword);
     } else if (typeof ast.value === 'boolean') {
@@ -696,7 +700,7 @@ function createLocalizedStringTaggedTemplate(
 // Revert once https://github.com/microsoft/TypeScript/issues/35374 is fixed
 function createTemplateMiddle(cooked: string, raw: string): ts.TemplateMiddle {
   const node: ts.TemplateLiteralLikeNode = ts.createTemplateHead(cooked, raw);
-  node.kind = ts.SyntaxKind.TemplateMiddle;
+  (node.kind as ts.SyntaxKind) = ts.SyntaxKind.TemplateMiddle;
   return node as ts.TemplateMiddle;
 }
 
@@ -704,7 +708,7 @@ function createTemplateMiddle(cooked: string, raw: string): ts.TemplateMiddle {
 // Revert once https://github.com/microsoft/TypeScript/issues/35374 is fixed
 function createTemplateTail(cooked: string, raw: string): ts.TemplateTail {
   const node: ts.TemplateLiteralLikeNode = ts.createTemplateHead(cooked, raw);
-  node.kind = ts.SyntaxKind.TemplateTail;
+  (node.kind as ts.SyntaxKind) = ts.SyntaxKind.TemplateTail;
   return node as ts.TemplateTail;
 }
 

@@ -33,7 +33,6 @@ import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
 
 
-
 /**
  * @description
  *
@@ -922,7 +921,7 @@ export class Router {
             const {source, state, urlTree} = currentChange;
             const extras: NavigationExtras = {replaceUrl: true};
             if (state) {
-              const stateCopy = {...state};
+              const stateCopy = {...state} as Partial<RestoredState>;
               delete stateCopy.navigationId;
               if (Object.keys(stateCopy).length !== 0) {
                 extras.state = stateCopy;

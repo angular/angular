@@ -136,7 +136,7 @@ export declare class AnimationEvent {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toEqual(`Type '"2"' is not assignable to type 'number'.`);
+      expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
       // The reported error code should be in the TS error space, not a -99 "NG" code.
       expect(diags[0].code).toBeGreaterThan(0);
     });
@@ -168,8 +168,8 @@ export declare class AnimationEvent {
 
          const diags = env.driveDiagnostics();
          expect(diags.length).toBe(2);
-         expect(diags[0].messageText).toEqual(`Type '"2"' is not assignable to type 'number'.`);
-         expect(diags[1].messageText).toEqual(`Type '"2"' is not assignable to type 'number'.`);
+         expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+         expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
        });
 
     it('should support inputs and outputs with names that are not JavaScript identifiers', () => {
@@ -204,7 +204,7 @@ export declare class AnimationEvent {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toEqual(`Type '2' is not assignable to type 'string'.`);
+      expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
       expect(diags[1].messageText)
           .toEqual(`Argument of type 'string' is not assignable to parameter of type 'number'.`);
     });
@@ -380,7 +380,7 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type '1' is not assignable to type 'string'.`);
+        expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
         expect(diags[1].messageText)
             .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
       });
@@ -390,7 +390,7 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type '1' is not assignable to type 'string'.`);
+        expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
         expect(diags[1].messageText)
             .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
       });
@@ -716,8 +716,8 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type '""' is not assignable to type 'boolean'.`);
-        expect(diags[1].messageText).toEqual(`Type '"3"' is not assignable to type 'number'.`);
+        expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'boolean'.`);
+        expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
       });
 
       it('should produce an error for text attributes when overall strictness is enabled', () => {
@@ -725,8 +725,8 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type '""' is not assignable to type 'boolean'.`);
-        expect(diags[1].messageText).toEqual(`Type '"3"' is not assignable to type 'number'.`);
+        expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'boolean'.`);
+        expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
       });
 
       it('should not produce an error for text attributes when not enabled', () => {
@@ -1119,7 +1119,7 @@ export declare class AnimationEvent {
       const allErrors = [
         `'does_not_exist' does not exist on type '{ name: string; }'`,
         `Expected 2 arguments, but got 3.`,
-        `Argument of type '"test"' is not assignable to parameter of type 'number'`,
+        `Argument of type 'string' is not assignable to parameter of type 'number'`,
         `Argument of type '{ name: string; }' is not assignable to parameter of type 'unknown[]'`,
       ];
 
@@ -1241,11 +1241,11 @@ export declare class AnimationEvent {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(3);
-      expect(diags[0].messageText).toBe(`Type 'true' is not assignable to type 'number'.`);
+      expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
       expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[fromAbstract]="true"');
-      expect(diags[1].messageText).toBe(`Type '3' is not assignable to type 'string'.`);
+      expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
       expect(getSourceCodeForDiagnostic(diags[1])).toEqual('[fromBase]="3"');
-      expect(diags[2].messageText).toBe(`Type '4' is not assignable to type 'boolean'.`);
+      expect(diags[2].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
       expect(getSourceCodeForDiagnostic(diags[2])).toEqual('[fromChild]="4"');
     });
 
@@ -1298,11 +1298,11 @@ export declare class AnimationEvent {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(3);
-      expect(diags[0].messageText).toBe(`Type 'true' is not assignable to type 'number'.`);
+      expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
       expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[fromAbstract]="true"');
-      expect(diags[1].messageText).toBe(`Type '3' is not assignable to type 'string'.`);
+      expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
       expect(getSourceCodeForDiagnostic(diags[1])).toEqual('[fromBase]="3"');
-      expect(diags[2].messageText).toBe(`Type '4' is not assignable to type 'boolean'.`);
+      expect(diags[2].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
       expect(getSourceCodeForDiagnostic(diags[2])).toEqual('[fromChild]="4"');
     });
 

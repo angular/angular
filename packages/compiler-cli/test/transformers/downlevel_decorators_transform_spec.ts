@@ -584,7 +584,7 @@ describe('downlevel decorator transform', () => {
         const visitNode = (node: ts.Node): ts.Node => {
           if (ts.isClassDeclaration(node) || ts.isClassElement(node)) {
             const cloned = ts.getMutableClone(node);
-            cloned.decorators = undefined;
+            (cloned.decorators as undefined) = undefined;
             return cloned;
           }
           return ts.visitEachChild(node, visitNode, context);
