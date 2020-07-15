@@ -778,8 +778,8 @@ Route guard functions implement the following interfaces:
 * [`CanActivate`](api/router/CanActivate)
 * [`CanActivateChild`](api/router/CanActivateChild)
 * [`CanDeactivate`](api/router/CanDeactivate)
-* [`Resolve`](api/router/Resolve)
 * [`CanLoad`](api/router/CanLoad)
+* [`Resolve`](api/router/Resolve)
 
 You can have multiple guards at every level of a navigation hierarchy.
 The router checks the `CanDeactivate` and `CanActivateChild` guards first, from the deepest child route to the top.
@@ -787,7 +787,15 @@ Then it checks the `CanActivate` guards from the top down to the deepest child r
 If the feature module is loaded asynchronously, the `CanLoad` guard is checked before the module is loaded.
 If _any_ guard returns false, pending guards that have not completed are canceled, and the entire navigation is canceled.
 
+If you specify both guards and resolvers for any routes, all guards must run and succeed for a given route hierarchy before the resolvers run.
+For example, consider a route configuration with route A, child of route A, route B, and child of route B.
+The order of execution is: A(guards), A child(guards), A(resolvers), B(guards), B child(guards), B(resolvers).
+
+<div class="alert is-helpful">
+
 Consider using [componentless routes](#nesting-routes) to more easily control access to child routes.  A componentless route is a `Route` object that has a base path but no component; it serves as a container for a set of related child routes.
+
+</div>
 
 ### Creating a guard service
 
