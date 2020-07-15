@@ -1137,19 +1137,21 @@ describe('meta-programing', () => {
       @Input() name: string = '';
     }
 
-    (Child.prototype as any).ngOnInit = () => events.push('onInit');
-    (Child.prototype as any).ngOnChanges = (e: SimpleChanges) => {
+    const ChildPrototype = Child.prototype as any;
+    ChildPrototype.ngOnInit = () => events.push('onInit');
+    ChildPrototype.ngOnChanges = (e: SimpleChanges) => {
       const name = e['name'];
       expect(name.previousValue).toEqual(undefined);
       expect(name.currentValue).toEqual('value');
       expect(name.firstChange).toEqual(true);
       events.push('ngOnChanges');
-    }, (Child.prototype as any).ngDoCheck = () => events.push('ngDoCheck');
-    (Child.prototype as any).ngAfterContentInit = () => events.push('ngAfterContentInit');
-    (Child.prototype as any).ngAfterContentChecked = () => events.push('ngAfterContentChecked');
-    (Child.prototype as any).ngAfterViewInit = () => events.push('ngAfterViewInit');
-    (Child.prototype as any).ngAfterViewChecked = () => events.push('ngAfterViewChecked');
-    (Child.prototype as any).ngOnDestroy = () => events.push('ngOnDestroy');
+    };
+    ChildPrototype.ngDoCheck = () => events.push('ngDoCheck');
+    ChildPrototype.ngAfterContentInit = () => events.push('ngAfterContentInit');
+    ChildPrototype.ngAfterContentChecked = () => events.push('ngAfterContentChecked');
+    ChildPrototype.ngAfterViewInit = () => events.push('ngAfterViewInit');
+    ChildPrototype.ngAfterViewChecked = () => events.push('ngAfterViewChecked');
+    ChildPrototype.ngOnDestroy = () => events.push('ngOnDestroy');
 
     TestBed.configureTestingModule({
       declarations: [App, Child],
@@ -1162,6 +1164,58 @@ describe('meta-programing', () => {
       'ngAfterViewInit', 'ngAfterViewChecked', 'ngOnDestroy'
     ]);
   });
+
+  it('should allow adding lifecycle hook methods with inheritance any time before first instance creation',
+     () => {
+       const events: any[] = [];
+
+       @Component({template: `<child name="value"></child>`})
+       class App {
+       }
+
+       class BaseChild {}
+
+       @Component({selector: 'child', template: `empty`})
+       class Child extends BaseChild {
+         @Input() name: string = '';
+       }
+
+       // These are defined on the base class
+       const BasePrototype = BaseChild.prototype as any;
+       BasePrototype.ngOnInit = () => events.push('onInit');
+       BasePrototype.ngOnChanges = (e: SimpleChanges) => {
+         const name = e['name'];
+         expect(name.previousValue).toEqual(undefined);
+         expect(name.currentValue).toEqual('value');
+         expect(name.firstChange).toEqual(true);
+         events.push('ngOnChanges');
+       };
+
+       // These will be overwritten later
+       BasePrototype.ngDoCheck = () => events.push('Expected to be overbidden');
+       BasePrototype.ngAfterContentInit = () => events.push('Expected to be overbidden');
+
+
+       // These are define on the concrete class
+       const ChildPrototype = Child.prototype as any;
+       ChildPrototype.ngDoCheck = () => events.push('ngDoCheck');
+       ChildPrototype.ngAfterContentInit = () => events.push('ngAfterContentInit');
+       ChildPrototype.ngAfterContentChecked = () => events.push('ngAfterContentChecked');
+       ChildPrototype.ngAfterViewInit = () => events.push('ngAfterViewInit');
+       ChildPrototype.ngAfterViewChecked = () => events.push('ngAfterViewChecked');
+       ChildPrototype.ngOnDestroy = () => events.push('ngOnDestroy');
+
+       TestBed.configureTestingModule({
+         declarations: [App, Child],
+       });
+       const fixture = TestBed.createComponent(App);
+       fixture.detectChanges();
+       fixture.destroy();
+       expect(events).toEqual([
+         'ngOnChanges', 'onInit', 'ngDoCheck', 'ngAfterContentInit', 'ngAfterContentChecked',
+         'ngAfterViewInit', 'ngAfterViewChecked', 'ngOnDestroy'
+       ]);
+     });
 });
 
 it('should call all hooks in correct order when several directives on same node', () => {
