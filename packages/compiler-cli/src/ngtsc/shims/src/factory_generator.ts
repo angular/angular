@@ -202,7 +202,8 @@ function transformFactorySourceFile(
     // satisfy closure compiler.
     transformedStatements.push(nonEmptyExport);
   }
-  file.statements = ts.createNodeArray(transformedStatements);
+  // sf.statements is readonly in TypeScript 4.0
+  (file.statements as ts.NodeArray<ts.Statement>) = ts.createNodeArray(transformedStatements);
 
   // If any imports to @angular/core were detected and rewritten (which happens when compiling
   // @angular/core), go through the SourceFile and rewrite references to symbols imported from core.

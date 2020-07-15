@@ -43,7 +43,8 @@ function flipIvySwitchInFile(sf: ts.SourceFile): ts.SourceFile {
   // Only update the statements in the SourceFile if any have changed.
   if (newStatements !== undefined) {
     sf = ts.getMutableClone(sf);
-    sf.statements = ts.createNodeArray(newStatements);
+    // sf.statements is readonly in TypeScript 4.0
+    (sf.statements as ts.NodeArray<ts.Statement>) = ts.createNodeArray(newStatements);
   }
   return sf;
 }

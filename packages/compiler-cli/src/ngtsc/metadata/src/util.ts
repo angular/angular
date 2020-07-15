@@ -20,22 +20,25 @@ export function extractReferencesFromType(
   if (!ts.isTupleTypeNode(def)) {
     return [];
   }
-  return def.elementTypes.map(element => {
-    if (!ts.isTypeQueryNode(element)) {
-      throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
-    }
-    const type = element.exprName;
-    const {node, from} = reflectTypeEntityToDeclaration(type, checker);
-    if (!isNamedClassDeclaration(node)) {
-      throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
-    }
-    const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
-    if (specifier !== null) {
-      return new Reference(node, {specifier, resolutionContext});
-    } else {
-      return new Reference(node);
-    }
-  });
+
+  // TODO(alan-agius4): remove `def.elementTypes` when TS 3.9 support is dropped.
+  return (def.elements || (def as typeof def&{elementTypes: typeof def.elements}).elementTypes)
+      .map(element => {
+        if (!ts.isTypeQueryNode(element)) {
+          throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
+        }
+        const type = element.exprName;
+        const {node, from} = reflectTypeEntityToDeclaration(type, checker);
+        if (!isNamedClassDeclaration(node)) {
+          throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
+        }
+        const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
+        if (specifier !== null) {
+          return new Reference(node, {specifier, resolutionContext});
+        } else {
+          return new Reference(node);
+        }
+      });
 }
 
 export function readStringType(type: ts.TypeNode): string|null {
@@ -69,12 +72,14 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
     return [];
   }
   const res: string[] = [];
-  type.elementTypes.forEach(el => {
-    if (!ts.isLiteralTypeNode(el) || !ts.isStringLiteral(el.literal)) {
-      return;
-    }
-    res.push(el.literal.text);
-  });
+  // TODO(alan-agius4): remove `type.elementTypes` when TS 3.9 support is dropped.
+  (type.elements || (type as typeof type&{elementTypes: typeof type.elements}).elementTypes)
+      .forEach(el => {
+        if (!ts.isLiteralTypeNode(el) || !ts.isStringLiteral(el.literal)) {
+          return;
+        }
+        res.push(el.literal.text);
+      });
   return res;
 }
 
