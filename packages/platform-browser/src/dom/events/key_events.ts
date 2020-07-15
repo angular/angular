@@ -111,7 +111,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     });
   }
 
-  static parseEventName(eventName: string): {[key: string]: string}|null {
+  static parseEventName(eventName: string): {fullKey: string, domEventName: string}|null {
     const parts: string[] = eventName.toLowerCase().split('.');
 
     const domEventName = parts.shift();
@@ -136,10 +136,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       return null;
     }
 
-    const result: {[k: string]: string} = {};
-    result['domEventName'] = domEventName;
-    result['fullKey'] = fullKey;
-    return result;
+    return {domEventName, fullKey};
   }
 
   static getEventFullKey(event: KeyboardEvent): string {
