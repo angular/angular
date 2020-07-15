@@ -29,7 +29,7 @@ import {generatedFactoryTransform} from '../../shims';
 import {ivySwitchTransform} from '../../switch';
 import {aliasTransformFactory, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {isTemplateDiagnostic, TemplateTypeCheckerImpl} from '../../typecheck';
-import {TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck/api';
+import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck/api';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
@@ -507,7 +507,8 @@ export class NgCompiler {
         continue;
       }
 
-      diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf));
+      diagnostics.push(
+          ...compilation.templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram));
     }
 
     const program = this.typeCheckingProgramStrategy.getProgram();

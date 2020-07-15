@@ -14,7 +14,7 @@ import {IncrementalBuild} from '../../incremental/api';
 import {ReflectionHost} from '../../reflection';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
-import {ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
+import {OptimizeFor, ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
 
 import {InliningMode, ShimTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from './context';
 import {findTypeCheckBlock, shouldReportDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
@@ -41,8 +41,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
    * Retrieve type-checking diagnostics from the given `ts.SourceFile` using the most recent
    * type-checking program.
    */
-  getDiagnosticsForFile(sf: ts.SourceFile): ts.Diagnostic[] {
-    this.ensureAllShimsForAllFiles();
+  getDiagnosticsForFile(sf: ts.SourceFile, optimizeFor: OptimizeFor): ts.Diagnostic[] {
+    switch (optimizeFor) {
+      case OptimizeFor.WholeProgram:
+        this.ensureAllShimsForAllFiles();
+        break;
+      case OptimizeFor.SingleFile:
+        this.ensureAllShimsForOneFile(sf);
+        break;
+    }
 
     const sfPath = absoluteFromSourceFile(sf);
     const fileRecord = this.state.get(sfPath)!;
@@ -68,7 +75,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getTypeCheckBlock(component: ts.ClassDeclaration): ts.Node|null {
-    this.ensureAllShimsForAllFiles();
+    this.ensureAllShimsForOneFile(component.getSourceFile());
 
     const program = this.typeCheckingStrategy.getProgram();
     const filePath = absoluteFromSourceFile(component.getSourceFile());
@@ -81,7 +88,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const id = fileRecord.sourceManager.getTemplateId(component);
 
     const shimSf = getSourceFileOrNull(program, shimPath);
-    if (shimSf === null) {
+    if (shimSf === null || !fileRecord.shimData.has(shimPath)) {
       throw new Error(`Error: no shim file in program: ${shimPath}`);
     }
 
@@ -144,12 +151,57 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     this.isComplete = true;
   }
 
+  private ensureAllShimsForOneFile(sf: ts.SourceFile): void {
+    this.maybeAdoptPriorResultsForFile(sf);
+
+    const sfPath = absoluteFromSourceFile(sf);
+
+    const fileData = this.getFileData(sfPath);
+    if (fileData.isComplete) {
+      // All data for this file is present and accounted for already.
+      return;
+    }
+
+    const host = new SingleFileTypeCheckingHost(sfPath, fileData, this.typeCheckingStrategy, this);
+    const ctx = this.newContext(host);
+
+    this.typeCheckAdapter.typeCheck(sf, ctx);
+
+    fileData.isComplete = true;
+
+    this.updateFromContext(ctx);
+  }
+
   private newContext(host: TypeCheckingHost): TypeCheckContextImpl {
     const inlining = this.typeCheckingStrategy.supportsInlineOperations ? InliningMode.InlineOps :
                                                                           InliningMode.Error;
     return new TypeCheckContextImpl(
         this.config, this.compilerHost, this.typeCheckingStrategy, this.refEmitter, this.reflector,
         host, inlining);
+  }
+
+  /**
+   * Remove any shim data that depends on inline operations applied to the type-checking program.
+   *
+   * This can be useful if new inlines need to be applied, and it's not possible to guarantee that
+   * they won't overwrite or corrupt existing inlines that are used by such shims.
+   */
+  clearAllShimDataUsingInlines(): void {
+    for (const fileData of this.state.values()) {
+      if (!fileData.hasInlines) {
+        continue;
+      }
+
+      for (const [shimFile, shimData] of fileData.shimData.entries()) {
+        if (shimData.hasInlines) {
+          fileData.shimData.delete(shimFile);
+        }
+      }
+
+      fileData.hasInlines = false;
+      fileData.isComplete = false;
+      this.isComplete = false;
+    }
   }
 
   private updateFromContext(ctx: TypeCheckContextImpl): void {
@@ -238,5 +290,63 @@ class WholeProgramTypeCheckingHost implements TypeCheckingHost {
 
   recordComplete(sfPath: AbsoluteFsPath): void {
     this.impl.getFileData(sfPath).isComplete = true;
+  }
+}
+
+/**
+ * Drives a `TypeCheckContext` to generate type-checking code efficiently for a single input file.
+ */
+class SingleFileTypeCheckingHost implements TypeCheckingHost {
+  private seenInlines = false;
+
+  constructor(
+      private sfPath: AbsoluteFsPath, private fileData: FileTypeCheckingData,
+      private strategy: TypeCheckingProgramStrategy, private impl: TemplateTypeCheckerImpl) {}
+
+  private assertPath(sfPath: AbsoluteFsPath): void {
+    if (this.sfPath !== sfPath) {
+      throw new Error(`AssertionError: querying TypeCheckingHost outside of assigned file`);
+    }
+  }
+
+  getSourceManager(sfPath: AbsoluteFsPath): TemplateSourceManager {
+    this.assertPath(sfPath);
+    return this.fileData.sourceManager;
+  }
+
+  shouldCheckComponent(node: ts.ClassDeclaration): boolean {
+    if (this.sfPath !== absoluteFromSourceFile(node.getSourceFile())) {
+      return false;
+    }
+    const shimPath = this.strategy.shimPathForComponent(node);
+
+    // Only need to generate a TCB for the class if no shim exists for it currently.
+    return !this.fileData.shimData.has(shimPath);
+  }
+
+  recordShimData(sfPath: AbsoluteFsPath, data: ShimTypeCheckingData): void {
+    this.assertPath(sfPath);
+
+    // Previous type-checking state may have required the use of inlines (assuming they were
+    // supported). If the current operation also requires inlines, this presents a problem:
+    // generating new inlines may invalidate any old inlines that old state depends on.
+    //
+    // Rather than resolve this issue by tracking specific dependencies on inlines, if the new state
+    // relies on inlines, any old state that relied on them is simply cleared. This happens when the
+    // first new state that uses inlines is encountered.
+    if (data.hasInlines && !this.seenInlines) {
+      this.impl.clearAllShimDataUsingInlines();
+      this.seenInlines = true;
+    }
+
+    this.fileData.shimData.set(data.path, data);
+    if (data.hasInlines) {
+      this.fileData.hasInlines = true;
+    }
+  }
+
+  recordComplete(sfPath: AbsoluteFsPath): void {
+    this.assertPath(sfPath);
+    this.fileData.isComplete = true;
   }
 }
