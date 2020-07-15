@@ -9,8 +9,9 @@
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, absoluteFromSourceFile, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
+import {OptimizeFor} from '../api';
 
-import {getClass, setup} from './test_utils';
+import {getClass, setup, TestDeclaration} from './test_utils';
 
 runInEachFileSystem(() => {
   describe('TemplateTypeChecker', () => {
@@ -22,12 +23,41 @@ runInEachFileSystem(() => {
         {fileName: file2, templates: {'Cmp2': '<span></span>'}}
       ]);
 
-      templateTypeChecker.getDiagnosticsForFile(getSourceFileOrError(program, file1));
+      templateTypeChecker.getDiagnosticsForFile(
+          getSourceFileOrError(program, file1), OptimizeFor.WholeProgram);
       const ttcProgram1 = programStrategy.getProgram();
-      templateTypeChecker.getDiagnosticsForFile(getSourceFileOrError(program, file2));
+      templateTypeChecker.getDiagnosticsForFile(
+          getSourceFileOrError(program, file2), OptimizeFor.WholeProgram);
       const ttcProgram2 = programStrategy.getProgram();
 
       expect(ttcProgram1).toBe(ttcProgram2);
+    });
+
+    it('should not batch diagnostic operations when requested in SingleFile mode', () => {
+      const file1 = absoluteFrom('/file1.ts');
+      const file2 = absoluteFrom('/file2.ts');
+      const {program, templateTypeChecker, programStrategy} = setup([
+        {fileName: file1, templates: {'Cmp1': '<div></div>'}},
+        {fileName: file2, templates: {'Cmp2': '<span></span>'}}
+      ]);
+
+      templateTypeChecker.getDiagnosticsForFile(
+          getSourceFileOrError(program, file1), OptimizeFor.SingleFile);
+      const ttcProgram1 = programStrategy.getProgram();
+
+      // ttcProgram1 should not contain a type check block for Cmp2.
+      const ttcSf2Before = getSourceFileOrError(ttcProgram1, absoluteFrom('/file2.ngtypecheck.ts'));
+      expect(ttcSf2Before.text).not.toContain('Cmp2');
+
+      templateTypeChecker.getDiagnosticsForFile(
+          getSourceFileOrError(program, file2), OptimizeFor.SingleFile);
+      const ttcProgram2 = programStrategy.getProgram();
+
+      // ttcProgram2 should now contain a type check block for Cmp2.
+      const ttcSf2After = getSourceFileOrError(ttcProgram2, absoluteFrom('/file2.ngtypecheck.ts'));
+      expect(ttcSf2After.text).toContain('Cmp2');
+
+      expect(ttcProgram1).not.toBe(ttcProgram2);
     });
 
     it('should allow access to the type-check block of a component', () => {
@@ -43,6 +73,56 @@ runInEachFileSystem(() => {
       expect(block).not.toBeNull();
       expect(block!.getText()).toMatch(/: i[0-9]\.Cmp1/);
       expect(block!.getText()).toContain(`document.createElement("div")`);
+    });
+
+    it('should clear old inlines when necessary', () => {
+      const file1 = absoluteFrom('/file1.ts');
+      const file2 = absoluteFrom('/file2.ts');
+      const dirFile = absoluteFrom('/dir.ts');
+      const dirDeclaration: TestDeclaration = {
+        name: 'TestDir',
+        selector: '[dir]',
+        file: dirFile,
+        type: 'directive',
+      };
+      const {program, templateTypeChecker, programStrategy} = setup([
+        {
+          fileName: file1,
+          templates: {'CmpA': '<div dir></div>'},
+          declarations: [dirDeclaration],
+        },
+        {
+          fileName: file2,
+          templates: {'CmpB': '<div dir></div>'},
+          declarations: [dirDeclaration],
+        },
+        {
+          fileName: dirFile,
+          source: `
+                // A non-exported interface used as a type bound for a generic directive causes
+                // an inline type constructor to be required.
+                interface NotExported {}
+                export class TestDir<T extends NotExported> {}`,
+          templates: {},
+        },
+      ]);
+      const sf1 = getSourceFileOrError(program, file1);
+      const cmpA = getClass(sf1, 'CmpA');
+      const sf2 = getSourceFileOrError(program, file2);
+      const cmpB = getClass(sf2, 'CmpB');
+      // Prime the TemplateTypeChecker by asking for a TCB from file1.
+      expect(templateTypeChecker.getTypeCheckBlock(cmpA)).not.toBeNull();
+
+      // Next, ask for a TCB from file2. This operation should clear data on TCBs generated for
+      // file1.
+      expect(templateTypeChecker.getTypeCheckBlock(cmpB)).not.toBeNull();
+      console.error(templateTypeChecker.getTypeCheckBlock(cmpB)?.getSourceFile().text);
+
+      // This can be detected by asking for a TCB again from file1. Since no data should be
+      // available for file1, this should cause another type-checking program step.
+      const prevTtcProgram = programStrategy.getProgram();
+      expect(templateTypeChecker.getTypeCheckBlock(cmpA)).not.toBeNull();
+      expect(programStrategy.getProgram()).not.toBe(prevTtcProgram);
     });
 
     describe('when inlining is unsupported', () => {
@@ -70,7 +150,7 @@ runInEachFileSystem(() => {
             ],
             {inlining: false});
         const sf = getSourceFileOrError(program, fileName);
-        const diags = templateTypeChecker.getDiagnosticsForFile(sf);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
         expect(diags.length).toBe(0);
       });
 
@@ -84,7 +164,7 @@ runInEachFileSystem(() => {
             }],
             {inlining: false});
         const sf = getSourceFileOrError(program, fileName);
-        const diags = templateTypeChecker.getDiagnosticsForFile(sf);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
         expect(diags.length).toBe(1);
         expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INLINE_TCB_REQUIRED));
       });
@@ -117,7 +197,7 @@ runInEachFileSystem(() => {
             ],
             {inlining: false});
         const sf = getSourceFileOrError(program, fileName);
-        const diags = templateTypeChecker.getDiagnosticsForFile(sf);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
         expect(diags.length).toBe(1);
         expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INLINE_TYPE_CTOR_REQUIRED));
 
