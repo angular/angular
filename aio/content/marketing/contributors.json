@@ -824,5 +824,14 @@
     "twitter": "ahasall",
     "website": "https://www.amadousall.com",
     "bio": "Amadou is a Frontend Software Engineer from Senegal based in France. He currently works at Air France where he helps developers build better Angular applications. Passionate about web technologies, Amadou is an international speaker, a technical writer, and a Google Developer Expert in Angular."
+  },
+  "twerske": {
+    "name": "Emma Twersky",
+    "picture": "twerske.jpg",
+    "twitter": "twerske",
+    "website": "http://twerske.github.io",
+    "bio": "Emma is a Developer Advocate at Google. She is passionate about good user experiences and design.",
+    "groups": ["Angular"],
+    "lead": "mgechev"
   }
 }
