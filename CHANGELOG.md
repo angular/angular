@@ -1,3 +1,20 @@
+<a name="10.1.0-next.1"></a>
+# 10.1.0-next.1 (2020-07-15)
+
+
+### Bug Fixes
+
+* **bazel:** ng_module rule does not expose flat module information in Ivy ([#36971](https://github.com/angular/angular/issues/36971)) ([1550663](https://github.com/angular/angular/commit/1550663))
+* **compiler:** check more cases for pipe usage inside host bindings ([#37883](https://github.com/angular/angular/issues/37883)) ([9322b9a](https://github.com/angular/angular/commit/9322b9a)), closes [#34655](https://github.com/angular/angular/issues/34655) [#37610](https://github.com/angular/angular/issues/37610)
+* **compiler-cli:** ensure file_system handles mixed Windows drives ([#37959](https://github.com/angular/angular/issues/37959)) ([6b31155](https://github.com/angular/angular/commit/6b31155)), closes [#36777](https://github.com/angular/angular/issues/36777)
+* **language-service:** remove completion for string ([#37983](https://github.com/angular/angular/issues/37983)) ([10aba15](https://github.com/angular/angular/commit/10aba15))
+* **ngcc:** report a warning if ngcc tries to use a solution-style tsconfig ([#38003](https://github.com/angular/angular/issues/38003)) ([b358495](https://github.com/angular/angular/commit/b358495)), closes [#36386](https://github.com/angular/angular/issues/36386)
+* **router:** ensure duplicate popstate/hashchange events are handled correctly ([#37674](https://github.com/angular/angular/issues/37674)) ([9185c6e](https://github.com/angular/angular/commit/9185c6e)), closes [/github.com/angular/angular/issues/16710#issuecomment-646919529](https://github.com//github.com/angular/angular/issues/16710/issues/issuecomment-646919529) [#16710](https://github.com/angular/angular/issues/16710)
+* **service-worker:** correctly handle relative base href ([#37922](https://github.com/angular/angular/issues/37922)) ([d19ef65](https://github.com/angular/angular/commit/d19ef65)), closes [#25055](https://github.com/angular/angular/issues/25055) [#25055](https://github.com/angular/angular/issues/25055)
+* **service-worker:** correctly serve `ngsw/state` with a non-root SW scope ([#37922](https://github.com/angular/angular/issues/37922)) ([2156bee](https://github.com/angular/angular/commit/2156bee)), closes [#30505](https://github.com/angular/angular/issues/30505)
+
+
+
 <a name="10.1.0-next.0"></a>
 # 10.1.0-next.0 (2020-07-08)
 
