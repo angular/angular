@@ -15,6 +15,7 @@ import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {ComponentToShimMappingStrategy, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
 
+import {TemplateDiagnostic} from './diagnostics';
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
@@ -34,7 +35,7 @@ export interface ShimTypeCheckingData {
    *
    * Some diagnostics are produced during creation time and are tracked here.
    */
-  genesisDiagnostics: ts.Diagnostic[];
+  genesisDiagnostics: TemplateDiagnostic[];
 
   /**
    * Whether any inline operations for the input file were required to generate this shim.
@@ -182,7 +183,6 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     }
 
     const sfPath = absoluteFromSourceFile(ref.node.getSourceFile());
-
     const overrideTemplate = this.host.getTemplateOverride(sfPath, ref.node);
     if (overrideTemplate !== null) {
       template = overrideTemplate;
@@ -231,12 +231,13 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       // and inlining would be required.
 
       // Record diagnostics to indicate the issues with this template.
+      const templateId = fileData.sourceManager.getTemplateId(ref.node);
       if (tcbRequiresInline) {
-        shimData.oobRecorder.requiresInlineTcb(ref.node);
+        shimData.oobRecorder.requiresInlineTcb(templateId, ref.node);
       }
 
       if (missingInlines.length > 0) {
-        shimData.oobRecorder.requiresInlineTypeConstructors(ref.node, missingInlines);
+        shimData.oobRecorder.requiresInlineTypeConstructors(templateId, ref.node, missingInlines);
       }
 
       // Checking this template would be unsupported, so don't try.
