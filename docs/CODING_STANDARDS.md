@@ -1,5 +1,8 @@
 # Angular Framework Coding Standards
 
+The coding practices in this doc apply only to development on Angular itself, not applications
+built _with_ Angular. (Though you can follow them too if you really want).
+
 ## Code style
 
 The [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html) is the
@@ -8,7 +11,7 @@ uses `clang-format` to automatically format code; automatic formatting is enforc
 
 ## Code practices
 
-#### Write useful comments
+### Write useful comments
 
 Comments that explain what some block of code does are nice; they can tell you something in less
 time than it would take to follow through the code itself.
@@ -42,8 +45,8 @@ use `//` style comments for everything else (explanations, background info, etc.
 
 #### Boolean arguments
 
-Avoid adding boolean arguments to a method in cases where that argument means "do something extra".
-In these cases, prefer breaking the behavior up into different functions.
+Generally avoid adding boolean arguments to a method in cases where that argument means
+"do something extra". In these cases, prefer breaking the behavior up into different functions.
 
 ```typescript
 // AVOID
@@ -59,14 +62,16 @@ function getExistingTargetElement() {
 }
 
 function createTargetElement() {
- // ...
+  // ...
 }
 ```
 
+You can ignore this guidance when necessary for performance reasons in framework code.
+
 #### Optional arguments
 
-Use optional function arguments only when such an argument makes sense for an API. Don't use
-optional arguments merely for convenience in implementation.
+Use optional function arguments only when such an argument makes sense for an API or when required
+for performance. Don't use optional arguments merely for convenience in implementation.
 
 ### TypeScript
 
@@ -76,6 +81,9 @@ Avoid `any` where possible. If you find yourself using `any`, consider whether a
 `unknown` may be appropriate in your case.
 
 #### Getters and Setters
+
+Getters and setters introduce openings for side-effects, add more complexity for code readers,
+and generate additional code when targeting older browsers.
 
 * Only use getters and setters for `@Input` properties or when otherwise required for API
 compatibility.
@@ -98,9 +106,9 @@ three lines, introduce a new method to contain the logic.
 
 #### Iteration
 
-Prefer `for of` to `Array.prototype.forEach`. The `for of` construct makes debugging easier and may
-reduce overhead from unnecessary function invocations (though browsers do generally optimize this
-well).
+Prefer `for` or `for of` to `Array.prototype.forEach`. The `forEach` API makes debugging harder
+and may increase overhead from unnecessary function invocations (though modern browsers do usually
+optimize this well).
 
 #### JsDoc comments
 
@@ -137,18 +145,16 @@ Boolean properties and return values should use "Whether..." as opposed to "True
 
 #### Try-Catch
 
-Avoid `try-catch` blocks, instead preferring to prevent an error from being thrown in the first
-place. When impossible to avoid, the `try-catch` block **must** include a comment that explains the
+Only use `try-catch` blocks when dealing with legitimately unexpected errors. Don't use `try` to
+avoid checking for expected error conditions such as null dereference or out-of-bound array access.
+
+Each `try-catch` block **must** include a comment that explains the
 specific error being caught and why it cannot be prevented.
-
-#### Private contructors
-
-Consider private constructors for all new code. This prevents extension outside of the framework,
-which is generally discouraged unless otherwise documented.
 
 ##### Variable declarations
 
-Prefer `const` wherever possible. Avoid `var` unless absolutely necessary.
+Prefer `const` wherever possible, only using `let` when a value must change. Avoid `var` unless
+absolutely necessary.
 
 ##### `readonly`
 
@@ -159,9 +165,9 @@ Use `readonly` members wherever possible.
 ##### General
 
 * Prefer writing out words instead of using abbreviations.
-* Prefer *exact* names over short names (within reason). E.g., `labelPosition` is better than
+* Prefer *exact* names over short names (within reason). For example, `labelPosition` is better than
 `align` because the former much more exactly communicates what the property means.
-* Except for `@Input` properties, use `is` and `has` prefixes for boolean properties / methods.
+* Except for `@Input()` properties, use `is` and `has` prefixes for boolean properties / methods.
 
 ##### Observables
 
@@ -177,7 +183,7 @@ class DefaultRouteReuseStrategy { }
 
 /** YES: */
 class NonStoringRouteReuseStrategy { }
-``` 
+```
 
 ##### Methods
 
@@ -210,7 +216,6 @@ class InputWithNgModel { /* ... */ }
 class Comp { /* ... */ }
 class InputComp { /* ... */ }
 ```
-
 
 #### RxJS
 

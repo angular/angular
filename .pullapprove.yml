@@ -1090,6 +1090,7 @@ groups:
           'dev-infra/**',
           'docs/BAZEL.md',
           'docs/CARETAKER.md',
+          'docs/CODING_STANDARDS.md',
           'docs/COMMITTER.md',
           'docs/DEBUG.md',
           'docs/DEBUG_COMPONENTS_REPO_IVY.md',
