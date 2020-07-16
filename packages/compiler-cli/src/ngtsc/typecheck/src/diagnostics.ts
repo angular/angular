@@ -21,6 +21,11 @@ export interface TemplateDiagnostic extends ts.Diagnostic {
    * The component with the template that resulted in this diagnostic.
    */
   componentFile: ts.SourceFile;
+
+  /**
+   * The template id of the component that resulted in this diagnostic.
+   */
+  templateId: TemplateId;
 }
 
 /**
@@ -119,7 +124,7 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
  * file from being reported as type-check errors.
  */
 export function translateDiagnostic(
-    diagnostic: ts.Diagnostic, resolver: TemplateSourceResolver): ts.Diagnostic|null {
+    diagnostic: ts.Diagnostic, resolver: TemplateSourceResolver): TemplateDiagnostic|null {
   if (diagnostic.file === undefined || diagnostic.start === undefined) {
     return null;
   }
@@ -139,7 +144,8 @@ export function translateDiagnostic(
 
   const mapping = resolver.getSourceMapping(sourceLocation.id);
   return makeTemplateDiagnostic(
-      mapping, span, diagnostic.category, diagnostic.code, diagnostic.messageText);
+      sourceLocation.id, mapping, span, diagnostic.category, diagnostic.code,
+      diagnostic.messageText);
 }
 
 export function findTypeCheckBlock(file: ts.SourceFile, id: TemplateId): ts.Node|null {
@@ -155,8 +161,9 @@ export function findTypeCheckBlock(file: ts.SourceFile, id: TemplateId): ts.Node
  * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
  */
 export function makeTemplateDiagnostic(
-    mapping: TemplateSourceMapping, span: ParseSourceSpan, category: ts.DiagnosticCategory,
-    code: number, messageText: string|ts.DiagnosticMessageChain, relatedMessage?: {
+    templateId: TemplateId, mapping: TemplateSourceMapping, span: ParseSourceSpan,
+    category: ts.DiagnosticCategory, code: number, messageText: string|ts.DiagnosticMessageChain,
+    relatedMessage?: {
       text: string,
       span: ParseSourceSpan,
     }): TemplateDiagnostic {
@@ -182,6 +189,7 @@ export function makeTemplateDiagnostic(
       messageText,
       file: mapping.node.getSourceFile(),
       componentFile: mapping.node.getSourceFile(),
+      templateId,
       start: span.start.offset,
       length: span.end.offset - span.start.offset,
       relatedInformation,
@@ -233,6 +241,7 @@ export function makeTemplateDiagnostic(
       messageText,
       file: sf,
       componentFile: componentSf,
+      templateId,
       start: span.start.offset,
       length: span.end.offset - span.start.offset,
       // Show a secondary message indicating the component whose template contains the error.

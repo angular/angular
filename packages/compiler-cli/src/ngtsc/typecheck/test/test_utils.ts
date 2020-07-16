@@ -20,6 +20,7 @@ import {ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckContext} from '..
 import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, UpdateMode} from '../api/api';
 import {ReusedProgramStrategy} from '../src/augmented_program';
 import {TemplateTypeCheckerImpl} from '../src/checker';
+import {TemplateDiagnostic} from '../src/diagnostics';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
 import {OutOfBandDiagnosticRecorder} from '../src/oob';
@@ -487,7 +488,7 @@ class FakeEnvironment /* implements Environment */ {
 }
 
 export class NoopSchemaChecker implements DomSchemaChecker {
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+  get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return [];
   }
 
@@ -498,7 +499,7 @@ export class NoopSchemaChecker implements DomSchemaChecker {
 }
 
 export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+  get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return [];
   }
   missingReferenceTarget(): void {}
