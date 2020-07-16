@@ -18,6 +18,9 @@
     "name": "InjectFlags"
   },
   {
+    "name": "InjectionToken"
+  },
+  {
     "name": "NEW_LINE"
   },
   {
@@ -45,7 +48,13 @@
     "name": "NULL_INJECTOR"
   },
   {
+    "name": "NullInjector"
+  },
+  {
     "name": "Optional"
+  },
+  {
+    "name": "R3Injector"
   },
   {
     "name": "ScopedService"
