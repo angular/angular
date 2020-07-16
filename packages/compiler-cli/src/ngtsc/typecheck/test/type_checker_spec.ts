@@ -318,5 +318,30 @@ runInEachFileSystem(() => {
         expect(currentTcb).toBe(originalTcb);
       });
     });
+
+    it('should allow get diagnostics for a single component', () => {
+      const fileName = absoluteFrom('/main.ts');
+
+      const {program, templateTypeChecker} = setup([{
+        fileName,
+        templates: {
+          'Cmp1': '<invalid-element-a></invalid-element-a>',
+          'Cmp2': '<invalid-element-b></invalid-element-b>'
+        },
+      }]);
+      const sf = getSourceFileOrError(program, fileName);
+      const cmp1 = getClass(sf, 'Cmp1');
+      const cmp2 = getClass(sf, 'Cmp2');
+
+      const diags1 = templateTypeChecker.getDiagnosticsForComponent(cmp1);
+      expect(diags1.length).toBe(1);
+      expect(diags1[0].messageText).toContain('invalid-element-a');
+      expect(diags1[0].messageText).not.toContain('invalid-element-b');
+
+      const diags2 = templateTypeChecker.getDiagnosticsForComponent(cmp2);
+      expect(diags2.length).toBe(1);
+      expect(diags2[0].messageText).toContain('invalid-element-b');
+      expect(diags2[0].messageText).not.toContain('invalid-element-a');
+    });
   });
 });
