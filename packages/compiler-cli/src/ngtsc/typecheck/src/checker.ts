@@ -18,7 +18,7 @@ import {getSourceFileOrNull} from '../../util/src/typescript';
 import {OptimizeFor, ProgramTypeCheckAdapter, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
 
 import {InliningMode, ShimTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from './context';
-import {findTypeCheckBlock, shouldReportDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
+import {findTypeCheckBlock, shouldReportDiagnostic, TemplateDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
 import {TemplateSourceManager} from './source';
 
 /**
@@ -112,8 +112,42 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       diagnostics.push(...shimRecord.genesisDiagnostics);
     }
 
-
     return diagnostics.filter((diag: ts.Diagnostic|null): diag is ts.Diagnostic => diag !== null);
+  }
+
+  getDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[] {
+    this.ensureShimForComponent(component);
+
+    const sf = component.getSourceFile();
+    const sfPath = absoluteFromSourceFile(sf);
+    const shimPath = this.typeCheckingStrategy.shimPathForComponent(component);
+
+    const fileRecord = this.getFileData(sfPath);
+
+    if (!fileRecord.shimData.has(shimPath)) {
+      return [];
+    }
+
+    const templateId = fileRecord.sourceManager.getTemplateId(component);
+    const shimRecord = fileRecord.shimData.get(shimPath)!;
+
+    const typeCheckProgram = this.typeCheckingStrategy.getProgram();
+
+    const diagnostics: (TemplateDiagnostic|null)[] = [];
+    if (shimRecord.hasInlines) {
+      const inlineSf = getSourceFileOrError(typeCheckProgram, sfPath);
+      diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(inlineSf).map(
+          diag => convertDiagnostic(diag, fileRecord.sourceManager)));
+    }
+
+    const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
+    diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(shimSf).map(
+        diag => convertDiagnostic(diag, fileRecord.sourceManager)));
+    diagnostics.push(...shimRecord.genesisDiagnostics);
+
+    return diagnostics.filter(
+        (diag: TemplateDiagnostic|null): diag is TemplateDiagnostic =>
+            diag !== null && diag.templateId === templateId);
   }
 
   getTypeCheckBlock(component: ts.ClassDeclaration): ts.Node|null {
@@ -219,6 +253,28 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     this.updateFromContext(ctx);
   }
 
+  private ensureShimForComponent(component: ts.ClassDeclaration): void {
+    const sf = component.getSourceFile();
+    const sfPath = absoluteFromSourceFile(sf);
+
+    this.maybeAdoptPriorResultsForFile(sf);
+
+    const fileData = this.getFileData(sfPath);
+    const shimPath = this.typeCheckingStrategy.shimPathForComponent(component);
+
+    if (fileData.shimData.has(shimPath)) {
+      // All data for this component is available.
+      return;
+    }
+
+    const host =
+        new SingleShimTypeCheckingHost(sfPath, fileData, this.typeCheckingStrategy, this, shimPath);
+    const ctx = this.newContext(host);
+
+    this.typeCheckAdapter.typeCheck(sf, ctx);
+    this.updateFromContext(ctx);
+  }
+
   private newContext(host: TypeCheckingHost): TypeCheckContextImpl {
     const inlining = this.typeCheckingStrategy.supportsInlineOperations ? InliningMode.InlineOps :
                                                                           InliningMode.Error;
@@ -272,7 +328,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 }
 
 function convertDiagnostic(
-    diag: ts.Diagnostic, sourceResolver: TemplateSourceResolver): ts.Diagnostic|null {
+    diag: ts.Diagnostic, sourceResolver: TemplateSourceResolver): TemplateDiagnostic|null {
   if (!shouldReportDiagnostic(diag)) {
     return null;
   }
@@ -367,8 +423,8 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
   private seenInlines = false;
 
   constructor(
-      private sfPath: AbsoluteFsPath, private fileData: FileTypeCheckingData,
-      private strategy: TypeCheckingProgramStrategy, private impl: TemplateTypeCheckerImpl) {}
+      protected sfPath: AbsoluteFsPath, protected fileData: FileTypeCheckingData,
+      protected strategy: TypeCheckingProgramStrategy, protected impl: TemplateTypeCheckerImpl) {}
 
   private assertPath(sfPath: AbsoluteFsPath): void {
     if (this.sfPath !== sfPath) {
@@ -429,5 +485,32 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
   recordComplete(sfPath: AbsoluteFsPath): void {
     this.assertPath(sfPath);
     this.fileData.isComplete = true;
+  }
+}
+
+/**
+ * Drives a `TypeCheckContext` to generate type-checking code efficiently for only those components
+ * which map to a single shim of a single input file.
+ */
+class SingleShimTypeCheckingHost extends SingleFileTypeCheckingHost {
+  constructor(
+      sfPath: AbsoluteFsPath, fileData: FileTypeCheckingData, strategy: TypeCheckingProgramStrategy,
+      impl: TemplateTypeCheckerImpl, private shimPath: AbsoluteFsPath) {
+    super(sfPath, fileData, strategy, impl);
+  }
+
+  shouldCheckNode(node: ts.ClassDeclaration): boolean {
+    if (this.sfPath !== absoluteFromSourceFile(node.getSourceFile())) {
+      return false;
+    }
+
+    // Only generate a TCB for the component if it maps to the requested shim file.
+    const shimPath = this.strategy.shimPathForComponent(node);
+    if (shimPath !== this.shimPath) {
+      return false;
+    }
+
+    // Only need to generate a TCB for the class if no shim exists for it currently.
+    return !this.fileData.shimData.has(shimPath);
   }
 }
