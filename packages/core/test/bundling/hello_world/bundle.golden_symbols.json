@@ -30,6 +30,12 @@
     "name": "NO_CHANGE"
   },
   {
+    "name": "NodeInjectorFactory"
+  },
+  {
+    "name": "SimpleChange"
+  },
+  {
     "name": "ViewEncapsulation"
   },
   {

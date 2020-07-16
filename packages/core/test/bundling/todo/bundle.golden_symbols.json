@@ -6,6 +6,12 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "DefaultIterableDiffer"
+  },
+  {
+    "name": "DefaultIterableDifferFactory"
+  },
+  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -18,7 +24,13 @@
     "name": "ElementRef"
   },
   {
+    "name": "ErrorHandler"
+  },
+  {
     "name": "InjectFlags"
+  },
+  {
+    "name": "IterableChangeRecord_"
   },
   {
     "name": "IterableDiffers"
@@ -54,10 +66,28 @@
     "name": "NgForOf"
   },
   {
+    "name": "NgForOfContext"
+  },
+  {
     "name": "NgIf"
   },
   {
+    "name": "NgIfContext"
+  },
+  {
+    "name": "NgModuleRef"
+  },
+  {
+    "name": "NodeInjector"
+  },
+  {
+    "name": "NodeInjectorFactory"
+  },
+  {
     "name": "Optional"
+  },
+  {
+    "name": "RecordViewTuple"
   },
   {
     "name": "SWITCH_ELEMENT_REF_FACTORY"
@@ -67,6 +97,9 @@
   },
   {
     "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
+  },
+  {
+    "name": "SimpleChange"
   },
   {
     "name": "SkipSelf"
@@ -93,6 +126,9 @@
     "name": "ToDoAppComponent_section_5_li_3_input_6_Template"
   },
   {
+    "name": "Todo"
+  },
+  {
     "name": "TodoStore"
   },
   {
@@ -102,7 +138,16 @@
     "name": "ViewEncapsulation"
   },
   {
+    "name": "ViewRef"
+  },
+  {
     "name": "_CLEAN_PROMISE"
+  },
+  {
+    "name": "_DuplicateItemRecordList"
+  },
+  {
+    "name": "_DuplicateMap"
   },
   {
     "name": "__forward_ref__"
