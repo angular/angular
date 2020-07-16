@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {TemplateId} from '../api';
 
-import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
+import {makeTemplateDiagnostic, TemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
 
 const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;
@@ -31,7 +31,7 @@ export interface DomSchemaChecker {
    * Get the `ts.Diagnostic`s that have been generated via `checkElement` and `checkProperty` calls
    * thus far.
    */
-  readonly diagnostics: ReadonlyArray<ts.Diagnostic>;
+  readonly diagnostics: ReadonlyArray<TemplateDiagnostic>;
 
   /**
    * Check a non-Angular element and record any diagnostics about it.
@@ -64,9 +64,9 @@ export interface DomSchemaChecker {
  * maintained by the Angular team via extraction from a browser IDL.
  */
 export class RegistryDomSchemaChecker implements DomSchemaChecker {
-  private _diagnostics: ts.Diagnostic[] = [];
+  private _diagnostics: TemplateDiagnostic[] = [];
 
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+  get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return this._diagnostics;
   }
 
@@ -93,7 +93,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
       }
 
       const diag = makeTemplateDiagnostic(
-          mapping, element.sourceSpan, ts.DiagnosticCategory.Error,
+          id, mapping, element.sourceSpan, ts.DiagnosticCategory.Error,
           ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT), errorMsg);
       this._diagnostics.push(diag);
     }
@@ -123,7 +123,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
       }
 
       const diag = makeTemplateDiagnostic(
-          mapping, span, ts.DiagnosticCategory.Error,
+          id, mapping, span, ts.DiagnosticCategory.Error,
           ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE), errorMsg);
       this._diagnostics.push(diag);
     }
