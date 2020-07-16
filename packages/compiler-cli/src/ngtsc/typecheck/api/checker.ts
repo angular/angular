@@ -55,6 +55,13 @@ export interface TemplateTypeChecker {
   getDiagnosticsForFile(sf: ts.SourceFile, optimizeFor: OptimizeFor): ts.Diagnostic[];
 
   /**
+   * Get all `ts.Diagnostic`s currently available that pertain to the given component.
+   *
+   * This method always runs in `OptimizeFor.SingleFile` mode.
+   */
+  getDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[];
+
+  /**
    * Retrieve the top-level node representing the TCB for the given component.
    *
    * This can return `null` if there is no TCB available for the component.
