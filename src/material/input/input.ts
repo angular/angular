@@ -77,7 +77,6 @@ const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
     // Native input properties that are overwritten by Angular inputs need to be synced with
     // the native input element. Otherwise property bindings for those don't work.
     '[attr.id]': 'id',
-    '[attr.placeholder]': '_getPlaceholderAttribute()',
     // At the time of writing, we have a lot of customer tests that look up the input based on its
     // placeholder. Since we sometimes omit the placeholder attribute from the DOM to prevent screen
     // readers from reading it twice, we have to keep it somewhere in the DOM for the lookup.
@@ -96,6 +95,8 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
   protected _uid = `mat-input-${nextUniqueId++}`;
   protected _previousNativeValue: any;
   private _inputValueAccessor: {value: any};
+  private _previousPlaceholder: string | null;
+
   /** The aria-describedby attribute on the input for improved a11y. */
   _ariaDescribedby: string;
 
@@ -315,6 +316,10 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     // we won't be notified when it changes (e.g. the consumer isn't using forms or they're
     // updating the value using `emitEvent: false`).
     this._dirtyCheckNativeValue();
+
+    // We need to dirty-check and set the placeholder attribute ourselves, because whether it's
+    // present or not depends on a query which is prone to "changed after checked" errors.
+    this._dirtyCheckPlaceholder();
   }
 
   /** Focuses the input. */
@@ -354,14 +359,21 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     // FormsModule or ReactiveFormsModule, because Angular forms also listens to input events.
   }
 
-  /** Determines the value of the native `placeholder` attribute that should be used in the DOM. */
-  _getPlaceholderAttribute() {
+  /** Does some manual dirty checking on the native input `placeholder` attribute. */
+  private _dirtyCheckPlaceholder() {
     // If we're hiding the native placeholder, it should also be cleared from the DOM, otherwise
     // screen readers will read it out twice: once from the label and once from the attribute.
     // TODO: can be removed once we get rid of the `legacy` style for the form field, because it's
     // the only one that supports promoting the placeholder to a label.
     const formField = this._formField;
-    return (!formField || !formField._hideControlPlaceholder()) ? this.placeholder : undefined;
+    const placeholder =
+        (!formField || !formField._hideControlPlaceholder()) ? this.placeholder : null;
+    if (placeholder !== this._previousPlaceholder) {
+      const element = this._elementRef.nativeElement;
+      this._previousPlaceholder = placeholder;
+      placeholder ?
+          element.setAttribute('placeholder', placeholder) : element.removeAttribute('placeholder');
+    }
   }
 
   /** Does some manual dirty checking on the native input `value` property. */
