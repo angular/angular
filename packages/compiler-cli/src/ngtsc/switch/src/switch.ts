@@ -110,10 +110,6 @@ function flipIvySwitchesInVariableStatement(
           stmt.getSourceFile().fileName} for the Ivy switch.`);
     }
 
-    // Copy the identifier with updateIdentifier(). This copies the internal information which
-    // allows TS to write a correct reference to the identifier.
-    newIdentifier = ts.updateIdentifier(newIdentifier);
-
     newDeclarations[i] = ts.updateVariableDeclaration(
         /* node */ decl,
         /* name */ decl.name,

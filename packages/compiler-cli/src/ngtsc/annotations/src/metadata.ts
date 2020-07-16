@@ -28,7 +28,7 @@ export function generateSetClassMetadataCall(
   if (!reflection.isClass(clazz)) {
     return null;
   }
-  const id = ts.updateIdentifier(reflection.getAdjacentNameOfClass(clazz));
+  const id = reflection.getAdjacentNameOfClass(clazz);
 
   // Reflect over the class decorators. If none are present, or those that are aren't from
   // Angular, then return null. Otherwise, turn them into metadata.
