@@ -11,6 +11,7 @@ ng_module(
     module_name = "@angular/cdk-experimental/listbox",
     deps = [
         "//src/cdk/a11y",
+        "//src/cdk/collections",
         "//src/cdk/keycodes",
     ],
 )
