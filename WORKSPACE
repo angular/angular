@@ -85,16 +85,6 @@ load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories"
 
 web_test_repositories()
 
-load("@io_bazel_rules_webtesting//web/versioned:browsers-0.3.2.bzl", "browser_repositories")
-
-browser_repositories(
-    # Chrome is brought in by `@npm_dev_infra_private` for better version control and
-    # RBE experience where individual browser archives per platform are provided.
-    # TODO: Do the same for Firefox (but it is not used for local development): DEV-114
-    chromium = False,
-    firefox = True,
-)
-
 # Fetch transitive dependencies which are needed to use the Sass rules.
 load("@io_bazel_rules_sass//:package.bzl", "rules_sass_dependencies")
 

@@ -61,7 +61,7 @@ if (local && (components.length > 1 || all)) {
   process.exit(1);
 }
 
-const browserName = firefox ? 'firefox-local' : 'chromium';
+const browserName = firefox ? 'firefox' : 'chromium';
 const bazelBinary = `yarn -s ${watch ? 'ibazel' : 'bazel'}`;
 const configFlag = viewEngine ? '--config=view-engine' : '';
 
