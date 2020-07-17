@@ -337,56 +337,12 @@ class _TreeBuilder {
     return this._elementStack.length > 0 ? this._elementStack[this._elementStack.length - 1] : null;
   }
 
-  /**
-   * Returns the parent in the DOM and the container.
-   *
-   * `<ng-container>` elements are skipped as they are not rendered as DOM element.
-   */
-  private _getParentElementSkippingContainers():
-      {parent: html.Element|null, container: html.Element|null} {
-    let container: html.Element|null = null;
-
-    for (let i = this._elementStack.length - 1; i >= 0; i--) {
-      if (!isNgContainer(this._elementStack[i].name)) {
-        return {parent: this._elementStack[i], container};
-      }
-      container = this._elementStack[i];
-    }
-
-    return {parent: null, container};
-  }
-
   private _addToParent(node: html.Node) {
     const parent = this._getParentElement();
     if (parent != null) {
       parent.children.push(node);
     } else {
       this.rootNodes.push(node);
-    }
-  }
-
-  /**
-   * Insert a node between the parent and the container.
-   * When no container is given, the node is appended as a child of the parent.
-   * Also updates the element stack accordingly.
-   *
-   * @internal
-   */
-  private _insertBeforeContainer(
-      parent: html.Element, container: html.Element|null, node: html.Element) {
-    if (!container) {
-      this._addToParent(node);
-      this._elementStack.push(node);
-    } else {
-      if (parent) {
-        // replace the container with the new node in the children
-        const index = parent.children.indexOf(container);
-        parent.children[index] = node;
-      } else {
-        this.rootNodes.push(node);
-      }
-      node.children.push(container);
-      this._elementStack.splice(this._elementStack.indexOf(container), 0, node);
     }
   }
 
