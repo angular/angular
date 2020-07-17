@@ -53,6 +53,9 @@
   },
   "kyliau": {
     "name": "Keen Yee Liau",
+    "twitter": "liauky",
+    "website": "https://github.com/kyliau",
+    "bio": "Keen works on language service and CLI. He also maintains Karma and Protractor.",
     "groups": ["Angular"],
     "lead": "igorminar",
     "picture": "kyliau.jpg"
