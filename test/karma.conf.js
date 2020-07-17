@@ -90,7 +90,7 @@ module.exports = config => {
       startConnect: false,
       recordVideo: false,
       recordScreenshots: false,
-      idleTimeout: 600,
+      idleTimeout: 1000,
       commandTimeout: 600,
       maxDuration: 5400,
     },
