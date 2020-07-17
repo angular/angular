@@ -65,6 +65,7 @@ const CORE_SUPPORTED_SYMBOLS = new Map<string, string>([
   ['ɵɵInjectorDef', 'ɵɵInjectorDef'],
   ['ɵɵNgModuleDefWithMeta', 'ɵɵNgModuleDefWithMeta'],
   ['ɵNgModuleFactory', 'NgModuleFactory'],
+  ['ɵnoSideEffects', 'ɵnoSideEffects'],
 ]);
 
 const CORE_MODULE = '@angular/core';
