@@ -21,15 +21,16 @@ export class LanguageService {
   }
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
-    const program = this.compiler.analyze();
-    if (!program) {
+    const result = this.compiler.analyze();
+    if (!result) {
       return [];
     }
+    const {compiler, program} = result;
     const sourceFile = program.getSourceFile(fileName);
     if (!sourceFile) {
       return [];
     }
-    return this.compiler.getDiagnostics(sourceFile);
+    return compiler.getDiagnostics(sourceFile);
   }
 
   private watchConfigFile(project: ts.server.Project) {
