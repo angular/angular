@@ -41,6 +41,10 @@ class _Humanizer implements html.Visitor {
 
   visitElement(element: html.Element, context: any): any {
     const res = this._appendContext(element, [html.Element, element.name, this.elDepth++]);
+    if (this.includeSourceSpan) {
+      res.push(element.startSourceSpan?.toString() ?? null);
+      res.push(element.endSourceSpan?.toString() ?? null);
+    }
     this.result.push(res);
     html.visitAll(this, element.attrs);
     html.visitAll(this, element.children);
