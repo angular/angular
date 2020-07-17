@@ -63,7 +63,8 @@ export class FactoryGenerator implements PerFileShimGenerator, FactoryTracker {
       // because it won't miss any that do.
       const varLines = symbolNames.map(
           name => `export const ${
-              name}NgFactory: i0.ɵNgModuleFactory<any> = new i0.ɵNgModuleFactory(${name});`);
+              name}NgFactory: i0.ɵNgModuleFactory<any> = i0.ɵnoSideEffects(() => new i0.ɵNgModuleFactory(${
+              name}));`);
       sourceText += [
         // This might be incorrect if the current package being compiled is Angular core, but it's
         // okay to leave in at type checking time. TypeScript can handle this reference via its path
