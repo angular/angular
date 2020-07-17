@@ -154,7 +154,10 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
    * Implemented as part of MatFormFieldControl.
    * @docs-private
    */
-  get empty(): boolean { return this._chipInput.empty && this._chips.length === 0; }
+  get empty(): boolean {
+    return (!this._chipInput || this._chipInput.empty) &&
+        (!this._chips || this._chips.length === 0);
+  }
 
     /** The ARIA role applied to the chip grid. */
   get role(): string | null { return this.empty ? null : 'grid'; }

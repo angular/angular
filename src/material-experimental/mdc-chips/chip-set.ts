@@ -193,7 +193,7 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
 
   /** Checks whether any of the chips is focused. */
   protected _hasFocusedChip() {
-    return this._chips.some(chip => chip._hasFocus);
+    return this._chips && this._chips.some(chip => chip._hasFocus);
   }
 
   /** Syncs the chip-set's state with the individual chips. */
