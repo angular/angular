@@ -17,44 +17,40 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {makeCompilerHostFromProject} from './compiler_host';
 
+interface AnalysisResult {
+  compiler: NgCompiler;
+  program: ts.Program;
+}
+
 export class Compiler {
   private tsCompilerHost: ts.CompilerHost;
-  private lastKnownProgram: ts.Program;
-  private compiler: NgCompiler;
+  private lastKnownProgram: ts.Program|null = null;
   private readonly strategy: TypeCheckingProgramStrategy;
 
   constructor(private readonly project: ts.server.Project, private options: CompilerOptions) {
     this.tsCompilerHost = makeCompilerHostFromProject(project);
-    const ngCompilerHost = NgCompilerHost.wrap(
-        this.tsCompilerHost,
-        project.getRootFiles(),  // input files
-        options,
-        null,  // old program
-    );
     this.strategy = createTypeCheckingProgramStrategy(project);
-    this.lastKnownProgram = this.strategy.getProgram();
-    this.compiler = new NgCompiler(
-        ngCompilerHost, options, this.lastKnownProgram, this.strategy,
-        new PatchedProgramIncrementalBuildStrategy());
+    // Do not retrieve the program in constructor because project is still in
+    // the process of loading, and not all data members have been initialized.
   }
 
   setCompilerOptions(options: CompilerOptions) {
     this.options = options;
   }
 
-  analyze(): ts.Program|undefined {
+  analyze(): AnalysisResult|undefined {
     const inputFiles = this.project.getRootFiles();
     const ngCompilerHost =
         NgCompilerHost.wrap(this.tsCompilerHost, inputFiles, this.options, this.lastKnownProgram);
     const program = this.strategy.getProgram();
-    this.compiler = new NgCompiler(
+    const compiler = new NgCompiler(
         ngCompilerHost, this.options, program, this.strategy,
         new PatchedProgramIncrementalBuildStrategy(), this.lastKnownProgram);
     try {
       // This is the only way to force the compiler to update the typecheck file
       // in the program. We have to do try-catch because the compiler immediately
       // throws if it fails to parse any template in the entire program!
-      const d = this.compiler.getDiagnostics();
+      const d = compiler.getDiagnostics();
       if (d.length) {
         // There could be global compilation errors. It's useful to print them
         // out in development.
@@ -64,12 +60,11 @@ export class Compiler {
       console.error('Failed to analyze program', e.message);
       return;
     }
-    this.lastKnownProgram = this.compiler.getNextProgram();
-    return this.lastKnownProgram;
-  }
-
-  getDiagnostics(sourceFile: ts.SourceFile): ts.Diagnostic[] {
-    return this.compiler.getDiagnostics(sourceFile);
+    this.lastKnownProgram = compiler.getNextProgram();
+    return {
+      compiler,
+      program: this.lastKnownProgram,
+    };
   }
 }
 
