@@ -17,7 +17,6 @@ const moment = _rollupMoment || _moment;
 @Component({
   selector: 'datepicker-moment-example',
   templateUrl: 'datepicker-moment-example.html',
-  styleUrls: ['datepicker-moment-example.css'],
   providers: [
     // `MomentDateAdapter` and `MAT_MOMENT_DATE_FORMATS` can be automatically provided by importing
     // `MatMomentDateModule` in your applications root module. We provide it at the component level

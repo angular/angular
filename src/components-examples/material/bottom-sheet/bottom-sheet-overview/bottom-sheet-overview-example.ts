@@ -7,7 +7,6 @@ import {MatBottomSheet, MatBottomSheetRef} from '@angular/material/bottom-sheet'
 @Component({
   selector: 'bottom-sheet-overview-example',
   templateUrl: 'bottom-sheet-overview-example.html',
-  styleUrls: ['bottom-sheet-overview-example.css'],
 })
 export class BottomSheetOverviewExample {
   constructor(private _bottomSheet: MatBottomSheet) {}

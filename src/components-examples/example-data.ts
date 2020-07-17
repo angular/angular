@@ -27,15 +27,13 @@ export class ExampleData {
       return;
     }
 
-    const {componentName, additionalFiles, additionalComponents, title} =
+    const {componentName, files, selector, primaryFile, additionalComponents, title} =
         EXAMPLE_COMPONENTS[example];
     const exampleName = example.replace(/(?:^\w|\b\w)/g, letter => letter.toUpperCase());
 
-    // TODO(tinayuangao): Do not hard-code extensions
-    this.exampleFiles = ['html', 'ts', 'css'].map(extension => `${example}-example.${extension}`);
-    this.selectorName = this.indexFilename = `${example}-example`;
-
-    this.exampleFiles.push(...additionalFiles);
+    this.exampleFiles = files;
+    this.selectorName = selector;
+    this.indexFilename = primaryFile;
     this.description = title || exampleName.replace(/[\-]+/g, ' ') + ' Example';
     this.componentNames = [componentName, ...additionalComponents];
   }

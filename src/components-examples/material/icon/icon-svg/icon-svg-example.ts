@@ -8,7 +8,6 @@ import {MatIconRegistry} from '@angular/material/icon';
 @Component({
   selector: 'icon-svg-example',
   templateUrl: 'icon-svg-example.html',
-  styleUrls: ['icon-svg-example.css'],
 })
 export class IconSvgExample {
   constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {

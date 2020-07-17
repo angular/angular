@@ -16,7 +16,6 @@ interface Car {
 @Component({
   selector: 'select-initial-value-example',
   templateUrl: 'select-initial-value-example.html',
-  styleUrls: ['select-initial-value-example.css'],
 })
 export class SelectInitialValueExample {
   foods: Food[] = [

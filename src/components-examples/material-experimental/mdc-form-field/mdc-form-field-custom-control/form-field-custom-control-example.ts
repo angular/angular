@@ -7,11 +7,10 @@ import {Subject} from 'rxjs';
 
 /** @title Form field with custom telephone number input control. */
 @Component({
-  selector: 'form-field-custom-control-example',
+  selector: 'mdc-form-field-custom-control-example',
   templateUrl: 'form-field-custom-control-example.html',
-  styleUrls: ['form-field-custom-control-example.css'],
 })
-export class FormFieldCustomControlExample {}
+export class MdcFormFieldCustomControlExample {}
 
 /** Data structure for holding telephone number. */
 export class MyTel {

@@ -6,7 +6,6 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'tab-group-lazy-loaded-example',
   templateUrl: 'tab-group-lazy-loaded-example.html',
-  styleUrls: ['tab-group-lazy-loaded-example.css'],
 })
 export class TabGroupLazyLoadedExample {
   tabLoadTimes: Date[] = [];

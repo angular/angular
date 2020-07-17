@@ -17,7 +17,6 @@ interface Car {
 @Component({
   selector: 'select-reactive-form-example',
   templateUrl: 'select-reactive-form-example.html',
-  styleUrls: ['select-reactive-form-example.css'],
 })
 export class SelectReactiveFormExample {
   form: FormGroup;

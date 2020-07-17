@@ -16,7 +16,6 @@ interface Car {
 @Component({
   selector: 'select-form-example',
   templateUrl: 'select-form-example.html',
-  styleUrls: ['select-form-example.css'],
 })
 export class SelectFormExample {
   selectedValue: string;

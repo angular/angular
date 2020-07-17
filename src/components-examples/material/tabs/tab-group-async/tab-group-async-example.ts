@@ -12,7 +12,6 @@ export interface ExampleTab {
 @Component({
   selector: 'tab-group-async-example',
   templateUrl: 'tab-group-async-example.html',
-  styleUrls: ['tab-group-async-example.css'],
 })
 export class TabGroupAsyncExample {
   asyncTabs: Observable<ExampleTab[]>;

@@ -25,7 +25,6 @@ import {Subject} from 'rxjs';
 @Component({
   selector: 'form-field-custom-control-example',
   templateUrl: 'form-field-custom-control-example.html',
-  styleUrls: ['form-field-custom-control-example.css']
 })
 export class FormFieldCustomControlExample {
   form: FormGroup = new FormGroup({

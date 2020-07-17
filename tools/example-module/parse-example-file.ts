@@ -4,6 +4,7 @@ interface ParsedMetadata {
   isPrimary: boolean;
   componentName: string;
   title: string;
+  selector: string;
   templateUrl: string;
   styleUrls: string[];
 }

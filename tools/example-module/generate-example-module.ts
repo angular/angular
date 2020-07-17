@@ -8,16 +8,18 @@ interface ExampleMetadata {
   componentName: string;
   /** Path to the source file that declares this example. */
   sourcePath: string;
-  /** Module import that can be used to load this example. */
-  importPath: string;
+  /** Path to the directory containing this example. */
+  packagePath: string;
+  /** Selector to match the component of this example. */
+  selector: string;
   /** Unique id for this example. */
   id: string;
   /** Title of the example. */
   title: string;
   /** Additional components for this example. */
   additionalComponents: string[];
-  /** Additional files for this example. */
-  additionalFiles: string[];
+  /** Files for this example. */
+  files: string[];
   /** Reference to the module that declares this example. */
   module: ExampleModule;
 }
@@ -37,11 +39,18 @@ interface AnalyzedExamples {
 function inlineExampleModuleTemplate(parsedData: AnalyzedExamples): string {
   const {exampleMetadata} = parsedData;
   const exampleComponents = exampleMetadata.reduce((result, data) => {
+    if (result[data.id] !== undefined) {
+      throw Error(`Multiple examples with the same id have been discovered: ${data.id}`);
+    }
+
     result[data.id] = {
+      packagePath: data.packagePath,
       title: data.title,
       componentName: data.componentName,
-      additionalFiles: data.additionalFiles,
+      files: data.files,
+      selector: data.selector,
       additionalComponents: data.additionalComponents,
+      primaryFile: path.basename(data.sourcePath),
       module: {
         name: data.module.name,
         importSpecifier: data.module.packagePath,
@@ -73,13 +82,14 @@ function analyzeExamples(sourceFiles: string[], baseDir: string): AnalyzedExampl
   for (const sourceFile of sourceFiles) {
     const relativePath = path.relative(baseDir, sourceFile).replace(/\\/g, '/');
     const importPath = relativePath.replace(/\.ts$/, '');
+    const packagePath = path.dirname(relativePath);
 
     // Collect all individual example modules.
     if (path.basename(sourceFile) === 'index.ts') {
       exampleModules.push(...parseExampleModuleFile(sourceFile).map(name => ({
         name,
         importPath,
-        packagePath: path.dirname(relativePath),
+        packagePath,
       })));
     }
 
@@ -96,25 +106,46 @@ function analyzeExamples(sourceFiles: string[], baseDir: string): AnalyzedExampl
       const exampleId = convertToDashCase(primaryComponent.componentName.replace('Example', ''));
       const example: ExampleMetadata = {
         sourcePath: relativePath,
+        packagePath,
         id: exampleId,
+        selector: primaryComponent.selector,
         componentName: primaryComponent.componentName,
         title: primaryComponent.title.trim(),
-        additionalFiles: [],
         additionalComponents: [],
+        files: [],
         module: null,
-        importPath,
       };
+
+      // For consistency, we expect the example component selector to match
+      // the id of the example.
+      const expectedSelector = `${exampleId}-example`;
+      if (primaryComponent.selector !== expectedSelector) {
+        throw Error(`Example ${exampleId} uses selector: ${primaryComponent.selector}, ` +
+            `but expected: ${expectedSelector}`);
+      }
+
+      example.files.push(path.basename(relativePath));
+      if (primaryComponent.templateUrl) {
+        example.files.push(primaryComponent.templateUrl);
+      }
+      if (primaryComponent.styleUrls) {
+        example.files.push(...primaryComponent.styleUrls);
+      }
+
       if (secondaryComponents.length) {
         for (const meta of secondaryComponents) {
           example.additionalComponents.push(meta.componentName);
           if (meta.templateUrl) {
-            example.additionalFiles.push(meta.templateUrl);
+            example.files.push(meta.templateUrl);
           }
           if (meta.styleUrls) {
-            example.additionalFiles.push(...meta.styleUrls);
+            example.files.push(...meta.styleUrls);
           }
         }
       }
+
+      // Ensure referenced files actually exist in the example.
+      example.files.forEach(f => assertReferencedExampleFileExists(baseDir, packagePath, f));
       exampleMetadata.push(example);
     } else {
         throw Error(`Could not find a primary example component in ${sourceFile}. ` +
@@ -132,10 +163,30 @@ function analyzeExamples(sourceFiles: string[], baseDir: string): AnalyzedExampl
       throw Error(`Could not determine example module for: ${example.id}`);
     }
 
+    const actualPath = path.dirname(example.sourcePath);
+    const expectedPath = path.posix.join(parentModule.packagePath, example.id);
+
+    // Ensures that example ids match with the directory they are stored in. This is not
+    // necessary for the docs site, but it helps with consistency and makes it easy to
+    // determine an id for an example. We also ensures for consistency that example
+    // folders are direct siblings of the module file.
+    if (actualPath !== expectedPath) {
+      throw Error(`Example is stored in: ${actualPath}, but expected: ${expectedPath}`);
+    }
+
     example.module = parentModule;
   });
 
   return {exampleMetadata};
+}
+
+/** Asserts that the given file exists for the specified example. */
+function assertReferencedExampleFileExists(baseDir: string, examplePackagePath: string,
+                                           relativePath: string) {
+  if (!fs.existsSync(path.join(baseDir, examplePackagePath, relativePath))) {
+    throw Error(
+        `Example "${examplePackagePath}" references "${relativePath}", but file does not exist.`);
+  }
 }
 
 /**

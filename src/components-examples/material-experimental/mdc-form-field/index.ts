@@ -4,17 +4,17 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {
-  FormFieldCustomControlExample,
+  MdcFormFieldCustomControlExample,
   MyTelInput
 } from './mdc-form-field-custom-control/form-field-custom-control-example';
 
 export {
-  FormFieldCustomControlExample,
+  MdcFormFieldCustomControlExample,
   MyTelInput,
 };
 
 const EXAMPLES = [
-  FormFieldCustomControlExample,
+  MdcFormFieldCustomControlExample,
 ];
 
 @NgModule({

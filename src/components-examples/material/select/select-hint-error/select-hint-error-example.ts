@@ -10,7 +10,6 @@ interface Animal {
 @Component({
   selector: 'select-hint-error-example',
   templateUrl: 'select-hint-error-example.html',
-  styleUrls: ['select-hint-error-example.css'],
 })
 export class SelectHintErrorExample {
   animalControl = new FormControl('', Validators.required);

@@ -4,7 +4,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 /** @title A custom CDK linear stepper with forms */
 @Component({
-  selector: 'cdk-linear-stepper-with-form',
+  selector: 'cdk-linear-stepper-with-form-example',
   templateUrl: './cdk-linear-stepper-with-form-example.html',
   styleUrls: ['./cdk-linear-stepper-with-form-example.css']
 })

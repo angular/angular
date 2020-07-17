@@ -12,7 +12,6 @@ export interface DialogData {
 @Component({
   selector: 'dialog-overview-example',
   templateUrl: 'dialog-overview-example.html',
-  styleUrls: ['dialog-overview-example.css'],
 })
 export class DialogOverviewExample {
 

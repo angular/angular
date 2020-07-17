@@ -31,7 +31,6 @@ export const MY_FORMATS = {
 @Component({
   selector: 'datepicker-formats-example',
   templateUrl: 'datepicker-formats-example.html',
-  styleUrls: ['datepicker-formats-example.css'],
   providers: [
     // `MomentDateAdapter` can be automatically provided by importing `MomentDateModule` in your
     // application's root module. We provide it at the component level here, due to limitations of

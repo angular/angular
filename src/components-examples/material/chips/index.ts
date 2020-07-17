@@ -7,7 +7,7 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {ChipsAutocompleteExample} from './chips-autocomplete/chips-autocomplete-example';
-import {ChipsDragDropExample} from './chips-drag-and-drop/chips-drag-drop-example';
+import {ChipsDragDropExample} from './chips-drag-drop/chips-drag-drop-example';
 import {ChipsInputExample} from './chips-input/chips-input-example';
 import {ChipsOverviewExample} from './chips-overview/chips-overview-example';
 import {ChipsStackedExample} from './chips-stacked/chips-stacked-example';

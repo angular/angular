@@ -6,6 +6,5 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'menu-position-example',
   templateUrl: 'menu-position-example.html',
-  styleUrls: ['menu-position-example.css'],
 })
 export class MenuPositionExample {}

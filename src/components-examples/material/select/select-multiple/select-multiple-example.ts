@@ -5,7 +5,6 @@ import {FormControl} from '@angular/forms';
 @Component({
   selector: 'select-multiple-example',
   templateUrl: 'select-multiple-example.html',
-  styleUrls: ['select-multiple-example.css'],
 })
 export class SelectMultipleExample {
   toppings = new FormControl();
