@@ -103,3 +103,5 @@ export interface QueryList<T>/* implements Iterable<T> */ {
 export type NgIterable<T> = Array<T>|Iterable<T>;
 
 export class NgZone {}
+
+export declare function ɵnoSideEffects<T>(fn: () => T): T;
