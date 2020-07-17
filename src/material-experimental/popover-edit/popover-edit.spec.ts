@@ -1,4 +1,4 @@
-  import {DataSource} from '@angular/cdk/collections';
+import {DataSource} from '@angular/cdk/collections';
 import {LEFT_ARROW, UP_ARROW, RIGHT_ARROW, DOWN_ARROW, TAB} from '@angular/cdk/keycodes';
 import {MatTableModule} from '@angular/material/table';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
@@ -565,7 +565,7 @@ matPopoverEditTabOut`, fakeAsync(() => {
 
       describe('edit lens', () => {
         function expectPixelsToEqual(actual: number, expected: number) {
-          expect(Math.round(actual)).toBe(Math.round(expected));
+          expect(Math.floor(actual)).toBe(Math.floor(expected));
         }
 
         it('shows a lens with the value from the table', fakeAsync(() => {

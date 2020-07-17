@@ -1929,6 +1929,21 @@ describe('MatDatepicker', () => {
 
 });
 
+/**
+ * Styles that set input elements to a fixed width. This helps with client rect measurements
+ * (i.e. that the datepicker aligns properly). Inputs have different dimensions in different
+ * browsers. e.g. in Firefox the input width is uneven, causing unexpected deviations in measuring.
+ * Note: The input should be able to shrink as on iOS the viewport width is very little but the
+ * datepicker inputs should not leave the viewport (as that throws off measuring too).
+ */
+const inputFixedWidthStyles = `
+  input {
+    width: 100%;
+    max-width: 150px;
+    border: none;
+    box-sizing: border-box;
+  }
+`;
 
 @Component({
   template: `
@@ -1941,6 +1956,7 @@ describe('MatDatepicker', () => {
       [xPosition]="xPosition"
       [yPosition]="yPosition"></mat-datepicker>
   `,
+  styles: [inputFixedWidthStyles]
 })
 class StandardDatepicker {
   opened = false;

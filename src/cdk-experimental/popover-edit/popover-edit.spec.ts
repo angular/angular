@@ -684,7 +684,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
 
       describe('edit lens', () => {
         function expectPixelsToEqual(actual: number, expected: number) {
-          expect(Math.round(actual)).toBe(Math.round(expected));
+          expect(Math.floor(actual)).toBe(Math.floor(expected));
         }
 
         it('shows a lens with the value from the table', fakeAsync(() => {
