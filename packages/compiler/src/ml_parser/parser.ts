@@ -261,8 +261,9 @@ class _TreeBuilder {
     const el = new html.Element(fullName, attrs, [], span, span, undefined);
     this._pushElement(el);
     if (selfClosing) {
-      this._popElement(fullName);
-      el.endSourceSpan = span;
+      // Elements that are self-closed have their `endSourceSpan` set to the full span, as the
+      // element start tag also represents the end tag.
+      this._popElement(fullName, span);
     }
   }
 
@@ -281,25 +282,26 @@ class _TreeBuilder {
     const fullName = this._getElementFullName(
         endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
 
-    if (this._getParentElement()) {
-      this._getParentElement()!.endSourceSpan = endTagToken.sourceSpan;
-    }
-
     if (this.getTagDefinition(fullName).isVoid) {
       this.errors.push(TreeError.create(
           fullName, endTagToken.sourceSpan,
           `Void elements do not have end tags "${endTagToken.parts[1]}"`));
-    } else if (!this._popElement(fullName)) {
+    } else if (!this._popElement(fullName, endTagToken.sourceSpan)) {
       const errMsg = `Unexpected closing tag "${
           fullName}". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags`;
       this.errors.push(TreeError.create(fullName, endTagToken.sourceSpan, errMsg));
     }
   }
 
-  private _popElement(fullName: string): boolean {
+  private _popElement(fullName: string, endSourceSpan: ParseSourceSpan): boolean {
     for (let stackIndex = this._elementStack.length - 1; stackIndex >= 0; stackIndex--) {
       const el = this._elementStack[stackIndex];
       if (el.name == fullName) {
+        // Record the parse span with the element that is being closed. Any elements that are
+        // removed from the element stack at this point are closed implicitly, so they won't get
+        // an end source span (as there is no explicit closing element).
+        el.endSourceSpan = endSourceSpan;
+
         this._elementStack.splice(stackIndex, this._elementStack.length - stackIndex);
         return true;
       }
