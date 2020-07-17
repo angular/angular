@@ -541,6 +541,15 @@ set the `href` value in `index.html` as shown here.
 
 ### HTML5 URLs and the  `<base href>`
 
+The guidelines that follow will refer to different parts of a URL. This diagram outlines what those parts refer to:
+
+```
+foo://example.com:8042/over/there?name=ferret#nose
+\_/   \______________/\_________/ \_________/ \__/
+ |           |            |            |        |
+scheme    authority      path        query   fragment
+```
+
 While the router uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a> style by default, you must configure that strategy with a `<base href>`.
 
 The preferred way to configure the strategy is to add a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a> tag in the `<head>` of the `index.html`.
@@ -554,8 +563,16 @@ Some developers may not be able to add the `<base>` element, perhaps because the
 
 Those developers may still use HTML5 URLs by taking the following two steps:
 
-1. Provide the router with an appropriate [APP_BASE_HREF][] value.
-1. Use root URLs for all web resources: CSS, images, scripts, and template HTML files.
+1. Provide the router with an appropriate `APP_BASE_HREF` value.
+1. Use root URLs (URLs with an `authority`) for all web resources: CSS, images, scripts, and template HTML files.
+
+* The `<base href>` `path` should end with a "/", as browsers ignore characters in the `path` that follow the right-most "/".
+* If the `<base href>` includes a `query` part, the `query` is only used if the `path` of a link in the page is empty and has no `query`.
+This means that a `query` in the `<base href>` is only included when using `HashLocationStrategy`.
+* If a link in the page is a root URL (has an `authority`), the `<base href>` is not used. In this way, an `APP_BASE_HREF` with an authority will cause all links created by Angular to ignore the `<base href>` value.
+* A fragment in the `<base href>` is _never_ persisted.
+
+For more complete information on how `<base href>` is used to construct target URIs, see the [RFC](https://tools.ietf.org/html/rfc3986#section-5.2.2) section on transforming references.
 
 {@a hashlocationstrategy}
 
