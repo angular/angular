@@ -1,28 +1,49 @@
-{@a code-coverage}
+# Generate code coverage reports
 
-# Find out how much code you're testing
-
-The CLI can run unit tests and create code coverage reports.
-Code coverage reports show you any parts of your code base that may not be properly tested by your unit tests.
-
-<div class="alert is-helpful">
-
-  For the sample app that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
-
-  For the tests features in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
-
-</div>
-
-
-To generate a coverage report run the following command in the root of your project.
+To find out how much code you're testing, run the following command in the root of your CLI generated project.
 
 <code-example language="sh" class="code-shell">
   ng test --no-watch --code-coverage
 </code-example>
 
-When the tests are complete, the command creates a new `/coverage` folder in the project. Open the `index.html` file to see a report with your source code and code coverage values.
+This command compiles the app, runs the tests, and concludes with a summary of how much of the code the tests executed.
+The following example is the coverage summary from a minimal app:
 
-If you want to create code-coverage reports every time you test, you can set the following option in the CLI configuration file, `angular.json`:
+```sh
+=========================== Coverage summary ========================
+Statements   : 100% ( 6/6 )
+Branches     : 100% ( 0/0 )
+Functions    : 100% ( 1/1 )
+Lines        : 100% ( 5/5 )
+=====================================================================
+```
+
+This output means that the tests executed 100% of the code.
+
+In addition to the command line output, this command produces a graphical user interface (GUI) for viewing coverage results.
+To view the GUI version, open `coverage/your-project/index.html` in the browser.
+
+In the browser, you can click on the directories and files to see exactly which code the tests executed.
+
+<div class="lightbox">
+  <img src="generated/images/guide/testing-code-coverage/code-coverage-browser.png" alt="Browser version of code coverage summary">
+</div>
+
+Notice that the summary data for statements, branches, functions, and lines is the same as the CLI output.
+However, this UI provides the added advantage of a more granular, sortable view with the ability of inspecting the code line-by-line.
+
+The following image shows that the test suite executed lines 8 and 9 in the `app.component.ts` one and three times respectively.
+
+
+<div class="lightbox">
+  <img src="generated/images/guide/testing-code-coverage/code-coverage-details.png" alt="Browser version of code coverage summary">
+</div>
+
+Notice that in this more granular level, that the summary at the top about statements, branches, and so on are in context of this particular file.
+
+## Create code coverage reports automatically
+
+To create code coverage reports every time you test, set the `codeCoverage` option to `true` in the CLI configuration file, `angular.json`:
 
 ```
   "test": {
@@ -32,13 +53,11 @@ If you want to create code-coverage reports every time you test, you can set the
   }
 ```
 
-## Code coverage enforcement
+## Set code coverage minimums
 
-The code coverage percentages let you estimate how much of your code is tested.
-If your team decides on a set minimum amount to be unit tested, you can enforce this minimum with the Angular CLI.
+To require a minimum amount of code coverage, add the following to the `coverageIstanbulReporter` key in the [Karma](https://karma-runner.github.io) test platform configuration file, `karma.conf.js`.
 
-For example, suppose you want the code base to have a minimum of 80% code coverage.
-To enable this, open the [Karma](https://karma-runner.github.io) test platform configuration file, `karma.conf.js`, and add the following in the `coverageIstanbulReporter:` key.
+<!-- Do we add this or do replace what's already in the default karma.conf.js? -->
 
 ```
 coverageIstanbulReporter: {
@@ -53,5 +72,6 @@ coverageIstanbulReporter: {
 }
 ```
 
-The `thresholds` property causes the tool to enforce a minimum of 80% code coverage when the unit tests are run in the project.
+<!-- What is coverageIstanbulReporter? What's the story behind the unique name? -->
 
+In this example, the `thresholds` property requires that the tests execute a minimum of 80% of the code in your project.
