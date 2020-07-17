@@ -31,9 +31,5 @@
   [
     "src/cdk/testing/private/e2e/actions.ts",
     "src/cdk/testing/private/e2e/query.ts"
-  ],
-  [
-    "src/material/grid-list/grid-list.ts",
-    "src/material/grid-list/tile-styler.ts"
   ]
 ]

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MatGridList} from './grid-list';
+import {QueryList} from '@angular/core';
 import {MatGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 
@@ -15,6 +15,12 @@ import {TileCoordinator} from './tile-coordinator';
  * be allowed inside a CSS `calc()` expression.
  */
 const cssCalcAllowedValue = /^-?\d+((\.\d+)?[A-Za-z%$]?)+$/;
+
+/** Object that can be styled by the `TileStyler`. */
+export interface TileStyleTarget {
+  _setListStyle(style: [string, string | null] | null): void;
+  _tiles: QueryList<MatGridTile>;
+}
 
 /**
  * Sets the style properties for an individual tile, given the position calculated by the
@@ -152,7 +158,7 @@ export abstract class TileStyler {
    * @param list Grid list that the styler was attached to.
    * @docs-private
    */
-  abstract reset(list: MatGridList): void;
+  abstract reset(list: TileStyleTarget): void;
 }
 
 
@@ -185,7 +191,7 @@ export class FixedTileStyler extends TileStyler {
     ];
   }
 
-  reset(list: MatGridList) {
+  reset(list: TileStyleTarget) {
     list._setListStyle(['height', null]);
 
     if (list._tiles) {
@@ -232,7 +238,7 @@ export class RatioTileStyler extends TileStyler {
     ];
   }
 
-  reset(list: MatGridList) {
+  reset(list: TileStyleTarget) {
     list._setListStyle(['paddingBottom', null]);
 
     list._tiles.forEach(tile => {
@@ -274,7 +280,7 @@ export class FitTileStyler extends TileStyler {
     tile._setStyle('height', calc(this.getTileSize(baseTileHeight, tile.rowspan)));
   }
 
-  reset(list: MatGridList) {
+  reset(list: TileStyleTarget) {
     if (list._tiles) {
       list._tiles.forEach(tile => {
         tile._setStyle('top', null);

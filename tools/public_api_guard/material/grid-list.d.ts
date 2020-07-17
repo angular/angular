@@ -3,7 +3,7 @@ export declare class MatGridAvatarCssMatStyler {
     static ɵfac: i0.ɵɵFactoryDef<MatGridAvatarCssMatStyler, never>;
 }
 
-export declare class MatGridList implements MatGridListBase, OnInit, AfterContentChecked {
+export declare class MatGridList implements MatGridListBase, OnInit, AfterContentChecked, TileStyleTarget {
     _tiles: QueryList<MatGridTile>;
     get cols(): number;
     set cols(value: number);
