@@ -5037,6 +5037,7 @@ describe('Integration', () => {
 
     describe('preloading', () => {
       let log: string[] = [];
+      let preloader: RouterPreloader;
       @Component({selector: 'lazy', template: 'should not show'})
       class LazyLoadedComponent {
       }
@@ -5066,7 +5067,7 @@ describe('Integration', () => {
             }
           ]
         });
-        const preloader = TestBed.inject(RouterPreloader);
+        preloader = TestBed.inject(RouterPreloader);
         preloader.setUpPreloading();
       });
 
@@ -5093,6 +5094,26 @@ describe('Integration', () => {
            const secondConfig = firstConfig.routes[0]._loadedConfig!;
            expect(secondConfig).toBeDefined();
            expect(secondConfig.routes[0].path).toEqual('LoadedModule2');
+         }));
+
+      it('should not preload already loaded route configs', fakeAsync(() => {
+           (TestBed.inject(NgModuleFactoryLoader) as SpyNgModuleFactoryLoader).stubbedModules = {
+             expected: LoadedModule1,
+             expected2: LoadedModule2
+           };
+           const preloadSpy = spyOn(preloader, 'preload').and.callThrough();
+           const router = TestBed.inject(Router);
+
+           router.resetConfig(
+               [{path: 'blank', component: BlankCmp}, {path: 'lazy', loadChildren: 'expected'}]);
+
+           router.navigateByUrl('/blank');
+           tick();
+
+           router.navigateByUrl('/lazy');
+           tick();
+
+           expect(preloadSpy).toHaveBeenCalledTimes(1);
          }));
 
       it('should not preload when canLoad is present and does not execute guard', fakeAsync(() => {
