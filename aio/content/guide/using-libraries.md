@@ -8,7 +8,7 @@ See the [Angular Resources](resources) page for links to the most popular ones.
 Libraries are published as [npm packages](guide/npm-packages), usually together with schematics that integrate them with the Angular CLI.
 To integrate reusable library code into an application, you need to install the package and import the provided functionality where you will use it. For most published Angular libraries, you can use the Angular CLI `ng add <lib_name>` command.
 
-The `ng add` command uses the npm package manager or [yarn](https://yarnpkg.com/) to install the library package, and invokes schematics that are included in the package to other scaffolding within the project code, such as adding import statements, fonts, themes, and so on.
+The `ng add` command uses a package manager such as [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) to install the library package, and invokes schematics that are included in the package to other scaffolding within the project code, such as adding import statements, fonts, themes, and so on.
 
 A published library typically provides a README or other documentation on how to add that lib to your app.
 For an example, see [Angular Material](https://material.angular.io/) docs.
