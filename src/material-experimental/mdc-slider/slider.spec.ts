@@ -24,12 +24,19 @@ import {Component, DebugElement, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick, inject} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatSlider, MatSliderModule} from './index';
 
 describe('MDC-based MatSlider', () => {
   function createComponent<T>(component: Type<T>): ComponentFixture<T> {
     TestBed.configureTestingModule({
-      imports: [MatSliderModule, ReactiveFormsModule, FormsModule, BidiModule],
+      imports: [
+        MatSliderModule,
+        ReactiveFormsModule,
+        FormsModule,
+        BidiModule,
+        NoopAnimationsModule,
+      ],
       declarations: [component],
     }).compileComponents();
 
