@@ -25,6 +25,14 @@ import {CdkMenuItemTrigger} from './menu-item-trigger';
 import {Menu, CDK_MENU} from './menu-interface';
 import {FocusNext} from './menu-stack';
 
+// TODO refactor this to be configurable allowing for custom elements to be removed
+/** Removes all icons from within the given element. */
+function removeIcons(element: Element) {
+  for (const icon of Array.from(element.querySelectorAll('mat-icon, .material-icons'))) {
+    icon.parentNode?.removeChild(icon);
+  }
+}
+
 /**
  * Directive which provides the ability for an element to be focused and navigated to using the
  * keyboard when residing in a CdkMenu, CdkMenuBar, or CdkMenuGroup. It performs user defined
@@ -106,8 +114,12 @@ export class CdkMenuItem implements FocusableOption {
 
   /** Get the label for this element which is required by the FocusableOption interface. */
   getLabel(): string {
-    // TODO(andy): implement a more robust algorithm for determining nested text
-    return this._elementRef.nativeElement.textContent || '';
+    // TODO cloning the tree may be expensive; implement a better method
+    // we know that the current node is an element type
+    const clone = this._elementRef.nativeElement.cloneNode(true) as Element;
+    removeIcons(clone);
+
+    return clone.textContent?.trim() || '';
   }
 
   // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
