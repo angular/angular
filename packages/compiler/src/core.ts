@@ -22,10 +22,10 @@ export const createInjectionToken = makeMetadataFactory<object>(
     'InjectionToken', (desc: string) => ({_desc: desc, ɵprov: undefined}));
 
 export interface Attribute {
-  attributeName?: string;
+  attributeName: string;
 }
 export const createAttribute =
-    makeMetadataFactory<Attribute>('Attribute', (attributeName?: string) => ({attributeName}));
+    makeMetadataFactory<Attribute>('Attribute', (attributeName: string) => ({attributeName}));
 
 export interface Query {
   descendants: boolean;
