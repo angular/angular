@@ -293,14 +293,14 @@ class _TreeBuilder {
     }
   }
 
-  private _popElement(fullName: string, sourceSpan: ParseSourceSpan): boolean {
+  private _popElement(fullName: string, endSourceSpan: ParseSourceSpan): boolean {
     for (let stackIndex = this._elementStack.length - 1; stackIndex >= 0; stackIndex--) {
       const el = this._elementStack[stackIndex];
       if (el.name == fullName) {
-        // Record the parse span with the element that is being closed. Any element that is removed
-        // from the element stack at this point are closed implicitly, so they won't get an end
-        // source span (as there is no explicit closing element).
-        el.endSourceSpan = sourceSpan;
+        // Record the parse span with the element that is being closed. Any elements that are
+        // removed from the element stack at this point are closed implicitly, so they won't get
+        // an end source span (as there is no explicit closing element).
+        el.endSourceSpan = endSourceSpan;
 
         this._elementStack.splice(stackIndex, this._elementStack.length - stackIndex);
         return true;
