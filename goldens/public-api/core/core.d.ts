@@ -53,7 +53,7 @@ export declare function asNativeElements(debugEls: DebugElement[]): any;
 export declare function assertPlatform(requiredToken: any): PlatformRef;
 
 export declare interface Attribute {
-    attributeName?: string;
+    attributeName: string;
 }
 
 export declare const Attribute: AttributeDecorator;
