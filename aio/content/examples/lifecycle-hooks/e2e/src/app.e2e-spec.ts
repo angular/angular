@@ -1,5 +1,3 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, ElementFinder, by } from 'protractor';
 
 describe('Lifecycle hooks', () => {

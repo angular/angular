@@ -1,5 +1,3 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by } from 'protractor';
 
 describe('AngularJS to Angular Quick Reference Tests', function () {

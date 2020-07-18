@@ -1,4 +1,3 @@
-;
 import { OptionalComponent } from './optional/optional.component';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
