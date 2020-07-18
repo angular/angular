@@ -2,7 +2,7 @@ import { inject, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Phone, PhoneData } from './phone.service';
 
-describe('Phone', function() {
+describe('Phone', () => {
   let phone: Phone;
   let phonesData: PhoneData[] = [
     {name: 'Phone X', snippet: '', images: []},

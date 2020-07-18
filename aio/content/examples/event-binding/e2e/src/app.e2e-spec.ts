@@ -1,8 +1,8 @@
 import { browser, element, by, protractor } from 'protractor';
 
-describe('Event binding example', function () {
+describe('Event binding example', () => {
 
-  beforeEach(function () {
+  beforeEach(() => {
     browser.get('');
   });
 
@@ -14,11 +14,11 @@ describe('Event binding example', function () {
   let saveProp = element.all(by.css('button')).get(5);
 
 
-  it('should display Event Binding with Angular', function () {
+  it('should display Event Binding with Angular', () => {
     expect(element(by.css('h1')).getText()).toEqual('Event Binding');
   });
 
-  it('should display 6 buttons', function() {
+  it('should display 6 buttons', () => {
     expect(saveButton.getText()).toBe('Save');
     expect(onSaveButton.getText()).toBe('on-click Save');
     expect(myClick.getText()).toBe('click with myClick');
@@ -27,7 +27,7 @@ describe('Event binding example', function () {
     expect(saveProp.getText()).toBe('Save with propagation');
   });
 
-  it('should support user input', function () {
+  it('should support user input', () => {
     let input = element(by.css('input'));
     let bindingResult = element.all(by.css('h4')).get(1);
     expect(bindingResult.getText()).toEqual('Result: teapot');
