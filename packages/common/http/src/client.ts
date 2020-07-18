@@ -2448,6 +2448,8 @@ export class HttpClient {
    */
   put<T>(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
+    params?: HttpParams|{[param: string]: string | string[]},
+    reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
   }): Observable<HttpEvent<T>>;
