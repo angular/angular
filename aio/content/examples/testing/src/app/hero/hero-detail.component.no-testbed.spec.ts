@@ -1,7 +1,7 @@
 import { asyncData, ActivatedRouteStub } from '../../testing';
 
 import { HeroDetailComponent } from './hero-detail.component';
-import { Hero }                from '../model/hero';
+import { Hero } from '../model/hero';
 
 //////////  Tests  ////////////////////
 

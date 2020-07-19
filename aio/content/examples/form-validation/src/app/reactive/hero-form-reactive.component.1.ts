@@ -1,7 +1,7 @@
 /* tslint:disable: member-ordering forin */
 // #docplaster
 // #docregion
-import { Component, OnInit }                  from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { forbiddenNameValidator } from '../shared/forbidden-name.directive';
 

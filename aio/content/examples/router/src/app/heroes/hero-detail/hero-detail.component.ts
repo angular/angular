@@ -7,7 +7,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 // #enddocregion imports-route-info
 import { Observable } from 'rxjs';
 
-import { HeroService }  from '../hero.service';
+import { HeroService } from '../hero.service';
 import { Hero } from '../hero';
 
 @Component({

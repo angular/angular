@@ -1,13 +1,13 @@
 // #docregion can-activate-child
-import { Injectable }       from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   CanActivate, Router,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
   CanActivateChild,
   UrlTree
-}                           from '@angular/router';
-import { AuthService }      from './auth.service';
+} from '@angular/router';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',

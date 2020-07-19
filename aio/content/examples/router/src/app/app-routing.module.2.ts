@@ -1,11 +1,11 @@
 // #docregion
 // #docregion milestone3
-import { NgModule }              from '@angular/core';
-import { RouterModule, Routes }  from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 
-import { CrisisListComponent }   from './crisis-list/crisis-list.component';
+import { CrisisListComponent } from './crisis-list/crisis-list.component';
 // #enddocregion milestone3
-// import { HeroListComponent }  from './hero-list/hero-list.component';  // <-- delete this line
+// import { HeroListComponent } from './hero-list/hero-list.component';  // <-- delete this line
 // #docregion milestone3
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 

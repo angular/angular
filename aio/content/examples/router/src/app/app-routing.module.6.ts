@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion, preload-v1
-import { NgModule }     from '@angular/core';
+import { NgModule } from '@angular/core';
 import {
   RouterModule, Routes,
 // #enddocregion preload-v1
@@ -9,9 +9,9 @@ import {
 } from '@angular/router';
 
 import { ComposeMessageComponent } from './compose-message/compose-message.component';
-import { PageNotFoundComponent }   from './page-not-found/page-not-found.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
-import { AuthGuard }               from './auth/auth.guard';
+import { AuthGuard } from './auth/auth.guard';
 
 const appRoutes: Routes = [
   {

@@ -9,7 +9,7 @@ import { RouterModule } from '@angular/router';
 import { HashLocationStrategy,
          LocationStrategy } from '@angular/common';
 
-import { HeroData }     from '../app/hero-data';
+import { HeroData } from '../app/hero-data';
 import { AppComponent } from '../app/app.component';
 
 import * as s0101 from '../01-01/app/app.module';

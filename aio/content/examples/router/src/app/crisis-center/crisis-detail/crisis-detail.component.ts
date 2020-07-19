@@ -4,8 +4,8 @@ import { Component, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { Crisis }         from '../crisis';
-import { DialogService }  from '../../dialog.service';
+import { Crisis } from '../crisis';
+import { DialogService } from '../../dialog.service';
 
 @Component({
   selector: 'app-crisis-detail',

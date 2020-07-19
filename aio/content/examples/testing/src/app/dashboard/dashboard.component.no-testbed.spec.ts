@@ -1,9 +1,9 @@
 import { Router } from '@angular/router';
 
 import { DashboardComponent } from './dashboard.component';
-import { Hero }               from '../model/hero';
+import { Hero } from '../model/hero';
 
-import { addMatchers }     from '../../testing';
+import { addMatchers } from '../../testing';
 import { TestHeroService, HeroService } from '../model/testing/test-hero.service';
 
 class FakeRouter {

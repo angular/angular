@@ -1,13 +1,13 @@
 // #docplaster
 // #docregion
-import { Component, OnInit }   from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-import { Observable }                       from 'rxjs';
-import { switchMap }                        from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
-import { CrisisService }  from '../crisis.service';
-import { Crisis }         from '../crisis';
-import { DialogService }  from '../../dialog.service';
+import { CrisisService } from '../crisis.service';
+import { Crisis } from '../crisis';
+import { DialogService } from '../../dialog.service';
 
 @Component({
   selector: 'app-crisis-detail',

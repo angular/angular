@@ -1,5 +1,5 @@
 // #docregion
-import { HttpClient }          from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Pipe, PipeTransform } from '@angular/core';
 
 // #docregion pipe-metadata
