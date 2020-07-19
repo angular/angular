@@ -42,7 +42,7 @@ mark valid insertion points in the template.
 `AdDirective` injects `ViewContainerRef` to gain access to the view
 container of the element that will host the dynamically added component.
 
-In the `@Directive` decorator, notice the selector name, `ad-host`;
+In the `@Directive` decorator, notice the selector name, `adHost`;
 that's what you use to apply the directive to the element.
 The next section shows you how.
 
@@ -56,7 +56,7 @@ decorator's `template` property as a template string.
 
 The `<ng-template>` element is where you apply the directive you just made.
 To apply the `AdDirective`, recall the selector from `ad.directive.ts`,
-`ad-host`. Apply that to `<ng-template>` without the square brackets. Now Angular knows
+`[adHost]`. Apply that to `<ng-template>` without the square brackets. Now Angular knows
 where to dynamically load components.
 
 

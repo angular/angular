@@ -1,4 +1,4 @@
-/* tslint:disable:forin */
+// tslint:disable: directive-selector forin no-input-rename
 import { Component, ContentChildren, Directive, EventEmitter,
          Injectable, Input, Output, Optional,
          HostBinding, HostListener,

@@ -14,7 +14,7 @@ When you call `emit()`, it passes the emitted value to the `next()` method of an
 
 A good example of usage can be found in the [EventEmitter](api/core/EventEmitter) documentation. Here is the example component that listens for open and close events:
 
-`<zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>`
+`<app-zippy (open)="onOpen($event)" (close)="onClose($event)"></app-zippy>`
 
 Here is the component definition:
 
