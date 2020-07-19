@@ -21,7 +21,7 @@ class NoMatch {}
 export function recognize(
     rootComponentType: Type<any>|null, config: Routes, urlTree: UrlTree, url: string,
     paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
-    relativeLinkResolution: 'legacy'|'corrected' = 'legacy'): Observable<RouterStateSnapshot> {
+    relativeLinkResolution: 'legacy'|'corrected' = 'corrected'): Observable<RouterStateSnapshot> {
   return new Recognizer(
              rootComponentType, config, urlTree, url, paramsInheritanceStrategy,
              relativeLinkResolution)

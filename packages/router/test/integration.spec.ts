@@ -84,6 +84,10 @@ describe('Integration', () => {
         }]);
       }));
 
+      it('should have defaut value as corrected', fakeAsync(inject([Router], (router: Router) => {
+           expect(router.relativeLinkResolution).toEqual('corrected');
+         })));
+
       it('should not ignore empty paths in legacy mode',
          fakeAsync(inject([Router], (router: Router) => {
            router.relativeLinkResolution = 'legacy';
