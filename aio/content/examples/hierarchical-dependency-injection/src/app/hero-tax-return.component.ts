@@ -30,9 +30,9 @@ export class HeroTaxReturnComponent {
   onCanceled()  {
     this.flashMessage('Canceled');
     this.heroTaxReturnService.restoreTaxReturn();
-  };
+  }
 
-  onClose() { this.close.emit(); };
+  onClose() { this.close.emit(); }
 
   onSaved() {
     this.flashMessage('Saved');

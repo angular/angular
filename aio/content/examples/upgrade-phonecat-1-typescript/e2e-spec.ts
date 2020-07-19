@@ -81,7 +81,7 @@ describe('PhoneCat Application', function() {
       waitForCount(phoneList, 1);
 
       let nexusPhone = phoneList.first();
-      let detailLink = nexusPhone.all(by.css('a')).first()
+      let detailLink = nexusPhone.all(by.css('a')).first();
 
       detailLink.click();
       expect(browser.getLocationAbsUrl()).toBe('/phones/nexus-s');

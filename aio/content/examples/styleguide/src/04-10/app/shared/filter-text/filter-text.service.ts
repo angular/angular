@@ -18,7 +18,7 @@ export class FilterTextService {
             match = true;
             break;
           }
-        };
+        }
         return match;
       });
       filteredList = filtered;
