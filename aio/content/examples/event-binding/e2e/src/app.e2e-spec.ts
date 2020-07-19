@@ -1,4 +1,4 @@
-import { browser, element, by, protractor } from 'protractor';
+import { browser, element, by } from 'protractor';
 
 describe('Event binding example', () => {
 
@@ -36,7 +36,6 @@ describe('Event binding example', () => {
   });
 
   it('should hide the item img', async () => {
-    let deleteButton = element.all(by.css('button')).get(3);
     await deleteButton.click();
     browser.switchTo().alert().accept();
     expect(element.all(by.css('img')).get(0).getCssValue('display')).toEqual('none');

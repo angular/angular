@@ -9,18 +9,18 @@ function sequenceSubscriber(observer) {
 
   // Will run through an array of numbers, emitting one value
   // per second until it gets to the end of the array.
-  function doSequence(arr, idx) {
+  function doInSequence(arr, idx) {
     timeoutId = setTimeout(() => {
       observer.next(arr[idx]);
       if (idx === arr.length - 1) {
         observer.complete();
       } else {
-        doSequence(arr, ++idx);
+        doInSequence(arr, ++idx);
       }
     }, 1000);
   }
 
-  doSequence(seq, 0);
+  doInSequence(seq, 0);
 
   // Unsubscribe should clear the timeout to stop execution
   return {unsubscribe() {
