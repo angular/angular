@@ -147,7 +147,7 @@ describe('Angular async helper', () => {
 
   // #docregion async-test-promise-then
   describe('test jsonp', () => {
-    function jsonp(url: string, callback: Function) {
+    function jsonp(url: string, callback: () => void) {
       // do a jsonp call which is not zone aware
     }
     // need to config __zone_symbol__supportWaitUnResolvedChainedPromise flag

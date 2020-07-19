@@ -27,9 +27,9 @@ import { useInjector } from './car-injector';
   providers: [Car, Engine, Tires]
 })
 export class CarComponent {
-  factoryCar  = (new CarFactory).createCar();
+  factoryCar  = (new CarFactory()).createCar();
   injectorCar = useInjector();
-  noDiCar     = new CarNoDi;
+  noDiCar     = new CarNoDi();
   simpleCar   = simpleCar();
   superCar    = superCar();
   testCar     = testCar();
