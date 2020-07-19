@@ -8,12 +8,12 @@ describe('Binding syntax e2e tests', () => {
   });
 
 
-    // helper function used to test what's logged to the console
-    async function logChecker(button, contents) {
-      const logs = await browser.manage().logs().get(logging.Type.BROWSER);
-      const message = logs.filter(({ message }) => message.indexOf(contents) !== -1 ? true : false);
-      expect(message.length).toBeGreaterThan(0);
-    }
+  // helper function used to test what's logged to the console
+  async function logChecker(button, contents) {
+    const logs = await browser.manage().logs().get(logging.Type.BROWSER);
+    const messages = logs.filter(({ message }) => message.indexOf(contents) !== -1 ? true : false);
+    expect(messages.length).toBeGreaterThan(0);
+  }
 
 
   it('should display Binding syntax', function () {

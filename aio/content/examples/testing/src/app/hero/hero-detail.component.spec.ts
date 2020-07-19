@@ -354,7 +354,7 @@ class Page {
   get nameInput()   { return this.query<HTMLInputElement>('input'); }
 
   gotoListSpy: jasmine.Spy;
-  navigateSpy:  jasmine.Spy;
+  navigateSpy: jasmine.Spy;
 
   constructor(fixture: ComponentFixture<HeroDetailComponent>) {
     // get the navigate spy from the injected router spy object

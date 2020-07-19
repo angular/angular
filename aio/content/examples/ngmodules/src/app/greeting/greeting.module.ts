@@ -14,7 +14,7 @@ import { UserServiceConfig } from './user.service';
 })
 export class GreetingModule {
   // #docregion ctor
-  constructor (@Optional() @SkipSelf() parentModule?: GreetingModule) {
+  constructor(@Optional() @SkipSelf() parentModule?: GreetingModule) {
     if (parentModule) {
       throw new Error(
         'GreetingModule is already loaded. Import it in the AppModule only');
