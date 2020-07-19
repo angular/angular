@@ -42,12 +42,12 @@ export class PopupComponent {
   state: 'opened' | 'closed' = 'closed';
 
   @Input()
+  get message(): string { return this._message; }
   set message(message: string) {
     this._message = message;
     this.state = 'opened';
   }
-  get message(): string { return this._message; }
-  _message: string;
+  private _message: string;  // tslint:disable-line: variable-name
 
   @Output()
   closed = new EventEmitter();

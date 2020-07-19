@@ -10,11 +10,8 @@ import { NgForm } from '@angular/forms';
 export class AppComponent {
   @ViewChild('itemForm') form: NgForm;
 
-  private _submitMessage = '';
-
-  get submitMessage() {
-    return this._submitMessage;
-  }
+  get submitMessage() { return this._submitMessage; }
+  private _submitMessage = '';  // tslint:disable-line: variable-name
 
   onSubmit(form: NgForm) {
     this._submitMessage = 'Submitted. Form value is ' + JSON.stringify(form.value);
