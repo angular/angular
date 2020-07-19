@@ -50,8 +50,8 @@ let page: {
 };
 
 function getPage(sectionTag: string) {
-  let section = element(by.css(sectionTag));
-  let buttons = section.all(by.css('button'));
+  const section = element(by.css(sectionTag));
+  const buttons = section.all(by.css('button'));
 
   page = {
     section,

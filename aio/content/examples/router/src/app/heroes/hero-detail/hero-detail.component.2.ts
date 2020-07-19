@@ -23,7 +23,7 @@ export class HeroDetailComponent implements OnInit  {
 
   // #docregion snapshot
   ngOnInit() {
-    let id = this.route.snapshot.paramMap.get('id');
+    const id = this.route.snapshot.paramMap.get('id');
 
     this.hero$ = this.service.getHero(id);
   }

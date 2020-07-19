@@ -15,7 +15,7 @@ describe('sw-example App', () => {
   });
 
   it('should display the Angular logo', () => {
-    let logo = element(by.css('img'));
+    const logo = element(by.css('img'));
     page.navigateTo();
     expect(logo.isPresent()).toBe(true);
   });

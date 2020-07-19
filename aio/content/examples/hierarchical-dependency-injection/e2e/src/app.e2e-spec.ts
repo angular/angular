@@ -7,7 +7,7 @@ describe('Hierarchical dependency injection', () => {
   });
 
   describe('Heroes Scenario', () => {
-    let page = {
+    const page = {
       heroName: '',
       income: '',
 

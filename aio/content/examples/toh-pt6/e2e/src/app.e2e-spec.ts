@@ -24,17 +24,17 @@ class Hero {
 
   // Hero from hero list <li> element.
   static async fromLi(li: ElementFinder): Promise<Hero> {
-      let stringsFromA = await li.all(by.css('a')).getText();
-      let strings = stringsFromA[0].split(' ');
+      const stringsFromA = await li.all(by.css('a')).getText();
+      const strings = stringsFromA[0].split(' ');
       return { id: +strings[0], name: strings[1] };
   }
 
   // Hero id and name from the given detail element.
   static async fromDetail(detail: ElementFinder): Promise<Hero> {
     // Get hero id from the first <div>
-    let id = await detail.all(by.css('div')).first().getText();
+    const id = await detail.all(by.css('div')).first().getText();
     // Get name from the h2
-    let name = await detail.element(by.css('h2')).getText();
+    const name = await detail.element(by.css('h2')).getText();
     return {
         id: +id.substr(id.indexOf(' ') + 1),
         name: name.substr(0, name.lastIndexOf(' '))
@@ -47,7 +47,7 @@ describe('Tutorial part 6', () => {
   beforeAll(() => browser.get(''));
 
   function getPageElts() {
-    let navElts = element.all(by.css('app-root nav a'));
+    const navElts = element.all(by.css('app-root nav a'));
 
     return {
       navElts,
@@ -80,12 +80,12 @@ describe('Tutorial part 6', () => {
 
     const expectedViewNames = ['Dashboard', 'Heroes'];
     it(`has views ${expectedViewNames}`, () => {
-      let viewNames = getPageElts().navElts.map((el: ElementFinder) => el.getText());
+      const viewNames = getPageElts().navElts.map((el: ElementFinder) => el.getText());
       expect(viewNames).toEqual(expectedViewNames);
     });
 
     it('has dashboard as the active view', () => {
-      let page = getPageElts();
+      const page = getPageElts();
       expect(page.appDashboard.isPresent()).toBeTruthy();
     });
 
@@ -96,7 +96,7 @@ describe('Tutorial part 6', () => {
     beforeAll(() => browser.get(''));
 
     it('has top heroes', () => {
-      let page = getPageElts();
+      const page = getPageElts();
       expect(page.topHeroes.count()).toEqual(4);
     });
 
@@ -108,7 +108,7 @@ describe('Tutorial part 6', () => {
       element(by.buttonText('go back')).click();
       browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
 
-      let targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
+      const targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
       expect(targetHeroElt.getText()).toEqual(targetHero.name);
     });
 
@@ -120,7 +120,7 @@ describe('Tutorial part 6', () => {
       element(by.buttonText('save')).click();
       browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
 
-      let targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
+      const targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
       expect(targetHeroElt.getText()).toEqual(newHeroName);
     });
 
@@ -132,7 +132,7 @@ describe('Tutorial part 6', () => {
 
     it('can switch to Heroes view', () => {
       getPageElts().appHeroesHref.click();
-      let page = getPageElts();
+      const page = getPageElts();
       expect(page.appHeroes.isPresent()).toBeTruthy();
       expect(page.allHeroes.count()).toEqual(10, 'number of heroes');
     });
@@ -140,9 +140,9 @@ describe('Tutorial part 6', () => {
     it('can route to hero details', async () => {
       getHeroLiEltById(targetHero.id).click();
 
-      let page = getPageElts();
+      const page = getPageElts();
       expect(page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
-      let hero = await Hero.fromDetail(page.heroDetail);
+      const hero = await Hero.fromDetail(page.heroDetail);
       expect(hero.id).toEqual(targetHero.id);
       expect(hero.name).toEqual(targetHero.name.toUpperCase());
     });
@@ -152,7 +152,7 @@ describe('Tutorial part 6', () => {
     it(`shows ${newHeroName} in Heroes list`, () => {
       element(by.buttonText('save')).click();
       browser.waitForAngular();
-      let expectedText = `${targetHero.id} ${newHeroName}`;
+      const expectedText = `${targetHero.id} ${newHeroName}`;
       expect(getHeroAEltById(targetHero.id).getText()).toEqual(expectedText);
     });
 
@@ -179,8 +179,8 @@ describe('Tutorial part 6', () => {
       element(by.css('input')).sendKeys(addedHeroName);
       element(by.buttonText('add')).click();
 
-      let page = getPageElts();
-      let heroesAfter = await toHeroArray(page.allHeroes);
+      const page = getPageElts();
+      const heroesAfter = await toHeroArray(page.allHeroes);
       expect(heroesAfter.length).toEqual(numHeroes + 1, 'number of heroes');
 
       expect(heroesAfter.slice(0, numHeroes)).toEqual(heroesBefore, 'Old heroes are still there');
@@ -233,34 +233,34 @@ describe('Tutorial part 6', () => {
     it(`continues search with 'e' and gets ${targetHero.name}`, async () => {
       getPageElts().searchBox.sendKeys('n');
       browser.sleep(1000);
-      let page = getPageElts();
+      const page = getPageElts();
       expect(page.searchResults.count()).toBe(1);
-      let hero = page.searchResults.get(0);
+      const hero = page.searchResults.get(0);
       expect(hero.getText()).toEqual(targetHero.name);
     });
 
     it(`navigates to ${targetHero.name} details view`, async () => {
-      let hero = getPageElts().searchResults.get(0);
+      const hero = getPageElts().searchResults.get(0);
       expect(hero.getText()).toEqual(targetHero.name);
       hero.click();
 
-      let page = getPageElts();
+      const page = getPageElts();
       expect(page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
-      let hero2 = await Hero.fromDetail(page.heroDetail);
+      const hero2 = await Hero.fromDetail(page.heroDetail);
       expect(hero2.id).toEqual(targetHero.id);
       expect(hero2.name).toEqual(targetHero.name.toUpperCase());
     });
   });
 
   async function dashboardSelectTargetHero() {
-    let targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
+    const targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
     expect(targetHeroElt.getText()).toEqual(targetHero.name);
     targetHeroElt.click();
     browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
 
-    let page = getPageElts();
+    const page = getPageElts();
     expect(page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
-    let hero = await Hero.fromDetail(page.heroDetail);
+    const hero = await Hero.fromDetail(page.heroDetail);
     expect(hero.id).toEqual(targetHero.id);
     expect(hero.name).toEqual(targetHero.name.toUpperCase());
   }
@@ -269,8 +269,8 @@ describe('Tutorial part 6', () => {
     // Assumes that the current view is the hero details view.
     addToHeroName(nameSuffix);
 
-    let page = getPageElts();
-    let hero = await Hero.fromDetail(page.heroDetail);
+    const page = getPageElts();
+    const hero = await Hero.fromDetail(page.heroDetail);
     expect(hero.id).toEqual(targetHero.id);
     expect(hero.name).toEqual(newHeroName.toUpperCase());
   }
@@ -278,28 +278,28 @@ describe('Tutorial part 6', () => {
 });
 
 function addToHeroName(text: string): promise.Promise<void> {
-  let input = element(by.css('input'));
+  const input = element(by.css('input'));
   return input.sendKeys(text);
 }
 
 function expectHeading(hLevel: number, expectedText: string): void {
-    let hTag = `h${hLevel}`;
-    let hText = element(by.css(hTag)).getText();
+    const hTag = `h${hLevel}`;
+    const hText = element(by.css(hTag)).getText();
     expect(hText).toEqual(expectedText, hTag);
 }
 
 function getHeroAEltById(id: number): ElementFinder {
-  let spanForId = element(by.cssContainingText('li span.badge', id.toString()));
+  const spanForId = element(by.cssContainingText('li span.badge', id.toString()));
   return spanForId.element(by.xpath('..'));
 }
 
 function getHeroLiEltById(id: number): ElementFinder {
-  let spanForId = element(by.cssContainingText('li span.badge', id.toString()));
+  const spanForId = element(by.cssContainingText('li span.badge', id.toString()));
   return spanForId.element(by.xpath('../..'));
 }
 
 async function toHeroArray(allHeroes: ElementArrayFinder): Promise<Hero[]> {
-  let promisedHeroes = await allHeroes.map(Hero.fromLi);
+  const promisedHeroes = await allHeroes.map(Hero.fromLi);
   // The cast is necessary to get around issuing with the signature of Promise.all()
   return Promise.all(promisedHeroes) as Promise<any>;
 }

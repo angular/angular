@@ -24,7 +24,7 @@ export class UserContextService {
   // #enddocregion ctor, injectables
 
   loadUser(userId: number) {
-    let user = this.userService.getUserById(userId);
+    const user = this.userService.getUserById(userId);
     this.name = user.name;
     this.role = user.role;
 
