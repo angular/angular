@@ -229,7 +229,7 @@ Angular에는 템플릿과 컴포넌트를 간편하게 연결하는 **데이터
 * `(click)` 과 같이 [*이벤트 바인딩*](guide/user-input#click) 하면 사용자가 히어로의 이름을 클릭했을 때 컴포넌트의 `selectHero` 메소드를 실행합니다.
 
 [템플릿 기반의 폼](guide/forms)에서 많이 사용하는 양방향 데이터 바인딩은 프로퍼티 바인딩과 이벤트 바인딩을 합쳐놓은 문법입니다.
-`HeroDetailComponent`의 템플릿에 히어로의 이름을 양방향 바인딩한다면 `noModel` 디렉티브를 사용해서 다음과 같이 구현할 수 있습니다.
+`HeroDetailComponent`의 템플릿에 히어로의 이름을 양방향 바인딩한다면 `ngModel` 디렉티브를 사용해서 다음과 같이 구현할 수 있습니다.
 
 <code-example path="architecture/src/app/hero-detail.component.html" header="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
