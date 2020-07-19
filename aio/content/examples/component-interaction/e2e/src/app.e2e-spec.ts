@@ -111,8 +111,8 @@ describe('Component Communication Cookbook Tests', () => {
       let logs = ul.all(by.tagName('li'));
 
       return {
-        label: label,
-        logs: logs,
+        label,
+        logs,
         count: logs.count()
       };
     }

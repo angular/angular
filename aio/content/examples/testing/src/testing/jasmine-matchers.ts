@@ -5,7 +5,7 @@
 
 export function addMatchers(): void {
   jasmine.addMatchers({
-    toHaveText: toHaveText
+    toHaveText
   });
 }
 
