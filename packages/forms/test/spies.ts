@@ -8,6 +8,7 @@
 
 import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detector_ref';
 import {SpyObject} from '@angular/core/testing/src/testing_internal';
+import {ControlValueAccessor} from '..';
 
 export class SpyChangeDetectorRef extends SpyObject {
   constructor() {
@@ -20,6 +21,7 @@ export class SpyNgControl extends SpyObject {
   path = [];
 }
 
-export class SpyValueAccessor extends SpyObject {
-  writeValue: any;
+export function createSpyControlValueAccessor(): ControlValueAccessor {
+  return jasmine.createSpyObj(
+      'ControlValueAccessor', ['writeValue', 'registerOnChange', 'registerOnTouched']);
 }

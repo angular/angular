@@ -185,13 +185,27 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    *
    * @param dir The `NgModel` directive instance.
    */
-  addControl(dir: NgModel): void {
+  addControl(dir: NgModel): void;
+  /**
+   * @description
+   * Method that sets up the control directive in this group, re-calculates its value
+   * and validity, and adds the instance to the internal list of directives.
+   *
+   * @param dir The `NgModel` directive instance.
+   * @param opts An optional set of options. If `skipValueInitialization` is true, the control's
+   *     validity and value will not be updated and value accessors will not be written to. Use this
+   *     flag if the control's value is updated immediately after this call.
+   * @internal
+   */
+  addControl(dir: NgModel, opts: {skipValueInitialization?: boolean}): void;
+  /** @internal */
+  addControl(dir: NgModel, opts?: {skipValueInitialization?: boolean}) {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
       (dir as {control: FormControl}).control =
           <FormControl>container.registerControl(dir.name, dir.control);
-      setUpControl(dir.control, dir);
-      dir.control.updateValueAndValidity({emitEvent: false});
+      setUpControl(dir.control, dir, opts);
+      if (!opts?.skipValueInitialization) dir.control.updateValueAndValidity({emitEvent: false});
       this._directives.push(dir);
     });
   }

@@ -17,7 +17,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor'
 import {NgControl} from './ng_control';
 import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
-import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
+import {composeAsyncValidators, composeValidators, controlPath, INITIAL_CONTROL_VALUE, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
 import {TemplateDrivenErrors} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
@@ -222,12 +222,14 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    */
   ngOnChanges(changes: SimpleChanges) {
     this._checkForErrors();
-    if (!this._registered) this._setUpControl();
+
+    const updateValue = isPropertyUpdated(changes, this.viewModel);
+    if (!this._registered) this._setUpControl({skipValueInitialization: updateValue});
     if ('isDisabled' in changes) {
       this._updateDisabled(changes);
     }
 
-    if (isPropertyUpdated(changes, this.viewModel)) {
+    if (updateValue) {
       this._updateValue(this.model);
       this.viewModel = this.model;
     }
@@ -288,9 +290,9 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     this.update.emit(newValue);
   }
 
-  private _setUpControl(): void {
+  private _setUpControl(opts?: {skipValueInitialization?: boolean}): void {
     this._setUpdateStrategy();
-    this._isStandalone() ? this._setUpStandalone() : this.formDirective.addControl(this);
+    this._isStandalone() ? this._setUpStandalone(opts) : this.formDirective.addControl(this, opts);
     this._registered = true;
   }
 
@@ -304,9 +306,9 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     return !this._parent || !!(this.options && this.options.standalone);
   }
 
-  private _setUpStandalone(): void {
-    setUpControl(this.control, this);
-    this.control.updateValueAndValidity({emitEvent: false});
+  private _setUpStandalone(opts?: {skipValueInitialization?: boolean}): void {
+    setUpControl(this.control, this, opts);
+    if (!opts?.skipValueInitialization) this.control.updateValueAndValidity({emitEvent: false});
   }
 
   private _checkForErrors(): void {

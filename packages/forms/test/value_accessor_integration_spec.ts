@@ -1450,6 +1450,9 @@ export class NgModelCustomComp implements ControlValueAccessor {
   changeFn!: (value: any) => void;
 
   writeValue(value: any) {
+    if (typeof value !== 'string') {
+      throw new Error(`Typeof value must be string! type=${typeof value}, value=${value}`);
+    }
     this.model = value;
   }
 

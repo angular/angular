@@ -11,19 +11,9 @@ import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, ValidationErrors, Validator, Validators} from '@angular/forms';
 import {composeValidators, selectValueAccessor} from '@angular/forms/src/directives/shared';
-import {SpyNgControl, SpyValueAccessor} from './spies';
+
+import {createSpyControlValueAccessor, SpyNgControl} from './spies';
 import {asyncValidator} from './util';
-
-class DummyControlValueAccessor implements ControlValueAccessor {
-  writtenValue: any;
-
-  registerOnChange(fn: any) {}
-  registerOnTouched(fn: any) {}
-
-  writeValue(obj: any): void {
-    this.writtenValue = obj;
-  }
-}
 
 class CustomValidatorDirective implements Validator {
   validate(c: FormControl): ValidationErrors {
@@ -89,7 +79,7 @@ class CustomValidatorDirective implements Validator {
         });
 
         it('should return custom accessor when provided', () => {
-          const customAccessor: ControlValueAccessor = new SpyValueAccessor() as any;
+          const customAccessor: ControlValueAccessor = createSpyControlValueAccessor();
           const checkboxAccessor = new CheckboxControlValueAccessor(null!, null!);
           expect(selectValueAccessor(dir, <any>[
             defaultAccessor, customAccessor, checkboxAccessor
@@ -97,7 +87,7 @@ class CustomValidatorDirective implements Validator {
         });
 
         it('should return custom accessor when provided with select multiple', () => {
-          const customAccessor: ControlValueAccessor = new SpyValueAccessor() as any;
+          const customAccessor: ControlValueAccessor = createSpyControlValueAccessor();
           const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null!, null!);
           expect(selectValueAccessor(dir, <any>[
             defaultAccessor, customAccessor, selectMultipleAccessor
@@ -105,7 +95,7 @@ class CustomValidatorDirective implements Validator {
         });
 
         it('should throw when more than one custom accessor is provided', () => {
-          const customAccessor: ControlValueAccessor = <any>new SpyValueAccessor();
+          const customAccessor: ControlValueAccessor = createSpyControlValueAccessor();
           expect(() => selectValueAccessor(dir, [customAccessor, customAccessor])).toThrowError();
         });
       });
@@ -140,10 +130,10 @@ class CustomValidatorDirective implements Validator {
         });
         form.form = formModel;
 
+        const spyAccessor = createSpyControlValueAccessor();
         loginControlDir = new FormControlName(
-            form, [Validators.required], [asyncValidator('expected')], [defaultAccessor], null);
+            form, [Validators.required], [asyncValidator('expected')], [spyAccessor], null);
         loginControlDir.name = 'login';
-        loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
 
       it('should reexport control properties', () => {
@@ -216,12 +206,13 @@ class CustomValidatorDirective implements Validator {
              expect(formModel.hasError('async', ['login'])).toBe(true);
            }));
 
-        it('should write value to the DOM', () => {
+        it('should write value to the DOM exactly once', () => {
           (<FormControl>formModel.get(['login'])).setValue('initValue');
 
           form.addControl(loginControlDir);
 
-          expect((<any>loginControlDir.valueAccessor).writtenValue).toEqual('initValue');
+          const writeValueSpy = loginControlDir.valueAccessor!.writeValue as jasmine.Spy;
+          expect(writeValueSpy.calls.allArgs()).toEqual([['initValue']]);
         });
 
         it('should add the directive to the list of directives included in the form', () => {
@@ -275,14 +266,18 @@ class CustomValidatorDirective implements Validator {
       });
 
       describe('ngOnChanges', () => {
-        it('should update dom values of all the directives', () => {
+        it('should update dom values of all directives', () => {
+          const writeValueSpy = loginControlDir.valueAccessor!.writeValue as jasmine.Spy;
+
+          expect(writeValueSpy.calls.count()).toBe(0);
           form.addControl(loginControlDir);
+          expect(writeValueSpy.calls.count()).toBe(1);
 
           (<FormControl>formModel.get(['login'])).setValue('new value');
-
           form.ngOnChanges({});
 
-          expect((<any>loginControlDir.valueAccessor).writtenValue).toEqual('new value');
+          expect(writeValueSpy.calls.count()).toBe(2);
+          expect(writeValueSpy.calls.argsFor(1)).toEqual(['new value']);
         });
 
         it('should set up a sync validator', () => {
@@ -319,9 +314,9 @@ class CustomValidatorDirective implements Validator {
         personControlGroupDir = new NgModelGroup(form, [], []);
         personControlGroupDir.name = 'person';
 
-        loginControlDir = new NgModel(personControlGroupDir, null!, null!, [defaultAccessor]);
+        const spyAccessor = createSpyControlValueAccessor();
+        loginControlDir = new NgModel(personControlGroupDir, null!, null!, [spyAccessor]);
         loginControlDir.name = 'login';
-        loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
 
       it('should reexport control properties', () => {
@@ -500,8 +495,8 @@ class CustomValidatorDirective implements Validator {
       };
 
       beforeEach(() => {
-        controlDir = new FormControlDirective([Validators.required], [], [defaultAccessor], null);
-        controlDir.valueAccessor = new DummyControlValueAccessor();
+        const spyAccessor = createSpyControlValueAccessor();
+        controlDir = new FormControlDirective([Validators.required], [], [spyAccessor], null);
 
         control = new FormControl(null);
         controlDir.form = control;
@@ -541,11 +536,14 @@ class CustomValidatorDirective implements Validator {
     describe('NgModel', () => {
       let ngModel: NgModel;
       let control: FormControl;
+      let validatorSpy: jasmine.Spy;
 
       beforeEach(() => {
+        const spyAccessor = createSpyControlValueAccessor();
+        validatorSpy = jasmine.createSpy('validatorSpy');
         ngModel = new NgModel(
-            null!, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
-        ngModel.valueAccessor = new DummyControlValueAccessor();
+            null!, [Validators.required, validatorSpy], [asyncValidator('expected')],
+            [spyAccessor]);
         control = ngModel.control;
       });
 
@@ -594,7 +592,8 @@ class CustomValidatorDirective implements Validator {
 
       it('should set up validator', fakeAsync(() => {
            // this will add the required validator and recalculate the validity
-           ngModel.ngOnChanges({});
+           ngModel.model = null;
+           ngModel.ngOnChanges({model: new SimpleChange(undefined, null, true)});
            tick();
 
            expect(ngModel.control.errors).toEqual({'required': true});
@@ -641,6 +640,48 @@ class CustomValidatorDirective implements Validator {
            ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'anything else', false)});
            tick();
            expect(ngModel.control.disabled).toEqual(true);
+         }));
+
+      it('should register changes, call writeValue, validate if standalone', fakeAsync(() => {
+           const writeValueSpy = ngModel.valueAccessor!.writeValue as jasmine.Spy;
+
+           // The first change is to the model directly to set up the form control
+           ngModel.model = 3;
+           ngModel.ngOnChanges({model: new SimpleChange(undefined, 3, true)});
+           tick();
+           expect(writeValueSpy.calls.allArgs()).toEqual([[3]]);
+           expect(validatorSpy.calls.count()).toEqual(1);
+
+           control.setValue('val');
+           tick();
+           expect(writeValueSpy.calls.allArgs()).toEqual([[3], ['val']]);
+           expect(validatorSpy.calls.count()).toEqual(2);
+         }));
+
+      it('should register changes, call writeValue, validate if not standalone', fakeAsync(() => {
+           const spyAccessor = createSpyControlValueAccessor();
+           const parent = new NgForm([], []);
+           const newNgModel = new NgModel(
+               parent,
+               [Validators.required, validatorSpy],
+               [asyncValidator('expected')],
+               [spyAccessor],
+           );
+           newNgModel.name = 'newNgModel';
+           const newControl = newNgModel.control;
+           const writeValueSpy = newNgModel.valueAccessor!.writeValue as jasmine.Spy;
+
+           // The first change is to the model directly to set up the form control
+           newNgModel.model = 3;
+           newNgModel.ngOnChanges({model: new SimpleChange(undefined, 3, true)});
+           tick();
+           expect(writeValueSpy.calls.allArgs()).toEqual([[3]]);
+           expect(validatorSpy.calls.count()).toEqual(1);
+
+           newControl.setValue('val');
+           tick();
+           expect(writeValueSpy.calls.allArgs()).toEqual([[3], ['val']]);
+           expect(validatorSpy.calls.count()).toEqual(2);
          }));
     });
 

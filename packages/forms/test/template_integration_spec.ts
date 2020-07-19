@@ -12,7 +12,8 @@ import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular
 import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm, NgModel} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
-import {merge} from 'rxjs';
+import {merge, Subject} from 'rxjs';
+import {map, take} from 'rxjs/operators';
 
 import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
 
@@ -193,18 +194,31 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
       it('should set status classes with ngModel and async validators', fakeAsync(() => {
            const fixture = initTest(NgModelAsyncValidation, NgAsyncValidator);
            fixture.whenStable().then(() => {
-             fixture.detectChanges();
+             fixture.detectChanges();  // detect (initial) value change
+             tick();                   // wait for asynchronous validator on initial (empty) value
+             fixture.detectChanges();  // detect status change
 
              const input = fixture.debugElement.query(By.css('input')).nativeElement;
              expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
+             NgAsyncValidator.resolve.next();
+             tick();
+             fixture.detectChanges();
+
+             expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+
              dispatchEvent(input, 'blur');
              fixture.detectChanges();
 
-             expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
+             expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
              input.value = 'updatedValue';
              dispatchEvent(input, 'input');
+             fixture.detectChanges();
+
+             expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
+
+             NgAsyncValidator.resolve.next();
              tick();
              fixture.detectChanges();
 
@@ -1837,8 +1851,14 @@ class NgModelEmailValidator {
       [{provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => NgAsyncValidator), multi: true}]
 })
 class NgAsyncValidator implements AsyncValidator {
+  static resolve = new Subject<void>();
+
   validate(c: AbstractControl) {
-    return Promise.resolve(null);
+    // returns an Observable that resolves when `NgAsyncValidator.resolve` emits a new value
+    return NgAsyncValidator.resolve.pipe(
+        take(1),
+        map(_ => c.value !== 'updatedValue' ? {invalidValue: true} : null),
+    );
   }
 }
 
