@@ -197,7 +197,7 @@ When the body is required it must be at least 20 characters long.
 
 The `footer` is optional.
 
-Any line of the commit message cannot be longer than 100 characters.
+Any line of the commit message cannot be longer than 120 characters.
 
 
 #### <a href="commit-header"></a>Commit Message Header
@@ -302,12 +302,13 @@ You can include a comparison of the previous behavior with the new behavior in o
 The footer can contain information about breaking changes and is also the place to reference GitHub issues, Jira tickets, and other PRs that this commit closes or is related to.
 
 ```
+Fixes #<issue number>
+
 BREAKING CHANGE: <breaking change summary>
 <BLANK LINE>
 <breaking change description + migration instructions>
 <BLANK LINE>
 <BLANK LINE>
-Fixes #<issue number>
 ```
 
 Breaking Change section should start with the phrase "BREAKING CHANGE: " followed by a summary of the breaking change, a blank line, and a detailed description of the breaking change that also includes migration instructions.
