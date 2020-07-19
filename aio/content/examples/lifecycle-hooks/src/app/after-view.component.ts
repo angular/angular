@@ -32,6 +32,9 @@ export class ChildViewComponent {
 })
 // #docregion hooks
 export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
+  // #enddocregion hooks
+  comment = '';
+  // #docregion hooks
   private prevHero = '';
 
   // Query for a VIEW child of type `ChildViewComponent`
@@ -60,8 +63,6 @@ export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
     }
   }
   // #enddocregion hooks
-
-  comment = '';
 
   // #docregion do-something
   // This surrogate for real business logic sets the `comment`
