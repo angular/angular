@@ -21,7 +21,7 @@ describe('HeroDetailComponent - no TestBed', () => {
     hds.getHero.and.returnValue(asyncData(expectedHero));
     hds.saveHero.and.returnValue(asyncData(expectedHero));
 
-    comp = new HeroDetailComponent(hds, <any> activatedRoute, router);
+    comp = new HeroDetailComponent(hds, activatedRoute as any, router);
     comp.ngOnInit();
 
     // OnInit calls HDS.getHero; wait for it to get the fake hero

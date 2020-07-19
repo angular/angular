@@ -358,7 +358,7 @@ class Page {
 
   constructor(fixture: ComponentFixture<HeroDetailComponent>) {
     // get the navigate spy from the injected router spy object
-    const routerSpy = <any> fixture.debugElement.injector.get(Router);
+    const routerSpy = someFixture.debugElement.injector.get(Router) as any;
     this.navigateSpy = routerSpy.navigate;
 
     // spy on component's `gotoList()` method

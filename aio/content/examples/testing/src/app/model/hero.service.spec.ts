@@ -17,7 +17,7 @@ describe ('HeroesService (with spies)', () => {
   beforeEach(() => {
     // TODO: spy on other methods too
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    heroService = new HeroService(<any> httpClientSpy);
+    heroService = new HeroService(httpClientSpy as any);
   });
 
   it('should return expected heroes (HttpClient called once)', () => {
