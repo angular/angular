@@ -11,10 +11,8 @@ import {resolve} from 'path';
 import {getRepoBaseDir} from '../utils/config';
 import {debug, info} from '../utils/console';
 import {allFiles} from '../utils/repo-files';
-
-import {PullApproveGroup} from './group';
 import {logGroup, logHeader} from './logging';
-import {parsePullApproveYaml} from './parse-yaml';
+import {getGroupsFromYaml} from './parse-yaml';
 
 export function verify() {
   /** Full path to PullApprove config file */
@@ -23,12 +21,8 @@ export function verify() {
   const REPO_FILES = allFiles();
   /** The pull approve config file. */
   const pullApproveYamlRaw = readFileSync(PULL_APPROVE_YAML_PATH, 'utf8');
-  /** JSON representation of the pullapprove yaml file. */
-  const pullApprove = parsePullApproveYaml(pullApproveYamlRaw);
   /** All of the groups defined in the pullapprove yaml. */
-  const groups = Object.entries(pullApprove.groups).map(([groupName, group]) => {
-    return new PullApproveGroup(groupName, group);
-  });
+  const groups = getGroupsFromYaml(pullApproveYamlRaw);
   /**
    * PullApprove groups without conditions. These are skipped in the verification
    * as those would always be active and cause zero unmatched files.

@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {error} from '../utils/console';
+import {error, warn} from '../utils/console';
 import {convertConditionToFunction} from './condition_evaluator';
 import {PullApproveGroupConfig} from './parse-yaml';
+import {PullApproveGroupStateDependencyError} from './pullapprove_arrays';
 
 /** A condition for a group. */
 interface GroupCondition {
   expression: string;
-  checkFn: (files: string[]) => boolean;
+  checkFn: (files: string[], groups: PullApproveGroup[]) => boolean;
   matchedFiles: Set<string>;
 }
 
@@ -39,7 +40,9 @@ export class PullApproveGroup {
   /** List of conditions for the group. */
   conditions: GroupCondition[] = [];
 
-  constructor(public groupName: string, config: PullApproveGroupConfig) {
+  constructor(
+      public groupName: string, config: PullApproveGroupConfig,
+      readonly precedingGroups: PullApproveGroup[] = []) {
     this._captureConditions(config);
   }
 
@@ -78,18 +81,30 @@ export class PullApproveGroup {
   testFile(filePath: string): boolean {
     return this.conditions.every(({matchedFiles, checkFn, expression}) => {
       try {
-        const matchesFile = checkFn([filePath]);
+        const matchesFile = checkFn([filePath], this.precedingGroups);
         if (matchesFile) {
           matchedFiles.add(filePath);
         }
         return matchesFile;
       } catch (e) {
-        const errMessage = `Condition could not be evaluated: \n\n` +
-            `From the [${this.groupName}] group:\n` +
-            ` - ${expression}` +
-            `\n\n${e.message} ${e.stack}\n\n`;
-        error(errMessage);
-        process.exit(1);
+        // In the case of a condition that depends on the state of groups we want to just
+        // warn that the verification can't accurately evaluate the condition and then
+        // continue processing. Other types of errors fail the verification, as conditions
+        // should otherwise be able to execute without throwing.
+        if (e instanceof PullApproveGroupStateDependencyError) {
+          const errMessage = `Condition could not be evaluated: \n` +
+              `${e.message}\n` +
+              `From the [${this.groupName}] group:\n` +
+              ` - ${expression}`;
+          warn(errMessage);
+        } else {
+          const errMessage = `Condition could not be evaluated: \n\n` +
+              `From the [${this.groupName}] group:\n` +
+              ` - ${expression}` +
+              `\n\n${e.message} ${e.stack}\n\n`;
+          error(errMessage);
+          process.exit(1);
+        }
       }
     });
   }

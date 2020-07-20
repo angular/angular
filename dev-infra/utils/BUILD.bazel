@@ -16,6 +16,7 @@ ts_library(
         "@npm//@types/node",
         "@npm//@types/shelljs",
         "@npm//chalk",
+        "@npm//inquirer",
         "@npm//shelljs",
         "@npm//tslib",
         "@npm//typed-graphqlify",
