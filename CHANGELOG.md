@@ -100,7 +100,6 @@
 | feature |  **snack-bar:** add MDC-based snack-bar ([#19738](https://github.com/angular/components/issues/19738)) ([a63bfc5](https://github.com/angular/components/commit/a63bfc5)) |
 | feature |  **snack-bar:** add MDC-based snack-bar ([#19800](https://github.com/angular/components/issues/19800)) ([7dcd2dd](https://github.com/angular/components/commit/7dcd2dd)) |
 
-
 # 10.0.0 "ice-dice" (2020-06-24)
 
 ## Highlights
