@@ -136,7 +136,6 @@ groups:
          - kara                    # Kara Erickson
          - kyliau                  # Keen Yee Liau
          - manughub                # Manu Murthy
-         - matsko                  # Matias Niemela
          - mgechev                 # Minko Gechev
          - mhevery                 # Miško Hevery
          - michaelprentice         # Michael Prentice
@@ -203,7 +202,9 @@ groups:
           ])
     reviewers:
       users:
-        - matsko
+        - crisbeto
+        - IgorMinar
+        - jelbourn
 
 
   # =========================================================
