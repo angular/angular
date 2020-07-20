@@ -756,8 +756,10 @@ function createDynamicNodeAtIndex(
     tView: TView, lView: LView, index: number, type: TNodeType, native: RElement|RText|null,
     name: string|null): TElementNode|TIcuContainerNode {
   const previousOrParentTNode = getPreviousOrParentTNode();
-  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
-  lView[index + HEADER_OFFSET] = native;
+  const nodeIndex = index + HEADER_OFFSET;
+  ngDevMode && assertDataInRange(lView, nodeIndex);
+  lView[nodeIndex] !== null && removeNode(tView, lView, index, false);
+  lView[nodeIndex] = native;
   // FIXME(misko): Why does this create A TNode??? I would not expect this to be here.
   const tNode = getOrCreateTNode(tView, lView[T_HOST], index, type as any, name, null);
 

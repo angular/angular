@@ -1435,6 +1435,45 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       // checking the second ICU case
       expect(fixture.nativeElement.textContent.trim()).toBe('deux articles');
     });
+
+    it('should handle select expressions without an `other` parameter inside a template', () => {
+      const fixture = initWithTemplate(AppComp, `
+        <p *ngFor="let item of items">{item.value, select, 0 {A} 1 {B} 2 {C}}</p>
+      `);
+      fixture.componentInstance.items = [{value: 0}, {value: 1}, {value: 1337}];
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('AB');
+
+      fixture.componentInstance.items[0].value = 2;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('CB');
+    });
+
+    it('should render an element whose case did not match initially', () => {
+      const fixture = initWithTemplate(AppComp, `
+        <p *ngFor="let item of items">{item.value, select, 0 {A} 1 {B} 2 {C}}</p>
+      `);
+      fixture.componentInstance.items = [{value: 0}, {value: 1}, {value: 1337}];
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('AB');
+
+      fixture.componentInstance.items[2].value = 2;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('ABC');
+    });
+
+    it('should remove an element whose case matched initially, but does not anymore', () => {
+      const fixture = initWithTemplate(AppComp, `
+        <p *ngFor="let item of items">{item.value, select, 0 {A} 1 {B} 2 {C}}</p>
+      `);
+      fixture.componentInstance.items = [{value: 0}, {value: 1}];
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('AB');
+
+      fixture.componentInstance.items[0].value = 1337;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('B');
+    });
   });
 
   describe('should support attributes', () => {
@@ -2589,7 +2628,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 });
 
-function initWithTemplate(compType: Type<any>, template: string) {
+function initWithTemplate<T>(compType: Type<T>, template: string) {
   TestBed.overrideComponent(compType, {set: {template}});
   const fixture = TestBed.createComponent(compType);
   fixture.detectChanges();
@@ -2601,6 +2640,8 @@ class AppComp {
   name = `Angular`;
   visible = true;
   count = 0;
+  items: any[] = [];
+  obj: any;
 }
 
 @Component({
