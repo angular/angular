@@ -205,8 +205,8 @@ groups:
           ])
     reviewers:
       users:
-        - IgorMinar
         - crisbeto
+        - IgorMinar
         - jelbourn
 
 
