@@ -1,14 +1,14 @@
 # The RxJS library
 
-Reactive programming is an asynchronous programming paradigm concerned with data streams and the propagation of change ([Wikipedia](https://en.wikipedia.org/wiki/Reactive_programming)). RxJS (Reactive Extensions for JavaScript) is a library for reactive programming using observables that makes it easier to compose asynchronous or callback-based code. See ([RxJS Docs](https://rxjs.dev/guide/overview)).
+Angular makes use of and extends the [RxJS (Reactive Extensions for JavaScript)](https://rxjs.dev/guide/overview "RxJS documentation") library for [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming "Wikipedia"). RxJS observables make it easier to compose asynchronous or callback-based code.
 
-RxJS provides an implementation of the `Observable` type, which is needed until the type becomes part of the language and until browsers support it. The library also provides utility functions for creating and working with observables. These utility functions can be used for:
+RxJS provides an implementation of the `Observable` type. The library also provides utility functions for creating and working with observables. You can use these utility functions to accomplish the following tasks:
 
-* Converting existing code for async operations into observables
-* Iterating through the values in a stream
-* Mapping values to different types
-* Filtering streams
-* Composing multiple streams
+* Convert existing code for async operations into observables
+* Iterate through the values in a stream
+* Map values to different types
+* Filter streams
+* Compose multiple streams
 
 ## Observable creation functions
 
@@ -27,11 +27,17 @@ RxJS offers a number of functions that can be used to create new observables. Th
 
 Operators are functions that build on the observables foundation to enable sophisticated manipulation of collections. For example, RxJS defines operators such as `map()`, `filter()`, `concat()`, and `flatMap()`.
 
-Operators take configuration options, and they return a function that takes a source observable. When executing this returned function, the operator observes the source observable’s emitted values, transforms them, and returns a new observable of those transformed values. Here is a simple example:
+Operators take configuration options, and they return a function that takes a source observable. When executing this returned function, the operator observes the source observable’s emitted values, transforms them, and returns a new observable of those transformed values. Here is a basic example:
 
 <code-example path="rx-library/src/operators.ts" header="Map operator"></code-example>
 
 You can use _pipes_ to link operators together. Pipes let you combine multiple functions into a single function. The `pipe()` function takes as its arguments the functions you want to combine, and returns a new function that, when executed, runs the composed functions in sequence.
+
+<div class="alert is-helpful">
+
+  Note that, for Angular apps, combining operators with pipes is preferred to _chaining_, which is used in many RxJS examples.
+
+</div>
 
 A set of operators applied to an observable is a recipe&mdash;that is, a set of instructions for producing the values you’re interested in. By itself, the recipe doesn’t do anything. You need to call `subscribe()` to produce a result through the recipe.
 
@@ -47,9 +53,6 @@ The `pipe()` function is also a method on the RxJS `Observable`, so you use this
 
 RxJS provides many operators, but only a handful are used frequently. For a list of operators and usage samples, visit the [RxJS API Documentation](https://rxjs.dev/api).
 
-<div class="alert is-helpful">
-  Note that, for Angular apps, we prefer combining operators with pipes, rather than chaining. Chaining is used in many RxJS examples.
-</div>
 
 | Area | Operators |
 | :------------| :----------|
@@ -59,7 +62,6 @@ RxJS provides many operators, but only a handful are used frequently. For a list
 | Transformation | `bufferTime`, `concatMap`, `map`, `mergeMap`, `scan`, `switchMap` |
 | Utility | `tap` |
 | Multicasting | `share` |
-
 
 
 ## Naming conventions for observables
