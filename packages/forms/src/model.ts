@@ -69,17 +69,24 @@ function _find(control: AbstractControl, path: Array<string|number>|string, deli
   return controlToFind;
 }
 
+/**
+ * Gets validators from either an options object or given validators.
+ */
 function pickValidators(validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|
                         null): ValidatorFn|ValidatorFn[]|null {
   return (isOptionsObj(validatorOrOpts) ? validatorOrOpts.validators : validatorOrOpts) || null;
 }
 
-function coerceToValidator(validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|
-                           null): ValidatorFn|null {
-  const validator = pickValidators(validatorOrOpts);
+/**
+ * Creates validator function by combining provided validators.
+ */
+function coerceToValidator(validator: ValidatorFn|ValidatorFn[]|null): ValidatorFn|null {
   return Array.isArray(validator) ? composeValidators(validator) : validator || null;
 }
 
+/**
+ * Gets async validators from either an options object or given validators.
+ */
 function pickAsyncValidators(
     asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null,
     validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null): AsyncValidatorFn|
@@ -87,13 +94,13 @@ function pickAsyncValidators(
   return (isOptionsObj(validatorOrOpts) ? validatorOrOpts.asyncValidators : asyncValidator) || null;
 }
 
-function coerceToAsyncValidator(
-    asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null,
-    validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null): AsyncValidatorFn|
-    null {
-  const origAsyncValidator = pickAsyncValidators(asyncValidator, validatorOrOpts);
-  return Array.isArray(origAsyncValidator) ? composeAsyncValidators(origAsyncValidator) :
-                                             origAsyncValidator || null;
+/**
+ * Creates async validator function by combining provided async validators.
+ */
+function coerceToAsyncValidator(asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|
+                                null): AsyncValidatorFn|null {
+  return Array.isArray(asyncValidator) ? composeAsyncValidators(asyncValidator) :
+                                         asyncValidator || null;
 }
 
 export type FormHooks = 'change'|'blur'|'submit';
@@ -176,7 +183,7 @@ export abstract class AbstractControl {
    *
    * @internal
    */
-  private _coercedValidator: ValidatorFn|null;
+  private _composedValidatorFn: ValidatorFn|null;
 
   /**
    * Contains the result of merging asynchronous validators into a single validator function
@@ -184,7 +191,7 @@ export abstract class AbstractControl {
    *
    * @internal
    */
-  private _coercedAsyncValidator: AsyncValidatorFn|null;
+  private _composedAsyncValidatorFn: AsyncValidatorFn|null;
 
   /**
    * Synchronous validators as they were provided:
@@ -233,28 +240,28 @@ export abstract class AbstractControl {
       asyncValidators: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     this._rawValidators = validators;
     this._rawAsyncValidators = asyncValidators;
-    this._coercedValidator = coerceToValidator(this._rawValidators);
-    this._coercedAsyncValidator = coerceToAsyncValidator(this._rawAsyncValidators);
+    this._composedValidatorFn = coerceToValidator(this._rawValidators);
+    this._composedAsyncValidatorFn = coerceToAsyncValidator(this._rawAsyncValidators);
   }
 
   /**
    * The function that is used to determine the validity of this control synchronously.
    */
   get validator(): ValidatorFn|null {
-    return this._coercedValidator;
+    return this._composedValidatorFn;
   }
   set validator(validatorFn: ValidatorFn|null) {
-    this._rawValidators = this._coercedValidator = validatorFn;
+    this._rawValidators = this._composedValidatorFn = validatorFn;
   }
 
   /**
    * The function that is used to determine the validity of this control asynchronously.
    */
   get asyncValidator(): AsyncValidatorFn|null {
-    return this._coercedAsyncValidator;
+    return this._composedAsyncValidatorFn;
   }
   set asyncValidator(asyncValidatorFn: AsyncValidatorFn|null) {
-    this._rawAsyncValidators = this._coercedAsyncValidator = asyncValidatorFn;
+    this._rawAsyncValidators = this._composedAsyncValidatorFn = asyncValidatorFn;
   }
 
   /**
@@ -426,7 +433,7 @@ export abstract class AbstractControl {
    */
   setValidators(newValidator: ValidatorFn|ValidatorFn[]|null): void {
     this._rawValidators = newValidator;
-    this._coercedValidator = coerceToValidator(newValidator);
+    this._composedValidatorFn = coerceToValidator(newValidator);
   }
 
   /**
@@ -439,7 +446,7 @@ export abstract class AbstractControl {
    */
   setAsyncValidators(newValidator: AsyncValidatorFn|AsyncValidatorFn[]|null): void {
     this._rawAsyncValidators = newValidator;
-    this._coercedAsyncValidator = coerceToAsyncValidator(newValidator);
+    this._composedAsyncValidatorFn = coerceToAsyncValidator(newValidator);
   }
 
   /**
