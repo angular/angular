@@ -557,6 +557,7 @@ Those developers may still use HTML5 URLs by taking the following two steps:
 1. Provide the router with an appropriate `APP_BASE_HREF` value.
 1. Use root URLs for all web resources: CSS, images, scripts, and template HTML files.
 
+A URL can have the following parts:
 ```
 foo://example.com:8042/over/there?name=ferret#nose
 \_/   \______________/\_________/ \_________/ \__/
@@ -565,8 +566,9 @@ scheme    authority      path        query   fragment
 ```
 
 * The `<base href>` path should end with a "/", as browsers ignore characters in the path that follow the right-most "/".
-* The query part in the `<base href>` is only used if the path in the page URI is empty and also has not query. This means the query from the base will only be included when using `HashLocationStrategy`.
-* If a URI has an `authority` part, the authority, path, query, and fragment are taken from the URI. In this way, an `APP_BASE_HREF` with an authority can override the `<base href>` value.
+* If the `<base href>` path includes a query part, that part is only used if the page-URL path is empty and has no query.
+This means that a query in the base is only included when using `HashLocationStrategy`.
+* If a URL has an `authority` part, the authority, path, query, and fragment are taken from the URL. In this way, an `APP_BASE_HREF` with an authority can override the `<base href>` value.
 * A fragment in the `<base href>` is _never_ persisted.
 
 For more complete information on how `<base href>` is used to construct target URIs, see the [RFC](https://tools.ietf.org/html/rfc3986#section-5.2.2) section on transforming references.
