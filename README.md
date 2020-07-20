@@ -33,19 +33,16 @@ If you'd like to contribute, please follow our [contributing guidelines][contrib
 our [`help wanted`][help-wanted] label for a list of issues with good opportunities for
 contribution.
 
-## What we're working on now (Q2 2020):
+## What we're working on now (Q3 2020):
 * Trying to get anything done at all during a global pandemic.
-* Hosting and mentoring a large contingent of summer interns.
-* Date-range picker
-* Remaining test harnesses for Angular Material components
+* Visual refresh and updates to http://material.angular.io
+* Hosting summer interns working on cdk-experimental implementations for menu, listbox, & combobox.
+* Remaining test harnesses for Angular Material components.
 * Continuing to create new, API-compatible versions of the Angular Material components backed by
 [MDC Web][] ([see @jelbourn's ng-conf talk](https://youtu.be/4EXQKP-Sihw?t=891)). Much of our effort
-will be dedicated towards rolling out these new versions of the components across Angular apps
+is dedicated towards rolling out these new versions of the components across Angular apps
 inside Google.
-* Add support for density configuration for the new components based on MDC Web.
-* Authoring benchmarks to collect performance metrics for Angular Material components. These
-benchmarks will live inside Google's internal code repository for the time being, but we should
-be able to publish the results.
+* Initial work on virtual-scroll support for cdk/table.
 
 
 ## About the team
