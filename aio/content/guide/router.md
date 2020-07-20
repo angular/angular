@@ -127,6 +127,7 @@ For more information on lazy-loading and pre-loading modules, see the dedicated 
 
 {@a example-config}
 {@a basic-route}
+{@a configuration}
 
 ### Configuring routes
 
@@ -309,6 +310,8 @@ The router automatically adds these classes to the tag when the linked route is 
 
 When you have [nested routes](#nesting-routes "Complex routing structure"), active routes cascade down through each level of the route tree, so parent and child routes can be active at the same time.
 To distinguish between specific linked routes, you can modify the `RouterLinkActive` directive with the `[routerLinkActiveOptions]={ exact: true }` input binding ([see example](api/router/RouterLinkActive#description "API reference")). This reports the linked route as active only when its URL is an exact match to the current URL.
+
+{@a router-events}
 
 ### Router event order
 
