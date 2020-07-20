@@ -62,6 +62,8 @@ What kind of problem is this?
 * `type: feature`
 * `type: performance`
 * `type: refactor`
+* `type: use-case`
+* `type: confusing`
 
 
 ## Caretaker Triage Process (Primary Triage)
@@ -83,8 +85,8 @@ Once the primary triage is done, the ng-bot automatically adds the milestone `ne
 The component owner is responsible for assigning one of the labels from each of these categories to the issues that have the milestone `needsTriage`:
 
 - `type: *`
-- `frequency: *`
-- `severity: *`
+- `frequency: *` (only required for `type: bug/fix`)
+- `severity: *` (only required for `type: bug/fix`)
 
 We've adopted the issue categorization based on [user pain](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html) used by AngularJS. In this system every issue is assigned frequency and severity based on which the total user pain score is calculated.
 
