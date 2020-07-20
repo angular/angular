@@ -46,6 +46,14 @@ $mat-tab-animation-duration: 500ms !default;
     .mdc-tab__ripple::before {
       opacity: map-get($mdc-ripple-dark-ink-opacities, focus);
     }
+
+    // The usual focus indication is color-based so it won't show up in
+    // high contrast mode. Add an outline which is a bit more visible.
+    @include cdk-high-contrast {
+      $outline-width: 2px;
+      outline: dotted $outline-width;
+      outline-offset: -$outline-width; // Not supported on IE, but looks better everywhere else.
+    }
   }
 
   .mat-ripple-element {
