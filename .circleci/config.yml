@@ -143,7 +143,7 @@ var_21: &slack_notify_on_failure
   run:
     name: "Notifying team about job failure"
     when: on_fail
-    command: ./scripts/circleci/notify-slack-job-failure.sh
+    command: node ./scripts/circleci/notify-slack-job-failure.js
 
 # -----------------------------
 # Container version of CircleCI
@@ -582,7 +582,8 @@ jobs:
       - run:
           name: Running size integration tests (failures are reported in Slack only).
           command: |
-            yarn integration-tests:size-test || ./scripts/circleci/notify-slack-job-failure.sh
+            # If the size integration tests fail, report the failure to a dedicated #components-ci-size-tracking Slack channel.
+            yarn integration-tests:size-test || node ./scripts/circleci/notify-slack-job-failure.js components-ci-size-tracking
       - run: yarn integration-tests:view-engine
       - *slack_notify_on_failure
 
