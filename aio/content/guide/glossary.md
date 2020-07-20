@@ -754,7 +754,7 @@ See an example of using a [resolve guard](guide/router-tutorial-toh#resolve-guar
 ## route guard
 
 A method that controls navigation to a requested route in a routing application.
-Guard functions that use this method signature can determine whether a route can be activated or deactivated, and whether a lazy-loaded module can be loaded.
+Guards determine whether a route can be activated or deactivated, and whether a lazy-loaded module can be loaded.
 
 Learn more in the [Routing and Navigation](guide/router#preventing-unauthorized-access "Examples") guide.
 
