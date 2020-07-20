@@ -3,7 +3,7 @@
 In a single-page app, you change what the user sees by showing or hiding portions of the display that correspond to particular components, rather than going out to the server to get a new page.
 As users perform application tasks, they need to move between the different [views](guide/glossary#view "Definition of view") defined by your components.
 
-To handle navigation from one view to another, you use the Angular [Router service](api/router/RouterModule). The Router service enables navigation by interpreting a browser URL as an instruction to change the view. A user can initiate a request for navigation interactively from the UI, or you can navigate programmatically.
+To handle navigation from one view to another, you use the Angular [Router service](api/router/RouterModule "API reference"). The Router service enables navigation by interpreting a browser URL as an instruction to change the view. A user can initiate a request for navigation interactively from the UI, or you can navigate programmatically.
 
 To explore a sample app that demonstrates the router's primary features, see the <live-example></live-example>.
 
@@ -61,14 +61,12 @@ The router resolves the parameter to create a final URL to the component's view 
 
 If a user enters that URL into the browser address bar, the router displays the "Magneta" detail view.
 
-The following example navigates to the detail view for a hero by passing a _link parameters array_ to the `router.navigate()` method.
+The following example navigates to the detail view for a hero by passing a [link parameters array](#link-parameters-array "Learn more about link parameters arrays and optional parameters") to the `router.navigate()` method.
 
    <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array"></code-example>
 
 The link parameters array here contains two items: the routing _path_ and the required _route parameter_ that specifies the `id` of the selected hero.
 The router composes the destination URL from the array: `localhost:4200/hero/15`.
-
-[See more about link parameters arrays and optional parameters](#link-parameters-array).
 
 {@a basics}
 
@@ -111,7 +109,7 @@ A dedicated routing module does not declare components, but serves to separate r
 
 </div>
 
-As your application grows more complex, you can generate additional feature modules with the `--routing` flag, and register them with the root module. When you do so, each additional routing module configures a parent of child routes in a [route hierarchy](#route-trees "Read more about nested routes").
+As your application grows more complex, you can generate additional feature modules with the `--routing` flag, and register them with the root module. When you do so, each additional routing module configures a parent of child routes in a [route hierarchy](#route-trees "Learn more about nested routes").
 
 {@a lazy-loading}
 
@@ -167,7 +165,7 @@ The order of routes in the configuration is particularly important. The router s
 List routes with a static path first, followed by an empty path route, which matches the default route.
 The *wildcard* route comes last because it matches every URL and the router selects it only if no other routes match first.
 
-You can [handle navigation errors](#404-page-how-to) by defining a "path not found" view, and avoid navigation errors caused by terminology changes by [defining route redirects](#redirects).
+You can [handle navigation errors](#404-page-how-to "Details below") by defining a "path not found" view, and avoid navigation errors caused by terminology changes by [defining route redirects](#redirects "Details below").
 
 See more examples of routing techniques in the [Route](api/router/Route#usage-notes) reference documentation.
 
@@ -227,7 +225,7 @@ Here, `path: ''` means to use the initial relative URL (the empty string `''`).
 
 ### Handling unfound views
 
-To display the equivalent of a "404 Not Found" page, set up a [wildcard route](#wildcard) with the `component` property set to the component you'd like to use for your 404 page as follows.
+To display the equivalent of a "404 Not Found" page, set up a [wildcard route](#wildcard "Details above") with the `component` property set to the component you'd like to use for your 404 page as follows.
 
 <code-example path="router/src/app/app-routing.module.8.ts" region="routes-with-wildcard" header="AppRoutingModule (excerpt)">
 
@@ -278,9 +276,9 @@ This code assigns the anchor tag to the element that will initiate navigation, a
 The `RouterLink` directives on the anchor tags give the router control over those elements.
 The navigation paths are fixed, so you can assign a path string to the `routerLink` (a "one-time" binding).
 
-For a more dynamic navigation path, you can bind the router link to a template expression that returns a [link parameters array](guide/router#link-parameters-array). This array contains an object which associates a route path string with one or more required, optional, or query parameters. The router service resolves that array into a complete URL.
+For a more dynamic navigation path, you can bind the router link to a template expression that returns a [link parameters array](guide/router#link-parameters-array "Learn more about link parameters arrays"). This array contains an object which associates a route path string with one or more required, optional, or query parameters. The router service resolves that array into a complete URL.
 
-To initiate navigation programmatically, pass a router URL string or link parameters array to the [Router.navigate() method](api/router/Router#navigate).
+To initiate navigation programmatically, pass a router URL string or link parameters array to the [Router.navigate() method](api/router/Router#navigate "API reference").
 
 {@a basics-router-state}
 {@a activated-route}
@@ -302,7 +300,7 @@ You can style views according to the navigation state. For example, you might wa
 
 You can use the [RouterLinkActive](api/router/RouterLinkActive "API reference") directive on an element to toggle CSS classes for active `RouterLink` bindings based on the current `RouterState`.
 
-On each anchor tag, you see a [property binding](guide/template-syntax#property-binding) to the `RouterLinkActive` directive that looks like `routerLinkActive="..."`, as in the following example.
+On each anchor tag, you see a [property binding](guide/template-syntax#property-binding "Learn more about property binding") to the `RouterLinkActive` directive that looks like `routerLinkActive="..."`, as in the following example.
 
 <code-example header="src/app/app.component.html" path="router-tutorial/src/app/app.component.html" region="routeractivelink"></code-example>
 
@@ -395,7 +393,7 @@ To get parameter information from an active or previously active route, use the 
 ### Retrieving parameters from parameter maps
 
 When you activate a route, the router stores the parameters that were passed to in that activation operation in a *parameter map*. Both route parameters and query parameters are stored in a `ParamMap` object.
-The [ParamMap interface](api/router/ParamMap "ParamMap API reference") is based on the [URLSearchParams interface](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams).
+The [ParamMap interface](api/router/ParamMap "ParamMap API reference") is based on the [URLSearchParams interface](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams "Web API standards").
 
 The [ActivatedRoute](api/router/ActivatedRoute "ActivatedRoute API reference") methods give you access to both the route parameters (`paramMap`) and query parameters (`queryParamMap`) with which the route was activated.
 A parameter map provides methods to handle parameter access.
@@ -446,10 +444,10 @@ The snapshot gives you direct access the initial parameters, without subscribing
 
 As your application grows more complex, you can create routes that are relative to a component other than your root component.
 In addition to the `<router-outlet>` in the root application's template, you can place `<router-outlet>` elements in the templates of other components, resulting in a nested structure of parent and child routes.
-You can [use relative paths to traverse the route tree](#using-relative-paths).
+You can [use relative paths to traverse the route tree](#using-relative-paths "Details below").
 
 The Angular router provides direct access to route path strings.
-You can [access and manipulate query parameters and URL fragments](#access-params), and [set required and optional route parameters](#link-parameters-array) for routing hierarchies of any depth.
+You can [access and manipulate query parameters and URL fragments](#access-params "Details below"), and [set required and optional route parameters](#link-parameters-array "Details below") for routing hierarchies of any depth.
 
 
 ### Create a navigation tree with nested routes
@@ -793,7 +791,7 @@ The order of execution is: A(guards), A child(guards), A(resolvers), B(guards), 
 
 <div class="alert is-helpful">
 
-Consider using [componentless routes](#nesting-routes) to more easily control access to child routes.  A componentless route is a `Route` object that has a base path but no component; it serves as a container for a set of related child routes.
+Consider using [componentless routes](#nesting-routes "Constructing route trees") to more easily control access to child routes.  A componentless route is a `Route` object that has a base path but no component; it serves as a container for a set of related child routes.
 
 </div>
 
