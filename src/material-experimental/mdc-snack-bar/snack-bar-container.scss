@@ -1,5 +1,6 @@
 @import '@material/snackbar/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
+@import '../../cdk/a11y/a11y';
 
 @include mdc-snackbar-core-styles($query: $mat-base-styles-query);
 
@@ -8,6 +9,10 @@
 // of positions, so we'll defer logic there.
 .mat-mdc-snack-bar-container {
   position: static;
+
+  @include cdk-high-contrast(active, off) {
+    border: solid 1px;
+  }
 }
 
 // These elements need to have full width using flex layout.
