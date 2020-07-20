@@ -1,6 +1,6 @@
 # The RxJS library
 
-Angular makes use of and extends the [RxJS (Reactive Extensions for JavaScript)](https://rxjs.dev/guide/overview "RxJS documentation") library for [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming "Wikipedia"). RxJS observables make it easier to compose asynchronous or callback-based code.
+Angular makes use of and extends [RxJS](https://rxjs.dev/guide/overview "RxJS documentation") (Reactive Extensions for JavaScript), a library for [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming "Wikipedia"). RxJS observables make it easier to compose asynchronous or callback-based code.
 
 RxJS provides an implementation of the `Observable` type. The library also provides utility functions for creating and working with observables. You can use these utility functions to accomplish the following tasks:
 
@@ -45,13 +45,13 @@ Here’s an example:
 
 <code-example path="rx-library/src/operators.1.ts" header="Standalone pipe function"></code-example>
 
-The `pipe()` function is also a method on the RxJS `Observable`, so you use this shorter form to define the same operation:
+The `pipe()` function is also a method on the RxJS `Observable`, so you can use this shorter form to define the same operation:
 
 <code-example path="rx-library/src/operators.2.ts" header="Observable.pipe function"></code-example>
 
 ### Common operators
 
-RxJS provides many operators, but only a handful are used frequently. For a list of operators and usage samples, visit the [RxJS API Documentation](https://rxjs.dev/api).
+RxJS provides many operators, but only a handful are used frequently. For a full list of operators and usage samples, visit the [RxJS API documentation](https://rxjs.dev/api).
 
 
 | Area | Operators |
