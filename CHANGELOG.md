@@ -1,3 +1,105 @@
+# 10.1.0 "plastic-vault" (2020-07-20)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** pointer position calculation for SVG with viewBox ([#19863](https://github.com/angular/components/issues/19863)) ([78483bf](https://github.com/angular/components/commit/78483bf)) |
+| bug fix |  **platform:** rtl scroll axis incorrectly determined in Safari macOS ([#19830](https://github.com/angular/components/issues/19830)) ([0ddad07](https://github.com/angular/components/commit/0ddad07)), closes [#14609](https://github.com/angular/components/issues/14609) |
+| bug fix |  **schematics:** errors when attempting to read some files ([#19783](https://github.com/angular/components/issues/19783)) ([00c5a53](https://github.com/angular/components/commit/00c5a53)), closes [#19779](https://github.com/angular/components/issues/19779) |
+| bug fix |  **scrolling:** fixed-size-virtual-scroll wrong range and position when items length changes and current scroll is greater than new data length ([#19578](https://github.com/angular/components/issues/19578)) ([1d6ae58](https://github.com/angular/components/commit/1d6ae58)) |
+| feature |  **testing:** add base class for harnesses that may contain other harnesses ([#19944](https://github.com/angular/components/issues/19944)) ([6d2fb1f](https://github.com/angular/components/commit/6d2fb1f)) |
+| feature |  **tree:** add trackBy to NestedTreeControl ([#19602](https://github.com/angular/components/issues/19602)) ([e2c7e1a](https://github.com/angular/components/commit/e2c7e1a)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** focus trap directive not capturing focus if auto capture input is set after init ([#19689](https://github.com/angular/components/issues/19689)) ([1acc608](https://github.com/angular/components/commit/1acc608)), closes [#19664](https://github.com/angular/components/issues/19664) |
+| bug fix |  **a11y:** list key manager not emitting change event if new item is added to active index ([#19666](https://github.com/angular/components/issues/19666)) ([3fbebe0](https://github.com/angular/components/commit/3fbebe0)), closes [#19661](https://github.com/angular/components/issues/19661) |
+| bug fix |  **aria-describer:** messages not being read out in IE and Edge ([#12304](https://github.com/angular/components/issues/12304)) ([0e22019](https://github.com/angular/components/commit/0e22019)), closes [#12298](https://github.com/angular/components/issues/12298) |
+| bug fix |  **autocomplete:** don't close when clicking inside custom origin ([#19784](https://github.com/angular/components/issues/19784)) ([1319c0a](https://github.com/angular/components/commit/1319c0a)), closes [#19771](https://github.com/angular/components/issues/19771) |
+| bug fix |  **button-toggle:** remove unused property and type ToggleType ([#19497](https://github.com/angular/components/issues/19497)) ([c225b28](https://github.com/angular/components/commit/c225b28)) |
+| bug fix |  **datepicker:** add role to date range input ([#19717](https://github.com/angular/components/issues/19717)) ([cfe37d1](https://github.com/angular/components/commit/cfe37d1)) |
+| bug fix |  **datepicker:** don't set aria-labelledby if form field does not have a label ([#19639](https://github.com/angular/components/issues/19639)) ([37e2171](https://github.com/angular/components/commit/37e2171)) |
+| bug fix |  **datepicker:** label state not being updated in some cases ([#19761](https://github.com/angular/components/issues/19761)) ([fcfc224](https://github.com/angular/components/commit/fcfc224)) |
+| bug fix |  **datepicker:** not marking as dirty when invalid value is typed in ([#19730](https://github.com/angular/components/issues/19730)) ([8934feb](https://github.com/angular/components/commit/8934feb)), closes [#19726](https://github.com/angular/components/issues/19726) |
+| bug fix |  **datepicker:** range input separator not hidden in high contrast mode ([#19706](https://github.com/angular/components/issues/19706)) ([9af441d](https://github.com/angular/components/commit/9af441d)) |
+| bug fix |  **dialog:** restore focus with the proper focus origin ([#9257](https://github.com/angular/components/issues/9257)) ([cf9bb1f](https://github.com/angular/components/commit/cf9bb1f)), closes [#8420](https://github.com/angular/components/issues/8420) |
+| bug fix |  **drag-drop:** allow handle to be set on drag element if there is a different drag root ([#19559](https://github.com/angular/components/issues/19559)) ([2335571](https://github.com/angular/components/commit/2335571)), closes [#19555](https://github.com/angular/components/issues/19555) |
+| bug fix |  **drag-drop:** error when cloning 0x0 canvas ([#19707](https://github.com/angular/components/issues/19707)) ([3614a0b](https://github.com/angular/components/commit/3614a0b)) |
+| bug fix |  **drag-drop:** not starting auto scroll when inside boundary ([#19865](https://github.com/angular/components/issues/19865)) ([39d48c7](https://github.com/angular/components/commit/39d48c7)), closes [#18596](https://github.com/angular/components/issues/18596) |
+| bug fix |  **drag-drop:** placeholder element not available in started event ([#19493](https://github.com/angular/components/issues/19493)) ([bc88cc1](https://github.com/angular/components/commit/bc88cc1)), closes [#19457](https://github.com/angular/components/issues/19457) |
+| bug fix |  **drag-drop:** sometimes incorrectly swapping items at the ends of the list ([#19633](https://github.com/angular/components/issues/19633)) ([0a6e4d6](https://github.com/angular/components/commit/0a6e4d6)), closes [#19249](https://github.com/angular/components/issues/19249) |
+| bug fix |  **drag-drop:** update free drag position on scroll ([#19648](https://github.com/angular/components/issues/19648)) ([9d903e0](https://github.com/angular/components/commit/9d903e0)) |
+| bug fix |  **focus indicators:** Improve styles that determine when focus indicators should render on selection controls. ([#19546](https://github.com/angular/components/issues/19546)) ([3d03bf3](https://github.com/angular/components/commit/3d03bf3)) |
+| bug fix |  **form-field:** error in older versions of edge ([#19698](https://github.com/angular/components/issues/19698)) ([e1bfb92](https://github.com/angular/components/commit/e1bfb92)), closes [#17810](https://github.com/angular/components/issues/17810) |
+| bug fix |  **input:** changed after checked error if input has static placeholder ([#20015](https://github.com/angular/components/issues/20015)) ([0d43581](https://github.com/angular/components/commit/0d43581)) |
+| bug fix |  **input:** incorrectly handling nested themes ([#19637](https://github.com/angular/components/issues/19637)) ([da9c707](https://github.com/angular/components/commit/da9c707)) |
+| bug fix |  **input:** placeholder being read out twice by some screen readers ([#10466](https://github.com/angular/components/issues/10466)) ([d05ba60](https://github.com/angular/components/commit/d05ba60)), closes [#9721](https://github.com/angular/components/issues/9721) |
+| bug fix |  **list:** single selection list selected state not shown on touch devices ([#19877](https://github.com/angular/components/issues/19877)) ([2eff545](https://github.com/angular/components/commit/2eff545)), closes [#19876](https://github.com/angular/components/issues/19876) |
+| bug fix |  **list:** use flexbox to size mat-line elements ([#19809](https://github.com/angular/components/issues/19809)) ([#19819](https://github.com/angular/components/issues/19819)) ([998bb18](https://github.com/angular/components/commit/998bb18)) |
+| bug fix |  **ng-update:** properly handle update from different working directory ([05ec25f](https://github.com/angular/components/commit/05ec25f)), closes [#19779](https://github.com/angular/components/issues/19779) |
+| bug fix |  **overlay:** outside click dispatcher not accounting for shadow DOM ([#19904](https://github.com/angular/components/issues/19904)) ([7427b26](https://github.com/angular/components/commit/7427b26)) |
+| bug fix |  **overlay:** overlay directives not emitting when detached externally ([#7950](https://github.com/angular/components/issues/7950)) ([4a3c960](https://github.com/angular/components/commit/4a3c960)) |
+| bug fix |  **progress-spinner:** not respecting user colors in high contrast mode ([#19786](https://github.com/angular/components/issues/19786)) ([abc94c4](https://github.com/angular/components/commit/abc94c4)) |
+| bug fix |  **sidenav:** restore focus if drawer is closed through backdrop click ([#19534](https://github.com/angular/components/issues/19534)) ([5ed1a00](https://github.com/angular/components/commit/5ed1a00)), closes [#17749](https://github.com/angular/components/issues/17749) |
+| bug fix |  **snack-bar:** announcing same message twice to screen readers ([#14504](https://github.com/angular/components/issues/14504)) ([1bbfcf4](https://github.com/angular/components/commit/1bbfcf4)) |
+| bug fix |  **sort:** sorted state being read out when navigating cells ([ea22e92](https://github.com/angular/components/commit/ea22e92)), closes [#13012](https://github.com/angular/components/issues/13012) |
+| bug fix |  **tree:** allow use of FlatTreeControl's trackBy function in MatTreeFlatDataSource and MatTreeFlattener ([#19600](https://github.com/angular/components/issues/19600)) ([8ea3558](https://github.com/angular/components/commit/8ea3558)) |
+| bug fix |  focus monitor-based styles not working in some cases inside shadow dom ([#19422](https://github.com/angular/components/issues/19422)) ([df981ee](https://github.com/angular/components/commit/df981ee)), closes [#19414](https://github.com/angular/components/issues/19414) |
+| bug fix |  **testing:** harness selector not matching mat-spinner selector ([#19657](https://github.com/angular/components/issues/19657)) ([3ffcc63](https://github.com/angular/components/commit/3ffcc63)), closes [#19649](https://github.com/angular/components/issues/19649) |
+| feature |  **a11y:** Add optional home/end key support to ListKeyManager ([#19834](https://github.com/angular/components/issues/19834)) ([544e335](https://github.com/angular/components/commit/544e335)) |
+| feature |  **overlay:** support closing when clicking outside the overlay ([#16611](https://github.com/angular/components/issues/16611)) ([210d054](https://github.com/angular/components/commit/210d054)) |
+| feature |  **schematics:** enable routing option ([#19439](https://github.com/angular/components/issues/19439)) ([31723b8](https://github.com/angular/components/commit/31723b8)) |
+| feature |  **testing:** expose whether harness elements are focused ([#19704](https://github.com/angular/components/issues/19704)) ([081d833](https://github.com/angular/components/commit/081d833)), closes [#19702](https://github.com/angular/components/issues/19702) |
+| feature |  **testing:** Add a test harness for `MatToolbar` ([#19976](https://github.com/angular/components/issues/19976)) ([9e97a34](https://github.com/angular/components/commit/9e97a34)) |
+| feature |  **testing:** Add a test harness for `MatCard` ([#19833](https://github.com/angular/components/issues/19833)) ([54c2d16](https://github.com/angular/components/commit/54c2d16)) |
+| performance |  **int-bar:** Convert MatInkBarFoundation adapter to class object ([#19986](https://github.com/angular/components/issues/19986)) ([78dc50b](https://github.com/angular/components/commit/78dc50b)) |
+| performance |  **tooltip:** Defer hooking up events until there's a message and the tooltip is not disabled ([#19764](https://github.com/angular/components/issues/19764)) ([49de56c](https://github.com/angular/components/commit/49de56c)) |
+
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  allow for dimensions to be controlled through CSS ([#19790](https://github.com/angular/components/issues/19790)) ([e32e2e2](https://github.com/angular/components/commit/e32e2e2)) |
+| bug fix |  rendering blank if custom options with no center are provided ([#19916](https://github.com/angular/components/issues/19916)) ([9ce2a90](https://github.com/angular/components/commit/9ce2a90)), closes [#19908](https://github.com/angular/components/issues/19908) |
+
+### youtube-player
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  support passing in the playerVars parameter ([#19746](https://github.com/angular/components/issues/19746)) ([cc36af7](https://github.com/angular/components/commit/cc36af7)), closes [#17672](https://github.com/angular/components/issues/17672) [#19267](https://github.com/angular/components/issues/19267) |
+
+### cdk-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **menu:** Fix circular dependency ([09b33c2](https://github.com/angular/components/commit/09b33c2)) |
+| feature |  **listbox:** add file skeleton ([#19612](https://github.com/angular/components/issues/19612)) ([0428231](https://github.com/angular/components/commit/0428231)) |
+| feature |  **listbox:** multi-select and active descendant support ([#19929](https://github.com/angular/components/issues/19929)) ([7c49399](https://github.com/angular/components/commit/7c49399)) |
+| feature |  **listbox:** selection logic and testing for listbox. ([#19690](https://github.com/angular/components/issues/19690)) ([2a97418](https://github.com/angular/components/commit/2a97418)) |
+| feature |  **menu:** add functionality to navigate a Menu and MenuBar with a keyboard ([#19962](https://github.com/angular/components/issues/19962)) ([ffc6f4b](https://github.com/angular/components/commit/ffc6f4b)) |
+| feature |  **menu:** Implement grouping logic for menuitems ([7a4b453](https://github.com/angular/components/commit/7a4b453)) |
+| feature |  **menu:** implement menu handling logic ([#19701](https://github.com/angular/components/issues/19701)) ([b3d6d92](https://github.com/angular/components/commit/b3d6d92)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **chips:** fix empty check when no chips ([#20025](https://github.com/angular/components/issues/20025)) ([ebda4de](https://github.com/angular/components/commit/ebda4de)) |
+| bug fix |  **form-field:** fix notch width after appearance change ([#19682](https://github.com/angular/components/issues/19682)) ([5ef23ba](https://github.com/angular/components/commit/5ef23ba)) |
+| bug fix |  strong focus indicator clipped in checkbox and radio button ([#19423](https://github.com/angular/components/issues/19423)) ([45492b6](https://github.com/angular/components/commit/45492b6)) |
+| bug fix |  **mdc-form-field:** update input alignment to match spec ([f4f0d95](https://github.com/angular/components/commit/f4f0d95)) |
+| bug fix |  **mdc-list:** fix infinite loop on init ([#19930](https://github.com/angular/components/issues/19930)) ([63da9e3](https://github.com/angular/components/commit/63da9e3)) |
+| bug fix |  **mdc-snack-bar:** error during server-side rendering ([#19922](https://github.com/angular/components/issues/19922)) ([912ad8d](https://github.com/angular/components/commit/912ad8d)) |
+| bug fix |  **mdc-snack-bar:** support dark themes ([#19926](https://github.com/angular/components/issues/19926)) ([a9e0ac5](https://github.com/angular/components/commit/a9e0ac5)) |
+| bug fix |  **slide-toggle:** fix focus indictor position ([#19551](https://github.com/angular/components/issues/19551)) ([6c212b7](https://github.com/angular/components/commit/6c212b7)) |
+| feature |  **mdc-chips:** Make chips editable by connecting to the mdc web editing interface ([#19618](https://github.com/angular/components/issues/19618)) ([04024fe](https://github.com/angular/components/commit/04024fe)) |
+| feature |  **snack-bar:** add MDC-based snack-bar ([#19738](https://github.com/angular/components/issues/19738)) ([a63bfc5](https://github.com/angular/components/commit/a63bfc5)) |
+| feature |  **snack-bar:** add MDC-based snack-bar ([#19800](https://github.com/angular/components/issues/19800)) ([7dcd2dd](https://github.com/angular/components/commit/7dcd2dd)) |
+
 # 10.0.0 "ice-dice" (2020-06-24)
 
 ## Highlights
