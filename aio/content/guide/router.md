@@ -301,7 +301,7 @@ You can style views according to the navigation state. For example, you might wa
 
 You can use the [RouterLinkActive](api/router/RouterLinkActive "API reference") directive on an element to toggle CSS classes for active `RouterLink` bindings based on the current `RouterState`.
 
-On each anchor tag, you see a [property binding](guide/template-syntax#property-binding "Learn more about property binding") to the `RouterLinkActive` directive that looks like `routerLinkActive="..."`, as in the following example.
+On each anchor tag, you see a [property binding](guide/property-binding "Learn more about property binding") to the `RouterLinkActive` directive that looks like `routerLinkActive="..."`, as in the following example.
 
 <code-example header="src/app/app.component.html" path="router-tutorial/src/app/app.component.html" region="routeractivelink"></code-example>
 
@@ -736,6 +736,7 @@ You can also configure a routing request to both preserve parameters and combine
 
 {@a route-guards}
 {@a guards}
+{@a preventing-unauthorized-access}
 
 ## Controlling view access with route guards
 
