@@ -18,6 +18,7 @@ import {extendStyles, toggleNativeDragInteractions} from './drag-styling';
 import {getTransformTransitionDurationInMs} from './transition-duration';
 import {getMutableClientRect, adjustClientRect} from './client-rect';
 import {ParentPositionTracker} from './parent-position-tracker';
+import {deepCloneNode} from './clone-node';
 
 /** Object that can be used to configure the behavior of DragRef. */
 export interface DragRefConfig {
@@ -1310,40 +1311,6 @@ function getTransform(x: number, y: number): string {
   // Round the transforms since some browsers will
   // blur the elements for sub-pixel transforms.
   return `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
-}
-
-/** Creates a deep clone of an element. */
-function deepCloneNode(node: HTMLElement): HTMLElement {
-  const clone = node.cloneNode(true) as HTMLElement;
-  const descendantsWithId = clone.querySelectorAll('[id]');
-  const descendantCanvases = node.querySelectorAll('canvas');
-
-  // Remove the `id` to avoid having multiple elements with the same id on the page.
-  clone.removeAttribute('id');
-
-  for (let i = 0; i < descendantsWithId.length; i++) {
-    descendantsWithId[i].removeAttribute('id');
-  }
-
-  // `cloneNode` won't transfer the content of `canvas` elements so we have to do it ourselves.
-  // We match up the cloned canvas to their sources using their index in the DOM.
-  if (descendantCanvases.length) {
-    const cloneCanvases = clone.querySelectorAll('canvas');
-
-    for (let i = 0; i < descendantCanvases.length; i++) {
-      const correspondingCloneContext = cloneCanvases[i].getContext('2d');
-
-      if (correspondingCloneContext) {
-        // In some cases `drawImage` can throw (e.g. if the canvas size is 0x0).
-        // We can't do much about it so just ignore the error.
-        try {
-          correspondingCloneContext.drawImage(descendantCanvases[i], 0, 0);
-        } catch {}
-      }
-    }
-  }
-
-  return clone;
 }
 
 /** Clamps a value between a minimum and a maximum. */

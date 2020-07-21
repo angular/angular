@@ -2247,6 +2247,31 @@ describe('CdkDrag', () => {
       expect(document.querySelector('.cdk-drag-preview canvas')).toBeTruthy();
     }));
 
+    it('should clone the content of descendant input elements', fakeAsync(() => {
+      const fixture = createComponent(DraggableWithInputsInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+      const sourceInput = item.querySelector('input')!;
+      const sourceTextarea = item.querySelector('textarea')!;
+      const sourceSelect = item.querySelector('select')!;
+      const value = fixture.componentInstance.inputValue;
+
+      expect(sourceInput.value).toBe(value);
+      expect(sourceTextarea.value).toBe(value);
+      expect(sourceSelect.value).toBe(value);
+
+      startDraggingViaMouse(fixture, item);
+
+      const preview = document.querySelector('.cdk-drag-preview')!;
+      const previewInput = preview.querySelector('input')!;
+      const previewTextarea = preview.querySelector('textarea')!;
+      const previewSelect = preview.querySelector('select')!;
+
+      expect(previewInput.value).toBe(value);
+      expect(previewTextarea.value).toBe(value);
+      expect(previewSelect.value).toBe(value);
+    }));
+
     it('should clear the ids from descendants of the preview', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
@@ -6363,6 +6388,38 @@ class DraggableWithAlternateRootAndSelfHandle {
   @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
   @ViewChild('dragRoot') dragRoot: ElementRef<HTMLElement>;
   @ViewChild(CdkDrag) dragInstance: CdkDrag;
+}
+
+
+@Component({
+  template: `
+    <div
+      cdkDropList
+      style="width: 100px; background: pink;"
+      [id]="dropZoneId"
+      [cdkDropListData]="items"
+      (cdkDropListSorted)="sortedSpy($event)"
+      (cdkDropListDropped)="droppedSpy($event)">
+      <div
+        *ngFor="let item of items"
+        cdkDrag
+        [cdkDragData]="item"
+        [style.height.px]="item.height"
+        [style.margin-bottom.px]="item.margin"
+        style="width: 100%; background: red;">
+          {{item.value}}
+          <input [value]="inputValue"/>
+          <textarea [value]="inputValue"></textarea>
+          <select [value]="inputValue">
+            <option value="goodbye">Goodbye</option>
+            <option value="hello">Hello</option>
+          </select>
+        </div>
+    </div>
+  `
+})
+class DraggableWithInputsInDropZone extends DraggableInDropZone {
+  inputValue = 'hello';
 }
 
 
