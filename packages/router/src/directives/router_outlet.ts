@@ -27,6 +27,19 @@ import {PRIMARY_OUTLET} from '../shared';
  * <router-outlet name='right'></router-outlet>
  * ```
  *
+ * Named outlets can be the targets of secondary routes.
+ * The route configuration for a secondary route has a third property, `outlet: <target_outlet_name>`.
+ * Secondary routes are independent of each other, but work in combination with other routes.
+ * Using named outlets and secondary routes, you can target multiple outlets with multiple routes
+ * in the same `RouterLink` directive.
+ *
+ * The router keeps track of separate branches in a navigation tree for each named outlet, and
+ * generates a representation of that tree in the URL.
+ * The URL for a secondary route uses the following syntax to specify both the primary and secondary
+ * routes at the same time:
+ *
+ * `http://base-path/primary-route-path(outlet-name:route-path)`
+ *
  * A router outlet emits an activate event when a new component is instantiated,
  * and a deactivate event when a component is destroyed.
  *
@@ -35,6 +48,9 @@ import {PRIMARY_OUTLET} from '../shared';
  *   (activate)='onActivate($event)'
  *   (deactivate)='onDeactivate($event)'></router-outlet>
  * ```
+ *
+ * @see [Routing tutorial](guide/router-tutorial-toh#named-outlets "Example of a named
+ * outlet and secondary route configuration").
  * @ngModule RouterModule
  *
  * @publicApi
