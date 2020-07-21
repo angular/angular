@@ -328,7 +328,7 @@ them on demand.
 
 <header>Don't eagerly import something from a lazy-loaded module</header>
 
-If you mean to lazy-load a module, be careful not import it
+If you mean to lazy-load a module, be careful not to import it
 in a file that's eagerly loaded when the app starts (such as the root `AppModule`).
 If you do that, the module will be loaded immediately.
 
