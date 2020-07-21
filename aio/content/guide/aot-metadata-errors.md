@@ -430,7 +430,7 @@ Angular does something similar with the `DOCUMENT` token so you can inject the b
 
 ```ts
 import { Inject }   from '@angular/core';
-import { DOCUMENT } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
 
 @Component({ ... })
 export class MyComponent {
