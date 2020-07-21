@@ -342,11 +342,6 @@
               "tooltip": "Using observables to pass values synchronously or asynchronously."
             },
             {
-              "url": "guide/rx-library",
-              "title": "The RxJS Library",
-              "tooltip": "A library for reactive programming using observables to compose asynchronous or callback-based code."
-            },
-            {
               "url": "guide/observables-in-angular",
               "title": "Observables in Angular",
               "tooltip": "How Angular subsystems use and expect observables."

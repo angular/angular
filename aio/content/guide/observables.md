@@ -1,15 +1,21 @@
 # Using observables to pass values
 
-Observables provide support for passing messages between parts of your application.
-They are used frequently in Angular and are the recommended technique for event handling, asynchronous programming, and handling multiple values.
+The Angular API makes frequent use of observables, and applications commonly use them for event handling and asynchronous programming. Some parts of the Angular API expect or return values in observables, and you can use them in your own code to pass messages between parts of your application.
 
-The observer pattern is a software design pattern in which an object, called the *subject*, maintains a list of its dependents, called *observers*, and notifies them automatically of state changes.
-This pattern is similar (but not identical) to the [publish/subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) design pattern.
+Angular makes use of and extends Reactive Extensions for JavaScript (RxJS), a library for [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming "Wikipedia").
+RxJS provides an implementation of the `Observable` type, which makes it easier to compose asynchronous or callback-based code in TypeScript applications. The library also provides many useful [operators and utility functions](#rx-library "Using RxJS functions and operators") for working with observables.
+
+## How observables work
+
+Observables get their name from the observer _pattern_. In this pattern, an object maintains a list of its dependents, called *observers*, and notifies them automatically of state changes.
+This pattern is similar to the [publish/subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern "Wikipedia") design pattern.
 
 Observables are declarative&mdash;that is, you define a function for publishing values, but it is not executed until a consumer subscribes to it.
-The subscribed consumer then receives notifications until the function completes, or until they unsubscribe.
+The subscribed consumer then receives notifications until the function completes or errors out, or until they unsubscribe.
 
-An observable can deliver multiple values of any type&mdash;literals, messages, or events, depending on the context. The API for receiving values is the same whether the values are delivered synchronously or asynchronously. Because setup and teardown logic are both handled by the observable, your application code only needs to worry about subscribing to consume values, and when done, unsubscribing. Whether the stream was keystrokes, an HTTP response, or an interval timer, the interface for listening to values and stopping listening is the same.
+An observable can deliver multiple values of any type&mdash;literals, messages, or events, depending on the context.
+Consumers can receive observable values synchronously or asynchronously.
+You subscribe to an observable to consume values, and unsubscribe when the execution completes or you no longer need to listen for new values.
 
 Because of these advantages, observables are used extensively within Angular, and are recommended for app development as well.
 
@@ -35,33 +41,32 @@ A handler for receiving observable notifications implements the `Observer` inter
 
 An observer object can define any combination of these handlers. If you don't supply a handler for a notification type, the observer ignores notifications of that type.
 
-## Subscribing
+## Subscribing to observables
 
-An `Observable` instance begins publishing values only when someone subscribes to it. You subscribe by calling the `subscribe()` method of the instance, passing an observer object to receive the notifications.
+An `Observable` instance begins publishing values only when you subscribe to it.
+You subscribe by calling the `subscribe()` method of the observable instance, passing an observer object to receive the notifications.
+
+The following example creates and subscribes to a basic observable, with an observer that logs the received message to the console.
 
 <div class="alert is-helpful">
 
-In order to show how subscribing works, we need to create a new observable. There is a constructor that you use to create new instances, but for illustration, we can use some methods from the RxJS library that create simple observables of frequently used types:
+For demonstration purposes, this example creates the observable using an [RxJS creation function](#observable-creation-functions "Read more about creation functions").
+The `of(...items)` function returns an Observable instance that synchronously delivers the values provided as arguments.
 
-  * `of(...items)`&mdash;Returns an `Observable` instance that synchronously delivers the values provided as arguments.
-  * `from(iterable)`&mdash;Converts its argument to an `Observable` instance. This method is commonly used to convert an array to an observable.
-
+You can also use a constructor to create new instances of `Observable`, as shown in the section [Creating observables](#creating-observables).
 </div>
-
-Here's an example of creating and subscribing to a simple observable, with an observer that logs the received message to the console:
 
 <code-example
   path="observables/src/subscribing.ts"
   region="observer"
   header="Subscribe using observer"></code-example>
 
-Alternatively, the `subscribe()` method can accept callback function definitions in line, for `next`, `error`, and `complete` handlers. For example, the following `subscribe()` call is the same as the one that specifies the predefined observer:
+As an alternative to passing in an observer object, the `subscribe()` method can accept inline callback function definitions for `next`, `error`, and `complete` handlers, in that order. For example, the following `subscribe()` call is the same as the one that specifies the predefined observer:
 
 <code-example path="observables/src/subscribing.ts" region="sub_fn" header="Subscribe with positional arguments"></code-example>
 
-In either case, a `next` handler is required. The `error` and `complete` handlers are optional.
-
-Note that a `next()` function could receive, for instance, message strings, or event objects, numeric values, or structures, depending on context. As a general term, we refer to data published by an observable as a *stream*. Any type of value can be represented with an observable, and the values are published as a stream.
+The `next()` handler can receive information such as message strings, or event objects, numeric values, or structures, depending on context.
+An observable can produce any type of value, and publishes those values as a stream.
 
 ## Creating observables
 
@@ -71,43 +76,51 @@ For example, to create an observable equivalent to the `of(1, 2, 3)` above, you 
 
 <code-example path="observables/src/creating.ts" region="subscriber" header="Create observable with constructor"></code-example>
 
-To take this example a little further, we can create an observable that publishes events. In this example, the subscriber function is defined inline.
+You can create an observable that publishes events. In the following example, the subscriber function is defined inline.
 
 <code-example path="observables/src/creating.ts" region="fromevent" header="Create with custom fromEvent function"></code-example>
 
-Now you can use this function to create an observable that publishes keydown events:
+You can use this function to create an observable that publishes keydown events, as follows:
 
 <code-example path="observables/src/creating.ts" region="fromevent_use" header="Use custom fromEvent function"></code-example>
 
-## Multicasting
+## Multicasting  values to multiple subscribers
 
-A typical observable creates a new, independent execution for each subscribed observer. When an observer subscribes, the observable wires up an event handler and delivers values to that observer. When a second observer subscribes, the observable then wires up a new event handler and delivers values to that second observer in a separate execution.
+*Multicasting* is the practice of broadcasting emitted values from a single observable execution to a list of multiple subscribers.
 
-Sometimes, instead of starting an independent execution for each subscriber, you want each subscription to get the same values&mdash;even if values have already started emitting. This might be the case with something like an observable of clicks on the document object.
+A typical observable creates a new, independent execution for each subscribed observer.
+When an observer subscribes, the observable creates and runs a producer instance that delivers values to that observer.
+When a second observer subscribes, the observable creates and runs a new producer instance that delivers values to that second observer in a separate execution.
 
-*Multicasting* is the practice of broadcasting to a list of multiple subscribers in a single execution. With a multicasting observable, you don't register multiple listeners on the document, but instead re-use the first listener and send values out to each subscriber.
+Sometimes, instead of starting an independent execution for each subscriber, you want each subscription to get the same values&mdash;even if values have already started emitting.
+For example, you might want to create an observable of clicks on a document object.
+With a multicasting observable, you don't register multiple listeners on the document, but instead re-use the first listener and send values out to each subscriber.
 
-When creating an observable you should determine how you want that observable to be used and whether or not you want to multicast its values.
-
-Let’s look at an example that counts from 1 to 3, with a one-second delay after each number emitted.
+Consider the following example that counts from 1 to 3, with a one-second delay after each number emitted.
 
 <code-example path="observables/src/multicasting.ts" region="delay_sequence" header="Create a delayed sequence"></code-example>
 
-Notice that if you subscribe twice, there will be two separate streams, each emitting values every second. It looks something like this:
+When creating the observable, you should determine how you want to use that observable and whether you want to multicast its values.
+If you subscribe twice, notice that there are two separate streams, each emitting values every second.
 
 <code-example path="observables/src/multicasting.ts" region="subscribe_twice" header="Two subscriptions"></code-example>
 
- Changing the observable to be multicasting could look something like this:
+The following code changes the observable to use multicasting instead:
 
 <code-example path="observables/src/multicasting.ts" region="multicast_sequence" header="Create a multicast subscriber"></code-example>
 
-<div class="alert is-helpful">
-   Multicasting observables take a bit more setup, but they can be useful for certain applications. Later we will look at tools that simplify the process of multicasting, allowing you to take any observable and make it multicasting.
-</div>
+### Multicast with the _Subject_ class
+
+RxJS provides the [`Subject` class](https://rxjs.dev/guide/subject "RxJS API reference") that simplifies the process of multicasting.
+
+<code-example path="observables/src/multicasting-subject.ts" region="multicast_subject" header="Use a Subject for multicasting"></code-example>
 
 ## Error handling
 
-Because observables produce values asynchronously, try/catch will not effectively catch errors. Instead, you handle errors by specifying an `error` callback on the observer. Producing an error also causes the observable to clean up subscriptions and stop producing values. An observable can either produce values (calling the `next` callback), or it can complete, calling either the `complete` or `error` callback.
+An observable can produce values (calling the `next` callback), or it can complete, calling either the `complete` or `error` callback. It can also do none of these things, producing only side effects.
+
+Because observables emit errors asynchronously, the try/catch construction does not effectively catch errors. Instead, you generally handle errors by specifying an `error` callback on the observer.
+Producing an error also causes the observable to clean up subscriptions and stop producing values.
 
 <code-example>
 myObservable.subscribe({
@@ -116,4 +129,114 @@ myObservable.subscribe({
 });
 </code-example>
 
-Error handling (and specifically recovering from an error) is covered in more detail in a later section.
+In addition to the `error()` handler that you provide on subscription, the RxJS library provides the [`catchError` operator](https://rxjs.dev/api/operators/catchError "RxJS API reference") that lets you handle known errors in the observable code.
+
+For instance, suppose you have an observable that makes an API request and maps to the response from the server. If the server returns an error or the value doesn’t exist, an error is produced. If you catch this error and supply a default value, your stream continues to process values rather than erroring out.
+
+The following example demonstrates the `catchError` operator:
+
+<code-example path="rx-library/src/error-handling.ts" header="catchError operator"></code-example>
+
+### Retrying a failed observable
+
+Where the `catchError` operator provides a simple path of recovery, the [`retry` operator](https://rxjs.dev/api/operators/retry "RxJS API reference") lets you retry a failed request.
+
+Use the `retry` operator before the `catchError` operator. It resubscribes to the original source observable, which can then re-run the full sequence of actions that resulted in the error. If this includes an HTTP request, it will retry that HTTP request.
+
+The following code converts the previous example to retry the request before catching the error:
+
+<code-example path="rx-library/src/retry-on-error.ts" header="retry operator"></code-example>
+
+<div class="alert is-important">
+
+   Do not retry **authentication** requests, since only users should initiate this action. You don't want to lock out user accounts with repeated login requests that the user has not initiated.
+
+</div>
+
+<!-- This could go at the beginning of practical-observable-usage.md -->
+
+{@a rx-library}
+
+## Creating and working with observables
+
+The  [RxJS](https://rxjs.dev/guide/overview "RxJS documentation") library, which provides the basic `Observable` type, also provides utility functions for creating and working with observables.
+You can import these from the `rxjs` library in your Angular application, and use them to accomplish the following kinds of tasks:
+
+* Convert existing code for async operations into observables
+* Iterate through the values in a stream
+* Map values to different types
+* Filter streams
+* Compose multiple streams
+
+### Observable creation functions
+
+RxJS offers a number of functions that you can use to create new observables. These functions help you create observables from things such as events, timers, promises, and so on. For example:
+
+
+<code-example path="rx-library/src/simple-creation.ts" region="promise" header="Create an observable from a promise"></code-example>
+
+<code-example path="rx-library/src/simple-creation.ts" region="interval" header="Create an observable from a counter"></code-example>
+
+<code-example path="rx-library/src/simple-creation.ts" region="event" header="Create an observable from an event"></code-example>
+
+<code-example path="rx-library/src/simple-creation.ts" region="ajax" header="Create an observable that creates an AJAX request"></code-example>
+
+### Operators
+
+Operators are functions that allow you to manipulate the values that observables return.
+For example, RxJS defines operators such as `map()`, `filter()`, `concat()`, and `mergeMap()`.
+
+Operators take configuration options, and they return a function that takes a source observable.
+When executing this returned function, the operator observes the source observable’s emitted values, transforms them, and returns a new observable of those transformed values.
+For example:
+
+<code-example path="rx-library/src/operators.ts" header="Map operator"></code-example>
+
+You can use _pipes_ to link operators together. Pipes let you combine multiple functions into a single function.
+The `pipe()` function takes as its arguments the functions you want to combine, and returns a new function that, when executed, runs the composed functions in sequence.
+
+<div class="alert is-helpful">
+
+ For Angular applications, it is recommended that you combine operators with pipes (rather than _chaining_, which is used in many RxJS examples).
+
+</div>
+
+A set of operators applied to an observable is a set of instructions for producing the values you’re interested in.
+The operators require input from the execution of an observable.
+You need to call `subscribe()` to execute the observable and produce a result from the operators.
+
+Here’s an example:
+
+<code-example path="rx-library/src/operators.1.ts" header="Standalone pipe function"></code-example>
+
+The `pipe()` function is also a method on the RxJS `Observable`, which means you can use this shorter form to define the same operation:
+
+<code-example path="rx-library/src/operators.2.ts" header="Observable.pipe function"></code-example>
+
+### Common operators
+
+RxJS provides many operators. The following are commonly used in Angular applications:
+
+
+| Area | Operators |
+| :------------| :----------|
+| Creation |  `from`,`fromEvent`, `of` |
+| Combination | `combineLatest`, `concat`, `merge`, `startWith` , `withLatestFrom`, `zip` |
+| Filtering | `debounceTime`, `distinctUntilChanged`, `filter`, `take`, `takeUntil` |
+| Transformation | `bufferTime`, `concatMap`, `map`, `mergeMap`, `scan`, `switchMap` |
+| Utility | `tap` |
+| Multicasting | `share` |
+
+For a full list of operators and usage samples, visit the [RxJS API documentation](https://rxjs.dev/api).
+
+
+## Naming conventions for observables
+
+Angular applications are mostly written in TypeScript, which makes it easier to know when a variable is an observable.
+However, a common naming convention for observables is to add a `$` to the variable name; for example, `response$`.
+Remember that the Angular framework does not enforce this convention.
+
+Using this naming convention can help you when you are scanning through code and looking for observable values, or when you want to associate an observable with a property that stores its returned values.
+For example:
+
+<code-example path="rx-library/src/naming-convention.ts" header="Naming observables"></code-example>

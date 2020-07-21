@@ -165,7 +165,7 @@ Next, specify that interface as the `HttpClient.get()` call's type parameter in 
 
 <div class="alert is-helpful">
 
- When you pass an interface as a type parameter to the `HttpClient.get()` method, you can use the [RxJS `map` operator](guide/rx-library#operators) to transform the response data as needed by the UI. You can then pass the transformed data to the [async pipe](api/common/AsyncPipe).
+ When you pass an interface as a type parameter to the `HttpClient.get()` method, you can use the [RxJS `map` operator](guide/observables#operators) to transform the response data as needed by the UI. You can then pass the transformed data to the [async pipe](api/common/AsyncPipe).
 
 </div>
 
@@ -355,7 +355,7 @@ Sometimes the error is transient and goes away automatically if you try again.
 For example, network interruptions are common in mobile scenarios, and trying again
 can produce a successful result.
 
-The [RxJS library](guide/rx-library) offers several _retry_ operators.
+The [RxJS library](guide/observables#rx-library) offers several _retry_ operators.
 For example, the `retry()` operator automatically re-subscribes to a failed `Observable` a specified number of times. _Re-subscribing_ to the result of an `HttpClient` method call has the effect of reissuing the HTTP request.
 
 The following example shows how you can pipe a failed request to the `retry()` operator before passing it to the error handler.
