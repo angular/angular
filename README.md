@@ -41,7 +41,13 @@ contribution.
 * Continuing to create new, API-compatible versions of the Angular Material components backed by
 [MDC Web][] ([see @jelbourn's ng-conf talk](https://youtu.be/4EXQKP-Sihw?t=891)). Much of our effort
 is dedicated towards rolling out these new versions of the components across Angular apps
-inside Google.
+inside Google. This work will payoff with the following benefits:
+  * Dramatically improve consistency with the Material Design spec, which has changed significantly
+    since Angular Material's 2016 inception.
+  * Introduce a new theming API for component density, a top feature request.
+  * Fix a number of longstanding accessibility bugs.
+  * Increase number of people working to continuously improve the components on an on-going basis
+    (both the Angular team and the Material Design team).
 * Initial work on virtual-scroll support for cdk/table.
 
 
