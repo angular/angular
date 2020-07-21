@@ -29,6 +29,10 @@ export const DEV_APP_ROUTES: Routes = [
   },
   {path: 'card', loadChildren: 'card/card-demo-module#CardDemoModule'},
   {
+    path: 'cdk-experimental-listbox',
+    loadChildren: 'cdk-experimental-listbox/cdk-listbox-demo-module#CdkListboxDemoModule'
+  },
+  {
     path: 'cdk-experimental-menu',
     loadChildren: 'cdk-experimental-menu/cdk-menu-demo-module#CdkMenuDemoModule'
   },

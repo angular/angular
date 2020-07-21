@@ -1,0 +1,16 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "cdk-experimental-listbox",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "cdk-listbox-demo.html",
+        "cdk-listbox-demo.css",
+    ],
+    deps = [
+        "//src/cdk-experimental/listbox",
+        "@npm//@angular/router",
+    ],
+)

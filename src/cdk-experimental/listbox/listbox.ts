@@ -16,7 +16,7 @@ import {
   QueryList
 } from '@angular/core';
 import {ActiveDescendantKeyManager, Highlightable, ListKeyManagerOption} from '@angular/cdk/a11y';
-import {END, ENTER, HOME, SPACE} from '@angular/cdk/keycodes';
+import {DOWN_ARROW, END, ENTER, HOME, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionChange, SelectionModel} from '@angular/cdk/collections';
 import {defer, merge, Observable, Subject} from 'rxjs';
@@ -33,11 +33,12 @@ let nextId = 0;
     '(focus)': 'activate()',
     '(blur)': 'deactivate()',
     '[id]': 'id',
-    '[attr.aria-selected]': '_selected || null',
+    '[attr.aria-selected]': 'selected || null',
     '[attr.tabindex]': '_getTabIndex()',
     '[attr.aria-disabled]': '_isInteractionDisabled()',
     '[class.cdk-option-disabled]': '_isInteractionDisabled()',
-    '[class.cdk-option-active]': '_active'
+    '[class.cdk-option-active]': '_active',
+    '[class.cdk-option-selected]': 'selected'
   }
 })
 export class CdkOption implements ListKeyManagerOption, Highlightable {
@@ -171,8 +172,9 @@ export class CdkOption implements ListKeyManagerOption, Highlightable {
     host: {
       'role': 'listbox',
       '(keydown)': '_keydown($event)',
-      '[attr.aria-disabled]': '_disabled',
-      '[attr.aria-multiselectable]': '_multiple',
+      '[attr.tabindex]': '_tabIndex',
+      '[attr.aria-disabled]': 'disabled',
+      '[attr.aria-multiselectable]': 'multiple',
       '[attr.aria-activedescendant]': '_getAriaActiveDescendant()'
     }
 })
@@ -180,16 +182,16 @@ export class CdkListbox implements AfterContentInit, OnDestroy, OnInit {
 
   _listKeyManager: ActiveDescendantKeyManager<CdkOption>;
   _selectionModel: SelectionModel<CdkOption>;
+  _tabIndex = 0;
 
   readonly optionSelectionChanges: Observable<OptionSelectionChangeEvent> = defer(() => {
-      const options = this._options;
+    const options = this._options;
 
-      return options.changes.pipe(
-          startWith(options),
-          switchMap(() => merge(...options.map(option => option.selectionChange)))
-      );
+    return options.changes.pipe(
+      startWith(options),
+      switchMap(() => merge(...options.map(option => option.selectionChange)))
+    );
   }) as Observable<OptionSelectionChangeEvent>;
-
 
   private _disabled: boolean = false;
   private _multiple: boolean = false;
@@ -256,7 +258,10 @@ export class CdkListbox implements AfterContentInit, OnDestroy, OnInit {
 
   private _initKeyManager() {
     this._listKeyManager = new ActiveDescendantKeyManager(this._options)
-        .withWrap().withVerticalOrientation().withTypeAhead();
+        .withWrap()
+        .withVerticalOrientation()
+        .withTypeAhead()
+        .withAllowedModifierKeys(['shiftKey']);
 
     this._listKeyManager.change.pipe(takeUntil(this._destroyed)).subscribe(() => {
       this._updateActiveOption();
@@ -284,6 +289,7 @@ export class CdkListbox implements AfterContentInit, OnDestroy, OnInit {
 
     const manager = this._listKeyManager;
     const {keyCode} = event;
+    const previousActiveIndex = manager.activeItemIndex;
 
     if (keyCode === HOME || keyCode === END) {
       event.preventDefault();
@@ -296,6 +302,12 @@ export class CdkListbox implements AfterContentInit, OnDestroy, OnInit {
 
     } else {
       manager.onKeydown(event);
+    }
+
+    /** Will select an option if shift was pressed while navigating to the option */
+    const isArrow = (keyCode === UP_ARROW || keyCode === DOWN_ARROW);
+    if (isArrow && event.shiftKey && previousActiveIndex !== this._listKeyManager.activeItemIndex) {
+      this._toggleActiveOption();
     }
   }
 

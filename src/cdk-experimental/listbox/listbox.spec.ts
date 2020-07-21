@@ -9,7 +9,11 @@ import {
   CdkOption,
   CdkListboxModule, ListboxSelectionChangeEvent, CdkListbox
 } from './index';
-import {dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing/private';
+import {
+  createKeyboardEvent,
+  dispatchKeyboardEvent,
+  dispatchMouseEvent
+} from '@angular/cdk/testing/private';
 import {A, DOWN_ARROW, END, HOME, SPACE} from '@angular/cdk/keycodes';
 
 describe('CdkOption', () => {
@@ -60,8 +64,8 @@ describe('CdkOption', () => {
     });
 
     it('should have set the selected input of the options to null by default', () => {
-      for (const instance of optionInstances) {
-        expect(instance.selected).toBeFalse();
+      for (const option of optionElements) {
+        expect(option.hasAttribute('aria-selected')).toBeFalse();
       }
     });
 
@@ -327,13 +331,34 @@ describe('CdkOption', () => {
       expect(fixture.componentInstance.changedOption).toBeDefined();
       expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[0].id);
     });
+
+    it('should focus and toggle the next item when pressing SHIFT + DOWN_ARROW', () => {
+      let selectedOptions = optionInstances.filter(option => option.selected);
+      const downKeyEvent =
+        createKeyboardEvent('keydown', DOWN_ARROW, undefined, undefined, {shift: true});
+
+      expect(selectedOptions.length).toBe(0);
+      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
+      expect(optionInstances[0].selected).toBeFalse();
+      expect(fixture.componentInstance.changedOption).toBeUndefined();
+
+      listboxInstance.setActiveOption(optionInstances[0]);
+      listboxInstance._keydown(downKeyEvent);
+      fixture.detectChanges();
+
+      selectedOptions = optionInstances.filter(option => option.selected);
+      expect(selectedOptions.length).toBe(1);
+      expect(optionElements[1].getAttribute('aria-selected')).toBe('true');
+      expect(optionInstances[1].selected).toBeTrue();
+      expect(fixture.componentInstance.changedOption).toBeDefined();
+      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[1].id);
+    });
   });
 
   describe('with multiple selection', () => {
     let fixture: ComponentFixture<ListboxMultiselect>;
 
     let testComponent: ListboxMultiselect;
-
     let listbox: DebugElement;
     let listboxInstance: CdkListbox;
 
@@ -353,7 +378,6 @@ describe('CdkOption', () => {
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
-
       listbox = fixture.debugElement.query(By.directive(CdkListbox));
       listboxInstance = listbox.injector.get<CdkListbox>(CdkListbox);
 

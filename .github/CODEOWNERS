@@ -143,6 +143,7 @@
 /src/dev-app/button-toggle/**                      @jelbourn
 /src/dev-app/button/**                             @jelbourn
 /src/dev-app/card/**                               @jelbourn
+/src/dev-app/cdk-experimental-listbox/**           @jelbourn @nielsr98
 /src/dev-app/cdk-experimental-menu/**              @jelbourn @andy9775
 /src/dev-app/checkbox/**                           @jelbourn @devversion
 /src/dev-app/chips/**                              @jelbourn

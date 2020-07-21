@@ -29,6 +29,7 @@ export class DevAppLayout {
     {name: 'Button Toggle', route: '/button-toggle'},
     {name: 'Button', route: '/button'},
     {name: 'Card', route: '/card'},
+    {name: 'Cdk Experimental Listbox', route: '/cdk-experimental-listbox'},
     {name: 'Cdk Experimental Menu', route: '/cdk-experimental-menu'},
     {name: 'Checkbox', route: '/checkbox'},
     {name: 'Chips', route: '/chips'},
