@@ -18,7 +18,7 @@ function unimplemented(): any {
 
 /**
  * @description
- * A base class that all control `FormControl`-based directives extend. It binds a `FormControl`
+ * A base class that all `FormControl`-based directives extend. It binds a `FormControl`
  * object to a DOM element.
  *
  * @publicApi
