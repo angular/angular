@@ -33,7 +33,11 @@ import {
 } from '@angular/material/core';
 import {Subscription} from 'rxjs';
 import {createMissingDateImplError} from './datepicker-errors';
-import {ExtractDateTypeFromSelection, MatDateSelectionModel} from './date-selection-model';
+import {
+  ExtractDateTypeFromSelection,
+  MatDateSelectionModel,
+  DateSelectionModelChange,
+} from './date-selection-model';
 
 /**
  * An event used for datepicker input and change events. We don't always have access to a native
@@ -198,8 +202,14 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
         this._cvaOnChange(value);
         this._onTouched();
         this._formatValue(value);
-        this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
-        this.dateChange.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
+
+        // Note that we can't wrap the entire block with this logic, because for the range inputs
+        // we want to revalidate whenever either one of the inputs changes and we don't have a
+        // good way of distinguishing it at the moment.
+        if (this._canEmitChangeEvent(event)) {
+          this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
+          this.dateChange.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
+        }
 
         if (this._outsideValueChanged) {
           this._outsideValueChanged();
@@ -225,6 +235,9 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
    * from somewhere that's not the current datepicker input.
    */
   protected abstract _outsideValueChanged?: () => void;
+
+  /** Predicate that determines whether we're allowed to emit a particular change event. */
+  protected abstract _canEmitChangeEvent(event: DateSelectionModelChange<S>): boolean;
 
   /** Whether the last value set on the input was valid. */
   protected _lastValueValid = false;

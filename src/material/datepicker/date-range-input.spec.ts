@@ -12,6 +12,7 @@ import {FocusMonitor} from '@angular/cdk/a11y';
 import {BACKSPACE} from '@angular/cdk/keycodes';
 import {MatDateRangeInput} from './date-range-input';
 import {MatDateRangePicker} from './date-range-picker';
+import {MatStartDate, MatEndDate} from './date-range-input-parts';
 
 describe('MatDateRangeInput', () => {
   function createComponent<T>(component: Type<T>): ComponentFixture<T> {
@@ -556,6 +557,75 @@ describe('MatDateRangeInput', () => {
     subscription.unsubscribe();
   });
 
+ it('should emit to the dateChange event only when typing in the relevant input', () => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+    const {startInput, endInput, start, end} = fixture.componentInstance;
+    const startSpy = jasmine.createSpy('matStartDate spy');
+    const endSpy = jasmine.createSpy('matEndDate spy');
+    const startSubscription = startInput.dateChange.subscribe(startSpy);
+    const endSubscription = endInput.dateChange.subscribe(endSpy);
+
+    start.nativeElement.value = '10/10/2020';
+    dispatchFakeEvent(start.nativeElement, 'change');
+    fixture.detectChanges();
+
+    expect(startSpy).toHaveBeenCalledTimes(1);
+    expect(endSpy).not.toHaveBeenCalled();
+
+    start.nativeElement.value = '11/10/2020';
+    dispatchFakeEvent(start.nativeElement, 'change');
+    fixture.detectChanges();
+
+    expect(startSpy).toHaveBeenCalledTimes(2);
+    expect(endSpy).not.toHaveBeenCalled();
+
+    end.nativeElement.value = '11/10/2020';
+    dispatchFakeEvent(end.nativeElement, 'change');
+    fixture.detectChanges();
+
+    expect(startSpy).toHaveBeenCalledTimes(2);
+    expect(endSpy).toHaveBeenCalledTimes(1);
+
+    end.nativeElement.value = '12/10/2020';
+    dispatchFakeEvent(end.nativeElement, 'change');
+    fixture.detectChanges();
+
+    expect(startSpy).toHaveBeenCalledTimes(2);
+    expect(endSpy).toHaveBeenCalledTimes(2);
+
+    startSubscription.unsubscribe();
+    endSubscription.unsubscribe();
+  });
+
+  it('should emit to the dateChange event when setting the value programmatically', () => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+    const {startInput, endInput} = fixture.componentInstance;
+    const {start, end} = fixture.componentInstance.range.controls;
+    const startSpy = jasmine.createSpy('matStartDate spy');
+    const endSpy = jasmine.createSpy('matEndDate spy');
+    const startSubscription = startInput.dateChange.subscribe(startSpy);
+    const endSubscription = endInput.dateChange.subscribe(endSpy);
+
+    start.setValue(new Date(2020, 1, 2));
+    end.setValue(new Date(2020, 2, 2));
+    fixture.detectChanges();
+
+    expect(startSpy).not.toHaveBeenCalled();
+    expect(endSpy).not.toHaveBeenCalled();
+
+    start.setValue(new Date(2020, 3, 2));
+    end.setValue(new Date(2020, 4, 2));
+    fixture.detectChanges();
+
+    expect(startSpy).not.toHaveBeenCalled();
+    expect(endSpy).not.toHaveBeenCalled();
+
+    startSubscription.unsubscribe();
+    endSubscription.unsubscribe();
+  });
+
 });
 
 @Component({
@@ -585,6 +655,8 @@ describe('MatDateRangeInput', () => {
 class StandardRangePicker {
   @ViewChild('start') start: ElementRef<HTMLInputElement>;
   @ViewChild('end') end: ElementRef<HTMLInputElement>;
+  @ViewChild(MatStartDate) startInput: MatStartDate<Date>;
+  @ViewChild(MatEndDate) endInput: MatEndDate<Date>;
   @ViewChild(MatDateRangeInput) rangeInput: MatDateRangeInput<Date>;
   @ViewChild(MatDateRangePicker) rangePicker: MatDateRangePicker<Date>;
   separator = '–';

@@ -40,7 +40,7 @@ import {
 import {BooleanInput} from '@angular/cdk/coercion';
 import {BACKSPACE} from '@angular/cdk/keycodes';
 import {MatDatepickerInputBase, DateFilterFn} from './datepicker-input-base';
-import {DateRange} from './date-selection-model';
+import {DateRange, DateSelectionModelChange} from './date-selection-model';
 
 /** Parent component that should be wrapped around `MatStartDate` and `MatEndDate`. */
 export interface MatDateRangeInputParent<D> {
@@ -238,6 +238,10 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpd
     }
   }
 
+  protected _canEmitChangeEvent = (event: DateSelectionModelChange<DateRange<D>>): boolean => {
+    return event.source !== this._rangeInput._endInput;
+  }
+
   protected _formatValue(value: D | null) {
     super._formatValue(value);
 
@@ -316,6 +320,10 @@ export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdat
       this._model.updateSelection(range, this);
       this._cvaOnChange(value);
     }
+  }
+
+  protected _canEmitChangeEvent = (event: DateSelectionModelChange<DateRange<D>>): boolean => {
+    return event.source !== this._rangeInput._startInput;
   }
 
   _onKeydown(event: KeyboardEvent) {

@@ -176,6 +176,10 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
     return this._dateFilter;
   }
 
+  protected _canEmitChangeEvent() {
+    return true;
+  }
+
   // Unnecessary when selecting a single date.
   protected _outsideValueChanged: undefined;
 
