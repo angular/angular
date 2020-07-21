@@ -13,30 +13,6 @@ import {
   MDCTabIndicatorFoundation
 } from '@material/tab-indicator';
 
-class TabIndicatorAdapter implements MDCTabIndicatorAdapter {
-  constructor(private readonly _delegate: MatInkBarFoundation) {}
-  addClass(className: string) {
-    if (!this._delegate._destroyed) {
-      this._delegate._hostElement.classList.add(className);
-    }
-  }
-  removeClass(className: string) {
-    if (!this._delegate._destroyed) {
-      this._delegate._hostElement.classList.remove(className);
-    }
-  }
-  setContentStyleProperty(propName: string, value: string | null) {
-    this._delegate._inkBarContentElement.style.setProperty(propName, value);
-  }
-  computeContentClientRect() {
-    // `getBoundingClientRect` isn't available on the server.
-    return this._delegate._destroyed ||
-      !this._delegate._inkBarContentElement.getBoundingClientRect ? {
-      width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0
-    } : this._delegate._inkBarContentElement.getBoundingClientRect();
-  }
-}
-
 /**
  * Item inside a tab header relative to which the ink bar can be aligned.
  * @docs-private
@@ -86,15 +62,34 @@ export class MatInkBar {
  * @docs-private
  */
 export class MatInkBarFoundation {
-  readonly _destroyed: boolean;
+  private _destroyed: boolean;
   private _foundation: MDCTabIndicatorFoundation;
   private _inkBarElement: HTMLElement;
-  readonly _inkBarContentElement: HTMLElement;
+  private _inkBarContentElement: HTMLElement;
   private _fitToContent = false;
-  private _adapter: MDCTabIndicatorAdapter;
+  private _adapter: MDCTabIndicatorAdapter = {
+    addClass: className => {
+      if (!this._destroyed) {
+        this._hostElement.classList.add(className);
+      }
+    },
+    removeClass: className => {
+      if (!this._destroyed) {
+        this._hostElement.classList.remove(className);
+      }
+    },
+    setContentStyleProperty: (propName, value) => {
+      this._inkBarContentElement.style.setProperty(propName, value);
+    },
+    computeContentClientRect: () => {
+      // `getBoundingClientRect` isn't available on the server.
+      return this._destroyed || !this._inkBarContentElement.getBoundingClientRect ? {
+        width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0
+      } : this._inkBarContentElement.getBoundingClientRect();
+    }
+  };
 
-  constructor(readonly _hostElement: HTMLElement, private _document: Document) {
-    this._adapter = new TabIndicatorAdapter(this);
+  constructor(private _hostElement: HTMLElement, private _document: Document) {
     this._foundation = new MDCSlidingTabIndicatorFoundation(this._adapter);
   }
 
@@ -125,10 +120,9 @@ export class MatInkBarFoundation {
       this._inkBarElement.parentNode.removeChild(this._inkBarElement);
     }
 
-    (this as {_hostElement: HTMLElement})._hostElement = this._inkBarElement
-      = (this as {_inkBarContentElement: HTMLElement})._inkBarContentElement = null!;
+    this._hostElement = this._inkBarElement = this._inkBarContentElement = null!;
     this._foundation.destroy();
-    (this as {_destroyed: boolean})._destroyed = true;
+    this._destroyed = true;
   }
 
   /**
@@ -154,8 +148,7 @@ export class MatInkBarFoundation {
   /** Creates and appends the ink bar element. */
   private _createInkBarElement() {
     this._inkBarElement = this._document.createElement('span');
-    (this as {_inkBarContentElement: HTMLElement})._inkBarContentElement
-      = this._document.createElement('span');
+    this._inkBarContentElement = this._document.createElement('span');
 
     this._inkBarElement.className = 'mdc-tab-indicator';
     this._inkBarContentElement.className = 'mdc-tab-indicator__content' +
