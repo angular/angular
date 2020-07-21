@@ -452,6 +452,27 @@ describe('MenuBar', () => {
 
           expect(document.activeElement).toEqual(fileMenuNativeItems[1]);
         }));
+
+        it('should handle keyboard actions if initial menu is opened programmatically', () => {
+          fixture.debugElement
+              .queryAll(By.directive(CdkMenuItem))[0]
+              .injector.get(CdkMenuItem)
+              .getMenuTrigger()!
+              .openMenu();
+          detectChanges();
+          fixture.debugElement
+              .queryAll(By.directive(CdkMenuItem))[2]
+              .injector.get(CdkMenuItem)
+              .getMenuTrigger()!
+              .openMenu();
+          detectChanges();
+
+          fileMenuNativeItems[0].focus();
+          dispatchKeyboardEvent(fileMenuNativeItems[0], 'keydown', TAB);
+          detectChanges();
+
+          expect(nativeMenus.length).toBe(0);
+        });
       });
     });
 
