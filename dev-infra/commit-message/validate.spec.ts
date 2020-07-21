@@ -69,12 +69,17 @@ describe('validate-commit-message.js', () => {
     });
 
     it('should validate max length', () => {
-      const msg =
+      const msgWithLongHeader =
           'fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer and longer and longer and longer...';
-
-      expect(validateCommitMessage(msg)).toBe(INVALID);
+      expect(validateCommitMessage(msgWithLongHeader)).toBe(INVALID);
       expect(lastError).toContain(`The commit message header is longer than ${
           config.commitMessage.maxLineLength} characters`);
+
+      // Should not trigger an error in case commit body contains lines longer than `maxLineLength`
+      // config value.
+      const msgWithLongLinesInBody = 'fix(compiler): some header\n\n' +
+          'Commit body is one line and it\'s super mega extra giga tera long, maybe even longer and longer and longer and longer and longer and longer...';
+      expect(validateCommitMessage(msgWithLongLinesInBody)).toBe(VALID);
     });
 
     it('should skip max length limit for URLs', () => {
@@ -242,8 +247,8 @@ describe('validate-commit-message.js', () => {
         commitMessage: {
           maxLineLength: 120,
           minBodyLength: 30,
-          minBodyLengthTypeExcludes: ['docs'],
-          types: ['fix', 'docs'],
+          minBodyLengthTypeExcludes: ['docs', 'release'],
+          types: ['fix', 'docs', 'release'],
           scopes: ['core']
         }
       };
@@ -271,6 +276,8 @@ describe('validate-commit-message.js', () => {
            expect(validateCommitMessage(
                       'docs(core): just fixing a typo\n\nThis was just a silly typo.'))
                .toBe(VALID);
+           expect(validateCommitMessage('release: some description')).toBe(VALID);
+           expect(validateCommitMessage('release(core): something')).toBe(VALID);
          });
     });
   });
