@@ -28,10 +28,10 @@ import {PRIMARY_OUTLET} from '../shared';
  * ```
  *
  * Named outlets can be the targets of secondary routes.
- * The route configuration for a secondary route has a third property, `outlet: <target_outlet_name>`.
- * Secondary routes are independent of each other, but work in combination with other routes.
- * Using named outlets and secondary routes, you can target multiple outlets with multiple routes
- * in the same `RouterLink` directive.
+ * The route configuration for a secondary route has a third property, `outlet:
+ * <target_outlet_name>`. Secondary routes are independent of each other, but work in combination
+ * with other routes. Using named outlets and secondary routes, you can target multiple outlets with
+ * multiple routes in the same `RouterLink` directive.
  *
  * The router keeps track of separate branches in a navigation tree for each named outlet, and
  * generates a representation of that tree in the URL.
