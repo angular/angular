@@ -12,7 +12,7 @@ export const merge = (): MergeConfig => {
 
   // TODO(devversion) Clean this up once the label/branching has been finalized.
   // let {minor, patch} = determineMergeBranches(currentVersion, '@angular/cdk');
-  const patch = '10.0.x';
+  const patch = '10.1.x';
   const minor = 'master';
 
   return {
