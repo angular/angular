@@ -6,18 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SanitizerFn} from './sanitization';
+
 /**
  * `I18nMutateOpCode` defines OpCodes for `I18nMutateOpCodes` array.
  *
+ * OpCodes are efficient operations which can be applied to the DOM to update it. (For example to
+ * update to a new ICU case requires that we clean up previous elements and create new ones.)
+ *
  * OpCodes contain three parts:
- *  1) Parent node index offset.
- *  2) Reference node index offset.
- *  3) The OpCode to execute.
+ *  1) Parent node index offset. (p)
+ *  2) Reference node index offset. (r)
+ *  3) The instruction to execute. (i)
+ *
+ * pppp pppp pppp pppp rrrr rrrr rrrr riii
+ * 3322 2222 2222 1111 1111 1110 0000 0000
+ * 1098 7654 3210 9876 5432 1098 7654 3210
+ *
+ * ```
+ * var parent = lView[opCode >>> SHIFT_PARENT];
+ * var refNode = lView[((opCode & MASK_REF) >>> SHIFT_REF)];
+ * var instruction = opCode & MASK_OPCODE;
+ * ```
  *
  * See: `I18nCreateOpCodes` for example of usage.
  */
-import {SanitizerFn} from './sanitization';
-
 export const enum I18nMutateOpCode {
   /**
    * Stores shift amount for bits 17-3 that contain reference index.
@@ -30,36 +43,61 @@ export const enum I18nMutateOpCode {
   /**
    * Mask for OpCode
    */
-  MASK_OPCODE = 0b111,
+  MASK_INSTRUCTION = 0b111,
 
   /**
-   * OpCode to select a node. (next OpCode will contain the operation.)
+   * Mask for the Reference node (bits 16-3)
+   */
+  // FIXME(misko): Why is this not used?
+  MASK_REF = 0b11111111111111000,
+  //           11111110000000000
+  //           65432109876543210
+
+  /**
+   * Instruction to select a node. (next OpCode will contain the operation.)
    */
   Select = 0b000,
+
   /**
-   * OpCode to append the current node to `PARENT`.
+   * Instruction to append the current node to `PARENT`.
    */
   AppendChild = 0b001,
+
   /**
-   * OpCode to remove the `REF` node from `PARENT`.
+   * Instruction to remove the `REF` node from `PARENT`.
    */
   Remove = 0b011,
+
   /**
-   * OpCode to set the attribute of a node.
+   * Instruction to set the attribute of a node.
    */
   Attr = 0b100,
+
   /**
-   * OpCode to simulate elementEnd()
+   * Instruction to simulate elementEnd()
    */
   ElementEnd = 0b101,
+
   /**
-   * OpCode to read the remove OpCodes for the nested ICU
+   * Instruction to removed the nested ICU.
    */
   RemoveNestedIcu = 0b110,
 }
 
+export function getParentFromI18nMutateOpCode(mergedCode: number): number {
+  return mergedCode >>> I18nMutateOpCode.SHIFT_PARENT;
+}
+
+export function getRefFromI18nMutateOpCode(mergedCode: number): number {
+  return (mergedCode & I18nMutateOpCode.MASK_REF) >>> I18nMutateOpCode.SHIFT_REF;
+}
+
+export function getInstructionFromI18nMutateOpCode(mergedCode: number): number {
+  return mergedCode & I18nMutateOpCode.MASK_INSTRUCTION;
+}
+
 /**
- * Marks that the next string is for element.
+ * Marks that the next string is an element name.
  *
  * See `I18nMutateOpCodes` documentation.
  */
@@ -71,7 +109,7 @@ export interface ELEMENT_MARKER {
 }
 
 /**
- * Marks that the next string is for comment.
+ * Marks that the next string is comment text.
  *
  * See `I18nMutateOpCodes` documentation.
  */
@@ -83,6 +121,18 @@ export interface COMMENT_MARKER {
   marker: 'comment';
 }
 
+export interface I18nDebug {
+  /**
+   * Human readable representation of the OpCode arrays.
+   *
+   * NOTE: This property only exists if `ngDevMode` is set to `true` and it is not present in
+   * production. Its presence is purely to help debug issue in development, and should not be relied
+   * on in production application.
+   */
+  debug?: string[];
+}
+
+
 /**
  * Array storing OpCode for dynamically creating `i18n` blocks.
  *
@@ -92,50 +142,27 @@ export interface COMMENT_MARKER {
  *   // For adding text nodes
  *   // ---------------------
  *   // Equivalent to:
- *   //   const node = lView[index++] = document.createTextNode('abc');
- *   //   lView[1].insertBefore(node, lView[2]);
- *   'abc', 1 << SHIFT_PARENT | 2 << SHIFT_REF | InsertBefore,
- *
- *   // Equivalent to:
- *   //   const node = lView[index++] = document.createTextNode('xyz');
- *   //   lView[1].appendChild(node);
- *   'xyz', 1 << SHIFT_PARENT | AppendChild,
+ *   //   lView[1].appendChild(lView[0] = document.createTextNode('xyz'));
+ *   'xyz', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
  *
  *   // For adding element nodes
  *   // ---------------------
  *   // Equivalent to:
- *   //   const node = lView[index++] = document.createElement('div');
- *   //   lView[1].insertBefore(node, lView[2]);
- *   ELEMENT_MARKER, 'div', 1 << SHIFT_PARENT | 2 << SHIFT_REF | InsertBefore,
- *
- *   // Equivalent to:
- *   //   const node = lView[index++] = document.createElement('div');
- *   //   lView[1].appendChild(node);
- *   ELEMENT_MARKER, 'div', 1 << SHIFT_PARENT | AppendChild,
+ *   //   lView[1].appendChild(lView[0] = document.createElement('div'));
+ *   ELEMENT_MARKER, 'div', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
  *
  *   // For adding comment nodes
  *   // ---------------------
  *   // Equivalent to:
- *   //   const node = lView[index++] = document.createComment('');
- *   //   lView[1].insertBefore(node, lView[2]);
- *   COMMENT_MARKER, '', 1 << SHIFT_PARENT | 2 << SHIFT_REF | InsertBefore,
- *
- *   // Equivalent to:
- *   //   const node = lView[index++] = document.createComment('');
- *   //   lView[1].appendChild(node);
- *   COMMENT_MARKER, '', 1 << SHIFT_PARENT | AppendChild,
+ *   //   lView[1].appendChild(lView[0] = document.createComment(''));
+ *   COMMENT_MARKER, '', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
  *
  *   // For moving existing nodes to a different location
  *   // --------------------------------------------------
  *   // Equivalent to:
  *   //   const node = lView[1];
- *   //   lView[2].insertBefore(node, lView[3]);
- *   1 << SHIFT_REF | Select, 2 << SHIFT_PARENT | 3 << SHIFT_REF | InsertBefore,
- *
- *   // Equivalent to:
- *   //   const node = lView[1];
  *   //   lView[2].appendChild(node);
- *   1 << SHIFT_REF | Select, 2 << SHIFT_PARENT | AppendChild,
+ *   1 << SHIFT_REF | Select, 2 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
  *
  *   // For removing existing nodes
  *   // --------------------------------------------------
@@ -147,18 +174,14 @@ export interface COMMENT_MARKER {
  *   // --------------------------------------------------
  *   //   const node = lView[1];
  *   //   node.setAttribute('attr', 'value');
- *   1 << SHIFT_REF | Select, 'attr', 'value'
- *            // NOTE: Select followed by two string (vs select followed by OpCode)
+ *   1 << SHIFT_REF | Attr, 'attr', 'value'
  * ];
  * ```
- * NOTE:
- *   - `index` is initial location where the extra nodes should be stored in the EXPANDO section of
- * `LVIewData`.
  *
  * See: `applyI18nCreateOpCodes`;
  */
-export interface I18nMutateOpCodes extends Array<number|string|ELEMENT_MARKER|COMMENT_MARKER|null> {
-}
+export interface I18nMutateOpCodes extends Array<number|string|ELEMENT_MARKER|COMMENT_MARKER|null>,
+                                           I18nDebug {}
 
 export const enum I18nUpdateOpCode {
   /**
@@ -171,19 +194,19 @@ export const enum I18nUpdateOpCode {
   MASK_OPCODE = 0b11,
 
   /**
-   * OpCode to update a text node.
+   * Instruction to update a text node.
    */
   Text = 0b00,
   /**
-   * OpCode to update a attribute of a node.
+   * Instruction to update a attribute of a node.
    */
   Attr = 0b01,
   /**
-   * OpCode to switch the current ICU case.
+   * Instruction to switch the current ICU case.
    */
   IcuSwitch = 0b10,
   /**
-   * OpCode to update the current ICU case.
+   * Instruction to update the current ICU case.
    */
   IcuUpdate = 0b11,
 }
@@ -196,6 +219,10 @@ export const enum I18nUpdateOpCode {
  * mask bit. (Bit 1 for expression 1, bit 2 for expression 2 etc..., bit 32 for expression 32 and
  * higher.) The OpCodes then compare its own change mask against the expression change mask to
  * determine if the OpCodes should execute.
+ *
+ * NOTE: 32nd bit is special as it says 32nd or higher. This way if we have more than 32 bindings
+ * the code still works, but with lower efficiency. (it is unlikely that a translation would have
+ * more than 32 bindings.)
  *
  * These OpCodes can be used by both the i18n block as well as ICU sub-block.
  *
@@ -220,8 +247,8 @@ export const enum I18nUpdateOpCode {
  *   // The following OpCodes represent: `<div i18n-title="pre{{exp1}}in{{exp2}}post">`
  *   // If `changeMask & 0b11`
  *   //        has changed then execute update OpCodes.
- *   //        has NOT changed then skip `7` values and start processing next OpCodes.
- *   0b11, 7,
+ *   //        has NOT changed then skip `8` values and start processing next OpCodes.
+ *   0b11, 8,
  *   // Concatenate `newValue = 'pre'+lView[bindIndex-4]+'in'+lView[bindIndex-3]+'post';`.
  *   'pre', -4, 'in', -3, 'post',
  *   // Update attribute: `elementAttribute(1, 'title', sanitizerFn(newValue));`
@@ -240,8 +267,8 @@ export const enum I18nUpdateOpCode {
  *   // The following OpCodes represent: `<div i18n>{exp4, plural, ... }">`
  *   // If `changeMask & 0b1000`
  *   //        has changed then execute update OpCodes.
- *   //        has NOT changed then skip `4` values and start processing next OpCodes.
- *   0b1000, 4,
+ *   //        has NOT changed then skip `2` values and start processing next OpCodes.
+ *   0b1000, 2,
  *   // Concatenate `newValue = lView[bindIndex -1];`.
  *   -1,
  *   // Switch ICU: `icuSwitchCase(lView[1], 0, newValue);`
@@ -256,7 +283,7 @@ export const enum I18nUpdateOpCode {
  * ```
  *
  */
-export interface I18nUpdateOpCodes extends Array<string|number|SanitizerFn|null> {}
+export interface I18nUpdateOpCodes extends Array<string|number|SanitizerFn|null>, I18nDebug {}
 
 /**
  * Store information for the i18n translation block.

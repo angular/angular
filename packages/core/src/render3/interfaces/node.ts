@@ -701,7 +701,9 @@ export interface TIcuContainerNode extends TNode {
   /**
    * Indicates the current active case for an ICU expression.
    * It is null when there is no active case.
+   *
    */
+  // FIXME(misko): This is at a wrong location as activeCase is `LView` (not `TView`) concern
   activeCaseIndex: number|null;
 }
 

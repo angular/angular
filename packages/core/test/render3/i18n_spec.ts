@@ -9,10 +9,11 @@
 import {noop} from '../../../compiler/src/render3/view/util';
 import {getTranslationForTemplate, ɵɵi18nAttributes, ɵɵi18nPostprocess, ɵɵi18nStart} from '../../src/render3/i18n';
 import {setDelayProjection, ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/all';
-import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
+import {I18nUpdateOpCodes, TI18n, TIcu} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
 import {TemplateFixture} from './render_util';
+import {debugMatch} from './utils';
 
 describe('Runtime i18n', () => {
   afterEach(() => {
@@ -72,25 +73,15 @@ describe('Runtime i18n', () => {
       const nbConsts = 1;
       const index = 0;
       const opCodes = getOpCodes(() => {
-        ɵɵi18nStart(index, MSG_DIV);
-      }, null, nbConsts, index);
-
-      // Check debug
-      const debugOps = (opCodes as any).create.debug!.operations;
-      expect(debugOps[0].__raw_opCode).toBe('simple text');
-      expect(debugOps[0].type).toBe('Create Text Node');
-      expect(debugOps[0].nodeIndex).toBe(1);
-      expect(debugOps[0].text).toBe('simple text');
-      expect(debugOps[1].__raw_opCode).toBe(1);
-      expect(debugOps[1].type).toBe('AppendChild');
-      expect(debugOps[1].nodeIndex).toBe(0);
+                        ɵɵi18nStart(index, MSG_DIV);
+                      }, null, nbConsts, index) as TI18n;
 
       expect(opCodes).toEqual({
         vars: 1,
-        create: [
-          'simple text', nbConsts,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
-        ],
+        create: debugMatch([
+          'lView[1] = document.createTextNode("simple text")',
+          '(lView[0] as Element).appendChild(lView[1])'
+        ]),
         update: [],
         icus: null
       });
@@ -102,37 +93,28 @@ describe('Runtime i18n', () => {
       // 3 consts for the 2 divs and 1 span + 1 const for `i18nStart` = 4 consts
       const nbConsts = 4;
       const index = 1;
-      const elementIndex = 2;
-      const elementIndex2 = 3;
       const opCodes = getOpCodes(() => {
         ɵɵi18nStart(index, MSG_DIV);
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 5,
-        create: [
-          'Hello ',
-          nbConsts,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          elementIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          'world',
-          nbConsts + 1,
-          elementIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          elementIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd,
-          ' and ',
-          nbConsts + 2,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          elementIndex2 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          'universe',
-          nbConsts + 3,
-          elementIndex2 << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          elementIndex2 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd,
-          '!',
-          nbConsts + 4,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-        ],
+        create: debugMatch([
+          'lView[4] = document.createTextNode("Hello ")',
+          '(lView[1] as Element).appendChild(lView[4])',
+          '(lView[1] as Element).appendChild(lView[2])',
+          'lView[5] = document.createTextNode("world")',
+          '(lView[2] as Element).appendChild(lView[5])',
+          'setPreviousOrParentTNode(tView.data[2] as TNode)',
+          'lView[6] = document.createTextNode(" and ")',
+          '(lView[1] as Element).appendChild(lView[6])',
+          '(lView[1] as Element).appendChild(lView[3])',
+          'lView[7] = document.createTextNode("universe")',
+          '(lView[3] as Element).appendChild(lView[7])',
+          'setPreviousOrParentTNode(tView.data[3] as TNode)',
+          'lView[8] = document.createTextNode("!")',
+          '(lView[1] as Element).appendChild(lView[8])',
+        ]),
         update: [],
         icus: null
       });
@@ -146,21 +128,18 @@ describe('Runtime i18n', () => {
         ɵɵi18nStart(index, MSG_DIV);
       }, null, nbConsts, index);
 
-      expect((opCodes as any).update.debug.operations).toEqual([
-        {__raw_opCode: 8, checkBit: 1, type: 'Text', nodeIndex: 2, text: 'Hello �0�!'}
+      expect((opCodes as any).update.debug).toEqual([
+        'if (mask & 0b1) { (lView[2] as Text).textContent = `Hello ${lView[1]}!`; }'
       ]);
 
       expect(opCodes).toEqual({
         vars: 1,
-        create:
-            ['', nbConsts, index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild],
-        update: [
-          0b1,  // bindings mask
-          4,    // if no update, skip 4
-          'Hello ',
-          -1,  // binding index
-          '!', (index + 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text
-        ],
+        create: debugMatch([
+          'lView[2] = document.createTextNode("")',
+          '(lView[1] as Element).appendChild(lView[2])',
+        ]),
+        update: debugMatch(
+            ['if (mask & 0b1) { (lView[2] as Text).textContent = `Hello ${lView[1]}!`; }']),
         icus: null
       });
     });
@@ -175,14 +154,12 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 1,
-        create:
-            ['', nbConsts, index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild],
-        update: [
-          0b11,  // bindings mask
-          8,     // if no update, skip 8
-          'Hello ', -1, ' and ', -2, ', again ', -1, '!',
-          (index + 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text
-        ],
+        create: debugMatch([
+          'lView[2] = document.createTextNode("")', '(lView[1] as Element).appendChild(lView[2])'
+        ]),
+        update: debugMatch([
+          'if (mask & 0b11) { (lView[2] as Text).textContent = `Hello ${lView[1]} and ${lView[2]}, again ${lView[1]}!`; }'
+        ]),
         icus: null
       });
     });
@@ -211,22 +188,14 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 2,
-        create: [
-          '',
-          nbConsts,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          ~rootTemplate << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          '!',
-          nbConsts + 1,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-        ],
-        update: [
-          0b1,  //  bindings mask
-          3,    // if no update, skip 3
-          -1,   // binding index
-          ' is rendered as: ', firstTextNode << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text
-        ],
+        create: debugMatch([
+          'lView[3] = document.createTextNode("")', '(lView[1] as Element).appendChild(lView[3])',
+          '(lView[1] as Element).appendChild(lView[16381])',
+          'lView[4] = document.createTextNode("!")', '(lView[1] as Element).appendChild(lView[4])'
+        ]),
+        update: debugMatch([
+          'if (mask & 0b1) { (lView[3] as Text).textContent = `${lView[1]} is rendered as: `; }'
+        ]),
         icus: null
       });
 
@@ -243,19 +212,15 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 2,
-        create: [
-          spanElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          'before',
-          nbConsts,
-          spanElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          ~bElementSubTemplate << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
-          spanElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          'after',
-          nbConsts + 1,
-          spanElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          spanElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd,
-        ],
+        create: debugMatch([
+          '(lView[0] as Element).appendChild(lView[1])',
+          'lView[3] = document.createTextNode("before")',
+          '(lView[1] as Element).appendChild(lView[3])',
+          '(lView[1] as Element).appendChild(lView[16381])',
+          'lView[4] = document.createTextNode("after")',
+          '(lView[1] as Element).appendChild(lView[4])',
+          'setPreviousOrParentTNode(tView.data[1] as TNode)'
+        ]),
         update: [],
         icus: null
       });
@@ -272,14 +237,12 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 1,
-        create: [
-          bElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          'middle',
-          nbConsts,
-          bElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          bElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd,
-        ],
+        create: debugMatch([
+          '(lView[0] as Element).appendChild(lView[1])',
+          'lView[2] = document.createTextNode("middle")',
+          '(lView[1] as Element).appendChild(lView[2])',
+          'setPreviousOrParentTNode(tView.data[1] as TNode)'
+        ]),
         update: [],
         icus: null
       });
@@ -294,179 +257,76 @@ describe('Runtime i18n', () => {
       const nbConsts = 1;
       const index = 0;
       const opCodes = getOpCodes(() => {
-        ɵɵi18nStart(index, MSG_DIV);
-      }, null, nbConsts, index);
-      const tIcuIndex = 0;
-      const icuCommentNodeIndex = index + 1;
-      const firstTextNodeIndex = index + 2;
-      const bElementNodeIndex = index + 3;
-      const iElementNodeIndex = index + 3;
-      const spanElementNodeIndex = index + 3;
-      const innerTextNode = index + 4;
-      const lastTextNode = index + 5;
-
-      const debugOps = (opCodes as any).update.debug.operations;
-      expect(debugOps[0].__raw_opCode).toBe(6);
-      expect(debugOps[0].checkBit).toBe(1);
-      expect(debugOps[0].type).toBe('IcuSwitch');
-      expect(debugOps[0].nodeIndex).toBe(1);
-      expect(debugOps[0].tIcuIndex).toBe(0);
-      expect(debugOps[0].mainBinding).toBe('�0�');
-
-      expect(debugOps[1].__raw_opCode).toBe(7);
-      expect(debugOps[1].checkBit).toBe(3);
-      expect(debugOps[1].type).toBe('IcuUpdate');
-      expect(debugOps[1].nodeIndex).toBe(1);
-      expect(debugOps[1].tIcuIndex).toBe(0);
-
-      const icuDebugOps = (opCodes as any).icus[0].create[0].debug.operations;
-      let op: any;
-      let i = 0;
-
-      op = icuDebugOps[i++];
-      expect(op.__raw_opCode).toBe('no ');
-      expect(op.type).toBe('Create Text Node');
-      expect(op.nodeIndex).toBe(2);
-      expect(op.text).toBe('no ');
-
-      op = icuDebugOps[i++];
-      expect(op.__raw_opCode).toBe(131073);
-      expect(op.type).toBe('AppendChild');
-      expect(op.nodeIndex).toBe(1);
-
-      op = icuDebugOps[i++];
-      expect(op.__raw_opCode).toEqual({marker: 'element'});
-      expect(op.type).toBe('ELEMENT_MARKER');
-
-      op = icuDebugOps[i++];
-      expect(op.__raw_opCode).toBe('b');
-      expect(op.type).toBe('Create Text Node');
-      expect(op.nodeIndex).toBe(3);
-      expect(op.text).toBe('b');
-
-      op = icuDebugOps[i++];
-      expect(op.__raw_opCode).toBe(131073);
-      expect(op.type).toBe('AppendChild');
-      expect(op.nodeIndex).toBe(1);
-
-      op = icuDebugOps[i++];
-      expect(op.__raw_opCode).toBe(28);
-      expect(op.type).toBe('Attr');
-      expect(op.nodeIndex).toBe(3);
-      expect(op.attrName).toBe('title');
-      expect(op.attrValue).toBe('none');
-
-      op = icuDebugOps[i++];
-      expect(op.__raw_opCode).toBe('emails');
-      expect(op.type).toBe('Create Text Node');
-      expect(op.nodeIndex).toBe(4);
-      expect(op.text).toBe('emails');
-
-      op = icuDebugOps[i++];
-      expect(op.__raw_opCode).toBe(393217);
-      expect(op.type).toBe('AppendChild');
-      expect(op.nodeIndex).toBe(3);
-
-      op = icuDebugOps[i++];
-      expect(op.__raw_opCode).toBe('!');
-      expect(op.type).toBe('Create Text Node');
-      expect(op.nodeIndex).toBe(5);
-      expect(op.text).toBe('!');
-
-      op = icuDebugOps[i++];
-      expect(op.__raw_opCode).toBe(131073);
-      expect(op.type).toBe('AppendChild');
-      expect(op.nodeIndex).toBe(1);
+                        ɵɵi18nStart(index, MSG_DIV);
+                      }, null, nbConsts, index) as TI18n;
 
       expect(opCodes).toEqual({
         vars: 5,
-        create: [
-          COMMENT_MARKER, 'ICU 1', icuCommentNodeIndex,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
-        ],
-        update: [
-          0b1,  // mask for ICU main binding
-          3,    // skip 3 if not changed
-          -1,   // icu main binding
-          icuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuSwitch, tIcuIndex,
-          0b11,  // mask for all ICU bindings
-          2,     // skip 2 if not changed
-          icuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuUpdate, tIcuIndex
-        ],
-        icus: [{
+        update: debugMatch([
+          'if (mask & 0b1) { icuSwitchCase(lView[1] as Comment, 0, `${lView[1]}`); }',
+          'if (mask & 0b11) { icuUpdateCase(lView[1] as Comment, 0); }',
+        ]),
+        create: debugMatch([
+          'lView[1] = document.createComment("ICU 1")',
+          '(lView[0] as Element).appendChild(lView[1])',
+        ]),
+        icus: [<TIcu>{
           type: 1,
           vars: [4, 3, 3],
           childIcus: [[], [], []],
           cases: ['0', '1', 'other'],
           create: [
-            [
-              'no ',
-              firstTextNodeIndex,
-              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-              ELEMENT_MARKER,
-              'b',
-              bElementNodeIndex,
-              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-              bElementNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Attr,
-              'title',
-              'none',
-              'emails',
-              innerTextNode,
-              bElementNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-              '!',
-              lastTextNode,
-              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-            ],
-            [
-              'one ', firstTextNodeIndex,
-              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-              ELEMENT_MARKER, 'i', iElementNodeIndex,
-              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-              'email', innerTextNode,
-              iElementNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
-            ],
-            [
-              '', firstTextNodeIndex,
-              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-              ELEMENT_MARKER, 'span', spanElementNodeIndex,
-              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-              'emails', innerTextNode,
-              spanElementNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
-            ]
+            debugMatch([
+              'lView[2] = document.createTextNode("no ")',
+              '(lView[1] as Element).appendChild(lView[2])',
+              'lView[3] = document.createElement("b")',
+              '(lView[1] as Element).appendChild(lView[3])',
+              '(lView[3] as Element).setAttribute("title", "none")',
+              'lView[4] = document.createTextNode("emails")',
+              '(lView[3] as Element).appendChild(lView[4])',
+              'lView[5] = document.createTextNode("!")',
+              '(lView[1] as Element).appendChild(lView[5])'
+            ]),
+            debugMatch([
+              'lView[2] = document.createTextNode("one ")',
+              '(lView[1] as Element).appendChild(lView[2])',
+              'lView[3] = document.createElement("i")',
+              '(lView[1] as Element).appendChild(lView[3])',
+              'lView[4] = document.createTextNode("email")',
+              '(lView[3] as Element).appendChild(lView[4])'
+            ]),
+            debugMatch([
+              'lView[2] = document.createTextNode("")',
+              '(lView[1] as Element).appendChild(lView[2])',
+              'lView[3] = document.createElement("span")',
+              '(lView[1] as Element).appendChild(lView[3])',
+              'lView[4] = document.createTextNode("emails")',
+              '(lView[3] as Element).appendChild(lView[4])'
+            ])
           ],
           remove: [
-            [
-              firstTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-              innerTextNode << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-              bElementNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-              lastTextNode << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-            ],
-            [
-              firstTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-              innerTextNode << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-              iElementNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-            ],
-            [
-              firstTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-              innerTextNode << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-              spanElementNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-            ]
+            debugMatch([
+              '(lView[0] as Element).remove(lView[2])',
+              '(lView[0] as Element).remove(lView[4])',
+              '(lView[0] as Element).remove(lView[3])',
+              '(lView[0] as Element).remove(lView[5])',
+            ]),
+            debugMatch([
+              '(lView[0] as Element).remove(lView[2])',
+              '(lView[0] as Element).remove(lView[4])',
+              '(lView[0] as Element).remove(lView[3])',
+            ]),
+            debugMatch([
+              '(lView[0] as Element).remove(lView[2])',
+              '(lView[0] as Element).remove(lView[4])',
+              '(lView[0] as Element).remove(lView[3])',
+            ])
           ],
           update: [
-            [], [],
-            [
-              0b1,  // mask for the first binding
-              3,    // skip 3 if not changed
-              -1,   // binding index
-              ' ',  // text string to concatenate to the binding value
-              firstTextNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text,
-              0b10,  // mask for the title attribute binding
-              4,     // skip 4 if not changed
-              -2,    // binding index
-              bElementNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr,
-              'title',  // attribute name
-              null      // sanitize function
-            ]
+            debugMatch([]), debugMatch([]), debugMatch([
+              'if (mask & 0b1) { (lView[2] as Text).textContent = `${lView[1]} `; }',
+              'if (mask & 0b10) { (lView[3] as Element).setAttribute(\'title\', `${lView[2]}`); }'
+            ])
           ]
         }]
       });
@@ -496,19 +356,14 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 6,
-        create: [
-          COMMENT_MARKER, 'ICU 1', icuCommentNodeIndex,
-          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
-        ],
-        update: [
-          0b1,  // mask for ICU main binding
-          3,    // skip 3 if not changed
-          -1,   // icu main binding
-          icuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuSwitch, tIcuIndex,
-          0b11,  // mask for all ICU bindings
-          2,     // skip 2 if not changed
-          icuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuUpdate, tIcuIndex
-        ],
+        create: debugMatch([
+          'lView[1] = document.createComment("ICU 1")',
+          '(lView[0] as Element).appendChild(lView[1])'
+        ]),
+        update: debugMatch([
+          'if (mask & 0b1) { icuSwitchCase(lView[1] as Comment, 1, `${lView[1]}`); }',
+          'if (mask & 0b11) { icuUpdateCase(lView[1] as Comment, 1); }'
+        ]),
         icus: [
           {
             type: 0,
@@ -516,28 +371,29 @@ describe('Runtime i18n', () => {
             childIcus: [[], [], []],
             cases: ['cat', 'dog', 'other'],
             create: [
-              [
-                'cats', nestedTextNodeIndex,
-                nestedIcuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT |
-                    I18nMutateOpCode.AppendChild
-              ],
-              [
-                'dogs', nestedTextNodeIndex,
-                nestedIcuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT |
-                    I18nMutateOpCode.AppendChild
-              ],
-              [
-                'animals', nestedTextNodeIndex,
-                nestedIcuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT |
-                    I18nMutateOpCode.AppendChild
-              ]
+              debugMatch([
+                'lView[5] = document.createTextNode("cats")',
+                '(lView[3] as Element).appendChild(lView[5])'
+              ]),
+              debugMatch([
+                'lView[5] = document.createTextNode("dogs")',
+                '(lView[3] as Element).appendChild(lView[5])'
+              ]),
+              debugMatch([
+                'lView[5] = document.createTextNode("animals")',
+                '(lView[3] as Element).appendChild(lView[5])'
+              ]),
             ],
             remove: [
-              [nestedTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove],
-              [nestedTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove],
-              [nestedTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove]
+              debugMatch(['(lView[0] as Element).remove(lView[5])']),
+              debugMatch(['(lView[0] as Element).remove(lView[5])']),
+              debugMatch(['(lView[0] as Element).remove(lView[5])'])
             ],
-            update: [[], [], []]
+            update: [
+              debugMatch([]),
+              debugMatch([]),
+              debugMatch([]),
+            ]
           },
           {
             type: 1,
@@ -545,48 +401,33 @@ describe('Runtime i18n', () => {
             childIcus: [[], [0]],
             cases: ['0', 'other'],
             create: [
-              [
-                'zero', firstTextNodeIndex,
-                icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
-              ],
-              [
-                '', firstTextNodeIndex,
-                icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-                COMMENT_MARKER, 'nested ICU 0', nestedIcuCommentNodeIndex,
-                icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-                '!', lastTextNodeIndex,
-                icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
-              ]
+              debugMatch([
+                'lView[2] = document.createTextNode("zero")',
+                '(lView[1] as Element).appendChild(lView[2])'
+              ]),
+              debugMatch([
+                'lView[2] = document.createTextNode("")',
+                '(lView[1] as Element).appendChild(lView[2])',
+                'lView[3] = document.createComment("nested ICU 0")',
+                '(lView[1] as Element).appendChild(lView[3])',
+                'lView[4] = document.createTextNode("!")',
+                '(lView[1] as Element).appendChild(lView[4])'
+              ]),
             ],
             remove: [
-              [firstTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove],
-              [
-                firstTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-                lastTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-                0 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.RemoveNestedIcu,
-                nestedIcuCommentNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
-              ]
+              debugMatch(['(lView[0] as Element).remove(lView[2])']),
+              debugMatch([
+                '(lView[0] as Element).remove(lView[2])', '(lView[0] as Element).remove(lView[4])',
+                'removeNestedICU(0)', '(lView[0] as Element).remove(lView[3])'
+              ]),
             ],
             update: [
-              [],
-              [
-                0b1,  // mask for ICU main binding
-                3,    // skip 3 if not changed
-                -1,   // binding index
-                ' ',  // text string to concatenate to the binding value
-                firstTextNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text,
-                0b10,  // mask for inner ICU main binding
-                3,     // skip 3 if not changed
-                -2,    // inner ICU main binding
-                nestedIcuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF |
-                    I18nUpdateOpCode.IcuSwitch,
-                nestedTIcuIndex,
-                0b10,  // mask for all inner ICU bindings
-                2,     // skip 2 if not changed
-                nestedIcuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF |
-                    I18nUpdateOpCode.IcuUpdate,
-                nestedTIcuIndex
-              ]
+              debugMatch([]),
+              debugMatch([
+                'if (mask & 0b1) { (lView[2] as Text).textContent = `${lView[1]} `; }',
+                'if (mask & 0b10) { icuSwitchCase(lView[3] as Comment, 0, `${lView[2]}`); }',
+                'if (mask & 0b10) { icuUpdateCase(lView[3] as Comment, 0); }'
+              ]),
             ]
           }
         ]
@@ -623,13 +464,9 @@ describe('Runtime i18n', () => {
         ɵɵi18nAttributes(index, MSG_div_attr);
       }, null, nbConsts, index);
 
-      expect(opCodes).toEqual([
-        0b1,  // bindings mask
-        6,    // if no update, skip 4
-        'Hello ',
-        -1,  // binding index
-        '!', (index - 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr, 'title', null
-      ]);
+      expect(opCodes).toEqual(debugMatch([
+        'if (mask & 0b1) { (lView[0] as Element).setAttribute(\'title\', `Hello ${lView[1]}!`); }'
+      ]));
     });
 
     it('for multiple bindings', () => {
@@ -641,12 +478,9 @@ describe('Runtime i18n', () => {
         ɵɵi18nAttributes(index, MSG_div_attr);
       }, null, nbConsts, index);
 
-      expect(opCodes).toEqual([
-        0b11,  // bindings mask
-        10,    // size
-        'Hello ', -1, ' and ', -2, ', again ', -1, '!',
-        (index - 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr, 'title', null
-      ]);
+      expect(opCodes).toEqual(debugMatch([
+        'if (mask & 0b11) { (lView[0] as Element).setAttribute(\'title\', `Hello ${lView[1]} and ${lView[2]}, again ${lView[1]}!`); }'
+      ]));
     });
 
     it('for multiple attributes', () => {
@@ -658,18 +492,10 @@ describe('Runtime i18n', () => {
         ɵɵi18nAttributes(index, MSG_div_attr);
       }, null, nbConsts, index);
 
-      expect(opCodes).toEqual([
-        0b1,  // bindings mask
-        6,    // if no update, skip 4
-        'Hello ',
-        -1,  // binding index
-        '!', (index - 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr, 'title', null,
-        0b1,  // bindings mask
-        6,    // if no update, skip 4
-        'Hello ',
-        -1,  // binding index
-        '!', (index - 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr, 'aria-label', null
-      ]);
+      expect(opCodes).toEqual(debugMatch([
+        'if (mask & 0b1) { (lView[0] as Element).setAttribute(\'title\', `Hello ${lView[1]}!`); }',
+        'if (mask & 0b1) { (lView[0] as Element).setAttribute(\'aria-label\', `Hello ${lView[1]}!`); }'
+      ]));
     });
   });
 
