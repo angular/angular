@@ -104,6 +104,15 @@ describe('MatTable', () => {
       expect(table.textContent.trim()).not.toContain('No data');
     });
 
+    it('should show the no data row if there is no data on init', () => {
+      const fixture = TestBed.createComponent(MatTableApp);
+      fixture.componentInstance.dataSource!.data = [];
+      fixture.detectChanges();
+
+      const table = fixture.nativeElement.querySelector('.mat-table')!;
+      expect(table.textContent.trim()).toContain('No data');
+    });
+
   });
 
   it('should be able to render a table correctly with native elements', () => {

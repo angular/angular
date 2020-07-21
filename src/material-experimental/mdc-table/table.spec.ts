@@ -117,6 +117,15 @@ describe('MDC-based MatTable', () => {
       expect(tbody.textContent.trim()).not.toContain('No data');
     });
 
+    it('should show the no data row if there is no data on init', () => {
+      const fixture = TestBed.createComponent(MatTableApp);
+      fixture.componentInstance.dataSource!.data = [];
+      fixture.detectChanges();
+
+      const tbody = fixture.nativeElement.querySelector('tbody')!;
+      expect(tbody.textContent.trim()).toContain('No data');
+    });
+
   });
 
   it('should render with MatTableDataSource and sort', () => {

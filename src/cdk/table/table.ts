@@ -512,6 +512,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     this._renderRows = this._getAllRenderRows();
     const changes = this._dataDiffer.diff(this._renderRows);
     if (!changes) {
+      this._updateNoDataRow();
       return;
     }
 

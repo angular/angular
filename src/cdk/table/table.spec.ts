@@ -301,6 +301,14 @@ describe('CdkTable', () => {
       expect(tableElement.textContent!.trim()).not.toContain('No data');
     });
 
+    it('should show the no data row if there is no data on init', () => {
+      fixture.destroy();
+      fixture = TestBed.createComponent(SimpleCdkTableApp);
+      fixture.componentInstance.dataSource.data = [];
+      fixture.detectChanges();
+      tableElement = fixture.nativeElement.querySelector('.cdk-table');
+      expect(tableElement.textContent!.trim()).toContain('No data');
+    });
   });
 
   it('should render no rows when the data is null', fakeAsync(() => {
