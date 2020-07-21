@@ -8,7 +8,7 @@
 
 import {Platform} from '@angular/cdk/platform';
 import {Injectable, NgZone, OnDestroy, Optional, Inject} from '@angular/core';
-import {merge, of as observableOf, fromEvent, Observable, Subscription} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {auditTime} from 'rxjs/operators';
 import {DOCUMENT} from '@angular/common';
 
@@ -31,10 +31,12 @@ export class ViewportRuler implements OnDestroy {
   private _viewportSize: {width: number; height: number};
 
   /** Stream of viewport change events. */
-  private _change: Observable<Event>;
+  private _change = new Subject<Event>();
 
-  /** Subscription to streams that invalidate the cached viewport dimensions. */
-  private _invalidateCache: Subscription;
+  /** Event listener that will be used to handle the viewport change events. */
+  private _changeListener = (event: Event) => {
+    this._change.next(event);
+  }
 
   /** Used to reference correct document/window */
   protected _document?: Document;
@@ -46,20 +48,29 @@ export class ViewportRuler implements OnDestroy {
     this._document = document;
 
     ngZone.runOutsideAngular(() => {
-      const window = this._getWindow();
+      if (_platform.isBrowser) {
+        const window = this._getWindow();
 
-      this._change = _platform.isBrowser ?
-          merge(fromEvent(window, 'resize'), fromEvent(window, 'orientationchange')) :
-          observableOf();
+        // Note that bind the events ourselves, rather than going through something like RxJS's
+        // `fromEvent` so that we can ensure that they're bound outside of the NgZone.
+        window.addEventListener('resize', this._changeListener);
+        window.addEventListener('orientationchange', this._changeListener);
+      }
 
-      // Note that we need to do the subscription inside `runOutsideAngular`
-      // since subscribing is what causes the event listener to be added.
-      this._invalidateCache = this.change().subscribe(() => this._updateViewportSize());
+      // We don't need to keep track of the subscription,
+      // because we complete the `change` stream on destroy.
+      this.change().subscribe(() => this._updateViewportSize());
     });
   }
 
   ngOnDestroy() {
-    this._invalidateCache.unsubscribe();
+    if (this._platform.isBrowser) {
+      const window = this._getWindow();
+      window.removeEventListener('resize', this._changeListener);
+      window.removeEventListener('orientationchange', this._changeListener);
+    }
+
+    this._change.complete();
   }
 
   /** Returns the viewport's width and height. */
