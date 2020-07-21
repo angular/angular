@@ -16,7 +16,7 @@ type CommitMessageConfig = validateConfig.CommitMessageConfig;
 // Constants
 const config: {commitMessage: CommitMessageConfig} = {
   commitMessage: {
-    maxLineLength: 120,
+    maxLineLength: 100,
     minBodyLength: 0,
     types: [
       'feat',
@@ -70,7 +70,7 @@ describe('validate-commit-message.js', () => {
 
     it('should validate max length', () => {
       const msg =
-          'fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer and longer and longer and longer...';
+          'fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer and longer...';
 
       expect(validateCommitMessage(msg)).toBe(INVALID);
       expect(lastError).toContain(`The commit message header is longer than ${
@@ -240,7 +240,7 @@ describe('validate-commit-message.js', () => {
     describe('minBodyLength', () => {
       const minBodyLengthConfig: {commitMessage: CommitMessageConfig} = {
         commitMessage: {
-          maxLineLength: 120,
+          maxLineLength: 100,
           minBodyLength: 30,
           minBodyLengthTypeExcludes: ['docs'],
           types: ['fix', 'docs'],
