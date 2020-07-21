@@ -38,14 +38,6 @@ You can then inject the `HttpClient` service as a dependency of an application c
   header="app/config/config.service.ts (excerpt)">
 </code-example>
 
-The `HttpClient` service makes use of [observables](guide/glossary#observable "Observable definition") for all transactions. You must import the RxJS observable and operator symbols that appear in the example snippets. These `ConfigService` imports are typical.
-
-<code-example
-  path="http/src/app/config/config.service.ts"
-  region="rxjs-imports"
-  header="app/config/config.service.ts (RxJS imports)">
-</code-example>
-
 <div class="alert is-helpful">
 
 You can run the <live-example></live-example> that accompanies this guide.
