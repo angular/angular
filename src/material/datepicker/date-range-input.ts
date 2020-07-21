@@ -19,6 +19,7 @@ import {
   Self,
   ElementRef,
   Inject,
+  OnChanges,
 } from '@angular/core';
 import {MatFormFieldControl, MatFormField, MAT_FORM_FIELD} from '@angular/material/form-field';
 import {ThemePalette, DateAdapter} from '@angular/material/core';
@@ -61,7 +62,7 @@ let nextUniqueId = 0;
 })
 export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   MatDatepickerControl<D>, MatDateRangeInputParent<D>, MatDateRangePickerInput<D>,
-  AfterContentInit, OnDestroy {
+  AfterContentInit, OnChanges, OnDestroy {
   /** Current value of the range input. */
   get value() {
     return this._model ? this._model.selection : null;
@@ -154,7 +155,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
 
     if (newValue !== this._groupDisabled) {
       this._groupDisabled = newValue;
-      this._disabledChange.next(this.disabled);
+      this._stateChanges.next(undefined);
     }
   }
   _groupDisabled = false;
@@ -200,8 +201,8 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
    */
   ngControl: NgControl | null;
 
-  /** Emits when the input's disabled state changes. */
-  _disabledChange = new Subject<boolean>();
+  /** Emits when the input's state changes. */
+  _stateChanges = new Subject<void>();
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -255,14 +256,18 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
 
     // We don't need to unsubscribe from this, because we
     // know that the input streams will be completed on destroy.
-    merge(this._startInput._disabledChange, this._endInput._disabledChange).subscribe(() => {
-      this._disabledChange.next(this.disabled);
+    merge(this._startInput.stateChanges, this._endInput.stateChanges).subscribe(() => {
+      this._stateChanges.next(undefined);
     });
+  }
+
+  ngOnChanges() {
+    this._stateChanges.next(undefined);
   }
 
   ngOnDestroy() {
     this.stateChanges.complete();
-    this._disabledChange.unsubscribe();
+    this._stateChanges.unsubscribe();
   }
 
   /** Gets the date at which the calendar should start. */
@@ -292,7 +297,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
 
   /** Handles the value in one of the child inputs changing. */
   _handleChildValueChange() {
-    this.stateChanges.next();
+    this.stateChanges.next(undefined);
     this._changeDetectorRef.markForCheck();
   }
 

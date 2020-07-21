@@ -116,9 +116,9 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
   }
 
   private _watchStateChanges() {
-    const datepickerDisabled = this.datepicker ? this.datepicker._disabledChange : observableOf();
-    const inputDisabled = this.datepicker && this.datepicker._datepickerInput ?
-        this.datepicker._datepickerInput._disabledChange : observableOf();
+    const datepickerStateChanged = this.datepicker ? this.datepicker._stateChanges : observableOf();
+    const inputStateChanged = this.datepicker && this.datepicker._datepickerInput ?
+        this.datepicker._datepickerInput._stateChanges : observableOf();
     const datepickerToggled = this.datepicker ?
         merge(this.datepicker.openedStream, this.datepicker.closedStream) :
         observableOf();
@@ -126,8 +126,8 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
     this._stateChanges.unsubscribe();
     this._stateChanges = merge(
       this._intl.changes,
-      datepickerDisabled,
-      inputDisabled,
+      datepickerStateChanged,
+      inputStateChanged,
       datepickerToggled
     ).subscribe(() => this._changeDetectorRef.markForCheck());
   }

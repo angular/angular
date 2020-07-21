@@ -18,6 +18,7 @@ import {
   Optional,
   Output,
   AfterViewInit,
+  OnChanges,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -31,7 +32,7 @@ import {
   MAT_DATE_FORMATS,
   MatDateFormats,
 } from '@angular/material/core';
-import {Subscription} from 'rxjs';
+import {Subscription, Subject} from 'rxjs';
 import {createMissingDateImplError} from './datepicker-errors';
 import {
   ExtractDateTypeFromSelection,
@@ -63,7 +64,7 @@ export type DateFilterFn<D> = (date: D | null) => boolean;
 /** Base class for datepicker inputs. */
 @Directive()
 export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection<S>>
-  implements ControlValueAccessor, AfterViewInit, OnDestroy, Validator {
+  implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy, Validator {
 
   /** Whether the component has been initialized. */
   private _isInitialized: boolean;
@@ -96,7 +97,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
 
     if (this._disabled !== newValue) {
       this._disabled = newValue;
-      this._disabledChange.emit(newValue);
+      this._stateChanges.next(undefined);
     }
 
     // We need to null check the `blur` method, because it's undefined during SSR.
@@ -123,8 +124,8 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   /** Emits when the value changes (either due to user input or programmatic change). */
   _valueChange = new EventEmitter<D | null>();
 
-  /** Emits when the disabled state has changed */
-  _disabledChange = new EventEmitter<boolean>();
+  /** Emits when the internal state has changed */
+  _stateChanges = new Subject<void>();
 
   _onTouched = () => {};
   _validatorOnChange = () => {};
@@ -263,11 +264,15 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
     this._isInitialized = true;
   }
 
+  ngOnChanges() {
+    this._stateChanges.next(undefined);
+  }
+
   ngOnDestroy() {
     this._valueChangesSubscription.unsubscribe();
     this._localeSubscription.unsubscribe();
     this._valueChange.complete();
-    this._disabledChange.complete();
+    this._stateChanges.complete();
   }
 
   /** @docs-private */

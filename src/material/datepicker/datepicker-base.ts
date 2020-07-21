@@ -48,7 +48,7 @@ import {
   ThemePalette,
 } from '@angular/material/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {merge, Subject, Observable} from 'rxjs';
+import {merge, Subject, Observable, Subscription} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {MatCalendar} from './calendar';
 import {matDatepickerAnimations} from './datepicker-animations';
@@ -126,6 +126,7 @@ const _MatDatepickerContentMixinBase: CanColorCtor & typeof MatDatepickerContent
 })
 export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
   extends _MatDatepickerContentMixinBase implements AfterViewInit, OnDestroy, CanColor {
+  private _subscriptions = new Subscription();
 
   /** Reference to the internal calendar component. */
   @ViewChild(MatCalendar) _calendar: MatCalendar<D>;
@@ -164,10 +165,18 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
   }
 
   ngAfterViewInit() {
+    // @breaking-change 11.0.0 Remove null check for `_changeDetectorRef.
+    if (this._changeDetectorRef) {
+      this._subscriptions.add(this.datepicker._stateChanges.subscribe(() => {
+        this._changeDetectorRef!.markForCheck();
+      }));
+    }
+
     this._calendar.focusActiveCell();
   }
 
   ngOnDestroy() {
+    this._subscriptions.unsubscribe();
     this._animationDone.complete();
   }
 
@@ -223,7 +232,7 @@ export interface MatDatepickerControl<D> {
   disabled: boolean;
   dateFilter: DateFilterFn<D>;
   getConnectedOverlayOrigin(): ElementRef;
-  _disabledChange: Observable<boolean>;
+  _stateChanges: Observable<void>;
 }
 
 /** Base class for a datepicker. */
@@ -231,6 +240,7 @@ export interface MatDatepickerControl<D> {
 export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   D = ExtractDateTypeFromSelection<S>> implements OnDestroy, CanColor, OnChanges {
   private _scrollStrategy: () => ScrollStrategy;
+  private _inputStateChanges = Subscription.EMPTY;
 
   /** An input indicating the type of the custom header component for the calendar, if set. */
   @Input() calendarHeaderComponent: ComponentType<any>;
@@ -283,7 +293,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
 
     if (newValue !== this._disabled) {
       this._disabled = newValue;
-      this._disabledChange.next(newValue);
+      this._stateChanges.next(undefined);
     }
   }
   private _disabled: boolean;
@@ -359,8 +369,8 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   /** The input element this datepicker is associated with. */
   _datepickerInput: C;
 
-  /** Emits when the datepicker is disabled. */
-  readonly _disabledChange = new Subject<boolean>();
+  /** Emits when the datepicker's state changes. */
+  readonly _stateChanges = new Subject<void>();
 
   constructor(private _dialog: MatDialog,
               private _overlay: Overlay,
@@ -389,12 +399,15 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
         this._popupRef.updatePosition();
       }
     }
+
+    this._stateChanges.next(undefined);
   }
 
   ngOnDestroy() {
     this._destroyPopup();
     this.close();
-    this._disabledChange.complete();
+    this._inputStateChanges.unsubscribe();
+    this._stateChanges.complete();
   }
 
   /** Selects the given date */
@@ -421,7 +434,10 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     if (this._datepickerInput) {
       throw Error('A MatDatepicker can only be associated with a single input.');
     }
+    this._inputStateChanges.unsubscribe();
     this._datepickerInput = input;
+    this._inputStateChanges =
+        input._stateChanges.subscribe(() => this._stateChanges.next(undefined));
     return this._model;
   }
 
