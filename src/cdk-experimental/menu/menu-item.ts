@@ -145,7 +145,7 @@ export class CdkMenuItem implements FocusableOption {
         if (this._isParentVertical() && !this.hasMenu()) {
           event.preventDefault();
           this._dir?.value === 'rtl'
-            ? this._getMenuStack().closeLatest(FocusNext.previousItem)
+            ? this._getMenuStack().close(this._parentMenu, FocusNext.previousItem)
             : this._getMenuStack().closeAll(FocusNext.nextItem);
         }
         break;
@@ -155,7 +155,7 @@ export class CdkMenuItem implements FocusableOption {
           event.preventDefault();
           this._dir?.value === 'rtl'
             ? this._getMenuStack().closeAll(FocusNext.nextItem)
-            : this._getMenuStack().closeLatest(FocusNext.previousItem);
+            : this._getMenuStack().close(this._parentMenu, FocusNext.previousItem);
         }
         break;
     }

@@ -154,11 +154,11 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
 
   /** Subscribe to the MenuStack close and empty observables. */
   private _subscribeToMenuStack() {
-    this._menuStack.close
+    this._menuStack.closed
       .pipe(takeUntil(this._destroyed))
       .subscribe((item: MenuStackItem) => this._closeOpenMenu(item));
 
-    this._menuStack.empty
+    this._menuStack.emptied
       .pipe(takeUntil(this._destroyed))
       .subscribe((event: FocusNext) => this._toggleOpenMenu(event));
   }

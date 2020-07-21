@@ -111,6 +111,7 @@ export class CdkMenuItemTrigger implements OnDestroy {
 
       this._overlayRef!.detach();
     }
+    this._getMenuStack().closeSubMenuOf(this._parentMenu);
   }
 
   /** Return true if the trigger has an attached menu */
@@ -150,7 +151,7 @@ export class CdkMenuItemTrigger implements OnDestroy {
         if (this._isParentVertical()) {
           event.preventDefault();
           if (this._directionality?.value === 'rtl') {
-            this._getMenuStack().closeLatest(FocusNext.currentItem);
+            this._getMenuStack().close(this._parentMenu, FocusNext.currentItem);
           } else {
             this.openMenu();
             this.menuPanel?._menu?.focusFirstItem('keyboard');
@@ -165,7 +166,7 @@ export class CdkMenuItemTrigger implements OnDestroy {
             this.openMenu();
             this.menuPanel?._menu?.focusFirstItem('keyboard');
           } else {
-            this._getMenuStack().closeLatest(FocusNext.currentItem);
+            this._getMenuStack().close(this._parentMenu, FocusNext.currentItem);
           }
         }
         break;

@@ -40,14 +40,14 @@ export class MenuStack {
   private readonly _empty: Subject<FocusNext> = new Subject();
 
   /** Observable which emits the MenuStackItem which has been requested to close. */
-  readonly close: Observable<MenuStackItem> = this._close;
+  readonly closed: Observable<MenuStackItem> = this._close.asObservable();
 
   /**
    * Observable which emits when the MenuStack is empty after popping off the last element. It
    * emits a FocusNext event which specifies the action the closer has requested the listener
    * perform.
    */
-  readonly empty: Observable<FocusNext> = this._empty;
+  readonly emptied: Observable<FocusNext> = this._empty.asObservable();
 
   /** @param menu the MenuStackItem to put on the stack. */
   push(menu: MenuStackItem) {
@@ -55,16 +55,36 @@ export class MenuStack {
   }
 
   /**
-   *  Pop off the top most MenuStackItem and emit it on the close observable.
-   *  @param focusNext the event to emit on the `empty` observable if the method call resulted in an
-   *  empty stack. Does not emit if the stack was initially empty.
+   * Pop items off of the stack up to and including `lastItem` and emit each on the close
+   * observable. If the stack is empty or `lastItem` is not on the stack it does nothing.
+   * @param lastItem the last item to pop off the stack.
+   * @param focusNext the event to emit on the `empty` observable if the method call resulted in an
+   * empty stack. Does not emit if the stack was initially empty or if `lastItem` was not on the
+   * stack.
    */
-  closeLatest(focusNext?: FocusNext) {
-    const menuStackItem = this._elements.pop();
-    if (menuStackItem) {
-      this._close.next(menuStackItem);
-      if (this._elements.length === 0) {
+  close(lastItem: MenuStackItem, focusNext?: FocusNext) {
+    if (this._elements.indexOf(lastItem) >= 0) {
+      let poppedElement;
+      do {
+        poppedElement = this._elements.pop();
+        this._close.next(poppedElement);
+      } while (poppedElement !== lastItem);
+
+      if (this.isEmpty()) {
         this._empty.next(focusNext);
+      }
+    }
+  }
+
+  /**
+   * Pop items off of the stack up to but excluding `lastItem` and emit each on the close
+   * observable. If the stack is empty or `lastItem` is not on the stack it does nothing.
+   * @param lastItem the element which should be left on the stack
+   */
+  closeSubMenuOf(lastItem: MenuStackItem) {
+    if (this._elements.indexOf(lastItem) >= 0) {
+      while (this.peek() !== lastItem) {
+        this._close.next(this._elements.pop());
       }
     }
   }
@@ -75,8 +95,8 @@ export class MenuStack {
    * not emit if the stack was initially empty.
    */
   closeAll(focusNext?: FocusNext) {
-    if (this._elements.length) {
-      while (this._elements.length) {
+    if (!this.isEmpty()) {
+      while (!this.isEmpty()) {
         const menuStackItem = this._elements.pop();
         if (menuStackItem) {
           this._close.next(menuStackItem);
@@ -85,5 +105,20 @@ export class MenuStack {
 
       this._empty.next(focusNext);
     }
+  }
+
+  /** Return true if this stack is empty. */
+  isEmpty() {
+    return !this._elements.length;
+  }
+
+  /** Return the length of the stack. */
+  length() {
+    return this._elements.length;
+  }
+
+  /** Get the top most element on the stack. */
+  peek() {
+    return this._elements[this._elements.length - 1];
   }
 }

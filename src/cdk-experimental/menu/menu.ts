@@ -151,7 +151,7 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
       case ESCAPE:
         if (!hasModifierKey(event)) {
           event.preventDefault();
-          this._menuStack.closeLatest(FocusNext.currentItem);
+          this._menuStack.close(this, FocusNext.currentItem);
         }
         break;
 
@@ -219,11 +219,11 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
 
   /** Subscribe to the MenuStack close and empty observables. */
   private _subscribeToMenuStack() {
-    this._menuStack.close
+    this._menuStack.closed
       .pipe(takeUntil(this.closed))
       .subscribe((item: MenuStackItem) => this._closeOpenMenu(item));
 
-    this._menuStack.empty
+    this._menuStack.emptied
       .pipe(takeUntil(this.closed))
       .subscribe((event: FocusNext) => this._toggleMenuFocus(event));
   }
