@@ -1,8 +1,7 @@
 # The RxJS library
 
-Angular makes use of and extends [RxJS](https://rxjs.dev/guide/overview "RxJS documentation") (Reactive Extensions for JavaScript), a library for [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming "Wikipedia"). RxJS observables make it easier to compose asynchronous or callback-based code.
-
-RxJS provides an implementation of the `Observable` type. The library also provides utility functions for creating and working with observables. You can use these utility functions to accomplish the following tasks:
+ The  [RxJS](https://rxjs.dev/guide/overview "RxJS documentation") library, which provides the basic `Observable` type, also provides utility functions for creating and working with observables.
+ You can import these from the `rxjs` library in your Angular application, and use them to accomplish the following tasks:
 
 * Convert existing code for async operations into observables
 * Iterate through the values in a stream

@@ -1,7 +1,9 @@
 # Using observables to pass values
 
 Observables provide support for passing messages between parts of your application.
-They are used frequently in Angular and are the recommended technique for event handling, asynchronous programming, and handling multiple values.
+They are used frequently in the Angular API, and are the recommended technique for event handling, asynchronous programming, and handling multiple values.
+
+## How observables work
 
 The observer pattern is a software design pattern in which an object (sometimes called the *subject*) maintains a list of its dependents, called *observers*, and notifies them automatically of state changes.
 This pattern is similar (but not identical) to the [publish/subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern "Wikipedia") design pattern.
@@ -12,6 +14,9 @@ The subscribed consumer then receives notifications until the function completes
 An observable can deliver multiple values of any type&mdash;literals, messages, or events, depending on the context. The API for receiving values is the same whether the values are delivered synchronously or asynchronously. Because setup and teardown logic are both handled by the observable, your application code only needs to worry about subscribing to consume values, and when done, unsubscribing. Whether the stream was keystrokes, an HTTP response, or an interval timer, the interface for listening to values and stopping listening is the same.
 
 Because of these advantages, observables are used extensively within Angular, and are recommended for app development as well.
+
+Angular makes use of and extends [RxJS](https://rxjs.dev/guide/overview "RxJS documentation") (Reactive Extensions for JavaScript), a library for [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming "Wikipedia").
+RxJS provides an implementation of the `Observable` type, which makes it easier to compose asynchronous or callback-based code in TypeScript applications, as well as many useful [operators and utility functions](guide/rx-library "Using RxJS functions and operators").
 
 ## Basic usage and terms
 
