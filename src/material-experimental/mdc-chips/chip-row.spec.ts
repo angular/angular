@@ -120,7 +120,7 @@ describe('MDC-based Row Chips', () => {
         });
 
         it('DELETE emits the (removed) event', () => {
-          const DELETE_EVENT = createKeyboardEvent('keydown', DELETE) as KeyboardEvent;
+          const DELETE_EVENT = createKeyboardEvent('keydown', DELETE);
 
           spyOn(testComponent, 'chipRemove');
 
@@ -135,7 +135,7 @@ describe('MDC-based Row Chips', () => {
         });
 
         it('BACKSPACE emits the (removed) event', () => {
-          const BACKSPACE_EVENT = createKeyboardEvent('keydown', BACKSPACE) as KeyboardEvent;
+          const BACKSPACE_EVENT = createKeyboardEvent('keydown', BACKSPACE);
 
           spyOn(testComponent, 'chipRemove');
 
@@ -150,7 +150,7 @@ describe('MDC-based Row Chips', () => {
         });
 
         it('arrow key navigation does not emit the (removed) event', () => {
-          const ARROW_KEY_EVENT = createKeyboardEvent('keydown', RIGHT_ARROW) as KeyboardEvent;
+          const ARROW_KEY_EVENT = createKeyboardEvent('keydown', RIGHT_ARROW);
 
           spyOn(testComponent, 'chipRemove');
 
@@ -172,7 +172,7 @@ describe('MDC-based Row Chips', () => {
         });
 
         it('DELETE does not emit the (removed) event', () => {
-          const DELETE_EVENT = createKeyboardEvent('keydown', DELETE) as KeyboardEvent;
+          const DELETE_EVENT = createKeyboardEvent('keydown', DELETE);
 
           spyOn(testComponent, 'chipRemove');
 
@@ -187,7 +187,7 @@ describe('MDC-based Row Chips', () => {
         });
 
         it('BACKSPACE does not emit the (removed) event', () => {
-          const BACKSPACE_EVENT = createKeyboardEvent('keydown', BACKSPACE) as KeyboardEvent;
+          const BACKSPACE_EVENT = createKeyboardEvent('keydown', BACKSPACE);
 
           spyOn(testComponent, 'chipRemove');
 
@@ -253,7 +253,7 @@ describe('MDC-based Row Chips', () => {
       it('should begin editing on ENTER', () => {
         chipInstance.focus();
         const primaryActionElement = chipNativeElement.querySelector('.mdc-chip__primary-action')!;
-        const enterEvent = createKeyboardEvent('keydown', ENTER, 'Enter', primaryActionElement);
+        const enterEvent = createKeyboardEvent('keydown', ENTER, 'Enter');
         dispatchEvent(primaryActionElement, enterEvent);
         expect(chipNativeElement.classList).toContain('mdc-chip--editing');
       });
@@ -279,7 +279,7 @@ describe('MDC-based Row Chips', () => {
 
       function keyDownOnPrimaryAction(keyCode: number, key: string) {
         const primaryActionElement = chipNativeElement.querySelector('.mdc-chip__primary-action')!;
-        const keyDownEvent = createKeyboardEvent('keydown', keyCode, key, primaryActionElement);
+        const keyDownEvent = createKeyboardEvent('keydown', keyCode, key);
         dispatchEvent(primaryActionElement, keyDownEvent);
       }
 

@@ -251,7 +251,7 @@ describe('MatChip', () => {
         });
 
         it('should selects/deselects the currently focused chip on SPACE', () => {
-          const SPACE_EVENT: KeyboardEvent = createKeyboardEvent('keydown', SPACE) as KeyboardEvent;
+          const SPACE_EVENT = createKeyboardEvent('keydown', SPACE);
           const CHIP_SELECTED_EVENT: MatChipSelectionChange = {
             source: chipInstance,
             isUserInput: true,
@@ -313,7 +313,7 @@ describe('MatChip', () => {
         });
 
         it('SPACE ignores selection', () => {
-          const SPACE_EVENT: KeyboardEvent = createKeyboardEvent('keydown', SPACE) as KeyboardEvent;
+          const SPACE_EVENT = createKeyboardEvent('keydown', SPACE);
 
           spyOn(testComponent, 'chipSelectionChange');
 
@@ -337,7 +337,7 @@ describe('MatChip', () => {
         });
 
         it('DELETE emits the (removed) event', () => {
-          const DELETE_EVENT = createKeyboardEvent('keydown', DELETE) as KeyboardEvent;
+          const DELETE_EVENT = createKeyboardEvent('keydown', DELETE);
 
           spyOn(testComponent, 'chipRemove');
 
@@ -349,7 +349,7 @@ describe('MatChip', () => {
         });
 
         it('BACKSPACE emits the (removed) event', () => {
-          const BACKSPACE_EVENT = createKeyboardEvent('keydown', BACKSPACE) as KeyboardEvent;
+          const BACKSPACE_EVENT = createKeyboardEvent('keydown', BACKSPACE);
 
           spyOn(testComponent, 'chipRemove');
 
@@ -368,7 +368,7 @@ describe('MatChip', () => {
         });
 
         it('DELETE does not emit the (removed) event', () => {
-          const DELETE_EVENT = createKeyboardEvent('keydown', DELETE) as KeyboardEvent;
+          const DELETE_EVENT = createKeyboardEvent('keydown', DELETE);
 
           spyOn(testComponent, 'chipRemove');
 
@@ -380,7 +380,7 @@ describe('MatChip', () => {
         });
 
         it('BACKSPACE does not emit the (removed) event', () => {
-          const BACKSPACE_EVENT = createKeyboardEvent('keydown', BACKSPACE) as KeyboardEvent;
+          const BACKSPACE_EVENT = createKeyboardEvent('keydown', BACKSPACE);
 
           spyOn(testComponent, 'chipRemove');
 

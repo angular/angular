@@ -405,9 +405,8 @@ describe('MDC-based MatMenu', () => {
     fixture.componentInstance.trigger.openMenu();
 
     const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
-    const event = createKeyboardEvent('keydown', ESCAPE);
+    const event = createKeyboardEvent('keydown', ESCAPE, undefined, {alt: true});
 
-    Object.defineProperty(event, 'altKey', {get: () => true});
     dispatchEvent(panel, event);
     fixture.detectChanges();
     tick(500);
@@ -788,8 +787,7 @@ describe('MDC-based MatMenu', () => {
 
     spyOn(items[0], 'focus').and.callThrough();
 
-    const event = createKeyboardEvent('keydown', HOME);
-    Object.defineProperty(event, 'altKey', {get: () => true});
+    const event = createKeyboardEvent('keydown', HOME, undefined, {alt: true});
 
     dispatchEvent(panel, event);
     fixture.detectChanges();
@@ -833,8 +831,7 @@ describe('MDC-based MatMenu', () => {
 
     spyOn(items[items.length - 1], 'focus').and.callThrough();
 
-    const event = createKeyboardEvent('keydown', END);
-    Object.defineProperty(event, 'altKey', {get: () => true});
+    const event = createKeyboardEvent('keydown', END, undefined, {alt: true});
 
     dispatchEvent(panel, event);
     fixture.detectChanges();

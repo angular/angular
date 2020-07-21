@@ -225,7 +225,7 @@ describe('MatSelectionList without forms', () => {
 
     it('should be able to use keyboard select with SPACE', () => {
       const testListItem = listOptions[1].nativeElement as HTMLElement;
-      const SPACE_EVENT = createKeyboardEvent('keydown', SPACE, undefined, testListItem);
+      const SPACE_EVENT = createKeyboardEvent('keydown', SPACE);
       const selectList =
           selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
       expect(selectList.selected.length).toBe(0);
@@ -241,7 +241,7 @@ describe('MatSelectionList without forms', () => {
 
     it('should be able to select an item using ENTER', () => {
       const testListItem = listOptions[1].nativeElement as HTMLElement;
-      const ENTER_EVENT = createKeyboardEvent('keydown', ENTER, undefined, testListItem);
+      const ENTER_EVENT = createKeyboardEvent('keydown', ENTER);
       const selectList =
           selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
       expect(selectList.selected.length).toBe(0);
@@ -263,8 +263,7 @@ describe('MatSelectionList without forms', () => {
       expect(selectList.selected.length).toBe(0);
 
       [ENTER, SPACE].forEach(key => {
-        const event = createKeyboardEvent('keydown', key, undefined, testListItem);
-        Object.defineProperty(event, 'ctrlKey', { get: () => true });
+        const event = createKeyboardEvent('keydown', key, undefined, {control: true});
 
         dispatchFakeEvent(testListItem, 'focus');
         selectionList.componentInstance._keydown(event);
@@ -284,8 +283,7 @@ describe('MatSelectionList without forms', () => {
       listOptions[1].componentInstance.disabled = true;
 
       dispatchFakeEvent(testListItem, 'focus');
-      selectionList.componentInstance._keydown(
-          createKeyboardEvent('keydown', SPACE, undefined, testListItem));
+      selectionList.componentInstance._keydown(createKeyboardEvent('keydown', SPACE));
       fixture.detectChanges();
 
       expect(selectionModel.selected.length).toBe(0);
@@ -369,8 +367,7 @@ describe('MatSelectionList without forms', () => {
       });
 
     it('should focus previous item when press UP ARROW', () => {
-      let testListItem = listOptions[2].nativeElement as HTMLElement;
-      let UP_EVENT = createKeyboardEvent('keydown', UP_ARROW, undefined, testListItem);
+      let UP_EVENT = createKeyboardEvent('keydown', UP_ARROW);
       let manager = selectionList.componentInstance._keyManager;
 
       dispatchFakeEvent(listOptions[2].nativeElement, 'focus');
@@ -385,8 +382,7 @@ describe('MatSelectionList without forms', () => {
 
     it('should focus and toggle the next item when pressing SHIFT + UP_ARROW', () => {
       const manager = selectionList.componentInstance._keyManager;
-      const upKeyEvent = createKeyboardEvent('keydown', UP_ARROW);
-      Object.defineProperty(upKeyEvent, 'shiftKey', {get: () => true});
+      const upKeyEvent = createKeyboardEvent('keydown', UP_ARROW, undefined, {shift: true});
 
       dispatchFakeEvent(listOptions[3].nativeElement, 'focus');
       expect(manager.activeItemIndex).toBe(3);
@@ -421,8 +417,7 @@ describe('MatSelectionList without forms', () => {
 
     it('should focus and toggle the next item when pressing SHIFT + DOWN_ARROW', () => {
       const manager = selectionList.componentInstance._keyManager;
-      const downKeyEvent = createKeyboardEvent('keydown', DOWN_ARROW);
-      Object.defineProperty(downKeyEvent, 'shiftKey', {get: () => true});
+      const downKeyEvent = createKeyboardEvent('keydown', DOWN_ARROW, undefined, {shift: true});
 
       dispatchFakeEvent(listOptions[0].nativeElement, 'focus');
       expect(manager.activeItemIndex).toBe(0);
@@ -458,8 +453,7 @@ describe('MatSelectionList without forms', () => {
       const manager = selectionList.componentInstance._keyManager;
       expect(manager.activeItemIndex).toBe(-1);
 
-      const event = createKeyboardEvent('keydown', HOME);
-      Object.defineProperty(event, 'shiftKey', { get: () => true });
+      const event = createKeyboardEvent('keydown', HOME, undefined, {shift: true});
 
       dispatchEvent(selectionList.nativeElement, event);
       fixture.detectChanges();
@@ -483,8 +477,7 @@ describe('MatSelectionList without forms', () => {
       const manager = selectionList.componentInstance._keyManager;
       expect(manager.activeItemIndex).toBe(-1);
 
-      const event = createKeyboardEvent('keydown', END);
-      Object.defineProperty(event, 'shiftKey', { get: () => true });
+      const event = createKeyboardEvent('keydown', END, undefined, {shift: true});
 
       dispatchEvent(selectionList.nativeElement, event);
       fixture.detectChanges();
@@ -495,8 +488,7 @@ describe('MatSelectionList without forms', () => {
 
     it('should select all items using ctrl + a', () => {
       listOptions.forEach(option => option.componentInstance.disabled = false);
-      const event = createKeyboardEvent('keydown', A, selectionList.nativeElement);
-      Object.defineProperty(event, 'ctrlKey', {get: () => true});
+      const event = createKeyboardEvent('keydown', A, undefined, {control: true});
 
       expect(listOptions.some(option => option.componentInstance.selected)).toBe(false);
 
@@ -507,8 +499,7 @@ describe('MatSelectionList without forms', () => {
     });
 
     it('should not select disabled items when pressing ctrl + a', () => {
-      const event = createKeyboardEvent('keydown', A, selectionList.nativeElement);
-      Object.defineProperty(event, 'ctrlKey', {get: () => true});
+      const event = createKeyboardEvent('keydown', A, undefined, {control: true});
 
       listOptions.slice(0, 2).forEach(option => option.componentInstance.disabled = true);
       fixture.detectChanges();
@@ -524,8 +515,7 @@ describe('MatSelectionList without forms', () => {
     });
 
     it('should select all items using ctrl + a if some items are selected', () => {
-      const event = createKeyboardEvent('keydown', A, selectionList.nativeElement);
-      Object.defineProperty(event, 'ctrlKey', {get: () => true});
+      const event = createKeyboardEvent('keydown', A, undefined, {control: true});
 
       listOptions.slice(0, 2).forEach(option => option.componentInstance.selected = true);
       fixture.detectChanges();
@@ -539,8 +529,7 @@ describe('MatSelectionList without forms', () => {
     });
 
     it('should deselect all with ctrl + a if all options are selected', () => {
-      const event = createKeyboardEvent('keydown', A, selectionList.nativeElement);
-      Object.defineProperty(event, 'ctrlKey', {get: () => true});
+      const event = createKeyboardEvent('keydown', A, undefined, {control: true});
 
       listOptions.forEach(option => option.componentInstance.selected = true);
       fixture.detectChanges();
@@ -615,8 +604,7 @@ describe('MatSelectionList without forms', () => {
       fixture.detectChanges();
       tick(100); // Tick only half the typeahead timeout.
 
-      selectionList.componentInstance._keydown(
-        createKeyboardEvent('keydown', SPACE, undefined, testListItem));
+      selectionList.componentInstance._keydown(createKeyboardEvent('keydown', SPACE));
       fixture.detectChanges();
       tick(100); // Tick the rest of the timeout.
 
@@ -1035,8 +1023,7 @@ describe('MatSelectionList without forms', () => {
     });
 
     it('should do nothing when pressing ctrl + a', () => {
-      const event = createKeyboardEvent('keydown', A, selectionList.nativeElement);
-      Object.defineProperty(event, 'ctrlKey', {get: () => true});
+      const event = createKeyboardEvent('keydown', A, undefined, {control: true});
 
       expect(listOptions.every(option => !option.componentInstance.selected)).toBe(true);
 
@@ -1049,8 +1036,7 @@ describe('MatSelectionList without forms', () => {
     it('should focus, but not toggle, the next item when pressing SHIFT + UP_ARROW in single ' +
       'selection mode', () => {
         const manager = selectionList.componentInstance._keyManager;
-        const upKeyEvent = createKeyboardEvent('keydown', UP_ARROW);
-        Object.defineProperty(upKeyEvent, 'shiftKey', {get: () => true});
+        const upKeyEvent = createKeyboardEvent('keydown', UP_ARROW, undefined, {shift: true});
 
         dispatchFakeEvent(listOptions[3].nativeElement, 'focus');
         expect(manager.activeItemIndex).toBe(3);
@@ -1068,8 +1054,7 @@ describe('MatSelectionList without forms', () => {
     it('should focus, but not toggle, the next item when pressing SHIFT + DOWN_ARROW ' +
       'in single selection mode', () => {
         const manager = selectionList.componentInstance._keyManager;
-        const downKeyEvent = createKeyboardEvent('keydown', DOWN_ARROW);
-        Object.defineProperty(downKeyEvent, 'shiftKey', {get: () => true});
+        const downKeyEvent = createKeyboardEvent('keydown', DOWN_ARROW, undefined, {shift: true});
 
         dispatchFakeEvent(listOptions[0].nativeElement, 'focus');
         expect(manager.activeItemIndex).toBe(0);

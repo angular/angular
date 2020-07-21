@@ -58,13 +58,13 @@ export function typeInElement(element: HTMLElement, ...modifiersAndKeys: any) {
 
   triggerFocus(element);
   for (const key of keys) {
-    dispatchKeyboardEvent(element, 'keydown', key.keyCode, key.key, element, modifiers);
-    dispatchKeyboardEvent(element, 'keypress', key.keyCode, key.key, element, modifiers);
+    dispatchKeyboardEvent(element, 'keydown', key.keyCode, key.key, modifiers);
+    dispatchKeyboardEvent(element, 'keypress', key.keyCode, key.key, modifiers);
     if (isTextInput(element) && key.key && key.key.length === 1) {
       element.value += key.key;
       dispatchFakeEvent(element, 'input');
     }
-    dispatchKeyboardEvent(element, 'keyup', key.keyCode, key.key, element, modifiers);
+    dispatchKeyboardEvent(element, 'keyup', key.keyCode, key.key, modifiers);
   }
 }
 

@@ -170,7 +170,7 @@ describe('MenuBar', () => {
         it('should not focus the last item when pressing end with modifier', () => {
           focusMenuBar();
 
-          const event = createKeyboardEvent('keydown', END, '', undefined, {control: true});
+          const event = createKeyboardEvent('keydown', END, '', {control: true});
           dispatchEvent(nativeMenuBar, event);
           detectChanges();
 
@@ -182,7 +182,7 @@ describe('MenuBar', () => {
           dispatchKeyboardEvent(nativeMenuBar, 'keydown', END);
           detectChanges();
 
-          let event = createKeyboardEvent('keydown', HOME, '', undefined, {control: true});
+          let event = createKeyboardEvent('keydown', HOME, '', {control: true});
           dispatchEvent(nativeMenuBar, event);
           detectChanges();
 
@@ -328,7 +328,7 @@ describe('MenuBar', () => {
         it('should not focus the last item when pressing end with modifier', () => {
           openFileMenu();
 
-          const event = createKeyboardEvent('keydown', END, '', undefined, {control: true});
+          const event = createKeyboardEvent('keydown', END, '', {control: true});
           dispatchEvent(nativeMenus[0], event);
           detectChanges();
 
@@ -340,7 +340,7 @@ describe('MenuBar', () => {
           dispatchKeyboardEvent(nativeMenus[0], 'keydown', END);
           detectChanges();
 
-          const event = createKeyboardEvent('keydown', HOME, '', undefined, {control: true});
+          const event = createKeyboardEvent('keydown', HOME, '', {control: true});
           dispatchEvent(nativeMenus[0], event);
           detectChanges();
 
@@ -422,7 +422,7 @@ describe('MenuBar', () => {
         it('should not close submenu and focus parent on escape with modifier', () => {
           openFileMenu();
           openShareMenu();
-          const event = createKeyboardEvent('keydown', ESCAPE, '', undefined, {control: true});
+          const event = createKeyboardEvent('keydown', ESCAPE, '', {control: true});
 
           dispatchEvent(nativeMenus[1], event);
           detectChanges();

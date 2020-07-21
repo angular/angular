@@ -1012,8 +1012,7 @@ describe('MatSlider', () => {
         UP_ARROW, DOWN_ARROW, RIGHT_ARROW,
         LEFT_ARROW, PAGE_DOWN, PAGE_UP, HOME, END
       ].forEach(key => {
-        const event = createKeyboardEvent('keydown', key);
-        Object.defineProperty(event, 'altKey', {get: () => true});
+        const event = createKeyboardEvent('keydown', key, undefined, {alt: true});
         dispatchEvent(sliderNativeElement, event);
         fixture.detectChanges();
         expect(event.defaultPrevented).toBe(false);

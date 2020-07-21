@@ -40,15 +40,12 @@ describe('Dialog', () => {
   let testViewContainerRef: ViewContainerRef;
   let viewContainerFixture: ComponentFixture<ComponentWithChildViewContainer>;
   let mockLocation: SpyLocation;
+  let overlayContainer: OverlayContainer;
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [DialogModule, DialogTestModule],
       providers: [
-        {provide: OverlayContainer, useFactory: () => {
-          overlayContainerElement = document.createElement('div');
-          return {getContainerElement: () => overlayContainerElement};
-        }},
         {provide: Location, useClass: SpyLocation}
       ],
     });
@@ -56,9 +53,12 @@ describe('Dialog', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([Dialog, Location], (d: Dialog, l: Location) => {
+  beforeEach(inject([Dialog, Location, OverlayContainer],
+      (d: Dialog, l: Location, o: OverlayContainer) => {
     dialog = d;
     mockLocation = l as SpyLocation;
+    overlayContainer = o;
+    overlayContainerElement = o.getContainerElement();
   }));
 
   beforeEach(() => {
@@ -67,6 +67,8 @@ describe('Dialog', () => {
     viewContainerFixture.detectChanges();
     testViewContainerRef = viewContainerFixture.componentInstance.childViewContainer;
   });
+
+  afterEach(() => overlayContainer.ngOnDestroy());
 
   it('should open a dialog with a component', () => {
     let dialogRef = dialog.openFromComponent(PizzaMsg, {
@@ -234,8 +236,7 @@ describe('Dialog', () => {
     dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
 
     viewContainerFixture.detectChanges();
-    const event = createKeyboardEvent('keydown', ESCAPE);
-    Object.defineProperty(event, 'altKey', {get: () => true});
+    const event = createKeyboardEvent('keydown', ESCAPE, undefined, {alt: true});
     dispatchEvent(document.body, event);
     viewContainerFixture.detectChanges();
     flush();
@@ -311,9 +312,10 @@ describe('Dialog', () => {
 
     let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
     let container = overlayContainerElement.querySelector('cdk-dialog-container') as HTMLElement;
+
     dispatchKeyboardEvent(document.body, 'keydown', A);
-    dispatchKeyboardEvent(document.body, 'keydown', A, undefined, backdrop);
-    dispatchKeyboardEvent(document.body, 'keydown', A, undefined, container);
+    dispatchKeyboardEvent(backdrop, 'keydown', A);
+    dispatchKeyboardEvent(container, 'keydown', A);
 
     expect(spy).toHaveBeenCalledTimes(3);
   }));

@@ -122,8 +122,7 @@ describe('MDC-based Chip Remove', () => {
       testChip.removable = true;
       fixture.detectChanges();
 
-      const event = createKeyboardEvent('keydown', SPACE);
-      Object.defineProperty(event, 'shiftKey', {get: () => true});
+      const event = createKeyboardEvent('keydown', SPACE, undefined, {shift: true});
       dispatchEvent(buttonElement, event);
       fixture.detectChanges();
 
@@ -148,8 +147,7 @@ describe('MDC-based Chip Remove', () => {
       testChip.removable = true;
       fixture.detectChanges();
 
-      const event = createKeyboardEvent('keydown', ENTER);
-      Object.defineProperty(event, 'shiftKey', {get: () => true});
+      const event = createKeyboardEvent('keydown', ENTER, undefined, {shift: true});
       dispatchEvent(buttonElement, event);
       fixture.detectChanges();
 

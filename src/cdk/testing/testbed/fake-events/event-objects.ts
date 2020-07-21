@@ -97,18 +97,19 @@ export function createTouchEvent(type: string, pageX = 0, pageY = 0) {
 }
 
 /**
- * Dispatches a keydown event from an element.
+ * Creates a keyboard event with the specified key and modifiers.
  * @docs-private
  */
 export function createKeyboardEvent(type: string, keyCode: number = 0, key: string = '',
-                                    target?: Element, modifiers: ModifierKeys = {}) {
-  const event = document.createEvent('KeyboardEvent') as any;
-  const originalPreventDefault = event.preventDefault;
+                                    modifiers: ModifierKeys = {}) {
+  const event = document.createEvent('KeyboardEvent');
+  const originalPreventDefault = event.preventDefault.bind(event);
 
   // Firefox does not support `initKeyboardEvent`, but supports `initKeyEvent`.
-  if (event.initKeyEvent) {
-    event.initKeyEvent(type, true, true, window, modifiers.control, modifiers.alt, modifiers.shift,
-        modifiers.meta, keyCode);
+  // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/initKeyEvent.
+  if ((event as any).initKeyEvent !== undefined) {
+    (event as any).initKeyEvent(type, true, true, window, modifiers.control, modifiers.alt,
+        modifiers.shift, modifiers.meta, keyCode);
   } else {
     // `initKeyboardEvent` expects to receive modifiers as a whitespace-delimited string
     // See https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/initKeyboardEvent
@@ -130,7 +131,10 @@ export function createKeyboardEvent(type: string, keyCode: number = 0, key: stri
       modifiersList += 'Meta ';
     }
 
-    event.initKeyboardEvent(type,
+    // TS3.6 removed the `initKeyboardEvent` method and suggested porting to
+    // `new KeyboardEvent()` constructor. We cannot use that as we support IE11.
+    // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/initKeyboardEvent.
+    (event as any).initKeyboardEvent(type,
         true, /* canBubble */
         true, /* cancelable */
         window, /* view */
@@ -145,7 +149,6 @@ export function createKeyboardEvent(type: string, keyCode: number = 0, key: stri
   // See related bug https://bugs.webkit.org/show_bug.cgi?id=16735
   defineReadonlyEventProperty(event, 'keyCode', keyCode);
   defineReadonlyEventProperty(event, 'key', key);
-  defineReadonlyEventProperty(event, 'target', target);
   defineReadonlyEventProperty(event, 'ctrlKey', !!modifiers.control);
   defineReadonlyEventProperty(event, 'altKey', !!modifiers.alt);
   defineReadonlyEventProperty(event, 'shiftKey', !!modifiers.shift);
@@ -154,7 +157,7 @@ export function createKeyboardEvent(type: string, keyCode: number = 0, key: stri
   // IE won't set `defaultPrevented` on synthetic events so we need to do it manually.
   event.preventDefault = function() {
     defineReadonlyEventProperty(event, 'defaultPrevented', true);
-    return originalPreventDefault.apply(this, arguments);
+    return originalPreventDefault();
   };
 
   return event;

@@ -211,12 +211,8 @@ describe('MDC-based MatTabHeader', () => {
     });
 
     it('should not do anything if a modifier key is pressed', () => {
-      const rightArrowEvent = createKeyboardEvent('keydown', RIGHT_ARROW);
-      const enterEvent = createKeyboardEvent('keydown', ENTER);
-
-      [rightArrowEvent, enterEvent].forEach(event => {
-        Object.defineProperty(event, 'shiftKey', {get: () => true});
-      });
+      const rightArrowEvent = createKeyboardEvent('keydown', RIGHT_ARROW, undefined, {shift: true});
+      const enterEvent = createKeyboardEvent('keydown', ENTER, undefined, {shift: true});
 
       appComponent.tabHeader.focusIndex = 0;
       fixture.detectChanges();

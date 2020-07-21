@@ -1310,7 +1310,7 @@ function assertSelectKeyWithModifierInteraction(fixture: ComponentFixture<any>,
       .toBe(0, 'Expected index of selected step to remain unchanged after pressing the next key.');
 
   modifiers.forEach(modifier => {
-    const event: KeyboardEvent = createKeyboardEvent('keydown', selectionKey);
+    const event = createKeyboardEvent('keydown', selectionKey);
     Object.defineProperty(event, modifier, {get: () => true});
     dispatchEvent(stepHeaders[1].nativeElement, event);
     fixture.detectChanges();

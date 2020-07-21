@@ -1160,8 +1160,7 @@ describe('MatAutocomplete', () => {
 
     it('should close the panel when pressing ALT + UP_ARROW', fakeAsync(() => {
       const trigger = fixture.componentInstance.trigger;
-      const upArrowEvent = createKeyboardEvent('keydown', UP_ARROW);
-      Object.defineProperty(upArrowEvent, 'altKey', {get: () => true});
+      const upArrowEvent = createKeyboardEvent('keydown', UP_ARROW, undefined, {alt: true});
       spyOn(upArrowEvent, 'stopPropagation').and.callThrough();
 
       input.focus();

@@ -454,8 +454,7 @@ describe('MatDatepicker', () => {
 
         expect(testComponent.datepicker.opened).toBe(true);
 
-        const event = createKeyboardEvent('keydown', UP_ARROW);
-        Object.defineProperty(event, 'altKey', {get: () => true});
+        const event = createKeyboardEvent('keydown', UP_ARROW, undefined, {alt: true});
 
         dispatchEvent(document.body, event);
         fixture.detectChanges();
@@ -467,8 +466,7 @@ describe('MatDatepicker', () => {
       it('should open the datepicker using ALT + DOWN_ARROW', fakeAsync(() => {
         expect(testComponent.datepicker.opened).toBe(false);
 
-        const event = createKeyboardEvent('keydown', DOWN_ARROW);
-        Object.defineProperty(event, 'altKey', {get: () => true});
+        const event = createKeyboardEvent('keydown', DOWN_ARROW, undefined, {alt: true});
 
         dispatchEvent(fixture.nativeElement.querySelector('input'), event);
         fixture.detectChanges();
@@ -485,8 +483,7 @@ describe('MatDatepicker', () => {
 
         input.setAttribute('readonly', 'true');
 
-        const event = createKeyboardEvent('keydown', DOWN_ARROW);
-        Object.defineProperty(event, 'altKey', {get: () => true});
+        const event = createKeyboardEvent('keydown', DOWN_ARROW, undefined, {alt: true});
 
         dispatchEvent(input, event);
         fixture.detectChanges();
@@ -511,8 +508,7 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
 
         expect(() => {
-          const event = createKeyboardEvent('keydown', DOWN_ARROW);
-          Object.defineProperty(event, 'altKey', {get: () => true});
+          const event = createKeyboardEvent('keydown', DOWN_ARROW, undefined, {alt: true});
           dispatchEvent(fixture.nativeElement.querySelector('input'), event);
           fixture.detectChanges();
           flush();

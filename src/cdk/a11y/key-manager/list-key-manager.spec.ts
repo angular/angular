@@ -723,8 +723,7 @@ describe('Key managers', () => {
       }));
 
       it('should not move focus if a modifier, that is not allowed, is pressed', fakeAsync(() => {
-        const tEvent = createKeyboardEvent('keydown', 84, 't');
-        Object.defineProperty(tEvent, 'ctrlKey', {get: () => true});
+        const tEvent = createKeyboardEvent('keydown', 84, 't', {control: true});
 
         expect(keyManager.activeItem).toBeFalsy();
 
@@ -735,8 +734,7 @@ describe('Key managers', () => {
       }));
 
       it('should always allow the shift key', fakeAsync(() => {
-        const tEvent = createKeyboardEvent('keydown', 84, 't');
-        Object.defineProperty(tEvent, 'shiftKey', {get: () => true});
+        const tEvent = createKeyboardEvent('keydown', 84, 't', {shift: true});
 
         expect(keyManager.activeItem).toBeFalsy();
 

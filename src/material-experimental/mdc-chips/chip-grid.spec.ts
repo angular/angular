@@ -1,24 +1,25 @@
 import {animate, style, transition, trigger} from '@angular/animations';
-import {Directionality, Direction} from '@angular/cdk/bidi';
+import {Direction, Directionality} from '@angular/cdk/bidi';
 import {
   BACKSPACE,
   DELETE,
+  END,
   ENTER,
+  HOME,
   LEFT_ARROW,
   RIGHT_ARROW,
   SPACE,
-  TAB,
-  HOME,
-  END
+  TAB
 } from '@angular/cdk/keycodes';
 import {
   createFakeEvent,
   createKeyboardEvent,
+  dispatchEvent,
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
-  typeInElement,
   MockNgZone,
+  typeInElement,
 } from '@angular/cdk/testing/private';
 import {
   Component,
@@ -30,7 +31,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import {fakeAsync, ComponentFixture, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -268,7 +269,6 @@ describe('MDC-based MatChipGrid', () => {
           let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
           let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
-          let LEFT_EVENT = createKeyboardEvent('keydown', LEFT_ARROW, undefined, lastNativeChip);
           let array = chips.toArray();
           let lastRowIndex = array.length - 1;
           let lastChip = array[lastRowIndex];
@@ -279,7 +279,8 @@ describe('MDC-based MatChipGrid', () => {
           expect(manager.activeColumnIndex).toEqual(0);
 
           // Press the LEFT arrow
-          chipGridInstance._keydown(LEFT_EVENT);
+          dispatchKeyboardEvent(lastNativeChip, 'keydown', LEFT_ARROW);
+
           chipGridInstance._blur(); // Simulate focus leaving the list and going to the chip.
           fixture.detectChanges();
 
@@ -292,8 +293,6 @@ describe('MDC-based MatChipGrid', () => {
           let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
           let firstNativeChip = nativeChips[0] as HTMLElement;
 
-          let RIGHT_EVENT: KeyboardEvent =
-            createKeyboardEvent('keydown', RIGHT_ARROW, undefined, firstNativeChip);
           let array = chips.toArray();
           let firstItem = array[0];
 
@@ -303,7 +302,7 @@ describe('MDC-based MatChipGrid', () => {
           expect(manager.activeColumnIndex).toEqual(0);
 
           // Press the RIGHT arrow
-          chipGridInstance._keydown(RIGHT_EVENT);
+          dispatchKeyboardEvent(firstNativeChip, 'keydown', RIGHT_ARROW);
           chipGridInstance._blur(); // Simulate focus leaving the list and going to the chip.
           fixture.detectChanges();
 
@@ -313,11 +312,9 @@ describe('MDC-based MatChipGrid', () => {
         });
 
         it('should not handle arrow key events from non-chip elements', () => {
-          const event: KeyboardEvent =
-              createKeyboardEvent('keydown', RIGHT_ARROW, undefined, chipGridNativeElement);
           const initialActiveIndex = manager.activeRowIndex;
 
-          chipGridInstance._keydown(event);
+          dispatchKeyboardEvent(chipGridNativeElement, 'keydown', RIGHT_ARROW);
           fixture.detectChanges();
 
           expect(manager.activeRowIndex)
@@ -335,8 +332,6 @@ describe('MDC-based MatChipGrid', () => {
           let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
           let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
-          let RIGHT_EVENT: KeyboardEvent =
-              createKeyboardEvent('keydown', RIGHT_ARROW, undefined, lastNativeChip);
           let array = chips.toArray();
           let lastRowIndex = array.length - 1;
           let lastItem = array[lastRowIndex];
@@ -348,7 +343,7 @@ describe('MDC-based MatChipGrid', () => {
 
 
           // Press the RIGHT arrow
-          chipGridInstance._keydown(RIGHT_EVENT);
+          dispatchKeyboardEvent(lastNativeChip, 'keydown', RIGHT_ARROW);
           chipGridInstance._blur(); // Simulate focus leaving the list and going to the chip.
           fixture.detectChanges();
 
@@ -361,8 +356,6 @@ describe('MDC-based MatChipGrid', () => {
           let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
           let firstNativeChip = nativeChips[0] as HTMLElement;
 
-          let LEFT_EVENT: KeyboardEvent =
-              createKeyboardEvent('keydown', LEFT_ARROW, undefined, firstNativeChip);
           let array = chips.toArray();
           let firstItem = array[0];
 
@@ -373,7 +366,7 @@ describe('MDC-based MatChipGrid', () => {
 
 
           // Press the LEFT arrow
-          chipGridInstance._keydown(LEFT_EVENT);
+          dispatchKeyboardEvent(firstNativeChip, 'keydown', LEFT_ARROW);
           chipGridInstance._blur(); // Simulate focus leaving the list and going to the chip.
           fixture.detectChanges();
 
@@ -386,8 +379,7 @@ describe('MDC-based MatChipGrid', () => {
           let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
           let firstNativeChip = nativeChips[0] as HTMLElement;
 
-          chipGridInstance._keydown(
-              createKeyboardEvent('keydown', TAB, undefined, firstNativeChip));
+          dispatchKeyboardEvent(firstNativeChip, 'keydown', TAB);
 
           expect(chipGridInstance.tabIndex)
             .toBe(-1, 'Expected tabIndex to be set to -1 temporarily.');
@@ -408,9 +400,7 @@ describe('MDC-based MatChipGrid', () => {
           let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
           let firstNativeChip = nativeChips[0] as HTMLElement;
 
-          chipGridInstance._keydown(
-              createKeyboardEvent('keydown', TAB, undefined, firstNativeChip));
-
+          dispatchKeyboardEvent(firstNativeChip, 'keydown', TAB);
           expect(chipGridInstance.tabIndex)
             .toBe(-1, 'Expected tabIndex to be set to -1 temporarily.');
 
@@ -427,8 +417,7 @@ describe('MDC-based MatChipGrid', () => {
         let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
         let firstNativeChip = nativeChips[0] as HTMLElement;
 
-        let RIGHT_EVENT: KeyboardEvent =
-          createKeyboardEvent('keydown', RIGHT_ARROW, undefined, firstNativeChip);
+        let RIGHT_EVENT = createKeyboardEvent('keydown', RIGHT_ARROW);
         let array = chips.toArray();
         let firstItem = array[0];
 
@@ -436,7 +425,7 @@ describe('MDC-based MatChipGrid', () => {
         expect(manager.activeRowIndex).toBe(0);
         expect(manager.activeColumnIndex).toBe(0);
 
-        chipGridInstance._keydown(RIGHT_EVENT);
+        dispatchEvent(firstNativeChip, RIGHT_EVENT);
         chipGridInstance._blur();
         fixture.detectChanges();
 
@@ -461,8 +450,7 @@ describe('MDC-based MatChipGrid', () => {
         const nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
         const lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
-        const HOME_EVENT: KeyboardEvent =
-          createKeyboardEvent('keydown', HOME, undefined, lastNativeChip);
+        const HOME_EVENT = createKeyboardEvent('keydown', HOME);
         const array = chips.toArray();
         const lastItem = array[array.length - 1];
 
@@ -470,7 +458,7 @@ describe('MDC-based MatChipGrid', () => {
         expect(manager.activeRowIndex).toBe(4);
         expect(manager.activeColumnIndex).toBe(0);
 
-        chipGridInstance._keydown(HOME_EVENT);
+        dispatchEvent(lastNativeChip, HOME_EVENT);
         fixture.detectChanges();
 
         expect(HOME_EVENT.defaultPrevented).toBe(true);
@@ -485,8 +473,7 @@ describe('MDC-based MatChipGrid', () => {
         const nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
         const firstNativeChip = nativeChips[0] as HTMLElement;
 
-        const END_EVENT: KeyboardEvent =
-          createKeyboardEvent('keydown', END, undefined, firstNativeChip);
+        const END_EVENT = createKeyboardEvent('keydown', END);
         const array = chips.toArray();
         const firstItem = array[0];
 
@@ -494,7 +481,7 @@ describe('MDC-based MatChipGrid', () => {
         expect(manager.activeRowIndex).toBe(0);
         expect(manager.activeColumnIndex).toBe(0);
 
-        chipGridInstance._keydown(END_EVENT);
+        dispatchEvent(firstNativeChip, END_EVENT);
         fixture.detectChanges();
 
         expect(END_EVENT.defaultPrevented).toBe(true);
@@ -510,8 +497,9 @@ describe('MDC-based MatChipGrid', () => {
 
         const array = chips.toArray();
         const firstItem = array[0];
+
         firstItem.focus();
-        firstItem._keydown(createKeyboardEvent('keydown', ENTER, 'Enter', document.activeElement!));
+        dispatchKeyboardEvent(document.activeElement!, 'keydown', ENTER, 'Enter');
         fixture.detectChanges();
 
         const activeRowIndex = manager.activeRowIndex;
@@ -519,9 +507,7 @@ describe('MDC-based MatChipGrid', () => {
 
         const KEYS_TO_IGNORE = [HOME, END, LEFT_ARROW, RIGHT_ARROW];
         for (const key of KEYS_TO_IGNORE) {
-          const event: KeyboardEvent =
-              createKeyboardEvent('keydown', key, undefined, document.activeElement!);
-          chipGridInstance._keydown(event);
+          dispatchKeyboardEvent(document.activeElement!, 'keydown', key);
           fixture.detectChanges();
 
           expect(manager.activeRowIndex).toBe(activeRowIndex);
@@ -559,8 +545,6 @@ describe('MDC-based MatChipGrid', () => {
 
         it('should not focus the last chip when press DELETE', () => {
           let nativeInput = fixture.nativeElement.querySelector('input');
-          let DELETE_EVENT: KeyboardEvent =
-              createKeyboardEvent('keydown', DELETE, nativeInput);
 
           // Focus the input
           nativeInput.focus();
@@ -568,7 +552,7 @@ describe('MDC-based MatChipGrid', () => {
           expect(manager.activeColumnIndex).toBe(-1);
 
           // Press the DELETE key
-          chipGridInstance._keydown(DELETE_EVENT);
+          dispatchKeyboardEvent(nativeInput, 'keydown', DELETE);
           fixture.detectChanges();
 
           // It doesn't focus the last chip
@@ -578,8 +562,6 @@ describe('MDC-based MatChipGrid', () => {
 
         it('should focus the last chip when press BACKSPACE', () => {
           let nativeInput = fixture.nativeElement.querySelector('input');
-          let BACKSPACE_EVENT: KeyboardEvent =
-              createKeyboardEvent('keydown', BACKSPACE, undefined, nativeInput);
 
           // Focus the input
           nativeInput.focus();
@@ -587,7 +569,7 @@ describe('MDC-based MatChipGrid', () => {
           expect(manager.activeColumnIndex).toBe(-1);
 
           // Press the BACKSPACE key
-          chipGridInstance._keydown(BACKSPACE_EVENT);
+          dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
           fixture.detectChanges();
 
           // It focuses the last chip

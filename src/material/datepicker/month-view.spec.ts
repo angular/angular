@@ -317,7 +317,7 @@ describe('MatMonthView', () => {
           expect(monthViewNativeElement.querySelectorAll('.mat-calendar-body-preview-end').length)
               .toBeGreaterThan(0);
 
-          const event = createKeyboardEvent('keydown', ESCAPE, 'Escape', calendarBodyEl);
+          const event = createKeyboardEvent('keydown', ESCAPE, 'Escape');
           spyOn(event, 'stopPropagation');
           dispatchEvent(calendarBodyEl, event);
           fixture.detectChanges();

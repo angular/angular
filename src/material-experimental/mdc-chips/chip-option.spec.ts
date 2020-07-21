@@ -178,7 +178,7 @@ describe('MDC-based Option Chips', () => {
         });
 
         it('should selects/deselects the currently focused chip on SPACE', () => {
-          const SPACE_EVENT: KeyboardEvent = createKeyboardEvent('keydown', SPACE) as KeyboardEvent;
+          const SPACE_EVENT = createKeyboardEvent('keydown', SPACE);
           const CHIP_SELECTED_EVENT: MatChipSelectionChange = {
             source: chipInstance,
             isUserInput: true,
@@ -250,7 +250,7 @@ describe('MDC-based Option Chips', () => {
         });
 
         it('SPACE ignores selection', () => {
-          const SPACE_EVENT: KeyboardEvent = createKeyboardEvent('keydown', SPACE) as KeyboardEvent;
+          const SPACE_EVENT = createKeyboardEvent('keydown', SPACE);
 
           spyOn(testComponent, 'chipSelectionChange');
 

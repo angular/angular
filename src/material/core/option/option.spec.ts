@@ -135,8 +135,7 @@ describe('MatOption component', () => {
     const subscription = optionInstance.onSelectionChange.subscribe(spy);
 
     [ENTER, SPACE].forEach(key => {
-      const event = createKeyboardEvent('keydown', key);
-      Object.defineProperty(event, 'shiftKey', {get: () => true});
+      const event = createKeyboardEvent('keydown', key, undefined, {shift: true});
       dispatchEvent(optionNativeElement, event);
       fixture.detectChanges();
 

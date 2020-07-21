@@ -170,8 +170,7 @@ describe('MatBottomSheet', () => {
   it('should not close a bottom sheet via the escape key with a modifier', fakeAsync(() => {
     bottomSheet.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
 
-    const event = createKeyboardEvent('keydown', ESCAPE);
-    Object.defineProperty(event, 'altKey', {get: () => true});
+    const event = createKeyboardEvent('keydown', ESCAPE, undefined, {alt: true});
     dispatchEvent(document.body, event);
     viewContainerFixture.detectChanges();
     flush();
@@ -239,8 +238,8 @@ describe('MatBottomSheet', () => {
     const container =
         overlayContainerElement.querySelector('mat-bottom-sheet-container') as HTMLElement;
     dispatchKeyboardEvent(document.body, 'keydown', A);
-    dispatchKeyboardEvent(document.body, 'keydown', A, undefined, backdrop);
-    dispatchKeyboardEvent(document.body, 'keydown', A, undefined, container);
+    dispatchKeyboardEvent(backdrop, 'keydown', A);
+    dispatchKeyboardEvent(container, 'keydown', A);
 
     expect(spy).toHaveBeenCalledTimes(3);
   }));

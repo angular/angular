@@ -228,8 +228,7 @@ describe('MatDrawer', () => {
       expect(testComponent.closeCount).toBe(0, 'Expected no close events.');
       expect(testComponent.closeStartCount).toBe(0, 'Expected no close start events.');
 
-      const event = createKeyboardEvent('keydown', ESCAPE);
-      Object.defineProperty(event, 'altKey', {get: () => true});
+      const event = createKeyboardEvent('keydown', ESCAPE, undefined, {alt: true});
       dispatchEvent(drawer.nativeElement, event);
       fixture.detectChanges();
       flush();

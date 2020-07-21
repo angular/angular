@@ -257,8 +257,7 @@ describe('MatAccordion', () => {
 
     headers.forEach(header => spyOn(header, 'focus'));
     const eventTarget = headerElements[headerElements.length - 1].nativeElement;
-    const event = createKeyboardEvent('keydown', HOME, eventTarget);
-    Object.defineProperty(event, 'altKey', {get: () => true});
+    const event = createKeyboardEvent('keydown', HOME, undefined, {alt: true});
 
     dispatchEvent(eventTarget, event);
     fixture.detectChanges();
@@ -292,8 +291,7 @@ describe('MatAccordion', () => {
     headers.forEach(header => spyOn(header, 'focus'));
 
     const eventTarget = headerElements[0].nativeElement;
-    const event = createKeyboardEvent('keydown', END, eventTarget);
-    Object.defineProperty(event, 'altKey', {get: () => true});
+    const event = createKeyboardEvent('keydown', END, undefined, {alt: true});
 
     dispatchEvent(eventTarget, event);
     fixture.detectChanges();

@@ -667,8 +667,7 @@ describe('MatTooltip', () => {
       tick(0);
       fixture.detectChanges();
 
-      const event = createKeyboardEvent('keydown', ESCAPE);
-      Object.defineProperty(event, 'altKey', {get: () => true});
+      const event = createKeyboardEvent('keydown', ESCAPE, undefined, {alt: true});
       dispatchEvent(buttonElement, event);
       fixture.detectChanges();
       flush();
