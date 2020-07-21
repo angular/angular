@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '../util/ng_i18n_closure_mode';
+import '../util/ng_dev_mode';
 
 import {DEFAULT_LOCALE_ID, getPluralCase} from '../i18n/localization';
 import {getTemplateContent, SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS} from '../sanitization/html_sanitizer';
@@ -16,8 +17,8 @@ import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
 
 import {bindingUpdated} from './bindings';
 import {attachPatchData} from './context_discovery';
+import {i18nMutateOpCodesToString, i18nUpdateOpCodesToString} from './i18n_debug';
 import {setDelayProjection} from './instructions/all';
-import {attachI18nOpCodesDebug} from './instructions/lview_debug';
 import {allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, setNgReflectProperties, textBindingInternal} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
 import {getDocument} from './interfaces/document';
@@ -29,6 +30,7 @@ import {isLContainer} from './interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, T_HOST, TVIEW, TView} from './interfaces/view';
 import {appendChild, applyProjection, createTextNode, nativeRemoveNode} from './node_manipulation';
 import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, getTView, nextBindingIndex, setIsNotParent, setPreviousOrParentTNode} from './state';
+import {attachDebugGetter} from './util/debug_utils';
 import {renderStringify} from './util/misc_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode, load} from './util/view_utils';
 
@@ -267,6 +269,9 @@ function generateBindingUpdateOpCodes(
     str: string, destinationNode: number, attrName?: string,
     sanitizeFn: SanitizerFn|null = null): I18nUpdateOpCodes {
   const updateOpCodes: I18nUpdateOpCodes = [null, null];  // Alloc space for mask and size
+  if (ngDevMode) {
+    attachDebugGetter(updateOpCodes, i18nUpdateOpCodesToString);
+  }
   const textParts = str.split(BINDING_REGEXP);
   let mask = 0;
 
@@ -395,6 +400,9 @@ function i18nStartFirstPass(
   let parentIndexPointer = 0;
   parentIndexStack[parentIndexPointer] = parentIndex;
   const createOpCodes: I18nMutateOpCodes = [];
+  if (ngDevMode) {
+    attachDebugGetter(createOpCodes, i18nMutateOpCodesToString);
+  }
   // If the previous node wasn't the direct parent then we have a translation without top level
   // element and we need to keep a reference of the previous element if there is one. We should also
   // keep track whether an element was a parent node or not, so that the logic that consumes
@@ -411,6 +419,9 @@ function i18nStartFirstPass(
     createOpCodes.push(previousTNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select);
   }
   const updateOpCodes: I18nUpdateOpCodes = [];
+  if (ngDevMode) {
+    attachDebugGetter(updateOpCodes, i18nUpdateOpCodesToString);
+  }
   const icuExpressions: TIcu[] = [];
 
   if (message === '' && isRootTemplateMessage(subTemplateIndex)) {
@@ -506,10 +517,6 @@ function i18nStartFirstPass(
   if (i18nVarsCount > 0) {
     allocExpando(tView, lView, i18nVarsCount);
   }
-
-  ngDevMode &&
-      attachI18nOpCodesDebug(
-          createOpCodes, updateOpCodes, icuExpressions.length ? icuExpressions : null, lView);
 
   // NOTE: local var needed to properly assert the type of `TI18n`.
   const tI18n: TI18n = {
@@ -780,7 +787,7 @@ function readCreateOpCodes(
       visitedNodes.push(textNodeIndex);
       setIsNotParent();
     } else if (typeof opCode == 'number') {
-      switch (opCode & I18nMutateOpCode.MASK_OPCODE) {
+      switch (opCode & I18nMutateOpCode.MASK_INSTRUCTION) {
         case I18nMutateOpCode.AppendChild:
           const destinationNodeIndex = opCode >>> I18nMutateOpCode.SHIFT_PARENT;
           let destinationTNode: TNode;
@@ -799,9 +806,10 @@ function readCreateOpCodes(
               appendI18nNode(tView, currentTNode!, destinationTNode, previousTNode, lView);
           break;
         case I18nMutateOpCode.Select:
-          // Negative indicies indicate that a given TNode is a sibling node, not a parent node
+          // Negative indices indicate that a given TNode is a sibling node, not a parent node
           // (see `i18nStartFirstPass` for additional information).
           const isParent = opCode >= 0;
+          // FIXME(misko): This SHIFT_REF looks suspect as it does not have mask.
           const nodeIndex = (isParent ? opCode : ~opCode) >>> I18nMutateOpCode.SHIFT_REF;
           visitedNodes.push(nodeIndex);
           previousTNode = currentTNode;
@@ -890,7 +898,6 @@ function readUpdateOpCodes(
           value += opCode;
         } else if (typeof opCode == 'number') {
           if (opCode < 0) {
-            // It's a binding index whose value is negative
             value += renderStringify(lView[bindingsStartIndex - opCode]);
           } else {
             const nodeIndex = opCode >>> I18nUpdateOpCode.SHIFT_REF;
@@ -909,6 +916,7 @@ function readUpdateOpCodes(
                 textBindingInternal(lView, nodeIndex, value);
                 break;
               case I18nUpdateOpCode.IcuSwitch:
+                // FIXME(misko): Pull to a new function `icuSwitchCase`
                 tIcuIndex = updateOpCodes[++j] as number;
                 tIcu = icus![tIcuIndex];
                 icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
@@ -917,7 +925,7 @@ function readUpdateOpCodes(
                   const removeCodes = tIcu.remove[icuTNode.activeCaseIndex];
                   for (let k = 0; k < removeCodes.length; k++) {
                     const removeOpCode = removeCodes[k] as number;
-                    switch (removeOpCode & I18nMutateOpCode.MASK_OPCODE) {
+                    switch (removeOpCode & I18nMutateOpCode.MASK_INSTRUCTION) {
                       case I18nMutateOpCode.Remove:
                         const nodeIndex = removeOpCode >>> I18nMutateOpCode.SHIFT_REF;
                         // Remove DOM element, but do *not* mark TNode as detached, since we are
@@ -951,6 +959,7 @@ function readUpdateOpCodes(
                 }
                 break;
               case I18nUpdateOpCode.IcuUpdate:
+                // FIXME(misko): Pull to a new function `icuUpdateCase`
                 tIcuIndex = updateOpCodes[++j] as number;
                 tIcu = icus![tIcuIndex];
                 icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
@@ -1044,6 +1053,9 @@ function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, valu
   const previousElement = getPreviousOrParentTNode();
   const previousElementIndex = previousElement.index - HEADER_OFFSET;
   const updateOpCodes: I18nUpdateOpCodes = [];
+  if (ngDevMode) {
+    attachDebugGetter(updateOpCodes, i18nUpdateOpCodesToString);
+  }
   for (let i = 0; i < values.length; i += 2) {
     const attrName = values[i];
     const message = values[i + 1];
@@ -1180,9 +1192,9 @@ function getCaseIndex(icuExpression: TIcu, bindingValue: string): number {
 function icuStart(
     tIcus: TIcu[], icuExpression: IcuExpression, startIndex: number,
     expandoStartIndex: number): void {
-  const createCodes = [];
-  const removeCodes = [];
-  const updateCodes = [];
+  const createCodes: I18nMutateOpCodes[] = [];
+  const removeCodes: I18nMutateOpCodes[] = [];
+  const updateCodes: I18nUpdateOpCodes[] = [];
   const vars = [];
   const childIcus: number[][] = [];
   for (let i = 0; i < icuExpression.values.length; i++) {
@@ -1240,6 +1252,11 @@ function parseIcuCase(
   }
   const wrapper = getTemplateContent(inertBodyElement!) as Element || inertBodyElement;
   const opCodes: IcuCase = {vars: 0, childIcus: [], create: [], remove: [], update: []};
+  if (ngDevMode) {
+    attachDebugGetter(opCodes.create, i18nMutateOpCodesToString);
+    attachDebugGetter(opCodes.remove, i18nMutateOpCodesToString);
+    attachDebugGetter(opCodes.update, i18nUpdateOpCodesToString);
+  }
   parseNodes(wrapper.firstChild, opCodes, parentIndex, nestedIcus, tIcus, expandoStartIndex);
   return opCodes;
 }
@@ -1364,6 +1381,7 @@ function parseNodes(
           3,                                 // skip 3 opCodes if not changed
           -1 - nestedIcu.mainBinding,
           nestedIcuNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuSwitch,
+          // FIXME(misko): Index should be part of the opcode
           nestTIcuIndex,
           mask,  // mask of all the bindings of this ICU expression
           2,     // skip 2 opCodes if not changed
@@ -1371,6 +1389,7 @@ function parseNodes(
           nestTIcuIndex);
       icuCase.remove.push(
           nestTIcuIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.RemoveNestedIcu,
+          // FIXME(misko): Index should be part of the opcode
           nestedIcuNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove);
     }
   }
