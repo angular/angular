@@ -1,18 +1,22 @@
+// TODO: disabled until we implement the new MDC slider.
+// @import '@material/slider/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
-@import '@material/slider/mixins.import';
 
 @mixin mat-mdc-slider-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
   @include mat-using-mdc-theme($config) {
-    @include mdc-slider-core-styles($query: $mat-theme-styles-query);
+    // TODO: disabled until we implement the new MDC slider.
+    // @include mdc-slider-core-styles($query: $mat-theme-styles-query);
 
     .mat-mdc-slider {
       &.mat-primary {
-        @include mdc-slider-color-accessible(primary, $mat-theme-styles-query);
+        // TODO: disabled until we implement the new MDC slider.
+        // @include mdc-slider-color-accessible(primary, $mat-theme-styles-query);
       }
 
       &.mat-warn {
-        @include mdc-slider-color-accessible(error, $mat-theme-styles-query);
+        // TODO: disabled until we implement the new MDC slider.
+        // @include mdc-slider-color-accessible(error, $mat-theme-styles-query);
       }
     }
   }
@@ -21,7 +25,8 @@
 @mixin mat-mdc-slider-typography($config-or-theme) {
   $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
-    @include mdc-slider-core-styles($query: $mat-typography-styles-query);
+    // TODO: disabled until we implement the new MDC slider.
+    // @include mdc-slider-core-styles($query: $mat-typography-styles-query);
   }
 }
 

@@ -18,7 +18,6 @@ import {
   AfterViewInit,
   Attribute,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -37,7 +36,7 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {MDCSliderAdapter, MDCSliderFoundation} from '@material/slider';
+import {MDCSliderAdapter, MDCSliderFoundation, Thumb} from '@material/slider';
 import {Subscription} from 'rxjs';
 
 /**
@@ -53,10 +52,14 @@ const MIN_AUTO_TICK_SEPARATION = 30;
  */
 const TICK_MARKER_SIZE = 2;
 
+// TODO: disabled until we implement the new MDC slider.
 /** Event options used to bind passive listeners. */
+// tslint:disable-next-line:no-unused-variable
 const passiveListenerOptions = normalizePassiveListenerOptions({passive: true});
 
+// TODO: disabled until we implement the new MDC slider.
 /** Event options used to bind active listeners. */
+// tslint:disable-next-line:no-unused-variable
 const activeListenerOptions = normalizePassiveListenerOptions({passive: false});
 
 /**
@@ -222,87 +225,35 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
 
   /** Adapter for the MDC slider foundation. */
   private _sliderAdapter: MDCSliderAdapter = {
-    hasClass: (className) => this._elementRef.nativeElement.classList.contains(className),
-    addClass: (className) => this._elementRef.nativeElement.classList.add(className),
-    removeClass: (className) => this._elementRef.nativeElement.classList.remove(className),
-    getAttribute: (name) => this._elementRef.nativeElement.getAttribute(name),
-    setAttribute: (name, value) => this._elementRef.nativeElement.setAttribute(name, value),
-    removeAttribute: (name) => this._elementRef.nativeElement.removeAttribute(name),
-    computeBoundingRect: () => this._elementRef.nativeElement.getBoundingClientRect(),
-    getTabIndex: () => this._elementRef.nativeElement.tabIndex,
-    registerInteractionHandler: (evtType, handler) =>
-        // Interaction event handlers (which handle keyboard interaction) cannot be passive
-        // as they will prevent the default behavior. Additionally we can't run these event
-        // handlers outside of the Angular zone because we rely on the events to cause the
-        // component tree to be re-checked.
-        // TODO: take in the event listener options from the adapter once MDC supports it.
-        this._elementRef.nativeElement.addEventListener(evtType, handler, activeListenerOptions),
-    deregisterInteractionHandler: (evtType, handler) =>
-        this._elementRef.nativeElement.removeEventListener(evtType, handler),
-    registerThumbContainerInteractionHandler: (evtType, handler) => {
-      // The thumb container interaction handlers are currently just used for transition
-      // events which don't need to run in the Angular zone.
-      this._ngZone.runOutsideAngular(() => {
-        this._thumbContainer.nativeElement
-          .addEventListener(evtType, handler, passiveListenerOptions);
-      });
-    },
-    deregisterThumbContainerInteractionHandler: (evtType, handler) => {
-      this._thumbContainer.nativeElement
-        .removeEventListener(evtType, handler, passiveListenerOptions);
-    },
-    registerBodyInteractionHandler: (evtType, handler) =>
-        // Body event handlers (which handle thumb sliding) cannot be passive as they will
-        // prevent the default behavior. Additionally we can't run these event handlers
-        // outside of the Angular zone because we rely on the events to cause the component
-        // tree to be re-checked.
-        document.body.addEventListener(evtType, handler),
-    deregisterBodyInteractionHandler: (evtType, handler) =>
-        document.body.removeEventListener(evtType, handler),
-    registerResizeHandler: (handler) => {
-      // The resize handler is currently responsible for detecting slider dimension
-      // changes and therefore doesn't cause a value change that needs to be propagated.
-      this._ngZone.runOutsideAngular(() => window.addEventListener('resize', handler));
-    },
-    deregisterResizeHandler: (handler) => window.removeEventListener('resize', handler),
-    notifyInput:
-        () => {
-          const newValue = this._foundation.getValue();
-          // MDC currently fires the input event multiple times.
-          // TODO(devversion): remove this check once the input notifications are fixed.
-          if (newValue !== this.value) {
-            this.value = newValue;
-            this.input.emit(this._createChangeEvent(newValue));
-          }
-        },
-    notifyChange:
-        () => {
-          // TODO(devversion): bug in MDC where only the "change" event is emitted if a keypress
-          // updated the value. Material and native range sliders also emit an input event.
-          // Usually we sync the "value" in the "input" event, but as a workaround we now sync
-          // the value in the "change" event.
-          this.value = this._foundation.getValue();
-          this._emitChangeEvent(this.value!);
-        },
-    setThumbContainerStyleProperty:
-        (propertyName, value) => {
-          this._thumbContainer.nativeElement.style.setProperty(propertyName, value);
-        },
-    setTrackStyleProperty:
-        (propertyName, value) => {
-          this._track.nativeElement.style.setProperty(propertyName, value);
-        },
-    setMarkerValue:
-        () => {
-          // Mark the component for check as the thumb label needs to be re-rendered.
-          this._changeDetectorRef.markForCheck();
-        },
-    setTrackMarkers:
-        (step, max, min) => {
-          this._trackMarker.nativeElement.style.setProperty(
-              'background', this._getTrackMarkersBackground(min, max, step));
-        },
-    isRTL: () => this._isRtl(),
+    hasClass: (_className: string) => false,
+    addClass: (_className: string) => {},
+    removeClass: (_className: string) => {},
+    getAttribute: (_attribute: string) => null,
+    addThumbClass: (_className: string, _thumb: Thumb) => {},
+    removeThumbClass: (_className: string, _thumb: Thumb) => {},
+    getThumbAttribute: (_attribute: string, _thumb: Thumb) => null,
+    setThumbAttribute: (_attribute: string, _value: string, _thumb: Thumb) => {},
+    getThumbKnobWidth: (_thumb: Thumb) => 0,
+    isThumbFocused: (_thumb: Thumb) => false,
+    focusThumb: (_thumb: Thumb) => {},
+    getThumbBoundingClientRect: (_thumb: Thumb) => null!,
+    getBoundingClientRect: () => null!,
+    isRTL: () => false,
+    setThumbStyleProperty: (_propertyName: string, _value: string, _thumb: Thumb) => {},
+    setTrackActiveStyleProperty: (_propertyName: string, _value: string) => {},
+    setValueIndicatorText: (_value: number, _thumb: Thumb) => {},
+    updateTickMarks: () => {},
+    setPointerCapture: (_pointerId: number) => {},
+    emitChangeEvent: (_value: number, _thumb: Thumb) => {},
+    emitInputEvent: (_value: number, _thumb: Thumb) => {},
+    registerEventHandler: () => {},
+    deregisterEventHandler: () => {},
+    registerThumbEventHandler: () => {},
+    deregisterThumbEventHandler: () => {},
+    registerBodyEventHandler: () => {},
+    deregisterBodyEventHandler: () => {},
+    registerWindowEventHandler: () => {},
+    deregisterWindowEventHandler: () => {},
   };
 
   /** Instance of the MDC slider foundation for this slider. */
@@ -327,7 +278,6 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
 
   constructor(
       private _elementRef: ElementRef<HTMLElement>,
-      private _changeDetectorRef: ChangeDetectorRef,
       private _ngZone: NgZone,
       private _platform: Platform,
       @Optional() private _dir: Directionality,
@@ -354,7 +304,7 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
       // The MDC slider foundation accesses DOM globals, so we cannot initialize the
       // foundation on the server. The foundation would be needed to move the thumb
       // to the proper position and to render the ticks.
-      this._foundation.init();
+      // this._foundation.init();
 
       // The standard Angular Material slider is always using discrete values. We always
       // want to enable discrete values and support ticks, but want to still provide
@@ -437,14 +387,18 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
     return event;
   }
 
+  // TODO: disabled until we implement the new MDC slider.
   /** Emits a change event and notifies the control value accessor. */
+  // tslint:disable-next-line:no-unused-variable
   private _emitChangeEvent(newValue: number) {
     this._controlValueAccessorChangeFn(newValue);
     this.valueChange.emit(newValue);
     this.change.emit(this._createChangeEvent(newValue));
   }
 
+  // TODO: disabled until we implement the new MDC slider.
   /** Computes the CSS background value for the track markers (aka ticks). */
+  // tslint:disable-next-line:no-unused-variable
   private _getTrackMarkersBackground(min: number, max: number, step: number) {
     if (!this.tickInterval) {
       return '';
@@ -476,32 +430,39 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
     // the markers dynamically. This is a workaround until we can get a public API for it. See:
     // https://github.com/material-components/material-components-web/issues/5020
     (this._foundation as any).hasTrackMarker_ = this.tickInterval !== 0;
-    this._foundation.setupTrackMarker();
+
+    // TODO: disabled until we implement the new MDC slider.
+    // this._foundation.setupTrackMarker();
   }
 
   /** Syncs the "step" input value with the MDC foundation. */
   private _syncStep() {
-    this._foundation.setStep(this.step);
+    // TODO: disabled until we implement the new MDC slider.
+    // this._foundation.setStep(this.step);
   }
 
   /** Syncs the "max" input value with the MDC foundation. */
   private _syncMax() {
-    this._foundation.setMax(this.max);
+    // TODO: disabled until we implement the new MDC slider.
+    // this._foundation.setMax(this.max);
   }
 
   /** Syncs the "min" input value with the MDC foundation. */
   private _syncMin() {
-    this._foundation.setMin(this.min);
+    // TODO: disabled until we implement the new MDC slider.
+    // this._foundation.setMin(this.min);
   }
 
   /** Syncs the "value" input binding with the MDC foundation. */
   private _syncValue() {
-    this._foundation.setValue(this.value!);
+    // TODO: disabled until we implement the new MDC slider.
+    // this._foundation.setValue(this.value!);
   }
 
   /** Syncs the "disabled" input value with the MDC foundation. */
   private _syncDisabled() {
-    this._foundation.setDisabled(this.disabled);
+    // TODO: disabled until we implement the new MDC slider.
+    // this._foundation.setDisabled(this.disabled);
   }
 
   /** Whether the slider is displayed in RTL-mode. */
