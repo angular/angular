@@ -758,6 +758,7 @@ function createDynamicNodeAtIndex(
   const previousOrParentTNode = getPreviousOrParentTNode();
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
   lView[index + HEADER_OFFSET] = native;
+  // FIXME(misko): Why does this create A TNode??? I would not expect this to be here.
   const tNode = getOrCreateTNode(tView, lView[T_HOST], index, type as any, name, null);
 
   // We are creating a dynamic node, the previous tNode might not be pointing at this node.
@@ -882,7 +883,7 @@ function readCreateOpCodes(
 
 function readUpdateOpCodes(
     updateOpCodes: I18nUpdateOpCodes, icus: TIcu[]|null, bindingsStartIndex: number,
-    changeMask: number, tView: TView, lView: LView, bypassCheckBit = false) {
+    changeMask: number, tView: TView, lView: LView, bypassCheckBit: boolean) {
   let caseCreated = false;
   for (let i = 0; i < updateOpCodes.length; i++) {
     // bit code to check if we should apply the next update
@@ -898,12 +899,10 @@ function readUpdateOpCodes(
           value += opCode;
         } else if (typeof opCode == 'number') {
           if (opCode < 0) {
+            // Negative opCode represent `i18nExp` values offset.
             value += renderStringify(lView[bindingsStartIndex - opCode]);
           } else {
             const nodeIndex = opCode >>> I18nUpdateOpCode.SHIFT_REF;
-            let tIcuIndex: number;
-            let tIcu: TIcu;
-            let icuTNode: TIcuContainerNode;
             switch (opCode & I18nUpdateOpCode.MASK_OPCODE) {
               case I18nUpdateOpCode.Attr:
                 const propName = updateOpCodes[++j] as string;
@@ -916,58 +915,13 @@ function readUpdateOpCodes(
                 textBindingInternal(lView, nodeIndex, value);
                 break;
               case I18nUpdateOpCode.IcuSwitch:
-                // FIXME(misko): Pull to a new function `icuSwitchCase`
-                tIcuIndex = updateOpCodes[++j] as number;
-                tIcu = icus![tIcuIndex];
-                icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
-                // If there is an active case, delete the old nodes
-                if (icuTNode.activeCaseIndex !== null) {
-                  const removeCodes = tIcu.remove[icuTNode.activeCaseIndex];
-                  for (let k = 0; k < removeCodes.length; k++) {
-                    const removeOpCode = removeCodes[k] as number;
-                    switch (removeOpCode & I18nMutateOpCode.MASK_INSTRUCTION) {
-                      case I18nMutateOpCode.Remove:
-                        const nodeIndex = removeOpCode >>> I18nMutateOpCode.SHIFT_REF;
-                        // Remove DOM element, but do *not* mark TNode as detached, since we are
-                        // just switching ICU cases (while keeping the same TNode), so a DOM element
-                        // representing a new ICU case will be re-created.
-                        removeNode(tView, lView, nodeIndex, /* markAsDetached */ false);
-                        break;
-                      case I18nMutateOpCode.RemoveNestedIcu:
-                        const nestedIcuNodeIndex =
-                            removeCodes[k + 1] as number >>> I18nMutateOpCode.SHIFT_REF;
-                        const nestedIcuTNode =
-                            getTNode(tView, nestedIcuNodeIndex) as TIcuContainerNode;
-                        const activeIndex = nestedIcuTNode.activeCaseIndex;
-                        if (activeIndex !== null) {
-                          const nestedIcuTIndex = removeOpCode >>> I18nMutateOpCode.SHIFT_REF;
-                          const nestedTIcu = icus![nestedIcuTIndex];
-                          addAllToArray(nestedTIcu.remove[activeIndex], removeCodes);
-                        }
-                        break;
-                    }
-                  }
-                }
-
-                // Update the active caseIndex
-                const caseIndex = getCaseIndex(tIcu, value);
-                icuTNode.activeCaseIndex = caseIndex !== -1 ? caseIndex : null;
-                if (caseIndex > -1) {
-                  // Add the nodes for the new case
-                  readCreateOpCodes(-1, tIcu.create[caseIndex], tView, lView);
-                  caseCreated = true;
-                }
+                caseCreated = icuSwitchCase(
+                    tView, updateOpCodes[++j] as number, nodeIndex, icus!, lView, value);
                 break;
               case I18nUpdateOpCode.IcuUpdate:
-                // FIXME(misko): Pull to a new function `icuUpdateCase`
-                tIcuIndex = updateOpCodes[++j] as number;
-                tIcu = icus![tIcuIndex];
-                icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
-                if (icuTNode.activeCaseIndex !== null) {
-                  readUpdateOpCodes(
-                      tIcu.update[icuTNode.activeCaseIndex], icus, bindingsStartIndex, changeMask,
-                      tView, lView, caseCreated);
-                }
+                icuUpdateCase(
+                    tView, lView, updateOpCodes[++j] as number, nodeIndex, bindingsStartIndex,
+                    icus!, caseCreated);
                 break;
             }
           }
@@ -975,6 +929,70 @@ function readUpdateOpCodes(
       }
     }
     i += skipCodes;
+  }
+}
+
+function icuUpdateCase(
+    tView: TView, lView: LView, tIcuIndex: number, nodeIndex: number, bindingsStartIndex: number,
+    tIcus: TIcu[], caseCreated: boolean) {
+  const tIcu = tIcus[tIcuIndex];
+  const icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
+  if (icuTNode.activeCaseIndex !== null) {
+    readUpdateOpCodes(
+        tIcu.update[icuTNode.activeCaseIndex], tIcus, bindingsStartIndex, changeMask, tView, lView,
+        caseCreated);
+  }
+}
+
+function icuSwitchCase(
+    tView: TView, tIcuIndex: number, nodeIndex: number, tIcus: TIcu[], lView: LView,
+    value: string): boolean {
+  const tIcu = tIcus[tIcuIndex];
+  const icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
+  let caseCreated = false;
+  // If there is an active case, delete the old nodes
+  if (icuTNode.activeCaseIndex !== null) {
+    const removeCodes = tIcu.remove[icuTNode.activeCaseIndex];
+    for (let k = 0; k < removeCodes.length; k++) {
+      const removeOpCode = removeCodes[k] as number;
+      const nodeOrIcuIndex = removeOpCode >>> I18nMutateOpCode.SHIFT_REF;
+      switch (removeOpCode & I18nMutateOpCode.MASK_INSTRUCTION) {
+        case I18nMutateOpCode.Remove:
+          // Remove DOM element, but do *not* mark TNode as detached, since we are
+          // just switching ICU cases (while keeping the same TNode), so a DOM element
+          // representing a new ICU case will be re-created.
+          removeNode(tView, lView, nodeOrIcuIndex, /* markAsDetached */ false);
+          break;
+        case I18nMutateOpCode.RemoveNestedIcu:
+          removeNestedIcu(
+              tView, tIcus, removeCodes, nodeOrIcuIndex,
+              removeCodes[k + 1] as number >>> I18nMutateOpCode.SHIFT_REF);
+          break;
+      }
+    }
+  }
+
+  // Update the active caseIndex
+  const caseIndex = getCaseIndex(tIcu, value);
+  icuTNode.activeCaseIndex = caseIndex !== -1 ? caseIndex : null;
+  if (caseIndex > -1) {
+    // Add the nodes for the new case
+    readCreateOpCodes(
+        -1 /* -1 means we don't have parent node */, tIcu.create[caseIndex], tView, lView);
+    caseCreated = true;
+  }
+  return caseCreated;
+}
+
+function removeNestedIcu(
+    tView: TView, tIcus: TIcu[], removeCodes: I18nMutateOpCodes, nodeIndex: number,
+    nestedIcuNodeIndex: number) {
+  const nestedIcuTNode = getTNode(tView, nestedIcuNodeIndex) as TIcuContainerNode;
+  const activeIndex = nestedIcuTNode.activeCaseIndex;
+  if (activeIndex !== null) {
+    const nestedTIcu = tIcus[nodeIndex];
+    // FIXME(misko): the fact that we are adding items to parent list looks very suspect!
+    addAllToArray(nestedTIcu.remove[activeIndex], removeCodes);
   }
 }
 
@@ -1146,7 +1164,7 @@ export function ɵɵi18nApply(index: number) {
     }
     const bindingsStartIndex = getBindingIndex() - shiftsCounter - 1;
     const lView = getLView();
-    readUpdateOpCodes(updateOpCodes, icus, bindingsStartIndex, changeMask, tView, lView);
+    readUpdateOpCodes(updateOpCodes, icus, bindingsStartIndex, changeMask, tView, lView, false);
 
     // Reset changeMask & maskBit to default for the next update cycle
     changeMask = 0b0;
