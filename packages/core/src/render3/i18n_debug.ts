@@ -102,7 +102,6 @@ export function i18nMutateOpCodesToString(
       case I18nMutateOpCode.ElementEnd:
         return `setPreviousOrParentTNode(tView.data[${ref}] as TNode)`;
       case I18nMutateOpCode.RemoveNestedIcu:
-        // FIXME(misko): refactor to have a real method in i18n.ts.
         return `removeNestedICU(${ref})`;
     }
     throw new Error('Unexpected OpCode');
