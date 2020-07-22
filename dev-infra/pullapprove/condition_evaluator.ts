@@ -7,7 +7,7 @@
  */
 
 import {PullApproveGroup} from './group';
-import {PullApproveArray, PullApproveGroupArray} from './pullapprove_arrays';
+import {PullApproveStringArray, PullApproveGroupArray} from './pullapprove_arrays';
 import {getOrCreateGlob} from './utils';
 
 /**
@@ -17,7 +17,7 @@ import {getOrCreateGlob} from './utils';
  */
 const conditionContext = {
   'len': (value: any[]) => value.length,
-  'contains_any_globs': (files: PullApproveArray, patterns: string[]) => {
+  'contains_any_globs': (files: PullApproveStringArray, patterns: string[]) => {
     // Note: Do not always create globs for the same pattern again. This method
     // could be called for each source file. Creating glob's is expensive.
     return files.some(f => patterns.some(pattern => getOrCreateGlob(pattern).match(f)));
@@ -43,7 +43,7 @@ export function convertConditionToFunction(expr: string): (
   // the condition expression that is usually evaluated with Python in PullApprove.
   return (files, groups) => {
     const result = evaluateFn(
-        new PullApproveArray(...files), new PullApproveGroupArray(...groups),
+        new PullApproveStringArray(...files), new PullApproveGroupArray(...groups),
         ...Object.values(conditionContext));
     // If an array is returned, we consider the condition as active if the array is not
     // empty. This matches PullApprove's condition evaluation that is based on Python.

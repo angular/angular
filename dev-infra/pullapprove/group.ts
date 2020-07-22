@@ -117,4 +117,8 @@ export class PullApproveGroup {
       groupName: this.groupName,
     };
   }
+
+  toString() {
+    return this.groupName;
+  }
 }

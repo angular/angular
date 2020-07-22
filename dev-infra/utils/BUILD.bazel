@@ -9,6 +9,7 @@ ts_library(
     module_name = "@angular/dev-infra-private/utils",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
+        "@npm//inquirer",
         "@npm//@octokit/graphql",
         "@npm//@octokit/rest",
         "@npm//@octokit/types",

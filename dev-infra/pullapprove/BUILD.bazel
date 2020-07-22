@@ -40,7 +40,6 @@ ts_library(
         ":pullapprove",
         "@npm//@types/jasmine",
         "@npm//@types/node",
-        "@npm//inquirer",
         "@npm//typescript",
     ],
 )
