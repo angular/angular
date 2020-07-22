@@ -16,8 +16,8 @@ const BOILERPLATE_PATHS = {
     'src/assets/.gitkeep', 'browserslist', 'src/favicon.ico', 'karma.conf.js',
     'src/polyfills.ts', 'src/test.ts', 'tsconfig.app.json', 'tsconfig.spec.json',
     'tslint.json', 'e2e/src/app.po.ts', 'e2e/protractor-puppeteer.conf.js',
-    'e2e/protractor.conf.js', 'e2e/tsconfig.json', '.editorconfig', 'angular.json', 'package.json',
-    'tsconfig.json', 'tslint.json'
+    'e2e/protractor.conf.js', 'e2e/tsconfig.json', '.editorconfig', '.gitignore', 'angular.json',
+    'package.json', 'tsconfig.json', 'tslint.json'
   ],
   systemjs: [
     'src/systemjs-angular-loader.js', 'src/systemjs.config.js', 'src/tsconfig.json',
