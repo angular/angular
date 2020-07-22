@@ -32,19 +32,26 @@ export interface NgModuleMeta {
   rawDeclarations: ts.Expression|null;
 }
 
+export interface DirectiveTypeCheckMeta {
+  ngTemplateGuards: TemplateGuardMeta[];
+  hasNgTemplateContextGuard: boolean;
+  coercedInputFields: Set<string>;
+  genericInputFields: Set<string>;
+  restrictedInputFields: Set<string>;
+  undeclaredInputFields: Set<string>;
+  isGeneric: boolean;
+}
+
 /**
  * Metadata collected for a directive within an NgModule's scope.
  */
-export interface DirectiveMeta extends T2DirectiveMeta {
+export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   ref: Reference<ClassDeclaration>;
   /**
    * Unparsed selector of the directive, or null if the directive does not have a selector.
    */
   selector: string|null;
   queries: string[];
-  ngTemplateGuards: TemplateGuardMeta[];
-  hasNgTemplateContextGuard: boolean;
-  coercedInputFields: Set<string>;
 
   /**
    * A `Reference` to the base class for the directive, if one was detected.

@@ -120,8 +120,10 @@ export function ngForDeclaration(): TestDeclaration {
     file: absoluteFrom('/ngfor.d.ts'),
     selector: '[ngForOf]',
     name: 'NgForOf',
-    inputs: {ngForOf: 'ngForOf'},
+    inputs: {ngForOf: 'ngForOf', ngForTrackBy: 'ngForTrackBy', ngForTemplate: 'ngForTemplate'},
     hasNgTemplateContextGuard: true,
+    isGeneric: true,
+    genericInputFields: ['ngForOf', 'ngForTrackBy', 'ngForTemplate'],
   };
 }
 
@@ -175,11 +177,13 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
 export type TestDirective = Partial<Pick<
     TypeCheckableDirectiveMeta,
-    Exclude<keyof TypeCheckableDirectiveMeta, 'ref'|'coercedInputFields'>>>&{
-  selector: string,
-  name: string,
-  file?: AbsoluteFsPath, type: 'directive',
-  coercedInputFields?: string[],
+    Exclude<
+        keyof TypeCheckableDirectiveMeta,
+        'ref'|'coercedInputFields'|'genericInputFields'|'restrictedInputFields'|
+        'undeclaredInputFields'>>>&{
+  selector: string, name: string, file?: AbsoluteFsPath, type: 'directive',
+      coercedInputFields?: string[], genericInputFields?: string[],
+      restrictedInputFields?: string[], undeclaredInputFields?: string[], isGeneric?: boolean;
 };
 export type TestPipe = {
   name: string,
@@ -417,6 +421,10 @@ function prepareDeclarations(
       isComponent: decl.isComponent || false,
       ngTemplateGuards: decl.ngTemplateGuards || [],
       coercedInputFields: new Set<string>(decl.coercedInputFields || []),
+      genericInputFields: new Set<string>(decl.genericInputFields || []),
+      restrictedInputFields: new Set<string>(decl.restrictedInputFields || []),
+      undeclaredInputFields: new Set<string>(decl.undeclaredInputFields || []),
+      isGeneric: decl.isGeneric ?? false,
       outputs: decl.outputs || {},
       queries: decl.queries || [],
     };
