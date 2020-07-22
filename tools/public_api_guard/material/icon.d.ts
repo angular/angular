@@ -24,6 +24,8 @@ export declare const MAT_ICON_LOCATION: InjectionToken<MatIconLocation>;
 export declare function MAT_ICON_LOCATION_FACTORY(): MatIconLocation;
 
 export declare class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, AfterViewChecked, CanColor, OnDestroy {
+    _svgName: string | null;
+    _svgNamespace: string | null;
     get fontIcon(): string;
     set fontIcon(value: string);
     get fontSet(): string;
@@ -32,6 +34,7 @@ export declare class MatIcon extends _MatIconMixinBase implements OnChanges, OnI
     set inline(inline: boolean);
     svgIcon: string;
     constructor(elementRef: ElementRef<HTMLElement>, _iconRegistry: MatIconRegistry, ariaHidden: string, _location: MatIconLocation, _errorHandler: ErrorHandler);
+    _usingFontIcon(): boolean;
     ngAfterViewChecked(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
