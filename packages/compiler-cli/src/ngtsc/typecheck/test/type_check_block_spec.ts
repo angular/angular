@@ -55,7 +55,7 @@ describe('type check blocks', () => {
       selector: '[dir]',
       inputs: {inputA: 'inputA'},
     }];
-    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": ("value")');
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('_t2: DirA = (null!); _t2["inputA"] = ("value");');
   });
 
   it('should handle multiple bindings to the same property', () => {
@@ -67,8 +67,8 @@ describe('type check blocks', () => {
       inputs: {inputA: 'inputA'},
     }];
     const block = tcb(TEMPLATE, DIRECTIVES);
-    expect(block).toContain('"inputA": (1)');
-    expect(block).not.toContain('"inputA": (2)');
+    expect(block).toContain('_t2["inputA"] = (1);');
+    expect(block).toContain('_t2["inputA"] = (2);');
   });
 
   it('should handle empty bindings', () => {
@@ -79,7 +79,7 @@ describe('type check blocks', () => {
       selector: '[dir-a]',
       inputs: {inputA: 'inputA'},
     }];
-    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": (undefined)');
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('_t2["inputA"] = (undefined);');
   });
 
   it('should handle bindings without value', () => {
@@ -90,7 +90,7 @@ describe('type check blocks', () => {
       selector: '[dir-a]',
       inputs: {inputA: 'inputA'},
     }];
-    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": (undefined)');
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('_t2["inputA"] = (undefined);');
   });
 
   it('should handle implicit vars on ng-template', () => {
@@ -109,20 +109,148 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('var _t2 = _t1.$implicit;');
   });
 
-  it('should handle missing property bindings', () => {
-    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      inputs: {
-        fieldA: 'inputA',
-        fieldB: 'inputB',
-      },
-    }];
-    expect(tcb(TEMPLATE, DIRECTIVES))
-        .toContain(
-            'var _t2 = Dir.ngTypeCtor({ "fieldA": (((ctx).foo)), "fieldB": (null as any) });');
+  describe('type constructors', () => {
+    it('should handle missing property bindings', () => {
+      const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          fieldA: 'inputA',
+          fieldB: 'inputB',
+        },
+        isGeneric: true,
+      }];
+      expect(tcb(TEMPLATE, DIRECTIVES))
+          .toContain(
+              'var _t2 = Dir.ngTypeCtor({ "fieldA": (((ctx).foo)), "fieldB": (null as any) });');
+    });
+
+    it('should handle multiple bindings to the same property', () => {
+      const TEMPLATE = `<div dir [inputA]="1" [inputA]="2"></div>`;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          fieldA: 'inputA',
+        },
+        isGeneric: true,
+      }];
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('"fieldA": (1)');
+      expect(block).not.toContain('"fieldA": (2)');
+    });
+
+
+    it('should only apply property bindings to directives', () => {
+      const TEMPLATE = `
+      <div dir [style.color]="'blue'" [class.strong]="false" [attr.enabled]="true"></div>
+    `;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {'color': 'color', 'strong': 'strong', 'enabled': 'enabled'},
+        isGeneric: true,
+      }];
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain(
+          'var _t2 = Dir.ngTypeCtor({ "color": (null as any), "strong": (null as any), "enabled": (null as any) });');
+      expect(block).toContain('"blue"; false; true;');
+    });
+
+    it('should generate a circular directive reference correctly', () => {
+      const TEMPLATE = `
+      <div dir #d="dir" [input]="d"></div>
+    `;
+      const DIRECTIVES: TestDirective[] = [{
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        exportAs: ['dir'],
+        inputs: {input: 'input'},
+        isGeneric: true,
+      }];
+      expect(tcb(TEMPLATE, DIRECTIVES))
+          .toContain(
+              'var _t3 = Dir.ngTypeCtor((null!)); ' +
+              'var _t2 = Dir.ngTypeCtor({ "input": (_t3) });');
+    });
+
+    it('should generate circular references between two directives correctly', () => {
+      const TEMPLATE = `
+    <div #a="dirA" dir-a [inputA]="b">A</div>
+    <div #b="dirB" dir-b [inputB]="a">B</div>
+`;
+      const DIRECTIVES: TestDirective[] = [
+        {
+          type: 'directive',
+          name: 'DirA',
+          selector: '[dir-a]',
+          exportAs: ['dirA'],
+          inputs: {inputA: 'inputA'},
+          isGeneric: true,
+        },
+        {
+          type: 'directive',
+          name: 'DirB',
+          selector: '[dir-b]',
+          exportAs: ['dirB'],
+          inputs: {inputB: 'inputB'},
+          isGeneric: true,
+        }
+      ];
+      expect(tcb(TEMPLATE, DIRECTIVES))
+          .toContain(
+              'var _t4 = DirA.ngTypeCtor((null!)); ' +
+              'var _t3 = DirB.ngTypeCtor({ "inputB": (_t4) }); ' +
+              'var _t2 = DirA.ngTypeCtor({ "inputA": (_t3) });');
+    });
+
+    it('should handle empty bindings', () => {
+      const TEMPLATE = `<div dir-a [inputA]=""></div>`;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'DirA',
+        selector: '[dir-a]',
+        inputs: {inputA: 'inputA'},
+        isGeneric: true,
+      }];
+      expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": (undefined)');
+    });
+
+    it('should handle bindings without value', () => {
+      const TEMPLATE = `<div dir-a [inputA]></div>`;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'DirA',
+        selector: '[dir-a]',
+        inputs: {inputA: 'inputA'},
+        isGeneric: true,
+      }];
+      expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": (undefined)');
+    });
+
+    it('should use coercion types if declared', () => {
+      const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          fieldA: 'inputA',
+        },
+        isGeneric: true,
+        coercedInputFields: ['fieldA'],
+      }];
+      expect(tcb(TEMPLATE, DIRECTIVES))
+          .toContain(
+              'var _t2 = Dir.ngTypeCtor({ "fieldA": (((ctx).foo)) }); ' +
+              'var _t3: typeof Dir.ngAcceptInputType_fieldA = (null!); ' +
+              '_t3 = (((ctx).foo));');
+    });
   });
 
   it('should generate a forward element reference correctly', () => {
@@ -147,7 +275,7 @@ describe('type check blocks', () => {
     }];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t1 = Dir.ngTypeCtor({}); "" + ((_t1).value); var _t2 = document.createElement("div");');
+            'var _t1: Dir = (null!); "" + ((_t1).value); var _t2 = document.createElement("div");');
   });
 
   it('should handle style and class bindings specially', () => {
@@ -173,8 +301,10 @@ describe('type check blocks', () => {
       inputs: {'color': 'color', 'strong': 'strong', 'enabled': 'enabled'},
     }];
     const block = tcb(TEMPLATE, DIRECTIVES);
-    expect(block).toContain(
-        'var _t2 = Dir.ngTypeCtor({ "color": (null as any), "strong": (null as any), "enabled": (null as any) });');
+    expect(block).toContain('var _t2: Dir = (null!);');
+    expect(block).not.toContain('"color"');
+    expect(block).not.toContain('"strong"');
+    expect(block).not.toContain('"enabled"');
     expect(block).toContain('"blue"; false; true;');
   });
 
@@ -191,8 +321,8 @@ describe('type check blocks', () => {
     }];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t3 = Dir.ngTypeCtor((null!)); ' +
-            'var _t2 = Dir.ngTypeCtor({ "input": (_t3) });');
+            'var _t2: Dir = (null!); ' +
+            '_t2["input"] = (_t2);');
   });
 
   it('should generate circular references between two directives correctly', () => {
@@ -218,9 +348,139 @@ describe('type check blocks', () => {
     ];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t4 = DirA.ngTypeCtor((null!)); ' +
-            'var _t3 = DirB.ngTypeCtor({ "inputA": (_t4) }); ' +
-            'var _t2 = DirA.ngTypeCtor({ "inputA": (_t3) });');
+            'var _t2: DirA = (null!); ' +
+            'var _t3: DirB = (null!); ' +
+            '_t2["inputA"] = (_t3); ' +
+            'var _t4 = document.createElement("div"); ' +
+            '_t3["inputA"] = (_t2);');
+  });
+
+  it('should handle undeclared properties', () => {
+    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'Dir',
+      selector: '[dir]',
+      inputs: {
+        fieldA: 'inputA',
+      },
+      undeclaredInputFields: ['fieldA']
+    }];
+    expect(tcb(TEMPLATE, DIRECTIVES))
+        .toContain(
+            'var _t2: Dir = (null!); ' +
+            '(((ctx).foo)); ');
+  });
+
+  it('should handle restricted properties', () => {
+    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'Dir',
+      selector: '[dir]',
+      inputs: {
+        fieldA: 'inputA',
+      },
+      restrictedInputFields: ['fieldA']
+    }];
+    expect(tcb(TEMPLATE, DIRECTIVES))
+        .toContain(
+            'var _t2: Dir = (null!); ' +
+            'var _t3: typeof _t2["fieldA"] = (null!); ' +
+            '_t3 = (((ctx).foo)); ');
+  });
+
+  it('should handle a single property bound to multiple fields', () => {
+    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'Dir',
+      selector: '[dir]',
+      inputs: {
+        field1: 'inputA',
+        field2: 'inputA',
+      },
+    }];
+    expect(tcb(TEMPLATE, DIRECTIVES))
+        .toContain(
+            'var _t2: Dir = (null!); ' +
+            '_t2["field2"] = _t2["field1"] = (((ctx).foo));');
+  });
+
+  it('should handle a single property bound to multiple fields, where one of them is coerced',
+     () => {
+       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+       const DIRECTIVES: TestDeclaration[] = [{
+         type: 'directive',
+         name: 'Dir',
+         selector: '[dir]',
+         inputs: {
+           field1: 'inputA',
+           field2: 'inputA',
+         },
+         coercedInputFields: ['field1'],
+       }];
+       expect(tcb(TEMPLATE, DIRECTIVES))
+           .toContain(
+               'var _t2: Dir = (null!); ' +
+               'var _t3: typeof Dir.ngAcceptInputType_field1 = (null!); ' +
+               '_t2["field2"] = _t3 = (((ctx).foo));');
+     });
+
+  it('should handle a single property bound to multiple fields, where one of them is undeclared',
+     () => {
+       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+       const DIRECTIVES: TestDeclaration[] = [{
+         type: 'directive',
+         name: 'Dir',
+         selector: '[dir]',
+         inputs: {
+           field1: 'inputA',
+           field2: 'inputA',
+         },
+         undeclaredInputFields: ['field1'],
+       }];
+       expect(tcb(TEMPLATE, DIRECTIVES))
+           .toContain(
+               'var _t2: Dir = (null!); ' +
+               '_t2["field2"] = (((ctx).foo));');
+     });
+
+  it('should use coercion types if declared', () => {
+    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'Dir',
+      selector: '[dir]',
+      inputs: {
+        fieldA: 'inputA',
+      },
+      coercedInputFields: ['fieldA'],
+    }];
+    expect(tcb(TEMPLATE, DIRECTIVES))
+        .toContain(
+            'var _t2: Dir = (null!); ' +
+            'var _t3: typeof Dir.ngAcceptInputType_fieldA = (null!); ' +
+            '_t3 = (((ctx).foo));');
+  });
+
+  it('should use coercion types if declared, even when backing field is not declared', () => {
+    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'Dir',
+      selector: '[dir]',
+      inputs: {
+        fieldA: 'inputA',
+      },
+      coercedInputFields: ['fieldA'],
+      undeclaredInputFields: ['fieldA'],
+    }];
+    expect(tcb(TEMPLATE, DIRECTIVES))
+        .toContain(
+            'var _t2: Dir = (null!); ' +
+            'var _t3: typeof Dir.ngAcceptInputType_fieldA = (null!); ' +
+            '_t3 = (((ctx).foo));');
   });
 
   it('should handle $any casts', () => {
@@ -379,14 +639,14 @@ describe('type check blocks', () => {
 
       it('should include null and undefined when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('Dir.ngTypeCtor({ "dirInput": (((ctx).a)) })');
+        expect(block).toContain('_t2["dirInput"] = (((ctx).a));');
         expect(block).toContain('((ctx).b);');
       });
       it('should use the non-null assertion operator when disabled', () => {
         const DISABLED_CONFIG:
             TypeCheckingConfig = {...BASE_CONFIG, strictNullInputBindings: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('Dir.ngTypeCtor({ "dirInput": (((ctx).a)!) })');
+        expect(block).toContain('_t2["dirInput"] = (((ctx).a)!);');
         expect(block).toContain('((ctx).b)!;');
       });
     });
@@ -395,7 +655,7 @@ describe('type check blocks', () => {
       it('should check types of bindings when enabled', () => {
         const TEMPLATE = `<div dir [dirInput]="a" [nonDirInput]="b"></div>`;
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('Dir.ngTypeCtor({ "dirInput": (((ctx).a)) })');
+        expect(block).toContain('_t2["dirInput"] = (((ctx).a));');
         expect(block).toContain('((ctx).b);');
       });
 
@@ -404,7 +664,7 @@ describe('type check blocks', () => {
         const DISABLED_CONFIG:
             TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfInputBindings: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('Dir.ngTypeCtor({ "dirInput": ((((ctx).a) as any)) })');
+        expect(block).toContain('_t2["dirInput"] = ((((ctx).a) as any));');
         expect(block).toContain('(((ctx).b) as any);');
       });
 
@@ -413,8 +673,7 @@ describe('type check blocks', () => {
         const DISABLED_CONFIG:
             TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfInputBindings: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain(
-            'Dir.ngTypeCtor({ "dirInput": ((((((ctx).a)) === (((ctx).b))) as any)) })');
+        expect(block).toContain('_t2["dirInput"] = ((((((ctx).a)) === (((ctx).b))) as any));');
       });
     });
 
@@ -534,17 +793,17 @@ describe('type check blocks', () => {
 
       it('should assign string value to the input when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('"disabled": ("")');
-        expect(block).toContain('"cols": ("3")');
-        expect(block).toContain('"rows": (2)');
+        expect(block).toContain('_t2["disabled"] = ("");');
+        expect(block).toContain('_t2["cols"] = ("3");');
+        expect(block).toContain('_t2["rows"] = (2);');
       });
 
       it('should use any for attributes but still check bound attributes when disabled', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfAttributes: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('"disabled": (null as any)');
-        expect(block).toContain('"cols": (null as any)');
-        expect(block).toContain('"rows": (2)');
+        expect(block).not.toContain('"disabled"');
+        expect(block).not.toContain('"cols"');
+        expect(block).toContain('_t2["rows"] = (2);');
       });
     });
 

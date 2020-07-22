@@ -15,7 +15,7 @@ import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
-import {DirectiveMeta, extractDirectiveGuards, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
+import {DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -51,7 +51,7 @@ export interface ComponentAnalysisData {
    */
   meta: Omit<R3ComponentMetadata, ComponentMetadataResolvedFields>;
   baseClass: Reference<ClassDeclaration>|'dynamic'|null;
-  guards: ReturnType<typeof extractDirectiveGuards>;
+  typeCheckMeta: DirectiveTypeCheckMeta;
   template: ParsedTemplateWithSource;
   metadataStmt: Statement|null;
 
@@ -327,7 +327,7 @@ export class ComponentDecoratorHandler implements
           i18nUseExternalIds: this.i18nUseExternalIds,
           relativeContextFilePath,
         },
-        guards: extractDirectiveGuards(node, this.reflector),
+        typeCheckMeta: extractDirectiveTypeCheckMeta(node, metadata.inputs, this.reflector),
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
@@ -356,7 +356,7 @@ export class ComponentDecoratorHandler implements
       queries: analysis.meta.queries.map(query => query.propertyName),
       isComponent: true,
       baseClass: analysis.baseClass,
-      ...analysis.guards,
+      ...analysis.typeCheckMeta,
     });
 
     this.injectableRegistry.registerInjectable(node);

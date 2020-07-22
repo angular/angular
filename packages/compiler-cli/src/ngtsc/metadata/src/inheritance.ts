@@ -28,6 +28,8 @@ export function flattenInheritedDirectiveMetadata(
   let inputs: {[key: string]: string|[string, string]} = {};
   let outputs: {[key: string]: string} = {};
   let coercedInputFields = new Set<string>();
+  let undeclaredInputFields = new Set<string>();
+  let restrictedInputFields = new Set<string>();
   let isDynamic = false;
 
   const addMetadata = (meta: DirectiveMeta): void => {
@@ -48,6 +50,12 @@ export function flattenInheritedDirectiveMetadata(
     for (const coercedInputField of meta.coercedInputFields) {
       coercedInputFields.add(coercedInputField);
     }
+    for (const undeclaredInputField of meta.undeclaredInputFields) {
+      undeclaredInputFields.add(undeclaredInputField);
+    }
+    for (const restrictedInputField of meta.restrictedInputFields) {
+      restrictedInputFields.add(restrictedInputField);
+    }
   };
 
   addMetadata(topMeta);
@@ -57,6 +65,8 @@ export function flattenInheritedDirectiveMetadata(
     inputs,
     outputs,
     coercedInputFields,
+    undeclaredInputFields,
+    restrictedInputFields,
     baseClass: isDynamic ? 'dynamic' : null,
   };
 }
