@@ -99,8 +99,9 @@ import {UrlTree} from '../url_tree';
  * </a>
  * ```
  *
- * Use {@link Router.getCurrentNavigation() Router#getCurrentNavigation} to retrieve a saved navigation-state value.
- * For example, to capture the `tracingId` during the `NavigationStart` event:
+ * Use {@link Router.getCurrentNavigation() Router#getCurrentNavigation} to retrieve a saved
+ * navigation-state value. For example, to capture the `tracingId` during the `NavigationStart`
+ * event:
  *
  * ```
  * // Get NavigationStart events
