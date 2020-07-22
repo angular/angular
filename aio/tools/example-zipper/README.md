@@ -23,33 +23,18 @@ to flag an example as something to stackblitz or zip. For example:
 
 The zipper will use this information for creating new zips.
 
-## Three kinds of examples
+## Two kinds of examples
 
-The majority of examples in AIO use `CLI`, with some additionally using `Webpack` and upgrade usiing `SystemJS`. This
-tool is able to differentiate between them.
+There are mainly two kinds of AIO docs examples: The ones based on the Angular CLI and the ones based on SystemJS.
+The majority of the examples are CLI-based with only some of the `ngUpgrade` examples using SystemJS.
 
-The boilerplate uses a `package.json` that contains packages and scripts to run any kind of example.
-Using that `package.json` in the zips would confuse the users.
+Some of the CLI-based examples require small tweaks to the default layout/configuration (for example, to add support for Angular elements, i18n, universal, etc.).
+These example types have separate boilerplate directories with the files that are different from the default `cli` boilerplate.
 
-Thanks to the `package.json` customizer, we can create a new `package.json` on the fly that would
-only contain the packages and scripts needed to run that example.
+There are appropriate `package.json` files for each type of example in the boilerplate directories.
+If there is no special `package.json` file for an example type, the one from the `cli` boilerplate directory will be used instead.
 
-The `exampleZipper.js` won't include any `System.js` related files for `CLI` or `Webpack` projects.
-
-### The package.json customizer
-
-Given a `type`, this tool will populate a `package.json` file customized for that type.
-
-Here you find a:
-
-* **base.json** - All the common scripts and packages
-* **cli.json** - Extra scripts and packages for the CLI
-* **universal.json** - Extra scripts and packages for universal
-* **i18n.json** - Extra scripts and packages for i18n
-* **systemjs.json** - All the System.js related packages but it also contains the remainder scripts
-  that are not in the other files.
-
-The tool will also give some standard names to the scripts.
+The `exampleZipper.js` won't include any `System.js` related files for CLI-based projects.
 
 ## The zipper.json
 

@@ -14,11 +14,3 @@ There, select all the packages that are updated on the new Angular release.
 
 **2)** Changes to the tsconfig.json? There are several files in `/aio/tools/examples/shared/boilerplate/*/tsconfig.json` (based on the example type).
 
----
-> NOTE(gkalpak):
-> There are some `package.json` files in `/aio/tools/examples/shared/boilerplate/*`.
-> AFAICT, they are copied over to the examples (based on the example type), but they are neither
-> used for installing dependencies (which come from `/aio/tools/examples/shared/package.json`) nor
-> used in zips (since they are overwritten by `/aio/tools/example-zipper/customizer`).
-> For all stackblitz live-examples, `/aio/tools/examples/shared/boilerplate/cli/package.json` seems
-> to be used.
