@@ -90,13 +90,13 @@ export function tsDeclareVariable(id: ts.Identifier, type: ts.TypeNode): ts.Vari
  * Create a `ts.VariableStatement` that initializes a variable with a given expression.
  *
  * Unlike with `tsDeclareVariable`, the type of the variable is inferred from the initializer
- * expression.
+ * expression unless an explicit type is provided.
  */
 export function tsCreateVariable(
-    id: ts.Identifier, initializer: ts.Expression): ts.VariableStatement {
+    id: ts.Identifier, initializer: ts.Expression, type?: ts.TypeNode): ts.VariableStatement {
   const decl = ts.createVariableDeclaration(
       /* name */ id,
-      /* type */ undefined,
+      /* type */ type,
       /* initializer */ initializer);
   return ts.createVariableStatement(
       /* modifiers */ undefined,
