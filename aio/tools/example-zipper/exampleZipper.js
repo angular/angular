@@ -98,7 +98,6 @@ class ExampleZipper {
       'src/favicon.ico',
       'src/polyfills.ts',
       'src/test.ts',
-      'src/typings.d.ts',
       'src/environments/**/*',
       'src/testing/**/*',
       // Only ignore root package.json
