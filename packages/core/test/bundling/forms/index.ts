@@ -13,29 +13,29 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
   selector: 'app-template-forms',
   template: `
   <form novalidate>
-  <div ngModelGroup="profileForm">
-    <div>
-      First Name:
-      <input name="first" ngModel required />
-    </div>
-    <div>
-      Last Name:
-      <input name="last" ngModel />
-    </div>
-    <div>
-      Subscribe:
-      <input name="subscribed" type="checkbox" ngModel />
-    </div>
+    <div ngModelGroup="profileForm">
+      <div>
+        First Name:
+        <input name="first" ngModel required />
+      </div>
+      <div>
+        Last Name:
+        <input name="last" ngModel />
+      </div>
+      <div>
+        Subscribe:
+        <input name="subscribed" type="checkbox" ngModel />
+      </div>
 
-    <div>Disabled: <input name="foo" ngModel disabled /></div>
+      <div>Disabled: <input name="foo" ngModel disabled /></div>
 
-    <div *ngFor="let city of addresses; let i = index">
-      City <input [(ngModel)]="addresses[i].city" name="name" />
+      <div *ngFor="let city of addresses; let i = index">
+        City <input [(ngModel)]="addresses[i].city" name="name" />
+      </div>
+
+      <button (click)="addCity()">Add City</button>
     </div>
-
-    <button (click)="addCity()">Add City</button>
-  </div>
-</form>`,
+  </form>`,
 })
 class TemplateFormsComponent {
   name = {first: 'Nancy', last: 'Drew', subscribed: true};
