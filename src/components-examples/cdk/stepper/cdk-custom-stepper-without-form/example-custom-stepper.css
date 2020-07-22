@@ -1,5 +1,5 @@
 .example-container {
-  border: 1px solid black;
+  border: 1px solid;
   padding: 10px;
   margin: 10px;
 }
@@ -10,24 +10,21 @@
   margin-top: 10px;
 }
 
-.example-active {
-  color: blue;
-}
-
 .example-step {
   background: transparent;
   border: 0;
   margin: 0 10px;
   padding: 10px;
-  color: black;
+  color: inherit;
 }
 
 .example-step.example-active {
-  color: blue;
-  border-bottom: 1px solid blue;
+  border-bottom: 1px solid;
+  font-weight: 600;
 }
 
 .example-nav-button {
   background: transparent;
   border: 0;
+  color: inherit;
 }
