@@ -2,7 +2,7 @@
   "TopBar": [
     {
       "url": "features",
-      "title": "Features"
+      "title": "Caracteristicas"
     },
     {
       "url": "docs",
@@ -10,11 +10,11 @@
     },
     {
       "url": "resources",
-      "title": "Resources"
+      "title": "Recursos"
     },
     {
       "url": "events",
-      "title": "Events"
+      "title": "Eventos"
     },
     {
       "url": "https://blog.angular.io/",
@@ -23,19 +23,19 @@
   ],
   "TopBarNarrow": [
     {
-      "title": "About Angular",
+      "title": "Acerca de Angular",
       "children": [
         {
           "url": "features",
-          "title": "Features"
+          "title": "Caracteristicas"
         },
         {
           "url": "resources",
-          "title": "Resources"
+          "title": "Recursos"
         },
         {
           "url": "events",
-          "title": "Events"
+          "title": "Eventos"
         },
         {
           "url": "https://blog.angular.io/",
@@ -955,80 +955,100 @@
   ],
   "Footer": [
     {
-      "title": "Resources",
+      "title": "Recursos",
       "children": [
         {
           "url": "about",
-          "title": "About",
-          "tooltip": "Angular contributors."
+          "title": "Contribuyentes",
+          "tooltip": "Contribuyentes de Angular."
         },
         {
           "url": "resources",
-          "title": "Resource Listing",
-          "tooltip": "Angular tools, training, and blogs from around the web."
+          "title": "Listado de recursos",
+          "tooltip": "Herramientas de Angular, capacitación y blogs de toda la web."
         },
         {
           "url": "presskit",
-          "title": "Press Kit",
-          "tooltip": "Press contacts, logos, and branding."
+          "title": "Kit de prensa",
+          "tooltip": "Contactos de prensa, logotipos y marcas."
         },
         {
           "url": "https://blog.angular.io/",
           "title": "Blog",
-          "tooltip": "Angular Blog"
+          "tooltip": "Blog de Angular"
         },
         {
           "url": "analytics",
-          "title": "Usage Analytics",
-          "tooltip": "Angular Usage Analytics"
+          "title": "Analítica de uso",
+          "tooltip": "Analítica de uso Angular"
         }
       ]
     },
     {
-      "title": "Help",
+      "title": "Consigue ayuda",
       "children": [
+        {
+          "url": "https://chat.angular.lat/",
+          "title": "Angular Hispano Chat",
+          "tooltip": "Chatea en castellano sobre Angular con otros miembros de la comunidad."
+        },
+        {
+          "url": "https://angular.lat/coc",
+          "title": "Código de Conducta",
+          "tooltip": "Tratarnos con respeto y proporcionar un lugar seguro para contribuir."
+        },
         {
           "url": "https://stackoverflow.com/questions/tagged/angular",
           "title": "Stack Overflow",
-          "tooltip": "Stack Overflow: where the community answers your technical Angular questions."
+          "tooltip": "Stack Overflow: donde la comunidad responde sus preguntas técnicas de Angular."
         },
         {
           "url": "https://gitter.im/angular/angular",
           "title": "Gitter",
-          "tooltip": "Chat about Angular with other birds of a feather."
+          "tooltip": "Chatea en inglés sobre Angular con otros miembros de la comunidad."
         },
         {
           "url": "https://github.com/angular/angular/issues",
-          "title": "Report Issues",
-          "tooltip": "Post issues and suggestions on github."
+          "title": "Informar Issues",
+          "tooltip": "Publica problemas y sugerencias en GitHub."
         },
         {
-          "url": "https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md",
-          "title": "Code of Conduct",
-          "tooltip": "Treating each other with respect."
+          "url": "https://github.com/angular-hispano/angular/issues",
+          "title": "Issues de traducción",
+          "tooltip": "Publica issues y sugerencias de traducción en GitHub."
         }
       ]
     },
     {
-      "title": "Community",
+      "title": "Comunidad",
       "children": [
         {
-          "url": "events",
-          "title": "Events",
-          "tooltip": "Angular events around the world."
+          "url": "https://angular.lat/conferencias",
+          "title": "Eventos Hispanos",
+          "tooltip": "Eventos en castellano de Angular alrededor del mundo."
+        },
+        {
+          "url": "https://angular.lat/meetups",
+          "title": "Meetups Hispanos",
+          "tooltip": "Asista a una reunión y aprenda de otros desarrolladores."
         },
         {
           "url": "http://www.meetup.com/topics/angularjs/",
-          "title": "Meetups",
-          "tooltip": "Attend a meetup and learn from fellow developers."
+          "title": "Mas Meetups",
+          "tooltip": "Asista a una reunión y aprenda de otros desarrolladores."
         },
         {
-          "url": "https://twitter.com/angular",
+          "url": "events",
+          "title": "Mas Eventos",
+          "tooltip": "Eventos de Angular alrededor del mundo."
+        },
+        {
+          "url": "https://twitter.com/AngularHispana",
           "title": "Twitter",
           "tooltip": "Twitter"
         },
         {
-          "url": "https://github.com/angular/angular",
+          "url": "https://github.com/angular-hispano",
           "title": "GitHub",
           "tooltip": "GitHub"
         },
@@ -1040,7 +1060,7 @@
       ]
     },
     {
-      "title": "Languages",
+      "title": "Idiomas",
       "children": [
         {
           "title": "简体中文版",

@@ -17,8 +17,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   selector: 'aio-search-box',
   template: `<input #searchBox
     type="search"
-    aria-label="search"
-    placeholder="Search"
+    aria-label="Buscar"
+    placeholder="Buscar"
     (input)="doSearch()"
     (keyup)="doSearch()"
     (focus)="doFocus()"
