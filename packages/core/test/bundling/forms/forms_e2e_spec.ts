@@ -27,11 +27,11 @@ describe('functional test for forms', () => {
 
            const templateForm = document.querySelector('app-template-forms')!;
 
-           // check for inputs
+           // Check for inputs
            const iputs = templateForm.querySelectorAll('input');
            expect(iputs.length).toBe(5);
 
-           // check for button
+           // Check for button
            const templateButtons = templateForm.querySelectorAll('button');
            expect(templateButtons.length).toBe(1);
            expect(templateButtons[0]).toBeDefined();
@@ -47,11 +47,11 @@ describe('functional test for forms', () => {
 
            const reactiveForm = document.querySelector('app-reactive-forms')!;
 
-           // check for inputs
+           // Check for inputs
            const inputs = reactiveForm.querySelectorAll('input');
            expect(inputs.length).toBe(5);
 
-           // check for button
+           // Check for button
            const reactiveButtons = reactiveForm.querySelectorAll('button');
            expect(reactiveButtons.length).toBe(1);
            expect(reactiveButtons[0]).toBeDefined();
