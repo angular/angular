@@ -32,7 +32,7 @@ const cliRelativePath = BOILERPLATE_PATHS.cli.map(file => `../cli/${file}`);
 
 BOILERPLATE_PATHS.elements = [...cliRelativePath, 'package.json', 'src/polyfills.ts'];
 
-BOILERPLATE_PATHS.i18n = [...cliRelativePath, 'angular.json', 'package.json'];
+BOILERPLATE_PATHS.i18n = [...cliRelativePath, 'angular.json', 'package.json', 'src/polyfills.ts'];
 
 BOILERPLATE_PATHS['service-worker'] = [...cliRelativePath, 'angular.json', 'package.json'];
 
