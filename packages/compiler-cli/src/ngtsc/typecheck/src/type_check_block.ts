@@ -19,7 +19,7 @@ import {Environment} from './environment';
 import {astToTypescript, NULL_AS_ANY} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {ExpressionSemanticVisitor} from './template_semantics';
-import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateVariable, tsDeclareVariable} from './ts_util';
+import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util';
 
 
 
@@ -197,6 +197,7 @@ class TcbTemplateBodyOp extends TcbOp {
   constructor(private tcb: Context, private scope: Scope, private template: TmplAstTemplate) {
     super();
   }
+
   execute(): null {
     // An `if` will be constructed, within which the template's children will be type checked. The
     // `if` is used for two reasons: it creates a new syntactic scope, isolating variables declared
@@ -308,13 +309,15 @@ class TcbTextInterpolationOp extends TcbOp {
 }
 
 /**
- * A `TcbOp` which constructs an instance of a directive with types inferred from its inputs, which
- * also checks the bindings to the directive in the process.
+ * A `TcbOp` which constructs an instance of a directive _without_ setting any of its inputs. Inputs
+ * are later set in the `TcbDirectiveInputsOp`. Type checking was found to be faster when done in
+ * this way as opposed to `TcbDirectiveCtorOp` which is only necessary when the directive is
+ * generic.
  *
  * Executing this operation returns a reference to the directive instance variable with its inferred
  * type.
  */
-class TcbDirectiveOp extends TcbOp {
+class TcbDirectiveTypeOp extends TcbOp {
   constructor(
       private tcb: Context, private scope: Scope, private node: TmplAstTemplate|TmplAstElement,
       private dir: TypeCheckableDirectiveMeta) {
@@ -323,37 +326,190 @@ class TcbDirectiveOp extends TcbOp {
 
   execute(): ts.Identifier {
     const id = this.tcb.allocateId();
-    // Process the directive and construct expressions for each of its bindings.
-    const inputs = tcbGetDirectiveInputs(this.node, this.dir, this.tcb, this.scope);
+
+    const type = this.tcb.env.referenceType(this.dir.ref);
+    this.scope.addStatement(tsDeclareVariable(id, type));
+    return id;
+  }
+}
+
+/**
+ * A `TcbOp` which constructs an instance of a directive with types inferred from its inputs. The
+ * inputs themselves are not checked here; checking of inputs is achieved in `TcbDirectiveInputsOp`.
+ * Any errors reported in this statement are ignored, as the type constructor call is only present
+ * for type-inference.
+ *
+ * When a Directive is generic, it is required that the TCB generates the instance using this method
+ * in order to infer the type information correctly.
+ *
+ * Executing this operation returns a reference to the directive instance variable with its inferred
+ * type.
+ */
+class TcbDirectiveCtorOp extends TcbOp {
+  constructor(
+      private tcb: Context, private scope: Scope, private node: TmplAstTemplate|TmplAstElement,
+      private dir: TypeCheckableDirectiveMeta) {
+    super();
+  }
+
+  execute(): ts.Identifier {
+    const id = this.tcb.allocateId();
+
+    const genericInputs = new Map<string, TcbDirectiveInput>();
+
+    const inputs = getBoundInputs(this.dir, this.node, this.tcb);
+    for (const input of inputs) {
+      for (const fieldName of input.fieldNames) {
+        // Skip the field if an attribute has already been bound to it; we can't have a duplicate
+        // key in the type constructor call.
+        if (genericInputs.has(fieldName)) {
+          continue;
+        }
+
+        const expression = translateInput(input.attribute, this.tcb, this.scope);
+        genericInputs.set(fieldName, {
+          type: 'binding',
+          field: fieldName,
+          expression,
+          sourceSpan: input.attribute.sourceSpan
+        });
+      }
+    }
+
+    // Add unset directive inputs for each of the remaining unset fields.
+    for (const fieldName of Object.keys(this.dir.inputs)) {
+      if (!genericInputs.has(fieldName)) {
+        genericInputs.set(fieldName, {type: 'unset', field: fieldName});
+      }
+    }
 
     // Call the type constructor of the directive to infer a type, and assign the directive
     // instance.
-    const typeCtor = tcbCallTypeCtor(this.dir, this.tcb, inputs);
-    addParseSpanInfo(typeCtor, this.node.sourceSpan);
+    const typeCtor = tcbCallTypeCtor(this.dir, this.tcb, Array.from(genericInputs.values()));
+    ignoreDiagnostics(typeCtor);
     this.scope.addStatement(tsCreateVariable(id, typeCtor));
     return id;
   }
 
   circularFallback(): TcbOp {
-    return new TcbDirectiveCircularFallbackOp(this.tcb, this.scope, this.node, this.dir);
+    return new TcbDirectiveCtorCircularFallbackOp(this.tcb, this.scope, this.node, this.dir);
+  }
+}
+
+/**
+ * A `TcbOp` which generates code to check input bindings on an element that correspond with the
+ * members of a directive.
+ *
+ * Executing this operation returns nothing.
+ */
+class TcbDirectiveInputsOp extends TcbOp {
+  constructor(
+      private tcb: Context, private scope: Scope, private node: TmplAstTemplate|TmplAstElement,
+      private dir: TypeCheckableDirectiveMeta) {
+    super();
+  }
+
+  execute(): null {
+    const dirId = this.scope.resolve(this.node, this.dir);
+
+    // TODO(joost): report duplicate properties
+
+    const inputs = getBoundInputs(this.dir, this.node, this.tcb);
+    for (const input of inputs) {
+      // For bound inputs, the property is assigned the binding expression.
+      let expr = translateInput(input.attribute, this.tcb, this.scope);
+      if (!this.tcb.env.config.checkTypeOfInputBindings) {
+        // If checking the type of bindings is disabled, cast the resulting expression to 'any'
+        // before the assignment.
+        expr = tsCastToAny(expr);
+      } else if (!this.tcb.env.config.strictNullInputBindings) {
+        // If strict null checks are disabled, erase `null` and `undefined` from the type by
+        // wrapping the expression in a non-null assertion.
+        expr = ts.createNonNullExpression(expr);
+      }
+
+      let assignment: ts.Expression = wrapForDiagnostics(expr);
+
+      for (const fieldName of input.fieldNames) {
+        let target: ts.LeftHandSideExpression;
+        if (this.dir.coercedInputFields.has(fieldName)) {
+          // The input has a coercion declaration which should be used instead of assigning the
+          // expression into the input field directly. To achieve this, a variable is declared
+          // with a type of `typeof Directive.ngAcceptInputType_fieldName` which is then used as
+          // target of the assignment.
+          const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
+          if (!ts.isTypeReferenceNode(dirTypeRef)) {
+            throw new Error(
+                `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`);
+          }
+
+          const id = this.tcb.allocateId();
+          const type = tsCreateTypeQueryForCoercedInput(dirTypeRef.typeName, fieldName);
+          this.scope.addStatement(tsDeclareVariable(id, type));
+
+          target = id;
+        } else if (this.dir.undeclaredInputFields.has(fieldName)) {
+          // If no coercion declaration is present nor is the field declared (i.e. the input is
+          // declared in a `@Directive` or `@Component` decorator's `inputs` property) there is no
+          // assignment target available, so this field is skipped.
+          continue;
+        } else if (this.dir.restrictedInputFields.has(fieldName)) {
+          // To ignore errors, assign to temp variable with type of the field
+          const id = this.tcb.allocateId();
+          const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
+          if (!ts.isTypeReferenceNode(dirTypeRef)) {
+            throw new Error(
+                `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`);
+          }
+          const type = ts.createIndexedAccessTypeNode(
+              ts.createTypeQueryNode(dirId as ts.Identifier),
+              ts.createLiteralTypeNode(ts.createStringLiteral(fieldName)));
+          const temp = tsCreateVariable(id, ts.createNonNullExpression(ts.createNull()), type);
+          addParseSpanInfo(temp, input.attribute.sourceSpan);
+          this.scope.addStatement(temp);
+          target = id;
+
+          // TODO: To get errors assign directly to the fields on the instance, using dot access
+          // when possible
+
+        } else {
+          // Otherwise, a declaration exists in which case the `dir["fieldName"]` syntax is used
+          // as assignment target. An element access is used instead of a property access to
+          // support input names that are not valid JavaScript identifiers. Additionally, using
+          // element access syntax does not produce
+          // TS2341 "Property $prop is private and only accessible within class $class." nor
+          // TS2445 "Property $prop is protected and only accessible within class $class and its
+          //         subclasses."
+          target = ts.createElementAccess(dirId, ts.createStringLiteral(fieldName));
+        }
+
+        // Finally the assignment is extended by assigning it into the target expression.
+        assignment = ts.createBinary(target, ts.SyntaxKind.EqualsToken, assignment);
+      }
+
+      addParseSpanInfo(assignment, input.attribute.sourceSpan);
+      this.scope.addStatement(ts.createExpressionStatement(assignment));
+    }
+
+    return null;
   }
 }
 
 /**
  * A `TcbOp` which is used to generate a fallback expression if the inference of a directive type
- * via `TcbDirectiveOp` requires a reference to its own type. This can happen using a template
+ * via `TcbDirectiveCtorOp` requires a reference to its own type. This can happen using a template
  * reference:
  *
  * ```html
  * <some-cmp #ref [prop]="ref.foo"></some-cmp>
  * ```
  *
- * In this case, `TcbDirectiveCircularFallbackOp` will add a second inference of the directive type
- * to the type-check block, this time calling the directive's type constructor without any input
- * expressions. This infers the widest possible supertype for the directive, which is used to
+ * In this case, `TcbDirectiveCtorCircularFallbackOp` will add a second inference of the directive
+ * type to the type-check block, this time calling the directive's type constructor without any
+ * input expressions. This infers the widest possible supertype for the directive, which is used to
  * resolve any recursive references required to infer the real type.
  */
-class TcbDirectiveCircularFallbackOp extends TcbOp {
+class TcbDirectiveCtorCircularFallbackOp extends TcbOp {
   constructor(
       private tcb: Context, private scope: Scope, private node: TmplAstTemplate|TmplAstElement,
       private dir: TypeCheckableDirectiveMeta) {
@@ -694,8 +850,8 @@ class Scope {
    */
   private elementOpMap = new Map<TmplAstElement, number>();
   /**
-   * A map of maps which tracks the index of `TcbDirectiveOp`s in the `opQueue` for each directive
-   * on a `TmplAstElement` or `TmplAstTemplate` node.
+   * A map of maps which tracks the index of `TcbDirectiveCtorOp`s in the `opQueue` for each
+   * directive on a `TmplAstElement` or `TmplAstTemplate` node.
    */
   private directiveOpMap =
       new Map<TmplAstElement|TmplAstTemplate, Map<TypeCheckableDirectiveMeta, number>>();
@@ -957,8 +1113,12 @@ class Scope {
 
     const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
     for (const dir of directives) {
-      const dirIndex = this.opQueue.push(new TcbDirectiveOp(this.tcb, this, node, dir)) - 1;
+      const directiveOp = dir.isGeneric ? new TcbDirectiveCtorOp(this.tcb, this, node, dir) :
+                                          new TcbDirectiveTypeOp(this.tcb, this, node, dir);
+      const dirIndex = this.opQueue.push(directiveOp) - 1;
       dirMap.set(dir, dirIndex);
+
+      this.opQueue.push(new TcbDirectiveInputsOp(this.tcb, this, node, dir));
     }
     this.directiveOpMap.set(node, dirMap);
 
@@ -1014,6 +1174,11 @@ class Scope {
       this.opQueue.push(new TcbUnclaimedOutputsOp(this.tcb, this, node, claimedOutputs));
     }
   }
+}
+
+interface TcbBoundInput {
+  attribute: TmplAstBoundAttribute|TmplAstTextAttribute;
+  fieldNames: string[];
 }
 
 /**
@@ -1269,53 +1434,13 @@ function tcbCallTypeCtor(
       /* argumentsArray */[ts.createObjectLiteral(members)]);
 }
 
-type TcbDirectiveInput = {
-  type: 'binding'; field: string; expression: ts.Expression; sourceSpan: ParseSourceSpan;
-}|{
-  type: 'unset';
-  field: string;
-};
+function getBoundInputs(
+    directive: TypeCheckableDirectiveMeta, node: TmplAstTemplate|TmplAstElement,
+    tcb: Context): TcbBoundInput[] {
+  const boundInputs: TcbBoundInput[] = [];
 
-function tcbGetDirectiveInputs(
-    el: TmplAstElement|TmplAstTemplate, dir: TypeCheckableDirectiveMeta, tcb: Context,
-    scope: Scope): TcbDirectiveInput[] {
-  // Only the first binding to a property is written.
-  // TODO(alxhub): produce an error for duplicate bindings to the same property, independently of
-  // this logic.
-  const directiveInputs = new Map<string, TcbDirectiveInput>();
-  // `dir.inputs` is an object map of field names on the directive class to property names.
-  // This is backwards from what's needed to match bindings - a map of properties to field names
-  // is desired. Invert `dir.inputs` into `propMatch` to create this map.
-  const propMatch = new Map<string, string>();
-  const inputs = dir.inputs;
-  Object.keys(inputs).forEach(key => {
-    Array.isArray(inputs[key]) ? propMatch.set(inputs[key][0], key) :
-                                 propMatch.set(inputs[key] as string, key);
-  });
-
-  el.inputs.forEach(processAttribute);
-  el.attributes.forEach(processAttribute);
-  if (el instanceof TmplAstTemplate) {
-    el.templateAttrs.forEach(processAttribute);
-  }
-
-  // Add unset directive inputs for each of the remaining unset fields.
-  // Note: it's actually important here that `propMatch.values()` isn't used, as there can be
-  // multiple fields which share the same property name and only one of them will be listed as a
-  // value in `propMatch`.
-  for (const field of Object.keys(inputs)) {
-    if (!directiveInputs.has(field)) {
-      directiveInputs.set(field, {type: 'unset', field});
-    }
-  }
-
-  return Array.from(directiveInputs.values());
-
-  /**
-   * Add a binding expression to the map for each input/template attribute of the directive that has
-   * a matching binding.
-   */
-  function processAttribute(attr: TmplAstBoundAttribute|TmplAstTextAttribute): void {
+  const propertyToFieldNames = invertInputs(directive.inputs);
+  const processAttribute = (attr: TmplAstBoundAttribute|TmplAstTextAttribute) => {
     // Skip non-property bindings.
     if (attr instanceof TmplAstBoundAttribute && attr.type !== BindingType.Property) {
       return;
@@ -1327,33 +1452,91 @@ function tcbGetDirectiveInputs(
     }
 
     // Skip the attribute if the directive does not have an input for it.
-    if (!propMatch.has(attr.name)) {
+    if (!propertyToFieldNames.has(attr.name)) {
       return;
     }
-    const field = propMatch.get(attr.name)!;
+    const fieldNames = propertyToFieldNames.get(attr.name)!;
+    boundInputs.push({attribute: attr, fieldNames});
+  };
 
-    // Skip the attribute if a previous binding also wrote to it.
-    if (directiveInputs.has(field)) {
-      return;
-    }
+  node.inputs.forEach(processAttribute);
+  node.attributes.forEach(processAttribute);
+  if (node instanceof TmplAstTemplate) {
+    node.templateAttrs.forEach(processAttribute);
+  }
 
-    let expr: ts.Expression;
-    if (attr instanceof TmplAstBoundAttribute) {
-      // Produce an expression representing the value of the binding.
-      expr = tcbExpression(attr.value, tcb, scope);
-    } else {
-      // For regular attributes with a static string value, use the represented string literal.
-      expr = ts.createStringLiteral(attr.value);
-    }
+  return boundInputs;
+}
 
-    directiveInputs.set(field, {
-      type: 'binding',
-      field: field,
-      expression: expr,
-      sourceSpan: attr.sourceSpan,
-    });
+/**
+ * Translates the given attribute binding to a `ts.Expression`.
+ */
+function translateInput(
+    attr: TmplAstBoundAttribute|TmplAstTextAttribute, tcb: Context, scope: Scope): ts.Expression {
+  if (attr instanceof TmplAstBoundAttribute) {
+    // Produce an expression representing the value of the binding.
+    return tcbExpression(attr.value, tcb, scope);
+  } else {
+    // For regular attributes with a static string value, use the represented string literal.
+    return ts.createStringLiteral(attr.value);
   }
 }
+
+/**
+ * Inverts the input-mapping from field-to-property name into property-to-field name, to be able
+ * to match a property in a template with the corresponding field on a directive.
+ */
+function invertInputs(inputs: {[fieldName: string]: string|[string, string]}):
+    Map<string, string[]> {
+  const propertyToFieldNames = new Map<string, string[]>();
+  for (const fieldName of Object.keys(inputs)) {
+    const propertyNames = inputs[fieldName];
+    const propertyName = Array.isArray(propertyNames) ? propertyNames[0] : propertyNames;
+
+    if (propertyToFieldNames.has(propertyName)) {
+      propertyToFieldNames.get(propertyName)!.push(fieldName);
+    } else {
+      propertyToFieldNames.set(propertyName, [fieldName]);
+    }
+  }
+  return propertyToFieldNames;
+}
+
+/**
+ * An input binding that corresponds with a field of a directive.
+ */
+interface TcbDirectiveBoundInput {
+  type: 'binding';
+
+  /**
+   * The name of a field on the directive that is set.
+   */
+  field: string;
+
+  /**
+   * The `ts.Expression` corresponding with the input binding expression.
+   */
+  expression: ts.Expression;
+
+  /**
+   * The source span of the full attribute binding.
+   */
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Indicates that a certain field of a directive does not have a corresponding input binding.
+ */
+interface TcbDirectiveUnsetInput {
+  type: 'unset';
+
+  /**
+   * The name of a field on the directive for which no input binding is present.
+   */
+  field: string;
+}
+
+type TcbDirectiveInput = TcbDirectiveBoundInput|TcbDirectiveUnsetInput;
 
 const EVENT_PARAMETER = '$event';
 
