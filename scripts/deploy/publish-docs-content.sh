@@ -41,11 +41,6 @@ commitAuthorName=$(git --no-pager show -s --format='%an' HEAD)
 commitAuthorEmail=$(git --no-pager show -s --format='%ae' HEAD)
 commitMessage=$(git log --oneline -n 1)
 
-# Note that we cannot store the commit SHA in its own version segment
-# as it will not comply with the semver specification. For example:
-# 1.0.0-00abcdef will break since the SHA starts with zeros. To fix this,
-# we create a new version segment with the following format: "1.0.0-sha-00abcdef".
-# See issue: https://jubianchi.github.io/semver-check/#/^8.0.0/8.2.2-0462599
 buildVersionName="${buildVersion}-sha-${commitSha}"
 buildTagName="${branchName}-${commitSha}"
 buildCommitMessage="${branchName} - ${commitMessage}"
@@ -94,12 +89,6 @@ if [[ $(git ls-remote origin "refs/tags/${buildTagName}") ]]; then
   echo "Skipping publish of docs-content because tag is already published. Exiting.."
   exit 0
 fi
-
-# Replace the version in every file recursively with a more specific version that also includes
-# the SHA of the current build job. Normally this "sed" call would just replace the version
-# placeholder, but the version placeholders have been replaced by "npm_package" already.
-escapedVersion=$(echo ${buildVersion} | sed 's/[.[\*^$]/\\&/g')
-sed -i "s/${escapedVersion}/${buildVersionName}/g" $(find . -type f -not -path '*\/.*')
 
 # Setup the Git configuration
 git config user.name "$commitAuthorName"

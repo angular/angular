@@ -2,17 +2,16 @@ import chalk from 'chalk';
 import {join} from 'path';
 import {checkReleasePackage} from './release-output/check-package';
 import {releasePackages} from './release-output/release-packages';
-import {parseVersionName, Version} from './version-name/parse-version';
 
 /**
  * Checks the release output by running the release-output validations for each
  * release package.
  */
-export function checkReleaseOutput(releaseOutputDir: string, currentVersion: Version) {
+export function checkReleaseOutput(releaseOutputDir: string, expectedVersion: string) {
   let hasFailed = false;
 
   releasePackages.forEach(packageName => {
-    if (!checkReleasePackage(releaseOutputDir, packageName, currentVersion)) {
+    if (!checkReleasePackage(releaseOutputDir, packageName, expectedVersion)) {
       hasFailed = true;
     }
   });
@@ -30,9 +29,10 @@ export function checkReleaseOutput(releaseOutputDir: string, currentVersion: Ver
 
 
 if (require.main === module) {
-  const currentVersion = parseVersionName(require('../../package.json').version);
-  if (currentVersion === null) {
-    throw Error('Version in project "package.json" is invalid.');
+  const [expectedVersion] = process.argv.slice(2);
+  if (expectedVersion === undefined) {
+    console.error('No expected version specified. Please pass one as argument.');
+    process.exit(1);
   }
-  checkReleaseOutput(join(__dirname, '../../dist/releases'), currentVersion);
+  checkReleaseOutput(join(__dirname, '../../dist/releases'), expectedVersion);
 }

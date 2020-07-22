@@ -27,28 +27,39 @@ const queryPackagesCmd =
     `${bazelCmd} query --output=label "attr('tags', '\\[.*${releaseTargetTag}.*\\]', //src/...) ` +
     `intersect kind('.*_package', //src/...)"`;
 
+/** Path for the default distribution output directory. */
+const defaultDistPath = join(projectDir, 'dist/releases');
+
 // Export the methods for building the release packages. These
 // can be consumed by the release tool.
-exports.buildReleasePackages = buildReleasePackages;
-exports.defaultBuildReleasePackages = defaultBuildReleasePackages;
+exports.performNpmReleaseBuild = performNpmReleaseBuild;
+exports.performDefaultSnapshotBuild = performDefaultSnapshotBuild;
 
 if (module === require.main) {
-  defaultBuildReleasePackages();
+  // We always build as a snapshot bu8ild, unless the script is invoked directly by the
+  // release publish script. The snapshot release configuration ensures that the current
+  // Git `HEAD` sha is included for the version placeholders.
+  performDefaultSnapshotBuild();
+}
+
+/** Builds the release packages for NPM. */
+function performNpmReleaseBuild() {
+  buildReleasePackages(false, defaultDistPath, /* isSnapshotBuild */ false);
 }
 
 /**
- * Builds the release packages with the default compile mode and
- * output directory.
+ * Builds the release packages as snapshot build. This means that the current
+ * Git HEAD SHA is included in the version (for easier debugging and back tracing).
  */
-function defaultBuildReleasePackages() {
-  buildReleasePackages(false, join(projectDir, 'dist/releases'));
+function performDefaultSnapshotBuild() {
+  buildReleasePackages(false, defaultDistPath, /* isSnapshotBuild */ true);
 }
 
 /**
  * Builds the release packages with the given compile mode and copies
  * the package output into the given directory.
  */
-function buildReleasePackages(useIvy, distPath) {
+function buildReleasePackages(useIvy, distPath, isSnapshotBuild) {
   console.log('######################################');
   console.log('  Building release packages...');
   console.log(`  Compiling with Ivy: ${useIvy}`);
@@ -59,6 +70,12 @@ function buildReleasePackages(useIvy, distPath) {
   const packageNames = getPackageNamesOfTargets(targets);
   const bazelBinPath = exec(`${bazelCmd} info bazel-bin`, true);
   const getOutputPath = pkgName => join(bazelBinPath, 'src', pkgName, 'npm_package');
+
+  // Build with "--config=release" or `--config=snapshot-build` so that Bazel
+  // runs the workspace stamping script. The stamping script ensures that the
+  // version placeholder is populated in the release output.
+  const stampConfigArg = `--config=${isSnapshotBuild ? 'snapshot-build' : 'release'}`;
+  const ivySwitchConfigArg = `--config=${useIvy ? 'ivy' : 'view-engine'}`;
 
   // Walk through each release package and clear previous "npm_package" outputs. This is
   // a workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1219. We need to
@@ -71,9 +88,7 @@ function buildReleasePackages(useIvy, distPath) {
     }
   });
 
-  // Build with "--config=release" so that Bazel runs the workspace stamping script. The
-  // stamping script ensures that the version placeholder is populated in the release output.
-  exec(`${bazelCmd} build --config=release --config=${useIvy ? 'ivy' : 'view-engine'} ${targets.join(' ')}`);
+  exec(`${bazelCmd} build ${stampConfigArg} ${ivySwitchConfigArg} ${targets.join(' ')}`);
 
   // Delete the distribution directory so that the output is guaranteed to be clean. Re-create
   // the empty directory so that we can copy the release packages into it later.

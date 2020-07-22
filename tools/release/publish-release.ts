@@ -16,7 +16,7 @@ import {parseVersionName, Version} from './version-name/parse-version';
 
 // The package builder script is not written in TypeScript and needs to
 // be imported through a CommonJS import.
-const {defaultBuildReleasePackages} = require('../../scripts/build-packages-dist');
+const {performNpmReleaseBuild} = require('../../scripts/build-packages-dist');
 
 /**
  * Class that can be instantiated in order to create a new release. The tasks requires user
@@ -90,11 +90,11 @@ class PublishReleaseTask extends BaseReleaseTask {
       await this._promptStableVersionForNextTag();
     }
 
-    defaultBuildReleasePackages();
+    performNpmReleaseBuild();
     console.info(chalk.green(`  ✓   Built the release output.`));
 
     // Checks all release packages against release output validations before releasing.
-    checkReleaseOutput(this.releaseOutputPath, this.currentVersion);
+    checkReleaseOutput(this.releaseOutputPath, this.currentVersion.format());
 
     // Extract the release notes for the new version from the changelog file.
     const extractedReleaseNotes = extractReleaseNotes(

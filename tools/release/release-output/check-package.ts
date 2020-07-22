@@ -2,7 +2,6 @@ import chalk from 'chalk';
 import {existsSync} from 'fs';
 import {sync as glob} from 'glob';
 import {join} from 'path';
-import {Version} from '../version-name/parse-version';
 
 import {
   checkCdkPackage,
@@ -35,7 +34,7 @@ type PackageFailures = Map<string, string[]>;
  * @returns Whether the package passed all checks or not.
  */
 export function checkReleasePackage(
-    releasesPath: string, packageName: string, currentVersion: Version): boolean {
+    releasesPath: string, packageName: string, expectedVersion: string): boolean {
   const packagePath = join(releasesPath, packageName);
   const failures = new Map() as PackageFailures;
   const addFailure = (message, filePath?) => {
@@ -82,7 +81,7 @@ export function checkReleasePackage(
     addFailure('No "README.md" file found in package output.');
   }
 
-  checkPrimaryPackageJson(join(packagePath, 'package.json'), currentVersion)
+  checkPrimaryPackageJson(join(packagePath, 'package.json'), expectedVersion)
       .forEach(f => addFailure(f));
 
   // In case there are failures for this package, we want to print those

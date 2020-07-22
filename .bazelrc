@@ -37,15 +37,19 @@ query --output=label_kind
 # By default, failing tests don't print any output, it goes to the log file
 test --test_output=errors
 
-#################################
-# Release configuration.        #
-# Run with "--config=release"   #
-#################################
+####################################
+# Stamping configurations.         #
+# Run with "--config=release" or   #
+# "--config=snapshot-build".       #
+####################################
 
 # Configures script to do version stamping.
 # See https://docs.bazel.build/versions/master/user-manual.html#flag--workspace_status_command
 build:release --workspace_status_command="node ./tools/bazel-stamp-vars.js"
 build:release --stamp
+
+build:snapshot-build --workspace_status_command="node ./tools/bazel-stamp-vars.js --snapshot"
+build:snapshot-build --stamp
 
 ################################
 # View Engine / Ivy toggle     #
