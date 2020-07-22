@@ -1155,14 +1155,16 @@ groups:
           ])
     reviewers:
       users:
+        - AndrewKushnir
         - IgorMinar
         - alxhub
+        - atscott
         - jelbourn
         - petebacondarwin
         - pkozlowski-opensource
     reviews:
-      request: -1   # request reviews from everyone
-      required: 3   # require at least 3 approvals
+      request: 4 # Request reviews from four people
+      required: 3 # Require that three people approve
       reviewed_for: required
 
 
@@ -1181,14 +1183,16 @@ groups:
           ])
     reviewers:
       users:
+        - AndrewKushnir
         - IgorMinar
         - alxhub
+        - atscott
         - jelbourn
         - petebacondarwin
         - pkozlowski-opensource
     reviews:
-      request: -1   # request reviews from everyone
-      required: 2   # require at least 2 approvals
+      request: 4 # Request reviews from four people
+      required: 2 # Require that two people approve
       reviewed_for: required
 
 
@@ -1207,9 +1211,11 @@ groups:
         ])
     reviewers:
       users:
+        - AndrewKushnir
         - IgorMinar
+        - alxhub
+        - atscott
         - jelbourn
-        - josephperrott
         - petebacondarwin
         - pkozlowski-opensource
 
@@ -1231,7 +1237,10 @@ groups:
           ])
     reviewers:
       users:
+        - AndrewKushnir
         - IgorMinar
+        - alxhub
+        - atscott
         - jelbourn
         - josephperrott
         - mhevery
