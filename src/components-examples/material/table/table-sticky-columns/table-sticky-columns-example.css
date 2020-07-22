@@ -1,6 +1,7 @@
 .example-container {
   height: 400px;
   width: 550px;
+  max-width: 100%;
   overflow: auto;
 }
 
