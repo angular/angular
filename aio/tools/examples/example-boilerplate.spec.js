@@ -9,24 +9,13 @@ describe('example-boilerplate tool', () => {
   describe('add', () => {
     const sharedDir = path.resolve(__dirname, 'shared');
     const sharedNodeModulesDir = path.resolve(sharedDir, 'node_modules');
-    const BPFiles = {
-      cli: 21,
-      i18n: 3,
-      universal: 2,
-      systemjs: 7,
-      common: 1,
-      viewengine: {
-        cli: 1,
-        systemjs: 2,
-      },
-    };
     const exampleFolders = ['a/b', 'c/d'];
 
     beforeEach(() => {
       spyOn(fs, 'ensureSymlinkSync');
       spyOn(fs, 'existsSync').and.returnValue(true);
       spyOn(shelljs, 'exec');
-      spyOn(exampleBoilerPlate, 'copyFile');
+      spyOn(exampleBoilerPlate, 'copyDirectoryContents');
       spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
       spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValue({});
     });
@@ -61,58 +50,81 @@ describe('example-boilerplate tool', () => {
 
     it('should copy all the source boilerplate files for systemjs', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
-      exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { projectType: 'systemjs' } : {});
+      exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'systemjs' });
+
       exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
-        (BPFiles.cli) +
-        (BPFiles.systemjs) +
-        (BPFiles.common * exampleFolders.length)
-      );
-      // for example
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/systemjs`, 'a/b', 'package.json');
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/common`, 'a/b', 'src/styles.css');
+
+      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(4);
+      expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
+        [`${boilerplateDir}/systemjs`, 'a/b'],
+        [`${boilerplateDir}/common`, 'a/b'],
+        [`${boilerplateDir}/systemjs`, 'c/d'],
+        [`${boilerplateDir}/common`, 'c/d'],
+      ]);
     });
 
     it('should copy all the source boilerplate files for cli', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
+      exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'cli' });
+
       exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
-        (BPFiles.cli * exampleFolders.length) +
-        (BPFiles.common * exampleFolders.length)
-      );
-      // for example
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/cli`, 'a/b', 'package.json');
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/common`, 'c/d', 'src/styles.css');
+
+      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(4);
+      expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
+        [`${boilerplateDir}/cli`, 'a/b'],
+        [`${boilerplateDir}/common`, 'a/b'],
+        [`${boilerplateDir}/cli`, 'c/d'],
+        [`${boilerplateDir}/common`, 'c/d'],
+      ]);
     });
 
-    it('should copy all the source boilerplate files for i18n', () => {
+    it('should default to `cli` if `projectType` is not specified', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
-      exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { projectType: 'i18n' } : {})
+      exampleBoilerPlate.loadJsonFile.and.returnValue({});
+
       exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
-        (BPFiles.cli + BPFiles.i18n) +
-        (BPFiles.cli) +
-        (BPFiles.common * exampleFolders.length)
-      );
-      // for example
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/i18n`, 'a/b', '../cli/angular.json');
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/i18n`, 'a/b', 'package.json');
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/common`, 'c/d', 'src/styles.css');
+
+      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(4);
+      expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
+        [`${boilerplateDir}/cli`, 'a/b'],
+        [`${boilerplateDir}/common`, 'a/b'],
+        [`${boilerplateDir}/cli`, 'c/d'],
+        [`${boilerplateDir}/common`, 'c/d'],
+      ]);
     });
 
-    it('should copy all the source boilerplate files for universal', () => {
+    it('should copy all the source boilerplate files for i18n (on top of the cli ones)', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
-      exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { projectType: 'universal' } : {})
+      exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'i18n' });
+
       exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
-        (BPFiles.cli + BPFiles.universal) +
-        (BPFiles.cli) +
-        (BPFiles.common * exampleFolders.length)
-      );
-      // for example
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/universal`, 'a/b', '../cli/tslint.json');
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/universal`, 'a/b', 'angular.json');
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/common`, 'c/d', 'src/styles.css');
+
+      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
+      expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
+        [`${boilerplateDir}/cli`, 'a/b'],
+        [`${boilerplateDir}/i18n`, 'a/b'],
+        [`${boilerplateDir}/common`, 'a/b'],
+        [`${boilerplateDir}/cli`, 'c/d'],
+        [`${boilerplateDir}/i18n`, 'c/d'],
+        [`${boilerplateDir}/common`, 'c/d'],
+      ]);
+    });
+
+    it('should copy all the source boilerplate files for universal (on top of the cli ones)', () => {
+      const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
+      exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'universal' });
+
+      exampleBoilerPlate.add();
+
+      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
+      expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
+        [`${boilerplateDir}/cli`, 'a/b'],
+        [`${boilerplateDir}/universal`, 'a/b'],
+        [`${boilerplateDir}/common`, 'a/b'],
+        [`${boilerplateDir}/cli`, 'c/d'],
+        [`${boilerplateDir}/universal`, 'c/d'],
+        [`${boilerplateDir}/common`, 'c/d'],
+      ]);
     });
 
     it('should try to load the example config file', () => {
@@ -130,27 +142,55 @@ describe('example-boilerplate tool', () => {
 
       it('should copy all the source boilerplate files for systemjs', () => {
         const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
-        exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { projectType: 'systemjs' } : {});
+        exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'systemjs' });
+
         exampleBoilerPlate.add(true);
-        expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
-          (BPFiles.cli + BPFiles.viewengine.cli) +
-          (BPFiles.systemjs + BPFiles.viewengine.systemjs) +
-          (BPFiles.common * exampleFolders.length)
-        );
-        // for example
-        expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/viewengine/systemjs`, 'a/b', 'tsconfig-aot.json');
+
+        expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
+        expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
+          [`${boilerplateDir}/systemjs`, 'a/b'],
+          [`${boilerplateDir}/common`, 'a/b'],
+          [`${boilerplateDir}/viewengine/systemjs`, 'a/b'],
+          [`${boilerplateDir}/systemjs`, 'c/d'],
+          [`${boilerplateDir}/common`, 'c/d'],
+          [`${boilerplateDir}/viewengine/systemjs`, 'c/d'],
+        ]);
       });
 
       it('should copy all the source boilerplate files for cli', () => {
         const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
+        exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'cli' });
+
         exampleBoilerPlate.add(true);
-        expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
-          (BPFiles.cli * exampleFolders.length) +
-          (BPFiles.viewengine.cli * exampleFolders.length) +
-          (BPFiles.common * exampleFolders.length)
-        );
-        // for example
-        expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/viewengine/cli`, 'a/b', 'tsconfig.json');
+
+        expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
+        expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
+          [`${boilerplateDir}/cli`, 'a/b'],
+          [`${boilerplateDir}/common`, 'a/b'],
+          [`${boilerplateDir}/viewengine/cli`, 'a/b'],
+          [`${boilerplateDir}/cli`, 'c/d'],
+          [`${boilerplateDir}/common`, 'c/d'],
+          [`${boilerplateDir}/viewengine/cli`, 'c/d'],
+        ]);
+      });
+
+      it('should copy all the source boilerplate files for elements', () => {
+        const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
+        exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'elements' });
+
+        exampleBoilerPlate.add(true);
+
+        expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(8);
+        expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
+          [`${boilerplateDir}/cli`, 'a/b'],
+          [`${boilerplateDir}/elements`, 'a/b'],
+          [`${boilerplateDir}/common`, 'a/b'],
+          [`${boilerplateDir}/viewengine/cli`, 'a/b'],
+          [`${boilerplateDir}/cli`, 'c/d'],
+          [`${boilerplateDir}/elements`, 'c/d'],
+          [`${boilerplateDir}/common`, 'c/d'],
+          [`${boilerplateDir}/viewengine/cli`, 'c/d'],
+        ]);
       });
     });
   });
@@ -172,16 +212,110 @@ describe('example-boilerplate tool', () => {
     });
   });
 
-  describe('copyFile', () => {
-    it('should use copySync and chmodSync', () => {
-      spyOn(fs, 'copySync');
-      spyOn(fs, 'chmodSync');
-      exampleBoilerPlate.copyFile('source/folder', 'destination/folder', 'some/file/path');
-      expect(fs.copySync).toHaveBeenCalledWith(
-        path.resolve('source/folder/some/file/path'),
-        path.resolve('destination/folder/some/file/path'),
-        { overwrite: true });
-      expect(fs.chmodSync).toHaveBeenCalledWith(path.resolve('destination/folder/some/file/path'), 444);
+  describe('copyDirectoryContents', () => {
+    const spyFnFor = fnName => (...args) => { callLog.push(`${fnName}(${args.join(', ')})`); };
+    let callLog;
+
+    beforeEach(() => {
+      callLog = [];
+      spyOn(shelljs, 'chmod').and.callFake(spyFnFor('chmod'));
+      spyOn(shelljs, 'cp').and.callFake(spyFnFor('cp'));
+      spyOn(shelljs, 'mkdir').and.callFake(spyFnFor('mkdir'));
+      spyOn(shelljs, 'test').and.callFake(spyFnFor('test'));
+    });
+
+    it('should list all contents of a directory', () => {
+      const lsSpy = spyOn(shelljs, 'ls').and.returnValue([]);
+      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir');
+      expect(lsSpy).toHaveBeenCalledWith('-Al', 'source/dir');
+    });
+
+    it('should use copy files and make them read-only', () => {
+      spyOn(shelljs, 'ls').and.returnValue([
+        {name: 'file-1.txt', isDirectory: () => false},
+        {name: 'file-2.txt', isDirectory: () => false},
+      ]);
+
+      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir');
+
+      expect(callLog).toEqual([
+        `test(-f, ${path.resolve('destination/dir/file-1.txt')})`,
+        `cp(${path.resolve('source/dir/file-1.txt')}, destination/dir)`,
+        `chmod(444, ${path.resolve('destination/dir/file-1.txt')})`,
+
+        `test(-f, ${path.resolve('destination/dir/file-2.txt')})`,
+        `cp(${path.resolve('source/dir/file-2.txt')}, destination/dir)`,
+        `chmod(444, ${path.resolve('destination/dir/file-2.txt')})`,
+      ]);
+    });
+
+    it('should make existing files in destination writable before overwriting', () => {
+      spyOn(shelljs, 'ls').and.returnValue([
+        {name: 'new-file.txt', isDirectory: () => false},
+        {name: 'existing-file.txt', isDirectory: () => false},
+      ]);
+      shelljs.test.and.callFake((_, filePath) => filePath.endsWith('existing-file.txt'));
+
+      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir');
+
+      expect(callLog).toEqual([
+        `cp(${path.resolve('source/dir/new-file.txt')}, destination/dir)`,
+        `chmod(444, ${path.resolve('destination/dir/new-file.txt')})`,
+
+        `chmod(666, ${path.resolve('destination/dir/existing-file.txt')})`,
+        `cp(${path.resolve('source/dir/existing-file.txt')}, destination/dir)`,
+        `chmod(444, ${path.resolve('destination/dir/existing-file.txt')})`,
+      ]);
+    });
+
+    it('should recursively copy sub-directories', () => {
+      spyOn(shelljs, 'ls')
+        .withArgs('-Al', 'source/dir').and.returnValue([
+          {name: 'file-1.txt', isDirectory: () => false},
+          {name: 'sub-dir-1', isDirectory: () => true},
+          {name: 'file-2.txt', isDirectory: () => false},
+        ])
+        .withArgs('-Al', path.resolve('source/dir/sub-dir-1')).and.returnValue([
+          {name: 'file-3.txt', isDirectory: () => false},
+          {name: 'sub-dir-2', isDirectory: () => true},
+        ])
+        .withArgs('-Al', path.resolve('source/dir/sub-dir-1/sub-dir-2')).and.returnValue([
+          {name: 'file-4.txt', isDirectory: () => false},
+        ]);
+
+      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir');
+
+      expect(callLog).toEqual([
+        // Copy `file-1.txt`.
+        `test(-f, ${path.resolve('destination/dir/file-1.txt')})`,
+        `cp(${path.resolve('source/dir/file-1.txt')}, destination/dir)`,
+        `chmod(444, ${path.resolve('destination/dir/file-1.txt')})`,
+
+        // Create `sub-dir-1` and recursively copy its contents.
+        `mkdir(-p, ${path.resolve('destination/dir/sub-dir-1')})`,
+
+          // Copy `sub-dir-1/file-3.txt`.
+          `test(-f, ${path.resolve('destination/dir/sub-dir-1/file-3.txt')})`,
+          'cp(' +
+              `${path.resolve('source/dir/sub-dir-1/file-3.txt')}, ` +
+              `${path.resolve('destination/dir/sub-dir-1')})`,
+          `chmod(444, ${path.resolve('destination/dir/sub-dir-1/file-3.txt')})`,
+
+          // Create `sub-dir-1/sub-dir-2` and recursively copy its contents.
+          `mkdir(-p, ${path.resolve('destination/dir/sub-dir-1/sub-dir-2')})`,
+
+            // Copy `sub-dir-1/sub-dir-2/file-4.txt`.
+            `test(-f, ${path.resolve('destination/dir/sub-dir-1/sub-dir-2/file-4.txt')})`,
+            'cp(' +
+                `${path.resolve('source/dir/sub-dir-1/sub-dir-2/file-4.txt')}, ` +
+                `${path.resolve('destination/dir/sub-dir-1/sub-dir-2')})`,
+            `chmod(444, ${path.resolve('destination/dir/sub-dir-1/sub-dir-2/file-4.txt')})`,
+
+        // Copy `file-2.txt`.
+        `test(-f, ${path.resolve('destination/dir/file-2.txt')})`,
+        `cp(${path.resolve('source/dir/file-2.txt')}, destination/dir)`,
+        `chmod(444, ${path.resolve('destination/dir/file-2.txt')})`,
+      ]);
     });
   });
 
