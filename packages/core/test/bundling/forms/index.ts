@@ -52,7 +52,8 @@ class TemplateFormsComponent {
 
 @Component({
   selector: 'app-reactive-forms',
-  template: `<form [formGroup]="profileForm">
+  template: `
+  <form [formGroup]="profileForm">
     <div>
       First Name:
       <input type="text" formControlName="firstName" />
