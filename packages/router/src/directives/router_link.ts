@@ -24,22 +24,9 @@ import {UrlTree} from '../url_tree';
  * that initiates navigation to a route, opening one or more routed components
  * in one or more `<router-outlet>` locations on the page.
  *
- * Given a route configuration `[{ path: 'user/:name', component: UserCmp }]`.
+ * Given a route configuration `[{ path: 'user/:name', component: UserCmp }]`,
  * the following creates a static link to the route:
  * `<a routerLink="/user/bob">link to user component</a>`
- *
- * The input that you provide to the link is treated as a delta to the current URL.
- * For instance, suppose the current URL is `/user/(box//aux:team)`.
- * The link `<a [routerLink]="['/user/jim']">Jim</a>` creates the URL
- * `/user/(jim//aux:team)`.
- *
- * See {@link Router#createUrlTree createUrlTree} for more information.
- *
- * @usageNotes
- *
- * You can generate links dynamically, use absolute or relative paths, and set query parameter.
- *
- * ### Dynamic links
  *
  * You can use dynamic values to generate the link.
  * For a dynamic link, pass an array of path segments,
@@ -47,8 +34,19 @@ import {UrlTree} from '../url_tree';
  * For example, `['/team', teamId, 'user', userName, {details: true}]`
  * generates a link to `/team/11/user/bob;details=true`.
  *
- * Multiple static segments can be merged into one and combined with dynamic segements.
+ * Multiple static segments can be merged into one term and combined with dynamic segements.
  * For example, `['/team/11/user', userName, {details: true}]`
+ *
+ * The input that you provide to the link is treated as a delta to the current URL.
+ * For instance, suppose the current URL is `/user/(box//aux:team)`.
+ * The link `<a [routerLink]="['/user/jim']">Jim</a>` creates the URL
+ * `/user/(jim//aux:team)`.
+ * See {@link Router#createUrlTree createUrlTree} for more information.
+ *
+ * @usageNotes
+ *
+ * You can use absolute or relative paths in a link, set query parameters,
+ * control how parameters are handled, and keep a history of navigation states.
  *
  * ### Relative link paths
  *
