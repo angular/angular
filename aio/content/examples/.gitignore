@@ -18,6 +18,7 @@
 **/src/karma.conf.js
 **/.angular-cli.json
 **/.editorconfig
+**/.gitignore
 **/angular.json
 **/tsconfig.json
 **/bs-config.e2e.json
