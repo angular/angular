@@ -567,7 +567,7 @@ scheme    authority      path        query   fragment
 
 * The `<base href>` path should end with a "/", as browsers ignore characters in the path that follow the right-most "/".
 * If the `<base href>` path includes a query part, that part is only used if the page-URL path is empty and has no query.
-This means that a query in the base is only included when using `HashLocationStrategy`.
+This means that a query in the `<base href>` is only included when using `HashLocationStrategy`.
 * If a URL has an `authority` part, the authority, path, query, and fragment are taken from the URL. In this way, an `APP_BASE_HREF` with an authority can override the `<base href>` value.
 * A fragment in the `<base href>` is _never_ persisted.
 
