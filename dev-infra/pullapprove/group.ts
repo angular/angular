@@ -87,6 +87,10 @@ export class PullApproveGroup {
         }
         return matchesFile;
       } catch (e) {
+        // In the case of a condition that depends on the state of groups we want to just
+        // warn that the verification can't accurately evaluate the condition and then
+        // continue processing. Other types of errors fail the verification, as conditions
+        // should otherwise be able to execute without throwing.
         if (e instanceof PullApproveGroupStateDependencyError) {
           const errMessage = `Condition could not be evaluated: \n` +
               `${e.message}\n` +
@@ -116,9 +120,5 @@ export class PullApproveGroup {
       unmatchedCount: unmatchedConditions.length,
       groupName: this.groupName,
     };
-  }
-
-  toString() {
-    return this.groupName;
   }
 }

@@ -21,6 +21,7 @@ export function verify() {
   const REPO_FILES = allFiles();
   /** The pull approve config file. */
   const pullApproveYamlRaw = readFileSync(PULL_APPROVE_YAML_PATH, 'utf8');
+  /** All of the groups defined in the pullapprove yaml. */
   const groups = getGroupsFromYaml(pullApproveYamlRaw);
   /**
    * PullApprove groups without conditions. These are skipped in the verification

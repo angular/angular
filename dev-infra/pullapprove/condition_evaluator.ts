@@ -7,7 +7,7 @@
  */
 
 import {PullApproveGroup} from './group';
-import {PullApproveStringArray, PullApproveGroupArray} from './pullapprove_arrays';
+import {PullApproveGroupArray, PullApproveStringArray} from './pullapprove_arrays';
 import {getOrCreateGlob} from './utils';
 
 /**

@@ -11,9 +11,12 @@ import {getOrCreateGlob} from './utils';
 export class PullApproveGroupStateDependencyError extends Error {
   constructor(message?: string) {
     super(message);
-    // see: typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html
-    Object.setPrototypeOf(this, new.target.prototype);      // restore prototype chain
-    this.name = PullApproveGroupStateDependencyError.name;  // stack traces display correctly now
+    // Set the prototype explicitly because in ES5, the prototype is accidentally
+    // lost due to a limitation in down-leveling.
+    // https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work.
+    Object.setPrototypeOf(this, PullApproveGroupStateDependencyError.prototype);
+    // Error names are displayed in their stack but can't be set in the constructor.
+    this.name = PullApproveGroupStateDependencyError.name;
   }
 }
 
@@ -31,19 +34,24 @@ class PullApproveArray<T> extends Array<T> {
     Object.setPrototypeOf(this, PullApproveArray.prototype);
   }
 
-  /** Returns the string representation of T, to be used for filtering with the `include` and `exclude` methods. */
+  /**
+   * Returns the string representation of T, to be used for filtering with the `include` and
+   * `exclude` methods.
+   */
   protected getFilterKey(e: T): string {
     throw Error('not implemented');
   }
 
   /** Returns a new array which only includes files that match the given pattern. */
   include(pattern: string): PullApproveArray<T> {
-    return new PullApproveArray<T>(...this.filter(s => getOrCreateGlob(pattern).match(this.getFilterKey(s))));
+    return new PullApproveArray<T>(
+        ...this.filter(s => getOrCreateGlob(pattern).match(this.getFilterKey(s))));
   }
 
   /** Returns a new array which only includes files that did not match the given pattern. */
   exclude(pattern: string): PullApproveArray<T> {
-    return new PullApproveArray<T>(...this.filter(s => !getOrCreateGlob(pattern).match(this.getFilterKey(s))));
+    return new PullApproveArray<T>(
+        ...this.filter(s => !getOrCreateGlob(pattern).match(this.getFilterKey(s))));
   }
 }
 
