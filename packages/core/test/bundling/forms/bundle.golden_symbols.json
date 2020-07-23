@@ -759,6 +759,9 @@
     "name": "classIndexOf"
   },
   {
+    "name": "cleanUpValidators"
+  },
+  {
     "name": "cleanUpView"
   },
   {
@@ -964,6 +967,12 @@
   },
   {
     "name": "getConstant"
+  },
+  {
+    "name": "getControlAsyncValidators"
+  },
+  {
+    "name": "getControlValidators"
   },
   {
     "name": "getCurrentTNode"
@@ -1314,6 +1323,9 @@
     "name": "mergeHostAttrs"
   },
   {
+    "name": "mergeValidators"
+  },
+  {
     "name": "modelGroupProvider"
   },
   {
@@ -1362,7 +1374,10 @@
     "name": "noop"
   },
   {
-    "name": "normalizeValidators"
+    "name": "normalizeAsyncValidator"
+  },
+  {
+    "name": "normalizeValidator"
   },
   {
     "name": "observable"
@@ -1414,6 +1429,9 @@
   },
   {
     "name": "registerDestroyHooksIfSupported"
+  },
+  {
+    "name": "registerOnValidatorChange"
   },
   {
     "name": "registerPostOrderHooks"
@@ -1540,6 +1558,9 @@
   },
   {
     "name": "setUpFormContainer"
+  },
+  {
+    "name": "setUpValidators"
   },
   {
     "name": "shareSubjectFactory"

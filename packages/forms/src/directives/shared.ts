@@ -8,8 +8,8 @@
 
 import {isDevMode} from '@angular/core';
 
-import {FormArray, FormControl, FormGroup} from '../model';
-import {Validators} from '../validators';
+import {AbstractControl, FormArray, FormControl, FormGroup} from '../model';
+import {getControlAsyncValidators, getControlValidators, mergeValidators} from '../utils/validators';
 
 import {AbstractControlDirective} from './abstract_control_directive';
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
@@ -25,7 +25,7 @@ import {FormArrayName} from './reactive_directives/form_group_name';
 import {ReactiveErrors} from './reactive_errors';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
-import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
+import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 
 export function controlPath(name: string|null, parent: ControlContainer): string[] {
@@ -38,8 +38,8 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
     if (!dir.valueAccessor) _throwError(dir, 'No value accessor for form control with');
   }
 
-  control.validator = Validators.compose([control.validator!, dir.validator]);
-  control.asyncValidator = Validators.composeAsync([control.asyncValidator!, dir.asyncValidator]);
+  setUpValidators(control, dir, /* handleOnValidatorChange */ true);
+
   dir.valueAccessor!.writeValue(control.value);
 
   setUpViewChangePipeline(control, dir);
@@ -52,20 +52,9 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
       dir.valueAccessor!.setDisabledState!(isDisabled);
     });
   }
-
-  // re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
-  dir._rawValidators.forEach((validator: Validator|ValidatorFn) => {
-    if ((<Validator>validator).registerOnValidatorChange)
-      (<Validator>validator).registerOnValidatorChange!(() => control.updateValueAndValidity());
-  });
-
-  dir._rawAsyncValidators.forEach((validator: AsyncValidator|AsyncValidatorFn) => {
-    if ((<Validator>validator).registerOnValidatorChange)
-      (<Validator>validator).registerOnValidatorChange!(() => control.updateValueAndValidity());
-  });
 }
 
-export function cleanUpControl(control: FormControl, dir: NgControl) {
+export function cleanUpControl(control: FormControl|null, dir: NgControl) {
   const noop = () => {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       _noControlError(dir);
@@ -75,19 +64,84 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
   dir.valueAccessor!.registerOnChange(noop);
   dir.valueAccessor!.registerOnTouched(noop);
 
-  dir._rawValidators.forEach((validator: any) => {
-    if (validator.registerOnValidatorChange) {
-      validator.registerOnValidatorChange(null);
-    }
-  });
-
-  dir._rawAsyncValidators.forEach((validator: any) => {
-    if (validator.registerOnValidatorChange) {
-      validator.registerOnValidatorChange(null);
-    }
-  });
+  cleanUpValidators(control, dir, /* handleOnValidatorChange */ true);
 
   if (control) control._clearChangeFns();
+}
+
+function registerOnValidatorChange<V>(validators: (V|Validator)[], onChange: () => void): void {
+  validators.forEach((validator: (V|Validator)) => {
+    if ((<Validator>validator).registerOnValidatorChange)
+      (<Validator>validator).registerOnValidatorChange!(onChange);
+  });
+}
+
+/**
+ * Sets up sync and async directive validators on provided form control.
+ *
+ * @param control Form control where directive validators should be setup.
+ * @param dir Directive instance that contains validators to be setup.
+ * @param handleOnValidatorChange Flag that determines whether directive validators should be setup
+ *     to handle validator input change.
+ */
+export function setUpValidators(
+    control: AbstractControl, dir: AbstractControlDirective,
+    handleOnValidatorChange: boolean): void {
+  if (dir.validator !== null) {
+    control.setValidators(
+        mergeValidators<ValidatorFn>(getControlValidators(control), dir.validator));
+  }
+
+  if (dir.asyncValidator !== null) {
+    control.setAsyncValidators(
+        mergeValidators<AsyncValidatorFn>(getControlAsyncValidators(control), dir.asyncValidator));
+  }
+
+  // Re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
+  if (handleOnValidatorChange) {
+    const onValidatorChange = () => control.updateValueAndValidity();
+    registerOnValidatorChange<ValidatorFn>(dir._rawValidators, onValidatorChange);
+    registerOnValidatorChange<AsyncValidatorFn>(dir._rawAsyncValidators, onValidatorChange);
+  }
+}
+
+/**
+ * Cleans up sync and async directive validators on provided form control.
+ * This function undoes the setup performed by the `setUpValidators` function.
+ *
+ * @param control Form control from where directive validators should be removed.
+ * @param dir Directive instance that contains validators to be removed.
+ * @param handleOnValidatorChange Flag that determines whether directive validators should be
+ *     cleaned up to stop handling validator input change.
+ */
+export function cleanUpValidators(
+    control: AbstractControl|null, dir: AbstractControlDirective,
+    handleOnValidatorChange: boolean): void {
+  if (control !== null) {
+    if (dir.validator !== null) {
+      const validators = getControlValidators(control);
+      if (Array.isArray(validators) && validators.length > 0) {
+        // Filter out directive validator function.
+        control.setValidators(validators.filter(validator => validator !== dir.validator));
+      }
+    }
+
+    if (dir.asyncValidator !== null) {
+      const asyncValidators = getControlAsyncValidators(control);
+      if (Array.isArray(asyncValidators) && asyncValidators.length > 0) {
+        // Filter out directive validator function.
+        control.setAsyncValidators(
+            asyncValidators.filter(asyncValidator => asyncValidator !== dir.asyncValidator));
+      }
+    }
+  }
+
+  if (handleOnValidatorChange) {
+    // Clear onValidatorChange callbacks by providing a noop callback.
+    const noop = () => {};
+    registerOnValidatorChange<ValidatorFn>(dir._rawValidators, noop);
+    registerOnValidatorChange<AsyncValidatorFn>(dir._rawAsyncValidators, noop);
+  }
 }
 
 function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
@@ -130,8 +184,7 @@ export function setUpFormContainer(
     control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName) {
   if (control == null && (typeof ngDevMode === 'undefined' || ngDevMode))
     _throwError(dir, 'Cannot find control with');
-  control.validator = Validators.compose([control.validator, dir.validator]);
-  control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
+  setUpValidators(control, dir, /* handleOnValidatorChange */ false);
 }
 
 function _noControlError(dir: NgControl) {

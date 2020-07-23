@@ -45,3 +45,28 @@ export function composeAsyncValidators(validators: Array<AsyncValidator|AsyncVal
   return validators != null ? Validators.composeAsync(validators.map(normalizeAsyncValidator)) :
                               null;
 }
+
+/**
+ * Retrieves the list of raw synchronous validators attached to a given control.
+ */
+export function getControlValidators(control: AbstractControl): ValidatorFn|ValidatorFn[]|null {
+  return (control as any)._rawValidators as ValidatorFn | ValidatorFn[] | null;
+}
+
+/**
+ * Retrieves the list of raw asynchronous validators attached to a given control.
+ */
+export function getControlAsyncValidators(control: AbstractControl): AsyncValidatorFn|
+    AsyncValidatorFn[]|null {
+  return (control as any)._rawAsyncValidators as AsyncValidatorFn | AsyncValidatorFn[] | null;
+}
+
+/**
+ * Merges raw control validators with a given directive validator and returns the combined list of
+ * validators as an array.
+ */
+export function mergeValidators<V>(controlValidators: V|V[]|null, dirValidator: V): V[] {
+  if (controlValidators === null) return [dirValidator];
+  return Array.isArray(controlValidators) ? [...controlValidators, dirValidator] :
+                                            [controlValidators, dirValidator];
+}
