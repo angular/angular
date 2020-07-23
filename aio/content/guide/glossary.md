@@ -950,7 +950,7 @@ The following example defines a template reference variable named `#phone`.
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ref-var" header="src/app/app.component.html"></code-example>
 
-For more information, see the [Template reference variable](guide/template-syntax#ref-var) section of the [Template Syntax](guide/template-syntax) guide.
+For more information, see the [Template reference variable](guide/template-reference-variables) guide.
 
 {@a token}
 
