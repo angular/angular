@@ -8,6 +8,8 @@
 
 import {exec as _exec} from '../utils/shelljs';
 
+import {getReleaseConfig} from './config';
+
 /**
  * Log the environment variables expected by bazel for stamping.
  *
@@ -19,12 +21,15 @@ import {exec as _exec} from '../utils/shelljs';
  * in Windows or OSX hosts (https://github.com/docker/for-win/issues/188).
  */
 export function buildEnvStamp() {
+  /** The configuration for the release tooling of ng-dev. */
+  const config = getReleaseConfig();
+
   console.info(`BUILD_SCM_BRANCH ${getCurrentBranch()}`);
   console.info(`BUILD_SCM_COMMIT_SHA ${getCurrentSha()}`);
   console.info(`BUILD_SCM_HASH ${getCurrentSha()}`);
   console.info(`BUILD_SCM_LOCAL_CHANGES ${hasLocalChanges()}`);
   console.info(`BUILD_SCM_USER ${getCurrentGitUser()}`);
-  console.info(`BUILD_SCM_VERSION ${getSCMVersion()}`);
+  console.info(`BUILD_SCM_VERSION ${getSCMVersion(config)}`);
   process.exit(0);
 }
 
@@ -39,10 +44,17 @@ function hasLocalChanges() {
 }
 
 /** Get the version based on the most recent semver tag. */
-function getSCMVersion() {
-  const version = exec(`git describe --match [0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
-  return `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${
-      (hasLocalChanges() ? '.with-local-changes' : '')}`;
+function getSCMVersion(config = getReleaseConfig()) {
+  const tagPrefix = config?.release?.tagPrefix || '';
+  const version = exec(`git describe --match ${tagPrefix}[0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
+  const tagPrefixRegex = new RegExp(`^${tagPrefix}`);
+  const parsedVersion =  version
+    // Remove the semver tag prefix, i.e. `v` in `v1.0.0`
+    .replace(tagPrefixRegex, '')
+    // Replace the git indication of the distance from tag with a reference which does not break semver.
+    // e.g.  0.0.0-next.0-44-abcd1234 becomes 0.0.0.next.0+44.sha-abcd1234
+    .replace(/-([0-9]+)-g/, '+$1.sha-');
+  return `${parsedVersion}${(hasLocalChanges() ? '.with-local-changes' : '')}`;
 }
 
 /** Get the current SHA of HEAD. */
