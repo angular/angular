@@ -84,11 +84,16 @@ export function verify() {
   info.groupEnd();
   const matchedGroups = resultsByGroup.filter(group => !group.unmatchedCount);
   info.group(`Matched conditions by Group (${matchedGroups.length} groups)`);
-  matchedGroups.forEach(group => logGroup(group, true, debug));
+  matchedGroups.forEach(group => logGroup(group, 'matchedConditions', debug));
   info.groupEnd();
   const unmatchedGroups = resultsByGroup.filter(group => group.unmatchedCount);
   info.group(`Unmatched conditions by Group (${unmatchedGroups.length} groups)`);
-  unmatchedGroups.forEach(group => logGroup(group, false));
+  unmatchedGroups.forEach(group => logGroup(group, 'unmatchedConditions'));
+  info.groupEnd();
+  const unverifiableConditionsInGroups =
+      resultsByGroup.filter(group => group.unverifiableConditions.length > 0);
+  info.group(`Unverifiable conditions by Group (${unverifiableConditionsInGroups.length} groups)`);
+  unverifiableConditionsInGroups.forEach(group => logGroup(group, 'unverifiableConditions'));
   info.groupEnd();
 
   // Provide correct exit code based on verification success.
