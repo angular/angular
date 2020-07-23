@@ -57,6 +57,20 @@ The task uses the user's preferred package manager to add the library to the pro
 In this example, the function receives the current `Tree` and returns it without any modifications.
 If you need to, you can do additional setup when your package is installed, such as generating files, updating configuration, or any other initial setup your library requires.
 
+### Define dependency type
+
+Use the `save` option of `ng-add` to configure if the library should be added to the `dependencies`, the `devDepedencies`, or not saved at all in the project's `package.json` configuration file.
+
+<code-example header="projects/my-lib/package.json (ng-add Reference)" path="schematics-for-libraries/projects/my-lib/package.json" region="ng-add">
+</code-example>
+
+Possible values are:
+
+  * `false` - Don't add the package to package.json
+  * `true` - Add the package to the dependencies
+  * `"dependencies"` - Add the package to the dependencies
+  * `"devDependencies"` - Add the package to the devDependencies
+
 ## Building your schematics
 
 To bundle your schematics together with your library, you must configure the library to build the schematics separately, then add them to the bundle.
