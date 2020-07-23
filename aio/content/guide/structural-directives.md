@@ -879,12 +879,14 @@ export type LoadingState<T> = Loaded<T> | Loading;
 export class IfLoadedDirective<T> {
     @Input('ifLoaded') set state(state: LoadingState<T>) {}
     static ngTemplateGuard_state<T>(dir: IfLoadedDirective<T>, expr: LoadingState<T>): expr is Loaded<T> { return true; };
+}
+
 export interface Person {
   name: string;
 }
 
 @Component({
-  template: `<div *ifLoaded="state">{{ state.data }}</div>`,
+  template: `&lt;div *ifLoaded="state">{{ state.data }}&lt;/div>`,
 })
 export class AppComponent {
   state: LoadingState<Person>;
