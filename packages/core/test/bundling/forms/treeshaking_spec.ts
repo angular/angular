@@ -17,6 +17,8 @@ const PACKAGE = 'angular/packages/core/test/bundling/forms';
 
 describe('treeshaking with uglify', () => {
   let content: string;
+  // We use the debug version as otherwise symbols/identifiers would be mangled (and the test would
+  // always pass)
   const contentPath = require.resolve(path.join(PACKAGE, 'bundle.min_debug.js'));
   beforeAll(() => {
     content = fs.readFileSync(contentPath, UTF8);
