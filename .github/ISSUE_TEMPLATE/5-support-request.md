@@ -1,16 +1,16 @@
 ---
-name: "❓Support request"
-about: Questions and requests for support
+name: "❓Solicitud de Soporte"
+about: Preguntas e solicitudes de soporte
 
 ---
 
 🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑
 
-Please do not file questions or support requests on the GitHub issues tracker.
+Por favor, no hagas preguntas o solicitudes de soporte técnico en el rastreador de problemas de GitHub.
 
-You can get your questions answered using other communication channels. Please see: 
+Puede obtener respuestas a sus preguntas utilizando otros canales de comunicación. Por favor, vea:
 https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
 
-Thank you!
+¡Gracias!
 
 🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑

@@ -1,69 +1,60 @@
 ---
-name: "\U0001F41EBug report"
-about: Report a bug in the Angular Framework
+name: "\U0001F41EReporta un bug"
+about: Reporta un bug en el framework de Angular
 ---
 <!--🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
 
-Oh hi there! 😄
+¡Hola! 😄
 
-To expedite issue processing please search open and closed issues before submitting a new one.
-Existing issues often contain information about workarounds, resolution, or progress updates.
+Para agilizar el procesamiento de issues, busque issues abiertas y cerradas antes de enviar uno nuevo.
+Los problemas existentes a menudo contienen información sobre soluciones alternativas, resolución o actualizaciones de progreso.
+
 
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅-->
 
 
-# 🐞 bug report
+# 🐞 Reporte de un bug
 
-### Affected Package
-<!-- Can you pin-point one or more @angular/* packages as the source of the bug? -->
-<!-- ✍️edit: --> The issue is caused by package @angular/....
-
-
-### Is this a regression?
-
-<!-- Did this behavior use to work in the previous version? -->
-<!-- ✍️--> Yes, the previous version in which this bug was not present was: ....
+### Paquete afectado
+<!-- ¿Puedes anclar uno o más paquetes @angular/* como origen del error? -->
+<!-- ✍️editar: --> El problema se debe a la @angular del paquete/....
 
 
-### Description
+### ¿Es una regresión?
 
-<!-- ✍️--> A clear and concise description of the problem...
+<!-- ¿Se utilizó este comportamiento para funcionar en la versión anterior? -->
+<!-- ✍️--> Sí, la versión anterior en la que este error no estaba presente era: ....
 
 
-## 🔬 Minimal Reproduction
-<!--
-Please create and share minimal reproduction of the issue starting with this template: https://stackblitz.com/fork/angular-ivy
--->
+### Descripción
+
+<!-- ✍️--> Una descripción clara y concisa del problema...
+
+
+## 🔬 Reproducción mínima
+<!-- Por favor, crea y comparte una reproducción mínima del problema a partir de esta plantilla: https://stackblitz.com/fork/angular-issue-repro2 -->
 <!-- ✍️--> https://stackblitz.com/...
 
-<!--
-If StackBlitz is not suitable for reproduction of your issue, please create a minimal GitHub repository with the reproduction of the issue.
-A good way to make a minimal reproduction is to create a new app via `ng new repro-app` and add the minimum possible code to show the problem.
-Share the link to the repo below along with step-by-step instructions to reproduce the problem, as well as expected and actual behavior.
+<!-- Si StackBlitz no es adecuado para la reproducción de su problema, crea un repositorio De GitHub mínimo con la reproducción del problema. Una buena manera de hacer una reproducción mínima es crear una nueva aplicación a través de 'ng nueva aplicación' y agregar el código mínimo posible para mostrar el problema. Compartir el enlace al repositorio a continuación junto con instrucciones paso a paso para reproducir el problema, así como el comportamiento esperado y real. Los problemas que no tienen suficiente información y no se pueden reproducir se cerrarán https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue.-->
 
-Issues that don't have enough info and can't be reproduced will be closed.
-
-You can read more about issue submission guidelines here: https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue
--->
-
-## 🔥 Exception or Error
+## 🔥 Excepción o Error
 <pre><code>
-<!-- If the issue is accompanied by an exception or an error, please share it below: -->
+<!-- Si el problema va acompañado de una excepción o un error, compártelo a continuación: -->
 <!-- ✍️-->
 
 </code></pre>
 
 
-## 🌍  Your Environment
+## 🌍  Su entorno
 
-**Angular Version:**
+**Versión Angular:**
 <pre><code>
-<!-- run `ng version` and paste output below -->
+<!-- ejecuta 'ng version' y pegar la salida debajo de -->
 <!-- ✍️-->
 
 </code></pre>
 
-**Anything else relevant?**
-<!-- ✍️Is this a browser specific issue? If so, please specify the browser and version. -->
+**¿Algo más relevante?**
+<!-- ✍️¿Es este un problema específico del navegador? Si es así, especifique el navegador y la versión. -->
 
-<!-- ✍️Do any of these matter: operating system, IDE, package manager, HTTP server, ...? If so, please mention it below. -->
+<!-- ✍️¿Alguno de estos asuntos: sistema operativo, IDE, administrador de paquetes, servidor HTTP, ...? Si es así, por favor menciona a continuación. -->
