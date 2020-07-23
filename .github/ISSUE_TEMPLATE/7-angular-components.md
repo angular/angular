@@ -1,13 +1,13 @@
 ---
-name: "\U0001F48EAngular Components"
-about: Issues and feature requests for Angular Components
+name: "\U0001F48EComponentes de Angular"
+about: Problemas y solicitudes de característica para los componentes de Angular
 
 ---
 
 🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑
 
-Please file any Angular Components issues at: https://github.com/angular/components/issues/new
+Por favor, presenta cualquier problema con los componentes de Angulares en: https://github.com/angular/components/issues/new
 
-For the time being, we keep Angular Components issues in a separate repository.
+Por el momento, mantenemos los problemas de componentes de Angular en un repositorio independiente.
 
 🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑

@@ -1,55 +1,55 @@
 ---
-name: "📚 Docs or angular.io issue report"
-about: Report an issue in Angular's documentation or angular.io application
+name: "📚 Informa problemas en los documentos o angular.io"
+about: Informar de un problema en la documentación de Angular o angular.io aplicación
 
 ---
 <!--🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
 
-Oh hi there! 😄
+¡Hola! 😄
 
-To expedite issue processing please search open and closed issues before submitting a new one.
-Existing issues often contain information about workarounds, resolution, or progress updates.
+Para agilizar el procesamiento de problemas, busque problemas abiertos y cerrados antes de enviar uno nuevo.
+Los problemas existentes a menudo contienen información sobre soluciones alternativas, resolución o actualizaciones de progreso.
 
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅-->
 
-# 📚 Docs or angular.io bug report
+# 📚 Informe de errores de documentos o angular.io
 
-### Description
+### Descripción
 
-<!-- ✍️edit:--> A clear and concise description of the problem...
+<!-- ✍️editar:--> Una descripción clara y concisa del problema...
 
 
-## 🔬 Minimal Reproduction
+## 🔬 Reproducción mínima
 
-### What's the affected URL?**
-<!-- ✍️edit:--> https://angular.io/...
+### ¿Cuál es la URL afectada?**
+<!-- ✍️editar:--> https://angular.io/...
 
 ### Reproduction Steps**
-<!-- If applicable please list the steps to take to reproduce the issue -->
-<!-- ✍️edit:-->
+<!-- Si corresponde, indica los pasos a seguir para reproducir el problema -->
+<!-- ✍️editar:-->
 
-### Expected vs Actual Behavior**
-<!-- If applicable please describe the difference between the expected and actual behavior after following the repro steps. -->
-<!-- ✍️edit:-->
-
-
-## 📷Screenshot
-<!-- Often a screenshot can help to capture the issue better than a long description. -->
-<!-- ✍️upload a screenshot:-->
+### Comportamiento esperado vs real**
+<!-- Si corresponde, describa la diferencia entre el comportamiento esperado y el comportamiento real después de seguir los pasos de reproducción. -->
+<!-- ✍️editar:-->
 
 
-## 🔥 Exception or Error
+## 📷Captura de pantall
+<!-- A menudo, una captura de pantalla puede ayudar a capturar el problema mejor que una descripción larga. -->
+<!-- ✍️subir una captura de pantalla:-->
+
+
+## 🔥 Excepción o Error
 <pre><code>
-<!-- If the issue is accompanied by an exception or an error, please share it below: -->
+<!-- Si el problema va acompañado de una excepción o un error, compártalo a continuación: -->
 <!-- ✍️-->
 
 </code></pre>
 
 
-## 🌍  Your Environment
+## 🌍  Tu entorno
 
-### Browser info
-<!-- ✍️Is this a browser specific issue? If so, please specify the device, browser, and version. -->
+### Información del navegador
+<!-- ✍️¿Es este un problema específico del navegador? Si es así, especifique el dispositivo, el navegador y la versión.  -->
 
-### Anything else relevant?
-<!-- ✍️Please provide additional info if necessary. -->
+### ¿Es este un problema específico del 
+<!-- ✍️Proporcione información adicional si es necesario. -->

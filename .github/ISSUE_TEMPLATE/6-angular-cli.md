@@ -1,13 +1,13 @@
 ---
 name: "\U0001F6E0️Angular CLI"
-about: Issues and feature requests for Angular CLI
+about: Problemas y solicitudes para el Angular CLI
 
 ---
 
 🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑
 
-Please file any Angular CLI issues at: https://github.com/angular/angular-cli/issues/new
+Por favor, presente cualquier problema de Angular CLI en: https://github.com/angular/angular-cli/issues/new
 
-For the time being, we keep Angular CLI issues in a separate repository.
+Por el momento, mantenemos los problemas del Angular CLI en un repositorio
 
 🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑
