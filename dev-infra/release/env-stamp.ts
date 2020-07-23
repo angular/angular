@@ -45,15 +45,16 @@ function hasLocalChanges() {
 
 /** Get the version based on the most recent semver tag. */
 function getSCMVersion(config = getReleaseConfig()) {
-  const tagPrefix = config?.release?.tagPrefix || '';
-  const version = exec(`git describe --match ${tagPrefix}[0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
-  const tagPrefixRegex = new RegExp(`^${tagPrefix}`);
-  const parsedVersion =  version
-    // Remove the semver tag prefix, i.e. `v` in `v1.0.0`
-    .replace(tagPrefixRegex, '')
-    // Replace the git indication of the distance from tag with a reference which does not break semver.
-    // e.g.  0.0.0-next.0-44-abcd1234 becomes 0.0.0.next.0+44.sha-abcd1234
-    .replace(/-([0-9]+)-g/, '+$1.sha-');
+  const prefix = config?.release?.tagPrefix || '';
+  const version = exec(`git describe --match ${prefix}[0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
+  const tagPrefixRegex = new RegExp(`^${prefix}`);
+  const parsedVersion =
+      version
+          // Remove the semver tag prefix, i.e. `v` in `v1.0.0`
+          .replace(tagPrefixRegex, '')
+          // Replace the git indication of the distance from tag with a reference which does not
+          // break semver. e.g.  0.0.0-next.0-44-abcd1234 becomes 0.0.0.next.0+44.sha-abcd1234
+          .replace(/-([0-9]+)-g/, '+$1.sha-');
   return `${parsedVersion}${(hasLocalChanges() ? '.with-local-changes' : '')}`;
 }
 
