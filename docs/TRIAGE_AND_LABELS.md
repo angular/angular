@@ -175,7 +175,7 @@ If a PR is missing the `PR target: *` label, or if the label is set to "TBD" whe
 
 Before a PR can be merged it must be approved by the appropriate reviewer(s).
 
-To ensure that the right people review each change, we set review requests using [PullApprove](https://https://docs.pullapprove.com/) (via `.pullapprove`) and require that each PR has at least one approval from an appropriate code owner.
+To ensure that the right people review each change, we set review requests using [PullApprove](https://docs.pullapprove.com/) (via `.pullapprove`) and require that each PR has at least one approval from an appropriate code owner.
 
 If the PR author is a code owner themselves, the approval can come from _any_ repo collaborator (person with write access).
 In any case, the reviewer should actually look through the code and provide feedback if necessary.
