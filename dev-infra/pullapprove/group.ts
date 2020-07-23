@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {error, warn} from '../utils/console';
+import {error} from '../utils/console';
 import {convertConditionToFunction} from './condition_evaluator';
 import {PullApproveGroupConfig} from './parse-yaml';
 import {PullApproveGroupStateDependencyError} from './pullapprove_arrays';
@@ -16,6 +16,7 @@ interface GroupCondition {
   expression: string;
   checkFn: (files: string[], groups: PullApproveGroup[]) => boolean;
   matchedFiles: Set<string>;
+  unverifiable: boolean;
 }
 
 /** Result of testing files against the group. */
@@ -25,6 +26,7 @@ export interface PullApproveGroupResult {
   matchedCount: number;
   unmatchedConditions: GroupCondition[];
   unmatchedCount: number;
+  unverifiableConditions: GroupCondition[];
 }
 
 // Regular expression that matches conditions for the global approval.
@@ -61,6 +63,7 @@ export class PullApproveGroup {
             expression,
             checkFn: convertConditionToFunction(expression),
             matchedFiles: new Set(),
+            unverifiable: false,
           });
         } catch (e) {
           error(`Could not parse condition in group: ${this.groupName}`);
@@ -79,7 +82,8 @@ export class PullApproveGroup {
    * the pull approve group's conditions.
    */
   testFile(filePath: string): boolean {
-    return this.conditions.every(({matchedFiles, checkFn, expression}) => {
+    return this.conditions.every((condition) => {
+      const {matchedFiles, checkFn, expression} = condition;
       try {
         const matchesFile = checkFn([filePath], this.precedingGroups);
         if (matchesFile) {
@@ -87,16 +91,14 @@ export class PullApproveGroup {
         }
         return matchesFile;
       } catch (e) {
-        // In the case of a condition that depends on the state of groups we want to just
-        // warn that the verification can't accurately evaluate the condition and then
+        // In the case of a condition that depends on the state of groups we want to
+        // ignore that the verification can't accurately evaluate the condition and then
         // continue processing. Other types of errors fail the verification, as conditions
         // should otherwise be able to execute without throwing.
         if (e instanceof PullApproveGroupStateDependencyError) {
-          const errMessage = `Condition could not be evaluated: \n` +
-              `${e.message}\n` +
-              `From the [${this.groupName}] group:\n` +
-              ` - ${expression}`;
-          warn(errMessage);
+          condition.unverifiable = true;
+          // Return true so that `this.conditions.every` can continue evaluating.
+          return true;
         } else {
           const errMessage = `Condition could not be evaluated: \n\n` +
               `From the [${this.groupName}] group:\n` +
@@ -111,13 +113,16 @@ export class PullApproveGroup {
 
   /** Retrieve the results for the Group, all matched and unmatched conditions. */
   getResults(): PullApproveGroupResult {
-    const matchedConditions = this.conditions.filter(c => !!c.matchedFiles.size);
-    const unmatchedConditions = this.conditions.filter(c => !c.matchedFiles.size);
+    const matchedConditions = this.conditions.filter(c => c.matchedFiles.size > 0);
+    const unmatchedConditions =
+        this.conditions.filter(c => c.matchedFiles.size === 0 && !c.unverifiable);
+    const unverifiableConditions = this.conditions.filter(c => c.unverifiable);
     return {
       matchedConditions,
       matchedCount: matchedConditions.length,
       unmatchedConditions,
       unmatchedCount: unmatchedConditions.length,
+      unverifiableConditions,
       groupName: this.groupName,
     };
   }
