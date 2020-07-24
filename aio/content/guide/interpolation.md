@@ -170,6 +170,6 @@ If an idempotent expression returns a string or a number, it returns the same st
 
 <div class="alert is-helpful">
 
-There is one exception to this behavior that applies to `*ngFor`. `*ngFor` has `trackBy` functionality that can deal with referential inequality of objects when iterating over them. See [*ngFor with `trackBy`](guide/built-in-directives #ngfor-with-trackby) for details.
+There is one exception to this behavior that applies to `*ngFor`. `*ngFor` has `trackBy` functionality that can deal with referential inequality of objects when iterating over them. See [*ngFor with `trackBy`](guide/built-in-directives#ngfor-with-trackby) for details.
 
 </div>
