@@ -10,8 +10,9 @@ import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoad
 import {from, Observable, of} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
-import {LoadChildren, LoadedRouterConfig, Route, standardizeConfig} from './config';
+import {LoadChildren, LoadedRouterConfig, Route} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
+import {standardizeConfig} from './utils/config';
 
 /**
  * The [DI token](guide/glossary/#di-token) for a router configuration.
