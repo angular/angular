@@ -21,7 +21,18 @@ export class CycleAnalyzer {
    */
   wouldCreateCycle(from: ts.SourceFile, to: ts.SourceFile): boolean {
     // Import of 'from' -> 'to' is illegal if an edge 'to' -> 'from' already exists.
-    return this.importGraph.transitiveImportsOf(to).has(from);
+    const cycle = this.importGraph.transitiveImportsOf(to).has(from);
+    if (!cycle) return false;
+
+    // Print out the cycle for debugging purposes.
+    const path = this.importGraph.somePath(to, from);
+    if (path) {
+      console.error(`Cycle detected, falling back to setComponentScope():\n${
+          [from, ...path].map((src) => src.fileName).join('\n')}`);
+    } else {
+      console.error(`Cycle detected, but could not be traced.`);
+    }
+    process.exit(1);
   }
 
   /**

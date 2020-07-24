@@ -34,6 +34,22 @@ export class ImportGraph {
   }
 
   /**
+   * Finds an import path from the first source to the second source. Returns a
+   * list of source files that connect the two, starting with the first file and
+   * ending with the second file. Returns `undefined` if no path could be found.
+   */
+  somePath(from: ts.SourceFile, to: ts.SourceFile): ts.SourceFile[]|undefined {
+    if (from.fileName === to.fileName) return [to];
+
+    const imports = this.importsOf(from);
+    for (const imp of imports) {
+      const path = this.somePath(imp, to);
+      if (path) return [from, ...path];
+    }
+    return undefined;
+  }
+
+  /**
    * Lists the transitive imports of a given `ts.SourceFile`.
    */
   transitiveImportsOf(sf: ts.SourceFile): Set<ts.SourceFile> {
