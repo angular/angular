@@ -569,7 +569,7 @@ which can only be reached by querying for them via the property decorated with
 
 {@a no-unidirectional-flow-worries}
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
 <header>No need to wait for content updates</header>
 
