@@ -32,7 +32,7 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
  * @returns `html` string which is safe to display to user, because all of the dangerous javascript
  * and urls have been removed.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ɵɵsanitizeHtml(unsafeHtml: any): string {
   const sanitizer = getSanitizer();
@@ -54,7 +54,7 @@ export function ɵɵsanitizeHtml(unsafeHtml: any): string {
  * @param unsafeStyle untrusted `style`, typically from the user.
  * @returns `style` string which is safe to bind to the `style` properties.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ɵɵsanitizeStyle(unsafeStyle: any): string {
   const sanitizer = getSanitizer();
@@ -81,7 +81,7 @@ export function ɵɵsanitizeStyle(unsafeStyle: any): string {
  * @returns `url` string which is safe to bind to the `src` properties such as `<img src>`, because
  * all of the dangerous javascript has been removed.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ɵɵsanitizeUrl(unsafeUrl: any): string {
   const sanitizer = getSanitizer();
@@ -103,7 +103,7 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
  * @returns `url` string which is safe to bind to the `src` properties such as `<img src>`, because
  * only trusted `url`s have been allowed to pass.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): string {
   const sanitizer = getSanitizer();
@@ -126,7 +126,7 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): string {
  * @returns `url` string which is safe to bind to the `<script>` element such as `<img src>`,
  * because only trusted `scripts` have been allowed to pass.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ɵɵsanitizeScript(unsafeScript: any): string {
   const sanitizer = getSanitizer();
@@ -169,7 +169,7 @@ export function getUrlSanitizer(tag: string, prop: string) {
  * @param prop name of the property that contains the value.
  * @returns `url` string which is safe to bind.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any {
   return getUrlSanitizer(tag, prop)(unsafeUrl);
