@@ -19,6 +19,7 @@ import {
   SkipSelf,
   Inject,
   InjectionToken,
+  isDevMode,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
@@ -252,8 +253,17 @@ export class CdkDropList<T = any> implements OnDestroy {
 
     ref.beforeStarted.subscribe(() => {
       const siblings = coerceArray(this.connectedTo).map(drop => {
-        return typeof drop === 'string' ?
-            CdkDropList._dropLists.find(list => list.id === drop)! : drop;
+        if (typeof drop === 'string') {
+          const correspondingDropList = CdkDropList._dropLists.find(list => list.id === drop);
+
+          if (!correspondingDropList && isDevMode()) {
+            console.warn(`CdkDropList could not find connected drop list with id "${drop}"`);
+          }
+
+          return correspondingDropList!;
+        }
+
+        return drop;
       });
 
       if (this._group) {

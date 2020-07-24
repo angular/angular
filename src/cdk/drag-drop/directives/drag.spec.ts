@@ -5280,6 +5280,24 @@ describe('CdkDrag', () => {
         }).not.toThrow();
       }));
 
+    it('should warn when the connected container ID does not exist', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZones);
+      fixture.detectChanges();
+
+      fixture.componentInstance.dropInstances.first.connectedTo = 'does-not-exist';
+      fixture.detectChanges();
+
+      const groups = fixture.componentInstance.groupedDragItems;
+      const element = groups[0][1].element.nativeElement;
+
+      spyOn(console, 'warn');
+      dragElementViaMouse(fixture, element, 0, 0);
+      flush();
+      fixture.detectChanges();
+
+      expect(console.warn).toHaveBeenCalledWith(`CdkDropList could not find connected drop ` +
+                                                `list with id "does-not-exist"`);
+    }));
   });
 
   describe('with nested drags', () => {
