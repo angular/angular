@@ -14,6 +14,7 @@ import {Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateStatement} from '../../translator';
 import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
 
+import {CompileResult} from './api';
 import {TraitCompiler} from './compilation';
 import {addImports} from './utils';
 
@@ -43,12 +44,15 @@ export function ivyTransformFactory(
   };
 }
 
-class IvyVisitor extends Visitor {
-  constructor(
-      private compilation: TraitCompiler, private reflector: ReflectionHost,
-      private importManager: ImportManager, private defaultImportRecorder: DefaultImportRecorder,
-      private isClosureCompilerEnabled: boolean, private isCore: boolean,
-      private constantPool: ConstantPool) {
+/**
+ * Visits all classes, performs Ivy compilation where Angular decorators are present and collects
+ * result in a Map that associates a ts.ClassDeclaration with Ivy compilation results. This visitor
+ * does NOT perform any TS transformations.
+ */
+class IvyCompilationVisitor extends Visitor {
+  public classCompilationMap = new Map<ts.ClassDeclaration, CompileResult[]>();
+
+  constructor(private compilation: TraitCompiler, private constantPool: ConstantPool) {
     super();
   }
 
@@ -56,55 +60,77 @@ class IvyVisitor extends Visitor {
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     // Determine if this class has an Ivy field that needs to be added, and compile the field
     // to an expression if so.
-    const res = this.compilation.compile(node, this.constantPool);
-
-    if (res !== null) {
-      // There is at least one field to add.
-      const statements: ts.Statement[] = [];
-      const members = [...node.members];
-
-      res.forEach(field => {
-        // Translate the initializer for the field into TS nodes.
-        const exprNode = translateExpression(
-            field.initializer, this.importManager, this.defaultImportRecorder,
-            ts.ScriptTarget.ES2015);
-
-        // Create a static property declaration for the new field.
-        const property = ts.createProperty(
-            undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], field.name, undefined,
-            undefined, exprNode);
-
-        if (this.isClosureCompilerEnabled) {
-          // Closure compiler transforms the form `Service.ɵprov = X` into `Service$ɵprov = X`. To
-          // prevent this transformation, such assignments need to be annotated with @nocollapse.
-          // Note that tsickle is typically responsible for adding such annotations, however it
-          // doesn't yet handle synthetic fields added during other transformations.
-          ts.addSyntheticLeadingComment(
-              property, ts.SyntaxKind.MultiLineCommentTrivia, '* @nocollapse ',
-              /* hasTrailingNewLine */ false);
-        }
-
-        field.statements
-            .map(
-                stmt => translateStatement(
-                    stmt, this.importManager, this.defaultImportRecorder, ts.ScriptTarget.ES2015))
-            .forEach(stmt => statements.push(stmt));
-
-        members.push(property);
-      });
-
-      // Replace the class declaration with an updated version.
-      node = ts.updateClassDeclaration(
-          node,
-          // Remove the decorator which triggered this compilation, leaving the others alone.
-          maybeFilterDecorator(node.decorators, this.compilation.decoratorsFor(node)),
-          node.modifiers, node.name, node.typeParameters, node.heritageClauses || [],
-          // Map over the class members and remove any Angular decorators from them.
-          members.map(member => this._stripAngularDecorators(member)));
-      return {node, after: statements};
+    const result = this.compilation.compile(node, this.constantPool);
+    if (result !== null) {
+      this.classCompilationMap.set(node, result);
     }
-
     return {node};
+  }
+}
+
+/**
+ * Visits all classes and performs transformation of corresponding TS nodes based on the Ivy
+ * compilation results (provided as an argument).
+ */
+class IvyTransformationVisitor extends Visitor {
+  constructor(
+      private compilation: TraitCompiler,
+      private classCompilationMap: Map<ts.ClassDeclaration, CompileResult[]>,
+      private reflector: ReflectionHost, private importManager: ImportManager,
+      private defaultImportRecorder: DefaultImportRecorder,
+      private isClosureCompilerEnabled: boolean, private isCore: boolean) {
+    super();
+  }
+
+  visitClassDeclaration(node: ts.ClassDeclaration):
+      VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
+    // If this class is not registered in the map, it means that it doesn't have Angular decorators,
+    // thus no further processing is required.
+    if (!this.classCompilationMap.has(node)) return {node};
+
+    // There is at least one field to add.
+    const statements: ts.Statement[] = [];
+    const members = [...node.members];
+
+    this.classCompilationMap.get(node)!.forEach(field => {
+      // Translate the initializer for the field into TS nodes.
+      const exprNode = translateExpression(
+          field.initializer, this.importManager, this.defaultImportRecorder,
+          ts.ScriptTarget.ES2015);
+
+      // Create a static property declaration for the new field.
+      const property = ts.createProperty(
+          undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], field.name, undefined,
+          undefined, exprNode);
+
+      if (this.isClosureCompilerEnabled) {
+        // Closure compiler transforms the form `Service.ɵprov = X` into `Service$ɵprov = X`. To
+        // prevent this transformation, such assignments need to be annotated with @nocollapse.
+        // Note that tsickle is typically responsible for adding such annotations, however it
+        // doesn't yet handle synthetic fields added during other transformations.
+        ts.addSyntheticLeadingComment(
+            property, ts.SyntaxKind.MultiLineCommentTrivia, '* @nocollapse ',
+            /* hasTrailingNewLine */ false);
+      }
+
+      field.statements
+          .map(
+              stmt => translateStatement(
+                  stmt, this.importManager, this.defaultImportRecorder, ts.ScriptTarget.ES2015))
+          .forEach(stmt => statements.push(stmt));
+
+      members.push(property);
+    });
+
+    // Replace the class declaration with an updated version.
+    node = ts.updateClassDeclaration(
+        node,
+        // Remove the decorator which triggered this compilation, leaving the others alone.
+        maybeFilterDecorator(node.decorators, this.compilation.decoratorsFor(node)), node.modifiers,
+        node.name, node.typeParameters, node.heritageClauses || [],
+        // Map over the class members and remove any Angular decorators from them.
+        members.map(member => this._stripAngularDecorators(member)));
+    return {node, after: statements};
   }
 
   /**
@@ -224,11 +250,26 @@ function transformIvySourceFile(
   const constantPool = new ConstantPool();
   const importManager = new ImportManager(importRewriter);
 
-  // Recursively scan through the AST and perform any updates requested by the IvyCompilation.
-  const visitor = new IvyVisitor(
-      compilation, reflector, importManager, defaultImportRecorder, isClosureCompilerEnabled,
-      isCore, constantPool);
-  let sf = visit(file, visitor, context);
+  // The transformation process consists of 2 steps:
+  //
+  //  1. Visit all classes, perform compilation and collect the results.
+  //  2. Perform actual transformation of required TS nodes using compilation results from the first
+  //     step.
+  //
+  // This is needed to have all `o.Expression`s generated before any TS transforms happen. This
+  // allows `ConstantPool` to properly identify expressions that can be shared across multiple
+  // components declared in the same file.
+
+  // Step 1. Go though all classes in AST, perform compilation and collect the results.
+  const compilationVisitor = new IvyCompilationVisitor(compilation, constantPool);
+  visit(file, compilationVisitor, context);
+
+  // Step 2. Scan through the AST again and perform transformations based on Ivy compilation
+  // results obtained at Step 1.
+  const transformationVisitor = new IvyTransformationVisitor(
+      compilation, compilationVisitor.classCompilationMap, reflector, importManager,
+      defaultImportRecorder, isClosureCompilerEnabled, isCore);
+  let sf = visit(file, transformationVisitor, context);
 
   // Generate the constant statements first, as they may involve adding additional imports
   // to the ImportManager.
