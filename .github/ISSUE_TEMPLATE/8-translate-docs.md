@@ -1,14 +1,14 @@
 ---
-name: "🇪🇦Traducir doc al español"
+name: "📚Traducir doc al español"
 about: Solicitud para traducir ciertos docs al español
 
 ---
 
-🇪🇦 Traducir:  <!-- ✍️ editar: -->  creating-libraries.md
+📚Traducir:  <!-- ✍️ editar: -->  creating-libraries.md
 
 <!--🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
 
-Traducción de la documentación oficial de Angular a Español
+Traducción de la documentación oficial de Angular a español
 
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅-->
 
