@@ -19,7 +19,7 @@ import {NgtscTestEnvironment} from './env';
 const testFiles = loadStandardTestFiles();
 
 runInEachFileSystem(() => {
-  describe('ngtsc type checking', () => {
+  fdescribe('ngtsc type checking', () => {
     let env!: NgtscTestEnvironment;
 
     beforeEach(() => {
@@ -136,10 +136,41 @@ export declare class AnimationEvent {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+      expect(diags[0].messageText).toEqual(`Type '"2"' is not assignable to type 'number'.`);
       // The reported error code should be in the TS error space, not a -99 "NG" code.
       expect(diags[0].code).toBeGreaterThan(0);
     });
+
+    it('should produce diagnostics when mapping to multiple fields and bound types are incorrect',
+       () => {
+         env.tsconfig(
+             {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: true});
+         env.write('test.ts', `
+        import {Component, Directive, NgModule, Input} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div dir foo="2"></div>',
+        })
+        class TestCmp {}
+
+        @Directive({selector: '[dir]'})
+        class TestDir {
+          @Input('foo') foo1: number;
+          @Input('foo') foo2: number;
+        }
+
+        @NgModule({
+          declarations: [TestCmp, TestDir],
+        })
+        class Module {}
+      `);
+
+         const diags = env.driveDiagnostics();
+         expect(diags.length).toBe(2);
+         expect(diags[0].messageText).toEqual(`Type '"2"' is not assignable to type 'number'.`);
+         expect(diags[0].messageText).toEqual(`Type '"2"' is not assignable to type 'number'.`);
+       });
 
     it('should support inputs and outputs with names that are not JavaScript identifiers', () => {
       env.tsconfig(
@@ -173,7 +204,7 @@ export declare class AnimationEvent {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
+      expect(diags[0].messageText).toEqual(`Type '2' is not assignable to type 'string'.`);
       expect(diags[1].messageText)
           .toEqual(`Argument of type 'string' is not assignable to parameter of type 'number'.`);
     });
@@ -349,7 +380,7 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
+        expect(diags[0].messageText).toEqual(`Type '1' is not assignable to type 'string'.`);
         expect(diags[1].messageText)
             .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
       });
@@ -359,7 +390,7 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
+        expect(diags[0].messageText).toEqual(`Type '1' is not assignable to type 'string'.`);
         expect(diags[1].messageText)
             .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
       });
@@ -685,8 +716,8 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'boolean'.`);
-        expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+        expect(diags[0].messageText).toEqual(`Type '""' is not assignable to type 'boolean'.`);
+        expect(diags[1].messageText).toEqual(`Type '"3"' is not assignable to type 'number'.`);
       });
 
       it('should produce an error for text attributes when overall strictness is enabled', () => {
@@ -694,8 +725,8 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'boolean'.`);
-        expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+        expect(diags[0].messageText).toEqual(`Type '""' is not assignable to type 'boolean'.`);
+        expect(diags[1].messageText).toEqual(`Type '"3"' is not assignable to type 'number'.`);
       });
 
       it('should not produce an error for text attributes when not enabled', () => {
@@ -1212,9 +1243,9 @@ export declare class AnimationEvent {
       expect(diags.length).toBe(3);
       expect(diags[0].messageText).toBe(`Type 'true' is not assignable to type 'number'.`);
       expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[fromAbstract]="true"');
-      expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+      expect(diags[1].messageText).toBe(`Type '3' is not assignable to type 'string'.`);
       expect(getSourceCodeForDiagnostic(diags[1])).toEqual('[fromBase]="3"');
-      expect(diags[2].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
+      expect(diags[2].messageText).toBe(`Type '4' is not assignable to type 'boolean'.`);
       expect(getSourceCodeForDiagnostic(diags[2])).toEqual('[fromChild]="4"');
     });
 
@@ -1269,9 +1300,9 @@ export declare class AnimationEvent {
       expect(diags.length).toBe(3);
       expect(diags[0].messageText).toBe(`Type 'true' is not assignable to type 'number'.`);
       expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[fromAbstract]="true"');
-      expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+      expect(diags[1].messageText).toBe(`Type '3' is not assignable to type 'string'.`);
       expect(getSourceCodeForDiagnostic(diags[1])).toEqual('[fromBase]="3"');
-      expect(diags[2].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
+      expect(diags[2].messageText).toBe(`Type '4' is not assignable to type 'boolean'.`);
       expect(getSourceCodeForDiagnostic(diags[2])).toEqual('[fromChild]="4"');
     });
 
@@ -1476,7 +1507,7 @@ export declare class AnimationEvent {
       it('should give an error if the binding expression type is not accepted by the coercion function',
          () => {
            env.write('test.ts', `
-            import {Component, NgModule} from '@angular/core';
+            import {Component, NgModule, Input, Directive} from '@angular/core';
             import {MatInputModule} from '@angular/material';
 
             @Component({
@@ -1489,7 +1520,7 @@ export declare class AnimationEvent {
 
             @NgModule({
               declarations: [FooCmp],
-              imports: [MatInputModule],
+              imports: [MatInputModule]
             })
             export class FooModule {}
         `);
@@ -1499,6 +1530,72 @@ export declare class AnimationEvent {
                .toBe(`Type 'boolean' is not assignable to type 'string | number'.`);
          });
     });
+
+    it('should not produce diagnostics for inputs which assign to private or protected fields',
+       () => {
+         env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+         env.write('test.ts', `
+            import {Component, NgModule, Input, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [protectedField]="value" [privateField]="value"></div>',
+            })
+            export class FooCmp {
+              value = "value";
+            }
+
+            @Directive({selector: '[dir]'})
+            export class TestDir {
+              @Input()
+              protected protectedField!: string;
+              @Input()
+              private privateField!: string;
+            }
+
+            @NgModule({
+              declarations: [FooCmp, TestDir],
+            })
+            export class FooModule {}
+        `);
+         const diags = env.driveDiagnostics();
+         expect(diags.length).toBe(0);
+       });
+
+    it('should produce diagnostics when assigning incorrect type to private or protected fields',
+       () => {
+         env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+         env.write('test.ts', `
+            import {Component, NgModule, Input, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [protectedField]="value" [privateField]="value"></div>',
+            })
+            export class FooCmp {
+              value = "value";
+            }
+
+            @Directive({selector: '[dir]'})
+            export class TestDir {
+              @Input()
+              protected protectedField!: number;
+              @Input()
+              private privateField!: number;
+            }
+
+            @NgModule({
+              declarations: [FooCmp, TestDir],
+            })
+            export class FooModule {}
+        `);
+         const diags = env.driveDiagnostics();
+         expect(diags.length).toBe(2);
+         expect(diags[0].messageText)
+             .toEqual('Type \'string\' is not assignable to type \'number\'.');
+         expect(diags[1].messageText)
+             .toEqual('Type \'string\' is not assignable to type \'number\'.');
+       });
 
     describe('legacy schema checking with the DOM schema', () => {
       beforeEach(() => {
