@@ -30,7 +30,7 @@ import {
   ErrorStateMatcher,
   mixinErrorState,
 } from '@angular/material/core';
-import {MatFormFieldControl, MatFormField} from '@angular/material/form-field';
+import {MatFormFieldControl, MatFormField, MAT_FORM_FIELD} from '@angular/material/form-field';
 import {Subject} from 'rxjs';
 import {getMatInputUnsupportedTypeError} from './input-errors';
 import {MAT_INPUT_VALUE_ACCESSOR} from './input-value-accessor';
@@ -238,8 +238,9 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     @Optional() @Self() @Inject(MAT_INPUT_VALUE_ACCESSOR) inputValueAccessor: any,
     private _autofillMonitor: AutofillMonitor,
     ngZone: NgZone,
-    // @breaking-change 8.0.0 `_formField` parameter to be made required.
-    @Optional() private _formField?: MatFormField) {
+    // TODO: Remove this once the legacy appearance has been removed. We only need
+    // to inject the form-field for determining whether the placeholder has been promoted.
+    @Optional() @Inject(MAT_FORM_FIELD) private _formField?: MatFormField) {
     super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
 
     const element = this._elementRef.nativeElement;
@@ -365,9 +366,7 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     // screen readers will read it out twice: once from the label and once from the attribute.
     // TODO: can be removed once we get rid of the `legacy` style for the form field, because it's
     // the only one that supports promoting the placeholder to a label.
-    const formField = this._formField;
-    const placeholder =
-        (!formField || !formField._hideControlPlaceholder()) ? this.placeholder : null;
+    const placeholder = this._formField?._hideControlPlaceholder?.() ? null : this.placeholder;
     if (placeholder !== this._previousPlaceholder) {
       const element = this._elementRef.nativeElement;
       this._previousPlaceholder = placeholder;

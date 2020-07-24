@@ -16,7 +16,6 @@ import {
   Injectable,
   Injector,
   NgZone,
-  Optional,
 } from '@angular/core';
 import {OverlayKeyboardDispatcher} from './dispatchers/overlay-keyboard-dispatcher';
 import {OverlayOutsideClickDispatcher} from './dispatchers/overlay-outside-click-dispatcher';
@@ -57,9 +56,9 @@ export class Overlay {
               @Inject(DOCUMENT) private _document: any,
               private _directionality: Directionality,
               // @breaking-change 8.0.0 `_location` parameter to be made required.
-              @Optional() private _location?: Location,
+              private _location?: Location,
               // @breaking-change 9.0.0 `_outsideClickDispatcher` parameter to be made required.
-              @Optional() private _outsideClickDispatcher?: OverlayOutsideClickDispatcher) { }
+              private _outsideClickDispatcher?: OverlayOutsideClickDispatcher) { }
 
   /**
    * Creates an overlay.

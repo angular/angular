@@ -88,7 +88,7 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
               /**
                * @deprecated @breaking-change 9.0.0 `platform` parameter to become required.
                */
-              @Optional() platform?: Platform,
+              platform?: Platform,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
               @Optional() @Inject(MAT_TABS_CONFIG) defaultConfig?: MatTabsConfig) {
     super(elementRef, dir, ngZone, changeDetectorRef, viewportRuler, platform, animationMode);

@@ -195,7 +195,7 @@ export declare class Overlay {
     scrollStrategies: ScrollStrategyOptions, _overlayContainer: OverlayContainer, _componentFactoryResolver: ComponentFactoryResolver, _positionBuilder: OverlayPositionBuilder, _keyboardDispatcher: OverlayKeyboardDispatcher, _injector: Injector, _ngZone: NgZone, _document: any, _directionality: Directionality, _location?: Location | undefined, _outsideClickDispatcher?: OverlayOutsideClickDispatcher | undefined);
     create(config?: OverlayConfig): OverlayRef;
     position(): OverlayPositionBuilder;
-    static ɵfac: i0.ɵɵFactoryDef<Overlay, [null, null, null, null, null, null, null, null, null, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<Overlay, never>;
     static ɵprov: i0.ɵɵInjectableDef<Overlay>;
 }
 

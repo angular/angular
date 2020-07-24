@@ -111,6 +111,9 @@ export class CdkTextColumn<T> implements OnDestroy, OnInit {
   @ViewChild(CdkHeaderCellDef, {static: true}) headerCell: CdkHeaderCellDef;
 
   constructor(
+      // `CdkTextColumn` is always requiring a table, but we just assert it manually
+      // for better error reporting.
+      // tslint:disable-next-line: lightweight-tokens
       @Optional() private _table: CdkTable<T>,
       @Optional() @Inject(TEXT_COLUMN_OPTIONS) private _options: TextColumnOptions<T>) {
     this._options = _options || {};

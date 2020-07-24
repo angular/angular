@@ -169,7 +169,11 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
               private _element: ElementRef<HTMLElement>,
               private _viewContainerRef: ViewContainerRef,
               @Inject(MAT_MENU_SCROLL_STRATEGY) scrollStrategy: any,
+              // `MatMenu` is always used in combination with a `MatMenuTrigger`.
+              // tslint:disable-next-line: lightweight-tokens
               @Optional() private _parentMenu: MatMenu,
+              // `MatMenuTrigger` is commonly used in combination with a `MatMenuItem`.
+              // tslint:disable-next-line: lightweight-tokens
               @Optional() @Self() private _menuItemInstance: MatMenuItem,
               @Optional() private _dir: Directionality,
               // TODO(crisbeto): make the _focusMonitor required when doing breaking changes.

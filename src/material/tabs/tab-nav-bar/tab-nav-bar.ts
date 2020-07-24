@@ -92,7 +92,7 @@ export abstract class _MatTabNavBase extends MatPaginatedTabHeader implements Af
               /**
                * @deprecated @breaking-change 9.0.0 `platform` parameter to become required.
                */
-              @Optional() platform?: Platform,
+              platform?: Platform,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
   }
@@ -175,7 +175,7 @@ export class MatTabNav extends _MatTabNavBase {
     /**
      * @deprecated @breaking-change 9.0.0 `platform` parameter to become required.
      */
-    @Optional() platform?: Platform,
+    platform?: Platform,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, dir, ngZone, changeDetectorRef, viewportRuler, platform, animationMode);
   }

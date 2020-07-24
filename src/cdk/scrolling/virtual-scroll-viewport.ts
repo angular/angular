@@ -163,7 +163,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
                * @deprecated `viewportRuler` parameter to become required.
                * @breaking-change 11.0.0
                */
-              @Optional() viewportRuler?: ViewportRuler) {
+              viewportRuler?: ViewportRuler) {
     super(elementRef, scrollDispatcher, ngZone, dir);
 
     if (!_scrollStrategy) {

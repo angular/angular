@@ -46,6 +46,8 @@ export class MatDialogClose implements OnInit, OnChanges {
   @Input('matDialogClose') _matDialogClose: any;
 
   constructor(
+    // The dialog title directive is always used in combination with a `MatDialogRef`.
+    // tslint:disable-next-line: lightweight-tokens
     @Optional() public dialogRef: MatDialogRef<any>,
     private _elementRef: ElementRef<HTMLElement>,
     private _dialog: MatDialog) {}
@@ -94,6 +96,8 @@ export class MatDialogTitle implements OnInit {
   @Input() id: string = `mat-dialog-title-${dialogElementUid++}`;
 
   constructor(
+    // The dialog title directive is always used in combination with a `MatDialogRef`.
+    // tslint:disable-next-line: lightweight-tokens
     @Optional() private _dialogRef: MatDialogRef<any>,
     private _elementRef: ElementRef<HTMLElement>,
     private _dialog: MatDialog) {}

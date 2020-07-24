@@ -141,7 +141,7 @@ export declare class CdkVirtualScrollViewport extends CdkScrollable implements O
     setRenderedRange(range: ListRange): void;
     setTotalContentSize(size: number): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkVirtualScrollViewport, "cdk-virtual-scroll-viewport", never, { "orientation": "orientation"; }, { "scrolledIndexChange": "scrolledIndexChange"; }, never, ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkVirtualScrollViewport, [null, null, null, { optional: true; }, { optional: true; }, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkVirtualScrollViewport, [null, null, null, { optional: true; }, { optional: true; }, null, null]>;
 }
 
 export declare const DEFAULT_RESIZE_TIME = 20;

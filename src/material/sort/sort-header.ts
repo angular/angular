@@ -142,6 +142,8 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
 
   constructor(public _intl: MatSortHeaderIntl,
               changeDetectorRef: ChangeDetectorRef,
+              // `MatSort` is not optionally injected, but just asserted manually w/ better error.
+              // tslint:disable-next-line: lightweight-tokens
               @Optional() public _sort: MatSort,
               @Inject('MAT_SORT_HEADER_COLUMN_DEF') @Optional()
                   public _columnDef: MatSortHeaderColumnDef,

@@ -70,6 +70,8 @@ export class CdkMenuItem implements FocusableOption {
     @Inject(CDK_MENU) private readonly _parentMenu: Menu,
     @Optional() private readonly _dir?: Directionality,
     /** Reference to the CdkMenuItemTrigger directive if one is added to the same element */
+    // `CdkMenuItem` is commonly used in combination with a `CdkMenuItemTrigger`.
+    // tslint:disable-next-line: lightweight-tokens
     @Self() @Optional() private readonly _menuTrigger?: CdkMenuItemTrigger
   ) {}
 

@@ -96,6 +96,8 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
 
   constructor(
     @Optional() private readonly _dir?: Directionality,
+    // `CdkMenuPanel` is always used in combination with a `CdkMenu`.
+    // tslint:disable-next-line: lightweight-tokens
     @Optional() private readonly _menuPanel?: CdkMenuPanel
   ) {
     super();
