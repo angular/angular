@@ -37,3 +37,14 @@ export function throwMatMenuInvalidPositionY() {
   throw Error(`yPosition value must be either 'above' or below'.
       Example: <mat-menu yPosition="above" #menu="matMenu"></mat-menu>`);
 }
+
+
+/**
+ * Throws an exception for the case when a menu is assigned
+ * to a trigger that is placed inside the same menu.
+ * @docs-private
+ */
+export function throwMatMenuRecursiveError() {
+  throw Error(`matMenuTriggerFor: menu cannot contain its own trigger. Assign a menu that is ` +
+              `not a parent of the trigger or move the trigger outside of the menu.`);
+}

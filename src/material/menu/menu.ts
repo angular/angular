@@ -39,6 +39,7 @@ import {
   ViewChild,
   ViewEncapsulation,
   OnInit,
+  isDevMode,
 } from '@angular/core';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, switchMap, take} from 'rxjs/operators';
@@ -150,7 +151,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   @Input()
   get xPosition(): MenuPositionX { return this._xPosition; }
   set xPosition(value: MenuPositionX) {
-    if (value !== 'before' && value !== 'after') {
+    if (isDevMode() && value !== 'before' && value !== 'after') {
       throwMatMenuInvalidPositionX();
     }
     this._xPosition = value;
@@ -161,7 +162,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   @Input()
   get yPosition(): MenuPositionY { return this._yPosition; }
   set yPosition(value: MenuPositionY) {
-    if (value !== 'above' && value !== 'below') {
+    if (isDevMode() && value !== 'above' && value !== 'below') {
       throwMatMenuInvalidPositionY();
     }
     this._yPosition = value;
