@@ -23,7 +23,8 @@ import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, S
  * that the injectable does not belong to any scope.
  *
  * @codeGenApi
- * @publicApi This instruction has been emitted by ViewEngine for some time and is deployed to npm.
+ * @publicApi The ViewEngine compiler emits code with this type for injectables. This code is
+ *   deployed to npm, and should be treated as public api.
 
  */
 export interface ɵɵInjectableDef<T> {
