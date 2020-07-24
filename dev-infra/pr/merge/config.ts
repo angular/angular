@@ -6,9 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getConfig, GitClientConfig, NgDevConfig} from '../../utils/config';
+import {GitClientConfig, NgDevConfig} from '../../utils/config';
+import {GithubClient} from '../../utils/git/github';
 
 import {GithubApiMergeStrategyConfig} from './strategies/api-merge';
+
+/** Describes possible values that can be returned for `branches` of a target label. */
+export type TargetLabelBranchResult = string[]|Promise<string[]>;
 
 /**
  * Possible merge methods supported by the Github API.
@@ -28,7 +32,7 @@ export interface TargetLabel {
    * Can also be wrapped in a function that accepts the target branch specified in the
    * Github Web UI. This is useful for supporting labels like `target: development-branch`.
    */
-  branches: string[]|((githubTargetBranch: string) => string[]);
+  branches: TargetLabelBranchResult|((githubTargetBranch: string) => TargetLabelBranchResult);
 }
 
 /**
@@ -72,12 +76,13 @@ export interface MergeConfig {
  * on branch name computations. We don't want to run these immediately whenever
  * the dev-infra configuration is loaded as that could slow-down other commands.
  */
-export type DevInfraMergeConfig = NgDevConfig<{'merge': () => MergeConfig}>;
+export type DevInfraMergeConfig =
+    NgDevConfig<{'merge': (api: GithubClient) => MergeConfig | Promise<MergeConfig>}>;
 
 /** Loads and validates the merge configuration. */
-export function loadAndValidateConfig(): {config?: MergeConfigWithRemote, errors?: string[]} {
-  const config: Partial<DevInfraMergeConfig> = getConfig();
-
+export async function loadAndValidateConfig(
+    config: Partial<DevInfraMergeConfig>,
+    api: GithubClient): Promise<{config?: MergeConfig, errors?: string[]}> {
   if (config.merge === undefined) {
     return {errors: ['No merge configuration found. Set the `merge` configuration.']};
   }
@@ -86,22 +91,14 @@ export function loadAndValidateConfig(): {config?: MergeConfigWithRemote, errors
     return {errors: ['Expected merge configuration to be defined lazily through a function.']};
   }
 
-  const mergeConfig = config.merge();
+  const mergeConfig = await config.merge(api);
   const errors = validateMergeConfig(mergeConfig);
 
   if (errors.length) {
     return {errors};
   }
 
-  if (mergeConfig.remote) {
-    mergeConfig.remote = {...config.github, ...mergeConfig.remote};
-  } else {
-    mergeConfig.remote = config.github;
-  }
-
-  // We always set the `remote` option, so we can safely cast the
-  // config to `MergeConfigWithRemote`.
-  return {config: mergeConfig as MergeConfigWithRemote};
+  return {config: mergeConfig};
 }
 
 /** Validates the specified configuration. Returns a list of failure messages. */

@@ -11,10 +11,7 @@ import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
 
 import {getConfig, getRepoBaseDir, NgDevConfig} from '../config';
 import {info, yellow} from '../console';
-import {_GithubClient} from './_github';
-
-// Re-export GithubApiRequestError
-export {GithubApiRequestError} from './_github';
+import {GithubClient} from './github';
 
 /** Github response type extended to include the `x-oauth-scopes` headers presence. */
 type RateLimitResponseWithOAuthScopeHeader = Octokit.Response<Octokit.RateLimitGetResponse>&{
@@ -54,10 +51,8 @@ export class GitClient {
       `https://${this._githubToken}@github.com/${this.remoteConfig.owner}/${
           this.remoteConfig.name}.git`;
   /** Instance of the authenticated Github octokit API. */
-  github = new _GithubClient(this._githubToken);
+  github = new GithubClient(this._githubToken);
 
-  /** The file path of project's root directory. */
-  private _projectRoot = getRepoBaseDir();
   /** The OAuth scopes available for the provided Github token. */
   private _oauthScopes: Promise<string[]>|null = null;
   /**
@@ -67,7 +62,8 @@ export class GitClient {
   private _githubTokenRegex: RegExp|null = null;
 
   constructor(
-      private _githubToken?: string, private _config: Pick<NgDevConfig, 'github'> = getConfig()) {
+      private _githubToken?: string, private _config: Pick<NgDevConfig, 'github'> = getConfig(),
+      private _projectRoot = getRepoBaseDir()) {
     // If a token has been specified (and is not empty), pass it to the Octokit API and
     // also create a regular expression that can be used for sanitizing Git command output
     // so that it does not print the token accidentally.
