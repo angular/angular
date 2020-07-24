@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BooleanInput} from '@angular/cdk/coercion';
+import {BooleanInput, NumberInput} from '@angular/cdk/coercion';
 import {ChangeDetectorRef, Directive, ElementRef, InjectionToken, OnDestroy} from '@angular/core';
 import {
   CanDisable,
@@ -197,4 +197,5 @@ export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable
   }
 
   static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_tabIndex: NumberInput;
 }

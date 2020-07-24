@@ -30,7 +30,7 @@ import {
   mixinDisabled,
   mixinTabIndex,
 } from '@angular/material/core';
-import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
 
 const _MatTreeNodeMixinBase: HasTabIndexCtor & CanDisableCtor & typeof CdkTreeNode =
     mixinTabIndex(mixinDisabled(CdkTreeNode));
@@ -63,6 +63,7 @@ export class MatTreeNode<T> extends _MatTreeNodeMixinBase<T>
   }
 
   static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_tabIndex: NumberInput;
 }
 
 /**

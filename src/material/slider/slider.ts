@@ -902,6 +902,7 @@ export class MatSlider extends _MatSliderMixinBase
   static ngAcceptInputType_value: NumberInput;
   static ngAcceptInputType_vertical: BooleanInput;
   static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_tabIndex: NumberInput;
 }
 
 /** Returns whether an event is a touch event. */

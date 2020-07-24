@@ -56,6 +56,7 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
     static ngAcceptInputType_removable: BooleanInput;
     static ngAcceptInputType_selectable: BooleanInput;
     static ngAcceptInputType_selected: BooleanInput;
+    static ngAcceptInputType_tabIndex: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatChip, "mat-basic-chip, [mat-basic-chip], mat-chip, [mat-chip]", ["matChip"], { "color": "color"; "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "selected": "selected"; "value": "value"; "selectable": "selectable"; "disabled": "disabled"; "removable": "removable"; }, { "selectionChange": "selectionChange"; "destroyed": "destroyed"; "removed": "removed"; }, ["avatar", "trailingIcon", "removeIcon"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatChip, [null, null, null, { optional: true; }, { optional: true; }, null, { attribute: "tabindex"; }, { optional: true; }]>;
 }

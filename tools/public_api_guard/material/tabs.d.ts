@@ -92,6 +92,7 @@ export declare class _MatTabLinkBase extends _MatTabLinkMixinBase implements Aft
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
+    static ngAcceptInputType_tabIndex: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabLinkBase, never, never, { "active": "active"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabLinkBase, [null, null, { optional: true; }, { attribute: "tabindex"; }, null, { optional: true; }]>;
 }

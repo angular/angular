@@ -139,7 +139,8 @@
       ["coerceBooleanProperty", "coerceCssPixelValue", "coerceNumberProperty"],
       {
         "CanDisable": ["disabled"],
-        "CanDisableRipple": ["disableRipple"]
+        "CanDisableRipple": ["disableRipple"],
+        "HasTabIndex": ["tabIndex"]
       }
     ],
     "no-host-decorator-in-concrete": [

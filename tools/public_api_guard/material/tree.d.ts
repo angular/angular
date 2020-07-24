@@ -63,6 +63,7 @@ export declare class MatTreeNode<T> extends _MatTreeNodeMixinBase<T> implements 
     role: 'treeitem' | 'group';
     constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T>, tabIndex: string);
     static ngAcceptInputType_disabled: BooleanInput;
+    static ngAcceptInputType_tabIndex: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNode<any>, "mat-tree-node", ["matTreeNode"], { "disabled": "disabled"; "tabIndex": "tabIndex"; "role": "role"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTreeNode<any>, [null, null, { attribute: "tabindex"; }]>;
 }

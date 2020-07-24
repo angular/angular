@@ -7,7 +7,7 @@
  */
 
 import {FocusableOption, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
-import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
 import {
   AfterViewChecked,
   Attribute,
@@ -504,4 +504,5 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   static ngAcceptInputType_required: BooleanInput;
   static ngAcceptInputType_disableRipple: BooleanInput;
   static ngAcceptInputType_indeterminate: BooleanInput;
+  static ngAcceptInputType_tabIndex: NumberInput;
 }

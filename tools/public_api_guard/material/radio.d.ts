@@ -36,6 +36,7 @@ export declare abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBa
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_required: BooleanInput;
+    static ngAcceptInputType_tabIndex: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatRadioButtonBase, never, never, { "id": "id"; "name": "name"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "ariaDescribedby": "aria-describedby"; "checked": "checked"; "value": "value"; "labelPosition": "labelPosition"; "disabled": "disabled"; "required": "required"; "color": "color"; }, { "change": "change"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatRadioButtonBase, never>;
 }

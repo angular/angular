@@ -66,6 +66,7 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     static ngAcceptInputType_max: NumberInput;
     static ngAcceptInputType_min: NumberInput;
     static ngAcceptInputType_step: NumberInput;
+    static ngAcceptInputType_tabIndex: NumberInput;
     static ngAcceptInputType_thumbLabel: BooleanInput;
     static ngAcceptInputType_tickInterval: NumberInput;
     static ngAcceptInputType_value: NumberInput;

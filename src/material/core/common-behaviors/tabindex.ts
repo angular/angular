@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {Constructor} from './constructor';
 import {CanDisable} from './disabled';
 
@@ -28,7 +29,7 @@ export function mixinTabIndex<T extends Constructor<CanDisable>>(base: T, defaul
     get tabIndex(): number { return this.disabled ? -1 : this._tabIndex; }
     set tabIndex(value: number) {
       // If the specified tabIndex value is null or undefined, fall back to the default value.
-      this._tabIndex = value != null ? value : defaultTabIndex;
+      this._tabIndex = value != null ? coerceNumberProperty(value) : defaultTabIndex;
     }
 
     constructor(...args: any[]) {
