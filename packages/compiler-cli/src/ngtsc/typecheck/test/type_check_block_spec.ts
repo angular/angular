@@ -252,7 +252,7 @@ describe('type check blocks', () => {
       expect(tcb(TEMPLATE, DIRECTIVES))
           .toContain(
               'var _t2 = Dir.ngTypeCtor({ "fieldA": (((ctx).foo)) }); ' +
-              'var _t3: Dir.ngAcceptInputType_fieldA = (null!); '+
+              'var _t3: typeof Dir.ngAcceptInputType_fieldA = (null!); ' +
               '_t3 = (((ctx).foo));');
     });
   });
@@ -359,23 +359,22 @@ describe('type check blocks', () => {
             '_t3["inputA"] = (_t2);');
   });
 
-  it('should handle undeclared properties',
-     () => {
-       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-       const DIRECTIVES: TestDeclaration[] = [{
-         type: 'directive',
-         name: 'Dir',
-         selector: '[dir]',
-         inputs: {
-           fieldA: 'inputA',
-         },
-         undeclaredInputFields: ['fieldA']
-       }];
-       expect(tcb(TEMPLATE, DIRECTIVES))
-         .toContain(
-           'var _t2: Dir = (null!); ' +
-           '(((ctx).foo)); ');
-     });
+  it('should handle undeclared properties', () => {
+    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'Dir',
+      selector: '[dir]',
+      inputs: {
+        fieldA: 'inputA',
+      },
+      undeclaredInputFields: ['fieldA']
+    }];
+    expect(tcb(TEMPLATE, DIRECTIVES))
+        .toContain(
+            'var _t2: Dir = (null!); ' +
+            '(((ctx).foo)); ');
+  });
 
   it('should handle restricted properties', () => {
     const TEMPLATE = `<div dir [inputA]="foo"></div>`;
@@ -411,42 +410,44 @@ describe('type check blocks', () => {
             '_t2["field2"] = _t2["field1"] = (((ctx).foo));');
   });
 
-  it('should handle a single property bound to multiple fields, where one of them is coerced', () => {
-    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      inputs: {
-        field1: 'inputA',
-        field2: 'inputA',
-      },
-      coercedInputFields: ['field1'],
-    }];
-    expect(tcb(TEMPLATE, DIRECTIVES))
-        .toContain(
-            'var _t2: Dir = (null!); ' +
-            'var _t3: Dir.ngAcceptInputType_field1 = (null!); ' +
-            '_t2["field2"] = _t3 = (((ctx).foo));');
-  });
+  it('should handle a single property bound to multiple fields, where one of them is coerced',
+     () => {
+       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+       const DIRECTIVES: TestDeclaration[] = [{
+         type: 'directive',
+         name: 'Dir',
+         selector: '[dir]',
+         inputs: {
+           field1: 'inputA',
+           field2: 'inputA',
+         },
+         coercedInputFields: ['field1'],
+       }];
+       expect(tcb(TEMPLATE, DIRECTIVES))
+           .toContain(
+               'var _t2: Dir = (null!); ' +
+               'var _t3: typeof Dir.ngAcceptInputType_field1 = (null!); ' +
+               '_t2["field2"] = _t3 = (((ctx).foo));');
+     });
 
-  it('should handle a single property bound to multiple fields, where one of them is undeclared', () => {
-    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      inputs: {
-        field1: 'inputA',
-        field2: 'inputA',
-      },
-      undeclaredInputFields: ['field1'],
-    }];
-    expect(tcb(TEMPLATE, DIRECTIVES))
-        .toContain(
-            'var _t2: Dir = (null!); ' +
-            '_t2["field2"] = (((ctx).foo));');
-  });
+  it('should handle a single property bound to multiple fields, where one of them is undeclared',
+     () => {
+       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+       const DIRECTIVES: TestDeclaration[] = [{
+         type: 'directive',
+         name: 'Dir',
+         selector: '[dir]',
+         inputs: {
+           field1: 'inputA',
+           field2: 'inputA',
+         },
+         undeclaredInputFields: ['field1'],
+       }];
+       expect(tcb(TEMPLATE, DIRECTIVES))
+           .toContain(
+               'var _t2: Dir = (null!); ' +
+               '_t2["field2"] = (((ctx).foo));');
+     });
 
   it('should use coercion types if declared', () => {
     const TEMPLATE = `<div dir [inputA]="foo"></div>`;
@@ -462,7 +463,7 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
             'var _t2: Dir = (null!); ' +
-            'var _t3: Dir.ngAcceptInputType_fieldA = (null!); '+
+            'var _t3: typeof Dir.ngAcceptInputType_fieldA = (null!); ' +
             '_t3 = (((ctx).foo));');
   });
 
@@ -481,7 +482,7 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
             'var _t2: Dir = (null!); ' +
-            'var _t3: Dir.ngAcceptInputType_fieldA = (null!); '+
+            'var _t3: typeof Dir.ngAcceptInputType_fieldA = (null!); ' +
             '_t3 = (((ctx).foo));');
   });
 

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {tsCreateTypeQueryForCoercedInput} from '@angular/compiler-cli/src/ngtsc/typecheck/src/ts_util';
 import * as ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
@@ -151,8 +152,7 @@ function constructTypeCtorParameter(
           /* name */ key,
           /* questionToken */ undefined,
           /* type */
-          ts.createTypeQueryNode(
-              ts.createQualifiedName(rawType.typeName, `ngAcceptInputType_${key}`)),
+          tsCreateTypeQueryForCoercedInput(rawType.typeName, key),
           /* initializer */ undefined));
     }
   }

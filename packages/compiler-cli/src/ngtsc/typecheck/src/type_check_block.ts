@@ -19,7 +19,7 @@ import {Environment} from './environment';
 import {astToTypescript, NULL_AS_ANY} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {ExpressionSemanticVisitor} from './template_semantics';
-import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateVariable, tsDeclareVariable} from './ts_util';
+import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util';
 
 
 
@@ -309,7 +309,10 @@ class TcbTextInterpolationOp extends TcbOp {
 }
 
 /**
- * TODO: docs, especially how it compares to `TcbDirectiveCtorOp`
+ * A `TcbOp` which constructs an instance of a directive _without_ setting any of its inputs. Inputs
+ * are later set in the `TcbDirectiveInputsOp`. Type checking was found to be faster when done in
+ * this way as opposed to `TcbDirectiveCtorOp` which is only necessary when the directive is
+ * generic.
  *
  * Executing this operation returns a reference to the directive instance variable with its inferred
  * type.
@@ -334,6 +337,9 @@ class TcbDirectiveOp extends TcbOp {
  * A `TcbOp` which constructs an instance of a directive with types inferred from its inputs, which
  * also checks the bindings to the directive in the process.
  *
+ * When a Directive is generic, it is required that the TCB generates the instance using this method
+ * in order to infer the type information correctly.
+ *
  * Executing this operation returns a reference to the directive instance variable with its inferred
  * type.
  */
@@ -349,7 +355,7 @@ class TcbDirectiveCtorOp extends TcbOp {
 
     const genericInputs = new Map<string, TcbDirectiveInput>();
 
-    const inputs = bindInputs(this.dir, this.node, this.tcb);
+    const inputs = getBoundInputs(this.dir, this.node, this.tcb);
     for (const input of inputs) {
       for (const fieldName of input.fieldNames) {
         // Skip the field if it does not infer any of the generic types.
@@ -374,11 +380,9 @@ class TcbDirectiveCtorOp extends TcbOp {
     }
 
     // Add unset directive inputs for each of the remaining unset fields.
-    if (this.dir.genericInputFields !== null) {
-      for (const fieldName of this.dir.genericInputFields) {
-        if (!genericInputs.has(fieldName)) {
-          genericInputs.set(fieldName, {type: 'unset', field: fieldName});
-        }
+    for (const fieldName of this.dir.genericInputFields) {
+      if (!genericInputs.has(fieldName)) {
+        genericInputs.set(fieldName, {type: 'unset', field: fieldName});
       }
     }
 
@@ -396,7 +400,10 @@ class TcbDirectiveCtorOp extends TcbOp {
 }
 
 /**
- * TODO: docs
+ * A `TcbOp` which generates code to check input bindings on an element that correspond with the
+ * members of a directive.
+ *
+ * Executing this operation returns nothing.
  */
 class TcbDirectiveInputsOp extends TcbOp {
   constructor(
@@ -410,7 +417,7 @@ class TcbDirectiveInputsOp extends TcbOp {
 
     // TODO: report duplicate properties
 
-    const inputs = bindInputs(this.dir, this.node, this.tcb);
+    const inputs = getBoundInputs(this.dir, this.node, this.tcb);
     for (const input of inputs) {
       // For bound inputs, the property is assigned the binding expression.
       let expr = translateInput(input.attribute, this.tcb, this.scope);
@@ -426,7 +433,8 @@ class TcbDirectiveInputsOp extends TcbOp {
         expr = ts.createNonNullExpression(expr);
       }
 
-      const coercedInputs = input.fieldNames.filter(fieldName => this.dir.coercedInputFields.has(fieldName));
+      const coercedInputs =
+          input.fieldNames.filter(fieldName => this.dir.coercedInputFields.has(fieldName));
       const coercedIds = new Map<string, ts.Identifier>();
       for (const coercedInput of coercedInputs) {
         const id = this.tcb.allocateId();
@@ -434,29 +442,23 @@ class TcbDirectiveInputsOp extends TcbOp {
 
         const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
         if (!ts.isTypeReferenceNode(dirTypeRef)) {
-          throw new Error(
-            `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`);
+          throw new Error(`Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`);
         }
 
-        const type = ts.createTypeReferenceNode(
-          /* typeName */ ts.createQualifiedName(
-            dirTypeRef.typeName, `ngAcceptInputType_${coercedInput}`),
-          /* typeArguments */ undefined);
+        const type = tsCreateTypeQueryForCoercedInput(dirTypeRef.typeName, coercedInput);
         this.scope.addStatement(tsDeclareVariable(id, type));
       }
 
       let assignment: ts.Expression = wrapForDiagnostics(expr);
 
       for (const fieldName of input.fieldNames) {
-        let target: ts.LeftHandSideExpression;
-        if (coercedIds.has(fieldName)) {
-          target = coercedIds.get(fieldName)!;
-        } else if (this.dir.undeclaredInputFields.has(fieldName)) {
-          continue;
-        } else {
-          target = ts.createElementAccess(dirId, ts.createStringLiteral(fieldName));
+        const coercedId = coercedIds.get(fieldName);
+        if (this.dir.undeclaredInputFields.has(fieldName) && coercedId === undefined) {
+          continue
         }
 
+        const target =
+            coercedId ?? ts.createElementAccess(dirId, ts.createStringLiteral(fieldName));
         assignment = ts.createBinary(target, ts.SyntaxKind.EqualsToken, assignment);
       }
 
@@ -1086,12 +1088,8 @@ class Scope {
 
     const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
     for (const dir of directives) {
-      let directiveOp: TcbOp;
-      if (dir.isGeneric) {
-        directiveOp = new TcbDirectiveCtorOp(this.tcb, this, node, dir);
-      } else {
-        directiveOp = new TcbDirectiveOp(this.tcb, this, node, dir);
-      }
+      const directiveOp = dir.isGeneric ? new TcbDirectiveCtorOp(this.tcb, this, node, dir) :
+                                          new TcbDirectiveOp(this.tcb, this, node, dir);
       const dirIndex = this.opQueue.push(directiveOp) - 1;
       dirMap.set(dir, dirIndex);
 
@@ -1418,7 +1416,7 @@ function tcbCallTypeCtor(
       /* argumentsArray */[ts.createObjectLiteral(members)]);
 }
 
-function bindInputs(
+function getBoundInputs(
     directive: TypeCheckableDirectiveMeta, node: TmplAstTemplate|TmplAstElement,
     tcb: Context): TcbBoundInput[] {
   const boundInputs: TcbBoundInput[] = [];
