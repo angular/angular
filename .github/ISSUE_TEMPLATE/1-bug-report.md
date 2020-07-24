@@ -38,6 +38,7 @@ Los problemas existentes a menudo contienen información sobre soluciones altern
 <!-- 
 Si StackBlitz no es adecuado para la reproducción de su problema, crea un repositorio De GitHub mínimo con la reproducción del problema.
 Una buena manera de hacer una reproducción mínima es crear una nueva aplicación a través de 'ng nueva aplicación' y agregar el código mínimo posible para mostrar el problema.
+
 Compartir el enlace al repositorio a continuación junto con instrucciones paso a paso para reproducir el problema, así como el comportamiento esperado y real.
 
 Los problemas que no tienen suficiente información y no se pueden reproducir se cerrarán. 
