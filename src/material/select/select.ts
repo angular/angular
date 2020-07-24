@@ -903,11 +903,11 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       // Shift focus to the active item. Note that we shouldn't do this in multiple
       // mode, because we don't know what option the user interacted with last.
       if (correspondingOption) {
-        this._keyManager.setActiveItem(correspondingOption);
+        this._keyManager.updateActiveItem(correspondingOption);
       } else if (!this.panelOpen) {
         // Otherwise reset the highlighted option. Note that we only want to do this while
         // closed, because doing it while open can shift the user's focus unnecessarily.
-        this._keyManager.setActiveItem(-1);
+        this._keyManager.updateActiveItem(-1);
       }
     }
 

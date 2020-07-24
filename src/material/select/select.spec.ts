@@ -1653,6 +1653,19 @@ describe('MatSelect', () => {
           subscription!.unsubscribe();
         }));
 
+        it('should not indicate programmatic value changes as user interactions', () => {
+          const events: MatOptionSelectionChange[] = [];
+          const subscription = fixture.componentInstance.select.optionSelectionChanges
+            .subscribe((event: MatOptionSelectionChange) => events.push(event));
+
+          fixture.componentInstance.control.setValue('eggs-5');
+          fixture.detectChanges();
+
+          expect(events.map(event => event.isUserInput)).toEqual([false]);
+
+          subscription.unsubscribe();
+        });
+
     });
 
     describe('forms integration', () => {
