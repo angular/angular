@@ -122,7 +122,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
-| [`preserveQueryParams`](api/router/NavigationExtras#preserveQueryParams) | [`queryParamsHandling`](api/router/NavigationExtras#queryParamsHandling) | v4 | none |
+| [`preserveQueryParams`](api/router/UrlCreationOptions#preserveQueryParams) | [`queryParamsHandling`](api/router/UrlCreationOptions#queryParamsHandling) | v4 | none |
 
 {@a platform-webworker}
 ### @angular/platform-webworker

@@ -172,6 +172,14 @@ export declare type Navigation = {
     previousNavigation: Navigation | null;
 };
 
+export declare interface NavigationBehaviorOptions {
+    replaceUrl?: boolean;
+    skipLocationChange?: boolean;
+    state?: {
+        [k: string]: any;
+    };
+}
+
 export declare class NavigationCancel extends RouterEvent {
     reason: string;
     constructor(
@@ -199,18 +207,7 @@ export declare class NavigationError extends RouterEvent {
     toString(): string;
 }
 
-export declare interface NavigationExtras {
-    fragment?: string;
-    preserveFragment?: boolean;
-    /** @deprecated */ preserveQueryParams?: boolean;
-    queryParams?: Params | null;
-    queryParamsHandling?: QueryParamsHandling | null;
-    relativeTo?: ActivatedRoute | null;
-    replaceUrl?: boolean;
-    skipLocationChange?: boolean;
-    state?: {
-        [k: string]: any;
-    };
+export declare interface NavigationExtras extends UrlCreationOptions, NavigationBehaviorOptions {
 }
 
 export declare class NavigationStart extends RouterEvent {
@@ -344,13 +341,13 @@ export declare class Router {
     urlHandlingStrategy: UrlHandlingStrategy;
     urlUpdateStrategy: 'deferred' | 'eager';
     constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
-    createUrlTree(commands: any[], navigationExtras?: NavigationExtras): UrlTree;
+    createUrlTree(commands: any[], navigationExtras?: UrlCreationOptions): UrlTree;
     dispose(): void;
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
     isActive(url: string | UrlTree, exact: boolean): boolean;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
-    navigateByUrl(url: string | UrlTree, extras?: NavigationExtras): Promise<boolean>;
+    navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
     ngOnDestroy(): void;
     parseUrl(url: string): UrlTree;
     resetConfig(config: Routes): void;
@@ -500,6 +497,15 @@ export declare class Scroll {
     position: [number, number] | null,
     anchor: string | null);
     toString(): string;
+}
+
+export declare interface UrlCreationOptions {
+    fragment?: string;
+    preserveFragment?: boolean;
+    /** @deprecated */ preserveQueryParams?: boolean;
+    queryParams?: Params | null;
+    queryParamsHandling?: QueryParamsHandling | null;
+    relativeTo?: ActivatedRoute | null;
 }
 
 export declare abstract class UrlHandlingStrategy {
