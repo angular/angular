@@ -86,7 +86,7 @@ export const APP_BASE_HREF = new InjectionToken<string>('appBaseHref');
  * For instance, if you provide an `APP_BASE_HREF` of `'/my/app/'` and call
  * `location.go('/foo')`, the browser's URL will become
  * `example.com/my/app/foo`. To ensure all relative URIs resolve correctly,
- * the base href should end with a `/`.
+ * the `<base href>` and/or `APP_BASE_HREF` should end with a `/`.
  *
  * Similarly, if you add `<base href='/my/app/'/>` to the document and call
  * `location.go('/foo')`, the browser's URL will become
