@@ -47,7 +47,7 @@ export function startCli() {
     options.exportTags = {
       requireAtLeastOne: ['publicApi', 'codeGenApi'],
       banned: ['experimental'],
-      toCopy: ['deprecated']
+      toCopy: ['deprecated', 'codeGenApi']
     };
     options.memberTags = {
       requireAtLeastOne: [],
