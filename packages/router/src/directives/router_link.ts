@@ -84,7 +84,7 @@ import {UrlTree} from '../url_tree';
  * </a>
  * ```
  *
- * See {@link NavigationExtras.queryParamsHandling NavigationExtras#queryParamsHandling}.
+ * See {@link UrlCreationOptions.queryParamsHandling UrlCreationOptions#queryParamsHandling}.
  *
  * ### Preserving navigation history
  *
@@ -117,51 +117,58 @@ import {UrlTree} from '../url_tree';
 @Directive({selector: ':not(a):not(area)[routerLink]'})
 export class RouterLink implements OnChanges {
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#queryParams NavigationExtras#queryParams}
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * @see {@link UrlCreationOptions#queryParams UrlCreationOptions#queryParams}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   // TODO(issue/24571): remove '!'.
   @Input() queryParams!: {[k: string]: any};
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#fragment NavigationExtras#fragment}
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * @see {@link UrlCreationOptions#fragment UrlCreationOptions#fragment}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   // TODO(issue/24571): remove '!'.
   @Input() fragment!: string;
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#queryParamsHandling NavigationExtras#queryParamsHandling}
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * @see {@link UrlCreationOptions#queryParamsHandling UrlCreationOptions#queryParamsHandling}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   // TODO(issue/24571): remove '!'.
   @Input() queryParamsHandling!: QueryParamsHandling;
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#preserveFragment NavigationExtras#preserveFragment}
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * @see {@link UrlCreationOptions#preserveFragment UrlCreationOptions#preserveFragment}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   // TODO(issue/24571): remove '!'.
   @Input() preserveFragment!: boolean;
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#skipLocationChange NavigationExtras#skipLocationChange}
-   * @see {@link Router#createUrlTree Router#createUrlTree}
+   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#skipLocationChange NavigationBehaviorOptions#skipLocationChange}
+   * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
   // TODO(issue/24571): remove '!'.
   @Input() skipLocationChange!: boolean;
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#replaceUrl NavigationExtras#replaceUrl}
-   * @see {@link Router#createUrlTree Router#createUrlTree}
+   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#replaceUrl NavigationBehaviorOptions#replaceUrl}
+   * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
   // TODO(issue/24571): remove '!'.
   @Input() replaceUrl!: boolean;
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#state NavigationExtras#state}
-   * @see {@link Router#createUrlTree Router#createUrlTree}
+   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#state NavigationBehaviorOptions#state}
+   * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
   @Input() state?: {[k: string]: any};
   private commands: any[] = [];
@@ -252,51 +259,58 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   // TODO(issue/24571): remove '!'.
   @HostBinding('attr.target') @Input() target!: string;
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#queryParams NavigationExtras#queryParams}
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * @see {@link UrlCreationOptions#queryParams UrlCreationOptions#queryParams}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   // TODO(issue/24571): remove '!'.
   @Input() queryParams!: {[k: string]: any};
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#fragment NavigationExtras#fragment}
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * @see {@link UrlCreationOptions#fragment UrlCreationOptions#fragment}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   // TODO(issue/24571): remove '!'.
   @Input() fragment!: string;
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#queryParamsHandling NavigationExtras#queryParamsHandling}
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * @see {@link UrlCreationOptions#queryParamsHandling UrlCreationOptions#queryParamsHandling}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   // TODO(issue/24571): remove '!'.
   @Input() queryParamsHandling!: QueryParamsHandling;
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#preserveFragment NavigationExtras#preserveFragment}
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * @see {@link UrlCreationOptions#preserveFragment UrlCreationOptions#preserveFragment}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   // TODO(issue/24571): remove '!'.
   @Input() preserveFragment!: boolean;
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#skipLocationChange NavigationExtras#skipLocationChange}
-   * @see {@link Router#createUrlTree Router#createUrlTree}
+   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#skipLocationChange NavigationBehaviorOptions#skipLocationChange}
+   * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
   // TODO(issue/24571): remove '!'.
   @Input() skipLocationChange!: boolean;
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#replaceUrl NavigationExtras#replaceUrl}
-   * @see {@link Router#createUrlTree Router#createUrlTree}
+   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#replaceUrl NavigationBehaviorOptions#replaceUrl}
+   * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
   // TODO(issue/24571): remove '!'.
   @Input() replaceUrl!: boolean;
   /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
-   * @see {@link NavigationExtras#state NavigationExtras#state}
-   * @see {@link Router#createUrlTree Router#createUrlTree}
+   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#state NavigationBehaviorOptions#state}
+   * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
   @Input() state?: {[k: string]: any};
   private commands: any[] = [];
