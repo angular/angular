@@ -363,7 +363,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     let kind: ClassMemberKind|null = null;
     let value: ts.Expression|null = null;
     let name: string|null = null;
-    let nameNode: ts.Identifier|null = null;
+    let nameNode: ts.Identifier|ts.StringLiteral|null = null;
 
     if (ts.isPropertyDeclaration(node)) {
       kind = ClassMemberKind.Property;
@@ -383,6 +383,9 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (ts.isConstructorDeclaration(node)) {
       name = 'constructor';
     } else if (ts.isIdentifier(node.name)) {
+      name = node.name.text;
+      nameNode = node.name;
+    } else if (ts.isStringLiteral(node.name)) {
       name = node.name.text;
       nameNode = node.name;
     } else {
