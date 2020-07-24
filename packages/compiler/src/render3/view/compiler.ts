@@ -231,7 +231,7 @@ export function compileComponentFromMetadata(
     const styleValues = meta.encapsulation == core.ViewEncapsulation.Emulated ?
         compileStyles(meta.styles, CONTENT_ATTR, HOST_ATTR) :
         meta.styles;
-    const strings = styleValues.map(str => o.literal(str));
+    const strings = styleValues.map(str => constantPool.getConstLiteral(o.literal(str)));
     definitionMap.set('styles', o.literalArr(strings));
   } else if (meta.encapsulation === core.ViewEncapsulation.Emulated) {
     // If there is no style, don't generate css selectors on elements
