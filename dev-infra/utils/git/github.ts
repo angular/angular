@@ -6,13 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/****************************************************************************
- ****************************************************************************
- ** DO NOT IMPORT THE GithubClient DIRECTLY, INSTEAD IMPORT GitClient from **
- ** ./index.ts and access the GithubClient via the `.github` member.       **
- ****************************************************************************
- ****************************************************************************/
-
 import {graphql} from '@octokit/graphql';
 import * as Octokit from '@octokit/rest';
 import {RequestParameters} from '@octokit/types';
@@ -28,10 +21,10 @@ export class GithubApiRequestError extends Error {
 /**
  * A Github client for interacting with the Github APIs.
  *
- * Additionally, provides convienience methods for actions which require multiple requests, or
+ * Additionally, provides convenience methods for actions which require multiple requests, or
  * would provide value from memoized style responses.
  **/
-export class _GithubClient extends Octokit {
+export class GithubClient extends Octokit {
   /** The Github GraphQL (v4) API. */
   graqhql: GithubGraphqlClient;
 
