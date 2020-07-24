@@ -82,15 +82,6 @@ describe('validate-commit-message.js', () => {
       expect(validateCommitMessage(msgWithLongLinesInBody)).toBe(VALID);
     });
 
-    it('should skip max length limit for URLs', () => {
-      const msg = 'fix(compiler): this is just an usual commit message tile\n\n' +
-          'This is a normal commit message body which does not exceed the max length\n' +
-          'limit. For more details see the following super long URL:\n\n' +
-          'https://github.com/angular/components/commit/e2ace018ddfad10608e0e32932c43dcfef4095d7#diff-9879d6db96fd29134fc802214163b95a';
-
-      expect(validateCommitMessage(msg)).toBe(VALID);
-    });
-
     it('should validate "<type>(<scope>): <subject>" format', () => {
       const msg = 'not correct format';
 
@@ -267,6 +258,13 @@ describe('validate-commit-message.js', () => {
         expect(validateCommitMessage('fix(core): something')).toBe(INVALID);
         expect(lastError).toContain(
             'The commit message body does not meet the minimum length of 30 characters');
+      });
+
+      it('should not take into account lines that start with `#`', () => {
+        const commitMsg = 'fix: some test commit header\n\n' +
+            '# Please enter the commit message for your changes. Lines starting\n' +
+            '# with `#` will be ignored, and an empty message aborts the commit.';
+        expect(validateCommitMessage(commitMsg)).toBe(INVALID);
       });
 
       it('should pass validation if the body is shorter than `minBodyLength` but the commit type is in the `minBodyLengthTypeExclusions` list',

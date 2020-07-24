@@ -149,7 +149,8 @@ export function validateCommitMessage(
         bodyByLine
             // Exclude lines that start with `#`, since these lines are ignored by git.
             .filter(line => !line.startsWith('#'))
-            .join('')
+            .join('\n')
+            .trim()
             .length;
     if (actualBodyLength < config.minBodyLength) {
       printError(`The commit message body does not meet the minimum length of ${
