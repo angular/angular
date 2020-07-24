@@ -24,7 +24,7 @@ def ts_api_guardian_test(
         golden,
         actual,
         data = [],
-        strip_export_pattern = ["^__", "^ɵ[^ɵ]"],
+        strip_export_pattern = [],
         allow_module_identifiers = COMMON_MODULE_IDENTIFIERS,
         use_angular_tag_rules = True,
         **kwargs):
@@ -49,8 +49,11 @@ def ts_api_guardian_test(
     ]
 
     for i in strip_export_pattern:
-        # The below replacement is needed because under Windows '^' needs to be escaped twice
-        args += ["--stripExportPattern", i.replace("^", "^^^^")]
+        # Escape regexp before passing it via the command line.
+        # The below replacement is needed because under Windows '^' needs to be escaped twice,
+        # the remaining characters need a single escape on all platforms.
+        escaped_pattern = i.replace("^", "^^^^").replace("(", "\(").replace(")", "\)").replace("|", "\|")
+        args += ["--stripExportPattern", escaped_pattern]
 
     for i in allow_module_identifiers:
         args += ["--allowModuleIdentifiers", i]
@@ -82,7 +85,7 @@ def ts_api_guardian_test_npm_package(
         goldenDir,
         actualDir,
         data = [],
-        strip_export_pattern = ["^__", "^ɵ[^ɵ]"],
+        strip_export_pattern = ["^ɵ(?!ɵdefineInjectable|ɵinject|ɵInjectableDef)"],
         allow_module_identifiers = COMMON_MODULE_IDENTIFIERS,
         use_angular_tag_rules = True,
         **kwargs):
@@ -109,8 +112,11 @@ def ts_api_guardian_test_npm_package(
     ]
 
     for i in strip_export_pattern:
-        # The below replacement is needed because under Windows '^' needs to be escaped twice
-        args += ["--stripExportPattern", i.replace("^", "^^^^")]
+        # Escape regexp before passing it via the command line.
+        # The below replacement is needed because under Windows '^' needs to be escaped twice,
+        # the remaining characters need a single escape on all platforms.
+        escaped_pattern = i.replace("^", "^^^^").replace("(", "\(").replace(")", "\)").replace("|", "\|")
+        args += ["--stripExportPattern", escaped_pattern]
 
     for i in allow_module_identifiers:
         args += ["--allowModuleIdentifiers", i]
