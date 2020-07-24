@@ -26,8 +26,8 @@ export class InvalidTargetLabelError {
 }
 
 /** Gets the target label from the specified pull request labels. */
-export function getTargetLabelFromPullRequest(config: MergeConfig, labels: string[]): TargetLabel|
-    null {
+export function getTargetLabelFromPullRequest(
+    config: Pick<MergeConfig, 'labels'>, labels: string[]): TargetLabel|null {
   for (const label of labels) {
     const match = config.labels.find(({pattern}) => matchesPattern(label, pattern));
     if (match !== undefined) {
