@@ -37,6 +37,13 @@ export const enum DefinitionKind {
 const KEY_CONTEXT = {};
 
 /**
+ * Generally all primitive values are excluded from the `ConstantPool`, but there is an exclusion
+ * for strings that reach a certain length threshold. This constant defines the length threshold for
+ * strings.
+ */
+const POOL_INCLUSION_LENGTH_THRESHOLD_FOR_STRINGS = 50;
+
+/**
  * A node that is a place-holder that allows the node to be replaced when the actual
  * node is known.
  *
@@ -96,7 +103,8 @@ export class ConstantPool {
   private nextNameIndex = 0;
 
   getConstLiteral(literal: o.Expression, forceShared?: boolean): o.Expression {
-    if (literal instanceof o.LiteralExpr || literal instanceof FixupExpression) {
+    if ((literal instanceof o.LiteralExpr && !isLongStringExpr(literal)) ||
+        literal instanceof FixupExpression) {
       // Do no put simple literals into the constant pool or try to produce a constant for a
       // reference to a constant.
       return literal;
@@ -304,4 +312,9 @@ function invalid<T>(this: o.ExpressionVisitor, arg: o.Expression|o.Statement): n
 
 function isVariable(e: o.Expression): e is o.ReadVarExpr {
   return e instanceof o.ReadVarExpr;
+}
+
+function isLongStringExpr(expr: o.LiteralExpr): boolean {
+  return typeof expr.value === 'string' &&
+      expr.value.length > POOL_INCLUSION_LENGTH_THRESHOLD_FOR_STRINGS;
 }
