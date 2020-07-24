@@ -49,11 +49,9 @@ def ts_api_guardian_test(
     ]
 
     for i in strip_export_pattern:
-        # Escape regexp before passing it via the command line.
-        # The below replacement is needed because under Windows '^' needs to be escaped twice,
-        # the remaining characters need a single escape on all platforms.
-        escaped_pattern = i.replace("^", "^^^^").replace("(", "\(").replace(")", "\)").replace("|", "\|")
-        args += ["--stripExportPattern", escaped_pattern]
+        # Quote the regexp before passing it via the command line.
+        quoted_pattern = "\"%s\"" % i
+        args += ["--stripExportPattern", quoted_pattern]
 
     for i in allow_module_identifiers:
         args += ["--allowModuleIdentifiers", i]
