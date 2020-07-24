@@ -6,7 +6,7 @@ about: Reporta un bug en el framework de Angular
 
 ¡Hola! 😄
 
-Para agilizar el procesamiento de issues, busque issues abiertas y cerradas antes de enviar uno nuevo.
+Para agilizar el procesamiento de issues, busque issues abiertas y cerradas antes de enviar una nueva.
 Los problemas existentes a menudo contienen información sobre soluciones alternativas, resolución o actualizaciones de progreso.
 
 
@@ -17,7 +17,7 @@ Los problemas existentes a menudo contienen información sobre soluciones altern
 
 ### Paquete afectado
 <!-- ¿Puedes anclar uno o más paquetes @angular/* como origen del error? -->
-<!-- ✍️editar: --> El problema se debe a la @angular del paquete/....
+<!-- ✍️editar: --> El problema es ocasionado por el paquete @angular/...
 
 
 ### ¿Es una regresión?
@@ -37,7 +37,8 @@ Los problemas existentes a menudo contienen información sobre soluciones altern
 
 <!-- 
 Si StackBlitz no es adecuado para la reproducción de su problema, crea un repositorio De GitHub mínimo con la reproducción del problema.
-Una buena manera de hacer una reproducción mínima es crear una nueva aplicación a través de 'ng nueva aplicación' y agregar el código mínimo posible para mostrar el problema. Compartir el enlace al repositorio a continuación junto con instrucciones paso a paso para reproducir el problema, así como el comportamiento esperado y real.
+Una buena manera de hacer una reproducción mínima es crear una nueva aplicación a través de 'ng nueva aplicación' y agregar el código mínimo posible para mostrar el problema.
+Compartir el enlace al repositorio a continuación junto con instrucciones paso a paso para reproducir el problema, así como el comportamiento esperado y real.
 
 Los problemas que no tienen suficiente información y no se pueden reproducir se cerrarán. 
 
@@ -64,4 +65,4 @@ Puede leer más acerca de las pautas de envío de problemas aquí: https://githu
 **¿Algo más relevante?**
 <!-- ✍️¿Es este un problema específico del navegador? Si es así, especifique el navegador y la versión. -->
 
-<!-- ✍️¿Alguno de estos asuntos: sistema operativo, IDE, administrador de paquetes, servidor HTTP, ...? Si es así, por favor menciona a continuación. -->
+<!-- ✍️¿Alguno de estos asuntos: sistema operativo, IDE, administrador de paquetes, servidor HTTP, ...? Si es así, por favor menciónalos a continuación. -->

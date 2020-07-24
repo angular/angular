@@ -33,7 +33,7 @@ Los problemas existentes a menudo contienen información sobre soluciones altern
 <!-- ✍️editar:-->
 
 
-## 📷Captura de pantall
+## 📷Captura de pantalla
 <!-- A menudo, una captura de pantalla puede ayudar a capturar el problema mejor que una descripción larga. -->
 <!-- ✍️subir una captura de pantalla:-->
 
