@@ -12,7 +12,7 @@ import {GitClient} from '../../utils/git';
 
 import {PullRequestFailure} from './failures';
 import {matchesPattern} from './string-pattern';
-import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest} from './target-label';
+import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest, InvalidTargetBranchError, InvalidTargetLabelError} from './target-label';
 import {PullRequestMergeTask} from './task';
 
 /** Interface that describes a pull request. */
@@ -83,6 +83,20 @@ export async function loadAndValidatePullRequest(
       labels.some(name => matchesPattern(name, config.commitMessageFixupLabel));
   const hasCaretakerNote = !!config.caretakerNoteLabel &&
       labels.some(name => matchesPattern(name, config.caretakerNoteLabel!));
+  let targetBranches: string[];
+
+  // If branches are determined for a given target label, capture errors that are
+  // thrown as part of branch computation. This is expected because a merge configuration
+  // can lazily compute branches for a target label and throw. e.g. if an invalid target
+  // label is applied, we want to exit the script gracefully with an error message.
+  try {
+    targetBranches = await getBranchesFromTargetLabel(targetLabel, githubTargetBranch);
+  } catch (error) {
+    if (error instanceof InvalidTargetBranchError || error instanceof InvalidTargetLabelError) {
+      return new PullRequestFailure(error.failureMessage);
+    }
+    throw error;
+  }
 
   return {
     url: prData.html_url,
@@ -92,8 +106,8 @@ export async function loadAndValidatePullRequest(
     githubTargetBranch,
     needsCommitMessageFixup,
     hasCaretakerNote,
+    targetBranches,
     title: prData.title,
-    targetBranches: getBranchesFromTargetLabel(targetLabel, githubTargetBranch),
     commitCount: prData.commits,
   };
 }

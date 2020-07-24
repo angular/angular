@@ -31,6 +31,9 @@ export interface TargetLabel {
    * List of branches a pull request with this target label should be merged into.
    * Can also be wrapped in a function that accepts the target branch specified in the
    * Github Web UI. This is useful for supporting labels like `target: development-branch`.
+   *
+   * @throws {InvalidTargetLabelError} Invalid label has been applied to pull request.
+   * @throws {InvalidTargetBranchError} Invalid Github target branch has been selected.
    */
   branches: TargetLabelBranchResult|((githubTargetBranch: string) => TargetLabelBranchResult);
 }
