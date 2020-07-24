@@ -316,5 +316,5 @@ function isVariable(e: o.Expression): e is o.ReadVarExpr {
 
 function isLongStringExpr(expr: o.LiteralExpr): boolean {
   return typeof expr.value === 'string' &&
-      expr.value.length > POOL_INCLUSION_LENGTH_THRESHOLD_FOR_STRINGS;
+      expr.value.length >= POOL_INCLUSION_LENGTH_THRESHOLD_FOR_STRINGS;
 }

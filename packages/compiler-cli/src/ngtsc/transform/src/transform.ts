@@ -86,13 +86,15 @@ class IvyTransformationVisitor extends Visitor {
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     // If this class is not registered in the map, it means that it doesn't have Angular decorators,
     // thus no further processing is required.
-    if (!this.classCompilationMap.has(node)) return {node};
+    if (!this.classCompilationMap.has(node)) {
+      return {node};
+    }
 
     // There is at least one field to add.
     const statements: ts.Statement[] = [];
     const members = [...node.members];
 
-    this.classCompilationMap.get(node)!.forEach(field => {
+    for (const field of this.classCompilationMap.get(node)!) {
       // Translate the initializer for the field into TS nodes.
       const exprNode = translateExpression(
           field.initializer, this.importManager, this.defaultImportRecorder,
@@ -120,7 +122,7 @@ class IvyTransformationVisitor extends Visitor {
           .forEach(stmt => statements.push(stmt));
 
       members.push(property);
-    });
+    }
 
     // Replace the class declaration with an updated version.
     node = ts.updateClassDeclaration(
