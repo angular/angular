@@ -416,6 +416,105 @@ describe('EventManager', () => {
          done();
        });
      });
+
+  describe('event modifier', () => {
+    let element: HTMLElement;
+    let manager: EventManager;
+    let handler: Function;
+    beforeEach(() => {
+      doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+      zone = new FakeNgZone(true);
+      domEventPlugin = new DomEventsPlugin(doc);
+      manager = new EventManager([domEventPlugin], zone);
+      element = el('<div></div>');
+      doc.body.appendChild(element);
+      handler = () => {};
+      spyOn(element, 'addEventListener').and.callThrough();
+      spyOn(element, 'removeEventListener').and.callThrough();
+    });
+
+    it('should handle event name with capture correctly', () => {
+      let removeHandler = manager.addEventListener(element, 'click.capture', handler);
+      removeHandler();
+      expect(element.addEventListener).toHaveBeenCalledWith('click', handler, {capture: true});
+      expect(element.removeEventListener).toHaveBeenCalledWith('click', handler, {capture: true});
+    });
+
+    it('should handle event name with passive correctly', () => {
+      const removeHandler = manager.addEventListener(element, 'click.passive', handler);
+      removeHandler();
+      expect(element.addEventListener).toHaveBeenCalledWith('click', handler, {passive: true});
+      expect(element.removeEventListener).toHaveBeenCalledWith('click', handler);
+    });
+
+    it('should handle event name with once correctly', () => {
+      const removeHandler = manager.addEventListener(element, 'click.once', handler);
+      removeHandler();
+      expect(element.addEventListener).toHaveBeenCalledWith('click', handler, {once: true});
+      expect(element.removeEventListener).toHaveBeenCalledWith('click', handler);
+    });
+
+    it('should handle event name with capture/passive/once correctly', () => {
+      const removeHandler =
+          manager.addEventListener(element, 'click.capture.passive.once', handler);
+      removeHandler();
+      expect(element.addEventListener)
+          .toHaveBeenCalledWith('click', handler, {capture: true, passive: true, once: true});
+      expect(element.removeEventListener).toHaveBeenCalledWith('click', handler, {capture: true});
+    });
+
+    describe('event modifier with zone option', () => {
+      let logs: string[];
+      const evt = createMouseEvent('click');
+
+      const zoneHandler = () => {
+        logs.push(`handler inside ngZone? ${NgZone.isInAngularZone()}`);
+      };
+      beforeEach(() => {
+        logs = [];
+      });
+
+      it('event with ngzone should always run inside ngZone', () => {
+        let removeHandler: any;
+        zone.runOutsideAngular(() => {
+          removeHandler = manager.addEventListener(element, 'click.ngZone', zoneHandler);
+        });
+        getDOM().dispatchEvent(element, evt);
+        removeHandler();
+        expect(element.addEventListener).toHaveBeenCalledWith('click', zoneHandler);
+        expect(element.removeEventListener).toHaveBeenCalledWith('click', zoneHandler);
+        expect(logs).toEqual(['handler inside ngZone? true']);
+      });
+
+      it('event with noopzone should always run outside ngZone', () => {
+        let removeHandler: any;
+        zone.run(() => {
+          removeHandler = manager.addEventListener(element, 'click.noopZone', zoneHandler);
+        });
+        getDOM().dispatchEvent(element, evt);
+        removeHandler();
+        expect(element.addEventListener).toHaveBeenCalledWith('click', zoneHandler);
+        expect(element.removeEventListener).toHaveBeenCalledWith('click', zoneHandler);
+        expect(logs).toEqual(['handler inside ngZone? false']);
+      });
+
+      it('event name should work with zone options and capture/passive/once ', () => {
+        let removeHandler: any;
+        zone.runOutsideAngular(() => {
+          removeHandler =
+              manager.addEventListener(element, 'click.ngZone.capture.passive.once', zoneHandler);
+        });
+        getDOM().dispatchEvent(element, evt);
+        removeHandler();
+        expect(element.addEventListener)
+            .toHaveBeenCalledWith('click', zoneHandler, {capture: true, passive: true, once: true});
+        expect(element.removeEventListener).toHaveBeenCalledWith('click', zoneHandler, {
+          capture: true
+        });
+        expect(logs).toEqual(['handler inside ngZone? true']);
+      });
+    });
+  });
 });
 })();
 
@@ -440,13 +539,23 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
 }
 
 class FakeNgZone extends NgZone {
-  constructor() {
+  private withZone = false;
+  private innerZone = Zone.current.fork({name: 'inner', properties: {isAngularZone: true}});
+  private outerZone = Zone.current.fork({name: 'outer'});
+  constructor(withZone?: boolean) {
     super({enableLongStackTrace: false, shouldCoalesceEventChangeDetection: true});
+    this.withZone = !!withZone;
   }
   run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
+    if (this.withZone) {
+      return this.innerZone.run(fn, applyThis, applyArgs);
+    }
     return fn();
   }
   runOutsideAngular(fn: Function) {
+    if (this.withZone) {
+      return this.outerZone.run(fn);
+    }
     return fn();
   }
 }

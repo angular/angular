@@ -68,6 +68,23 @@ To update the `name` property, the changed text is retrieved by following the pa
 If the event belongs to a directive&mdash;recall that components
 are directives&mdash;`$event` has whatever shape the directive produces.
 
+## Apply `capture`, `passive`, `once`, `ngZone`, `noopZone` options
+
+It is possible to apply [AddEventListenerOptions](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) `capture`, `passive`, `once` by combining the event name with the option.
+
+Consider this example:
+
+<code-example path="event-binding/src/app/app.component.html" region="event-binding-4" header="src/app/app.component.html"></code-example>
+
+And it is also possible to apply `ngZone` or `noopZone` option to make sure the event handler run into the specified `zone`.
+
+- `ngZone`: The event handler always runs into the `angular zone`, so it triggers the change detection automatically.
+- `noopZone`: The event handler always runs outside of the `angular zone`, so it does not trigger the change detection automatically.
+
+Consider this example:
+
+<code-example path="event-binding/src/app/app.component.html" region="event-binding-5" header="src/app/app.component.html"></code-example>
+
 ## Custom events with `EventEmitter`
 
 Directives typically raise custom events with an Angular [EventEmitter](api/core/EventEmitter).

@@ -8,7 +8,7 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, NgZone} from '@angular/core';
-import {EventManagerPlugin} from './event_manager';
+import {EventManagerPlugin, EventManagerPluginOptions} from './event_manager';
 
 /**
  * Defines supported modifiers for key events.
@@ -100,14 +100,16 @@ export class KeyEventsPlugin extends EventManagerPlugin {
    * event object as an argument.
    * @returns The key event that was registered.
    */
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  addEventListener(
+      element: HTMLElement, eventName: string, handler: Function,
+      options?: EventManagerPluginOptions): Function {
     const parsedEvent = KeyEventsPlugin.parseEventName(eventName)!;
 
     const outsideHandler =
         KeyEventsPlugin.eventCallback(parsedEvent['fullKey'], handler, this.manager.getZone());
 
     return this.manager.getZone().runOutsideAngular(() => {
-      return getDOM().onAndCancel(element, parsedEvent['domEventName'], outsideHandler);
+      return getDOM().onAndCancel(element, parsedEvent['domEventName'], outsideHandler, options);
     });
   }
 

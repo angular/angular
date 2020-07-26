@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
 
-import {EventManagerPlugin} from './event_manager';
+import {EventManagerPlugin, EventManagerPluginOptions} from './event_manager';
+import {onAndCancelWithZone} from './zone_event_util';
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
@@ -23,12 +24,10 @@ export class DomEventsPlugin extends EventManagerPlugin {
     return true;
   }
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    element.addEventListener(eventName, handler as EventListener, false);
-    return () => this.removeEventListener(element, eventName, handler as EventListener);
-  }
-
-  removeEventListener(target: any, eventName: string, callback: Function): void {
-    return target.removeEventListener(eventName, callback as EventListener);
+  addEventListener(
+      element: HTMLElement, eventName: string, handler: Function,
+      options?: EventManagerPluginOptions): Function {
+    return onAndCancelWithZone(
+        element, eventName, handler as EventListener, this.manager.getZone(), options);
   }
 }

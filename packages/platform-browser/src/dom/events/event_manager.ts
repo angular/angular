@@ -47,7 +47,9 @@ export class EventManager {
    */
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const plugin = this._findPluginFor(eventName);
-    return plugin.addEventListener(element, eventName, handler);
+    const eventNameWithOptions = this._splitEventNameAndOptions(eventName);
+    return plugin.addEventListener(
+        element, eventNameWithOptions.eventName, handler, eventNameWithOptions.options);
   }
 
   /**
@@ -61,7 +63,9 @@ export class EventManager {
    */
   addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
     const plugin = this._findPluginFor(eventName);
-    return plugin.addGlobalEventListener(target, eventName, handler);
+    const eventNameWithOptions = this._splitEventNameAndOptions(eventName);
+    return plugin.addGlobalEventListener(
+        target, eventNameWithOptions.eventName, handler, eventNameWithOptions.options);
   }
 
   /**
@@ -88,6 +92,60 @@ export class EventManager {
     }
     throw new Error(`No event manager plugin found for event ${eventName}`);
   }
+
+  /** @internal */
+  _splitEventNameAndOptions(eventName: string):
+      {eventName: string, options?: EventManagerPluginOptions} {
+    const parts: string[] = eventName.split('.');
+    let domEventName = parts.shift();
+    const r: {eventName: string, options?: EventManagerPluginOptions} = {eventName: domEventName!};
+    parts.forEach(p => {
+      const pLower = p.toLowerCase();
+      if (!r.options &&
+          (pLower === 'capture' || pLower === 'once' || pLower === 'passive' ||
+           pLower === 'ngzone' || pLower === 'noopzone')) {
+        r.options = {};
+      }
+      if (pLower === 'capture') {
+        r.options!.capture = true;
+      } else if (pLower === 'once') {
+        r.options!.once = true;
+      } else if (pLower === 'passive') {
+        r.options!.passive = true;
+      } else if (pLower === 'ngzone') {
+        r.options!.zone = 'ngZone';
+      } else if (pLower === 'noopzone') {
+        r.options!.zone = 'noopZone';
+      } else {
+        // combine the part with eventName
+        // since Angular supports the eventName with modifier such as `keydown.enter`.
+        r.eventName += `.${p}`;
+      }
+    });
+    return r;
+  }
+}
+
+/**
+ * Event Manager Plugin listener options.
+ * The options includes the following keys.
+ *
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener}
+ * 1. capture: indicate `capture` option of `addEventListener`, default is `false`.
+ * 2. once: indicate `once` option of `addEventListener`, default is `false`.
+ * 3. passive: indicate `passive` option of `addEventListener`, default is `false`.
+ * 4. zone: a string indicating the Zone that the event handler want to run into, by default, the
+ * event handler will run into the Zone when the handler is registered. The available options are
+ *    - ngZone: force the event handler run into angular zone.
+ *    - noop: force the event handler run outside of angular zone.
+ *
+ * @publicApi
+ */
+export interface EventManagerPluginOptions {
+  capture?: boolean;
+  once?: boolean;
+  passive?: boolean;
+  zone?: 'ngZone'|'noopZone';
 }
 
 export abstract class EventManagerPlugin {
@@ -98,13 +156,17 @@ export abstract class EventManagerPlugin {
 
   abstract supports(eventName: string): boolean;
 
-  abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+  abstract addEventListener(
+      element: HTMLElement, eventName: string, handler: Function,
+      options?: EventManagerPluginOptions): Function;
 
-  addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
+  addGlobalEventListener(
+      element: string, eventName: string, handler: Function,
+      options?: EventManagerPluginOptions): Function {
     const target: HTMLElement = getDOM().getGlobalEventTarget(this._doc, element);
     if (!target) {
       throw new Error(`Unsupported event target ${target} for event ${eventName}`);
     }
-    return this.addEventListener(target, eventName, handler);
+    return this.addEventListener(target, eventName, handler, options);
   }
 }

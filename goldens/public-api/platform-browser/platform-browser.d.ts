@@ -36,6 +36,13 @@ export declare class EventManager {
     getZone(): NgZone;
 }
 
+export declare interface EventManagerPluginOptions {
+    capture?: boolean;
+    once?: boolean;
+    passive?: boolean;
+    zone?: 'ngZone' | 'noopZone';
+}
+
 export declare const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 
 export declare const HAMMER_LOADER: InjectionToken<HammerLoader>;
@@ -89,6 +96,8 @@ export declare type MetaDefinition = {
 } & {
     [prop: string]: string;
 };
+
+export declare function onAndCancelWithZone(element: any, eventName: string, handler: EventListener, ngZone: NgZone, options?: EventManagerPluginOptions): Function;
 
 export declare const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
 

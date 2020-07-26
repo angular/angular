@@ -52,7 +52,8 @@ export abstract class DomAdapter {
   abstract isShadowRoot(node: any): boolean;
 
   // Used by KeyEventsPlugin
-  abstract onAndCancel(el: any, evt: any, listener: any): Function;
+  abstract onAndCancel(el: any, evt: any, listener: any, options?: AddEventListenerOptions):
+      Function;
   abstract supportsDOMEvents(): boolean;
 
   // Used by PlatformLocation and ServerEventManagerPlugin
