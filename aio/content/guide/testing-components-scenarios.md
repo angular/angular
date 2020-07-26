@@ -779,7 +779,7 @@ which reports router activity, is a _hot_ observable.
 
 RxJS marble testing is a rich subject, beyond the scope of this guide.
 Learn about it on the web, starting with the
-[official documentation](https://github.com/ReactiveX/rxjs/blob/master/doc/writing-marble-tests.md).
+[official documentation](https://rxjs.dev/guide/testing/marble-testing).
 
 <hr>
 
