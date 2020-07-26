@@ -51,3 +51,13 @@ La terminologia que estamos usando la podras encontrar aqui:
 
 https://github.com/angular-hispano/angular/issues/9
 -->
+
+## Enlaza la PR con el issue correspondiente
+<!--
+Cuando abres un PR, en el lado derecho te da la opción enlazar un PR con una issue.
+Enlaza la PR con el issue correspondiente.
+
+Maca con una X si la PR ya la enlazaste con el issue correspondiente
+-->
+- [ ] PR enlazada con el issue correspondiente
+<!--
