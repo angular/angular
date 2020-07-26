@@ -10,7 +10,7 @@
 </tr>
 <tr>
 <td><code><b>platformBrowserDynamic().bootstrapModule</b>(AppModule);</code></td>
-<td><p>Bootstraps the app, using the root component from the specified <code>NgModule</code>. </p>
+<td><p>Empaqueta la app, usando el componente raíz del <code>NgModule</code> especificado.</p>
 </td>
 </tr>
 </tbody></table>
@@ -24,370 +24,372 @@
 </tr>
 <tr>
 <td><code>@<b>NgModule</b>({ declarations: ..., imports: ...,<br>     exports: ..., providers: ..., bootstrap: ...})<br>class MyModule {}</code></td>
-<td><p>Defines a module that contains components, directives, pipes, and providers.</p>
+<td><p>Define un módulo que contiene componentes, directivas, tuberías y proveedores.</p>
 </td>
 </tr><tr>
 <td><code><b>declarations:</b> [MyRedComponent, MyBlueComponent, MyDatePipe]</code></td>
-<td><p>List of components, directives, and pipes that belong to this module.</p>
+<td><p>Lista de componentes, directivas y tuberías que pertenecen a este módulo.</p>
 </td>
 </tr><tr>
 <td><code><b>imports:</b> [BrowserModule, SomeOtherModule]</code></td>
-<td><p>List of modules to import into this module. Everything from the imported modules
-is available to <code>declarations</code> of this module.</p>
+<td><p>Lista de módulos para importar en este módulo. Todo, desde los módulos importados,
+está disponible para las declaraciones (<code>declarations</code>) de este módulo.
 </td>
 </tr><tr>
 <td><code><b>exports:</b> [MyRedComponent, MyDatePipe]</code></td>
-<td><p>List of components, directives, and pipes visible to modules that import this module.</p>
+<td><p>Lista de componentes, directivas y tuberías visibles a los módulos que importan este módulo.</p>
 </td>
 </tr><tr>
 <td><code><b>providers:</b> [MyService, { provide: ... }]</code></td>
-<td><p>List of dependency injection providers visible both to the contents of this module and to importers of this module.</p>
+<td><p>Lista de proveedores de inyección de dependencias visibles tanto para los contenidos de este módulo como para los importadores de este módulo.</p>
 </td>
 </tr><tr>
 <td><code><b>entryComponents:</b> [SomeComponent, OtherComponent]</code></td>
-<td><p>List of components not referenced in any reachable template, for example dynamically created from code.</p></td>
+<td><p>Lista de componentes no referenciados en cualquier plantilla accesible, por ejemplo, creada dinámicamente a partir de código.</p></td>
 </tr><tr>
 <td><code><b>bootstrap:</b> [MyAppComponent]</code></td>
-<td><p>List of components to bootstrap when this module is bootstrapped.</p>
+<td><p>Lista de componentes a empaquetar cuando este módulo se inicia.</p>
 </td>
 </tr>
 </tbody></table>
 
 <table class="is-full-width is-fixed-layout">
 <tbody><tr>
-<th>Template syntax</th>
+<th>Sintaxis de plantilla</th>
 <th></th>
 </tr>
 <tr>
 <td><code>&lt;input <b>[value]</b>="firstName"&gt;</code></td>
-<td><p>Binds property <code>value</code> to the result of expression <code>firstName</code>.</p>
+<td><p>Vincula la propiedad <code>value</code> al resultado de la expresión <code>firstName</code>.</p>
 </td>
 </tr><tr>
 <td><code>&lt;div <b>[attr.role]</b>="myAriaRole"&gt;</code></td>
-<td><p>Binds attribute <code>role</code> to the result of expression <code>myAriaRole</code>.</p>
+<td><p>Vincula el atributo <code>role</code> al resultado de la expresión <code>myAriaRole</code>.</p>
 </td>
 </tr><tr>
 <td><code>&lt;div <b>[class.extra-sparkle]</b>="isDelightful"&gt;</code></td>
-<td><p>Binds the presence of the CSS class <code>extra-sparkle</code> on the element to the truthiness of the expression <code>isDelightful</code>.</p>
+<td><p>Vincula la presencia de la clase CSS <code>extra-sparkle</code> sobre el elemento a la veracidad de la expresión <code>isDelightful</code>.</p>
 </td>
 </tr><tr>
 <td><code>&lt;div <b>[style.width.px]</b>="mySize"&gt;</code></td>
-<td><p>Binds style property <code>width</code> to the result of expression <code>mySize</code> in pixels. Units are optional.</p>
+<td><p>Vincula la propiedad de estilo <code>width</code> al resultado de la expresión <code>mySize</code> en píxeles. La unidad de medida es opcional.</p>
 </td>
 </tr><tr>
 <td><code>&lt;button <b>(click)</b>="readRainbow($event)"&gt;</code></td>
-<td><p>Calls method <code>readRainbow</code> when a click event is triggered on this button element (or its children) and passes in the event object.</p>
+<td><p>Llama al método <code>readRainbow</code> cuando se lanza un evento clic en este elemento botón (o sus hijos) y pasa por argumento el objeto evento.</p>
 </td>
 </tr><tr>
-<td><code>&lt;div title="Hello <b>{{ponyName}}</b>"&gt;</code></td>
+<td><code>&lt;div title="Hola <b>{{ponyName}}</b>"&gt;</code></td>
+<td><p>Vincula una propiedad a una cadena interpolada, por ejemplo, "Hola Seabiscuit". Equivalente a:
 <td><p>Binds a property to an interpolated string, for example, "Hello Seabiscuit". Equivalent to:
-<code>&lt;div [title]="'Hello ' + ponyName"&gt;</code></p>
+<code>&lt;div [title]="'Hola ' + ponyName"&gt;</code></p>
 </td>
 </tr><tr>
-<td><code>&lt;p&gt;Hello <b>{{ponyName}}</b>&lt;/p&gt;</code></td>
-<td><p>Binds text content to an interpolated string, for example, "Hello Seabiscuit".</p>
+<td><code>&lt;p&gt;Hola <b>{{ponyName}}</b>&lt;/p&gt;</code></td>
+<td><p>Vincula el contenido de texto a una cadena interpolada, por ejemplo, "Hola Seabiscuit".</p>
 </td>
 </tr><tr>
 <td><code>&lt;my-cmp <b>[(title)]</b>="name"&gt;</code></td>
-<td><p>Sets up two-way data binding. Equivalent to: <code>&lt;my-cmp [title]="name" (titleChange)="name=$event"&gt;</code></p>
+<td><p>Establece el two-way data binding. Equivalente a: <code>&lt;my-cmp [title]="name" (titleChange)="name=$event"&gt;</code></p>
 </td>
 </tr><tr>
 <td><code>&lt;video <b>#movieplayer</b> ...&gt;<br>  &lt;button <b>(click)</b>="movieplayer.play()"&gt;<br>&lt;/video&gt;</code></td>
-<td><p>Creates a local variable <code>movieplayer</code> that provides access to the <code>video</code> element instance in data-binding and event-binding expressions in the current template.</p>
+<td><p>Crea una variable local <code>movieplayer</code> que provee acceso a la instancia del elemento <code>video</code> en las expresiones de data-binding y event-binding de la actual plantilla.</p>
 </td>
 </tr><tr>
 <td><code>&lt;p <b>*myUnless</b>="myExpression"&gt;...&lt;/p&gt;</code></td>
-<td><p>The <code>*</code> symbol turns the current element into an embedded template. Equivalent to:
+<td><p>El símbolo <code>*</code> convierte el elemento actual en una plantilla incrustada. Equivalente a:
 <code>&lt;ng-template [myUnless]="myExpression"&gt;&lt;p&gt;...&lt;/p&gt;&lt;/ng-template&gt;</code></p>
 </td>
 </tr><tr>
 <td><code>&lt;p&gt;Card No.: <b>{{cardNumber | myCardNumberFormatter}}</b>&lt;/p&gt;</code></td>
-<td><p>Transforms the current value of expression <code>cardNumber</code> via the pipe called <code>myCardNumberFormatter</code>.</p>
+<td><p>Transforma el valor actual de la expresión <code>cardNumber</code> a través de la tubería <code>myCardNumberFormatter</code>.</p>
 </td>
 </tr><tr>
 <td><code>&lt;p&gt;Employer: <b>{{employer?.companyName}}</b>&lt;/p&gt;</code></td>
-<td><p>The safe navigation operator (<code>?</code>) means that the <code>employer</code> field is optional and if <code>undefined</code>, the rest of the expression should be ignored.</p>
+<td><p>El operador de navegación seguro (<code>?</code>) significa que el campo <code>employer</code> es opcional y que si es <code>undefined</code>, el resto de la expresión debería ser ignorado.</p>
 </td>
 </tr><tr>
 <td><code>&lt;<b>svg:</b>rect x="0" y="0" width="100" height="100"/&gt;</code></td>
-<td><p>An SVG snippet template needs an <code>svg:</code> prefix on its root element to disambiguate the SVG element from an HTML component.</p>
+<td><p>Una plantilla de fragmento SVG necesita un prefijo <code>svg:</code> en su elemento raíz para distinguir el elemento SVG de un componente HTML.</p>
 </td>
 </tr><tr>
 <td><code>&lt;<b>svg</b>&gt;<br>  &lt;rect x="0" y="0" width="100" height="100"/&gt;<br>&lt;/<b>svg</b>&gt;</code></td>
-<td><p>An <code>&lt;svg&gt;</code> root element is detected as an SVG element automatically, without the prefix.</p>
+<td><p>Un elemento raíz <code>&lt;svg&gt;</code> es detectado como un elemento SVG automáticamente, sin el prefijo.</p>
 </td>
 </tr>
 </tbody></table>
 
 <table class="is-full-width is-fixed-layout">
 <tbody><tr>
-<th>Built-in directives</th>
+<th>Directivas incorporadas</th>
 <th><p><code>import { CommonModule } from '@angular/common';</code>
 </p>
 </th>
 </tr>
 <tr>
 <td><code>&lt;section <b>*ngIf</b>="showSection"&gt;</code></td>
-<td><p>Removes or recreates a portion of the DOM tree based on the <code>showSection</code> expression.</p>
+<td><p>Elimina o recrea una parte del árbol DOM basado en la expresión <code>showSection</code>.</p>
 </td>
 </tr><tr>
 <td><code>&lt;li <b>*ngFor</b>="let item of list"&gt;</code></td>
-<td><p>Turns the li element and its contents into a template, and uses that to instantiate a view for each item in list.</p>
+<td><p>Convierte el elemento li y su contenido en una plantilla, y lo utiliza para crear una vista por cada elemento de la lista.</p>
 </td>
 </tr><tr>
 <td><code>&lt;div <b>[ngSwitch]</b>="conditionExpression"&gt;<br>  &lt;ng-template <b>[<b>ngSwitchCase</b>]</b>="case1Exp"&gt;...&lt;/ng-template&gt;<br>  &lt;ng-template <b>ngSwitchCase</b>="case2LiteralString"&gt;...&lt;/ng-template&gt;<br>  &lt;ng-template <b>ngSwitchDefault</b>&gt;...&lt;/ng-template&gt;<br>&lt;/div&gt;</code></td>
-<td><p>Conditionally swaps the contents of the div by selecting one of the embedded templates based on the current value of <code>conditionExpression</code>.</p>
+<td><p>Intercambia condicionalmente el contenido del div seleccionando una de las plantillas incrustadas en función del valor actual de <code>conditionExpression</code>.</p>
 </td>
 </tr><tr>
 <td><code>&lt;div <b>[ngClass]</b>="{'active': isActive, 'disabled': isDisabled}"&gt;</code></td>
-<td><p>Binds the presence of CSS classes on the element to the truthiness of the associated map values. The right-hand expression should return {class-name: true/false} map.</p>
+<td><p>Vincula la presencia de clases CSS en el elemento a la veracidad de los valores de mapa asociados. La expresión de la derecha debería devolver el mapa {class-name: true/false}.</p>
 </td>
 </tr>
 <tr>
 <td><code>&lt;div <b>[ngStyle]</b>="{'property': 'value'}"&gt;</code><br><code>&lt;div <b>[ngStyle]</b>="dynamicStyles()"&gt;</code></td>
-<td><p>Allows you to assign styles to an HTML element using CSS. You can use CSS directly, as in the first example, or you can call a method from the component.</p>
+<td><p>Le permite asignar estilos a un elemento HTML usando CSS. Puede usar CSS directamente, como en el primer ejemplo, o puede llamar a un método desde el componente.</p>
 </td>
 </tr>
 </tbody></table>
 
 <table class="is-full-width is-fixed-layout">
 <tbody><tr>
-<th>Forms</th>
+<th>Formularios</th>
 <th><p><code>import { FormsModule } from '@angular/forms';</code>
 </p>
 </th>
 </tr>
 <tr>
 <td><code>&lt;input <b>[(ngModel)]</b>="userName"&gt;</code></td>
-<td><p>Provides two-way data-binding, parsing, and validation for form controls.</p>
+<td><p>Provee two-way data-binding, conversión y validación para controles de formulario.</p>
 </td>
 </tr>
 </tbody></table>
 
 <table class="is-full-width is-fixed-layout">
 <tbody><tr>
-<th>Class decorators</th>
+<th>Decoradores de clases</th>
 <th><p><code>import { Directive, ... } from '@angular/core';</code>
 </p>
 </th>
 </tr>
 <tr>
 <td><code><b>@Component({...})</b><br>class MyComponent() {}</code></td>
-<td><p>Declares that a class is a component and provides metadata about the component.</p>
+<td><p>Declara que una clase es un componente y proporciona metadatos sobre el componente.</p>
 </td>
 </tr><tr>
 <td><code><b>@Directive({...})</b><br>class MyDirective() {}</code></td>
-<td><p>Declares that a class is a directive and provides metadata about the directive.</p>
+<td><p>Declara que una clase es una directiva y proporciona metadatos sobre la directiva.</p>
 </td>
 </tr><tr>
 <td><code><b>@Pipe({...})</b><br>class MyPipe() {}</code></td>
-<td><p>Declares that a class is a pipe and provides metadata about the pipe.</p>
+<td><p>Declara que una clase es una tubería and y proporciona metadatos sobre la tubería.</p>
 </td>
 </tr><tr>
 <td><code><b>@Injectable()</b><br>class MyService() {}</code></td>
-<td><p>Declares that a class can be provided and injected by other classes. Without this decorator, the compiler won't generate enough metadata to allow the class to be created properly when it's injected somewhere.</p>
+<td><p>Declara que una clase puede ser proporcionada e inyectada por otras clases. Sin este decorador, el compilador no generará suficientes metadatos para permitir que la clase se cree correctamente cuando se inyecta en alguna parte.</p>
 </td>
 </tr>
 </tbody></table>
 
 <table class="is-full-width is-fixed-layout">
 <tbody><tr>
-<th>Directive configuration</th>
+<th>Configuración de Directiva</th>
 <th><p><code>@Directive({ property1: value1, ... })</code>
 </p>
 </th>
 </tr>
 <tr>
 <td><code><b>selector:</b> '.cool-button:not(a)'</code></td>
-<td><p>Specifies a CSS selector that identifies this directive within a template. Supported selectors include <code>element</code>,
+<td><p>Especifica un selector CSS que identifica esta directiva dentro de una plantilla. Los selectores compatibles incluyen <code>element</code>,
 <code>[attribute]</code>, <code>.class</code>, and <code>:not()</code>.</p>
-<p>Does not support parent-child relationship selectors.</p>
+<p>No soporta selectores de relación padre-hijo.</p>
 </td>
 </tr><tr>
 <td><code><b>providers:</b> [MyService, { provide: ... }]</code></td>
-<td><p>List of dependency injection providers for this directive and its children.</p>
+<td><p>Lista de proveedores de inyección de dependencia para esta directiva y sus hijos.</p>
 </td>
 </tr>
 </tbody></table>
 
 <table class="is-full-width is-fixed-layout">
 <tbody><tr>
-<th>Component configuration</th>
+<th>Configuración de Componente</th>
 <th><p>
-<code>@Component</code> extends <code>@Directive</code>,
-so the <code>@Directive</code> configuration applies to components as well</p>
+<code>@Component</code> extiende <code>@Directive</code>,
+entonces la configuración de <code>@Directive</code> se aplica también a los componentes</p>
 </th>
 </tr>
 <tr>
 <td><code><b>moduleId:</b> module.id</code></td>
-<td><p>If set, the <code>templateUrl</code> and <code>styleUrl</code> are resolved relative to the component.</p>
+<td><p>Si está presente, el <code>templateUrl</code> y <code>styleUrl</code> se resuelven en relación con el componente.</p>
 </td>
 </tr><tr>
 <td><code><b>viewProviders:</b> [MyService, { provide: ... }]</code></td>
-<td><p>List of dependency injection providers scoped to this component's view.</p>
+<td><p>Lista de proveedores de inyección de dependencias en la vista de este componente.</p>
 </td>
 </tr><tr>
-<td><code><b>template:</b> 'Hello {{name}}'<br><b>templateUrl:</b> 'my-component.html'</code></td>
-<td><p>Inline template or external template URL of the component's view.</p>
+<td><code><b>template:</b> 'Hola {{name}}'<br><b>templateUrl:</b> 'my-component.html'</code></td>
+<td><p>Plantilla en línea o URL de plantilla externa de la vista del componente.</p>
 </td>
 </tr><tr>
 <td><code><b>styles:</b> ['.primary {color: red}']<br><b>styleUrls:</b> ['my-component.css']</code></td>
-<td><p>List of inline CSS styles or external stylesheet URLs for styling the component’s view.</p>
+<td><p>Lista de estilos CSS en línea o URL de hojas de estilo externas para estilar la vista del componente.</p>
 </td>
 </tr>
 </tbody></table>
 
 <table class="is-full-width is-fixed-layout">
 <tbody><tr>
-<th>Class field decorators for directives and components</th>
+<th>Decoradores para los campos de la clase para directivas y componentes.</th>
 <th><p><code>import { Input, ... } from '@angular/core';</code>
 </p>
 </th>
 </tr>
 <tr>
 <td><code><b>@Input()</b> myProperty;</code></td>
-<td><p>Declares an input property that you can update via property binding (example:
+<td><p>Declara una propiedad de entrada (input) que puede actualizar mediante el enlace de propiedad (property binding) (ejemplo:
 <code>&lt;my-cmp [myProperty]="someExpression"&gt;</code>).</p>
 </td>
 </tr><tr>
 <td><code><b>@Output()</b> myEvent = new EventEmitter();</code></td>
-<td><p>Declares an output property that fires events that you can subscribe to with an event binding (example: <code>&lt;my-cmp (myEvent)="doSomething()"&gt;</code>).</p>
+<td><p>Declara una propiedad de salida (output) que dispara eventos a los que puede suscribirse con un enlace de evento (event binding) (ejemplo: <code>&lt;my-cmp (myEvent)="doSomething()"&gt;</code>).</p>
 </td>
 </tr><tr>
 <td><code><b>@HostBinding('class.valid')</b> isValid;</code></td>
-<td><p>Binds a host element property (here, the CSS class <code>valid</code>) to a directive/component property (<code>isValid</code>).</p>
+<td><p>Vincula una propiedad del elemento anfitrión (aquí, la clase CSS <code>valid</code>) a una propiedad de directiva/componente (<code>isValid</code>).</p>
 </td>
 </tr><tr>
 <td><code><b>@HostListener('click', ['$event'])</b> onClick(e) {...}</code></td>
-<td><p>Subscribes to a host element event (<code>click</code>) with a directive/component method (<code>onClick</code>), optionally passing an argument (<code>$event</code>).</p>
+<td><p>Se suscribe a un evento del elemento anfitrión (<code>click</code>) con un método de directiva/componente (<code>onClick</code>), opcionalmente, pasando un argumento (<code>$event</code>).</p>
 </td>
 </tr><tr>
 <td><code><b>@ContentChild(myPredicate)</b> myChildComponent;</code></td>
-<td><p>Binds the first result of the component content query (<code>myPredicate</code>) to a property (<code>myChildComponent</code>) of the class.</p>
+<td><p>Vincula el primer resultado de la consulta de contenido del componente (<code>myPredicate</code>) a una propiedad (<code>myChildComponent</code>) de la clase.</p>
 </td>
 </tr><tr>
 <td><code><b>@ContentChildren(myPredicate)</b> myChildComponents;</code></td>
-<td><p>Binds the results of the component content query (<code>myPredicate</code>) to a property (<code>myChildComponents</code>) of the class.</p>
+<td><p>Vincula los resultados de la consulta de contenido del componente (<code>myPredicate</code>) a una propiedad (<code>myChildComponents</code>) de la clase.</p>
 </td>
 </tr><tr>
 <td><code><b>@ViewChild(myPredicate)</b> myChildComponent;</code></td>
-<td><p>Binds the first result of the component view query (<code>myPredicate</code>) to a property (<code>myChildComponent</code>) of the class. Not available for directives.</p>
+<td><p>Vincula el primer resultado de la consulta de vista del componente (<code>myPredicate</code>) a una propiedad (<code>myChildComponent</code>) de la clase. No disponible para directivas.</p>
 </td>
 </tr><tr>
 <td><code><b>@ViewChildren(myPredicate)</b> myChildComponents;</code></td>
-<td><p>Binds the results of the component view query (<code>myPredicate</code>) to a property (<code>myChildComponents</code>) of the class. Not available for directives.</p>
+<td><p>Vincula los resultados de la consulta de vista del componente (<code>myPredicate</code>) a una propiedad (<code>myChildComponents</code>) de la clase. No disponible para directivas.</p>
 </td>
 </tr>
 </tbody></table>
 
 <table class="is-full-width is-fixed-layout">
 <tbody><tr>
-<th>Directive and component change detection and lifecycle hooks</th>
-<th><p>(implemented as class methods)
+
+<th>Detección de cambios (change detection) y ciclos de vida (lifecycle hooks) en directivas y componentes</th>
+<th><p>(implementado como métodos de clase)
 </p>
 </th>
 </tr>
 <tr>
 <td><code><b>constructor(myService: MyService, ...)</b> { ... }</code></td>
-<td><p>Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.</p>
+<td><p>Se llama antes que cualquier ciclo de vida. Úselo para inyectar dependencias, pero evite cualquier trabajo serio aquí.</p>
 </td>
 </tr><tr>
 <td><code><b>ngOnChanges(changeRecord)</b> { ... }</code></td>
-<td><p>Called after every change to input properties and before processing content or child views.</p>
+<td><p>Se llama después de cada cambio en las propiedades de entrada (input) y antes de procesar contenido o vistas de hijos.</p>
 </td>
 </tr><tr>
 <td><code><b>ngOnInit()</b> { ... }</code></td>
-<td><p>Called after the constructor, initializing input properties, and the first call to <code>ngOnChanges</code>.</p>
+<td><p>Se llama después del constructor, inicializando propiedades de entrada (input), y la primera llamada a <code>ngOnChanges</code>.</p>
 </td>
 </tr><tr>
 <td><code><b>ngDoCheck()</b> { ... }</code></td>
-<td><p>Called every time that the input properties of a component or a directive are checked. Use it to extend change detection by performing a custom check.</p>
+<td><p>Se llama cada vez que se verifican las propiedades de entrada (input) de un componente o una directiva. Úselo para extender la detección de cambios (change detection) realizando una verificación personalizada.</p>
 </td>
 </tr><tr>
 <td><code><b>ngAfterContentInit()</b> { ... }</code></td>
-<td><p>Called after <code>ngOnInit</code> when the component's or directive's content has been initialized.</p>
+<td><p>Se llama después de <code>ngOnInit</code> cuando el contenido del componente o directiva ha sido inicializado.</p>
 </td>
 </tr><tr>
 <td><code><b>ngAfterContentChecked()</b> { ... }</code></td>
-<td><p>Called after every check of the component's or directive's content.</p>
+<td><p>Se llama después de cada verificación del contenido del componente o directiva.</p>
 </td>
 </tr><tr>
 <td><code><b>ngAfterViewInit()</b> { ... }</code></td>
-<td><p>Called after <code>ngAfterContentInit</code> when the component's views and child views / the view that a directive is in has been initialized.</p>
+<td><p>Se llama después de <code>ngAfterContentInit</code> cuando las vistas del componente y las vistas hijas / la vista en la que se encuentra una directiva ha sido inicializado.</p>
 </td>
 </tr><tr>
 <td><code><b>ngAfterViewChecked()</b> { ... }</code></td>
-<td><p>Called after every check of the component's views and child views / the view that a directive is in.</p>
+<td><p>Se llama después de cada verificación de las vistas del componentes y las vistas hijas / la vista en la que se encuentra una directiva.</p>
 </td>
 </tr><tr>
 <td><code><b>ngOnDestroy()</b> { ... }</code></td>
-<td><p>Called once, before the instance is destroyed.</p>
+<td><p>Se llama una vez, antes de que la instancia se destruya.</p>
 </td>
 </tr>
 </tbody></table>
 
 <table class="is-full-width is-fixed-layout">
 <tbody><tr>
-<th>Dependency injection configuration</th>
+<th>Configuración de inyección de dependencia</th>
 <th></th>
 </tr>
 <tr>
 <td><code>{ <b>provide</b>: MyService, <b>useClass</b>: MyMockService }</code></td>
-<td><p>Sets or overrides the provider for <code>MyService</code> to the <code>MyMockService</code> class.</p>
+<td><p>Establece o sobre-escribe el proveedor para <code>MyService</code> en la clase <code>MyMockService</code>.</p>
 </td>
 </tr><tr>
 <td><code>{ <b>provide</b>: MyService, <b>useFactory</b>: myFactory }</code></td>
-<td><p>Sets or overrides the provider for <code>MyService</code> to the <code>myFactory</code> factory function.</p>
+<td><p>Establece o sobre-escribe el proveedor para <code>MyService</code> en la factoría de función <code>myFactory</code>.</p>
 </td>
 </tr><tr>
 <td><code>{ <b>provide</b>: MyValue, <b>useValue</b>: 41 }</code></td>
-<td><p>Sets or overrides the provider for <code>MyValue</code> to the value <code>41</code>.</p>
+<td><p>Establece o sobre-escribe el proveedor para <code>MyValue</code> al valor <code>41</code>.</p>
 </td>
 </tr>
 </tbody></table>
 
 <table class="is-full-width is-fixed-layout">
 <tbody><tr>
-<th>Routing and navigation</th>
+<th>Enrutamiento y navegación</th>
 <th><p><code>import { Routes, RouterModule, ... } from '@angular/router';</code>
 </p>
 </th>
 </tr>
 <tr>
 <td><code>const routes: <b>Routes</b> = [<br>  { path: '', component: HomeComponent },<br>  { path: 'path/:routeParam', component: MyComponent },<br>  { path: 'staticPath', component: ... },<br>  { path: '**', component: ... },<br>  { path: 'oldPath', redirectTo: '/staticPath' },<br>  { path: ..., component: ..., data: { message: 'Custom' } }<br>]);<br><br>const routing = RouterModule.forRoot(routes);</code></td>
-<td><p>Configures routes for the application. Supports static, parameterized, redirect, and wildcard routes. Also supports custom route data and resolve.</p>
+<td><p>Configura rutas para la aplicación. Soporta rutas estáticas, parametrizadas, de redireccionamiento y comodines. También soporta datos de ruta personalizados y los resuelve.</p>
 </td>
 </tr><tr>
 <td><code><br>&lt;<b>router-outlet</b>&gt;&lt;/<b>router-outlet</b>&gt;<br>&lt;<b>router-outlet</b> name="aux"&gt;&lt;/<b>router-outlet</b>&gt;<br></code></td>
-<td><p>Marks the location to load the component of the active route.</p>
+<td><p>Marca la ubicación para cargar el componente de la ruta activa.</p>
 </td>
 </tr><tr>
 <td><code><br>&lt;a routerLink="/path"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path', routeParam ]"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path', { matrixParam: 'value' } ]"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path' ]" [queryParams]="{ page: 1 }"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path' ]" fragment="anchor"&gt;<br></code></td>
-<td><p>Creates a link to a different view based on a route instruction consisting of a route path, required and optional parameters, query parameters, and a fragment. To navigate to a root route, use the <code>/</code> prefix; for a child route, use the <code>./</code>prefix; for a sibling or parent, use the <code>../</code> prefix.</p>
+<td><p>Crea un enlace a una vista diferente basada en una instrucción de ruta que consta de un camino de de ruta, parámetros obligatorios y opcionales, parámetros de consulta y un fragmento. Para navegar a un camino de ruta, usa el prefijo <code>/</code>; para una ruta hija, usa el prefijo <code>./</code>; para un padre o hermano, usa el prefijo <code>../</code>.</p>
 </td>
 </tr><tr>
 <td><code>&lt;a [routerLink]="[ '/path' ]" routerLinkActive="active"&gt;</code></td>
-<td><p>The provided classes are added to the element when the <code>routerLink</code> becomes the current active route.</p>
+<td><p>Las clases proporcionadas se agregan al elemento cuando el <code>routerLink</code> se convierte en la ruta activa actual.</p>
 </td>
 </tr><tr>
 <td><code>class <b>CanActivate</b>Guard implements <b>CanActivate</b> {<br>    canActivate(<br>      route: ActivatedRouteSnapshot,<br>      state: RouterStateSnapshot<br>    ): Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canActivate: [<b>CanActivate</b>Guard] }</code></td>
-<td><p>An interface for defining a class that the router should call first to determine if it should activate this component. Should return a boolean|UrlTree or an Observable/Promise that resolves to a boolean|UrlTree.</p>
+<td><p>Una interfaz para definir una clase que el enrutador debe llamar primero para determinar si debe activar este componente. Debe devolver un boolean|UrlTree o un Observable/Promise que se resuelba en un boolean|UrlTree.</p>
 </td>
 </tr><tr>
 <td><code>class <b>CanDeactivate</b>Guard implements <b>CanDeactivate</b>&lt;T&gt; {<br>    canDeactivate(<br>      component: T,<br>      route: ActivatedRouteSnapshot,<br>      state: RouterStateSnapshot<br>    ): Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canDeactivate: [<b>CanDeactivate</b>Guard] }</code></td>
-<td><p>An interface for defining a class that the router should call first to determine if it should deactivate this component after a navigation. Should return a boolean|UrlTree or an Observable/Promise that resolves to a boolean|UrlTree.</p>
+<td><p>Una interfaz para definir una clase que el enrutador debería llamar primero para determinar si debería desactivar este componente después de una navegación. Debe devolver un boolean|UrlTree o un Observable/Promise que se resuelva a boolean|UrlTree.</p>
 </td>
 </tr><tr>
 <td><code>class <b>CanActivateChild</b>Guard implements <b>CanActivateChild</b> {<br>    canActivateChild(<br>      route: ActivatedRouteSnapshot,<br>      state: RouterStateSnapshot<br>    ): Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canActivateChild: [CanActivateGuard],<br>    children: ... }</code></td>
-<td><p>An interface for defining a class that the router should call first to determine if it should activate the child route. Should return a boolean|UrlTree or an Observable/Promise that resolves to a boolean|UrlTree.</p>
+<td><p>Una interfaz para definir una clase que el enrutador debe llamar primero para determinar si debe activar la ruta hija. Debe devolver un boolean|UrlTree o un Observable/Promise que se resuelva en un boolean|UrlTree.</p>
 </td>
 </tr><tr>
 <td><code>class <b>Resolve</b>Guard implements <b>Resolve</b>&lt;T&gt; {<br>    resolve(<br>      route: ActivatedRouteSnapshot,<br>      state: RouterStateSnapshot<br>    ): Observable&lt;any&gt;|Promise&lt;any&gt;|any { ... }<br>}<br><br>{ path: ..., resolve: [<b>Resolve</b>Guard] }</code></td>
-<td><p>An interface for defining a class that the router should call first to resolve route data before rendering the route. Should return a value or an Observable/Promise that resolves to a value.</p>
+<td><p>Una interfaz para definir una clase que el enrutador debe llamar primero para resolver los datos de la ruta antes de representar la ruta. Debe devolver un valor o un Observable/Promise que se resuelva en un valor.</p>
 </td>
 </tr><tr>
 <td><code>class <b>CanLoad</b>Guard implements <b>CanLoad</b> {<br>    canLoad(<br>      route: Route<br>    ): Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canLoad: [<b>CanLoad</b>Guard], loadChildren: ... }</code></td>
-<td><p>An interface for defining a class that the router should call first to check if the lazy loaded module should be loaded. Should return a boolean|UrlTree or an Observable/Promise that resolves to a boolean|UrlTree.</p>
+<td><p>Una interfaz para definir una clase a la que el enrutador debe llamar primero para verificar si el módulo perezoso cargado (lazy loaded module) debe cargarse. Debe devolver un boolean|UrlTree o un Observable/Promise que se resuelva en un boolean|UrlTree.</p>
 </td>
 </tr>
 </tbody></table>
