@@ -41,15 +41,15 @@ export const INJECTOR_IMPL = INJECTOR_IMPL__PRE_R3__;
  *
  * @usageNotes
  *
- *  The following example creates a service injector instance.
+ *  The following example creates an injector instance that provides a class.
  *
  * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
  *
- * ### Usage example
+ * The following shows how an injector can provide a literal value.
  *
  * {@example core/di/ts/injector_spec.ts region='Injector'}
  *
- * `Injector` returns itself when given `Injector` as a token:
+ * The following test shows that `Injector` returns itself when given `Injector` as a token:
  *
  * {@example core/di/ts/injector_spec.ts region='injectInjector'}
  *

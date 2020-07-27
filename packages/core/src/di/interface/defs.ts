@@ -153,27 +153,27 @@ export function ɵɵdefineInjectable<T>(opts: {
 }
 
 /**
- * @deprecated in v8, delete after v10. This API should be used only be generated code, and that
+ * @deprecated in v8. This API should be used only be generated code, and that
  * code should now use ɵɵdefineInjectable instead.
  * @publicApi
  */
 export const defineInjectable = ɵɵdefineInjectable;
 
 /**
- * Construct an `InjectorDef` which configures an injector.
+ * Constructs an `InjectorDef` which configures an injector.
  *
  * This should be assigned to a static injector def (`ɵinj`) field on a type, which will then be an
  * `InjectorType`.
  *
  * Options:
  *
- * * `factory`: an `InjectorType` is an instantiable type, so a zero argument `factory` function to
+ * * `factory`: An `InjectorType` is an instantiable type, so a zero argument `factory` function to
  *   create the type must be provided. If that factory function needs to inject arguments, it can
  *   use the `inject` function.
- * * `providers`: an optional array of providers to add to the injector. Each provider must
+ * * `providers`: An optional array of providers to add to the injector. Each provider must
  *   either have a factory or point to a type which has a `ɵprov` static property (the
  *   type must be an `InjectableType`).
- * * `imports`: an optional array of imports of other `InjectorType`s or `InjectorTypeWithModule`s
+ * * `imports`: An optional array of imports of other `InjectorType`s or `InjectorTypeWithModule`s
  *   whose providers will also be added to the injector. Locally provided types will override
  *   providers from imports.
  *

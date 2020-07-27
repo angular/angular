@@ -22,18 +22,17 @@ export interface ValueSansProvider {
 }
 
 /**
- * Configures the `Injector` to return a value for a token.
- * @see ["Dependency Injection Guide"](guide/dependency-injection).
+ * Configures the `Injector` to return a literal value for a token.
  *
- * @usageNotes
- *
- * ### Example
+ * The following creates an `Injector` instance that provides a string value.
  *
  * {@example core/di/ts/provider_spec.ts region='ValueProvider'}
  *
- * ### Multi-value example
+ * The following creates an `Injector` instance that provides multiple literal string values.
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @see ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @publicApi
  */
@@ -44,37 +43,36 @@ export interface ValueProvider extends ValueSansProvider {
   provide: any;
 
   /**
-   * When true, injector returns an array of instances. This is useful to allow multiple
+   * When true, the `Injector` returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
 }
 
 /**
- * Configures the `Injector` to return an instance of `useClass` for a token.
+ * Configures the `Injector` to return an instance of a given class for a token.
  * Base for `StaticClassProvider` decorator.
  *
  * @publicApi
  */
 export interface StaticClassSansProvider {
   /**
-   * An optional class to instantiate for the `token`. By default, the `provide`
+   * An optional class to instantiate for the token. By default, the `provide`
    * class is instantiated.
    */
   useClass: Type<any>;
 
   /**
-   * A list of `token`s to be resolved by the injector. The list of values is then
-   * used as arguments to the `useClass` constructor.
+   * A list of tokens to be resolved by the injector. The listed values
+   * are passed as arguments to the `useClass` constructor.
    */
   deps: any[];
 }
 
 /**
- * Configures the `Injector` to return an instance of `useClass` for a token.
- * @see ["Dependency Injection Guide"](guide/dependency-injection).
+ * Configures the `Injector` to return an instance of a given class for a token.
  *
- * @usageNotes
+ * The following creates an `Injector` instance that provides the "Square" class.
  *
  * {@example core/di/ts/provider_spec.ts region='StaticClassProvider'}
  *
@@ -82,20 +80,21 @@ export interface StaticClassSansProvider {
  *
  * {@example core/di/ts/provider_spec.ts region='StaticClassProviderDifference'}
  *
- * ### Multi-value example
+ * The following creates an `Injector` instance that provides multiple literal string values.
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
  *
+ * @see ["Dependency Injection Guide"](guide/dependency-injection).
  * @publicApi
  */
 export interface StaticClassProvider extends StaticClassSansProvider {
   /**
-   * An injection token. Typically an instance of `Type` or `InjectionToken`, but can be `any`.
+   * An injection token, typically an instance of `Type` or `InjectionToken`.
    */
   provide: any;
 
   /**
-   * When true, injector returns an array of instances. This is useful to allow multiple
+   * When true, the `Injector` returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
@@ -104,14 +103,14 @@ export interface StaticClassProvider extends StaticClassSansProvider {
 /**
  * Configures the `Injector` to return an instance of a token.
  *
- * @see ["Dependency Injection Guide"](guide/dependency-injection).
- *
- * @usageNotes
+ * The following configures a service to be provided by the injector for the NgModule "SomeModule".
  *
  * ```ts
  * @Injectable(SomeModule, {deps: []})
  * class MyService {}
  * ```
+ *
+ * @see ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @publicApi
  */
@@ -125,15 +124,15 @@ export interface ConstructorSansProvider {
 /**
  * Configures the `Injector` to return an instance of a token.
  *
- * @see ["Dependency Injection Guide"](guide/dependency-injection).
- *
- * @usageNotes
+ * The following creates an `Injector` instance that provides the "Square" class.
  *
  * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
  *
- * ### Multi-value example
+ * The following creates an `Injector` instance that provides multiple literal string values.
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @see ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @publicApi
  */
@@ -144,14 +143,14 @@ export interface ConstructorProvider extends ConstructorSansProvider {
   provide: Type<any>;
 
   /**
-   * When true, injector returns an array of instances. This is useful to allow multiple
+   * When true, the `Injector` returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
 }
 
 /**
- * Configures the `Injector` to return a value of another `useExisting` token.
+ * Configures the `Injector` to return the value of another existing token.
  *
  * @see `ExistingProvider`
  * @see ["Dependency Injection Guide"](guide/dependency-injection).
@@ -160,34 +159,35 @@ export interface ConstructorProvider extends ConstructorSansProvider {
  */
 export interface ExistingSansProvider {
   /**
-   * Existing `token` to return. (Equivalent to `injector.get(useExisting)`)
+   * Existing token to return. Equivalent to `injector.get(useExisting)`.
    */
   useExisting: any;
 }
 
 /**
- * Configures the `Injector` to return a value of another `useExisting` token.
+ * Configures the `Injector` to return a value of an existing token.
  *
- * @see ["Dependency Injection Guide"](guide/dependency-injection).
- *
- * @usageNotes
+ * The following creates an `Injector` instance that provides a child class
+ * by using the existing token for its parent class.
  *
  * {@example core/di/ts/provider_spec.ts region='ExistingProvider'}
  *
- * ### Multi-value example
+ * The following creates an `Injector` instance that provides multiple literal string values.
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @see ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @publicApi
  */
 export interface ExistingProvider extends ExistingSansProvider {
   /**
-   * An injection token. Typically an instance of `Type` or `InjectionToken`, but can be `any`.
+   * An injection token, typically an instance of `Type` or `InjectionToken`.
    */
   provide: any;
 
   /**
-   * When true, injector returns an array of instances. This is useful to allow multiple
+   * When true, the `Injector` returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
@@ -203,44 +203,45 @@ export interface ExistingProvider extends ExistingSansProvider {
  */
 export interface FactorySansProvider {
   /**
-   * A function to invoke to create a value for this `token`. The function is invoked with
-   * resolved values of `token`s in the `deps` field.
+   * A function to invoke to create a value for this token. The function is invoked with
+   * resolved values of dependency tokens provided in the `deps` field.
    */
   useFactory: Function;
 
   /**
-   * A list of `token`s to be resolved by the injector. The list of values is then
-   * used as arguments to the `useFactory` function.
+   * A set of dependency tokens to be resolved by the injector. The listed values are
+   * passed as arguments to the `useFactory()` function.
    */
   deps?: any[];
 }
 
 /**
- * Configures the `Injector` to return a value by invoking a `useFactory` function.
- * @see ["Dependency Injection Guide"](guide/dependency-injection).
+ * Configures the `Injector` to return a value by invoking a `useFactory()` function.
  *
- * @usageNotes
+ * The following creates an `Injector` instance that provides a value using a factory function.
  *
  * {@example core/di/ts/provider_spec.ts region='FactoryProvider'}
  *
- * Dependencies can also be marked as optional:
+ * The following shows how dependencies can be marked as optional.
  *
  * {@example core/di/ts/provider_spec.ts region='FactoryProviderOptionalDeps'}
  *
- * ### Multi-value example
+ * The following creates an `Injector` instance that provides multiple literal string values.
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @see ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @publicApi
  */
 export interface FactoryProvider extends FactorySansProvider {
   /**
-   * An injection token. (Typically an instance of `Type` or `InjectionToken`, but can be `any`).
+   * An injection token, typically an instance of `Type` or `InjectionToken`.
    */
   provide: any;
 
   /**
-   * When true, injector returns an array of instances. This is useful to allow multiple
+   * When true, the `Injector` returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
@@ -260,16 +261,14 @@ export type StaticProvider =
 
 
 /**
- * Configures the `Injector` to return an instance of `Type` when `Type' is used as the token.
+ * Configures the `Injector` to return an instance of a given type when that type is used as the token.
  *
  * Create an instance by invoking the `new` operator and supplying additional arguments.
- * This form is a short form of `TypeProvider`;
- *
- * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
- *
- * @usageNotes
+ * The following shows how you can use a short form of `TypeProvider`.
  *
  * {@example core/di/ts/provider_spec.ts region='TypeProvider'}
+ *
+ * @see ["Dependency Injection Guide"](guide/dependency-injection)
  *
  * @publicApi
  */
@@ -292,9 +291,8 @@ export interface ClassSansProvider {
 
 /**
  * Configures the `Injector` to return an instance of `useClass` for a token.
- * @see ["Dependency Injection Guide"](guide/dependency-injection).
  *
- * @usageNotes
+ * The following creates an `Injector` instance that provides the "Square" class.
  *
  * {@example core/di/ts/provider_spec.ts region='ClassProvider'}
  *
@@ -302,9 +300,11 @@ export interface ClassSansProvider {
  *
  * {@example core/di/ts/provider_spec.ts region='ClassProviderDifference'}
  *
- * ### Multi-value example
+ * The following creates an `Injector` instance that provides multiple literal string values.
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @see ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @publicApi
  */
@@ -315,7 +315,7 @@ export interface ClassProvider extends ClassSansProvider {
   provide: any;
 
   /**
-   * When true, injector returns an array of instances. This is useful to allow multiple
+   * When true, the `Injector` returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
