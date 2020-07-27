@@ -1160,13 +1160,6 @@ class Scope {
   }
 }
 
-type TcbGenericInput = {
-  type: 'binding'; fieldName: string; attr: TmplAstBoundAttribute | TmplAstTextAttribute
-}|{
-  type: 'unset';
-  fieldName: string
-};
-
 interface TcbBoundInput {
   attribute: TmplAstBoundAttribute|TmplAstTextAttribute;
   fieldNames: string[];
@@ -1430,7 +1423,7 @@ function getBoundInputs(
     tcb: Context): TcbBoundInput[] {
   const boundInputs: TcbBoundInput[] = [];
 
-  const propertyToFieldNames = indexInputs(directive.inputs);
+  const propertyToFieldNames = invertInputs(directive.inputs);
   const processAttribute = (attr: TmplAstBoundAttribute|TmplAstTextAttribute) => {
     // Skip non-property bindings.
     if (attr instanceof TmplAstBoundAttribute && attr.type !== BindingType.Property) {
@@ -1459,6 +1452,9 @@ function getBoundInputs(
   return boundInputs;
 }
 
+/**
+ * Translates the given attribute binding to a `ts.Expression`.
+ */
 function translateInput(
     attr: TmplAstBoundAttribute|TmplAstTextAttribute, tcb: Context, scope: Scope): ts.Expression {
   if (attr instanceof TmplAstBoundAttribute) {
@@ -1470,7 +1466,11 @@ function translateInput(
   }
 }
 
-function indexInputs(inputs: {[fieldName: string]: string|[string, string]}):
+/**
+ * Inverts the input-mapping from field-to-property name into property-to-field name, to be able
+ * to match a property in a template with the corresponding field on a directive.
+ */
+function invertInputs(inputs: {[fieldName: string]: string|[string, string]}):
     Map<string, string[]> {
   const propertyToFieldNames = new Map<string, string[]>();
   for (const fieldName of Object.keys(inputs)) {

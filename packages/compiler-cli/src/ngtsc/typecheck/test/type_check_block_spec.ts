@@ -116,7 +116,6 @@ describe('type check blocks', () => {
           fieldB: 'inputB',
         },
         isGeneric: true,
-        genericInputFields: ['fieldA', 'fieldB'],
       }];
       expect(tcb(TEMPLATE, DIRECTIVES))
           .toContain(
@@ -133,7 +132,6 @@ describe('type check blocks', () => {
           fieldA: 'inputA',
         },
         isGeneric: true,
-        genericInputFields: ['fieldA'],
       }];
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('"fieldA": (1)');
@@ -151,7 +149,6 @@ describe('type check blocks', () => {
         selector: '[dir]',
         inputs: {'color': 'color', 'strong': 'strong', 'enabled': 'enabled'},
         isGeneric: true,
-        genericInputFields: ['color', 'strong', 'enabled'],
       }];
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain(
@@ -170,7 +167,6 @@ describe('type check blocks', () => {
         exportAs: ['dir'],
         inputs: {input: 'input'},
         isGeneric: true,
-        genericInputFields: ['input'],
       }];
       expect(tcb(TEMPLATE, DIRECTIVES))
           .toContain(
@@ -191,7 +187,6 @@ describe('type check blocks', () => {
           exportAs: ['dirA'],
           inputs: {inputA: 'inputA'},
           isGeneric: true,
-          genericInputFields: ['inputA'],
         },
         {
           type: 'directive',
@@ -200,7 +195,6 @@ describe('type check blocks', () => {
           exportAs: ['dirB'],
           inputs: {inputB: 'inputB'},
           isGeneric: true,
-          genericInputFields: ['inputB'],
         }
       ];
       expect(tcb(TEMPLATE, DIRECTIVES))
@@ -218,7 +212,6 @@ describe('type check blocks', () => {
         selector: '[dir-a]',
         inputs: {inputA: 'inputA'},
         isGeneric: true,
-        genericInputFields: ['inputA'],
       }];
       expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": (undefined)');
     });
@@ -231,7 +224,6 @@ describe('type check blocks', () => {
         selector: '[dir-a]',
         inputs: {inputA: 'inputA'},
         isGeneric: true,
-        genericInputFields: ['inputA'],
       }];
       expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": (undefined)');
     });
@@ -247,7 +239,6 @@ describe('type check blocks', () => {
         },
         isGeneric: true,
         coercedInputFields: ['fieldA'],
-        genericInputFields: ['fieldA'],
       }];
       expect(tcb(TEMPLATE, DIRECTIVES))
           .toContain(
