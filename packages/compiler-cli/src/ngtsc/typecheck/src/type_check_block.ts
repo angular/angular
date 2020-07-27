@@ -415,7 +415,7 @@ class TcbDirectiveInputsOp extends TcbOp {
   execute(): null {
     const dirId = this.scope.resolve(this.node, this.dir);
 
-    // TODO: report duplicate properties
+    // TODO(joost): report duplicate properties
 
     const inputs = getBoundInputs(this.dir, this.node, this.tcb);
     for (const input of inputs) {
@@ -424,8 +424,6 @@ class TcbDirectiveInputsOp extends TcbOp {
       if (!this.tcb.env.config.checkTypeOfInputBindings) {
         // If checking the type of bindings is disabled, cast the resulting expression to 'any'
         // before the assignment.
-        // TODO: now that we're not forced to satisfy the type constructor parameter, we may also
-        //  choose to omit the assignment.
         expr = tsCastToAny(expr);
       } else if (!this.tcb.env.config.strictNullInputBindings) {
         // If strict null checks are disabled, erase `null` and `undefined` from the type by
@@ -433,32 +431,43 @@ class TcbDirectiveInputsOp extends TcbOp {
         expr = ts.createNonNullExpression(expr);
       }
 
-      const coercedInputs =
-          input.fieldNames.filter(fieldName => this.dir.coercedInputFields.has(fieldName));
-      const coercedIds = new Map<string, ts.Identifier>();
-      for (const coercedInput of coercedInputs) {
-        const id = this.tcb.allocateId();
-        coercedIds.set(coercedInput, id);
-
-        const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
-        if (!ts.isTypeReferenceNode(dirTypeRef)) {
-          throw new Error(`Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`);
-        }
-
-        const type = tsCreateTypeQueryForCoercedInput(dirTypeRef.typeName, coercedInput);
-        this.scope.addStatement(tsDeclareVariable(id, type));
-      }
-
       let assignment: ts.Expression = wrapForDiagnostics(expr);
 
       for (const fieldName of input.fieldNames) {
-        const coercedId = coercedIds.get(fieldName);
-        if (this.dir.undeclaredInputFields.has(fieldName) && coercedId === undefined) {
-          continue
+        let target: ts.LeftHandSideExpression;
+        if (this.dir.coercedInputFields.has(fieldName)) {
+          // The input has a coercion declaration which should be used instead of assigning the
+          // expression into the input field directly. To achieve this, a variable is declared
+          // with a type of `typeof Directive.ngAcceptInputType_fieldName` which is then used as
+          // target of the assignment.
+          const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
+          if (!ts.isTypeReferenceNode(dirTypeRef)) {
+            throw new Error(
+                `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`);
+          }
+
+          const id = this.tcb.allocateId();
+          const type = tsCreateTypeQueryForCoercedInput(dirTypeRef.typeName, fieldName);
+          this.scope.addStatement(tsDeclareVariable(id, type));
+
+          target = id;
+        } else if (this.dir.undeclaredInputFields.has(fieldName)) {
+          // If no coercion declaration is present nor is the field declared (i.e. the input is
+          // declared in a `@Directive` or `@Component` decorator's `inputs` property) there is no
+          // assignment target available, so this field is skipped.
+          continue;
+        } else {
+          // Otherwise, a declaration exists in which case the `dir["fieldName"]` syntax is used
+          // as assignment target. An element access is used instead of a property access to
+          // support input names that are not valid JavaScript identifiers. Additionally, using
+          // element access syntax does not produce
+          // TS2341 "Property $prop is private and only accessible within class $class." nor
+          // TS2445 "Property $prop is protected and only accessible within class $class and its
+          //         subclasses."
+          target = ts.createElementAccess(dirId, ts.createStringLiteral(fieldName));
         }
 
-        const target =
-            coercedId ?? ts.createElementAccess(dirId, ts.createStringLiteral(fieldName));
+        // Finally the assignment is extended by assigning it into the target expression.
         assignment = ts.createBinary(target, ts.SyntaxKind.EqualsToken, assignment);
       }
 

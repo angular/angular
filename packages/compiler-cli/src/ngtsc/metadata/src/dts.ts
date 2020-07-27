@@ -12,7 +12,7 @@ import {Reference} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
-import {extractDirectiveGuards, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
+import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
 
 /**
  * A `MetadataReader` that can read metadata from `.d.ts` files, which have static Ivy properties
@@ -86,7 +86,7 @@ export class DtsMetadataReader implements MetadataReader {
       inputs,
       outputs: readStringMapType(def.type.typeArguments[4]),
       queries: readStringArrayType(def.type.typeArguments[5]),
-      ...extractDirectiveGuards(clazz, inputs, this.reflector),
+      ...extractDirectiveTypeCheckMeta(clazz, inputs, this.reflector),
       baseClass: readBaseClass(clazz, this.checker, this.reflector),
     };
   }

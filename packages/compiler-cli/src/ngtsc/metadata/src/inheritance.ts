@@ -29,6 +29,7 @@ export function flattenInheritedDirectiveMetadata(
   let outputs: {[key: string]: string} = {};
   let coercedInputFields = new Set<string>();
   let undeclaredInputFields = new Set<string>();
+  let restrictedInputFields = new Set<string>();
   let isDynamic = false;
 
   const addMetadata = (meta: DirectiveMeta): void => {
@@ -52,8 +53,9 @@ export function flattenInheritedDirectiveMetadata(
     for (const undeclaredInputField of meta.undeclaredInputFields) {
       undeclaredInputFields.add(undeclaredInputField);
     }
-    // TODO: shouldn't we inherit restricted input fields? If this is a child class, it *must* have
-    // the same access modifiers on the members as the base.
+    for (const restrictedInputField of meta.restrictedInputFields) {
+      restrictedInputFields.add(restrictedInputField);
+    }
   };
 
   addMetadata(topMeta);
@@ -64,6 +66,7 @@ export function flattenInheritedDirectiveMetadata(
     outputs,
     coercedInputFields,
     undeclaredInputFields,
+    restrictedInputFields,
     baseClass: isDynamic ? 'dynamic' : null,
   };
 }

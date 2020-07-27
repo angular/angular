@@ -93,12 +93,12 @@ export function tsDeclareVariable(id: ts.Identifier, type: ts.TypeNode): ts.Vari
  * is the `coercedInputName`.
  *
  * @param typeName The `EntityName` of the Directive where the static coerced input is defined.
- * @param coercedInputName The field name of the coerced input
+ * @param coercedInputName The field name of the coerced input.
  */
 export function tsCreateTypeQueryForCoercedInput(
     typeName: ts.EntityName, coercedInputName: string): ts.TypeQueryNode {
   return ts.createTypeQueryNode(
-      ts.createQualifiedName(typeName, `ngAcceptInputType_${coercedInputName}`))
+      ts.createQualifiedName(typeName, `ngAcceptInputType_${coercedInputName}`));
 }
 
 /**
