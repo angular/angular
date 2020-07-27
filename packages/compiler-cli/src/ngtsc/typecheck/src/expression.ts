@@ -96,7 +96,9 @@ class AstTranslator implements AstVisitor {
   visitConditional(ast: Conditional): ts.Expression {
     const condExpr = this.translate(ast.condition);
     const trueExpr = this.translate(ast.trueExp);
-    const falseExpr = this.translate(ast.falseExp);
+    // Wrap `falseExpr` in parens so that the trailing parse span info is not attributed to the
+    // whole conditional.
+    const falseExpr = ts.createParen(this.translate(ast.falseExp));
     const node = ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
@@ -119,7 +121,8 @@ class AstTranslator implements AstVisitor {
     // interpolation's expressions. The chain is started using an actual string literal to ensure
     // the type is inferred as 'string'.
     return ast.expressions.reduce(
-        (lhs, ast) => ts.createBinary(lhs, ts.SyntaxKind.PlusToken, this.translate(ast)),
+        (lhs, ast) =>
+            ts.createBinary(lhs, ts.SyntaxKind.PlusToken, ts.createParen(this.translate(ast))),
         ts.createLiteral(''));
   }
 

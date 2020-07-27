@@ -126,10 +126,8 @@ export function ngForDeclaration(): TestDeclaration {
   };
 }
 
-export function ngForDts(): TestFile {
-  return {
-    name: absoluteFrom('/ngfor.d.ts'),
-    contents: `
+export function ngForDts(): TestFile&TypeCheckingTarget {
+  const contents = `
     export declare class NgForOf<T> {
       ngForOf: T[];
       ngForTrackBy: TrackByFunction<T>;
@@ -148,7 +146,14 @@ export function ngForDts(): TestFile {
       readonly even: boolean;
       readonly first: boolean;
       readonly last: boolean;
-    }`,
+    }`;
+  const name = absoluteFrom('/ngfor.d.ts');
+  return {
+    name,
+    fileName: name,
+    contents,
+    source: contents,
+    templates: {},
   };
 }
 

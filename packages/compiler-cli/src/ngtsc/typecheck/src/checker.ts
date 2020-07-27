@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, parseTemplate, TmplAstNode} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, ParseError, parseTemplate, SafePropertyRead, TmplAstNode} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
@@ -20,6 +20,7 @@ import {OptimizeFor, ProgramTypeCheckAdapter, TemplateId, TemplateTypeChecker, T
 import {InliningMode, ShimTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from './context';
 import {findTypeCheckBlock, shouldReportDiagnostic, TemplateDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
 import {TemplateSourceManager} from './source';
+import {findNodeWithAbsoluteSourceSpan} from './tcb_util';
 
 /**
  * Primary template type-checking engine, which performs type-checking using a
@@ -324,6 +325,69 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       });
     }
     return this.state.get(path)!;
+  }
+
+  getSymbolOfTemplateExpression(expression: AST, component: ts.ClassDeclaration): ts.Symbol|null {
+    if (expression instanceof ASTWithSource) {
+      return this.getSymbolOfTemplateExpression(expression.ast, component);
+    }
+    const tcb = this.getTypeCheckBlock(component);
+    if (tcb === null) {
+      return null;
+    }
+
+    let node = findNodeWithAbsoluteSourceSpan(
+        expression.sourceSpan, tcb, (n: ts.Node): n is ts.Node => true);
+    if (node === null) {
+      return null;
+    }
+
+    node = ts.isParenthesizedExpression(node) ? node.expression : node;
+    // - If we have safe property read ("a?.b") we want to get the Symbol for b, the `whenTrue`
+    // expression.
+    // - If our expression is a pipe binding ("a | test:b:c"), we want the Symbol for the
+    // `transform` on the pipe.
+    // - Otherwise, we retrieve the symbol for the node itself with no special considerations
+    if (expression instanceof SafePropertyRead && ts.isConditionalExpression(node)) {
+      return this.getSymbolForTsNode(node.whenTrue);
+    } else if (expression instanceof BindingPipe && ts.isCallExpression(node)) {
+      return this.getSymbolForTsNode(node.expression);
+    } else {
+      return this.getSymbolForTsNode(node);
+    }
+  }
+
+  private getSymbolForTsNode(node: ts.Node): ts.Symbol|null {
+    if (ts.isParenthesizedExpression(node)) {
+      return this.getSymbolForTsNode(node.expression);
+    }
+
+    const typeChecker = this.typeCheckingStrategy.getProgram().getTypeChecker();
+    let result: ts.Symbol|null;
+    if (ts.isPropertyAccessExpression(node)) {
+      result = typeChecker.getSymbolAtLocation(node.name) ?? null;
+    } else {
+      result = typeChecker.getSymbolAtLocation(node) ?? null;
+    }
+    if (result === null) {
+      return null;
+    }
+
+    const [declaration] = result.declarations;
+    // If the located Symbol's is a variable declaration, then what we located was an
+    // assignment to a temporary variable in the template. Instead of returning the Symbol for the
+    // temporary variable, we want to get the `ts.Symbol` for:
+    // - The type reference for `var _t2: MyDir = xyz` (prioritize/trust the declared type)
+    // - The initializer for `var _t2 = _t1.index`.
+    if (ts.isVariableDeclaration(declaration)) {
+      if (declaration.type && ts.isTypeReferenceNode(declaration.type)) {
+        return this.getSymbolForTsNode(declaration.type.typeName);
+      } else if (declaration.initializer) {
+        return this.getSymbolForTsNode(declaration.initializer);
+      }
+    }
+
+    return result;
   }
 }
 

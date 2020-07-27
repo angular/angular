@@ -314,7 +314,7 @@ function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|nul
 
 const parseSpanComment = /^(\d+),(\d+)$/;
 
-function readSpanComment(sourceFile: ts.SourceFile, node: ts.Node): AbsoluteSourceSpan|null {
+export function readSpanComment(sourceFile: ts.SourceFile, node: ts.Node): AbsoluteSourceSpan|null {
   return ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
     if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
       return null;

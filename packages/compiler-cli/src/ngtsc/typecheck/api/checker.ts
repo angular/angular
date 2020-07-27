@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, TmplAstNode} from '@angular/compiler';
+import {AST, ParseError, TmplAstNode} from '@angular/compiler';
 import * as ts from 'typescript';
 
 /**
@@ -69,6 +69,19 @@ export interface TemplateTypeChecker {
    * This method always runs in `OptimizeFor.SingleFile` mode.
    */
   getTypeCheckBlock(component: ts.ClassDeclaration): ts.Node|null;
+
+  /**
+   * Given a template AST expression and the component class for the template, finds and returns the
+   * `ts.Symbol` for the expression.
+   *
+   * Not all expressions will have symbols (e.g. there is no symbol associated with the expression a
+   * + b, but there are symbols for both the a and b nodes individually).
+   *
+   * When the expression is an assignment to an intermediate variable, either through a template
+   * context or a local reference, this method returns the `ts.Symbol` for the context or actual
+   * reference rather than the intermediate variable.
+   */
+  getSymbolOfTemplateExpression(expression: AST, component: ts.ClassDeclaration): ts.Symbol|null;
 }
 
 /**
