@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {tsCreateTypeQueryForCoercedInput} from '@angular/compiler-cli/src/ngtsc/typecheck/src/ts_util';
 import * as ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {TypeCtorMetadata} from '../api';
 
+import {tsCreateTypeQueryForCoercedInput} from './ts_util';
 import {TypeParameterEmitter} from './type_parameter_emitter';
 
 export function generateTypeCtorDeclarationFn(
@@ -151,8 +151,7 @@ function constructTypeCtorParameter(
           /* modifiers */ undefined,
           /* name */ key,
           /* questionToken */ undefined,
-          /* type */
-          tsCreateTypeQueryForCoercedInput(rawType.typeName, key),
+          /* type */ tsCreateTypeQueryForCoercedInput(rawType.typeName, key),
           /* initializer */ undefined));
     }
   }

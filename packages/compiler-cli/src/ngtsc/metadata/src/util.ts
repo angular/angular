@@ -79,10 +79,11 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
 }
 
 /**
- * TODO: rename to `extractDirectiveInfo` and rename the `guards` field in
- * `DirectiveHandlerData`/`ComponentAnalysisData` to a more appropriate name.
+ * Inspects the class' members and extracts the metadata that is used when type-checking templates
+ * that use the directive. This metadata does not contain information from a base class, if any,
+ * making this metadata invariant to changes of inherited classes.
  */
-export function extractDirectiveGuards(
+export function extractDirectiveTypeCheckMeta(
     node: ClassDeclaration, inputs: {[fieldName: string]: string|[string, string]},
     reflector: ReflectionHost): DirectiveTypeCheckMeta {
   const members = reflector.getMembersOfClass(node);

@@ -19,7 +19,7 @@ import {NgtscTestEnvironment} from './env';
 const testFiles = loadStandardTestFiles();
 
 runInEachFileSystem(() => {
-  fdescribe('ngtsc type checking', () => {
+  describe('ngtsc type checking', () => {
     let env!: NgtscTestEnvironment;
 
     beforeEach(() => {
@@ -169,7 +169,7 @@ export declare class AnimationEvent {
          const diags = env.driveDiagnostics();
          expect(diags.length).toBe(2);
          expect(diags[0].messageText).toEqual(`Type '"2"' is not assignable to type 'number'.`);
-         expect(diags[0].messageText).toEqual(`Type '"2"' is not assignable to type 'number'.`);
+         expect(diags[1].messageText).toEqual(`Type '"2"' is not assignable to type 'number'.`);
        });
 
     it('should support inputs and outputs with names that are not JavaScript identifiers', () => {
@@ -1520,7 +1520,7 @@ export declare class AnimationEvent {
 
             @NgModule({
               declarations: [FooCmp],
-              imports: [MatInputModule]
+              imports: [MatInputModule],
             })
             export class FooModule {}
         `);
@@ -1564,7 +1564,7 @@ export declare class AnimationEvent {
          });
     });
 
-    it('should not produce diagnostics for inputs which assign to private or protected fields',
+    it('should not produce diagnostics for correct inputs which assign to private or protected fields',
        () => {
          env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
          env.write('test.ts', `
@@ -1584,6 +1584,41 @@ export declare class AnimationEvent {
               protected protectedField!: string;
               @Input()
               private privateField!: string;
+            }
+
+            @NgModule({
+              declarations: [FooCmp, TestDir],
+            })
+            export class FooModule {}
+        `);
+         const diags = env.driveDiagnostics();
+         expect(diags.length).toBe(0);
+       });
+
+    it('should not produce diagnostics for correct inputs which assign to private or protected fields inherited from a base class',
+       () => {
+         env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+         env.write('test.ts', `
+            import {Component, NgModule, Input, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [protectedField]="value" [privateField]="value"></div>',
+            })
+            export class FooCmp {
+              value = "value";
+            }
+
+            @Directive()
+            export class BaseDir {
+              @Input()
+              protected protectedField!: string;
+              @Input()
+              private privateField!: string;
+            }
+
+            @Directive({selector: '[dir]'})
+            export class TestDir extends BaseDir {
             }
 
             @NgModule({
@@ -1624,11 +1659,100 @@ export declare class AnimationEvent {
         `);
          const diags = env.driveDiagnostics();
          expect(diags.length).toBe(2);
-         expect(diags[0].messageText)
-             .toEqual('Type \'string\' is not assignable to type \'number\'.');
-         expect(diags[1].messageText)
-             .toEqual('Type \'string\' is not assignable to type \'number\'.');
+         expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+         expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
        });
+
+    it('should not produce diagnostics for undeclared inputs', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.write('test.ts', `
+            import {Component, NgModule, Input, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [undeclared]="value"></div>',
+            })
+            export class FooCmp {
+              value = "value";
+            }
+
+            @Directive({
+              selector: '[dir]',
+              inputs: ['undeclared'],
+            })
+            export class TestDir {
+            }
+
+            @NgModule({
+              declarations: [FooCmp, TestDir],
+            })
+            export class FooModule {}
+        `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should produce diagnostics for invalid expressions when assigned into an undeclared input',
+       () => {
+         env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+         env.write('test.ts', `
+            import {Component, NgModule, Input, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [undeclared]="value"></div>',
+            })
+            export class FooCmp {
+            }
+
+            @Directive({
+              selector: '[dir]',
+              inputs: ['undeclared'],
+            })
+            export class TestDir {
+            }
+
+            @NgModule({
+              declarations: [FooCmp, TestDir],
+            })
+            export class FooModule {}
+        `);
+         const diags = env.driveDiagnostics();
+         expect(diags.length).toBe(1);
+         expect(diags[0].messageText).toBe(`Property 'value' does not exist on type 'FooCmp'.`);
+       });
+
+    it('should not produce diagnostics for undeclared inputs inherited from a base class', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.write('test.ts', `
+            import {Component, NgModule, Input, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [undeclaredBase]="value"></div>',
+            })
+            export class FooCmp {
+              value = "value";
+            }
+
+            @Directive({
+              inputs: ['undeclaredBase'],
+            })
+            export class BaseDir {
+            }
+
+            @Directive({selector: '[dir]'})
+            export class TestDir extends BaseDir {
+            }
+
+            @NgModule({
+              declarations: [FooCmp, TestDir],
+            })
+            export class FooModule {}
+        `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
 
     describe('legacy schema checking with the DOM schema', () => {
       beforeEach(() => {
