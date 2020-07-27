@@ -252,7 +252,7 @@ entonces la configuración de <code>@Directive</code> se aplica también a los c
 </td>
 </tr><tr>
 <td><code><b>@Output()</b> myEvent = new EventEmitter();</code></td>
-<td><p>Declara una propiedad de salida (output) que dispara eventos a los que puede suscribirse con un enlace de evento (event binding) (ejemplo: <code>&lt;my-cmp (myEvent)="doSomething()"&gt;</code>).</p>
+<td><p>Declara una propiedad de salida (output) que dispara eventos a los que puedes suscribirse con un enlace de evento (event binding) (ejemplo: <code>&lt;my-cmp (myEvent)="doSomething()"&gt;</code>).</p>
 </td>
 </tr><tr>
 <td><code><b>@HostBinding('class.valid')</b> isValid;</code></td>
