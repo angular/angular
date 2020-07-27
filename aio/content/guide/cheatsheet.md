@@ -146,7 +146,7 @@ está disponible para las declaraciones (<code>declarations</code>) de este mód
 </tr>
 <tr>
 <td><code>&lt;div <b>[ngStyle]</b>="{'property': 'value'}"&gt;</code><br><code>&lt;div <b>[ngStyle]</b>="dynamicStyles()"&gt;</code></td>
-<td><p>Le permite asignar estilos a un elemento HTML usando CSS. Puede usar CSS directamente, como en el primer ejemplo, o puede llamar a un método desde el componente.</p>
+<p>Te permite asignar estilos a un elemento HTML usando CSS. Puedes usar CSS directamente, como en el primer ejemplo, o puedes llamar a un método desde el componente.</p>
 </td>
 </tr>
 </tbody></table>
