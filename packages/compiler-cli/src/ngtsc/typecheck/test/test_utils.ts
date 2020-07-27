@@ -123,7 +123,6 @@ export function ngForDeclaration(): TestDeclaration {
     inputs: {ngForOf: 'ngForOf', ngForTrackBy: 'ngForTrackBy', ngForTemplate: 'ngForTemplate'},
     hasNgTemplateContextGuard: true,
     isGeneric: true,
-    genericInputFields: ['ngForOf', 'ngForTrackBy', 'ngForTemplate'],
   };
 }
 
@@ -182,8 +181,7 @@ export type TestDirective = Partial<Pick<
         'ref'|'coercedInputFields'|'genericInputFields'|'restrictedInputFields'|
         'undeclaredInputFields'>>>&{
   selector: string, name: string, file?: AbsoluteFsPath, type: 'directive',
-      coercedInputFields?: string[], genericInputFields?: string[],
-      restrictedInputFields?: string[], undeclaredInputFields?: string[], isGeneric?: boolean;
+      coercedInputFields?: string[], undeclaredInputFields?: string[], isGeneric?: boolean;
 };
 export type TestPipe = {
   name: string,
