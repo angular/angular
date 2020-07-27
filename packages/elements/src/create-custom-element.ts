@@ -18,6 +18,8 @@ import {createCustomEvent, getComponentInputs, getDefaultAttributeToPropertyInpu
  * that can be used for custom element registration. Implemented and returned
  * by the {@link createCustomElement createCustomElement() function}.
  *
+ * @see [Angular Elements Overview](guide/elements "Turning Angular components into custom elements")
+ *
  * @publicApi
  */
 export interface NgElementConstructor<P> {
@@ -114,6 +116,8 @@ export interface NgElementConfig {
  * and used by default for each created instance.This behavior can be overridden with the
  * static property to affect all newly created instances, or as a constructor argument for
  * one-off creations.
+ *
+ * @see [Angular Elements Overview](guide/elements "Turning Angular components into custom elements")
  *
  * @param component The component to transform.
  * @param config A configuration that provides initialization information to the created class.
