@@ -24,11 +24,11 @@
 </tr>
 <tr>
 <td><code>@<b>NgModule</b>({ declarations: ..., imports: ...,<br>     exports: ..., providers: ..., bootstrap: ...})<br>class MyModule {}</code></td>
-<td><p>Define un módulo que contiene componentes, directivas, tuberías y proveedores.</p>
+<td><p>Define un módulo que contiene componentes, directivas, pipes y proveedores.</p>
 </td>
 </tr><tr>
 <td><code><b>declarations:</b> [MyRedComponent, MyBlueComponent, MyDatePipe]</code></td>
-<td><p>Lista de componentes, directivas y tuberías que pertenecen a este módulo.</p>
+<td><p>Lista de componentes, directivas y pipes que pertenecen a este módulo.</p>
 </td>
 </tr><tr>
 <td><code><b>imports:</b> [BrowserModule, SomeOtherModule]</code></td>
@@ -37,7 +37,7 @@ está disponible para las declaraciones (<code>declarations</code>) de este mód
 </td>
 </tr><tr>
 <td><code><b>exports:</b> [MyRedComponent, MyDatePipe]</code></td>
-<td><p>Lista de componentes, directivas y tuberías visibles a los módulos que importan este módulo.</p>
+<td><p>Lista de componentes, directivas y pipes visibles a los módulos que importan este módulo.</p>
 </td>
 </tr><tr>
 <td><code><b>providers:</b> [MyService, { provide: ... }]</code></td>
@@ -76,7 +76,7 @@ está disponible para las declaraciones (<code>declarations</code>) de este mód
 </td>
 </tr><tr>
 <td><code>&lt;button <b>(click)</b>="readRainbow($event)"&gt;</code></td>
-<td><p>Llama al método <code>readRainbow</code> cuando se lanza un evento clic en este elemento botón (o sus hijos) y pasa por argumento el objeto evento.</p>
+<td><p>Llama al método <code>readRainbow</code> cuando se lanza un evento click en este elemento botón (o sus hijos) y pasa por argumento el objeto evento.</p>
 </td>
 </tr><tr>
 <td><code>&lt;div title="Hola <b>{{ponyName}}</b>"&gt;</code></td>
@@ -103,7 +103,7 @@ está disponible para las declaraciones (<code>declarations</code>) de este mód
 </td>
 </tr><tr>
 <td><code>&lt;p&gt;Card No.: <b>{{cardNumber | myCardNumberFormatter}}</b>&lt;/p&gt;</code></td>
-<td><p>Transforma el valor actual de la expresión <code>cardNumber</code> a través de la tubería <code>myCardNumberFormatter</code>.</p>
+<td><p>Transforma el valor actual de la expresión <code>cardNumber</code> a través de la pipe <code>myCardNumberFormatter</code>.</p>
 </td>
 </tr><tr>
 <td><code>&lt;p&gt;Employer: <b>{{employer?.companyName}}</b>&lt;/p&gt;</code></td>
@@ -182,7 +182,7 @@ está disponible para las declaraciones (<code>declarations</code>) de este mód
 </td>
 </tr><tr>
 <td><code><b>@Pipe({...})</b><br>class MyPipe() {}</code></td>
-<td><p>Declara que una clase es una tubería and y proporciona metadatos sobre la tubería.</p>
+<td><p>Declara que una clase es una pipe y proporciona metadatos sobre la pipe.</p>
 </td>
 </tr><tr>
 <td><code><b>@Injectable()</b><br>class MyService() {}</code></td>
