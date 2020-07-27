@@ -35,18 +35,21 @@ import { ShippingComponent } from './shipping/shipping.component';
 // #docregion product-details-route, http-client-module, shipping-route, cart-route
     ])
   ],
-  // #enddocregion product-details-route, cart-route
+  // #enddocregion cart-route
   declarations: [
     AppComponent,
     TopBarComponent,
     ProductListComponent,
     ProductAlertsComponent,
     ProductDetailsComponent,
+  // #enddocregion product-details-route
     CartComponent,
 // #enddocregion http-client-module
     ShippingComponent
 // #docregion http-client-module
+// #docregion product-details-route
   ],
+  // #enddocregion product-details-route
   bootstrap: [
     AppComponent
   ]
