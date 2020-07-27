@@ -1,0 +1,15 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "menubar",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "mat-menubar-demo.html",
+    ],
+    deps = [
+        "//src/material-experimental/menubar",
+        "@npm//@angular/router",
+    ],
+)

@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary", "sass_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "menubar",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    assets = [
+        ":menubar.css",
+        ":menubar-item.css",
+    ] + glob(["**/*.html"]),
+    module_name = "@angular/material-experimental/menubar",
+    deps = [
+        "@npm//@angular/core",
+    ],
+)
+
+sass_library(
+    name = "menubar_scss_lib",
+    srcs = glob(["**/_*.scss"]),
+)
+
+sass_binary(
+    name = "menubar_scss",
+    src = "menubar.scss",
+)
+
+sass_binary(
+    name = "menubar_item_scss",
+    src = "menubar-item.scss",
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
+)

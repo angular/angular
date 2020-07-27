@@ -62,6 +62,7 @@ ng_module(
         "//src/dev-app/mdc-table",
         "//src/dev-app/mdc-tabs",
         "//src/dev-app/menu",
+        "//src/dev-app/menubar",
         "//src/dev-app/paginator",
         "//src/dev-app/platform",
         "//src/dev-app/popover-edit",

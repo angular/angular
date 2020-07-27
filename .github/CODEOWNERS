@@ -119,6 +119,7 @@
 /src/material-experimental/mdc-table/**            @andrewseguin
 /src/material-experimental/mdc-theming/**          @mmalerba
 /src/material-experimental/mdc-typography/**       @mmalerba
+/src/material-experimental/menubar/**              @jelbourn @andy9775
 /src/material-experimental/popover-edit/**         @kseamon @andrewseguin
 
 # CDK experimental package
@@ -185,6 +186,7 @@
 /src/dev-app/mdc-table/**                          @andrewseguin
 /src/dev-app/mdc-tabs/**                           @crisbeto
 /src/dev-app/menu/**                               @crisbeto
+/src/dev-app/menubar/**                            @jelbourn @andy9775
 /src/dev-app/overlay/**                            @jelbourn @crisbeto
 /src/dev-app/paginator/**                          @andrewseguin
 /src/dev-app/platform/**                           @jelbourn @devversion

@@ -50,6 +50,7 @@ export class DevAppLayout {
     {name: 'List', route: '/list'},
     {name: 'Live Announcer', route: '/live-announcer'},
     {name: 'Menu', route: '/menu'},
+    {name: 'Menubar', route: '/menubar'},
     {name: 'Paginator', route: '/paginator'},
     {name: 'Platform', route: '/platform'},
     {name: 'Popover Edit', route: '/popover-edit'},
