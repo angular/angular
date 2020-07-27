@@ -61,7 +61,7 @@
     "@angular/language-service": "github:angular/language-service-builds#47ebd2797fb7b5b85055b2c266cf84a590aedfa3",
     "@angular/router": "github:angular/router-builds#7fda69901b35a1953cd9398493c2c0f412e5d38a",
     "@bahmutov/add-typescript-to-cypress": "^2.1.2",
-    "@types/chrome": "^0.0.120",
+    "@types/chrome": "^0.0.122",
     "@types/clone-deep": "^4.0.1",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
