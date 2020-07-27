@@ -28,7 +28,6 @@ The initial app that you create with `ng new app_name` is listed under "projects
 
 </code-example>
 
-Each additional app that you create with `ng generate application` has a corresponding end-to-end test project, with its own configuration section.
 When you create a library project with `ng generate library`, the library project is also added to the `projects` section.
 
 <div class="alert is-helpful">
