@@ -1140,8 +1140,6 @@ groups:
   public-api:
     <<: *defaults
     conditions:
-      - *no-groups-above-this-pending
-      - *no-groups-above-this-rejected
       - *can-be-global-approved
       - >
         contains_any_globs(files, [
@@ -1174,8 +1172,6 @@ groups:
   size-tracking:
     <<: *defaults
     conditions:
-      - *no-groups-above-this-pending
-      - *no-groups-above-this-rejected
       - *can-be-global-approved
       - >
         contains_any_globs(files, [
@@ -1202,8 +1198,6 @@ groups:
   circular-dependencies:
     <<: *defaults
     conditions:
-      - *no-groups-above-this-pending
-      - *no-groups-above-this-rejected
       - *can-be-global-approved
       - >
         contains_any_globs(files, [
