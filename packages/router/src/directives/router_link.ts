@@ -21,7 +21,7 @@ import {UrlTree} from '../url_tree';
  * @description
  *
  * When applied to an element in a template, makes that element a link
- * that initiates navigation to a route, opening one or more routed components
+ * that initiates navigation to a route. Navigation opens one or more routed components
  * in one or more `<router-outlet>` locations on the page.
  *
  * Given a route configuration `[{ path: 'user/:name', component: UserCmp }]`,
@@ -66,14 +66,15 @@ import {UrlTree} from '../url_tree';
  *   link to user component
  * </a>
  * ```
- * The router generates the link: `/user/bob?debug=true#education`.
+ * By default, the directive constructs the new URL using the given query parameters.
+ * The example generates the link: `/user/bob?debug=true#education`.
  *
- * You can tell the directive how to handle query params by specifying the
- * `queryParamsHandling` option in the link. Allowed values are:
+ * You can instruct the directive to handle query parameters differently
+ * by specifying the `queryParamsHandling` option in the link.
+ * Allowed values are:
  *
  *  - `'merge'`: Merge the given `queryParams` into the current query params.
  *  - `'preserve'`: Preserve the current query params.
- *  - default/`''`: Use the given `queryParams` only.
  *
  * For example:
  *
