@@ -249,7 +249,7 @@ function transformIvySourceFile(
     importRewriter: ImportRewriter, file: ts.SourceFile, isCore: boolean,
     isClosureCompilerEnabled: boolean,
     defaultImportRecorder: DefaultImportRecorder): ts.SourceFile {
-  const constantPool = new ConstantPool();
+  const constantPool = new ConstantPool(isClosureCompilerEnabled);
   const importManager = new ImportManager(importRewriter);
 
   // The transformation process consists of 2 steps:
