@@ -102,8 +102,10 @@ export class ConstantPool {
 
   private nextNameIndex = 0;
 
+  constructor(private readonly isClosureCompilerEnabled: boolean = false) {}
+
   getConstLiteral(literal: o.Expression, forceShared?: boolean): o.Expression {
-    if ((literal instanceof o.LiteralExpr && !isLongStringExpr(literal)) ||
+    if ((literal instanceof o.LiteralExpr && !isLongStringLiteral(literal)) ||
         literal instanceof FixupExpression) {
       // Do no put simple literals into the constant pool or try to produce a constant for a
       // reference to a constant.
@@ -121,9 +123,39 @@ export class ConstantPool {
     if ((!newValue && !fixup.shared) || (newValue && forceShared)) {
       // Replace the expression with a variable
       const name = this.freshName();
-      this.statements.push(
-          o.variable(name).set(literal).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
-      fixup.fixup(o.variable(name));
+      let definition: o.WriteVarExpr;
+      let usage: o.Expression;
+      if (this.isClosureCompilerEnabled && isLongStringLiteral(literal)) {
+        // For string literals, Closure will **always** inline the string at
+        // **all** usages, duplicating it each time. For large strings, this
+        // unnecessarily bloats bundle size. To work around this restriction, we
+        // wrap the string in a function, and call that function for each usage.
+        // This tricks Closure into using inline logic for functions instead of
+        // string literals. Function calls are only inlined if the body is small
+        // enough to be worth it. By doing this, very large strings will be
+        // shared across multiple usages, rather than duplicating the string at
+        // each usage site.
+        //
+        // const myStr = function() { return "very very very long string"; };
+        // const usage1 = myStr();
+        // const usage2 = myStr();
+        definition = o.variable(name).set(new o.FunctionExpr(
+            [],  // Params.
+            [
+              // Statements.
+              new o.ReturnStatement(literal),
+            ],
+            ));
+        usage = o.variable(name).callFn([]);
+      } else {
+        // Just declare and use the variable directly, without a function call
+        // indirection. This saves a few bytes and avoids an unncessary call.
+        definition = o.variable(name).set(literal);
+        usage = o.variable(name);
+      }
+
+      this.statements.push(definition.toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
+      fixup.fixup(usage);
     }
 
     return fixup;
@@ -314,7 +346,7 @@ function isVariable(e: o.Expression): e is o.ReadVarExpr {
   return e instanceof o.ReadVarExpr;
 }
 
-function isLongStringExpr(expr: o.LiteralExpr): boolean {
-  return typeof expr.value === 'string' &&
+function isLongStringLiteral(expr: o.Expression): boolean {
+  return expr instanceof o.LiteralExpr && typeof expr.value === 'string' &&
       expr.value.length >= POOL_INCLUSION_LENGTH_THRESHOLD_FOR_STRINGS;
 }
