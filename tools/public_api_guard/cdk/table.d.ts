@@ -1,3 +1,17 @@
+export declare class _CoalescedStyleScheduler implements OnDestroy {
+    constructor(_ngZone: NgZone);
+    ngOnDestroy(): void;
+    schedule(task: () => unknown): void;
+    scheduleEnd(task: () => unknown): void;
+    static ɵfac: i0.ɵɵFactoryDef<_CoalescedStyleScheduler, never>;
+    static ɵprov: i0.ɵɵInjectableDef<_CoalescedStyleScheduler>;
+}
+
+export declare class _Schedule {
+    endTasks: (() => unknown)[];
+    tasks: (() => unknown)[];
+}
+
 export declare class BaseCdkCell {
     constructor(columnDef: CdkColumnDef, elementRef: ElementRef);
 }
@@ -169,6 +183,7 @@ export declare class CdkRowDef<T> extends BaseRowDef {
 
 export declare class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
     protected readonly _changeDetectorRef: ChangeDetectorRef;
+    protected readonly _coalescedStyleScheduler: _CoalescedStyleScheduler;
     _contentColumnDefs: QueryList<CdkColumnDef>;
     _contentFooterRowDefs: QueryList<CdkFooterRowDef>;
     _contentHeaderRowDefs: QueryList<CdkHeaderRowDef>;
@@ -194,7 +209,7 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
         start: number;
         end: number;
     }>;
-    constructor(_differs: IterableDiffers, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef, role: string, _dir: Directionality, _document: any, _platform: Platform);
+    constructor(_differs: IterableDiffers, _changeDetectorRef: ChangeDetectorRef, _coalescedStyleScheduler: _CoalescedStyleScheduler, _elementRef: ElementRef, role: string, _dir: Directionality, _document: any, _platform: Platform);
     _getRenderedRows(rowOutlet: RowOutlet): HTMLElement[];
     _getRowDefs(data: T, dataIndex: number): CdkRowDef<T>[];
     addColumnDef(columnDef: CdkColumnDef): void;
@@ -214,7 +229,7 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     updateStickyHeaderRowStyles(): void;
     static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkTable<any>, "cdk-table, table[cdk-table]", ["cdkTable"], { "trackBy": "trackBy"; "dataSource": "dataSource"; "multiTemplateDataRows": "multiTemplateDataRows"; }, {}, ["_noDataRow", "_contentColumnDefs", "_contentRowDefs", "_contentHeaderRowDefs", "_contentFooterRowDefs"], ["caption", "colgroup, col"]>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkTable<any>, [null, null, null, { attribute: "role"; }, { optional: true; }, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkTable<any>, [null, null, null, null, { attribute: "role"; }, { optional: true; }, null, null]>;
 }
 
 export declare class CdkTableModule {
@@ -299,7 +314,7 @@ export declare type StickyDirection = 'top' | 'bottom' | 'left' | 'right';
 
 export declare class StickyStyler {
     direction: Direction;
-    constructor(_isNativeHtmlTable: boolean, _stickCellCss: string, direction: Direction, _isBrowser?: boolean);
+    constructor(_isNativeHtmlTable: boolean, _stickCellCss: string, direction: Direction, _coalescedStyleScheduler: _CoalescedStyleScheduler, _isBrowser?: boolean);
     _addStickyStyle(element: HTMLElement, dir: StickyDirection, dirValue: number): void;
     _getCalculatedZIndex(element: HTMLElement): string;
     _getCellWidths(row: HTMLElement): number[];

@@ -48,6 +48,7 @@ import {
 } from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {CdkColumnDef} from './cell';
+import {_CoalescedStyleScheduler} from './coalesced-style-scheduler';
 import {
   BaseRowDef,
   CdkCellOutlet,
@@ -186,7 +187,10 @@ export interface RenderRow<T> {
   // declared elsewhere, they are checked when their declaration points are checked.
   // tslint:disable-next-line:validate-decorators
   changeDetection: ChangeDetectionStrategy.Default,
-  providers: [{provide: CDK_TABLE, useExisting: CdkTable}]
+  providers: [
+    {provide: CDK_TABLE, useExisting: CdkTable},
+    _CoalescedStyleScheduler,
+  ]
 })
 export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
   private _document: Document;
@@ -376,6 +380,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     // this setter will be invoked before the row outlet has been defined hence the null check.
     if (this._rowOutlet && this._rowOutlet.viewContainer.length) {
       this._forceRenderDataRows();
+      this.updateStickyColumnStyles();
     }
   }
   _multiTemplateDataRows: boolean = false;
@@ -422,6 +427,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   constructor(
       protected readonly _differs: IterableDiffers,
       protected readonly _changeDetectorRef: ChangeDetectorRef,
+      protected readonly _coalescedStyleScheduler: _CoalescedStyleScheduler,
       protected readonly _elementRef: ElementRef, @Attribute('role') role: string,
       @Optional() protected readonly _dir: Directionality, @Inject(DOCUMENT) _document: any,
       private _platform: Platform) {
@@ -1081,7 +1087,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   private _setupStickyStyler() {
     const direction: Direction = this._dir ? this._dir.value : 'ltr';
     this._stickyStyler = new StickyStyler(
-        this._isNativeHtmlTable, this.stickyCssClass, direction, this._platform.isBrowser);
+        this._isNativeHtmlTable, this.stickyCssClass, direction, this._coalescedStyleScheduler,
+        this._platform.isBrowser);
     (this._dir ? this._dir.change : observableOf<Direction>())
         .pipe(takeUntil(this._onDestroy))
         .subscribe(value => {

@@ -11,6 +11,7 @@
  * @docs-private
  */
 import {Direction} from '@angular/cdk/bidi';
+import {_CoalescedStyleScheduler} from './coalesced-style-scheduler';
 
 export type StickyDirection = 'top' | 'bottom' | 'left' | 'right';
 
@@ -37,6 +38,7 @@ export class StickyStyler {
   constructor(private _isNativeHtmlTable: boolean,
               private _stickCellCss: string,
               public direction: Direction,
+              private _coalescedStyleScheduler: _CoalescedStyleScheduler,
               private _isBrowser = true) { }
 
   /**
@@ -46,6 +48,7 @@ export class StickyStyler {
    * @param stickyDirections The directions that should no longer be set as sticky on the rows.
    */
   clearStickyPositioning(rows: HTMLElement[], stickyDirections: StickyDirection[]) {
+    const elementsToClear: HTMLElement[] = [];
     for (const row of rows) {
       // If the row isn't an element (e.g. if it's an `ng-container`),
       // it won't have inline styles or `children` so we skip it.
@@ -53,13 +56,18 @@ export class StickyStyler {
         continue;
       }
 
-      this._removeStickyStyle(row, stickyDirections);
-
+      elementsToClear.push(row);
       for (let i = 0; i < row.children.length; i++) {
-        const cell = row.children[i] as HTMLElement;
-        this._removeStickyStyle(cell, stickyDirections);
+        elementsToClear.push(row.children[i] as HTMLElement);
       }
     }
+
+    // Coalesce with sticky row/column updates (and potentially other changes like column resize).
+    this._coalescedStyleScheduler.schedule(() => {
+      for (const element of elementsToClear) {
+        this._removeStickyStyle(element, stickyDirections);
+      }
+    });
   }
 
   /**
@@ -73,9 +81,8 @@ export class StickyStyler {
    */
   updateStickyColumns(
       rows: HTMLElement[], stickyStartStates: boolean[], stickyEndStates: boolean[]) {
-    const hasStickyColumns =
-        stickyStartStates.some(state => state) || stickyEndStates.some(state => state);
-    if (!rows.length || !hasStickyColumns || !this._isBrowser) {
+    if (!rows.length || !this._isBrowser || !(stickyStartStates.some(state => state) ||
+        stickyEndStates.some(state => state))) {
       return;
     }
 
@@ -85,20 +92,26 @@ export class StickyStyler {
 
     const startPositions = this._getStickyStartColumnPositions(cellWidths, stickyStartStates);
     const endPositions = this._getStickyEndColumnPositions(cellWidths, stickyEndStates);
-    const isRtl = this.direction === 'rtl';
 
-    for (const row of rows) {
-      for (let i = 0; i < numCells; i++) {
-        const cell = row.children[i] as HTMLElement;
-        if (stickyStartStates[i]) {
-          this._addStickyStyle(cell, isRtl ? 'right' : 'left', startPositions[i]);
-        }
+    // Coalesce with sticky row updates (and potentially other changes like column resize).
+    this._coalescedStyleScheduler.schedule(() => {
+      const isRtl = this.direction === 'rtl';
+      const start = isRtl ? 'right' : 'left';
+      const end = isRtl ? 'left' : 'right';
 
-        if (stickyEndStates[i]) {
-          this._addStickyStyle(cell, isRtl ? 'left' : 'right', endPositions[i]);
+      for (const row of rows) {
+        for (let i = 0; i < numCells; i++) {
+          const cell = row.children[i] as HTMLElement;
+          if (stickyStartStates[i]) {
+            this._addStickyStyle(cell, start, startPositions[i]);
+          }
+
+          if (stickyEndStates[i]) {
+            this._addStickyStyle(cell, end, endPositions[i]);
+          }
         }
       }
-    }
+    });
   }
 
   /**
@@ -124,30 +137,39 @@ export class StickyStyler {
     const rows = position === 'bottom' ? rowsToStick.slice().reverse() : rowsToStick;
     const states = position === 'bottom' ? stickyStates.slice().reverse() : stickyStates;
 
-    let stickyHeight = 0;
-    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+    // Measure row heights all at once before adding sticky styles to reduce layout thrashing.
+    const stickyHeights: number[] = [];
+    const elementsToStick: HTMLElement[][] = [];
+    for (let rowIndex = 0, stickyHeight = 0; rowIndex < rows.length; rowIndex++) {
+      stickyHeights[rowIndex] = stickyHeight;
+
       if (!states[rowIndex]) {
         continue;
       }
 
       const row = rows[rowIndex];
-      if (this._isNativeHtmlTable) {
-        for (let j = 0; j < row.children.length; j++) {
-          const cell = row.children[j] as HTMLElement;
-          this._addStickyStyle(cell, position, stickyHeight);
-        }
-      } else {
-        // Flex does not respect the stick positioning on the cells, needs to be applied to the row.
-        // If this is applied on a native table, Safari causes the header to fly in wrong direction.
-        this._addStickyStyle(row, position, stickyHeight);
-      }
+      elementsToStick[rowIndex] = this._isNativeHtmlTable ?
+          Array.from(row.children) as HTMLElement[] : [row];
 
-      if (rowIndex === rows.length - 1) {
-        // prevent unnecessary reflow from getBoundingClientRect()
-        return;
+      if (rowIndex !== rows.length - 1) {
+        stickyHeight += row.getBoundingClientRect().height;
       }
-      stickyHeight += row.getBoundingClientRect().height;
     }
+
+    // Coalesce with other sticky row updates (top/bottom), sticky columns updates
+    // (and potentially other changes like column resize).
+    this._coalescedStyleScheduler.schedule(() => {
+      for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+        if (!states[rowIndex]) {
+          continue;
+        }
+
+        const height = stickyHeights[rowIndex];
+        for (const element of elementsToStick[rowIndex]) {
+          this._addStickyStyle(element, position, height);
+        }
+      }
+    });
   }
 
   /**
@@ -162,11 +184,15 @@ export class StickyStyler {
     }
 
     const tfoot = tableElement.querySelector('tfoot')!;
-    if (stickyStates.some(state => !state)) {
-      this._removeStickyStyle(tfoot, ['bottom']);
-    } else {
-      this._addStickyStyle(tfoot, 'bottom', 0);
-    }
+
+    // Coalesce with other sticky updates (and potentially other changes like column resize).
+    this._coalescedStyleScheduler.schedule(() => {
+      if (stickyStates.some(state => !state)) {
+        this._removeStickyStyle(tfoot, ['bottom']);
+      } else {
+        this._addStickyStyle(tfoot, 'bottom', 0);
+      }
+    });
   }
 
   /**

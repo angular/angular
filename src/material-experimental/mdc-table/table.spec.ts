@@ -156,13 +156,14 @@ describe('MDC-based MatTable', () => {
     ]);
   });
 
-  it('should apply custom sticky CSS class to sticky cells', () => {
+  it('should apply custom sticky CSS class to sticky cells', fakeAsync(() => {
     let fixture = TestBed.createComponent(StickyTableApp);
     fixture.detectChanges();
+    flushMicrotasks();
 
     const stuckCellElement = fixture.nativeElement.querySelector('table th')!;
     expect(stuckCellElement.classList).toContain('mat-mdc-table-sticky');
-  });
+  }));
 
   // Note: needs to be fakeAsync so it catches the error.
   it('should not throw when a row definition is on an ng-container', fakeAsync(() => {

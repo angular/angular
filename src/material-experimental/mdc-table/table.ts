@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {CDK_TABLE_TEMPLATE, CdkTable} from '@angular/cdk/table';
+import {CDK_TABLE_TEMPLATE, CdkTable, _CoalescedStyleScheduler} from '@angular/cdk/table';
 
 @Component({
   selector: 'table[mat-table]',
@@ -17,7 +17,10 @@ import {CDK_TABLE_TEMPLATE, CdkTable} from '@angular/cdk/table';
   host: {
     'class': 'mat-mdc-table mdc-data-table__table',
   },
-  providers: [{provide: CdkTable, useExisting: MatTable}],
+  providers: [
+    {provide: CdkTable, useExisting: MatTable},
+    _CoalescedStyleScheduler,
+  ],
   encapsulation: ViewEncapsulation.None,
   // See note on CdkTable for explanation on why this uses the default change detection strategy.
   // tslint:disable-next-line:validate-decorators

@@ -6,7 +6,7 @@ import {
   ViewChild,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, inject} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, flushMicrotasks, inject} from '@angular/core/testing';
 import {BidiModule} from '@angular/cdk/bidi';
 import {DataSource} from '@angular/cdk/collections';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
@@ -347,7 +347,7 @@ describe('Material Popover Edit', () => {
       let fixture: ComponentFixture<BaseTestComponent>;
       let overlayContainer: OverlayContainer;
 
-      beforeEach(() => {
+      beforeEach(fakeAsync(() => {
         jasmine.addMatchers(approximateMatcher);
 
         TestBed.configureTestingModule({
@@ -360,7 +360,8 @@ describe('Material Popover Edit', () => {
         fixture = TestBed.createComponent(componentClass);
         component = fixture.componentInstance;
         fixture.detectChanges();
-      });
+        flushMicrotasks();
+      }));
 
       afterEach(() => {
         // The overlay container's `ngOnDestroy` won't be called between test runs so we need
