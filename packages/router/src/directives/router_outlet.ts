@@ -263,6 +263,8 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       this.activated.destroy();
       this.activated = null;
       this._activatedRoute = null;
+      // For the `EmptyOutletComponent` instances, the `deactivateEvents` are subscribed to and
+      // emitted in the `activateWith` function.
       if (!(c instanceof ɵEmptyOutletComponent)) {
         this.deactivateEvents.emit(c);
       }
@@ -348,7 +350,7 @@ export class ɵEmptyOutletComponent {
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
 
-  @ViewChild(RouterOutlet) outlet !: RouterOutlet;
+  @ViewChild(RouterOutlet) outlet!: RouterOutlet;
 
   public destroy$ = new Subject();
 
@@ -373,9 +375,13 @@ export class ɵEmptyOutletComponent {
     return this.activatedRoute.snapshot.data;
   }
 
-  activate(ev: any) { this.activateEvents.emit(ev); }
+  activate(ev: any) {
+    this.activateEvents.emit(ev);
+  }
 
-  deactivate(ev: any) { this.deactivateEvents.emit(ev); }
+  deactivate(ev: any) {
+    this.deactivateEvents.emit(ev);
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
