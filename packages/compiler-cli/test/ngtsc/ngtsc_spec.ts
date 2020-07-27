@@ -6685,6 +6685,66 @@ export const Foo = Foo__PRE_R3__;
                 // remains a string in the `styles` array.
                 '"img[_ngcontent-%COMP%] { background: url(/b/some-very-very-long-path.png); }"]');
       });
+
+      it('large strings are wrapped in a function for Closure', () => {
+        env.tsconfig({
+          annotateForClosureCompiler: true,
+        });
+
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp-a',
+            template: 'Comp A',
+            styles: [
+              'div { background: url(/a.png); }',
+              'div { background: url(/some-very-very-long-path.png); }',
+            ]
+          })
+          export class CompA {}
+
+          @Component({
+            selector: 'comp-b',
+            template: 'Comp B',
+            styles: [
+              'div { background: url(/b.png); }',
+              'div { background: url(/some-very-very-long-path.png); }',
+            ]
+          })
+          export class CompB {}
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        // Verify that long strings are extracted to a separate var. This should be wrapped in a
+        // function to trick Closure not to inline the contents for very large strings.
+        // See: https://github.com/angular/angular/pull/38253.
+        expect(jsContents)
+            .toContain(
+                '_c0 = function () {' +
+                ' return "div[_ngcontent-%COMP%] {' +
+                ' background: url(/some-very-very-long-path.png);' +
+                ' }";' +
+                ' };');
+
+        expect(jsContents)
+            .toContain(
+                'styles: [' +
+                // Check styles for component A.
+                '"div[_ngcontent-%COMP%] { background: url(/a.png); }", ' +
+                // Large string should be called from function definition.
+                '_c0()]');
+
+        expect(jsContents)
+            .toContain(
+                'styles: [' +
+                // Check styles for component B.
+                '"div[_ngcontent-%COMP%] { background: url(/b.png); }", ' +
+                // Large string should be called from function definition.
+                '_c0()]');
+      });
     });
 
     describe('non-exported classes', () => {
