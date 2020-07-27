@@ -26,6 +26,15 @@ import {CdkMenuItem} from './menu-item';
 import {MenuStack, MenuStackItem, FocusNext} from './menu-stack';
 
 /**
+ * Check if the given element is part of the cdk menu module.
+ * @param target the element to check.
+ * @return true if the given element is part of the menu module.
+ */
+function isMenuElement(target: Element) {
+  return target.className.indexOf('cdk-menu') !== -1;
+}
+
+/**
  * Directive applied to an element which configures it as a MenuBar by setting the appropriate
  * role, aria attributes, and accessible keyboard and mouse handling logic. The component that
  * this directive is applied to should contain components marked with CdkMenuItem.
@@ -36,8 +45,10 @@ import {MenuStack, MenuStackItem, FocusNext} from './menu-stack';
   exportAs: 'cdkMenuBar',
   host: {
     '(keydown)': '_handleKeyEvent($event)',
+    '(document:click)': '_closeOnBackgroundClick($event)',
     '(focus)': 'focusFirstItem()',
     'role': 'menubar',
+    'class': 'cdk-menu-bar',
     'tabindex': '0',
     '[attr.aria-orientation]': 'orientation',
   },
@@ -212,6 +223,22 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
     return this.orientation === 'horizontal';
   }
 
+  /** Close any open submenu if there was a click event which occurred outside the menu stack. */
+  _closeOnBackgroundClick(event: MouseEvent) {
+    if (this._hasOpenSubmenu()) {
+      // get target from composed path to account for shadow dom
+      let target = event.composedPath ? event.composedPath()[0] : event.target;
+      while (target instanceof Element) {
+        if (isMenuElement(target)) {
+          return;
+        }
+        target = target.parentElement;
+      }
+
+      this._openItem?.getMenuTrigger()?.toggle();
+    }
+  }
+
   /**
    * Subscribe to the menu trigger's open events in order to track the trigger which opened the menu
    * and stop tracking it when the menu is closed.
@@ -234,6 +261,11 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
         takeUntil(this._destroyed)
       )
       .subscribe(() => (this._openItem = undefined));
+  }
+
+  /** Return true if the MenuBar has an open submenu. */
+  private _hasOpenSubmenu() {
+    return !!this._openItem;
   }
 
   ngOnDestroy() {

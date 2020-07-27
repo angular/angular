@@ -45,6 +45,7 @@ function removeIcons(element: Element) {
     'tabindex': '-1',
     'type': 'button',
     'role': 'menuitem',
+    'class': 'cdk-menu-item',
     '[attr.aria-disabled]': 'disabled || null',
   },
 })

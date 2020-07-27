@@ -51,6 +51,7 @@ import {MenuStack, MenuStackItem, FocusNext} from './menu-stack';
   host: {
     '(keydown)': '_handleKeyEvent($event)',
     'role': 'menu',
+    'class': 'cdk-menu',
     '[attr.aria-orientation]': 'orientation',
   },
   providers: [

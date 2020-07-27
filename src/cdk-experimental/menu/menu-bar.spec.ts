@@ -34,6 +34,8 @@ import {CdkMenuItemRadio} from './menu-item-radio';
 import {CdkMenu} from './menu';
 import {CdkMenuItem} from './menu-item';
 import {CdkMenuItemCheckbox} from './menu-item-checkbox';
+import {CdkMenuItemTrigger} from './menu-item-trigger';
+import {CdkMenuGroup} from './menu-group';
 
 describe('MenuBar', () => {
   describe('as radio group', () => {
@@ -735,6 +737,106 @@ describe('MenuBar', () => {
       );
     });
   });
+
+  describe('background click closeout', () => {
+    let fixture: ComponentFixture<MenuBarWithMenus>;
+
+    let menus: CdkMenu[];
+    let triggers: CdkMenuItemTrigger[];
+
+    /** open the attached menu. */
+    function openMenu() {
+      triggers[0].toggle();
+      detectChanges();
+    }
+
+    /** set the menus and triggers arrays. */
+    function grabElementsForTesting() {
+      menus = fixture.componentInstance.menus.toArray();
+      triggers = fixture.componentInstance.triggers.toArray();
+    }
+
+    /** run change detection and, extract and set the rendered elements. */
+    function detectChanges() {
+      fixture.detectChanges();
+      grabElementsForTesting();
+    }
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [MenuBarWithMenus],
+      }).compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(MenuBarWithMenus);
+      detectChanges();
+    });
+
+    it('should close out all open menus when clicked outside the menu tree', () => {
+      openMenu();
+      expect(menus.length).toBe(1);
+
+      fixture.debugElement.query(By.css('#container')).nativeElement.click();
+      detectChanges();
+
+      expect(menus.length).toBe(0);
+    });
+
+    it('should not close open menus when clicking on a menu group', () => {
+      openMenu();
+      expect(menus.length).toBe(1);
+
+      const menuGroups = fixture.debugElement.queryAll(By.directive(CdkMenuGroup));
+      menuGroups[2].nativeElement.click();
+      detectChanges();
+
+      expect(menus.length).toBe(1);
+    });
+
+    it('should not close open menus when clicking on a menu', () => {
+      openMenu();
+      expect(menus.length).toBe(1);
+
+      fixture.debugElement.query(By.directive(CdkMenu)).nativeElement.click();
+      detectChanges();
+
+      expect(menus.length).toBe(1);
+    });
+
+    it('should not close open menus when clicking on a menu bar', () => {
+      openMenu();
+      expect(menus.length).toBe(1);
+
+      fixture.debugElement.query(By.directive(CdkMenuBar)).nativeElement.click();
+      detectChanges();
+
+      expect(menus.length).toBe(1);
+    });
+
+    it('should not close when clicking on a CdkMenuItemCheckbox element', () => {
+      openMenu();
+      expect(menus.length).toBe(1);
+
+      fixture.debugElement.query(By.directive(CdkMenuItemCheckbox)).nativeElement.click();
+      fixture.detectChanges();
+
+      expect(menus.length).toBe(1);
+    });
+
+    it('should not close when clicking on a non-menu element inside menu', () => {
+      openMenu();
+      expect(menus.length).toBe(1);
+
+      fixture.debugElement.query(By.css('#inner-element')).nativeElement.click();
+      detectChanges();
+
+      expect(menus.length)
+        .withContext('menu should stay open if clicking on an inner span element')
+        .toBe(1);
+    });
+  });
 });
 
 @Component({
@@ -846,4 +948,28 @@ class MenuWithRadioButtons {
   @ViewChildren(CdkMenuItem, {read: ElementRef}) nativeItems: QueryList<ElementRef>;
 
   @ViewChildren(CdkMenuItemRadio) radioItems: QueryList<CdkMenuItemRadio>;
+}
+
+@Component({
+  template: `
+    <div id="container">
+      <div cdkMenuBar>
+        <button cdkMenuItem [cdkMenuTriggerFor]="sub1">Trigger</button>
+      </div>
+
+      <ng-template cdkMenuPanel #sub1="cdkMenuPanel">
+        <div cdkMenu [cdkMenuPanel]="sub1">
+          <div cdkMenuGroup>
+            <button cdkMenuItemCheckbox>Trigger</button>
+            <span id="inner-element">A nested non-menuitem element</span>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  `,
+})
+class MenuBarWithMenus {
+  @ViewChildren(CdkMenu) menus: QueryList<CdkMenu>;
+
+  @ViewChildren(CdkMenuItemTrigger) triggers: QueryList<CdkMenuItemTrigger>;
 }

@@ -29,6 +29,7 @@ import {CdkMenuItem} from './menu-item';
   exportAs: 'cdkMenuGroup',
   host: {
     'role': 'group',
+    'class': 'cdk-menu-group',
   },
   providers: [{provide: UniqueSelectionDispatcher, useClass: UniqueSelectionDispatcher}],
 })
