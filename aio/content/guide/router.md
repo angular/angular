@@ -44,7 +44,7 @@ You can define *route guard* functions to control access to parts of your applic
 
 {@a route-parameters}
 
-### Resolving route parameters
+### Composing view URLs with route parameters
 
 The router composes a URL for a particular view by combining a base path with a set of parameters. Parameters in a route definition can be specified as literal values, or can be tokens or expressions that the router resolves.
 For example, in the following route definition, the route to `HeroDetailComponent` has an `:id` token in the path.
@@ -156,6 +156,75 @@ Each item in a `Routes` array is a [`Route`](api/router/Route "API reference") o
 The empty path in the fourth route represents the default path for the application&mdash;the place to go when the path in the URL is empty, as it typically is at the start.
 This default route redirects to the route for the `/heroes` URL and, therefore, displays the `HeroesListComponent`.
 
+See more about [route ordering and special syntax](#route-order).
+
+## Enabling interactive navigation
+
+A template that enables navigation for users needs two things:
+
+* An *outlet*, a placeholder in the page where a component's view is to be inserted.
+* Links to the routing components that allow users to trigger navigation.
+
+{@a basics-router-outlet}
+
+### Placing a view in a template
+
+The `RouterOutlet` is a directive from the router library that is used like a component.
+It acts as a placeholder that marks the spot in the template where the router should
+display the component views for that outlet.
+
+A `<router-outlet>` element in the template for the root component tells Angular to update the application view with the component for the selected route.
+
+<code-example language="html">
+  &lt;router-outlet>&lt;/router-outlet>
+  &lt;!-- Routed components go here -->
+
+</code-example>
+
+Given the configuration above, when the browser URL for this application becomes `/heroes`, the router matches that URL to the route path `/heroes` and displays the `HeroListComponent` as a sibling element to the `RouterOutlet` that you've placed in the host component's template.
+
+{@a basics-router-links}
+{@a router-link}
+
+### Initiating interactive navigation
+
+Your app can initiate navigation programmatically, or a user can trigger a request for navigation by typing a URL in the address bar or clicking a link.
+To navigate as a result of a user action such as a click, include the [`RouterLink` directive](api/router/RouterLink "API reference") in the template.
+
+For example, the following template creates a link to a routing component in a `<nav>` container by using an anchor tag with the `routerLink` attribute.
+
+<code-example path="router/src/app/app.component.1.html" header="src/app/app.component.html"></code-example>
+
+This code assigns the anchor tag to the element that will initiate navigation, and sets the value of that attribute to the component to show when a user clicks on that link.
+
+The `RouterLink` directives on the anchor tags give the router control over those elements.
+The navigation paths are fixed, so you can assign a path string to the `routerLink` (a "one-time" binding).
+
+For a more dynamic navigation path, you can bind the router link to a template expression that returns a [link parameters array](guide/router#link-parameters-array "Learn more about link parameters arrays"). This array contains an object which associates a route path string with one or more required, optional, or query parameters. The router service resolves that array into a complete URL.
+
+To initiate navigation programmatically, pass a router URL string or link parameters array to the [Router.navigate() method](api/router/Router#navigate "API reference").
+
+{@a basics-router-state}
+{@a activated-route}
+{@a router-link-active}
+
+### Style views according to navigation state
+
+When the router matches a path and displays a new view, the selected route becomes *active*.
+You can style views according to the navigation state.
+For example, you might want to highlight the currently selected tab in a set of tabbed panes, to keep the user oriented.
+
+To toggle CSS classes according to the navigation state, use the [router-link-active directive](api/router/RouterLinkActive "API reference").
+The following example adds this directive to bind styles to each anchor tag when the user clicks the link to activate the associated route.
+
+<code-example header="src/app/app.component.html" path="router-tutorial/src/app/app.component.html" region="routeractivelink"></code-example>
+
+You can bind the `routerLinkActive` directive to a space-delimited string of CSS classes such as `[routerLinkActive]="'active fluffy'"`, or bind it to a component property that returns such a string.
+The router automatically adds these classes to the tag when the linked route is activated, and removes them when the route becomes inactive.
+
+When you have [nested routes](#nesting-routes "Complex routing structure"), active routes cascade down through each level of the route tree, so parent and child routes can be active at the same time.
+To distinguish between specific linked routes, you can modify the `RouterLinkActive` directive with the `[routerLinkActiveOptions]={ exact: true }` input binding ([see example](api/router/RouterLinkActive#description "API reference")). This reports the linked route as active only when its URL is an exact match to the current URL.
+
 {@a route-order}
 
 ## Prevent navigation failures with route ordering and special syntax
@@ -235,119 +304,6 @@ To display the equivalent of a "404 Not Found" page, set up a [wildcard route](#
 The last route with the `path` of `**` is a wildcard route.
 The router service selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
 
-## Enabling interactive navigation
-
-A template that enables navigation for users needs two things:
-
-* An *outlet*, a placeholder in the page where a component's view is to be inserted.
-* Links to the routing components that allow users to trigger navigation.
-
-{@a basics-router-outlet}
-
-### Placing a view in a template
-
-The `RouterOutlet` is a directive from the router library that is used like a component.
-It acts as a placeholder that marks the spot in the template where the router should
-display the component views for that outlet.
-
-A `<router-outlet>` element in the template for the root component tells Angular to update the application view with the component for the selected route.
-
-<code-example language="html">
-  &lt;router-outlet>&lt;/router-outlet>
-  &lt;!-- Routed components go here -->
-
-</code-example>
-
-Given the configuration above, when the browser URL for this application becomes `/heroes`, the router matches that URL to the route path `/heroes` and displays the `HeroListComponent` as a sibling element to the `RouterOutlet` that you've placed in the host component's template.
-
-{@a basics-router-links}
-{@a router-link}
-
-### Initiating interactive navigation
-
-Your app can initiate navigation programmatically, or a user can trigger a request for navigation by typing a URL in the address bar or clicking a link.
-To navigate as a result of a user action such as a click, include the [`RouterLink` directive](api/router/RouterLink "API reference") in the template.
-
-For example, the following template creates a link to a routing component in a `<nav>` container by using an anchor tag with the `routerLink` attribute.
-
-<code-example path="router/src/app/app.component.1.html" header="src/app/app.component.html"></code-example>
-
-This code assigns the anchor tag to the element that will initiate navigation, and sets the value of that attribute to the component to show when a user clicks on that link.
-
-The `RouterLink` directives on the anchor tags give the router control over those elements.
-The navigation paths are fixed, so you can assign a path string to the `routerLink` (a "one-time" binding).
-
-For a more dynamic navigation path, you can bind the router link to a template expression that returns a [link parameters array](guide/router#link-parameters-array "Learn more about link parameters arrays"). This array contains an object which associates a route path string with one or more required, optional, or query parameters. The router service resolves that array into a complete URL.
-
-To initiate navigation programmatically, pass a router URL string or link parameters array to the [Router.navigate() method](api/router/Router#navigate "API reference").
-
-{@a basics-router-state}
-{@a activated-route}
-{@a router-link-active}
-
-## Tracking navigation state
-
-When the router matches a path and displays a new view, the selected route becomes *active*.
-An active route is represented by an [ActivatedRoute](api/router/ActivatedRoute "API reference") object.
-After the end of each successful navigation cycle, the router builds a tree of `ActivatedRoute` objects that make up the current navigation state.
-Access the navigation state through the [Router.routerState](api/router/Router#routerState "API reference") property.
-
-Each `ActivatedRoute` in the `RouterState` provides the route path and parameters, as well as methods to traverse up and down the route tree to get information from parent, child and sibling routes.
-See the API reference for the many useful properties of an [ActivatedRoute](api/router/ActivatedRoute "API reference documentation") object.
-
-### Style views according to navigation state
-
-You can style views according to the navigation state. For example, you might want to highlight the currently selected tab in a set of tabbed panes, to keep the user oriented.
-
-You can use the [RouterLinkActive](api/router/RouterLinkActive "API reference") directive on an element to toggle CSS classes for active `RouterLink` bindings based on the current `RouterState`.
-
-On each anchor tag, you see a [property binding](guide/property-binding "Learn more about property binding") to the `RouterLinkActive` directive that looks like `routerLinkActive="..."`, as in the following example.
-
-<code-example header="src/app/app.component.html" path="router-tutorial/src/app/app.component.html" region="routeractivelink"></code-example>
-
-You can bind the `routerLinkActive` directive to a space-delimited string of CSS classes such as `[routerLinkActive]="'active fluffy'"`, or bind it to a component property that returns such a string.
-The router automatically adds these classes to the tag when the linked route is activated, and removes them when the route becomes inactive.
-
-When you have [nested routes](#nesting-routes "Complex routing structure"), active routes cascade down through each level of the route tree, so parent and child routes can be active at the same time.
-To distinguish between specific linked routes, you can modify the `RouterLinkActive` directive with the `[routerLinkActiveOptions]={ exact: true }` input binding ([see example](api/router/RouterLinkActive#description "API reference")). This reports the linked route as active only when its URL is an exact match to the current URL.
-
-{@a router-events}
-
-### Router event order
-
-During each navigation, the router service emits navigation events through the `Router.events` property.
-These events occur when the navigation starts and ends and many points in between.
-
-If you need to see what events are happening during the navigation lifecycle, you can set the `enableTracing` option as part of the router's default configuration.
-This outputs each router event that took place during each navigation lifecycle to the browser console.
-Use `enableTracing` only for debugging purposes.
-Set the `enableTracing: true` option in the object passed as the second argument to the `RouterModule.forRoot()` method.
-
-<!-- this table is moved into API doc in another PR (TBD) - when that lands, replace it with a link -->
-
-The following table lists the router event types in the order in which they can occur. The properties of each event are listed in the [API reference documentation](api/router/Event "Router event types").
-
-| Router Event | Trigger |
-| :----------- | :------- |
-| [NavigationStart](api/router/NavigationStart) | Navigation starts. |
-| [RouteConfigLoadStart](api/router/RouteConfigLoadStart) | Before the router [lazy loads](/guide/router-tutorial-toh#asynchronous-routing) a route configuration. |
-| [RouteConfigLoadEnd](api/router/RouteConfigLoadEnd) | After a route has been lazy loaded. |
-| [RoutesRecognized](api/router/RoutesRecognized) | When the router parses the URL and the routes are recognized. |
-| [GuardsCheckStart](api/router/GuardsCheckStart) | When the router begins the *guards* phase of routing. |
-| [ChildActivationStart](api/router/ChildActivationStart) | When the router begins activating a route's children. |
-| [ActivationStart](api/router/ActivationStart)| When the router begins activating a route. |
-| [GuardsCheckEnd](api/router/GuardsCheckEnd) | When the router finishes the *guards* phase of routing successfully. |
-| [ResolveStart](api/router/ResolveStart) | When the router begins the *resolve* phase of routing. |
-| [ResolveEnd](api/router/ResolveEnd) | When the router finishes the *resolve* phase of routing successfuly. |
-| [ChildActivationEnd](api/router/ChildActivationEnd) | When the router finishes activating a route's children. |
-| [ActivationEnd](api/router/ActivationStart) | When the router finishes activating a route. |
-| [NavigationEnd](api/router/NavigationEnd) | When navigation ends successfully. |
-| [NavigationCancel](api/router/NavigationCancel) | When navigation is canceled. This can happen when a [route guard](/guide/router-tutorial-toh#guards) returns false during navigation, or redirects by returning a `UrlTree`. |
-| [NavigationError](api/router/NavigationError) | When navigation fails due to an unexpected error. |
-| [Scroll](api/router/Scroll) | When the user scrolls. |
-
-When you set the `enableTracing` option, Angular logs these events to the console.
-For an example of filtering router navigation events, see the [router section](guide/observables-in-angular#router) of the [Observables in Angular](guide/observables-in-angular) guide.
 
 {@a activated-route}
 {@a getting-route-information}
@@ -390,6 +346,17 @@ To get parameter information from an active or previously active route, use the 
           });
         }
       </code-example>
+
+<div class="alert is-helpful">
+
+An active route is represented by an [ActivatedRoute](api/router/ActivatedRoute "API reference") object.
+After the end of each successful navigation cycle, the router builds a tree of `ActivatedRoute` objects that make up the current navigation state.
+Access the navigation state through the [Router.routerState](api/router/Router#routerState "API reference") property.
+
+Each `ActivatedRoute` in the `RouterState` provides the route path and parameters, as well as methods to traverse up and down the route tree to get information from parent, child and sibling routes.
+See the API reference for the many useful properties of an [ActivatedRoute](api/router/ActivatedRoute "API reference documentation") object.
+
+</div>
 
 {@a param-maps}
 
@@ -440,6 +407,24 @@ The snapshot gives you direct access the initial parameters, without subscribing
 
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.2.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit snapshot)" region="snapshot"></code-example>
 
+{@a router-events}
+
+### Tracking navigation events
+
+During each navigation, the router service emits navigation events through the `Router.events` property.
+These events occur when the navigation starts and ends and many points in between.
+
+If you need to see what events are happening during the navigation lifecycle, you can set the `enableTracing` option as part of the router's default configuration.
+This outputs each router event that took place during each navigation lifecycle to the browser console.
+Use `enableTracing` only for debugging purposes.
+Set the `enableTracing: true` option in the object passed as the second argument to the `RouterModule.forRoot()` method.
+
+For a complete list of navigation events, their triggers, and the order in which they occur, see the API reference documentation for the router [Event](api/router/Event "Router event types") types.
+
+When you set the `enableTracing` option, Angular logs these events to the console.
+For an example of filtering router navigation events, see the [router section](guide/observables-in-angular#router) of the [Observables in Angular](guide/observables-in-angular) guide.
+
+<!-- possible new sub-page -->
 
 {@a nesting-routes}
 {@a route-trees}
