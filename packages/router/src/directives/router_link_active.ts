@@ -23,8 +23,7 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  * to specify one or more CSS classes to add to the element when the linked route
  * is active.
  *
- * Use this directive to create a visual distinction for elements the router has
- * activated through a user action.
+ * Use this directive to create a visual distinction for elements associated with an active route.
  * For example, the following code highlights the word "Bob" when the the router
  * activates the associated route:
  *
