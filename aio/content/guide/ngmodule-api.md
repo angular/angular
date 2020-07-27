@@ -1,13 +1,36 @@
-# NgModule API
+# Using the NgModule metadata
 
-At a high level, NgModules are a way to organize Angular apps
-and they accomplish this through the metadata in the `@NgModule`
-decorator.
-The metadata falls into three categories:
+An [NgModule](guide/glossary#ngmodule "Definition of NgModule") is a class marked by the `@NgModule` decorator with a metadata object that describes how that particular part of the app fits together with the other parts.
 
-* **Static:** Compiler configuration which tells the compiler about directive selectors and where in templates the directives should be applied through selector matching. This is configured via the `declarations` array.
-* **Runtime:** Injector configuration via the `providers` array.
-* **Composability/Grouping:** Bringing NgModules together and making them available via the `imports` and `exports` arrays.
+## Prerequisites
+
+This topic requires a basic understanding of the following:
+
+* [Typescript](guide/glossary#typescript "Definition of Typescript") and HTML5 programming
+* [Templates](guide/glossary#template "Definition of a template") in HTML with CSS styles
+* [Components](guide/glossary#component "Definition of a component")
+* [Angular CLI](cli "Angular CLI")
+* [Organizing your app with NgModules](guide/ngmodules "Organizing your app with NgModules")
+
+## How the metadata guides compilation
+
+The `@NgModule` metadata provides important information for the Angular compilation process that converts the app code you write into highly performant JavaScript code.
+The metadata provides the following arrays:
+
+* [`declarations`](#declarations): Which [components](guide/glossary#component "Definition of component"), [directives](guide/glossary#directive "Definition of directive"), and [pipes](guide/glossary#pipe "Definition of pipe)") belong to the NgModule.
+  These classes are called [declarables](guide/glossary#declarable "Definition of a declarable").
+
+* [`entryComponents`](#entry-components): A list of [entry components](guide/entry-components "Specifying an entry component") that can be dynamically loaded into the view.
+
+* [`providers`](#providers-array): [Providers](guide/glossary#provider "Definition of provider") of [services](guide/glossary#service "Definition of a service") that components in other NgModules can use.
+
+* [`bootstrap`](#bootstrap-array): The entry component that Angular creates and inserts into the `index.html` host web page, thereby bootstrapping the app.
+
+* [`imports`](#imports): Other NgModules you are importing into this NgModule, so that you can use their declarables.
+
+* [`exports`](#exports): A list of declarations (components, directives, and pipes) that another NgModule can use after importing this NgModule.
+
+The following code excerpt shows how the metadata appears in the `@NgModule` decorator:
 
 ```typescript
 @NgModule({
@@ -24,208 +47,147 @@ The metadata falls into three categories:
 })
 ```
 
-## `@NgModule` metadata
+{@a declarations}
 
-The following table summarizes the `@NgModule` metadata properties.
+## The declarations array
 
-<table>
+The `declarations` array identifies the [declarables](guide/glossary#declarable "Definition of a declarable") ([components](guide/glossary#component "Definition of component"), [directives](guide/glossary#directive "Definition of directive"), and [pipes](guide/glossary#pipe "Definition of pipe)")) that belong to the NgModule.
 
-  <tr>
+All of the declarables for an NgModule must be in the NgModule's `declarations` array.
+You can use the [Angular CLI](cli "Angular CLI") to [generate](cli/generate) a new component, directive, or pipe in your NgModule, so that the CLI automatically adds the declarable to the NgModule's `declarations` array.
 
-    <th>
-      Property
-    </th>
+Each component, directive, and pipe that you include in an NgModule's `declarations` array belongs _only_ to that NgModule.
 
-    <th>
-      Description
-    </th>
+*Do not* include the following in the `declarations` array:
 
-  </tr>
+* A class that's already declared in another NgModule, another [Javascript module](guide/ngmodule-vs-jsmodule "JavaScript modules vs. NgModules"), or a third-party module or NgModule.
+  The compiler emits an error if you try to declare the same class in more than one NgModule.
+  For example, don't declare `FORMS_DIRECTIVES` from `@angular/forms` because the `FormsModule` already declares it.
+  Be careful not to re-declare a class that is imported directly or indirectly from another NgModule.
 
-  <tr>
+* NgModule or service classes, or non-Angular classes and objects, such as strings, numbers, functions, entity models, configurations, business logic, or helper classes.
 
-    <td style="vertical-align: top">
-      <code>declarations</code>
-    </td>
+{@a entry-components}
 
-    <td>
+## The entryComponents array
 
-      A list of [declarable](guide/ngmodule-faq#q-declarable) classes,
-      (*components*, *directives*, and *pipes*) that _belong to this module_.
+The `entryComponents` array describes the [entry components](guide/entry-components "Specifying an entry component") that you can dynamically load into the view.
 
-      <ol>
-        <li>When compiling a template, you need to determine a set of selectors which should be used for triggering their corresponding directives.</li>
-        <li>
-          The template is compiled within the context of an NgModule&mdash;the NgModule within which the template's component is declared&mdash;which determines the set of selectors using the following rules:
-          <ul>
-            <li>All selectors of directives listed in `declarations`.</li>
-            <li>All selectors of directives exported from imported NgModules.</li>
-          </ul>
-        </li>
-      </ol>
+If you use the CLI [new](cli/new "ng new") command to create an initial Angular app, the CLI creates one entry component, the root component called `AppComponent`, in the root NgModule `AppModule`.
+This component serves as a point of entry into the app.
+You [bootstrap](guide/glossary#bootstrap "Definition of bootstrap") it to launch the app, as described in the section about the [bootstrap array](#bootstrap-array).
 
-      Components, directives, and pipes must belong to _exactly_ one module.
-      The compiler emits an error if you try to declare the same class in more than one module. Be careful not to re-declare a class that is imported
-      directly or indirectly from another module.
+[Routing components](guide/glossary#routing-component "Definition of routing component") are also entry components because they are loaded dynamically by the router.
+The router creates them and drops them into the DOM near a `<router-outlet>`.
+You don't have to add the routing components to an NgModule's `entryComponents` array because Angular adds them implicitly.
 
-    </td>
+The only components you need to add manually to the `entryComponents` array are any components you are bootstrapping using one of the imperative techniques, such as [`ViewComponentRef.createComponent()`](api/core/ViewContainerRef#createComponent), as undiscoverable.
+If you need to dynamically load components, add these components to the `entryComponents` array.
+For more information, see [Specifying an entry component](guide/entry-components).
 
-  </tr>
+<div class="callout is-helpful">
+<header>Why a component appears in both arrays</header>
 
-  <tr>
+`AppComponent` is listed in both the `declarations` and `bootstrap` arrays for the `AppModule` root NgModule.
+You might see the same component listed in `exports` and `entryComponents`.
+While that seems redundant, these metadata arrays have different functions.
+Membership in one doesn't imply membership in another.
+For example, you might declare `AppComponent` in your NgModule but not use it for bootstrapping, or `AppComponent` might be declared in a different NgModule.
 
-    <td style="vertical-align: top">
-      <code>providers</code>
-    </td>
+</div>
 
-    <td>
+{@a providers-array}
 
-      A list of dependency-injection providers.
+## The providers array
 
-      Angular registers these providers with the NgModule's injector.
-      If it is the NgModule used for bootstrapping then it is the root injector.
+The `providers` array is a list of [dependency-injection](guide/glossary#dependency-injection-di "Definition of dependency injection") providers that describes the services that the app needs, and how to create an [injector](guide/glossary#injector "Definition of injector") at runtime for each service.
+Angular registers the providers you include in this array with the NgModule's injector.
 
-      These services become available for injection into any component, directive, pipe or service which is a child of this injector.
+If you include a provider in the _root_ NgModule's `providers` array, it becomes the root injector.
+Services for providers declared in the root become available for injection into any component, directive, pipe, or service which is a child of this injector.
+You can scope service usage when [creating other NgModules](guide/feature-modules "Creating a new NgModule").
 
-      A lazy-loaded module has its own injector which
-      is typically a child of the application root injector.
+A [lazy-loaded NgModule](guide/lazy-loading-ngmodules "Lazy-loading an NgModule") has its own injector, which is typically a child of the root injector.
+Lazy-loaded services are scoped to the lazy-loaded NgModule's injector.
+If a lazy-loaded NgModule also provides the `UserService`, any component created within that NgModule's context (such as by router navigation) gets the local instance of the service, not the instance in the root injector.
+Components in external NgModules continue to receive the instance provided by their injectors.
 
-      Lazy-loaded services are scoped to the lazy module's injector.
-      If a lazy-loaded module also provides the `UserService`,
-      any component created within that module's context (such as by router navigation)
-      gets the local instance of the service, not the instance in the root application injector.
+To learn more about service providers, see [Providing dependencies for an NgModule](guide/providers "Providing dependencies for an NgModule").
 
-      Components in external modules continue to receive the instance provided by their injectors.
+{@a bootstrap-array}
 
-      For more information on injector hierarchy and scoping, see [Providers](guide/providers) and the [DI Guide](guide/dependency-injection).
+## The bootstrap array
 
-    </td>
+The `bootstrap` array is list of components that Angular automatically bootstraps to start your app.
 
-  </tr>
+The Angular CLI command `ng new` generates the root NgModule for a new app project, as described in [Launching an app with a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
+The app starts by launching the [entry component](guide/entry-components "Entry components") in the root NgModule's `bootstrap` array, which is `AppComponent`.
 
-  <tr>
+Your app typically has only this one component in this list.
+However, Angular can launch with multiple bootstrap components, each with its own location in the host web page.
+Angular creates each component that appears in the `bootstrap` array and inserts it into the browser DOM.
+Each bootstrapped component is the base of its own tree of components.
+Inserting a bootstrapped component usually triggers a cascade of component creations that fill out that tree.
+Any component you add to `bootstrap` is automatically added to `entryComponents`.
 
-    <td style="vertical-align: top">
-      <code>imports</code>
-    </td>
+{@a imports}
 
-    <td>
+## The imports array
 
-      A list of modules which should be folded into this module. Folded means it is
-      as if all the imported NgModule's exported properties were declared here.
+The NgModule's `imports` array describes other NgModules needed for this NgModule.
+The `imports` array accepts only `@NgModule` references.
+The other NgModules must export the needed components, directives, or pipes that this NgModule needs.
 
-      Specifically, it is as if the list of modules whose exported components, directives, or pipes
-      are referenced by the component templates were declared in this module.
+The other NgModules' exported components, directives, and pipes are treated as if they were declared in this NgModule.
+You can therefore can use a component, directive, or pipe in this NgModule's templates.
+For example, your component can use the `NgIf` and `NgFor` directives if your NgModule has imported `CommonModule` (perhaps indirectly by importing `BrowserModule`).
 
-      A component template can [reference](guide/ngmodule-faq#q-template-reference) another component, directive, or pipe
-      when the reference is declared in this module or if the imported module has exported it.
-      For example, a component can use the `NgIf` and `NgFor` directives only if the
-      module has imported the Angular `CommonModule` (perhaps indirectly by importing `BrowserModule`).
+{@a exports}
 
-      You can import many standard directives from the `CommonModule`
-      but some familiar directives belong to other modules.
-      For example, you can use `[(ngModel)]` only
-      after importing the Angular `FormsModule`.
+## The exports array
 
-    </td>
+The `exports` array is a list of declarations that another NgModule can use if the other NgModule imports this NgModule.
 
-  </tr>
+Export only [declarable](guide/glossary#declarable "Definition of a declarable") classes (components, directives, or pipes) that you want other NgModules to be able to use in their templates.
+You can export any declarable whether it's declared in this NgModule or in an imported NgModule.
+The declarables you export are your NgModule's _public_ classes.
+If you don't export a declarable class, it stays _private_, visible only to other components declared in this NgModule.
 
-  <tr>
+For example, if an NgModule includes `UserComponent` in its `exports` array, components and templates in other NgModules can use `UserComponent` as long as the other NgModules import this NgModule.
+If you don't include `UserComponent` in the `exports` array, only components and templates within this NgModule can use it.
 
-    <td style="vertical-align: top">
-      <code>exports</code>
-    </td>
+## Re-exporting an entire NgModule
 
-    <td>
+Importing an NgModule does _not_ automatically re-export the imported NgModule's imports.
+For example, NgModule B can't use `ngIf` just because it imported NgModule A, which imported `CommonModule` in order to includer `ngIf`.
+Module B must also import `CommonModule`.
 
-      A list of declarations&mdash;*component*, *directive*, and *pipe* classes&mdash;that
-      an importing module can use.
+However, you can add another NgModule to your NgModule's `exports` array so that all of the other NgModule's public components, directives, and pipes are _re-exported_ by your NgModule.
+If NgModule A re-exports `CommonModule` and NgModule B imports NgModule A, NgModule B components can use `ngIf` even though NgModule B didn't import `CommonModule`.
 
-      Exported declarations are the module's _public API_.
-      A component in another module can [use](guide/ngmodule-faq#q-template-reference) _this_
-      module's `UserComponent` if it imports this module and this module exports `UserComponent`.
+An NgModule can export a combination of its own declarations, selected imported classes, and imported NgModules.
+You can selectively aggregate classes from other NgModules and re-export them in a consolidated, convenience NgModule.
+For example, Angular's own `BrowserModule` exports a couple of NgModules as follows:
 
-      Declarations are private by default.
-      If this module does _not_ export `UserComponent`, then only the components within _this_
-      module can use `UserComponent`.
+```typescript
+  exports: [CommonModule, ApplicationModule]
+```
 
-      Importing a module does _not_ automatically re-export the imported module's imports.
-      Module 'B' can't use `ngIf` just because it imported module 'A' which imported `CommonModule`.
-      Module 'B' must import `CommonModule` itself.
+Don't bother re-exporting pure service NgModules, because they don't export declarables that another NgModule could use.
+For example, there's no point in re-exporting `HttpClientModule` because it doesn't export anything.
 
-      A module can list another module among its `exports`, in which case
-      all of that module's public components, directives, and pipes are exported.
+## Next steps
 
-      [Re-export](guide/ngmodule-faq#q-reexport) makes module transitivity explicit.
-      If Module 'A' re-exports `CommonModule` and Module 'B' imports Module 'A',
-      Module 'B' components can use `ngIf` even though 'B' itself didn't import `CommonModule`.
+* To learn about frequently used Angular NgModules and how to import them into your app, see [Frequently-used NgModules](guide/frequent-ngmodules "Frequently-used NgModules").
 
-    </td>
+* For guidance on how to use NgModules for organizing different areas of your code, see [Guidelines for creating NgModules](guide/module-types "Guidelines for creating NgModules").
 
-  </tr>
+* For step-by-step instructions on creating an NgModule and importing it into your app, see [Creating a new NgModule](guide/feature-modules "Creating a new NgModule").
 
-  <tr>
+* To learn how to use shared modules to organize and streamline your code, see [Sharing NgModules in an app](guide/sharing-ngmodules "Sharing NgModules in an app").
 
-    <td style="vertical-align: top">
-      <code>bootstrap</code>
-    </td>
+* To learn about loading NgModules eagerly when the app starts, or lazy-loading NgModules asynchronously by the router, see [Lazy-loading an NgModule](guide/lazy-loading-ngmodules "Lazy-loading an NgModule").
 
-    <td>
+* To understand how to provide a service or other dependency for your app, see [Providing dependencies for an NgModule](guide/providers "Providing dependencies for an NgModule").
 
-      A list of components that are automatically bootstrapped.
-
-      Usually there's only one component in this list, the _root component_ of the application.
-
-      Angular can launch with multiple bootstrap components,
-      each with its own location in the host web page.
-
-      A bootstrap component is automatically added to `entryComponents`.
-
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td style="vertical-align: top">
-      <code>entryComponents</code>
-    </td>
-
-    <td>
-
-      A list of components that can be dynamically loaded into the view.
-
-      By default, an Angular app always has at least one entry component, the root component, `AppComponent`. Its purpose is to serve as a point of entry into the app, that is, you bootstrap it to launch the app.
-
-      Routed components are also _entry components_ because they need to be loaded dynamically.
-      The router creates them and drops them into the DOM near a `<router-outlet>`.
-
-      While the bootstrapped and routed components are _entry components_,
-      you don't have to add them to a module's `entryComponents` list,
-      as they are added implicitly.
-
-      Angular automatically adds components in the module's `bootstrap` and route definitions into the `entryComponents` list.
-
-      That leaves only components bootstrapped using one of the imperative techniques, such as [`ViewComponentRef.createComponent()`](api/core/ViewContainerRef#createComponent) as undiscoverable.
-
-      Dynamic component loading is not common in most apps beyond the router. If you need to dynamically load components, you must add these components to the `entryComponents` list yourself.
-
-      For more information, see [Entry Components](guide/entry-components).
-
-    </td>
-
-  </tr>
-
-</table>
-
-
-<hr />
-
-## More on NgModules
-
-You may also be interested in the following:
-* [Feature Modules](guide/feature-modules).
-* [Entry Components](guide/entry-components).
-* [Providers](guide/providers).
-* [Types of Feature Modules](guide/module-types).
+* To learn how to create a singleton service to use in NgModules, see [Making a service a singleton](guide/singleton-services "Making a service a singleton").
