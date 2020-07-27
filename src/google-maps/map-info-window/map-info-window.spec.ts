@@ -129,6 +129,31 @@ describe('MapInfoWindow', () => {
     expect(infoWindowSpy.open).toHaveBeenCalledWith(mapSpy, fakeMarker);
   });
 
+  it('should not try to reopen info window multiple times for the same marker', () => {
+    const fakeMarker = {} as unknown as google.maps.Marker;
+    const fakeMarkerComponent = {
+      marker: fakeMarker,
+      getAnchor: () => fakeMarker
+    } as unknown as MapMarker;
+    const infoWindowSpy = createInfoWindowSpy({});
+    createInfoWindowConstructorSpy(infoWindowSpy).and.callThrough();
+
+    const fixture = TestBed.createComponent(TestApp);
+    const infoWindowComponent = fixture.debugElement.query(By.directive(
+        MapInfoWindow))!.injector.get<MapInfoWindow>(MapInfoWindow);
+    fixture.detectChanges();
+
+    infoWindowComponent.open(fakeMarkerComponent);
+    expect(infoWindowSpy.open).toHaveBeenCalledTimes(1);
+
+    infoWindowComponent.open(fakeMarkerComponent);
+    expect(infoWindowSpy.open).toHaveBeenCalledTimes(1);
+
+    infoWindowComponent.close();
+    infoWindowComponent.open(fakeMarkerComponent);
+    expect(infoWindowSpy.open).toHaveBeenCalledTimes(2);
+  });
+
   it('exposes methods that provide information about the info window', () => {
     const infoWindowSpy = createInfoWindowSpy({});
     createInfoWindowConstructorSpy(infoWindowSpy).and.callThrough();

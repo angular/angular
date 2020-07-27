@@ -93,10 +93,14 @@ export function createMarkerConstructorSpy(markerSpy: jasmine.SpyObj<google.maps
 /** Creates a jasmine.SpyObj for a google.maps.InfoWindow */
 export function createInfoWindowSpy(options: google.maps.InfoWindowOptions):
     jasmine.SpyObj<google.maps.InfoWindow> {
+  let anchor: any;
   const infoWindowSpy = jasmine.createSpyObj(
       'google.maps.InfoWindow',
-      ['addListener', 'close', 'getContent', 'getPosition', 'getZIndex', 'open']);
+      ['addListener', 'close', 'getContent', 'getPosition', 'getZIndex', 'open', 'get']);
   infoWindowSpy.addListener.and.returnValue({remove: () => {}});
+  infoWindowSpy.open.and.callFake((_map: any, target: any) => anchor = target);
+  infoWindowSpy.close.and.callFake(() => anchor = null);
+  infoWindowSpy.get.and.callFake((key: string) => key === 'anchor' ? anchor : null);
   return infoWindowSpy;
 }
 
