@@ -1,43 +1,75 @@
 ## PR Checklist
-Please check if your PR fulfills the following requirements:
+Compruebe si su RP cumple los siguientes requisitos:
 
 - [ ] The commit message follows our guidelines: https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit
-- [ ] Tests for the changes have been added (for bug fixes / features)
-- [ ] Docs have been added / updated (for bug fixes / features)
+- [ ] Examina los cambios que agregaste (arreglo de bugs / funcionalidades)
+- [ ] Docs se han agregado / actualizado (para arreglos de bugs / funcionalidades)
 
 
-## PR Type
-What kind of change does this PR introduce?
+## Tipo de PR
+¿Qué tipo de cambio introduce este PR?
 
-<!-- Please check the one that applies to this PR using "x". -->
+<!-- Marca con una "x" las opciones que aplican. -->
 
 - [ ] Bugfix
-- [ ] Feature
-- [ ] Code style update (formatting, local variables)
-- [ ] Refactoring (no functional changes, no api changes)
-- [ ] Build related changes
-- [ ] CI related changes
-- [ ] Documentation content changes
-- [ ] angular.io application / infrastructure changes
-- [ ] Other... Please describe:
+- [ ] Funcionalidad
+- [ ] Actualizar el stilo de codigo (formato, variables locales)
+- [ ] Refactorización (no cambios en la funcionalidad, no cambios en el api)
+- [ ] Cambios relacionados al build
+- [ ] Cambios relacionados al CI (Integración continua)
+- [ ] Cambios en el contenido de la documentación
+- [ ] Cambios en la aplicación / infrastructura de angular.io
+- [ ] Otro... Porfavor describela:
+
+## ¿Cuál es el comportamiento actual?
+<!-- Describa el comportamiento actual que está modificando o vincule a un problema relevante.
+
+Marca con una "x" si la PR ya la enlazaste con el issue correspondiente
+-->
+- [ ] PR enlazada con el issue correspondiente
 
 
-## What is the current behavior?
-<!-- Please describe the current behavior that you are modifying, or link to a relevant issue. -->
-
-Issue Number: N/A
-
-
-## What is the new behavior?
-
-
-## Does this PR introduce a breaking change?
+## ¿Cuál es el nuevo comportamiento?
+<!--
+Ejemplo: Archivo en Español
+-->
+## ¿Este PR introduce algunos errores?
 
 - [ ] Yes
 - [ ] No
 
+## Tendras que crear un nuevo archivo que es el que contiene la traducción
+<!--
+- El archivo orginal que esta en Inglés cambia su extensión a .en.md
+- El archivo con la traducción a Español tendra la extensión .md
 
-<!-- If this PR contains a breaking change, please describe the impact and migration path for existing applications below. -->
+Ejemplo:
+
+creating-libraries.md (Archivo en Español)
+
+creating-libraries.en.md (Archivo en Inglés)
+
+-->
+
+<!--
+Marca con una "x" si creaste dos archivos con la extensión correspondiente.
+-->
+- [ ] Se han creado dos archivos con la extensión correspondiente
+
+## ⚠️ Consulta el diccionario de términos
+<!--
+Temporalmente tenemos la terminología utilizada en este tema. Se migrará a un archivo pronto
+
+La terminologia que estamos usando la podras encontrar aqui:
+
+https://github.com/angular-hispano/angular/issues/9
+
+Marca con una "x" si consultaste el diccionario de términos
+-->
+- [ ] Consulte el diccionario de términos
 
 
-## Other information
+<!-- Si este PR contiene un cambio importante, describa el impacto y la ruta de migración para las aplicaciones existentes a continuación. -->
+
+
+## Otra información
