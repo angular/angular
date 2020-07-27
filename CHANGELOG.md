@@ -1,3 +1,39 @@
+## 10.1.1 "tin-hat" (2020-07-27)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** interactivity checker detecting tabbable state incorrectly for videos, audio and object elements ([2825a9b](https://github.com/angular/components/commit/2825a9b)) |
+| bug fix |  **drag-drop:** warn if connected container ID doesn't exist ([#20057](https://github.com/angular/components/issues/20057)) ([4fa9eb9](https://github.com/angular/components/commit/4fa9eb9)), closes [#20056](https://github.com/angular/components/issues/20056) |
+| bug fix |  **drag-drop:** not transferring input value when cloning element for preview ([#20009](https://github.com/angular/components/issues/20009)) ([9833eea](https://github.com/angular/components/commit/9833eea)), closes [#19905](https://github.com/angular/components/issues/19905) |
+| bug fix |  **scrolling:** viewport ruler events being run inside zone ([#15814](https://github.com/angular/components/issues/15814)) ([200ca35](https://github.com/angular/components/commit/200ca35)), closes [#18471](https://github.com/angular/components/issues/18471) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** emitting dateChange event when opposite range input changes ([#19995](https://github.com/angular/components/issues/19995)) ([d383bba](https://github.com/angular/components/commit/d383bba)), closes [#19968](https://github.com/angular/components/issues/19968) |
+| bug fix |  **select:** indicating programmatic value change as user interaction in some cases ([#19970](https://github.com/angular/components/issues/19970)) ([88d8416](https://github.com/angular/components/commit/88d8416)), closes [#19967](https://github.com/angular/components/issues/19967) |
+| bug fix |  tabindex inputs not supporting coercion ([#20037](https://github.com/angular/components/issues/20037)) ([ec5986c](https://github.com/angular/components/commit/ec5986c)), closes [#20026](https://github.com/angular/components/issues/20026) |
+| bug fix |  **datepicker:** not updating calendar state if input changes while open ([#19973](https://github.com/angular/components/issues/19973)) ([8b48a9b](https://github.com/angular/components/commit/8b48a9b)), closes [#19959](https://github.com/angular/components/issues/19959) |
+| bug fix |  **menu:** throw error if menu contains its own trigger ([#19943](https://github.com/angular/components/issues/19943)) ([16e8376](https://github.com/angular/components/commit/16e8376)), closes [#19941](https://github.com/angular/components/issues/19941) |
+| bug fix |  **table:** no data row not shown if data source is empty on init ([#19994](https://github.com/angular/components/issues/19994)) ([392e384](https://github.com/angular/components/commit/392e384)), closes [#19992](https://github.com/angular/components/issues/19992) |
+
+### cdk-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **menu:** fix bug preventing keyboard event handling if opened programmatically ([#20004](https://github.com/angular/components/issues/20004)) ([d7954d6](https://github.com/angular/components/commit/d7954d6)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-snack-bar:** blending in with background in high contrast mode ([#19996](https://github.com/angular/components/issues/19996)) ([7b2d6b0](https://github.com/angular/components/commit/7b2d6b0)) |
+| bug fix |  **mdc-tabs:** missing focus indication in high contrast mode ([#17601](https://github.com/angular/components/issues/17601)) ([ec87358](https://github.com/angular/components/commit/ec87358)) |
+
+
 # 10.1.0 "plastic-vault" (2020-07-20)
 
 ### cdk
@@ -99,6 +135,7 @@
 | feature |  **mdc-chips:** Make chips editable by connecting to the mdc web editing interface ([#19618](https://github.com/angular/components/issues/19618)) ([04024fe](https://github.com/angular/components/commit/04024fe)) |
 | feature |  **snack-bar:** add MDC-based snack-bar ([#19738](https://github.com/angular/components/issues/19738)) ([a63bfc5](https://github.com/angular/components/commit/a63bfc5)) |
 | feature |  **snack-bar:** add MDC-based snack-bar ([#19800](https://github.com/angular/components/issues/19800)) ([7dcd2dd](https://github.com/angular/components/commit/7dcd2dd)) |
+
 
 # 10.0.0 "ice-dice" (2020-06-24)
 
@@ -766,7 +803,7 @@ Big thanks to @mbehrlich for contributing this!
 This new capability for `@angular/cdk` provides some convenient helpers for dealign with
 the clipboard. [See the documentation for more information](https://material.angular.io/cdk/clipboard).
 
-Big thanks to @xkxx for contributing this! 
+Big thanks to @xkxx for contributing this!
 
 ### Breaking changes
 
@@ -1289,7 +1326,7 @@ Big thanks to @YourDeveloperFriend for contributing this!
 
 ### Highlights
 * The `MatNavTabBar` now support tab pagination, a long-requested feature.
-* `CdkDrag` now supports scrolling the viewport when an item is dragged near the edge. 
+* `CdkDrag` now supports scrolling the viewport when an item is dragged near the edge.
 
 
 ### Bug Fixes
