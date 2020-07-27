@@ -162,7 +162,7 @@ export class TreeChecklistExample {
         : new TodoItemFlatNode();
     flatNode.item = node.item;
     flatNode.level = level;
-    flatNode.expandable = !!node.children;
+    flatNode.expandable = !!node.children?.length;
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;
@@ -171,9 +171,9 @@ export class TreeChecklistExample {
   /** Whether all the descendants of the node are selected. */
   descendantsAllSelected(node: TodoItemFlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
-    const descAllSelected = descendants.every(child =>
-      this.checklistSelection.isSelected(child)
-    );
+    const descAllSelected = descendants.length > 0 && descendants.every(child => {
+      return this.checklistSelection.isSelected(child);
+    });
     return descAllSelected;
   }
 
@@ -193,9 +193,7 @@ export class TreeChecklistExample {
       : this.checklistSelection.deselect(...descendants);
 
     // Force update for the parent
-    descendants.every(child =>
-      this.checklistSelection.isSelected(child)
-    );
+    descendants.forEach(child => this.checklistSelection.isSelected(child));
     this.checkAllParentsSelection(node);
   }
 
@@ -218,9 +216,9 @@ export class TreeChecklistExample {
   checkRootNodeSelection(node: TodoItemFlatNode): void {
     const nodeSelected = this.checklistSelection.isSelected(node);
     const descendants = this.treeControl.getDescendants(node);
-    const descAllSelected = descendants.every(child =>
-      this.checklistSelection.isSelected(child)
-    );
+    const descAllSelected = descendants.length > 0 && descendants.every(child => {
+      return this.checklistSelection.isSelected(child);
+    });
     if (nodeSelected && !descAllSelected) {
       this.checklistSelection.deselect(node);
     } else if (!nodeSelected && descAllSelected) {
