@@ -12,6 +12,7 @@ import {GoogleMap} from './google-map/google-map';
 import {MapCircle} from './map-circle/map-circle';
 import {MapGroundOverlay} from './map-ground-overlay/map-ground-overlay';
 import {MapInfoWindow} from './map-info-window/map-info-window';
+import {MapKmlLayer} from './map-kml-layer/map-kml-layer';
 import {MapMarker} from './map-marker/map-marker';
 import {MapPolygon} from './map-polygon/map-polygon';
 import {MapPolyline} from './map-polyline/map-polyline';
@@ -22,6 +23,7 @@ const COMPONENTS = [
   MapCircle,
   MapGroundOverlay,
   MapInfoWindow,
+  MapKmlLayer,
   MapMarker,
   MapPolygon,
   MapPolyline,

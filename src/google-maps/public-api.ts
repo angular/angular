@@ -11,6 +11,7 @@ export {GoogleMapsModule} from './google-maps-module';
 export {MapCircle} from './map-circle/map-circle';
 export {MapGroundOverlay} from './map-ground-overlay/map-ground-overlay';
 export {MapInfoWindow} from './map-info-window/map-info-window';
+export {MapKmlLayer} from './map-kml-layer/map-kml-layer';
 export {MapMarker} from './map-marker/map-marker';
 export {MapPolygon} from './map-polygon/map-polygon';
 export {MapPolyline} from './map-polyline/map-polyline';

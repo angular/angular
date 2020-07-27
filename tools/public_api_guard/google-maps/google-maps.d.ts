@@ -53,7 +53,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
 export declare class GoogleMapsModule {
     static ɵinj: i0.ɵɵInjectorDef<GoogleMapsModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapGroundOverlay, typeof i4.MapInfoWindow, typeof i5.MapMarker, typeof i6.MapPolygon, typeof i7.MapPolyline, typeof i8.MapRectangle], never, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapGroundOverlay, typeof i4.MapInfoWindow, typeof i5.MapMarker, typeof i6.MapPolygon, typeof i7.MapPolyline, typeof i8.MapRectangle]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapGroundOverlay, typeof i4.MapInfoWindow, typeof i5.MapKmlLayer, typeof i6.MapMarker, typeof i7.MapPolygon, typeof i8.MapPolyline, typeof i9.MapRectangle], never, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapGroundOverlay, typeof i4.MapInfoWindow, typeof i5.MapKmlLayer, typeof i6.MapMarker, typeof i7.MapPolygon, typeof i8.MapPolyline, typeof i9.MapRectangle]>;
 }
 
 export interface MapAnchorPoint {
@@ -128,6 +128,25 @@ export declare class MapInfoWindow implements OnInit, OnDestroy {
     open(anchor?: MapAnchorPoint): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapInfoWindow, "map-info-window", ["mapInfoWindow"], { "options": "options"; "position": "position"; }, { "closeclick": "closeclick"; "contentChanged": "contentChanged"; "domready": "domready"; "positionChanged": "positionChanged"; "zindexChanged": "zindexChanged"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapInfoWindow, never>;
+}
+
+export declare class MapKmlLayer implements OnInit, OnDestroy {
+    defaultviewportChanged: Observable<void>;
+    kmlClick: Observable<google.maps.KmlMouseEvent>;
+    kmlLayer?: google.maps.KmlLayer;
+    set options(options: google.maps.KmlLayerOptions);
+    statusChanged: Observable<void>;
+    set url(url: string);
+    constructor(_map: GoogleMap, _ngZone: NgZone);
+    getDefaultViewport(): google.maps.LatLngBounds;
+    getMetadata(): google.maps.KmlLayerMetadata;
+    getStatus(): google.maps.KmlLayerStatus;
+    getUrl(): string;
+    getZIndex(): number;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapKmlLayer, "map-kml-layer", ["mapKmlLayer"], { "options": "options"; "url": "url"; }, { "kmlClick": "kmlClick"; "defaultviewportChanged": "defaultviewportChanged"; "statusChanged": "statusChanged"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MapKmlLayer, never>;
 }
 
 export declare class MapMarker implements OnInit, OnDestroy, MapAnchorPoint {

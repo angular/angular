@@ -56,6 +56,7 @@ export class GoogleMapDemo {
   isPolylineDisplayed = false;
   polylineOptions:
       google.maps.PolylineOptions = {path: POLYLINE_PATH, strokeColor: 'grey', strokeOpacity: 0.8};
+
   isPolygonDisplayed = false;
   polygonOptions:
       google.maps.PolygonOptions = {paths: POLYGON_PATH, strokeColor: 'grey', strokeOpacity: 0.8};
@@ -65,6 +66,7 @@ export class GoogleMapDemo {
   isCircleDisplayed = false;
   circleOptions: google.maps.CircleOptions =
       {center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, strokeColor: 'grey', strokeOpacity: 0.8};
+
   isGroundOverlayDisplayed = false;
   groundOverlayImages = [
     {
@@ -78,6 +80,9 @@ export class GoogleMapDemo {
   ];
   groundOverlayUrl = this.groundOverlayImages[0].url;
   groundOverlayBounds = RECTANGLE_BOUNDS;
+  isKmlLayerDisplayed = false;
+  demoKml =
+      'https://developers.google.com/maps/documentation/javascript/examples/kml/westcampus.kml';
 
   mapTypeId: google.maps.MapTypeId;
   mapTypeIds = [
@@ -162,5 +167,9 @@ export class GoogleMapDemo {
 
   groundOverlayUrlChanged(event: Event) {
     this.groundOverlayUrl = (event.target as HTMLSelectElement).value;
+  }
+
+  toggleKmlLayerDisplay() {
+    this.isKmlLayerDisplayed = !this.isKmlLayerDisplayed;
   }
 }

@@ -24,6 +24,8 @@
     <map-ground-overlay *ngIf="isGroundOverlayDisplayed"
                         [url]="groundOverlayUrl"
                         [bounds]="groundOverlayBounds"></map-ground-overlay>
+    <map-kml-layer *ngIf="isKmlLayerDisplayed"
+                   [url]="demoKml"></map-kml-layer>
   </google-map>
 
   <p><label>Latitude:</label> {{display?.lat}}</p>
@@ -113,6 +115,13 @@
           *ngFor="let image of groundOverlayImages"
           [value]="image.url">{{image.title}}</option>
       </select>
+    </label>
+  </div>
+
+  <div>
+    <label for="kml-layer-checkbox">
+      Toggle KML Layer
+      <input type="checkbox" (click)="toggleKmlLayerDisplay()">
     </label>
   </div>
 
