@@ -1,32 +1,32 @@
 # App shell
 
-App shell is a way to render a portion of your application via a route at build time.
-It can improve the user experience by quickly launching a static rendered page (a skeleton common to all pages) while the browser downloads the full client version and switches to it automatically after the code loads.
+App shell es una manera de renderizar una porción de tu aplicación a través de una ruta en tiempo de compilación (build time).
+Puede mejorar la experiencia de usuario lanzando rápidamente una página estática renderizada (un esqueleto común a todas las páginas) mientras el navegador descarga la versión completa del cliente y la muestra automáticamente al finalizar su carga.
 
-This gives users a meaningful first paint of your application that appears quickly because the browser can simply render the HTML and CSS without the need to initialize any JavaScript.
+Esto da a los usuarios una primera visualización significativa de su aplicación que aparece rápidamente porque el navegador simplemente puede renderizar HTML y CSS sin la necesidad de inicializar JavaScript.
 
-Learn more in [The App Shell Model](https://developers.google.com/web/fundamentals/architecture/app-shell).
+Obténga más información en [El modelo de aplicación Shell](https://developers.google.com/web/fundamentals/architecture/app-shell).
 
-## Step 1: Prepare the application
+## Paso 1: Prepara la aplicación
 
-You can do this with the following CLI command:
+Puedes hacer esto con el siguiente comando CLI:
 <code-example language="bash">
 ng new my-app --routing
 </code-example>
 
-For an existing application, you have to manually add the `RouterModule` and defining a `<router-outlet>` within your application.
+Para una aplicación existente, debes agregar manualmente el `RouterModule` y definir un` <router-outlet> `dentro de tu aplicación.
 
-## Step 2: Create the app shell
+## Paso 2: Crea el shell de la aplicación
 
-Use the CLI to automatically create the app shell.
+Usa la CLI para crear automáticamente el shell de la aplicación.
 
 <code-example language="bash">
 ng generate app-shell
 </code-example>
 
-* `client-project` takes the name of your client application.
+* `client-project` toma el nombre de tu aplicación cliente.
 
-After running this command you will notice that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
+Después de ejecutar este comando, notará que el archivo de configuración `angular.json` se ha actualizado para agregar dos nuevos targets, con algunos otros cambios.
 
 <code-example language="json">
 "server": {
@@ -53,20 +53,18 @@ After running this command you will notice that the `angular.json` configuration
 }
 </code-example>
 
-## Step 3: Verify the app is built with the shell content
+## Paso 3: Verifica que la aplicación está construida con el contenido del shell
 
-Use the CLI to build the `app-shell` target.
+Usa la CLI para construir el `app-shell` target.
 
 <code-example language="bash">
 ng run my-app:app-shell
 </code-example>
 
-Or to use the production configuration.
+O usa la configuración de producción.
 
 <code-example language="bash">
 ng run my-app:app-shell:production
 </code-example>
 
-To verify the build output, open `dist/my-app/index.html`. Look for default text `app-shell works!` to show that the app shell route was rendered as part of the output.
-
-
+Para verificar el resultado de la compilación, abre `dist/my-app/index.html`. Busca el texto por defecto `app-shell works!` para mostrar que la ruta del shell de la aplicación se ha renderizado como parte de la carpeta de distribución.
