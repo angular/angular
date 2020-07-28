@@ -98,6 +98,7 @@ export function extractDirectiveTypeCheckMeta(
                   .filter((inputName): inputName is string => inputName !== null));
 
   const restrictedInputFields = new Set<string>();
+  const stringLiteralInputFields = new Set<string>();
   const undeclaredInputFields = new Set<string>();
 
   for (const fieldName of Object.keys(inputs)) {
@@ -106,6 +107,9 @@ export function extractDirectiveTypeCheckMeta(
       undeclaredInputFields.add(fieldName);
     } else if (isRestricted(field.node)) {
       restrictedInputFields.add(fieldName);
+    }
+    if (field && field.nameNode !== null && ts.isStringLiteral(field.nameNode)) {
+      stringLiteralInputFields.add(fieldName);
     }
   }
 
@@ -116,6 +120,7 @@ export function extractDirectiveTypeCheckMeta(
     ngTemplateGuards,
     coercedInputFields,
     restrictedInputFields,
+    stringLiteralInputFields,
     undeclaredInputFields,
     isGeneric: arity !== null && arity > 0,
   };

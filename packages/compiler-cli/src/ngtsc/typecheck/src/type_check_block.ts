@@ -456,10 +456,11 @@ class TcbDirectiveInputsOp extends TcbOp {
         } else if (this.dir.restrictedInputFields.has(fieldName)) {
           if (this.tcb.env.config.honorAccessModifiersForInputBindings) {
             // To get errors assign directly to the fields on the instance, using property access
-            // when possible
-            // TODO: use element access when field name is not valid identifier
-            // target = ts.createElementAccess(dirId, ts.createStringLiteral(fieldName));
-            target = ts.createPropertyAccess(dirId, ts.createIdentifier(fieldName));
+            // when possible. String literal fields may not be valid JS identifiers so we use
+            // literal element access instead for those cases.
+            target = this.dir.stringLiteralInputFields.has(fieldName) ?
+                ts.createElementAccess(dirId, ts.createStringLiteral(fieldName)) :
+                ts.createPropertyAccess(dirId, ts.createIdentifier(fieldName));
           } else {
             // To ignore errors, assign to temp variable with type of the field
             const id = this.tcb.allocateId();

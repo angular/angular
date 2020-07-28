@@ -1649,6 +1649,36 @@ export declare class AnimationEvent {
           ].sort();
           expect(actualMessages).toEqual(expectedMessages);
         }
+
+        it('should report invalid type assignment when field name is not a valid JS identifier',
+           () => {
+             env.write('test.ts', `
+            import {Component, NgModule, Input, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [private-input.xs]="value"></div>',
+            })
+            export class FooCmp {
+              value = 5;
+            }
+
+            @Directive({selector: '[dir]'})
+            export class TestDir {
+              @Input()
+              private 'private-input.xs'!: string;
+            }
+
+            @NgModule({
+              declarations: [FooCmp, TestDir],
+            })
+            export class FooModule {}
+          `);
+             const diags = env.driveDiagnostics();
+             expect(diags.length).toBe(1);
+             expect(diags[0].messageText)
+                 .toEqual(`Type 'number' is not assignable to type 'string'.`);
+           });
       });
 
       describe('with strict inputs', () => {
