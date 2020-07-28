@@ -1577,14 +1577,7 @@ export declare class AnimationEvent {
             }
       `;
 
-      describe('with strict inputs', () => {
-        beforeEach(() => {
-          env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
-        });
-
-        it('should not produce diagnostics for correct inputs which assign to readonly, private, or protected fields',
-           () => {
-             env.write('test.ts', `
+      const correctTypeInputsToRestrictedFields = `
             import {Component, NgModule, Input, Directive} from '@angular/core';
 
             @Component({
@@ -1601,14 +1594,9 @@ export declare class AnimationEvent {
               declarations: [FooCmp, TestDir],
             })
             export class FooModule {}
-        `);
-             const diags = env.driveDiagnostics();
-             expect(diags.length).toBe(0);
-           });
+        `;
 
-        it('should not produce diagnostics for correct inputs which assign to readonly, private, or protected fields inherited from a base class',
-           () => {
-             env.write('test.ts', `
+      const correctInputsToRestrictedFieldsFromBaseClass = `
             import {Component, NgModule, Input, Directive} from '@angular/core';
 
             @Component({
@@ -1629,7 +1617,85 @@ export declare class AnimationEvent {
               declarations: [FooCmp, ChildDir],
             })
             export class FooModule {}
-        `);
+        `;
+      describe('with strictInputAccessModifiers', () => {
+        beforeEach(() => {
+          env.tsconfig({
+            fullTemplateTypeCheck: true,
+            strictInputTypes: true,
+            strictInputAccessModifiers: true
+          });
+        });
+
+        it('should produce diagnostics for inputs which assign to readonly, private, and protected fields',
+           () => {
+             env.write('test.ts', correctTypeInputsToRestrictedFields);
+             expectIllegalAssignmentErrors(env.driveDiagnostics());
+           });
+
+        it('should produce diagnostics for inputs which assign to readonly, private, and protected fields inherited from a base class',
+           () => {
+             env.write('test.ts', correctInputsToRestrictedFieldsFromBaseClass);
+             expectIllegalAssignmentErrors(env.driveDiagnostics());
+           });
+
+        function expectIllegalAssignmentErrors(diags: ReadonlyArray<ts.Diagnostic>) {
+          expect(diags.length).toBe(3);
+          const actualMessages = diags.map(d => d.messageText).sort();
+          const expectedMessages = [
+            `Property 'protectedField' is protected and only accessible within class 'TestDir' and its subclasses.`,
+            `Property 'privateField' is private and only accessible within class 'TestDir'.`,
+            `Cannot assign to 'readonlyField' because it is a read-only property.`,
+          ].sort();
+          expect(actualMessages).toEqual(expectedMessages);
+        }
+
+        it('should report invalid type assignment when field name is not a valid JS identifier',
+           () => {
+             env.write('test.ts', `
+            import {Component, NgModule, Input, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [private-input.xs]="value"></div>',
+            })
+            export class FooCmp {
+              value = 5;
+            }
+
+            @Directive({selector: '[dir]'})
+            export class TestDir {
+              @Input()
+              private 'private-input.xs'!: string;
+            }
+
+            @NgModule({
+              declarations: [FooCmp, TestDir],
+            })
+            export class FooModule {}
+          `);
+             const diags = env.driveDiagnostics();
+             expect(diags.length).toBe(1);
+             expect(diags[0].messageText)
+                 .toEqual(`Type 'number' is not assignable to type 'string'.`);
+           });
+      });
+
+      describe('with strict inputs', () => {
+        beforeEach(() => {
+          env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+        });
+
+        it('should not produce diagnostics for correct inputs which assign to readonly, private, or protected fields',
+           () => {
+             env.write('test.ts', correctTypeInputsToRestrictedFields);
+             const diags = env.driveDiagnostics();
+             expect(diags.length).toBe(0);
+           });
+
+        it('should not produce diagnostics for correct inputs which assign to readonly, private, or protected fields inherited from a base class',
+           () => {
+             env.write('test.ts', correctInputsToRestrictedFieldsFromBaseClass);
              const diags = env.driveDiagnostics();
              expect(diags.length).toBe(0);
            });

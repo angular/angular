@@ -244,6 +244,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     ngTemplateGuards: [],
     coercedInputFields: new Set<string>(),
     restrictedInputFields: new Set<string>(),
+    stringLiteralInputFields: new Set<string>(),
     undeclaredInputFields: new Set<string>(),
     isGeneric: false,
     baseClass: null,
