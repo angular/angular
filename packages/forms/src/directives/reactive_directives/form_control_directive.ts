@@ -13,7 +13,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
-import {_ngModelWarning, composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
+import {_ngModelWarning, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 
@@ -51,7 +51,6 @@ export const formControlBinding: any = {
  * @publicApi
  */
 @Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
-
 export class FormControlDirective extends NgControl implements OnChanges {
   /**
    * Internal reference to the view model value.
@@ -111,8 +110,8 @@ export class FormControlDirective extends NgControl implements OnChanges {
       @Optional() @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING) private _ngModelWarningConfig: string|
       null) {
     super();
-    this._rawValidators = validators || [];
-    this._rawAsyncValidators = asyncValidators || [];
+    this._setValidators(validators);
+    this._setAsyncValidators(asyncValidators);
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
@@ -139,24 +138,6 @@ export class FormControlDirective extends NgControl implements OnChanges {
    */
   get path(): string[] {
     return [];
-  }
-
-  /**
-   * @description
-   * Synchronous validator function composed of all the synchronous validators
-   * registered with this directive.
-   */
-  get validator(): ValidatorFn|null {
-    return composeValidators(this._rawValidators);
-  }
-
-  /**
-   * @description
-   * Async validator function composed of all the async validators registered with this
-   * directive.
-   */
-  get asyncValidator(): AsyncValidatorFn|null {
-    return composeAsyncValidators(this._rawAsyncValidators);
   }
 
   /**
