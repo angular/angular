@@ -91,6 +91,14 @@ export interface TypeCheckingConfig {
   checkTypeOfInputBindings: boolean;
 
   /**
+   * Whether to honor the access modifiers on input bindings for the component/directive.
+   *
+   * If a template binding attempts to assign to an input that is private/protected/readonly,
+   * this will produce errors when enabled but will not when disabled.
+   */
+  honorAccessModifiersForInputBindings: boolean;
+
+  /**
    * Whether to use strict null types for input bindings for directives.
    *
    * If this is `true`, applications that are compiled with TypeScript's `strictNullChecks` enabled

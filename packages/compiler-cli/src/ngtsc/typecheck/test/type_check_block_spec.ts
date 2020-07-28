@@ -367,7 +367,7 @@ describe('type check blocks', () => {
             '(((ctx).foo)); ');
   });
 
-  it('should handle restricted properties', () => {
+  it('should assign restricted properties to temp variables by default', () => {
     const TEMPLATE = `<div dir [inputA]="foo"></div>`;
     const DIRECTIVES: TestDeclaration[] = [{
       type: 'directive',
@@ -585,6 +585,7 @@ describe('type check blocks', () => {
       checkQueries: false,
       checkTemplateBodies: true,
       checkTypeOfInputBindings: true,
+      honorAccessModifiersForInputBindings: false,
       strictNullInputBindings: true,
       checkTypeOfAttributes: true,
       checkTypeOfDomBindings: false,
@@ -866,6 +867,47 @@ describe('type check blocks', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, useContextGenericType: false};
         const block = tcb(TEMPLATE, undefined, DISABLED_CONFIG);
         expect(block).toContain('function Test_TCB(ctx: Test<any>)');
+      });
+    });
+
+    describe('config.checkAccessModifiersForInputBindings', () => {
+      const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+
+      xit('should assign restricted properties via element access for field names that are not JS identifiers',
+          () => {
+            const DIRECTIVES: TestDeclaration[] = [{
+              type: 'directive',
+              name: 'Dir',
+              selector: '[dir]',
+              inputs: {
+                'some-input.xs': 'inputA',
+              },
+              restrictedInputFields: ['some-input.xs']
+            }];
+            const enableChecks:
+                TypeCheckingConfig = {...BASE_CONFIG, honorAccessModifiersForInputBindings: true};
+            const block = tcb(TEMPLATE, DIRECTIVES, enableChecks);
+            expect(block).toContain(
+                'var _t2: Dir = (null!); ' +
+                '_t2["some-input.xs"] = (((ctx).foo)); ');
+          });
+
+      it('should assign restricted properties via property access', () => {
+        const DIRECTIVES: TestDeclaration[] = [{
+          type: 'directive',
+          name: 'Dir',
+          selector: '[dir]',
+          inputs: {
+            fieldA: 'inputA',
+          },
+          restrictedInputFields: ['fieldA']
+        }];
+        const enableChecks:
+            TypeCheckingConfig = {...BASE_CONFIG, honorAccessModifiersForInputBindings: true};
+        const block = tcb(TEMPLATE, DIRECTIVES, enableChecks);
+        expect(block).toContain(
+            'var _t2: Dir = (null!); ' +
+            '_t2.fieldA = (((ctx).foo)); ');
       });
     });
   });
