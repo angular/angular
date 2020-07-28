@@ -23,7 +23,7 @@ Angular creates, updates, and destroys components as the user moves through the 
 
 <img src="generated/images/guide/architecture/metadata.png" alt="Metadata" class="left">
 
-The `@Component` decorator identifies the class immediately below it as a component class, and specifies its metadata. In the example code below, you can see that `HeroListComponent` is just a class, with no special Angular notation or syntax at all. It's not a component until you mark it as one with the `@Component` decorator.
+The `@Component` decorator identifies the class immediately below it as a component class, and specifies its metadata. In the example code above, you can see that `HeroListComponent` is just a class, with no special Angular notation or syntax at all. It's not a component until you mark it as one with the `@Component` decorator.
 
 The metadata for a component tells Angular where to get the major building blocks that it needs to create and present the component and its view. In particular, it associates a *template* with the component, either directly with inline code, or by reference. Together, the component and its template describe a *view*.
 
