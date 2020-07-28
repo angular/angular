@@ -48,12 +48,12 @@ export abstract class SwRegistrationOptions {
    * with the browser.
    *
    * The default behavior of registering once the application stabilizes (i.e. as soon as there are
-   * no pending micro- and macro-tasks), is designed register the ServiceWorker as soon as possible
-   * but without affecting the application's first time load.
+   * no pending micro- and macro-tasks) is designed to register the ServiceWorker as soon as
+   * possible but without affecting the application's first time load.
    *
    * Still, there might be cases where you want more control over when the ServiceWorker is
-   * registered (e.g. there might be a long-running timeout or polling interval, preventing the app
-   * to stabilize). The available option are:
+   * registered (for example, there might be a long-running timeout or polling interval, preventing
+   * the app from stabilizing). The available option are:
    *
    * - `registerWhenStable:<timeout>`: Register as soon as the application stabilizes (no pending
    *     micro-/macro-tasks) but no later than `<timeout>` milliseconds. If the app hasn't

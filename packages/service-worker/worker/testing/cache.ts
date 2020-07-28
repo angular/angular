@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockRequest, MockResponse} from './fetch';
+import {MockResponse} from './fetch';
+import {normalizeUrl} from './utils';
 
 export interface DehydratedResponse {
   body: string|null;
@@ -104,7 +105,7 @@ export class MockCache {
   }
 
   async 'delete'(request: RequestInfo, options?: CacheQueryOptions): Promise<boolean> {
-    let url = (typeof request === 'string' ? request : request.url);
+    let url = this.getRequestUrl(request);
     if (this.cache.has(url)) {
       this.cache.delete(url);
       return true;
@@ -127,10 +128,7 @@ export class MockCache {
   }
 
   async match(request: RequestInfo, options?: CacheQueryOptions): Promise<Response> {
-    let url = (typeof request === 'string' ? request : request.url);
-    if (url.startsWith(this.origin)) {
-      url = '/' + url.substr(this.origin.length);
-    }
+    let url = this.getRequestUrl(request);
     // TODO: cleanup typings. Typescript doesn't know this can resolve to undefined.
     let res = this.cache.get(url);
     if (!res && options?.ignoreSearch) {
@@ -150,8 +148,7 @@ export class MockCache {
     if (request === undefined) {
       return Array.from(this.cache.values());
     }
-    const url = (typeof request === 'string' ? request : request.url);
-    const res = await this.match(url, options);
+    const res = await this.match(request, options);
     if (res) {
       return [res];
     } else {
@@ -160,7 +157,7 @@ export class MockCache {
   }
 
   async put(request: RequestInfo, response: Response): Promise<void> {
-    const url = (typeof request === 'string' ? request : request.url);
+    const url = this.getRequestUrl(request);
     this.cache.set(url, response.clone());
 
     // Even though the body above is cloned, consume it here because the
@@ -188,6 +185,12 @@ export class MockCache {
       dehydrated[url] = dehydratedResp;
     });
     return dehydrated;
+  }
+
+  /** Get the normalized URL from a `RequestInfo` value. */
+  private getRequestUrl(request: RequestInfo): string {
+    const url = typeof request === 'string' ? request : request.url;
+    return normalizeUrl(url, this.origin);
   }
 
   /** remove the query/hash part from a url*/

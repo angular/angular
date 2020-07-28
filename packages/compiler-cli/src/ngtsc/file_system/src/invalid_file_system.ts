@@ -82,7 +82,7 @@ export class InvalidFileSystem implements FileSystem {
   isRooted(path: string): boolean {
     throw makeError();
   }
-  relative<T extends PathString>(from: T, to: T): PathSegment {
+  relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
     throw makeError();
   }
   basename(filePath: string, extension?: string): PathSegment {

@@ -12,7 +12,7 @@
 
 import {findEventTasks} from '../common/events';
 import {patchTimer} from '../common/timers';
-import {patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, zoneSymbol} from '../common/utils';
+import {patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, zoneSymbol,} from '../common/utils';
 
 import {patchCustomElements} from './custom-elements';
 import {eventTargetPatch, patchEvent} from './event-target';
@@ -59,9 +59,18 @@ Zone.__load_patch('EventTarget', (global: any, Zone: ZoneType, api: _ZonePrivate
   if (XMLHttpRequestEventTarget && XMLHttpRequestEventTarget.prototype) {
     api.patchEventTarget(global, [XMLHttpRequestEventTarget.prototype]);
   }
+});
+
+Zone.__load_patch('MutationObserver', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   patchClass('MutationObserver');
   patchClass('WebKitMutationObserver');
+});
+
+Zone.__load_patch('IntersectionObserver', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   patchClass('IntersectionObserver');
+});
+
+Zone.__load_patch('FileReader', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   patchClass('FileReader');
 });
 

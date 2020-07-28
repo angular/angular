@@ -46,21 +46,21 @@ You saw a component for the first time in the [Getting Started](start "Getting S
 
 <!--
 *Structural Directives* change the structure of the view.
-Two examples are [NgFor](guide/template-syntax#ngFor) and [NgIf](guide/template-syntax#ngIf).
+Two examples are [NgFor](guide/built-in-directives#ngFor) and [NgIf](guide/built-in-directives#ngIf).
 Learn about them in the [Structural Directives](guide/structural-directives) guide.
 -->
 *구조 디렉티브*는 뷰의 구조를 변경합니다.
-구조 디렉티브 중에서 가장 많이 사용하는 [NgFor](guide/template-syntax#ngFor)나 [NgIf](guide/template-syntax#ngIf) 예제를 확인해 보세요.
+구조 디렉티브 중에서 가장 많이 사용하는 [NgFor](guide/built-in-directives#ngFor)나 [NgIf](guide/built-in-directives#ngIf) 예제를 확인해 보세요.
 구조 디렉티브의 개념은 [구조 디렉티브](guide/structural-directives)에서도 확인할 수 있습니다.
 
 <!--
 *Attribute directives* are used as attributes of elements.
-The built-in [NgStyle](guide/template-syntax#ngStyle) directive in the
-[Template Syntax](guide/template-syntax) guide, for example,
+The built-in [NgStyle](guide/built-in-directives#ngStyle) directive in the
+[Built-in directives](guide/built-in-directives) guide, for example,
 can change several element styles at the same time.
 -->
 *어트리뷰트 디렉티브*는 엘리먼트의 어트리뷰트처럼 사용합니다.
-[템플릿 문법](guide/template-syntax) 가이드 문서에서 활용하는 [NgStyle](guide/template-syntax#ngStyle)을 확인해 보세요. 이 디렉티브는 Angular에서 제공하는 기본 디렉티브이며, 여러 엘리먼트 스타일을 한 번에 지정할 수 있습니다.
+[기본 디렉티브](guide/built-in-directives) 문서에서 설명하는 [NgStyle](guide/built-in-directives#ngStyle)을 확인해 보세요. 이 디렉티브는 Angular에서 제공하는 기본 디렉티브이며, 여러 엘리먼트 스타일을 한 번에 지정할 수 있습니다.
 
 <!--
 ## Build a simple attribute directive

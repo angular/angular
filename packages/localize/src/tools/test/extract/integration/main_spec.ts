@@ -7,7 +7,6 @@
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {Logger} from '@angular/compiler-cli/src/ngtsc/logging';
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 import {loadTestDirectory} from '@angular/compiler-cli/test/helpers';
 
@@ -15,7 +14,7 @@ import {extractTranslations} from '../../../src/extract/main';
 
 runInEachFileSystem(() => {
   let fs: FileSystem;
-  let logger: Logger;
+  let logger: MockLogger;
   let rootPath: AbsoluteFsPath;
   let outputPath: AbsoluteFsPath;
   let sourceFilePath: AbsoluteFsPath;
@@ -40,12 +39,13 @@ runInEachFileSystem(() => {
       extractTranslations({
         rootPath,
         sourceLocale: 'en',
-        sourceFilePaths: [],
+        sourceFilePaths: [textFile1, textFile2],
         format: 'json',
         outputPath,
         logger,
         useSourceMaps: false,
         useLegacyIds: false,
+        duplicateMessageHandling: 'ignore',
       });
       expect(fs.readFile(outputPath)).toEqual([
         `{`,
@@ -65,6 +65,7 @@ runInEachFileSystem(() => {
         logger,
         useSourceMaps: false,
         useLegacyIds: false,
+        duplicateMessageHandling: 'ignore',
       });
       expect(fs.readFile(outputPath)).toEqual([
         `{`,
@@ -87,6 +88,7 @@ runInEachFileSystem(() => {
         logger,
         useSourceMaps: false,
         useLegacyIds: false,
+        duplicateMessageHandling: 'ignore',
       });
       expect(fs.readFile(outputPath)).toEqual([
         `<?xml version="1.0" encoding="UTF-8" ?>`,
@@ -128,6 +130,7 @@ runInEachFileSystem(() => {
         logger,
         useSourceMaps: false,
         useLegacyIds: false,
+        duplicateMessageHandling: 'ignore',
       });
       expect(fs.readFile(outputPath)).toEqual([
         `<?xml version="1.0" encoding="UTF-8" ?>`,
@@ -164,6 +167,7 @@ runInEachFileSystem(() => {
         logger,
         useSourceMaps: false,
         useLegacyIds: false,
+        duplicateMessageHandling: 'ignore',
       });
       expect(fs.readFile(outputPath)).toEqual([
         `<?xml version="1.0" encoding="UTF-8" ?>`,
@@ -197,6 +201,7 @@ runInEachFileSystem(() => {
              logger,
              useSourceMaps: true,
              useLegacyIds: false,
+             duplicateMessageHandling: 'ignore',
            });
            expect(fs.readFile(outputPath)).toEqual([
              `<?xml version="1.0" encoding="UTF-8" ?>`,
@@ -224,5 +229,82 @@ runInEachFileSystem(() => {
            ].join('\n'));
          });
     }
+
+    describe('[duplicateMessageHandling]', () => {
+      it('should throw if set to "error"', () => {
+        expect(() => extractTranslations({
+                 rootPath,
+                 sourceLocale: 'en-GB',
+                 sourceFilePaths: [fs.resolve(rootPath, 'test_files/duplicate.js')],
+                 format: 'json',
+                 outputPath,
+                 logger,
+                 useSourceMaps: false,
+                 useLegacyIds: false,
+                 duplicateMessageHandling: 'error',
+               }))
+            .toThrowError(
+                `Failed to extract messages\n` +
+                `ERRORS:\n` +
+                ` - Duplicate messages with id "message-2":\n` +
+                `   - "message contents" : test_files/duplicate.js:6\n` +
+                `   - "different message contents" : test_files/duplicate.js:7`);
+        expect(fs.exists(outputPath)).toBe(false);
+      });
+
+      it('should log to the logger if set to "warning"', () => {
+        extractTranslations({
+          rootPath,
+          sourceLocale: 'en-GB',
+          sourceFilePaths: [fs.resolve(rootPath, 'test_files/duplicate.js')],
+          format: 'json',
+          outputPath,
+          logger,
+          useSourceMaps: false,
+          useLegacyIds: false,
+          duplicateMessageHandling: 'warning',
+        });
+        expect(logger.logs.warn).toEqual([
+          ['Messages extracted with warnings\n' +
+           `WARNINGS:\n` +
+           ` - Duplicate messages with id "message-2":\n` +
+           `   - "message contents" : test_files/duplicate.js:6\n` +
+           `   - "different message contents" : test_files/duplicate.js:7`]
+        ]);
+        expect(fs.readFile(outputPath)).toEqual([
+          `{`,
+          `  "locale": "en-GB",`,
+          `  "translations": {`,
+          `    "message-1": "message {$PH} contents",`,
+          `    "message-2": "different message contents"`,
+          `  }`,
+          `}`,
+        ].join('\n'));
+      });
+
+      it('should not log to the logger if set to "ignore"', () => {
+        extractTranslations({
+          rootPath,
+          sourceLocale: 'en-GB',
+          sourceFilePaths: [fs.resolve(rootPath, 'test_files/duplicate.js')],
+          format: 'json',
+          outputPath,
+          logger,
+          useSourceMaps: false,
+          useLegacyIds: false,
+          duplicateMessageHandling: 'ignore',
+        });
+        expect(logger.logs.warn).toEqual([]);
+        expect(fs.readFile(outputPath)).toEqual([
+          `{`,
+          `  "locale": "en-GB",`,
+          `  "translations": {`,
+          `    "message-1": "message {$PH} contents",`,
+          `    "message-2": "different message contents"`,
+          `  }`,
+          `}`,
+        ].join('\n'));
+      });
+    });
   });
 });

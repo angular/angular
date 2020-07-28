@@ -387,15 +387,9 @@ Angular CLI로 라이브러리 프로젝트를 생성했을 때 `dev` 환경 기
 
 ### `strictInjectionParameters`
 
-<!--
 When `true` (recommended), reports an error for a supplied parameter whose injection type cannot be determined. When `false` (currently the default), constructor parameters of classes marked with `@Injectable` whose type cannot be resolved produce a warning.
 
-When you use the CLI command `ng new`, it is set to `true` by default in the generated project's configuration.
--->
-`true`로 설정하면 의존성으로 주입되는 객체 타입을 인식할 수 없을 때 에러를 발생시킵니다.
-그리고 `false`로 설정하면 생성자로 주입되는 의존성 객체 중에 `@Injectable`로 지정된 객체의 타입을 확인하지 못해도 단순하게 경고만 표시합니다.
-
-기본값은 `false`지만 `true` 값을 권장합니다.
+When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 
 ### `strictTemplates`
@@ -404,6 +398,8 @@ When you use the CLI command `ng new`, it is set to `true` by default in the gen
 When `true`, enables [strict template type checking](guide/template-typecheck#strict-mode) in Angular version 9. Strict mode is only available when using [Ivy](guide/ivy).
 
 Additional strictness flags allow you to enable and disable specific types of strict template type checking. See [troubleshooting template errors](guide/template-typecheck#troubleshooting-template-errors).
+
+When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 -->
 `true`로 설정하면 [더 엄격한 템플릿 타입 검사](guide/template-typecheck#strict-mode)를 활성화 합니다.
 이 기능은 Angular 9버전부터 도입되었으며 [Ivy](guide/ivy)를 대상으로 동작합니다.
@@ -411,6 +407,7 @@ Additional strictness flags allow you to enable and disable specific types of st
 세부 검사 옵션은 추가 옵션을 지정해서 제어할 수 있습니다.
 [템플릿 에러 해결하기](guide/template-typecheck#troubleshooting-template-errors) 문서를 참고하세요.
 
+When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 ### `trace`
 

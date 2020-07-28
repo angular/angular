@@ -365,6 +365,13 @@ export function getLocation(startPath: NodePath, endPath?: NodePath): ɵSourceLo
   };
 }
 
+export function serializeLocationPosition(location: ɵSourceLocation): string {
+  const endLineString = location.end !== undefined && location.end.line !== location.start.line ?
+      `,${location.end.line + 1}` :
+      '';
+  return `${location.start.line + 1}${endLineString}`;
+}
+
 function getFileFromPath(path: NodePath|undefined): AbsoluteFsPath|null {
   const opts = path?.hub.file.opts;
   return opts?.filename ?

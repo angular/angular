@@ -75,7 +75,16 @@ export function getExpressionCompletions(
     visitKeyedWrite(_ast) {},
     visitLiteralArray(_ast) {},
     visitLiteralMap(_ast) {},
-    visitLiteralPrimitive(_ast) {},
+    visitLiteralPrimitive(ast) {
+      // The type `LiteralPrimitive` include the `ERROR`, and it's wrapped as `string`.
+      // packages/compiler/src/template_parser/binding_parser.ts#L308
+      // So exclude the `ERROR` here.
+      if (typeof ast.value === 'string' &&
+          ast.value ===
+              templateInfo.source.slice(ast.sourceSpan.start + 1, ast.sourceSpan.end - 1)) {
+        result = undefined;
+      }
+    },
     visitMethodCall(_ast) {},
     visitPipe(ast) {
       if (position >= ast.exp.span.end &&

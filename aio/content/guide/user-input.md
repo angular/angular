@@ -21,22 +21,22 @@ DOM 이벤트는 사용자가 링크를 클릭하거나 버튼을 클릭할 때,
 ## 사용자 동작 이벤트 바인딩하기
 
 <!--
-You can use [Angular event bindings](guide/template-syntax#event-binding)
+You can use [Angular event bindings](guide/event-binding)
 to respond to any [DOM event](https://developer.mozilla.org/en-US/docs/Web/Events).
 Many DOM events are triggered by user input. Binding to these events provides a way to
 get input from the user.
 
 To bind to a DOM event, surround the DOM event name in parentheses and assign a quoted
-[template statement](guide/template-syntax#template-statements) to it.
+[template statement](guide/template-statements) to it.
 
 The following example shows an event binding that implements a click handler:
 
 <code-example path="user-input/src/app/click-me.component.ts" region="click-me-button" header="src/app/click-me.component.ts"></code-example>
 -->
-[DOM에서 발생하는 이벤트](https://developer.mozilla.org/en-US/docs/Web/Events)는 [Angular 이벤트 바인딩](guide/template-syntax#event-binding) 문법을 사용해서 반응할 수 있습니다.
+[DOM에서 발생하는 이벤트](https://developer.mozilla.org/en-US/docs/Web/Events)는 [Angular 이벤트 바인딩](guide/event-binding) 문법을 사용해서 반응할 수 있습니다.
 DOM에서 일어나는 이벤트는 대부분 사용자의 행동에 의해 발생합니다. 그래서 이 이벤트를 확인하면 사용자가 어떤 동작을 하고 있는지 알 수 있습니다.
 
-DOM 이벤트를 바인딩 하려면 이벤트 이름을 괄호(`(`, `)`)로 감싸고 [템플릿 실행문](guide/template-syntax#template-statements)을 연결하면 됩니다.
+DOM 이벤트를 바인딩 하려면 이벤트 이름을 괄호(`(`, `)`)로 감싸고 [템플릿 실행문](guide/template-statements)을 연결하면 됩니다.
 
 아래 예제는 클릭 이벤트에 `onClickMe()` 핸들러를 바인딩하는 예제 코드입니다.
 
@@ -115,7 +115,7 @@ In this case, `target` refers to the [`<input>` element](https://developer.mozil
 
 After each call, the `onKey()` method appends the contents of the input box value to the list
 in the component's `values` property, followed by a separator character (|).
-The [interpolation](guide/template-syntax#interpolation)
+The [interpolation](guide/interpolation)
 displays the accumulating input box changes from the `values` property.
 
 Suppose the user enters the letters "abc", and then backspaces to remove them one by one.
@@ -128,7 +128,7 @@ Here's what the UI displays:
 이 예제에서는 `target` 프로퍼티가 [`<input>` 엘리먼트](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement)를 가리키며, 이 입력 필드의 현재값은 `event.target.value` 프로퍼티를 참조해서 확인할 수 있습니다.
 
 `onKey()` 메소드가 실행될 때마다 변하는 값을 컴포넌트의 `values` 프로퍼티에 할당해서 화면에 표시해 봅시다.
-위 코드는 이벤트가 발생할 때마다 현재값에 구분 기호(|)를 붙여서 계속 연결하며, 템플릿에는 [문자열 바인딩](guide/template-syntax#interpolation)으로 연결했습니다.
+위 코드는 이벤트가 발생할 때마다 현재값에 구분 기호(|)를 붙여서 계속 연결하며, 템플릿에는 [문자열 바인딩](guide/interpolation)으로 연결했습니다.
 
 사용자가 "abc"를 차례대로 입력한 이후에 백스페이스로 모두 지웠다고 합시다.
 그러면 화면에는 다음과 같이 표시됩니다:
@@ -231,7 +231,7 @@ The next section shows how to use template reference variables to address this p
 
 <!--
 There's another way to get the user data: use Angular
-[**template reference variables**](guide/template-syntax#ref-vars).
+[**template reference variables**](guide/template-reference-variables).
 These variables provide direct access to an element from within the template.
 To declare a template reference variable, precede an identifier with a hash (or pound) character (#).
 
@@ -257,7 +257,7 @@ Type something in the input box, and watch the display update with each keystrok
   <img src='generated/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back">
 </div>
 -->
-Angular에서 제공하는 [**템플릿 참조 변수**](guide/template-syntax#ref-vars)를 사용해서 사용자가 입력한 데이터를 확인해 봅시다.
+Angular에서 제공하는 [**템플릿 참조 변수**](guide/template-reference-variables)를 사용해서 사용자가 입력한 데이터를 확인해 봅시다.
 이 방법을 사용하면 템플릿 안에서 엘리먼트에 직접 접근할 수 있습니다.
 먼저, 템플릿 참조 변수를 선언하기 위해 엘리먼트에 해시 기호(`#`)를 붙여 변수를 선언합니다.
 

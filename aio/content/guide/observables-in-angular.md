@@ -6,13 +6,13 @@
 <!--
 Angular makes use of observables as an interface to handle a variety of common asynchronous operations. For example:
 
-* You can define [custom events](guide/template-syntax#custom-events-with-eventemitter) that send observable output data from a child to a parent component.
+* You can define [custom events](guide/event-binding#custom-events-with-eventemitter) that send observable output data from a child to a parent component.
 * The HTTP module uses observables to handle AJAX requests and responses.
 * The Router and Forms modules use observables to listen for and respond to user-input events.
 -->
 Angular는 비동기 로직을 처리할 때 옵저버블을 다양하게 사용합니다. 몇 가지 예를 들면 다음과 같은 경우에 옵저버블을 사용합니다:
 
-* 자식 컴포넌트에서 부모 컴포넌트로 데이터를 전달할 때 옵저버블 형태로 [커스텀 이벤트](guide/template-syntax#custom-events-with-eventemitter)를 보낼 수 있습니다.
+* 자식 컴포넌트에서 부모 컴포넌트로 데이터를 전달할 때 옵저버블 형태로 [커스텀 이벤트](guide/event-binding#custom-events-with-eventemitter)를 보낼 수 있습니다.
 * HTTP 모듈이 AJAX 요청을 보내거나 응답을 받아 처리할 때 옵저버블을 사용합니다.
 * 라우터와 폼 모듈이 사용자 입력 이벤트를 감지할 때 옵저버블을 사용합니다.
 
@@ -23,7 +23,7 @@ Angular는 비동기 로직을 처리할 때 옵저버블을 다양하게 사용
 ## 컴포넌트간 데이터 전달하기
 
 <!--
-Angular provides an `EventEmitter` class that is used when publishing values from a component through the [`@Output()` decorator](guide/template-syntax#how-to-use-output).
+Angular provides an `EventEmitter` class that is used when publishing values from a component through the [`@Output()` decorator](guide/inputs-outputs#how-to-use-output).
 `EventEmitter` extends [RxJS `Subject`](https://rxjs.dev/api/index/class/Subject), adding an `emit()` method so it can send arbitrary values.
 When you call `emit()`, it passes the emitted value to the `next()` method of any subscribed observer.
 
@@ -35,7 +35,7 @@ Here is the component definition:
 
 <code-example path="observables-in-angular/src/main.ts" header="EventEmitter" region="eventemitter"></code-example>
 -->
-컴포넌트 밖으로 데이터를 보내려면 [`@Output()` 데코레이터](guide/template-syntax#how-to-use-output)가 지정된 프로퍼티에 `EventEmitter` 인스턴스를 사용합니다.
+컴포넌트 밖으로 데이터를 보내려면 [`@Output()` 데코레이터](guide/inputs-outputs#how-to-use-output)가 지정된 프로퍼티에 `EventEmitter` 인스턴스를 사용합니다.
 `EventEmitter`는 [RxJS가 제공하는 `Subject`](https://rxjs.dev/api/index/class/Subject) 클래스를 확장한 클래스입니다.
 `Subject`에 있는 기능 외에 `EventEmitter`가 제공하는 `emit()` 메소드를 사용하면 데이터를 옵저버블에 실어 보낼 수 있습니다.
 그리고 이렇게 보낸 데이터는 이 옵저버블을 구독하는 옵저버의 `next()` 메소드가 받을 수 있습니다.

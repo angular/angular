@@ -290,72 +290,65 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
   schemas?: SchemaMetadata[] | null;
 }): never {
   return noSideEffects(() => {
-    // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
-    // See the `initNgDevMode` docstring for more information.
-    (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
+           // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
+           // See the `initNgDevMode` docstring for more information.
+           (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
-    const type = componentDefinition.type;
-    const typePrototype = type.prototype;
-    const declaredInputs: {[key: string]: string} = {} as any;
-    const def: Mutable<ComponentDef<any>, keyof ComponentDef<any>> = {
-      type: type,
-      providersResolver: null,
-      decls: componentDefinition.decls,
-      vars: componentDefinition.vars,
-      factory: null,
-      template: componentDefinition.template || null!,
-      consts: componentDefinition.consts || null,
-      ngContentSelectors: componentDefinition.ngContentSelectors,
-      hostBindings: componentDefinition.hostBindings || null,
-      hostVars: componentDefinition.hostVars || 0,
-      hostAttrs: componentDefinition.hostAttrs || null,
-      contentQueries: componentDefinition.contentQueries || null,
-      declaredInputs: declaredInputs,
-      inputs: null!,   // assigned in noSideEffects
-      outputs: null!,  // assigned in noSideEffects
-      exportAs: componentDefinition.exportAs || null,
-      onChanges: null,
-      onInit: typePrototype.ngOnInit || null,
-      doCheck: typePrototype.ngDoCheck || null,
-      afterContentInit: typePrototype.ngAfterContentInit || null,
-      afterContentChecked: typePrototype.ngAfterContentChecked || null,
-      afterViewInit: typePrototype.ngAfterViewInit || null,
-      afterViewChecked: typePrototype.ngAfterViewChecked || null,
-      onDestroy: typePrototype.ngOnDestroy || null,
-      onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
-      directiveDefs: null!,  // assigned in noSideEffects
-      pipeDefs: null!,       // assigned in noSideEffects
-      selectors: componentDefinition.selectors || EMPTY_ARRAY,
-      viewQuery: componentDefinition.viewQuery || null,
-      features: componentDefinition.features as DirectiveDefFeature[] || null,
-      data: componentDefinition.data || {},
-      // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in
-      // the next line. Also `None` should be 0 not 2.
-      encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
-      id: 'c',
-      styles: componentDefinition.styles || EMPTY_ARRAY,
-      _: null as never,
-      setInput: null,
-      schemas: componentDefinition.schemas || null,
-      tView: null,
-    };
-    const directiveTypes = componentDefinition.directives!;
-    const feature = componentDefinition.features;
-    const pipeTypes = componentDefinition.pipes!;
-    def.id += _renderCompCount++;
-    def.inputs = invertObject(componentDefinition.inputs, declaredInputs),
-    def.outputs = invertObject(componentDefinition.outputs),
-    feature && feature.forEach((fn) => fn(def));
-    def.directiveDefs = directiveTypes ?
-        () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
-                  .map(extractDirectiveDef) :
-        null;
-    def.pipeDefs = pipeTypes ?
-        () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
-        null;
+           const type = componentDefinition.type;
+           const typePrototype = type.prototype;
+           const declaredInputs: {[key: string]: string} = {} as any;
+           const def: Mutable<ComponentDef<any>, keyof ComponentDef<any>> = {
+             type: type,
+             providersResolver: null,
+             decls: componentDefinition.decls,
+             vars: componentDefinition.vars,
+             factory: null,
+             template: componentDefinition.template || null!,
+             consts: componentDefinition.consts || null,
+             ngContentSelectors: componentDefinition.ngContentSelectors,
+             hostBindings: componentDefinition.hostBindings || null,
+             hostVars: componentDefinition.hostVars || 0,
+             hostAttrs: componentDefinition.hostAttrs || null,
+             contentQueries: componentDefinition.contentQueries || null,
+             declaredInputs: declaredInputs,
+             inputs: null!,   // assigned in noSideEffects
+             outputs: null!,  // assigned in noSideEffects
+             exportAs: componentDefinition.exportAs || null,
+             onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
+             directiveDefs: null!,  // assigned in noSideEffects
+             pipeDefs: null!,       // assigned in noSideEffects
+             selectors: componentDefinition.selectors || EMPTY_ARRAY,
+             viewQuery: componentDefinition.viewQuery || null,
+             features: componentDefinition.features as DirectiveDefFeature[] || null,
+             data: componentDefinition.data || {},
+             // TODO(misko): convert ViewEncapsulation into const enum so that it can be used
+             // directly in the next line. Also `None` should be 0 not 2.
+             encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
+             id: 'c',
+             styles: componentDefinition.styles || EMPTY_ARRAY,
+             _: null as never,
+             setInput: null,
+             schemas: componentDefinition.schemas || null,
+             tView: null,
+           };
+           const directiveTypes = componentDefinition.directives!;
+           const feature = componentDefinition.features;
+           const pipeTypes = componentDefinition.pipes!;
+           def.id += _renderCompCount++;
+           def.inputs = invertObject(componentDefinition.inputs, declaredInputs),
+           def.outputs = invertObject(componentDefinition.outputs),
+           feature && feature.forEach((fn) => fn(def));
+           def.directiveDefs = directiveTypes ?
+               () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
+                         .map(extractDirectiveDef) :
+               null;
+           def.pipeDefs = pipeTypes ?
+               () =>
+                   (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
+               null;
 
-    return def as never;
-  });
+           return def as never;
+         }) as never;
 }
 
 /**

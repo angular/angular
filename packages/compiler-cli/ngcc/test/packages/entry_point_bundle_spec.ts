@@ -13,8 +13,12 @@ import {makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 
 runInEachFileSystem(() => {
   describe('entry point bundle', () => {
+    let _: typeof absoluteFrom;
+    beforeEach(() => {
+      _ = absoluteFrom;
+    });
+
     function setupMockFileSystem(): void {
-      const _ = absoluteFrom;
       loadTestFiles([
         {
           name: _('/node_modules/test/package.json'),
@@ -209,6 +213,103 @@ runInEachFileSystem(() => {
                '/node_modules/other/index.d.ts',
              ].map(p => absoluteFrom(p).toString())));
        });
+
+    it('does not include .js files outside of the package when no .d.ts file is available', () => {
+      // Declare main "test" package with "entry" entry-point that imports all sorts of
+      // internal and external modules.
+      loadTestFiles([
+        {
+          name: _('/node_modules/test/entry/package.json'),
+          contents: `{"name": "test", "main": "./index.js", "typings": "./index.d.ts"}`,
+        },
+        {
+          name: _('/node_modules/test/entry/index.d.ts'),
+          contents: `
+              import 'external-js';
+              import 'external-ts';
+              import 'nested-js';
+              import './local';
+              import '../package';
+          `,
+        },
+        {
+          name: _('/node_modules/test/entry/index.js'),
+          contents: `
+              import 'external-js';
+              import 'external-ts';
+              import 'nested-js';
+              import './local';
+              import '../package';
+            `,
+        },
+        {name: _('/node_modules/test/entry/local.d.ts'), contents: `export {};`},
+        {name: _('/node_modules/test/entry/local.js'), contents: `export {};`},
+        {name: _('/node_modules/test/package.d.ts'), contents: `export {};`},
+        {name: _('/node_modules/test/package.js'), contents: `export {};`},
+      ]);
+
+      // Declare "external-js" package outside of the "test" package without .d.ts files, should
+      // not be included in the program.
+      loadTestFiles([
+        {
+          name: _('/node_modules/external-js/package.json'),
+          contents: `{"name": "external-js", "main": "./index.js"}`,
+        },
+        {name: _('/node_modules/external-js/index.js'), contents: 'export {};'},
+      ]);
+
+      // Same as "external-js" but located in a nested node_modules directory, which should also
+      // not be included in the program.
+      loadTestFiles([
+        {
+          name: _('/node_modules/test/node_modules/nested-js/package.json'),
+          contents: `{"name": "nested-js", "main": "./index.js"}`,
+        },
+        {name: _('/node_modules/test/node_modules/nested-js/index.js'), contents: 'export {}'},
+      ]);
+
+      // Declare "external-ts" which does have .d.ts files, so the .d.ts should be
+      // loaded into the program.
+      loadTestFiles([
+        {
+          name: _('/node_modules/external-ts/package.json'),
+          contents: `{"name": "external-ts", "main": "./index.js", "typings": "./index.d.ts"}`,
+        },
+        {name: _('/node_modules/external-ts/index.d.ts'), contents: 'export {};'},
+        {name: _('/node_modules/external-ts/index.js'), contents: 'export {};'},
+      ]);
+
+      const fs = getFileSystem();
+      const entryPoint: EntryPoint = {
+        name: 'test/entry',
+        path: absoluteFrom('/node_modules/test/entry'),
+        packageName: 'test',
+        packagePath: absoluteFrom('/node_modules/test'),
+        packageJson: {name: 'test/entry'},
+        typings: absoluteFrom('/node_modules/test/entry/index.d.ts'),
+        compiledByAngular: true,
+        ignoreMissingDependencies: false,
+        generateDeepReexports: false,
+      };
+      const esm5bundle = makeEntryPointBundle(
+          fs, entryPoint, './index.js', false, 'esm5', /* transformDts */ true,
+          /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
+
+      expect(esm5bundle.src.program.getSourceFiles().map(sf => _(sf.fileName)))
+          .toEqual(jasmine.arrayWithExactContents([
+            _('/node_modules/test/entry/index.js'),
+            _('/node_modules/test/entry/local.js'),
+            _('/node_modules/test/package.js'),
+            _('/node_modules/external-ts/index.d.ts'),
+          ]));
+      expect(esm5bundle.dts!.program.getSourceFiles().map(sf => _(sf.fileName)))
+          .toEqual(jasmine.arrayWithExactContents([
+            _('/node_modules/test/entry/index.d.ts'),
+            _('/node_modules/test/entry/local.d.ts'),
+            _('/node_modules/test/package.d.ts'),
+            _('/node_modules/external-ts/index.d.ts'),
+          ]));
+    });
 
     describe(
         'including equivalently named, internally imported, src files in the typings program',

@@ -39,9 +39,9 @@ in which two or more components share information.
 
 <!--
 `HeroChildComponent` has two ***input properties***,
-typically adorned with [@Input decorations](guide/template-syntax#inputs-outputs).
+typically adorned with [@Input() decorator](guide/inputs-outputs#input).
 -->
-`HeroChildComponent`에는 ***입력 프로퍼티***가 두 개 있습니다. 이 프로퍼티들은 [@Input 데코레이터](guide/template-syntax#inputs-outputs)를 사용해서 선언합니다.
+`HeroChildComponent`에는 ***입력 프로퍼티***가 두 개 있습니다. 이 프로퍼티들은 [@Input() 데코레이터](guide/inputs-outputs#input)를 사용해서 선언합니다.
 
 <code-example path="component-interaction/src/app/hero-child.component.ts" header="component-interaction/src/app/hero-child.component.ts">
 
@@ -252,10 +252,10 @@ The parent binds to that event property and reacts to those events.
 
 <!--
 The child's `EventEmitter` property is an ***output property***,
-  typically adorned with an [@Output decoration](guide/template-syntax#inputs-outputs)
+  typically adorned with an [@Output() decorator](guide/inputs-outputs#output)
   as seen in this `VoterComponent`:
 -->
-자식 컴포넌트에서 외부로 이벤트를 보내려면 `EventEmitter` 타입으로 선언한 프로퍼티에 [@Output 데코레이터](guide/template-syntax#inputs-outputs)를 사용해서 ***출력 프로퍼티***로 지정합니다. `VoterComponent`에서는 다음과 같이 선언했습니다:
+자식 컴포넌트에서 외부로 이벤트를 보내려면 `EventEmitter` 타입으로 선언한 프로퍼티에 [@Output() 데코레이터](guide/inputs-outputs#output)를 사용해서 ***출력 프로퍼티***로 지정합니다. `VoterComponent`에서는 다음과 같이 선언했습니다:
 
 
 <code-example path="component-interaction/src/app/voter.component.ts" header="component-interaction/src/app/voter.component.ts">

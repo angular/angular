@@ -58,7 +58,7 @@ The tabs in the example show the following:
 </code-tabs>
 
 The component's `birthday` value flows through the
-[pipe operator](guide/template-syntax#pipe) ( | ) to the [`date`](api/common/DatePipe)
+[pipe operator](guide/template-expression-operators#pipe) ( | ) to the [`date`](api/common/DatePipe)
 function.
 
 {@a parameterizing-a-pipe}
@@ -374,7 +374,7 @@ As shown in the code below, only the pipe in the template changes.
 
 [Observables](/guide/glossary#observable "Definition of observable") let you pass messages between parts of your application.
 Observables are recommended for event handling, asynchronous programming, and handling multiple values.
-Observables can deliver single or multiple values of any type, either synchronously (as a function delivers a value to its caller) or asynchronously on a schedule. 
+Observables can deliver single or multiple values of any type, either synchronously (as a function delivers a value to its caller) or asynchronously on a schedule.
 
 <div class="alert is-helpful">
 

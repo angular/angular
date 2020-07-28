@@ -57,23 +57,24 @@ No brackets. No parentheses. Just `*ngIf` set to a string.
 
 You'll learn in this guide that the [asterisk (*) is a convenience notation](guide/structural-directives#asterisk)
 and the string is a [_microsyntax_](guide/structural-directives#microsyntax) rather than the usual
-[template expression](guide/template-syntax#template-expressions).
+[template expression](guide/interpolation#template-expressions).
 Angular desugars this notation into a marked-up `<ng-template>` that surrounds the
-host element and its descendents.
+host element and its descendants.
 Each structural directive does something different with that template.
 
-Three of the common, built-in structural directives&mdash;[NgIf](guide/template-syntax#ngIf),
-[NgFor](guide/template-syntax#ngFor), and [NgSwitch...](guide/template-syntax#ngSwitch)&mdash;are
-described in the [_Template Syntax_](guide/template-syntax) guide and seen in samples throughout the Angular documentation.
+Three of the common, built-in structural directives&mdash;[NgIf](guide/built-in-directives#ngIf),
+[NgFor](guide/built-in-directives#ngFor), and [NgSwitch...](guide/built-in-directives#ngSwitch)&mdash;are
+described in the [Built-in directives](guide/built-in-directives) guide and seen in samples throughout the Angular documentation.
 Here's an example of them in a template:
 -->
 구조 디렉티브에는 괄호(`(`, `)`)도 없고 대괄호(`[`, `]`)도 없습니다. `*ngIf`는 단순하게 문자열일 뿐입니다.
 
-아래 부분에서 좀 더 자세히 설명하겠지만, [별표(`*`)는 구조 디렉티브를 사용하기 편하게 만드는](guide/structural-directives#asterisk) 문법 테크닉이며, 이런 문법은 [템플릿 표현식](guide/template-syntax#template-expressions)이라기 보다는 [_세부 문법(microsyntax)_](guide/structural-directives#microsyntax)이라고 하는 것이 더 적합합니다.
+아래 부분에서 좀 더 자세히 설명하겠지만, [별표(`*`)는 구조 디렉티브를 사용하기 편하게 만드는](guide/structural-directives#asterisk) 문법 테크닉이며, 이런 문법은 [템플릿 표현식](guide/interpolation#template-expressions)이라기 보다는 [_세부 문법(microsyntax)_](guide/structural-directives#microsyntax)이라고 하는 것이 더 적합합니다.
 Angular가 애플리케이션을 빌드하면 이 문법 테크닉은 호스트 엘리먼트와 자식 엘리먼트 사이에 `<ng-template>` 계층의 마크업을 구성하면서 사라집니다.
 이 때 구조 디렉티브를 템플릿에서 어떻게 사용했느냐에 따라 다른 결과물이 될 수도 있습니다.
 
-Angular의 기본 구조 디렉티브 중 가장 많이 사용하는 것은 [NgIf](guide/template-syntax#ngIf), [NgFor](guide/template-syntax#ngFor), [NgSwitch...](guide/template-syntax#ngSwitch) 이렇게 3가지 입니다. 각각은 [_템플릿 문법_](guide/template-syntax) 문서에서 자세하게 다루며, 예제도 함께 확인할 수 있습니다.
+Angular의 기본 구조 디렉티브 중 가장 많이 사용하는 것은 [NgIf](guide/built-in-directives#ngIf), [NgFor](guide/built-in-directives#ngFor), [NgSwitch...](guide/built-in-directives#ngSwitch) 이렇게 3가지 입니다.
+각각은 [_기본 디렉티브_](guide/built-in-directives) 문서에서 자세하게 다루며, 예제도 함께 확인할 수 있습니다.
 이 문서에서는 예제와 함께 간단하게만 알아봅시다.
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (built-in)" region="built-in"></code-example>
@@ -132,7 +133,7 @@ Technically it's a directive with a template.
 
 An [*attribute* directive](guide/attribute-directives) changes the appearance or behavior
 of an element, component, or another directive.
-For example, the built-in [`NgStyle`](guide/template-syntax#ngStyle) directive
+For example, the built-in [`NgStyle`](guide/built-in-directives#ngStyle) directive
 changes several element styles at the same time.
 
 You can apply many _attribute_ directives to one host element.
@@ -148,7 +149,7 @@ You can [only apply one](guide/structural-directives#one-per-element) _structura
 문법적으로는 디렉티브에 템플릿이 추가된 것이 컴포넌트입니다.
 
 [*어트리뷰트* 디렉티브](guide/attribute-directives)는 엘리먼트나 컴포넌트, 디렉티브의 모습이나 동작을 변경합니다.
-예를 들어 보면, [`NgStyle`](guide/template-syntax#ngStyle) 디렉티브는 엘리먼트에 여러 엘리먼트 스타일을 동시에 지정할 수 있습니다.
+예를 들어 보면, [`NgStyle`](guide/built-in-directives#ngStyle) 디렉티브는 엘리먼트에 여러 엘리먼트 스타일을 동시에 지정할 수 있습니다.
 
 호스트 엘리먼트에는 여러 개의 _어트리뷰트_ 디렉티브를 지정할 수도 있습니다.
 하지만 구조 디렉티브는 호스트 엘리먼트에 [하나만](guide/structural-directives#one-per-element) 적용할 수 있습니다.
@@ -690,7 +691,7 @@ There are several such variables in this example: `hero`, `i`, and `odd`.
 All are preceded by the keyword `let`.
 
 A _template input variable_ is **_not_** the same as a
-[template _reference_ variable](guide/template-syntax#ref-vars),
+[template _reference_ variable](guide/template-reference-variables),
 neither _semantically_ nor _syntactically_.
 
 You declare a template _input_ variable using the `let` keyword (`let hero`).
@@ -707,7 +708,7 @@ variable as the `hero` declared as `#hero`.
 _템플릿 입력 변수_ 는 템플릿 인스턴스 _안에서_ 참조할 수 있는 변수입니다.
 위에서 살펴본 예제에서는 `hero`, `i`, `odd`가 템플릿 입력 변수이며, `let` 키워드를 사용해서 선언합니다.
 
-_템플릿 입력 변수_ 는 _용도_ 나 _문법_ 측면에서 봤을 때 [템플릿 _참조_ 변수](guide/template-syntax#ref-vars)와는 **_다릅니다_**.
+_템플릿 입력 변수_ 는 _용도_ 나 _문법_ 측면에서 봤을 때 [템플릿 _참조_ 변수](guide/template-reference-variables)와는 **_다릅니다_**.
 
 템플릿 _입력_ 변수는 `let hero`와 같이 `let` 키워드를 사용해서 선언합니다.
 이 변수의 스코프는 반복되는 템플릿 _인스턴스 하나_ 로만 제한되며, 템플릿 안에 있는 다른 구조 디렉티브에도 같은 이름의 변수를 사용할 수 있습니다.
@@ -1197,9 +1198,9 @@ That means the directive needs an `appUnless` property, decorated with `@Input`
 
 
 <!--
-Read about `@Input` in the [_Template Syntax_](guide/template-syntax#inputs-outputs) guide.
+Read about `@Input` in the [`@Input()` and `@Output()` properties](guide/inputs-outputs) guide.
 -->
-`@Input` 데코레이터에 대한 내용은 [_템플릿 문법_](guide/template-syntax#inputs-outputs) 문서를 참고하세요.
+`@Input` 데코레이터에 대한 내용은 [`@Input()`, `@Output()` 데코레이터](guide/inputs-outputs) 문서를 참고하세요.
 
 </div>
 
@@ -1306,12 +1307,14 @@ export type LoadingState<T> = Loaded<T> | Loading;
 export class IfLoadedDirective<T> {
     @Input('ifLoaded') set state(state: LoadingState<T>) {}
     static ngTemplateGuard_state<T>(dir: IfLoadedDirective<T>, expr: LoadingState<T>): expr is Loaded<T> { return true; };
+}
+
 export interface Person {
   name: string;
 }
 
 @Component({
-  template: `<div *ifLoaded="state">{{ state.data }}</div>`,
+  template: `&lt;div *ifLoaded="state">{{ state.data }}&lt;/div>`,
 })
 export class AppComponent {
   state: LoadingState<Person>;

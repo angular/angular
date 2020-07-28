@@ -583,7 +583,10 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
           expect(humanizeDomSourceSpans(parser.parse(
                      '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div>', 'TestComp')))
               .toEqual([
-                [html.Element, 'div', 0, '<div [prop]="v1" (e)="do()" attr="v2" noValue>'],
+                [
+                  html.Element, 'div', 0, '<div [prop]="v1" (e)="do()" attr="v2" noValue>',
+                  '<div [prop]="v1" (e)="do()" attr="v2" noValue>', '</div>'
+                ],
                 [html.Attribute, '[prop]', 'v1', '[prop]="v1"'],
                 [html.Attribute, '(e)', 'do()', '(e)="do()"'],
                 [html.Attribute, 'attr', 'v2', 'attr="v2"'],
@@ -602,12 +605,61 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
           expect(node.endSourceSpan!.end.offset).toEqual(12);
         });
 
+        it('should not set the end source span for void elements', () => {
+          expect(humanizeDomSourceSpans(parser.parse('<div><br></div>', 'TestComp'))).toEqual([
+            [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
+            [html.Element, 'br', 1, '<br>', '<br>', null],
+          ]);
+        });
+
+        it('should not set the end source span for multiple void elements', () => {
+          expect(humanizeDomSourceSpans(parser.parse('<div><br><hr></div>', 'TestComp'))).toEqual([
+            [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
+            [html.Element, 'br', 1, '<br>', '<br>', null],
+            [html.Element, 'hr', 1, '<hr>', '<hr>', null],
+          ]);
+        });
+
+        it('should not set the end source span for standalone void elements', () => {
+          expect(humanizeDomSourceSpans(parser.parse('<br>', 'TestComp'))).toEqual([
+            [html.Element, 'br', 0, '<br>', '<br>', null],
+          ]);
+        });
+
+        it('should set the end source span for standalone self-closing elements', () => {
+          expect(humanizeDomSourceSpans(parser.parse('<br/>', 'TestComp'))).toEqual([
+            [html.Element, 'br', 0, '<br/>', '<br/>', '<br/>'],
+          ]);
+        });
+
+        it('should set the end source span for self-closing elements', () => {
+          expect(humanizeDomSourceSpans(parser.parse('<div><br/></div>', 'TestComp'))).toEqual([
+            [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
+            [html.Element, 'br', 1, '<br/>', '<br/>', '<br/>'],
+          ]);
+        });
+
+        it('should not set the end source span for elements that are implicitly closed', () => {
+          expect(humanizeDomSourceSpans(parser.parse('<div><p></div>', 'TestComp'))).toEqual([
+            [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
+            [html.Element, 'p', 1, '<p>', '<p>', null],
+          ]);
+          expect(humanizeDomSourceSpans(parser.parse('<div><li>A<li>B</div>', 'TestComp')))
+              .toEqual([
+                [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
+                [html.Element, 'li', 1, '<li>', '<li>', null],
+                [html.Text, 'A', 2, 'A'],
+                [html.Element, 'li', 1, '<li>', '<li>', null],
+                [html.Text, 'B', 2, 'B'],
+              ]);
+        });
+
         it('should support expansion form', () => {
           expect(humanizeDomSourceSpans(parser.parse(
                      '<div>{count, plural, =0 {msg}}</div>', 'TestComp',
                      {tokenizeExpansionForms: true})))
               .toEqual([
-                [html.Element, 'div', 0, '<div>'],
+                [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
                 [html.Expansion, 'count', 'plural', 1, '{count, plural, =0 {msg}}'],
                 [html.ExpansionCase, '=0', 2, '=0 {msg}'],
               ]);

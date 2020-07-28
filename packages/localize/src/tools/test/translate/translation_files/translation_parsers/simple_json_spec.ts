@@ -23,6 +23,29 @@ describe('SimpleJsonTranslationParser', () => {
        });
   });
 
+  describe('analyze()', () => {
+    it('should return a success object if the file extension  is `.json` and contains top level `locale` and `translations` properties',
+       () => {
+         const parser = new SimpleJsonTranslationParser();
+         expect(parser.analyze('/some/file.json', '{ "locale" : "fr", "translations" : {}}'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+       });
+
+    it('should return a failure object if the file is not a valid format', () => {
+      const parser = new SimpleJsonTranslationParser();
+      expect(parser.analyze('/some/file.xlf', '')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+      expect(parser.analyze('/some/file.json', '{}')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+      expect(parser.analyze('/some/file.json', '{ "translations" : {} }'))
+          .toEqual(jasmine.objectContaining({canParse: false}));
+      expect(parser.analyze('/some/file.json', '{ "locale" : "fr" }'))
+          .toEqual(jasmine.objectContaining({canParse: false}));
+    });
+  });
+
   for (const withHint of [true, false]) {
     describe(`parse() [${withHint ? 'with' : 'without'} hint]`, () => {
       const doParse: (fileName: string, contents: string) => ParsedTranslationBundle =

@@ -647,7 +647,7 @@ fix the dashboard hero links to navigate via the _parameterized_ dashboard route
   header="src/app/dashboard/dashboard.component.html (hero links)">
 </code-example>
 
-You're using Angular [interpolation binding](guide/template-syntax#interpolation) within the `*ngFor` repeater
+You're using Angular [interpolation binding](guide/interpolation) within the `*ngFor` repeater
 to insert the current iteration's `hero.id` into each
 [`routerLink`](#routerlink).
 -->
@@ -661,7 +661,7 @@ to insert the current iteration's `hero.id` into each
   header="src/app/dashboard/dashboard.component.html (hero links)">
 </code-example>
 
-이 때 `*ngFor`로 순회하는 각 링크의 [`routerLink`](#routerlink)의 값으로 `hero.id`를 지정하기 위해 Angular가 제공하는 [문자열 바인딩(interpolation binding)](guide/template-syntax#interpolation) 문법을 사용했습니다.
+이 때 `*ngFor`로 순회하는 각 링크의 [`routerLink`](#routerlink)의 값으로 `hero.id`를 지정하기 위해 Angular가 제공하는 [문자열 바인딩(interpolation binding)](guide/interpolation) 문법을 사용했습니다.
 
 
 {@a heroes-component-links}

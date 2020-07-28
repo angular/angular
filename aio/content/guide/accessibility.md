@@ -35,7 +35,7 @@ work well for all users, including those who rely on assistive technologies.
 <!--
 Building accessible web experience often involves setting [ARIA attributes](https://developers.google.com/web/fundamentals/accessibility/semantics-aria)
 to provide semantic meaning where it might otherwise be missing.
-Use [attribute binding](guide/template-syntax#attribute-binding) template syntax to control the values of accessibility-related attributes.
+Use [attribute binding](guide/attribute-binding) template syntax to control the values of accessibility-related attributes.
 
 When binding to ARIA attributes in Angular, you must use the `attr.` prefix, as the ARIA
 specification depends specifically on HTML attributes rather than properties of DOM elements.
@@ -56,7 +56,7 @@ Static ARIA attributes require no extra syntax.
 NOTE:
 -->
 웹 접근성을 높이려면 보통 [ARIA 어트리뷰트](https://developers.google.com/web/fundamentals/accessibility/semantics-aria)를 지정해서 엘리먼트가 사용된 맥락의 의미를 추가하는 작업을 합니다.
-그리고 이 어트리뷰트들은 이전에 살펴봤던 [어트리뷰트 바인딩](guide/template-syntax#attribute-binding) 템플릿 문법을 그대로 활용합니다.
+그리고 이 어트리뷰트들은 이전에 살펴봤던 [어트리뷰트 바인딩](guide/attribute-binding) 템플릿 문법을 그대로 활용합니다.
 
 ARIA 어트리뷰트를 바인딩하려면 `attr.` 접두사를 꼭 붙여야 합니다.
 ARIA 스펙은 DOM 엘리먼트에 있는 프로퍼티가 아니라 HTML 어트리뷰트 스펙으로 정의되어 있습니다.
@@ -82,11 +82,11 @@ ARIA 스펙은 DOM 엘리먼트에 있는 프로퍼티가 아니라 HTML 어트�
    <!--
    By convention, HTML attributes use lowercase names (`tabindex`), while properties use camelCase names (`tabIndex`).
 
-   See the [Template Syntax](guide/template-syntax#html-attribute-vs-dom-property) guide for more background on the difference between attributes and properties.
+   See the [Binding syntax](guide/binding-syntax#html-attribute-vs-dom-property) guide for more background on the difference between attributes and properties.
    -->
    일반적으로 HTML 어트리뷰트 이름은 소문자로 사용하며(`tabindex`), 프로퍼티 이름은 캐멀-케이스로 사용합니다(`tabIndex`).
 
-   어트리뷰트와 프로퍼티가 어떻게 다른지 알아보려면 [템플릿 문법](guide/template-syntax#html-attribute-vs-dom-property) 가이드 문서를 참고하세요.
+   어트리뷰트와 프로퍼티가 어떻게 다른지 알아보려면 [바인딩 문법](guide/binding-syntax#html-attribute-vs-dom-property) 가이드 문서를 참고하세요.
 
 </div>
 

@@ -7,7 +7,7 @@
  */
 
 import {Adapter} from './adapter';
-import {CacheState, Debuggable, DebugIdleState, DebugState, DebugVersion, UpdateCacheStatus, UpdateSource} from './api';
+import {CacheState, Debuggable, DebugIdleState, DebugState, DebugVersion, NormalizedUrl, UpdateCacheStatus, UpdateSource} from './api';
 import {AppVersion} from './app-version';
 import {Database} from './database';
 import {DebugHandler} from './debug';
@@ -99,6 +99,8 @@ export class Driver implements Debuggable, UpdateSource {
    */
   private loggedInvalidOnlyIfCachedRequest: boolean = false;
 
+  private ngswStatePath = this.adapter.parseUrl('ngsw/state', this.scope.registration.scope).path;
+
   /**
    * A scheduler which manages a queue of tasks that need to be executed when the SW is
    * not doing any other work (not processing any other requests).
@@ -184,7 +186,7 @@ export class Driver implements Debuggable, UpdateSource {
     }
 
     // The only thing that is served unconditionally is the debug page.
-    if (requestUrlObj.path === '/ngsw/state') {
+    if (requestUrlObj.path === this.ngswStatePath) {
       // Allow the debugger to handle the request, but don't affect SW state in any other way.
       event.respondWith(this.debugger.handleFetch(req));
       return;
@@ -957,7 +959,7 @@ export class Driver implements Debuggable, UpdateSource {
    * Determine if a specific version of the given resource is cached anywhere within the SW,
    * and fetch it if so.
    */
-  lookupResourceWithHash(url: string, hash: string): Promise<Response|null> {
+  lookupResourceWithHash(url: NormalizedUrl, hash: string): Promise<Response|null> {
     return Array
         // Scan through the set of all cached versions, valid or otherwise. It's safe to do such
         // lookups even for invalid versions as the cached version of a resource will have the
@@ -979,13 +981,13 @@ export class Driver implements Debuggable, UpdateSource {
         }, Promise.resolve<Response|null>(null));
   }
 
-  async lookupResourceWithoutHash(url: string): Promise<CacheState|null> {
+  async lookupResourceWithoutHash(url: NormalizedUrl): Promise<CacheState|null> {
     await this.initialized;
     const version = this.versions.get(this.latestHash!);
     return version ? version.lookupResourceWithoutHash(url) : null;
   }
 
-  async previouslyCachedResources(): Promise<string[]> {
+  async previouslyCachedResources(): Promise<NormalizedUrl[]> {
     await this.initialized;
     const version = this.versions.get(this.latestHash!);
     return version ? version.previouslyCachedResources() : [];

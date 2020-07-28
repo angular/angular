@@ -2739,7 +2739,7 @@ with Angular's two-way `[(ngModel)]` binding syntax:
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="controls" header="app/phone-list/phone-list.template.html (search controls)"></code-example>
 
 Replace the list's `ng-repeat` with an `*ngFor` as
-[described in the Template Syntax page](guide/template-syntax#directives).
+[described in the Template Syntax page](guide/built-in-directives).
 Replace the image tag's `ng-src` with a binding to the native `src` property.
 
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="list" header="app/phone-list/phone-list.template.html (phones)"></code-example>
@@ -2765,7 +2765,7 @@ AngularJS의 `$ctrl`를 사용하는 표현식을 Angular의 양방향 바인딩
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="controls" header="app/phone-list/phone-list.template.html (검색 컨트롤)"></code-example>
 
 `ng-repeat`을 사용한 부분은 `*ngFor`로 변경합니다.
-`*ngFor`를 사용하는 방법은 [템플릿 문법](guide/template-syntax#directives) 가이드 문서를 참고하세요.
+`*ngFor`를 사용하는 방법은 [기본 디렉티브](guide/built-in-directives) 가이드 문서를 참고하세요.
 그리고 이미지 태그의 `ng-src`도 `src` 프로퍼티로 변경합니다.
 
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="list" header="app/phone-list/phone-list.template.html (스마트폰 목록 템플릿)"></code-example>
@@ -2840,7 +2840,7 @@ There are several notable changes here:
   bindings for the standard `src` property.
 
 * You're using the property binding syntax around `ng-class`. Though Angular
-  does have [a very similar `ngClass`](guide/template-syntax#directives)
+  does have [a very similar `ngClass`](guide/built-in-directives)
   as AngularJS does, its value is not magically evaluated as an expression.
   In Angular, you always specify in the template when an attribute's value is
   a property expression, as opposed to a literal string.
@@ -2920,7 +2920,7 @@ AngularJS에는 `routeParams`이라는 의존성 객체가 있는데 이 객체�
 * 프로퍼티 바인딩에 사용된 `ng-src`는 표준 프로퍼티 `src`를 바인딩하는 방식으로 변경했습니다.
 
 * AngularJS에서는 클래스를 바인딩하기 위해 `ng-class`를 사용했습니다.
-이 코드는 Angular에서 [거의 비슷한 동작을 하는 `ngClass`](guide/template-syntax#directives)로 변경되었으며 사용법도 비슷합니다.
+이 코드는 Angular에서 [거의 비슷한 동작을 하는 `ngClass`](guide/built-in-directives)로 변경되었으며 사용법도 비슷합니다.
 그리고 표현식이 실행된 결과는 객체이기 때문에 프로퍼티 바인딩으로 연결했습니다.
 
 * `ng-repeat`은 `*ngFor`로 변경했습니다.

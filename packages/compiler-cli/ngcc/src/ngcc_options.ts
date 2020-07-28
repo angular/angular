@@ -186,6 +186,8 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
     errorOnFailedEntryPoint = true;
   }
 
+  checkForSolutionStyleTsConfig(fileSystem, logger, projectPath, options.tsConfigPath, tsConfig);
+
   return {
     basePath,
     targetEntryPointPath,
@@ -232,4 +234,23 @@ function getTsConfig(tsConfigPath: string): ParsedConfiguration|null {
 export function clearTsConfigCache() {
   tsConfigPathCache = null;
   tsConfigCache = null;
+}
+
+function checkForSolutionStyleTsConfig(
+    fileSystem: FileSystem, logger: Logger, projectPath: AbsoluteFsPath,
+    tsConfigPath: string|null|undefined, tsConfig: ParsedConfiguration|null): void {
+  if (tsConfigPath !== null && !tsConfigPath && tsConfig !== null &&
+      tsConfig.rootNames.length === 0 && tsConfig.projectReferences !== undefined &&
+      tsConfig.projectReferences.length > 0) {
+    logger.warn(
+        `The inferred tsconfig file "${tsConfig.project}" appears to be "solution-style" ` +
+        `since it contains no root files but does contain project references.\n` +
+        `This is probably not wanted, since ngcc is unable to infer settings like "paths" mappings from such a file.\n` +
+        `Perhaps you should have explicitly specified one of the referenced projects using the --tsconfig option. For example:\n\n` +
+        tsConfig.projectReferences.map(ref => `  ngcc ... --tsconfig "${ref.originalPath}"\n`)
+            .join('') +
+        `\nFind out more about solution-style tsconfig at https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig.\n` +
+        `If you did intend to use this file, then you can hide this warning by providing it explicitly:\n\n` +
+        `  ngcc ... --tsconfig "${fileSystem.relative(projectPath, tsConfig.project)}"`);
+  }
 }

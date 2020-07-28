@@ -152,6 +152,33 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
       return clock;
     };
   }
+
+  // monkey patch createSpyObj to make properties enumerable to true
+  if (!(jasmine as any)[Zone.__symbol__('createSpyObj')]) {
+    const originalCreateSpyObj = jasmine.createSpyObj;
+    (jasmine as any)[Zone.__symbol__('createSpyObj')] = originalCreateSpyObj;
+    jasmine.createSpyObj = function() {
+      const args: any = Array.prototype.slice.call(arguments);
+      const propertyNames = args.length >= 3 ? args[2] : null;
+      let spyObj: any;
+      if (propertyNames) {
+        const defineProperty = Object.defineProperty;
+        Object.defineProperty = function(obj: any, p: string, attributes: any) {
+          return defineProperty.call(
+              this, obj, p, {...attributes, configurable: true, enumerable: true});
+        };
+        try {
+          spyObj = originalCreateSpyObj.apply(this, args);
+        } finally {
+          Object.defineProperty = defineProperty;
+        }
+      } else {
+        spyObj = originalCreateSpyObj.apply(this, args);
+      }
+      return spyObj;
+    };
+  }
+
   /**
    * Gets a function wrapping the body of a Jasmine `describe` block to execute in a
    * synchronous-only zone.

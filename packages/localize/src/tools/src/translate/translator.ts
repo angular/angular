@@ -35,7 +35,7 @@ export interface TranslationHandler {
    * @param relativeFilePath A relative path from the sourceRoot to the resource file to handle.
    * @param contents The contents of the file to handle.
    */
-  canTranslate(relativeFilePath: PathSegment, contents: Buffer): boolean;
+  canTranslate(relativeFilePath: PathSegment|AbsoluteFsPath, contents: Buffer): boolean;
 
   /**
    * Translate the file at `relativeFilePath` containing `contents`, using the given `translations`,
@@ -53,9 +53,9 @@ export interface TranslationHandler {
    * stripped out.
    */
   translate(
-      diagnostics: Diagnostics, sourceRoot: AbsoluteFsPath, relativeFilePath: PathSegment,
-      contents: Buffer, outputPathFn: OutputPathFn, translations: TranslationBundle[],
-      sourceLocale?: string): void;
+      diagnostics: Diagnostics, sourceRoot: AbsoluteFsPath,
+      relativeFilePath: PathSegment|AbsoluteFsPath, contents: Buffer, outputPathFn: OutputPathFn,
+      translations: TranslationBundle[], sourceLocale?: string): void;
 }
 
 /**

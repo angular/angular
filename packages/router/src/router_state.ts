@@ -28,7 +28,8 @@ import {Tree, TreeNode} from './utils/tree';
  * and the resolved data.
  * Use the `ActivatedRoute` properties to traverse the tree from any node.
  *
- * ### Example
+ * The following fragment shows how a component gets the root node
+ * of the current state to establish its own route tree:
  *
  * ```
  * @Component({templateUrl:'template.html'})
@@ -44,6 +45,7 @@ import {Tree, TreeNode} from './utils/tree';
  * ```
  *
  * @see `ActivatedRoute`
+ * @see [Getting route information](guide/router#getting-route-information)
  *
  * @publicApi
  */
@@ -93,8 +95,13 @@ export function createEmptyStateSnapshot(
  * that is loaded in an outlet.
  * Use to traverse the `RouterState` tree and extract information from nodes.
  *
+ * The following example shows how to construct a component using information from a
+ * currently activated route.
+ *
  * {@example router/activated-route/module.ts region="activated-route"
  *     header="activated-route.component.ts"}
+ *
+ * @see [Getting route information](guide/router#getting-route-information)
  *
  * @publicApi
  */
@@ -249,6 +256,9 @@ function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
  * outlet at a particular moment in time. ActivatedRouteSnapshot can also be used to
  * traverse the router state tree.
  *
+ * The following example initializes a component with route information extracted
+ * from the snapshot of the root node at the time of creation.
+ *
  * ```
  * @Component({templateUrl:'./my-component.html'})
  * class MyComponent {
@@ -361,8 +371,8 @@ export class ActivatedRouteSnapshot {
  * This is a tree of activated route snapshots. Every node in this tree knows about
  * the "consumed" URL segments, the extracted parameters, and the resolved data.
  *
- * @usageNotes
- * ### Example
+ * The following example shows how a component is initialized with information
+ * from the snapshot of the root node's state at the time of creation.
  *
  * ```
  * @Component({templateUrl:'template.html'})

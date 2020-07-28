@@ -1,5 +1,5 @@
 <!--
-# Displaying data
+# Displaying data in views
 -->
 # 화면에 데이터 표시하기
 
@@ -249,14 +249,14 @@ It marks that `<li>` element (and its children) as the "repeater template":
 <div class="alert is-important">
 
 Don't forget the leading asterisk (\*) in `*ngFor`. It is an essential part of the syntax.
-Read more about `ngFor` and `*` in the [ngFor section](guide/template-syntax#ngfor) of the [Template Syntax](guide/template-syntax) page.
+Read more about `ngFor` and `*` in the [ngFor section](guide/built-in-directives#ngfor) of the [Built-in directives](guide/built-in-directives) page.
 
 </div>
 
 Notice the `hero` in the `ngFor` double-quoted instruction;
 it is an example of a template input variable. Read
-more about template input variables in the [microsyntax](guide/template-syntax#microsyntax) section of
-the [Template Syntax](guide/template-syntax) page.
+more about template input variables in the [microsyntax](guide/built-in-directives#microsyntax) section of
+the [Built-in directives](guide/built-in-directives) page.
 
 Angular duplicates the `<li>` for each item in the list, setting the `hero` variable
 to the item (the hero) in the current iteration. Angular uses that variable as the
@@ -299,14 +299,14 @@ The `*ngFor` directive (predefined by Angular) lets you loop through data. The f
 <div class="alert is-important">
 
 그리고 `*ngFor` 를 사용할 때 별표(\*)를 잊지 마세요. 이 표기방식은 템플릿 문법에서도 특히 중요합니다.
-좀 더 자세한 설명은 [템플릿 문법](guide/template-syntax)의 [ngFor](guide/template-syntax#ngFor) 섹션을 참고하세요.
+좀 더 자세한 설명은 [기본 디렉티브](guide/built-in-directives) 문서의 [ngFor](guide/built-in-directives#ngFor) 섹션을 참고하세요.
 
 </div>
 
 이 코드에서 `ngFor` 가 지정된 엘리먼트 안의 `hero` 에는 이중 중괄호가 사용되었는데, 이 문법은 템플릿에 데이터를 바인딩하는 방법 중 가장 간단한 방법입니다.
-더 자세한 내용은 [템플릿 문법](guide/template-syntax)의 [세부 문법](guide/template-syntax#microsyntax) 를 참고하세요.
+더 자세한 내용은 [템플릿 문법](guide/template-syntax)의 [세부 문법](guide/built-in-directives#microsyntax) 를 참고하세요.
 
-이렇게 코드를 작성하면 Angular는 목록에 있는 항목의 개수만큼 `<li>` 태그를 반복하하면서 `hero` 변수를 하나씩 전달합니다.
+이렇게 코드를 작성하면 Angular는 목록에 있는 항목의 개수만큼 `<li>` 태그를 반복하면서 `hero` 변수를 하나씩 전달합니다.
 이 때 전달된 변수는 이중 중괄호 안에서만 유효합니다.
 
 <div class="alert is-helpful">
@@ -416,7 +416,7 @@ At the moment it displays the hero's `id` and `name`.
 Fix that to display only the hero's `name` property.
 
 
-<code-example path="displaying-data/src/app/app.component.3.ts" header="src/app/app.component.ts (템플릿)" region="template"></code-example>
+<code-example path="displaying-data/src/app/app.component.3.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
 
 
 The display looks the same, but the code is clearer.
@@ -453,7 +453,7 @@ To see it in action, add the following paragraph at the bottom of the template:
 <div class="alert is-important">
 
 Don't forget the leading asterisk (\*) in `*ngIf`. It is an essential part of the syntax.
-Read more about `ngIf` and `*` in the [ngIf section](guide/template-syntax#ngIf) of the [Template Syntax](guide/template-syntax) page.
+Read more about `ngIf` and `*` in the [ngIf section](guide/built-in-directives#ngIf) of the [Built-in directives](guide/built-in-directives) page.
 
 </div>
 
@@ -464,7 +464,7 @@ When the component's list of heroes has more than three items, Angular adds the 
 to the DOM and the message appears.
 If there are three or fewer items, Angular omits the paragraph, so no message appears.
 
-For more information, see [template expressions](guide/template-syntax#template-expressions).
+For more information, see [template expression operators](guide/interpolation#template-expressions).
 
 
 <div class="alert is-helpful">
@@ -490,7 +490,7 @@ Angular에서 제공하는 `ngIf` 디렉티브는 _참/거짓으로 평가되는
 <div class="alert is-important">
 
 `*ngIf` 를 사용할 때 별표(\*) 를 빼먹지 마세요. 이 표기방식은 템플릿 문법에서 특히 중요합니다.
-`ngIf` 나 `*` 에 대해 자세히 살펴보려면 [템플릿 문법](guide/template-syntax) 문서에 있는 [ngIf 섹션](guide/template-syntax#ngIf)을 참고하세요.
+`ngIf` 나 `*` 에 대해 자세히 살펴보려면 [기본 디렉티브](guide/built-in-directives) 문서에 있는 [ngIf 섹션](guide/built-in-directives#ngIf)을 참고하세요.
 
 </div>
 
@@ -501,7 +501,7 @@ When the component's list of heroes has more than three items, Angular adds the 
 to the DOM and the message appears.
 If there are three or fewer items, Angular omits the paragraph, so no message appears.
 
-For more information, see [template expressions](guide/template-syntax#template-expressions).
+For more information, see [template expression operators](guide/interpolation#template-expressions).
 
 
 <div class="alert is-helpful">
