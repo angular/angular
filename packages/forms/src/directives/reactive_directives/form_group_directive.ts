@@ -82,8 +82,8 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   @Output() ngSubmit = new EventEmitter();
 
   constructor(
-      @Optional() @Self() @Inject(NG_VALIDATORS) private validators: (Validator|ValidatorFn)[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private asyncValidators:
+      @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
           (AsyncValidator|AsyncValidatorFn)[]) {
     super();
     this._setValidators(validators);

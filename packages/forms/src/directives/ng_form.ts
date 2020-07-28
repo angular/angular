@@ -9,7 +9,8 @@
 import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
 
 import {AbstractControl, FormControl, FormGroup, FormHooks} from '../model';
-import {composeAsyncValidators, composeValidators, NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+import {composeAsyncValidators, composeValidators} from '../utils/validators';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';

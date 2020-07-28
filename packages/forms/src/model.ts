@@ -10,7 +10,8 @@ import {EventEmitter} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/validators';
-import {composeAsyncValidators, composeValidators, toObservable} from './validators';
+import {composeAsyncValidators, composeValidators} from './utils/validators';
+import {toObservable} from './validators';
 
 /**
  * Reports that a FormControl is valid, meaning that no errors exist in the input value.

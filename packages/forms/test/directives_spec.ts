@@ -11,7 +11,7 @@ import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, ValidationErrors, Validator, Validators} from '@angular/forms';
 import {selectValueAccessor} from '@angular/forms/src/directives/shared';
-import {composeValidators} from '@angular/forms/src/validators';
+import {composeValidators} from '@angular/forms/src/utils/validators';
 import {SpyNgControl, SpyValueAccessor} from './spies';
 import {asyncValidator} from './util';
 

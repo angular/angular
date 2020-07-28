@@ -10,6 +10,7 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, AsyncValidatorFn, FormArray, FormControl, Validators} from '@angular/forms';
 import {AsyncValidator, ValidationErrors, ValidatorFn} from '@angular/forms/src/directives/validators';
+import {normalizeAsyncValidator} from '@angular/forms/src/utils/validators';
 import {Observable, of, timer} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 

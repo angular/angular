@@ -15,7 +15,6 @@ import {Form} from './form_interface';
 import {controlPath} from './shared';
 
 
-
 /**
  * @description
  * A base class for code shared between the `NgModelGroup` and `FormGroupName` directives.

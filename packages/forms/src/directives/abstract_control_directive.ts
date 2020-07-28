@@ -9,7 +9,7 @@
 import {Observable} from 'rxjs';
 
 import {AbstractControl} from '../model';
-import {composeAsyncValidators, composeValidators} from '../validators';
+import {composeAsyncValidators, composeValidators} from '../utils/validators';
 
 import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './validators';
 
