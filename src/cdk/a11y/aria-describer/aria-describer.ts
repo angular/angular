@@ -85,7 +85,7 @@ export class AriaDescriber implements OnDestroy {
 
   /** Removes the host element's aria-describedby reference to the message element. */
   removeDescription(hostElement: Element, message: string|HTMLElement) {
-    if (!this._isElementNode(hostElement)) {
+    if (!message || !this._isElementNode(hostElement)) {
       return;
     }
 
