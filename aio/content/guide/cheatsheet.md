@@ -10,7 +10,7 @@
 </tr>
 <tr>
 <td><code><b>platformBrowserDynamic().bootstrapModule</b>(AppModule);</code></td>
-<td><p>Empaqueta la app, usando el componente raíz del <code>NgModule</code> especificado.</p>
+<td><p>Carga la app, usando el componente raíz del <code>NgModule</code> especificado.</p>
 </td>
 </tr>
 </tbody></table>
