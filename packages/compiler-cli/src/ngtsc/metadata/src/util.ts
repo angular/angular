@@ -97,7 +97,6 @@ export function extractDirectiveTypeCheckMeta(
       new Set(staticMembers.map(extractCoercedInput)
                   .filter((inputName): inputName is string => inputName !== null));
 
-  const genericInputFields = new Set<string>();
   const restrictedInputFields = new Set<string>();
   const undeclaredInputFields = new Set<string>();
 
@@ -107,8 +106,6 @@ export function extractDirectiveTypeCheckMeta(
       undeclaredInputFields.add(fieldName);
     } else if (isRestricted(field.node)) {
       restrictedInputFields.add(fieldName);
-    } else if (hasGenericType(field.node)) {
-      genericInputFields.add(fieldName);
     }
   }
 
@@ -118,7 +115,6 @@ export function extractDirectiveTypeCheckMeta(
     hasNgTemplateContextGuard,
     ngTemplateGuards,
     coercedInputFields,
-    genericInputFields,
     restrictedInputFields,
     undeclaredInputFields,
     isGeneric: arity !== null && arity > 0,
@@ -133,11 +129,6 @@ function isRestricted(node: ts.Node): boolean {
   return node.modifiers.some(
       modifier => modifier.kind === ts.SyntaxKind.PrivateKeyword ||
           modifier.kind === ts.SyntaxKind.ProtectedKeyword);
-}
-
-function hasGenericType(node: ts.Node): boolean {
-  // TODO: figure this out
-  return true;
 }
 
 function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {

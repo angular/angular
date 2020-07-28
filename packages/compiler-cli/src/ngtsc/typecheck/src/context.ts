@@ -199,12 +199,12 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     for (const dir of boundTarget.getUsedDirectives()) {
       const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
       const dirNode = dirRef.node;
-      if (requiresInlineTypeCtor(dirNode, this.reflector)) {
+
+      if (dir.isGeneric && requiresInlineTypeCtor(dirNode, this.reflector)) {
         if (this.inlining === InliningMode.Error) {
           missingInlines.push(dirNode);
           continue;
         }
-
         // Add a type constructor operation for the directive.
         this.addInlineTypeCtor(fileData, dirNode.getSourceFile(), dirRef, {
           fnName: 'ngTypeCtor',

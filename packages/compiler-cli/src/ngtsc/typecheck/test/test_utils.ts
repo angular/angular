@@ -178,10 +178,10 @@ export type TestDirective = Partial<Pick<
     TypeCheckableDirectiveMeta,
     Exclude<
         keyof TypeCheckableDirectiveMeta,
-        'ref'|'coercedInputFields'|'genericInputFields'|'restrictedInputFields'|
-        'undeclaredInputFields'>>>&{
+        'ref'|'coercedInputFields'|'restrictedInputFields'|'undeclaredInputFields'>>>&{
   selector: string, name: string, file?: AbsoluteFsPath, type: 'directive',
-      coercedInputFields?: string[], undeclaredInputFields?: string[], isGeneric?: boolean;
+      coercedInputFields?: string[], restrictedInputFields?: string[],
+      undeclaredInputFields?: string[], isGeneric?: boolean;
 };
 export type TestPipe = {
   name: string,
@@ -419,7 +419,6 @@ function prepareDeclarations(
       isComponent: decl.isComponent || false,
       ngTemplateGuards: decl.ngTemplateGuards || [],
       coercedInputFields: new Set<string>(decl.coercedInputFields || []),
-      genericInputFields: new Set<string>(decl.genericInputFields || []),
       restrictedInputFields: new Set<string>(decl.restrictedInputFields || []),
       undeclaredInputFields: new Set<string>(decl.undeclaredInputFields || []),
       isGeneric: decl.isGeneric ?? false,
