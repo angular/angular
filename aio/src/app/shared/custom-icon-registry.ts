@@ -40,19 +40,17 @@ const DEFAULT_NS = '$$default';
 @Injectable()
 export class CustomIconRegistry extends MatIconRegistry {
   private cachedSvgElements: SvgIconMap = {[DEFAULT_NS]: {}};
-  private svgIcons: SvgIconInfo[];
 
   constructor(http: HttpClient, sanitizer: DomSanitizer, @Optional() @Inject(DOCUMENT) document: Document,
-              errorHandler: ErrorHandler, @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {
+              errorHandler: ErrorHandler, @Inject(SVG_ICONS) private svgIcons: SvgIconInfo[]) {
     super(http, sanitizer, document, errorHandler);
-    this.svgIcons = svgIcons;
   }
 
   getNamedSvgIcon(iconName: string, namespace?: string) {
     const nsIconMap = this.cachedSvgElements[namespace || DEFAULT_NS];
     let preloadedElement: SVGElement | undefined = nsIconMap && nsIconMap[iconName];
     if (!preloadedElement) {
-      preloadedElement = this.lazyloadSvgElement(iconName, namespace);
+      preloadedElement = this.loadSvgElement(iconName, namespace);
     }
 
     return preloadedElement
@@ -60,7 +58,7 @@ export class CustomIconRegistry extends MatIconRegistry {
         : super.getNamedSvgIcon(iconName, namespace);
   }
 
-  private lazyloadSvgElement(iconName: string, namespace?: string) {
+  private loadSvgElement(iconName: string, namespace?: string) {
     const svgIcon = this.svgIcons.find(icon => {
       return namespace
       ? icon.name === iconName && icon.namespace === namespace
