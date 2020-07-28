@@ -13,8 +13,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
 import {ReactiveErrors} from '../reactive_errors';
-import {composeAsyncValidators, composeValidators, controlPath} from '../shared';
-import {AsyncValidatorFn, ValidatorFn} from '../validators';
+import {controlPath} from '../shared';
 
 import {FormGroupDirective} from './form_group_directive';
 
@@ -90,8 +89,8 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
     super();
     this._parent = parent;
-    this._validators = validators;
-    this._asyncValidators = asyncValidators;
+    this._setValidators(validators);
+    this._setAsyncValidators(asyncValidators);
   }
 
   /** @internal */
@@ -136,12 +135,6 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
   /** @internal */
   _parent: ControlContainer;
 
-  /** @internal */
-  _validators: any[];
-
-  /** @internal */
-  _asyncValidators: any[];
-
   /**
    * @description
    * Tracks the name of the `FormArray` bound to the directive. The name corresponds
@@ -160,8 +153,8 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
     super();
     this._parent = parent;
-    this._validators = validators;
-    this._asyncValidators = asyncValidators;
+    this._setValidators(validators);
+    this._setAsyncValidators(asyncValidators);
   }
 
   /**
@@ -208,23 +201,6 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    */
   get path(): string[] {
     return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
-  }
-
-  /**
-   * @description
-   * Synchronous validator function composed of all the synchronous validators registered with this
-   * directive.
-   */
-  get validator(): ValidatorFn|null {
-    return composeValidators(this._validators);
-  }
-
-  /**
-   * @description
-   * Async validator function composed of all the async validators registered with this directive.
-   */
-  get asyncValidator(): AsyncValidatorFn|null {
-    return composeAsyncValidators(this._asyncValidators);
   }
 
   private _checkParentType(): void {

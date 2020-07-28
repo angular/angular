@@ -8,8 +8,9 @@
 
 import {EventEmitter} from '@angular/core';
 import {Observable} from 'rxjs';
-import {composeAsyncValidators, composeValidators} from './directives/shared';
+
 import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/validators';
+import {composeAsyncValidators, composeValidators} from './utils/validators';
 import {toObservable} from './validators';
 
 /**

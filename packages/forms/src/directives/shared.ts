@@ -17,7 +17,6 @@ import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
 import {DefaultValueAccessor} from './default_value_accessor';
 import {NgControl} from './ng_control';
-import {normalizeAsyncValidator, normalizeValidator} from './normalize_validator';
 import {NumberValueAccessor} from './number_value_accessor';
 import {RadioControlValueAccessor} from './radio_control_value_accessor';
 import {RangeValueAccessor} from './range_value_accessor';
@@ -139,16 +138,6 @@ function _throwError(dir: AbstractControlDirective, message: string): void {
     messageEnd = 'unspecified name attribute';
   }
   throw new Error(`${message} ${messageEnd}`);
-}
-
-export function composeValidators(validators: Array<Validator|ValidatorFn>): ValidatorFn|null {
-  return validators != null ? Validators.compose(validators.map(normalizeValidator)) : null;
-}
-
-export function composeAsyncValidators(validators: Array<AsyncValidator|AsyncValidatorFn>):
-    AsyncValidatorFn|null {
-  return validators != null ? Validators.composeAsync(validators.map(normalizeAsyncValidator)) :
-                              null;
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
