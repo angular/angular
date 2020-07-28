@@ -83,10 +83,9 @@ To learn more about the root NgModule, see [Launching an app with a root NgModul
 
 </div>
 
-What happens if you import the same NgModule into more than one NgModule in your app?
-Angular evaluates the import of the NgModule once, the first time it encounters it, and doesn't do so again.
+If you import the same NgModule into multiple NgModules in your app, Angular evaluates the import only once.
 
-## Using BrowserModule and CommonModule
+## Using `BrowserModule` and `CommonModule`
 
 For apps that run in the browser, import `BrowserModule` into the root ngModel `AppModule` (in the `app.module.ts` file) because it provides services that are essential to launch and run a browser app.
 Do _not_ import `BrowserModule` into any other NgModule in your app.
