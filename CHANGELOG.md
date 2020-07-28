@@ -1,3 +1,13 @@
+<a name="10.1.0-next.3"></a>
+# 10.1.0-next.3 (2020-07-28)
+
+
+### Bug Fixes
+
+* **elements:** run strategy methods in correct zone ([#37814](https://github.com/angular/angular/issues/37814)) ([8df888d](https://github.com/angular/angular/commit/8df888d)), closes [#24181](https://github.com/angular/angular/issues/24181)
+
+
+
 <a name="10.0.6"></a>
 ## 10.0.6 (2020-07-28)
 
