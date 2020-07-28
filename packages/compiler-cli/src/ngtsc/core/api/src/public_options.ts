@@ -148,6 +148,14 @@ export interface StrictTemplateOptions {
   strictInputTypes?: boolean;
 
   /**
+   * Whether to check if the input binding attempts to assign to a restricted field (readonly,
+   * private, or protected) on the directive/component.
+   *
+   * Defaults to `false`, even if "fullTemplateTypeCheck" and/or "strictInputTypes" is set.
+   */
+  strictInputAccessModifiers?: boolean;
+
+  /**
    * Whether to use strict null types for input bindings for directives.
    *
    * If this is `true`, applications that are compiled with TypeScript's `strictNullChecks` enabled

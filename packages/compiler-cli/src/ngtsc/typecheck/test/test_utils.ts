@@ -157,6 +157,7 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   checkQueries: false,
   checkTemplateBodies: true,
   checkTypeOfInputBindings: true,
+  honorAccessModifiersForInputBindings: true,
   strictNullInputBindings: true,
   checkTypeOfAttributes: true,
   // Feature is still in development.
@@ -212,6 +213,7 @@ export function tcb(
     applyTemplateContextGuards: true,
     checkQueries: false,
     checkTypeOfInputBindings: true,
+    honorAccessModifiersForInputBindings: false,
     strictNullInputBindings: true,
     checkTypeOfAttributes: true,
     checkTypeOfDomBindings: false,

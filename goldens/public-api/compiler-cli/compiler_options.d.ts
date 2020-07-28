@@ -35,6 +35,7 @@ export interface StrictTemplateOptions {
     strictContextGenerics?: boolean;
     strictDomEventTypes?: boolean;
     strictDomLocalRefTypes?: boolean;
+    strictInputAccessModifiers?: boolean;
     strictInputTypes?: boolean;
     strictLiteralTypes?: boolean;
     strictNullInputTypes?: boolean;
