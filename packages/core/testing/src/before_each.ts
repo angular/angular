@@ -26,3 +26,7 @@ if (_global.beforeEach) {
     resetFakeAsyncZone();
   });
 }
+
+// TODO(juliemr): remove this, only used because we need to export something to have compilation
+// work.
+export const __core_private_testing_placeholder__ = '';
