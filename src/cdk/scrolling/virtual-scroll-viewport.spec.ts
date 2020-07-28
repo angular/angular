@@ -134,6 +134,14 @@ describe('CdkVirtualScrollViewport', () => {
           .toBe(testComponent.itemSize * 2, 'combined size of 2 50px items should be 100px');
     }));
 
+    it('should measure range size when items has a margin', fakeAsync(() => {
+      fixture.componentInstance.hasMargin = true;
+      finishInit(fixture);
+
+      expect(viewport.measureRangeSize({start: 1, end: 3})).toBe(testComponent.itemSize * 2 + 10,
+            'combined size of 2 50px items with a 10px margin should be 110px');
+    }));
+
     it('should set total content size', fakeAsync(() => {
       finishInit(fixture);
 
@@ -916,7 +924,8 @@ function triggerScroll(viewport: CdkVirtualScrollViewport, offset?: number) {
     <cdk-virtual-scroll-viewport
         [itemSize]="itemSize" [minBufferPx]="minBufferPx" [maxBufferPx]="maxBufferPx"
         [orientation]="orientation" [style.height.px]="viewportHeight"
-        [style.width.px]="viewportWidth" (scrolledIndexChange)="scrolledToIndex = $event">
+        [style.width.px]="viewportWidth" (scrolledIndexChange)="scrolledToIndex = $event"
+        [class.has-margin]="hasMargin">
       <div class="item"
            *cdkVirtualFor="let item of items; let i = index; trackBy: trackBy; \
                            templateCacheSize: templateCacheSize"
@@ -943,6 +952,10 @@ function triggerScroll(viewport: CdkVirtualScrollViewport, offset?: number) {
       box-sizing: border-box;
       border: 1px dashed #ccc;
     }
+
+    .has-margin .item {
+      margin-bottom: 10px;
+    }
   `],
   encapsulation: ViewEncapsulation.None,
 })
@@ -962,6 +975,7 @@ class FixedSizeVirtualScroll {
   @Input() templateCacheSize = 20;
 
   scrolledToIndex = 0;
+  hasMargin = false;
 
   get viewportWidth() {
     return this.orientation == 'horizontal' ? this.viewportSize : this.viewportCrossSize;

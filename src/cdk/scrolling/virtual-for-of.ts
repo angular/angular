@@ -57,16 +57,20 @@ export type CdkVirtualForOfContext<T> = {
 };
 
 
-/** Helper to extract size from a DOM Node. */
-function getSize(orientation: 'horizontal' | 'vertical', node: Node): number {
+/** Helper to extract the offset of a DOM Node in a certain direction. */
+function getOffset(orientation: 'horizontal' | 'vertical', direction: 'start' | 'end', node: Node) {
   const el = node as Element;
   if (!el.getBoundingClientRect) {
     return 0;
   }
   const rect = el.getBoundingClientRect();
-  return orientation == 'horizontal' ? rect.width : rect.height;
-}
 
+  if (orientation === 'horizontal') {
+    return direction === 'start' ? rect.left : rect.right;
+  }
+
+  return direction === 'start' ? rect.top : rect.bottom;
+}
 
 /**
  * A directive similar to `ngForOf` to be used for rendering data inside a virtual scrolling
@@ -209,19 +213,33 @@ export class CdkVirtualForOf<T> implements
     // The length of the range we're measuring.
     const rangeLen = range.end - range.start;
 
-    // Loop over all root nodes for all items in the range and sum up their size.
-    let totalSize = 0;
-    let i = rangeLen;
-    while (i--) {
+    // Loop over all the views, find the first and land node and compute the size by subtracting
+    // the top of the first node from the bottom of the last one.
+    let firstNode: HTMLElement | undefined;
+    let lastNode: HTMLElement | undefined;
+
+    // Find the first node by starting from the beginning and going forwards.
+    for (let i = 0; i < rangeLen; i++) {
       const view = this._viewContainerRef.get(i + renderedStartIndex) as
           EmbeddedViewRef<CdkVirtualForOfContext<T>> | null;
-      let j = view ? view.rootNodes.length : 0;
-      while (j--) {
-        totalSize += getSize(orientation, view!.rootNodes[j]);
+      if (view && view.rootNodes.length) {
+        firstNode = lastNode = view.rootNodes[0];
+        break;
       }
     }
 
-    return totalSize;
+    // Find the last node by starting from the end and going backwards.
+    for (let i = rangeLen - 1; i > -1; i--) {
+      const view = this._viewContainerRef.get(i + renderedStartIndex) as
+          EmbeddedViewRef<CdkVirtualForOfContext<T>> | null;
+      if (view && view.rootNodes.length) {
+        lastNode = view.rootNodes[view.rootNodes.length - 1];
+        break;
+      }
+    }
+
+    return firstNode && lastNode ?
+        getOffset(orientation, 'end', lastNode) - getOffset(orientation, 'start', firstNode) : 0;
   }
 
   ngDoCheck() {
