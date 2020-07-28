@@ -381,7 +381,8 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
             'var _t2: Dir = (null!); ' +
-            '_t2["fieldA"] = (((ctx).foo)); ');
+            'var _t3: typeof _t2["fieldA"] = (null!); ' +
+            '_t3 = (((ctx).foo)); ');
   });
 
   it('should handle a single property bound to multiple fields', () => {

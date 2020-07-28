@@ -1531,104 +1531,107 @@ export declare class AnimationEvent {
          });
     });
 
-    it('should not produce diagnostics for correct inputs which assign to private or protected fields',
-       () => {
-         env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
-         env.write('test.ts', `
-            import {Component, NgModule, Input, Directive} from '@angular/core';
-
-            @Component({
-              selector: 'blah',
-              template: '<div dir [protectedField]="value" [privateField]="value"></div>',
-            })
-            export class FooCmp {
-              value = "value";
-            }
-
+    describe('restricted inputs', () => {
+      const directiveDeclaration = `
             @Directive({selector: '[dir]'})
             export class TestDir {
               @Input()
               protected protectedField!: string;
               @Input()
               private privateField!: string;
+              @Input()
+              readonly readonlyField!: string;
             }
+      `;
 
-            @NgModule({
-              declarations: [FooCmp, TestDir],
-            })
-            export class FooModule {}
-        `);
-         const diags = env.driveDiagnostics();
-         expect(diags.length).toBe(0);
-       });
+      describe('with strict inputs', () => {
+        beforeEach(() => {
+          env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+        });
 
-    it('should not produce diagnostics for correct inputs which assign to private or protected fields inherited from a base class',
-       () => {
-         env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
-         env.write('test.ts', `
+        it('should not produce diagnostics for correct inputs which assign to readonly, private, or protected fields',
+           () => {
+             env.write('test.ts', `
             import {Component, NgModule, Input, Directive} from '@angular/core';
 
             @Component({
               selector: 'blah',
-              template: '<div dir [protectedField]="value" [privateField]="value"></div>',
+              template: '<div dir [readonlyField]="value" [protectedField]="value" [privateField]="value"></div>',
             })
             export class FooCmp {
               value = "value";
             }
 
-            @Directive()
-            export class BaseDir {
-              @Input()
-              protected protectedField!: string;
-              @Input()
-              private privateField!: string;
-            }
-
-            @Directive({selector: '[dir]'})
-            export class TestDir extends BaseDir {
-            }
+            ${directiveDeclaration}
 
             @NgModule({
               declarations: [FooCmp, TestDir],
             })
             export class FooModule {}
         `);
-         const diags = env.driveDiagnostics();
-         expect(diags.length).toBe(0);
-       });
+             const diags = env.driveDiagnostics();
+             expect(diags.length).toBe(0);
+           });
 
-    it('should produce diagnostics when assigning incorrect type to private or protected fields',
-       () => {
-         env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
-         env.write('test.ts', `
+        it('should not produce diagnostics for correct inputs which assign to readonly, private, or protected fields inherited from a base class',
+           () => {
+             env.write('test.ts', `
             import {Component, NgModule, Input, Directive} from '@angular/core';
 
             @Component({
               selector: 'blah',
-              template: '<div dir [protectedField]="value" [privateField]="value"></div>',
+              template: '<div child-dir [readonlyField]="value" [protectedField]="value" [privateField]="value"></div>',
             })
             export class FooCmp {
               value = "value";
             }
 
-            @Directive({selector: '[dir]'})
-            export class TestDir {
-              @Input()
-              protected protectedField!: number;
-              @Input()
-              private privateField!: number;
+            ${directiveDeclaration}
+
+            @Directive({selector: '[child-dir]'})
+            export class ChildDir extends TestDir {
             }
+
+            @NgModule({
+              declarations: [FooCmp, ChildDir],
+            })
+            export class FooModule {}
+        `);
+             const diags = env.driveDiagnostics();
+             expect(diags.length).toBe(0);
+           });
+
+        it('should produce diagnostics when assigning incorrect type to readonly, private, or protected fields',
+           () => {
+             env.write('test.ts', `
+            import {Component, NgModule, Input, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [readonlyField]="value" [protectedField]="value" [privateField]="value"></div>',
+            })
+            export class FooCmp {
+              value = 1;
+            }
+
+            ${directiveDeclaration}
 
             @NgModule({
               declarations: [FooCmp, TestDir],
             })
             export class FooModule {}
         `);
-         const diags = env.driveDiagnostics();
-         expect(diags.length).toBe(2);
-         expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
-         expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
-       });
+             const diags = env.driveDiagnostics();
+             expect(diags.length).toBe(3);
+             expect(diags[0].messageText)
+                 .toEqual(`Type 'number' is not assignable to type 'string'.`);
+             expect(diags[1].messageText)
+                 .toEqual(`Type 'number' is not assignable to type 'string'.`);
+             expect(diags[2].messageText)
+                 .toEqual(`Type 'number' is not assignable to type 'string'.`);
+           });
+      });
+    });
 
     it('should not produce diagnostics for undeclared inputs', () => {
       env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});

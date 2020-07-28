@@ -451,6 +451,25 @@ class TcbDirectiveInputsOp extends TcbOp {
           // declared in a `@Directive` or `@Component` decorator's `inputs` property) there is no
           // assignment target available, so this field is skipped.
           continue;
+        } else if (this.dir.restrictedInputFields.has(fieldName)) {
+          // To ignore errors, assign to temp variable with type of the field
+          const id = this.tcb.allocateId();
+          const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
+          if (!ts.isTypeReferenceNode(dirTypeRef)) {
+            throw new Error(
+                `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`);
+          }
+          const type = ts.createIndexedAccessTypeNode(
+              ts.createTypeQueryNode(dirId as ts.Identifier),
+              ts.createLiteralTypeNode(ts.createStringLiteral(fieldName)));
+          const temp = tsCreateVariable(id, ts.createNonNullExpression(ts.createNull()), type);
+          addParseSpanInfo(temp, input.attribute.sourceSpan);
+          this.scope.addStatement(temp);
+          target = id;
+
+          // TODO: To get errors assign directly to the fields on the instance, using dot access
+          // when possible
+
         } else {
           // Otherwise, a declaration exists in which case the `dir["fieldName"]` syntax is used
           // as assignment target. An element access is used instead of a property access to
