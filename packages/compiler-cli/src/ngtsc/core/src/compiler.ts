@@ -415,6 +415,7 @@ export class NgCompiler {
         checkQueries: false,
         checkTemplateBodies: true,
         checkTypeOfInputBindings: strictTemplates,
+        honorAccessModifiersForInputBindings: false,
         strictNullInputBindings: strictTemplates,
         checkTypeOfAttributes: strictTemplates,
         // Even in full template type-checking mode, DOM binding checks are not quite ready yet.
@@ -442,6 +443,7 @@ export class NgCompiler {
         checkTemplateBodies: false,
         checkTypeOfInputBindings: false,
         strictNullInputBindings: false,
+        honorAccessModifiersForInputBindings: false,
         checkTypeOfAttributes: false,
         checkTypeOfDomBindings: false,
         checkTypeOfOutputEvents: false,
@@ -461,6 +463,10 @@ export class NgCompiler {
     if (this.options.strictInputTypes !== undefined) {
       typeCheckingConfig.checkTypeOfInputBindings = this.options.strictInputTypes;
       typeCheckingConfig.applyTemplateContextGuards = this.options.strictInputTypes;
+    }
+    if (this.options.strictInputAccessModifiers !== undefined) {
+      typeCheckingConfig.honorAccessModifiersForInputBindings =
+          this.options.strictInputAccessModifiers;
     }
     if (this.options.strictNullInputTypes !== undefined) {
       typeCheckingConfig.strictNullInputBindings = this.options.strictNullInputTypes;

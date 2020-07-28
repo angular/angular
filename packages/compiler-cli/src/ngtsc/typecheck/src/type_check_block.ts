@@ -453,8 +453,13 @@ class TcbDirectiveInputsOp extends TcbOp {
           // declared in a `@Directive` or `@Component` decorator's `inputs` property) there is no
           // assignment target available, so this field is skipped.
           continue;
-        } else if (this.dir.restrictedInputFields.has(fieldName)) {
-          // To ignore errors, assign to temp variable with type of the field
+        } else if (
+            !this.tcb.env.config.honorAccessModifiersForInputBindings &&
+            this.dir.restrictedInputFields.has(fieldName)) {
+          // If strict checking of access modifiers is disabled and the field is restricted
+          // (i.e. private/protected/readonly), generate an assignment into a temporary variable
+          // that has the type of the field. This achieves type-checking but circumvents the access
+          // modifiers.
           const id = this.tcb.allocateId();
           const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
           if (!ts.isTypeReferenceNode(dirTypeRef)) {
@@ -464,23 +469,16 @@ class TcbDirectiveInputsOp extends TcbOp {
           const type = ts.createIndexedAccessTypeNode(
               ts.createTypeQueryNode(dirId as ts.Identifier),
               ts.createLiteralTypeNode(ts.createStringLiteral(fieldName)));
-          const temp = tsCreateVariable(id, ts.createNonNullExpression(ts.createNull()), type);
-          addParseSpanInfo(temp, input.attribute.sourceSpan);
+          const temp = tsDeclareVariable(id, type);
           this.scope.addStatement(temp);
           target = id;
-
-          // TODO: To get errors assign directly to the fields on the instance, using dot access
-          // when possible
-
         } else {
-          // Otherwise, a declaration exists in which case the `dir["fieldName"]` syntax is used
-          // as assignment target. An element access is used instead of a property access to
-          // support input names that are not valid JavaScript identifiers. Additionally, using
-          // element access syntax does not produce
-          // TS2341 "Property $prop is private and only accessible within class $class." nor
-          // TS2445 "Property $prop is protected and only accessible within class $class and its
-          //         subclasses."
-          target = ts.createElementAccess(dirId, ts.createStringLiteral(fieldName));
+          // To get errors assign directly to the fields on the instance, using property access
+          // when possible. String literal fields may not be valid JS identifiers so we use
+          // literal element access instead for those cases.
+          target = this.dir.stringLiteralInputFields.has(fieldName) ?
+              ts.createElementAccess(dirId, ts.createStringLiteral(fieldName)) :
+              ts.createPropertyAccess(dirId, ts.createIdentifier(fieldName));
         }
 
         // Finally the assignment is extended by assigning it into the target expression.

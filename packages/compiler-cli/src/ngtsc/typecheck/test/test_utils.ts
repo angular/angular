@@ -157,6 +157,7 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   checkQueries: false,
   checkTemplateBodies: true,
   checkTypeOfInputBindings: true,
+  honorAccessModifiersForInputBindings: true,
   strictNullInputBindings: true,
   checkTypeOfAttributes: true,
   // Feature is still in development.
@@ -178,10 +179,11 @@ export type TestDirective = Partial<Pick<
     TypeCheckableDirectiveMeta,
     Exclude<
         keyof TypeCheckableDirectiveMeta,
-        'ref'|'coercedInputFields'|'restrictedInputFields'|'undeclaredInputFields'>>>&{
+        'ref'|'coercedInputFields'|'restrictedInputFields'|'stringLiteralInputFields'|
+        'undeclaredInputFields'>>>&{
   selector: string, name: string, file?: AbsoluteFsPath, type: 'directive',
       coercedInputFields?: string[], restrictedInputFields?: string[],
-      undeclaredInputFields?: string[], isGeneric?: boolean;
+      stringLiteralInputFields?: string[], undeclaredInputFields?: string[], isGeneric?: boolean;
 };
 export type TestPipe = {
   name: string,
@@ -212,6 +214,7 @@ export function tcb(
     applyTemplateContextGuards: true,
     checkQueries: false,
     checkTypeOfInputBindings: true,
+    honorAccessModifiersForInputBindings: false,
     strictNullInputBindings: true,
     checkTypeOfAttributes: true,
     checkTypeOfDomBindings: false,
@@ -420,6 +423,7 @@ function prepareDeclarations(
       ngTemplateGuards: decl.ngTemplateGuards || [],
       coercedInputFields: new Set<string>(decl.coercedInputFields || []),
       restrictedInputFields: new Set<string>(decl.restrictedInputFields || []),
+      stringLiteralInputFields: new Set<string>(decl.stringLiteralInputFields || []),
       undeclaredInputFields: new Set<string>(decl.undeclaredInputFields || []),
       isGeneric: decl.isGeneric ?? false,
       outputs: decl.outputs || {},
