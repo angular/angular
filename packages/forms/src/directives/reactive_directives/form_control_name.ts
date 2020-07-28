@@ -15,7 +15,7 @@ import {ControlContainer} from '../control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
-import {_ngModelWarning, composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
+import {_ngModelWarning, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
@@ -136,8 +136,8 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
       null) {
     super();
     this._parent = parent;
-    this._rawValidators = validators || [];
-    this._rawAsyncValidators = asyncValidators || [];
+    this._setValidators(validators);
+    this._setAsyncValidators(asyncValidators);
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
@@ -184,24 +184,6 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    */
   get formDirective(): any {
     return this._parent ? this._parent.formDirective : null;
-  }
-
-  /**
-   * @description
-   * Synchronous validator function composed of all the synchronous validators
-   * registered with this directive.
-   */
-  get validator(): ValidatorFn|null {
-    return composeValidators(this._rawValidators);
-  }
-
-  /**
-   * @description
-   * Async validator function composed of all the async validators registered with this
-   * directive.
-   */
-  get asyncValidator(): AsyncValidatorFn {
-    return composeAsyncValidators(this._rawAsyncValidators)!;
   }
 
   private _checkParentType(): void {

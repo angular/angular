@@ -532,3 +532,23 @@ export function normalizeValidators<V>(validators: (V|Validator|AsyncValidator)[
         ((c: AbstractControl) => validator.validate(c)) as unknown as V;
   });
 }
+
+/**
+ * Merges synchronous validators into a single validator function (combined using
+ * `Validators.compose`).
+ */
+export function composeValidators(validators: Array<Validator|ValidatorFn>): ValidatorFn|null {
+  return validators != null ? Validators.compose(normalizeValidators<ValidatorFn>(validators)) :
+                              null;
+}
+
+/**
+ * Merges asynchronous validators into a single validator function (combined using
+ * `Validators.composeAsync`).
+ */
+export function composeAsyncValidators(validators: Array<AsyncValidator|AsyncValidatorFn>):
+    AsyncValidatorFn|null {
+  return validators != null ?
+      Validators.composeAsync(normalizeValidators<AsyncValidatorFn>(validators)) :
+      null;
+}

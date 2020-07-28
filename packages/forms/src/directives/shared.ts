@@ -9,7 +9,7 @@
 import {isDevMode} from '@angular/core';
 
 import {FormArray, FormControl, FormGroup} from '../model';
-import {normalizeValidators, Validators} from '../validators';
+import {Validators} from '../validators';
 
 import {AbstractControlDirective} from './abstract_control_directive';
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
@@ -148,18 +148,6 @@ function _throwError(dir: AbstractControlDirective, message: string): void {
     messageEnd = 'unspecified name attribute';
   }
   throw new Error(`${message} ${messageEnd}`);
-}
-
-export function composeValidators(validators: Array<Validator|ValidatorFn>): ValidatorFn|null {
-  return validators != null ? Validators.compose(normalizeValidators<ValidatorFn>(validators)) :
-                              null;
-}
-
-export function composeAsyncValidators(validators: Array<AsyncValidator|AsyncValidatorFn>):
-    AsyncValidatorFn|null {
-  return validators != null ?
-      Validators.composeAsync(normalizeValidators<AsyncValidatorFn>(validators)) :
-      null;
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
