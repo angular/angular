@@ -55,11 +55,6 @@ export interface DirectiveTypeCheckMeta {
   coercedInputFields: Set<string>;
 
   /**
-   * The set of input fields which map to generic members in the Directive's class.
-   */
-  genericInputFields: Set<string>;
-
-  /**
    * The set of input fields which map to `private` or `protected` members in the Directive's
    * class.
    */

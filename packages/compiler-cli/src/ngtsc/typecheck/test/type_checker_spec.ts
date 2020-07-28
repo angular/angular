@@ -86,6 +86,7 @@ runInEachFileSystem(os => {
         selector: '[dir]',
         file: dirFile,
         type: 'directive',
+        isGeneric: true,
       };
       const {program, templateTypeChecker, programStrategy} = setup([
         {
@@ -104,7 +105,7 @@ runInEachFileSystem(os => {
                 // A non-exported interface used as a type bound for a generic directive causes
                 // an inline type constructor to be required.
                 interface NotExported {}
-                export class TestDir<T extends NotExported> {}`,
+                export abstract class TestDir<T extends NotExported> {}`,
           templates: {},
         },
       ]);
@@ -161,7 +162,7 @@ runInEachFileSystem(os => {
         const {program, templateTypeChecker} = setup(
             [{
               fileName,
-              source: `class Cmp {} // not exported, so requires inline`,
+              source: `abstract class Cmp {} // not exported, so requires inline`,
               templates: {'Cmp': '<div></div>'}
             }],
             {inlining: false});
@@ -188,6 +189,7 @@ runInEachFileSystem(os => {
                     selector: '[dir]',
                     file: dirFile,
                     type: 'directive',
+                    isGeneric: true,
                   }]
                 },
                 {
@@ -196,7 +198,7 @@ runInEachFileSystem(os => {
                   // A non-exported interface used as a type bound for a generic directive causes
                   // an inline type constructor to be required.
                   interface NotExported {}
-                  export class TestDir<T extends NotExported> {}`,
+                  export abstract class TestDir<T extends NotExported> {}`,
                   templates: {},
                 }
               ],

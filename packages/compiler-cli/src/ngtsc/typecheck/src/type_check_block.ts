@@ -358,11 +358,6 @@ class TcbDirectiveCtorOp extends TcbOp {
     const inputs = getBoundInputs(this.dir, this.node, this.tcb);
     for (const input of inputs) {
       for (const fieldName of input.fieldNames) {
-        // Skip the field if it does not infer any of the generic types.
-        if (!this.dir.genericInputFields.has(fieldName)) {
-          continue;
-        }
-
         // Skip the field if an attribute has already been bound to it; we can't have a duplicate
         // key in the type constructor call.
         if (genericInputs.has(fieldName)) {
@@ -380,7 +375,7 @@ class TcbDirectiveCtorOp extends TcbOp {
     }
 
     // Add unset directive inputs for each of the remaining unset fields.
-    for (const fieldName of this.dir.genericInputFields) {
+    for (const fieldName of Object.keys(this.dir.inputs)) {
       if (!genericInputs.has(fieldName)) {
         genericInputs.set(fieldName, {type: 'unset', field: fieldName});
       }
