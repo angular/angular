@@ -26,6 +26,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
+import {takeWhile} from 'rxjs/operators';
 import {Overlay} from './overlay';
 import {OverlayConfig} from './overlay-config';
 import {OverlayRef} from './overlay-ref';
@@ -113,6 +114,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _backdropSubscription = Subscription.EMPTY;
   private _attachSubscription = Subscription.EMPTY;
   private _detachSubscription = Subscription.EMPTY;
+  private _positionSubscription = Subscription.EMPTY;
   private _offsetX: number;
   private _offsetY: number;
   private _position: FlexibleConnectedPositionStrategy;
@@ -254,6 +256,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     this._attachSubscription.unsubscribe();
     this._detachSubscription.unsubscribe();
     this._backdropSubscription.unsubscribe();
+    this._positionSubscription.unsubscribe();
 
     if (this._overlayRef) {
       this._overlayRef.dispose();
@@ -367,10 +370,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   /** Returns the position strategy of the overlay to be set on the overlay config */
   private _createPositionStrategy(): FlexibleConnectedPositionStrategy {
     const strategy = this._overlay.position().flexibleConnectedTo(this.origin.elementRef);
-
     this._updatePositionStrategy(strategy);
-    strategy.positionChanges.subscribe(p => this.positionChange.emit(p));
-
     return strategy;
   }
 
@@ -394,6 +394,22 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     } else {
       this._backdropSubscription.unsubscribe();
     }
+
+    this._positionSubscription.unsubscribe();
+
+    // Only subscribe to `positionChanges` if requested, because putting
+    // together all the information for it can be expensive.
+    if (this.positionChange.observers.length > 0) {
+      this._positionSubscription = this._position.positionChanges
+        .pipe(takeWhile(() => this.positionChange.observers.length > 0))
+        .subscribe(position => {
+          this.positionChange.emit(position);
+
+          if (this.positionChange.observers.length === 0) {
+            this._positionSubscription.unsubscribe();
+          }
+        });
+    }
   }
 
   /** Detaches the overlay and unsubscribes to backdrop clicks if backdrop exists */
@@ -403,6 +419,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     }
 
     this._backdropSubscription.unsubscribe();
+    this._positionSubscription.unsubscribe();
   }
 
   static ngAcceptInputType_hasBackdrop: BooleanInput;
