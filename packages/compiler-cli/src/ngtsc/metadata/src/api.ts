@@ -61,6 +61,13 @@ export interface DirectiveTypeCheckMeta {
   restrictedInputFields: Set<string>;
 
   /**
+   * The set of input fields which are declared as string literal members in the Directive's class.
+   * We need to track these separately because these fields may not be valid JS identifiers so
+   * we cannot use them with property access expressions when assigning inputs.
+   */
+  stringLiteralInputFields: Set<string>;
+
+  /**
    * The set of input fields which do not have corresponding members in the Directive's class.
    */
   undeclaredInputFields: Set<string>;

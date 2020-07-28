@@ -873,24 +873,25 @@ describe('type check blocks', () => {
     describe('config.checkAccessModifiersForInputBindings', () => {
       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
 
-      xit('should assign restricted properties via element access for field names that are not JS identifiers',
-          () => {
-            const DIRECTIVES: TestDeclaration[] = [{
-              type: 'directive',
-              name: 'Dir',
-              selector: '[dir]',
-              inputs: {
-                'some-input.xs': 'inputA',
-              },
-              restrictedInputFields: ['some-input.xs']
-            }];
-            const enableChecks:
-                TypeCheckingConfig = {...BASE_CONFIG, honorAccessModifiersForInputBindings: true};
-            const block = tcb(TEMPLATE, DIRECTIVES, enableChecks);
-            expect(block).toContain(
-                'var _t2: Dir = (null!); ' +
-                '_t2["some-input.xs"] = (((ctx).foo)); ');
-          });
+      it('should assign restricted properties via element access for field names that are not JS identifiers',
+         () => {
+           const DIRECTIVES: TestDeclaration[] = [{
+             type: 'directive',
+             name: 'Dir',
+             selector: '[dir]',
+             inputs: {
+               'some-input.xs': 'inputA',
+             },
+             restrictedInputFields: ['some-input.xs'],
+             stringLiteralInputFields: ['some-input.xs'],
+           }];
+           const enableChecks:
+               TypeCheckingConfig = {...BASE_CONFIG, honorAccessModifiersForInputBindings: true};
+           const block = tcb(TEMPLATE, DIRECTIVES, enableChecks);
+           expect(block).toContain(
+               'var _t2: Dir = (null!); ' +
+               '_t2["some-input.xs"] = (((ctx).foo)); ');
+         });
 
       it('should assign restricted properties via property access', () => {
         const DIRECTIVES: TestDeclaration[] = [{
