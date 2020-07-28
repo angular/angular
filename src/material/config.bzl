@@ -14,6 +14,7 @@ entryPoints = [
     "checkbox",
     "checkbox/testing",
     "chips",
+    "chips/testing",
     "core",
     "core/testing",
     "datepicker",

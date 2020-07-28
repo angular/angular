@@ -293,6 +293,7 @@
 /tools/public_api_guard/material/card.d.ts              @jelbourn
 /tools/public_api_guard/material/checkbox.d.ts          @jelbourn @devversion
 /tools/public_api_guard/material/chips.d.ts             @jelbourn
+/tools/public_api_guard/material/chips/testing.d.ts     @jelbourn
 /tools/public_api_guard/material/core.d.ts              @jelbourn
 /tools/public_api_guard/material/datepicker.d.ts        @mmalerba
 /tools/public_api_guard/material/dialog.d.ts            @jelbourn @crisbeto
