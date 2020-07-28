@@ -58,6 +58,10 @@ export class SymbolExtractor {
           const funcDecl = child as ts.FunctionDeclaration;
           funcDecl.name && symbols.push({name: stripSuffix(funcDecl.name.getText())});
           break;
+        case ts.SyntaxKind.ClassDeclaration:
+          const classDecl = child as ts.ClassDeclaration;
+          classDecl.name && symbols.push({name: stripSuffix(classDecl.name.getText())});
+          break;
         default:
           // Left for easier debugging.
           // console.log('###', ts.SyntaxKind[child.kind], child.getText());

@@ -9,12 +9,14 @@
 import {error} from '../utils/console';
 import {convertConditionToFunction} from './condition_evaluator';
 import {PullApproveGroupConfig} from './parse-yaml';
+import {PullApproveGroupStateDependencyError} from './pullapprove_arrays';
 
 /** A condition for a group. */
 interface GroupCondition {
   expression: string;
-  checkFn: (files: string[]) => boolean;
+  checkFn: (files: string[], groups: PullApproveGroup[]) => boolean;
   matchedFiles: Set<string>;
+  unverifiable: boolean;
 }
 
 /** Result of testing files against the group. */
@@ -24,6 +26,7 @@ export interface PullApproveGroupResult {
   matchedCount: number;
   unmatchedConditions: GroupCondition[];
   unmatchedCount: number;
+  unverifiableConditions: GroupCondition[];
 }
 
 // Regular expression that matches conditions for the global approval.
@@ -39,7 +42,9 @@ export class PullApproveGroup {
   /** List of conditions for the group. */
   conditions: GroupCondition[] = [];
 
-  constructor(public groupName: string, config: PullApproveGroupConfig) {
+  constructor(
+      public groupName: string, config: PullApproveGroupConfig,
+      readonly precedingGroups: PullApproveGroup[] = []) {
     this._captureConditions(config);
   }
 
@@ -58,6 +63,7 @@ export class PullApproveGroup {
             expression,
             checkFn: convertConditionToFunction(expression),
             matchedFiles: new Set(),
+            unverifiable: false,
           });
         } catch (e) {
           error(`Could not parse condition in group: ${this.groupName}`);
@@ -76,33 +82,47 @@ export class PullApproveGroup {
    * the pull approve group's conditions.
    */
   testFile(filePath: string): boolean {
-    return this.conditions.every(({matchedFiles, checkFn, expression}) => {
+    return this.conditions.every((condition) => {
+      const {matchedFiles, checkFn, expression} = condition;
       try {
-        const matchesFile = checkFn([filePath]);
+        const matchesFile = checkFn([filePath], this.precedingGroups);
         if (matchesFile) {
           matchedFiles.add(filePath);
         }
         return matchesFile;
       } catch (e) {
-        const errMessage = `Condition could not be evaluated: \n\n` +
-            `From the [${this.groupName}] group:\n` +
-            ` - ${expression}` +
-            `\n\n${e.message} ${e.stack}\n\n`;
-        error(errMessage);
-        process.exit(1);
+        // In the case of a condition that depends on the state of groups we want to
+        // ignore that the verification can't accurately evaluate the condition and then
+        // continue processing. Other types of errors fail the verification, as conditions
+        // should otherwise be able to execute without throwing.
+        if (e instanceof PullApproveGroupStateDependencyError) {
+          condition.unverifiable = true;
+          // Return true so that `this.conditions.every` can continue evaluating.
+          return true;
+        } else {
+          const errMessage = `Condition could not be evaluated: \n\n` +
+              `From the [${this.groupName}] group:\n` +
+              ` - ${expression}` +
+              `\n\n${e.message} ${e.stack}\n\n`;
+          error(errMessage);
+          process.exit(1);
+        }
       }
     });
   }
 
   /** Retrieve the results for the Group, all matched and unmatched conditions. */
   getResults(): PullApproveGroupResult {
-    const matchedConditions = this.conditions.filter(c => !!c.matchedFiles.size);
-    const unmatchedConditions = this.conditions.filter(c => !c.matchedFiles.size);
+    const matchedConditions = this.conditions.filter(c => c.matchedFiles.size > 0);
+    const unmatchedConditions =
+        this.conditions.filter(c => c.matchedFiles.size === 0 && !c.unverifiable);
+    const unverifiableConditions = this.conditions.filter(c => c.unverifiable);
     return {
       matchedConditions,
       matchedCount: matchedConditions.length,
       unmatchedConditions,
       unmatchedCount: unmatchedConditions.length,
+      unverifiableConditions,
       groupName: this.groupName,
     };
   }

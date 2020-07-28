@@ -104,6 +104,8 @@ export class Template implements Node {
 }
 
 export class Content implements Node {
+  readonly name = 'ng-content';
+
   constructor(
       public selector: string, public attributes: TextAttribute[],
       public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}

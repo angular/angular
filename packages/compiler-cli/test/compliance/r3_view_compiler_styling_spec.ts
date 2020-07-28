@@ -336,9 +336,10 @@ describe('compiler compliance: styling', () => {
           hostVars: 1,
           hostBindings: function MyAnimDir_HostBindings(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵcomponentHostSyntheticListener("@myAnim.start", function MyAnimDir_animation_myAnim_start_HostBindingHandler() { return ctx.onStart(); })("@myAnim.done", function MyAnimDir_animation_myAnim_done_HostBindingHandler() { return ctx.onDone(); });
-            } if (rf & 2) {
-              $r3$.ɵɵupdateSyntheticHostBinding("@myAnim", ctx.myAnimState);
+              $r3$.ɵɵsyntheticHostListener("@myAnim.start", function MyAnimDir_animation_myAnim_start_HostBindingHandler() { return ctx.onStart(); })("@myAnim.done", function MyAnimDir_animation_myAnim_done_HostBindingHandler() { return ctx.onDone(); });
+            }
+            if (rf & 2) {
+              $r3$.ɵɵsyntheticHostProperty("@myAnim", ctx.myAnimState);
             }
           }
           …
@@ -2083,7 +2084,7 @@ describe('compiler compliance: styling', () => {
           hostBindings: function MyDir_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵhostProperty("title", ctx.title);
-              $r3$.ɵɵupdateSyntheticHostBinding("@anim",
+              $r3$.ɵɵsyntheticHostProperty("@anim",
                 $r3$.ɵɵpureFunction2(7, _c1, ctx._animValue,
                 $r3$.ɵɵpureFunction2(4, _c0, ctx._animParam1, ctx._animParam2)));
               $r3$.ɵɵclassProp("foo", ctx.foo);

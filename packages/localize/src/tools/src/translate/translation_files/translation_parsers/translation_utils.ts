@@ -8,6 +8,7 @@
 import {Element, LexerRange, Node, ParseError, ParseErrorLevel, ParseSourceSpan, XmlParser} from '@angular/compiler';
 import {Diagnostics} from '../../../diagnostics';
 import {TranslationParseError} from './translation_parse_error';
+import {ParseAnalysis} from './translation_parser';
 
 export function getAttrOrThrow(element: Element, attrName: string): string {
   const attrValue = getAttribute(element, attrName);
@@ -81,25 +82,33 @@ export interface XmlTranslationParserHint {
  */
 export function canParseXml(
     filePath: string, contents: string, rootNodeName: string,
-    attributes: Record<string, string>): XmlTranslationParserHint|false {
+    attributes: Record<string, string>): ParseAnalysis<XmlTranslationParserHint> {
+  const diagnostics = new Diagnostics();
   const xmlParser = new XmlParser();
   const xml = xmlParser.parse(contents, filePath);
 
   if (xml.rootNodes.length === 0 ||
       xml.errors.some(error => error.level === ParseErrorLevel.ERROR)) {
-    return false;
+    xml.errors.forEach(e => addParseError(diagnostics, e));
+    return {canParse: false, diagnostics};
   }
 
   const rootElements = xml.rootNodes.filter(isNamedElement(rootNodeName));
   const rootElement = rootElements[0];
   if (rootElement === undefined) {
-    return false;
+    diagnostics.warn(`The XML file does not contain a <${rootNodeName}> root node.`);
+    return {canParse: false, diagnostics};
   }
 
   for (const attrKey of Object.keys(attributes)) {
     const attr = rootElement.attrs.find(attr => attr.name === attrKey);
     if (attr === undefined || attr.value !== attributes[attrKey]) {
-      return false;
+      addParseDiagnostic(
+          diagnostics, rootElement.sourceSpan,
+          `The <${rootNodeName}> node does not have the required attribute: ${attrKey}="${
+              attributes[attrKey]}".`,
+          ParseErrorLevel.WARNING);
+      return {canParse: false, diagnostics};
     }
   }
 
@@ -110,7 +119,7 @@ export function canParseXml(
         ParseErrorLevel.WARNING));
   }
 
-  return {element: rootElement, errors: xml.errors};
+  return {canParse: true, diagnostics, hint: {element: rootElement, errors: xml.errors}};
 }
 
 /**

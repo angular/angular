@@ -112,6 +112,14 @@ When the Angular router lazy-loads a module, it creates a new injector. This inj
 Any component created within a lazy loaded module’s context, such as by router navigation, gets the local instance of the service, not the instance in the root application injector. Components in external modules continue to receive the instance created for the application root.
 
 Though you can provide services by lazy loading modules, not all services can be lazy loaded. For instance, some modules only work in the root module, such as the Router. The Router works with the global location object in the browser.
+
+As of Angular version 9, you can provide a new instance of a service with each lazy loaded module. The following code adds this functionality to `UserService`.
+
+<code-example path="providers/src/app/user.service.2.ts"  header="src/app/user.service.ts"></code-example>
+
+With `providedIn: 'any'`, all eagerly loaded modules share a singleton instance; however, lazy loaded modules each get their own unique instance, as shown in the following diagram.
+
+<img src="generated/images/guide/providers/any-provider.svg" alt="any-provider-scope" class="left">
 -->
 Angular 라우터가 모듈을 지연 로딩하면, 이 때 새로운 인젝터를 생성합니다.
 이 인젝터는 애플리케이션의 최상위 인젝터의 자식 인젝터인데, 인젝트도 모듈 트리와 비슷하게 트리 구조로 구성됩니다.
@@ -121,6 +129,15 @@ Angular 라우터가 모듈을 지연 로딩하면, 이 때 새로운 인젝터�
 
 하지만 모듈이 지연 로딩된다고 해서 모든 서비스가 지연로딩 되는 것은 아닙니다.
 예를 들면, Router와 같은 모듈은 앱 모듈에만 등록되었지만 이 모듈은 브라우저 전체를 대상으로 동작합니다.
+
+As of Angular version 9, you can provide a new instance of a service with each lazy loaded module. The following code adds this functionality to `UserService`.
+
+<code-example path="providers/src/app/user.service.2.ts"  header="src/app/user.service.ts"></code-example>
+
+With `providedIn: 'any'`, all eagerly loaded modules share a singleton instance; however, lazy loaded modules each get their own unique instance, as shown in the following diagram.
+
+<img src="generated/images/guide/providers/any-provider.svg" alt="any-provider-scope" class="left">
+
 
 
 <!--

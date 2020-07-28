@@ -114,8 +114,7 @@ The following table lists some of the key AngularJS template features with their
       The context of the binding is implied and is always the
       associated component, so it needs no reference variable.
 
-      For more information, see the [Interpolation](guide/template-syntax#interpolation)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information, see the [Interpolation](guide/interpolation) guide.
       -->
       ### 바인딩/문자열 바인딩
 
@@ -125,7 +124,7 @@ The following table lists some of the key AngularJS template features with their
       그리고 이 바인딩은 컴포넌트 프로퍼티 값을 템플릿 엘리먼트로 연결하는 방향입니다.
       바인딩할 수 있는 컨텍스트는 언제나 컴포넌트와 관련되어 있으며 컴포넌트 자체를 따로 지정할 필요는 없습니다.
 
-      자세한 내용은 [템플릿 문법](guide/template-syntax) 문서의 [문자열 바인딩](guide/template-syntax#interpolation) 섹션을 참고하세요.
+      자세한 내용은 [문자열 바인딩](guide/interpolation) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -223,13 +222,12 @@ The following table lists some of the key AngularJS template features with their
       <!--
       Angular has true template input variables that are explicitly defined using the `let` keyword.
 
-      For more information, see the [ngFor micro-syntax](guide/template-syntax#microsyntax)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information, see the [ngFor micro-syntax](guide/built-in-directives#microsyntax)
+      section of the [Built-in Directives](guide/built-in-directives) page.
       -->
       Angular 템플릿에서는 `let` 키워드를 사용해서 입력 변수를 정의할 수 있습니다.
 
-      자세한 내용은 [템플릿 문법](guide/template-syntax) 문서의 [ngFor 세부 문법](guide/template-syntax#microsyntax) 섹션을 참고하세요.
-
+      자세한 내용은 [기본 디렉티브](guide/built-in-directives) 문서의 [ngFor 세부 문법](guide/built-in-directives#microsyntax) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -375,8 +373,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       Angular also has **class binding**, which is a good way to add or remove a single class,
       as shown in the third example.
 
-      For more information see the [Attribute, class, and style bindings](guide/template-syntax#other-bindings)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information see [Attribute, class, and style bindings](guide/attribute-binding) page.
       -->
       `ngClass`도 비슷하게 동작합니다.
       이 디렉티브도 표현식이 반환하는 결과에 따라 엘리먼트의 CSS 클래스를 추가하거나 제거합니다.
@@ -387,7 +384,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       세번째 예제 코드에 사용한 것은 **클래스 바인딩** 문법입니다. 조작하려는 클래스가 하나라면 이 방법을 사용하는 것도 좋습니다.
 
-      더 자세한 내용은 [템플릿 문법](guide/template-syntax) 문서의 [어트리뷰트, 클래스, 스타일 바인딩](guide/template-syntax#other-bindings) 섹션을 참고하세요.
+      더 자세한 내용은 [어트리뷰트, 클래스, 스타일 바인딩](guide/attribute-binding) 섹션을 참고하세요.
 
     </td>
 
@@ -445,8 +442,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       For a list of DOM events, see: https://developer.mozilla.org/en-US/docs/Web/Events.
 
-      For more information, see the [Event binding](guide/template-syntax#event-binding)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information, see the [Event binding](guide/event-binding) page.
       -->
       ### `click` 이벤트 바인딩
       
@@ -465,7 +461,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       DOM에서 발생하는 이벤트 목록은 https://developer.mozilla.org/en-US/docs/Web/Events 를 참고하세요.
 
-      그리고 이벤트 바인딩에 대해 자세하게 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [이벤트 바인딩](guide/template-syntax#event-binding) 섹션을 참고하세요.
+      그리고 이벤트 바인딩에 대해 자세하게 알아보려면 [이벤트 바인딩](guide/event-binding) 섹션을 참고하세요.
 
     </td>
 
@@ -599,8 +595,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       Angular uses property binding; there is no built-in *href* directive.
       Place the element's `href` property in square brackets and set it to a quoted template expression.
 
-      For more information see the [Property binding](guide/template-syntax#property-binding)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information see the [Property binding](guide/property-binding) page.
 
       In Angular, `href` is no longer used for routing. Routing uses `routerLink`, as shown in the following example.
 
@@ -617,7 +612,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       Angular는 *href* 디렉티브를 제공하지 않습니다. 이 방식 대신 프로퍼티 바인딩을 사용합니다.
       엘리먼트의 `href` 프로퍼티를 대괄호(`[`, `]`)로 감싸고 등호 오른쪽에 템플릿 표현식을 작성하면 됩니다.
 
-      더 자세한 내용은 [템플릿 문법](guide/template-syntax) 문서의 [프로퍼티 바인딩](guide/template-syntax#property-binding) 섹션을 참고하세요.
+      더 자세한 내용은 [프로퍼티 바인딩](guide/property-binding) 문서를 참고하세요.
 
       Angular에서 라우팅을 한다면 `href`는 더이상 사용하지 않습니다.
       이 프로퍼티 대신 아래 예제처럼 `routerLink`를 활용합니다.
@@ -712,13 +707,13 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       and event binding (from the view to the component), thereby providing two-way binding.
 
       For more information on two-way binding with `ngModel`, see the [NgModel&mdash;Two-way binding to
-      form elements with `[(ngModel)]`](../guide/template-syntax.html#ngModel)
-      section of the [Template Syntax](guide/template-syntax) page.
+      form elements with `[(ngModel)]`](../guide/built-in-directives#ngModel)
+      section of the [Built-in directives](guide/built-in-directives) page.
       -->
       Angular에서는 `[()]`라는 문법으로 **양방향 바인딩**을 사용할 수 있습니다. 괄호 순서를 헷갈리지 않게 "상자에 든 바나나" 라고도 합니다.
       그런데 이 문법은 사실 프로퍼티 바인딩(컴포넌트에서 화면으로)과 이벤트 바인딩(화면에서 컴포넌트로)을 함께 엮어 양방향 바인딩시키는 문법을 간략화한 것입니다.
 
-      `ngModel`을 사용해서 양방향 바인딩을 활용하는 방법에 대해 자세하게 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [`[(NgModel)]: 양방향 바인딩](guide/template-syntax#ngModel) 섹션을 참고하세요.
+      `ngModel`을 사용해서 양방향 바인딩을 활용하는 방법에 대해 자세하게 알아보려면 [기본 디렉티브](guide/built-in-directives) 문서의 `[(ngModel)]`](../guide/built-in-directives#ngModel) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -819,8 +814,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       In this example, the `<div>` element is hidden if the `favoriteHero` variable is not truthy.
 
-      For more information on property binding, see the [Property binding](guide/template-syntax#property-binding)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information on property binding, see the [Property binding](guide/property-binding) page.
       -->
       ### `hidden` 프로퍼티 바인딩
 
@@ -832,8 +826,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       위 예제 코드에서 `<div>` 엘리먼트는 `favoriteHero` 변수의 값이 거짓으로 평가되면 화면에 표시되지 않습니다.
 
-      프로퍼티 바인딩에 대해 더 자세하게 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [프로퍼티 바인딩](guide/template-syntax#property-binding) 섹션을 참고하세요.
-
+      프로퍼티 바인딩에 대해 더 자세하게 알아보려면 [프로퍼티 바인딩](guide/property-binding) 섹션을 참고하세요.
 
     </td>
 
@@ -871,8 +864,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       Angular uses property binding; there is no built-in *src* directive.
       Place the `src` property in square brackets and set it to a quoted template expression.
 
-      For more information on property binding, see the [Property binding](guide/template-syntax#property-binding)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information on property binding, see the [Property binding](guide/property-binding) page.
       -->
       ### `src` 프로퍼티 바인딩
 
@@ -881,7 +873,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       Angular는 `src` 디렉티브를 제공하지 않습니다. 이 방식 대신 프로퍼티 바인딩을 사용합니다.
       Angular에서는 `src` 프로퍼티를 대괄호(`[`, `]`)로 감싸고 템플릿 표현식을 연결하면 됩니다.
 
-      프로퍼티 바인딩에 대해 더 자세하게 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [프로퍼티 바인딩](guide/template-syntax#property-binding) 섹션을 참고하세요.
+      프로퍼티 바인딩에 대해 더 자세하게 알아보려면 [프로퍼티 바인딩](guide/property-binding) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -925,11 +917,11 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       Angular also has **style binding**, which is good way to set a single style. This is shown in the second example.
 
-      For more information on style binding, see the [Style binding](guide/template-syntax#style-binding) section of the
-      [Template Syntax](guide/template-syntax) page.
+      For more information on style binding, see the [Style binding](guide/attribute-binding#style-binding) section of the
+      [Attribute binding](guide/attribute-binding) page.
 
-      For more information on the `ngStyle` directive, see [NgStyle](guide/template-syntax#ngStyle)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information on the `ngStyle` directive, see the [NgStyle](guide/built-in-directives#ngStyle)
+      section of the [Built-in directives](guide/built-in-directives) page.
       -->
       Angular에서는 `ngStyle`가 비슷한 동작을 합니다.
       이 디렉티브도 템플릿 표현식의 결과에 따라 HTML 엘리먼트에 CSS 스타일을 적용합니다.
@@ -938,9 +930,9 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       그리고 Angular는 두번째 예제 코드처럼 사용하는 **스타일 바인딩** 문법도 제공합니다.
 
-      스타일 바인딩에 대해 더 자세하게 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [스타일 바인딩](guide/template-syntax#style-binding) 섹션을 참고하세요.
+      스타일 바인딩에 대해 더 자세하게 알아보려면 [어트리뷰트 바인딩](guide/attribute-binding) 문서의 [스타일 바인딩](guide/attribute-binding#style-binding) 섹션을 참고하세요.
 
-      그리고 `ngStyle` 디렉티브에 대해 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [NgStyle](guide/template-syntax#ngStyle) 섹션을 참고하세요.
+      그리고 `ngStyle` 디렉티브에 대해 알아보려면 [기본 디렉티브](guide/built-in-directives) 문서의 [NgStyle](guide/built-in-directives#ngStyle) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -1005,8 +997,8 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       The (*) before `ngSwitchCase` and `ngSwitchDefault` is required in this example.
 
-      For more information, see [The NgSwitch directives](guide/template-syntax#ngSwitch)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information, see [The NgSwitch directives](guide/built-in-directives#ngSwitch)
+      section of the [Built-in directives](guide/built-in-directives) page.
       -->
       Angular의 `ngSwitch` 디렉티브도 비슷하게 동작합니다.
       이 디렉티브는 `ngSwitch`과 바인딩된 표현식의 결과에 맞는 `*ngSwitchCase`를 찾아서 화면에 표시합니다.
@@ -1018,7 +1010,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       `ngSwitchCase`와 `ngSwitchDefault` 앞에는 별표(`*`)가 붙는다는 것에 주의하세요.
 
-      더 자세한 내용을 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [NgSwitch 디렉티브](guide/template-syntax#ngSwitch) 섹션을 참고하세요.
+      더 자세한 내용을 알아보려면 [기본 디렉티브](guide/built-in-directives) 문서의 [NgSwitch 디렉티브](guide/built-in-directives#ngSwitch) 섹션을 참고하세요.
     </td>
 
   </tr>

@@ -68,7 +68,7 @@ export function makeTestBundleProgram(
   const rootDir = fs.dirname(entryPointPath);
   const options: ts.CompilerOptions =
       {allowJs: true, maxNodeModuleJsDepth: Infinity, checkJs: false, rootDir, rootDirs: [rootDir]};
-  const host = new NgccSourcesCompilerHost(fs, options, entryPointPath);
+  const host = new NgccSourcesCompilerHost(fs, options, rootDir);
   return makeBundleProgram(
       fs, isCore, rootDir, path, 'r3_symbols.js', options, host, additionalFiles);
 }

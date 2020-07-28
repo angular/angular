@@ -84,7 +84,7 @@ export class ConfigService {
     // 사용자가 이해할 수 있는 에러 메시지를 반환합니다.
     return throwError(
       'Something bad happened; please try again later.');
-  };
+  }
   // #enddocregion handleError
 
   makeIntentionalError() {

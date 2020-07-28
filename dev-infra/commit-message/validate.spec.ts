@@ -77,6 +77,15 @@ describe('validate-commit-message.js', () => {
           config.commitMessage.maxLineLength} characters`);
     });
 
+    it('should skip max length limit for URLs', () => {
+      const msg = 'fix(compiler): this is just an usual commit message tile\n\n' +
+          'This is a normal commit message body which does not exceed the max length\n' +
+          'limit. For more details see the following super long URL:\n\n' +
+          'https://github.com/angular/components/commit/e2ace018ddfad10608e0e32932c43dcfef4095d7#diff-9879d6db96fd29134fc802214163b95a';
+
+      expect(validateCommitMessage(msg)).toBe(VALID);
+    });
+
     it('should validate "<type>(<scope>): <subject>" format', () => {
       const msg = 'not correct format';
 

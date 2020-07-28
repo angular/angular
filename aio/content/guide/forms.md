@@ -36,7 +36,7 @@ This tutorial teaches you how to do the following:
 * Use `ngModel` to create two-way data bindings for reading and writing input-control values.
 * Provide visual feedback using special CSS classes that track the state of the controls.
 * Display validation errors to users and enable or disable form controls based on the form status.
-* Share information across HTML elements using [template reference variables](guide/template-syntax#template-reference-variables-var).
+* Share information across HTML elements using [template reference variables](guide/template-reference-variables).
 
 ## Prerequisites
 
@@ -93,7 +93,7 @@ In the course of this tutorial, you bind a sample form to data and handle user i
    * Add custom CSS to provide visual feedback on the status.
    * Show and hide validation-error messages.
 4. Respond to a native HTML button-click event by adding to the model data.
-5. Handle form submission using the [`ngSubmit`(api/forms/NgForm#properties)] output property of the form.
+5. Handle form submission using the [`ngSubmit`](api/forms/NgForm#properties) output property of the form.
    * Disable the **Submit** button until the form is valid.
    * After submit, swap out the finished form for different content on the page.
 
@@ -184,7 +184,7 @@ The note reminds you to remove the diagnostic lines when you have finished obser
 
 When you imported the `FormsModule` in your component, Angular automatically created and attached an [NgForm](api/forms/NgForm "API reference for NgForm") directive to the `<form>` tag in the template (because `NgForm` has the selector `form` that matches `<form>` elements).
 
-To get access to the `NgForm` and the overall form status, declare a [template reference variable](guide/template-syntax#template-reference-variables-var).
+To get access to the `NgForm` and the overall form status, declare a [template reference variable](guide/template-reference-variables).
 
 1. Edit the template file `hero-form.component.html`.
 
@@ -467,7 +467,7 @@ You will bind the form property that indicates its overall validity to the **Sub
 3. Run the application now. Notice that the button is enabled&mdash;although
 it doesn't do anything useful yet.
 
-4. Delete the **Name** value. This violates the "required" rule, so it displays the error message&emdash;and notice that it also disables the **Submit** button.
+4. Delete the **Name** value. This violates the "required" rule, so it displays the error message&mdash;and notice that it also disables the **Submit** button.
 
 
    You didn't have to explicitly wire the button's enabled state to the form's validity.

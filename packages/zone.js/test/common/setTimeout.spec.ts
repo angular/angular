@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {patchTimer} from '../../lib/common/timers';
 import {isNode, zoneSymbol} from '../../lib/common/utils';
+
 declare const global: any;
 const wtfMock = global.wtfMock;
 
@@ -54,6 +56,25 @@ describe('setTimeout', function() {
         done();
       }, 1);
     });
+  });
+
+  it('should call native clearTimeout with the correct context', function() {
+    // since clearTimeout has been patched already, we can not test `clearTimeout` directly
+    // we will fake another API patch to test
+    let context: any = null;
+    const fakeGlobal = {
+      setTimeout: function() {
+        return 1;
+      },
+      clearTimeout: function(id: number) {
+        context = this;
+      }
+    };
+    patchTimer(fakeGlobal, 'set', 'clear', 'Timeout')
+    const cancelId = fakeGlobal.setTimeout();
+    const m = fakeGlobal.clearTimeout;
+    m.call({}, cancelId);
+    expect(context).toBe(fakeGlobal);
   });
 
   it('should allow cancelation of fns registered with setTimeout after invocation', function(done) {

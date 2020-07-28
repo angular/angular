@@ -723,8 +723,6 @@ export declare type ɵɵComponentDefWithMeta<T, Selector extends String, ExportA
     [key: string]: string;
 }, QueryFields extends string[], NgContentSelectors extends string[]> = ɵComponentDef<T>;
 
-export declare function ɵɵcomponentHostSyntheticListener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): typeof ɵɵcomponentHostSyntheticListener;
-
 export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: Type<any> | InjectionToken<unknown> | string[], descend: boolean, read?: any): void;
 
 export declare function ɵɵCopyDefinitionFeature(definition: ɵDirectiveDef<any> | ɵComponentDef<any>): void;
@@ -894,7 +892,7 @@ export declare function ɵɵnextContext<T = any>(level?: number): T;
 
 export declare type ɵɵNgModuleDefWithMeta<T, Declarations, Imports, Exports> = ɵNgModuleDef<T>;
 
-export declare function ɵɵNgOnChangesFeature<T>(definition: ɵDirectiveDef<T>): void;
+export declare function ɵɵNgOnChangesFeature<T>(): DirectiveDefFeature;
 
 export declare function ɵɵpipe(index: number, pipeName: string): any;
 
@@ -1054,9 +1052,13 @@ export declare function ɵɵstylePropInterpolate8(prop: string, prefix: string, 
 
 export declare function ɵɵstylePropInterpolateV(prop: string, values: any[], valueSuffix?: string | null): typeof ɵɵstylePropInterpolateV;
 
+export declare function ɵɵsyntheticHostListener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): typeof ɵɵsyntheticHostListener;
+
+export declare function ɵɵsyntheticHostProperty<T>(propName: string, value: T | ɵNO_CHANGE, sanitizer?: SanitizerFn | null): typeof ɵɵsyntheticHostProperty;
+
 export declare function ɵɵtemplate(index: number, templateFn: ComponentTemplate<any> | null, decls: number, vars: number, tagName?: string | null, attrsIndex?: number | null, localRefsIndex?: number | null, localRefExtractor?: LocalRefExtractor): void;
 
-export declare function ɵɵtemplateRefExtractor(tNode: TNode, currentView: ɵangular_packages_core_core_bo): TemplateRef<unknown> | null;
+export declare function ɵɵtemplateRefExtractor(tNode: TNode, currentView: ɵangular_packages_core_core_bp): TemplateRef<unknown> | null;
 
 export declare function ɵɵtext(index: number, value?: string): void;
 
@@ -1079,8 +1081,6 @@ export declare function ɵɵtextInterpolate7(prefix: string, v0: any, i0: string
 export declare function ɵɵtextInterpolate8(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string): typeof ɵɵtextInterpolate8;
 
 export declare function ɵɵtextInterpolateV(values: any[]): typeof ɵɵtextInterpolateV;
-
-export declare function ɵɵupdateSyntheticHostBinding<T>(propName: string, value: T | ɵNO_CHANGE, sanitizer?: SanitizerFn | null): typeof ɵɵupdateSyntheticHostBinding;
 
 export declare function ɵɵviewQuery<T>(predicate: Type<any> | InjectionToken<unknown> | string[], descend: boolean, read?: any): void;
 

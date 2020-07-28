@@ -5,6 +5,7 @@
 This migration adds support to existing projects for TypeScript's new ["solution-style" tsconfig feature](https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig).
 
 Support is added by making two changes:
+
 1. Renaming the workspace-level `tsconfig.json` to `tsconfig.base.json`.
 All project [TypeScript configuration files](guide/typescript-configuration) will extend from this base which contains the common options used throughout the workspace.
 

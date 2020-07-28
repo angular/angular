@@ -124,7 +124,7 @@ region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (impor
 </code-example>
 
 The `hero` property
-[must be an _Input_ property](guide/template-syntax#inputs-outputs "Input and Output properties"),
+[must be an _Input_ property](guide/inputs-outputs "Input and Output properties"),
 annotated with the `@Input()` decorator,
 because the _external_ `HeroesComponent` [will bind to it](#heroes-component-template) like this.
 
@@ -152,7 +152,7 @@ region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (impor
 </code-example>
 
 이 때 `hero` 프로퍼티의 값은 _외부_ 컴포넌트인 `HeroesComponent`에서 [바인딩되어](#heroes-component-template) 전달됩니다.
-따라서 `hero` 프로퍼티는 `@Input()` 데코레이터를 사용해서 [_입력_ 프로퍼티](guide/template-syntax#inputs-outputs "Input and Output properties")로 선언해야 합니다.
+따라서 `hero` 프로퍼티는 `@Input()` 데코레이터를 사용해서 [_입력_ 프로퍼티](guide/inputs-outputs "Input and Output properties")로 선언해야 합니다.
 
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding">
 </code-example>
@@ -213,7 +213,7 @@ Bind the `HeroesComponent.selectedHero` to the element's `hero` property like th
 
 </code-example>
 
-`[hero]="selectedHero"` is an Angular [property binding](guide/template-syntax#property-binding).
+`[hero]="selectedHero"` is an Angular [property binding](guide/property-binding).
 
 It's a _one way_ data binding from
 the `selectedHero` property of the `HeroesComponent` to the `hero` property of the target element, which maps to the `hero` property of the `HeroDetailComponent`.
@@ -238,7 +238,7 @@ The browser refreshes and the app starts working again as it did before.
 
 </code-example>
 
-`[hero]="selectedHero"`는 Angular가 제공하는 [프로퍼티 바인딩](guide/template-syntax#property-binding) 문법입니다.
+`[hero]="selectedHero"`는 Angular가 제공하는 [프로퍼티 바인딩](guide/property-binding) 문법입니다.
 
 이렇게 작성하면 `HeroesComponent`의 `selectedHero` 프로퍼티가 `HeroDetailComponent`의 `hero` 프로퍼티로 _단방향_ 데이터 바인딩됩니다.
 
@@ -323,15 +323,15 @@ Here are the code files discussed on this page.
 * You created a separate, reusable `HeroDetailComponent`.
 
 
-* You used a [property binding](guide/template-syntax#property-binding) to give the parent `HeroesComponent` control over the child `HeroDetailComponent`.
+* You used a [property binding](guide/property-binding) to give the parent `HeroesComponent` control over the child `HeroDetailComponent`.
 
 
-* You used the [`@Input` decorator](guide/template-syntax#inputs-outputs)
+* You used the [`@Input` decorator](guide/inputs-outputs)
 to make the `hero` property available for binding
 by the external `HeroesComponent`.
 -->
 * 기존 컴포넌트의 일부를 분리해서 `HeroDetailComponent`를 만들었습니다. 이 컴포넌트는 다른 곳에 재사용할 수 있습니다.
 
-* 부모 컴포넌트 `HeroesComponent`에서 자식 컴포넌트 `HeroDetailComponent`로 데이터를 전달하기 위해 [프로퍼티 바인딩](guide/template-syntax#property-binding)을 사용했습니다.
+* 부모 컴포넌트 `HeroesComponent`에서 자식 컴포넌트 `HeroDetailComponent`로 데이터를 전달하기 위해 [프로퍼티 바인딩](guide/property-binding)을 사용했습니다.
 
-* `HeroDetailComponent`의 `hero` 프로퍼티 값을 컴포넌트 외부인 `HeroesComponent`에서 가져오기 위해 [`@Input` 데코레이터](guide/template-syntax#inputs-outputs)를 사용했습니다.
+* `HeroDetailComponent`의 `hero` 프로퍼티 값을 컴포넌트 외부인 `HeroesComponent`에서 가져오기 위해 [`@Input` 데코레이터](guide/inputs-outputs)를 사용했습니다.

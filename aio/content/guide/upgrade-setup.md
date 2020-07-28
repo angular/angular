@@ -399,10 +399,10 @@ Windows에서 이 제한을 해제하려면 레지스트리를 수정해야 합�
 ## 부록: `fakeAsync()/async()` 활용하기
 
 <!--
-If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read the [Testing guide](guide/testing#async-test-with-fakeasync)), you need to import `zone.js/dist/zone-testing` in your test setup file.
+If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read the [Testing guide](guide/testing-components-scenarios#fake-async)), you need to import `zone.js/dist/zone-testing` in your test setup file.
 -->
 유닛 테스트를 실행할 때 `fakeAsync()/async()` 헬퍼 함수를 사용한다면, 테스트 환경 설정을 위해 `zone.js/dist/zone-testing` 패키지들을 로드해야 합니다.
-자세한 내용은 [테스트](guide/testing#비동기로-테스트하기-fakeasync) 문서를 참고하세요.
+자세한 내용은 [테스트](guide/testing-components-scenarios#fake-async) 문서를 참고하세요.
 
 <div class="alert is-important">
 <!--

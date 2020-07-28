@@ -326,6 +326,21 @@ interface ZoneGlobalConfigurations {
   __Zone_disable_EventTarget?: boolean;
 
   /**
+   * Disable the monkey patch of the browser `FileReader` APIs.
+   */
+  __Zone_disable_FileReader?: boolean;
+
+  /**
+   * Disable the monkey patch of the browser `MutationObserver` APIs.
+   */
+  __Zone_disable_MutationObserver?: boolean;
+
+  /**
+   * Disable the monkey patch of the browser `IntersectionObserver` APIs.
+   */
+  __Zone_disable_IntersectionObserver?: boolean;
+
+  /**
    * Disable the monkey patch of the browser onProperty APIs(such as onclick).
    *
    * By default, `zone.js` monkey patches onXXX properties (such as onclick). The callbacks of onXXX

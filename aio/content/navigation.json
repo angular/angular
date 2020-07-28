@@ -241,11 +241,76 @@
               "tooltip": "UI에 데이터 바인딩하기"
             },
             {
-              "url": "guide/template-syntax",
               "//title": "Template Syntax",
               "title": "템플릿 문법",
-              "//tooltip": "Learn how to write templates that display data and consume user events with the help of data binding.",
-              "tooltip": "템플릿에 데이터를 어떻게 표시하는지, 이벤트를 어떻게 처리하는지 알아봅니다."
+              "tooltip": "Syntax to use in templates for binding, expressions, and directives.",
+              "children": [
+                {
+                  "url": "guide/template-syntax",
+                  "title": "Introduction",
+                  "tooltip": "Introduction to writing templates that display data and consume user events with the help of data binding."
+                },
+                {
+                  "url": "guide/interpolation",
+                  "title": "Interpolation",
+                  "tooltip": "An introduction to interpolation and expressions in HTML."
+                },
+                {
+                  "url": "guide/template-statements",
+                  "title": "Template statements",
+                  "tooltip": "Introductory guide to statements in templates that respond to events that components, directives, or elements raise."
+                },
+                {
+                  "url": "guide/binding-syntax",
+                  "title": "Binding syntax",
+                  "tooltip": "Introductory guide to coordinating app values."
+                },
+                {
+                  "url": "guide/property-binding",
+                  "title": "Property binding",
+                  "tooltip": "Introductory guide to setting element or input properties."
+                },
+                {
+                  "url": "guide/attribute-binding",
+                  "title": "Attribute, class, and style bindings",
+                  "tooltip": "Introductory guide to setting the value of HTML attributes."
+                },
+                {
+                  "url": "guide/event-binding",
+                  "title": "Event binding",
+                  "tooltip": "Introductory guide to listening for user interaction."
+                },
+                {
+                  "url": "guide/two-way-binding",
+                  "title": "Two-way binding",
+                  "tooltip": "Introductory guide to sharing data between a class and a template."
+                },
+                {
+                  "url": "guide/built-in-directives",
+                  "title": "Built-in directives",
+                  "tooltip": "Introductory guide to some of the most popular built-in directives."
+                },
+                {
+                  "url": "guide/template-reference-variables",
+                  "title": "Template reference variables",
+                  "tooltip": "Introductory guide to referring to DOM elements within a template."
+                },
+                {
+                  "url": "guide/inputs-outputs",
+                  "title": "Inputs and Outputs",
+                  "tooltip": "Introductory guide to sharing data between parent and child directives or components."
+                },
+                {
+                  "url": "guide/template-expression-operators",
+                  "title": "Template expression operators",
+                  "tooltip": "Introductory guide to transforming data, ensuring safe navigation, and guarding against null variables in templates."
+                },
+                {
+                  "url": "guide/svg-in-templates",
+                  "title": "SVG in templates",
+                  "tooltip": "Guide to using SVGs as templates to create interactive graphics."
+                }
+              ]
             },
             {
               "url": "guide/user-input",
@@ -656,111 +721,6 @@
           "title": "서버 사이드 렌더링",
           "//tooltip": "Render HTML server-side with Angular Universal.",
           "tooltip": "Angular Universal을 사용하면 서버에 HTML 문서를 렌더링 해둘 수 있습니다."
-        },
-        {
-          "//title": "Upgrading from AngularJS",
-          "title": "AngularJS 앱 업그레이드",
-          "//tooltip": "Incrementally upgrade an AngularJS application to Angular.",
-          "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요.",
-          "children": [
-            {
-              "url": "guide/upgrade-setup",
-              "title": "Setup for Upgrading from AngularJS",
-              "tooltip": "Use code from the Angular QuickStart seed as part of upgrading from AngularJS.",
-              "hidden": true
-            },
-            {
-              "url": "guide/upgrade",
-              "//title": "Upgrading Instructions",
-              "title": "업그레이드 방법",
-              "//tooltip": "Incrementally upgrade an AngularJS application to Angular.",
-              "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요."
-            },
-            {
-              "url": "guide/upgrade-performance",
-              "//title": "Upgrading for Performance",
-              "title": "성능 비교",
-              "//tooltip": "Upgrade from AngularJS to Angular in a more flexible way.",
-              "tooltip": "좀 더 유연한 방식으로 AngularJS 프로젝트를 Angular 프로젝트로 전환할 수 있습니다."
-            },
-            {
-              "url": "guide/ajs-quick-reference",
-              "//title": "AngularJS-Angular Concepts",
-              "title": "컨셉 비교",
-              "//tooltip": "Learn how AngularJS concepts and techniques map to Angular.",
-              "tooltip": "AngularJS에 사용하던 컨셉과 테크닉을 Angular에서 어떻게 적용할 수 있는지 확인해 보세요."
-            }
-          ]
-        },
-        {
-          "//title": "Angular Libraries",
-          "title": "Angular 라이브러리",
-          "//tooltip": "Extending Angular with shared libraries.",
-          "tooltip": "다른 개발자가 공유한 라이브러리로 Angular는 확장해보세요.",
-          "children": [
-            {
-              "url": "guide/libraries",
-              "//title": "Libraries Overview",
-              "title": "개요",
-              "//tooltip": "Understand how and when to use or create libraries.",
-              "tooltip": "라이브러리는 언제 만들고 어떻게 사용하는지 알아봅시다."
-            },
-            {
-              "url": "guide/using-libraries",
-              "//title": "Using Published Libraries",
-              "title": "배포된 라이브러리 활용하기",
-              "//tooltip": "Integrate published libraries into an app.",
-              "tooltip": "배포된 라이브러리를 앱에 추가해 봅시다."
-            },
-            {
-              "url": "guide/creating-libraries",
-              "//title": "Creating Libraries",
-              "title": "라이브러리 만들기",
-              "//tooltip": "Extend Angular by creating, publishing, and using your own libraries.",
-              "tooltip": "라이브러리를 만들고 배포해서 Angular 생태계를 직접 확장해 보세요."
-            },
-            {
-              "url": "guide/lightweight-injection-tokens",
-              "title": "Lightweight Injection Tokens for Libraries",
-              "tooltip": "Optimize client app size by designing library services with lightweight injection tokens."
-            }
-          ]
-        },
-        {
-          "//title": "Schematics",
-          "title": "스키매틱",
-          "//tooltip": "Using CLI schematics for code generation.",
-          "tooltip": "스키매틱으로 코드 생성하기",
-          "children": [
-            {
-              "url": "guide/schematics",
-              "//title": "Schematics Overview",
-              "title": "스키매틱 소개",
-              "//tooltip": "How the CLI uses schematics to generate code.",
-              "tooltip": "Angular CLI가 스키매틱을 어떻게 활용하는지 알아봅시다."
-            },
-            {
-              "url": "guide/schematics-authoring",
-              "//title": "Authoring Schematics",
-              "title": "스키매틱 만들기",
-              "//tooltip": "Understand the structure of a schematic.",
-              "tooltip": "스키매틱의 구조에 대해 알아봅시다."
-            },
-            {
-              "url": "guide/schematics-for-libraries",
-              "//title": "Schematics for Libraries",
-              "title": "라이브러리용 스키매틱",
-              "//tooltip": "Use schematics to integrate your library with the Angular CLI.",
-              "tooltip": "스키매틱을 사용해서 Angular 라이브러리와 Angular CLI를 통합해 보세요."
-            }
-          ]
-        },
-        {
-          "url": "guide/cli-builder",
-          "//title": "CLI Builders",
-          "title": "CLI 빌더",
-          "//tooltip": "Using builders to customize Angular CLI.",
-          "tooltip": "빌더를 사용해서 Angular CLI를 커스터마이징 해보세요."
         }
       ]
     },
@@ -814,11 +774,57 @@
           "tooltip": "Angular 앱을 개발용, 운영용으로 빌드해 보세요."
         },
         {
-          "url": "guide/testing",
           "//title": "Testing",
           "title": "테스트",
-          "//tooltip": "Techniques and practices for testing an Angular app.",
-          "tooltip": "Angular 앱에 테스트를 적용하는 방법에 대해 안내합니다."
+          "//tooltip": "Testing your Angular apps.",
+          "tooltip": "Angular apps.",
+          "children": [
+            {
+              "url": "guide/testing",
+              "title": "Intro to Testing",
+              "tooltip": "Introduction to testing an Angular app."
+            },
+            {
+              "url": "guide/testing-code-coverage",
+              "title": "Code Coverage",
+              "tooltip": "Determine how much of your code is tested."
+            },
+            {
+              "url": "guide/testing-services",
+              "title": "Testing Services",
+              "tooltip": "How to test services."
+            },
+            {
+              "url": "guide/testing-components-basics",
+              "title": "Basics of Testing Components",
+              "tooltip": "The fundamentals of how to test components."
+            },
+            {
+              "url": "guide/testing-components-scenarios",
+              "title": "Component Testing Scenarios",
+              "tooltip": "Use cases for testing components."
+            },
+            {
+              "url": "guide/testing-attribute-directives",
+              "title": "Testing Attribute Directives",
+              "tooltip": "How to test attribute directives."
+            },
+            {
+              "url": "guide/testing-pipes",
+              "title": "Testing Pipes",
+              "tooltip": "Writing tests for pipes."
+            },
+            {
+              "url": "guide/test-debugging",
+              "title": "Debugging Tests",
+              "tooltip": "How to debug tests."
+            },
+            {
+              "url": "guide/testing-utility-apis",
+              "title": "Testing Utility APIs",
+              "tooltip": "Features of the Angular testing utilities."
+            }
+          ]
         },
         {
           "url": "guide/deployment",
@@ -924,6 +930,11 @@
               "url": "guide/creating-libraries",
               "title": "Creating Libraries",
               "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
+            },
+            {
+              "url": "guide/lightweight-injection-tokens",
+              "title": "Lightweight Injection Tokens for Libraries",
+              "tooltip": "Optimize client app size by designing library services with lightweight injection tokens."
             }
           ]
         },
@@ -962,9 +973,20 @@
       "tooltip": "튜토리얼을 통해 Angular의 개념과 개발 패턴에 대해 알아보세요.",
       "children": [
         {
-          "url": "guide/router-tutorial",
-          "title": "Using Angular Routes in a Single-page Application",
-          "tooltip": "A tutorial that covers many patterns associated with Angular routing."
+          "title": "Routing",
+          "tooltip": "End-to-end tutorials for learning about Angular's router.",
+          "children": [
+            {
+              "url": "guide/router-tutorial",
+              "title": "Using Angular Routes in a Single-page Application",
+              "tooltip": "A tutorial that covers many patterns associated with Angular routing."
+            },
+            {
+              "url": "guide/router-tutorial-toh",
+              "title": "Router tutorial: tour of heroes",
+              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
+            }
+          ]
         },
         {
           "url": "guide/forms",

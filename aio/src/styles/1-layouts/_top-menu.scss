@@ -1,4 +1,6 @@
 // VARIABLES
+$showTopMenuWidth: 1048px;
+$hideTopMenuWidth: $showTopMenuWidth - 1;
 $hamburgerShownMargin: 0 8px 0 0;
 $hamburgerHiddenMargin: 0 16px 0 -64px;
 
@@ -52,9 +54,9 @@ aio-shell.folder-docs mat-toolbar.mat-toolbar,
 aio-shell.folder-guide mat-toolbar.mat-toolbar,
 aio-shell.folder-start mat-toolbar.mat-toolbar,
 aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
-  @media (min-width: 992px) {
+  @media (min-width: $showTopMenuWidth) {
     .hamburger.mat-button {
-      // Hamburger shown on non-marketing pages on large screens.
+      // Hamburger shown on non-marketing pages even on large screens.
       margin: $hamburgerShownMargin;
     }
   }
@@ -66,7 +68,7 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   margin: $hamburgerShownMargin;
   padding: 0;
 
-  @media (min-width: 992px) {
+  @media (min-width: $showTopMenuWidth) {
     // Hamburger hidden by default on large screens.
     // (Will be shown per doc.)
     margin: $hamburgerHiddenMargin;
@@ -104,7 +106,7 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
     outline-offset: 4px;
   }
 
-  @media screen and (max-width: 991px) {
+  @media screen and (max-width: $hideTopMenuWidth) {
     padding: 4px 0;
   }
 
@@ -118,7 +120,7 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
     top: 12px;
     height: 40px;
 
-    @media (max-width: 991px) {
+    @media (max-width: $hideTopMenuWidth) {
       &:hover {
         transform: scale(1.1);
       }
@@ -230,6 +232,7 @@ aio-search-box.search-container {
         width: 80%;
       }
     }
+
     @media (max-width: 480px) {
       width: 150px;
     }
@@ -241,6 +244,7 @@ aio-search-box.search-container {
   .toolbar-external-icons-container {
     display: flex;
     flex-direction: row;
+    flex-shrink: 0; // This is required for the icons to be displayed correctly in IE11.
     height: 100%;
 
     a {

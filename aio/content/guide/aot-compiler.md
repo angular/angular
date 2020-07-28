@@ -1114,12 +1114,12 @@ For more information about input type narrowing, see [Input setter coercion](gui
 ### null 방지 연산자
 
 <!--
-Use the [non-null type assertion operator](guide/template-syntax#non-null-assertion-operator) to suppress the `Object is possibly 'undefined'` error when it is inconvenient to use `*ngIf` or when some constraint in the component ensures that the expression is always non-null when the binding expression is interpolated.
+Use the [non-null type assertion operator](guide/template-expression-operators#non-null-assertion-operator) to suppress the `Object is possibly 'undefined'` error when it is inconvenient to use `*ngIf` or when some constraint in the component ensures that the expression is always non-null when the binding expression is interpolated.
 
 In the following example, the `person` and `address` properties are always set together, implying that `address` is always non-null if `person` is non-null.
 There is no convenient way to describe this constraint to TypeScript and the template compiler, but the error is suppressed in the example by using `address!.street`.
 -->
-표현식에 문자열 바인딩 문법을 사용할 때 `*ngIf`를 사용해도 `Object is possibly 'undefined'` 에러를 방지할 수 있지만, [null 방지 연산자](guide/template-syntax#non-null-assertion-operator)를 사용해도 이 에러를 방지할 수 있습니다.
+표현식에 문자열 바인딩 문법을 사용할 때 `*ngIf`를 사용해도 `Object is possibly 'undefined'` 에러를 방지할 수 있지만, [null 방지 연산자](guide/template-expression-operators#non-null-assertion-operator)를 사용해도 이 에러를 방지할 수 있습니다.
 
 컴포넌트 프로퍼티 `person`과 `address`의 값은 동시에 할당되기 때문에 `person`만 검사하면 `address`가 null이 아니라는 것을 보장할 수 있습니다.
 하지만 TypeScript나 템플릿 컴파일러는 이 정보를 알 수 없기 때문에 `address` 프로퍼티에 대해 `Object is possibly 'undefined'` 에러가 발생할 수 있습니다.

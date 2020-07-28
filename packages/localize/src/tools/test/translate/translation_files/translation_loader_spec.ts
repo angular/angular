@@ -12,7 +12,7 @@ import {ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 import {DiagnosticHandlingStrategy, Diagnostics} from '../../../src/diagnostics';
 import {TranslationLoader} from '../../../src/translate/translation_files/translation_loader';
 import {SimpleJsonTranslationParser} from '../../../src/translate/translation_files/translation_parsers/simple_json_translation_parser';
-import {TranslationParser} from '../../../src/translate/translation_files/translation_parsers/translation_parser';
+import {ParseAnalysis, TranslationParser} from '../../../src/translate/translation_files/translation_parsers/translation_parser';
 
 runInEachFileSystem(() => {
   describe('TranslationLoader', () => {
@@ -204,8 +204,11 @@ runInEachFileSystem(() => {
         const parser = new MockTranslationParser(neverCanParse);
         const loader = new TranslationLoader(fs, [parser], 'error', diagnostics);
         expect(() => loader.loadBundles([[enTranslationPath], [frTranslationPath]], []))
-            .toThrowError(`There is no "TranslationParser" that can parse this translation file: ${
-                enTranslationPath}.`);
+            .toThrowError(
+                `There is no "TranslationParser" that can parse this translation file: ${
+                    enTranslationPath}.\n` +
+                `MockTranslationParser cannot parse translation file.\n` +
+                `WARNINGS:\n - This is a mock failure warning.`);
       });
     });
   });
@@ -217,8 +220,16 @@ runInEachFileSystem(() => {
         private _translations: Record<string, ɵParsedTranslation> = {}) {}
 
     canParse(filePath: string, fileContents: string) {
+      const result = this.analyze(filePath, fileContents);
+      return result.canParse && result.hint;
+    }
+
+    analyze(filePath: string, fileContents: string): ParseAnalysis<true> {
+      const diagnostics = new Diagnostics();
+      diagnostics.warn('This is a mock failure warning.');
       this.log.push(`canParse(${filePath}, ${fileContents})`);
-      return this._canParse(filePath);
+      return this._canParse(filePath) ? {canParse: true, hint: true, diagnostics} :
+                                        {canParse: false, diagnostics};
     }
 
     parse(filePath: string, fileContents: string) {

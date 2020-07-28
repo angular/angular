@@ -188,8 +188,8 @@ There can also be false positives when the typings of an Angular library are eit
 
 In case of a false positive like these, there are a few options:
 
-* Use the [`$any()` type-cast function](guide/template-syntax#any-type-cast-function) in certain contexts to opt out of type-checking for a part of the expression.
-* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file.
+* Use the [`$any()` type-cast function](guide/template-expression-operators#any-type-cast-function) in certain contexts to opt out of type-checking for a part of the expression.
+* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file, `tsconfig.json`.
 * You can disable certain type-checking operations individually, while maintaining strictness in other aspects, by setting a _strictness flag_ to `false`.
 * If you want to use `strictTemplates` and `strictNullChecks` together, you can opt out of strict null type checking specifically for input bindings via `strictNullInputTypes`.
 
@@ -226,7 +226,7 @@ Angular 9버전부터 도입된 엄격한 타입 검사 모드를 활성화하�
 
 이런 경우는 다음과 같은 방법으로 해결할 수 있습니다:
 
-* 표현식의 일부분을 검사하지 않으려면 [`$any()` 타입 캐스팅 함수](guide/template-syntax#any-type-cast-function)를 사용하세요.
+* 표현식의 일부분을 검사하지 않으려면 [`$any()` 타입 캐스팅 함수](guide/template-expression-operators#any-type-cast-function)를 사용하세요.
 * 애플리케이션 TypeScript 환경설정 파일에서 `strictTemplates` 값을 `false`로 설정해서 엄격한 타입 검사 모드를 비활성화 하세요.
 * 특정 규칙만 비활성화할 수 있습니다. 해당 _strictness flag_를 `false`로 설정하면 됩니다.
 * `strictTemplates` 옵션과 `strictNullChecks` 옵션을 그대로 사용하려면 `strictNullInputTypes` 옵션을 추가로 사용해서 입력 프로퍼티로 바인딩되는 객체의 타입 검사 옵션을 조정할 수 있습니다.
@@ -527,12 +527,17 @@ Care should be taken that if an `ngAcceptInputType_` override is present for a g
 ## `$any()`로 타입 검사 우회하기
 
 <!--
-Disable checking of a binding expression by surrounding the expression in a call to the [`$any()` cast pseudo-function](guide/template-syntax).
+Disable checking of a binding expression by surrounding the expression in a call to the [`$any()` cast pseudo-function](guide/template-expression-operators).
 The compiler treats it as a cast to the `any` type just like in TypeScript when a `<any>` or `as any` cast is used.
 
 In the following example, casting `person` to the `any` type suppresses the error `Property address does not exist`.
 -->
-[`$any()` 타입 캐스팅 함수](guide/template-syntax#any-type-cast-function)를 사용하면 바인딩 표현식의 타입 검사를 우회할 수 있습니다.
+[`$any()` 타입 캐스팅 함수](guide/template-expression-operators)를 사용하면 바인딩 표현식의 타입 검사를 우회할 수 있습니다.
+`$any()` 함수를 실행하고 나면 이 함수의 인자로 전달한 객체는 TypeScript 코드에서 `<any>`나 `as any`를 사용한 것과 같은 효과를 받습니다.
+
+그래서 아래 예제처럼 `person` 객체를 `any` 타입으로 캐스팅하면 `Property address does not exist`와 같은 타입 에러가 발생하지 않습니다.
+-->
+[`$any()` 타입 캐스팅 함수](guide/template-expression-operators)를 사용하면 바인딩 표현식의 타입 검사를 우회할 수 있습니다.
 `$any()` 함수를 실행하고 나면 이 함수의 인자로 전달한 객체는 TypeScript 코드에서 `<any>`나 `as any`를 사용한 것과 같은 효과를 받습니다.
 
 그래서 아래 예제처럼 `person` 객체를 `any` 타입으로 캐스팅하면 `Property address does not exist`와 같은 타입 에러가 발생하지 않습니다.

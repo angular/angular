@@ -57,7 +57,14 @@ export interface FileSystem {
   resolve(...paths: string[]): AbsoluteFsPath;
   dirname<T extends PathString>(file: T): T;
   join<T extends PathString>(basePath: T, ...paths: string[]): T;
-  relative<T extends PathString>(from: T, to: T): PathSegment;
+  /**
+   * Compute the relative path between `from` and `to`.
+   *
+   * In file-systems that can have multiple file trees the returned path may not actually be
+   * "relative" (i.e. `PathSegment`). For example, Windows can have multiple drives :
+   * `relative('c:/a/b', 'd:/a/c')` would be `d:/a/c'.
+   */
+  relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath;
   basename(filePath: string, extension?: string): PathSegment;
   realpath(filePath: AbsoluteFsPath): AbsoluteFsPath;
   getDefaultLibLocation(): AbsoluteFsPath;

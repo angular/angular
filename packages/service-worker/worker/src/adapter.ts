@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NormalizedUrl} from './api';
+
+
 /**
  * Adapts the service worker to its runtime environment.
  *
@@ -14,12 +17,18 @@
  */
 export class Adapter {
   readonly cacheNamePrefix: string;
+  private readonly origin: string;
 
-  constructor(scope: ServiceWorkerGlobalScope) {
-    // Suffixing `ngsw` with the baseHref to avoid clash of cache names
-    // for SWs with different scopes on the same domain.
-    const baseHref = this.parseUrl(scope.registration.scope).path;
-    this.cacheNamePrefix = 'ngsw:' + baseHref;
+  constructor(protected readonly scopeUrl: string) {
+    const parsedScopeUrl = this.parseUrl(this.scopeUrl);
+
+    // Determine the origin from the registration scope. This is used to differentiate between
+    // relative and absolute URLs.
+    this.origin = parsedScopeUrl.origin;
+
+    // Suffixing `ngsw` with the baseHref to avoid clash of cache names for SWs with different
+    // scopes on the same domain.
+    this.cacheNamePrefix = 'ngsw:' + parsedScopeUrl.path;
   }
 
   /**
@@ -58,7 +67,25 @@ export class Adapter {
   }
 
   /**
-   * Extract the pathname of a URL.
+   * Get a normalized representation of a URL such as those found in the ServiceWorker's `ngsw.json`
+   * configuration.
+   *
+   * More specifically:
+   * 1. Resolve the URL relative to the ServiceWorker's scope.
+   * 2. If the URL is relative to the ServiceWorker's own origin, then only return the path part.
+   *    Otherwise, return the full URL.
+   *
+   * @param url The raw request URL.
+   * @return A normalized representation of the URL.
+   */
+  normalizeUrl(url: string): NormalizedUrl {
+    // Check the URL's origin against the ServiceWorker's.
+    const parsed = this.parseUrl(url, this.scopeUrl);
+    return (parsed.origin === this.origin ? parsed.path : url) as NormalizedUrl;
+  }
+
+  /**
+   * Parse a URL into its different parts, such as `origin`, `path` and `search`.
    */
   parseUrl(url: string, relativeTo?: string): {origin: string, path: string, search: string} {
     // Workaround a Safari bug, see

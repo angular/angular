@@ -11,6 +11,10 @@ import {ConsoleLogger, Logger, LogLevel} from '@angular/compiler-cli/src/ngtsc/l
 import {ɵParsedMessage} from '@angular/localize';
 import * as glob from 'glob';
 import * as yargs from 'yargs';
+
+import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
+
+import {checkDuplicateMessages} from './duplicates';
 import {MessageExtractor} from './extraction';
 import {TranslationSerializer} from './translation_files/translation_serializer';
 import {SimpleJsonTranslationSerializer} from './translation_files/json_translation_serializer';
@@ -68,6 +72,12 @@ if (require.main === module) {
             describe:
                 'Whether to use the legacy id format for messages that were extracted from Angular templates.'
           })
+          .option('d', {
+            alias: 'duplicateMessageHandling',
+            describe: 'How to handle messages with the same id but different text.',
+            choices: ['error', 'warning', 'ignore'],
+            default: 'warning',
+          })
           .strict()
           .help()
           .parse(args);
@@ -79,6 +89,7 @@ if (require.main === module) {
   const sourceFilePaths = glob.sync(options['source'], {cwd: rootPath, nodir: true});
   const logLevel = options['loglevel'] as (keyof typeof LogLevel) | undefined;
   const logger = new ConsoleLogger(logLevel ? LogLevel[logLevel] : LogLevel.warn);
+  const duplicateMessageHandling: DiagnosticHandlingStrategy = options['d'];
 
 
   extractTranslations({
@@ -90,6 +101,7 @@ if (require.main === module) {
     logger,
     useSourceMaps: options['useSourceMaps'],
     useLegacyIds: options['useLegacyIds'],
+    duplicateMessageHandling,
   });
 }
 
@@ -129,6 +141,10 @@ export interface ExtractTranslationsOptions {
    * Whether to use the legacy id format for messages that were extracted from Angular templates
    */
   useLegacyIds: boolean;
+  /**
+   * How to handle messages with the same id but not the same text.
+   */
+  duplicateMessageHandling: DiagnosticHandlingStrategy;
 }
 
 export function extractTranslations({
@@ -139,15 +155,21 @@ export function extractTranslations({
   outputPath: output,
   logger,
   useSourceMaps,
-  useLegacyIds
+  useLegacyIds,
+  duplicateMessageHandling,
 }: ExtractTranslationsOptions) {
   const fs = getFileSystem();
-  const extractor =
-      new MessageExtractor(fs, logger, {basePath: fs.resolve(rootPath), useSourceMaps});
+  const basePath = fs.resolve(rootPath);
+  const extractor = new MessageExtractor(fs, logger, {basePath, useSourceMaps});
 
   const messages: ɵParsedMessage[] = [];
   for (const file of sourceFilePaths) {
     messages.push(...extractor.extractMessages(file));
+  }
+
+  const diagnostics = checkDuplicateMessages(fs, messages, duplicateMessageHandling, basePath);
+  if (diagnostics.hasErrors) {
+    throw new Error(diagnostics.formatDiagnostics('Failed to extract messages'));
   }
 
   const outputPath = fs.resolve(rootPath, output);
@@ -155,6 +177,10 @@ export function extractTranslations({
   const translationFile = serializer.serialize(messages);
   fs.ensureDir(fs.dirname(outputPath));
   fs.writeFile(outputPath, translationFile);
+
+  if (diagnostics.messages.length) {
+    logger.warn(diagnostics.formatDiagnostics('Messages extracted with warnings'));
+  }
 }
 
 export function getSerializer(

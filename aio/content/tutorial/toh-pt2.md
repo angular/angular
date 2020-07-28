@@ -100,7 +100,7 @@ That shows one hero. To list them all, add an `*ngFor` to the `<li>` to iterate 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="li">
 </code-example>
 
-The [`*ngFor`](guide/template-syntax#ngFor) is Angular's _repeater_ directive.
+The [`*ngFor`](guide/built-in-directives#ngFor) is Angular's _repeater_ directive.
 It repeats the host element for each element in a list.
 
 The syntax in this example is as follows:
@@ -133,7 +133,7 @@ After the browser refreshes, the list of heroes appears.
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="li">
 </code-example>
 
-[`*ngFor`](guide/template-syntax#ngFor)는 _항목을 반복하는_ Angular 디렉티브입니다.
+[`*ngFor`](guide/built-in-directives#ngFor)는 _항목을 반복하는_ Angular 디렉티브입니다.
 이 디렉티브는 목록에 있는 항목마다 호스트 엘리먼트를 반복합니다.
 
 이 예제에서
@@ -250,7 +250,7 @@ Add a click event binding to the `<li>` like this:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (template excerpt)"></code-example>
 
-This is an example of Angular's [event binding](guide/template-syntax#event-binding) syntax.
+This is an example of Angular's [event binding](guide/event-binding) syntax.
 
 The parentheses around `click` tell Angular to listen for the `<li>` element's  `click` event.
 When the user clicks in the `<li>`, Angular executes the `onSelect(hero)` expression.
@@ -262,7 +262,7 @@ display the hero that was defined in the `*ngFor` expression.
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (일부 템플릿)"></code-example>
 
-위 코드는 Angular의 [이벤트 바인딩](guide/template-syntax#event-binding) 문법입니다.
+위 코드는 Angular의 [이벤트 바인딩](guide/event-binding) 문법입니다.
 
 이렇게 이벤트를 바인딩하면 Angular가 `<li>` 엘리먼트에서 발생하는 `click` 이벤트를 감지할 수 있습니다.
 그래서 사용자가 `<li>` 엘리먼트를 클릭하면 Angular는 `onSelect(hero)` 표현식을 실행합니다.
@@ -423,7 +423,7 @@ If the user clicks "Magneta", that hero should render with a distinctive but sub
 That _selected hero_ coloring is the work of the `.selected` CSS class in the [styles you added earlier](#styles).
 You just have to apply the `.selected` class to the `<li>` when the user clicks it.
 
-The Angular [class binding](guide/template-syntax#class-binding) makes it easy to add and remove a CSS class conditionally.
+The Angular [class binding](guide/attribute-binding#class-binding) makes it easy to add and remove a CSS class conditionally.
 Just add `[class.some-css-class]="some-condition"` to the element you want to style.
 
 Add the following `[class.selected]` binding to the `<li>` in the `HeroesComponent` template:
@@ -447,7 +447,7 @@ The finished `<li>` looks like this:
 이 스타일은 [이전에 추가한 스타일](#styles)에 있는 `.selected` CSS 클래스가 적용된 것입니다.
 사용자가 선택한 항목에 이 클래스를 적용하려면 사용자가 클릭한 `<li>` 엘리먼트에 `.selected` 클래스를 적용하기만 하면 됩니다.
 
-Angular가 제공하는 [클래스 바인딩](guide/template-syntax#class-binding) 문법을 사용하면 특정 조건에 따라 CSS 클래스를 추가하거나 제거할 수 있습니다.
+Angular가 제공하는 [클래스 바인딩](guide/attribute-binding#class-binding) 문법을 사용하면 특정 조건에 따라 CSS 클래스를 추가하거나 제거할 수 있습니다.
 스타일을 지정하려는 엘리먼트에 `[class.some-css-class]="some-condition"`와 같은 문법을 추가하면 됩니다.
 
 이 예제에서는 `HeroesComponent` 템플릿의 `<li>` 엘리먼트에 `[class.selected]`와 같은 문법으로 클래스를 바인딩합니다:

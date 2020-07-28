@@ -116,7 +116,13 @@ export class NgCompiler {
 
     const moduleResolutionCache = ts.createModuleResolutionCache(
         this.adapter.getCurrentDirectory(),
-        fileName => this.adapter.getCanonicalFileName(fileName));
+        // Note: this used to be an arrow-function closure. However, JS engines like v8 have some
+        // strange behaviors with retaining the lexical scope of the closure. Even if this function
+        // doesn't retain a reference to `this`, if other closures in the constructor here reference
+        // `this` internally then a closure created here would retain them. This can cause major
+        // memory leak issues since the `moduleResolutionCache` is a long-lived object and finds its
+        // way into all kinds of places inside TS internal objects.
+        this.adapter.getCanonicalFileName.bind(this.adapter));
     this.moduleResolver =
         new ModuleResolver(tsProgram, this.options, this.adapter, moduleResolutionCache);
     this.resourceManager = new AdapterResourceLoader(adapter, this.options);

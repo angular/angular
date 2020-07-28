@@ -67,6 +67,24 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, true)).toBe(false);
       });
 
+      it('should return false when queryParams are not the same', () => {
+        const t1 = serializer.parse('/one/two?test=4&test=4&test=2');
+        const t2 = serializer.parse('/one/two?test=4&test=3&test=2');
+        expect(containsTree(t1, t2, false)).toBe(false);
+      });
+
+      it('should return true when queryParams are the same in different order', () => {
+        const t1 = serializer.parse('/one/two?test=4&test=3&test=2');
+        const t2 = serializer.parse('/one/two?test=2&test=3&test=4');
+        expect(containsTree(t1, t2, false)).toBe(true);
+      });
+
+      it('should return true when queryParams are the same in different order', () => {
+        const t1 = serializer.parse('/one/two?test=4&test=4&test=1');
+        const t2 = serializer.parse('/one/two?test=1&test=4&test=4');
+        expect(containsTree(t1, t2, false)).toBe(true);
+      });
+
       it('should return false when containee is missing queryParams', () => {
         const t1 = serializer.parse('/one/two?page=5');
         const t2 = serializer.parse('/one/two');

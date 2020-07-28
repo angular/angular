@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "../../out-tsc/e2e",
     "module": "commonjs",
-    "target": "es5",
+    "target": "es2018",
     "types": [
       "jasmine",
       "jasminewd2",

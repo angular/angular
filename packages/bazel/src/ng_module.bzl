@@ -354,8 +354,11 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "angularCompilerOptions": angular_compiler_options,
     })
 
+def _has_target_angular_summaries(target):
+    return hasattr(target, "angular") and hasattr(target.angular, "summaries")
+
 def _collect_summaries_aspect_impl(target, ctx):
-    results = depset(target.angular.summaries if hasattr(target, "angular") else [])
+    results = depset(target.angular.summaries if _has_target_angular_summaries(target) else [])
 
     # If we are visiting empty-srcs ts_library, this is a re-export
     srcs = ctx.rule.attr.srcs if hasattr(ctx.rule.attr, "srcs") else []
@@ -363,7 +366,7 @@ def _collect_summaries_aspect_impl(target, ctx):
     # "re-export" rules should expose all the files of their deps
     if not srcs and hasattr(ctx.rule.attr, "deps"):
         for dep in ctx.rule.attr.deps:
-            if (hasattr(dep, "angular")):
+            if (_has_target_angular_summaries(dep)):
                 results = depset(dep.angular.summaries, transitive = [results])
 
     return struct(collect_summaries_aspect_result = results)
@@ -608,20 +611,23 @@ def ng_module_impl(ctx, ts_compile_actions):
 
     outs = _expected_outs(ctx)
 
+    providers["angular"] = {}
+
     if is_legacy_ngc:
-        providers["angular"] = {
-            "summaries": outs.summaries,
-            "metadata": outs.metadata,
-        }
+        providers["angular"]["summaries"] = outs.summaries
+        providers["angular"]["metadata"] = outs.metadata
         providers["ngc_messages"] = outs.i18n_messages
 
-    if is_legacy_ngc and _should_produce_flat_module_outs(ctx):
-        if len(outs.metadata) > 1:
+    if _should_produce_flat_module_outs(ctx):
+        # Sanity error if more than one metadata file has been created in the
+        # legacy ngc compiler while a flat module should be produced.
+        if is_legacy_ngc and len(outs.metadata) > 1:
             fail("expecting exactly one metadata output for " + str(ctx.label))
 
         providers["angular"]["flat_module_metadata"] = struct(
             module_name = ctx.attr.module_name,
-            metadata_file = outs.metadata[0],
+            # Metadata files are only generated in the legacy ngc compiler.
+            metadata_file = outs.metadata[0] if is_legacy_ngc else None,
             typings_file = outs.bundle_index_typings,
             flat_module_out_file = _flat_module_out_file(ctx),
         )

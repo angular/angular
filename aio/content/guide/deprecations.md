@@ -31,6 +31,7 @@ Angular 6 버전까지 지원이 중단되기로 계획되었던 기능들은 An
 
 </div>
 
+{@a index}
 <!--
 ## Index
 -->

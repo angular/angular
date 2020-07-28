@@ -179,7 +179,7 @@ This example from the `HeroListComponent` template uses three of these forms.
 * The `{{hero.name}}` [*interpolation*](guide/displaying-data#interpolation)
 displays the component's `hero.name` property value within the `<li>` element.
 
-* The `[hero]` [*property binding*](guide/template-syntax#property-binding) passes the value of
+* The `[hero]` [*property binding*](guide/property-binding) passes the value of
 `selectedHero` from the parent `HeroListComponent` to the `hero` property of the child `HeroDetailComponent`.
 
 * The `(click)` [*event binding*](guide/user-input#binding-to-user-input-events) calls the component's `selectHero` method when the user clicks a hero's name.
@@ -224,7 +224,7 @@ Angular에는 템플릿과 컴포넌트를 간편하게 연결하는 **데이터
 
 * `{{hero.name}}` 과 같이 [*문자열 바인딩*](guide/displaying-data#interpolation) 하면 컴포넌트의 `hero.name` 프로퍼티 값을 `<li>` 엘리먼트 안에 표시합니다.
 
-* `[hero]` 와 같이 [*프로퍼티 바인딩*](guide/template-syntax#property-binding) 하면 부모 컴포넌트 `HeroListComponent` 에 있는 `selectedHero` 값을 자식 컴포넌트 `HeroDetailComponent` 의 `hero` 프로퍼티로 전달합니다.
+* `[hero]` 와 같이 [*프로퍼티 바인딩*](guide/property-binding) 하면 부모 컴포넌트 `HeroListComponent` 에 있는 `selectedHero` 값을 자식 컴포넌트 `HeroDetailComponent` 의 `hero` 프로퍼티로 전달합니다.
 
 * `(click)` 과 같이 [*이벤트 바인딩*](guide/user-input#click) 하면 사용자가 히어로의 이름을 클릭했을 때 컴포넌트의 `selectHero` 메소드를 실행합니다.
 
@@ -259,7 +259,7 @@ Angular pipes let you declare display-value transformations in your template HTM
 
 Angular defines various pipes, such as the [date](https://angular.io/api/common/DatePipe) pipe and [currency](https://angular.io/api/common/CurrencyPipe) pipe; for a complete list, see the [Pipes API list](https://angular.io/api?type=pipe). You can also define new pipes.
 
-To specify a value transformation in an HTML template, use the [pipe operator (|)](https://angular.io/guide/template-syntax#pipe).
+To specify a value transformation in an HTML template, use the [pipe operator (|)](https://angular.io/guide/template-expression-operators#pipe).
 
 `{{interpolated_value | pipe_name}}`
 
@@ -267,9 +267,9 @@ You can chain pipes, sending the output of one pipe function to be transformed b
 -->
 파이프를 사용하면 애플리케이션 데이터가 템플릿 HTML에 표시될 때 원하는 형식을 지정할 수 있습니다. 파이프는 원래값을 입력받고 새로운 형식의 값을 반환하는 함수에 `@Pipe` 데코레이터를 사용해서 Angular에 등록합니다.
 
-Angular는 여러가지 파이프를 기본으로 제공하는데, 이 중 [날짜](https://angular.io/api/common/DatePipe) 파이프와 [통화](https://angular.io/api/common/CurrencyPipe) 파이프는 자주 사용하게 될 것입니다. Angular에서 제공하는 파이프 목록을 확인하려면 [파이프 API 목록](https://angular.io/api?type=pipe) 문서를 참고하세요. 필요하다면 파이프를 새로 정의해서 사용할 수도 있습니다.
+Angular는 여러가지 파이프를 기본으로 제공하는데, 이 중 [날짜](api/common/DatePipe) 파이프와 [통화](api/common/CurrencyPipe) 파이프는 자주 사용하게 될 것입니다. Angular에서 제공하는 파이프 목록을 확인하려면 [파이프 API 목록](https://angular.io/api?type=pipe) 문서를 참고하세요. 필요하다면 파이프를 새로 정의해서 사용할 수도 있습니다.
 
-HTML 템플릿에 파이프를 적용할 때는 [파이프 연산자 (|)](https://angular.io/guide/template-syntax#pipe)를 다음과 같이 사용합니다:
+HTML 템플릿에 파이프를 적용할 때는 [파이프 연산자 (|)](guide/template-expression-operators#pipe)를 다음과 같이 사용합니다:
 
 `{{변환되는 값 | 파이프 이름}}`
 
@@ -368,9 +368,9 @@ The `ngModel` directive, which implements two-way data binding, is an example of
 <code-example path="architecture/src/app/hero-detail.component.html" header="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
 Angular has more pre-defined directives that either alter the layout structure
-(for example, [ngSwitch](guide/template-syntax#ngSwitch))
+(for example, [ngSwitch](guide/built-in-directives#ngSwitch))
 or modify aspects of DOM elements and components
-(for example, [ngStyle](guide/template-syntax#ngStyle) and [ngClass](guide/template-syntax#ngClass)).
+(for example, [ngStyle](guide/built-in-directives#ngStyle) and [ngClass](guide/built-in-directives#ngClass)).
 -->
 *어트리뷰트 디렉티브*는 이미 존재하는 엘리먼트의 모양이나 동작을 변형합니다.
 이때 템플릿에서 보통 HTML 어트리뷰트처럼 보이기 때문에 자연스럽게 어트리뷰트 디렉티브라는 이름으로 사용합니다.
@@ -379,8 +379,7 @@ or modify aspects of DOM elements and components
 
 <code-example path="architecture/src/app/hero-detail.component.html" header="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
-이 외에도 Angular가 제공하는 기본 디렉티브 중에는 조건에 따라 레이아웃을 선택해서 표시하는 [ngSwitch](guide/template-syntax#ngSwitch)나, 컴포넌트에 스타일이나 지정하는 [ngStyle](guide/template-syntax#ngStyle), 컴포넌트에 CSS 스타일을 지정하는 [ngClass](guide/template-syntax#ngClass)도 있습니다.
-
+이 외에도 Angular가 제공하는 기본 디렉티브 중에는 조건에 따라 레이아웃을 선택해서 표시하는 [ngSwitch](guide/built-in-directives#ngStyle)나, 컴포넌트에 스타일이나 지정하는 [ngStyle](guide/built-in-directives#ngStyle), 컴포넌트에 CSS 스타일을 지정하는 [ngClass](guide/built-in-directives#ngClass)도 있습니다.
 
 <div class="alert is-helpful">
 
