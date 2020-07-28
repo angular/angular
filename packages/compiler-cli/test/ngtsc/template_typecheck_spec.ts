@@ -1498,6 +1498,39 @@ export declare class AnimationEvent {
            expect(diags[0].messageText)
                .toBe(`Type 'boolean' is not assignable to type 'string | number'.`);
          });
+
+      it('should give an error for undefined bindings into regular inputs when coercion members are present',
+         () => {
+           env.tsconfig({strictTemplates: true});
+           env.write('test.ts', `
+            import {Component, Directive, NgModule, Input} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<input dir [regular]="undefined" [coerced]="1">',
+            })
+            export class FooCmp {
+              invalidType = true;
+            }
+
+            @Directive({selector: '[dir]'})
+            export class CoercionDir {
+              @Input() regular: string;
+              @Input() coerced: boolean;
+
+              static ngAcceptInputType_coerced: boolean|number;
+            }
+
+            @NgModule({
+              declarations: [FooCmp, CoercionDir],
+            })
+            export class FooModule {}
+        `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toBe(`Type 'undefined' is not assignable to type 'string'.`);
+         });
     });
 
     describe('legacy schema checking with the DOM schema', () => {

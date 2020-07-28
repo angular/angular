@@ -179,7 +179,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const typeCtor = TestClassWithCtor.members.find(isTypeCtor)!;
         const ctorText = typeCtor.getText().replace(/[ \r\n]+/g, ' ');
         expect(ctorText).toContain(
-            'init: Pick<TestClass, "foo"> | { bar: typeof TestClass.ngAcceptInputType_bar; }');
+            'init: Pick<TestClass, "foo"> & { bar: typeof TestClass.ngAcceptInputType_bar; }');
       });
     });
   });
