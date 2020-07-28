@@ -166,8 +166,8 @@ function constructTypeCtorParameter(
   if (coercedKeys.length > 0) {
     const coercedLiteral = ts.createTypeLiteralNode(coercedKeys);
 
-    initType =
-        initType !== null ? ts.createUnionTypeNode([initType, coercedLiteral]) : coercedLiteral;
+    initType = initType !== null ? ts.createIntersectionTypeNode([initType, coercedLiteral]) :
+                                   coercedLiteral;
   }
 
   if (initType === null) {
