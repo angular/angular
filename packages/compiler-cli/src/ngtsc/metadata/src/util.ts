@@ -128,7 +128,8 @@ function isRestricted(node: ts.Node): boolean {
 
   return node.modifiers.some(
       modifier => modifier.kind === ts.SyntaxKind.PrivateKeyword ||
-          modifier.kind === ts.SyntaxKind.ProtectedKeyword);
+          modifier.kind === ts.SyntaxKind.ProtectedKeyword ||
+          modifier.kind === ts.SyntaxKind.ReadonlyKeyword);
 }
 
 function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {
