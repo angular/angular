@@ -27,6 +27,13 @@ if (_global.beforeEach) {
   });
 }
 
-// TODO(juliemr): remove this, only used because we need to export something to have compilation
-// work.
+/**
+ * This API should be removed. But doing so seems to break `google3` and so it requires a bit of
+ * investigation.
+ *
+ * A work around is to mark it as `@codeGenApi` for now and investigate later.
+ *
+ * @codeGenApi
+ */
+// TODO(iminar): Remove this code in a safe way.
 export const __core_private_testing_placeholder__ = '';

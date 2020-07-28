@@ -1,3 +1,6 @@
+/** @codeGenApi */
+export declare const __core_private_testing_placeholder__ = "";
+
 export declare function async(fn: Function): (done: any) => any;
 
 export declare class ComponentFixture<T> {
