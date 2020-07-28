@@ -349,12 +349,7 @@
             {
               "url": "guide/observables-in-angular",
               "title": "Observables in Angular",
-              "tooltip": "How Angular subsystems use and expect observables."
-            },
-            {
-              "url": "guide/practical-observable-usage",
-              "title": "Practical Usage",
-              "tooltip": "Domains in which observables are particularly useful."
+              "tooltip": "Handling observables from the Angular API, and using them to implement your own features."
             },
             {
               "url": "guide/comparing-observables",
