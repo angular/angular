@@ -64,8 +64,8 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
           (AsyncValidator|AsyncValidatorFn)[]) {
     super();
     this._parent = parent;
-    this._validators = validators;
-    this._asyncValidators = asyncValidators;
+    this._setValidators(validators);
+    this._setAsyncValidators(asyncValidators);
   }
 
   /** @internal */
