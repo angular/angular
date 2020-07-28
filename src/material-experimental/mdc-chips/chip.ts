@@ -158,7 +158,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     this._chipFoundation.handleTransitionEnd(event);
   }
 
-  get _hasFocus() {
+  _hasFocus() {
     return this._hasFocusInternal;
   }
 

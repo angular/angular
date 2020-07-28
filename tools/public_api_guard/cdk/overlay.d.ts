@@ -89,7 +89,6 @@ export interface ConnectedPosition {
 }
 
 export declare class ConnectedPositionStrategy implements PositionStrategy {
-    get _isRtl(): boolean;
     _positionStrategy: FlexibleConnectedPositionStrategy;
     _preferredPositions: ConnectionPositionPair[];
     get onPositionChange(): Observable<ConnectedOverlayPositionChange>;

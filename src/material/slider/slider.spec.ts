@@ -174,12 +174,12 @@ describe('MatSlider', () => {
       sliderInstance.value = 0;
       fixture.detectChanges();
 
-      expect(sliderInstance._thumbGap).toBe(10);
+      expect(sliderInstance._getThumbGap()).toBe(10);
 
       dispatchFakeEvent(sliderNativeElement, 'blur');
       fixture.detectChanges();
 
-      expect(sliderInstance._thumbGap).toBe(7);
+      expect(sliderInstance._getThumbGap()).toBe(7);
     });
 
     it('should have thumb gap when at min value', () => {
@@ -1077,18 +1077,18 @@ describe('MatSlider', () => {
       testComponent.dir = 'rtl';
       fixture.detectChanges();
 
-      let initialTrackFillStyles = sliderInstance._trackFillStyles;
-      let initialTicksContainerStyles = sliderInstance._ticksContainerStyles;
-      let initialTicksStyles = sliderInstance._ticksStyles;
-      let initialThumbContainerStyles = sliderInstance._thumbContainerStyles;
+      let initialTrackFillStyles = sliderInstance._getTrackFillStyles();
+      let initialTicksContainerStyles = sliderInstance._getTicksContainerStyles();
+      let initialTicksStyles = sliderInstance._getTicksStyles();
+      let initialThumbContainerStyles = sliderInstance._getThumbContainerStyles();
 
       testComponent.dir = 'ltr';
       fixture.detectChanges();
 
-      expect(initialTrackFillStyles).not.toEqual(sliderInstance._trackFillStyles);
-      expect(initialTicksContainerStyles).not.toEqual(sliderInstance._ticksContainerStyles);
-      expect(initialTicksStyles).not.toEqual(sliderInstance._ticksStyles);
-      expect(initialThumbContainerStyles).not.toEqual(sliderInstance._thumbContainerStyles);
+      expect(initialTrackFillStyles).not.toEqual(sliderInstance._getTrackFillStyles());
+      expect(initialTicksContainerStyles).not.toEqual(sliderInstance._getTicksContainerStyles());
+      expect(initialTicksStyles).not.toEqual(sliderInstance._getTicksStyles());
+      expect(initialThumbContainerStyles).not.toEqual(sliderInstance._getThumbContainerStyles());
     });
 
     it('should increment inverted slider by 1 on right arrow pressed', () => {

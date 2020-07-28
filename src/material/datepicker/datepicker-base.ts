@@ -341,16 +341,16 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   id: string = `mat-datepicker-${datepickerUid++}`;
 
   /** The minimum selectable date. */
-  get _minDate(): D | null {
+  _getMinDate(): D | null {
     return this._datepickerInput && this._datepickerInput.min;
   }
 
   /** The maximum selectable date. */
-  get _maxDate(): D | null {
+  _getMaxDate(): D | null {
     return this._datepickerInput && this._datepickerInput.max;
   }
 
-  get _dateFilter(): DateFilterFn<D> {
+  _getDateFilter(): DateFilterFn<D> {
     return this._datepickerInput && this._datepickerInput.dateFilter;
   }
 

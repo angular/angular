@@ -138,15 +138,16 @@ const _MatSliderMixinBase:
     '[class.mat-slider-disabled]': 'disabled',
     '[class.mat-slider-has-ticks]': 'tickInterval',
     '[class.mat-slider-horizontal]': '!vertical',
-    '[class.mat-slider-axis-inverted]': '_invertAxis',
+    '[class.mat-slider-axis-inverted]': '_shouldInvertAxis()',
     // Class binding which is only used by the test harness as there is no other
     // way for the harness to detect if mouse coordinates need to be inverted.
     '[class.mat-slider-invert-mouse-coords]': '_shouldInvertMouseCoords()',
     '[class.mat-slider-sliding]': '_isSliding',
     '[class.mat-slider-thumb-label-showing]': 'thumbLabel',
     '[class.mat-slider-vertical]': 'vertical',
-    '[class.mat-slider-min-value]': '_isMinValue',
-    '[class.mat-slider-hide-last-tick]': 'disabled || _isMinValue && _thumbGap && _invertAxis',
+    '[class.mat-slider-min-value]': '_isMinValue()',
+    '[class.mat-slider-hide-last-tick]':
+        'disabled || _isMinValue() && _getThumbGap() && _shouldInvertAxis()',
     '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
   },
   templateUrl: 'slider.html',
@@ -339,7 +340,7 @@ export class MatSlider extends _MatSliderMixinBase
    * Whether the axis of the slider is inverted.
    * (i.e. whether moving the thumb in the positive x or y direction decreases the slider's value).
    */
-  get _invertAxis() {
+  _shouldInvertAxis() {
     // Standard non-inverted mode for a vertical slider should be dragging the thumb from bottom to
     // top. However from a y-axis standpoint this is inverted.
     return this.vertical ? !this.invert : this.invert;
@@ -347,7 +348,7 @@ export class MatSlider extends _MatSliderMixinBase
 
 
   /** Whether the slider is at its minimum value. */
-  get _isMinValue() {
+  _isMinValue() {
     return this.percent === 0;
   }
 
@@ -355,30 +356,30 @@ export class MatSlider extends _MatSliderMixinBase
    * The amount of space to leave between the slider thumb and the track fill & track background
    * elements.
    */
-  get _thumbGap() {
+  _getThumbGap() {
     if (this.disabled) {
       return DISABLED_THUMB_GAP;
     }
-    if (this._isMinValue && !this.thumbLabel) {
+    if (this._isMinValue() && !this.thumbLabel) {
       return this._isActive ? MIN_VALUE_ACTIVE_THUMB_GAP : MIN_VALUE_NONACTIVE_THUMB_GAP;
     }
     return 0;
   }
 
   /** CSS styles for the track background element. */
-  get _trackBackgroundStyles(): { [key: string]: string } {
+  _getTrackBackgroundStyles(): { [key: string]: string } {
     const axis = this.vertical ? 'Y' : 'X';
     const scale = this.vertical ? `1, ${1 - this.percent}, 1` : `${1 - this.percent}, 1, 1`;
     const sign = this._shouldInvertMouseCoords() ? '-' : '';
 
     return {
       // scale3d avoids some rendering issues in Chrome. See #12071.
-      transform: `translate${axis}(${sign}${this._thumbGap}px) scale3d(${scale})`
+      transform: `translate${axis}(${sign}${this._getThumbGap()}px) scale3d(${scale})`
     };
   }
 
   /** CSS styles for the track fill element. */
-  get _trackFillStyles(): { [key: string]: string } {
+  _getTrackFillStyles(): { [key: string]: string } {
     const percent = this.percent;
     const axis = this.vertical ? 'Y' : 'X';
     const scale = this.vertical ? `1, ${percent}, 1` : `${percent}, 1, 1`;
@@ -386,7 +387,7 @@ export class MatSlider extends _MatSliderMixinBase
 
     return {
       // scale3d avoids some rendering issues in Chrome. See #12071.
-      transform: `translate${axis}(${sign}${this._thumbGap}px) scale3d(${scale})`,
+      transform: `translate${axis}(${sign}${this._getThumbGap()}px) scale3d(${scale})`,
       // iOS Safari has a bug where it won't re-render elements which start of as `scale(0)` until
       // something forces a style recalculation on it. Since we'll end up with `scale(0)` when
       // the value of the slider is 0, we can easily get into this situation. We force a
@@ -396,7 +397,7 @@ export class MatSlider extends _MatSliderMixinBase
   }
 
   /** CSS styles for the ticks container element. */
-  get _ticksContainerStyles(): { [key: string]: string } {
+  _getTicksContainerStyles(): { [key: string]: string } {
     let axis = this.vertical ? 'Y' : 'X';
     // For a horizontal slider in RTL languages we push the ticks container off the left edge
     // instead of the right edge to avoid causing a horizontal scrollbar to appear.
@@ -408,7 +409,7 @@ export class MatSlider extends _MatSliderMixinBase
   }
 
   /** CSS styles for the ticks element. */
-  get _ticksStyles(): { [key: string]: string } {
+  _getTicksStyles(): { [key: string]: string } {
     let tickSize = this._tickIntervalPercent * 100;
     let backgroundSize = this.vertical ? `2px ${tickSize}%` : `${tickSize}% 2px`;
     let axis = this.vertical ? 'Y' : 'X';
@@ -423,27 +424,29 @@ export class MatSlider extends _MatSliderMixinBase
       'transform': `translateZ(0) translate${axis}(${sign}${tickSize / 2}%)${rotate}`
     };
 
-    if (this._isMinValue && this._thumbGap) {
+    if (this._isMinValue() && this._getThumbGap()) {
+      const shouldInvertAxis = this._shouldInvertAxis();
       let side: string;
 
       if (this.vertical) {
-        side = this._invertAxis ? 'Bottom' : 'Top';
+        side = shouldInvertAxis ? 'Bottom' : 'Top';
       } else {
-        side = this._invertAxis ? 'Right' : 'Left';
+        side = shouldInvertAxis ? 'Right' : 'Left';
       }
 
-      styles[`padding${side}`] = `${this._thumbGap}px`;
+      styles[`padding${side}`] = `${this._getThumbGap()}px`;
     }
 
     return styles;
   }
 
-  get _thumbContainerStyles(): { [key: string]: string } {
+  _getThumbContainerStyles(): { [key: string]: string } {
+    const shouldInvertAxis = this._shouldInvertAxis();
     let axis = this.vertical ? 'Y' : 'X';
     // For a horizontal slider in RTL languages we push the thumb container off the left edge
     // instead of the right edge to avoid causing a horizontal scrollbar to appear.
     let invertOffset =
-        (this._getDirection() == 'rtl' && !this.vertical) ? !this._invertAxis : this._invertAxis;
+        (this._getDirection() == 'rtl' && !this.vertical) ? !shouldInvertAxis : shouldInvertAxis;
     let offset = (invertOffset ? this.percent : 1 - this.percent) * 100;
     return {
       'transform': `translate${axis}(-${offset}%)`
@@ -478,7 +481,8 @@ export class MatSlider extends _MatSliderMixinBase
    * from the right or bottom edge of the slider as opposed to the top or left.
    */
   _shouldInvertMouseCoords() {
-    return (this._getDirection() == 'rtl' && !this.vertical) ? !this._invertAxis : this._invertAxis;
+    const shouldInvertAxis = this._shouldInvertAxis();
+    return (this._getDirection() == 'rtl' && !this.vertical) ? !shouldInvertAxis : shouldInvertAxis;
   }
 
   /** The language direction for this slider element. */

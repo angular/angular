@@ -845,7 +845,7 @@ describe('MatInput without forms', () => {
     inputContainer._animateAndLockLabel();
     fixture.detectChanges();
 
-    expect(inputContainer._shouldAlwaysFloat).toBe(false);
+    expect(inputContainer._shouldAlwaysFloat()).toBe(false);
     expect(inputContainer.floatLabel).toBe('always');
 
     const fakeEvent = createFakeEvent('transitionend');
@@ -853,7 +853,7 @@ describe('MatInput without forms', () => {
     label.dispatchEvent(fakeEvent);
     fixture.detectChanges();
 
-    expect(inputContainer._shouldAlwaysFloat).toBe(true);
+    expect(inputContainer._shouldAlwaysFloat()).toBe(true);
     expect(inputContainer.floatLabel).toBe('always');
   }));
 

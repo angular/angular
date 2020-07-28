@@ -223,9 +223,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 
   /** Event emitted when the drawer has been opened. */
   @Output('opened')
-  get _openedStream(): Observable<void> {
-    return this.openedChange.pipe(filter(o => o), map(() => {}));
-  }
+  _openedStream = this.openedChange.pipe(filter(o => o), map(() => {}));
 
   /** Event emitted when the drawer has started opening. */
   @Output()
@@ -238,9 +236,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 
   /** Event emitted when the drawer has been closed. */
   @Output('closed')
-  get _closedStream(): Observable<void> {
-    return this.openedChange.pipe(filter(o => !o), map(() => {}));
-  }
+  _closedStream = this.openedChange.pipe(filter(o => !o), map(() => {}));
 
   /** Event emitted when the drawer has started closing. */
   @Output()
@@ -455,7 +451,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     });
   }
 
-  get _width(): number {
+  _getWidth(): number {
     return this._elementRef.nativeElement ? (this._elementRef.nativeElement.offsetWidth || 0) : 0;
   }
 
@@ -696,9 +692,9 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
 
     if (this._left && this._left.opened) {
       if (this._left.mode == 'side') {
-        left += this._left._width;
+        left += this._left._getWidth();
       } else if (this._left.mode == 'push') {
-        const width = this._left._width;
+        const width = this._left._getWidth();
         left += width;
         right -= width;
       }
@@ -706,9 +702,9 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
 
     if (this._right && this._right.opened) {
       if (this._right.mode == 'side') {
-        right += this._right._width;
+        right += this._right._getWidth();
       } else if (this._right.mode == 'push') {
-        const width = this._right._width;
+        const width = this._right._getWidth();
         right += width;
         left -= width;
       }

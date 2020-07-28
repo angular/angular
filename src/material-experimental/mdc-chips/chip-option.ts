@@ -183,7 +183,7 @@ export class MatChipOption extends MatChip implements AfterContentInit {
       return;
     }
 
-    if (!this._hasFocus) {
+    if (!this._hasFocus()) {
       this._elementRef.nativeElement.focus();
       this._onFocus.next({chip: this});
     }

@@ -533,12 +533,12 @@ describe('MDC-based MatChipGrid', () => {
         secondChip.focus();
         fixture.detectChanges();
 
-        expect(chipGridInstance._chips.toArray().findIndex(chip => chip._hasFocus)).toBe(1);
+        expect(chipGridInstance._chips.toArray().findIndex(chip => chip._hasFocus())).toBe(1);
 
         dispatchKeyboardEvent(secondChip, 'keydown', DELETE);
         fixture.detectChanges();
 
-        expect(chipGridInstance._chips.toArray().findIndex(chip => chip._hasFocus)).toBe(1);
+        expect(chipGridInstance._chips.toArray().findIndex(chip => chip._hasFocus())).toBe(1);
       });
 
       describe('when the input has focus', () => {

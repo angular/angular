@@ -150,7 +150,7 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
     this._hasFocusInternal = false;
     // Wait to see if focus moves to the other gridcell
     setTimeout(() => {
-      if (this._hasFocus) {
+      if (this._hasFocus()) {
         return;
       }
       this._onBlur.next({chip: this});

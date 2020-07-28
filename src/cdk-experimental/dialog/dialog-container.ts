@@ -87,7 +87,7 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   // @HostBinding is used in the class as it is expected to be extended. Since @Component decorator
   // metadata is not inherited by child classes, instead the host binding data is defined in a way
   // that can be inherited.
-  // tslint:disable:no-host-decorator-in-concrete
+  // tslint:disable:no-host-decorator-in-concrete no-private-getters
   @HostBinding('attr.aria-label') get _ariaLabel() { return this._config.ariaLabel || null; }
 
   @HostBinding('attr.aria-describedby')
@@ -98,7 +98,7 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   @HostBinding('attr.aria-modal') _ariaModal: boolean = true;
 
   @HostBinding('attr.tabindex') get _tabindex() { return -1; }
-  // tslint:disable:no-host-decorator-in-concrete
+  // tslint:disable:no-host-decorator-in-concrete no-private-getters
 
   /** The portal host inside of this container into which the dialog content will be loaded. */
   @ViewChild(CdkPortalOutlet, {static: true}) _portalHost: CdkPortalOutlet;

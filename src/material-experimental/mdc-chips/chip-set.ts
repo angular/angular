@@ -193,7 +193,7 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
 
   /** Checks whether any of the chips is focused. */
   protected _hasFocusedChip() {
-    return this._chips && this._chips.some(chip => chip._hasFocus);
+    return this._chips && this._chips.some(chip => chip._hasFocus());
   }
 
   /** Syncs the chip-set's state with the individual chips. */
@@ -251,7 +251,7 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
       // In case the chip that will be removed is currently focused, we temporarily store
       // the index in order to be able to determine an appropriate sibling chip that will
       // receive focus.
-      if (this._isValidIndex(chipIndex) && chip._hasFocus) {
+      if (this._isValidIndex(chipIndex) && chip._hasFocus()) {
         this._lastDestroyedChipIndex = chipIndex;
       }
     });

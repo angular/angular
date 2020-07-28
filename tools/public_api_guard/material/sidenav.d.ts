@@ -6,11 +6,10 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     _animationEnd: Subject<AnimationEvent>;
     _animationStarted: Subject<AnimationEvent>;
     _animationState: 'open-instant' | 'open' | 'void';
-    get _closedStream(): Observable<void>;
+    _closedStream: Observable<void>;
     _container?: MatDrawerContainer | undefined;
     readonly _modeChanged: Subject<void>;
-    get _openedStream(): Observable<void>;
-    get _width(): number;
+    _openedStream: Observable<void>;
     get autoFocus(): boolean;
     set autoFocus(value: boolean);
     get closedStart(): Observable<void>;
@@ -30,6 +29,7 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     _animationDoneListener(event: AnimationEvent): void;
     _animationStartListener(event: AnimationEvent): void;
     _closeViaBackdropClick(): Promise<MatDrawerToggleResult>;
+    _getWidth(): number;
     close(): Promise<MatDrawerToggleResult>;
     ngAfterContentChecked(): void;
     ngAfterContentInit(): void;

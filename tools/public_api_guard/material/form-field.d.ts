@@ -27,7 +27,6 @@ export declare class MatError {
 export declare class MatFormField extends _MatFormFieldMixinBase implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
     _animationsEnabled: boolean;
     _appearance: MatFormFieldAppearance;
-    get _canLabelFloat(): boolean;
     _connectionContainerRef: ElementRef;
     get _control(): MatFormFieldControl<any>;
     set _control(value: MatFormFieldControl<any>);
@@ -38,13 +37,11 @@ export declare class MatFormField extends _MatFormFieldMixinBase implements Afte
     _hintChildren: QueryList<MatHint>;
     _hintLabelId: string;
     _inputContainerRef: ElementRef;
-    get _labelChild(): MatLabel;
     _labelChildNonStatic: MatLabel;
     _labelChildStatic: MatLabel;
     _labelId: string;
     _placeholderChild: MatPlaceholder;
     _prefixChildren: QueryList<MatPrefix>;
-    get _shouldAlwaysFloat(): boolean;
     _subscriptAnimationState: string;
     _suffixChildren: QueryList<MatSuffix>;
     get appearance(): MatFormFieldAppearance;
@@ -58,11 +55,13 @@ export declare class MatFormField extends _MatFormFieldMixinBase implements Afte
     underlineRef: ElementRef;
     constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, labelOptions: LabelOptions, _dir: Directionality, _defaults: MatFormFieldDefaultOptions, _platform: Platform, _ngZone: NgZone, _animationMode: string);
     _animateAndLockLabel(): void;
+    _canLabelFloat(): boolean;
     _getDisplayedMessages(): 'error' | 'hint';
     _hasFloatingLabel(): boolean;
     _hasLabel(): boolean;
     _hasPlaceholder(): boolean;
     _hideControlPlaceholder(): boolean;
+    _shouldAlwaysFloat(): boolean;
     _shouldForward(prop: keyof NgControl): boolean;
     _shouldLabelFloat(): boolean;
     protected _validateControlChild(): void;

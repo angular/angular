@@ -132,7 +132,7 @@ export const MAT_FORM_FIELD = new InjectionToken<MatFormField>('MatFormField');
     '[class.mat-form-field-appearance-outline]': 'appearance == "outline"',
     '[class.mat-form-field-appearance-legacy]': 'appearance == "legacy"',
     '[class.mat-form-field-invalid]': '_control.errorState',
-    '[class.mat-form-field-can-float]': '_canLabelFloat',
+    '[class.mat-form-field-can-float]': '_canLabelFloat()',
     '[class.mat-form-field-should-float]': '_shouldLabelFloat()',
     '[class.mat-form-field-has-label]': '_hasFloatingLabel()',
     '[class.mat-form-field-hide-placeholder]': '_hideControlPlaceholder()',
@@ -199,12 +199,12 @@ export class MatFormField extends _MatFormFieldMixinBase
   private _showAlwaysAnimate = false;
 
   /** Whether the floating label should always float or not. */
-  get _shouldAlwaysFloat(): boolean {
+  _shouldAlwaysFloat(): boolean {
     return this.floatLabel === 'always' && !this._showAlwaysAnimate;
   }
 
   /** Whether the label can float or not. */
-  get _canLabelFloat(): boolean { return this.floatLabel !== 'never'; }
+  _canLabelFloat(): boolean { return this.floatLabel !== 'never'; }
 
   /** State of the mat-hint and mat-error animations. */
   _subscriptAnimationState: string = '';
@@ -271,10 +271,6 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   @ContentChild(MatLabel) _labelChildNonStatic: MatLabel;
   @ContentChild(MatLabel, {static: true}) _labelChildStatic: MatLabel;
-  get _labelChild() {
-    return this._labelChildNonStatic || this._labelChildStatic;
-  }
-
   @ContentChild(MatPlaceholder) _placeholderChild: MatPlaceholder;
 
   // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
@@ -407,12 +403,12 @@ export class MatFormField extends _MatFormFieldMixinBase
   }
 
   _hasLabel() {
-    return !!this._labelChild;
+    return !!(this._labelChildNonStatic || this._labelChildStatic);
   }
 
   _shouldLabelFloat() {
-    return this._canLabelFloat &&
-        ((this._control && this._control.shouldLabelFloat) || this._shouldAlwaysFloat);
+    return this._canLabelFloat() &&
+        ((this._control && this._control.shouldLabelFloat) || this._shouldAlwaysFloat());
   }
 
   _hideControlPlaceholder() {
@@ -434,7 +430,7 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   /** Animates the placeholder up and locks it in position. */
   _animateAndLockLabel(): void {
-    if (this._hasFloatingLabel() && this._canLabelFloat) {
+    if (this._hasFloatingLabel() && this._canLabelFloat()) {
       // If animations are disabled, we shouldn't go in here,
       // because the `transitionend` will never fire.
       if (this._animationsEnabled && this._label) {

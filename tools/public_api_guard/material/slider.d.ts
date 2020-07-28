@@ -3,26 +3,8 @@ export declare const MAT_SLIDER_VALUE_ACCESSOR: any;
 export declare class MatSlider extends _MatSliderMixinBase implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, AfterViewInit, HasTabIndex {
     _animationMode?: string | undefined;
     protected _document: Document;
-    get _invertAxis(): boolean;
     _isActive: boolean;
-    get _isMinValue(): boolean;
     _isSliding: boolean;
-    get _thumbContainerStyles(): {
-        [key: string]: string;
-    };
-    get _thumbGap(): 7 | 10 | 0;
-    get _ticksContainerStyles(): {
-        [key: string]: string;
-    };
-    get _ticksStyles(): {
-        [key: string]: string;
-    };
-    get _trackBackgroundStyles(): {
-        [key: string]: string;
-    };
-    get _trackFillStyles(): {
-        [key: string]: string;
-    };
     readonly change: EventEmitter<MatSliderChange>;
     get displayValue(): string | number;
     displayWith: (value: number) => string | number;
@@ -47,11 +29,29 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     get vertical(): boolean;
     set vertical(value: boolean);
     constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, tabIndex: string, _ngZone: NgZone, _document: any, _animationMode?: string | undefined);
+    _getThumbContainerStyles(): {
+        [key: string]: string;
+    };
+    _getThumbGap(): 7 | 10 | 0;
+    _getTicksContainerStyles(): {
+        [key: string]: string;
+    };
+    _getTicksStyles(): {
+        [key: string]: string;
+    };
+    _getTrackBackgroundStyles(): {
+        [key: string]: string;
+    };
+    _getTrackFillStyles(): {
+        [key: string]: string;
+    };
+    _isMinValue(): boolean;
     _onBlur(): void;
     _onFocus(): void;
     _onKeydown(event: KeyboardEvent): void;
     _onKeyup(): void;
     _onMouseenter(): void;
+    _shouldInvertAxis(): boolean;
     _shouldInvertMouseCoords(): boolean;
     blur(): void;
     focus(options?: FocusOptions): void;

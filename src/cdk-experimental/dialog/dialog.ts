@@ -50,14 +50,14 @@ export class Dialog implements OnDestroy {
   private _scrollStrategy: () => ScrollStrategy;
 
   /** Stream that emits when all dialogs are closed. */
-  get _afterAllClosed(): Observable<void> {
+  _getAfterAllClosed(): Observable<void> {
     return this._parentDialog ? this._parentDialog.afterAllClosed : this._afterAllClosedBase;
   }
   _afterAllClosedBase = new Subject<void>();
 
   // TODO(jelbourn): tighten the type on the right-hand side of this expression.
   afterAllClosed: Observable<void> = defer(() => this.openDialogs.length ?
-      this._afterAllClosed : this._afterAllClosed.pipe(startWith(undefined)));
+      this._getAfterAllClosed() : this._getAfterAllClosed().pipe(startWith(undefined)));
 
   /** Stream that emits when a dialog is opened. */
   get afterOpened(): Subject<DialogRef<any>> {

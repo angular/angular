@@ -85,9 +85,9 @@ export class MatDialog implements OnDestroy {
     return this._parentDialog ? this._parentDialog.afterOpened : this._afterOpenedAtThisLevel;
   }
 
-  get _afterAllClosed(): Subject<void> {
+  _getAfterAllClosed(): Subject<void> {
     const parent = this._parentDialog;
-    return parent ? parent._afterAllClosed : this._afterAllClosedAtThisLevel;
+    return parent ? parent._getAfterAllClosed() : this._afterAllClosedAtThisLevel;
   }
 
   // TODO (jelbourn): tighten the typing right-hand side of this expression.
@@ -96,8 +96,8 @@ export class MatDialog implements OnDestroy {
    * Will emit on subscribe if there are no open dialogs to begin with.
    */
   readonly afterAllClosed: Observable<void> = defer(() => this.openDialogs.length ?
-      this._afterAllClosed :
-      this._afterAllClosed.pipe(startWith(undefined))) as Observable<any>;
+      this._getAfterAllClosed() :
+      this._getAfterAllClosed().pipe(startWith(undefined))) as Observable<any>;
 
   constructor(
       private _overlay: Overlay,
@@ -324,7 +324,7 @@ export class MatDialog implements OnDestroy {
         });
 
         this._ariaHiddenElements.clear();
-        this._afterAllClosed.next();
+        this._getAfterAllClosed().next();
       }
     }
   }
