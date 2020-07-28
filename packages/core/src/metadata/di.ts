@@ -332,7 +332,7 @@ export interface ViewChildDecorator {
    *   * A template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
    * with `@ViewChild('cmp')`)
    *   * Any provider defined in the child component tree of the current component (e.g.
-   * `@ViewChild(SomeService) someService: SomeService`)
+   * `@ViewChild(SomeComponent) someComponent: SomeComponent`)
    *   * Any provider defined through a string token (e.g. `@ViewChild('someToken') someTokenVal:
    * any`)
    *   * A `TemplateRef` (e.g. query `<ng-template></ng-template>` with `@ViewChild(TemplateRef)
