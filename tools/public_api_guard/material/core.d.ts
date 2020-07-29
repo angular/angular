@@ -2,6 +2,46 @@ export declare function _countGroupLabelsBeforeOption(optionIndex: number, optio
 
 export declare function _getOptionScrollPosition(optionIndex: number, optionHeight: number, currentScrollPosition: number, panelHeight: number): number;
 
+export declare class _MatOptgroupBase extends _MatOptgroupMixinBase implements CanDisable {
+    _labelId: string;
+    label: string;
+    static ngAcceptInputType_disabled: BooleanInput;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatOptgroupBase, never, never, { "label": "label"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<_MatOptgroupBase, never>;
+}
+
+export declare class _MatOptionBase implements FocusableOption, AfterViewChecked, OnDestroy {
+    readonly _stateChanges: Subject<void>;
+    get active(): boolean;
+    get disableRipple(): boolean | undefined;
+    get disabled(): any;
+    set disabled(value: any);
+    readonly group: _MatOptgroupBase;
+    id: string;
+    get multiple(): boolean | undefined;
+    readonly onSelectionChange: EventEmitter<MatOptionSelectionChange>;
+    get selected(): boolean;
+    value: any;
+    get viewValue(): string;
+    constructor(_element: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _parent: MatOptionParentComponent, group: _MatOptgroupBase);
+    _getAriaSelected(): boolean | null;
+    _getHostElement(): HTMLElement;
+    _getTabIndex(): string;
+    _handleKeydown(event: KeyboardEvent): void;
+    _selectViaInteraction(): void;
+    deselect(): void;
+    focus(_origin?: FocusOrigin, options?: FocusOptions): void;
+    getLabel(): string;
+    ngAfterViewChecked(): void;
+    ngOnDestroy(): void;
+    select(): void;
+    setActiveStyles(): void;
+    setInactiveStyles(): void;
+    static ngAcceptInputType_disabled: BooleanInput;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatOptionBase, never, never, { "value": "value"; "id": "id"; "disabled": "disabled"; }, { "onSelectionChange": "onSelectionChange"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<_MatOptionBase, never>;
+}
+
 export declare class AnimationCurves {
     static ACCELERATION_CURVE: string;
     static DECELERATION_CURVE: string;
@@ -191,43 +231,14 @@ export declare class MatNativeDateModule {
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatNativeDateModule, never, [typeof NativeDateModule], never>;
 }
 
-export declare class MatOptgroup extends _MatOptgroupMixinBase implements CanDisable {
-    _labelId: string;
-    label: string;
-    static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOptgroup, "mat-optgroup", ["matOptgroup"], { "disabled": "disabled"; "label": "label"; }, {}, never, ["*", "mat-option, ng-container"]>;
+export declare class MatOptgroup extends _MatOptgroupBase {
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOptgroup, "mat-optgroup", ["matOptgroup"], { "disabled": "disabled"; }, {}, never, ["*", "mat-option, ng-container"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatOptgroup, never>;
 }
 
-export declare class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
-    readonly _stateChanges: Subject<void>;
-    get active(): boolean;
-    get disableRipple(): boolean | undefined;
-    get disabled(): any;
-    set disabled(value: any);
-    readonly group: MatOptgroup;
-    id: string;
-    get multiple(): boolean | undefined;
-    readonly onSelectionChange: EventEmitter<MatOptionSelectionChange>;
-    get selected(): boolean;
-    value: any;
-    get viewValue(): string;
-    constructor(_element: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _parent: MatOptionParentComponent, group: MatOptgroup);
-    _getAriaSelected(): boolean | null;
-    _getHostElement(): HTMLElement;
-    _getTabIndex(): string;
-    _handleKeydown(event: KeyboardEvent): void;
-    _selectViaInteraction(): void;
-    deselect(): void;
-    focus(_origin?: FocusOrigin, options?: FocusOptions): void;
-    getLabel(): string;
-    ngAfterViewChecked(): void;
-    ngOnDestroy(): void;
-    select(): void;
-    setActiveStyles(): void;
-    setInactiveStyles(): void;
-    static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOption, "mat-option", ["matOption"], { "value": "value"; "id": "id"; "disabled": "disabled"; }, { "onSelectionChange": "onSelectionChange"; }, never, ["*"]>;
+export declare class MatOption extends _MatOptionBase {
+    constructor(element: ElementRef<HTMLElement>, changeDetectorRef: ChangeDetectorRef, parent: MatOptionParentComponent, group: MatOptgroup);
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOption, "mat-option", ["matOption"], {}, {}, never, ["*"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatOption, [null, null, { optional: true; }, { optional: true; }]>;
 }
 

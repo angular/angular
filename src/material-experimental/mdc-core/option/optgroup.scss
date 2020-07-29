@@ -1,0 +1,13 @@
+@import '@material/list/mixins.import';
+@import '@material/list/variables.import';
+@import '../../mdc-helpers/mdc-helpers';
+
+.mat-mdc-optgroup-label {
+  @include mdc-list-item-base_;
+  @include mdc-list-list-item-padding-variant(
+    $mdc-list-textual-variant-config, $query: $mat-base-styles-query);
+  @include mdc-list-list-item-height-variant(
+    $mdc-list-textual-variant-config, $query: $mat-base-styles-query);
+  @include mdc-list-item-disabled-text-opacity($mdc-list-text-disabled-opacity,
+    $query: $mat-base-styles-query);
+}

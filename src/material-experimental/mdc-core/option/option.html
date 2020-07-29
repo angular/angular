@@ -1,0 +1,9 @@
+<mat-pseudo-checkbox *ngIf="multiple" class="mat-mdc-option-pseudo-checkbox"
+    [state]="selected ? 'checked' : 'unchecked'" [disabled]="disabled"></mat-pseudo-checkbox>
+
+<span class="mdc-list-item__text"><ng-content></ng-content></span>
+
+<div class="mat-mdc-option-ripple" mat-ripple
+     [matRippleTrigger]="_getHostElement()"
+     [matRippleDisabled]="disabled || disableRipple">
+</div>

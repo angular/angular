@@ -1,0 +1,15 @@
+@import '../../material/core/theming/check-duplicate-styles';
+@import './option/option-theme';
+@import './option/optgroup-theme';
+
+// Mixin that renders all of the core styles that depend on the theme.
+@mixin mat-mdc-core-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  // Wrap the sub-theme includes in the duplicate theme styles mixin. This ensures that
+  // there won't be multiple warnings. e.g. if `mat-mdc-core-theme` reports a warning, then
+  // the imported themes (such as `mat-ripple-theme`) should not report again.
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-core') {
+    @include mat-mdc-option-theme($theme);
+    @include mat-mdc-optgroup-theme($theme);
+  }
+}

@@ -12,7 +12,8 @@ import {
   Component,
   InjectionToken,
   Input,
-  ViewEncapsulation
+  ViewEncapsulation,
+  Directive
 } from '@angular/core';
 import {CanDisable, CanDisableCtor, mixinDisabled} from '../common-behaviors/disabled';
 
@@ -25,6 +26,18 @@ const _MatOptgroupMixinBase: CanDisableCtor & typeof MatOptgroupBase =
 
 // Counter for unique group ids.
 let _uniqueOptgroupIdCounter = 0;
+
+@Directive()
+// tslint:disable-next-line:class-name
+export class _MatOptgroupBase extends _MatOptgroupMixinBase implements CanDisable {
+  /** Label for the option group. */
+  @Input() label: string;
+
+  /** Unique id for the underlying label. */
+  _labelId: string = `mat-optgroup-label-${_uniqueOptgroupIdCounter++}`;
+
+  static ngAcceptInputType_disabled: BooleanInput;
+}
 
 /**
  * Injection token that can be used to reference instances of `MatOptgroup`. It serves as
@@ -53,12 +66,5 @@ export const MAT_OPTGROUP = new InjectionToken<MatOptgroup>('MatOptgroup');
   },
   providers: [{provide: MAT_OPTGROUP, useExisting: MatOptgroup}],
 })
-export class MatOptgroup extends _MatOptgroupMixinBase implements CanDisable {
-  /** Label for the option group. */
-  @Input() label: string;
-
-  /** Unique id for the underlying label. */
-  _labelId: string = `mat-optgroup-label-${_uniqueOptgroupIdCounter++}`;
-
-  static ngAcceptInputType_disabled: BooleanInput;
+export class MatOptgroup extends _MatOptgroupBase {
 }

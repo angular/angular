@@ -23,10 +23,11 @@ import {
   Output,
   QueryList,
   ViewEncapsulation,
+  Directive,
 } from '@angular/core';
 import {FocusOptions, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
 import {Subject} from 'rxjs';
-import {MAT_OPTGROUP, MatOptgroup} from './optgroup';
+import {MatOptgroup, _MatOptgroupBase, MAT_OPTGROUP} from './optgroup';
 
 /**
  * Option IDs need to be unique across components, so this counter exists outside of
@@ -59,32 +60,10 @@ export interface MatOptionParentComponent {
 export const MAT_OPTION_PARENT_COMPONENT =
     new InjectionToken<MatOptionParentComponent>('MAT_OPTION_PARENT_COMPONENT');
 
-/**
- * Single option inside of a `<mat-select>` element.
- */
-@Component({
-  selector: 'mat-option',
-  exportAs: 'matOption',
-  host: {
-    'role': 'option',
-    '[attr.tabindex]': '_getTabIndex()',
-    '[class.mat-selected]': 'selected',
-    '[class.mat-option-multiple]': 'multiple',
-    '[class.mat-active]': 'active',
-    '[id]': 'id',
-    '[attr.aria-selected]': '_getAriaSelected()',
-    '[attr.aria-disabled]': 'disabled.toString()',
-    '[class.mat-option-disabled]': 'disabled',
-    '(click)': '_selectViaInteraction()',
-    '(keydown)': '_handleKeydown($event)',
-    'class': 'mat-option mat-focus-indicator',
-  },
-  styleUrls: ['option.css'],
-  templateUrl: 'option.html',
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
+
+@Directive()
+// tslint:disable-next-line:class-name
+export class _MatOptionBase implements FocusableOption, AfterViewChecked, OnDestroy {
   private _selected = false;
   private _active = false;
   private _disabled = false;
@@ -120,8 +99,8 @@ export class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
   constructor(
     private _element: ElementRef<HTMLElement>,
     private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() @Inject(MAT_OPTION_PARENT_COMPONENT) private _parent: MatOptionParentComponent,
-    @Optional() @Inject(MAT_OPTGROUP) readonly group: MatOptgroup) {}
+    private _parent: MatOptionParentComponent,
+    readonly group: _MatOptgroupBase) {}
 
   /**
    * Whether or not the option is currently active and ready to be selected.
@@ -268,6 +247,41 @@ export class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
   }
 
   static ngAcceptInputType_disabled: BooleanInput;
+}
+
+/**
+ * Single option inside of a `<mat-select>` element.
+ */
+@Component({
+  selector: 'mat-option',
+  exportAs: 'matOption',
+  host: {
+    'role': 'option',
+    '[attr.tabindex]': '_getTabIndex()',
+    '[class.mat-selected]': 'selected',
+    '[class.mat-option-multiple]': 'multiple',
+    '[class.mat-active]': 'active',
+    '[id]': 'id',
+    '[attr.aria-selected]': '_getAriaSelected()',
+    '[attr.aria-disabled]': 'disabled.toString()',
+    '[class.mat-option-disabled]': 'disabled',
+    '(click)': '_selectViaInteraction()',
+    '(keydown)': '_handleKeydown($event)',
+    'class': 'mat-option mat-focus-indicator',
+  },
+  styleUrls: ['option.css'],
+  templateUrl: 'option.html',
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MatOption extends _MatOptionBase {
+  constructor(
+    element: ElementRef<HTMLElement>,
+    changeDetectorRef: ChangeDetectorRef,
+    @Optional() @Inject(MAT_OPTION_PARENT_COMPONENT) parent: MatOptionParentComponent,
+    @Optional() @Inject(MAT_OPTGROUP) group: MatOptgroup) {
+    super(element, changeDetectorRef, parent, group);
+  }
 }
 
 /**

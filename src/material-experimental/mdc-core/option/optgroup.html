@@ -1,0 +1,8 @@
+<label
+  class="mat-mdc-optgroup-label"
+  [class.mdc-list-item--disabled]="disabled"
+  [id]="_labelId">
+  <span class="mdc-list-item__text">{{ label }} <ng-content></ng-content></span>
+</label>
+
+<ng-content select="mat-option, ng-container"></ng-content>

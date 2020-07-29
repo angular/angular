@@ -1,0 +1,68 @@
+@import '@material/list/mixins.import';
+@import '@material/list/variables.import';
+@import '@material/theme/functions.import';
+@import '../../mdc-helpers/mdc-helpers';
+@import '../../../material/core/theming/check-duplicate-styles';
+
+@mixin mat-mdc-option-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
+
+  @include mat-using-mdc-theme($config) {
+    .mat-mdc-option {
+      // Since this will usually be rendered in an overlay,
+      // we have explicitly set the default color.
+      @include mdc-theme-prop(color, text-primary-on-background);
+      @include mdc-list-item-disabled-text-color($mdc-list-text-disabled-color,
+        $query: $mat-theme-styles-query);
+
+      &:hover:not(.mdc-list-item--disabled),
+      &:focus:not(.mdc-list-item--disabled),
+      &.mat-mdc-option-active,
+
+      // In multiple mode there is a checkbox to show that the option is selected.
+      &.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
+        $color: $mdc-theme-on-surface;
+        background: rgba($color, mdc-states-opacity($color, hover));
+      }
+    }
+
+    .mat-primary .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      @include mdc-list-item-primary-text-ink-color(primary, $query: $mat-theme-styles-query);
+    }
+
+    .mat-accent .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      @include mdc-list-item-primary-text-ink-color(secondary, $query: $mat-theme-styles-query);
+    }
+
+    .mat-warn .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      @include mdc-list-item-primary-text-ink-color(error, $query: $mat-theme-styles-query);
+    }
+  }
+}
+
+@mixin mat-mdc-option-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
+}
+
+@mixin mat-mdc-option-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
+
+@mixin mat-mdc-option-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-option') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
+
+    @if $color != null {
+      @include mat-mdc-option-color($color);
+    }
+    @if $density != null {
+      @include mat-mdc-option-density($density);
+    }
+    @if $typography != null {
+      @include mat-mdc-option-typography($typography);
+    }
+  }
+}

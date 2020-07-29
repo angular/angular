@@ -1,0 +1,46 @@
+@import '@material/list/mixins.import';
+@import '@material/list/variables.import';
+@import '@material/theme/functions.import';
+@import '../../mdc-helpers/mdc-helpers';
+@import '../../../material/core/theming/check-duplicate-styles';
+
+@mixin mat-mdc-optgroup-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
+
+  @include mat-using-mdc-theme($config) {
+    .mat-mdc-optgroup-label {
+      // Since this will usually be rendered in an overlay,
+      // we have explicitly set the default color.
+      @include mdc-theme-prop(color, text-primary-on-background);
+      @include mdc-list-item-disabled-text-color($mdc-list-text-disabled-color,
+        $query: $mat-theme-styles-query);
+    }
+  }
+}
+
+@mixin mat-mdc-optgroup-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
+}
+
+@mixin mat-mdc-optgroup-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
+
+@mixin mat-mdc-optgroup-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-optgroup') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
+
+    @if $color != null {
+      @include mat-mdc-optgroup-color($color);
+    }
+    @if $density != null {
+      @include mat-mdc-optgroup-density($density);
+    }
+    @if $typography != null {
+      @include mat-mdc-optgroup-typography($typography);
+    }
+  }
+}
