@@ -83,13 +83,17 @@ export class DomPortalOutlet extends BasePortalOutlet {
   attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
     let viewContainer = portal.viewContainerRef;
     let viewRef = viewContainer.createEmbeddedView(portal.templateRef, portal.context);
-    viewRef.detectChanges();
 
     // The method `createEmbeddedView` will add the view as a child of the viewContainer.
     // But for the DomPortalOutlet the view can be added everywhere in the DOM
     // (e.g Overlay Container) To move the view to the specified host element. We just
     // re-append the existing root nodes.
     viewRef.rootNodes.forEach(rootNode => this.outletElement.appendChild(rootNode));
+
+    // Note that we want to detect changes after the nodes have been moved so that
+    // any directives inside the portal that are looking at the DOM inside a lifecycle
+    // hook won't be invoked too early.
+    viewRef.detectChanges();
 
     this.setDisposeFn((() => {
       let index = viewContainer.indexOf(viewRef);

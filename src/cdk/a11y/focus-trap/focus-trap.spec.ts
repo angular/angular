@@ -1,6 +1,7 @@
 import {Platform} from '@angular/cdk/platform';
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, TemplateRef, ViewContainerRef} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {PortalModule, CdkPortalOutlet, TemplatePortal} from '@angular/cdk/portal';
 import {A11yModule, FocusTrap, CdkTrapFocus} from '../index';
 
 
@@ -8,7 +9,7 @@ describe('FocusTrap', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [A11yModule],
+      imports: [A11yModule, PortalModule],
       declarations: [
         FocusTrapWithBindings,
         SimpleFocusTrap,
@@ -17,6 +18,7 @@ describe('FocusTrap', () => {
         FocusTrapWithoutFocusableElements,
         FocusTrapWithAutoCapture,
         FocusTrapUnfocusableTarget,
+        FocusTrapInsidePortal,
       ],
     });
 
@@ -209,6 +211,27 @@ describe('FocusTrap', () => {
     }));
 
   });
+
+  it('should put anchors inside the outlet when set at the root of a template portal', () => {
+    const fixture = TestBed.createComponent(FocusTrapInsidePortal);
+    const instance = fixture.componentInstance;
+    fixture.detectChanges();
+    const outlet: HTMLElement = fixture.nativeElement.querySelector('.portal-outlet');
+
+    expect(outlet.querySelectorAll('button').length)
+      .toBe(0, 'Expected no buttons inside the outlet on init.');
+    expect(outlet.querySelectorAll('.cdk-focus-trap-anchor').length)
+      .toBe(0, 'Expected no focus trap anchors inside the outlet on init.');
+
+    const portal = new TemplatePortal(instance.template, instance.viewContainerRef);
+    instance.portalOutlet.attachTemplatePortal(portal);
+    fixture.detectChanges();
+
+    expect(outlet.querySelectorAll('button').length)
+      .toBe(1, 'Expected one button inside the outlet after attaching.');
+    expect(outlet.querySelectorAll('.cdk-focus-trap-anchor').length)
+      .toBe(2, 'Expected two focus trap anchors in the outlet after attaching.');
+  });
 });
 
 
@@ -305,4 +328,25 @@ class FocusTrapWithSvg {
 })
 class FocusTrapWithoutFocusableElements {
   @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
+}
+
+
+@Component({
+  template: `
+  <div class="portal-outlet">
+    <ng-template cdkPortalOutlet></ng-template>
+  </div>
+
+  <ng-template #template>
+    <div cdkTrapFocus>
+      <button>Click me</button>
+    </div>
+  </ng-template>
+  `,
+})
+class FocusTrapInsidePortal {
+  @ViewChild('template', {static: false}) template: TemplateRef<any>;
+  @ViewChild(CdkPortalOutlet, {static: false}) portalOutlet: CdkPortalOutlet;
+
+  constructor(public viewContainerRef: ViewContainerRef) {}
 }
