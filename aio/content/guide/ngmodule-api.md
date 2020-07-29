@@ -225,7 +225,7 @@ The following table summarizes the `@NgModule` metadata properties.
 ## More on NgModules
 
 You may also be interested in the following:
-* [Feature Modules](guide/feature-modules).
+* [Creating a new NgModule](guide/feature-modules).
 * [Entry Components](guide/entry-components).
 * [Providers](guide/providers).
 * [Types of Feature Modules](guide/module-types).

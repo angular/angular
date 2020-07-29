@@ -42,7 +42,7 @@ Every Angular app has at least one module, the root module.
 You [bootstrap](guide/bootstrapping) that module to launch the application.
 
 The root module is all you need in a simple application with a few components.
-As the app grows, you refactor the root module into [feature modules](guide/feature-modules)
+As the app grows, you refactor the root module into [other modules](guide/feature-modules)
 that represent collections of related functionality.
 You then import these modules into the root module.
 
@@ -62,7 +62,7 @@ At the top are the import statements. The next section is where you configure th
 ## More on NgModules
 
 You may also be interested in the following:
-* [Feature Modules](guide/feature-modules).
+* [Creating a new NgModule](guide/feature-modules).
 * [Entry Components](guide/entry-components).
 * [Providers](guide/providers).
 * [Types of NgModules](guide/module-types).

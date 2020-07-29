@@ -389,7 +389,7 @@
             },
             {
               "url": "guide/module-types",
-              "title": "Guidelines for creating NgModules",
+              "title": "Guidelines for Creating NgModules",
               "tooltip": "Suggestions for creating different types of NgModules."
             },
             {

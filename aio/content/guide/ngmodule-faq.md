@@ -589,7 +589,7 @@ in one folder, that the contents of that folder would be a feature module that y
 your `SearchModule`. It would contain all of the components, routing, and templates that
 would make up the search functionality.
 
-For more information, see [Feature Modules](guide/feature-modules) and
+For more information, see [Creating a new NgModule](guide/feature-modules) and
 [Module Types](guide/module-types)
 
 

@@ -1690,7 +1690,7 @@ It's a bit tighter and smaller, with fewer import statements (not shown).
 
 #### Import a feature module
 
-The `HeroDetailComponent` is part of the `HeroModule` [Feature Module](guide/feature-modules) that aggregates more of the interdependent pieces
+The `HeroDetailComponent` is part of the `HeroModule` [NgModule](guide/feature-modules) that aggregates more of the interdependent pieces
 including the `SharedModule`.
 Try a test configuration that imports the `HeroModule` like this one:
 
