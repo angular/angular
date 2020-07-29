@@ -12,6 +12,8 @@ export class CopierService {
   /**
    * Copy the contents of a `<textarea>` element to clipboard.
    *
+   * NOTE: For this method to work, the elements must be already inserted into the DOM.
+   *
    * @param textArea The area containing the text to be copied to clipboard.
    * @return Whether the copy operation was successful.
    */
@@ -27,8 +29,7 @@ export class CopierService {
   }
 
   /**
-   * Create a temporary, hidden `<textarea>` element, set its value to the specified text and insert
-   * it into the DOM.
+   * Create a temporary, hidden `<textarea>` element and set its value to the specified text.
    *
    * @param text The text to be inserted into the textarea.
    * @return The temporary `<textarea>` element containing the specified text.
@@ -60,8 +61,6 @@ export class CopierService {
     textArea.setAttribute('readonly', '');
     textArea.value = text;
 
-    document.body.appendChild(textArea);
-
     return textArea;
   }
 
@@ -72,9 +71,16 @@ export class CopierService {
    * @return Whether the copy operation was successful.
    */
   copyText(text: string): boolean {
+    // Create a `<textarea>` element with the specified text.
     const textArea = this.createTextArea(text);
+
+    // Insert it into the DOM.
+    document.body.appendChild(textArea);
+
+    // Copy its contents to the clipboard.
     const success = this.copyTextArea(textArea);
 
+    // Remove it from the DOM, so it can be garbage-collected.
     if (textArea.parentNode) {
       // We cannot use ChildNode.remove() because of IE11.
       textArea.parentNode.removeChild(textArea);
