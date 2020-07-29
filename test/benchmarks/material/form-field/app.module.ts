@@ -12,7 +12,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
 
-/** component: mat-form-field-button */
+/** component: mat-form-field */
 
 @Component({
   selector: 'app-root',
