@@ -12,6 +12,7 @@ import {info} from '../utils/console';
 import {restoreCommitMessage} from './restore-commit-message';
 import {validateFile} from './validate-file';
 import {validateCommitRange} from './validate-range';
+import {runWizard} from './wizard';
 
 /** Build the parser for the commit-message commands. */
 export function buildCommitMessageParser(localYargs: yargs.Argv) {
@@ -40,6 +41,23 @@ export function buildCommitMessageParser(localYargs: yargs.Argv) {
           },
           args => {
             restoreCommitMessage(args['file-env-variable'][0], args['file-env-variable'][1] as any);
+          })
+      .command(
+          'wizard <filePath> [source] [commitSha]', '', ((args: any) => {
+            return args
+                .positional(
+                    'filePath',
+                    {description: 'The file path to write the generated commit message into'})
+                .positional('source', {
+                  choices: ['message', 'template', 'merge', 'squash', 'commit'],
+                  description: 'The source of the commit message as described here: ' +
+                      'https://git-scm.com/docs/githooks#_prepare_commit_msg'
+                })
+                .positional(
+                    'commitSha', {description: 'The commit sha if source is set to `commit`'});
+          }),
+          async (args: any) => {
+            await runWizard(args);
           })
       .command(
           'pre-commit-validate', 'Validate the most recent commit message', {

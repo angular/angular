@@ -4,6 +4,7 @@ load("@npm_bazel_typescript//:index.bzl", "ts_library")
 ts_library(
     name = "commit-message",
     srcs = [
+        "builder.ts",
         "cli.ts",
         "commit-message-draft.ts",
         "config.ts",
@@ -12,14 +13,17 @@ ts_library(
         "validate.ts",
         "validate-file.ts",
         "validate-range.ts",
+        "wizard.ts",
     ],
     module_name = "@angular/dev-infra-private/commit-message",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/utils",
+        "@npm//@types/inquirer",
         "@npm//@types/node",
         "@npm//@types/shelljs",
         "@npm//@types/yargs",
+        "@npm//inquirer",
         "@npm//shelljs",
         "@npm//yargs",
     ],
@@ -29,6 +33,7 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = [
+        "builder.spec.ts",
         "parse.spec.ts",
         "validate.spec.ts",
     ],
