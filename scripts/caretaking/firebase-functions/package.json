@@ -1,0 +1,21 @@
+{
+  "name": "caretaker-firebase-functions",
+  "scripts": {
+    "build": "tsc",
+    "serve": "yarn build && firebase emulators:start --only functions --project test-jperrott",
+    "deploy": "yarn build && firebase deploy --only functions --project test-jperrott"
+  },
+  "engines": {
+    "node": "12"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^9.0.0",
+    "firebase-functions": "^3.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^3.9.7",
+    "firebase-tools": "^8.6.0"
+  },
+  "private": true
+}

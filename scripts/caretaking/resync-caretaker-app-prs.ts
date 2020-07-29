@@ -33,7 +33,9 @@ async function resync() {
           'state': pull.state,
           'commit_sha': pull.head.sha,
           'author': pull.user,
-          'labels': pull.labels
+          'labels': pull.labels,
+          'created_at': pull.created_at,
+          'updated_at': pull.updated_at,
         })
       });
     syncedCount++;
