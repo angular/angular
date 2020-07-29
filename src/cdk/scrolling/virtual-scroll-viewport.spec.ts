@@ -567,50 +567,50 @@ describe('CdkVirtualScrollViewport', () => {
 
     it('should trackBy value by default', fakeAsync(() => {
       testComponent.items = [];
-      spyOn(testComponent.virtualForOf, '_detachView').and.callThrough();
+      spyOn(testComponent.virtualForOf._viewContainerRef, 'detach').and.callThrough();
       finishInit(fixture);
 
       testComponent.items = [0];
       fixture.detectChanges();
       flush();
 
-      expect(testComponent.virtualForOf._detachView).not.toHaveBeenCalled();
+      expect(testComponent.virtualForOf._viewContainerRef.detach).not.toHaveBeenCalled();
 
       testComponent.items = [1];
       fixture.detectChanges();
       flush();
 
-      expect(testComponent.virtualForOf._detachView).toHaveBeenCalled();
+      expect(testComponent.virtualForOf._viewContainerRef.detach).toHaveBeenCalled();
     }));
 
     it('should trackBy index when specified', fakeAsync(() => {
       testComponent.trackBy = i => i;
       testComponent.items = [];
-      spyOn(testComponent.virtualForOf, '_detachView').and.callThrough();
+      spyOn(testComponent.virtualForOf._viewContainerRef, 'detach').and.callThrough();
       finishInit(fixture);
 
       testComponent.items = [0];
       fixture.detectChanges();
       flush();
 
-      expect(testComponent.virtualForOf._detachView).not.toHaveBeenCalled();
+      expect(testComponent.virtualForOf._viewContainerRef.detach).not.toHaveBeenCalled();
 
       testComponent.items = [1];
       fixture.detectChanges();
       flush();
 
-      expect(testComponent.virtualForOf._detachView).not.toHaveBeenCalled();
+      expect(testComponent.virtualForOf._viewContainerRef.detach).not.toHaveBeenCalled();
     }));
 
     it('should recycle views when template cache is large enough to accommodate', fakeAsync(() => {
       testComponent.trackBy = i => i;
-      const spy = spyOn(testComponent.virtualForOf, '_createEmbeddedViewAt')
+      const spy = spyOn(testComponent.virtualForOf, '_getEmbeddedViewArgs')
           .and.callThrough();
 
       finishInit(fixture);
 
       // Should create views for the initial rendered items.
-      expect(testComponent.virtualForOf._createEmbeddedViewAt)
+      expect(testComponent.virtualForOf._getEmbeddedViewArgs)
           .toHaveBeenCalledTimes(4);
 
       spy.calls.reset();
@@ -621,7 +621,7 @@ describe('CdkVirtualScrollViewport', () => {
       // As we first start to scroll we need to create one more item. This is because the first item
       // is still partially on screen and therefore can't be removed yet. At the same time a new
       // item is now partially on the screen at the bottom and so a new view is needed.
-      expect(testComponent.virtualForOf._createEmbeddedViewAt)
+      expect(testComponent.virtualForOf._getEmbeddedViewArgs)
           .toHaveBeenCalledTimes(1);
 
       spy.calls.reset();
@@ -635,20 +635,20 @@ describe('CdkVirtualScrollViewport', () => {
 
       // As we scroll through the rest of the items, no new views should be created, our existing 5
       // can just be recycled as appropriate.
-      expect(testComponent.virtualForOf._createEmbeddedViewAt)
+      expect(testComponent.virtualForOf._getEmbeddedViewArgs)
           .not.toHaveBeenCalled();
     }));
 
     it('should not recycle views when template cache is full', fakeAsync(() => {
       testComponent.trackBy = i => i;
       testComponent.templateCacheSize = 0;
-      const spy = spyOn(testComponent.virtualForOf, '_createEmbeddedViewAt')
+      const spy = spyOn(testComponent.virtualForOf, '_getEmbeddedViewArgs')
           .and.callThrough();
 
         finishInit(fixture);
 
       // Should create views for the initial rendered items.
-      expect(testComponent.virtualForOf._createEmbeddedViewAt)
+      expect(testComponent.virtualForOf._getEmbeddedViewArgs)
           .toHaveBeenCalledTimes(4);
 
       spy.calls.reset();
@@ -659,7 +659,7 @@ describe('CdkVirtualScrollViewport', () => {
       // As we first start to scroll we need to create one more item. This is because the first item
       // is still partially on screen and therefore can't be removed yet. At the same time a new
       // item is now partially on the screen at the bottom and so a new view is needed.
-      expect(testComponent.virtualForOf._createEmbeddedViewAt)
+      expect(testComponent.virtualForOf._getEmbeddedViewArgs)
           .toHaveBeenCalledTimes(1);
 
       spy.calls.reset();
@@ -673,7 +673,7 @@ describe('CdkVirtualScrollViewport', () => {
 
       // Since our template cache size is 0, as we scroll through the rest of the items, we need to
       // create a new view for each one.
-      expect(testComponent.virtualForOf._createEmbeddedViewAt)
+      expect(testComponent.virtualForOf._getEmbeddedViewArgs)
           .toHaveBeenCalledTimes(5);
     }));
 

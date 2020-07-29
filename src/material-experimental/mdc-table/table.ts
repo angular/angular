@@ -8,6 +8,7 @@
 
 import {ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {CDK_TABLE_TEMPLATE, CdkTable, _CoalescedStyleScheduler} from '@angular/cdk/table';
+import {_DisposeViewRepeaterStrategy, _VIEW_REPEATER_STRATEGY} from '@angular/cdk/collections';
 
 @Component({
   selector: 'table[mat-table]',
@@ -20,6 +21,9 @@ import {CDK_TABLE_TEMPLATE, CdkTable, _CoalescedStyleScheduler} from '@angular/c
   providers: [
     {provide: CdkTable, useExisting: MatTable},
     _CoalescedStyleScheduler,
+    // TODO(michaeljamesparsons) Abstract the view repeater strategy to a directive API so this code
+    //  is only included in the build if used.
+    {provide: _VIEW_REPEATER_STRATEGY, useClass: _DisposeViewRepeaterStrategy},
   ],
   encapsulation: ViewEncapsulation.None,
   // See note on CdkTable for explanation on why this uses the default change detection strategy.

@@ -18,6 +18,7 @@ import {
   CdkFooterCellDef, CdkFooterCell
 } from './cell';
 import {CdkTextColumn} from './text-column';
+import {ScrollingModule} from '@angular/cdk/scrolling';
 
 const EXPORTED_DECLARATIONS = [
   CdkTable,
@@ -45,7 +46,7 @@ const EXPORTED_DECLARATIONS = [
 
 @NgModule({
   exports: EXPORTED_DECLARATIONS,
-  declarations: EXPORTED_DECLARATIONS
-
+  declarations: EXPORTED_DECLARATIONS,
+  imports: [ScrollingModule]
 })
 export class CdkTableModule { }

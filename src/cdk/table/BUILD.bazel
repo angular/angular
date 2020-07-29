@@ -20,6 +20,7 @@ ng_module(
         "//src/cdk/coercion",
         "//src/cdk/collections",
         "//src/cdk/platform",
+        "//src/cdk/scrolling",
         "@npm//@angular/core",
         "@npm//rxjs",
     ],

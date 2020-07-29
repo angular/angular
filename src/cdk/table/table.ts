@@ -8,7 +8,17 @@
 
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {CollectionViewer, DataSource, isDataSource} from '@angular/cdk/collections';
+import {
+  CollectionViewer,
+  DataSource,
+  _DisposeViewRepeaterStrategy,
+  isDataSource,
+  _VIEW_REPEATER_STRATEGY,
+  _ViewRepeater,
+  _ViewRepeaterItemChange,
+  _ViewRepeaterItemInsertArgs,
+  _ViewRepeaterOperation,
+} from '@angular/cdk/collections';
 import {Platform} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
 import {
@@ -17,6 +27,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ContentChild,
   ContentChildren,
   Directive,
   ElementRef,
@@ -36,15 +47,14 @@ import {
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
-  ContentChild
 } from '@angular/core';
 import {
   BehaviorSubject,
+  isObservable,
   Observable,
   of as observableOf,
   Subject,
   Subscription,
-  isObservable,
 } from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {CdkColumnDef} from './cell';
@@ -56,8 +66,8 @@ import {
   CdkCellOutletRowContext,
   CdkFooterRowDef,
   CdkHeaderRowDef,
-  CdkRowDef,
-  CdkNoDataRow
+  CdkNoDataRow,
+  CdkRowDef
 } from './row';
 import {StickyStyler} from './sticky-styler';
 import {
@@ -189,6 +199,7 @@ export interface RenderRow<T> {
   changeDetection: ChangeDetectionStrategy.Default,
   providers: [
     {provide: CDK_TABLE, useExisting: CdkTable},
+    {provide: _VIEW_REPEATER_STRATEGY, useClass: _DisposeViewRepeaterStrategy},
     _CoalescedStyleScheduler,
   ]
 })
@@ -430,7 +441,11 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       protected readonly _coalescedStyleScheduler: _CoalescedStyleScheduler,
       protected readonly _elementRef: ElementRef, @Attribute('role') role: string,
       @Optional() protected readonly _dir: Directionality, @Inject(DOCUMENT) _document: any,
-      private _platform: Platform) {
+      private _platform: Platform,
+      // Optional for backwards compatibility, but a view repeater strategy will always
+      // be provided.
+      @Optional() @Inject(_VIEW_REPEATER_STRATEGY)
+      protected readonly _viewRepeater: _ViewRepeater<T, RenderRow<T>, RowContext<T>>) {
     if (!role) {
       this._elementRef.nativeElement.setAttribute('role', 'grid');
     }
@@ -527,21 +542,20 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       this._updateNoDataRow();
       return;
     }
-
     const viewContainer = this._rowOutlet.viewContainer;
-
-    changes.forEachOperation(
-        (record: IterableChangeRecord<RenderRow<T>>, prevIndex: number|null,
-         currentIndex: number|null) => {
-          if (record.previousIndex == null) {
-            this._insertRow(record.item, currentIndex!);
-          } else if (currentIndex == null) {
-            viewContainer.remove(prevIndex!);
-          } else {
-            const view = <RowViewRef<T>>viewContainer.get(prevIndex!);
-            viewContainer.move(view!, currentIndex);
+    this._viewRepeater.applyChanges(
+        changes,
+        viewContainer,
+        (record: IterableChangeRecord<RenderRow<T>>,
+         adjustedPreviousIndex: number|null,
+         currentIndex: number|null) => this._getEmbeddedViewArgs(record.item, currentIndex!),
+        (record) => record.item.data,
+        (change: _ViewRepeaterItemChange<RenderRow<T>, RowContext<T>>) => {
+          if (change.operation === _ViewRepeaterOperation.INSERTED && change.context) {
+            this._renderCellTemplateForItem(change.record.item.rowDef, change.context);
           }
-        });
+        }
+    );
 
     // Update the meta context of a row's context data (index, count, first, last, ...)
     this._updateRowIndexContext();
@@ -887,6 +901,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     this._headerRowDefs.forEach((def, i) => this._renderRow(this._headerRowOutlet, def, i));
     this.updateStickyHeaderRowStyles();
   }
+
   /**
    * Clears any existing content in the footer row outlet and creates a new embedded view
    * in the outlet using the footer row definition.
@@ -956,14 +971,16 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     return rowDefs;
   }
 
-  /**
-   * Create the embedded view for the data row template and place it in the correct index location
-   * within the data row view container.
-   */
-  private _insertRow(renderRow: RenderRow<T>, renderIndex: number) {
+
+  private _getEmbeddedViewArgs(renderRow: RenderRow<T>,
+                               index: number): _ViewRepeaterItemInsertArgs<RowContext<T>> {
     const rowDef = renderRow.rowDef;
     const context: RowContext<T> = {$implicit: renderRow.data};
-    this._renderRow(this._rowOutlet, rowDef, renderIndex, context);
+    return {
+      templateRef: rowDef.template,
+      context,
+      index,
+    };
   }
 
   /**
@@ -972,10 +989,15 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    * of where to place the new row template in the outlet.
    */
   private _renderRow(
-      outlet: RowOutlet, rowDef: BaseRowDef, index: number, context: RowContext<T> = {}) {
+      outlet: RowOutlet, rowDef: BaseRowDef, index: number,
+      context: RowContext<T> = {}): EmbeddedViewRef<RowContext<T>> {
     // TODO(andrewseguin): enforce that one outlet was instantiated from createEmbeddedView
-    outlet.viewContainer.createEmbeddedView(rowDef.template, context, index);
+    const view = outlet.viewContainer.createEmbeddedView(rowDef.template, context, index);
+    this._renderCellTemplateForItem(rowDef, context);
+    return view;
+  }
 
+  private _renderCellTemplateForItem(rowDef: BaseRowDef, context: RowContext<T>) {
     for (let cellTemplate of this._getCellTemplates(rowDef)) {
       if (CdkCellOutlet.mostRecentCellOutlet) {
         CdkCellOutlet.mostRecentCellOutlet._viewContainer.createEmbeddedView(cellTemplate, context);
@@ -1066,7 +1088,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    * during a change detection and after the inputs are settled (after content check).
    */
   private _checkStickyStates() {
-    const stickyCheckReducer = (acc: boolean, d: CdkHeaderRowDef|CdkFooterRowDef|CdkColumnDef) => {
+    const stickyCheckReducer = (acc: boolean,
+                                d: CdkHeaderRowDef|CdkFooterRowDef|CdkColumnDef) => {
       return acc || d.hasStickyChanged();
     };
 
@@ -1098,11 +1121,11 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
         this._isNativeHtmlTable, this.stickyCssClass, direction, this._coalescedStyleScheduler,
         this._platform.isBrowser);
     (this._dir ? this._dir.change : observableOf<Direction>())
-        .pipe(takeUntil(this._onDestroy))
-        .subscribe(value => {
-          this._stickyStyler.direction = value;
-          this.updateStickyColumnStyles();
-        });
+    .pipe(takeUntil(this._onDestroy))
+    .subscribe(value => {
+      this._stickyStyler.direction = value;
+      this.updateStickyColumnStyles();
+    });
   }
 
   /** Filters definitions that belong to this table from a QueryList. */
