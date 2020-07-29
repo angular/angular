@@ -652,10 +652,13 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
       this._changeDetectorRef.markForCheck();
     });
 
-    this._doCheckSubject.pipe(
-      debounceTime(10), // Arbitrary debounce time, less than a frame at 60fps
-      takeUntil(this._destroyed)
-    ).subscribe(() => this.updateContentMargins());
+    // Avoid hitting the NgZone through the debounce timeout.
+    this._ngZone.runOutsideAngular(() => {
+      this._doCheckSubject.pipe(
+        debounceTime(10), // Arbitrary debounce time, less than a frame at 60fps
+        takeUntil(this._destroyed)
+      ).subscribe(() => this.updateContentMargins());
+    });
   }
 
   ngOnDestroy() {
