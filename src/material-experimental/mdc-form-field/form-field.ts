@@ -191,11 +191,11 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
   }
   private _hintLabel = '';
 
-  // Unique id for the hint label.
-  _hintLabelId = `mat-mdc-hint-${nextUniqueId++}`;
-
   // Unique id for the internal form field label.
-  _labelId = `mat-mdc-form-field-label-${nextUniqueId++}`;
+  readonly _labelId = `mat-mdc-form-field-label-${nextUniqueId++}`;
+
+  // Unique id for the hint label.
+  readonly _hintLabelId = `mat-mdc-hint-${nextUniqueId++}`;
 
   /** State of the mat-hint and mat-error animations. */
   _subscriptAnimationState = '';
@@ -355,6 +355,13 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
   ngOnDestroy() {
     this._destroyed.next();
     this._destroyed.complete();
+  }
+
+  /**
+   * Gets the id of the label element. If no label is present, returns `null`.
+   */
+  getLabelId(): string|null {
+    return this._hasFloatingLabel() ? this._labelId : null;
   }
 
   /**

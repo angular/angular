@@ -3,6 +3,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   Component,
   ElementRef,
+  Inject,
   Input,
   OnDestroy,
   Optional,
@@ -10,15 +11,15 @@ import {
   ViewChild
 } from '@angular/core';
 import {
-  FormBuilder,
-  FormGroup,
+  AbstractControl,
   ControlValueAccessor,
-  NgControl,
-  Validators,
+  FormBuilder,
   FormControl,
-  AbstractControl
+  FormGroup,
+  NgControl,
+  Validators
 } from '@angular/forms';
-import {MatFormFieldControl} from '@angular/material/form-field';
+import {MAT_FORM_FIELD, MatFormField, MatFormFieldControl} from '@angular/material/form-field';
 import {Subject} from 'rxjs';
 
 /** @title Form field with custom telephone number input control. */
@@ -50,7 +51,6 @@ export class MyTel {
   host: {
     '[class.example-floating]': 'shouldLabelFloat',
     '[id]': 'id',
-    '[attr.aria-describedby]': 'describedBy'
   }
 })
 export class MyTelInput
@@ -133,8 +133,9 @@ export class MyTelInput
     formBuilder: FormBuilder,
     private _focusMonitor: FocusMonitor,
     private _elementRef: ElementRef<HTMLElement>,
-    @Optional() @Self() public ngControl: NgControl
-  ) {
+    @Optional() @Inject(MAT_FORM_FIELD) public _formField: MatFormField,
+    @Optional() @Self() public ngControl: NgControl) {
+
     this.parts = formBuilder.group({
       area: [
         null,

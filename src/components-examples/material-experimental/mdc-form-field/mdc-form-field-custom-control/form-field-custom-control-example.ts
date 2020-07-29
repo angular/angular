@@ -1,8 +1,9 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Component, ElementRef, Input, OnDestroy, Optional, Self} from '@angular/core';
-import {FormBuilder, FormGroup, ControlValueAccessor, NgControl, Validators} from '@angular/forms';
-import {MatFormFieldControl} from '@angular/material-experimental/mdc-form-field';
+import {Component, ElementRef, Inject, Input, OnDestroy, Optional, Self} from '@angular/core';
+import {ControlValueAccessor, FormBuilder, FormGroup, NgControl, Validators} from '@angular/forms';
+import {MatFormField, MatFormFieldControl} from '@angular/material-experimental/mdc-form-field';
+import {MAT_FORM_FIELD} from '@angular/material/form-field';
 import {Subject} from 'rxjs';
 
 /** @title Form field with custom telephone number input control. */
@@ -26,7 +27,6 @@ export class MyTel {
   host: {
     '[class.example-floating]': 'shouldLabelFloat',
     '[id]': 'id',
-    '[attr.aria-describedby]': 'describedBy',
   }
 })
 export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyTel>, OnDestroy {
@@ -93,6 +93,7 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
     formBuilder: FormBuilder,
     private _focusMonitor: FocusMonitor,
     private _elementRef: ElementRef<HTMLElement>,
+    @Optional() @Inject(MAT_FORM_FIELD) public _formField: MatFormField,
     @Optional() @Self() public ngControl: NgControl) {
 
     this.parts = formBuilder.group({

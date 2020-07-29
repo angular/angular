@@ -219,10 +219,10 @@ export class MatFormField extends _MatFormFieldMixinBase
   private _hintLabel = '';
 
   // Unique id for the hint label.
-  _hintLabelId: string = `mat-hint-${nextUniqueId++}`;
+  readonly _hintLabelId: string = `mat-hint-${nextUniqueId++}`;
 
-  // Unique id for the internal form field label.
-  _labelId = `mat-form-field-label-${nextUniqueId++}`;
+  // Unique id for the label element.
+  readonly _labelId = `mat-form-field-label-${nextUniqueId++}`;
 
   /**
    * Whether the label should always float, never float or float as the user types.
@@ -299,6 +299,13 @@ export class MatFormField extends _MatFormFieldMixinBase
     this.appearance = (_defaults && _defaults.appearance) ? _defaults.appearance : 'legacy';
     this._hideRequiredMarker = (_defaults && _defaults.hideRequiredMarker != null) ?
         _defaults.hideRequiredMarker : false;
+  }
+
+  /**
+   * Gets the id of the label element. If no label is present, returns `null`.
+   */
+  getLabelId(): string|null {
+    return this._hasFloatingLabel() ? this._labelId : null;
   }
 
   /**
