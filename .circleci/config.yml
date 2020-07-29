@@ -32,8 +32,8 @@ var_4_win: &cache_key_win_fallback v7-angular-win-node-12-{{ checksum ".bazelver
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v7-angular-components-f428c00465dfcf8a020237f22532480eedbd2cb6
-var_6: &components_repo_unit_tests_cache_key_fallback v7-angular-components-
+var_5: &components_repo_unit_tests_cache_key v9-angular-components-09e68db8ed5b1253f2fe38ff954ef0df019fc25a
+var_6: &components_repo_unit_tests_cache_key_fallback v9-angular-components-
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
 # `build-ivy-npm-packages`.
