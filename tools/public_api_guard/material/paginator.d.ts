@@ -10,6 +10,7 @@ export declare function MAT_PAGINATOR_INTL_PROVIDER_FACTORY(parentIntl: MatPagin
 
 export declare class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy, CanDisable, HasInitialized {
     _displayedPageSizeOptions: number[];
+    _formFieldAppearance?: MatFormFieldAppearance;
     _intl: MatPaginatorIntl;
     color: ThemePalette;
     get hidePageSize(): boolean;
@@ -49,6 +50,7 @@ export declare class MatPaginator extends _MatPaginatorBase implements OnInit, O
 }
 
 export interface MatPaginatorDefaultOptions {
+    formFieldAppearance?: MatFormFieldAppearance;
     hidePageSize?: boolean;
     pageSize?: number;
     pageSizeOptions?: number[];

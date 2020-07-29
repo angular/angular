@@ -37,6 +37,7 @@ import {
   CanDisableCtor,
   CanDisable,
 } from '@angular/material/core';
+import {MatFormFieldAppearance} from '@angular/material/form-field';
 
 /** The default page size if there is no page size and there are no provided page size options. */
 const DEFAULT_PAGE_SIZE = 50;
@@ -76,6 +77,9 @@ export interface MatPaginatorDefaultOptions {
 
   /** Whether to show the first/last buttons UI to the user. */
   showFirstLastButtons?: boolean;
+
+  /** The default form-field appearance to apply to the page size options selector. */
+  formFieldAppearance?: MatFormFieldAppearance;
 }
 
 /** Injection token that can be used to provide the default options for the paginator module. */
@@ -172,6 +176,9 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
   /** Displayed set of page size options. Will be sorted and include current page size. */
   _displayedPageSizeOptions: number[];
 
+  /** If set, styles the "page size" form field with the designated style. */
+  _formFieldAppearance?: MatFormFieldAppearance;
+
   constructor(public _intl: MatPaginatorIntl,
               private _changeDetectorRef: ChangeDetectorRef,
               @Optional() @Inject(MAT_PAGINATOR_DEFAULT_OPTIONS)
@@ -180,7 +187,13 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
     this._intlChanges = _intl.changes.subscribe(() => this._changeDetectorRef.markForCheck());
 
     if (defaults) {
-      const {pageSize, pageSizeOptions, hidePageSize, showFirstLastButtons} = defaults;
+      const {
+        pageSize,
+        pageSizeOptions,
+        hidePageSize,
+        showFirstLastButtons,
+        formFieldAppearance,
+      } = defaults;
 
       if (pageSize != null) {
         this._pageSize = pageSize;
@@ -196,6 +209,10 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
 
       if (showFirstLastButtons != null) {
         this._showFirstLastButtons = showFirstLastButtons;
+      }
+
+      if (formFieldAppearance != null) {
+        this._formFieldAppearance = formFieldAppearance;
       }
     }
   }
