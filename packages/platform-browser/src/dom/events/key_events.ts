@@ -136,7 +136,13 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       return null;
     }
 
-    return {domEventName, fullKey};
+    // NOTE: Please don't rewrite this as so, as it will break JSCompiler property renaming.
+    //       The code must remain in the `result['domEventName']` form.
+    // return {domEventName, fullKey};
+    const result: {fullKey: string, domEventName: string} = {} as any;
+    result['domEventName'] = domEventName;
+    result['fullKey'] = fullKey;
+    return result;
   }
 
   static getEventFullKey(event: KeyboardEvent): string {
