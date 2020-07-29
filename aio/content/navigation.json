@@ -389,8 +389,8 @@
             },
             {
               "url": "guide/module-types",
-              "title": "Types of Feature Modules",
-              "tooltip": "Description of the different types of feature modules."
+              "title": "Guidelines for creating NgModules",
+              "tooltip": "Suggestions for creating different types of NgModules."
             },
             {
               "url": "guide/entry-components",

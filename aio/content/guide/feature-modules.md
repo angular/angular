@@ -6,7 +6,7 @@ NgModules are a great way to organize an app and keep code related to a specific
 Use NgModules to consolidate [components](guide/glossary#component "Definition of component"), [directives](guide/glossary#directive "Definition of directive"), and [pipes](guide/glossary#pipe "Definition of pipe)") into cohesive blocks of functionality, each focused on a feature area, application business domain, workflow, or common collection of utilities.
 You can also declare [services](guide/glossary#service "Definition of service") that the NgModule can add to your app, including services from outside sources.
 
-For more about NgModules, see [Organizing your app with NgModules](guide/ngmodules "Organizing your app with NgModules").
+For more about NgModules, see [NgModules](guide/ngmodules "NgModules").
 
 <div class="alert is-helpful">
 
@@ -127,7 +127,7 @@ The `customer-dashboard.module.ts` file includes the following import statements
 * `NgModule`, which lets you use the `@NgModule` decorator to define an NgModule.
 * `CommonModule`, which contributes directives such as `ngIf` and `ngFor` that are commonly used in templates.
 
-Note that new NgModules should import `CommonModule` rather than `BrowserModule`, which is  imported only once in the [root NgModule](guide/bootstrapping "Launching your app with a root NgModule") and configures the entire app for the browser.
+Note that new NgModules should import `CommonModule` rather than `BrowserModule`, which is  imported only once in the [root](guide/bootstrapping "Launching your app with a root module") NgModule and configures the entire app for the browser.
 
 You use the (now empty) `declarations` array in the `customer-dashboard.module.ts` file to declare the components, directives, and pipes that will belong exclusively to this particular NgModule.
 
@@ -204,18 +204,18 @@ For the final sample app with the new NgModule that this page describes, see the
 This tutorial shows you how to create a new NgModule and incorporate it into your app.
 You may also be interested in the following:
 
-* For more about NgModules, see [Organizing your app with NgModules](guide/ngmodules "Organizing your app with NgModules").
-* To learn more about the root NgModule, see [Launching an app with a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
+* For more about NgModules, see [NgModules](guide/ngmodules "NgModules").
+* To learn more about the root NgModule, see [Launching an app with a root module](guide/bootstrapping "Launching an app with a root module").
 * To learn about frequently used Angular NgModules and how to import them into your app, see [Frequently-used modules](guide/frequent-ngmodules "Frequently-used modules").
 
 If you are expanding your app with features, routing, services, widgets, or other code organized with NgModules, see the following:
 
 * For guidance on how to use NgModules for organizing different areas of your code, see [Guidelines for creating NgModules](guide/module-types "Guidelines for creating NgModules").
-* For a complete description of the NgModule metadata properties, see [Using the NgModule metadata](guide/ngmodule-api "Using the NgModule metadata").
-* To learn how to use shared modules to organize and streamline your code, see [Sharing NgModules in an app](guide/sharing-ngmodules "Sharing NgModules in an app").
+* For a complete description of the NgModule metadata properties, see [NgModule API](guide/ngmodule-api "NgModule API").
+* To learn how to use shared modules to organize and streamline your code, see [Sharing modules](guide/sharing-ngmodules "Sharing modules").
 
 If you want to manage NgModule loading and the use of dependencies and services, see the following:
 
-* To learn about loading NgModules eagerly when the app starts, or lazy-loading NgModules asynchronously by the router, see [Lazy-loading feature modules](guide/lazy-loading-ngmodules).
-* To understand how to provide a service or other dependency for your app, see [Providing Dependencies for an NgModule](guide/providers "Providing Dependencies for an NgModule").
-* To learn how to create a singleton service to use in NgModules, see [Making a service a singleton](guide/singleton-services "Making a service a singleton").
+* To learn about loading NgModules as part of the app launch (known as "eager loading") versus loading some NgModules only when needed by the router (known as "lazy loading"), see [Lazy-loading feature modules](guide/lazy-loading-ngmodules "Lazy-loading feature modules").
+* To understand how to provide a service or other dependency for your app, see [Providing dependencies in modules](guide/providers "Providing dependencies in modules").
+* To learn how to create a singleton service to use in NgModules, see [Singleton services](guide/singleton-services "Singleton services").
