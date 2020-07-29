@@ -83,7 +83,7 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
   @Input()
   get min(): D | null { return this._min; }
   set min(value: D | null) {
-    this._min = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+    this._min = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
     this._validatorOnChange();
   }
   private _min: D | null;
@@ -92,7 +92,7 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
   @Input()
   get max(): D | null { return this._max; }
   set max(value: D | null) {
-    this._max = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+    this._max = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
     this._validatorOnChange();
   }
   private _max: D | null;

@@ -253,7 +253,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     return this._startAt || (this._datepickerInput ? this._datepickerInput.getStartValue() : null);
   }
   set startAt(value: D | null) {
-    this._startAt = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+    this._startAt = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
   private _startAt: D | null;
 
@@ -639,14 +639,6 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
         overlayY: secondaryY
       }
     ]);
-  }
-
-  /**
-   * @param obj The object to check.
-   * @returns The given object if it is both a date instance and valid, otherwise null.
-   */
-  private _getValidDateOrNull(obj: any): D | null {
-    return (this._dateAdapter.isDateInstance(obj) && this._dateAdapter.isValid(obj)) ? obj : null;
   }
 
   static ngAcceptInputType_disabled: BooleanInput;

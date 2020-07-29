@@ -129,7 +129,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   @Input()
   get min(): D | null { return this._min; }
   set min(value: D | null) {
-    this._min = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+    this._min = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
     this._revalidate();
   }
   private _min: D | null;
@@ -138,7 +138,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   @Input()
   get max(): D | null { return this._max; }
   set max(value: D | null) {
-    this._max = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+    this._max = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
     this._revalidate();
   }
   private _max: D | null;
@@ -317,14 +317,6 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   _getAriaLabelledby() {
     const formField = this._formField;
     return formField && formField._hasFloatingLabel() ? formField._labelId : null;
-  }
-
-  /**
-   * @param obj The object to check.
-   * @returns The given object if it is both a date instance and valid, otherwise null.
-   */
-  private _getValidDateOrNull(obj: any): D | null {
-    return (this._dateAdapter.isDateInstance(obj) && this._dateAdapter.isValid(obj)) ? obj : null;
   }
 
   /** Re-runs the validators on the start/end inputs. */

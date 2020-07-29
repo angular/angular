@@ -67,6 +67,7 @@ export declare abstract class DateAdapter<D> {
     abstract getMonth(date: D): number;
     abstract getMonthNames(style: 'long' | 'short' | 'narrow'): string[];
     abstract getNumDaysInMonth(date: D): number;
+    getValidDateOrNull(obj: unknown): D | null;
     abstract getYear(date: D): number;
     abstract getYearName(date: D): string;
     abstract invalid(): D;

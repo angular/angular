@@ -319,6 +319,12 @@ describe('MomentDateAdapter', () => {
     expect(adapter.isDateInstance(d)).toBe(false);
   });
 
+  it('should provide a method to return a valid date or null', () => {
+    let d = moment();
+    expect(adapter.getValidDateOrNull(d)).toBe(d);
+    expect(adapter.getValidDateOrNull(moment(NaN))).toBeNull();
+  });
+
   it('should create valid dates from valid ISO strings', () => {
     assertValidDate(adapter.deserialize('1985-04-12T23:20:50.52Z'), true);
     assertValidDate(adapter.deserialize('1996-12-19T16:39:57-08:00'), true);

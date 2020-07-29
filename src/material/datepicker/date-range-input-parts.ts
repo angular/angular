@@ -200,7 +200,8 @@ const _MatDateRangeInputBase:
 export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState {
   /** Validator that checks that the start date isn't after the end date. */
   private _startValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-    const start = this._getValidDateOrNull(this._dateAdapter.deserialize(control.value));
+    const start = this._dateAdapter.getValidDateOrNull(
+      this._dateAdapter.deserialize(control.value));
     const end = this._model ? this._model.selection.end : null;
     return (!start || !end ||
         this._dateAdapter.compareDate(start, end) <= 0) ?
@@ -284,7 +285,7 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpd
 export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState {
   /** Validator that checks that the end date isn't before the start date. */
   private _endValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-    const end = this._getValidDateOrNull(this._dateAdapter.deserialize(control.value));
+    const end = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(control.value));
     const start = this._model ? this._model.selection.start : null;
     return (!end || !start ||
         this._dateAdapter.compareDate(end, start) >= 0) ?

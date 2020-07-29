@@ -349,6 +349,18 @@ describe('NativeDateAdapter', () => {
     expect(adapter.isDateInstance(d)).toBe(false);
   });
 
+  it('should provide a method to return a valid date or null', () => {
+    let d = new Date();
+    expect(adapter.getValidDateOrNull(d)).toBe(d);
+    expect(adapter.getValidDateOrNull(new Date(NaN))).toBeNull();
+    expect(adapter.getValidDateOrNull(null)).toBeNull();
+    expect(adapter.getValidDateOrNull(undefined)).toBeNull();
+    expect(adapter.getValidDateOrNull('')).toBeNull();
+    expect(adapter.getValidDateOrNull(0)).toBeNull();
+    expect(adapter.getValidDateOrNull('Wed Jul 28 1993')).toBeNull();
+    expect(adapter.getValidDateOrNull('1595204418000')).toBeNull();
+  });
+
   it('should create dates from valid ISO strings', () => {
     assertValidDate(adapter.deserialize('1985-04-12T23:20:50.52Z'), true);
     assertValidDate(adapter.deserialize('1996-12-19T16:39:57-08:00'), true);

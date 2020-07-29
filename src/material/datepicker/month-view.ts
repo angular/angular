@@ -76,7 +76,9 @@ export class MatMonthView<D> implements AfterContentInit, OnDestroy {
   set activeDate(value: D) {
     const oldActiveDate = this._activeDate;
     const validDate =
-        this._getValidDateOrNull(this._dateAdapter.deserialize(value)) || this._dateAdapter.today();
+      this._dateAdapter.getValidDateOrNull(
+        this._dateAdapter.deserialize(value)
+      ) || this._dateAdapter.today();
     this._activeDate = this._dateAdapter.clampDate(validDate, this.minDate, this.maxDate);
     if (!this._hasSameMonthAndYear(oldActiveDate, this._activeDate)) {
       this._init();
@@ -91,7 +93,7 @@ export class MatMonthView<D> implements AfterContentInit, OnDestroy {
     if (value instanceof DateRange) {
       this._selected = value;
     } else {
-      this._selected = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+      this._selected = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
     }
 
     this._setRanges(this._selected);
@@ -102,7 +104,7 @@ export class MatMonthView<D> implements AfterContentInit, OnDestroy {
   @Input()
   get minDate(): D | null { return this._minDate; }
   set minDate(value: D | null) {
-    this._minDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+    this._minDate = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
   private _minDate: D | null;
 
@@ -110,7 +112,7 @@ export class MatMonthView<D> implements AfterContentInit, OnDestroy {
   @Input()
   get maxDate(): D | null { return this._maxDate; }
   set maxDate(value: D | null) {
-    this._maxDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+    this._maxDate = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
   private _maxDate: D | null;
 
@@ -410,14 +412,6 @@ export class MatMonthView<D> implements AfterContentInit, OnDestroy {
     }
 
     return null;
-  }
-
-  /**
-   * @param obj The object to check.
-   * @returns The given object if it is both a date instance and valid, otherwise null.
-   */
-  private _getValidDateOrNull(obj: any): D | null {
-    return (this._dateAdapter.isDateInstance(obj) && this._dateAdapter.isValid(obj)) ? obj : null;
   }
 
   /** Determines whether the user has the RTL layout direction. */

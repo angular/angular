@@ -206,7 +206,7 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   @Input()
   get startAt(): D | null { return this._startAt; }
   set startAt(value: D | null) {
-    this._startAt = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+    this._startAt = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
   private _startAt: D | null;
 
@@ -220,7 +220,7 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
     if (value instanceof DateRange) {
       this._selected = value;
     } else {
-      this._selected = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+      this._selected = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
     }
   }
   private _selected: DateRange<D> | D | null;
@@ -229,7 +229,7 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   @Input()
   get minDate(): D | null { return this._minDate; }
   set minDate(value: D | null) {
-    this._minDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+    this._minDate = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
   private _minDate: D | null;
 
@@ -237,7 +237,7 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   @Input()
   get maxDate(): D | null { return this._maxDate; }
   set maxDate(value: D | null) {
-    this._maxDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+    this._maxDate = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
   private _maxDate: D | null;
 
@@ -415,14 +415,6 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   _goToDateInView(date: D, view: 'month' | 'year' | 'multi-year'): void {
     this.activeDate = date;
     this.currentView = view;
-  }
-
-  /**
-   * @param obj The object to check.
-   * @returns The given object if it is both a date instance and valid, otherwise null.
-   */
-  private _getValidDateOrNull(obj: any): D | null {
-    return (this._dateAdapter.isDateInstance(obj) && this._dateAdapter.isValid(obj)) ? obj : null;
   }
 
   /** Returns the component instance that corresponds to the current calendar view. */

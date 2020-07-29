@@ -77,7 +77,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   set value(value: D | null) {
     value = this._dateAdapter.deserialize(value);
     this._lastValueValid = this._isValidValue(value);
-    value = this._getValidDateOrNull(value);
+    value = this._dateAdapter.getValidDateOrNull(value);
     const oldDate = this.value;
     this._assignValue(value);
     this._formatValue(value);
@@ -149,7 +149,8 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
 
   /** The form control validator for the date filter. */
   private _filterValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-    const controlValue = this._getValidDateOrNull(this._dateAdapter.deserialize(control.value));
+    const controlValue = this._dateAdapter.getValidDateOrNull(
+      this._dateAdapter.deserialize(control.value));
     const dateFilter = this._getDateFilter();
     return !dateFilter || !controlValue || dateFilter(controlValue) ?
         null : {'matDatepickerFilter': true};
@@ -157,7 +158,8 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
 
   /** The form control validator for the min date. */
   private _minValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-    const controlValue = this._getValidDateOrNull(this._dateAdapter.deserialize(control.value));
+    const controlValue = this._dateAdapter.getValidDateOrNull(
+      this._dateAdapter.deserialize(control.value));
     const min = this._getMinDate();
     return (!min || !controlValue ||
         this._dateAdapter.compareDate(min, controlValue) <= 0) ?
@@ -166,7 +168,8 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
 
   /** The form control validator for the max date. */
   private _maxValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-    const controlValue = this._getValidDateOrNull(this._dateAdapter.deserialize(control.value));
+    const controlValue = this._dateAdapter.getValidDateOrNull(
+      this._dateAdapter.deserialize(control.value));
     const max = this._getMaxDate();
     return (!max || !controlValue ||
         this._dateAdapter.compareDate(max, controlValue) >= 0) ?
@@ -318,7 +321,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
     const lastValueWasValid = this._lastValueValid;
     let date = this._dateAdapter.parse(value, this._dateFormats.parse.dateInput);
     this._lastValueValid = this._isValidValue(date);
-    date = this._getValidDateOrNull(date);
+    date = this._dateAdapter.getValidDateOrNull(date);
 
     if (!this._dateAdapter.sameDate(date, this.value)) {
       this._assignValue(date);
@@ -356,14 +359,6 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   protected _formatValue(value: D | null) {
     this._elementRef.nativeElement.value =
         value ? this._dateAdapter.format(value, this._dateFormats.display.dateInput) : '';
-  }
-
-  /**
-   * @param obj The object to check.
-   * @returns The given object if it is both a date instance and valid, otherwise null.
-   */
-  protected _getValidDateOrNull(obj: any): D | null {
-    return (this._dateAdapter.isDateInstance(obj) && this._dateAdapter.isValid(obj)) ? obj : null;
   }
 
   /** Assigns a value to the model. */
