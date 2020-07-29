@@ -5,6 +5,9 @@
  * - https://github.com/zenorocha/clipboard.js/
  *
  * Both released under MIT license - © Zeno Rocha
+ *
+ * It is also influenced by the Angular CDK `PendingCopy` class:
+ * https://github.com/angular/components/blob/master/src/cdk/clipboard/pending-copy.ts
  */
 
 
@@ -18,6 +21,8 @@ export class CopierService {
    * @return Whether the copy operation was successful.
    */
   private copyTextArea(textArea: HTMLTextAreaElement): boolean {
+    const currentFocus = document.activeElement as HTMLOrSVGElement | null;
+
     try {
       textArea.select();
       textArea.setSelectionRange(0, textArea.value.length);
@@ -25,6 +30,10 @@ export class CopierService {
       return document.execCommand('copy');
     } catch {
       return false;
+    } finally {
+      // Calling `.select()` on the `<textarea>` element may have also focused it.
+      // Change the focus back to the previously focused element.
+      currentFocus?.focus();
     }
   }
 
