@@ -15,3 +15,6 @@ export * from './menu-item-radio';
 export * from './menu-item-trigger';
 export * from './menu-panel';
 export * from './menu-group';
+
+export * from './menu-stack';
+export {CDK_MENU} from './menu-interface';
