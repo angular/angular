@@ -777,6 +777,35 @@ describe('StaticReflector', () => {
           .toEqual({});
     });
 
+    it('should not inherit methods from Object.prototype', () => {
+      const filePath = '/tmp/test.ts';
+      init({
+        ...DEFAULT_TEST_DATA,
+        [filePath]: `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-component',
+          })
+          export class TestComponent {
+            title = 'Hello World';
+
+            toString() {
+              return 'Test Component';
+            }
+          }
+        `,
+      });
+      const declaration = reflector.getStaticSymbol(filePath, 'TestComponent');
+      expect(declaration.filePath).toBe(filePath);
+      expect(declaration.name).toBe('TestComponent');
+      const propMetadata = reflector.propMetadata(declaration);
+      // 'toString' is a member of TestComponent so it should be part of the metadata.
+      expect(propMetadata.hasOwnProperty('toString')).toBe(true);
+      // There are no decorators on 'toString' so it should be an empty array.
+      expect(propMetadata['toString']).toEqual([]);
+    });
+
     it('should inherit lifecycle hooks', () => {
       initWithDecorator({
         '/tmp/src/main.ts': `
