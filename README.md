@@ -18,9 +18,8 @@ Angular es una plataforma de desarrollo para construir aplicaciones web y móvil
 ## ¿Quieres ayudar?
 
 ¿Quieres encontrar fallos, colaborar con código, o mejorar la documentación? ¡Excelente! Lee nuestras
-pautas para [colaborar][contributing] y luego revisa algunos de nuestras incidencias (issues) en [hotlist: community-help](https://github.com/angular/angular/labels/hotlist%3A%20community-help).
+pautas para [colaborar][contributing] y luego revisa algunos de nuestras incidencias (issues) en [ayuda comunitaria](https://github.com/angular-hispano/angular/labels/ayuda%20comunitaria).
 
-[colaborar]: https://github.com/angular/angular/blob/master/CONTRIBUTING.md
-[guía rápida]: https://angular.io/start
-[registro de cambios]: https://github.com/angular/angular/blob/master/CHANGELOG.md
-[ng]: https://angular.io
+[contributing]: https://github.com/angular-hispano/angular/blob/master/CONTRIBUTING.md
+[quickstart]: https://docs.angular.lat/start
+[changelog]: https://github.com/angular/angular/blob/master/CHANGELOG.md
