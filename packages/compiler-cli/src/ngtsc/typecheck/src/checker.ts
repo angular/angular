@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, parseTemplate, TmplAstNode} from '@angular/compiler';
+import {ParseError, parseTemplate, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstNode} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
@@ -20,6 +20,7 @@ import {OptimizeFor, ProgramTypeCheckAdapter, TemplateId, TemplateTypeChecker, T
 import {InliningMode, ShimTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from './context';
 import {findTypeCheckBlock, shouldReportDiagnostic, TemplateDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
 import {TemplateSourceManager} from './source';
+import {findNodeWithSourceSpan} from './tcb_util';
 
 /**
  * Primary template type-checking engine, which performs type-checking using a
@@ -176,6 +177,66 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
 
     return node;
+  }
+
+  /**
+   * While the signature for this method allows for multiple `Symbol`s to be returned, the
+   * current implementation only returns the first match.
+   */
+  getSymbolsOfBinding(
+      binding: TmplAstBoundAttribute|TmplAstBoundEvent,
+      component: ts.ClassDeclaration): ts.Symbol[] {
+    const tcb = this.getTypeCheckBlock(component);
+    if (tcb === null) {
+      return [];
+    }
+
+    if (binding instanceof TmplAstBoundAttribute) {
+      return this.getSymbolsFromInputBinding(binding, tcb);
+    } else {
+      return this.getSymbolsForBoundEvent(binding, tcb);
+    }
+  }
+
+  private getSymbolsForBoundEvent(eventBinding: TmplAstBoundEvent, tcb: ts.Node) {
+    // Outputs are a `CallExpression` that look like one of the two:
+    // * _outputHelper(_t1["outputField"]).subscribe(handler);
+    // * _t1.addEventListener(handler);
+    const node = findNodeWithSourceSpan(tcb, eventBinding.sourceSpan, ts.isCallExpression);
+    if (node === null) {
+      return [];
+    }
+
+    // _t1.addEventListener or _outputHelper(_t1["outputField"]).subscribe
+    const subscribeFnOrAddEventListener = node.expression as ts.PropertyAccessExpression;
+    if (subscribeFnOrAddEventListener.name.text === 'addEventListener') {
+      // addEventListener is not supported
+      return [];
+    }
+
+    // _outputHelper(_t1["outputField"])
+    const outputHelper = subscribeFnOrAddEventListener.expression as ts.CallExpression;
+    // _t1["outputField"]
+    const outputField = outputHelper.arguments[0] as ts.ElementAccessExpression;
+
+    const typeChecker = this.typeCheckingStrategy.getProgram().getTypeChecker();
+    const symbol = typeChecker.getSymbolAtLocation(outputField.argumentExpression);
+    return symbol ? [symbol] : [];
+  }
+
+  private getSymbolsFromInputBinding(attributeBinding: TmplAstBoundAttribute, tcb: ts.Node) {
+    const node = findNodeWithSourceSpan(tcb, attributeBinding.sourceSpan, ts.isBinaryExpression);
+    if (node === null) {
+      return [];
+    }
+    const typeChecker = this.typeCheckingStrategy.getProgram().getTypeChecker();
+    let symbol: ts.Symbol|undefined;
+    if (ts.isElementAccessExpression(node.left)) {
+      symbol = typeChecker.getSymbolAtLocation(node.left.argumentExpression);
+    } else if (ts.isPropertyAccessExpression(node.left)) {
+      symbol = typeChecker.getSymbolAtLocation(node.left.name);
+    }
+    return symbol ? [symbol] : [];
   }
 
   private maybeAdoptPriorResultsForFile(sf: ts.SourceFile): void {

@@ -314,7 +314,11 @@ function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|nul
 
 const parseSpanComment = /^(\d+),(\d+)$/;
 
-function readSpanComment(sourceFile: ts.SourceFile, node: ts.Node): AbsoluteSourceSpan|null {
+/**
+ * Reads the trailing comments and finds the first match which is a span comment (i.e. 4,10) on a
+ * node and returns it as an `AbsoluteSourceSpan`.
+ */
+export function readSpanComment(sourceFile: ts.SourceFile, node: ts.Node): AbsoluteSourceSpan|null {
   return ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
     if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
       return null;

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, TmplAstNode} from '@angular/compiler';
+import {ParseError, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstNode} from '@angular/compiler';
 import * as ts from 'typescript';
 
 /**
@@ -69,6 +69,20 @@ export interface TemplateTypeChecker {
    * This method always runs in `OptimizeFor.SingleFile` mode.
    */
   getTypeCheckBlock(component: ts.ClassDeclaration): ts.Node|null;
+
+  /**
+   * Given a template binding and the component class for the template,
+   * returns a list of `Symbol`s for the class members on the component
+   * and/or directives which the binding maps to.
+   *
+   * This can return an empty list if no `Symbol`s are found for the binding.
+   *
+   * @param binding The binding in a template
+   * @param component The component class for the template
+   */
+  getSymbolsOfBinding(
+      binding: TmplAstBoundAttribute|TmplAstBoundEvent,
+      component: ts.ClassDeclaration): ts.Symbol[];
 }
 
 /**
