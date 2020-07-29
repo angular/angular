@@ -54,7 +54,7 @@ The following code excerpt shows how the metadata appears in the `@NgModule` dec
 The `declarations` array identifies the [declarables](guide/glossary#declarable "Definition of a declarable") ([components](guide/glossary#component "Definition of component"), [directives](guide/glossary#directive "Definition of directive"), and [pipes](guide/glossary#pipe "Definition of pipe)")) that belong to the NgModule.
 
 All of the declarables for an NgModule must be in the NgModule's `declarations` array.
-You can use the [Angular CLI](cli "Angular CLI") to [generate](cli/generate) a new component, directive, or pipe in your NgModule, so that the CLI automatically adds the declarable to the NgModule's `declarations` array.
+When you use the `ng generate` [CLI command](cli/generate "ClI generate command") to create a new component, directive, or pipe in your NgModule, the CLI automatically adds the declarable to the NgModule's `declarations` array.
 
 Each component, directive, and pipe that you include in an NgModule's `declarations` array belongs _only_ to that NgModule.
 
@@ -73,7 +73,7 @@ Each component, directive, and pipe that you include in an NgModule's `declarati
 
 The `entryComponents` array describes the [entry components](guide/entry-components "Entry components") that you can dynamically load into the view.
 
-If you use the CLI [new](cli/new "ng new") command to create an initial Angular app, the CLI creates one entry component, the root component called `AppComponent`, in the root NgModule `AppModule`.
+When you use the `ng new` CLI [CLI command](cli/new "ng new") to create an initial Angular app, the CLI creates one entry component, the root component called `AppComponent`, in the root NgModule `AppModule`.
 This component serves as a point of entry into the app.
 Angular [bootstraps](guide/glossary#bootstrap "Definition of bootstrap") it to launch the app, as described in the section about the [bootstrap array](#bootstrap-array).
 
@@ -139,14 +139,14 @@ The `imports` array accepts only `@NgModule` references.
 The other NgModules must export the needed components, directives, or pipes that this NgModule needs.
 
 The other NgModules' exported components, directives, and pipes are treated as if they were declared in this NgModule.
-You can therefore can use a component, directive, or pipe in this NgModule's templates.
+You can use them in this NgModule's templates.
 For example, your component can use the `NgIf` and `NgFor` directives if your NgModule has imported `CommonModule` (perhaps indirectly by importing `BrowserModule`).
 
 {@a exports}
 
 ## The exports array
 
-The `exports` array is a list of declarations that another NgModule can use if the other NgModule imports this NgModule.
+The `exports` array is a list of declarations that another NgModule can use if it imports this NgModule.
 
 Export only [declarable](guide/glossary#declarable "Definition of a declarable") classes (components, directives, or pipes) that you want other NgModules to be able to use in their templates.
 You can export any declarable whether it's declared in this NgModule or in an imported NgModule.
@@ -163,7 +163,7 @@ For example, NgModule B can't use `ngIf` just because it imported NgModule A, wh
 Module B must also import `CommonModule`.
 
 However, you can add another NgModule to your NgModule's `exports` array so that all of the other NgModule's public components, directives, and pipes are _re-exported_ by your NgModule.
-If NgModule A re-exports `CommonModule` and NgModule B imports NgModule A, NgModule B components can use `ngIf` even though NgModule B didn't import `CommonModule`.
+If NgModule A re-exports `CommonModule` and NgModule B imports NgModule A, NgModule B components can use `ngIf` even though NgModule B didn't import `CommonModule` directly.
 
 An NgModule can export a combination of its own declarations, selected imported classes, and imported NgModules.
 You can selectively aggregate classes from other NgModules and re-export them in a consolidated, convenience NgModule.
