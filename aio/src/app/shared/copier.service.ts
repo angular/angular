@@ -10,11 +10,11 @@
 
 export class CopierService {
   /**
-   * Copy the contents of a `<textarea>` element to clipboard.
+   * Copy the contents of a `<textarea>` element to the clipboard.
    *
    * NOTE: For this method to work, the elements must be already inserted into the DOM.
    *
-   * @param textArea The area containing the text to be copied to clipboard.
+   * @param textArea The area containing the text to be copied to the clipboard.
    * @return Whether the copy operation was successful.
    */
   private copyTextArea(textArea: HTMLTextAreaElement): boolean {
@@ -65,9 +65,9 @@ export class CopierService {
   }
 
   /**
-   * Copy the specified text to clipboard.
+   * Copy the specified text to the clipboard.
    *
-   * @param text The text to be copied to clipboard.
+   * @param text The text to be copied to the clipboard.
    * @return Whether the copy operation was successful.
    */
   copyText(text: string): boolean {
