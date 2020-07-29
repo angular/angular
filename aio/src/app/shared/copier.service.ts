@@ -59,14 +59,13 @@ export class CopierService {
     style.padding = '0';
     style.margin = '0';
 
-    // Move element out of screen horizontally.
-    style.position = 'absolute';
-    style[ isRTL ? 'right' : 'left' ] = '-9999px';
+    // Make the element invisible and move it out of screen horizontally.
+    style.opacity = '0';
+    style.position = 'fixed';
+    style.top = '0';
+    style[isRTL ? 'right' : 'left'] = '-999em';
 
-    // Move element to the same position vertically.
-    const yPosition = window.pageYOffset || docElem.scrollTop;
-    style.top = yPosition + 'px';
-
+    textArea.setAttribute('aria-hidden', 'true');
     textArea.setAttribute('readonly', '');
     textArea.value = text;
 
