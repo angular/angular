@@ -18,7 +18,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
-import {ComponentPortal, PortalInjector} from '@angular/cdk/portal';
+import {ComponentPortal} from '@angular/cdk/portal';
 import {Overlay, OverlayRef} from '@angular/cdk/overlay';
 import {CdkColumnDef} from '@angular/cdk/table';
 import {merge, Subject} from 'rxjs';
@@ -213,10 +213,14 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
   }
 
   private _createHandlePortal(): ComponentPortal<HandleComponent> {
-    const injector = new PortalInjector(this.injector, new WeakMap([[
-      ResizeRef,
-      new ResizeRef(this.elementRef, this.overlayRef!, this.minWidthPx, this.maxWidthPx),
-    ]]));
+    const injector = Injector.create({
+      parent: this.injector,
+      providers: [{
+        provide: ResizeRef,
+        useValue: new ResizeRef(this.elementRef, this.overlayRef!, this.minWidthPx, this.maxWidthPx)
+      }]
+    });
+
     return new ComponentPortal(this.getOverlayHandleComponentType(),
         this.viewContainerRef, injector);
   }

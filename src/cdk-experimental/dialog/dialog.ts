@@ -15,9 +15,10 @@ import {
   Inject,
   ComponentRef,
   OnDestroy,
-  Type
+  Type,
+  StaticProvider
 } from '@angular/core';
-import {ComponentPortal, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
+import {ComponentPortal, TemplatePortal} from '@angular/cdk/portal';
 import {of as observableOf, Observable, Subject, defer} from 'rxjs';
 import {DialogRef} from './dialog-ref';
 import {Location} from '@angular/common';
@@ -198,9 +199,10 @@ export class Dialog implements OnDestroy {
   protected _attachDialogContainer(overlay: OverlayRef, config: DialogConfig): CdkDialogContainer {
     const container = config.containerComponent || this._injector.get(DIALOG_CONTAINER);
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
-    const injector = new PortalInjector(userInjector || this._injector, new WeakMap([
-      [DialogConfig, config]
-    ]));
+    const injector = Injector.create({
+      parent: userInjector || this._injector,
+      providers: [{provide: DialogConfig, useValue: config}]
+    });
     const containerPortal = new ComponentPortal(container, config.viewContainerRef, injector);
     const containerRef: ComponentRef<CdkDialogContainer> = overlay.attach(containerPortal);
     containerRef.instance._config = config;
@@ -270,24 +272,24 @@ export class Dialog implements OnDestroy {
   private _createInjector<T>(
       config: DialogConfig,
       dialogRef: DialogRef<T>,
-      dialogContainer: CdkDialogContainer): PortalInjector {
+      dialogContainer: CdkDialogContainer): Injector {
 
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
-    const injectionTokens = new WeakMap<any, any>([
-      [this._injector.get(DIALOG_REF), dialogRef],
-      [this._injector.get(DIALOG_CONTAINER), dialogContainer],
-      [DIALOG_DATA, config.data]
-    ]);
+    const providers: StaticProvider[] = [
+      {provide: this._injector.get(DIALOG_REF), useValue: dialogRef},
+      {provide: this._injector.get(DIALOG_CONTAINER), useValue: dialogContainer},
+      {provide: DIALOG_DATA, useValue: config.data}
+    ];
 
     if (config.direction &&
         (!userInjector || !userInjector.get<Directionality | null>(Directionality, null))) {
-      injectionTokens.set(Directionality, {
-        value: config.direction,
-        change: observableOf()
+      providers.push({
+        provide: Directionality,
+        useValue: {value: config.direction, change: observableOf()}
       });
     }
 
-    return new PortalInjector(userInjector || this._injector, injectionTokens);
+    return Injector.create({parent: userInjector || this._injector, providers});
   }
 
   /** Creates a new dialog ref. */

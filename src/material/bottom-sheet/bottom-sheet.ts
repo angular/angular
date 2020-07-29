@@ -8,7 +8,7 @@
 
 import {Directionality} from '@angular/cdk/bidi';
 import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
-import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
+import {ComponentPortal, ComponentType, TemplatePortal} from '@angular/cdk/portal';
 import {
   ComponentRef,
   Injectable,
@@ -19,6 +19,7 @@ import {
   InjectionToken,
   Inject,
   OnDestroy,
+  StaticProvider,
 } from '@angular/core';
 import {Location} from '@angular/common';
 import {of as observableOf} from 'rxjs';
@@ -133,9 +134,10 @@ export class MatBottomSheet implements OnDestroy {
                            config: MatBottomSheetConfig): MatBottomSheetContainer {
 
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
-    const injector = new PortalInjector(userInjector || this._injector, new WeakMap([
-      [MatBottomSheetConfig, config]
-    ]));
+    const injector = Injector.create({
+      parent: userInjector || this._injector,
+      providers: [{provide: MatBottomSheetConfig, useValue: config}]
+    });
 
     const containerPortal =
         new ComponentPortal(MatBottomSheetContainer, config.viewContainerRef, injector);
@@ -170,23 +172,23 @@ export class MatBottomSheet implements OnDestroy {
    * @param bottomSheetRef Reference to the bottom sheet.
    */
   private _createInjector<T>(config: MatBottomSheetConfig,
-                             bottomSheetRef: MatBottomSheetRef<T>): PortalInjector {
+                             bottomSheetRef: MatBottomSheetRef<T>): Injector {
 
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
-    const injectionTokens = new WeakMap<any, any>([
-      [MatBottomSheetRef, bottomSheetRef],
-      [MAT_BOTTOM_SHEET_DATA, config.data]
-    ]);
+    const providers: StaticProvider[] = [
+      {provide: MatBottomSheetRef, useValue: bottomSheetRef},
+      {provide: MAT_BOTTOM_SHEET_DATA, useValue: config.data}
+    ];
 
     if (config.direction &&
         (!userInjector || !userInjector.get<Directionality | null>(Directionality, null))) {
-      injectionTokens.set(Directionality, {
-        value: config.direction,
-        change: observableOf()
+      providers.push({
+        provide: Directionality,
+        useValue: {value: config.direction, change: observableOf()}
       });
     }
 
-    return new PortalInjector(userInjector || this._injector, injectionTokens);
+    return Injector.create({parent: userInjector || this._injector, providers});
   }
 }
 
