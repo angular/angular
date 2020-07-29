@@ -204,7 +204,6 @@ export declare class OverlayConfig {
     backdropClass?: string | string[];
     direction?: Direction | Directionality;
     disposeOnNavigation?: boolean;
-    excludeFromOutsideClick?: HTMLElement[];
     hasBackdrop?: boolean;
     height?: number | string;
     maxHeight?: number | string;

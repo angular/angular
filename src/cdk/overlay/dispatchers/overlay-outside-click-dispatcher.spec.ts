@@ -125,26 +125,34 @@ describe('OverlayOutsideClickDispatcher', () => {
     overlayTwo.dispose();
   });
 
-  it(`should not dispatch click event when click on element
-      included in excludeFromOutsideClick array`, () => {
+  it('should dispatch the click event when click is on an element outside the overlay', () => {
+    const portal = new ComponentPortal(TestComponent);
     const overlayRef = overlay.create();
+    overlayRef.attach(portal);
+    const button = document.createElement('button');
+    document.body.appendChild(button);
+
+    const spy = jasmine.createSpy('overlay mouse click spy');
+    overlayRef.outsidePointerEvents().subscribe(spy);
+
+    button.click();
+    expect(spy).toHaveBeenCalled();
+
+    button.parentNode!.removeChild(button);
+    overlayRef.dispose();
+  });
+
+  it('should not dispatch the click event when click is on an element inside the overlay', () => {
+    const portal = new ComponentPortal(TestComponent);
+    const overlayRef = overlay.create();
+    overlayRef.attach(portal);
+
     const spy = jasmine.createSpy('overlay mouse click event spy');
     overlayRef.outsidePointerEvents().subscribe(spy);
 
-    const overlayConfig = overlayRef.getConfig();
-    expect(overlayConfig.excludeFromOutsideClick).toBeDefined();
-    expect(overlayConfig.excludeFromOutsideClick!.length).toBe(0);
-
-    overlayRef.attach(new ComponentPortal(TestComponent));
-
-    const buttonShouldNotDetach = document.createElement('button');
-    document.body.appendChild(buttonShouldNotDetach);
-    overlayConfig.excludeFromOutsideClick!.push(buttonShouldNotDetach);
-    buttonShouldNotDetach.click();
-
+    overlayRef.overlayElement.click();
     expect(spy).not.toHaveBeenCalled();
 
-    buttonShouldNotDetach.parentNode!.removeChild(buttonShouldNotDetach);
     overlayRef.dispose();
   });
 });

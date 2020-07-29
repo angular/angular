@@ -59,11 +59,6 @@ export class OverlayConfig {
    */
   disposeOnNavigation?: boolean = false;
 
-  /**
-   * Array of HTML elements clicking on which should not be considered as outside click
-   */
-  excludeFromOutsideClick?: HTMLElement[] = [];
-
   constructor(config?: OverlayConfig) {
     if (config) {
       // Use `Iterable` instead of `Array` because TypeScript, as of 3.6.3,

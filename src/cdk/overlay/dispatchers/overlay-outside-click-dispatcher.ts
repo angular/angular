@@ -81,13 +81,9 @@ export class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher {
         continue;
       }
 
-      const config = overlayRef.getConfig();
-      const excludeElements = [...config.excludeFromOutsideClick!, overlayRef.overlayElement];
-      const isInsideClick: boolean = excludeElements.some(e => e.contains(target));
-
-      // If it is inside click just break - we should do nothing
-      // If it is outside click dispatch the mouse event, and proceed with the next overlay
-      if (isInsideClick) {
+      // If it's a click inside the overlay, just break - we should do nothing
+      // If it's an outside click dispatch the mouse event, and proceed with the next overlay
+      if (overlayRef.overlayElement.contains(target as Node)) {
         break;
       }
 
