@@ -31,6 +31,8 @@ export class CopierService {
     } catch {
       return false;
     } finally {
+      // Calling `.select()` on the `<textarea>` element may have also focused it.
+      // Change the focus back to the previously focused element.
       currentFocus?.focus();
     }
   }
