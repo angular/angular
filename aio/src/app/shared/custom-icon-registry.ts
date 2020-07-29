@@ -58,7 +58,7 @@ export class CustomIconRegistry extends MatIconRegistry {
         : super.getNamedSvgIcon(iconName, namespace);
   }
 
-  private loadSvgElement(iconName: string, namespace?: string) {
+  private loadSvgElement(iconName: string, namespace?: string): SVGElement | undefined {
     const svgIcon = this.svgIcons.find(icon => {
       return namespace
       ? icon.name === iconName && icon.namespace === namespace
