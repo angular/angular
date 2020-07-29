@@ -7,6 +7,7 @@
  */
 
 import {Component} from '@angular/core';
+import {FormControl} from '@angular/forms';
 
 @Component({
   templateUrl: 'cdk-listbox-demo.html',
@@ -15,6 +16,11 @@ import {Component} from '@angular/core';
 export class CdkListboxDemo {
   multiSelectable = false;
   activeDescendant = true;
+  formControl = new FormControl();
+
+  disableForm() {
+    this.formControl.disable();
+  }
 
   toggleMultiple() {
     this.multiSelectable = !this.multiSelectable;

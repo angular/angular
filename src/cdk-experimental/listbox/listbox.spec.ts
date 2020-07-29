@@ -3,7 +3,7 @@ import {
   async,
   TestBed, tick, fakeAsync,
 } from '@angular/core/testing';
-import {Component, DebugElement} from '@angular/core';
+import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {
   CdkOption,
@@ -15,8 +15,9 @@ import {
   dispatchMouseEvent
 } from '@angular/cdk/testing/private';
 import {A, DOWN_ARROW, END, HOME, SPACE} from '@angular/cdk/keycodes';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-describe('CdkOption', () => {
+describe('CdkOption and CdkListbox', () => {
 
   describe('selection state change', () => {
     let fixture: ComponentFixture<ListboxWithOptions>;
@@ -24,7 +25,7 @@ describe('CdkOption', () => {
     let testComponent: ListboxWithOptions;
 
     let listbox: DebugElement;
-    let listboxInstance: CdkListbox;
+    let listboxInstance: CdkListbox<unknown>;
     let listboxElement: HTMLElement;
 
     let options: DebugElement[];
@@ -45,7 +46,7 @@ describe('CdkOption', () => {
       testComponent = fixture.debugElement.componentInstance;
 
       listbox = fixture.debugElement.query(By.directive(CdkListbox));
-      listboxInstance = listbox.injector.get<CdkListbox>(CdkListbox);
+      listboxInstance = listbox.injector.get<CdkListbox<unknown>>(CdkListbox);
       listboxElement = listbox.nativeElement;
 
       options = fixture.debugElement.queryAll(By.directive(CdkOption));
@@ -360,7 +361,7 @@ describe('CdkOption', () => {
 
     let testComponent: ListboxMultiselect;
     let listbox: DebugElement;
-    let listboxInstance: CdkListbox;
+    let listboxInstance: CdkListbox<unknown>;
 
     let options: DebugElement[];
     let optionInstances: CdkOption[];
@@ -379,7 +380,7 @@ describe('CdkOption', () => {
 
       testComponent = fixture.debugElement.componentInstance;
       listbox = fixture.debugElement.query(By.directive(CdkListbox));
-      listboxInstance = listbox.injector.get<CdkListbox>(CdkListbox);
+      listboxInstance = listbox.injector.get<CdkListbox<unknown>>(CdkListbox);
 
       options = fixture.debugElement.queryAll(By.directive(CdkOption));
       optionInstances = options.map(o => o.injector.get<CdkOption>(CdkOption));
@@ -502,7 +503,7 @@ describe('CdkOption', () => {
     let testComponent: ListboxActiveDescendant;
 
     let listbox: DebugElement;
-    let listboxInstance: CdkListbox;
+    let listboxInstance: CdkListbox<unknown>;
     let listboxElement: HTMLElement;
 
     let options: DebugElement[];
@@ -523,7 +524,7 @@ describe('CdkOption', () => {
       testComponent = fixture.debugElement.componentInstance;
 
       listbox = fixture.debugElement.query(By.directive(CdkListbox));
-      listboxInstance = listbox.injector.get<CdkListbox>(CdkListbox);
+      listboxInstance = listbox.injector.get<CdkListbox<unknown>>(CdkListbox);
       listboxElement = listbox.nativeElement;
 
       options = fixture.debugElement.queryAll(By.directive(CdkOption));
@@ -582,6 +583,185 @@ describe('CdkOption', () => {
 
     });
   });
+
+  describe('with control value accessor implemented', () => {
+    let fixture: ComponentFixture<ListboxControlValueAccessor>;
+    let testComponent: ListboxControlValueAccessor;
+
+    let listbox: DebugElement;
+    let listboxInstance: CdkListbox<string>;
+
+    let options: DebugElement[];
+    let optionInstances: CdkOption[];
+    let optionElements: HTMLElement[];
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkListboxModule, FormsModule, ReactiveFormsModule],
+        declarations: [ListboxControlValueAccessor],
+      }).compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(ListboxControlValueAccessor);
+      fixture.detectChanges();
+
+      testComponent = fixture.debugElement.componentInstance;
+
+      listbox = fixture.debugElement.query(By.directive(CdkListbox));
+      listboxInstance = listbox.injector.get<CdkListbox<string>>(CdkListbox);
+
+      options = fixture.debugElement.queryAll(By.directive(CdkOption));
+      optionInstances = options.map(o => o.injector.get<CdkOption>(CdkOption));
+      optionElements = options.map(o => o.nativeElement);
+    });
+
+    it('should be able to set the disabled state via setDisabledState', () => {
+      expect(listboxInstance.disabled)
+          .toBe(false, 'Expected the selection list to be enabled.');
+      expect(optionInstances.every(option => !option.disabled))
+          .toBe(true, 'Expected every list option to be enabled.');
+
+      listboxInstance.setDisabledState(true);
+      fixture.detectChanges();
+
+      expect(listboxInstance.disabled)
+          .toBe(true, 'Expected the selection list to be disabled.');
+      for (const option of optionElements) {
+        expect(option.getAttribute('aria-disabled')).toBe('true');
+      }
+    });
+
+    it('should be able to select options via writeValue', () => {
+      expect(optionInstances.every(option => !option.disabled))
+          .toBe(true, 'Expected every list option to be enabled.');
+
+      listboxInstance.writeValue('arc');
+      fixture.detectChanges();
+
+      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
+      expect(optionElements[1].hasAttribute('aria-selected')).toBeFalse();
+      expect(optionElements[3].hasAttribute('aria-selected')).toBeFalse();
+
+      expect(optionInstances[2].selected).toBeTrue();
+      expect(optionElements[2].getAttribute('aria-selected')).toBe('true');
+    });
+
+    it('should be select multiple options by their values', () => {
+      expect(optionInstances.every(option => !option.disabled))
+          .toBe(true, 'Expected every list option to be enabled.');
+
+      testComponent.isMultiselectable = true;
+      fixture.detectChanges();
+
+      listboxInstance.writeValue(['arc', 'stasis']);
+      fixture.detectChanges();
+
+      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
+      expect(optionElements[1].hasAttribute('aria-selected')).toBeFalse();
+
+      expect(optionInstances[2].selected).toBeTrue();
+      expect(optionElements[2].getAttribute('aria-selected')).toBe('true');
+      expect(optionInstances[3].selected).toBeTrue();
+      expect(optionElements[3].getAttribute('aria-selected')).toBe('true');
+    });
+
+    it('should be able to disable options from the control', () => {
+      expect(testComponent.listbox.disabled).toBeFalse();
+      expect(optionInstances.every(option => !option.disabled))
+          .toBe(true, 'Expected every list option to be enabled.');
+
+      testComponent.form.disable();
+      fixture.detectChanges();
+
+      expect(testComponent.listbox.disabled).toBeTrue();
+      for (const option of optionElements) {
+        expect(option.getAttribute('aria-disabled')).toBe('true');
+      }
+    });
+
+    it('should be able to toggle disabled state after form control is disabled',  () => {
+      expect(testComponent.listbox.disabled).toBeFalse();
+      expect(optionInstances.every(option => !option.disabled))
+          .toBe(true, 'Expected every list option to be enabled.');
+
+      testComponent.form.disable();
+      fixture.detectChanges();
+
+      expect(testComponent.listbox.disabled).toBeTrue();
+      for (const option of optionElements) {
+        expect(option.getAttribute('aria-disabled')).toBe('true');
+      }
+
+      listboxInstance.disabled = false;
+      fixture.detectChanges();
+
+      expect(testComponent.listbox.disabled).toBeFalse();
+      expect(optionInstances.every(option => !option.disabled))
+          .toBe(true, 'Expected every list option to be enabled.');
+    });
+
+    it('should be able to select options via setting the value in form control', () => {
+      expect(optionInstances.every(option => option.selected)).toBeFalse();
+
+      testComponent.isMultiselectable = true;
+      fixture.detectChanges();
+
+      testComponent.form.setValue(['purple', 'arc']);
+      fixture.detectChanges();
+
+      expect(optionElements[0].getAttribute('aria-selected')).toBe('true');
+      expect(optionElements[2].getAttribute('aria-selected')).toBe('true');
+      expect(optionInstances[0].selected).toBeTrue();
+      expect(optionInstances[2].selected).toBeTrue();
+
+      testComponent.form.setValue(null);
+      fixture.detectChanges();
+
+      expect(optionInstances.every(option => option.selected)).toBeFalse();
+    });
+
+    it('should only select the first matching option if multiple is not enabled', () => {
+      expect(optionInstances.every(option => option.selected)).toBeFalse();
+
+      testComponent.form.setValue(['solar', 'arc']);
+      fixture.detectChanges();
+
+      expect(optionElements[1].getAttribute('aria-selected')).toBe('true');
+      expect(optionElements[2].hasAttribute('aria-selected')).toBeFalse();
+      expect(optionInstances[1].selected).toBeTrue();
+      expect(optionInstances[2].selected).toBeFalse();
+    });
+
+    it('should deselect an option selected via form control once its value changes', () => {
+      const option = optionInstances[1];
+      const element = optionElements[1];
+
+      testComponent.form.setValue(['solar']);
+      fixture.detectChanges();
+
+      expect(element.getAttribute('aria-selected')).toBe('true');
+      expect(option.selected).toBeTrue();
+
+      option.value = 'new-value';
+      fixture.detectChanges();
+
+      expect(element.hasAttribute('aria-selected')).toBeFalse();
+      expect(option.selected).toBeFalse();
+    });
+
+    it('should maintain the form control on listbox destruction', function () {
+      testComponent.form.setValue(['solar']);
+      fixture.detectChanges();
+
+      expect(testComponent.form.value).toEqual(['solar']);
+
+      testComponent.showListbox = false;
+      fixture.detectChanges();
+
+      expect(testComponent.form.value).toEqual(['solar']);
+    });
+  });
 });
 
 @Component({
@@ -607,7 +787,7 @@ class ListboxWithOptions {
   isPurpleDisabled: boolean = false;
   isSolarDisabled: boolean = false;
 
-  onSelectionChange(event: ListboxSelectionChangeEvent) {
+  onSelectionChange(event: ListboxSelectionChangeEvent<unknown>) {
     this.changedOption = event.option;
   }
 }
@@ -627,7 +807,7 @@ class ListboxMultiselect {
   changedOption: CdkOption;
   isMultiselectable: boolean = false;
 
-  onSelectionChange(event: ListboxSelectionChangeEvent) {
+  onSelectionChange(event: ListboxSelectionChangeEvent<unknown>) {
     this.changedOption = event.option;
   }
 }
@@ -647,11 +827,38 @@ class ListboxActiveDescendant {
   isActiveDescendant: boolean = true;
   focusedOption: string;
 
-  onSelectionChange(event: ListboxSelectionChangeEvent) {
+  onSelectionChange(event: ListboxSelectionChangeEvent<unknown>) {
     this.changedOption = event.option;
   }
 
   onFocus(option: string) {
     this.focusedOption = option;
+  }
+}
+
+@Component({
+  template: `
+    <select cdkListbox
+         [disabled]="isDisabled"
+         [multiple]="isMultiselectable"
+         (selectionChange)="onSelectionChange($event)"
+         [formControl]="form"
+         *ngIf="showListbox"   ngDefaultControl>
+      <option cdkOption [value]="'purple'">Purple</option>
+      <option cdkOption [value]="'solar'">Solar</option>
+      <option cdkOption [value]="'arc'">Arc</option>
+      <option cdkOption [value]="'stasis'">Stasis</option>
+    </select>`
+})
+class ListboxControlValueAccessor {
+  form = new FormControl();
+  changedOption: CdkOption<string>;
+  isDisabled: boolean = false;
+  isMultiselectable: boolean = false;
+  showListbox: boolean = true;
+  @ViewChild(CdkListbox) listbox: CdkListbox<string>;
+
+  onSelectionChange(event: ListboxSelectionChangeEvent<string>) {
+    this.changedOption = event.option;
   }
 }

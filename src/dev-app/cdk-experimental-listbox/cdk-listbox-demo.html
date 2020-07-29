@@ -1,10 +1,15 @@
-<ul cdkListbox class="demo-listbox" [multiple]="multiSelectable" [useActiveDescendant]="activeDescendant">
+<ul cdkListbox class="demo-listbox"
+    [multiple]="multiSelectable"
+    [useActiveDescendant]="activeDescendant"
+    [formControl]="formControl" ngDefaultControl>
   <li cdkOption>Apple</li>
   <li cdkOption>Orange</li>
   <li cdkOption>Grapefruit</li>
   <li cdkOption>Peach</li>
 </ul>
 
+<button (click)="disableForm()">Disable Form</button>
+<br>
 <button (click)="toggleMultiple()">Toggle Multiple</button>
 <br>
 <button (click)="toggleActiveDescendant()">Toggle Active Descendant</button>

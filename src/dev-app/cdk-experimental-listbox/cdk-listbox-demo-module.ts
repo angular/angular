@@ -10,6 +10,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {CdkListboxModule} from '@angular/cdk-experimental/listbox';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {CdkListboxDemo} from './cdk-listbox-demo';
 
@@ -17,6 +18,8 @@ import {CdkListboxDemo} from './cdk-listbox-demo';
   imports: [
     CdkListboxModule,
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
     RouterModule.forChild([{path: '', component: CdkListboxDemo}]),
   ],
   declarations: [CdkListboxDemo],
