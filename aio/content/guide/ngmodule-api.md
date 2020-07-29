@@ -20,7 +20,7 @@ The metadata provides the following arrays:
 * [`declarations`](#declarations): Which [components](guide/glossary#component "Definition of component"), [directives](guide/glossary#directive "Definition of directive"), and [pipes](guide/glossary#pipe "Definition of pipe)") belong to the NgModule.
   These classes are called [declarables](guide/glossary#declarable "Definition of a declarable").
 
-* [`entryComponents`](#entry-components): A list of [entry components](guide/entry-components "Specifying an entry component") that can be dynamically loaded into the view.
+* [`entryComponents`](#entry-components): A list of [entry components](guide/entry-components "Entry components") that can be dynamically loaded into the view.
 
 * [`providers`](#providers-array): [Providers](guide/glossary#provider "Definition of provider") of [services](guide/glossary#service "Definition of a service") that components in other NgModules can use.
 
@@ -71,11 +71,11 @@ Each component, directive, and pipe that you include in an NgModule's `declarati
 
 ## The entryComponents array
 
-The `entryComponents` array describes the [entry components](guide/entry-components "Specifying an entry component") that you can dynamically load into the view.
+The `entryComponents` array describes the [entry components](guide/entry-components "Entry components") that you can dynamically load into the view.
 
 If you use the CLI [new](cli/new "ng new") command to create an initial Angular app, the CLI creates one entry component, the root component called `AppComponent`, in the root NgModule `AppModule`.
 This component serves as a point of entry into the app.
-You [bootstrap](guide/glossary#bootstrap "Definition of bootstrap") it to launch the app, as described in the section about the [bootstrap array](#bootstrap-array).
+Angular [bootstraps](guide/glossary#bootstrap "Definition of bootstrap") it to launch the app, as described in the section about the [bootstrap array](#bootstrap-array).
 
 [Routing components](guide/glossary#routing-component "Definition of routing component") are also entry components because they are loaded dynamically by the router.
 The router creates them and drops them into the DOM near a `<router-outlet>`.
@@ -83,7 +83,7 @@ You don't have to add the routing components to an NgModule's `entryComponents` 
 
 The only components you need to add manually to the `entryComponents` array are any components you are bootstrapping using one of the imperative techniques, such as [`ViewComponentRef.createComponent()`](api/core/ViewContainerRef#createComponent), as undiscoverable.
 If you need to dynamically load components, add these components to the `entryComponents` array.
-For more information, see [Specifying an entry component](guide/entry-components).
+For more information, see [Entry components](guide/entry-components "Entry components").
 
 <div class="callout is-helpful">
 <header>Why a component appears in both arrays</header>
@@ -105,14 +105,14 @@ Angular registers the providers you include in this array with the NgModule's in
 
 If you include a provider in the _root_ NgModule's `providers` array, it becomes the root injector.
 Services for providers declared in the root become available for injection into any component, directive, pipe, or service which is a child of this injector.
-You can scope service usage when [creating other NgModules](guide/feature-modules "Creating a new NgModule").
+You can scope service usage when [creating other NgModules](guide/feature-modules "Feature modules").
 
-A [lazy-loaded NgModule](guide/lazy-loading-ngmodules "Lazy-loading an NgModule") has its own injector, which is typically a child of the root injector.
+A [lazy-loaded NgModule](guide/lazy-loading-ngmodules "Lazy-loading feature modules") has its own injector, which is typically a child of the root injector.
 Lazy-loaded services are scoped to the lazy-loaded NgModule's injector.
 If a lazy-loaded NgModule also provides the `UserService`, any component created within that NgModule's context (such as by router navigation) gets the local instance of the service, not the instance in the root injector.
 Components in external NgModules continue to receive the instance provided by their injectors.
 
-To learn more about service providers, see [Providing dependencies for an NgModule](guide/providers "Providing dependencies for an NgModule").
+To learn more about service providers, see [Providing dependencies in modules](guide/providers "Providing dependencies in modules").
 
 {@a bootstrap-array}
 
@@ -120,7 +120,7 @@ To learn more about service providers, see [Providing dependencies for an NgModu
 
 The `bootstrap` array is list of components that Angular automatically bootstraps to start your app.
 
-The Angular CLI command `ng new` generates the root NgModule for a new app project, as described in [Launching an app with a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
+The Angular CLI command `ng new` generates the root NgModule for a new app project, as described in [Launching your app with a root module](guide/bootstrapping "Launching your app with a root module").
 The app starts by launching the [entry component](guide/entry-components "Entry components") in the root NgModule's `bootstrap` array, which is `AppComponent`.
 
 Your app typically has only this one component in this list.
@@ -178,16 +178,8 @@ For example, there's no point in re-exporting `HttpClientModule` because it does
 
 ## Next steps
 
-* To learn about frequently used Angular NgModules and how to import them into your app, see [Frequently-used NgModules](guide/frequent-ngmodules "Frequently-used NgModules").
+* To learn about frequently used Angular NgModules and how to import them into your app, see [Frequently-used modules](guide/frequent-ngmodules "Frequently-used modules").
 
 * For guidance on how to use NgModules for organizing different areas of your code, see [Guidelines for creating NgModules](guide/module-types "Guidelines for creating NgModules").
 
-* For step-by-step instructions on creating an NgModule and importing it into your app, see [Creating a new NgModule](guide/feature-modules "Creating a new NgModule").
-
-* To learn how to use shared modules to organize and streamline your code, see [Sharing NgModules in an app](guide/sharing-ngmodules "Sharing NgModules in an app").
-
-* To learn about loading NgModules eagerly when the app starts, or lazy-loading NgModules asynchronously by the router, see [Lazy-loading an NgModule](guide/lazy-loading-ngmodules "Lazy-loading an NgModule").
-
-* To understand how to provide a service or other dependency for your app, see [Providing dependencies for an NgModule](guide/providers "Providing dependencies for an NgModule").
-
-* To learn how to create a singleton service to use in NgModules, see [Making a service a singleton](guide/singleton-services "Making a service a singleton").
+* For step-by-step instructions on creating an NgModule and importing it into your app, see [Feature modules](guide/feature-modules "Feature modules").

@@ -424,8 +424,8 @@
             },
             {
               "url": "guide/ngmodule-api",
-              "title": "NgModule API",
-              "tooltip": "Understand the details of NgModules."
+              "title": "NgModule Metadata",
+              "tooltip": "Understand how the metadata guides compilation."
             },
             {
               "url": "guide/ngmodule-faq",
