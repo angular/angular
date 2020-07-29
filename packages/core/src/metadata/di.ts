@@ -330,14 +330,14 @@ export interface ViewChildDecorator {
    *
    * The following selectors are supported.
    *  * Any class with the `@Component` or `@Directive` decorator
-   *  * A template reference variable as a string (for example, query `<my-component #cmp></my-component>`
-   * with `@ViewChild('cmp')`)
+   *  * A template reference variable as a string (for example, query `<my-component
+   * #cmp></my-component>` with `@ViewChild('cmp')`)
    *   * Any provider defined in the child component tree of the current component (for example,
    * `@ViewChild(SomeService) someService: SomeService`)
-   *   * Any provider defined through a string token (for example, `@ViewChild('someToken') someTokenVal:
-   * any`)
-   *   * A `TemplateRef` (for example, query `<ng-template></ng-template>` with `@ViewChild(TemplateRef)
-   * template;`)
+   *   * Any provider defined through a string token (for example, `@ViewChild('someToken')
+   * someTokenVal: any`)
+   *   * A `TemplateRef` (for example, query `<ng-template></ng-template>` with
+   * `@ViewChild(TemplateRef) template;`)
    *
    * Creates a `QueryList` of changes in the view DOM.
    * Any time a child element is added, removed, or moved, the query list is updated,

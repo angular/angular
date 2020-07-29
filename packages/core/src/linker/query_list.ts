@@ -29,7 +29,8 @@ function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
  * ES6 JavaScript `for (var i of items)` loops as well as in Angular templates with
  * `*ngFor="let i of myList"`.
  *
- * The following component definition saves the results of a view query as an instance of this class.
+ * The following component definition saves the results of a view query as an instance of this
+ * class.
  *
  * ```typescript
  * @Component({...})
