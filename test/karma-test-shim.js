@@ -79,7 +79,15 @@ function patchTestBedToDestroyFixturesAfterEveryTest(testBed) {
   // errors when destroying components are no longer causing Jasmine to fail.
   testBed.resetTestingModule = function() {
     try {
+      const moduleRef = this._testModuleRef || this._moduleRef;
       this._activeFixtures.forEach(function (fixture) { fixture.destroy(); });
+      // Destroy the TestBed `NgModule` reference to clear out shared styles that would
+      // otherwise remain in DOM and significantly increase memory consumption in browsers.
+      // This increased consumption then results in noticeable test instability and slow-down.
+      // See: https://github.com/angular/angular/issues/31834.
+      if (moduleRef != null) {
+        moduleRef.destroy();
+      }
     } finally {
       this._activeFixtures = [];
       // Regardless of errors or not, run the original reset testing module function.

@@ -2169,7 +2169,7 @@ describe('CdkDrag', () => {
       fixture.componentInstance.boundarySelector = '.cdk-drop-list';
       fixture.detectChanges();
 
-      const container: HTMLElement = fixture.nativeElement.querySelector('.container');
+      const container: HTMLElement = fixture.nativeElement.querySelector('.scroll-container');
       const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
       const list = fixture.componentInstance.dropInstance.element.nativeElement;
       const cleanup = makeScrollable('vertical', container);
@@ -3889,7 +3889,7 @@ describe('CdkDrag', () => {
       const fixture = createComponent(DraggableInScrollableParentContainer);
       fixture.detectChanges();
       const item = fixture.componentInstance.dragItems.first.element.nativeElement;
-      const container = fixture.nativeElement.querySelector('.container');
+      const container = fixture.nativeElement.querySelector('.scroll-container');
       const containerRect = container.getBoundingClientRect();
 
       expect(container.scrollTop).toBe(0);
@@ -5519,7 +5519,7 @@ class StandaloneDraggableWithMultipleHandles {
 const DROP_ZONE_FIXTURE_TEMPLATE = `
   <div
     cdkDropList
-    class="drop-list"
+    class="drop-list scroll-container"
     style="width: 100px; background: pink;"
     [id]="dropZoneId"
     [cdkDropListData]="items"
@@ -5539,7 +5539,7 @@ const DROP_ZONE_FIXTURE_TEMPLATE = `
 `;
 
 @Component({template: DROP_ZONE_FIXTURE_TEMPLATE})
-class DraggableInDropZone {
+class DraggableInDropZone implements AfterViewInit {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   @ViewChild(CdkDropList) dropInstance: CdkDropList;
   items = [
@@ -5556,6 +5556,15 @@ class DraggableInDropZone {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   });
   startedSpy = jasmine.createSpy('started spy');
+
+  constructor(protected _elementRef: ElementRef) {}
+
+  ngAfterViewInit() {
+    // Firefox preserves the `scrollTop` value from previous similar containers. This
+    // could throw off test assertions and result in flaky results.
+    // See: https://bugzilla.mozilla.org/show_bug.cgi?id=959812.
+    this._elementRef.nativeElement.querySelector('.scroll-container').scrollTop = 0;
+  }
 }
 
 @Component({
@@ -5579,8 +5588,8 @@ class DraggableInOnPushDropZone extends DraggableInDropZone {}
   `]
 })
 class DraggableInScrollableVerticalDropZone extends DraggableInDropZone {
-  constructor() {
-    super();
+  constructor(elementRef: ElementRef) {
+    super(elementRef);
 
     for (let i = 0; i < 60; i++) {
       this.items.push({value: `Extra item ${i}`, height: ITEM_HEIGHT, margin: 0});
@@ -5589,12 +5598,12 @@ class DraggableInScrollableVerticalDropZone extends DraggableInDropZone {
 }
 
 @Component({
-  template: '<div class="container" cdkScrollable>' + DROP_ZONE_FIXTURE_TEMPLATE + '</div>',
+  template: '<div class="scroll-container" cdkScrollable>' + DROP_ZONE_FIXTURE_TEMPLATE + '</div>',
 
   // Note that it needs a margin to ensure that it's not flush against the viewport
   // edge which will cause the viewport to scroll, rather than the list.
   styles: [`
-    .container {
+    .scroll-container {
       max-height: 200px;
       overflow: auto;
       margin: 10vw 0 0 10vw;
@@ -5602,8 +5611,8 @@ class DraggableInScrollableVerticalDropZone extends DraggableInDropZone {
   `]
 })
 class DraggableInScrollableParentContainer extends DraggableInDropZone {
-  constructor() {
-    super();
+  constructor(elementRef: ElementRef) {
+    super(elementRef);
 
     for (let i = 0; i < 60; i++) {
       this.items.push({value: `Extra item ${i}`, height: ITEM_HEIGHT, margin: 0});
@@ -5617,7 +5626,7 @@ class DraggableInScrollableParentContainer extends DraggableInDropZone {
   template: `
     <div
       cdkDropList
-      class="drop-list"
+      class="drop-list scroll-container"
       style="width: 100px; background: pink;"
       [id]="dropZoneId"
       [cdkDropListData]="items"
@@ -5656,7 +5665,7 @@ const HORIZONTAL_FIXTURE_STYLES = `
 
 const HORIZONTAL_FIXTURE_TEMPLATE = `
   <div
-    class="drop-list"
+    class="drop-list scroll-container"
     cdkDropList
     cdkDropListOrientation="horizontal"
     [cdkDropListData]="items"
@@ -5675,7 +5684,7 @@ const HORIZONTAL_FIXTURE_TEMPLATE = `
   styles: [HORIZONTAL_FIXTURE_STYLES],
   template: HORIZONTAL_FIXTURE_TEMPLATE
 })
-class DraggableInHorizontalDropZone {
+class DraggableInHorizontalDropZone implements AfterViewInit {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   @ViewChild(CdkDropList) dropInstance: CdkDropList;
   items = [
@@ -5688,6 +5697,15 @@ class DraggableInHorizontalDropZone {
   droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   });
+
+  constructor(protected _elementRef: ElementRef) {}
+
+  ngAfterViewInit() {
+    // Firefox preserves the `scrollLeft` value from previous similar containers. This
+    // could throw off test assertions and result in flaky results.
+    // See: https://bugzilla.mozilla.org/show_bug.cgi?id=959812.
+    this._elementRef.nativeElement.querySelector('.scroll-container').scrollLeft = 0;
+  }
 }
 
 
@@ -5706,8 +5724,8 @@ class DraggableInHorizontalDropZone {
   `]
 })
 class DraggableInScrollableHorizontalDropZone extends DraggableInHorizontalDropZone {
-  constructor() {
-    super();
+  constructor(elementRef: ElementRef) {
+    super(elementRef);
 
     for (let i = 0; i < 60; i++) {
       this.items.push({value: `Extra item ${i}`, width: ITEM_WIDTH, margin: 0});
@@ -6142,6 +6160,7 @@ class ConnectedWrappedDropZones {
 @Component({
   template: `
     <div
+      class="drop-list scroll-container"
       cdkDropList
       style="width: 100px; background: pink;"
       [id]="dropZoneId"
@@ -6162,11 +6181,12 @@ class ConnectedWrappedDropZones {
   `
 })
 class DraggableWithCanvasInDropZone extends DraggableInDropZone implements AfterViewInit {
-  constructor(private _elementRef: ElementRef<HTMLElement>) {
-    super();
+  constructor(elementRef: ElementRef<HTMLElement>) {
+    super(elementRef);
   }
 
   ngAfterViewInit() {
+    super.ngAfterViewInit();
     const canvases = this._elementRef.nativeElement.querySelectorAll('canvas');
 
     // Add a circle to all the canvases.
@@ -6183,6 +6203,7 @@ class DraggableWithCanvasInDropZone extends DraggableInDropZone implements After
 @Component({
   template: `
     <div
+      class="drop-list scroll-container"
       cdkDropList
       style="width: 100px; background: pink;"
       [id]="dropZoneId"
@@ -6413,6 +6434,7 @@ class DraggableWithAlternateRootAndSelfHandle {
   template: `
     <div
       cdkDropList
+      class="drop-list scroll-container"
       style="width: 100px; background: pink;"
       [id]="dropZoneId"
       [cdkDropListData]="items"

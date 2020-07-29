@@ -31,12 +31,16 @@ describe('CdkScrollable', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ScrollableViewport);
+    fixture.detectChanges();
     testComponent = fixture.componentInstance;
+    // Firefox preserves the `scrollTop` value from previous similar containers. This
+    // could throw off test assertions and result in flaky results.
+    // See: https://bugzilla.mozilla.org/show_bug.cgi?id=959812.
+    testComponent.scrollContainer.nativeElement.scrollTop = 0;
   });
 
   describe('in LTR context', () => {
     beforeEach(() => {
-      fixture.detectChanges();
       maxOffset = testComponent.scrollContainer.nativeElement.scrollHeight -
           testComponent.scrollContainer.nativeElement.clientHeight;
     });

@@ -1,3 +1,4 @@
+import {NgModuleRef} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   BrowserDynamicTestingModule,
@@ -8,8 +9,8 @@ import {
  * Common setup / initialization for all unit tests in Angular Material and CDK.
  */
 
-const testBed = TestBed.initTestEnvironment(
-    [BrowserDynamicTestingModule], platformBrowserDynamicTesting());
+const testBed =
+    TestBed.initTestEnvironment([BrowserDynamicTestingModule], platformBrowserDynamicTesting());
 patchTestBedToDestroyFixturesAfterEveryTest(testBed);
 
 (window as any).module = {};
@@ -38,9 +39,24 @@ function patchTestBedToDestroyFixturesAfterEveryTest(testBedInstance: TestBed) {
   // Monkey-patch the resetTestingModule to destroy fixtures outside of a try/catch block.
   // With https://github.com/angular/angular/commit/2c5a67134198a090a24f6671dcdb7b102fea6eba
   // errors when destroying components are no longer causing Jasmine to fail.
-  testBedInstance.resetTestingModule = function(this: {_activeFixtures: ComponentFixture<any>[]}) {
+  testBedInstance.resetTestingModule = function(this: {
+    /** List of active fixtures in the current testing module. */
+    _activeFixtures: ComponentFixture<any>[],
+    /** Module Ref used in the Ivy TestBed for creating components. */
+    _testModuleRef?: NgModuleRef<unknown>|null,
+    /** Module Ref used in the View Engine TestBed for creating components. */
+    _moduleRef?: NgModuleRef<unknown>|null
+  }) {
     try {
+      const moduleRef = this._testModuleRef || this._moduleRef;
       this._activeFixtures.forEach((fixture: ComponentFixture<any>) => fixture.destroy());
+      // Destroy the TestBed `NgModule` reference to clear out shared styles that would
+      // otherwise remain in DOM and significantly increase memory consumption in browsers.
+      // This increased consumption then results in noticeable test instability and slow-down.
+      // See: https://github.com/angular/angular/issues/31834.
+      if (moduleRef != null) {
+        moduleRef.destroy();
+      }
     } finally {
       this._activeFixtures = [];
       // Regardless of errors or not, run the original reset testing module function.
