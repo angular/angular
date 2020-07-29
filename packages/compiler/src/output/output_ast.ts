@@ -176,8 +176,9 @@ export abstract class Expression {
     return new InvokeMethodExpr(this, name, params, null, sourceSpan);
   }
 
-  callFn(params: Expression[], sourceSpan?: ParseSourceSpan|null): InvokeFunctionExpr {
-    return new InvokeFunctionExpr(this, params, null, sourceSpan);
+  callFn(params: Expression[], sourceSpan?: ParseSourceSpan|null, pure?: boolean):
+      InvokeFunctionExpr {
+    return new InvokeFunctionExpr(this, params, null, sourceSpan, pure);
   }
 
   instantiate(params: Expression[], type?: Type|null, sourceSpan?: ParseSourceSpan|null):
