@@ -16,14 +16,19 @@ import {
   EventEmitter,
   Inject,
   HostListener,
+  NgZone,
+  OnDestroy,
 } from '@angular/core';
 import {coerceBooleanProperty, BooleanInput} from '@angular/cdk/coercion';
 import {FocusableOption} from '@angular/cdk/a11y';
 import {SPACE, ENTER, RIGHT_ARROW, LEFT_ARROW} from '@angular/cdk/keycodes';
 import {Directionality} from '@angular/cdk/bidi';
+import {Subject, fromEvent} from 'rxjs';
+import {takeUntil, filter} from 'rxjs/operators';
 import {CdkMenuItemTrigger} from './menu-item-trigger';
 import {Menu, CDK_MENU} from './menu-interface';
 import {FocusNext} from './menu-stack';
+import {FocusableElement} from './item-pointer-entries';
 
 // TODO refactor this to be configurable allowing for custom elements to be removed
 /** Removes all icons from within the given element. */
@@ -49,7 +54,7 @@ function removeIcons(element: Element) {
     '[attr.aria-disabled]': 'disabled || null',
   },
 })
-export class CdkMenuItem implements FocusableOption {
+export class CdkMenuItem implements FocusableOption, FocusableElement, OnDestroy {
   /**  Whether the CdkMenuItem is disabled - defaults to false */
   @Input()
   get disabled(): boolean {
@@ -66,21 +71,32 @@ export class CdkMenuItem implements FocusableOption {
    */
   @Output('cdkMenuItemTriggered') triggered: EventEmitter<void> = new EventEmitter();
 
+  /** Emits when the menu item is destroyed. */
+  private readonly _destroyed: Subject<void> = new Subject();
+
   constructor(
-    private readonly _elementRef: ElementRef<HTMLElement>,
+    readonly _elementRef: ElementRef<HTMLElement>,
     @Inject(CDK_MENU) private readonly _parentMenu: Menu,
+    private readonly _ngZone: NgZone,
     @Optional() private readonly _dir?: Directionality,
     /** Reference to the CdkMenuItemTrigger directive if one is added to the same element */
     // `CdkMenuItem` is commonly used in combination with a `CdkMenuItemTrigger`.
     // tslint:disable-next-line: lightweight-tokens
     @Self() @Optional() private readonly _menuTrigger?: CdkMenuItemTrigger
-  ) {}
+  ) {
+    this._setupMouseEnter();
+  }
 
   /** Place focus on the element. */
   focus() {
     this._elementRef.nativeElement.focus();
   }
 
+  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
+  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
+  // can move this back into `host`.
+  // tslint:disable:no-host-decorator-in-concrete
+  @HostListener('click')
   /**
    * If the menu item is not disabled and the element does not have a menu trigger attached, emit
    * on the cdkMenuItemTriggered emitter and close all open menus.
@@ -164,6 +180,23 @@ export class CdkMenuItem implements FocusableOption {
     }
   }
 
+  /**
+   * Subscribe to the mouseenter events and close any sibling menu items if this element is moused
+   * into.
+   */
+  private _setupMouseEnter() {
+    this._ngZone.runOutsideAngular(() =>
+      fromEvent(this._elementRef.nativeElement, 'mouseenter')
+        .pipe(
+          filter(() => !this._getMenuStack().isEmpty() && !this.hasMenu()),
+          takeUntil(this._destroyed)
+        )
+        .subscribe(() => {
+          this._ngZone.run(() => this._getMenuStack().closeSubMenuOf(this._parentMenu));
+        })
+    );
+  }
+
   /** Return true if the enclosing parent menu is configured in a horizontal orientation. */
   private _isParentVertical() {
     return this._parentMenu.orientation === 'vertical';
@@ -175,6 +208,10 @@ export class CdkMenuItem implements FocusableOption {
     // its menu stack set. Therefore we need to reference the menu stack from the parent each time
     // we want to use it.
     return this._parentMenu._menuStack;
+  }
+
+  ngOnDestroy() {
+    this._destroyed.next();
   }
 
   static ngAcceptInputType_disabled: BooleanInput;

@@ -17,6 +17,7 @@ import {
   OnDestroy,
   Optional,
   OnInit,
+  NgZone,
 } from '@angular/core';
 import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
 import {
@@ -30,13 +31,14 @@ import {
 } from '@angular/cdk/keycodes';
 import {Directionality} from '@angular/cdk/bidi';
 import {take, takeUntil, startWith, mergeMap, mapTo, mergeAll, switchMap} from 'rxjs/operators';
-import {merge} from 'rxjs';
+import {merge, Observable} from 'rxjs';
 import {CdkMenuGroup} from './menu-group';
 import {CdkMenuPanel} from './menu-panel';
 import {Menu, CDK_MENU} from './menu-interface';
 import {throwMissingMenuPanelError} from './menu-errors';
 import {CdkMenuItem} from './menu-item';
 import {MenuStack, MenuStackItem, FocusNext} from './menu-stack';
+import {getItemPointerEntries} from './item-pointer-entries';
 
 /**
  * Directive which configures the element as a Menu which should contain child elements marked as
@@ -75,6 +77,9 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
   /** Handles keyboard events for the menu. */
   private _keyManager: FocusKeyManager<CdkMenuItem>;
 
+  /** Emits when a child MenuItem is moused over. */
+  private _mouseFocusChanged: Observable<CdkMenuItem>;
+
   /** List of nested CdkMenuGroup elements */
   @ContentChildren(CdkMenuGroup, {descendants: true})
   private readonly _nestedGroups: QueryList<CdkMenuGroup>;
@@ -96,6 +101,7 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
   @Input('cdkMenuPanel') private readonly _explicitPanel?: CdkMenuPanel;
 
   constructor(
+    private readonly _ngZone: NgZone,
     @Optional() private readonly _dir?: Directionality,
     // `CdkMenuPanel` is always used in combination with a `CdkMenu`.
     // tslint:disable-next-line: lightweight-tokens
@@ -115,6 +121,7 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
     this._setKeyManager();
     this._subscribeToMenuOpen();
     this._subscribeToMenuStack();
+    this._subscribeToMouseManager();
   }
 
   /** Place focus on the first MenuItem in the menu and set the focus origin. */
@@ -218,6 +225,19 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
     } else {
       this._keyManager.withVerticalOrientation();
     }
+  }
+
+  /**
+   * Set the FocusMouseManager and ensure that when mouse focus changes the key manager is updated
+   * with the latest menu item under mouse focus.
+   */
+  private _subscribeToMouseManager() {
+    this._ngZone.runOutsideAngular(() => {
+      this._mouseFocusChanged = getItemPointerEntries(this._allItems);
+      this._mouseFocusChanged
+        .pipe(takeUntil(this.closed))
+        .subscribe(item => this._keyManager.setActiveItem(item));
+    });
   }
 
   /** Subscribe to the MenuStack close and empty observables. */

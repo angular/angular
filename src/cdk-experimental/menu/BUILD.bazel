@@ -33,6 +33,7 @@ ng_test_library(
         "//src/cdk/keycodes",
         "//src/cdk/testing/private",
         "@npm//@angular/platform-browser",
+        "@npm//rxjs",
     ],
 )
 

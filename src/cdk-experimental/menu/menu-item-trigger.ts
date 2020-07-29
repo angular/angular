@@ -45,6 +45,8 @@ import {FocusNext} from './menu-stack';
   exportAs: 'cdkMenuTriggerFor',
   host: {
     '(keydown)': '_toggleOnKeydown($event)',
+    '(mouseenter)': '_toggleOnMouseEnter()',
+    '(click)': 'toggle()',
     'tabindex': '-1',
     'aria-haspopup': 'menu',
     '[attr.aria-expanded]': 'isMenuOpen()',
@@ -130,6 +132,27 @@ export class CdkMenuItemTrigger implements OnDestroy {
    */
   getMenu(): Menu | undefined {
     return this.menuPanel?._menu;
+  }
+
+  /**
+   * If there are existing open menus and this menu is not open, close sibling menus and open
+   * this one.
+   */
+  _toggleOnMouseEnter() {
+    const menuStack = this._getMenuStack();
+    if (!menuStack.isEmpty() && !this.isMenuOpen()) {
+      // If nothing was removed from the stack and the last element is not the parent item
+      // that means that the parent menu is a menu bar since we don't put the menu bar on the
+      // stack
+      const isParentMenuBar =
+        !menuStack.closeSubMenuOf(this._parentMenu) && menuStack.peek() !== this._parentMenu;
+
+      if (isParentMenuBar) {
+        menuStack.closeAll();
+      }
+
+      this.openMenu();
+    }
   }
 
   /**

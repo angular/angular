@@ -27,6 +27,7 @@ import {
   dispatchKeyboardEvent,
   createKeyboardEvent,
   dispatchEvent,
+  dispatchMouseEvent,
 } from '@angular/cdk/testing/private';
 import {CdkMenuBar} from './menu-bar';
 import {CdkMenuModule} from './menu-module';
@@ -836,6 +837,195 @@ describe('MenuBar', () => {
         .withContext('menu should stay open if clicking on an inner span element')
         .toBe(1);
     });
+  });
+
+  describe('Mouse handling', () => {
+    let fixture: ComponentFixture<MultiMenuWithSubmenu>;
+    let nativeMenus: HTMLElement[];
+    let menuBarNativeItems: HTMLButtonElement[];
+    let fileMenuNativeItems: HTMLButtonElement[];
+    let shareMenuNativeItems: HTMLButtonElement[];
+
+    /** Get menus and items used for tests. */
+    function grabElementsForTesting() {
+      nativeMenus = fixture.componentInstance.nativeMenus.map(e => e.nativeElement);
+
+      menuBarNativeItems = fixture.componentInstance.nativeItems
+        .map(e => e.nativeElement)
+        .slice(0, 2); // menu bar has the first 2 menu items
+
+      fileMenuNativeItems = fixture.componentInstance.nativeItems
+        .map(e => e.nativeElement)
+        .slice(2, 5); // file menu has the next 3 menu items
+
+      shareMenuNativeItems = fixture.componentInstance.nativeItems
+        .map(e => e.nativeElement)
+        .slice(5, 7); // share menu has the next 2 menu items
+    }
+
+    /** Run change detection and extract then set the rendered elements. */
+    function detectChanges() {
+      fixture.detectChanges();
+      grabElementsForTesting();
+    }
+
+    /** Mock mouse events required to open the file menu. */
+    function openFileMenu() {
+      dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
+      dispatchMouseEvent(menuBarNativeItems[0], 'click');
+      detectChanges();
+    }
+
+    /** Mock mouse events required to open the share menu. */
+    function openShareMenu() {
+      dispatchMouseEvent(fileMenuNativeItems[1], 'mouseenter');
+      detectChanges();
+    }
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [MultiMenuWithSubmenu],
+      }).compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(MultiMenuWithSubmenu);
+      detectChanges();
+    });
+
+    it('should toggle menu from menu bar when clicked', () => {
+      openFileMenu();
+
+      expect(nativeMenus.length).toBe(1);
+      expect(nativeMenus[0].id).toBe('file_menu');
+
+      dispatchMouseEvent(menuBarNativeItems[0], 'click');
+      detectChanges();
+
+      expect(nativeMenus.length).toBe(0);
+    });
+
+    it('should not open menu when hovering over trigger in menu bar with no open siblings', () => {
+      dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
+      detectChanges();
+
+      expect(nativeMenus.length).toBe(0);
+    });
+
+    it(
+      'should not change focused items when hovering over trigger in menu bar with no open ' +
+        'siblings',
+      () => {
+        dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
+        detectChanges();
+
+        expect(document.querySelector(':focus')).not.toEqual(menuBarNativeItems[0]);
+        expect(document.querySelector(':focus')).not.toEqual(menuBarNativeItems[1]);
+      }
+    );
+
+    it(
+      'should toggle open menus in menu bar if sibling is open when mouse moves from one item ' +
+        'to the other',
+      () => {
+        openFileMenu();
+
+        dispatchMouseEvent(menuBarNativeItems[1], 'mouseenter');
+        detectChanges();
+
+        expect(nativeMenus.length).toBe(1);
+        expect(nativeMenus[0].id).toBe('edit_menu');
+
+        dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
+        detectChanges();
+
+        expect(nativeMenus.length).toBe(1);
+        expect(nativeMenus[0].id).toBe('file_menu');
+
+        dispatchMouseEvent(menuBarNativeItems[1], 'mouseenter');
+        detectChanges();
+
+        expect(nativeMenus.length).toBe(1);
+        expect(nativeMenus[0].id).toBe('edit_menu');
+      }
+    );
+
+    it('should not close the menu when re-hovering the trigger', () => {
+      openFileMenu();
+
+      dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
+
+      expect(nativeMenus.length).toBe(1);
+      expect(nativeMenus[0].id).toBe('file_menu');
+    });
+
+    it('should open a submenu when hovering over a trigger in a menu with no siblings open', () => {
+      openFileMenu();
+
+      openShareMenu();
+
+      expect(nativeMenus.length).toBe(2);
+      expect(nativeMenus[0].id).toBe('file_menu');
+      expect(nativeMenus[1].id).toBe('share_menu');
+    });
+
+    it('should close menu when hovering over non-triggering sibling menu item', () => {
+      openFileMenu();
+      openShareMenu();
+
+      dispatchMouseEvent(fileMenuNativeItems[0], 'mouseenter');
+      detectChanges();
+
+      expect(nativeMenus.length).toBe(1);
+      expect(nativeMenus[0].id).toBe('file_menu');
+    });
+
+    it('should retain open menus when hovering over root level trigger which opened them', () => {
+      openFileMenu();
+      openShareMenu();
+
+      dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
+      detectChanges();
+
+      expect(nativeMenus.length).toBe(2);
+    });
+
+    it('should close out the menu tree when hovering over sibling item in menu bar', () => {
+      openFileMenu();
+      openShareMenu();
+
+      dispatchMouseEvent(menuBarNativeItems[1], 'mouseenter');
+      detectChanges();
+
+      expect(nativeMenus.length).toBe(1);
+      expect(nativeMenus[0].id).toBe('edit_menu');
+    });
+
+    it('should close out the menu tree when clicking a non-triggering menu item', () => {
+      openFileMenu();
+      openShareMenu();
+
+      dispatchMouseEvent(shareMenuNativeItems[0], 'mouseenter');
+      dispatchMouseEvent(shareMenuNativeItems[0], 'click');
+      detectChanges();
+
+      expect(nativeMenus.length).toBe(0);
+    });
+
+    it(
+      'should allow keyboard down arrow to focus next item after mouse sets focus to' +
+        ' initial item',
+      () => {
+        openFileMenu();
+        dispatchMouseEvent(fileMenuNativeItems[0], 'mouseenter');
+        detectChanges();
+
+        dispatchKeyboardEvent(nativeMenus[0], 'keydown', DOWN_ARROW);
+
+        expect(document.querySelector(':focus')).toEqual(fileMenuNativeItems[1]);
+      }
+    );
   });
 });
 

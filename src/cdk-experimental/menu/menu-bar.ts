@@ -14,16 +14,18 @@ import {
   AfterContentInit,
   OnDestroy,
   Optional,
+  NgZone,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
 import {LEFT_ARROW, RIGHT_ARROW, UP_ARROW, DOWN_ARROW, ESCAPE, TAB} from '@angular/cdk/keycodes';
 import {takeUntil, mergeAll, mapTo, startWith, mergeMap, switchMap} from 'rxjs/operators';
-import {Subject, merge} from 'rxjs';
+import {Subject, merge, Observable} from 'rxjs';
 import {CdkMenuGroup} from './menu-group';
 import {CDK_MENU, Menu} from './menu-interface';
 import {CdkMenuItem} from './menu-item';
 import {MenuStack, MenuStackItem, FocusNext} from './menu-stack';
+import {getItemPointerEntries} from './item-pointer-entries';
 
 /**
  * Check if the given element is part of the cdk menu module.
@@ -68,6 +70,9 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
   /** Handles keyboard events for the MenuBar. */
   private _keyManager: FocusKeyManager<CdkMenuItem>;
 
+  /** Emits when a child MenuItem is moused over. */
+  private _mouseFocusChanged: Observable<CdkMenuItem>;
+
   /** Emits when the MenuBar is destroyed. */
   private readonly _destroyed: Subject<void> = new Subject();
 
@@ -78,7 +83,11 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
   /** The Menu Item which triggered the open submenu. */
   private _openItem?: CdkMenuItem;
 
-  constructor(readonly _menuStack: MenuStack, @Optional() private readonly _dir?: Directionality) {
+  constructor(
+    readonly _menuStack: MenuStack,
+    private readonly _ngZone: NgZone,
+    @Optional() private readonly _dir?: Directionality
+  ) {
     super();
   }
 
@@ -88,6 +97,7 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
     this._setKeyManager();
     this._subscribeToMenuOpen();
     this._subscribeToMenuStack();
+    this._subscribeToMouseManager();
   }
 
   /** Place focus on the first MenuItem in the menu and set the focus origin. */
@@ -163,6 +173,21 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
     }
   }
 
+  /**
+   * Set the FocusMouseManager and ensure that when mouse focus changes the key manager is updated
+   * with the latest menu item under mouse focus.
+   */
+  private _subscribeToMouseManager() {
+    this._ngZone.runOutsideAngular(() => {
+      this._mouseFocusChanged = getItemPointerEntries(this._allItems);
+      this._mouseFocusChanged.pipe(takeUntil(this._destroyed)).subscribe(item => {
+        if (this._hasOpenSubmenu()) {
+          this._keyManager.setActiveItem(item);
+        }
+      });
+    });
+  }
+
   /** Subscribe to the MenuStack close and empty observables. */
   private _subscribeToMenuStack() {
     this._menuStack.closed
@@ -235,7 +260,7 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
         target = target.parentElement;
       }
 
-      this._openItem?.getMenuTrigger()?.toggle();
+      this._menuStack.closeAll();
     }
   }
 

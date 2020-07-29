@@ -40,14 +40,14 @@ export class MenuStack {
   private readonly _empty: Subject<FocusNext> = new Subject();
 
   /** Observable which emits the MenuStackItem which has been requested to close. */
-  readonly closed: Observable<MenuStackItem> = this._close.asObservable();
+  readonly closed: Observable<MenuStackItem> = this._close;
 
   /**
    * Observable which emits when the MenuStack is empty after popping off the last element. It
    * emits a FocusNext event which specifies the action the closer has requested the listener
    * perform.
    */
-  readonly emptied: Observable<FocusNext> = this._empty.asObservable();
+  readonly emptied: Observable<FocusNext> = this._empty;
 
   /** @param menu the MenuStackItem to put on the stack. */
   push(menu: MenuStackItem) {
@@ -80,13 +80,17 @@ export class MenuStack {
    * Pop items off of the stack up to but excluding `lastItem` and emit each on the close
    * observable. If the stack is empty or `lastItem` is not on the stack it does nothing.
    * @param lastItem the element which should be left on the stack
+   * @return whether or not an item was removed from the stack
    */
   closeSubMenuOf(lastItem: MenuStackItem) {
+    let removed = false;
     if (this._elements.indexOf(lastItem) >= 0) {
+      removed = this.peek() !== lastItem;
       while (this.peek() !== lastItem) {
         this._close.next(this._elements.pop());
       }
     }
+    return removed;
   }
 
   /**

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
-import {Directive, OnDestroy, ElementRef, Self, Optional, Inject} from '@angular/core';
+import {Directive, OnDestroy, ElementRef, Self, Optional, Inject, NgZone} from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkMenuItemSelectable} from './menu-item-selectable';
 import {CdkMenuItem} from './menu-item';
@@ -40,6 +40,7 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
   constructor(
     private readonly _selectionDispatcher: UniqueSelectionDispatcher,
     element: ElementRef<HTMLElement>,
+    ngZone: NgZone,
     @Inject(CDK_MENU) parentMenu: Menu,
     @Optional() dir?: Directionality,
     /** Reference to the CdkMenuItemTrigger directive if one is added to the same element */
@@ -47,7 +48,7 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
     // tslint:disable-next-line: lightweight-tokens
     @Self() @Optional() menuTrigger?: CdkMenuItemTrigger
   ) {
-    super(element, parentMenu, dir, menuTrigger);
+    super(element, parentMenu, ngZone, dir, menuTrigger);
 
     this._registerDispatcherListener();
   }
@@ -69,6 +70,7 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
   }
 
   ngOnDestroy() {
+    super.ngOnDestroy();
     this._removeDispatcherListener();
   }
 }
