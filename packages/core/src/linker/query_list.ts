@@ -17,22 +17,20 @@ function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
 }
 
 /**
- * An unmodifiable list of items that Angular keeps up to date when the state
- * of the application changes.
+ * A read-only list of items returned by view and content queries, such as
+ * `ViewChildren` and `ContentChildren`.
+ * Any time a child element is added to, removed from, or moved within the
+ * view or content hierarchy, Angular updates the
+ * read-only `QueryList` object, and the `changes` observable of the
+ * query list emits a new value.
+ * Track changes in the view or content hierarchy by subscribing to the `changes` observable.
  *
- * The type of object that {@link ViewChildren}, {@link ContentChildren}, and {@link QueryList}
- * provide.
- *
- * Implements an iterable interface, therefore it can be used in both ES6
- * javascript `for (var i of items)` loops as well as in Angular templates with
+ * `QueryList` implements its own iterable interface, which means that it can be used in both
+ * ES6 JavaScript `for (var i of items)` loops as well as in Angular templates with
  * `*ngFor="let i of myList"`.
  *
- * Changes can be observed by subscribing to the changes `Observable`.
+ * The following component definition saves the results of a view query as an instance of this class.
  *
- * NOTE: In the future this class will implement an `Observable` interface.
- *
- * @usageNotes
- * ### Example
  * ```typescript
  * @Component({...})
  * class Container {
@@ -43,14 +41,28 @@ function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
  * @publicApi
  */
 export class QueryList<T> implements Iterable<T> {
+  /**
+   * True when the list has changed since the previous change-detection cycle.
+   */
   public readonly dirty = true;
   private _results: Array<T> = [];
+  /**
+   * An observable that emits an event value for each change in the view or content hierarchy.
+   */
   public readonly changes: Observable<any> = new EventEmitter();
-
+  /**
+   * The number of change events emitted in the most recent change-detection cycle.
+   */
   readonly length: number = 0;
   // TODO(issue/24571): remove '!'.
+  /**
+   * True if the current iteration index is the first in the set.
+   */
   readonly first!: T;
   // TODO(issue/24571): remove '!'.
+  /**
+   * True if the current iteration index is the last in the set.
+   */
   readonly last!: T;
 
   constructor() {

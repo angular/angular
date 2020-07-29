@@ -56,19 +56,18 @@ export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForE
  */
 export interface AttributeDecorator {
   /**
-   * Specifies that a constant attribute value should be injected.
+   * A parameter decorator that specifies that a constant attribute value should be injected.
    *
-   * The directive can inject constant string literals of host element attributes.
-   *
-   * @usageNotes
-   *
-   * Suppose we have an `<input>` element and want to know its `type`.
+   * You can use this to inject constant string literals of host element attributes.
+   * For example, suppose you have an `<input>` element and want to know its type.
    *
    * ```html
    * <input type="text">
    * ```
    *
-   * A decorator can inject string literal `text` as in the following example.
+   * The following constructor for the directive that instantiates this element
+   * uses the parameter decorator to inject
+   * the string literal "text" as the value of the element's `type` attribute.
    *
    * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
    *
@@ -97,16 +96,36 @@ export interface Attribute {
  * @publicApi
  */
 export interface Query {
+  /**
+   * True to include all descendants, otherwise include only direct children.
+   */
   descendants: boolean;
+  /**
+   * True to if the current iteration index is the first in the set.
+   */
   first: boolean;
+  /**
+   * Use to read a different token from the queried elements.
+   */
   read: any;
+  /**
+   * True if this is a view query, false if it is a content query.
+   */
   isViewQuery: boolean;
+  /**
+   * The directive type or the name used for querying.
+   */
   selector: any;
+  /**
+   * True to resolve query results before change detection runs,
+   * false to resolve after change detection. Default is false.
+   */
   static?: boolean;
 }
 
 /**
- * Base class for query metadata.
+ * Base class for query metadata. Sets up and allows iteration through
+ * a set of changes in the view or content hierarchy.
  *
  * @see `ContentChildren`.
  * @see `ContentChild`.
@@ -127,33 +146,28 @@ export interface ContentChildrenDecorator {
   /**
    * Parameter decorator that configures a content query.
    *
-   * Use to get the `QueryList` of elements or directives from the content DOM.
-   * Any time a child element is added, removed, or moved, the query list will be
-   * updated, and the changes observable of the query list will emit a new value.
+   * Retrieves a `QueryList` of changes to elements or directives from the content DOM.
+   * Any time a child element is added, removed, or moved, Angular updates the
+   * read-only `QueryList` object, and the `changes` observable of the
+   * query list emits a new value.
    *
    * Content queries are set before the `ngAfterContentInit` callback is called.
    *
-   * Does not retrieve elements or directives that are in other components' templates,
-   * since a component's template is always a black box to its ancestors.
+   * Does not retrieve elements or directives that are in other components' templates.
+   * A component's template is not directly accessible from its content ancestors.
    *
-   * **Metadata Properties**:
-   *
-   * * **selector** - The directive type or the name used for querying.
-   * * **descendants** - True to include all descendants, otherwise include only direct children.
-   * * **read** - Used to read a different token from the queried elements.
-   *
-   * @usageNotes
-   *
-   * Here is a simple demonstration of how the `ContentChildren` decorator can be used.
+   * The following code shows how to set up a content query.
    *
    * {@example core/di/ts/contentChildren/content_children_howto.ts region='HowTo'}
    *
-   * ### Tab-pane example
-   *
-   * Here is a slightly more realistic example that shows how `ContentChildren` decorators
+   * The following slightly more complete example shows how a content query
    * can be used to implement a tab pane component.
    *
    * {@example core/di/ts/contentChildren/content_children_example.ts region='Component'}
+   *
+   * @see `QueryList`
+   * @see [Lifecycle hooks guide](guide/lifecycle-hooks)
+   * @see `ContentChild`
    *
    * @Annotation
    */
@@ -196,27 +210,26 @@ export interface ContentChildDecorator {
    *
    * Use to get the first element or the directive matching the selector from the content DOM.
    * If the content DOM changes, and a new child matches the selector,
-   * the property will be updated.
+   * the property is updated.
    *
    * Content queries are set before the `ngAfterContentInit` callback is called.
    *
-   * Does not retrieve elements or directives that are in other components' templates,
-   * since a component's template is always a black box to its ancestors.
+   * Does not retrieve elements or directives that are in other components' templates.
+   * A component's template is not directly accessible from its content ancestors.
    *
-   * **Metadata Properties**:
-   *
-   * * **selector** - The directive type or the name used for querying.
-   * * **read** - Used to read a different token from the queried element.
-   * * **static** - True to resolve query results before change detection runs,
-   * false to resolve after change detection. Defaults to false.
-   *
-   * @usageNotes
+   * The following basic example shows how to set up an `AfterContentInit`
+   * handler method that can operate on a component's content child.
    *
    * {@example core/di/ts/contentChild/content_child_howto.ts region='HowTo'}
    *
-   * ### Example
+   * The following slightly more complete example shows how a content query
+   * can be used to implement a tab pane component.
    *
    * {@example core/di/ts/contentChild/content_child_example.ts region='Component'}
+   *
+   * @see `QueryList`
+   * @see [Lifecycle hooks guide](guide/lifecycle-hooks)
+   * @see `ContentChildren`
    *
    * @Annotation
    */
@@ -259,23 +272,23 @@ export interface ViewChildrenDecorator {
    * Parameter decorator that configures a view query.
    *
    * Use to get the `QueryList` of elements or directives from the view DOM.
-   * Any time a child element is added, removed, or moved, the query list will be updated,
-   * and the changes observable of the query list will emit a new value.
+   * Any time a child element is added, removed, or moved, the query list is updated,
+   * and the `changes` observable of the query list emits a new value.
    *
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
-   * **Metadata Properties**:
-   *
-   * * **selector** - The directive type or the name used for querying.
-   * * **read** - Used to read a different token from the queried elements.
-   *
-   * @usageNotes
+   * The following basic example shows how to set up a view query.
    *
    * {@example core/di/ts/viewChildren/view_children_howto.ts region='HowTo'}
    *
-   * ### Another example
+   * The following slightly more complete example shows how a content query
+   * can be used to implement a tab pane component.
    *
    * {@example core/di/ts/viewChildren/view_children_example.ts region='Component'}
+   *
+   * @see `QueryList`
+   * @see [Lifecycle hooks guide](guide/lifecycle-hooks)
+   * @see `ViewChild`
    *
    * @Annotation
    */
@@ -312,39 +325,38 @@ export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
 export interface ViewChildDecorator {
   /**
    * @description
-   * Property decorator that configures a view query.
-   * The change detector looks for the first element or the directive matching the selector
-   * in the view DOM. If the view DOM changes, and a new child matches the selector,
-   * the property is updated.
+   * Property decorator that configures a query for the direct view child
+   * of the queried component or directive.
+   *
+   * The following selectors are supported.
+   *  * Any class with the `@Component` or `@Directive` decorator
+   *  * A template reference variable as a string (for example, query `<my-component #cmp></my-component>`
+   * with `@ViewChild('cmp')`)
+   *   * Any provider defined in the child component tree of the current component (for example,
+   * `@ViewChild(SomeService) someService: SomeService`)
+   *   * Any provider defined through a string token (for example, `@ViewChild('someToken') someTokenVal:
+   * any`)
+   *   * A `TemplateRef` (for example, query `<ng-template></ng-template>` with `@ViewChild(TemplateRef)
+   * template;`)
+   *
+   * Creates a `QueryList` of changes in the view DOM.
+   * Any time a child element is added, removed, or moved, the query list is updated,
+   * and the `changes` observable of the query list emits a new value.
    *
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
-   * **Metadata Properties**:
-   *
-   * * **selector** - The directive type or the name used for querying.
-   * * **read** - Used to read a different token from the queried elements.
-   * * **static** - True to resolve query results before change detection runs,
-   * false to resolve after change detection. Defaults to false.
-   *
-   *
-   * The following selectors are supported.
-   *   * Any class with the `@Component` or `@Directive` decorator
-   *   * A template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
-   * with `@ViewChild('cmp')`)
-   *   * Any provider defined in the child component tree of the current component (e.g.
-   * `@ViewChild(SomeComponent) someComponent: SomeComponent`)
-   *   * Any provider defined through a string token (e.g. `@ViewChild('someToken') someTokenVal:
-   * any`)
-   *   * A `TemplateRef` (e.g. query `<ng-template></ng-template>` with `@ViewChild(TemplateRef)
-   * template;`)
-   *
-   * @usageNotes
+   * The following basic example shows how to set up a view query.
    *
    * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
    *
-   * ### Example 2
+   * The following slightly more complete example shows how a view query
+   * can be used to implement a tab pane component.
    *
    * {@example core/di/ts/viewChild/view_child_howto.ts region='HowTo'}
+   *
+   * @see `QueryList`
+   * @see [Lifecycle hooks guide](guide/lifecycle-hooks)
+   * @see `ViewChildren`
    *
    * @Annotation
    */
