@@ -442,7 +442,10 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   get value(): any { return this._value; }
   set value(newValue: any) {
     if (newValue !== this._value) {
-      this.writeValue(newValue);
+      if (this.options) {
+        this._setSelectionByValue(newValue);
+      }
+
       this._value = newValue;
     }
   }
@@ -676,9 +679,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    * @param value New value to be written to the model.
    */
   writeValue(value: any): void {
-    if (this.options) {
-      this._setSelectionByValue(value);
-    }
+    this.value = value;
   }
 
   /**
@@ -1003,7 +1004,10 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     if (option.value == null && !this._multiple) {
       option.deselect();
       this._selectionModel.clear();
-      this._propagateChanges(option.value);
+
+      if (this.value != null) {
+        this._propagateChanges(option.value);
+      }
     } else {
       if (wasSelected !== option.selected) {
         option.selected ? this._selectionModel.select(option) :

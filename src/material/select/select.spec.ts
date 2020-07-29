@@ -2910,6 +2910,44 @@ describe('MatSelect', () => {
         }));
   });
 
+  describe('with reset option and a form control', () => {
+    let fixture: ComponentFixture<SelectWithResetOptionAndFormControl>;
+    let options: HTMLElement[];
+
+    beforeEach(fakeAsync(() => {
+      configureMatSelectTestingModule([SelectWithResetOptionAndFormControl]);
+      fixture = TestBed.createComponent(SelectWithResetOptionAndFormControl);
+      fixture.detectChanges();
+      fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement.click();
+      fixture.detectChanges();
+      options = Array.from(overlayContainerElement.querySelectorAll('mat-option'));
+    }));
+
+    it('should set the select value', fakeAsync(() => {
+      fixture.componentInstance.control.setValue('a');
+      fixture.detectChanges();
+      expect(fixture.componentInstance.select.value).toBe('a');
+    }));
+
+    it('should reset the control value', fakeAsync(() => {
+      fixture.componentInstance.control.setValue('a');
+      fixture.detectChanges();
+
+      options[0].click();
+      fixture.detectChanges();
+      flush();
+      expect(fixture.componentInstance.control.value).toBe(undefined);
+    }));
+
+    it('should reflect the value in the form control', fakeAsync(() => {
+      options[1].click();
+      fixture.detectChanges();
+      flush();
+      expect(fixture.componentInstance.select.value).toBe('a');
+      expect(fixture.componentInstance.control.value).toBe('a');
+    }));
+  });
+
   describe('without Angular forms', () => {
     beforeEach(async(() => configureMatSelectTestingModule([
       BasicSelectWithoutForms,
@@ -3187,6 +3225,63 @@ describe('MatSelect', () => {
           .toBeFalsy('Expected no value after tabbing away.');
     }));
 
+    it('should emit once when a reset value is selected', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicSelectWithoutForms);
+      const instance = fixture.componentInstance;
+      const spy = jasmine.createSpy('change spy');
+
+      instance.selectedFood = 'sandwich-2';
+      instance.foods[0].value = null;
+      fixture.detectChanges();
+
+      const subscription = instance.select.selectionChange.subscribe(spy);
+
+      fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
+      fixture.detectChanges();
+      flush();
+
+      (overlayContainerElement.querySelector('mat-option') as HTMLElement).click();
+      fixture.detectChanges();
+      flush();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      subscription.unsubscribe();
+    }));
+
+    it('should not emit the change event multiple times when a reset option is ' +
+      'selected twice in a row', fakeAsync(() => {
+        const fixture = TestBed.createComponent(BasicSelectWithoutForms);
+        const instance = fixture.componentInstance;
+        const spy = jasmine.createSpy('change spy');
+
+        instance.foods[0].value = null;
+        fixture.detectChanges();
+
+        const subscription = instance.select.selectionChange.subscribe(spy);
+
+        fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
+        fixture.detectChanges();
+        flush();
+
+        (overlayContainerElement.querySelector('mat-option') as HTMLElement).click();
+        fixture.detectChanges();
+        flush();
+
+        expect(spy).not.toHaveBeenCalled();
+
+        fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
+        fixture.detectChanges();
+        flush();
+
+        (overlayContainerElement.querySelector('mat-option') as HTMLElement).click();
+        fixture.detectChanges();
+        flush();
+
+        expect(spy).not.toHaveBeenCalled();
+
+        subscription.unsubscribe();
+      }));
 
   });
 
@@ -5314,4 +5409,24 @@ class MultiSelectWithLotsOfOptions {
   uncheckAll() {
     this.value = [];
   }
+}
+
+
+@Component({
+  selector: 'basic-select-with-reset',
+  template: `
+    <mat-form-field>
+      <mat-select [formControl]="control">
+        <mat-option>Reset</mat-option>
+        <mat-option value="a">A</mat-option>
+        <mat-option value="b">B</mat-option>
+        <mat-option value="c">C</mat-option>
+      </mat-select>
+    </mat-form-field>
+  `
+})
+class SelectWithResetOptionAndFormControl {
+  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  control = new FormControl();
 }
