@@ -9,59 +9,83 @@
 
 
 export class CopierService {
-    private fakeElem: HTMLTextAreaElement|null;
+  /**
+   * Copy the contents of a `<textarea>` element to the clipboard.
+   *
+   * NOTE: For this method to work, the elements must be already inserted into the DOM.
+   *
+   * @param textArea The area containing the text to be copied to the clipboard.
+   * @return Whether the copy operation was successful.
+   */
+  private copyTextArea(textArea: HTMLTextAreaElement): boolean {
+    try {
+      textArea.select();
+      textArea.setSelectionRange(0, textArea.value.length);
 
-    /**
-     * Creates a fake textarea element, sets its value from `text` property,
-     * and makes a selection on it.
-     */
-    createFake(text: string) {
-      const docElem = document.documentElement!;
-      const isRTL = docElem.getAttribute('dir') === 'rtl';
+      return document.execCommand('copy');
+    } catch {
+      return false;
+    }
+  }
 
-      // Create a fake element to hold the contents to copy
-      this.fakeElem = document.createElement('textarea');
+  /**
+   * Create a temporary, hidden `<textarea>` element and set its value to the specified text.
+   *
+   * @param text The text to be inserted into the textarea.
+   * @return The temporary `<textarea>` element containing the specified text.
+   */
+  private createTextArea(text: string): HTMLTextAreaElement {
+    const docElem = document.documentElement!;
+    const isRTL = docElem.getAttribute('dir') === 'rtl';
 
-      // Prevent zooming on iOS
-      this.fakeElem.style.fontSize = '12pt';
+    // Create a temporary element to hold the contents to copy.
+    const textArea = document.createElement('textarea');
+    const style = textArea.style;
 
-      // Reset box model
-      this.fakeElem.style.border = '0';
-      this.fakeElem.style.padding = '0';
-      this.fakeElem.style.margin = '0';
+    // Prevent zooming on iOS.
+    style.fontSize = '12pt';
 
-      // Move element out of screen horizontally
-      this.fakeElem.style.position = 'absolute';
-      this.fakeElem.style[ isRTL ? 'right' : 'left' ] = '-9999px';
+    // Reset box model.
+    style.border = '0';
+    style.padding = '0';
+    style.margin = '0';
 
-      // Move element to the same position vertically
-      const yPosition = window.pageYOffset || docElem.scrollTop;
-      this.fakeElem.style.top = yPosition + 'px';
+    // Move element out of screen horizontally.
+    style.position = 'absolute';
+    style[ isRTL ? 'right' : 'left' ] = '-9999px';
 
-      this.fakeElem.setAttribute('readonly', '');
-      this.fakeElem.value = text;
+    // Move element to the same position vertically.
+    const yPosition = window.pageYOffset || docElem.scrollTop;
+    style.top = yPosition + 'px';
 
-      document.body.appendChild(this.fakeElem);
+    textArea.setAttribute('readonly', '');
+    textArea.value = text;
 
-      this.fakeElem.select();
-      this.fakeElem.setSelectionRange(0, this.fakeElem.value.length);
+    return textArea;
+  }
+
+  /**
+   * Copy the specified text to the clipboard.
+   *
+   * @param text The text to be copied to the clipboard.
+   * @return Whether the copy operation was successful.
+   */
+  copyText(text: string): boolean {
+    // Create a `<textarea>` element with the specified text.
+    const textArea = this.createTextArea(text);
+
+    // Insert it into the DOM.
+    document.body.appendChild(textArea);
+
+    // Copy its contents to the clipboard.
+    const success = this.copyTextArea(textArea);
+
+    // Remove it from the DOM, so it can be garbage-collected.
+    if (textArea.parentNode) {
+      // We cannot use ChildNode.remove() because of IE11.
+      textArea.parentNode.removeChild(textArea);
     }
 
-    removeFake() {
-      if (this.fakeElem) {
-        document.body.removeChild(this.fakeElem);
-        this.fakeElem = null;
-      }
-    }
-
-    copyText(text: string) {
-      try {
-        this.createFake(text);
-        return document.execCommand('copy');
-      } catch (err) {
-        return false;
-      } finally {
-        this.removeFake();
-      }
-    }
+    return success;
+  }
 }
