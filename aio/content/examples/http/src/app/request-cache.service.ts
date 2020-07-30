@@ -12,7 +12,7 @@ export interface RequestCacheEntry {
 // #docregion request-cache
 export abstract class RequestCache {
   abstract get(req: HttpRequest<any>): HttpResponse<any> | undefined;
-  abstract put(req: HttpRequest<any>, response: HttpResponse<any>): void
+  abstract put(req: HttpRequest<any>, response: HttpResponse<any>): void;
 }
 // #enddocregion request-cache
 

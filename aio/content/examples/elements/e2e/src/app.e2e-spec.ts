@@ -14,7 +14,7 @@ describe('Elements', () => {
   const waitForText = (elem: ElementFinder) => {
     // Waiting for the element to have some text, makes the tests less flaky.
     browser.wait(async () => /\S/.test(await elem.getText()), 5000);
-  }
+  };
 
   beforeEach(() => browser.get(''));
 

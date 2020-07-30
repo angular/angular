@@ -139,5 +139,5 @@ class Page {
     // Get the component's injected router navigation spy
     const routerSpy = fixture.debugElement.injector.get(Router);
     this.navSpy = routerSpy.navigate as jasmine.Spy;
-  };
+  }
 }
