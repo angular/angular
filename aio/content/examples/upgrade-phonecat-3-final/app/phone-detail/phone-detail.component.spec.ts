@@ -42,7 +42,7 @@ describe('PhoneDetailComponent', () => {
       declarations: [ CheckmarkPipe, PhoneDetailComponent ],
       providers: [
         { provide: Phone, useClass: MockPhone },
-        { provide: ActivatedRoute, useValue: new ActivatedRouteMock({ params: { 'phoneId': 1 } }) }
+        { provide: ActivatedRoute, useValue: new ActivatedRouteMock({ params: { phoneId: 1 } }) }
       ]
     })
     .compileComponents();
