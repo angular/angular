@@ -1,19 +1,19 @@
 import { browser, element, by } from 'protractor';
 
 describe('Displaying Data Tests', () => {
-  let _title = 'Tour of Heroes';
-  let _defaultHero = 'Windstorm';
+  let title = 'Tour of Heroes';
+  let defaultHero = 'Windstorm';
 
   beforeAll(() => {
     browser.get('');
   });
 
-  it('should display correct title: ' + _title, () => {
-    expect(element(by.css('h1')).getText()).toEqual(_title);
+  it('should display correct title: ' + title, () => {
+    expect(element(by.css('h1')).getText()).toEqual(title);
   });
 
-  it('should have correct default hero:  ' + _defaultHero, () => {
-    expect(element(by.css('h2')).getText()).toContain(_defaultHero);
+  it('should have correct default hero:  ' + defaultHero, () => {
+    expect(element(by.css('h2')).getText()).toContain(defaultHero);
   });
 
   it('should have heroes', () => {
