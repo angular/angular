@@ -11,7 +11,7 @@ export function addMatchers(): void {
 
 function toHaveText(): jasmine.CustomMatcher {
   return {
-    compare: function (actual: any, expectedText: string, expectationFailOutput?: any): jasmine.CustomMatcherResult {
+    compare: (actual: any, expectedText: string, expectationFailOutput?: any): jasmine.CustomMatcherResult => {
       const actualText = elementText(actual);
       const pass = actualText.indexOf(expectedText) > -1;
       const message = pass ? '' : composeMessage();

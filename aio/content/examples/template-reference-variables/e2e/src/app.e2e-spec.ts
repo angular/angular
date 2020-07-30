@@ -1,8 +1,8 @@
 import { browser, element, by } from 'protractor';
 import { logging } from 'selenium-webdriver';
 
-describe('Template-reference-variables-example', function() {
-  beforeEach(function() {
+describe('Template-reference-variables-example', () => {
+  beforeEach(() => {
     browser.get('');
 
   });
@@ -19,7 +19,7 @@ describe('Template-reference-variables-example', function() {
     expect(message.length).toBeGreaterThan(0);
   }
 
-  it('should display Template reference variables', function() {
+  it('should display Template reference variables', () => {
     expect(element(by.css('h1')).getText()).toEqual(
       'Template reference variables'
     );
@@ -43,7 +43,7 @@ describe('Template-reference-variables-example', function() {
     await logChecker(faxButton, contents);
   });
 
-  it('should display a disabled button', function() {
+  it('should display a disabled button', () => {
     let disabledButton = element.all(by.css('button')).get(2);
     expect(disabledButton.isEnabled()).toBe(false);
   });

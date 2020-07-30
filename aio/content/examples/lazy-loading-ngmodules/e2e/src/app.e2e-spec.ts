@@ -18,24 +18,24 @@ describe('providers App', () => {
     expect(page.getTitleText()).toEqual('Lazy loading feature modules');
   });
 
-  describe('Customers', function() {
-    beforeEach(function() {
+  describe('Customers', () => {
+    beforeEach(() => {
       customersButton.click();
     });
 
-    it('should show customers when the button is clicked', function() {
+    it('should show customers when the button is clicked', () => {
         let customersMessage = element(by.css('app-customers > p'));
         expect(customersMessage.getText()).toBe('customers works!');
     });
 
   });
 
-  describe('Orders', function() {
-    beforeEach(function() {
+  describe('Orders', () => {
+    beforeEach(() => {
       ordersButton.click();
     });
 
-    it('should show orders when the button is clicked', function() {
+    it('should show orders when the button is clicked', () => {
         let ordersMessage = element(by.css('app-orders > p'));
         expect(ordersMessage.getText()).toBe('orders works!');
     });

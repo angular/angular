@@ -1,7 +1,7 @@
 import { browser, element, by } from 'protractor';
 import { logging } from 'selenium-webdriver';
 
-describe('Inputs and Outputs', function () {
+describe('Inputs and Outputs', () => {
 
 
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe('Inputs and Outputs', function () {
     expect(message.length).toBeGreaterThan(0);
   }
 
-  it('should have title Inputs and Outputs', function () {
+  it('should have title Inputs and Outputs', () => {
     let title = element.all(by.css('h1')).get(0);
     expect(title.getText()).toEqual('Inputs and Outputs');
   });

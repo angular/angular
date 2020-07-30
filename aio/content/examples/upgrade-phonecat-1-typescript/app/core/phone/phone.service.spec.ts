@@ -8,7 +8,7 @@ describe('Phone', () => {
   ];
 
   // Add a custom equality tester before each test
-  beforeEach(function() {
+  beforeEach(() => {
     jasmine.addCustomEqualityTester(angular.equals);
   });
 
@@ -16,7 +16,7 @@ describe('Phone', () => {
   beforeEach(angular.mock.module('core.phone'));
 
   // Instantiate the service and "train" `$httpBackend` before each test
-  beforeEach(inject(function(_$httpBackend_: angular.IHttpBackendService, _Phone_: any) {
+  beforeEach(inject((_$httpBackend_: angular.IHttpBackendService, _Phone_: any) => {
     $httpBackend = _$httpBackend_;
     $httpBackend.expectGET('phones/phones.json').respond(phonesData);
 
