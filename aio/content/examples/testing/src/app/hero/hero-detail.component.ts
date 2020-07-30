@@ -17,7 +17,7 @@ export class HeroDetailComponent implements OnInit {
   // #docregion ctor
   constructor(
     private heroDetailService: HeroDetailService,
-    private route:  ActivatedRoute,
+    private route: ActivatedRoute,
     private router: Router) {
   }
   // #enddocregion ctor

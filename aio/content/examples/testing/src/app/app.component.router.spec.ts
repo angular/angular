@@ -156,9 +156,9 @@ function createComponent() {
 }
 
 class Page {
-  aboutLinkDe:     DebugElement;
+  aboutLinkDe: DebugElement;
   dashboardLinkDe: DebugElement;
-  heroesLinkDe:    DebugElement;
+  heroesLinkDe: DebugElement;
 
   // for debugging
   comp: AppComponent;

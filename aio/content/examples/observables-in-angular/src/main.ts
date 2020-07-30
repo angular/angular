@@ -7,13 +7,14 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'zippy',
   template: `
-  <div class="zippy">
-    <div (click)="toggle()">Toggle</div>
-    <div [hidden]="!visible">
-      <ng-content></ng-content>
+    <div class="zippy">
+      <div (click)="toggle()">Toggle</div>
+      <div [hidden]="!visible">
+        <ng-content></ng-content>
+      </div>
     </div>
-  </div>`})
-
+  `,
+})
 export class ZippyComponent {
   visible = true;
   @Output() open = new EventEmitter<any>();

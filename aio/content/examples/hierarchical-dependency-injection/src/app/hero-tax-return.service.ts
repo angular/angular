@@ -10,12 +10,12 @@ export class HeroTaxReturnService {
 
   constructor(private heroService: HeroesService) { }
 
-  set taxReturn (htr: HeroTaxReturn) {
+  set taxReturn(htr: HeroTaxReturn) {
     this.originalTaxReturn = htr;
     this.currentTaxReturn  = htr.clone();
   }
 
-  get taxReturn (): HeroTaxReturn {
+  get taxReturn(): HeroTaxReturn {
     return this.currentTaxReturn;
   }
 

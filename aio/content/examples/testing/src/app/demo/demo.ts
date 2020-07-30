@@ -51,7 +51,7 @@ export class MasterService {
 export class ReversePipe implements PipeTransform {
   transform(s: string) {
     let r = '';
-    for (let i = s.length; i; )  { r += s[--i]; };
+    for (let i = s.length; i; ) { r += s[--i]; };
     return r;
   }
 }

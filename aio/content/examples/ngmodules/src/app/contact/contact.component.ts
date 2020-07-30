@@ -11,7 +11,7 @@ import { UserService } from '../greeting/user.service';
   styleUrls: [ './contact.component.css' ]
 })
 export class ContactComponent implements OnInit {
-  contact:  Contact;
+  contact: Contact;
   contacts: Contact[];
 
   msg = 'Loading contacts ...';
