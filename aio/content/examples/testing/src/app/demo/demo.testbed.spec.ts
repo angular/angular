@@ -557,8 +557,8 @@ describe('demo (with TestBed):', () => {
 
   describe('lifecycle hooks w/ MyIfParentComp', () => {
     let fixture: ComponentFixture<MyIfParentComponent>;
-    let parent:  MyIfParentComponent;
-    let child:   MyIfChildComponent;
+    let parent: MyIfParentComponent;
+    let child: MyIfChildComponent;
 
     beforeEach(() => {
       TestBed.configureTestingModule({

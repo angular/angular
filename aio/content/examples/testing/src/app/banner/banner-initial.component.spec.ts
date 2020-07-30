@@ -75,16 +75,16 @@ describe('BannerComponent (with beforeEach)', () => {
   it('should create', () => {
     expect(component).toBeDefined();
   });
-// #enddocregion v3
+  // #enddocregion v3
 
-// #docregion v4-test-2
+  // #docregion v4-test-2
   it('should contain "banner works!"', () => {
     const bannerElement: HTMLElement = fixture.nativeElement;
     expect(bannerElement.textContent).toContain('banner works!');
   });
-// #enddocregion v4-test-2
+  // #enddocregion v4-test-2
 
-// #docregion v4-test-3
+  // #docregion v4-test-3
   it('should have <p> with "banner works!"', () => {
     // #docregion nativeElement
     const bannerElement: HTMLElement = fixture.nativeElement;
@@ -92,28 +92,28 @@ describe('BannerComponent (with beforeEach)', () => {
     const p = bannerElement.querySelector('p');
     expect(p.textContent).toEqual('banner works!');
   });
-// #enddocregion v4-test-3
+  // #enddocregion v4-test-3
 
 
-// #docregion v4-test-4
-it('should find the <p> with fixture.debugElement.nativeElement)', () => {
-  // #docregion debugElement-nativeElement
-  const bannerDe: DebugElement = fixture.debugElement;
-  const bannerEl: HTMLElement = bannerDe.nativeElement;
-  // #enddocregion debugElement-nativeElement
-  const p = bannerEl.querySelector('p');
-  expect(p.textContent).toEqual('banner works!');
-});
-// #enddocregion v4-test-4
+  // #docregion v4-test-4
+  it('should find the <p> with fixture.debugElement.nativeElement)', () => {
+    // #docregion debugElement-nativeElement
+    const bannerDe: DebugElement = fixture.debugElement;
+    const bannerEl: HTMLElement = bannerDe.nativeElement;
+    // #enddocregion debugElement-nativeElement
+    const p = bannerEl.querySelector('p');
+    expect(p.textContent).toEqual('banner works!');
+  });
+  // #enddocregion v4-test-4
 
-// #docregion v4-test-5
-it('should find the <p> with fixture.debugElement.query(By.css)', () => {
-  const bannerDe: DebugElement = fixture.debugElement;
-  const paragraphDe = bannerDe.query(By.css('p'));
-  const p: HTMLElement = paragraphDe.nativeElement;
-  expect(p.textContent).toEqual('banner works!');
-});
-// #enddocregion v4-test-5
-// #docregion v3
+  // #docregion v4-test-5
+  it('should find the <p> with fixture.debugElement.query(By.css)', () => {
+    const bannerDe: DebugElement = fixture.debugElement;
+    const paragraphDe = bannerDe.query(By.css('p'));
+    const p: HTMLElement = paragraphDe.nativeElement;
+    expect(p.textContent).toEqual('banner works!');
+  });
+  // #enddocregion v4-test-5
+  // #docregion v3
 });
 // #enddocregion v3, v4

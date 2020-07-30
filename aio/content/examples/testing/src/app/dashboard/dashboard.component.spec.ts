@@ -109,12 +109,12 @@ function tests(heroClick: Function) {
     let router: Router;
 
      // Trigger component so it gets heroes and binds to them
-     beforeEach(async(() => {
-        router = fixture.debugElement.injector.get(Router);
-        fixture.detectChanges(); // runs ngOnInit -> getHeroes
-        fixture.whenStable() // No need for the `lastPromise` hack!
-          .then(() => fixture.detectChanges()); // bind to heroes
-     }));
+    beforeEach(async(() => {
+      router = fixture.debugElement.injector.get(Router);
+      fixture.detectChanges(); // runs ngOnInit -> getHeroes
+      fixture.whenStable() // No need for the `lastPromise` hack!
+        .then(() => fixture.detectChanges()); // bind to heroes
+    }));
 
     it('should HAVE heroes', () => {
       expect(comp.heroes.length).toBeGreaterThan(0,
