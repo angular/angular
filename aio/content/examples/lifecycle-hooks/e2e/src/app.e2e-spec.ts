@@ -135,7 +135,7 @@ describe('Lifecycle hooks', () => {
     const inputEle = element(by.css('spy-parent input'));
     const addHeroButtonEle = element(by.cssContainingText('spy-parent button', 'Add Hero'));
     const resetHeroesButtonEle = element(by.cssContainingText('spy-parent button', 'Reset Heroes'));
-    const heroEles = element.all(by.css('spy-parent div[mySpy'));
+    const heroEles = element.all(by.css('spy-parent div[appSpy'));
     const logEles = element.all(by.css('spy-parent h4 ~ div'));
 
     expect(heroEles.count()).toBe(2, 'should have two heroes displayed');

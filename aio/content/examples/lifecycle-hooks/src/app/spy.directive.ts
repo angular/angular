@@ -7,8 +7,8 @@ let nextId = 1;
 
 // #docregion spy-directive
 // Spy on any element to which it is applied.
-// Usage: <div mySpy>...</div>
-@Directive({selector: '[mySpy]'})
+// Usage: <div appSpy>...</div>
+@Directive({selector: '[appSpy]'})
 export class SpyDirective implements OnInit, OnDestroy {
 
   constructor(private logger: LoggerService) { }

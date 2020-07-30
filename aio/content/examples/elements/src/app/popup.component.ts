@@ -1,6 +1,6 @@
 // tslint:disable: variable-name
 // #docregion
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -9,9 +9,6 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
     <span>Popup: {{message}}</span>
     <button (click)="closed.next()">&#x2716;</button>
   `,
-  host: {
-    '[@state]': 'state',
-  },
   animations: [
     trigger('state', [
       state('opened', style({transform: 'translateY(0%)'})),
@@ -41,6 +38,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
   `]
 })
 export class PopupComponent {
+  @HostBinding('@state')
   state: 'opened' | 'closed' = 'closed';
 
   @Input()
