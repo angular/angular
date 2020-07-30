@@ -1,5 +1,3 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, by, element, ElementFinder, ExpectedConditions as EC } from 'protractor';
 
 /* tslint:disable:quotemark */

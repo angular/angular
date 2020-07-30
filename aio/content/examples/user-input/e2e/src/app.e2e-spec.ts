@@ -1,5 +1,3 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by, protractor } from 'protractor';
 
 describe('User Input Tests', function () {

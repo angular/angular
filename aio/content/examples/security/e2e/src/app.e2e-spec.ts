@@ -1,5 +1,3 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, By } from 'protractor';
 
 describe('Security E2E Tests', () => {
