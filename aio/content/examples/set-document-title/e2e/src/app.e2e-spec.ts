@@ -6,7 +6,7 @@ describe('Set Document Title', () => {
 
   it('should set the document title', () => {
 
-    let titles = [
+    const titles = [
       'Good morning!',
       'Good afternoon!',
       'Good evening!'

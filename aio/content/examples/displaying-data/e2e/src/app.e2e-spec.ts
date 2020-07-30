@@ -1,8 +1,8 @@
 import { browser, element, by } from 'protractor';
 
 describe('Displaying Data Tests', () => {
-  let title = 'Tour of Heroes';
-  let defaultHero = 'Windstorm';
+  const title = 'Tour of Heroes';
+  const defaultHero = 'Windstorm';
 
   beforeAll(() => {
     browser.get('');
@@ -17,7 +17,7 @@ describe('Displaying Data Tests', () => {
   });
 
   it('should have heroes', () => {
-    let heroEls = element.all(by.css('li'));
+    const heroEls = element.all(by.css('li'));
     expect(heroEls.count()).not.toBe(0, 'should have heroes');
   });
 

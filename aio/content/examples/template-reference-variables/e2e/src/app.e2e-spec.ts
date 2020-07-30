@@ -21,8 +21,8 @@ describe('Template-reference-variables-example', () => {
   });
 
   it('should log a Calling 123 ... message', async () => {
-    let callButton = element.all(by.css('button')).get(0);
-    let phoneInput = element.all(by.css('input')).get(0);
+    const callButton = element.all(by.css('button')).get(0);
+    const phoneInput = element.all(by.css('input')).get(0);
     await phoneInput.sendKeys('123');
     await callButton.click();
     const contents = 'Calling 123 ...';
@@ -30,8 +30,8 @@ describe('Template-reference-variables-example', () => {
   });
 
   it('should log a Faxing 123 ... message', async () => {
-    let faxButton = element.all(by.css('button')).get(1);
-    let faxInput = element.all(by.css('input')).get(1);
+    const faxButton = element.all(by.css('button')).get(1);
+    const faxInput = element.all(by.css('input')).get(1);
     await faxInput.sendKeys('123');
     await faxButton.click();
     const contents = 'Faxing 123 ...';
@@ -39,13 +39,13 @@ describe('Template-reference-variables-example', () => {
   });
 
   it('should display a disabled button', () => {
-    let disabledButton = element.all(by.css('button')).get(2);
+    const disabledButton = element.all(by.css('button')).get(2);
     expect(disabledButton.isEnabled()).toBe(false);
   });
 
   it('should submit form', async () => {
-    let submitButton = element.all(by.css('button')).get(3);
-    let nameInput = element.all(by.css('input')).get(2);
+    const submitButton = element.all(by.css('button')).get(3);
+    const nameInput = element.all(by.css('input')).get(2);
     await nameInput.sendKeys('123');
     await submitButton.click();
     expect(element.all(by.css('div > p')).get(2).getText()).toEqual('Submitted. Form value is {"name":"123"}');

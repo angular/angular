@@ -6,10 +6,10 @@ describe('Two-way binding e2e tests', () => {
     browser.get('');
   });
 
-  let minusButton = element.all(by.css('button')).get(0);
-  let plusButton = element.all(by.css('button')).get(1);
-  let minus2Button = element.all(by.css('button')).get(2);
-  let plus2Button = element.all(by.css('button')).get(3);
+  const minusButton = element.all(by.css('button')).get(0);
+  const plusButton = element.all(by.css('button')).get(1);
+  const minus2Button = element.all(by.css('button')).get(2);
+  const plus2Button = element.all(by.css('button')).get(3);
 
   it('should display Two-way Binding', () => {
     expect(element(by.css('h1')).getText()).toEqual('Two-way Binding');

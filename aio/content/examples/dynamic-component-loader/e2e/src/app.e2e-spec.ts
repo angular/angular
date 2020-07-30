@@ -8,9 +8,9 @@ describe('Dynamic Component Loader', () => {
   });
 
   it('should load ad banner', () => {
-    let headline = element(by.xpath("//h4[text()='Featured Hero Profile']"));
-    let name = element(by.xpath("//h3[text()='Bombasto']"));
-    let bio = element(by.xpath("//p[text()='Brave as they come']"));
+    const headline = element(by.xpath("//h4[text()='Featured Hero Profile']"));
+    const name = element(by.xpath("//h3[text()='Bombasto']"));
+    const bio = element(by.xpath("//p[text()='Brave as they come']"));
 
     expect(name).toBeDefined();
     expect(headline).toBeDefined();

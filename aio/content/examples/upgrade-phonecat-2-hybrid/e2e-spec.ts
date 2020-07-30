@@ -18,8 +18,8 @@ describe('PhoneCat Application', () => {
     });
 
     it('should filter the phone list as a user types into the search box', () => {
-      let phoneList = element.all(by.css('.phones li'));
-      let query = element(by.css('input'));
+      const phoneList = element.all(by.css('.phones li'));
+      const query = element(by.css('input'));
 
       expect(phoneList.count()).toBe(20);
 
@@ -32,10 +32,10 @@ describe('PhoneCat Application', () => {
     });
 
     it('should be possible to control phone order via the drop-down menu', () => {
-      let queryField = element(by.css('input'));
-      let orderSelect = element(by.css('select'));
-      let nameOption = orderSelect.element(by.css('option[value="name"]'));
-      let phoneNameColumn = element.all(by.css('.phones .name'));
+      const queryField = element(by.css('input'));
+      const orderSelect = element(by.css('select'));
+      const nameOption = orderSelect.element(by.css('option[value="name"]'));
+      const phoneNameColumn = element.all(by.css('.phones .name'));
 
       function getNames() {
         return phoneNameColumn.map((elem) => elem.getText());
@@ -57,7 +57,7 @@ describe('PhoneCat Application', () => {
     });
 
     it('should render phone specific links', () => {
-      let query = element(by.css('input'));
+      const query = element(by.css('input'));
       query.sendKeys('nexus');
 
       element.all(by.css('.phones li a')).first().click();
@@ -78,14 +78,14 @@ describe('PhoneCat Application', () => {
     });
 
     it('should display the first phone image as the main phone image', () => {
-      let mainImage = element(by.css('img.phone.selected'));
+      const mainImage = element(by.css('img.phone.selected'));
 
       expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
 
     it('should swap the main image when clicking on a thumbnail image', () => {
-      let mainImage = element(by.css('img.phone.selected'));
-      let thumbnails = element.all(by.css('.phone-thumbs img'));
+      const mainImage = element(by.css('img.phone.selected'));
+      const thumbnails = element.all(by.css('.phone-thumbs img'));
 
       thumbnails.get(2).click();
       expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.2.jpg/);

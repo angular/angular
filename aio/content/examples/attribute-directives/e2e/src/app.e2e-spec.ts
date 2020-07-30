@@ -2,7 +2,7 @@ import { browser, element, by } from 'protractor';
 
 describe('Attribute directives', () => {
 
-  let title = 'My First Attribute Directive';
+  const title = 'My First Attribute Directive';
 
   beforeAll(() => {
     browser.get('');

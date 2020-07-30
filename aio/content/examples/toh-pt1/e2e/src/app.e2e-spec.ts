@@ -12,9 +12,9 @@ class Hero {
   // Get hero id and name from the given detail element.
   static async fromDetail(detail: ElementFinder): Promise<Hero> {
     // Get hero id from the first <div>
-    let id = await detail.all(by.css('div')).first().getText();
+    const id = await detail.all(by.css('div')).first().getText();
     // Get name from the h2
-    let name = await detail.element(by.css('h2')).getText();
+    const name = await detail.element(by.css('h2')).getText();
     return {
       id: +id.substr(id.indexOf(' ') + 1),
       name: name.substr(0, name.lastIndexOf(' '))
@@ -24,7 +24,7 @@ class Hero {
 
 const nameSuffix = 'X';
 function addToHeroName(text: string): promise.Promise<void> {
-  let input = element(by.css('input'));
+  const input = element(by.css('input'));
   return input.sendKeys(text);
 }
 
@@ -39,22 +39,22 @@ describe('Tutorial part 1', () => {
   });
 
   it(`has h1 '${expectedH1}'`, () => {
-    let hText = element(by.css('h1')).getText();
+    const hText = element(by.css('h1')).getText();
     expect(hText).toEqual(expectedH1, 'h1');
   });
 
   it(`shows initial hero details`, async () => {
-    let page = getPageElts();
-    let hero = await Hero.fromDetail(page.heroDetail);
+    const page = getPageElts();
+    const hero = await Hero.fromDetail(page.heroDetail);
     expect(hero.id).toEqual(expectedHero.id);
     expect(hero.name).toEqual(expectedHero.name.toUpperCase());
   });
 
   it(`shows updated hero name`, async () => {
     addToHeroName(nameSuffix);
-    let page = getPageElts();
-    let hero = await Hero.fromDetail(page.heroDetail);
-    let newName = expectedHero.name + nameSuffix;
+    const page = getPageElts();
+    const hero = await Hero.fromDetail(page.heroDetail);
+    const newName = expectedHero.name + nameSuffix;
     expect(hero.id).toEqual(expectedHero.id);
     expect(hero.name).toEqual(newName.toUpperCase());
   });

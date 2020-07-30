@@ -1,7 +1,7 @@
 import { browser, element, by } from 'protractor';
 
 describe('Docs Style Guide', () => {
-  let title = 'Authors Style Guide Sample';
+  const title = 'Authors Style Guide Sample';
 
   beforeAll(() => {
     browser.get('');

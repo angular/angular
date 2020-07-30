@@ -12,7 +12,7 @@ describe('AngularJS to Angular Quick Reference Tests', () => {
 
   it('should display proper movie data', () => {
     // We check only a few samples
-    let expectedSamples: any[] = [
+    const expectedSamples: any[] = [
       {row: 0, column: 0, element: 'img', attr: 'src', value: 'images/hero.png', contains: true},
       {row: 0, column: 2, value: 'Celeritas'},
       {row: 1, column: 3, matches: /Dec 1[678], 2015/}, // absorb timezone dif; we care about date format
@@ -23,18 +23,18 @@ describe('AngularJS to Angular Quick Reference Tests', () => {
     ];
 
     // Go through the samples
-    let movieRows = getMovieRows();
+    const movieRows = getMovieRows();
     for (let i = 0; i < expectedSamples.length; i++) {
-      let sample = expectedSamples[i];
-      let tableCell = movieRows.get(sample.row)
+      const sample = expectedSamples[i];
+      const tableCell = movieRows.get(sample.row)
         .all(by.tagName('td')).get(sample.column);
       // Check the cell or its nested element
-      let elementToCheck = sample.element
+      const elementToCheck = sample.element
         ? tableCell.element(by.tagName(sample.element))
         : tableCell;
 
       // Check element attribute or text
-      let valueToCheck = sample.attr
+      const valueToCheck = sample.attr
         ? elementToCheck.getAttribute(sample.attr)
         : elementToCheck.getText();
 
@@ -70,18 +70,18 @@ describe('AngularJS to Angular Quick Reference Tests', () => {
   });
 
   function testImagesAreDisplayed(isDisplayed: boolean) {
-    let expectedMovieCount = 3;
+    const expectedMovieCount = 3;
 
-    let movieRows = getMovieRows();
+    const movieRows = getMovieRows();
     expect(movieRows.count()).toBe(expectedMovieCount);
     for (let i = 0; i < expectedMovieCount; i++) {
-      let movieImage = movieRows.get(i).element(by.css('td > img'));
+      const movieImage = movieRows.get(i).element(by.css('td > img'));
       expect(movieImage.isDisplayed()).toBe(isDisplayed);
     }
   }
 
   function testPosterButtonClick(expectedButtonText: string, isDisplayed: boolean) {
-    let posterButton = element(by.css('app-movie-list tr > th > button'));
+    const posterButton = element(by.css('app-movie-list tr > th > button'));
     expect(posterButton.getText()).toBe(expectedButtonText);
 
     posterButton.click().then(() => {
@@ -94,10 +94,10 @@ describe('AngularJS to Angular Quick Reference Tests', () => {
   }
 
   function testFavoriteHero(heroName: string, expectedLabel: string) {
-    let movieListComp = element(by.tagName('app-movie-list'));
-    let heroInput = movieListComp.element(by.tagName('input'));
-    let favoriteHeroLabel = movieListComp.element(by.tagName('h3'));
-    let resultLabel = movieListComp.element(by.css('span > p'));
+    const movieListComp = element(by.tagName('app-movie-list'));
+    const heroInput = movieListComp.element(by.tagName('input'));
+    const favoriteHeroLabel = movieListComp.element(by.tagName('h3'));
+    const resultLabel = movieListComp.element(by.css('span > p'));
 
     heroInput.clear().then(() => {
       heroInput.sendKeys(heroName || '');

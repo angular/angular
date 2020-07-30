@@ -9,7 +9,7 @@ class PhoneDetailController {
 
   static $inject = ['$routeParams', 'phone'];
   constructor($routeParams: angular.route.IRouteParamsService, phone: Phone) {
-    let phoneId = $routeParams.phoneId;
+    const phoneId = $routeParams.phoneId;
     phone.get(phoneId).subscribe(data => {
       this.phone = data;
       this.setImage(data.images[0]);

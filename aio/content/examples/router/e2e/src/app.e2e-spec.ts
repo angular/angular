@@ -100,7 +100,7 @@ describe('Router', () => {
     await page.heroesHref.click();
     await browser.sleep(600);
     const heroEle = page.heroesList.get(4);
-    let text = await heroEle.getText();
+    const text = await heroEle.getText();
     expect(text.length).toBeGreaterThan(0, 'hero item text length');
     // remove leading id from text
     const heroText = text.substr(text.indexOf(' ')).trim();
@@ -110,11 +110,11 @@ describe('Router', () => {
     expect(page.heroesList.count()).toBe(0, 'hero list count');
     expect(page.heroDetail.isPresent()).toBe(true, 'hero detail');
     expect(page.heroDetailTitle.getText()).toContain(heroText);
-    let inputEle = page.heroDetail.element(by.css('input'));
+    const inputEle = page.heroDetail.element(by.css('input'));
     await inputEle.sendKeys('-foo');
     expect(page.heroDetailTitle.getText()).toContain(heroText + '-foo');
 
-    let buttonEle = page.heroDetail.element(by.css('button'));
+    const buttonEle = page.heroDetail.element(by.css('button'));
     await buttonEle.click();
     await browser.sleep(600);
     expect(heroEle.getText()).toContain(heroText + '-foo');
@@ -166,7 +166,7 @@ describe('Router', () => {
     const page = getPageStruct();
     await page.crisisHref.click();
     let crisisEle = page.crisisList.get(index);
-    let text = await crisisEle.getText();
+    const text = await crisisEle.getText();
     expect(text.length).toBeGreaterThan(0, 'crisis item text length');
     // remove leading id from text
     const crisisText = text.substr(text.indexOf(' ')).trim();
@@ -174,10 +174,10 @@ describe('Router', () => {
     await crisisEle.click();
     expect(page.crisisDetail.isPresent()).toBe(true, 'crisis detail present');
     expect(page.crisisDetailTitle.getText()).toContain(crisisText);
-    let inputEle = page.crisisDetail.element(by.css('input'));
+    const inputEle = page.crisisDetail.element(by.css('input'));
     await inputEle.sendKeys('-foo');
 
-    let buttonEle = page.crisisDetail.element(by.buttonText(save ? 'Save' : 'Cancel'));
+    const buttonEle = page.crisisDetail.element(by.buttonText(save ? 'Save' : 'Cancel'));
     await buttonEle.click();
     crisisEle = page.crisisList.get(index);
     if (save) {

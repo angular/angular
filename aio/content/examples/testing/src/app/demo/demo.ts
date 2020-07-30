@@ -310,11 +310,11 @@ export class MyIfChildComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-    for (let propName in changes) {
+    for (const propName in changes) {
       this.ngOnChangesCounter += 1;
-      let prop = changes[propName];
-      let cur  = JSON.stringify(prop.currentValue);
-      let prev = JSON.stringify(prop.previousValue);
+      const prop = changes[propName];
+      const cur  = JSON.stringify(prop.currentValue);
+      const prev = JSON.stringify(prop.previousValue);
       this.changeLog.push(`${propName}: currentValue = ${cur}, previousValue = ${prev}`);
     }
   }

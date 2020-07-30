@@ -24,7 +24,7 @@ describe('providers App', () => {
     });
 
     it('should show customers when the button is clicked', () => {
-        let customersMessage = element(by.css('app-customers > p'));
+        const customersMessage = element(by.css('app-customers > p'));
         expect(customersMessage.getText()).toBe('customers works!');
     });
 
@@ -36,7 +36,7 @@ describe('providers App', () => {
     });
 
     it('should show orders when the button is clicked', () => {
-        let ordersMessage = element(by.css('app-orders > p'));
+        const ordersMessage = element(by.css('app-orders > p'));
         expect(ordersMessage.getText()).toBe('orders works!');
     });
 

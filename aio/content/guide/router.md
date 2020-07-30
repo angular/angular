@@ -335,22 +335,22 @@ Inject `ActivatedRoute` and `Router` in the constructor of the component class s
 
 <code-example header="Component 2 (excerpt)">
 
-  item$: Observable<Item>;
+  hero$: Observable<Hero>;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router  ) {}
 
   ngOnInit() {
-    let id = this.route.snapshot.paramMap.get('id');
-    this.hero$ = this.service.getHero(id);
+    const heroId = this.route.snapshot.paramMap.get('id');
+    this.hero$ = this.service.getHero(heroId);
   }
 
-  gotoItems(item: Item) {
-    let heroId = item ? hero.id : null;
-    // Pass along the item id if available
+  gotoItems(hero: Hero) {
+    const heroId = hero ? hero.id : null;
+    // Pass along the hero id if available
     // so that the HeroList component can select that item.
-    this.router.navigate(['/heroes', { id: itemId }]);
+    this.router.navigate(['/heroes', { id: heroId }]);
   }
 
 </code-example>

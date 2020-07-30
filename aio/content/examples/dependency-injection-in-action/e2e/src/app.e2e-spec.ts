@@ -7,68 +7,68 @@ describe('Dependency Injection Cookbook', () => {
     });
 
     it('should render Logged in User example', () => {
-      let loggedInUser = element.all(by.xpath('//h3[text()="Logged in user"]')).get(0);
+      const loggedInUser = element.all(by.xpath('//h3[text()="Logged in user"]')).get(0);
       expect(loggedInUser).toBeDefined();
     });
 
     it('"Bombasto" should be the logged in user', () => {
-      let loggedInUser = element.all(by.xpath('//div[text()="Name: Bombasto"]')).get(0);
+      const loggedInUser = element.all(by.xpath('//div[text()="Name: Bombasto"]')).get(0);
       expect(loggedInUser).toBeDefined();
     });
 
     it('should render sorted heroes', () => {
-      let sortedHeroes = element.all(by.xpath('//h3[text()="Sorted Heroes" and position()=1]')).get(0);
+      const sortedHeroes = element.all(by.xpath('//h3[text()="Sorted Heroes" and position()=1]')).get(0);
       expect(sortedHeroes).toBeDefined();
     });
 
     it('Dr Nice should be in sorted heroes', () => {
-      let sortedHero = element.all(by.xpath('//sorted-heroes/[text()="Dr Nice" and position()=2]')).get(0);
+      const sortedHero = element.all(by.xpath('//sorted-heroes/[text()="Dr Nice" and position()=2]')).get(0);
       expect(sortedHero).toBeDefined();
     });
 
     it('RubberMan should be in sorted heroes', () => {
-      let sortedHero = element.all(by.xpath('//sorted-heroes/[text()="RubberMan" and position()=3]')).get(0);
+      const sortedHero = element.all(by.xpath('//sorted-heroes/[text()="RubberMan" and position()=3]')).get(0);
       expect(sortedHero).toBeDefined();
     });
 
     it('Magma should be in sorted heroes', () => {
-      let sortedHero = element.all(by.xpath('//sorted-heroes/[text()="Magma"]')).get(0);
+      const sortedHero = element.all(by.xpath('//sorted-heroes/[text()="Magma"]')).get(0);
       expect(sortedHero).toBeDefined();
     });
 
     it('should render Hero of the Month', () => {
-      let heroOfTheMonth = element.all(by.xpath('//h3[text()="Hero of the month"]')).get(0);
+      const heroOfTheMonth = element.all(by.xpath('//h3[text()="Hero of the month"]')).get(0);
       expect(heroOfTheMonth).toBeDefined();
     });
 
     it('should render Hero Bios', () => {
-      let heroBios = element.all(by.xpath('//h3[text()="Hero Bios"]')).get(0);
+      const heroBios = element.all(by.xpath('//h3[text()="Hero Bios"]')).get(0);
       expect(heroBios).toBeDefined();
     });
 
     it('should render Magma\'s description in Hero Bios', () => {
-      let magmaText =  element.all(by.xpath('//textarea[text()="Hero of all trades"]')).get(0);
+      const magmaText =  element.all(by.xpath('//textarea[text()="Hero of all trades"]')).get(0);
       expect(magmaText).toBeDefined();
     });
 
     it('should render Magma\'s phone in Hero Bios and Contacts', () => {
-      let magmaPhone =  element.all(by.xpath('//div[text()="Phone #: 555-555-5555"]')).get(0);
+      const magmaPhone =  element.all(by.xpath('//div[text()="Phone #: 555-555-5555"]')).get(0);
       expect(magmaPhone).toBeDefined();
     });
 
     it('should render Hero-of-the-Month runner-ups', () => {
-      let runnersUp =  element(by.id('rups1')).getText();
+      const runnersUp =  element(by.id('rups1')).getText();
       expect(runnersUp).toContain('RubberMan, Dr Nice');
     });
 
     it('should render DateLogger log entry in Hero-of-the-Month', () => {
-      let logs =  element.all(by.id('logs')).get(0).getText();
+      const logs =  element.all(by.id('logs')).get(0).getText();
       expect(logs).toContain('INFO: starting up at');
     });
 
     it('should highlight Hero Bios and Contacts container when mouseover', () => {
-      let target = element(by.css('div[appHighlight="yellow"]'));
-      let yellow = 'rgba(255, 255, 0, 1)';
+      const target = element(by.css('div[appHighlight="yellow"]'));
+      const yellow = 'rgba(255, 255, 0, 1)';
 
       expect(target.getCssValue('background-color')).not.toEqual(yellow);
 
@@ -80,10 +80,10 @@ describe('Dependency Injection Cookbook', () => {
     });
 
     describe('in Parent Finder', () => {
-      let cathy1 = element(by.css('alex cathy'));
-      let craig1 = element(by.css('alex craig'));
-      let carol1 = element(by.css('alex carol p'));
-      let carol2 = element(by.css('barry carol p'));
+      const cathy1 = element(by.css('alex cathy'));
+      const craig1 = element(by.css('alex craig'));
+      const carol1 = element(by.css('alex carol p'));
+      const carol2 = element(by.css('barry carol p'));
 
       it('"Cathy" should find "Alex" via the component class', () => {
         expect(cathy1.getText()).toContain('Found Alex via the component');

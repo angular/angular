@@ -57,7 +57,7 @@ describe('Lazy Loading AngularJS Tests', () => {
     // Run the protractor pre-bootstrap logic and resumeBootstrap
     // Based on https://github.com/angular/protractor/blob/5.3.0/lib/browser.ts#L950-L969
     {
-        let moduleNames = [];
+        const moduleNames = [];
         for (const {name, script, args} of browser.mockModules_) {
             moduleNames.push(name);
             await browser.executeScriptWithDescription(script, 'add mock module ' + name, ...args);
