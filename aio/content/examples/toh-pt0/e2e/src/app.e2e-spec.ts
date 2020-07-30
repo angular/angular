@@ -4,7 +4,7 @@ describe('Tour of Heroes', () => {
   beforeEach(() => browser.get('/'));
 
   it('should display "Tour of Heroes"', () => {
-    let title = element(by.css('app-root h1')).getText();
+    const title = element(by.css('app-root h1')).getText();
     expect(title).toEqual('Tour of Heroes');
   });
 });

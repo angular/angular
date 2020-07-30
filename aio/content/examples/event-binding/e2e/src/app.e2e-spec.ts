@@ -6,12 +6,12 @@ describe('Event binding example', () => {
     browser.get('');
   });
 
-  let saveButton = element.all(by.css('button')).get(0);
-  let onSaveButton = element.all(by.css('button')).get(1);
-  let myClick = element.all(by.css('button')).get(2);
-  let deleteButton = element.all(by.css('button')).get(3);
-  let saveNoProp = element.all(by.css('button')).get(4);
-  let saveProp = element.all(by.css('button')).get(5);
+  const saveButton = element.all(by.css('button')).get(0);
+  const onSaveButton = element.all(by.css('button')).get(1);
+  const myClick = element.all(by.css('button')).get(2);
+  const deleteButton = element.all(by.css('button')).get(3);
+  const saveNoProp = element.all(by.css('button')).get(4);
+  const saveProp = element.all(by.css('button')).get(5);
 
 
   it('should display Event Binding with Angular', () => {
@@ -28,8 +28,8 @@ describe('Event binding example', () => {
   });
 
   it('should support user input', () => {
-    let input = element(by.css('input'));
-    let bindingResult = element.all(by.css('h4')).get(1);
+    const input = element(by.css('input'));
+    const bindingResult = element.all(by.css('h4')).get(1);
     expect(bindingResult.getText()).toEqual('Result: teapot');
     input.sendKeys('abc');
     expect(bindingResult.getText()).toEqual('Result: teapotabc');
@@ -42,8 +42,8 @@ describe('Event binding example', () => {
   });
 
   it('should show two alerts', async () => {
-    let parentDiv = element.all(by.css('.parent-div'));
-    let childDiv = element.all(by.css('div > div')).get(1);
+    const parentDiv = element.all(by.css('.parent-div'));
+    const childDiv = element.all(by.css('div > div')).get(1);
     await parentDiv.click();
     browser.switchTo().alert().accept();
     expect(childDiv.getText()).toEqual('Click me too! (child)');

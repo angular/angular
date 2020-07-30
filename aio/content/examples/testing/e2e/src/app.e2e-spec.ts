@@ -6,7 +6,7 @@ describe('Testing Example', () => {
   beforeAll(() => browser.get(''));
 
   function getPageElts() {
-    let navElts = element.all(by.css('app-root nav a'));
+    const navElts = element.all(by.css('app-root nav a'));
 
     return {
       navElts,
@@ -20,13 +20,13 @@ describe('Testing Example', () => {
   });
 
   it(`has views ${expectedViewNames}`, async () => {
-    let viewNames = getPageElts().navElts.map(async (el: ElementFinder) => await el.getText());
+    const viewNames = getPageElts().navElts.map(async (el: ElementFinder) => await el.getText());
 
     expect(viewNames).toEqual(expectedViewNames);
   });
 
   it('has dashboard as the active view', () => {
-    let page = getPageElts();
+    const page = getPageElts();
 
     expect(page.appDashboard.isPresent()).toBeTruthy();
   });

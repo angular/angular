@@ -15,7 +15,7 @@ import { VersionParentComponent } from './version-parent.component';
 import { VoterComponent } from './voter.component';
 import { VoteTakerComponent } from './votetaker.component';
 
-let directives: any[] = [
+const directives: any[] = [
     AppComponent,
     AstronautComponent,
     CountdownTimerComponent,
@@ -30,7 +30,7 @@ let directives: any[] = [
     VoteTakerComponent
   ];
 
-let schemas: any[] = [];
+const schemas: any[] = [];
 
 // Include Countdown examples
 // unless in e2e tests which they break.
