@@ -1,4 +1,6 @@
+// tslint:disable: variable-name
 // #docplaster
+// #docregion
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { trigger, transition, animate, style, query, stagger } from '@angular/animations';
 import { HEROES } from './mock-heroes';
@@ -52,13 +54,11 @@ export class HeroListPageComponent implements OnInit {
   @HostBinding('@pageAnimations')
   public animatePage = true;
 
-  _heroes = [];
 // #docregion filter-animations
   heroTotal = -1;
 // #enddocregion filter-animations
-  get heroes() {
-    return this._heroes;
-  }
+  get heroes() { return this._heroes; }
+  private _heroes = [];
 
   ngOnInit() {
     this._heroes = HEROES;

@@ -25,12 +25,12 @@ class Hero {
     // Get hero id and name from the given detail element.
     static async fromDetail(detail: ElementFinder): Promise<Hero> {
         // Get hero id from the first <div>
-        let _id = await detail.all(by.css('div')).first().getText();
+        let id = await detail.all(by.css('div')).first().getText();
         // Get name from the h2
-        let _name = await detail.element(by.css('h2')).getText();
+        let name = await detail.element(by.css('h2')).getText();
         return {
-            id: +_id.substr(_id.indexOf(' ') + 1),
-            name: _name.substr(0, _name.lastIndexOf(' '))
+            id: +id.substr(id.indexOf(' ') + 1),
+            name: name.substr(0, name.lastIndexOf(' '))
         };
     }
 }
