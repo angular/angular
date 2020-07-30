@@ -11,18 +11,18 @@ describe('Component Communication Cookbook Tests', () => {
   describe('Parent-to-child communication', () => {
     // #docregion parent-to-child
     // ...
-    let _heroNames = ['Dr IQ', 'Magneta', 'Bombasto'];
-    let _masterName = 'Master';
+    let heroNames = ['Dr IQ', 'Magneta', 'Bombasto'];
+    let masterName = 'Master';
 
     it('should pass properties to children properly', () => {
       let parent = element.all(by.tagName('app-hero-parent')).get(0);
       let heroes = parent.all(by.tagName('app-hero-child'));
 
-      for (let i = 0; i < _heroNames.length; i++) {
+      for (let i = 0; i < heroNames.length; i++) {
         let childTitle = heroes.get(i).element(by.tagName('h3')).getText();
         let childDetail = heroes.get(i).element(by.tagName('p')).getText();
-        expect(childTitle).toEqual(_heroNames[i] + ' says:');
-        expect(childDetail).toContain(_masterName);
+        expect(childTitle).toEqual(heroNames[i] + ' says:');
+        expect(childDetail).toContain(masterName);
       }
     });
     // ...
@@ -33,23 +33,23 @@ describe('Component Communication Cookbook Tests', () => {
     // #docregion parent-to-child-setter
     // ...
     it('should display trimmed, non-empty names', () => {
-      let _nonEmptyNameIndex = 0;
-      let _nonEmptyName = '"Dr IQ"';
+      let nonEmptyNameIndex = 0;
+      let nonEmptyName = '"Dr IQ"';
       let parent = element.all(by.tagName('app-name-parent')).get(0);
-      let hero = parent.all(by.tagName('app-name-child')).get(_nonEmptyNameIndex);
+      let hero = parent.all(by.tagName('app-name-child')).get(nonEmptyNameIndex);
 
       let displayName = hero.element(by.tagName('h3')).getText();
-      expect(displayName).toEqual(_nonEmptyName);
+      expect(displayName).toEqual(nonEmptyName);
     });
 
     it('should replace empty name with default name', () => {
-      let _emptyNameIndex = 1;
-      let _defaultName = '"<no name set>"';
+      let emptyNameIndex = 1;
+      let defaultName = '"<no name set>"';
       let parent = element.all(by.tagName('app-name-parent')).get(0);
-      let hero = parent.all(by.tagName('app-name-child')).get(_emptyNameIndex);
+      let hero = parent.all(by.tagName('app-name-child')).get(emptyNameIndex);
 
       let displayName = hero.element(by.tagName('h3')).getText();
-      expect(displayName).toEqual(_defaultName);
+      expect(displayName).toEqual(defaultName);
     });
     // ...
     // #enddocregion parent-to-child-setter
@@ -214,13 +214,13 @@ describe('Component Communication Cookbook Tests', () => {
     });
 
     function testConfirmMission(buttonIndex: number, expectedLogCount: number, astronaut: string) {
-      let _confirmedLog = ' confirmed the mission';
+      let confirmedLog = ' confirmed the mission';
       let missionControl = element(by.tagName('app-mission-control'));
       let confirmButton = missionControl.all(by.tagName('button')).get(buttonIndex);
       confirmButton.click().then(() => {
         let history = missionControl.all(by.tagName('li'));
         expect(history.count()).toBe(expectedLogCount);
-        expect(history.get(expectedLogCount - 1).getText()).toBe(astronaut + _confirmedLog);
+        expect(history.get(expectedLogCount - 1).getText()).toBe(astronaut + confirmedLog);
       });
     }
     // ...

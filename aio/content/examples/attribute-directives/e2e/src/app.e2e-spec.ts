@@ -2,14 +2,14 @@ import { browser, element, by } from 'protractor';
 
 describe('Attribute directives', () => {
 
-  let _title = 'My First Attribute Directive';
+  let title = 'My First Attribute Directive';
 
   beforeAll(() => {
     browser.get('');
   });
 
-  it(`should display correct title: ${_title}`, () => {
-    expect(element(by.css('h1')).getText()).toEqual(_title);
+  it(`should display correct title: ${title}`, () => {
+    expect(element(by.css('h1')).getText()).toEqual(title);
   });
 
   it('should be able to select green highlight', () => {
