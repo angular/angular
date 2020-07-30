@@ -3,14 +3,14 @@ import { async, inject, ComponentFixture, TestBed
 } from '@angular/core/testing';
 
 import { addMatchers, asyncData, click } from '../../testing';
-import { HeroService }   from '../model/hero.service';
+import { HeroService } from '../model/hero.service';
 import { getTestHeroes } from '../model/testing/test-heroes';
 
-import { By }     from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
 import { DashboardComponent } from './dashboard.component';
-import { DashboardModule }    from './dashboard.module';
+import { DashboardModule } from './dashboard.module';
 
 beforeEach ( addMatchers );
 

@@ -6,9 +6,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
 // #enddocregion added-imports
-import { Hero }         from '../hero';
+import { Hero } from '../hero';
 // #docregion added-imports
-import { HeroService }  from '../hero.service';
+import { HeroService } from '../hero.service';
 // #enddocregion added-imports
 
 @Component({

@@ -2,15 +2,15 @@
 // #docregion import-async
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 // #enddocregion import-async
-import { By }              from '@angular/platform-browser';
-import { DebugElement }    from '@angular/core';
+import { By } from '@angular/platform-browser';
+import { DebugElement } from '@angular/core';
 
 import { BannerComponent } from './banner-external.component';
 
 describe('BannerComponent (external files)', () => {
   let component: BannerComponent;
-  let fixture:   ComponentFixture<BannerComponent>;
-  let h1:        HTMLElement;
+  let fixture: ComponentFixture<BannerComponent>;
+  let h1: HTMLElement;
 
   describe('Two beforeEach', () => {
     // #docregion async-before-each

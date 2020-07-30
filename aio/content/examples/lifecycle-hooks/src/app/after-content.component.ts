@@ -2,7 +2,7 @@
 // #docregion
 import { AfterContentChecked, AfterContentInit, Component, ContentChild } from '@angular/core';
 
-import { LoggerService }  from './logger.service';
+import { LoggerService } from './logger.service';
 
 //////////////////
 @Component({

@@ -1,9 +1,9 @@
 // #docplaster
 // #docregion
-import { Injectable }    from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { LoggerService } from './logger.service';
-import { UserService }   from './user.service';
+import { UserService } from './user.service';
 
 // #docregion injectables, injectable
 @Injectable({
