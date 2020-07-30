@@ -1,8 +1,8 @@
 // #docplaster
 // #docregion
-import { Component }              from '@angular/core';
+import { Component } from '@angular/core';
 
-import { HEROES }                 from './heroes';
+import { HEROES } from './heroes';
 
 @Component({
   selector: 'app-flying-heroes',

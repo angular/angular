@@ -6,29 +6,29 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { asyncData } from '../testing';
 
 import { RouterTestingModule } from '@angular/router/testing';
-import { SpyLocation }         from '@angular/common/testing';
+import { SpyLocation } from '@angular/common/testing';
 
 import { Router, RouterLinkWithHref } from '@angular/router';
 
-import { By }                 from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { DebugElement, Type } from '@angular/core';
-import { Location }           from '@angular/common';
+import { Location } from '@angular/common';
 
-import { click }              from '../testing';
+import { click } from '../testing';
 
-import { routes }             from './app-routing.module';
-import { AppModule }          from './app.module';
-import { AppComponent }       from './app.component';
-import { AboutComponent }     from './about/about.component';
+import { routes } from './app-routing.module';
+import { AppModule } from './app.module';
+import { AppComponent } from './app.component';
+import { AboutComponent } from './about/about.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { TwainService }       from './twain/twain.service';
+import { TwainService } from './twain/twain.service';
 
 import { HeroService, TestHeroService } from './model/testing/test-hero.service';
 
-let comp:     AppComponent;
-let fixture:  ComponentFixture<AppComponent>;
-let page:     Page;
-let router:   Router;
+let comp: AppComponent;
+let fixture: ComponentFixture<AppComponent>;
+let page: Page;
+let router: Router;
 let location: SpyLocation;
 
 describe('AppComponent & RouterTestingModule', () => {
@@ -84,11 +84,11 @@ describe('AppComponent & RouterTestingModule', () => {
 
 
 ///////////////
-import { NgModuleFactoryLoader }    from '@angular/core';
+import { NgModuleFactoryLoader } from '@angular/core';
 import { SpyNgModuleFactoryLoader } from '@angular/router/testing';
 
-import { HeroModule }             from './hero/hero.module';  // should be lazy loaded
-import { HeroListComponent }      from './hero/hero-list.component';
+import { HeroModule } from './hero/hero.module';  // should be lazy loaded
+import { HeroListComponent } from './hero/hero-list.component';
 
 let loader: SpyNgModuleFactoryLoader;
 

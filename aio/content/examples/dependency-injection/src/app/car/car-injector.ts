@@ -1,7 +1,7 @@
 import { Injector } from '@angular/core';
 
 import { Car, Engine, Tires } from './car';
-import { Logger }             from '../logger.service';
+import { Logger } from '../logger.service';
 
 // #docregion injector
 export function useInjector() {

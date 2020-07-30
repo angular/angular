@@ -1,7 +1,7 @@
-import { Component }       from '@angular/core';
+import { Component } from '@angular/core';
 
 import { SalesTaxService } from './sales-tax.service';
-import { TaxRateService }  from './tax-rate.service';
+import { TaxRateService } from './tax-rate.service';
 
 @Component({
   selector:    'app-sales-tax',

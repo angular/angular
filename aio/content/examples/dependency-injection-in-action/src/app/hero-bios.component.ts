@@ -1,9 +1,9 @@
 // #docplaster
 // #docregion
-import { Component }             from '@angular/core';
+import { Component } from '@angular/core';
 
-import { HeroService }          from './hero.service';
-import { LoggerService }        from './logger.service';
+import { HeroService } from './hero.service';
+import { LoggerService } from './logger.service';
 
 //////// HeroBiosComponent ////
 // #docregion simple

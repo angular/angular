@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute }    from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import { Item,
-  ItemService }     from './items.service';
+  ItemService } from './items.service';
 
 @Component({
   template: `
