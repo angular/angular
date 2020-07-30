@@ -1,3 +1,4 @@
+// tslint:disable: directive-selector
 // #docregion
 // #docregion hero-detail
 export const heroDetail = {

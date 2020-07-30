@@ -1,3 +1,4 @@
+// tslint:disable: no-output-native
 // #docregion
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { HeroTaxReturn } from './hero';
