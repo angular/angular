@@ -29,8 +29,8 @@ describe('PhoneCat Application', () => {
     });
 
     it('should filter the phone list as a user types into the search box', () => {
-      let phoneList = element.all(by.repeater('phone in $ctrl.phones'));
-      let query = element(by.model('$ctrl.query'));
+      const phoneList = element.all(by.repeater('phone in $ctrl.phones'));
+      const query = element(by.model('$ctrl.query'));
 
       waitForCount(phoneList, 20);
       expect(phoneList.count()).toBe(20);
@@ -46,10 +46,10 @@ describe('PhoneCat Application', () => {
     });
 
     it('should be possible to control phone order via the drop-down menu', () => {
-      let queryField = element(by.model('$ctrl.query'));
-      let orderSelect = element(by.model('$ctrl.orderProp'));
-      let nameOption = orderSelect.element(by.css('option[value="name"]'));
-      let phoneNameColumn = element.all(by.repeater('phone in $ctrl.phones').column('phone.name'));
+      const queryField = element(by.model('$ctrl.query'));
+      const orderSelect = element(by.model('$ctrl.orderProp'));
+      const nameOption = orderSelect.element(by.css('option[value="name"]'));
+      const phoneNameColumn = element.all(by.repeater('phone in $ctrl.phones').column('phone.name'));
 
       function getNames() {
         return phoneNameColumn.map((elem: ElementFinder) => elem.getText());
@@ -72,14 +72,14 @@ describe('PhoneCat Application', () => {
     });
 
     it('should render phone specific links', () => {
-      let phoneList = element.all(by.repeater('phone in $ctrl.phones'));
-      let query = element(by.model('$ctrl.query'));
+      const phoneList = element.all(by.repeater('phone in $ctrl.phones'));
+      const query = element(by.model('$ctrl.query'));
 
       query.sendKeys('nexus');
       waitForCount(phoneList, 1);
 
-      let nexusPhone = phoneList.first();
-      let detailLink = nexusPhone.all(by.css('a')).first();
+      const nexusPhone = phoneList.first();
+      const detailLink = nexusPhone.all(by.css('a')).first();
 
       detailLink.click();
       expect(browser.getLocationAbsUrl()).toBe('/phones/nexus-s');
@@ -98,14 +98,14 @@ describe('PhoneCat Application', () => {
     });
 
     it('should display the first phone image as the main phone image', () => {
-      let mainImage = element(by.css('img.phone.selected'));
+      const mainImage = element(by.css('img.phone.selected'));
 
       expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
 
     it('should swap the main image when clicking on a thumbnail image', () => {
-      let mainImage = element(by.css('img.phone.selected'));
-      let thumbnails = element.all(by.css('.phone-thumbs img'));
+      const mainImage = element(by.css('img.phone.selected'));
+      const thumbnails = element.all(by.css('.phone-thumbs img'));
 
       thumbnails.get(2).click();
       expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.2.jpg/);

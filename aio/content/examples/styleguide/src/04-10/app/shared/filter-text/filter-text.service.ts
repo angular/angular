@@ -11,9 +11,9 @@ export class FilterTextService {
     let filteredList: any[];
     if (data && props && originalList) {
       data = data.toLowerCase();
-      let filtered = originalList.filter(item => {
+      const filtered = originalList.filter(item => {
         let match = false;
-        for (let prop of props) {
+        for (const prop of props) {
           if (item[prop].toString().toLowerCase().indexOf(data) > -1) {
             match = true;
             break;
