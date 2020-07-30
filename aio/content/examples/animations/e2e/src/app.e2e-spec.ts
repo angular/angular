@@ -1,5 +1,3 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, ExpectedConditions as EC } from 'protractor';
 import { logging } from 'selenium-webdriver';
 import * as openClose from './open-close.po';

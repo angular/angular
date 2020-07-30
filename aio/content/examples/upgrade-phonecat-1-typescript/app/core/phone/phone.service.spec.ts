@@ -1,5 +1,3 @@
-'use strict';
-
 describe('Phone', () => {
   let $httpBackend: angular.IHttpBackendService;
   let Phone: any;
