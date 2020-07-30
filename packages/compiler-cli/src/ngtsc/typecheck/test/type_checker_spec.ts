@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {platform} from 'os';
+
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, absoluteFromSourceFile, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
@@ -13,7 +15,7 @@ import {OptimizeFor} from '../api';
 
 import {getClass, setup, TestDeclaration} from './test_utils';
 
-runInEachFileSystem(() => {
+runInEachFileSystem(os => {
   describe('TemplateTypeChecker', () => {
     it('should batch diagnostic operations when requested in WholeProgram mode', () => {
       const file1 = absoluteFrom('/file1.ts');
@@ -169,45 +171,49 @@ runInEachFileSystem(() => {
         expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INLINE_TCB_REQUIRED));
       });
 
-      it('should produce errors for components that require type constructor inlining', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const dirFile = absoluteFrom('/dir.ts');
-        const {program, templateTypeChecker} = setup(
-            [
-              {
-                fileName,
-                source: `export class Cmp {}`,
-                templates: {'Cmp': '<div dir></div>'},
-                declarations: [{
-                  name: 'TestDir',
-                  selector: '[dir]',
-                  file: dirFile,
-                  type: 'directive',
-                }]
-              },
-              {
-                fileName: dirFile,
-                source: `
+      // These tests are currently disabled when running in Windows mode as the assertions involving
+      // the filename attached to the diagnostic are suffering from a case-sensitivity issue.
+      if (os !== 'Windows' && platform() !== 'win32') {
+        it('should produce errors for components that require type constructor inlining', () => {
+          const fileName = absoluteFrom('/main.ts');
+          const dirFile = absoluteFrom('/dir.ts');
+          const {program, templateTypeChecker} = setup(
+              [
+                {
+                  fileName,
+                  source: `export class Cmp {}`,
+                  templates: {'Cmp': '<div dir></div>'},
+                  declarations: [{
+                    name: 'TestDir',
+                    selector: '[dir]',
+                    file: dirFile,
+                    type: 'directive',
+                  }]
+                },
+                {
+                  fileName: dirFile,
+                  source: `
                   // A non-exported interface used as a type bound for a generic directive causes
                   // an inline type constructor to be required.
                   interface NotExported {}
                   export class TestDir<T extends NotExported> {}`,
-                templates: {},
-              }
-            ],
-            {inlining: false});
-        const sf = getSourceFileOrError(program, fileName);
-        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
-        expect(diags.length).toBe(1);
-        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INLINE_TYPE_CTOR_REQUIRED));
+                  templates: {},
+                }
+              ],
+              {inlining: false});
+          const sf = getSourceFileOrError(program, fileName);
+          const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INLINE_TYPE_CTOR_REQUIRED));
 
-        // The relatedInformation of the diagnostic should point to the directive which required the
-        // inline type constructor.
-        expect(diags[0].relatedInformation).not.toBeUndefined();
-        expect(diags[0].relatedInformation!.length).toBe(1);
-        expect(diags[0].relatedInformation![0].file).not.toBeUndefined();
-        expect(absoluteFromSourceFile(diags[0].relatedInformation![0].file!)).toBe(dirFile);
-      });
+          // The relatedInformation of the diagnostic should point to the directive which required
+          // the inline type constructor.
+          expect(diags[0].relatedInformation).not.toBeUndefined();
+          expect(diags[0].relatedInformation!.length).toBe(1);
+          expect(diags[0].relatedInformation![0].file).not.toBeUndefined();
+          expect(absoluteFromSourceFile(diags[0].relatedInformation![0].file!)).toBe(dirFile);
+        });
+      }
     });
 
     describe('template overrides', () => {
