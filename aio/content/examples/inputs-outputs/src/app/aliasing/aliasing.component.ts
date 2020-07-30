@@ -2,6 +2,7 @@
 /* tslint:disable:use-output-property-decorator */
 
 /* tslint:disable:no-input-rename */
+/* tslint:disable:no-output-rename */
 
 
 import { Component, EventEmitter, Input, Output } from '@angular/core';
