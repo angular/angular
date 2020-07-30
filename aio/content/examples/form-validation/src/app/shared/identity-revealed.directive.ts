@@ -19,7 +19,7 @@ export const identityRevealedValidator: ValidatorFn = (control: FormGroup): Vali
 })
 export class IdentityRevealedValidatorDirective implements Validator {
   validate(control: AbstractControl): ValidationErrors {
-    return identityRevealedValidator(control)
+    return identityRevealedValidator(control);
   }
 }
 // #enddocregion cross-validation-directive

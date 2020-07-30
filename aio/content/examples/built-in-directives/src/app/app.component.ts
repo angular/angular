@@ -84,7 +84,7 @@ export class AppComponent implements OnInit {
   }
 
   resetList() {
-    this.resetItems()
+    this.resetItems();
     this.itemsWithTrackByCountReset = 0;
     this.itemsNoTrackByCount = ++this.itemsNoTrackByCount;
   }

@@ -97,11 +97,11 @@ describe('NgModule-example', function () {
 
         newContactButton.click().then(function () {
           input.click();
-          nextButton.click()
+          nextButton.click();
           expect(contacts.validationError.getText()).toBe('Name is required.');
           input.click();
           contacts.input.sendKeys('Watson');
-          saveButton.click()
+          saveButton.click();
           expect(contacts.contactNameHeader.getText()).toBe('Awesome Watson');
 
         });
