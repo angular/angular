@@ -1,3 +1,4 @@
+// tslint:disable: variable-name
 // #docregion
 import { Component, Input } from '@angular/core';
 
@@ -11,6 +12,6 @@ export class NameChildComponent {
   set name(name: string) {
     this._name = (name && name.trim()) || '<no name set>';
   }
-  private _name = '';  // tslint:disable-line: variable-name
+  private _name = '';
 }
 // #enddocregion

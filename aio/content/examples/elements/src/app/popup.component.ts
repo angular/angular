@@ -1,3 +1,5 @@
+// tslint:disable: variable-name
+// #docregion
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
@@ -47,7 +49,7 @@ export class PopupComponent {
     this._message = message;
     this.state = 'opened';
   }
-  private _message: string;  // tslint:disable-line: variable-name
+  private _message: string;
 
   @Output()
   closed = new EventEmitter();
