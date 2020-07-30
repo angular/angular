@@ -44,8 +44,8 @@ export class RequestCacheWithMap implements RequestCache {
     const url = req.urlWithParams;
     this.messenger.add(`Caching response from "${url}".`);
 
-    const entry = { url, response, lastRead: Date.now() };
-    this.cache.set(url, entry);
+    const newEntry = { url, response, lastRead: Date.now() };
+    this.cache.set(url, newEntry);
 
     // remove expired cache entries
     const expired = Date.now() - maxAge;

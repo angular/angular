@@ -6,7 +6,6 @@ import { Hero } from '../model/hero';
 //////////  Tests  ////////////////////
 
 describe('HeroDetailComponent - no TestBed', () => {
-  let activatedRoute: ActivatedRouteStub;
   let comp: HeroDetailComponent;
   let expectedHero: Hero;
   let hds: any;
@@ -26,7 +25,6 @@ describe('HeroDetailComponent - no TestBed', () => {
 
     // OnInit calls HDS.getHero; wait for it to get the fake hero
     hds.getHero.calls.first().returnValue.subscribe(done);
-
   });
 
   it('should expose the hero retrieved from the service', () => {
