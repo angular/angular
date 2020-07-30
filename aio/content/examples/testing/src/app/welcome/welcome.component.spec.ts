@@ -8,7 +8,7 @@ import { WelcomeComponent } from './welcome.component';
 class MockUserService {
   isLoggedIn = true;
   user = { name: 'Test User'};
-};
+}
 // #enddocregion mock-user-service
 
 describe('WelcomeComponent (class only)', () => {

@@ -160,7 +160,7 @@ function expectFormIsInvalid() {
 
 function triggerAlterEgoValidation() {
   // alterEgo has updateOn set to 'blur', click outside of the input to trigger the blur event
-  element(by.css('app-root')).click()
+  element(by.css('app-root')).click();
 }
 
 function waitForAlterEgoValidation() {

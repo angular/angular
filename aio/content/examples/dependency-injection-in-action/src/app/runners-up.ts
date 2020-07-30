@@ -22,5 +22,5 @@ export function runnersUpFactory(take: number) {
           .join(', ');
 // #docregion factory-synopsis
   };
-};
+}
 // #enddocregion factory-synopsis

@@ -286,7 +286,7 @@ function expectHeading(hLevel: number, expectedText: string): void {
     let hTag = `h${hLevel}`;
     let hText = element(by.css(hTag)).getText();
     expect(hText).toEqual(expectedText, hTag);
-};
+}
 
 function getHeroAEltById(id: number): ElementFinder {
   let spanForId = element(by.cssContainingText('li span.badge', id.toString()));
