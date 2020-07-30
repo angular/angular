@@ -1,15 +1,15 @@
 
 // #docregion
-import { Injectable }             from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   Router, Resolve,
   RouterStateSnapshot,
   ActivatedRouteSnapshot
-}                                 from '@angular/router';
-import { Observable, of, EMPTY }  from 'rxjs';
-import { mergeMap, take }         from 'rxjs/operators';
+} from '@angular/router';
+import { Observable, of, EMPTY } from 'rxjs';
+import { mergeMap, take } from 'rxjs/operators';
 
-import { CrisisService }  from './crisis.service';
+import { CrisisService } from './crisis.service';
 import { Crisis } from './crisis';
 
 @Injectable({

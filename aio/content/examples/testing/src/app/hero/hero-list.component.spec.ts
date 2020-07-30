@@ -1,19 +1,19 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick
 } from '@angular/core/testing';
 
-import { By }           from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { Router }       from '@angular/router';
+import { Router } from '@angular/router';
 
 import { addMatchers, newEvent } from '../../testing';
 
 import { getTestHeroes, TestHeroService } from '../model/testing/test-hero.service';
 
-import { HeroModule }         from './hero.module';
-import { HeroListComponent }  from './hero-list.component';
+import { HeroModule } from './hero.module';
+import { HeroListComponent } from './hero-list.component';
 import { HighlightDirective } from '../shared/highlight.directive';
-import { HeroService }        from '../model/hero.service';
+import { HeroService } from '../model/hero.service';
 
 const HEROES = getTestHeroes();
 

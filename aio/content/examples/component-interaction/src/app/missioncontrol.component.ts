@@ -1,7 +1,7 @@
 // #docregion
-import { Component }          from '@angular/core';
+import { Component } from '@angular/core';
 
-import { MissionService }     from './mission.service';
+import { MissionService } from './mission.service';
 
 @Component({
   selector: 'app-mission-control',

@@ -2,7 +2,7 @@
 // #docregion
 import { AfterViewChecked, AfterViewInit, Component, ViewChild } from '@angular/core';
 
-import { LoggerService }  from './logger.service';
+import { LoggerService } from './logger.service';
 
 //////////////////
 // #docregion child-view

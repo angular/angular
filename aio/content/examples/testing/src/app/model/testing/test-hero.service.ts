@@ -6,12 +6,12 @@ import { asyncData } from '../../../testing';
 import { map } from 'rxjs/operators';
 
 // re-export for tester convenience
-export { Hero }          from '../hero';
-export { HeroService }   from '../hero.service';
+export { Hero } from '../hero';
+export { HeroService } from '../hero.service';
 export { getTestHeroes } from './test-heroes';
 
-import { Hero }          from '../hero';
-import { HeroService }   from '../hero.service';
+import { Hero } from '../hero';
+import { HeroService } from '../hero.service';
 import { getTestHeroes } from './test-heroes';
 
 @Injectable()

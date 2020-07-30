@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion
-import { Injectable }       from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   CanActivate, Router,
   ActivatedRouteSnapshot,
@@ -8,8 +8,8 @@ import {
   CanActivateChild,
   NavigationExtras,
   UrlTree
-}                           from '@angular/router';
-import { AuthService }      from './auth.service';
+} from '@angular/router';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',

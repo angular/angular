@@ -1,26 +1,26 @@
 // #docregion
-import { BrowserModule }                from '@angular/platform-browser';
-import { FormsModule }                  from '@angular/forms';
-import { HttpClientModule }             from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
-// import { AppRoutingModule }             from './app-routing.module';
+// import { AppRoutingModule } from './app-routing.module';
 import { LocationStrategy,
-         HashLocationStrategy }         from '@angular/common';
-import { NgModule }                     from '@angular/core';
+         HashLocationStrategy } from '@angular/common';
+import { NgModule } from '@angular/core';
 
-import { HeroData }                     from './hero-data';
-import { InMemoryWebApiModule }         from 'angular-in-memory-web-api';
+import { HeroData } from './hero-data';
+import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
 
 
-import { AppComponent }                 from './app.component';
-import { HeroBioComponent }             from './hero-bio.component';
+import { AppComponent } from './app.component';
+import { HeroBioComponent } from './hero-bio.component';
 import { HeroBiosComponent,
          HeroBiosAndContactsComponent } from './hero-bios.component';
-import { HeroOfTheMonthComponent }      from './hero-of-the-month.component';
-import { HeroContactComponent }         from './hero-contact.component';
+import { HeroOfTheMonthComponent } from './hero-of-the-month.component';
+import { HeroContactComponent } from './hero-contact.component';
 import { HeroesBaseComponent,
-         SortedHeroesComponent }        from './sorted-heroes.component';
-import { HighlightDirective }           from './highlight.directive';
+         SortedHeroesComponent } from './sorted-heroes.component';
+import { HighlightDirective } from './highlight.directive';
 import { ParentFinderComponent,
          AlexComponent,
          AliceComponent,
@@ -30,8 +30,8 @@ import { ParentFinderComponent,
          CathyComponent,
          BarryComponent,
          BethComponent,
-         BobComponent }                 from './parent-finder.component';
-import { StorageComponent }             from './storage.component';
+         BobComponent } from './parent-finder.component';
+import { StorageComponent } from './storage.component';
 
 const declarations = [
     AppComponent,

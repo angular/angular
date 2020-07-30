@@ -2,7 +2,7 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 
 import { AdDirective } from './ad.directive';
-import { AdItem }      from './ad-item';
+import { AdItem } from './ad-item';
 import { AdComponent } from './ad.component';
 
 @Component({

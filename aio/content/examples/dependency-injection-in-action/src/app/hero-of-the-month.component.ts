@@ -10,12 +10,12 @@ export const TITLE = new InjectionToken<string>('title');
 import { Component, Inject } from '@angular/core';
 
 import { DateLoggerService } from './date-logger.service';
-import { Hero }              from './hero';
-import { HeroService }       from './hero.service';
-import { LoggerService }     from './logger.service';
-import { MinimalLogger }     from './minimal-logger.service';
+import { Hero } from './hero';
+import { HeroService } from './hero.service';
+import { LoggerService } from './logger.service';
+import { MinimalLogger } from './minimal-logger.service';
 import { RUNNERS_UP,
-         runnersUpFactory }  from './runners-up';
+         runnersUpFactory } from './runners-up';
 
 // #enddocregion hero-of-the-month
 // #docregion some-hero
