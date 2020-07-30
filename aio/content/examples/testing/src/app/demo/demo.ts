@@ -424,9 +424,9 @@ export const demoProviders = [MasterService, ValueService];
 
 ////////////////////
 ////////////
-import { NgModule }      from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule }   from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [BrowserModule, FormsModule],

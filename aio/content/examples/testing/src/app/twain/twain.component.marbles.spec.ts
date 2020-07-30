@@ -5,7 +5,7 @@ import { async, fakeAsync, ComponentFixture, TestBed, tick } from '@angular/core
 import { cold, getTestScheduler } from 'jasmine-marbles';
 // #enddocregion import-marbles
 
-import { TwainService }   from './twain.service';
+import { TwainService } from './twain.service';
 import { TwainComponent } from './twain.component';
 
 

@@ -2,9 +2,9 @@
 import { Component } from '@angular/core';
 
 // #docregion import-services
-import { LoggerService }      from './logger.service';
+import { LoggerService } from './logger.service';
 import { UserContextService } from './user-context.service';
-import { UserService }        from './user.service';
+import { UserService } from './user.service';
 
 @Component({
   selector: 'app-root',

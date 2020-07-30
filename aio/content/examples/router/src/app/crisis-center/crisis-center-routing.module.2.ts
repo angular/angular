@@ -1,19 +1,19 @@
 // #docplaster
 // #docregion routes
-import { NgModule }             from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CrisisCenterHomeComponent } from './crisis-center-home/crisis-center-home.component';
-import { CrisisListComponent }       from './crisis-list/crisis-list.component';
-import { CrisisCenterComponent }     from './crisis-center/crisis-center.component';
-import { CrisisDetailComponent }     from './crisis-detail/crisis-detail.component';
+import { CrisisListComponent } from './crisis-list/crisis-list.component';
+import { CrisisCenterComponent } from './crisis-center/crisis-center.component';
+import { CrisisDetailComponent } from './crisis-detail/crisis-detail.component';
 // #enddocregion routes
 
 // #docregion can-deactivate-guard
-import { CanDeactivateGuard }    from '../can-deactivate.guard';
+import { CanDeactivateGuard } from '../can-deactivate.guard';
 // #enddocregion can-deactivate-guard
 // #docregion crisis-detail-resolver
-import { CrisisDetailResolverService }  from './crisis-detail-resolver.service';
+import { CrisisDetailResolverService } from './crisis-detail-resolver.service';
 
 // #enddocregion crisis-detail-resolver
 // #docregion routes
