@@ -80,7 +80,7 @@ export class OpenCloseComponent {
 // #enddocregion component
   @Input() logging = false;
 // #docregion events1, events
-  onAnimationEvent ( event: AnimationEvent ) {
+  onAnimationEvent( event: AnimationEvent ) {
 // #enddocregion events1, events
     if (!this.logging) {
       return;

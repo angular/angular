@@ -21,7 +21,7 @@ export class HeroTaxReturnComponent {
   }
 
   @Input()
-  set taxReturn (htr: HeroTaxReturn) {
+  set taxReturn(htr: HeroTaxReturn) {
     this.heroTaxReturnService.taxReturn = htr;
   }
 
@@ -32,7 +32,7 @@ export class HeroTaxReturnComponent {
     this.heroTaxReturnService.restoreTaxReturn();
   };
 
-  onClose()  { this.close.emit(); };
+  onClose() { this.close.emit(); };
 
   onSaved() {
     this.flashMessage('Saved');

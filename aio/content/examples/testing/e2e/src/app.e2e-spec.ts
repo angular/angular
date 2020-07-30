@@ -15,12 +15,12 @@ describe('Testing Example', () => {
     };
   }
 
-  it('has title', async() => {
+  it('has title', async () => {
     expect(await browser.getTitle()).toEqual('App Under Test');
   });
 
   it(`has views ${expectedViewNames}`, async () => {
-    let viewNames = getPageElts().navElts.map(async(el: ElementFinder) => await el.getText());
+    let viewNames = getPageElts().navElts.map(async (el: ElementFinder) => await el.getText());
 
     expect(viewNames).toEqual(expectedViewNames);
   });
