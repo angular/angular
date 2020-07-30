@@ -1,3 +1,4 @@
+// tslint:disable-next-line: no-reference
 /// <reference path="./jasmine-matchers.d.ts" />
 
 ////  Jasmine Custom Matchers ////

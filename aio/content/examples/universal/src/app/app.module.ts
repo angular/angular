@@ -51,7 +51,7 @@ import { isPlatformBrowser } from '@angular/common';
 export class AppModule {
   // #docregion platform-detection
   constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
+    @Inject(PLATFORM_ID) private platformId: object,
     @Inject(APP_ID) private appId: string) {
     const platform = isPlatformBrowser(platformId) ?
       'in the browser' : 'on the server';
