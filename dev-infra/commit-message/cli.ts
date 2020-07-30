@@ -9,6 +9,7 @@ import * as yargs from 'yargs';
 
 import {info} from '../utils/console';
 
+import {restoreCommitMessage} from './restore-commit-message';
 import {validateFile} from './validate-file';
 import {validateCommitRange} from './validate-range';
 
@@ -16,6 +17,11 @@ import {validateCommitRange} from './validate-range';
 export function buildCommitMessageParser(localYargs: yargs.Argv) {
   return localYargs.help()
       .strict()
+      .command(
+          'restore-commit-message-draft [filePath] [source] [_]', false, {},
+          args => {
+            restoreCommitMessage(args.filePath, args.source);
+          })
       .command(
           'pre-commit-validate', 'Validate the most recent commit message', {
             'file': {
