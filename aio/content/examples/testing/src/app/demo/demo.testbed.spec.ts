@@ -222,7 +222,7 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
       const ngForRow = fixture.debugElement.query(By.directive(IoComponent)); // first hero ngForRow
 
-      const hero = ngForRow.context['hero']; // the hero object passed into the row
+      const hero = ngForRow.context.hero; // the hero object passed into the row
       expect(hero.name).toBe(heroName, 'ngRow.context.hero');
 
       const rowComp = ngForRow.componentInstance;
@@ -514,11 +514,11 @@ describe('demo (with TestBed):', () => {
       expect(comp.children.toArray().length).toBe(4,
         'three different child components and an ElementRef with #content');
 
-      expect(el.references['nc']).toBe(comp, '#nc reference to component');
+      expect(el.references.nc).toBe(comp, '#nc reference to component');
 
       // #docregion custom-predicate
       // Filter for DebugElements with a #content reference
-      const contentRefs = el.queryAll( de => de.references['content']);
+      const contentRefs = el.queryAll( de => de.references.content);
       // #enddocregion custom-predicate
       expect(contentRefs.length).toBe(4, 'elements w/ a #content reference');
     });

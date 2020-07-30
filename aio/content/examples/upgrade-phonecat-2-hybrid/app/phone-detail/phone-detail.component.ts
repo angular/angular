@@ -22,7 +22,7 @@ export class PhoneDetailComponent {
   mainImageUrl: string;
 
   constructor(routeParams: RouteParams, phone: Phone) {
-    phone.get(routeParams['phoneId']).subscribe(phone => {
+    phone.get(routeParams.phoneId).subscribe(phone => {
       this.phone = phone;
       this.setImage(phone.images[0]);
     });

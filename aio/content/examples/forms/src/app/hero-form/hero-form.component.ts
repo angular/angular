@@ -48,9 +48,9 @@ export class HeroFormComponent {
   // Reveal in html:
   //   Name via form.controls = {{showFormControls(heroForm)}}
   showFormControls(form: any) {
-    return form && form.controls['name'] &&
+    return form && form.controls.name &&
     // #docregion form-controls
-    form.controls['name'].value; // Dr. IQ
+    form.controls.name.value; // Dr. IQ
     // #enddocregion form-controls
   }
 
