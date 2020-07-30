@@ -46,9 +46,9 @@ export class AppComponent implements OnInit {
   setCurrentClasses() {
     // CSS classes: added/removed per current state of component properties
     this.currentClasses =  {
-      'saveable': this.canSave,
-      'modified': !this.isUnchanged,
-      'special':  this.isSpecial
+      saveable: this.canSave,
+      modified: !this.isUnchanged,
+      special:  this.isSpecial
     };
   }
   // #enddocregion setClasses
@@ -107,7 +107,7 @@ export class AppComponent implements OnInit {
   trackByItems(index: number, item: Item): number { return item.id; }
 // #enddocregion trackByItems
 
-  trackById(index: number, item: any): number { return item['id']; }
+  trackById(index: number, item: any): number { return item.id; }
 
 }
 

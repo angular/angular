@@ -49,6 +49,6 @@ if (!/e2e/.test(location.search)) {
   ],
   declarations: directives,
   bootstrap: [ AppComponent ],
-  schemas: schemas
+  schemas
 })
 export class AppModule { }

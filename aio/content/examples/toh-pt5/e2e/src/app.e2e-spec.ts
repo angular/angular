@@ -43,7 +43,7 @@ describe('Tutorial part 5', () => {
     let navElts = element.all(by.css('app-root nav a'));
 
     return {
-      navElts: navElts,
+      navElts,
 
       appDashboardHref: navElts.get(0),
       appDashboard: element(by.css('app-root app-dashboard')),

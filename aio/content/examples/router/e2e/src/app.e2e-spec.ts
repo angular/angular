@@ -20,12 +20,12 @@ describe('Router', () => {
 
       crisisHref: hrefEles.get(0),
       crisisList: element.all(by.css('app-root > div > app-crisis-center > app-crisis-list li')),
-      crisisDetail: crisisDetail,
+      crisisDetail,
       crisisDetailTitle: crisisDetail.element(by.xpath('*[1]')),
 
       heroesHref: hrefEles.get(1),
       heroesList: element.all(by.css('app-root > div > app-hero-list li')),
-      heroDetail: heroDetail,
+      heroDetail,
       heroDetailTitle: heroDetail.element(by.xpath('*[2]')),
 
       adminHref: hrefEles.get(2),
