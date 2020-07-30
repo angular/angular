@@ -1,5 +1,3 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by, ElementArrayFinder, ElementFinder } from 'protractor';
 
 // Angular E2E Testing Guide:
