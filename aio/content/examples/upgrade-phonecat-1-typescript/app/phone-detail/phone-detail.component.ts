@@ -1,3 +1,4 @@
+/* tslint:disable: member-ordering */
 // #docregion
 class PhoneDetailController {
   phone: any;
