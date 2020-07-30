@@ -301,5 +301,5 @@ function getHeroLiEltById(id: number): ElementFinder {
 async function toHeroArray(allHeroes: ElementArrayFinder): Promise<Hero[]> {
   let promisedHeroes = await allHeroes.map(Hero.fromLi);
   // The cast is necessary to get around issuing with the signature of Promise.all()
-  return <Promise<any>> Promise.all(promisedHeroes);
+  return Promise.all(promisedHeroes) as Promise<any>;
 }
