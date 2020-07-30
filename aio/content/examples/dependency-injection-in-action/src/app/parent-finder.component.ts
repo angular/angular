@@ -1,4 +1,4 @@
-/* tslint:disable: no-unused-variable component-selector one-line space-before-function-paren */
+// tslint:disable: component-selector space-before-function-paren
 // #docplaster
 // #docregion
 import { Component, forwardRef, Optional, SkipSelf } from '@angular/core';
