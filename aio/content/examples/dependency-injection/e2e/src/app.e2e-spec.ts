@@ -138,15 +138,15 @@ describe('Dependency Injection Tests', () => {
     });
 
     it('unauthorized user should have multiple unauthorized heroes', () => {
-      let heroes = element.all(by.css('#unauthorized app-hero-list div'));
+      const heroes = element.all(by.css('#unauthorized app-hero-list div'));
       expect(heroes.count()).toBeGreaterThan(0);
     });
 
     it('unauthorized user should have no secret heroes', () => {
-      let heroes = element.all(by.css('#unauthorized app-hero-list div'));
+      const heroes = element.all(by.css('#unauthorized app-hero-list div'));
       expect(heroes.count()).toBeGreaterThan(0);
 
-      let filteredHeroes = heroes.filter((elem: ElementFinder, index: number) => {
+      const filteredHeroes = heroes.filter((elem: ElementFinder, index: number) => {
         return elem.getText().then((text: string) => /secret/.test(text));
       });
 
@@ -160,7 +160,7 @@ describe('Dependency Injection Tests', () => {
     describe('after button click', () => {
 
       beforeAll((done: any) => {
-        let buttonEle = element.all(by.cssContainingText('button', 'Next User')).get(0);
+        const buttonEle = element.all(by.cssContainingText('button', 'Next User')).get(0);
         buttonEle.click().then(done, done);
       });
 
@@ -170,20 +170,20 @@ describe('Dependency Injection Tests', () => {
       });
 
       it('authorized user should have multiple authorized heroes ', () => {
-        let heroes = element.all(by.css('#authorized app-hero-list div'));
+        const heroes = element.all(by.css('#authorized app-hero-list div'));
         expect(heroes.count()).toBeGreaterThan(0);
       });
 
       it('authorized user should have multiple authorized heroes with tree-shakeable HeroesService', () => {
-        let heroes = element.all(by.css('#tspAuthorized app-hero-list div'));
+        const heroes = element.all(by.css('#tspAuthorized app-hero-list div'));
         expect(heroes.count()).toBeGreaterThan(0);
       });
 
       it('authorized user should have secret heroes', () => {
-        let heroes = element.all(by.css('#authorized app-hero-list div'));
+        const heroes = element.all(by.css('#authorized app-hero-list div'));
         expect(heroes.count()).toBeGreaterThan(0);
 
-        let filteredHeroes = heroes.filter((elem: ElementFinder, index: number) => {
+        const filteredHeroes = heroes.filter((elem: ElementFinder, index: number) => {
          return elem.getText().then((text: string) => /secret/.test(text));
         });
 

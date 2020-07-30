@@ -46,7 +46,7 @@ export class ContactComponent implements OnInit {
   }
 
   onSubmit() {
-    let newName = this.contactForm.get('name').value;
+    const newName = this.contactForm.get('name').value;
     this.displayMessage('Saved ' + newName);
     this.contact.name = newName;
   }

@@ -26,14 +26,14 @@ export function useInjector() {
     ]
   });
   // #docregion injector-call
-  let car = injector.get(Car);
+  const car = injector.get(Car);
   // #enddocregion injector-call, injector-create-and-call
   car.description = 'Injector';
 
   injector = Injector.create({
     providers: [{ provide: Logger, deps: [] }]
   });
-  let logger = injector.get(Logger);
+  const logger = injector.get(Logger);
   logger.log('Injector car.drive() said: ' + car.drive());
   return car;
 }

@@ -26,13 +26,13 @@ describe('Pipes', () => {
   });
 
   it('should be able to toggle birthday formats', () => {
-    let birthDayEle = element(by.css('app-hero-birthday2 > p'));
+    const birthDayEle = element(by.css('app-hero-birthday2 > p'));
     if (angularVersion.indexOf('4.') === 0) { // Breaking change between v4 and v5 (https://github.com/angular/angular/commit/079d884)
       expect(birthDayEle.getText()).toEqual(`The hero's birthday is 4/15/1988`);
     } else {
       expect(birthDayEle.getText()).toEqual(`The hero's birthday is 4/15/88`);
     }
-    let buttonEle = element(by.cssContainingText('app-hero-birthday2 > button', 'Toggle Format'));
+    const buttonEle = element(by.cssContainingText('app-hero-birthday2 > button', 'Toggle Format'));
     expect(buttonEle.isDisplayed()).toBe(true);
     buttonEle.click().then(() => {
       expect(birthDayEle.getText()).toEqual(`The hero's birthday is Friday, April 15, 1988`);
@@ -40,7 +40,7 @@ describe('Pipes', () => {
   });
 
   it('should be able to chain and compose pipes', () => {
-    let chainedPipeEles = element.all(by.cssContainingText('app-root p', `The chained hero's`));
+    const chainedPipeEles = element.all(by.cssContainingText('app-root p', `The chained hero's`));
     expect(chainedPipeEles.count()).toBe(3, 'should have 3 chained pipe examples');
     expect(chainedPipeEles.get(0).getText()).toContain('APR 15, 1988');
     expect(chainedPipeEles.get(1).getText()).toContain('FRIDAY, APRIL 15, 1988');
@@ -48,15 +48,15 @@ describe('Pipes', () => {
   });
 
   it('should be able to use ExponentialStrengthPipe pipe', () => {
-    let ele = element(by.css('app-power-booster p'));
+    const ele = element(by.css('app-power-booster p'));
     expect(ele.getText()).toContain('Super power boost: 1024');
   });
 
   it('should be able to use the exponential calculator', () => {
-    let eles = element.all(by.css('app-power-boost-calculator input'));
-    let baseInputEle = eles.get(0);
-    let factorInputEle = eles.get(1);
-    let outputEle = element(by.css('app-power-boost-calculator p'));
+    const eles = element.all(by.css('app-power-boost-calculator input'));
+    const baseInputEle = eles.get(0);
+    const factorInputEle = eles.get(1);
+    const outputEle = element(by.css('app-power-boost-calculator p'));
     baseInputEle.clear().then(() => {
       baseInputEle.sendKeys('7');
       return factorInputEle.clear();
@@ -68,11 +68,11 @@ describe('Pipes', () => {
 
 
   it('should support flying heroes (pure) ', () => {
-    let nameEle = element(by.css('app-flying-heroes input[type="text"]'));
-    let canFlyCheckEle = element(by.css('app-flying-heroes #can-fly'));
-    let mutateCheckEle = element(by.css('app-flying-heroes #mutate'));
-    let resetEle = element(by.css('app-flying-heroes button'));
-    let flyingHeroesEle = element.all(by.css('app-flying-heroes #flyers div'));
+    const nameEle = element(by.css('app-flying-heroes input[type="text"]'));
+    const canFlyCheckEle = element(by.css('app-flying-heroes #can-fly'));
+    const mutateCheckEle = element(by.css('app-flying-heroes #mutate'));
+    const resetEle = element(by.css('app-flying-heroes button'));
+    const flyingHeroesEle = element.all(by.css('app-flying-heroes #flyers div'));
 
     expect(canFlyCheckEle.getAttribute('checked')).toEqual('true', 'should default to "can fly"');
     expect(mutateCheckEle.getAttribute('checked')).toEqual('true', 'should default to mutating array');
@@ -94,10 +94,10 @@ describe('Pipes', () => {
 
 
   it('should support flying heroes (impure) ', () => {
-    let nameEle = element(by.css('app-flying-heroes-impure input[type="text"]'));
-    let canFlyCheckEle = element(by.css('app-flying-heroes-impure #can-fly'));
-    let mutateCheckEle = element(by.css('app-flying-heroes-impure #mutate'));
-    let flyingHeroesEle = element.all(by.css('app-flying-heroes-impure #flyers div'));
+    const nameEle = element(by.css('app-flying-heroes-impure input[type="text"]'));
+    const canFlyCheckEle = element(by.css('app-flying-heroes-impure #can-fly'));
+    const mutateCheckEle = element(by.css('app-flying-heroes-impure #mutate'));
+    const flyingHeroesEle = element.all(by.css('app-flying-heroes-impure #flyers div'));
 
     expect(canFlyCheckEle.getAttribute('checked')).toEqual('true', 'should default to "can fly"');
     expect(mutateCheckEle.getAttribute('checked')).toEqual('true', 'should default to mutating array');

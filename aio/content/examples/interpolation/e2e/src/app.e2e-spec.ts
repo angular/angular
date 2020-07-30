@@ -27,8 +27,8 @@ describe('Interpolation e2e tests', () => {
   });
 
   it('should display two pictures', () => {
-    let pottedPlant = element.all(by.css('img')).get(0);
-    let lamp = element.all(by.css('img')).get(1);
+    const pottedPlant = element.all(by.css('img')).get(0);
+    const lamp = element.all(by.css('img')).get(1);
 
     expect(pottedPlant.getAttribute('src')).toContain('potted-plant');
     expect(pottedPlant.isDisplayed()).toBe(true);
@@ -38,8 +38,8 @@ describe('Interpolation e2e tests', () => {
   });
 
   it('should support user input', () => {
-    let input = element(by.css('input'));
-    let label = element(by.css('label'));
+    const input = element(by.css('input'));
+    const label = element(by.css('label'));
     expect(label.getText()).toEqual('Type something:');
     input.sendKeys('abc');
     expect(label.getText()).toEqual('Type something: abc');

@@ -34,7 +34,7 @@ export class MissionControlComponent {
   }
 
   announce() {
-    let mission = this.missions[this.nextMission++];
+    const mission = this.missions[this.nextMission++];
     this.missionService.announceMission(mission);
     this.history.push(`Mission "${mission}" announced`);
     if (this.nextMission >= this.missions.length) { this.nextMission = 0; }

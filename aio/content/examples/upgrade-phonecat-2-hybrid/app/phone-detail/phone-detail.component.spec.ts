@@ -52,7 +52,7 @@ describe('PhoneDetailComponent', () => {
   it('should fetch phone detail', () => {
     const fixture = TestBed.createComponent(PhoneDetailComponent);
     fixture.detectChanges();
-    let compiled = fixture.debugElement.nativeElement;
+    const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('h1').textContent).toContain(xyzPhoneData().name);
   });
 
