@@ -356,14 +356,14 @@ class Page {
   gotoListSpy: jasmine.Spy;
   navigateSpy: jasmine.Spy;
 
-  constructor(fixture: ComponentFixture<HeroDetailComponent>) {
+  constructor(someFixture: ComponentFixture<HeroDetailComponent>) {
     // get the navigate spy from the injected router spy object
     const routerSpy = someFixture.debugElement.injector.get(Router) as any;
     this.navigateSpy = routerSpy.navigate;
 
     // spy on component's `gotoList()` method
-    const component = fixture.componentInstance;
-    this.gotoListSpy = spyOn(component, 'gotoList').and.callThrough();
+    const someComponent = someFixture.componentInstance;
+    this.gotoListSpy = spyOn(someComponent, 'gotoList').and.callThrough();
   }
 
   //// query helpers ////

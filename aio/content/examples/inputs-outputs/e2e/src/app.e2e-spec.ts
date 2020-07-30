@@ -4,9 +4,7 @@ import { logging } from 'selenium-webdriver';
 describe('Inputs and Outputs', () => {
 
 
-  beforeEach(() => {
-    browser.get('');
-  });
+  beforeEach(() => browser.get(''));
 
 
    // helper function used to test what's logged to the console
@@ -15,11 +13,8 @@ describe('Inputs and Outputs', () => {
       .manage()
       .logs()
       .get(logging.Type.BROWSER);
-    const message = logs.filter(({ message }) =>
-      message.indexOf(contents) !== -1 ? true : false
-    );
-    console.log(message);
-    expect(message.length).toBeGreaterThan(0);
+    const messages = logs.filter(({ message }) => message.indexOf(contents) !== -1);
+    expect(messages.length).toBeGreaterThan(0);
   }
 
   it('should have title Inputs and Outputs', () => {

@@ -2,10 +2,7 @@ import { browser, element, by } from 'protractor';
 import { logging } from 'selenium-webdriver';
 
 describe('Template-reference-variables-example', () => {
-  beforeEach(() => {
-    browser.get('');
-
-  });
+  beforeEach(() => browser.get(''));
 
   // helper function used to test what's logged to the console
   async function logChecker(button, contents) {
@@ -13,10 +10,8 @@ describe('Template-reference-variables-example', () => {
       .manage()
       .logs()
       .get(logging.Type.BROWSER);
-    const message = logs.filter(({ message }) =>
-      message.indexOf(contents) !== -1 ? true : false
-    );
-    expect(message.length).toBeGreaterThan(0);
+    const messages = logs.filter(({ message }) => message.indexOf(contents) !== -1);
+    expect(messages.length).toBeGreaterThan(0);
   }
 
   it('should display Template reference variables', () => {
