@@ -18,7 +18,7 @@ import { getTestHeroes } from './test-heroes';
 /**
  * FakeHeroService pretends to make real http requests.
  * implements only as much of HeroService as is actually consumed by the app
-*/
+ */
 export class TestHeroService extends HeroService {
 
   constructor() {
