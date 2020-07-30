@@ -218,7 +218,7 @@ You may also be interested in the following:
 
 * For more about NgModules, see [Organizing your app with NgModules](guide/ngmodules "Organizing your app with NgModules").
 * To learn more about the root NgModule, see [Launching an app with a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
-* To learn about frequently used Angular NgModules and how to import them into your app, see [Frequently-used modules](guide/frequent-ngmodules "Frequently-used modules").
+* To learn about frequently used Angular NgModules and how to import them into your app, see [Frequently-used NgModules](guide/frequent-ngmodules "Frequently-used NgModules").
 * For a complete description of the NgModule metadata properties, see [Using the NgModule metadata](guide/ngmodule-api "Using the NgModule metadata").
 
 If you want to manage NgModule loading and the use of dependencies and services, see the following:

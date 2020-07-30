@@ -171,4 +171,4 @@ root module's `bootstrap` array.
 ## More about Angular Modules
 
 For more on NgModules you're likely to see frequently in apps,
-see [Frequently Used Modules](guide/frequent-ngmodules).
+see [Frequently-used NgModules](guide/frequent-ngmodules "Frequently-used NgModules").

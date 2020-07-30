@@ -1,12 +1,11 @@
 # Frequently-used NgModules
 
-You may want to use code in other published [NgModules](guide/glossary#ngmodule "Definition of NgModule").
-You can import NgModules in order to use their [declarables](guide/glossary#declarable "Definition of a declarable").
+To use one or more [declarables](guide/glossary#declarable "Definition of a declarable") (components, directives, and pipes) exported by an Angular [NgModule](guide/glossary#ngmodule "Definition of NgModule"), import the NgModule.
 
-For example, you can import `CommonModule` from `@angular/common` for access to the Angular directives such as `NgIf` and `NgFor`.
+For example, you can import `CommonModule` from `@angular/common` for access to the Angular directives `NgIf` and `NgFor`.
 You can import `FormsModule` from `@angular/forms` if your components have `[(ngModel)]` two-way binding expressions.
 
-For more about NgModules, see [Organizing your app with NgModules](guide/ngmodules "Organizing your app with NgModules").
+For more about NgModules, see [NgModules](guide/ngmodules "NgModules").
 
 ## Summary of frequently-used NgModules
 
@@ -79,7 +78,7 @@ For example, `BrowserModule` is the first import at the top of the root NgModule
 
 <div class="alert is-helpful">
 
-To learn more about the root NgModule, see [Launching an app with a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
+To learn more about `AppModule`, see [Launching your app with a root module](guide/bootstrapping "Launching your app with a root module").
 
 </div>
 
@@ -94,7 +93,7 @@ Do _not_ import `BrowserModule` into any other NgModule in your app.
 Other NgModules in your app, such as those organized for different features, should import `CommonModule` for its directives, not re-install app-wide providers with `BrowserModule`.
 Importing `CommonModule` also frees your NgModules for use on _any_ target platform, not just browsers.
 
-If you import `BrowserModule` into a [lazy-loaded NgModule](guide/lazy-loading-ngmodules "Lazy-loading an NgModule"), Angular returns an error telling you to use `CommonModule` instead:
+If you import `BrowserModule` into a [lazy-loaded NgModule](guide/lazy-loading-ngmodules "Lazy-loading feature modules"), Angular returns an error telling you to use `CommonModule` instead:
 
 `BrowserModule has already been loaded. If you need access to common directives such as NgIf and NgFor from a lazy loaded module, import CommonModule instead.`
 
@@ -102,6 +101,6 @@ If you import `BrowserModule` into a [lazy-loaded NgModule](guide/lazy-loading-n
 
 * For guidance on how to use NgModules for organizing different areas of your code, see [Guidelines for creating NgModules](guide/module-types "Guidelines for creating NgModules").
 
-* For step-by-step instructions on creating an NgModule and importing it into your app, see [Creating a new NgModule](guide/feature-modules "Creating a new NgModule").
+* For step-by-step instructions on creating an NgModule and importing it into your app, see [Feature modules](guide/feature-modules "Feature modules").
 
-* To understand how to provide a service or other dependency for your app, see [Providing dependencies for an NgModule](guide/providers "Providing dependencies for an NgModule").
+* To understand how to provide a service or other dependency for your app, see [Providing dependencies in modules](guide/providers "Providing dependencies in modules").

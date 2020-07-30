@@ -384,8 +384,8 @@
             },
             {
               "url": "guide/frequent-ngmodules",
-              "title": "Frequently Used NgModules",
-              "tooltip": "Introduction to the most frequently used NgModules."
+              "title": "Frequently-used NgModules",
+              "tooltip": "All about importing frequently-used NgModules."
             },
             {
               "url": "guide/module-types",
