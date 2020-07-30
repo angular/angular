@@ -24,8 +24,7 @@ describe('AngularJS to Angular Quick Reference Tests', () => {
 
     // Go through the samples
     const movieRows = getMovieRows();
-    for (let i = 0; i < expectedSamples.length; i++) {
-      const sample = expectedSamples[i];
+    for (const sample of expectedSamples) {
       const tableCell = movieRows.get(sample.row)
         .all(by.tagName('td')).get(sample.column);
       // Check the cell or its nested element
