@@ -1,8 +1,8 @@
 import { browser, element, by } from 'protractor';
 
-describe('Forms Overview Tests', function () {
+describe('Forms Overview Tests', () => {
 
-  beforeEach(function () {
+  beforeEach(() => {
     browser.get('');
   });
 

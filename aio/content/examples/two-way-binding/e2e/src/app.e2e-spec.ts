@@ -2,7 +2,7 @@ import { browser, element, by } from 'protractor';
 
 describe('Two-way binding e2e tests', () => {
 
-  beforeEach(function () {
+  beforeEach(() => {
     browser.get('');
   });
 
@@ -11,11 +11,11 @@ describe('Two-way binding e2e tests', () => {
   let minus2Button = element.all(by.css('button')).get(2);
   let plus2Button = element.all(by.css('button')).get(3);
 
-  it('should display Two-way Binding', function () {
+  it('should display Two-way Binding', () => {
     expect(element(by.css('h1')).getText()).toEqual('Two-way Binding');
   });
 
-  it('should display four buttons', function() {
+  it('should display four buttons', () => {
     expect(minusButton.getText()).toBe('-');
     expect(plusButton.getText()).toBe('+');
     expect(minus2Button.getText()).toBe('-');
@@ -35,7 +35,7 @@ describe('Two-way binding e2e tests', () => {
     await expect(element.all(by.css('label')).get(2).getText()).toEqual('FontSize: 15px');
   });
 
-  it('should display De-sugared two-way binding', function () {
+  it('should display De-sugared two-way binding', () => {
     expect(element(by.css('h2')).getText()).toEqual('De-sugared two-way binding');
   });
 

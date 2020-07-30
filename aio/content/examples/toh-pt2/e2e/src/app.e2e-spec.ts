@@ -59,7 +59,7 @@ function initialPageTests() {
     expect(page.heroes.count()).toEqual(10);
   });
 
-  it('has no selected hero and no hero details', function () {
+  it('has no selected hero and no hero details', () => {
     let page = getPageElts();
     expect(page.selected.isPresent()).toBeFalsy('selected hero');
     expect(page.heroDetail.isPresent()).toBeFalsy('no hero detail');
@@ -67,13 +67,13 @@ function initialPageTests() {
 }
 
 function selectHeroTests() {
-  it(`selects ${targetHero.name} from hero list`, function () {
+  it(`selects ${targetHero.name} from hero list`, () => {
     let hero = element(by.cssContainingText('li span.badge', targetHero.id.toString()));
     hero.click();
     // Nothing specific to expect other than lack of exceptions.
   });
 
-  it(`has selected ${targetHero.name}`, function () {
+  it(`has selected ${targetHero.name}`, () => {
     let page = getPageElts();
     let expectedText = `${targetHero.id} ${targetHero.name}`;
     expect(page.selected.getText()).toBe(expectedText);
