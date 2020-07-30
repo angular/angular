@@ -54,7 +54,7 @@ function getPage(sectionTag: string) {
   let buttons = section.all(by.css('button'));
 
   page = {
-    section: section,
+    section,
     form: section.element(by.css('form')),
     title: section.element(by.css('h1')),
     nameInput: section.element(by.css('#name')),
