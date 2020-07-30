@@ -46,6 +46,7 @@ export function typescriptLibDts(): TestFile {
         [index: number]: T;
         length: number;
       }
+      declare interface Iterable<T> {}
       declare interface String {
         length: number;
       }
@@ -63,7 +64,7 @@ export function typescriptLibDts(): TestFile {
       }
       declare interface HTMLElement {
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any): void;
-        addEventListener(type: string, listener: (evt: Event): void;): void;
+        addEventListener(type: string, listener: (evt: Event) => void): void;
       }
       declare interface HTMLDivElement extends HTMLElement {}
       declare interface HTMLImageElement extends HTMLElement {
@@ -94,8 +95,8 @@ export function angularCoreDts(): TestFile {
     name: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
     contents: `
     export declare class TemplateRef<C> {
-      abstract readonly elementRef: unknown;
-      abstract createEmbeddedView(context: C): unknown;
+      readonly elementRef: unknown;
+      createEmbeddedView(context: C): unknown;
     }
 
     export declare class EventEmitter<T> {
