@@ -1,8 +1,8 @@
 // Snapshot version
 // #docregion
-import { Component, OnInit }      from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable }             from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { HeroService } from '../hero.service';
 import { Hero } from '../hero';

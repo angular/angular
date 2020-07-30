@@ -4,7 +4,7 @@ import {
   OnChanges, SimpleChanges,
 } from '@angular/core';
 
-import { LoggerService }  from './logger.service';
+import { LoggerService } from './logger.service';
 
 @Component({
   selector: 'app-counter',

@@ -2,7 +2,7 @@
 // #docregion
 // Import the native Angular services.
 import { Component } from '@angular/core';
-import { Title }     from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
 
 @Component({
 selector: 'app-root',

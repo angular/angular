@@ -15,10 +15,10 @@ import {
   ReversePipeComponent, ShellComponent
 } from './demo';
 
-import { By }          from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { Component,
          DebugElement,
-         Injectable }  from '@angular/core';
+         Injectable } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 // Forms symbols imported only for a specific test below

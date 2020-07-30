@@ -1,16 +1,16 @@
 // #docplaster
 // #docregion
 // #docregion first-config
-import { NgModule }             from '@angular/core';
-import { BrowserModule }        from '@angular/platform-browser';
-import { FormsModule }          from '@angular/forms';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 // #docregion import-router
 import { RouterModule, Routes } from '@angular/router';
 // #enddocregion import-router
 
-import { AppComponent }          from './app.component';
-import { CrisisListComponent }   from './crisis-list/crisis-list.component';
-import { HeroListComponent }     from './hero-list/hero-list.component';
+import { AppComponent } from './app.component';
+import { CrisisListComponent } from './crisis-list/crisis-list.component';
+import { HeroListComponent } from './hero-list/hero-list.component';
 // #enddocregion first-config
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 // #docregion first-config

@@ -1,13 +1,13 @@
 // #docplaster
 import { async, fakeAsync, ComponentFixture, TestBed, tick } from '@angular/core/testing';
 
-import { asyncData, asyncError }  from '../../testing';
+import { asyncData, asyncError } from '../../testing';
 
 import { of, throwError } from 'rxjs';
 
 import { last } from 'rxjs/operators';
 
-import { TwainService }   from './twain.service';
+import { TwainService } from './twain.service';
 import { TwainComponent } from './twain.component';
 
 describe('TwainComponent', () => {
