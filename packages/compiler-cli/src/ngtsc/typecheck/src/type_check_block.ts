@@ -701,16 +701,7 @@ class TcbDirectiveInputsOp extends TcbOp {
     const inputs = getBoundInputs(this.dir, this.node, this.tcb);
     for (const input of inputs) {
       // For bound inputs, the property is assigned the binding expression.
-      let expr = translateInput(input.attribute, this.tcb, this.scope);
-      if (!this.tcb.env.config.checkTypeOfInputBindings) {
-        // If checking the type of bindings is disabled, cast the resulting expression to 'any'
-        // before the assignment.
-        expr = tsCastToAny(expr);
-      } else if (!this.tcb.env.config.strictNullInputBindings) {
-        // If strict null checks are disabled, erase `null` and `undefined` from the type by
-        // wrapping the expression in a non-null assertion.
-        expr = ts.createNonNullExpression(expr);
-      }
+      const expr = widenBinding(translateInput(input.attribute, this.tcb, this.scope), this.tcb);
 
       let assignment: ts.Expression = wrapForDiagnostics(expr);
 
@@ -922,16 +913,7 @@ class TcbUnclaimedInputsOp extends TcbOp {
         continue;
       }
 
-      let expr = tcbExpression(binding.value, this.tcb, this.scope);
-      if (!this.tcb.env.config.checkTypeOfInputBindings) {
-        // If checking the type of bindings is disabled, cast the resulting expression to 'any'
-        // before the assignment.
-        expr = tsCastToAny(expr);
-      } else if (!this.tcb.env.config.strictNullInputBindings) {
-        // If strict null checks are disabled, erase `null` and `undefined` from the type by
-        // wrapping the expression in a non-null assertion.
-        expr = ts.createNonNullExpression(expr);
-      }
+      const expr = widenBinding(tcbExpression(binding.value, this.tcb, this.scope), this.tcb);
 
       if (this.tcb.env.config.checkTypeOfDomBindings && binding.type === BindingType.Property) {
         if (binding.name !== 'style' && binding.name !== 'class') {
@@ -1811,16 +1793,7 @@ function tcbCallTypeCtor(
 
     if (input.type === 'binding') {
       // For bound inputs, the property is assigned the binding expression.
-      let expr = input.expression;
-      if (!tcb.env.config.checkTypeOfInputBindings) {
-        // If checking the type of bindings is disabled, cast the resulting expression to 'any'
-        // before the assignment.
-        expr = tsCastToAny(expr);
-      } else if (!tcb.env.config.strictNullInputBindings) {
-        // If strict null checks are disabled, erase `null` and `undefined` from the type by
-        // wrapping the expression in a non-null assertion.
-        expr = ts.createNonNullExpression(expr);
-      }
+      const expr = widenBinding(input.expression, tcb);
 
       const assignment = ts.createPropertyAssignment(propertyName, wrapForDiagnostics(expr));
       addParseSpanInfo(assignment, input.sourceSpan);
@@ -1880,6 +1853,31 @@ function translateInput(
   } else {
     // For regular attributes with a static string value, use the represented string literal.
     return ts.createStringLiteral(attr.value);
+  }
+}
+
+/**
+ * Potentially widens the type of `expr` according to the type-checking configuration.
+ */
+function widenBinding(expr: ts.Expression, tcb: Context): ts.Expression {
+  if (!tcb.env.config.checkTypeOfInputBindings) {
+    // If checking the type of bindings is disabled, cast the resulting expression to 'any'
+    // before the assignment.
+    return tsCastToAny(expr);
+  } else if (!tcb.env.config.strictNullInputBindings) {
+    if (ts.isObjectLiteralExpression(expr) || ts.isArrayLiteralExpression(expr)) {
+      // Object literals and array literals should not be wrapped in non-null assertions as that
+      // would cause literals to be prematurely widened, resulting in type errors when assigning
+      // into a literal type.
+      return expr;
+    } else {
+      // If strict null checks are disabled, erase `null` and `undefined` from the type by
+      // wrapping the expression in a non-null assertion.
+      return ts.createNonNullExpression(expr);
+    }
+  } else {
+    // No widening is requested, use the expression as is.
+    return expr;
   }
 }
 

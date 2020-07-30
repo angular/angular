@@ -277,6 +277,46 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('should retain literal types in object literals together if strictNullInputBindings is disabled',
+       () => {
+         const messages = diagnose(
+             `<div dir [ngModelOptions]="{updateOn: 'change'}"></div>`, `
+              class Dir {
+                ngModelOptions: { updateOn: 'change'|'blur' };
+              }
+
+              class TestComponent {}`,
+             [{
+               type: 'directive',
+               name: 'Dir',
+               selector: '[dir]',
+               inputs: {'ngModelOptions': 'ngModelOptions'},
+             }],
+             [], {strictNullInputBindings: false});
+
+         expect(messages).toEqual([]);
+       });
+
+    it('should retain literal types in array literals together if strictNullInputBindings is disabled',
+       () => {
+         const messages = diagnose(
+             `<div dir [options]="['literal']"></div>`, `
+                class Dir {
+                  options!: Array<'literal'>;
+                }
+
+                class TestComponent {}`,
+             [{
+               type: 'directive',
+               name: 'Dir',
+               selector: '[dir]',
+               inputs: {'options': 'options'},
+             }],
+             [], {strictNullInputBindings: false});
+
+         expect(messages).toEqual([]);
+       });
+
     it('does not produce diagnostics for user code', () => {
       const messages = diagnose(`{{ person.name }}`, `
       class TestComponent {
