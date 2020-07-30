@@ -1,9 +1,9 @@
 import { browser, element, by, protractor, ElementFinder, ElementArrayFinder } from 'protractor';
 
 // THESE TESTS ARE INCOMPLETE
-describe('Form Validation Tests', function () {
+describe('Form Validation Tests', () => {
 
-  beforeAll(function () {
+  beforeAll(() => {
     browser.get('');
   });
 
@@ -71,31 +71,31 @@ function getPage(sectionTag: string) {
 
 function tests(title: string) {
 
-  it('should display correct title', function () {
+  it('should display correct title', () => {
     expect(page.title.getText()).toContain(title);
   });
 
-  it('should not display submitted message before submit', function () {
+  it('should not display submitted message before submit', () => {
     expect(page.heroSubmitted.isElementPresent(by.css('p'))).toBe(false);
   });
 
-  it('should have form buttons', function () {
+  it('should have form buttons', () => {
     expect(page.heroFormButtons.count()).toEqual(2);
   });
 
-  it('should have error at start', function () {
+  it('should have error at start', () => {
     expectFormIsInvalid();
   });
 
-  // it('showForm', function () {
+  // it('showForm', () => {
   //   page.form.getInnerHtml().then(html => console.log(html));
   // });
 
-  it('should have disabled submit button', function () {
+  it('should have disabled submit button', () => {
     expect(page.heroFormButtons.get(0).isEnabled()).toBe(false);
   });
 
-  it('resetting name to valid name should clear errors', function () {
+  it('resetting name to valid name should clear errors', () => {
     const ele = page.nameInput;
     expect(ele.isPresent()).toBe(true, 'nameInput should exist');
     ele.clear();
@@ -103,7 +103,7 @@ function tests(title: string) {
     expectFormIsValid();
   });
 
-  it('should produce "required" error after clearing name', function () {
+  it('should produce "required" error after clearing name', () => {
     page.nameInput.clear();
     // page.alterEgoInput.click(); // to blur ... didn't work
     page.nameInput.sendKeys('x', protractor.Key.BACK_SPACE); // ugh!
@@ -111,37 +111,37 @@ function tests(title: string) {
     expect(page.errorMessages.get(0).getText()).toContain('required');
   });
 
-  it('should produce "at least 4 characters" error when name="x"', function () {
+  it('should produce "at least 4 characters" error when name="x"', () => {
     page.nameInput.clear();
     page.nameInput.sendKeys('x'); // too short
     expectFormIsInvalid();
     expect(page.errorMessages.get(0).getText()).toContain('at least 4 characters');
   });
 
-  it('resetting name to valid name again should clear errors', function () {
+  it('resetting name to valid name again should clear errors', () => {
     page.nameInput.sendKeys(testName);
     expectFormIsValid();
   });
 
-  it('should have enabled submit button', function () {
+  it('should have enabled submit button', () => {
     const submitBtn = page.heroFormButtons.get(0);
     expect(submitBtn.isEnabled()).toBe(true);
   });
 
-  it('should hide form after submit', function () {
+  it('should hide form after submit', () => {
     page.heroFormButtons.get(0).click();
     expect(page.heroFormButtons.get(0).isDisplayed()).toBe(false);
   });
 
-  it('submitted form should be displayed', function () {
+  it('submitted form should be displayed', () => {
     expect(page.heroSubmitted.isElementPresent(by.css('p'))).toBe(true);
   });
 
-  it('submitted form should have new hero name', function () {
+  it('submitted form should have new hero name', () => {
     expect(page.heroSubmitted.getText()).toContain(testName);
   });
 
-  it('clicking edit button should reveal form again', function () {
+  it('clicking edit button should reveal form again', () => {
     const newFormBtn = page.heroSubmitted.element(by.css('button'));
     newFormBtn.click();
     expect(page.heroSubmitted.isElementPresent(by.css('p')))
@@ -171,7 +171,7 @@ function waitForAlterEgoValidation() {
 function bobTests() {
   const emsg = 'Name cannot be Bob.';
 
-  it('should produce "no bob" error after setting name to "Bobby"', function () {
+  it('should produce "no bob" error after setting name to "Bobby"', () => {
     // Re-populate select element
     page.powerSelect.click();
     page.powerOption.click();
@@ -182,7 +182,7 @@ function bobTests() {
     expect(page.errorMessages.get(0).getText()).toBe(emsg);
   });
 
-  it('should be ok again with valid name', function () {
+  it('should be ok again with valid name', () => {
     page.nameInput.clear();
     page.nameInput.sendKeys(testName);
     expectFormIsValid();
@@ -192,7 +192,7 @@ function bobTests() {
 function asyncValidationTests() {
   const emsg = 'Alter ego is already taken.';
 
-  it(`should produce "${emsg}" error after setting alterEgo to Eric`, function () {
+  it(`should produce "${emsg}" error after setting alterEgo to Eric`, () => {
     page.alterEgoInput.clear();
     page.alterEgoInput.sendKeys('Eric');
 
@@ -203,7 +203,7 @@ function asyncValidationTests() {
     expect(page.alterEgoErrors.getText()).toBe(emsg);
   });
 
-  it('should be ok again with different values', function () {
+  it('should be ok again with different values', () => {
     page.alterEgoInput.clear();
     page.alterEgoInput.sendKeys('John');
 
@@ -218,7 +218,7 @@ function asyncValidationTests() {
 function crossValidationTests() {
   const emsg = 'Name cannot match alter ego.';
 
-  it(`should produce "${emsg}" error after setting name and alter ego to the same value`, function () {
+  it(`should produce "${emsg}" error after setting name and alter ego to the same value`, () => {
     page.nameInput.clear();
     page.nameInput.sendKeys('Batman');
 
@@ -232,7 +232,7 @@ function crossValidationTests() {
     expect(page.crossValidationErrorMessage.getText()).toBe(emsg);
   });
 
-  it('should be ok again with different values', function () {
+  it('should be ok again with different values', () => {
     page.nameInput.clear();
     page.nameInput.sendKeys('Batman');
 

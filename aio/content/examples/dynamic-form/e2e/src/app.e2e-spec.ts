@@ -1,13 +1,13 @@
 import { browser, element, by } from 'protractor';
 
 /* tslint:disable:quotemark */
-describe('Dynamic Form', function () {
+describe('Dynamic Form', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
         browser.get('');
     });
 
-    it('should submit form', function () {
+    it('should submit form', () => {
       let firstNameElement = element.all(by.css('input[id=firstName]')).get(0);
       expect(firstNameElement.getAttribute('value')).toEqual('Bombasto');
 
@@ -19,7 +19,7 @@ describe('Dynamic Form', function () {
       element(by.css('select option[value="solid"]')).click();
 
       let saveButton = element.all(by.css('button')).get(0);
-      saveButton.click().then(function() {
+      saveButton.click().then(() => {
         expect(element(by.xpath("//strong[contains(text(),'Saved the following values')]")).isPresent()).toBe(true);
       });
   });

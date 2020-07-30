@@ -3,20 +3,20 @@ import { browser, element, by, ElementArrayFinder, ElementFinder } from 'protrac
 // Angular E2E Testing Guide:
 // https://docs.angularjs.org/guide/e2e-testing
 
-describe('PhoneCat Application', function() {
+describe('PhoneCat Application', () => {
 
-  beforeAll(function() {
+  beforeAll(() => {
     browser.baseUrl = 'http://localhost:8080/app/';
     // protractor.config.js is set to ng2 mode by default, so we must manually change it
     browser.rootEl = 'body';
   });
 
-  it('should redirect `index.html` to `index.html#!/phones', function() {
+  it('should redirect `index.html` to `index.html#!/phones', () => {
     browser.get('index.html');
     expect(browser.getLocationAbsUrl()).toBe('/phones');
   });
 
-  describe('View: Phone list', function() {
+  describe('View: Phone list', () => {
 
     // Helpers
     const waitForCount = (elems: ElementArrayFinder, count: number) => {
@@ -24,11 +24,11 @@ describe('PhoneCat Application', function() {
       browser.wait(() => elems.count().then(c => c === count), 5000);
     };
 
-    beforeEach(function() {
+    beforeEach(() => {
       browser.get('index.html#!/phones');
     });
 
-    it('should filter the phone list as a user types into the search box', function() {
+    it('should filter the phone list as a user types into the search box', () => {
       let phoneList = element.all(by.repeater('phone in $ctrl.phones'));
       let query = element(by.model('$ctrl.query'));
 
@@ -45,16 +45,14 @@ describe('PhoneCat Application', function() {
       expect(phoneList.count()).toBe(8);
     });
 
-    it('should be possible to control phone order via the drop-down menu', function() {
+    it('should be possible to control phone order via the drop-down menu', () => {
       let queryField = element(by.model('$ctrl.query'));
       let orderSelect = element(by.model('$ctrl.orderProp'));
       let nameOption = orderSelect.element(by.css('option[value="name"]'));
       let phoneNameColumn = element.all(by.repeater('phone in $ctrl.phones').column('phone.name'));
 
       function getNames() {
-        return phoneNameColumn.map(function(elem: ElementFinder) {
-          return elem.getText();
-        });
+        return phoneNameColumn.map((elem: ElementFinder) => elem.getText());
       }
 
       queryField.sendKeys('tablet');   // Let's narrow the dataset to make the assertions shorter
@@ -73,7 +71,7 @@ describe('PhoneCat Application', function() {
       ]);
     });
 
-    it('should render phone specific links', function() {
+    it('should render phone specific links', () => {
       let phoneList = element.all(by.repeater('phone in $ctrl.phones'));
       let query = element(by.model('$ctrl.query'));
 
@@ -89,23 +87,23 @@ describe('PhoneCat Application', function() {
 
   });
 
-  describe('View: Phone detail', function() {
+  describe('View: Phone detail', () => {
 
-    beforeEach(function() {
+    beforeEach(() => {
       browser.get('index.html#!/phones/nexus-s');
     });
 
-    it('should display the `nexus-s` page', function() {
+    it('should display the `nexus-s` page', () => {
       expect(element(by.binding('$ctrl.phone.name')).getText()).toBe('Nexus S');
     });
 
-    it('should display the first phone image as the main phone image', function() {
+    it('should display the first phone image as the main phone image', () => {
       let mainImage = element(by.css('img.phone.selected'));
 
       expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
 
-    it('should swap the main image when clicking on a thumbnail image', function() {
+    it('should swap the main image when clicking on a thumbnail image', () => {
       let mainImage = element(by.css('img.phone.selected'));
       let thumbnails = element.all(by.css('.phone-thumbs img'));
 

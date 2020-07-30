@@ -3,9 +3,7 @@ import { logging } from 'selenium-webdriver';
 
 describe('Binding syntax e2e tests', () => {
 
-  beforeEach(function () {
-    browser.get('');
-  });
+  beforeEach(() => browser.get(''));
 
 
   // helper function used to test what's logged to the console
@@ -16,23 +14,23 @@ describe('Binding syntax e2e tests', () => {
   }
 
 
-  it('should display Binding syntax', function () {
+  it('should display Binding syntax', () => {
     expect(element(by.css('h1')).getText()).toEqual('Binding syntax');
   });
 
-  it('should display Save button', function () {
+  it('should display Save button', () => {
     expect(element.all(by.css('button')).get(0).getText()).toBe('Save');
   });
 
-  it('should display HTML attributes and DOM properties', function () {
+  it('should display HTML attributes and DOM properties', () => {
     expect(element.all(by.css('h2')).get(1).getText()).toBe('HTML attributes and DOM properties');
   });
 
-  it('should display 1. Use the inspector...', function () {
+  it('should display 1. Use the inspector...', () => {
     expect(element.all(by.css('p')).get(0).getText()).toContain('1. Use the inspector');
   });
 
-  it('should display Disabled property vs. attribute', function () {
+  it('should display Disabled property vs. attribute', () => {
     expect(element.all(by.css('h3')).get(0).getText()).toBe('Disabled property vs. attribute');
   });
 

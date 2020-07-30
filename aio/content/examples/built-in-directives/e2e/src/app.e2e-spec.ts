@@ -1,12 +1,12 @@
 import { browser, element, by } from 'protractor';
 
-describe('Built-in Directives', function () {
+describe('Built-in Directives', () => {
 
-  beforeAll(function () {
+  beforeAll(() => {
     browser.get('');
   });
 
-  it('should have title Built-in Directives', function () {
+  it('should have title Built-in Directives', () => {
     let title = element.all(by.css('h1')).get(0);
     expect(title.getText()).toEqual('Built-in Directives');
   });
@@ -21,7 +21,7 @@ describe('Built-in Directives', function () {
   });
 
 
-  it('should modify sentence when modified checkbox checked', function () {
+  it('should modify sentence when modified checkbox checked', () => {
     let modifiedChkbxLabel = element.all(by.css('input[type="checkbox"]')).get(1);
     let modifiedSentence = element.all(by.css('div')).get(1);
 
@@ -29,7 +29,7 @@ describe('Built-in Directives', function () {
     expect(modifiedSentence.getText()).toContain('modified');
   });
 
-  it('should modify sentence when normal checkbox checked', function () {
+  it('should modify sentence when normal checkbox checked', () => {
     let normalChkbxLabel = element.all(by.css('input[type="checkbox"]')).get(4);
     let normalSentence = element.all(by.css('div')).get(7);
 
@@ -37,7 +37,7 @@ describe('Built-in Directives', function () {
     expect(normalSentence.getText()).toContain('normal weight and, extra large');
   });
 
-  it('should toggle app-item-detail', function () {
+  it('should toggle app-item-detail', () => {
     let toggleButton = element.all(by.css('button')).get(3);
     let toggledDiv = element.all(by.css('app-item-detail')).get(0);
 
@@ -45,7 +45,7 @@ describe('Built-in Directives', function () {
     expect(toggledDiv.isDisplayed()).toBe(true);
   });
 
-  it('should hide app-item-detail', function () {
+  it('should hide app-item-detail', () => {
     let hiddenMessage = element.all(by.css('p')).get(11);
     let hiddenDiv = element.all(by.css('app-item-detail')).get(2);
 
@@ -53,12 +53,12 @@ describe('Built-in Directives', function () {
     expect(hiddenDiv.isDisplayed()).toBe(true);
   });
 
-  it('should have 10 lists each containing the string Teapot', function () {
+  it('should have 10 lists each containing the string Teapot', () => {
     let listDiv = element.all(by.cssContainingText('.box', 'Teapot'));
     expect(listDiv.count()).toBe(10);
   });
 
-  it('should switch case', function () {
+  it('should switch case', () => {
     let tvRadioButton = element.all(by.css('input[type="radio"]')).get(3);
     let tvDiv = element(by.css('app-lost-item'));
 

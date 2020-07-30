@@ -1,6 +1,6 @@
 import { browser, element, by, ExpectedConditions } from 'protractor';
 
-describe('Lazy Loading AngularJS Tests', function () {
+describe('Lazy Loading AngularJS Tests', () => {
   const pageElements = {
     homePageHref: element(by.cssContainingText('app-root nav a', 'Home')),
     homePageParagraph: element(by.css('app-root app-home p')),

@@ -1,9 +1,7 @@
 import { browser, element, by } from 'protractor';
 
 describe('Tour of Heroes', () => {
-  beforeEach(() => {
-    return browser.get('/');
-  });
+  beforeEach(() => browser.get('/'));
 
   it('should display "Tour of Heroes"', () => {
     let title = element(by.css('app-root h1')).getText();
