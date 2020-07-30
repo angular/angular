@@ -30,6 +30,14 @@ export class AppComponent implements OnInit {
   itemsWithTrackByCountReset = 0;
   itemIdIncrement = 1;
 
+  // #docregion setClasses
+  currentClasses: {};
+  // #enddocregion setClasses
+
+  // #docregion setStyles
+  currentStyles: {};
+  // #enddocregion setStyles
+
   ngOnInit() {
     this.resetItems();
     this.setCurrentClasses();
@@ -41,8 +49,7 @@ export class AppComponent implements OnInit {
     this.currentItem.name = name.toUpperCase();
   }
 
-// #docregion setClasses
-  currentClasses: {};
+  // #docregion setClasses
   setCurrentClasses() {
     // CSS classes: added/removed per current state of component properties
     this.currentClasses =  {
@@ -54,7 +61,6 @@ export class AppComponent implements OnInit {
   // #enddocregion setClasses
 
   // #docregion setStyles
-  currentStyles: {};
   setCurrentStyles() {
     // CSS styles: set per current state of component properties
     this.currentStyles = {
