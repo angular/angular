@@ -26,7 +26,7 @@ export class AppComponent {
 
   toggleDisabled(): any {
 
-    let testButton = <HTMLInputElement> document.getElementById('testButton');
+    let testButton = document.getElementById('testButton') as HTMLInputElement;
     testButton.disabled = !testButton.disabled;
     console.warn(testButton.disabled);
   }
