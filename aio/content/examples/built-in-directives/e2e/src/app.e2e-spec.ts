@@ -1,5 +1,3 @@
-'use strict';
-
 import { browser, element, by } from 'protractor';
 
 describe('Built-in Directives', function () {

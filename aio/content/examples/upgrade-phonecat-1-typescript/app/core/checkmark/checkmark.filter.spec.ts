@@ -1,5 +1,3 @@
-'use strict';
-
 describe('checkmark', () => {
 
   beforeEach(angular.mock.module('core'));

@@ -1,5 +1,3 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by, ExpectedConditions as EC, logging, ElementFinder, ElementArrayFinder } from 'protractor';
 
 describe('Getting Started', () => {
