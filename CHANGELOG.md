@@ -1,3 +1,13 @@
+<a name="10.0.7"></a>
+## 10.0.7 (2020-07-30)
+
+
+### Bug Fixes
+
+* **compiler:** Metadata should not include methods on Object.prototype ([#38292](https://github.com/angular/angular/issues/38292)) ([879ff08](https://github.com/angular/angular/commit/879ff08))
+
+
+
 <a name="10.1.0-next.3"></a>
 # 10.1.0-next.3 (2020-07-28)
 
