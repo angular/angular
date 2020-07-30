@@ -1,16 +1,16 @@
 import { browser, element, by } from 'protractor';
 
-describe('Reactive forms', function () {
+describe('Reactive forms', () => {
   const nameEditor = element(by.css('app-name-editor'));
   const profileEditor = element(by.css('app-profile-editor'));
   const nameEditorLink = element(by.cssContainingText('app-root > nav > a', 'Name Editor'));
   const profileEditorLink = element(by.cssContainingText('app-root > nav > a', 'Profile Editor'));
 
-  beforeAll(function () {
+  beforeAll(() => {
     browser.get('');
   });
 
-  describe('Name Editor', function () {
+  describe('Name Editor', () => {
     const nameInput = nameEditor.element(by.css('input'));
     const updateButton = nameEditor.element(by.buttonText('Update Name'));
     const nameText = 'John Smith';
@@ -53,7 +53,7 @@ describe('Reactive forms', function () {
     });
   });
 
-  describe('Profile Editor', function () {
+  describe('Profile Editor', () => {
     const firstNameInput = getInput('firstName');
     const lastNameInput = getInput('lastName');
     const streetInput = getInput('street');

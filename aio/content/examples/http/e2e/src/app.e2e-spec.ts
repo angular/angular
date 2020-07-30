@@ -28,7 +28,7 @@ let checkLogForMessage = (message: string) => {
   expect(page.logList.getText()).toContain(message);
 };
 
-describe('Http Tests', function() {
+describe('Http Tests', () => {
   beforeEach(() => {
     browser.get('');
   });
