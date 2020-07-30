@@ -5,8 +5,10 @@ ts_library(
     name = "commit-message",
     srcs = [
         "cli.ts",
+        "commit-message-draft.ts",
         "config.ts",
         "parse.ts",
+        "restore-commit-message.ts",
         "validate.ts",
         "validate-file.ts",
         "validate-range.ts",
