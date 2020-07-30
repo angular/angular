@@ -42,11 +42,11 @@ const declarations = [
     ParentFinderComponent,
 ];
 
-const a_components = [AliceComponent, AlexComponent ];
+const componentListA = [ AliceComponent, AlexComponent ];
 
-const b_components = [ BarryComponent, BethComponent, BobComponent ];
+const componentListB = [ BarryComponent, BethComponent, BobComponent ];
 
-const c_components = [
+const componentListC = [
   CarolComponent, ChrisComponent, CraigComponent,
   CathyComponent
 ];
@@ -61,9 +61,9 @@ const c_components = [
   ],
   declarations: [
     declarations,
-    a_components,
-    b_components,
-    c_components,
+    componentListA,
+    componentListB,
+    componentListC,
     StorageComponent,
   ],
   bootstrap: [ AppComponent ],
