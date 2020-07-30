@@ -1,4 +1,4 @@
-/* tslint:disable:no-unused-variable component-selector-name one-line check-open-brace */
+/* tslint:disable: no-unused-variable component-selector-name one-line space-before-function-paren */
 /* tslint:disable:*/
 // #docplaster
 // #docregion
