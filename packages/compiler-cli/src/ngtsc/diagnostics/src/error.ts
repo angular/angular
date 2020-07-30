@@ -24,7 +24,7 @@ export class FatalDiagnosticError {
 }
 
 export function makeDiagnostic(
-    code: ErrorCode, node: ts.Node, messageText: string,
+    code: ErrorCode, node: ts.Node, messageText: string|ts.DiagnosticMessageChain,
     relatedInformation?: ts.DiagnosticRelatedInformation[]): ts.DiagnosticWithLocation {
   node = ts.getOriginalNode(node);
   return {
