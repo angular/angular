@@ -1,5 +1,3 @@
-'use strict'; // necessary for node!
-
 import { browser, element, by, protractor, ElementFinder, ElementArrayFinder } from 'protractor';
 
 // THESE TESTS ARE INCOMPLETE
