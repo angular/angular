@@ -1,12 +1,12 @@
 import { browser, element, by } from 'protractor';
 
-describe('Component Style Tests', function () {
+describe('Component Style Tests', () => {
 
-  beforeAll(function () {
+  beforeAll(() => {
     browser.get('');
   });
 
-  it('scopes component styles to component view', function() {
+  it('scopes component styles to component view', () => {
     let componentH1 = element(by.css('app-root > h1'));
     let externalH1 = element(by.css('body > h1'));
 
@@ -17,26 +17,26 @@ describe('Component Style Tests', function () {
   });
 
 
-  it('allows styling :host element', function() {
+  it('allows styling :host element', () => {
     let host = element(by.css('app-hero-details'));
 
     expect(host.getCssValue('borderWidth')).toEqual('1px');
   });
 
-  it('supports :host() in function form', function() {
+  it('supports :host() in function form', () => {
     let host = element(by.css('app-hero-details'));
 
     host.element(by.buttonText('Activate')).click();
     expect(host.getCssValue('borderWidth')).toEqual('3px');
   });
 
-  it('allows conditional :host-context() styling', function() {
+  it('allows conditional :host-context() styling', () => {
     let h2 = element(by.css('app-hero-details h2'));
 
     expect(h2.getCssValue('backgroundColor')).toEqual('rgba(238, 238, 255, 1)'); // #eeeeff
   });
 
-  it('styles both view and content children with /deep/', function() {
+  it('styles both view and content children with /deep/', () => {
     let viewH3 = element(by.css('app-hero-team h3'));
     let contentH3 = element(by.css('app-hero-controls h3'));
 
@@ -44,20 +44,20 @@ describe('Component Style Tests', function () {
     expect(contentH3.getCssValue('fontStyle')).toEqual('italic');
   });
 
-  it('includes styles loaded with CSS @import', function() {
+  it('includes styles loaded with CSS @import', () => {
     let host = element(by.css('app-hero-details'));
 
     expect(host.getCssValue('padding')).toEqual('10px');
   });
 
-  it('processes template inline styles', function() {
+  it('processes template inline styles', () => {
     let button = element(by.css('app-hero-controls button'));
     let externalButton = element(by.css('body > button'));
     expect(button.getCssValue('backgroundColor')).toEqual('rgba(255, 255, 255, 1)'); // #ffffff
     expect(externalButton.getCssValue('backgroundColor')).not.toEqual('rgba(255, 255, 255, 1)');
   });
 
-  it('processes template <link>s', function() {
+  it('processes template <link>s', () => {
     let li = element(by.css('app-hero-team li:first-child'));
     let externalLi = element(by.css('body > ul li'));
 

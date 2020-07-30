@@ -662,12 +662,12 @@ describe('demo (with TestBed):', () => {
 
       // DebugElement.queryAll: if we wanted all of many instances:
       childDe = fixture.debugElement
-        .queryAll(function (de) { return de.componentInstance instanceof MyIfChildComponent; })[0];
+        .queryAll(de => de.componentInstance instanceof MyIfChildComponent)[0];
 
       // WE'LL USE THIS APPROACH !
       // DebugElement.query: find first instance (if any)
       childDe = fixture.debugElement
-        .query(function (de) { return de.componentInstance instanceof MyIfChildComponent; });
+        .query(de => de.componentInstance instanceof MyIfChildComponent);
 
       if (childDe && childDe.componentInstance) {
         child = childDe.componentInstance;

@@ -5,7 +5,7 @@ export const heroDetail = {
     <h2>Windstorm details!</h2>
     <div><label>id: </label>1</div>
   `,
-  controller: function() {
+  controller: function HeroDetailController() {
   }
 };
 // #enddocregion hero-detail

@@ -36,7 +36,7 @@ function heroTests() {
     expect(page.heroes.count()).toEqual(3);
   });
 
-  it('has no hero details initially', function () {
+  it('has no hero details initially', () => {
     let page = getPageElts();
     expect(page.heroDetail.isPresent()).toBeFalsy('no hero detail');
   });
@@ -61,12 +61,12 @@ function heroTests() {
 }
 
 function salesTaxTests() {
-  it('has no sales tax initially', function () {
+  it('has no sales tax initially', () => {
     let page = getPageElts();
     expect(page.salesTaxDetail.isPresent()).toBeFalsy('no sales tax info');
   });
 
-  it('shows sales tax', async function () {
+  it('shows sales tax', async () => {
     let page = getPageElts();
     page.salesTaxAmountInput.sendKeys('10', protractor.Key.ENTER);
     expect(page.salesTaxDetail.getText()).toEqual('The sales tax is $1.00');
