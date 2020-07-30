@@ -172,11 +172,11 @@ describe('Tutorial part 6', () => {
     });
 
     it(`adds back ${targetHero.name}`, async () => {
-      const newHeroName = 'Alice';
+      const addedHeroName = 'Alice';
       const heroesBefore = await toHeroArray(getPageElts().allHeroes);
       const numHeroes = heroesBefore.length;
 
-      element(by.css('input')).sendKeys(newHeroName);
+      element(by.css('input')).sendKeys(addedHeroName);
       element(by.buttonText('add')).click();
 
       let page = getPageElts();
@@ -186,7 +186,7 @@ describe('Tutorial part 6', () => {
       expect(heroesAfter.slice(0, numHeroes)).toEqual(heroesBefore, 'Old heroes are still there');
 
       const maxId = heroesBefore[heroesBefore.length - 1].id;
-      expect(heroesAfter[numHeroes]).toEqual({id: maxId + 1, name: newHeroName});
+      expect(heroesAfter[numHeroes]).toEqual({id: maxId + 1, name: addedHeroName});
     });
 
     it('displays correctly styled buttons', async () => {

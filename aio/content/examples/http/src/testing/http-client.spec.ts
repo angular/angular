@@ -83,7 +83,7 @@ describe('HttpClient testing', () => {
     // #docregion predicate
     // Expect one request with an authorization header
     const req = httpTestingController.expectOne(
-      req => req.headers.has('Authorization')
+      request => request.headers.has('Authorization')
     );
     // #enddocregion predicate
     req.flush(testData);

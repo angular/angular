@@ -237,7 +237,7 @@ export class Provider9Component implements OnInit {
 import { Optional } from '@angular/core';
 // #enddocregion import-optional
 
-let some_message = 'Hello from the injected logger';
+let someMessage = 'Hello from the injected logger';
 
 @Component({
   selector: 'provider-10',
@@ -249,7 +249,7 @@ export class Provider10Component implements OnInit {
   // #docregion provider-10-ctor
   constructor(@Optional() private logger?: Logger) {
     if (this.logger) {
-      this.logger.log(some_message);
+      this.logger.log(someMessage);
     }
   }
   // #enddocregion provider-10-ctor
