@@ -9,7 +9,7 @@ describe('Testing Example', () => {
     let navElts = element.all(by.css('app-root nav a'));
 
     return {
-      navElts: navElts,
+      navElts,
 
       appDashboard: element(by.css('app-root app-dashboard')),
     };

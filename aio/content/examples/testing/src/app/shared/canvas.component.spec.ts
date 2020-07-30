@@ -7,7 +7,7 @@ describe('CanvasComponent', () => {
   // #enddocregion without-toBlob-macrotask
   // #docregion enable-toBlob-macrotask
   beforeEach(() => {
-    window['__zone_symbol__FakeAsyncTestMacroTask'] = [
+    (window as any).__zone_symbol__FakeAsyncTestMacroTask = [
       {
         source: 'HTMLCanvasElement.toBlob',
         callbackArgs: [{ size: 200 }],

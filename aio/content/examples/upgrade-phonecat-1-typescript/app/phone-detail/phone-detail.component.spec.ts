@@ -19,7 +19,7 @@ describe('phoneDetail', () => {
       $httpBackend = _$httpBackend_;
       $httpBackend.expectGET('phones/xyz.json').respond(xyzPhoneData);
 
-      $routeParams['phoneId'] = 'xyz';
+      $routeParams.phoneId = 'xyz';
 
       ctrl = $componentController('phoneDetail');
     }));
