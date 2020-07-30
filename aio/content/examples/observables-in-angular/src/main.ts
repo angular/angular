@@ -1,11 +1,12 @@
-
+// tslint:disable: no-output-native
+// #docregion
 import { Component, Output, OnInit, EventEmitter, NgModule } from '@angular/core';
 import { Observable } from 'rxjs';
 
 // #docregion eventemitter
 
 @Component({
-  selector: 'zippy',
+  selector: 'app-zippy',
   template: `
     <div class="zippy">
       <div (click)="toggle()">Toggle</div>

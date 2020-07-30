@@ -1,3 +1,4 @@
+// tslint:disable: directive-selector
 // #docregion
 import { Directive, ElementRef, Input, OnChanges } from '@angular/core';
 

@@ -1,9 +1,4 @@
-/* tslint:disable:use-input-property-decorator */
-/* tslint:disable:use-output-property-decorator */
-
-/* tslint:disable:no-input-rename */
-
-
+// tslint:disable: no-input-rename no-output-rename use-input-property-decorator use-output-property-decorator
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
