@@ -6,12 +6,12 @@ describe('Built Template Functions Example', () => {
   });
 
   it('should have title Built-in Template Functions', () => {
-    let title = element.all(by.css('h1')).get(0);
+    const title = element.all(by.css('h1')).get(0);
     expect(title.getText()).toEqual('Built-in Template Functions');
   });
 
   it('should display $any( ) in h2', () => {
-    let header = element(by.css('h2'));
+    const header = element(by.css('h2'));
     expect(header.getText()).toContain('$any( )');
   });
 

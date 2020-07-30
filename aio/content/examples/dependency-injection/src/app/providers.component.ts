@@ -76,7 +76,7 @@ export class EvenBetterLogger extends Logger {
   constructor(private userService: UserService) { super(); }
 
   log(message: string) {
-    let name = this.userService.user.name;
+    const name = this.userService.user.name;
     super.log(`Message to ${name}: ${message}`);
   }
 }
@@ -237,7 +237,7 @@ export class Provider9Component implements OnInit {
 import { Optional } from '@angular/core';
 // #enddocregion import-optional
 
-let someMessage = 'Hello from the injected logger';
+const someMessage = 'Hello from the injected logger';
 
 @Component({
   selector: 'provider-10',

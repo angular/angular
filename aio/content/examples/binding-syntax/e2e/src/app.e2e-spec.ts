@@ -36,22 +36,22 @@ describe('Binding syntax e2e tests', () => {
 
 
   it('should log a message including Sarah', async () => {
-    let attributeButton = element.all(by.css('button')).get(1);
+    const attributeButton = element.all(by.css('button')).get(1);
     await attributeButton.click();
     const contents = 'Sarah';
     logChecker(attributeButton, contents);
   });
 
   it('should log a message including Sarah for DOM property', async () => {
-    let DOMPropertyButton = element.all(by.css('button')).get(2);
+    const DOMPropertyButton = element.all(by.css('button')).get(2);
     await DOMPropertyButton.click();
     const contents = 'Sarah';
     logChecker(DOMPropertyButton, contents);
   });
 
   it('should log a message including Sally for DOM property', async () => {
-    let DOMPropertyButton = element.all(by.css('button')).get(2);
-    let input = element(by.css('input'));
+    const DOMPropertyButton = element.all(by.css('button')).get(2);
+    const input = element(by.css('input'));
     input.sendKeys('Sally');
     await DOMPropertyButton.click();
     const contents = 'Sally';
@@ -59,14 +59,14 @@ describe('Binding syntax e2e tests', () => {
   });
 
   it('should log a message that Test Button works', async () => {
-    let testButton = element.all(by.css('button')).get(3);
+    const testButton = element.all(by.css('button')).get(3);
     await testButton.click();
     const contents = 'Test';
     logChecker(testButton, contents);
   });
 
   it('should toggle Test Button disabled', async () => {
-    let toggleButton = element.all(by.css('button')).get(4);
+    const toggleButton = element.all(by.css('button')).get(4);
     await toggleButton.click();
     const contents = 'true';
     logChecker(toggleButton, contents);

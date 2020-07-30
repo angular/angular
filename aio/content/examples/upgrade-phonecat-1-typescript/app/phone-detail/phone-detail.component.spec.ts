@@ -9,7 +9,7 @@ describe('phoneDetail', () => {
   describe('PhoneDetailController', () => {
     let $httpBackend: angular.IHttpBackendService;
     let ctrl: any;
-    let xyzPhoneData = {
+    const xyzPhoneData = {
       name: 'phone xyz',
       images: ['image/url1.png', 'image/url2.png']
     };

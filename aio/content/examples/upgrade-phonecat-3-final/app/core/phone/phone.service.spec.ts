@@ -5,7 +5,7 @@ import { Phone, PhoneData } from './phone.service';
 
 describe('Phone', () => {
   let phone: Phone;
-  let phonesData: PhoneData[] = [
+  const phonesData: PhoneData[] = [
     {name: 'Phone X', snippet: '', images: []},
     {name: 'Phone Y', snippet: '', images: []},
     {name: 'Phone Z', snippet: '', images: []}
