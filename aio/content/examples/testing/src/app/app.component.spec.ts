@@ -18,7 +18,7 @@ class RouterOutletStubComponent { }
 class WelcomeStubComponent {}
 // #enddocregion component-stubs
 
-let comp:    AppComponent;
+let comp: AppComponent;
 let fixture: ComponentFixture<AppComponent>;
 
 describe('AppComponent & TestModule', () => {
