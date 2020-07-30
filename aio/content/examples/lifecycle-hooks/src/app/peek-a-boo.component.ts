@@ -1,3 +1,5 @@
+// tslint:disable: no-conflicting-lifecycle
+// #docregion
 import {
   AfterContentChecked,
   AfterContentInit,

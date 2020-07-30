@@ -1,5 +1,4 @@
-/* tslint:disable: no-unused-variable component-selector-name one-line space-before-function-paren */
-/* tslint:disable:*/
+/* tslint:disable: no-unused-variable component-selector one-line space-before-function-paren */
 // #docplaster
 // #docregion
 import { Component, forwardRef, Optional, SkipSelf } from '@angular/core';
@@ -20,8 +19,7 @@ const DifferentParent = Parent;
 // The `parentType` defaults to `Parent` when omitting the second parameter.
 // #docregion provide-the-parent
 export function provideParent
-// #enddocregion provide-parent, provide-the-parent
-// #docregion provide-parent
+// #enddocregion provide-the-parent
   (component: any, parentType?: any) {
     return { provide: parentType || Parent, useExisting: forwardRef(() => component) };
   }

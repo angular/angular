@@ -13,7 +13,7 @@ import { LoggerService } from './logger.service';
     Counter = {{counter}}
 
     <h5>-- Counter Change Log --</h5>
-    <div *ngFor="let chg of changeLog" mySpy>{{chg}}</div>
+    <div *ngFor="let chg of changeLog" appSpy>{{chg}}</div>
   </div>
   `,
   styles: ['.counter {background: LightYellow; padding: 8px; margin-top: 8px}']
