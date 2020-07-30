@@ -90,7 +90,7 @@ function compileAndCreate() {
  * The (almost) same tests for both.
  * Only change: the way that the first hero is clicked
  */
-function tests(heroClick: Function) {
+function tests(heroClick: () => void) {
 
   it('should NOT have heroes before ngOnInit', () => {
     expect(comp.heroes.length).toBe(0,

@@ -76,11 +76,7 @@ export class AppComponent implements OnInit {
   }
 
   giveNullCustomerValue() {
-    !(this.nullCustomer = null) ? (this.nullCustomer = 'Kelly') : (this.nullCustomer = null);
-  }
-
-  resetNullItem() {
-    this.nullCustomer = null;
+    this.nullCustomer = 'Kelly';
   }
 
   resetItems() {
