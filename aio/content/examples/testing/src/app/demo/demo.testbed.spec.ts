@@ -256,7 +256,7 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
 
       const comp = fixture.componentInstance;
-      const input = <HTMLInputElement> fixture.debugElement.query(By.css('input')).nativeElement;
+      const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
 
       expect(comp.name).toBe(expectedOrigName,
         `At start name should be ${expectedOrigName} `);
@@ -294,7 +294,7 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
 
       const comp =  fixture.componentInstance;
-      const input = <HTMLInputElement> fixture.debugElement.query(By.css('input')).nativeElement;
+      const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
 
       expect(comp.name).toBe(expectedOrigName,
         `At start name should be ${expectedOrigName} `);
