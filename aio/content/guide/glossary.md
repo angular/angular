@@ -867,7 +867,7 @@ To learn more, see [Introduction to Services and Dependency Injection](guide/arc
 
 ## structural directives
 
-A category of [directive](#directive) that is responsible for shaping HTML layout by modifying the DOM&mdashthat is, adding, removing, or manipulating elements and their children.
+A category of [directive](#directive) that is responsible for shaping HTML layout by modifying the DOM&mdash;that is, adding, removing, or manipulating elements and their children.
 
 To learn more, see [Structural Directives](guide/structural-directives).
 
