@@ -41,7 +41,7 @@ import {FocusNext} from './menu-stack';
  * functionality.
  */
 @Directive({
-  selector: '[cdkMenuItem][cdkMenuTriggerFor]',
+  selector: '[cdkMenuTriggerFor]',
   exportAs: 'cdkMenuTriggerFor',
   host: {
     '(keydown)': '_toggleOnKeydown($event)',
