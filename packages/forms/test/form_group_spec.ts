@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {async, fakeAsync, tick} from '@angular/core/testing';
+import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {of} from 'rxjs';
@@ -726,7 +726,7 @@ describe('FormGroup', () => {
     let control: FormControl;
     let group: FormGroup;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       control = new FormControl('', asyncValidatorReturningObservable);
       group = new FormGroup({'one': control});
     }));

@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, Component, destroyPlatform, EventEmitter, forwardRef, Input, NgModule, NgModuleFactory, NgZone, NO_ERRORS_SCHEMA, OnChanges, OnDestroy, Output, SimpleChange, SimpleChanges, Testability} from '@angular/core';
-import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -30,7 +30,7 @@ withEachNg1Version(() => {
       it('should have AngularJS loaded',
          () => expect(angular.getAngularJSGlobal().version.major).toBe(1));
 
-      it('should instantiate ng2 in ng1 template and project content', async(() => {
+      it('should instantiate ng2 in ng1 template and project content', waitForAsync(() => {
            const ng1Module = angular.module_('ng1', []);
 
            @Component({
@@ -55,7 +55,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should instantiate ng1 in ng2 template and project content', async(() => {
+      it('should instantiate ng1 in ng2 template and project content', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -86,7 +86,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('supports the compilerOptions argument', async(() => {
+      it('supports the compilerOptions argument', waitForAsync(() => {
            const platformRef = platformBrowserDynamic();
            spyOn(platformRef, 'bootstrapModule').and.callThrough();
            spyOn(platformRef, 'bootstrapModuleFactory').and.callThrough();
@@ -170,7 +170,7 @@ withEachNg1Version(() => {
     });
 
     describe('change-detection', () => {
-      it('should not break if a $digest is already in progress', async(() => {
+      it('should not break if a $digest is already in progress', waitForAsync(() => {
            @Component({selector: 'my-app', template: ''})
            class AppComponent {
            }
@@ -209,7 +209,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should interleave scope and component expressions', async(() => {
+      it('should interleave scope and component expressions', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
            const log: string[] = [];
@@ -256,7 +256,8 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should propagate changes to a downgraded component inside the ngZone', async(() => {
+      it('should propagate changes to a downgraded component inside the ngZone',
+         waitForAsync(() => {
            let appComponent: AppComponent;
            let upgradeRef: UpgradeAdapterRef;
 
@@ -342,7 +343,7 @@ withEachNg1Version(() => {
     });
 
     describe('downgrade ng2 component', () => {
-      it('should allow non-element selectors for downgraded components', async(() => {
+      it('should allow non-element selectors for downgraded components', waitForAsync(() => {
            @Component({selector: '[itWorks]', template: 'It works'})
            class WorksComponent {
            }
@@ -361,7 +362,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should bind properties, events', async(() => {
+      it('should bind properties, events', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []).value($EXCEPTION_HANDLER, (err: any) => {
              throw err;
@@ -483,7 +484,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support two-way binding and event listener', async(() => {
+      it('should support two-way binding and event listener', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const listenerSpy = jasmine.createSpy('$rootScope.listener');
            const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
@@ -532,7 +533,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should initialize inputs in time for `ngOnChanges`', async(() => {
+      it('should initialize inputs in time for `ngOnChanges`', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
 
            @Component({
@@ -591,7 +592,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should bind to ng-model', async(() => {
+      it('should bind to ng-model', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -661,7 +662,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should properly run cleanup when ng1 directive is destroyed', async(() => {
+      it('should properly run cleanup when ng1 directive is destroyed', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
            const onDestroyed: EventEmitter<string> = new EventEmitter<string>();
@@ -700,7 +701,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should properly run cleanup with multiple levels of nesting', async(() => {
+      it('should properly run cleanup with multiple levels of nesting', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            let destroyed = false;
 
@@ -745,7 +746,8 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should fallback to the root ng2.injector when compiled outside the dom', async(() => {
+      it('should fallback to the root ng2.injector when compiled outside the dom',
+         waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -781,7 +783,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support multi-slot projection', async(() => {
+      it('should support multi-slot projection', waitForAsync(() => {
            const ng1Module = angular.module_('ng1', []);
 
            @Component({
@@ -810,7 +812,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should correctly project structural directives', async(() => {
+      it('should correctly project structural directives', waitForAsync(() => {
            @Component({selector: 'ng2', template: 'ng2-{{ itemId }}(<ng-content></ng-content>)'})
            class Ng2Component {
              // TODO(issue/24571): remove '!'.
@@ -844,7 +846,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should allow attribute selectors for components in ng2', async(() => {
+      it('should allow attribute selectors for components in ng2', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
            const ng1Module = angular.module_('myExample', []);
 
@@ -1123,7 +1125,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should bind properties, events', async(() => {
+      it('should bind properties, events', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -1181,7 +1183,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should bind optional properties', async(() => {
+      it('should bind optional properties', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -1226,7 +1228,7 @@ withEachNg1Version(() => {
          }));
 
       it('should bind properties, events in controller when bindToController is not used',
-         async(() => {
+         waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -1272,7 +1274,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should bind properties, events in link function', async(() => {
+      it('should bind properties, events in link function', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -1318,7 +1320,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support templateUrl fetched from $httpBackend', async(() => {
+      it('should support templateUrl fetched from $httpBackend', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
            ng1Module.value(
@@ -1349,7 +1351,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support templateUrl as a function', async(() => {
+      it('should support templateUrl as a function', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
            ng1Module.value(
@@ -1384,7 +1386,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support empty template', async(() => {
+      it('should support empty template', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -1412,7 +1414,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support template as a function', async(() => {
+      it('should support template as a function', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -1444,7 +1446,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support templateUrl fetched from $templateCache', async(() => {
+      it('should support templateUrl fetched from $templateCache', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
            ng1Module.run(($templateCache: any) => $templateCache.put('url.html', 'WORKS'));
@@ -1473,7 +1475,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support controller with controllerAs', async(() => {
+      it('should support controller with controllerAs', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -1524,7 +1526,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support bindToController', async(() => {
+      it('should support bindToController', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -1558,7 +1560,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support bindToController with bindings', async(() => {
+      it('should support bindToController with bindings', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -1592,7 +1594,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support single require in linking fn', async(() => {
+      it('should support single require in linking fn', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -1635,7 +1637,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support array require in linking fn', async(() => {
+      it('should support array require in linking fn', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -1688,7 +1690,7 @@ withEachNg1Version(() => {
          }));
 
       describe('with life-cycle hooks', () => {
-        it('should call `$onInit()` on controller', async(() => {
+        it('should call `$onInit()` on controller', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const $onInitSpyA = jasmine.createSpy('$onInitA');
              const $onInitSpyB = jasmine.createSpy('$onInitB');
@@ -1739,7 +1741,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should not call `$onInit()` on scope', async(() => {
+        it('should not call `$onInit()` on scope', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const $onInitSpy = jasmine.createSpy('$onInit');
 
@@ -1785,7 +1787,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should call `$doCheck()` on controller', async(() => {
+        it('should call `$doCheck()` on controller', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const $doCheckSpyA = jasmine.createSpy('$doCheckA');
              const $doCheckSpyB = jasmine.createSpy('$doCheckB');
@@ -1847,7 +1849,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should not call `$doCheck()` on scope', async(() => {
+        it('should not call `$doCheck()` on scope', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const $doCheckSpyA = jasmine.createSpy('$doCheckA');
              const $doCheckSpyB = jasmine.createSpy('$doCheckB');
@@ -1904,7 +1906,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should call `$postLink()` on controller', async(() => {
+        it('should call `$postLink()` on controller', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const $postLinkSpyA = jasmine.createSpy('$postLinkA');
              const $postLinkSpyB = jasmine.createSpy('$postLinkB');
@@ -1955,7 +1957,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should not call `$postLink()` on scope', async(() => {
+        it('should not call `$postLink()` on scope', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const $postLinkSpy = jasmine.createSpy('$postLink');
 
@@ -2520,7 +2522,7 @@ withEachNg1Version(() => {
       });
 
       describe('linking', () => {
-        it('should run the pre-linking after instantiating the controller', async(() => {
+        it('should run the pre-linking after instantiating the controller', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const log: string[] = [];
 
@@ -2561,7 +2563,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should run the pre-linking function before linking', async(() => {
+        it('should run the pre-linking function before linking', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const log: string[] = [];
 
@@ -2601,7 +2603,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should run the post-linking function after linking (link: object)', async(() => {
+        it('should run the post-linking function after linking (link: object)', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const log: string[] = [];
 
@@ -2641,7 +2643,8 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should run the post-linking function after linking (link: function)', async(() => {
+        it('should run the post-linking function after linking (link: function)',
+           waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const log: string[] = [];
 
@@ -2681,7 +2684,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should run the post-linking function before `$postLink`', async(() => {
+        it('should run the post-linking function before `$postLink`', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const log: string[] = [];
 
@@ -2724,7 +2727,7 @@ withEachNg1Version(() => {
       });
 
       describe('transclusion', () => {
-        it('should support single-slot transclusion', async(() => {
+        it('should support single-slot transclusion', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              let ng2ComponentAInstance: Ng2ComponentA;
              let ng2ComponentBInstance: Ng2ComponentB;
@@ -2788,7 +2791,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should support single-slot transclusion with fallback content', async(() => {
+        it('should support single-slot transclusion with fallback content', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              let ng1ControllerInstances: any[] = [];
              let ng2ComponentInstance: Ng2Component;
@@ -2854,7 +2857,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should support multi-slot transclusion', async(() => {
+        it('should support multi-slot transclusion', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              let ng2ComponentInstance: Ng2Component;
 
@@ -2916,7 +2919,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should support default slot (with fallback content)', async(() => {
+        it('should support default slot (with fallback content)', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              let ng1ControllerInstances: any[] = [];
              let ng2ComponentInstance: Ng2Component;
@@ -2999,7 +3002,8 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should support optional transclusion slots (with fallback content)', async(() => {
+        it('should support optional transclusion slots (with fallback content)',
+           waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              let ng1ControllerInstances: any[] = [];
              let ng2ComponentInstance: Ng2Component;
@@ -3072,7 +3076,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should throw if a non-optional slot is not filled', async(() => {
+        it('should throw if a non-optional slot is not filled', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              let errorMessage: string;
 
@@ -3111,7 +3115,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should support structural directives in transcluded content', async(() => {
+        it('should support structural directives in transcluded content', waitForAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              let ng2ComponentInstance: Ng2Component;
 
@@ -3179,7 +3183,7 @@ withEachNg1Version(() => {
            }));
       });
 
-      it('should bind input properties (<) of components', async(() => {
+      it('should bind input properties (<) of components', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -3211,7 +3215,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support ng2 > ng1 > ng2', async(() => {
+      it('should support ng2 > ng1 > ng2', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
@@ -3247,7 +3251,7 @@ withEachNg1Version(() => {
     describe('injection', () => {
       function SomeToken() {}
 
-      it('should export ng2 instance to ng1', async(() => {
+      it('should export ng2 instance to ng1', waitForAsync(() => {
            @NgModule({
              providers: [{provide: SomeToken, useValue: 'correct_value'}],
              imports: [BrowserModule],
@@ -3264,7 +3268,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should export ng1 instance to ng2', async(() => {
+      it('should export ng1 instance to ng2', waitForAsync(() => {
            @NgModule({imports: [BrowserModule]})
            class MyNg2Module {
            }
@@ -3283,7 +3287,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should respect hierarchical dependency injection for ng2', async(() => {
+      it('should respect hierarchical dependency injection for ng2', waitForAsync(() => {
            const ng1Module = angular.module_('ng1', []);
 
            @Component({selector: 'ng2-parent', template: `ng2-parent(<ng-content></ng-content>)`})
@@ -3311,7 +3315,7 @@ withEachNg1Version(() => {
     });
 
     describe('testability', () => {
-      it('should handle deferred bootstrap', async(() => {
+      it('should handle deferred bootstrap', waitForAsync(() => {
            @NgModule({imports: [BrowserModule]})
            class MyNg2Module {
            }
@@ -3362,7 +3366,7 @@ withEachNg1Version(() => {
            expect(value).toBe(a1Injector);
          }));
 
-      it('should wait for ng2 testability', async(() => {
+      it('should wait for ng2 testability', waitForAsync(() => {
            @NgModule({imports: [BrowserModule]})
            class MyNg2Module {
            }
@@ -3389,7 +3393,7 @@ withEachNg1Version(() => {
     });
 
     describe('examples', () => {
-      it('should verify UpgradeAdapter example', async(() => {
+      it('should verify UpgradeAdapter example', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const module = angular.module_('myExample', []);
 
@@ -3461,7 +3465,7 @@ withEachNg1Version(() => {
         });
       });
 
-      it('should be able to test ng1 components that use ng2 components', async(() => {
+      it('should be able to test ng1 components that use ng2 components', waitForAsync(() => {
            upgradeAdapterRef.ready(() => {
              const element = $compile('<ng2></ng2>')($rootScope);
              $rootScope.$digest();

@@ -8,7 +8,7 @@
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, asNativeElements, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {ElementRef} from '@angular/core/src/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 import {Subject} from 'rxjs';
@@ -414,7 +414,7 @@ describe('Query API', () => {
   });
 
   describe('changes', () => {
-    it('should notify query on change', async(() => {
+    it('should notify query on change', waitForAsync(() => {
          const template = '<needs-query #q>' +
              '<div text="1"></div>' +
              '<div *ngIf="shouldShow" text="2"></div>' +
