@@ -1,22 +1,16 @@
 // #docregion
 // #docregion activatedroute
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-
 // #enddocregion activatedroute
 import { Observable, of } from 'rxjs';
-
-import { async, TestBed } from '@angular/core/testing';
 
 import { PhoneDetailComponent } from './phone-detail.component';
 import { Phone, PhoneData } from '../core/phone/phone.service';
 import { CheckmarkPipe } from '../core/checkmark/checkmark.pipe';
 
 function xyzPhoneData(): PhoneData {
-  return {
-    name: 'phone xyz',
-    snippet: '',
-    images: ['image/url1.png', 'image/url2.png']
-  };
+  return {name: 'phone xyz', snippet: '', images: ['image/url1.png', 'image/url2.png']};
 }
 
 class MockPhone {
@@ -34,10 +28,9 @@ class ActivatedRouteMock {
 // #enddocregion activatedroute
 
 describe('PhoneDetailComponent', () => {
-
   // #docregion activatedroute
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CheckmarkPipe, PhoneDetailComponent ],
       providers: [
@@ -55,5 +48,4 @@ describe('PhoneDetailComponent', () => {
     const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('h1').textContent).toContain(xyzPhoneData().name);
   });
-
 });

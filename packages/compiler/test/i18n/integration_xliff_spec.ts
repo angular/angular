@@ -7,14 +7,15 @@
  */
 
 import {Xliff} from '@angular/compiler/src/i18n/serializers/xliff';
-import {async} from '@angular/core/testing';
+import {waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {configureCompiler, createComponent, HTML, serializeTranslations, validateHtml} from './integration_common';
 
 describe('i18n XLIFF integration spec', () => {
   describe('(with LF line endings)', () => {
-    beforeEach(async(() => configureCompiler(XLIFF_TOMERGE + LF_LINE_ENDING_XLIFF_TOMERGE, 'xlf')));
+    beforeEach(
+        waitForAsync(() => configureCompiler(XLIFF_TOMERGE + LF_LINE_ENDING_XLIFF_TOMERGE, 'xlf')));
 
     it('should extract from templates', () => {
       const serializer = new Xliff();
@@ -33,8 +34,8 @@ describe('i18n XLIFF integration spec', () => {
   });
 
   describe('(with CRLF line endings', () => {
-    beforeEach(
-        async(() => configureCompiler(XLIFF_TOMERGE + CRLF_LINE_ENDING_XLIFF_TOMERGE, 'xlf')));
+    beforeEach(waitForAsync(
+        () => configureCompiler(XLIFF_TOMERGE + CRLF_LINE_ENDING_XLIFF_TOMERGE, 'xlf')));
 
     it('should extract from templates (with CRLF line endings)', () => {
       const serializer = new Xliff();

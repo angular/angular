@@ -402,7 +402,7 @@ There is no nested syntax (like a `Promise.then()`) to disrupt the flow of contr
 <div class="alert is-helpful">
 
 Limitation: The `fakeAsync()` function won't work if the test body makes an `XMLHttpRequest` (XHR) call.
-XHR calls within a test are rare, but if you need to call XHR, see [`async()`](#async), below.
+XHR calls within a test are rare, but if you need to call XHR, see [`waitForAsync()`](#waitForAsync), below.
 
 </div>
 
@@ -587,41 +587,41 @@ Then call `detectChanges()` to tell Angular to update the screen.
 
 Then you can assert that the quote element displays the expected text.
 
-{@a async}
+{@a waitForAsync}
 
-#### Async test with _async()_
+#### Async test with _waitForAsync()_
 
-To use `async()` functionality, you must import `zone.js/dist/zone-testing` in your test setup file.
+To use `waitForAsync()` functionality, you must import `zone.js/dist/zone-testing` in your test setup file.
 If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
 
 The `fakeAsync()` utility function has a few limitations.
 In particular, it won't work if the test body makes an `XMLHttpRequest` (XHR) call.
 XHR calls within a test are rare so you can generally stick with [`fakeAsync()`](#fake-async).
-But if you ever do need to call `XMLHttpRequest`, you'll want to know about `async()`.
+But if you ever do need to call `XMLHttpRequest`, you'll want to know about `waitForAsync()`.
 
 <div class="alert is-helpful">
 
 The `TestBed.compileComponents()` method (see [below](#compile-components)) calls `XHR`
 to read external template and css files during "just-in-time" compilation.
-Write tests that call `compileComponents()` with the `async()` utility.
+Write tests that call `compileComponents()` with the `waitForAsync()` utility.
 
 </div>
 
-Here's the previous `fakeAsync()` test, re-written with the `async()` utility.
+Here's the previous `fakeAsync()` test, re-written with the `waitForAsync()` utility.
 
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
   region="async-test">
 </code-example>
 
-The `async()` utility hides some asynchronous boilerplate by arranging for the tester's code
+The `waitForAsync()` utility hides some asynchronous boilerplate by arranging for the tester's code
 to run in a special _async test zone_.
 You don't need to pass Jasmine's `done()` into the test and call `done()` because it is `undefined` in promise or observable callbacks.
 
 But the test's asynchronous nature is revealed by the call to `fixture.whenStable()`,
 which breaks the linear flow of control.
 
-When using an `intervalTimer()` such as `setInterval()` in `async()`, remember to cancel the timer with `clearInterval()` after the test, otherwise the `async()` never ends.
+When using an `intervalTimer()` such as `setInterval()` in `waitForAsync()`, remember to cancel the timer with `clearInterval()` after the test, otherwise the `waitForAsync()` never ends.
 
 {@a when-stable}
 
@@ -641,18 +641,18 @@ update the quote element with the expected text.
 
 #### Jasmine _done()_
 
-While the `async()` and `fakeAsync()` functions greatly
+While the `waitForAsync()` and `fakeAsync()` functions greatly
 simplify Angular asynchronous testing,
 you can still fall back to the traditional technique
 and pass `it` a function that takes a
 [`done` callback](https://jasmine.github.io/2.0/introduction.html#section-Asynchronous_Support).
 
-You can't call `done()` in `async()` or `fakeAsync()` functions, because the `done parameter`
+You can't call `done()` in `waitForAsync()` or `fakeAsync()` functions, because the `done parameter`
 is `undefined`.
 
 Now you are responsible for chaining promises, handling errors, and calling `done()` at the appropriate moments.
 
-Writing test functions with `done()`, is more cumbersome than `async()`and `fakeAsync()`, but it is occasionally necessary when code involves the `intervalTimer()` like `setInterval`.
+Writing test functions with `done()`, is more cumbersome than `waitForAsync()`and `fakeAsync()`, but it is occasionally necessary when code involves the `intervalTimer()` like `setInterval`.
 
 Here are two more versions of the previous test, written with `done()`.
 The first one subscribes to the `Observable` exposed to the template by the component's `quote` property.
@@ -738,7 +738,7 @@ you tell the `TestScheduler` to _flush_ its queue of prepared tasks like this.
   region="test-scheduler-flush"></code-example>
 
 This step serves a purpose analogous to [tick()](api/core/testing/tick) and `whenStable()` in the
-earlier `fakeAsync()` and `async()` examples.
+earlier `fakeAsync()` and `waitForAsync()` examples.
 The balance of the test is the same as those examples.
 
 #### Marble error testing
@@ -1535,7 +1535,7 @@ You must call `compileComponents()` within an asynchronous test function.
 <div class="alert is-critical">
 
 If you neglect to make the test function async
-(e.g., forget to use `async()` as described below),
+(e.g., forget to use `waitForAsync()` as described below),
 you'll see this error message
 
 <code-example language="sh" class="code-shell" hideCopy>
@@ -1549,7 +1549,7 @@ A typical approach is to divide the setup logic into two separate `beforeEach()`
 1.  An async `beforeEach()` that compiles the components
 1.  A synchronous `beforeEach()` that performs the remaining setup.
 
-To follow this pattern, import the `async()` helper with the other testing symbols.
+To follow this pattern, import the `waitForAsync()` helper with the other testing symbols.
 
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
@@ -1565,7 +1565,7 @@ Write the first async `beforeEach` like this.
   region="async-before-each"
   header="app/banner/banner-external.component.spec.ts (async beforeEach)"></code-example>
 
-The `async()` helper function takes a parameterless function with the body of the setup.
+The `waitForAsync()` helper function takes a parameterless function with the body of the setup.
 
 The `TestBed.configureTestingModule()` method returns the `TestBed` class so you can chain
 calls to other `TestBed` static methods such as `compileComponents()`.

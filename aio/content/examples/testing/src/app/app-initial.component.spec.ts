@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 // #enddocregion
 import { AppComponent } from './app-initial.component';
 /*
@@ -12,29 +12,29 @@ describe('AppComponent', () => {
 */
 describe('AppComponent (initial CLI version)', () => {
   // #docregion
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
-    }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed
+        .configureTestingModule({
+          declarations: [AppComponent],
+        })
+        .compileComponents();
   }));
-  it('should create the app', async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  }));
-  it(`should have as title 'app'`, async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('app');
-  }));
-  it('should render title', async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to app!');
-  }));
+  it('should create the app', waitForAsync(() => {
+       const fixture = TestBed.createComponent(AppComponent);
+       const app = fixture.componentInstance;
+       expect(app).toBeTruthy();
+     }));
+  it(`should have as title 'app'`, waitForAsync(() => {
+       const fixture = TestBed.createComponent(AppComponent);
+       const app = fixture.componentInstance;
+       expect(app.title).toEqual('app');
+     }));
+  it('should render title', waitForAsync(() => {
+       const fixture = TestBed.createComponent(AppComponent);
+       fixture.detectChanges();
+       const compiled = fixture.nativeElement;
+       expect(compiled.querySelector('h1').textContent).toContain('Welcome to app!');
+     }));
 });
 // #enddocregion
 
@@ -43,16 +43,13 @@ import { DebugElement } from '@angular/core';
 import { ComponentFixture } from '@angular/core/testing';
 
 describe('AppComponent (initial CLI version - as it should be)', () => {
-
   let app: AppComponent;
   let de: DebugElement;
   let fixture: ComponentFixture<AppComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
+      declarations: [AppComponent],
     });
 
     fixture = TestBed.createComponent(AppComponent);
@@ -70,7 +67,6 @@ describe('AppComponent (initial CLI version - as it should be)', () => {
 
   it('should render title in an h1 tag', () => {
     fixture.detectChanges();
-    expect(de.nativeElement.querySelector('h1').textContent)
-      .toContain('Welcome to app!');
+    expect(de.nativeElement.querySelector('h1').textContent).toContain('Welcome to app!');
   });
 });

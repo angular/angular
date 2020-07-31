@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, Input} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -17,7 +17,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     let fixture: ComponentFixture<TestComponent>;
 
     describe('directives', () => {
-      it('should support dotted selectors', async(() => {
+      it('should support dotted selectors', waitForAsync(() => {
            @Directive({selector: '[dot.name]'})
            class MyDir {
              // TODO(issue/24571): remove '!'.
@@ -41,7 +41,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
     describe('ng-container', () => {
       if (browserDetection.isChromeDesktop) {
-        it('should work regardless the namespace', async(() => {
+        it('should work regardless the namespace', waitForAsync(() => {
              @Component({
                selector: 'comp',
                template:

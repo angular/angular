@@ -8,7 +8,7 @@
 
 import {CompilerConfig, ResourceLoader} from '@angular/compiler';
 import {Compiler, Component, ComponentFactoryResolver, CUSTOM_ELEMENTS_SCHEMA, Directive, Inject, Injectable, InjectionToken, Injector, Input, NgModule, Optional, Pipe, SkipSelf, ɵstringify as stringify} from '@angular/core';
-import {async, fakeAsync, getTestBed, inject, TestBed, tick, withModule} from '@angular/core/testing';
+import {fakeAsync, getTestBed, inject, TestBed, tick, waitForAsync, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -146,11 +146,11 @@ const bTok = new InjectionToken<string>('b');
         }, 0);
       });
 
-      it('should run async tests with tasks', async(function(this: TestContext) {
+      it('should run async tests with tasks', waitForAsync(function(this: TestContext) {
            setTimeout(() => this.actuallyDone = true, 0);
          }));
 
-      it('should run async tests with promises', async(function(this: TestContext) {
+      it('should run async tests with promises', waitForAsync(function(this: TestContext) {
            const p = new Promise((resolve, reject) => setTimeout(resolve, 10));
            p.then(() => this.actuallyDone = true);
          }));
@@ -192,7 +192,7 @@ const bTok = new InjectionToken<string>('b');
              }));
 
       it('should preserve context when async and inject helpers are combined',
-         async(inject([], function(this: TestContext) {
+         waitForAsync(inject([], function(this: TestContext) {
            setTimeout(() => this.contextModified = true, 0);
          })));
 
@@ -214,7 +214,7 @@ const bTok = new InjectionToken<string>('b');
              }));
 
           it('should wait until returned promises',
-             async(inject([FancyService], (service: FancyService) => {
+             waitForAsync(inject([FancyService], (service: FancyService) => {
                service.getAsyncValue().then((value) => expect(value).toEqual('async value'));
                service.getTimeoutValue().then((value) => expect(value).toEqual('timeout value'));
              })));
@@ -251,7 +251,7 @@ const bTok = new InjectionToken<string>('b');
           });
 
           describe('using async beforeEach', () => {
-            beforeEach(async(inject([FancyService], (service: FancyService) => {
+            beforeEach(waitForAsync(inject([FancyService], (service: FancyService) => {
               service.getAsyncValue().then((value) => service.value = value);
             })));
 
@@ -335,7 +335,7 @@ const bTok = new InjectionToken<string>('b');
       });
 
       describe('components with template url', () => {
-        beforeEach(async(() => {
+        beforeEach(waitForAsync(() => {
           TestBed.configureTestingModule({declarations: [CompWithUrlTemplate]});
           TestBed.compileComponents();
         }));
@@ -892,9 +892,9 @@ const bTok = new InjectionToken<string>('b');
         const itPromise = patchJasmineIt();
         const barError = new Error('bar');
 
-        it('throws an async error', async(inject([], () => setTimeout(() => {
-                                                       throw barError;
-                                                     }, 0))));
+        it('throws an async error', waitForAsync(inject([], () => setTimeout(() => {
+                                                              throw barError;
+                                                            }, 0))));
 
         itPromise.then(() => done.fail('Expected test to fail, but it did not'), (err) => {
           expect(err).toEqual(barError);
@@ -906,7 +906,7 @@ const bTok = new InjectionToken<string>('b');
       it('should fail when a returned promise is rejected', (done) => {
         const itPromise = patchJasmineIt();
 
-        it('should fail with an error from a promise', async(inject([], () => {
+        it('should fail with an error from a promise', waitForAsync(inject([], () => {
              let reject: (error: any) => void = undefined!;
              const promise = new Promise((_, rej) => reject = rej);
              const p = promise.then(() => expect(1).toEqual(2));
@@ -1011,14 +1011,14 @@ Did you run and wait for 'resolveComponentResources()'?` :
         });
       });
 
-      it('should instantiate a component with valid DOM', async(() => {
+      it('should instantiate a component with valid DOM', waitForAsync(() => {
            const fixture = TestBed.createComponent(ChildComp);
            fixture.detectChanges();
 
            expect(fixture.nativeElement).toHaveText('Original Child');
          }));
 
-      it('should allow changing members of the component', async(() => {
+      it('should allow changing members of the component', waitForAsync(() => {
            const componentFixture = TestBed.createComponent(MyIfComp);
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('MyIf()');
@@ -1028,14 +1028,14 @@ Did you run and wait for 'resolveComponentResources()'?` :
            expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
          }));
 
-      it('should override a template', async(() => {
+      it('should override a template', waitForAsync(() => {
            TestBed.overrideComponent(ChildComp, {set: {template: '<span>Mock</span>'}});
            const componentFixture = TestBed.createComponent(ChildComp);
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('Mock');
          }));
 
-      it('should override a provider', async(() => {
+      it('should override a provider', waitForAsync(() => {
            TestBed.overrideComponent(
                TestProvidersComp,
                {set: {providers: [{provide: FancyService, useClass: MockFancyService}]}});
@@ -1045,7 +1045,7 @@ Did you run and wait for 'resolveComponentResources()'?` :
          }));
 
 
-      it('should override a viewProvider', async(() => {
+      it('should override a viewProvider', waitForAsync(() => {
            TestBed.overrideComponent(
                TestViewProvidersComp,
                {set: {viewProviders: [{provide: FancyService, useClass: MockFancyService}]}});
@@ -1065,7 +1065,7 @@ Did you run and wait for 'resolveComponentResources()'?` :
         });
       });
 
-      it('should override component dependencies', async(() => {
+      it('should override component dependencies', waitForAsync(() => {
            const componentFixture = TestBed.createComponent(ParentComp);
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('Parent(Mock)');
