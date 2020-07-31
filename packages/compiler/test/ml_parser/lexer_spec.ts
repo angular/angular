@@ -477,12 +477,16 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           lex.TokenType.TEXT,
           'Unknown entity "tbo" - use the "&#<decimal>;" or  "&#x<hex>;" syntax', '0:0'
         ]]);
-        expect(tokenizeAndHumanizeErrors('&#3sdf;')).toEqual([
-          [lex.TokenType.TEXT, 'Unexpected character "s"', '0:3']
-        ]);
-        expect(tokenizeAndHumanizeErrors('&#xasdf;')).toEqual([
-          [lex.TokenType.TEXT, 'Unexpected character "s"', '0:4']
-        ]);
+        expect(tokenizeAndHumanizeErrors('&#3sdf;')).toEqual([[
+          lex.TokenType.TEXT,
+          'Unable to parse entity "&#3s" - decimal character reference entities must end with ";"',
+          '0:4'
+        ]]);
+        expect(tokenizeAndHumanizeErrors('&#xasdf;')).toEqual([[
+          lex.TokenType.TEXT,
+          'Unable to parse entity "&#xas" - hexadecimal character reference entities must end with ";"',
+          '0:5'
+        ]]);
 
         expect(tokenizeAndHumanizeErrors('&#xABC')).toEqual([
           [lex.TokenType.TEXT, 'Unexpected character "EOF"', '0:6']
