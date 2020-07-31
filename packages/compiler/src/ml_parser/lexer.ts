@@ -139,7 +139,8 @@ function _unknownEntityErrorMsg(entitySrc: string): string {
 }
 
 function _unparsableEntityErrorMsg(type: CharacterReferenceType, entityStr: string): string {
-  return `Unable to parse entity "${entityStr}" - ${type} character reference entities must end with ";"`;
+  return `Unable to parse entity "${entityStr}" - ${
+      type} character reference entities must end with ";"`;
 }
 
 enum CharacterReferenceType {
@@ -409,10 +410,13 @@ class _Tokenizer {
       const codeStart = this._cursor.clone();
       this._attemptCharCodeUntilFn(isDigitEntityEnd);
       if (this._cursor.peek() != chars.$SEMICOLON) {
+        // Advance cursor to include the peeked character in the string provided to the error
+        // message.
         this._cursor.advance();
         const entityType = isHex ? CharacterReferenceType.HEX : CharacterReferenceType.DEC;
         throw this._createError(
-            _unparsableEntityErrorMsg(entityType, this._cursor.getChars(start)), this._cursor.getSpan());
+            _unparsableEntityErrorMsg(entityType, this._cursor.getChars(start)),
+            this._cursor.getSpan());
       }
       const strNum = this._cursor.getChars(codeStart);
       this._cursor.advance();
