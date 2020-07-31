@@ -20,7 +20,7 @@ the header, usually through keyboard navigation.
 If a tab's label is only text then the simple tab-group API can be used.
 
 <!-- example({"example": "tab-group-basic",
-              "file": "tab-group-basic.html"}) -->
+              "file": "tab-group-basic-example.html"}) -->
 
 For more complex labels, add a template with the `mat-tab-label` directive inside the `mat-tab`.
 
@@ -33,7 +33,7 @@ For more complex labels, add a template with the `mat-tab-label` directive insid
 By default, the tab group will not change its height to the height of the currently active tab. To
 change this, set the `dynamicHeight` input to true. The tab body will animate its height according
  to the height of the active tab.
- 
+
  <!-- example({"example": "tab-group-dynamic-height",
                "file": "tab-group-dynamic-height-example.html",
                "region": "dynamic-height"}) -->
