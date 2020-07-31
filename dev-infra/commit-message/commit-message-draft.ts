@@ -7,24 +7,24 @@
  */
 import {existsSync, readFileSync, unlinkSync, writeFileSync} from 'fs';
 
-const SAVED_COMMIT_MSG_FILE_PATH = '.git/COMMIT_EDITMSG.ngDevSave';
-
 /** Load the commit message draft from the file system if it exists. */
-export function loadCommitMessageDraft() {
-  if (existsSync(SAVED_COMMIT_MSG_FILE_PATH)) {
-    return readFileSync(SAVED_COMMIT_MSG_FILE_PATH).toString();
+export function loadCommitMessageDraft(basePath: string) {
+  const commitMessageDraftPath = `${basePath}.ngDevSave`;
+  if (existsSync(commitMessageDraftPath)) {
+    return readFileSync(commitMessageDraftPath).toString();
   }
   return '';
 }
 
 /** Remove the commit message draft from the file system. */
-export function deleteCommitMessageDraft() {
-  if (existsSync(SAVED_COMMIT_MSG_FILE_PATH)) {
-    unlinkSync(SAVED_COMMIT_MSG_FILE_PATH);
+export function deleteCommitMessageDraft(basePath: string) {
+  const commitMessageDraftPath = `${basePath}.ngDevSave`;
+  if (existsSync(commitMessageDraftPath)) {
+    unlinkSync(commitMessageDraftPath);
   }
 }
 
 /** Save the commit message draft to the file system for later retrieval. */
-export function saveCommitMessageDraft(commitMessage: string) {
-  writeFileSync(SAVED_COMMIT_MSG_FILE_PATH, commitMessage);
+export function saveCommitMessageDraft(basePath: string, commitMessage: string) {
+  writeFileSync(`${basePath}.ngDevSave`, commitMessage);
 }

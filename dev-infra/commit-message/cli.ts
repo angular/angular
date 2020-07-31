@@ -18,9 +18,24 @@ export function buildCommitMessageParser(localYargs: yargs.Argv) {
   return localYargs.help()
       .strict()
       .command(
-          'restore-commit-message-draft [filePath] [source] [_]', false, {},
+          'restore-commit-message-draft', false, {
+            'file-env-variable': {
+              type: 'string',
+              conflicts: ['file'],
+              required: true,
+              description:
+                  'The key of the environment variable for the path of the commit message file.',
+              coerce: arg => {
+                const [file, source] = process.env[arg].split(' ');
+                if (!file) {
+                  throw new Error(`Provided environment variable "${arg}" was not found.`);
+                }
+                return [file, source];
+              },
+            }
+          },
           args => {
-            restoreCommitMessage(args.filePath, args.source);
+            restoreCommitMessage(args.fileEnvVariable[0], args.fileEnvVariable[1]);
           })
       .command(
           'pre-commit-validate', 'Validate the most recent commit message', {

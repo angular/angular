@@ -19,12 +19,12 @@ export function validateFile(filePath: string) {
   const commitMessage = readFileSync(resolve(getRepoBaseDir(), filePath), 'utf8');
   if (validateCommitMessage(commitMessage)) {
     info('√  Valid commit message');
-    deleteCommitMessageDraft();
+    deleteCommitMessageDraft(filePath);
     return;
   }
   // On all invalid commit messages, the commit message should be saved as a draft to be
   // restored on the next commit attempt.
-  saveCommitMessageDraft(commitMessage);
+  saveCommitMessageDraft(filePath, commitMessage);
   // If the validation did not return true, exit as a failure.
   process.exit(1);
 }

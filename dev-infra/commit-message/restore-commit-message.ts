@@ -19,12 +19,26 @@ import {loadCommitMessageDraft} from './commit-message-draft';
  */
 export function restoreCommitMessage(filePath: string, source: string) {
   if (!!source) {
-    info('Skipping commit message restoration due to flags in the `git commit` command')
+    info('Skipping commit message restoration attempt');
+    if (source === 'message') {
+      info('A commit message was already provided via the command with a -m or -F flag');
+    }
+    if (source === 'template') {
+      info('A commit message was already provided via the -t flag or config.template setting');
+    }
+    if (source === 'squash') {
+      info('A commit message was already provided as a merge action or via .git/MERGE_MSG');
+    }
+    if (source === 'commit') {
+      info('A commit message was already provided via another commit via --fixup, -c, -C');
+      info('or --amend flag');
+    }
+    process.exit(0);
   }
   /** A draft of a commit message. */
-  const commitMessage = loadCommitMessageDraft();
+  const commitMessage = loadCommitMessageDraft(filePath);
 
-  // If the commit message draft has content, restore it into the git's COMMIT_EDITMSG.
+  // If the commit message draft has content, restore it into the provided filepath.
   if (commitMessage) {
     writeFileSync(resolve(getRepoBaseDir(), filePath), commitMessage);
   }
