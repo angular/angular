@@ -1,6 +1,7 @@
 /** @codeGenApi */
 export declare const __core_private_testing_placeholder__ = "";
 
+/** @deprecated */
 export declare function async(fn: Function): (done: any) => any;
 
 export declare class ComponentFixture<T> {
@@ -140,6 +141,8 @@ export declare type TestModuleMetadata = {
 export declare function tick(millis?: number, tickOptions?: {
     processNewMacroTasksSynchronously: boolean;
 }): void;
+
+export declare function waitForAsync(fn: Function): (done: any) => any;
 
 export declare function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
 export declare function withModule(moduleDef: TestModuleMetadata, fn: Function): () => any;

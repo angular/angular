@@ -1,6 +1,5 @@
 // #docplaster
-import { async, inject, ComponentFixture, TestBed
-} from '@angular/core/testing';
+import { ComponentFixture, inject, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { addMatchers, asyncData, click } from '../../testing';
 import { HeroService } from '../model/hero.service';
@@ -12,7 +11,7 @@ import { Router } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
 import { DashboardModule } from './dashboard.module';
 
-beforeEach ( addMatchers );
+beforeEach(addMatchers);
 
 let comp: DashboardComponent;
 let fixture: ComponentFixture<DashboardComponent>;
@@ -21,9 +20,7 @@ let fixture: ComponentFixture<DashboardComponent>;
 
 describe('DashboardComponent (deep)', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [ DashboardModule ]
-    });
+    TestBed.configureTestingModule({imports: [DashboardModule]});
   });
 
   compileAndCreate();
@@ -43,10 +40,8 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('DashboardComponent (shallow)', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DashboardComponent ],
-      schemas:      [NO_ERRORS_SCHEMA]
-    });
+    TestBed.configureTestingModule(
+        {declarations: [DashboardComponent], schemas: [NO_ERRORS_SCHEMA]});
   });
 
   compileAndCreate();
@@ -63,25 +58,26 @@ describe('DashboardComponent (shallow)', () => {
 /** Add TestBed providers, compile, and create DashboardComponent */
 function compileAndCreate() {
   // #docregion compile-and-create-body
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     // #docregion router-spy
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
     const heroServiceSpy = jasmine.createSpyObj('HeroService', ['getHeroes']);
 
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: HeroService, useValue: heroServiceSpy },
-        { provide: Router,      useValue: routerSpy }
-      ]
-    })
-    // #enddocregion router-spy
-    .compileComponents().then(() => {
-      fixture = TestBed.createComponent(DashboardComponent);
-      comp = fixture.componentInstance;
+    TestBed
+        .configureTestingModule({
+          providers: [
+            {provide: HeroService, useValue: heroServiceSpy}, {provide: Router, useValue: routerSpy}
+          ]
+        })
+        // #enddocregion router-spy
+        .compileComponents()
+        .then(() => {
+          fixture = TestBed.createComponent(DashboardComponent);
+          comp = fixture.componentInstance;
 
-      // getHeroes spy returns observable of test heroes
-      heroServiceSpy.getHeroes.and.returnValue(asyncData(getTestHeroes()));
-    });
+          // getHeroes spy returns observable of test heroes
+          heroServiceSpy.getHeroes.and.returnValue(asyncData(getTestHeroes()));
+        });
     // #enddocregion compile-and-create-body
   }));
 }
@@ -93,23 +89,20 @@ function compileAndCreate() {
 function tests(heroClick: () => void) {
 
   it('should NOT have heroes before ngOnInit', () => {
-    expect(comp.heroes.length).toBe(0,
-      'should not have heroes before ngOnInit');
+    expect(comp.heroes.length).toBe(0, 'should not have heroes before ngOnInit');
   });
 
   it('should NOT have heroes immediately after ngOnInit', () => {
-    fixture.detectChanges(); // runs initial lifecycle hooks
+    fixture.detectChanges();  // runs initial lifecycle hooks
 
-    expect(comp.heroes.length).toBe(0,
-      'should not have heroes until service promise resolves');
+    expect(comp.heroes.length).toBe(0, 'should not have heroes until service promise resolves');
   });
 
   describe('after get dashboard heroes', () => {
-
     let router: Router;
 
      // Trigger component so it gets heroes and binds to them
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       router = fixture.debugElement.injector.get(Router);
       fixture.detectChanges(); // runs ngOnInit -> getHeroes
       fixture.whenStable() // No need for the `lastPromise` hack!
@@ -117,8 +110,8 @@ function tests(heroClick: () => void) {
     }));
 
     it('should HAVE heroes', () => {
-      expect(comp.heroes.length).toBeGreaterThan(0,
-        'should have heroes after service promise resolves');
+      expect(comp.heroes.length)
+          .toBeGreaterThan(0, 'should have heroes after service promise resolves');
     });
 
     it('should DISPLAY heroes', () => {
@@ -130,8 +123,7 @@ function tests(heroClick: () => void) {
 
     // #docregion navigate-test
     it('should tell ROUTER to navigate when hero clicked', () => {
-
-      heroClick(); // trigger click on first inner <div class="hero">
+      heroClick();  // trigger click on first inner <div class="hero">
 
       // args passed to router.navigateByUrl() spy
       const spy = router.navigateByUrl as jasmine.Spy;
@@ -139,10 +131,8 @@ function tests(heroClick: () => void) {
 
       // expecting to navigate to id of the component's first hero
       const id = comp.heroes[0].id;
-      expect(navArgs).toBe('/heroes/' + id,
-        'should nav to HeroDetail for first hero');
+      expect(navArgs).toBe('/heroes/' + id, 'should nav to HeroDetail for first hero');
     });
     // #enddocregion navigate-test
   });
 }
-

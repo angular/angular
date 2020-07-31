@@ -8,7 +8,7 @@
 
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, forwardRef, Type} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm, NgModel} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
@@ -168,7 +168,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.value).toEqual({});
          }));
 
-      it('should set status classes with ngModel', async(() => {
+      it('should set status classes with ngModel', waitForAsync(() => {
            const fixture = initTest(NgModelForm);
            fixture.componentInstance.name = 'aa';
            fixture.detectChanges();
@@ -212,7 +212,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            });
          }));
 
-      it('should set status classes with ngModelGroup and ngForm', async(() => {
+      it('should set status classes with ngModelGroup and ngForm', waitForAsync(() => {
            const fixture = initTest(NgModelGroupForm);
            fixture.componentInstance.first = '';
            fixture.detectChanges();
@@ -1179,7 +1179,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(input.nativeElement.disabled).toBe(true);
          }));
 
-      it('should disable a custom control if disabled attr is added', async(() => {
+      it('should disable a custom control if disabled attr is added', waitForAsync(() => {
            const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
            fixture.componentInstance.name = 'Nancy';
            fixture.componentInstance.isDisabled = true;

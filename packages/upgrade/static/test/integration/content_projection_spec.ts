@@ -7,7 +7,7 @@
  */
 
 import {Component, destroyPlatform, Directive, ElementRef, Injector, Input, NgModule} from '@angular/core';
-import {async} from '@angular/core/testing';
+import {waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
@@ -22,7 +22,7 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should instantiate ng2 in ng1 template and project content', async(() => {
+    it('should instantiate ng2 in ng1 template and project content', waitForAsync(() => {
          // the ng2 component that will be used in ng1 (downgraded)
          @Component({selector: 'ng2', template: `{{ prop }}(<ng-content></ng-content>)`})
          class Ng2Component {
@@ -57,7 +57,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should correctly project structural directives', async(() => {
+    it('should correctly project structural directives', waitForAsync(() => {
          @Component({selector: 'ng2', template: 'ng2-{{ itemId }}(<ng-content></ng-content>)'})
          class Ng2Component {
            // TODO(issue/24571): remove '!'.
@@ -94,7 +94,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should instantiate ng1 in ng2 template and project content', async(() => {
+    it('should instantiate ng1 in ng2 template and project content', waitForAsync(() => {
          @Component({
            selector: 'ng2',
            template: `{{ 'ng2(' }}<ng1>{{ transclude }}</ng1>{{ ')' }}`,
@@ -139,7 +139,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should support multi-slot projection', async(() => {
+    it('should support multi-slot projection', waitForAsync(() => {
          @Component({
            selector: 'ng2',
            template: '2a(<ng-content select=".ng1a"></ng-content>)' +

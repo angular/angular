@@ -8,19 +8,19 @@
 import {Injector} from '@angular/core';
 import {APP_INITIALIZER, ApplicationInitStatus} from '@angular/core/src/application_init';
 
-import {async, inject, TestBed} from '../testing';
+import {inject, TestBed, waitForAsync} from '../testing';
 
 {
   describe('ApplicationInitStatus', () => {
     describe('no initializers', () => {
       it('should return true for `done`',
-         async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
+         waitForAsync(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
            (status as any).runInitializers();
            expect(status.done).toBe(true);
          })));
 
       it('should return a promise that resolves immediately for `donePromise`',
-         async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
+         waitForAsync(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
            (status as any).runInitializers();
            status.donePromise.then(() => {
              expect(status.done).toBe(true);
@@ -58,7 +58,7 @@ import {async, inject, TestBed} from '../testing';
       });
 
       it('should update the status once all async initializers are done',
-         async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
+         waitForAsync(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
            (status as any).runInitializers();
 
            setTimeout(() => {

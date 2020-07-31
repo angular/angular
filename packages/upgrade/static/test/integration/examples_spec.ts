@@ -7,7 +7,7 @@
  */
 
 import {Component, destroyPlatform, Directive, ElementRef, Injector, Input, NgModule} from '@angular/core';
-import {async} from '@angular/core/testing';
+import {waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
@@ -25,7 +25,7 @@ withEachNg1Version(() => {
     it('should have AngularJS loaded',
        () => expect(angular.getAngularJSGlobal().version.major).toBe(1));
 
-    it('should verify UpgradeAdapter example', async(() => {
+    it('should verify UpgradeAdapter example', waitForAsync(() => {
          // This is wrapping (upgrading) an AngularJS component to be used in an Angular
          // component
          @Directive({selector: 'ng1'})
