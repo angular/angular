@@ -1762,6 +1762,16 @@ describe('Driver', () => {
 });
 })();
 
+async function removeAssetFromCache(
+    scope: SwTestHarness, appVersionManifest: Manifest, assetPath: string) {
+  const assetGroupName =
+      appVersionManifest.assetGroups?.find(group => group.urls.includes(assetPath))?.name;
+  const cacheName = `${scope.cacheNamePrefix}:${sha1(JSON.stringify(appVersionManifest))}:assets:${
+      assetGroupName}:cache`;
+  const cache = await scope.caches.open(cacheName);
+  return cache.delete(assetPath);
+}
+
 async function makeRequest(
     scope: SwTestHarness, url: string, clientId: string|null = 'default',
     init?: Object): Promise<string|null> {
