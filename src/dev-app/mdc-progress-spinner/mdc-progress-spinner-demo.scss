@@ -1,0 +1,12 @@
+.demo-progress-spinner {
+  width: 100%;
+
+  .mat-mdc-progress-spinner,
+  .mat-mdc-spinner {
+    display: inline-block;
+  }
+}
+
+.demo-progress-spinner-controls {
+  margin: 10px 0;
+}

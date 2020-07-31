@@ -83,6 +83,11 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'mdc-input', loadChildren: 'mdc-input/mdc-input-demo-module#MdcInputDemoModule'},
   {path: 'mdc-list', loadChildren: 'mdc-list/mdc-list-demo-module#MdcListDemoModule'},
   {path: 'mdc-menu', loadChildren: 'mdc-menu/mdc-menu-demo-module#MdcMenuDemoModule'},
+  {
+    path: 'mdc-progress-spinner',
+    loadChildren:
+      'mdc-progress-spinner/mdc-progress-spinner-demo-module#MdcProgressSpinnerDemoModule'
+  },
   {path: 'mdc-radio', loadChildren: 'mdc-radio/mdc-radio-demo-module#MdcRadioDemoModule'},
   {path: 'mdc-sidenav', loadChildren: 'mdc-sidenav/mdc-sidenav-demo-module#MdcSidenavDemoModule'},
   {

@@ -178,6 +178,7 @@
 /src/dev-app/mdc-list/**                           @mmalerba
 /src/dev-app/mdc-menu/**                           @crisbeto
 /src/dev-app/mdc-progress-bar/**                   @crisbeto
+/src/dev-app/mdc-progress-spinner/**               @annieyw @mmalerba
 /src/dev-app/mdc-radio/**                          @mmalerba
 /src/dev-app/mdc-snack-bar/**                      @andrewseguin
 /src/dev-app/mdc-sidenav/**                        @crisbeto
@@ -237,6 +238,7 @@
 /src/e2e-app/mdc-input/**                          @devversion
 /src/e2e-app/mdc-menu/**                           @crisbeto
 /src/e2e-app/mdc-progress-bar/**                   @crisbeto
+/src/e2e-app/mdc-progress-spinner/**               @annieyw @mmalerba
 /src/e2e-app/mdc-radio/**                          @mmalerba
 /src/e2e-app/mdc-slider/**                         @andrewseguin
 /src/e2e-app/mdc-slide-toggle/**                   @crisbeto

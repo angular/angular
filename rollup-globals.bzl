@@ -41,6 +41,7 @@ ROLLUP_GLOBALS = {
     "@material/auto-init": "mdc.autoInit",
     "@material/base": "mdc.base",
     "@material/checkbox": "mdc.checkbox",
+    "@material/circular-progress": "mdc.circularProgress",
     "@material/chips": "mdc.chips",
     "@material/dialog": "mdc.dialog",
     "@material/dom": "mdc.dom",

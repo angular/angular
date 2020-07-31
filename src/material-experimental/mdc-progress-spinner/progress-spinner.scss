@@ -1,0 +1,9 @@
+@import '@material/circular-progress/mixins.import';
+@import '../mdc-helpers/mdc-helpers';
+
+
+@include mdc-circular-progress-core-styles($query: $mat-base-styles-without-animation-query);
+
+:not(._mat-animation-noopable) {
+    @include mdc-circular-progress-core-styles($query: animation);
+}

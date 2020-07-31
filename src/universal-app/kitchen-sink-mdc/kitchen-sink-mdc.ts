@@ -14,6 +14,7 @@ import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
 import {MatTableModule} from '@angular/material-experimental/mdc-table';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material-experimental/mdc-snack-bar';
+import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
 
 @Component({
   selector: 'kitchen-sink-mdc',
@@ -39,6 +40,7 @@ export class KitchenSinkMdc {
     MatTableModule,
     MatProgressBarModule,
     MatSnackBarModule,
+    MatProgressSpinnerModule,
   ],
   declarations: [KitchenSinkMdc],
   exports: [KitchenSinkMdc],

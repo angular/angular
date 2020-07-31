@@ -1,0 +1,32 @@
+<h1>Determinate</h1>
+
+<div class="demo-progress-spinner-controls">
+  <p>Value: {{progressValue}}</p>
+  <button mat-raised-button (click)="step(10)">Increase</button>
+  <button mat-raised-button (click)="step(-10)">Decrease</button>
+  <mat-checkbox [(ngModel)]="isDeterminate">Is determinate</mat-checkbox>
+</div>
+
+<div class="demo-progress-spinner">
+  <mat-progress-spinner [mode]="isDeterminate ? 'determinate' : 'indeterminate'"
+                        [value]="progressValue" color="warn" [strokeWidth]="1.6" [diameter]="16"></mat-progress-spinner>
+  <mat-progress-spinner [mode]="isDeterminate ? 'determinate' : 'indeterminate'"
+                        [value]="progressValue" color="accent" [strokeWidth]="1" [diameter]="32"></mat-progress-spinner>
+  <mat-progress-spinner [mode]="isDeterminate ? 'determinate' : 'indeterminate'"
+                        [value]="progressValue" color="primary" [diameter]="50"></mat-progress-spinner>
+</div>
+
+<h1>Indeterminate</h1>
+
+<mat-button-toggle-group class="demo-progress-spinner-controls" [(ngModel)]="color">
+  <mat-button-toggle value="primary">Primary Color</mat-button-toggle>
+  <mat-button-toggle value="accent">Accent Color</mat-button-toggle>
+  <mat-button-toggle value="warn">Warn Color</mat-button-toggle>
+</mat-button-toggle-group>
+
+<div class="demo-progress-spinner">
+  <mat-progress-spinner mode="indeterminate" [color]="color"></mat-progress-spinner>
+  <mat-progress-spinner mode="indeterminate" [color]="color"></mat-progress-spinner>
+  <mat-spinner [color]="color"></mat-spinner>
+</div>
+
