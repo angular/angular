@@ -495,8 +495,8 @@ function searchTokensOnInjector<T>(
  * @returns Index of a found directive or provider, or null when none found.
  */
 export function locateDirectiveOrProvider<T>(
-    tNode: TNode, tView: TView, token: Type<T>|InjectionToken<T>, canAccessViewProviders: boolean,
-    isHostSpecialCase: boolean|number): number|null {
+    tNode: TNode, tView: TView, token: Type<T>|InjectionToken<T>|string,
+    canAccessViewProviders: boolean, isHostSpecialCase: boolean|number): number|null {
   const nodeProviderIndexes = tNode.providerIndexes;
   const tInjectables = tView.data;
 

@@ -227,20 +227,23 @@ class TQuery_ implements TQuery {
   }
 
   private matchTNode(tView: TView, tNode: TNode): void {
-    if (Array.isArray(this.metadata.predicate)) {
-      const localNames = this.metadata.predicate;
-      for (let i = 0; i < localNames.length; i++) {
-        this.matchTNodeWithReadOption(tView, tNode, getIdxOfMatchingSelector(tNode, localNames[i]));
+    const predicate = this.metadata.predicate;
+    if (Array.isArray(predicate)) {
+      for (let i = 0; i < predicate.length; i++) {
+        const name = predicate[i];
+        this.matchTNodeWithReadOption(tView, tNode, getIdxOfMatchingSelector(tNode, name));
+        // Also try matching the name to a provider since strings can be used as DI tokens too.
+        this.matchTNodeWithReadOption(
+            tView, tNode, locateDirectiveOrProvider(tNode, tView, name, false, false));
       }
     } else {
-      const typePredicate = this.metadata.predicate as any;
-      if (typePredicate === ViewEngine_TemplateRef) {
+      if ((predicate as any) === ViewEngine_TemplateRef) {
         if (tNode.type === TNodeType.Container) {
           this.matchTNodeWithReadOption(tView, tNode, -1);
         }
       } else {
         this.matchTNodeWithReadOption(
-            tView, tNode, locateDirectiveOrProvider(tNode, tView, typePredicate, false, false));
+            tView, tNode, locateDirectiveOrProvider(tNode, tView, predicate, false, false));
       }
     }
   }
