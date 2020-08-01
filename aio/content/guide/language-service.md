@@ -122,7 +122,7 @@ npm install --save-dev @angular/language-service
   ]
 </code-example>
 
-4. In your editor's user preferences (`Cmd+,` or `Ctrl+,`), add the following:
+4. In your editor's user preferences (`Cmd+,` on Mac OS), add the following:
 
 <code-example language="json" header="Sublime Text user preferences">
 "typescript-tsdk": "<path to your folder>/node_modules/typescript/lib"
