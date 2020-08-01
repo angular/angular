@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, basename} from '../../file_system';
 import {ImportRewriter} from '../../imports';
-import {FactoryInfo, FactoryTracker, PerFileShimGenerator} from '../api';
+import {FactoryInfo, FactoryTracker, ModuleInfo, PerFileShimGenerator} from '../api';
 
 import {generatedModuleName} from './util';
 
@@ -22,7 +22,7 @@ const STRIP_NG_FACTORY = /(.*)NgFactory$/;
  */
 export class FactoryGenerator implements PerFileShimGenerator, FactoryTracker {
   readonly sourceInfo = new Map<string, FactoryInfo>();
-  private sourceToFactorySymbols = new Map<string, Set<string>>();
+  private sourceToFactorySymbols = new Map<string, Map<string, ModuleInfo>>();
 
   readonly shouldEmit = true;
   readonly extensionPrefix = 'ngfactory';
@@ -85,16 +85,19 @@ export class FactoryGenerator implements PerFileShimGenerator, FactoryTracker {
       genFile.moduleName = generatedModuleName(sf.moduleName, sf.fileName, '.ngfactory');
     }
 
-    const moduleSymbolNames = new Set<string>();
-    this.sourceToFactorySymbols.set(absoluteSfPath, moduleSymbolNames);
-    this.sourceInfo.set(genFilePath, {sourceFilePath: absoluteSfPath, moduleSymbolNames});
+    const moduleSymbols = new Map<string, ModuleInfo>();
+    this.sourceToFactorySymbols.set(absoluteSfPath, moduleSymbols);
+    this.sourceInfo.set(genFilePath, {
+      sourceFilePath: absoluteSfPath,
+      moduleSymbols,
+    });
 
     return genFile;
   }
 
-  track(sf: ts.SourceFile, factorySymbolName: string): void {
+  track(sf: ts.SourceFile, moduleInfo: ModuleInfo): void {
     if (this.sourceToFactorySymbols.has(sf.fileName)) {
-      this.sourceToFactorySymbols.get(sf.fileName)!.add(factorySymbolName);
+      this.sourceToFactorySymbols.get(sf.fileName)!.set(moduleInfo.name, moduleInfo);
     }
   }
 }
@@ -123,7 +126,7 @@ function transformFactorySourceFile(
     return file;
   }
 
-  const {moduleSymbolNames, sourceFilePath} = factoryMap.get(file.fileName)!;
+  const {moduleSymbols, sourceFilePath} = factoryMap.get(file.fileName)!;
 
   file = ts.getMutableClone(file);
 
@@ -183,7 +186,7 @@ function transformFactorySourceFile(
 
         // Otherwise, check if this export is a factory for a known NgModule, and retain it if so.
         const match = STRIP_NG_FACTORY.exec(decl.name.text);
-        if (match !== null && moduleSymbolNames.has(match[1])) {
+        if (match !== null && moduleSymbols.has(match[1])) {
           transformedStatements.push(stmt);
         }
       } else {
