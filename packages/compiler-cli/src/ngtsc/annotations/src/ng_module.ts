@@ -313,7 +313,7 @@ export class NgModuleDecoratorHandler implements
     if (this.factoryTracker !== null) {
       this.factoryTracker.track(node.getSourceFile(), {
         name: analysis.factorySymbolName,
-        hasId: !!analysis.id,
+        hasId: analysis.id !== null,
       });
     }
 
