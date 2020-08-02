@@ -67,6 +67,13 @@ Therefore, it is recommended to reload the page once the promise returned by `ac
 
 </div>
 
+### Handling an unrecoverable state
+
+This can happen when the browser evicts eagerly cached assets from the cache, which can also not be found on the server anymore. This can lead to broken state where only parts of the application will load and others will fail. In such cases, the best way to fix this is to reload the browser.
+
+<code-example path="service-worker-getting-started/src/app/unrecoverable-state.service.ts" header="unrecoverable-state.service.ts" region="sw-unrecoverable-state"></code-example>
+
+
 ## More on Angular service workers
 
 You may also be interested in the following:
