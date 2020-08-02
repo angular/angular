@@ -1762,7 +1762,7 @@ describe('Driver', () => {
                            .withManifest(manifest)
                            .withStaticFiles(fileSystem)
                            .build(),
-          manifest
+          manifest,
         };
       };
 
@@ -1777,6 +1777,12 @@ describe('Driver', () => {
             new MockFileSystemBuilder()
                 .addFile('/index.html', '<script src="bar.hash.js"></script>')
                 .addFile('/bar.hash.js', 'console.log("BAR");')
+                .build());
+
+        const {serverState: serverState3} = generateMockServerState(
+            new MockFileSystemBuilder()
+                .addFile('/index.html', '<script src="baz.hash.js"></script>')
+                .addFile('/baz.hash.js', 'console.log("BAZ");')
                 .build());
 
         // Create initial server state and initialize the SW.
@@ -1795,7 +1801,7 @@ describe('Driver', () => {
         expect(await makeRequest(scope, '/foo.hash.js')).toBe('console.log("FOO");');
         serverState1.assertNoRequestFor('/foo.hash.js');
 
-        // Update the server to the updated version.
+        // Update the ServiceWorker to the second version.
         scope.updateServerState(serverState2);
         expect(await driver.checkForUpdate()).toEqual(true);
 
@@ -1803,14 +1809,7 @@ describe('Driver', () => {
         const [client1, client2] =
             await Promise.all([scope.clients.get('client1'), scope.clients.get('client2')]);
 
-        await driver.updateClient(client1);
-        await driver.updateClient(client2);
-
-        const {serverState: serverState3} = generateMockServerState(
-            new MockFileSystemBuilder()
-                .addFile('/index.html', '<script src="baz.hash.js"></script>')
-                .addFile('/baz.hash.js', 'console.log("BAZ");')
-                .build());
+        await Promise.all([driver.updateClient(client1), driver.updateClient(client2)]);
 
         // Update the ServiceWorker to the latest version
         scope.updateServerState(serverState3);
@@ -1819,23 +1818,24 @@ describe('Driver', () => {
         // Remove `bar.hash.js` from the cache to emulate the browser evicting files from the cache.
         await removeAssetFromCache(scope, manifest2, '/bar.hash.js');
 
-        // Get first client and verify its messages
+        // Get all clients and verify their messages
         const mockClient1 = scope.clients.getMock('client1')!;
-        // Clear messages related to previous updates for this client.
-        mockClient1.messages.length = 0;
+        const mockClient2 = scope.clients.getMock('client2')!;
+        const mockClient3 = scope.clients.getMock('client3')!;
 
         // Try to retrieve `bar.hash.js`, which is neither in the cache nor on the server.
         // This should put the SW in an unrecoverable state and notify clients.
         expect(await makeRequest(scope, '/bar.hash.js', 'client1')).toBeNull();
         serverState2.assertSawRequestFor('/bar.hash.js');
+        const unrecoverableMessage = {
+          type: 'UNRECOVERABLE_STATE',
+          reason:
+              'Failed to retrieve hashed resource from the server. (AssetGroup: assets | URL: /bar.hash.js)'
+        };
 
-        expect(mockClient1.messages).toEqual([
-          {
-            type: 'UNRECOVERABLE_STATE',
-            reason:
-                'Failed to retrieve hashed resource from the server. (AssetGroup: assets | URL: /bar.hash.js)'
-          },
-        ]);
+        expect(mockClient1.messages).toContain(unrecoverableMessage);
+        expect(mockClient2.messages).toContain(unrecoverableMessage);
+        expect(mockClient3.messages).not.toContain(unrecoverableMessage);
 
         // Because `client1` failed, `client1` and `client2` have been moved to the latest version.
         // Verify that by retrieving `baz.hash.js`.
@@ -1882,7 +1882,6 @@ describe('Driver', () => {
                     .withServerState(updatedServer)
                     .build();
         driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
-
 
         // The SW is still able to serve `foo.hash.js` from the cache.
         expect(await makeRequest(scope, '/foo.hash.js')).toBe('console.log("FOO");');
