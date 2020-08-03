@@ -78,5 +78,5 @@ It then configures the `@NgModule` with the following arrays:
 ## Next steps
 
 * For more about NgModules, see [Organizing your app with NgModules](guide/ngmodules "Organizing your app with NgModules").
-* To learn more about the root NgModule, see [Launching an app with a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
+* To learn more about the root NgModule, see [Overview of the AppModule](guide/bootstrapping "Overview of the AppModule").
 * To learn about frequently used Angular NgModules and how to import them into your app, see [Frequently-used modules](guide/frequent-ngmodules "Frequently-used modules").

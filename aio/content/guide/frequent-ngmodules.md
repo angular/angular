@@ -117,10 +117,9 @@ Angular returns an error telling you to use `CommonModule` instead.
 
 <hr />
 
-
 ## More on NgModules
 
 You may also be interested in the following:
-* [Bootstrapping](guide/bootstrapping).
-* [NgModules](guide/ngmodules).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
+* [Overview of the AppModule](guide/bootstrapping "Overview of the AppModule")
+* [NgModules](guide/ngmodules)
+* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule)

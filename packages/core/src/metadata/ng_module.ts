@@ -328,7 +328,7 @@ export const NgModule: NgModuleDecorator = makeDecorator(
  *
  * Reference to the current application is provided as a parameter.
  *
- * See ["Bootstrapping"](guide/bootstrapping) and ["Entry components"](guide/entry-components).
+ * See as described in [Overview of the AppModule](guide/bootstrapping "Overview of the AppModule") and ["Entry components"](guide/entry-components).
  *
  * @usageNotes
  * ```typescript

@@ -18,7 +18,7 @@ For the example app used in NgModules-related topics, see the <live-example name
 
 ## Summary of NgModule categories
 
-All apps start by [bootstrapping a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
+All apps start by bootstrapping a root NgModule as described in [Overview of the AppModule](guide/bootstrapping "Overview of the AppModule").
 You can organize your other NgModules any way you wish.
 
 This topic provides some guidelines for the following general categories of NgModules:
@@ -217,7 +217,7 @@ To learn how to use shared modules to organize and streamline your code, see [Sh
 You may also be interested in the following:
 
 * For more about NgModules, see [Organizing your app with NgModules](guide/ngmodules "Organizing your app with NgModules").
-* To learn more about the root NgModule, see [Launching an app with a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
+* To learn more about the root NgModule, see [Overview of the AppModule](guide/bootstrapping "Overview of the AppModule").
 * To learn about frequently used Angular NgModules and how to import them into your app, see [Frequently-used modules](guide/frequent-ngmodules "Frequently-used modules").
 * For a complete description of the NgModule metadata properties, see [Using the NgModule metadata](guide/ngmodule-api "Using the NgModule metadata").
 

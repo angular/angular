@@ -105,7 +105,7 @@ In Angular, an app's root NgModule (`AppModule`) has a `bootstrap` property that
 During the bootstrap process, Angular creates and inserts these components into the `index.html` host web page.
 You can bootstrap multiple apps in the same `index.html`. Each app contains its own components.
 
-Learn more in [Bootstrapping](guide/bootstrapping).
+Learn more in [Overview of the AppModule](guide/bootstrapping "Overview of the AppModule").
 
 {@a builder}
 

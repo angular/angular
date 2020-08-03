@@ -95,7 +95,7 @@ that can be injected, but Angular can't actually inject it anywhere until you co
 an Angular [dependency injector](guide/glossary#injector) with a [provider](guide/glossary#provider) of that service.
 
 The injector is responsible for creating service instances and injecting them into classes like `HeroListComponent`.
-You rarely create an Angular injector yourself. Angular creates injectors for you as it executes the app, starting with the _root injector_ that it creates during the [bootstrap process](guide/bootstrapping).
+You rarely create an Angular injector yourself. Angular creates injectors for you as it executes the app, starting with the _root injector_ that it creates during the bootstrap process as described in [Overview of the AppModule](guide/bootstrapping "Overview of the AppModule").
 
 A provider tells an injector _how to create the service_.
 You must configure an injector with a provider before that injector can create a service (or provide any other kind of dependency).

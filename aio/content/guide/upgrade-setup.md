@@ -269,7 +269,7 @@ The following are all in `src/`
     <td>
 
 
-      Defines `AppModule`, the  [root module](guide/bootstrapping "AppModule: the root module") that tells Angular how to assemble the application.
+      Defines the root module [`AppModule`](guide/bootstrapping "Overview of the AppModule") that tells Angular how to assemble the application.
       When initially created, it declares only the `AppComponent`.
       Over time, you add more components to declare.
     </td>
