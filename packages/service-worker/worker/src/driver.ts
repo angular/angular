@@ -720,7 +720,11 @@ export class Driver implements Debuggable, UpdateSource {
 
   private async deleteAllCaches(): Promise<void> {
     await (await this.scope.caches.keys())
-        .filter(key => key.startsWith(`${this.adapter.cacheNamePrefix}:`))
+        // The Chrome debugger is not able to render the syntax properly when the
+        // code contains backticks. This is a known issue in Chrome and they have an
+        // open [issue](https://bugs.chromium.org/p/chromium/issues/detail?id=659515) for that.
+        // As a work-around for the time being, we can use \\ ` at the end of the line.
+        .filter(key => key.startsWith(`${this.adapter.cacheNamePrefix}:`))  // `
         .reduce(async (previous, key) => {
           await Promise.all([
             previous,
