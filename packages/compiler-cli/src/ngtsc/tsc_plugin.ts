@@ -11,7 +11,9 @@ import * as ts from 'typescript';
 import {NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions, UnifiedModulesHost} from './core/api';
 import {NodeJSFileSystem, setFileSystem} from './file_system';
+import {PatchedProgramIncrementalBuildStrategy} from './incremental';
 import {NOOP_PERF_RECORDER} from './perf';
+import {untagAllTsFiles} from './shims';
 import {ReusedProgramStrategy} from './typecheck/src/augmented_program';
 
 // The following is needed to fix a the chicken-and-egg issue where the sync (into g3) script will
@@ -79,6 +81,9 @@ export class NgTscPlugin implements TscPlugin {
   wrapHost(
       host: ts.CompilerHost&UnifiedModulesHost, inputFiles: readonly string[],
       options: ts.CompilerOptions): PluginCompilerHost {
+    // TODO(alxhub): Eventually the `wrapHost()` API will accept the old `ts.Program` (if one is
+    // available). When it does, its `ts.SourceFile`s need to be re-tagged to enable proper
+    // incremental compilation.
     this.options = {...this.ngOptions, ...options} as NgCompilerOptions;
     this.host = NgCompilerHost.wrap(host, inputFiles, this.options, /* oldProgram */ null);
     return this.host;
@@ -91,10 +96,13 @@ export class NgTscPlugin implements TscPlugin {
     if (this.host === null || this.options === null) {
       throw new Error('Lifecycle error: setupCompilation() before wrapHost().');
     }
+    this.host.postProgramCreationCleanup();
+    untagAllTsFiles(program);
     const typeCheckStrategy = new ReusedProgramStrategy(
         program, this.host, this.options, this.host.shimExtensionPrefixes);
     this._compiler = new NgCompiler(
-        this.host, this.options, program, typeCheckStrategy, oldProgram, NOOP_PERF_RECORDER);
+        this.host, this.options, program, typeCheckStrategy,
+        new PatchedProgramIncrementalBuildStrategy(), oldProgram, NOOP_PERF_RECORDER);
     return {
       ignoreForDiagnostics: this._compiler.ignoreForDiagnostics,
       ignoreForEmit: this._compiler.ignoreForEmit,

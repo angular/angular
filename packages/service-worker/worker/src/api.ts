@@ -13,6 +13,18 @@ export enum UpdateCacheStatus {
 }
 
 /**
+ * A `string` representing a URL that has been normalized relative to an origin (usually that of the
+ * ServiceWorker).
+ *
+ * If the URL is relative to the origin, then it is representated by the path part only. Otherwise,
+ * the full URL is used.
+ *
+ * NOTE: A `string` is not assignable to a `NormalizedUrl`, but a `NormalizedUrl` is assignable to a
+ *       `string`.
+ */
+export type NormalizedUrl = string&{_brand: 'normalizedUrl'};
+
+/**
  * A source for old versions of URL contents and other resources.
  *
  * Used to abstract away the fetching of old contents, to avoid a
@@ -27,7 +39,7 @@ export interface UpdateSource {
    * If an old version of the resource doesn't exist, or exists but does
    * not match the hash given, this returns null.
    */
-  lookupResourceWithHash(url: string, hash: string): Promise<Response|null>;
+  lookupResourceWithHash(url: NormalizedUrl, hash: string): Promise<Response|null>;
 
   /**
    * Lookup an older version of a resource for which the hash is not known.
@@ -37,7 +49,7 @@ export interface UpdateSource {
    * `Response`, but the cache metadata needed to re-cache the resource in
    * a newer `AppVersion`.
    */
-  lookupResourceWithoutHash(url: string): Promise<CacheState|null>;
+  lookupResourceWithoutHash(url: NormalizedUrl): Promise<CacheState|null>;
 
   /**
    * List the URLs of all of the resources which were previously cached.
@@ -45,7 +57,7 @@ export interface UpdateSource {
    * This allows for the discovery of resources which are not listed in the
    * manifest but which were picked up because they matched URL patterns.
    */
-  previouslyCachedResources(): Promise<string[]>;
+  previouslyCachedResources(): Promise<NormalizedUrl[]>;
 
   /**
    * Check whether a particular resource exists in the most recent cache.

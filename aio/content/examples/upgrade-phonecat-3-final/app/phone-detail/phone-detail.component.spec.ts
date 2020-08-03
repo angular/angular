@@ -42,7 +42,7 @@ describe('PhoneDetailComponent', () => {
       declarations: [ CheckmarkPipe, PhoneDetailComponent ],
       providers: [
         { provide: Phone, useClass: MockPhone },
-        { provide: ActivatedRoute, useValue: new ActivatedRouteMock({ params: { 'phoneId': 1 } }) }
+        { provide: ActivatedRoute, useValue: new ActivatedRouteMock({ params: { phoneId: 1 } }) }
       ]
     })
     .compileComponents();
@@ -52,7 +52,7 @@ describe('PhoneDetailComponent', () => {
   it('should fetch phone detail', () => {
     const fixture = TestBed.createComponent(PhoneDetailComponent);
     fixture.detectChanges();
-    let compiled = fixture.debugElement.nativeElement;
+    const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('h1').textContent).toContain(xyzPhoneData().name);
   });
 

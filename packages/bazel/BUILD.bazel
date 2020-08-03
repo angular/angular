@@ -8,10 +8,8 @@ pkg_npm(
     ) + [
         "//packages/bazel/src:package_assets",
         "//packages/bazel/src/api-extractor:package_assets",
-        "//packages/bazel/src/builders:package_assets",
         "//packages/bazel/src/ng_package:package_assets",
         "//packages/bazel/src/ngc-wrapped:package_assets",
-        "//packages/bazel/src/schematics:package_assets",
         "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:package_assets",
     ],
     nested_packages = [
@@ -29,10 +27,7 @@ pkg_npm(
     visibility = ["//integration:__pkg__"],
     deps = [
         "//packages/bazel/src/api-extractor:lib",
-        "//packages/bazel/src/builders",
         "//packages/bazel/src/ng_package:lib",
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
-        "//packages/bazel/src/schematics/ng-add",
-        "//packages/bazel/src/schematics/ng-new",
     ],
 )

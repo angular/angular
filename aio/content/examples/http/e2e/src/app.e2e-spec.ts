@@ -24,11 +24,11 @@ const page = {
   uploadMessage: element(by.css('app-uploader p'))
 };
 
-let checkLogForMessage = (message: string) => {
+const checkLogForMessage = (message: string) => {
   expect(page.logList.getText()).toContain(message);
 };
 
-describe('Http Tests', function() {
+describe('Http Tests', () => {
   beforeEach(() => {
     browser.get('');
   });

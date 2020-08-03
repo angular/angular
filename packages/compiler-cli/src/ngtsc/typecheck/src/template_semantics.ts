@@ -8,7 +8,8 @@
 
 import {AST, BoundTarget, ImplicitReceiver, PropertyWrite, RecursiveAstVisitor, TmplAstVariable} from '@angular/compiler';
 
-import {TemplateId} from './api';
+import {TemplateId} from '../api';
+
 import {OutOfBandDiagnosticRecorder} from './oob';
 
 /**

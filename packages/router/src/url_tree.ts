@@ -39,7 +39,6 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
 }
 
 function containsQueryParams(container: Params, containee: Params): boolean {
-  // TODO: This does not handle array params correctly.
   return Object.keys(containee).length <= Object.keys(container).length &&
       Object.keys(containee).every(key => equalArraysOrString(container[key], containee[key]));
 }
@@ -340,6 +339,11 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
 
       return [`${k}:${serializeSegment(v, false)}`];
     });
+
+    // use no parenthesis if the only child is a primary outlet route
+    if (Object.keys(segment.children).length === 1 && segment.children[PRIMARY_OUTLET] != null) {
+      return `${serializePaths(segment)}/${children[0]}`;
+    }
 
     return `${serializePaths(segment)}/(${children.join('//')})`;
   }

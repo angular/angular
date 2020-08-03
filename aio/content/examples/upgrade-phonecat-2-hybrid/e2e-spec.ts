@@ -1,27 +1,25 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by } from 'protractor';
 
 // Angular E2E Testing Guide:
 // https://docs.angularjs.org/guide/e2e-testing
 
-describe('PhoneCat Application', function() {
+describe('PhoneCat Application', () => {
 
-  it('should redirect `index.html` to `index.html#!/phones', function() {
+  it('should redirect `index.html` to `index.html#!/phones', () => {
     browser.get('index.html');
     browser.sleep(1000); // Not sure why this is needed but it is. The route change works fine.
     expect(browser.getCurrentUrl()).toMatch(/\/phones$/);
   });
 
-  describe('View: Phone list', function() {
+  describe('View: Phone list', () => {
 
-    beforeEach(function() {
+    beforeEach(() => {
       browser.get('index.html#!/phones');
     });
 
-    it('should filter the phone list as a user types into the search box', function() {
-      let phoneList = element.all(by.css('.phones li'));
-      let query = element(by.css('input'));
+    it('should filter the phone list as a user types into the search box', () => {
+      const phoneList = element.all(by.css('.phones li'));
+      const query = element(by.css('input'));
 
       expect(phoneList.count()).toBe(20);
 
@@ -33,16 +31,14 @@ describe('PhoneCat Application', function() {
       expect(phoneList.count()).toBe(8);
     });
 
-    it('should be possible to control phone order via the drop-down menu', function() {
-      let queryField = element(by.css('input'));
-      let orderSelect = element(by.css('select'));
-      let nameOption = orderSelect.element(by.css('option[value="name"]'));
-      let phoneNameColumn = element.all(by.css('.phones .name'));
+    it('should be possible to control phone order via the drop-down menu', () => {
+      const queryField = element(by.css('input'));
+      const orderSelect = element(by.css('select'));
+      const nameOption = orderSelect.element(by.css('option[value="name"]'));
+      const phoneNameColumn = element.all(by.css('.phones .name'));
 
       function getNames() {
-        return phoneNameColumn.map(function(elem) {
-          return elem.getText();
-        });
+        return phoneNameColumn.map((elem) => elem.getText());
       }
 
       queryField.sendKeys('tablet');   // Let's narrow the dataset to make the assertions shorter
@@ -60,8 +56,8 @@ describe('PhoneCat Application', function() {
       ]);
     });
 
-    it('should render phone specific links', function() {
-      let query = element(by.css('input'));
+    it('should render phone specific links', () => {
+      const query = element(by.css('input'));
       query.sendKeys('nexus');
 
       element.all(by.css('.phones li a')).first().click();
@@ -71,25 +67,25 @@ describe('PhoneCat Application', function() {
 
   });
 
-  describe('View: Phone detail', function() {
+  describe('View: Phone detail', () => {
 
-    beforeEach(function() {
+    beforeEach(() => {
       browser.get('index.html#!/phones/nexus-s');
     });
 
-    it('should display the `nexus-s` page', function() {
+    it('should display the `nexus-s` page', () => {
       expect(element(by.css('h1')).getText()).toBe('Nexus S');
     });
 
-    it('should display the first phone image as the main phone image', function() {
-      let mainImage = element(by.css('img.phone.selected'));
+    it('should display the first phone image as the main phone image', () => {
+      const mainImage = element(by.css('img.phone.selected'));
 
       expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
 
-    it('should swap the main image when clicking on a thumbnail image', function() {
-      let mainImage = element(by.css('img.phone.selected'));
-      let thumbnails = element.all(by.css('.phone-thumbs img'));
+    it('should swap the main image when clicking on a thumbnail image', () => {
+      const mainImage = element(by.css('img.phone.selected'));
+      const thumbnails = element.all(by.css('.phone-thumbs img'));
 
       thumbnails.get(2).click();
       expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.2.jpg/);

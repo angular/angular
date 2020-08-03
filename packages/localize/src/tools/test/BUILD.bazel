@@ -4,15 +4,17 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(
-        ["**/*_spec.ts"],
+        ["**/*.ts"],
     ),
     deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/localize",
         "//packages/localize/src/tools",
+        "//packages/localize/src/utils",
         "@npm//@babel/core",
         "@npm//@babel/generator",
         "@npm//@babel/template",

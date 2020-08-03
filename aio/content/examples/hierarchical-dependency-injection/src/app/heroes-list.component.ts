@@ -1,9 +1,9 @@
 // #docregion
-import { Component }  from '@angular/core';
+import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { Hero, HeroTaxReturn } from './hero';
-import { HeroesService }       from './heroes.service';
+import { HeroesService } from './heroes.service';
 
 @Component({
   selector: 'app-heroes-list',

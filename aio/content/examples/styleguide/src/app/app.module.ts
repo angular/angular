@@ -9,18 +9,13 @@ import { RouterModule } from '@angular/router';
 import { HashLocationStrategy,
          LocationStrategy } from '@angular/common';
 
-import { HeroData }     from '../app/hero-data';
+import { HeroData } from '../app/hero-data';
 import { AppComponent } from '../app/app.component';
 
 import * as s0101 from '../01-01/app/app.module';
 import * as s0205 from '../02-05/app/app.module';
 import * as s0207 from '../02-07/app/app.module';
 import * as s0208 from '../02-08/app/app.module';
-import * as s0301 from '../03-01/app/app.module';
-import * as s0302 from '../03-02/app/app.module';
-import * as s0303 from '../03-03/app/app.module';
-import * as s0304 from '../03-04/app/app.module';
-import * as s0306 from '../03-06/app/app.module';
 import * as s0408 from '../04-08/app/app.module';
 import * as s0410 from '../04-10/app/app.module';
 import * as s0411 from '../04-11/app/app.module';
@@ -51,11 +46,6 @@ import * as s0901 from '../09-01/app/app.module';
     s0205.AppModule,
     s0207.AppModule,
     s0208.AppModule,
-    s0301.AppModule,
-    s0302.AppModule,
-    s0303.AppModule,
-    s0304.AppModule,
-    s0306.AppModule,
     s0408.AppModule,
     s0410.AppModule,
     s0411.AppModule,

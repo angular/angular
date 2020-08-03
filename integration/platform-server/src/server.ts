@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /* tslint:disable:no-console  */
-require('zone.js/dist/zone-node.js');
+require('zone.js/bundles/zone-node.umd.js');
 
 import {enableProdMode, NgModuleFactory} from '@angular/core';
 import {renderModuleFactory} from '@angular/platform-server';

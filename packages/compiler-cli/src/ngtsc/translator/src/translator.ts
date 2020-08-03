@@ -187,8 +187,14 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     return ts.createThrow(stmt.error.visitExpression(this, context.withExpressionMode));
   }
 
-  visitCommentStmt(stmt: CommentStmt, context: Context): never {
-    throw new Error('Method not implemented.');
+  visitCommentStmt(stmt: CommentStmt, context: Context): ts.NotEmittedStatement {
+    const commentStmt = ts.createNotEmittedStatement(ts.createLiteral(''));
+    ts.addSyntheticLeadingComment(
+        commentStmt,
+        stmt.multiline ? ts.SyntaxKind.MultiLineCommentTrivia :
+                         ts.SyntaxKind.SingleLineCommentTrivia,
+        stmt.comment, /** hasTrailingNewLine */ false);
+    return commentStmt;
   }
 
   visitJSDocCommentStmt(stmt: JSDocCommentStmt, context: Context): ts.NotEmittedStatement {
@@ -268,9 +274,11 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitLocalizedString(ast: LocalizedString, context: Context): ts.Expression {
-    return this.scriptTarget >= ts.ScriptTarget.ES2015 ?
+    const localizedString = this.scriptTarget >= ts.ScriptTarget.ES2015 ?
         createLocalizedStringTaggedTemplate(ast, context, this) :
         createLocalizedStringFunctionCall(ast, context, this, this.imports);
+    this.setSourceMapRange(localizedString, ast);
+    return localizedString;
   }
 
   visitExternalExpr(ast: ExternalExpr, context: Context): ts.PropertyAccessExpression

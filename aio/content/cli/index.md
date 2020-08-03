@@ -1,6 +1,6 @@
 # CLI Overview and Command Reference
 
-The Angular CLI is a command-line interface tool that you use to initialize, develop, scaffold, and maintain Angular applications. You can use the tool directly in a command shell, or indirectly through an interactive UI such as [Angular Console](https://angularconsole.com).
+The Angular CLI is a command-line interface tool that you use to initialize, develop, scaffold, and maintain Angular applications directly from a command shell.
 
 ## Installing Angular CLI
 
@@ -109,9 +109,3 @@ Options that specify files can be given as absolute paths, or as paths relative 
 The [ng generate](cli/generate) and  [ng add](cli/add) commands take as an argument the artifact or library to be generated or added to the current project.
 In addition to any general options, each artifact or library defines its own options in a *schematic*.
 Schematic options are supplied to the command in the same format as immediate command options.
-
-
-### Building with Bazel
-
-Optionally, you can configure the Angular CLI to use [Bazel](https://docs.bazel.build) as the build tool. For more information, see [Building with Bazel](guide/bazel).
-

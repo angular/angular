@@ -22,6 +22,7 @@ const REVERT_PREFIX_RE = /^revert:? /i;
 const TYPE_SCOPE_RE = /^(\w+)(?:\(([^)]+)\))?\:\s(.+)$/;
 const COMMIT_HEADER_RE = /^(.*)/i;
 const COMMIT_BODY_RE = /^.*\n\n([\s\S]*)$/;
+const COMMIT_BODY_URL_LINE_RE = /^https?:\/\/.*$/;
 
 /** Parse a full commit message into its composite parts. */
 export function parseCommitMessage(commitMsg: string) {
@@ -148,16 +149,23 @@ export function validateCommitMessage(
   // Checking commit body //
   //////////////////////////
 
-  if (commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
+  if (!config.minBodyLengthTypeExcludes?.includes(commit.type) &&
+      commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
     printError(`The commit message body does not meet the minimum length of ${
         config.minBodyLength} characters`);
     return false;
   }
 
   const bodyByLine = commit.body.split('\n');
-  if (bodyByLine.some(line => line.length > config.maxLineLength)) {
+  const lineExceedsMaxLength = bodyByLine.some(line => {
+    // Check if any line exceeds the max line length limit. The limit is ignored for
+    // lines that just contain an URL (as these usually cannot be wrapped or shortened).
+    return line.length > config.maxLineLength && !COMMIT_BODY_URL_LINE_RE.test(line);
+  });
+
+  if (lineExceedsMaxLength) {
     printError(
-        `The commit messsage body contains lines greater than ${config.maxLineLength} characters`);
+        `The commit message body contains lines greater than ${config.maxLineLength} characters`);
     return false;
   }
 

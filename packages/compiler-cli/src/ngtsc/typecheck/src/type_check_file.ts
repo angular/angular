@@ -11,8 +11,8 @@ import {AbsoluteFsPath, join} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
+import {TypeCheckBlockMetadata, TypeCheckingConfig} from '../api';
 
-import {TypeCheckBlockMetadata, TypeCheckingConfig} from './api';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
@@ -34,7 +34,7 @@ export class TypeCheckFile extends Environment {
 
   constructor(
       readonly fileName: AbsoluteFsPath, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
-      reflector: ReflectionHost, compilerHost: ts.CompilerHost) {
+      reflector: ReflectionHost, compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>) {
     super(
         config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter, reflector,
         ts.createSourceFile(

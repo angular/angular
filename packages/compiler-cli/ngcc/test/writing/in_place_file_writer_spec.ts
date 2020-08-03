@@ -7,11 +7,11 @@
  */
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {InPlaceFileWriter, NGCC_BACKUP_EXTENSION} from '../../src/writing/in_place_file_writer';
-import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('InPlaceFileWriter', () => {
@@ -101,8 +101,12 @@ runInEachFileSystem(() => {
              `Tried to write ${
                  absoluteBackupPath}.__ivy_ngcc_bak with an ngcc back up file but it already exists so not writing, nor backing up, ${
                  absoluteBackupPath}.\n` +
-             `This error may be because two or more entry-points overlap and ngcc has been asked to process some files more than once.\n` +
-             `You should check other entry-points in this package and set up a config to ignore any that you are not using.`
+             `This error may be caused by one of the following:\n` +
+             `* two or more entry-points overlap and ngcc has been asked to process some files more than once.\n` +
+             `  In this case, you should check other entry-points in this package\n` +
+             `  and set up a config to ignore any that you are not using.\n` +
+             `* a previous run of ngcc was killed in the middle of processing, in a way that cannot be recovered.\n` +
+             `  In this case, you should try cleaning the node_modules directory and any dist directories that contain local libraries. Then try again.`
            ]]);
          });
     });

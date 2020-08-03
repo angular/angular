@@ -10,19 +10,22 @@
 import * as validateConfig from './config';
 import {validateCommitMessage} from './validate';
 
+type CommitMessageConfig = validateConfig.CommitMessageConfig;
+
+
 // Constants
-const config = {
-  'commitMessage': {
-    'maxLineLength': 120,
-    'minBodyLength': 0,
-    'types': [
+const config: {commitMessage: CommitMessageConfig} = {
+  commitMessage: {
+    maxLineLength: 120,
+    minBodyLength: 0,
+    types: [
       'feat',
       'fix',
       'refactor',
       'release',
       'style',
     ],
-    'scopes': [
+    scopes: [
       'common',
       'compiler',
       'core',
@@ -72,6 +75,15 @@ describe('validate-commit-message.js', () => {
       expect(validateCommitMessage(msg)).toBe(INVALID);
       expect(lastError).toContain(`The commit message header is longer than ${
           config.commitMessage.maxLineLength} characters`);
+    });
+
+    it('should skip max length limit for URLs', () => {
+      const msg = 'fix(compiler): this is just an usual commit message tile\n\n' +
+          'This is a normal commit message body which does not exceed the max length\n' +
+          'limit. For more details see the following super long URL:\n\n' +
+          'https://github.com/angular/components/commit/e2ace018ddfad10608e0e32932c43dcfef4095d7#diff-9879d6db96fd29134fc802214163b95a';
+
+      expect(validateCommitMessage(msg)).toBe(VALID);
     });
 
     it('should validate "<type>(<scope>): <subject>" format', () => {
@@ -223,6 +235,43 @@ describe('validate-commit-message.js', () => {
               `Unable to find match for fixup commit among prior commits: -`);
         });
       });
+    });
+
+    describe('minBodyLength', () => {
+      const minBodyLengthConfig: {commitMessage: CommitMessageConfig} = {
+        commitMessage: {
+          maxLineLength: 120,
+          minBodyLength: 30,
+          minBodyLengthTypeExcludes: ['docs'],
+          types: ['fix', 'docs'],
+          scopes: ['core']
+        }
+      };
+
+      beforeEach(() => {
+        (validateConfig.getCommitMessageConfig as jasmine.Spy).and.returnValue(minBodyLengthConfig);
+      });
+
+      it('should fail validation if the body is shorter than `minBodyLength`', () => {
+        expect(validateCommitMessage(
+                   'fix(core): something\n\n Explanation of the motivation behind this change'))
+            .toBe(VALID);
+        expect(validateCommitMessage('fix(core): something\n\n too short')).toBe(INVALID);
+        expect(lastError).toContain(
+            'The commit message body does not meet the minimum length of 30 characters');
+        expect(validateCommitMessage('fix(core): something')).toBe(INVALID);
+        expect(lastError).toContain(
+            'The commit message body does not meet the minimum length of 30 characters');
+      });
+
+      it('should pass validation if the body is shorter than `minBodyLength` but the commit type is in the `minBodyLengthTypeExclusions` list',
+         () => {
+           expect(validateCommitMessage('docs: just fixing a typo')).toBe(VALID);
+           expect(validateCommitMessage('docs(core): just fixing a typo')).toBe(VALID);
+           expect(validateCommitMessage(
+                      'docs(core): just fixing a typo\n\nThis was just a silly typo.'))
+               .toBe(VALID);
+         });
     });
   });
 });

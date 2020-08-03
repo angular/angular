@@ -89,17 +89,8 @@ export function mainDiagnosticsForTest(
 }
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
-  const transformDecorators =
-      (options.enableIvy === false && options.annotationsAs !== 'decorators');
-  const transformTypesToClosure = options.annotateForClosureCompiler;
-  if (!transformDecorators && !transformTypesToClosure) {
+  if (!options.annotateForClosureCompiler) {
     return undefined;
-  }
-  if (transformDecorators) {
-    // This is needed as a workaround for https://github.com/angular/tsickle/issues/635
-    // Otherwise tsickle might emit references to non imported values
-    // as TypeScript elided the import.
-    options.emitDecoratorMetadata = true;
   }
   const tsickleHost: Pick<
       tsickle.TsickleHost,
@@ -115,41 +106,29 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
     googmodule: false,
     untyped: true,
     convertIndexImportShorthand: false,
-    transformDecorators,
-    transformTypesToClosure,
+    // Decorators are transformed as part of the Angular compiler programs. To avoid
+    // conflicts, we disable decorator transformations for tsickle.
+    transformDecorators: false,
+    transformTypesToClosure: true,
   };
 
-  if (options.annotateForClosureCompiler || options.annotationsAs === 'static fields') {
-    return ({
-             program,
-             targetSourceFile,
-             writeFile,
-             cancellationToken,
-             emitOnlyDtsFiles,
-             customTransformers = {},
-             host,
-             options
-           }) =>
-               // tslint:disable-next-line:no-require-imports only depend on tsickle if requested
-        require('tsickle').emitWithTsickle(
-            program, {...tsickleHost, options, host, moduleResolutionHost: host}, host, options,
-            targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, {
-              beforeTs: customTransformers.before,
-              afterTs: customTransformers.after,
-            });
-  } else {
-    return ({
-             program,
-             targetSourceFile,
-             writeFile,
-             cancellationToken,
-             emitOnlyDtsFiles,
-             customTransformers = {},
-           }) =>
-               program.emit(
-                   targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles,
-                   {after: customTransformers.after, before: customTransformers.before});
-  }
+  return ({
+           program,
+           targetSourceFile,
+           writeFile,
+           cancellationToken,
+           emitOnlyDtsFiles,
+           customTransformers = {},
+           host,
+           options
+         }) =>
+             // tslint:disable-next-line:no-require-imports only depend on tsickle if requested
+      require('tsickle').emitWithTsickle(
+          program, {...tsickleHost, options, host, moduleResolutionHost: host}, host, options,
+          targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, {
+            beforeTs: customTransformers.before,
+            afterTs: customTransformers.after,
+          });
 }
 
 export interface NgcParsedConfiguration extends ParsedConfiguration {

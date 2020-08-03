@@ -15,10 +15,10 @@ import {
   ReversePipeComponent, ShellComponent
 } from './demo';
 
-import { By }          from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { Component,
          DebugElement,
-         Injectable }  from '@angular/core';
+         Injectable } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 // Forms symbols imported only for a specific test below
@@ -222,7 +222,7 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
       const ngForRow = fixture.debugElement.query(By.directive(IoComponent)); // first hero ngForRow
 
-      const hero = ngForRow.context['hero']; // the hero object passed into the row
+      const hero = ngForRow.context.hero; // the hero object passed into the row
       expect(hero.name).toBe(heroName, 'ngRow.context.hero');
 
       const rowComp = ngForRow.componentInstance;
@@ -256,7 +256,7 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
 
       const comp = fixture.componentInstance;
-      const input = <HTMLInputElement> fixture.debugElement.query(By.css('input')).nativeElement;
+      const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
 
       expect(comp.name).toBe(expectedOrigName,
         `At start name should be ${expectedOrigName} `);
@@ -294,7 +294,7 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
 
       const comp =  fixture.componentInstance;
-      const input = <HTMLInputElement> fixture.debugElement.query(By.css('input')).nativeElement;
+      const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
 
       expect(comp.name).toBe(expectedOrigName,
         `At start name should be ${expectedOrigName} `);
@@ -514,11 +514,11 @@ describe('demo (with TestBed):', () => {
       expect(comp.children.toArray().length).toBe(4,
         'three different child components and an ElementRef with #content');
 
-      expect(el.references['nc']).toBe(comp, '#nc reference to component');
+      expect(el.references.nc).toBe(comp, '#nc reference to component');
 
       // #docregion custom-predicate
       // Filter for DebugElements with a #content reference
-      const contentRefs = el.queryAll( de => de.references['content']);
+      const contentRefs = el.queryAll( de => de.references.content);
       // #enddocregion custom-predicate
       expect(contentRefs.length).toBe(4, 'elements w/ a #content reference');
     });
@@ -557,8 +557,8 @@ describe('demo (with TestBed):', () => {
 
   describe('lifecycle hooks w/ MyIfParentComp', () => {
     let fixture: ComponentFixture<MyIfParentComponent>;
-    let parent:  MyIfParentComponent;
-    let child:   MyIfChildComponent;
+    let parent: MyIfParentComponent;
+    let child: MyIfChildComponent;
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -662,12 +662,12 @@ describe('demo (with TestBed):', () => {
 
       // DebugElement.queryAll: if we wanted all of many instances:
       childDe = fixture.debugElement
-        .queryAll(function (de) { return de.componentInstance instanceof MyIfChildComponent; })[0];
+        .queryAll(de => de.componentInstance instanceof MyIfChildComponent)[0];
 
       // WE'LL USE THIS APPROACH !
       // DebugElement.query: find first instance (if any)
       childDe = fixture.debugElement
-        .query(function (de) { return de.componentInstance instanceof MyIfChildComponent; });
+        .query(de => de.componentInstance instanceof MyIfChildComponent);
 
       if (childDe && childDe.componentInstance) {
         child = childDe.componentInstance;

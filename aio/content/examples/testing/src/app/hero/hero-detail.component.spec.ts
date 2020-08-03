@@ -3,16 +3,16 @@ import {
   async, ComponentFixture, fakeAsync, inject, TestBed, tick
 } from '@angular/core/testing';
 
-import { Router }       from '@angular/router';
+import { Router } from '@angular/router';
 
 import {
   ActivatedRoute, ActivatedRouteStub, asyncData, click, newEvent
 } from '../../testing';
 
-import { Hero }                from '../model/hero';
+import { Hero } from '../model/hero';
 import { HeroDetailComponent } from './hero-detail.component';
-import { HeroDetailService }   from './hero-detail.service';
-import { HeroModule }          from './hero.module';
+import { HeroDetailService } from './hero-detail.service';
+import { HeroModule } from './hero.module';
 
 ////// Testing Vars //////
 let activatedRoute: ActivatedRouteStub;
@@ -266,8 +266,8 @@ function heroModuleSetup() {
 }
 
 /////////////////////
-import { FormsModule }         from '@angular/forms';
-import { TitleCasePipe }       from '../shared/title-case.pipe';
+import { FormsModule } from '@angular/forms';
+import { TitleCasePipe } from '../shared/title-case.pipe';
 
 function formsModuleSetup() {
  // #docregion setup-forms-module
@@ -297,7 +297,7 @@ function formsModuleSetup() {
 }
 
 ///////////////////////
-import { SharedModule }        from '../shared/shared.module';
+import { SharedModule } from '../shared/shared.module';
 
 function sharedModuleSetup() {
   // #docregion setup-shared-module
@@ -354,16 +354,16 @@ class Page {
   get nameInput()   { return this.query<HTMLInputElement>('input'); }
 
   gotoListSpy: jasmine.Spy;
-  navigateSpy:  jasmine.Spy;
+  navigateSpy: jasmine.Spy;
 
-  constructor(fixture: ComponentFixture<HeroDetailComponent>) {
+  constructor(someFixture: ComponentFixture<HeroDetailComponent>) {
     // get the navigate spy from the injected router spy object
-    const routerSpy = <any> fixture.debugElement.injector.get(Router);
+    const routerSpy = someFixture.debugElement.injector.get(Router) as any;
     this.navigateSpy = routerSpy.navigate;
 
     // spy on component's `gotoList()` method
-    const component = fixture.componentInstance;
-    this.gotoListSpy = spyOn(component, 'gotoList').and.callThrough();
+    const someComponent = someFixture.componentInstance;
+    this.gotoListSpy = spyOn(someComponent, 'gotoList').and.callThrough();
   }
 
   //// query helpers ////

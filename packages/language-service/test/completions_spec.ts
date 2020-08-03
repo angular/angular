@@ -15,9 +15,7 @@ import {TypeScriptServiceHost} from '../src/typescript_host';
 import {MockTypescriptHost} from './test_utils';
 
 const APP_COMPONENT = '/app/app.component.ts';
-const PARSING_CASES = '/app/parsing-cases.ts';
 const TEST_TEMPLATE = '/app/test.ng';
-const EXPRESSION_CASES = '/app/expression-cases.ts';
 
 describe('completions', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts']);
@@ -29,23 +27,16 @@ describe('completions', () => {
     mockHost.reset();
   });
 
-  it('should be able to get entity completions', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'entity-amp');
-    const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
-    expectContain(completions, CompletionKind.ENTITY, ['&amp;', '&gt;', '&lt;', '&iota;']);
-  });
-
   it('should be able to return html elements', () => {
-    const locations = ['empty', 'start-tag-h1', 'h1-content', 'start-tag', 'start-tag-after-h'];
-    for (const location of locations) {
-      const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, location);
-      const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
-      expectContain(completions, CompletionKind.HTML_ELEMENT, ['div', 'h1', 'h2', 'span']);
-    }
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '<~{cursor}');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
+    const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
+    expectContain(completions, CompletionKind.HTML_ELEMENT, ['div', 'h1', 'h2', 'span']);
   });
 
   it('should be able to return component directives', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'empty');
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '<~{cursor}');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.COMPONENT, [
       'ng-form',
@@ -56,13 +47,15 @@ describe('completions', () => {
   });
 
   it('should be able to return attribute directives', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'h1-after-space');
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '<h1 ~{cursor}>');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.ATTRIBUTE, ['string-model', 'number-model']);
   });
 
   it('should be able to return angular pseudo elements', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'empty');
+    mockHost.overrideInlineTemplate(APP_COMPONENT, `<~{cursor}`);
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.ANGULAR_ELEMENT, [
       'ng-container',
@@ -72,7 +65,8 @@ describe('completions', () => {
   });
 
   it('should be able to return h1 attributes', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'h1-after-space');
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '<h1 ~{cursor}>');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.HTML_ATTRIBUTE, [
       'class',
@@ -83,7 +77,8 @@ describe('completions', () => {
   });
 
   it('should be able to find common Angular attributes', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'div-attributes');
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '<div ~{cursor}>');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.ATTRIBUTE, [
       'ngClass',
@@ -95,13 +90,15 @@ describe('completions', () => {
   });
 
   it('should be able to get the completions at the beginning of an interpolation', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'h2-hero');
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '<h2>{{ ~{cursor} }}</h2>');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.PROPERTY, ['title', 'hero']);
   });
 
   it('should not include private members of a class', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'h2-hero');
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '<h2>{{ ~{cursor} }}</h2>');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expect(completions).toBeDefined();
     const internal = completions!.entries.find(e => e.name === 'internal');
@@ -109,13 +106,15 @@ describe('completions', () => {
   });
 
   it('should be able to get the completions at the end of an interpolation', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'sub-end');
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '{{ti~{cursor}}}');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.PROPERTY, ['title', 'hero']);
   });
 
   it('should be able to get the completions in a property', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'h2-name');
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '<h2>{{ hero.~{cursor} }}</h2>');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
   });
@@ -184,7 +183,8 @@ describe('completions', () => {
   });
 
   it('should suggest $any() type cast function in an interpolation', () => {
-    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'sub-start');
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '{{ ~{cursor} }}');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
     const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.METHOD, ['$any']);
   });
@@ -234,28 +234,21 @@ describe('completions', () => {
   });
 
   describe('in external template', () => {
-    it('should be able to get entity completions in external template', () => {
-      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'entity-amp');
-      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
-      expectContain(completions, CompletionKind.ENTITY, ['&amp;', '&gt;', '&lt;', '&iota;']);
-    });
-
     it('should not return html elements', () => {
-      const locations = ['empty', 'start-tag-h1', 'h1-content', 'start-tag', 'start-tag-after-h'];
-      for (const location of locations) {
-        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, location);
-        const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
-        expect(completions).toBeDefined();
-        const {entries} = completions!;
-        expect(entries).not.toContain(jasmine.objectContaining({name: 'div'}));
-        expect(entries).not.toContain(jasmine.objectContaining({name: 'h1'}));
-        expect(entries).not.toContain(jasmine.objectContaining({name: 'h2'}));
-        expect(entries).not.toContain(jasmine.objectContaining({name: 'span'}));
-      }
+      mockHost.override(TEST_TEMPLATE, '<~{cursor}');
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+      expect(completions).toBeDefined();
+      const {entries} = completions!;
+      expect(entries).not.toContain(jasmine.objectContaining({name: 'div'}));
+      expect(entries).not.toContain(jasmine.objectContaining({name: 'h1'}));
+      expect(entries).not.toContain(jasmine.objectContaining({name: 'h2'}));
+      expect(entries).not.toContain(jasmine.objectContaining({name: 'span'}));
     });
 
     it('should be able to return element directives', () => {
-      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'empty');
+      mockHost.override(TEST_TEMPLATE, '<~{cursor}');
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
       const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
       expectContain(completions, CompletionKind.COMPONENT, [
         'ng-form',
@@ -266,7 +259,8 @@ describe('completions', () => {
     });
 
     it('should not return html attributes', () => {
-      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'h1-after-space');
+      mockHost.override(TEST_TEMPLATE, '<h1 ~{cursor}>');
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
       const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
       expect(completions).toBeDefined();
       const {entries} = completions!;
@@ -823,6 +817,43 @@ describe('completions', () => {
       // Expect string properties
       expectContain(completions, CompletionKind.METHOD, ['charAt', 'substring']);
     });
+  });
+
+  it('should select the right signature for a pipe given exact type', () => {
+    mockHost.override(TEST_TEMPLATE, '{{ ("world" | prefixPipe:"hello").~{cursor} }}');
+    const m1 = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const c1 = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, m1.start);
+    // should resolve to transform(value: string, prefix: string): string
+    expectContain(c1, CompletionKind.METHOD, ['charCodeAt', 'trim']);
+
+    mockHost.override(TEST_TEMPLATE, '{{ (456 | prefixPipe:123).~{cursor} }}');
+    const m2 = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const c2 = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, m2.start);
+    // should resolve to transform(value: number, prefix: number): number
+    expectContain(c2, CompletionKind.METHOD, ['toFixed', 'toExponential']);
+  });
+
+  it('should work in the conditional operator', () => {
+    mockHost.override(TEST_TEMPLATE, '{{ title ? title.~{cursor} }}');
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+    expectContain(completions, CompletionKind.METHOD, [
+      'trim',
+    ]);
+  });
+
+  it('should not return any results for unknown symbol', () => {
+    mockHost.override(TEST_TEMPLATE, '{{ doesnotexist.~{cursor} }}');
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+    expect(completions).toBeUndefined();
+  });
+
+  it('should not provide completions for string', () => {
+    mockHost.override(TEST_TEMPLATE, `<div [ngClass]="'str~{cursor}'"></div>`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+    expect(completions).toBeUndefined();
   });
 });
 

@@ -10,9 +10,9 @@ import {PullsListCommitsResponse, PullsMergeParams} from '@octokit/rest';
 import {prompt} from 'inquirer';
 
 import {parseCommitMessage} from '../../../commit-message/validate';
+import {GitClient} from '../../../utils/git';
 import {GithubApiMergeMethod} from '../config';
 import {PullRequestFailure} from '../failures';
-import {GitClient} from '../git';
 import {PullRequest} from '../pull-request';
 import {matchesPattern} from '../string-pattern';
 
@@ -94,7 +94,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
 
     try {
       // Merge the pull request using the Github API into the selected base branch.
-      const result = await this.git.api.pulls.merge(mergeOptions);
+      const result = await this.git.github.pulls.merge(mergeOptions);
 
       mergeStatusCode = result.status;
       targetSha = result.data.sha;
@@ -135,7 +135,13 @@ export class GithubApiMergeStrategy extends MergeStrategy {
 
     // Cherry pick the merged commits into the remaining target branches.
     const failedBranches = await this.cherryPickIntoTargetBranches(
-        `${targetSha}~${targetCommitsCount}..${targetSha}`, cherryPickTargetBranches);
+        `${targetSha}~${targetCommitsCount}..${targetSha}`, cherryPickTargetBranches, {
+          // Commits that have been created by the Github API do not necessarily contain
+          // a reference to the source pull request (unless the squash strategy is used).
+          // To ensure that original commits can be found when a commit is viewed in a
+          // target branch, we add a link to the original commits when cherry-picking.
+          linkToOriginalCommits: true,
+        });
 
     // We already checked whether the PR can be cherry-picked into the target branches,
     // but in case the cherry-pick somehow fails, we still handle the conflicts here. The
@@ -153,7 +159,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
    * strategy, we cannot start an interactive rebase because we merge using the Github API.
    * The Github API only allows modifications to PR title and body for squash merges.
    */
-  async _promptCommitMessageEdit(pullRequest: PullRequest, mergeOptions: PullsMergeParams) {
+  private async _promptCommitMessageEdit(pullRequest: PullRequest, mergeOptions: PullsMergeParams) {
     const commitMessage = await this._getDefaultSquashCommitMessage(pullRequest);
     const {result} = await prompt<{result: string}>({
       type: 'editor',
@@ -189,9 +195,9 @@ export class GithubApiMergeStrategy extends MergeStrategy {
 
   /** Gets all commit messages of commits in the pull request. */
   private async _getPullRequestCommitMessages({prNumber}: PullRequest) {
-    const request = this.git.api.pulls.listCommits.endpoint.merge(
+    const request = this.git.github.pulls.listCommits.endpoint.merge(
         {...this.git.remoteParams, pull_number: prNumber});
-    const allCommits: PullsListCommitsResponse = await this.git.api.paginate(request);
+    const allCommits: PullsListCommitsResponse = await this.git.github.paginate(request);
     return allCommits.map(({commit}) => commit.message);
   }
 

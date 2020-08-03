@@ -6,16 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem, join, PathSegment, relative, relativeFrom} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
-import {Logger} from '../logging/logger';
 import {hasBeenProcessed} from '../packages/build_marker';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../packages/entry_point';
+import {EntryPointJsonProperty, getEntryPointInfo, isEntryPoint} from '../packages/entry_point';
 import {PathMappings} from '../path_mappings';
 
-import {EntryPointFinder} from './interface';
-import {getBasePaths} from './utils';
+import {TracingEntryPointFinder} from './tracing_entry_point_finder';
 
 /**
  * An EntryPointFinder that starts from a target entry-point and only finds
@@ -24,30 +23,20 @@ import {getBasePaths} from './utils';
  * This is faster than searching the entire file-system for all the entry-points,
  * and is used primarily by the CLI integration.
  */
-export class TargetedEntryPointFinder implements EntryPointFinder {
-  private unprocessedPaths: AbsoluteFsPath[] = [];
-  private unsortedEntryPoints = new Map<AbsoluteFsPath, EntryPointWithDependencies>();
-  private basePaths: AbsoluteFsPath[]|null = null;
-  private getBasePaths() {
-    if (this.basePaths === null) {
-      this.basePaths = getBasePaths(this.logger, this.basePath, this.pathMappings);
-    }
-    return this.basePaths;
+export class TargetedEntryPointFinder extends TracingEntryPointFinder {
+  constructor(
+      fs: FileSystem, config: NgccConfiguration, logger: Logger, resolver: DependencyResolver,
+      basePath: AbsoluteFsPath, pathMappings: PathMappings|undefined,
+      private targetPath: AbsoluteFsPath) {
+    super(fs, config, logger, resolver, basePath, pathMappings);
   }
 
-  constructor(
-      private fs: FileSystem, private config: NgccConfiguration, private logger: Logger,
-      private resolver: DependencyResolver, private basePath: AbsoluteFsPath,
-      private targetPath: AbsoluteFsPath, private pathMappings: PathMappings|undefined) {}
-
+  /**
+   * Search for Angular entry-points that can be reached from the entry-point specified by the given
+   * `targetPath`.
+   */
   findEntryPoints(): SortedEntryPointsInfo {
-    this.unprocessedPaths = [this.targetPath];
-    while (this.unprocessedPaths.length > 0) {
-      this.processNextPath();
-    }
-    const targetEntryPoint = this.unsortedEntryPoints.get(this.targetPath);
-    const entryPoints = this.resolver.sortEntryPointsByDependency(
-        Array.from(this.unsortedEntryPoints.values()), targetEntryPoint?.entryPoint);
+    const entryPoints = super.findEntryPoints();
 
     const invalidTarget =
         entryPoints.invalidEntryPoints.find(i => i.entryPoint.path === this.targetPath);
@@ -59,17 +48,25 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     return entryPoints;
   }
 
+  /**
+   * Determine whether the entry-point at the given `targetPath` needs to be processed.
+   *
+   * @param propertiesToConsider the package.json properties that should be considered for
+   *     processing.
+   * @param compileAllFormats true if all formats need to be processed, or false if it is enough for
+   *     one of the formats covered by the `propertiesToConsider` is processed.
+   */
   targetNeedsProcessingOrCleaning(
       propertiesToConsider: EntryPointJsonProperty[], compileAllFormats: boolean): boolean {
-    const entryPoint = this.getEntryPoint(this.targetPath);
-    if (entryPoint === null || !entryPoint.compiledByAngular) {
+    const entryPointWithDeps = this.getEntryPointWithDeps(this.targetPath);
+    if (entryPointWithDeps === null) {
       return false;
     }
 
     for (const property of propertiesToConsider) {
-      if (entryPoint.packageJson[property]) {
+      if (entryPointWithDeps.entryPoint.packageJson[property]) {
         // Here is a property that should be processed.
-        if (!hasBeenProcessed(entryPoint.packageJson, property)) {
+        if (!hasBeenProcessed(entryPointWithDeps.entryPoint.packageJson, property)) {
           return true;
         }
         if (!compileAllFormats) {
@@ -83,31 +80,42 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     return false;
   }
 
-  private processNextPath(): void {
-    const path = this.unprocessedPaths.shift()!;
-    const entryPoint = this.getEntryPoint(path);
-    if (entryPoint === null || !entryPoint.compiledByAngular) {
-      return;
-    }
-    const entryPointWithDeps = this.resolver.getEntryPointWithDependencies(entryPoint);
-    this.unsortedEntryPoints.set(entryPoint.path, entryPointWithDeps);
-    entryPointWithDeps.depInfo.dependencies.forEach(dep => {
-      if (!this.unsortedEntryPoints.has(dep)) {
-        this.unprocessedPaths.push(dep);
-      }
-    });
+  /**
+   * Return an array containing the `targetPath` from which to start the trace.
+   */
+  protected getInitialEntryPointPaths(): AbsoluteFsPath[] {
+    return [this.targetPath];
   }
 
-  private getEntryPoint(entryPointPath: AbsoluteFsPath): EntryPoint|null {
+  /**
+   * For the given `entryPointPath`, compute, or retrieve, the entry-point information, including
+   * paths to other entry-points that this entry-point depends upon.
+   *
+   * @param entryPointPath the path to the entry-point whose information and dependencies are to be
+   *     retrieved or computed.
+   *
+   * @returns the entry-point and its dependencies or `null` if the entry-point is not compiled by
+   *     Angular or cannot be determined.
+   */
+  protected getEntryPointWithDeps(entryPointPath: AbsoluteFsPath): EntryPointWithDependencies|null {
     const packagePath = this.computePackagePath(entryPointPath);
     const entryPoint =
         getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
-    if (entryPoint === NO_ENTRY_POINT || entryPoint === INCOMPATIBLE_ENTRY_POINT) {
+    if (!isEntryPoint(entryPoint) || !entryPoint.compiledByAngular) {
       return null;
     }
-    return entryPoint;
+    return this.resolver.getEntryPointWithDependencies(entryPoint);
   }
 
+  /**
+   * Compute the path to the package that contains the given entry-point.
+   *
+   * In this entry-point finder it is not trivial to find the containing package, since it is
+   * possible that this entry-point is not directly below the directory containing the package.
+   * Moreover, the import path could be affected by path-mapping.
+   *
+   * @param entryPointPath the path to the entry-point, whose package path we want to compute.
+   */
   private computePackagePath(entryPointPath: AbsoluteFsPath): AbsoluteFsPath {
     // First try the main basePath, to avoid having to compute the other basePaths from the paths
     // mappings, which can be computationally intensive.
@@ -138,6 +146,7 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     // `basePath`.
     return this.computePackagePathFromNearestNodeModules(entryPointPath);
   }
+
 
   /**
    * Search down to the `entryPointPath` from the `containingPath` for the first `package.json` that
@@ -218,13 +227,14 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
 
   /**
    * Split the given `path` into path segments using an FS independent algorithm.
-   * @param path The path to split.
    */
-  private splitPath(path: PathSegment) {
+  private splitPath(path: PathSegment|AbsoluteFsPath) {
     const segments = [];
-    while (path !== '.') {
+    let container = this.fs.dirname(path);
+    while (path !== container) {
       segments.unshift(this.fs.basename(path));
-      path = this.fs.dirname(path);
+      path = container;
+      container = this.fs.dirname(container);
     }
     return segments;
   }

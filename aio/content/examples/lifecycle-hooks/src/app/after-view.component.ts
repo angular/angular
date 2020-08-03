@@ -2,7 +2,7 @@
 // #docregion
 import { AfterViewChecked, AfterViewInit, Component, ViewChild } from '@angular/core';
 
-import { LoggerService }  from './logger.service';
+import { LoggerService } from './logger.service';
 
 //////////////////
 // #docregion child-view
@@ -32,17 +32,20 @@ export class ChildViewComponent {
 })
 // #docregion hooks
 export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
+  // #enddocregion hooks
+  comment = '';
+  // #docregion hooks
   private prevHero = '';
 
   // Query for a VIEW child of type `ChildViewComponent`
   @ViewChild(ChildViewComponent) viewChild: ChildViewComponent;
 
-// #enddocregion hooks
+  // #enddocregion hooks
   constructor(private logger: LoggerService) {
     this.logIt('AfterView constructor');
   }
 
-// #docregion hooks
+  // #docregion hooks
   ngAfterViewInit() {
     // viewChild is set after the view has been initialized
     this.logIt('AfterViewInit');
@@ -59,27 +62,25 @@ export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
       this.doSomething();
     }
   }
-// #enddocregion hooks
+  // #enddocregion hooks
 
-  comment = '';
-
-// #docregion do-something
+  // #docregion do-something
   // This surrogate for real business logic sets the `comment`
   private doSomething() {
-    let c = this.viewChild.hero.length > 10 ? `That's a long name` : '';
+    const c = this.viewChild.hero.length > 10 ? `That's a long name` : '';
     if (c !== this.comment) {
       // Wait a tick because the component's view has already been checked
       this.logger.tick_then(() => this.comment = c);
     }
   }
-// #enddocregion do-something
+  // #enddocregion do-something
 
   private logIt(method: string) {
-    let child = this.viewChild;
-    let message = `${method}: ${child ? child.hero : 'no'} child view`;
+    const child = this.viewChild;
+    const message = `${method}: ${child ? child.hero : 'no'} child view`;
     this.logger.log(message);
   }
-// #docregion hooks
+  // #docregion hooks
   // ...
 }
 // #enddocregion hooks

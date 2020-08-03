@@ -8,10 +8,13 @@
 
 import * as ts from 'typescript';
 
-import {ErrorCode} from './error_code';
+import {ErrorCode, ngErrorCode} from './error_code';
 
 export class FatalDiagnosticError {
-  constructor(readonly code: ErrorCode, readonly node: ts.Node, readonly message: string) {}
+  constructor(
+      readonly code: ErrorCode, readonly node: ts.Node,
+      readonly message: string|ts.DiagnosticMessageChain,
+      readonly relatedInformation?: ts.DiagnosticRelatedInformation[]) {}
 
   /**
    * @internal
@@ -19,37 +22,36 @@ export class FatalDiagnosticError {
   _isFatalDiagnosticError = true;
 
   toDiagnostic(): ts.DiagnosticWithLocation {
-    return makeDiagnostic(this.code, this.node, this.message);
+    return makeDiagnostic(this.code, this.node, this.message, this.relatedInformation);
   }
 }
 
-export function makeDiagnostic(code: ErrorCode, node: ts.Node, messageText: string, relatedInfo?: {
-  node: ts.Node,
-  messageText: string,
-}[]): ts.DiagnosticWithLocation {
+export function makeDiagnostic(
+    code: ErrorCode, node: ts.Node, messageText: string|ts.DiagnosticMessageChain,
+    relatedInformation?: ts.DiagnosticRelatedInformation[]): ts.DiagnosticWithLocation {
   node = ts.getOriginalNode(node);
-  const diag: ts.DiagnosticWithLocation = {
+  return {
     category: ts.DiagnosticCategory.Error,
-    code: Number('-99' + code.valueOf()),
+    code: ngErrorCode(code),
     file: ts.getOriginalNode(node).getSourceFile(),
     start: node.getStart(undefined, false),
     length: node.getWidth(),
     messageText,
+    relatedInformation,
   };
-  if (relatedInfo !== undefined) {
-    diag.relatedInformation = relatedInfo.map(info => {
-      const infoNode = ts.getOriginalNode(info.node);
-      return {
-        category: ts.DiagnosticCategory.Message,
-        code: 0,
-        file: infoNode.getSourceFile(),
-        start: infoNode.getStart(),
-        length: infoNode.getWidth(),
-        messageText: info.messageText,
-      };
-    });
-  }
-  return diag;
+}
+
+export function makeRelatedInformation(
+    node: ts.Node, messageText: string): ts.DiagnosticRelatedInformation {
+  node = ts.getOriginalNode(node);
+  return {
+    category: ts.DiagnosticCategory.Message,
+    code: 0,
+    file: node.getSourceFile(),
+    start: node.getStart(),
+    length: node.getWidth(),
+    messageText,
+  };
 }
 
 export function isFatalDiagnosticError(err: any): err is FatalDiagnosticError {

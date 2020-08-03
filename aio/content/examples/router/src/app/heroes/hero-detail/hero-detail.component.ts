@@ -7,7 +7,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 // #enddocregion imports-route-info
 import { Observable } from 'rxjs';
 
-import { HeroService }  from '../hero.service';
+import { HeroService } from '../hero.service';
 import { Hero } from '../hero';
 
 @Component({
@@ -38,7 +38,7 @@ export class HeroDetailComponent implements OnInit {
 
   // #docregion redirect
   gotoHeroes(hero: Hero) {
-    let heroId = hero ? hero.id : null;
+    const heroId = hero ? hero.id : null;
     // Pass along the hero id if available
     // so that the HeroList component can select that hero.
     // Include a junk 'foo' property for fun.

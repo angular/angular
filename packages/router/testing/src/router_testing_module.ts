@@ -155,7 +155,7 @@ export function setupTestingRouter(
  *
  * ```
  * beforeEach(() => {
- *   TestBed.configureTestModule({
+ *   TestBed.configureTestingModule({
  *     imports: [
  *       RouterTestingModule.withRoutes(
  *         [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}]

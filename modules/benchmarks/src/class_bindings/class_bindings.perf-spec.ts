@@ -7,7 +7,7 @@
  */
 
 import {$, browser} from 'protractor';
-import {runBenchmark} from '../../../e2e_util/perf_util';
+import {runBenchmark} from '../../../../dev-infra/benchmark/driver-utilities';
 
 describe('class bindings perf', () => {
   it('should work for update', async () => {

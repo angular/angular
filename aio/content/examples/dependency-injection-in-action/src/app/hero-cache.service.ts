@@ -1,7 +1,7 @@
 // #docregion
-import { Injectable }  from '@angular/core';
+import { Injectable } from '@angular/core';
 
-import { Hero }        from './hero';
+import { Hero } from './hero';
 import { HeroService } from './hero.service';
 
 // #docregion service

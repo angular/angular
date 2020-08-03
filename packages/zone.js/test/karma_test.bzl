@@ -49,15 +49,15 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
             first = False
             karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point)
         _karma_test_required_dist_files = [
-            "//packages/zone.js/dist:task-tracking.js",
-            "//packages/zone.js/dist:wtf.js",
-            "//packages/zone.js/dist:webapis-notification.js",
-            "//packages/zone.js/dist:webapis-media-query.js",
-            "//packages/zone.js/dist:zone-patch-canvas.js",
-            "//packages/zone.js/dist:zone-patch-fetch.js",
-            "//packages/zone.js/dist:zone-patch-resize-observer.js",
-            "//packages/zone.js/dist:zone-patch-message-port.js",
-            "//packages/zone.js/dist:zone-patch-user-media.js",
+            "//packages/zone.js/bundles:task-tracking.umd.js",
+            "//packages/zone.js/bundles:wtf.umd.js",
+            "//packages/zone.js/bundles:webapis-notification.umd.js",
+            "//packages/zone.js/bundles:webapis-media-query.umd.js",
+            "//packages/zone.js/bundles:zone-patch-canvas.umd.js",
+            "//packages/zone.js/bundles:zone-patch-fetch.umd.js",
+            "//packages/zone.js/bundles:zone-patch-resize-observer.umd.js",
+            "//packages/zone.js/bundles:zone-patch-message-port.umd.js",
+            "//packages/zone.js/bundles:zone-patch-user-media.umd.js",
             ":" + name + "_rollup.umd",
         ]
 
@@ -70,7 +70,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                             ":" + name + "_env_rollup.umd",
                         ] + bootstrap +
                         _karma_test_required_dist_files,
-            browsers = ["//tools/browsers:chromium"],
+            browsers = ["//dev-infra/browsers/chromium:chromium"],
             static_files = [
                 ":assets/sample.json",
                 ":assets/worker.js",
@@ -91,9 +91,9 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                 bootstrap = [
                     ":saucelabs.js",
                     ":" + name + "_env_rollup.umd",
-                    "//packages/zone.js/dist:zone-testing-bundle.min.js",
+                    "//packages/zone.js/bundles:zone-testing-bundle.umd.min.js",
                 ] + _karma_test_required_dist_files,
-                browsers = ["//tools/browsers:chromium"],
+                browsers = ["//dev-infra/browsers/chromium:chromium"],
                 config_file = "//:karma-js.conf.js",
                 configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
                 data = [

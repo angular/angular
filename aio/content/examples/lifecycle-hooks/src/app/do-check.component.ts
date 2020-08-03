@@ -51,8 +51,8 @@ export class DoCheckComponent implements DoCheck {
         this.noChangeCount = 0;
     } else {
         // log that hook was called when there was no relevant change.
-        let count = this.noChangeCount += 1;
-        let noChangeMsg = `DoCheck called ${count}x when no change to hero or power`;
+        const count = this.noChangeCount += 1;
+        const noChangeMsg = `DoCheck called ${count}x when no change to hero or power`;
         if (count === 1) {
           // add new "no change" message
           this.changeLog.push(noChangeMsg);

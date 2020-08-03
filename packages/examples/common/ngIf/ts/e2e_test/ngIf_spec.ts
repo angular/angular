@@ -61,8 +61,8 @@ describe('ngIf', () => {
     });
   });
 
-  describe('ng-if-let', () => {
-    let comp = 'ng-if-let';
+  describe('ng-if-as', () => {
+    let comp = 'ng-if-as';
     it('should hide/show content', () => {
       browser.get(URL);
       waitForElement(comp);

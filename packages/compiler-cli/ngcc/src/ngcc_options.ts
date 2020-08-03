@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
+import {ConsoleLogger, Logger, LogLevel} from '../../src/ngtsc/logging';
 import {ParsedConfiguration, readConfiguration} from '../../src/perform_compile';
 
-import {ConsoleLogger} from './logging/console_logger';
-import {Logger, LogLevel} from './logging/logger';
 import {SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
 import {getPathMappingsFromTsConfig, PathMappings} from './path_mappings';
 import {FileWriter} from './writing/file_writer';
@@ -124,6 +123,14 @@ export interface SyncNgccOptions {
    * If `null`, ngcc will not attempt to load any TS config file at all.
    */
   tsConfigPath?: string|null;
+
+  /**
+   * Use the program defined in the loaded tsconfig.json (if available - see
+   * `tsConfigPath` option) to identify the entry-points that should be processed.
+   * If this is set to `true` then only the entry-points reachable from the given
+   * program (and their dependencies) will be processed.
+   */
+  findEntryPointsFromTsConfigProgram?: boolean;
 }
 
 /**
@@ -136,7 +143,8 @@ export type AsyncNgccOptions = Omit<SyncNgccOptions, 'async'>&{async: true};
  */
 export type NgccOptions = AsyncNgccOptions|SyncNgccOptions;
 
-export type OptionalNgccOptionKeys = 'targetEntryPointPath'|'tsConfigPath'|'pathMappings';
+export type OptionalNgccOptionKeys =
+    'targetEntryPointPath'|'tsConfigPath'|'pathMappings'|'findEntryPointsFromTsConfigProgram';
 export type RequiredNgccOptions = Required<Omit<NgccOptions, OptionalNgccOptionKeys>>;
 export type OptionalNgccOptions = Pick<NgccOptions, OptionalNgccOptionKeys>;
 export type SharedSetup = {
@@ -156,7 +164,7 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
   const absBasePath = absoluteFrom(options.basePath);
   const projectPath = fileSystem.dirname(absBasePath);
   const tsConfig =
-      options.tsConfigPath !== null ? readConfiguration(options.tsConfigPath || projectPath) : null;
+      options.tsConfigPath !== null ? getTsConfig(options.tsConfigPath || projectPath) : null;
 
   let {
     basePath,
@@ -177,6 +185,8 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
     // targetEntryPointPath forces us to error if an entry-point fails.
     errorOnFailedEntryPoint = true;
   }
+
+  checkForSolutionStyleTsConfig(fileSystem, logger, projectPath, options.tsConfigPath, tsConfig);
 
   return {
     basePath,
@@ -199,4 +209,48 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
         new NewEntryPointFileWriter(fileSystem, logger, errorOnFailedEntryPoint, pkgJsonUpdater) :
         new InPlaceFileWriter(fileSystem, logger, errorOnFailedEntryPoint),
   };
+}
+
+let tsConfigCache: ParsedConfiguration|null = null;
+let tsConfigPathCache: string|null = null;
+
+/**
+ * Get the parsed configuration object for the given `tsConfigPath`.
+ *
+ * This function will cache the previous parsed configuration object to avoid unnecessary processing
+ * of the tsconfig.json in the case that it is requested repeatedly.
+ *
+ * This makes the assumption, which is true as of writing, that the contents of tsconfig.json and
+ * its dependencies will not change during the life of the process running ngcc.
+ */
+function getTsConfig(tsConfigPath: string): ParsedConfiguration|null {
+  if (tsConfigPath !== tsConfigPathCache) {
+    tsConfigPathCache = tsConfigPath;
+    tsConfigCache = readConfiguration(tsConfigPath);
+  }
+  return tsConfigCache;
+}
+
+export function clearTsConfigCache() {
+  tsConfigPathCache = null;
+  tsConfigCache = null;
+}
+
+function checkForSolutionStyleTsConfig(
+    fileSystem: FileSystem, logger: Logger, projectPath: AbsoluteFsPath,
+    tsConfigPath: string|null|undefined, tsConfig: ParsedConfiguration|null): void {
+  if (tsConfigPath !== null && !tsConfigPath && tsConfig !== null &&
+      tsConfig.rootNames.length === 0 && tsConfig.projectReferences !== undefined &&
+      tsConfig.projectReferences.length > 0) {
+    logger.warn(
+        `The inferred tsconfig file "${tsConfig.project}" appears to be "solution-style" ` +
+        `since it contains no root files but does contain project references.\n` +
+        `This is probably not wanted, since ngcc is unable to infer settings like "paths" mappings from such a file.\n` +
+        `Perhaps you should have explicitly specified one of the referenced projects using the --tsconfig option. For example:\n\n` +
+        tsConfig.projectReferences.map(ref => `  ngcc ... --tsconfig "${ref.originalPath}"\n`)
+            .join('') +
+        `\nFind out more about solution-style tsconfig at https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig.\n` +
+        `If you did intend to use this file, then you can hide this warning by providing it explicitly:\n\n` +
+        `  ngcc ... --tsconfig "${fileSystem.relative(projectPath, tsConfig.project)}"`);
+  }
 }

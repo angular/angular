@@ -11,6 +11,7 @@ import {assertNoErrors, getConfig, NgDevConfig} from '../utils/config';
 export interface CommitMessageConfig {
   maxLineLength: number;
   minBodyLength: number;
+  minBodyLengthTypeExcludes?: string[];
   types: string[];
   scopes: string[];
 }
@@ -19,7 +20,7 @@ export interface CommitMessageConfig {
 export function getCommitMessageConfig() {
   // List of errors encountered validating the config.
   const errors: string[] = [];
-  // The unvalidated config object.
+  // The non-validated config object.
   const config: Partial<NgDevConfig<{commitMessage: CommitMessageConfig}>> = getConfig();
 
   if (config.commitMessage === undefined) {

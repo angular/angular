@@ -18,7 +18,7 @@ class RouterOutletStubComponent { }
 class WelcomeStubComponent {}
 // #enddocregion component-stubs
 
-let comp:    AppComponent;
+let comp: AppComponent;
 let fixture: ComponentFixture<AppComponent>;
 
 describe('AppComponent & TestModule', () => {
@@ -68,7 +68,7 @@ describe('AppComponent & NO_ERRORS_SCHEMA', () => {
 //////// Testing w/ real root module //////
 // Tricky because we are disabling the router and its configuration
 // Better to use RouterTestingModule
-import { AppModule }    from './app.module';
+import { AppModule } from './app.module';
 import { AppRoutingModule } from './app-routing.module';
 
 describe('AppComponent & AppModule', () => {

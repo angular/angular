@@ -1,18 +1,13 @@
 {
   "name": "@angular/benchpress",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Benchpress - a framework for e2e performance tests",
   "main": "index.js",
   "typings": "./index.d.ts",
   "strictNullChecks": true,
   "dependencies": {
-    "@angular/core": "^9.0.0",
-    "@types/node": "^12.11.1",
-    "@types/q": "^1.5.2",
-    "protractor": "^5.4.2",
-    "q": "^1.5.1",
-    "reflect-metadata": "^0.1.2",
-    "selenium-webdriver": "^2.53.3"
+    "@angular/core": "^10.0.0-0 || ^11.0.0",
+    "reflect-metadata": "^0.1.13"
   },
   "repository": {
     "type": "git",
@@ -27,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
   },
-  "homepage": "https://github.com/angular/angular/tree/master/packages/compiler-cli"
+  "homepage": "https://github.com/angular/angular/tree/master/packages/compiler-cli",
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
+  }
 }

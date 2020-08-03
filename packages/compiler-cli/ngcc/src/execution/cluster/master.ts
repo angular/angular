@@ -11,7 +11,7 @@
 import * as cluster from 'cluster';
 
 import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
-import {Logger} from '../../logging/logger';
+import {Logger} from '../../../../src/ngtsc/logging';
 import {FileWriter} from '../../writing/file_writer';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
 import {AnalyzeEntryPointsFn} from '../api';

@@ -1,7 +1,6 @@
 
 // #docplaster
-import { async, ComponentFixture, TestBed
-} from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
@@ -75,22 +74,22 @@ describe('DashboardHeroComponent when tested directly', () => {
     let selectedHero: Hero;
     comp.selected.subscribe((hero: Hero) => selectedHero = hero);
 
-  // #docregion trigger-event-handler
+    // #docregion trigger-event-handler
     heroDe.triggerEventHandler('click', null);
-  // #enddocregion trigger-event-handler
+    // #enddocregion trigger-event-handler
     expect(selectedHero).toBe(expectedHero);
   });
   // #enddocregion click-test
 
-    // #docregion click-test-2
-    it('should raise selected event when clicked (element.click)', () => {
-      let selectedHero: Hero;
-      comp.selected.subscribe((hero: Hero) => selectedHero = hero);
+  // #docregion click-test-2
+  it('should raise selected event when clicked (element.click)', () => {
+    let selectedHero: Hero;
+    comp.selected.subscribe((hero: Hero) => selectedHero = hero);
 
-      heroEl.click();
-      expect(selectedHero).toBe(expectedHero);
-    });
-    // #enddocregion click-test-2
+    heroEl.click();
+    expect(selectedHero).toBe(expectedHero);
+  });
+  // #enddocregion click-test-2
 
   // #docregion click-test-3
   it('should raise selected event when clicked (click helper)', () => {

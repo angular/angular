@@ -22,9 +22,10 @@ import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, S
  * `InjectorDef`, `NgModule`, or a special scope (e.g. `'root'`). A value of `null` indicates
  * that the injectable does not belong to any scope.
  *
- * NOTE: This is a private type and should not be exported
- *
- * @publicApi
+ * @codeGenApi
+ * @publicApi The ViewEngine compiler emits code with this type for injectables. This code is
+ *   deployed to npm, and should be treated as public api.
+
  */
 export interface ɵɵInjectableDef<T> {
   /**
@@ -65,7 +66,7 @@ export interface ɵɵInjectableDef<T> {
  *
  * NOTE: This is a private type and should not be exported
  *
- * @publicApi
+ * @codeGenApi
  */
 export interface ɵɵInjectorDef<T> {
   factory: () => T;
@@ -137,6 +138,7 @@ export interface InjectorTypeWithProviders<T> {
  *   The factory can call `inject` to access the `Injector` and request injection of dependencies.
  *
  * @codeGenApi
+ * @publicApi This instruction has been emitted by ViewEngine for some time and is deployed to npm.
  */
 export function ɵɵdefineInjectable<T>(opts: {
   token: unknown,
@@ -175,7 +177,7 @@ export const defineInjectable = ɵɵdefineInjectable;
  *   whose providers will also be added to the injector. Locally provided types will override
  *   providers from imports.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ɵɵdefineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
     never {
@@ -217,8 +219,8 @@ function getOwnDefinition<T>(type: any, def: ɵɵInjectableDef<T>): ɵɵInjectab
  *
  * @param type A type which may have `ɵprov`, via inheritance.
  *
- * @deprecated Will be removed in v10, where an error will occur in the scenario if we find the
- * `ɵprov` on an ancestor only.
+ * @deprecated Will be removed in a future version of Angular, where an error will occur in the
+ *     scenario if we find the `ɵprov` on an ancestor only.
  */
 export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
   // See `jit/injectable.ts#compileInjectable` for context on NG_PROV_DEF_FALLBACK.
@@ -233,7 +235,8 @@ export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|nu
     console.warn(
         `DEPRECATED: DI is instantiating a token "${
             typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
-        `This will become an error in v10. Please add @Injectable() to the "${typeName}" class.`);
+        `This will become an error in a future version of Angular. Please add @Injectable() to the "${
+            typeName}" class.`);
     return def;
   } else {
     return null;

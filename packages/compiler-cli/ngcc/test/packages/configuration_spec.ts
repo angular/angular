@@ -36,9 +36,6 @@ runInEachFileSystem(() => {
       it('should compute a hash from the loaded and processed project configuration', () => {
         const project1 = _Abs('/project-1');
         const project1Config = fs.resolve(project1, 'ngcc.config.js');
-        const project1NodeModules = fs.resolve(project1, 'node_modules');
-        const project1Package1 = fs.resolve(project1NodeModules, 'package-1');
-        const project1Package1EntryPoint1 = fs.resolve(project1Package1, 'entry-point-1');
 
         loadTestFiles([{
           name: project1Config,
@@ -50,16 +47,13 @@ runInEachFileSystem(() => {
             };`
         }]);
         const project1Conf = new NgccConfiguration(fs, project1);
-        const expectedProject1Config = `{"packages":{"${project1Package1}":[{"entryPoints":{"${
-            project1Package1EntryPoint1}":{}},"versionRange":"*"}]},"locking":{}}`;
+        const expectedProject1Config =
+            `{"packages":{"package-1":[{"entryPoints":{"./entry-point-1":{}},"versionRange":"*"}]},"locking":{}}`;
         expect(project1Conf.hash)
             .toEqual(createHash('md5').update(expectedProject1Config).digest('hex'));
 
         const project2 = _Abs('/project-2');
         const project2Config = fs.resolve(project2, 'ngcc.config.js');
-        const project2NodeModules = fs.resolve(project2, 'node_modules');
-        const project2Package1 = fs.resolve(project2NodeModules, 'package-1');
-        const project2Package1EntryPoint1 = fs.resolve(project2Package1, 'entry-point-1');
 
         loadTestFiles([{
           name: project2Config,
@@ -71,8 +65,8 @@ runInEachFileSystem(() => {
               };`
         }]);
         const project2Conf = new NgccConfiguration(fs, project2);
-        const expectedProject2Config = `{"packages":{"${project2Package1}":[{"entryPoints":{"${
-            project2Package1EntryPoint1}":{"ignore":true}},"versionRange":"*"}]},"locking":{}}`;
+        const expectedProject2Config =
+            `{"packages":{"package-1":[{"entryPoints":{"./entry-point-1":{"ignore":true}},"versionRange":"*"}]},"locking":{}}`;
         expect(project2Conf.hash)
             .toEqual(createHash('md5').update(expectedProject2Config).digest('hex'));
       });
@@ -94,29 +88,58 @@ runInEachFileSystem(() => {
              loadTestFiles(packageWithConfigFiles('package-1', 'entry-point-1', '1.0.0'));
              const readFileSpy = spyOn(fs, 'readFile').and.callThrough();
              const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-             const config =
-                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+             const config = configuration.getPackageConfig(
+                 'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
 
-             expect(config).toEqual({
-               versionRange: '1.0.0',
-               entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}}
-             });
+             expect(config).toEqual(jasmine.objectContaining({
+               ignorableDeepImportMatchers: [],
+               entryPoints: new Map([
+                 [_Abs('/project-1/node_modules/package-1/entry-point-1'), {}],
+               ]),
+             }));
              expect(readFileSpy)
                  .toHaveBeenCalledWith(_Abs('/project-1/node_modules/package-1/ngcc.config.js'));
            });
+
+        it('should cope with configurations missing an `entryPoints` property', () => {
+          loadTestFiles([
+            {
+              name: _Abs('/project-1/node_modules/package-1/package.json'),
+              contents: '{"version": "1.0.0"}',
+            },
+            {
+              name: _Abs('/project-1/node_modules/package-1/ngcc.config.js'),
+              contents: `
+                module.exports = {
+                  ignorableDeepImportMatchers: [ /xxx/ ],
+                };
+              `,
+            },
+          ]);
+
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const config = configuration.getPackageConfig(
+              'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
+
+          expect(config).toEqual(jasmine.objectContaining({
+            ignorableDeepImportMatchers: [/xxx/],
+            entryPoints: new Map(),
+          }));
+        });
 
         it('should read extra package config from package level file', () => {
           loadTestFiles(packageWithConfigFiles(
               'package-1', 'entry-point-1', '1.0.0', 'ignorableDeepImportMatchers: [ /xxx/ ]'));
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-          const config =
-              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+          const config = configuration.getPackageConfig(
+              'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
 
-          expect(config).toEqual({
-            versionRange: '1.0.0',
-            entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}},
+          expect(config).toEqual(jasmine.objectContaining({
             ignorableDeepImportMatchers: [/xxx/],
-          });
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-1/entry-point-1'), {}],
+            ]),
+          }));
         });
 
         it('should used cached configuration for a package if available', () => {
@@ -124,16 +147,19 @@ runInEachFileSystem(() => {
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
 
           // Populate the cache
-          configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+          configuration.getPackageConfig(
+              'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
 
           const readFileSpy = spyOn(fs, 'readFile').and.callThrough();
-          const config =
-              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+          const config = configuration.getPackageConfig(
+              'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
 
-          expect(config).toEqual({
-            versionRange: '1.0.0',
-            entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}}
-          });
+          expect(config).toEqual(jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-1/entry-point-1'), {}],
+            ]),
+          }));
           expect(readFileSpy).not.toHaveBeenCalled();
         });
 
@@ -141,9 +167,12 @@ runInEachFileSystem(() => {
            () => {
              loadTestFiles(packageWithConfigFiles('package-2', 'entry-point-1', '1.0.0'));
              const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-             const config =
-                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
-             expect(config).toEqual({versionRange: '*', entryPoints: {}});
+             const config = configuration.getPackageConfig(
+                 'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
+             expect(config).toEqual(jasmine.objectContaining({
+               ignorableDeepImportMatchers: [],
+               entryPoints: new Map(),
+             }));
            });
 
         it('should error if a package level config file is badly formatted', () => {
@@ -154,10 +183,58 @@ runInEachFileSystem(() => {
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           expect(
               () => configuration.getPackageConfig(
-                  _Abs('/project-1/node_modules/package-1'), '1.0.0'))
+                  'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0'))
               .toThrowError(`Invalid package configuration file at "${
                   _Abs(
                       '/project-1/node_modules/package-1/ngcc.config.js')}": Unexpected identifier`);
+        });
+
+        it('should correctly differentiate packages in nested `node_modules/`', () => {
+          loadTestFiles([
+            ...packageWithConfigFiles('package-1', 'entry-point-1', '1.0.0'),
+            ...packageWithConfigFiles('package-2/node_modules/package-1', 'entry-point-2', '2.0.0'),
+          ]);
+
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+
+          expect(configuration.getPackageConfig(
+                     'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0'))
+              .toEqual(jasmine.objectContaining({
+                ignorableDeepImportMatchers: [],
+                entryPoints: new Map([
+                  [_Abs('/project-1/node_modules/package-1/entry-point-1'), {}],
+                ]),
+              }));
+
+          expect(configuration.getPackageConfig(
+                     'package-1', _Abs('/project-1/node_modules/package-2/node_modules/package-1'),
+                     '2.0.0'))
+              .toEqual(jasmine.objectContaining({
+                ignorableDeepImportMatchers: [],
+                entryPoints: new Map([
+                  [
+                    _Abs('/project-1/node_modules/package-2/node_modules/package-1/entry-point-2'),
+                    {},
+                  ],
+                ]),
+              }));
+
+          // It should also be able to return a cached config for a package name/version
+          // combination, but adjust the entry-point paths.
+          // NOTE: While the package does not exist on the test file system, we are able to retrieve
+          //       the config from cache.
+          expect(configuration.getPackageConfig(
+                     'package-1', _Abs('/project-1/node_modules/package-3/node_modules/package-1'),
+                     '1.0.0'))
+              .toEqual(jasmine.objectContaining({
+                ignorableDeepImportMatchers: [],
+                entryPoints: new Map([
+                  [
+                    _Abs('/project-1/node_modules/package-3/node_modules/package-1/entry-point-1'),
+                    {},
+                  ],
+                ]),
+              }));
         });
       });
 
@@ -178,13 +255,40 @@ runInEachFileSystem(() => {
               };`
           }]);
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-          const config =
-              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
-          expect(config).toEqual({
-            versionRange: '*',
-            entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}},
+          const config = configuration.getPackageConfig(
+              'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
+          expect(config).toEqual(jasmine.objectContaining({
             ignorableDeepImportMatchers: [/xxx/],
-          });
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-1/entry-point-1'), {}],
+            ]),
+          }));
+        });
+
+        it('should cope with configurations missing an `entryPoints` property', () => {
+          loadTestFiles([
+            {
+              name: _Abs('/project-1/ngcc.config.js'),
+              contents: `
+                module.exports = {
+                  packages: {
+                    'package-1': {
+                      ignorableDeepImportMatchers: [ /xxx/ ],
+                    },
+                  },
+                };
+              `,
+            },
+          ]);
+
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const config = configuration.getPackageConfig(
+              'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
+
+          expect(config).toEqual(jasmine.objectContaining({
+            ignorableDeepImportMatchers: [/xxx/],
+            entryPoints: new Map(),
+          }));
         });
 
         it('should return configuration for the correct version of a package found in a project level file',
@@ -214,27 +318,36 @@ runInEachFileSystem(() => {
              }]);
              const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
 
-             expect(
-                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0'))
-                 .toEqual({
-                   versionRange: '1.0.0',
-                   entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}}
-                 });
-             expect(
-                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '2.5.0'))
-                 .toEqual({
-                   versionRange: '2.*',
-                   entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-2')]: {}}
-                 });
-             expect(
-                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '3.2.5'))
-                 .toEqual({
-                   versionRange: '^3.2.0',
-                   entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-3')]: {}}
-                 });
-             expect(
-                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '4.0.0'))
-                 .toEqual({versionRange: '*', entryPoints: {}});
+             expect(configuration.getPackageConfig(
+                        'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0'))
+                 .toEqual(jasmine.objectContaining({
+                   ignorableDeepImportMatchers: [],
+                   entryPoints: new Map([
+                     [_Abs('/project-1/node_modules/package-1/entry-point-1'), {}],
+                   ]),
+                 }));
+             expect(configuration.getPackageConfig(
+                        'package-1', _Abs('/project-1/node_modules/package-1'), '2.5.0'))
+                 .toEqual(jasmine.objectContaining({
+                   ignorableDeepImportMatchers: [],
+                   entryPoints: new Map([
+                     [_Abs('/project-1/node_modules/package-1/entry-point-2'), {}],
+                   ]),
+                 }));
+             expect(configuration.getPackageConfig(
+                        'package-1', _Abs('/project-1/node_modules/package-1'), '3.2.5'))
+                 .toEqual(jasmine.objectContaining({
+                   ignorableDeepImportMatchers: [],
+                   entryPoints: new Map([
+                     [_Abs('/project-1/node_modules/package-1/entry-point-3'), {}],
+                   ]),
+                 }));
+             expect(configuration.getPackageConfig(
+                        'package-1', _Abs('/project-1/node_modules/package-1'), '4.0.0'))
+                 .toEqual(jasmine.objectContaining({
+                   ignorableDeepImportMatchers: [],
+                   entryPoints: new Map(),
+                 }));
            });
 
         it('should correctly handle pre-release versions and version ranges', () => {
@@ -265,85 +378,62 @@ runInEachFileSystem(() => {
             },
           ]);
 
+          const NO_CONFIG = jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map(),
+          });
+          const PACKAGE_1_CONFIG = jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-1/entry-point-1'), {}],
+            ]),
+          });
+          const PACKAGE_2_CONFIG = jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-2/entry-point-2'), {}],
+            ]),
+          });
+          const PACKAGE_3_CONFIG = jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-3/entry-point-3'), {}],
+            ]),
+          });
+
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           const getConfig = (packageName: string, version: string|null) =>
               configuration.getPackageConfig(
-                  _Abs(`/project-1/node_modules/${packageName}`), version);
+                  packageName, _Abs(`/project-1/node_modules/${packageName}`), version);
 
           // Default version range: *
           expect(getConfig('package-1', '1.0.0-beta.2'))
-              .toEqual(
-                  {
-                    versionRange: '*',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}},
-                  },
-                  'Config for package-1@1.0.0-beta.2');
+              .toEqual(PACKAGE_1_CONFIG, 'Config for package-1@1.0.0-beta.2');
 
           // Version range: 1.0.0-beta.2
           expect(getConfig('package-2', '1.0.0-beta.2'))
-              .toEqual(
-                  {
-                    versionRange: '1.0.0-beta.2',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-2/entry-point-2')]: {}},
-                  },
-                  'Config for package-2@1.0.0-beta.2');
+              .toEqual(PACKAGE_2_CONFIG, 'Config for package-2@1.0.0-beta.2');
 
-          expect(getConfig('package-2', '1.0.0'))
-              .toEqual(
-                  {
-                    versionRange: '*',
-                    entryPoints: {},
-                  },
-                  'Config for package-2@1.0.0');
+          expect(getConfig('package-2', '1.0.0')).toEqual(NO_CONFIG, 'Config for package-2@1.0.0');
 
           expect(getConfig('package-2', null))
-              .toEqual(
-                  {
-                    versionRange: '1.0.0-beta.2',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-2/entry-point-2')]: {}},
-                  },
-                  'Config for package-2@null');
+              .toEqual(PACKAGE_2_CONFIG, 'Config for package-2@null');
 
           // Version range: >=1.0.0-beta.2
           expect(getConfig('package-3', '1.0.0-beta.2'))
-              .toEqual(
-                  {
-                    versionRange: '>=1.0.0-beta.2',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
-                  },
-                  'Config for package-3@1.0.0-beta.2');
+              .toEqual(PACKAGE_3_CONFIG, 'Config for package-3@1.0.0-beta.2');
 
           expect(getConfig('package-3', '1.0.0'))
-              .toEqual(
-                  {
-                    versionRange: '>=1.0.0-beta.2',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
-                  },
-                  'Config for package-3@1.0.0');
+              .toEqual(PACKAGE_3_CONFIG, 'Config for package-3@1.0.0');
 
           expect(getConfig('package-3', '2.0.0'))
-              .toEqual(
-                  {
-                    versionRange: '>=1.0.0-beta.2',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
-                  },
-                  'Config for package-3@2.0.0');
+              .toEqual(PACKAGE_3_CONFIG, 'Config for package-3@2.0.0');
 
           expect(getConfig('package-3', '1.0.0-beta.1'))
-              .toEqual(
-                  {
-                    versionRange: '*',
-                    entryPoints: {},
-                  },
-                  'Config for package-3@1.0.0-beta.1');
+              .toEqual(NO_CONFIG, 'Config for package-3@1.0.0-beta.1');
 
           expect(getConfig('package-3', '0.9.99'))
-              .toEqual(
-                  {
-                    versionRange: '*',
-                    entryPoints: {},
-                  },
-                  'Config for package-3@0.9.99');
+              .toEqual(NO_CONFIG, 'Config for package-3@0.9.99');
         });
 
         it('should not get confused by the @ in namespaced packages', () => {
@@ -363,11 +453,13 @@ runInEachFileSystem(() => {
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
 
           expect(configuration.getPackageConfig(
-                     _Abs('/project-1/node_modules/@angular/common'), '1.0.0'))
-              .toEqual({
-                versionRange: '*',
-                entryPoints: {[_Abs('/project-1/node_modules/@angular/common')]: {}}
-              });
+                     '@angular/common', _Abs('/project-1/node_modules/@angular/common'), '1.0.0'))
+              .toEqual(jasmine.objectContaining({
+                ignorableDeepImportMatchers: [],
+                entryPoints: new Map([
+                  [_Abs('/project-1/node_modules/@angular/common'), {}],
+                ]),
+              }));
         });
 
         it('should override package level config with project level config per package', () => {
@@ -393,29 +485,79 @@ runInEachFileSystem(() => {
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           expect(readFileSpy).toHaveBeenCalledWith(_Abs('/project-1/ngcc.config.js'));
 
-          const package1Config =
-              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
-          expect(package1Config).toEqual({
-            versionRange: '1.0.0',
-            entryPoints:
-                {[_Abs('/project-1/node_modules/package-1/package-setting-entry-point')]: {}}
-          });
+          const package1Config = configuration.getPackageConfig(
+              'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
+          expect(package1Config).toEqual(jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-1/package-setting-entry-point'), {}],
+            ]),
+          }));
           expect(readFileSpy)
               .toHaveBeenCalledWith(_Abs('/project-1/node_modules/package-1/ngcc.config.js'));
 
           // Note that for `package-2` only the project level entry-point is left.
           // This is because overriding happens for packages as a whole and there is no attempt to
           // merge entry-points.
-          const package2Config =
-              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-2'), '1.0.0');
-          expect(package2Config).toEqual({
-            versionRange: '*',
-            entryPoints:
-                {[_Abs('/project-1/node_modules/package-2/project-setting-entry-point')]: {}}
-          });
+          const package2Config = configuration.getPackageConfig(
+              'package-2', _Abs('/project-1/node_modules/package-2'), '1.0.0');
+          expect(package2Config).toEqual(jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-2/project-setting-entry-point'), {}],
+            ]),
+          }));
           expect(readFileSpy)
               .not.toHaveBeenCalledWith(_Abs('/project-1/node_modules/package-2/ngcc.config.js'));
         });
+
+        it('should correctly match packages in nested `node_modules/` (and adjust entry-point paths)',
+           () => {
+             loadTestFiles([
+               {
+                 name: _Abs('/project-1/ngcc.config.js'),
+                 contents: `
+                   module.exports = {
+                     packages: {
+                       'package-1': {
+                         entryPoints: {
+                           '.': {},
+                           'foo': {},
+                           './bar': {},
+                         },
+                       },
+                     },
+                   };
+                 `,
+               },
+             ]);
+
+             const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+
+             expect(configuration.getPackageConfig(
+                        'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0'))
+                 .toEqual(jasmine.objectContaining({
+                   ignorableDeepImportMatchers: [],
+                   entryPoints: new Map([
+                     [_Abs('/project-1/node_modules/package-1'), {}],
+                     [_Abs('/project-1/node_modules/package-1/foo'), {}],
+                     [_Abs('/project-1/node_modules/package-1/bar'), {}],
+                   ]),
+                 }));
+
+             expect(configuration.getPackageConfig(
+                        'package-1',
+                        _Abs('/project-1/node_modules/other-package/node_modules/package-1'),
+                        '2.0.0'))
+                 .toEqual(jasmine.objectContaining({
+                   ignorableDeepImportMatchers: [],
+                   entryPoints: new Map([
+                     [_Abs('/project-1/node_modules/other-package/node_modules/package-1'), {}],
+                     [_Abs('/project-1/node_modules/other-package/node_modules/package-1/foo'), {}],
+                     [_Abs('/project-1/node_modules/other-package/node_modules/package-1/bar'), {}],
+                   ]),
+                 }));
+           });
       });
 
       describe('at the default level', () => {
@@ -432,26 +574,45 @@ runInEachFileSystem(() => {
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           expect(readFileSpy).not.toHaveBeenCalled();
 
-          const config =
-              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
-          expect(config).toEqual({
-            versionRange: '*',
-            entryPoints: {[_Abs('/project-1/node_modules/package-1/default-level-entry-point')]: {}}
-          });
+          const config = configuration.getPackageConfig(
+              'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
+          expect(config).toEqual(jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-1/default-level-entry-point'), {}],
+            ]),
+          }));
+        });
+
+        it('should cope with configurations missing an `entryPoints` property', () => {
+          DEFAULT_NGCC_CONFIG.packages!['package-1'] = {
+            ignorableDeepImportMatchers: [/xxx/],
+          };
+
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const config = configuration.getPackageConfig(
+              'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
+
+          expect(config).toEqual(jasmine.objectContaining({
+            ignorableDeepImportMatchers: [/xxx/],
+            entryPoints: new Map(),
+          }));
         });
 
         it('should override default level config with package level config, if provided', () => {
           loadTestFiles(packageWithConfigFiles('package-1', 'package-level-entry-point', '1.0.0'));
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-          const config =
-              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+          const config = configuration.getPackageConfig(
+              'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
           // Note that only the package-level-entry-point is left.
           // This is because overriding happens for packages as a whole and there is no attempt to
           // merge entry-points.
-          expect(config).toEqual({
-            versionRange: '1.0.0',
-            entryPoints: {[_Abs('/project-1/node_modules/package-1/package-level-entry-point')]: {}}
-          });
+          expect(config).toEqual(jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-1/package-level-entry-point'), {}],
+            ]),
+          }));
         });
 
         it('should override default level config with project level config, if provided', () => {
@@ -480,15 +641,17 @@ runInEachFileSystem(() => {
           ]);
 
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-          const config =
-              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+          const config = configuration.getPackageConfig(
+              'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0');
           // Note that only the project-level-entry-point is left.
           // This is because overriding happens for packages as a whole and there is no attempt to
           // merge entry-points.
-          expect(config).toEqual({
-            versionRange: '*',
-            entryPoints: {[_Abs('/project-1/node_modules/package-1/project-level-entry-point')]: {}}
-          });
+          expect(config).toEqual(jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-1/project-level-entry-point'), {}],
+            ]),
+          }));
         });
 
         it('should correctly handle pre-release versions and version ranges', () => {
@@ -510,86 +673,100 @@ runInEachFileSystem(() => {
             },
           });
 
+          const NO_CONFIG = jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map(),
+          });
+          const PACKAGE_1_CONFIG = jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-1/entry-point-1'), {}],
+            ]),
+          });
+          const PACKAGE_2_CONFIG = jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-2/entry-point-2'), {}],
+            ]),
+          });
+          const PACKAGE_3_CONFIG = jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
+            entryPoints: new Map([
+              [_Abs('/project-1/node_modules/package-3/entry-point-3'), {}],
+            ]),
+          });
+
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           const getConfig = (packageName: string, version: string|null) =>
               configuration.getPackageConfig(
-                  _Abs(`/project-1/node_modules/${packageName}`), version);
+                  packageName, _Abs(`/project-1/node_modules/${packageName}`), version);
 
           // Default version range: *
           expect(getConfig('package-1', '1.0.0-beta.2'))
-              .toEqual(
-                  {
-                    versionRange: '*',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}},
-                  },
-                  'Config for package-1@1.0.0-beta.2');
+              .toEqual(PACKAGE_1_CONFIG, 'Config for package-1@1.0.0-beta.2');
 
           // Version range: 1.0.0-beta.2
           expect(getConfig('package-2', '1.0.0-beta.2'))
-              .toEqual(
-                  {
-                    versionRange: '1.0.0-beta.2',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-2/entry-point-2')]: {}},
-                  },
-                  'Config for package-2@1.0.0-beta.2');
+              .toEqual(PACKAGE_2_CONFIG, 'Config for package-2@1.0.0-beta.2');
 
-          expect(getConfig('package-2', '1.0.0'))
-              .toEqual(
-                  {
-                    versionRange: '*',
-                    entryPoints: {},
-                  },
-                  'Config for package-2@1.0.0');
+          expect(getConfig('package-2', '1.0.0')).toEqual(NO_CONFIG, 'Config for package-2@1.0.0');
 
           expect(getConfig('package-2', null))
-              .toEqual(
-                  {
-                    versionRange: '1.0.0-beta.2',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-2/entry-point-2')]: {}},
-                  },
-                  'Config for package-2@null');
+              .toEqual(PACKAGE_2_CONFIG, 'Config for package-2@null');
 
           // Version range: >=1.0.0-beta.2
           expect(getConfig('package-3', '1.0.0-beta.2'))
-              .toEqual(
-                  {
-                    versionRange: '>=1.0.0-beta.2',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
-                  },
-                  'Config for package-3@1.0.0-beta.2');
+              .toEqual(PACKAGE_3_CONFIG, 'Config for package-3@1.0.0-beta.2');
 
           expect(getConfig('package-3', '1.0.0'))
-              .toEqual(
-                  {
-                    versionRange: '>=1.0.0-beta.2',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
-                  },
-                  'Config for package-3@1.0.0');
+              .toEqual(PACKAGE_3_CONFIG, 'Config for package-3@1.0.0');
 
           expect(getConfig('package-3', '2.0.0'))
-              .toEqual(
-                  {
-                    versionRange: '>=1.0.0-beta.2',
-                    entryPoints: {[_Abs('/project-1/node_modules/package-3/entry-point-3')]: {}},
-                  },
-                  'Config for package-3@2.0.0');
+              .toEqual(PACKAGE_3_CONFIG, 'Config for package-3@2.0.0');
 
           expect(getConfig('package-3', '1.0.0-beta.1'))
-              .toEqual(
-                  {
-                    versionRange: '*',
-                    entryPoints: {},
-                  },
-                  'Config for package-3@1.0.0-beta.1');
+              .toEqual(NO_CONFIG, 'Config for package-3@1.0.0-beta.1');
 
           expect(getConfig('package-3', '0.9.99'))
-              .toEqual(
-                  {
-                    versionRange: '*',
-                    entryPoints: {},
-                  },
-                  'Config for package-3@0.9.99');
+              .toEqual(NO_CONFIG, 'Config for package-3@0.9.99');
         });
+
+        it('should correctly match packages in nested `node_modules/` (and adjust entry-point paths)',
+           () => {
+             DEFAULT_NGCC_CONFIG.packages!['package-1'] = {
+               entryPoints: {
+                 '.': {},
+                 'foo': {},
+                 './bar': {},
+               },
+             };
+
+             const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+
+             expect(configuration.getPackageConfig(
+                        'package-1', _Abs('/project-1/node_modules/package-1'), '1.0.0'))
+                 .toEqual(jasmine.objectContaining({
+                   ignorableDeepImportMatchers: [],
+                   entryPoints: new Map([
+                     [_Abs('/project-1/node_modules/package-1'), {}],
+                     [_Abs('/project-1/node_modules/package-1/foo'), {}],
+                     [_Abs('/project-1/node_modules/package-1/bar'), {}],
+                   ]),
+                 }));
+
+             expect(configuration.getPackageConfig(
+                        'package-1',
+                        _Abs('/project-1/node_modules/other-package/node_modules/package-1'),
+                        '2.0.0'))
+                 .toEqual(jasmine.objectContaining({
+                   ignorableDeepImportMatchers: [],
+                   entryPoints: new Map([
+                     [_Abs('/project-1/node_modules/other-package/node_modules/package-1'), {}],
+                     [_Abs('/project-1/node_modules/other-package/node_modules/package-1/foo'), {}],
+                     [_Abs('/project-1/node_modules/other-package/node_modules/package-1/bar'), {}],
+                   ]),
+                 }));
+           });
       });
     });
 

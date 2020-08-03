@@ -10,6 +10,12 @@ In this page, you'll take the first step in that direction by moving the hero de
 The `HeroesComponent` will only present the list of heroes.
 The `HeroDetailComponent` will present details of a selected hero.
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
 ## Make the `HeroDetailComponent`
 
 Use the Angular CLI to generate a new component named `hero-detail`.
@@ -56,7 +62,7 @@ region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (impor
 </code-example>
 
 The `hero` property
-[must be an _Input_ property](guide/template-syntax#inputs-outputs "Input and Output properties"),
+[must be an _Input_ property](guide/inputs-outputs "Input and Output properties"),
 annotated with the `@Input()` decorator,
 because the _external_ `HeroesComponent` [will bind to it](#heroes-component-template) like this.
 
@@ -101,7 +107,7 @@ Bind the `HeroesComponent.selectedHero` to the element's `hero` property like th
 
 </code-example>
 
-`[hero]="selectedHero"` is an Angular [property binding](guide/template-syntax#property-binding).
+`[hero]="selectedHero"` is an Angular [property binding](guide/property-binding).
 
 It's a _one way_ data binding from
 the `selectedHero` property of the `HeroesComponent` to the `hero` property of the target element, which maps to the `hero` property of the `HeroDetailComponent`.
@@ -136,7 +142,7 @@ without touching the parent `HeroesComponent`.
 
 ## Final code review
 
-Here are the code files discussed on this page and your app should look like this <live-example></live-example>.
+Here are the code files discussed on this page.
 
 <code-tabs>
 
@@ -159,9 +165,9 @@ Here are the code files discussed on this page and your app should look like thi
 * You created a separate, reusable `HeroDetailComponent`.
 
 
-* You used a [property binding](guide/template-syntax#property-binding) to give the parent `HeroesComponent` control over the child `HeroDetailComponent`.
+* You used a [property binding](guide/property-binding) to give the parent `HeroesComponent` control over the child `HeroDetailComponent`.
 
 
-* You used the [`@Input` decorator](guide/template-syntax#inputs-outputs)
+* You used the [`@Input` decorator](guide/inputs-outputs)
 to make the `hero` property available for binding
 by the external `HeroesComponent`.

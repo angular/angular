@@ -1,7 +1,7 @@
 // #docregion
 import { Component, Input, OnInit } from '@angular/core';
 
-import { HeroCacheService }         from './hero-cache.service';
+import { HeroCacheService } from './hero-cache.service';
 
 // #docregion component
 @Component({

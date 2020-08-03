@@ -9,9 +9,9 @@
 
 import {getRepoBaseDir} from '../../utils/config';
 import {error, green, info, promptConfirm, red, yellow} from '../../utils/console';
+import {GithubApiRequestError} from '../../utils/git';
 
 import {loadAndValidateConfig, MergeConfigWithRemote} from './config';
-import {GithubApiRequestError} from './git';
 import {MergeResult, MergeStatus, PullRequestMergeTask} from './task';
 
 /** URL to the Github page where personal access tokens can be generated. */
@@ -90,7 +90,7 @@ export async function mergePullRequest(
   /**
    * Handles the merge result by printing console messages, exiting the process
    * based on the result, or by restarting the merge if force mode has been enabled.
-   * @returns Whether the merge was successful or not.
+   * @returns Whether the merge completed without errors or not.
    */
   async function handleMergeResult(result: MergeResult, disableForceMergePrompt = false) {
     const {failure, status} = result;
@@ -98,7 +98,7 @@ export async function mergePullRequest(
 
     switch (status) {
       case MergeStatus.SUCCESS:
-        info(green(`Successfully merged the pull request: ${prNumber}`));
+        info(green(`Successfully merged the pull request: #${prNumber}`));
         return true;
       case MergeStatus.DIRTY_WORKING_DIR:
         error(
@@ -110,6 +110,13 @@ export async function mergePullRequest(
             red('An unknown Git error has been thrown. Please check the output ' +
                 'above for details.'));
         return false;
+      case MergeStatus.GITHUB_ERROR:
+        error(red('An error related to interacting with Github has been discovered.'));
+        error(failure!.message);
+        return false;
+      case MergeStatus.USER_ABORTED:
+        info(`Merge of pull request has been aborted manually: #${prNumber}`);
+        return true;
       case MergeStatus.FAILED:
         error(yellow(`Could not merge the specified pull request.`));
         error(red(failure!.message));

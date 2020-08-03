@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {looseIdentical} from '../util/comparison';
 import {getSymbolIterator} from '../util/symbol';
 
 export function devModeEqual(a: any, b: any): boolean {
@@ -20,7 +19,7 @@ export function devModeEqual(a: any, b: any): boolean {
     if (!isListLikeIterableA && isAObject && !isListLikeIterableB && isBObject) {
       return true;
     } else {
-      return looseIdentical(a, b);
+      return Object.is(a, b);
     }
   }
 }

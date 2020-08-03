@@ -12,7 +12,7 @@ export class AppComponent {
   clickMessage = '';
 
   onSave(event?: KeyboardEvent) {
-    const evtMsg = event ? ' Event target is ' + (<HTMLElement>event.target).textContent : '';
+    const evtMsg = event ? ' Event target is ' + (event.target as HTMLElement).textContent : '';
     alert('Saved.' + evtMsg);
     if (event) { event.stopPropagation(); }
   }
@@ -22,7 +22,7 @@ export class AppComponent {
   }
 
   onClickMe(event?: KeyboardEvent) {
-    const evtMsg = event ? ' Event target class is ' + (<HTMLElement>event.target).className  : '';
+    const evtMsg = event ? ' Event target class is ' + (event.target as HTMLElement).className  : '';
     alert('Click me.' + evtMsg);
   }
 

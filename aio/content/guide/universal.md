@@ -48,11 +48,11 @@ src/
   app/ ...                   <i>application code</i>
     app.server.module.ts     <i>* server-side application module</i>
 server.ts                    <i>* express web server</i>
-tsconfig.json                <i>TypeScript client configuration</i>
-tsconfig.app.json            <i>TypeScript client configuration</i>
-tsconfig.server.json         <i>* TypeScript server configuration</i>
-tsconfig.spec.json           <i>TypeScript spec configuration</i>
-package.json                 <i>npm configuration</i>
+tsconfig.json                <i>TypeScript solution style configuration</i>
+tsconfig.base.json           <i>TypeScript base configuration</i>
+tsconfig.app.json            <i>TypeScript browser application configuration</i>
+tsconfig.server.json         <i>TypeScript server application configuration</i>
+tsconfig.spec.json           <i>TypeScript tests configuration</i>
 </code-example>
 
 The files marked with `*` are new and not in the original tutorial sample.
@@ -227,7 +227,7 @@ as a navigation URL intended for the router.
 
 Fortunately, application routes have something in common: their URLs lack file extensions.
 (Data requests also lack extensions but they're easy to recognize because they always begin with `/api`.)
-All static asset requests have a file extension (such as `main.js` or `/node_modules/zone.js/dist/zone.js`).
+All static asset requests have a file extension (such as `main.js` or `/node_modules/zone.js/bundles/zone.umd.js`).
 
 Because we use routing, we can easily recognize the three types of requests and handle them differently.
 

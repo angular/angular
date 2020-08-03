@@ -1,9 +1,9 @@
 // #docregion
 
 export interface Hero {
-  id:   number;
+  id: number;
   name: string;
-  tid:  string; // tax id
+  tid: string; // tax id
 }
 
 //// HeroTaxReturn ////

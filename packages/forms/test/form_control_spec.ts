@@ -6,43 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {FormArray} from '@angular/forms/src/model';
+import {asyncValidator, asyncValidatorReturningObservable} from './util';
 
 (function() {
-function asyncValidator(expected: string, timeouts = {}): AsyncValidatorFn {
-  return (c: AbstractControl) => {
-    let resolve: (result: any) => void = undefined!;
-    const promise = new Promise<ValidationErrors|null>(res => {
-      resolve = res;
-    });
-    const t = (timeouts as any)[c.value] != null ? (timeouts as any)[c.value] : 0;
-    const res = c.value != expected ? {'async': true} : null;
-
-    if (t == 0) {
-      resolve(res);
-    } else {
-      setTimeout(() => {
-        resolve(res);
-      }, t);
-    }
-
-    return promise;
-  };
-}
-
-function asyncValidatorReturningObservable(c: AbstractControl) {
-  const e = new EventEmitter<Record<string, boolean>>();
-  Promise.resolve(null).then(() => {
-    e.emit({'async': true});
-  });
-  return e;
-}
-
 function otherAsyncValidator() {
   return Promise.resolve({'other': true});
 }
@@ -263,6 +234,57 @@ describe('FormControl', () => {
       expect(c.valid).toEqual(true);
     });
 
+    it('should override validators using `setValidators` function', () => {
+      const c = new FormControl('');
+      expect(c.valid).toEqual(true);
+
+      c.setValidators([Validators.minLength(5), Validators.required]);
+
+      c.setValue('');
+      expect(c.valid).toEqual(false);
+
+      c.setValue('abc');
+      expect(c.valid).toEqual(false);
+
+      c.setValue('abcde');
+      expect(c.valid).toEqual(true);
+
+      // Define new set of validators, overriding previously applied ones.
+      c.setValidators([Validators.maxLength(2)]);
+
+      c.setValue('abcdef');
+      expect(c.valid).toEqual(false);
+
+      c.setValue('a');
+      expect(c.valid).toEqual(true);
+    });
+
+    it('should override validators by setting `control.validator` field value', () => {
+      const c = new FormControl('');
+      expect(c.valid).toEqual(true);
+
+      // Define new set of validators, overriding previously applied ones.
+      c.validator = Validators.compose([Validators.minLength(5), Validators.required]);
+
+      c.setValue('');
+      expect(c.valid).toEqual(false);
+
+      c.setValue('abc');
+      expect(c.valid).toEqual(false);
+
+      c.setValue('abcde');
+      expect(c.valid).toEqual(true);
+
+      // Define new set of validators, overriding previously applied ones.
+      c.validator = Validators.compose([Validators.maxLength(2)]);
+
+      c.setValue('abcdef');
+      expect(c.valid).toEqual(false);
+
+      c.setValue('a');
+      expect(c.valid).toEqual(true);
+    });
+
     it('should clear validators', () => {
       const c = new FormControl('', Validators.required);
       expect(c.valid).toEqual(false);
@@ -409,6 +431,59 @@ describe('FormControl', () => {
          c.setValue('expected');
          tick();
 
+         expect(c.valid).toEqual(true);
+       }));
+
+    it('should override validators using `setAsyncValidators` function', fakeAsync(() => {
+         const c = new FormControl('');
+         expect(c.valid).toEqual(true);
+
+         c.setAsyncValidators([asyncValidator('expected')]);
+
+         c.setValue('');
+         tick();
+         expect(c.valid).toEqual(false);
+
+         c.setValue('expected');
+         tick();
+         expect(c.valid).toEqual(true);
+
+         // Define new set of validators, overriding previously applied ones.
+         c.setAsyncValidators([asyncValidator('new expected')]);
+
+         c.setValue('expected');
+         tick();
+         expect(c.valid).toEqual(false);
+
+         c.setValue('new expected');
+         tick();
+         expect(c.valid).toEqual(true);
+       }));
+
+    it('should override validators by setting `control.asyncValidator` field value',
+       fakeAsync(() => {
+         const c = new FormControl('');
+         expect(c.valid).toEqual(true);
+
+         c.asyncValidator = Validators.composeAsync([asyncValidator('expected')]);
+
+         c.setValue('');
+         tick();
+         expect(c.valid).toEqual(false);
+
+         c.setValue('expected');
+         tick();
+         expect(c.valid).toEqual(true);
+
+         // Define new set of validators, overriding previously applied ones.
+         c.asyncValidator = Validators.composeAsync([asyncValidator('new expected')]);
+
+         c.setValue('expected');
+         tick();
+         expect(c.valid).toEqual(false);
+
+         c.setValue('new expected');
+         tick();
          expect(c.valid).toEqual(true);
        }));
 

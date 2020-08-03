@@ -9,10 +9,11 @@
 import {BindingPipe, PropertyWrite, TmplAstReference, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
+import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
+import {ClassDeclaration} from '../../reflection';
+import {TemplateId} from '../api';
 
-import {TemplateId} from './api';
-import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
+import {makeTemplateDiagnostic, TemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
 
 
 
@@ -26,7 +27,7 @@ import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
  * recorder for later display.
  */
 export interface OutOfBandDiagnosticRecorder {
-  readonly diagnostics: ReadonlyArray<ts.Diagnostic>;
+  readonly diagnostics: ReadonlyArray<TemplateDiagnostic>;
 
   /**
    * Reports a `#ref="target"` expression in the template for which a target directive could not be
@@ -61,14 +62,19 @@ export interface OutOfBandDiagnosticRecorder {
    */
   duplicateTemplateVar(
       templateId: TemplateId, variable: TmplAstVariable, firstDecl: TmplAstVariable): void;
+
+  requiresInlineTcb(templateId: TemplateId, node: ClassDeclaration): void;
+
+  requiresInlineTypeConstructors(
+      templateId: TemplateId, node: ClassDeclaration, directives: ClassDeclaration[]): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
-  private _diagnostics: ts.Diagnostic[] = [];
+  private _diagnostics: TemplateDiagnostic[] = [];
 
   constructor(private resolver: TemplateSourceResolver) {}
 
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+  get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return this._diagnostics;
   }
 
@@ -78,7 +84,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
     const errorMsg = `No directive found with exportAs '${value}'.`;
     this._diagnostics.push(makeTemplateDiagnostic(
-        mapping, ref.valueSpan || ref.sourceSpan, ts.DiagnosticCategory.Error,
+        templateId, mapping, ref.valueSpan || ref.sourceSpan, ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.MISSING_REFERENCE_TARGET), errorMsg));
   }
 
@@ -92,8 +98,8 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
           `Assertion failure: no SourceLocation found for usage of pipe '${ast.name}'.`);
     }
     this._diagnostics.push(makeTemplateDiagnostic(
-        mapping, sourceSpan, ts.DiagnosticCategory.Error, ngErrorCode(ErrorCode.MISSING_PIPE),
-        errorMsg));
+        templateId, mapping, sourceSpan, ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.MISSING_PIPE), errorMsg));
   }
 
   illegalAssignmentToTemplateVar(
@@ -108,7 +114,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       throw new Error(`Assertion failure: no SourceLocation found for property binding.`);
     }
     this._diagnostics.push(makeTemplateDiagnostic(
-        mapping, sourceSpan, ts.DiagnosticCategory.Error,
+        templateId, mapping, sourceSpan, ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE), errorMsg, {
           text: `The variable ${assignment.name} is declared here.`,
           span: target.valueSpan || target.sourceSpan,
@@ -127,10 +133,44 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     //
     // TODO(alxhub): allocate to a tighter span once one is available.
     this._diagnostics.push(makeTemplateDiagnostic(
-        mapping, variable.sourceSpan, ts.DiagnosticCategory.Error,
+        templateId, mapping, variable.sourceSpan, ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION), errorMsg, {
           text: `The variable '${firstDecl.name}' was first declared here.`,
           span: firstDecl.sourceSpan,
         }));
   }
+
+  requiresInlineTcb(templateId: TemplateId, node: ClassDeclaration): void {
+    this._diagnostics.push(makeInlineDiagnostic(
+        templateId, ErrorCode.INLINE_TCB_REQUIRED, node.name,
+        `This component requires inline template type-checking, which is not supported by the current environment.`));
+  }
+
+  requiresInlineTypeConstructors(
+      templateId: TemplateId, node: ClassDeclaration, directives: ClassDeclaration[]): void {
+    let message: string;
+    if (directives.length > 1) {
+      message =
+          `This component uses directives which require inline type constructors, which are not supported by the current environment.`;
+    } else {
+      message =
+          `This component uses a directive which requires an inline type constructor, which is not supported by the current environment.`;
+    }
+
+    this._diagnostics.push(makeInlineDiagnostic(
+        templateId, ErrorCode.INLINE_TYPE_CTOR_REQUIRED, node.name, message,
+        directives.map(
+            dir => makeRelatedInformation(dir.name, `Requires an inline type constructor.`))));
+  }
+}
+
+function makeInlineDiagnostic(
+    templateId: TemplateId, code: ErrorCode.INLINE_TCB_REQUIRED|ErrorCode.INLINE_TYPE_CTOR_REQUIRED,
+    node: ts.Node, messageText: string|ts.DiagnosticMessageChain,
+    relatedInformation?: ts.DiagnosticRelatedInformation[]): TemplateDiagnostic {
+  return {
+    ...makeDiagnostic(code, node, messageText, relatedInformation),
+    componentFile: node.getSourceFile(),
+    templateId,
+  };
 }

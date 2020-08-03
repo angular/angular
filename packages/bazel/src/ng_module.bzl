@@ -7,12 +7,14 @@
 
 load(
     ":external.bzl",
+    "BuildSettingInfo",
     "COMMON_ATTRIBUTES",
     "COMMON_OUTPUTS",
     "DEFAULT_API_EXTRACTOR",
     "DEFAULT_NG_COMPILER",
     "DEFAULT_NG_XI18N",
     "DEPS_ASPECTS",
+    "LinkablePackageInfo",
     "NpmPackageInfo",
     "TsConfigInfo",
     "compile_ts",
@@ -35,6 +37,15 @@ def is_ivy_enabled(ctx):
     Returns:
       Boolean, Whether the ivy compiler should be used.
     """
+
+    # Check the renderer flag to see if Ivy is enabled.
+    # This is intended to support a transition use case for google3 migration.
+    # The `_renderer` attribute will never be set externally, but will always be
+    # set internally as a `string_flag()` with the allowed values of:
+    # "view_engine" or "ivy".
+    if ((hasattr(ctx.attr, "_renderer") and
+         ctx.attr._renderer[BuildSettingInfo].value == "ivy")):
+        return True
 
     # TODO(josephperott): Remove after ~Feb 2020, to allow local script migrations
     if "compile" in ctx.var and ctx.workspace_name == "angular":
@@ -174,6 +185,7 @@ def _expected_outs(ctx):
     devmode_js_files = []
     closure_js_files = []
     declaration_files = []
+    transpilation_infos = []
     summary_files = []
     metadata_files = []
 
@@ -223,11 +235,18 @@ def _expected_outs(ctx):
             continue
 
         filter_summaries = ctx.attr.filter_summaries
-        closure_js = [f.replace(".js", ".mjs") for f in devmode_js if not filter_summaries or not f.endswith(".ngsummary.js")]
         declarations = [f.replace(".js", ".d.ts") for f in devmode_js]
 
-        devmode_js_files += [ctx.actions.declare_file(basename + ext) for ext in devmode_js]
-        closure_js_files += [ctx.actions.declare_file(basename + ext) for ext in closure_js]
+        for devmode_ext in devmode_js:
+            devmode_js_file = ctx.actions.declare_file(basename + devmode_ext)
+            devmode_js_files.append(devmode_js_file)
+
+            if not filter_summaries or not devmode_ext.endswith(".ngsummary.js"):
+                closure_ext = devmode_ext.replace(".js", ".mjs")
+                closure_js_file = ctx.actions.declare_file(basename + closure_ext)
+                closure_js_files.append(closure_js_file)
+                transpilation_infos.append(struct(closure = closure_js_file, devmode = devmode_js_file))
+
         declaration_files += [ctx.actions.declare_file(basename + ext) for ext in declarations]
         summary_files += [ctx.actions.declare_file(basename + ext) for ext in summaries]
         if not _is_bazel():
@@ -270,6 +289,7 @@ def _expected_outs(ctx):
         closure_js = closure_js_files,
         devmode_js = devmode_js_files,
         declarations = declaration_files,
+        transpilation_infos = transpilation_infos,
         summaries = summary_files,
         metadata = metadata_files,
         dts_bundles = dts_bundles,
@@ -334,8 +354,11 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "angularCompilerOptions": angular_compiler_options,
     })
 
+def _has_target_angular_summaries(target):
+    return hasattr(target, "angular") and hasattr(target.angular, "summaries")
+
 def _collect_summaries_aspect_impl(target, ctx):
-    results = depset(target.angular.summaries if hasattr(target, "angular") else [])
+    results = depset(target.angular.summaries if _has_target_angular_summaries(target) else [])
 
     # If we are visiting empty-srcs ts_library, this is a re-export
     srcs = ctx.rule.attr.srcs if hasattr(ctx.rule.attr, "srcs") else []
@@ -343,7 +366,7 @@ def _collect_summaries_aspect_impl(target, ctx):
     # "re-export" rules should expose all the files of their deps
     if not srcs and hasattr(ctx.rule.attr, "deps"):
         for dep in ctx.rule.attr.deps:
-            if (hasattr(dep, "angular")):
+            if (_has_target_angular_summaries(dep)):
                 results = depset(dep.angular.summaries, transitive = [results])
 
     return struct(collect_summaries_aspect_result = results)
@@ -588,20 +611,23 @@ def ng_module_impl(ctx, ts_compile_actions):
 
     outs = _expected_outs(ctx)
 
+    providers["angular"] = {}
+
     if is_legacy_ngc:
-        providers["angular"] = {
-            "summaries": outs.summaries,
-            "metadata": outs.metadata,
-        }
+        providers["angular"]["summaries"] = outs.summaries
+        providers["angular"]["metadata"] = outs.metadata
         providers["ngc_messages"] = outs.i18n_messages
 
-    if is_legacy_ngc and _should_produce_flat_module_outs(ctx):
-        if len(outs.metadata) > 1:
+    if _should_produce_flat_module_outs(ctx):
+        # Sanity error if more than one metadata file has been created in the
+        # legacy ngc compiler while a flat module should be produced.
+        if is_legacy_ngc and len(outs.metadata) > 1:
             fail("expecting exactly one metadata output for " + str(ctx.label))
 
         providers["angular"]["flat_module_metadata"] = struct(
             module_name = ctx.attr.module_name,
-            metadata_file = outs.metadata[0],
+            # Metadata files are only generated in the legacy ngc compiler.
+            metadata_file = outs.metadata[0] if is_legacy_ngc else None,
             typings_file = outs.bundle_index_typings,
             flat_module_out_file = _flat_module_out_file(ctx),
         )
@@ -630,6 +656,15 @@ def _ng_module_impl(ctx):
         # (JSModuleInfo) and remove legacy "typescript" provider
         # once it is no longer needed.
     ])
+
+    if ctx.attr.module_name:
+        path = "/".join([p for p in [ctx.bin_dir.path, ctx.label.workspace_root, ctx.label.package] if p])
+        ts_providers["providers"].append(LinkablePackageInfo(
+            package_name = ctx.attr.module_name,
+            path = path,
+            files = ts_providers["typescript"]["es5_sources"],
+            _tslibrary = True,
+        ))
 
     return ts_providers_dict_to_struct(ts_providers)
 

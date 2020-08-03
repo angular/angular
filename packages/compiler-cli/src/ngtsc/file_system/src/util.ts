@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath} from './types';
+import {AbsoluteFsPath, PathString} from './types';
 
 const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
 
@@ -21,8 +21,8 @@ export function normalizeSeparators(path: string): string {
 /**
  * Remove a .ts, .d.ts, or .js extension from a file name.
  */
-export function stripExtension(path: string): string {
-  return path.replace(TS_DTS_JS_EXTENSION, '');
+export function stripExtension<T extends PathString>(path: T): T {
+  return path.replace(TS_DTS_JS_EXTENSION, '') as T;
 }
 
 export function getSourceFileOrError(program: ts.Program, fileName: AbsoluteFsPath): ts.SourceFile {

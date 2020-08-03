@@ -153,14 +153,14 @@ It marks that `<li>` element (and its children) as the "repeater template":
 <div class="alert is-important">
 
 Don't forget the leading asterisk (\*) in `*ngFor`. It is an essential part of the syntax.
-Read more about `ngFor` and `*` in the [ngFor section](guide/template-syntax#ngfor) of the [Template Syntax](guide/template-syntax) page.
+Read more about `ngFor` and `*` in the [ngFor section](guide/built-in-directives#ngfor) of the [Built-in directives](guide/built-in-directives) page.
 
 </div>
 
 Notice the `hero` in the `ngFor` double-quoted instruction;
 it is an example of a template input variable. Read
-more about template input variables in the [microsyntax](guide/template-syntax#microsyntax) section of
-the [Template Syntax](guide/template-syntax) page.
+more about template input variables in the [microsyntax](guide/built-in-directives#microsyntax) section of
+the [Built-in directives](guide/built-in-directives) page.
 
 Angular duplicates the `<li>` for each item in the list, setting the `hero` variable
 to the item (the hero) in the current iteration. Angular uses that variable as the
@@ -255,7 +255,7 @@ To see it in action, add the following paragraph at the bottom of the template:
 <div class="alert is-important">
 
 Don't forget the leading asterisk (\*) in `*ngIf`. It is an essential part of the syntax.
-Read more about `ngIf` and `*` in the [ngIf section](guide/template-syntax#ngIf) of the [Template Syntax](guide/template-syntax) page.
+Read more about `ngIf` and `*` in the [ngIf section](guide/built-in-directives#ngIf) of the [Built-in directives](guide/built-in-directives) page.
 
 </div>
 
@@ -266,7 +266,7 @@ When the component's list of heroes has more than three items, Angular adds the 
 to the DOM and the message appears.
 If there are three or fewer items, Angular omits the paragraph, so no message appears.
 
-For more information, see [template expressions](guide/template-syntax#template-expressions).
+For more information, see [template expression operators](guide/interpolation#template-expressions).
 
 
 <div class="alert is-helpful">

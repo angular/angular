@@ -221,7 +221,8 @@ export interface R3QueryMetadata {
   first: boolean;
 
   /**
-   * Either an expression representing a type for the query predicate, or a set of string selectors.
+   * Either an expression representing a type or `InjectionToken` for the query
+   * predicate, or a set of string selectors.
    */
   predicate: o.Expression|string[];
 

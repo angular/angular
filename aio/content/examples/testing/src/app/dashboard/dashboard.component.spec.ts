@@ -3,14 +3,14 @@ import { async, inject, ComponentFixture, TestBed
 } from '@angular/core/testing';
 
 import { addMatchers, asyncData, click } from '../../testing';
-import { HeroService }   from '../model/hero.service';
+import { HeroService } from '../model/hero.service';
 import { getTestHeroes } from '../model/testing/test-heroes';
 
-import { By }     from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
 import { DashboardComponent } from './dashboard.component';
-import { DashboardModule }    from './dashboard.module';
+import { DashboardModule } from './dashboard.module';
 
 beforeEach ( addMatchers );
 
@@ -90,7 +90,7 @@ function compileAndCreate() {
  * The (almost) same tests for both.
  * Only change: the way that the first hero is clicked
  */
-function tests(heroClick: Function) {
+function tests(heroClick: () => void) {
 
   it('should NOT have heroes before ngOnInit', () => {
     expect(comp.heroes.length).toBe(0,
@@ -109,12 +109,12 @@ function tests(heroClick: Function) {
     let router: Router;
 
      // Trigger component so it gets heroes and binds to them
-     beforeEach(async(() => {
-        router = fixture.debugElement.injector.get(Router);
-        fixture.detectChanges(); // runs ngOnInit -> getHeroes
-        fixture.whenStable() // No need for the `lastPromise` hack!
-          .then(() => fixture.detectChanges()); // bind to heroes
-     }));
+    beforeEach(async(() => {
+      router = fixture.debugElement.injector.get(Router);
+      fixture.detectChanges(); // runs ngOnInit -> getHeroes
+      fixture.whenStable() // No need for the `lastPromise` hack!
+        .then(() => fixture.detectChanges()); // bind to heroes
+    }));
 
     it('should HAVE heroes', () => {
       expect(comp.heroes.length).toBeGreaterThan(0,

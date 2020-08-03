@@ -3,6 +3,12 @@
 In this page, you'll expand the Tour of Heroes app to display a list of heroes, and
 allow users to select a hero and display the hero's details.
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
 
 ## Create mock heroes
 
@@ -47,7 +53,7 @@ That shows one hero. To list them all, add an `*ngFor` to the `<li>` to iterate 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="li">
 </code-example>
 
-The [`*ngFor`](guide/template-syntax#ngFor) is Angular's _repeater_ directive.
+The [`*ngFor`](guide/built-in-directives#ngFor) is Angular's _repeater_ directive.
 It repeats the host element for each element in a list.
 
 The syntax in this example is as follows:
@@ -116,7 +122,7 @@ Add a click event binding to the `<li>` like this:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (template excerpt)"></code-example>
 
-This is an example of Angular's [event binding](guide/template-syntax#event-binding) syntax.
+This is an example of Angular's [event binding](guide/event-binding) syntax.
 
 The parentheses around `click` tell Angular to listen for the `<li>` element's  `click` event.
 When the user clicks in the `<li>`, Angular executes the `onSelect(hero)` expression.
@@ -203,7 +209,7 @@ If the user clicks "Magneta", that hero should render with a distinctive but sub
 That _selected hero_ coloring is the work of the `.selected` CSS class in the [styles you added earlier](#styles).
 You just have to apply the `.selected` class to the `<li>` when the user clicks it.
 
-The Angular [class binding](guide/template-syntax#class-binding) makes it easy to add and remove a CSS class conditionally.
+The Angular [class binding](guide/attribute-binding#class-binding) makes it easy to add and remove a CSS class conditionally.
 Just add `[class.some-css-class]="some-condition"` to the element you want to style.
 
 Add the following `[class.selected]` binding to the `<li>` in the `HeroesComponent` template:
@@ -219,8 +225,6 @@ The finished `<li>` looks like this:
 {@a final-code-review}
 
 ## Final code review
-
-Your app should look like this <live-example></live-example>.
 
 Here are the code files discussed on this page, including the `HeroesComponent` styles.
 

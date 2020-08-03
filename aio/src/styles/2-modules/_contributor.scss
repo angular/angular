@@ -52,16 +52,18 @@ aio-contributor {
   transition: all .3s;
   perspective: 800px;
 
-  &:hover {
-    transform: translate3d(0,-3px,0);
-    box-shadow: 0 8px 8px rgba(10, 16, 20, 0.24), 0 0 8px rgba(10, 16, 20, 0.12);
+  @media (hover) {
+    &:hover {
+      transform: translate3d(0,-3px,0);
+      box-shadow: 0 8px 8px rgba(10, 16, 20, 0.24), 0 0 8px rgba(10, 16, 20, 0.12);
 
-    .contributor-image {
-      transform: scale(1.05);
-    }
+      .contributor-image {
+        transform: scale(1.05);
+      }
 
-    .contributor-info {
-      opacity: 1;
+      .contributor-info {
+        opacity: 1;
+      }
     }
   }
 

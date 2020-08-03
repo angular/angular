@@ -1,5 +1,3 @@
-import "tslib";
-
 import "@angular/core";
 
 import "@angular/common";

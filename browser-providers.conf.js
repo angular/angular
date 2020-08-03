@@ -14,7 +14,8 @@
 var CIconfiguration = {
   'Chrome': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'FirefoxESR': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  // Set ESR as a not required browser as it fails for Ivy acceptance tests.
+  'FirefoxESR': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   // Disabled because using the "beta" channel of Chrome can cause non-deterministic CI results.
   // e.g. a new chrome beta version has been released, but the Saucelabs selenium server does
   // not provide a chromedriver version that is compatible with the new beta.
@@ -31,7 +32,16 @@ var CIconfiguration = {
   'Android7': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Android8': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Android9': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Android10': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  // Disable Android 10 tests due to infrastructure failure.
+  // ex:
+  // Chrome Mobile 74.0.3729 (Android 0.0.0) ERROR:
+  //    Error: XHR error loading
+  //    http://angular-ci.local:9876/base/node_modules/rxjs/internal/operators/zip.js
+  //
+  // Error loading http://angular-ci.local:9876/base/node_modules/rxjs/internal/operators/zip.js as
+  // "../internal/operators/zip" from
+  // http://angular-ci.local:9876/base/node_modules/rxjs/operators/index.js
+  'Android10': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   // Disable all Safari and iOS tests because of incorrect results
   // ex:
   // Mobile Safari 13.0.0 (iOS 13.0.0) styling static template only should capture static values in

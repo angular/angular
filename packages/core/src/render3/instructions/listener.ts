@@ -68,9 +68,9 @@ export function ɵɵlistener(
  *
  * @codeGenApi
  */
-export function ɵɵcomponentHostSyntheticListener(
+export function ɵɵsyntheticHostListener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
-    eventTargetResolver?: GlobalTargetResolver): typeof ɵɵcomponentHostSyntheticListener {
+    eventTargetResolver?: GlobalTargetResolver): typeof ɵɵsyntheticHostListener {
   const tNode = getPreviousOrParentTNode();
   const lView = getLView();
   const tView = getTView();
@@ -78,7 +78,7 @@ export function ɵɵcomponentHostSyntheticListener(
   const renderer = loadComponentRenderer(currentDef, tNode, lView);
   listenerInternal(
       tView, lView, renderer, tNode, eventName, listenerFn, useCapture, eventTargetResolver);
-  return ɵɵcomponentHostSyntheticListener;
+  return ɵɵsyntheticHostListener;
 }
 
 /**
@@ -128,7 +128,7 @@ function listenerInternal(
 
   ngDevMode &&
       assertNodeOfPossibleTypes(
-          tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
+          tNode, [TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer]);
 
   let processOutputs = true;
 

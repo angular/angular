@@ -49,7 +49,7 @@ ts_library(
 karma_web_test_suite(
     name = "test",
     bootstrap = [
-        "@npm//:node_modules/zone.js/dist/zone-testing-bundle.js",
+        "@npm//:node_modules/zone.js/bundles/zone-testing-bundle.umd.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     browsers = [

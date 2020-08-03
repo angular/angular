@@ -9,7 +9,6 @@
 import {IterableChangeRecord, IterableChanges} from '@angular/core/src/change_detection/differs/iterable_differs';
 import {KeyValueChangeRecord, KeyValueChanges} from '@angular/core/src/change_detection/differs/keyvalue_differs';
 
-import {looseIdentical} from '../../src/util/comparison';
 import {stringify} from '../../src/util/stringify';
 
 export function iterableDifferToString<V>(iterableChanges: IterableChanges<V>) {
@@ -64,7 +63,7 @@ export function iterableChangesAsString({
 }
 
 function kvcrAsString(kvcr: KeyValueChangeRecord<string, any>) {
-  return looseIdentical(kvcr.previousValue, kvcr.currentValue) ?
+  return Object.is(kvcr.previousValue, kvcr.currentValue) ?
       stringify(kvcr.key) :
       (stringify(kvcr.key) + '[' + stringify(kvcr.previousValue) + '->' +
        stringify(kvcr.currentValue) + ']');

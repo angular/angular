@@ -434,7 +434,7 @@ describe('compiler compliance', () => {
         hostVars: 14,
         hostBindings: function MyComponent_HostBindings(rf, ctx) {
           if (rf & 2) {
-            $r3$.ɵɵupdateSyntheticHostBinding("@expansionHeight",
+            $r3$.ɵɵsyntheticHostProperty("@expansionHeight",
                 $r3$.ɵɵpureFunction2(5, $_c1$, ctx.getExpandedState(),
                   $r3$.ɵɵpureFunction2(2, $_c0$, ctx.collapsedHeight, ctx.expandedHeight)
                 )
@@ -1550,6 +1550,43 @@ describe('compiler compliance', () => {
 
         const result = compile(files, angularFiles);
         expectEmit(result.source, SimpleComponentDefinition, 'Incorrect MyApp definition');
+      });
+
+      it('should capture the node name of ng-content with a structural directive', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
+
+              @Component({selector: 'simple', template: '<ng-content *ngIf="showContent"></ng-content>'})
+              export class SimpleComponent {}
+            `
+          }
+        };
+
+        const SimpleComponentDefinition = `
+          SimpleComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+            type: SimpleComponent,
+            selectors: [["simple"]],
+            ngContentSelectors: $c0$,
+            decls: 1,
+            vars: 1,
+            consts: [[4, "ngIf"]],
+            template:  function SimpleComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                i0.ɵɵprojectionDef();
+                i0.ɵɵtemplate(0, SimpleComponent_ng_content_0_Template, 1, 0, "ng-content", 0);
+              }
+              if (rf & 2) {
+                i0.ɵɵproperty("ngIf", ctx.showContent);
+              }
+            },
+            encapsulation: 2
+          });`;
+
+        const result = compile(files, angularFiles);
+        expectEmit(
+            result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
       });
     });
 

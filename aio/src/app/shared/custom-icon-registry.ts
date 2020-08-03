@@ -1,4 +1,4 @@
-import { InjectionToken, Inject, Injectable, Optional } from '@angular/core';
+import { ErrorHandler, InjectionToken, Inject, Injectable, Optional } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { of } from 'rxjs';
 import { MatIconRegistry } from '@angular/material/icon';
@@ -39,33 +39,48 @@ const DEFAULT_NS = '$$default';
  */
 @Injectable()
 export class CustomIconRegistry extends MatIconRegistry {
-  private preloadedSvgElements: SvgIconMap = {[DEFAULT_NS]: {}};
+  private cachedSvgElements: SvgIconMap = {[DEFAULT_NS]: {}};
 
   constructor(http: HttpClient, sanitizer: DomSanitizer, @Optional() @Inject(DOCUMENT) document: Document,
-              @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {
-    super(http, sanitizer, document);
-    this.loadSvgElements(svgIcons);
+              errorHandler: ErrorHandler, @Inject(SVG_ICONS) private svgIcons: SvgIconInfo[]) {
+    super(http, sanitizer, document, errorHandler);
   }
 
   getNamedSvgIcon(iconName: string, namespace?: string) {
-    const nsIconMap = this.preloadedSvgElements[namespace || DEFAULT_NS];
-    const preloadedElement = nsIconMap && nsIconMap[iconName];
+    const nsIconMap = this.cachedSvgElements[namespace || DEFAULT_NS];
+    let preloadedElement: SVGElement | undefined = nsIconMap && nsIconMap[iconName];
+    if (!preloadedElement) {
+      preloadedElement = this.loadSvgElement(iconName, namespace);
+    }
 
     return preloadedElement
         ? of(preloadedElement.cloneNode(true) as SVGElement)
         : super.getNamedSvgIcon(iconName, namespace);
   }
 
-  private loadSvgElements(svgIcons: SvgIconInfo[]) {
-    const div = document.createElement('DIV');
-    svgIcons.forEach(icon => {
-      const ns = icon.namespace || DEFAULT_NS;
-      const nsIconMap = this.preloadedSvgElements[ns] || (this.preloadedSvgElements[ns] = {});
-
-      // SECURITY: the source for the SVG icons is provided in code by trusted developers
-      div.innerHTML = icon.svgSource;
-
-      nsIconMap[icon.name] = div.querySelector('svg')!;
+  private loadSvgElement(iconName: string, namespace?: string): SVGElement | undefined {
+    const svgIcon = this.svgIcons.find(icon => {
+      return namespace
+      ? icon.name === iconName && icon.namespace === namespace
+      : icon.name === iconName;
     });
+
+    if (!svgIcon) {
+      return;
+    }
+
+    const ns = svgIcon.namespace || DEFAULT_NS;
+    const nsIconMap = this.cachedSvgElements[ns] || (this.cachedSvgElements[ns] = {});
+
+    // Creating a new `<div>` per icon is necessary for the SVGs to work correctly in IE11.
+    const div = document.createElement('DIV');
+
+    // SECURITY: the source for the SVG icons is provided in code by trusted developers
+    div.innerHTML = svgIcon.svgSource;
+
+    const svgElement = div.querySelector('svg')!;
+    nsIconMap[svgIcon.name] = svgElement;
+
+    return svgElement;
   }
 }

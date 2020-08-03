@@ -1,5 +1,5 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { BrowserModule }  from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { AstronautComponent } from './astronaut.component';
@@ -15,7 +15,7 @@ import { VersionParentComponent } from './version-parent.component';
 import { VoterComponent } from './voter.component';
 import { VoteTakerComponent } from './votetaker.component';
 
-let directives: any[] = [
+const directives: any[] = [
     AppComponent,
     AstronautComponent,
     CountdownTimerComponent,
@@ -30,7 +30,7 @@ let directives: any[] = [
     VoteTakerComponent
   ];
 
-let schemas: any[] = [];
+const schemas: any[] = [];
 
 // Include Countdown examples
 // unless in e2e tests which they break.
@@ -49,6 +49,6 @@ if (!/e2e/.test(location.search)) {
   ],
   declarations: directives,
   bootstrap: [ AppComponent ],
-  schemas: schemas
+  schemas
 })
 export class AppModule { }

@@ -7,11 +7,11 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
+import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
 
@@ -186,6 +186,135 @@ describe('component', () => {
           .toBe(
               true,
               'Expected component onDestroy method to be called when its parent view is destroyed');
+    });
+  });
+
+  it('should clear the contents of dynamically created component when it\'s attached to ApplicationRef',
+     () => {
+       let wasOnDestroyCalled = false;
+       @Component({
+         selector: '[comp]',
+         template: 'comp content',
+       })
+       class DynamicComponent {
+         ngOnDestroy() {
+           wasOnDestroyCalled = true;
+         }
+       }
+
+       @NgModule({
+         declarations: [DynamicComponent],
+         entryComponents: [DynamicComponent],  // needed only for ViewEngine
+       })
+       class TestModule {
+       }
+
+       @Component({
+         selector: 'button',
+         template: `
+           <div class="wrapper"></div>
+           <div id="app-root"></div>
+           <div class="wrapper"></div>
+         `,
+       })
+       class App {
+         componentRef!: ComponentRef<DynamicComponent>;
+
+         constructor(
+             private cfr: ComponentFactoryResolver, private injector: Injector,
+             private appRef: ApplicationRef) {}
+
+         create() {
+           const factory = this.cfr.resolveComponentFactory(DynamicComponent);
+           // Component to be bootstrapped into an element with the `app-root` id.
+           this.componentRef = factory.create(this.injector, undefined, '#app-root');
+           this.appRef.attachView(this.componentRef.hostView);
+         }
+
+         destroy() {
+           this.componentRef.destroy();
+         }
+       }
+
+       TestBed.configureTestingModule({imports: [TestModule], declarations: [App]});
+       const fixture = TestBed.createComponent(App);
+       fixture.detectChanges();
+
+       let appRootEl = fixture.nativeElement.querySelector('#app-root');
+       expect(appRootEl).toBeDefined();
+       expect(appRootEl.innerHTML).toBe('');  // app container content is empty
+
+       fixture.componentInstance.create();
+
+       appRootEl = fixture.nativeElement.querySelector('#app-root');
+       expect(appRootEl).toBeDefined();
+       expect(appRootEl.innerHTML).toBe('comp content');
+
+       fixture.componentInstance.destroy();
+       fixture.detectChanges();
+
+       appRootEl = fixture.nativeElement.querySelector('#app-root');
+       expect(appRootEl).toBeFalsy();  // host element is removed
+       const wrapperEls = fixture.nativeElement.querySelectorAll('.wrapper');
+       expect(wrapperEls.length).toBe(2);  // other elements are preserved
+     });
+
+  describe('invalid host element', () => {
+    it('should throw when <ng-container> is used as a host element for a Component', () => {
+      @Component({
+        selector: 'ng-container',
+        template: '...',
+      })
+      class Comp {
+      }
+
+      @Component({
+        selector: 'root',
+        template: '<ng-container></ng-container>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Comp]});
+      if (ivyEnabled) {
+        expect(() => TestBed.createComponent(App))
+            .toThrowError(
+                /"ng-container" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
+      } else {
+        // In VE there is no special check for the case when `<ng-container>` is used as a host
+        // element for a Component. VE tries to attach Component's content to a Comment node that
+        // represents the `<ng-container>` location and this call fails with a
+        // browser/environment-specific error message, so we just verify that this scenario is
+        // triggering an error in VE.
+        expect(() => TestBed.createComponent(App)).toThrow();
+      }
+    });
+
+    it('should throw when <ng-template> is used as a host element for a Component', () => {
+      @Component({
+        selector: 'ng-template',
+        template: '...',
+      })
+      class Comp {
+      }
+
+      @Component({
+        selector: 'root',
+        template: '<ng-template></ng-template>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Comp]});
+      if (ivyEnabled) {
+        expect(() => TestBed.createComponent(App))
+            .toThrowError(
+                /"ng-template" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
+      } else {
+        expect(() => TestBed.createComponent(App))
+            .toThrowError(
+                /Components on an embedded template: Comp \("\[ERROR ->\]<ng-template><\/ng-template>"\)/);
+      }
     });
   });
 

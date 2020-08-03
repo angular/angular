@@ -98,4 +98,17 @@ class LanguageServiceImpl implements ng.LanguageService {
     const declarations = this.host.getDeclarations(fileName);
     return getTsHover(position, declarations, analyzedModules);
   }
+
+  getReferencesAtPosition(fileName: string, position: number): tss.ReferenceEntry[]|undefined {
+    const defAndSpan = this.getDefinitionAndBoundSpan(fileName, position);
+    if (!defAndSpan?.definitions) {
+      return;
+    }
+    const {definitions} = defAndSpan;
+    const tsDef = definitions.find(def => def.fileName.endsWith('.ts'));
+    if (!tsDef) {
+      return;
+    }
+    return this.host.tsLS.getReferencesAtPosition(tsDef.fileName, tsDef.textSpan.start);
+  }
 }

@@ -16,7 +16,7 @@ import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type':  'application/json',
-    'Authorization': 'my-auth-token'
+    Authorization: 'my-auth-token'
   })
 };
 // #enddocregion http-options
@@ -33,7 +33,7 @@ export class HeroesService {
   }
 
   /** GET heroes from the server */
-  getHeroes (): Observable<Hero[]> {
+  getHeroes(): Observable<Hero[]> {
     return this.http.get<Hero[]>(this.heroesUrl)
       .pipe(
         catchError(this.handleError('getHeroes', []))
@@ -60,7 +60,7 @@ export class HeroesService {
 
   // #docregion addHero
   /** POST: add a new hero to the database */
-  addHero (hero: Hero): Observable<Hero> {
+  addHero(hero: Hero): Observable<Hero> {
     return this.http.post<Hero>(this.heroesUrl, hero, httpOptions)
       .pipe(
         catchError(this.handleError('addHero', hero))
@@ -70,7 +70,7 @@ export class HeroesService {
 
   // #docregion deleteHero
   /** DELETE: delete the hero from the server */
-  deleteHero (id: number): Observable<{}> {
+  deleteHero(id: number): Observable<{}> {
     const url = `${this.heroesUrl}/${id}`; // DELETE api/heroes/42
     return this.http.delete(url, httpOptions)
       .pipe(
@@ -81,7 +81,7 @@ export class HeroesService {
 
   // #docregion updateHero
   /** PUT: update the hero on the server. Returns the updated hero upon success. */
-  updateHero (hero: Hero): Observable<Hero> {
+  updateHero(hero: Hero): Observable<Hero> {
     // #enddocregion updateHero
     // #docregion update-headers
     httpOptions.headers =

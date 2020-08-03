@@ -1,15 +1,15 @@
 // #docplaster
 // #docregion
 // #docregion example
-import { NgModule }      from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 // #enddocregion example
-import { RouterModule }  from '@angular/router';
+import { RouterModule } from '@angular/router';
 // #docregion example
 
-import { AppComponent }    from './app.component';
+import { AppComponent } from './app.component';
 import { HeroesComponent } from './heroes/heroes.component';
-import { SharedModule }    from './shared/shared.module';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   imports: [

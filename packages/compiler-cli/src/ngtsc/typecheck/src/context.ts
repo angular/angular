@@ -6,75 +6,45 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, ParseSourceFile, SchemaMetadata} from '@angular/compiler';
+import {ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
+import {ComponentToShimMappingStrategy, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
 
-import {TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, TypeCtorMetadata} from './api';
-import {TemplateSourceResolver} from './diagnostics';
+import {TemplateDiagnostic} from './diagnostics';
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
-import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
 import {generateTypeCheckBlock, requiresInlineTypeCheckBlock} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
 
-/**
- * Complete type-checking code generated for the user's program, ready for input into the
- * type-checking engine.
- */
-export interface TypeCheckRequest {
+export interface ShimTypeCheckingData {
   /**
-   * Map of source filenames to new contents for those files.
-   *
-   * This includes both contents of type-checking shim files, as well as changes to any user files
-   * which needed to be made to support template type-checking.
+   * Path to the shim file.
    */
-  updates: Map<AbsoluteFsPath, string>;
-
-  /**
-   * Map containing additional data for each type-checking shim that is required to support
-   * generation of diagnostics.
-   */
-  perFileData: Map<AbsoluteFsPath, FileTypeCheckingData>;
-}
-
-/**
- * Data for a type-checking shim which is required to support generation of diagnostics.
- */
-export interface FileTypeCheckingData {
-  /**
-   * Whether the type-checking shim required any inline changes to the original file, which affects
-   * whether the shim can be reused.
-   */
-  hasInlines: boolean;
-
-  /**
-   * Source mapping information for mapping diagnostics back to the original template.
-   */
-  sourceResolver: TemplateSourceResolver;
+  path: AbsoluteFsPath;
 
   /**
    * Any `ts.Diagnostic`s which were produced during the generation of this shim.
    *
    * Some diagnostics are produced during creation time and are tracked here.
    */
-  genesisDiagnostics: ts.Diagnostic[];
+  genesisDiagnostics: TemplateDiagnostic[];
 
   /**
-   * Path to the shim file.
+   * Whether any inline operations for the input file were required to generate this shim.
    */
-  typeCheckFile: AbsoluteFsPath;
+  hasInlines: boolean;
 }
 
 /**
- * Data for a type-checking shim which is still having its code generated.
+ * Data for an input file which is still in the process of template type-checking code generation.
  */
 export interface PendingFileTypeCheckingData {
   /**
@@ -83,10 +53,18 @@ export interface PendingFileTypeCheckingData {
   hasInlines: boolean;
 
   /**
-   * `TemplateSourceManager` being used to track source mapping information for this shim.
+   * Source mapping information for mapping diagnostics from inlined type check blocks back to the
+   * original template.
    */
   sourceManager: TemplateSourceManager;
 
+  /**
+   * Map of in-progress shim data for shims generated from this input file.
+   */
+  shimData: Map<AbsoluteFsPath, PendingShimData>;
+}
+
+export interface PendingShimData {
   /**
    * Recorder for out-of-band diagnostics which are raised during generation.
    */
@@ -98,9 +76,64 @@ export interface PendingFileTypeCheckingData {
   domSchemaChecker: DomSchemaChecker;
 
   /**
-   * Path to the shim file.
+   * Shim file in the process of being generated.
    */
-  typeCheckFile: TypeCheckFile;
+  file: TypeCheckFile;
+}
+
+/**
+ * Adapts the `TypeCheckContextImpl` to the larger template type-checking system.
+ *
+ * Through this interface, a single `TypeCheckContextImpl` (which represents one "pass" of template
+ * type-checking) requests information about the larger state of type-checking, as well as reports
+ * back its results once finalized.
+ */
+export interface TypeCheckingHost {
+  /**
+   * Retrieve the `TemplateSourceManager` responsible for components in the given input file path.
+   */
+  getSourceManager(sfPath: AbsoluteFsPath): TemplateSourceManager;
+
+  /**
+   * Whether a particular component class should be included in the current type-checking pass.
+   *
+   * Not all components offered to the `TypeCheckContext` for checking may require processing. For
+   * example, the component may have results already available from a prior pass or from a previous
+   * program.
+   */
+  shouldCheckComponent(node: ts.ClassDeclaration): boolean;
+
+  /**
+   * Check if the given component has had its template overridden, and retrieve the new template
+   * nodes if so.
+   */
+  getTemplateOverride(sfPath: AbsoluteFsPath, node: ts.ClassDeclaration): TmplAstNode[]|null;
+
+  /**
+   * Report data from a shim generated from the given input file path.
+   */
+  recordShimData(sfPath: AbsoluteFsPath, data: ShimTypeCheckingData): void;
+
+  /**
+   * Record that all of the components within the given input file path had code generated - that
+   * is, coverage for the file can be considered complete.
+   */
+  recordComplete(sfPath: AbsoluteFsPath): void;
+}
+
+/**
+ * How a type-checking context should handle operations which would require inlining.
+ */
+export enum InliningMode {
+  /**
+   * Use inlining operations when required.
+   */
+  InlineOps,
+
+  /**
+   * Produce diagnostics if an operation would require inlining.
+   */
+  Error,
 }
 
 /**
@@ -109,12 +142,15 @@ export interface PendingFileTypeCheckingData {
  * The `TypeCheckContext` allows registration of components and their templates which need to be
  * type checked.
  */
-export class TypeCheckContext {
+export class TypeCheckContextImpl implements TypeCheckContext {
   private fileMap = new Map<AbsoluteFsPath, PendingFileTypeCheckingData>();
 
   constructor(
-      private config: TypeCheckingConfig, private compilerHost: ts.CompilerHost,
-      private refEmitter: ReferenceEmitter, private reflector: ReflectionHost) {}
+      private config: TypeCheckingConfig,
+      private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
+      private componentMappingStrategy: ComponentToShimMappingStrategy,
+      private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
+      private host: TypeCheckingHost, private inlining: InliningMode) {}
 
   /**
    * A `Map` of `ts.SourceFile`s that the context has seen to the operations (additions of methods
@@ -129,22 +165,6 @@ export class TypeCheckContext {
   private typeCtorPending = new Set<ts.ClassDeclaration>();
 
   /**
-   * Map of data for file paths which was adopted from a prior compilation.
-   *
-   * This data allows the `TypeCheckContext` to generate a `TypeCheckRequest` which can interpret
-   * diagnostics from type-checking shims included in the prior compilation.
-   */
-  private adoptedFiles = new Map<AbsoluteFsPath, FileTypeCheckingData>();
-
-  /**
-   * Record the `FileTypeCheckingData` from a previous program that's associated with a particular
-   * source file.
-   */
-  adoptPriorResults(sf: ts.SourceFile, data: FileTypeCheckingData): void {
-    this.adoptedFiles.set(absoluteFromSourceFile(sf), data);
-  }
-
-  /**
    * Record a template for the given component `node`, with a `SelectorMatcher` for directive
    * matching.
    *
@@ -154,18 +174,37 @@ export class TypeCheckContext {
    */
   addTemplate(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
+      binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
       pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
       schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping,
       file: ParseSourceFile): void {
-    const fileData = this.dataForFile(ref.node.getSourceFile());
+    if (!this.host.shouldCheckComponent(ref.node)) {
+      return;
+    }
 
-    const id = fileData.sourceManager.captureSource(sourceMapping, file);
+    const sfPath = absoluteFromSourceFile(ref.node.getSourceFile());
+    const overrideTemplate = this.host.getTemplateOverride(sfPath, ref.node);
+    if (overrideTemplate !== null) {
+      template = overrideTemplate;
+    }
+
+    // Accumulate a list of any directives which could not have type constructors generated due to
+    // unsupported inlining operations.
+    let missingInlines: ClassDeclaration[] = [];
+
+    const fileData = this.dataForFile(ref.node.getSourceFile());
+    const shimData = this.pendingShimForComponent(ref.node);
+    const boundTarget = binder.bind({template});
     // Get all of the directives used in the template and record type constructors for all of them.
     for (const dir of boundTarget.getUsedDirectives()) {
       const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
       const dirNode = dirRef.node;
       if (requiresInlineTypeCtor(dirNode, this.reflector)) {
+        if (this.inlining === InliningMode.Error) {
+          missingInlines.push(dirNode);
+          continue;
+        }
+
         // Add a type constructor operation for the directive.
         this.addInlineTypeCtor(fileData, dirNode.getSourceFile(), dirRef, {
           fnName: 'ngTypeCtor',
@@ -183,15 +222,41 @@ export class TypeCheckContext {
       }
     }
 
-    const tcbMetadata: TypeCheckBlockMetadata = {id, boundTarget, pipes, schemas};
-    if (requiresInlineTypeCheckBlock(ref.node)) {
+    const tcbRequiresInline = requiresInlineTypeCheckBlock(ref.node);
+
+    // If inlining is not supported, but is required for either the TCB or one of its directive
+    // dependencies, then exit here with an error.
+    if (this.inlining === InliningMode.Error && (tcbRequiresInline || missingInlines.length > 0)) {
+      // This template cannot be supported because the underlying strategy does not support inlining
+      // and inlining would be required.
+
+      // Record diagnostics to indicate the issues with this template.
+      const templateId = fileData.sourceManager.getTemplateId(ref.node);
+      if (tcbRequiresInline) {
+        shimData.oobRecorder.requiresInlineTcb(templateId, ref.node);
+      }
+
+      if (missingInlines.length > 0) {
+        shimData.oobRecorder.requiresInlineTypeConstructors(templateId, ref.node, missingInlines);
+      }
+
+      // Checking this template would be unsupported, so don't try.
+      return;
+    }
+
+    const meta = {
+      id: fileData.sourceManager.captureSource(ref.node, sourceMapping, file),
+      boundTarget,
+      pipes,
+      schemas,
+    };
+    if (tcbRequiresInline) {
       // This class didn't meet the requirements for external type checking, so generate an inline
       // TCB for the class.
-      this.addInlineTypeCheckBlock(fileData, ref, tcbMetadata);
+      this.addInlineTypeCheckBlock(fileData, shimData, ref, meta);
     } else {
       // The class can be type-checked externally as normal.
-      fileData.typeCheckFile.addTypeCheckBlock(
-          ref, tcbMetadata, fileData.domSchemaChecker, fileData.oobRecorder);
+      shimData.file.addTypeCheckBlock(ref, meta, shimData.domSchemaChecker, shimData.oobRecorder);
     }
   }
 
@@ -262,7 +327,7 @@ export class TypeCheckContext {
     return code;
   }
 
-  finalize(): TypeCheckRequest {
+  finalize(): Map<AbsoluteFsPath, string> {
     // First, build the map of updates to source files.
     const updates = new Map<AbsoluteFsPath, string>();
     for (const originalSf of this.opMap.keys()) {
@@ -272,33 +337,28 @@ export class TypeCheckContext {
       }
     }
 
-    const results: TypeCheckRequest = {
-      updates: updates,
-      perFileData: new Map<AbsoluteFsPath, FileTypeCheckingData>(),
-    };
-
-    for (const [sfPath, fileData] of this.fileMap.entries()) {
-      updates.set(fileData.typeCheckFile.fileName, fileData.typeCheckFile.render());
-      results.perFileData.set(sfPath, {
-        genesisDiagnostics: [
-          ...fileData.domSchemaChecker.diagnostics,
-          ...fileData.oobRecorder.diagnostics,
-        ],
-        hasInlines: fileData.hasInlines,
-        sourceResolver: fileData.sourceManager,
-        typeCheckFile: fileData.typeCheckFile.fileName,
-      });
+    // Then go through each input file that has pending code generation operations.
+    for (const [sfPath, pendingFileData] of this.fileMap) {
+      // For each input file, consider generation operations for each of its shims.
+      for (const pendingShimData of pendingFileData.shimData.values()) {
+        this.host.recordShimData(sfPath, {
+          genesisDiagnostics: [
+            ...pendingShimData.domSchemaChecker.diagnostics,
+            ...pendingShimData.oobRecorder.diagnostics,
+          ],
+          hasInlines: pendingFileData.hasInlines,
+          path: pendingShimData.file.fileName,
+        });
+        updates.set(pendingShimData.file.fileName, pendingShimData.file.render());
+      }
     }
 
-    for (const [sfPath, fileData] of this.adoptedFiles.entries()) {
-      results.perFileData.set(sfPath, fileData);
-    }
-
-    return results;
+    return updates;
   }
 
   private addInlineTypeCheckBlock(
-      fileData: PendingFileTypeCheckingData, ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+      fileData: PendingFileTypeCheckingData, shimData: PendingShimData,
+      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       tcbMeta: TypeCheckBlockMetadata): void {
     const sf = ref.node.getSourceFile();
     if (!this.opMap.has(sf)) {
@@ -306,24 +366,33 @@ export class TypeCheckContext {
     }
     const ops = this.opMap.get(sf)!;
     ops.push(new TcbOp(
-        ref, tcbMeta, this.config, this.reflector, fileData.domSchemaChecker,
-        fileData.oobRecorder));
+        ref, tcbMeta, this.config, this.reflector, shimData.domSchemaChecker,
+        shimData.oobRecorder));
     fileData.hasInlines = true;
+  }
+
+  private pendingShimForComponent(node: ts.ClassDeclaration): PendingShimData {
+    const fileData = this.dataForFile(node.getSourceFile());
+    const shimPath = this.componentMappingStrategy.shimPathForComponent(node);
+    if (!fileData.shimData.has(shimPath)) {
+      fileData.shimData.set(shimPath, {
+        domSchemaChecker: new RegistryDomSchemaChecker(fileData.sourceManager),
+        oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager),
+        file: new TypeCheckFile(
+            shimPath, this.config, this.refEmitter, this.reflector, this.compilerHost),
+      });
+    }
+    return fileData.shimData.get(shimPath)!;
   }
 
   private dataForFile(sf: ts.SourceFile): PendingFileTypeCheckingData {
     const sfPath = absoluteFromSourceFile(sf);
 
     if (!this.fileMap.has(sfPath)) {
-      const sourceManager = new TemplateSourceManager();
       const data: PendingFileTypeCheckingData = {
-        domSchemaChecker: new RegistryDomSchemaChecker(sourceManager),
-        oobRecorder: new OutOfBandDiagnosticRecorderImpl(sourceManager),
-        typeCheckFile: new TypeCheckFile(
-            TypeCheckShimGenerator.shimFor(sfPath), this.config, this.refEmitter, this.reflector,
-            this.compilerHost),
         hasInlines: false,
-        sourceManager,
+        sourceManager: this.host.getSourceManager(sfPath),
+        shimData: new Map(),
       };
       this.fileMap.set(sfPath, data);
     }

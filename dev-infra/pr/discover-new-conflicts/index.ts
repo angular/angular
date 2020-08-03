@@ -11,7 +11,7 @@ import {types as graphQLTypes} from 'typed-graphqlify';
 
 import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info} from '../../utils/console';
-import {getCurrentBranch, hasLocalChanges} from '../../utils/git';
+import {GitClient} from '../../utils/git';
 import {getPendingPrs} from '../../utils/github';
 import {exec} from '../../utils/shelljs';
 
@@ -55,15 +55,16 @@ const tempWorkingBranch = '__NgDevRepoBaseAfterChange__';
 /** Checks if the provided PR will cause new conflicts in other pending PRs. */
 export async function discoverNewConflictsForPr(
     newPrNumber: number, updatedAfter: number, config: Pick<NgDevConfig, 'github'> = getConfig()) {
+  const git = new GitClient();
   // If there are any local changes in the current repository state, the
   // check cannot run as it needs to move between branches.
-  if (hasLocalChanges()) {
+  if (git.hasLocalChanges()) {
     error('Cannot run with local changes. Please make sure there are no local changes.');
     process.exit(1);
   }
 
-  /** The active github branch when the run began. */
-  const originalBranch = getCurrentBranch();
+  /** The active github branch or revision before we performed any Git commands. */
+  const previousBranchOrRevision = git.getCurrentBranchOrRevision();
   /* Progress bar to indicate progress. */
   const progressBar = new Bar({format: `[{bar}] ETA: {eta}s | {value}/{total}`});
   /* PRs which were found to be conflicting. */
@@ -102,7 +103,7 @@ export async function discoverNewConflictsForPr(
   const result = exec(`git rebase FETCH_HEAD`);
   if (result.code) {
     error('The requested PR currently has conflicts');
-    cleanUpGitState(originalBranch);
+    cleanUpGitState(previousBranchOrRevision);
     process.exit(1);
   }
 
@@ -129,7 +130,7 @@ export async function discoverNewConflictsForPr(
   info();
   info(`Result:`);
 
-  cleanUpGitState(originalBranch);
+  cleanUpGitState(previousBranchOrRevision);
 
   // If no conflicts are found, exit successfully.
   if (conflicts.length === 0) {
@@ -140,20 +141,20 @@ export async function discoverNewConflictsForPr(
   // Inform about discovered conflicts, exit with failure.
   error.group(`${conflicts.length} PR(s) which conflict(s) after #${newPrNumber} merges:`);
   for (const pr of conflicts) {
-    error(`  - ${pr.number}: ${pr.title}`);
+    error(`  - #${pr.number}: ${pr.title}`);
   }
   error.groupEnd();
   process.exit(1);
 }
 
-/** Reset git back to the provided branch. */
-export function cleanUpGitState(branch: string) {
+/** Reset git back to the provided branch or revision. */
+export function cleanUpGitState(previousBranchOrRevision: string) {
   // Ensure that any outstanding rebases are aborted.
   exec(`git rebase --abort`);
   // Ensure that any changes in the current repo state are cleared.
   exec(`git reset --hard`);
   // Checkout the original branch from before the run began.
-  exec(`git checkout ${branch}`);
+  exec(`git checkout ${previousBranchOrRevision}`);
   // Delete the generated branch.
   exec(`git branch -D ${tempWorkingBranch}`);
 }

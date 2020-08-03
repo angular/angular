@@ -18,7 +18,7 @@ import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembe
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 
-import {getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic} from './diagnostics';
+import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic} from './diagnostics';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
@@ -278,8 +278,7 @@ export function extractDirectiveMetadata(
     const expr = directive.get('selector')!;
     const resolved = evaluator.evaluate(expr);
     if (typeof resolved !== 'string') {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `selector must be a string`);
+      throw createValueHasWrongTypeError(expr, resolved, `selector must be a string`);
     }
     // use default selector in case selector is an empty string
     selector = resolved === '' ? defaultSelector : resolved;
@@ -310,8 +309,7 @@ export function extractDirectiveMetadata(
     const expr = directive.get('exportAs')!;
     const resolved = evaluator.evaluate(expr);
     if (typeof resolved !== 'string') {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `exportAs must be a string`);
+      throw createValueHasWrongTypeError(expr, resolved, `exportAs must be a string`);
     }
     exportAs = resolved.split(',').map(part => part.trim());
   }
@@ -381,8 +379,7 @@ export function extractQueryMetadata(
   } else if (isStringArrayOrDie(arg, `@${name} predicate`, node)) {
     predicate = arg;
   } else {
-    throw new FatalDiagnosticError(
-        ErrorCode.VALUE_HAS_WRONG_TYPE, node, `@${name} predicate cannot be interpreted`);
+    throw createValueHasWrongTypeError(node, arg, `@${name} predicate cannot be interpreted`);
   }
 
   // Extract the read and descendants options.
@@ -405,9 +402,8 @@ export function extractQueryMetadata(
       const descendantsExpr = options.get('descendants')!;
       const descendantsValue = evaluator.evaluate(descendantsExpr);
       if (typeof descendantsValue !== 'boolean') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, descendantsExpr,
-            `@${name} options.descendants must be a boolean`);
+        throw createValueHasWrongTypeError(
+            descendantsExpr, descendantsValue, `@${name} options.descendants must be a boolean`);
       }
       descendants = descendantsValue;
     }
@@ -415,8 +411,8 @@ export function extractQueryMetadata(
     if (options.has('static')) {
       const staticValue = evaluator.evaluate(options.get('static')!);
       if (typeof staticValue !== 'boolean') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, node, `@${name} options.static must be a boolean`);
+        throw createValueHasWrongTypeError(
+            node, staticValue, `@${name} options.static must be a boolean`);
       }
       isStatic = staticValue;
     }
@@ -482,9 +478,8 @@ function isStringArrayOrDie(value: any, name: string, node: ts.Expression): valu
 
   for (let i = 0; i < value.length; i++) {
     if (typeof value[i] !== 'string') {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, node,
-          `Failed to resolve ${name} at position ${i} to a string`);
+      throw createValueHasWrongTypeError(
+          node, value[i], `Failed to resolve ${name} at position ${i} to a string`);
     }
   }
   return true;
@@ -501,9 +496,8 @@ export function parseFieldArrayValue(
   const expression = directive.get(field)!;
   const value = evaluator.evaluate(expression);
   if (!isStringArrayOrDie(value, field, expression)) {
-    throw new FatalDiagnosticError(
-        ErrorCode.VALUE_HAS_WRONG_TYPE, expression,
-        `Failed to resolve @Directive.${field} to a string array`);
+    throw createValueHasWrongTypeError(
+        expression, value, `Failed to resolve @Directive.${field} to a string array`);
   }
 
   return value;
@@ -548,8 +542,8 @@ function parseDecoratedFields(
       } else if (decorator.args.length === 1) {
         const property = evaluator.evaluate(decorator.args[0]);
         if (typeof property !== 'string') {
-          throw new FatalDiagnosticError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE, Decorator.nodeForError(decorator),
+          throw createValueHasWrongTypeError(
+              Decorator.nodeForError(decorator), property,
               `@${decorator.name} decorator argument must resolve to a string`);
         }
         results[fieldName] = mapValueResolver(property, fieldName);
@@ -613,8 +607,8 @@ function evaluateHostExpressionBindings(
     hostExpr: ts.Expression, evaluator: PartialEvaluator): ParsedHostBindings {
   const hostMetaMap = evaluator.evaluate(hostExpr);
   if (!(hostMetaMap instanceof Map)) {
-    throw new FatalDiagnosticError(
-        ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr, `Decorator host metadata must be an object`);
+    throw createValueHasWrongTypeError(
+        hostExpr, hostMetaMap, `Decorator host metadata must be an object`);
   }
   const hostMetadata: StringMap<string|Expression> = {};
   hostMetaMap.forEach((value, key) => {
@@ -624,8 +618,8 @@ function evaluateHostExpressionBindings(
     }
 
     if (typeof key !== 'string') {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr,
+      throw createValueHasWrongTypeError(
+          hostExpr, key,
           `Decorator host metadata must be a string -> string object, but found unparseable key`);
     }
 
@@ -634,8 +628,8 @@ function evaluateHostExpressionBindings(
     } else if (value instanceof DynamicValue) {
       hostMetadata[key] = new WrappedNodeExpr(value.node as ts.Expression);
     } else {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr,
+      throw createValueHasWrongTypeError(
+          hostExpr, value,
           `Decorator host metadata must be a string -> string object, but found unparseable value`);
     }
   });
@@ -678,8 +672,8 @@ export function extractHostBindings(
 
             const resolved = evaluator.evaluate(decorator.args[0]);
             if (typeof resolved !== 'string') {
-              throw new FatalDiagnosticError(
-                  ErrorCode.VALUE_HAS_WRONG_TYPE, Decorator.nodeForError(decorator),
+              throw createValueHasWrongTypeError(
+                  Decorator.nodeForError(decorator), resolved,
                   `@HostBinding's argument must be a string`);
             }
 
@@ -704,8 +698,8 @@ export function extractHostBindings(
 
             const resolved = evaluator.evaluate(decorator.args[0]);
             if (typeof resolved !== 'string') {
-              throw new FatalDiagnosticError(
-                  ErrorCode.VALUE_HAS_WRONG_TYPE, decorator.args[0],
+              throw createValueHasWrongTypeError(
+                  decorator.args[0], resolved,
                   `@HostListener's event name argument must be a string`);
             }
 
@@ -715,8 +709,8 @@ export function extractHostBindings(
               const expression = decorator.args[1];
               const resolvedArgs = evaluator.evaluate(decorator.args[1]);
               if (!isStringArrayOrDie(resolvedArgs, '@HostListener.args', expression)) {
-                throw new FatalDiagnosticError(
-                    ErrorCode.VALUE_HAS_WRONG_TYPE, decorator.args[1],
+                throw createValueHasWrongTypeError(
+                    decorator.args[1], resolvedArgs,
                     `@HostListener's second argument must be a string array`);
               }
               args = resolvedArgs;

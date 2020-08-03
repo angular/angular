@@ -1,6 +1,6 @@
 # Angular compiler options
 
-When you use [AOT compilation](guide/aot-compiler), you can control how your application is compiled by specifying *template* compiler options in the `tsconfig.json` [TypeScript configuration file](guide/typescript-configuration).
+When you use [AOT compilation](guide/aot-compiler), you can control how your application is compiled by specifying *template* compiler options in the [TypeScript configuration file](guide/typescript-configuration).
 
 The template options object, `angularCompilerOptions`, is a sibling to the `compilerOptions` object that supplies standard options to the TypeScript compiler.
 
@@ -21,11 +21,11 @@ The template options object, `angularCompilerOptions`, is a sibling to the `comp
 {@a tsconfig-extends}
 ## Configuration inheritance with extends
 
-Like the TypeScript compiler, The Angular AOT compiler also supports `extends` in the `angularCompilerOptions` section of the TypeScript configuration file, `tsconfig.json`.
+Like the TypeScript compiler, The Angular AOT compiler also supports `extends` in the `angularCompilerOptions` section of the TypeScript configuration file.
 The `extends` property is at the top level, parallel to `compilerOptions` and `angularCompilerOptions`.
 
 A TypeScript configuration can inherit settings from another file using the `extends` property.
-The configuration options from the base file are loaded first, then overridden by those in the inheriting `tsconfig` file.
+The configuration options from the base file are loaded first, then overridden by those in the inheriting configuration file.
 
 For example:
 
@@ -186,7 +186,7 @@ For library projects generated with the CLI, the dev configuration default is `t
 
 When `true` (recommended), reports an error for a supplied parameter whose injection type cannot be determined. When `false` (currently the default), constructor parameters of classes marked with `@Injectable` whose type cannot be resolved produce a warning.
 
-When you use the CLI command `ng new`, it is set to `true` by default in the generated project's configuration.
+When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 ### `strictTemplates`
 
@@ -194,6 +194,7 @@ When `true`, enables [strict template type checking](guide/template-typecheck#st
 
 Additional strictness flags allow you to enable and disable specific types of strict template type checking. See [troubleshooting template errors](guide/template-typecheck#troubleshooting-template-errors).
 
+When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 ### `trace`
 
