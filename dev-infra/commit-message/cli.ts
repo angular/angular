@@ -24,9 +24,11 @@ export function buildCommitMessageParser(localYargs: yargs.Argv) {
               conflicts: ['file'],
               required: true,
               description:
-                  'The key of the environment variable for the path of the commit message file.',
+                  'The key for the environment variable which holds the arguments for the ' +
+                  'prepare-commit-msg hook as described here: ' +
+                  'https://git-scm.com/docs/githooks#_prepare_commit_msg',
               coerce: arg => {
-                const [file, source] = process.env[arg].split(' ');
+                const [file, source] = (process.env[arg] || '').split(' ');
                 if (!file) {
                   throw new Error(`Provided environment variable "${arg}" was not found.`);
                 }

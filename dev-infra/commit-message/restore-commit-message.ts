@@ -8,16 +8,17 @@
 
 import {info} from 'console';
 import {writeFileSync} from 'fs';
-import {resolve} from 'path';
-
-import {getRepoBaseDir} from '../utils/config';
 
 import {loadCommitMessageDraft} from './commit-message-draft';
 
 /**
  * Restore the commit message draft to the git to be used as the default commit message.
+ *
+ * The source provided may be one of the sources described in
+ *   https://git-scm.com/docs/githooks#_prepare_commit_msg
  */
-export function restoreCommitMessage(filePath: string, source: string) {
+export function restoreCommitMessage(
+    filePath: string, source?: 'message'|'template'|'squash'|'commit') {
   if (!!source) {
     info('Skipping commit message restoration attempt');
     if (source === 'message') {
@@ -30,8 +31,8 @@ export function restoreCommitMessage(filePath: string, source: string) {
       info('A commit message was already provided as a merge action or via .git/MERGE_MSG');
     }
     if (source === 'commit') {
-      info('A commit message was already provided via another commit via --fixup, -c, -C');
-      info('or --amend flag');
+      info('A commit message was already provided through a revision specified via --fixup, -c,');
+      info('-C or --amend flag');
     }
     process.exit(0);
   }
@@ -40,7 +41,7 @@ export function restoreCommitMessage(filePath: string, source: string) {
 
   // If the commit message draft has content, restore it into the provided filepath.
   if (commitMessage) {
-    writeFileSync(resolve(getRepoBaseDir(), filePath), commitMessage);
+    writeFileSync(filePath, commitMessage);
   }
   // Exit the process
   process.exit(0);
