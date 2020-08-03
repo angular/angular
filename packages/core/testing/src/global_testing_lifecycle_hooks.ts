@@ -27,6 +27,19 @@ if (_global.beforeEach) {
   });
 }
 
+// Tear down the test module, destroying the test module and active fixtures after each test.
+if (_global.afterEach) {
+  _global.afterEach(() => {
+    try {
+      TestBed.tearDownTestModule();
+    } catch (e) {
+      console.error(
+          'An error occured while tearing down the test module, in the future this will be a failure\n' +
+          'Details:\n\n' + e.stack);
+    }
+  });
+}
+
 /**
  * This API should be removed. But doing so seems to break `google3` and so it requires a bit of
  * investigation.

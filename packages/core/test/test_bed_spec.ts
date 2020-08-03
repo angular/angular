@@ -120,9 +120,11 @@ export class ComponentWithInlineTemplate {
 export class HelloWorldModule {
 }
 
+@Component({selector: 'style-test', template: '<span>some text</span>', styles: ['div { color: blue; }']})
+export class StylesTestComp  {}
+
 describe('TestBed', () => {
   beforeEach(() => {
-    getTestBed().resetTestingModule();
     TestBed.configureTestingModule({imports: [HelloWorldModule]});
   });
 
@@ -304,6 +306,26 @@ describe('TestBed', () => {
 
     // verify that original `ngOnDestroy` was not called
     expect(SimpleService.ngOnDestroyCalls).toBe(0);
+  });
+
+  describe('should not preserve shared styles between tests', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({declarations: [StylesTestComp]});
+    });
+
+    const totalRuns = 2;
+    for (let i = 0; i < totalRuns; i++) {
+      // To properly test the styles aren't "leaking" to other tests, run this same test multiple times.
+      it(`${i}/${totalRuns}`, () => {
+        // Creating the component adds the components styles in the document <head>
+        const fixture = TestBed.createComponent(StylesTestComp);
+        // Because this test runs in both node and browsers via karma, we need to get the document to which the fixture belongs.
+        const fixturesDocument = fixture.nativeElement.ownerDocument;
+        // Confirm only one style block is in the document, as it was just created.  If styles are not being properly removed on
+        // tear down, multiple style blocks will appear in the document.
+        expect(fixturesDocument.querySelectorAll('style').length).toBe(1);
+      });
+    }
   });
 
   describe('module overrides using TestBed.overrideModule', () => {

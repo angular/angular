@@ -61,6 +61,7 @@ export interface TestBedStatic {
 
   resetTestingModule(): TestBedStatic;
 
+  tearDownTestModule(): void;
   /**
    * Allows overriding default compiler providers and settings
    * which are defined in test_injector.js

@@ -24,6 +24,8 @@ let _nextRootElementId = 0;
 export interface TestBed {
   platform: PlatformRef;
 
+  tearDownTestModule(): void;
+
   ngModule: Type<any>|Type<any>[];
 
   /**
@@ -126,6 +128,11 @@ export class TestBedViewEngine implements TestBed {
 
   static resetTestingModule(): TestBedStatic {
     _getTestBedViewEngine().resetTestingModule();
+    return TestBedViewEngine as any as TestBedStatic;
+  }
+
+  static tearDownTestModule(): TestBedStatic {
+    _getTestBedViewEngine().tearDownTestModule();
     return TestBedViewEngine as any as TestBedStatic;
   }
 
@@ -321,17 +328,12 @@ export class TestBedViewEngine implements TestBed {
     this._imports = [];
     this._schemas = [];
     this._instantiated = false;
-    this._activeFixtures.forEach((fixture) => {
-      try {
-        fixture.destroy();
-      } catch (e) {
-        console.error('Error during cleanup of component', {
-          component: fixture.componentInstance,
-          stacktrace: e,
-        });
-      }
-    });
-    this._activeFixtures = [];
+    this.destroyActiveFixtures();
+  }
+
+  tearDownTestModule(): void {
+    this._moduleRef?.destroy();
+    this.destroyActiveFixtures();
   }
 
   configureCompiler(config: {providers?: any[], useJit?: boolean}): void {
@@ -610,6 +612,20 @@ export class TestBedViewEngine implements TestBed {
     const fixture = !ngZone ? initComponent() : ngZone.run(initComponent);
     this._activeFixtures.push(fixture);
     return fixture;
+  }
+
+  private destroyActiveFixtures(): void {
+    this._activeFixtures.forEach((fixture) => {
+      try {
+        fixture.destroy();
+      } catch (e) {
+        console.error('Error during cleanup of component', {
+          component: fixture.componentInstance,
+          stacktrace: e,
+        });
+      }
+    });
+    this._activeFixtures = [];
   }
 }
 

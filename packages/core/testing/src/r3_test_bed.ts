@@ -182,6 +182,10 @@ export class TestBedRender3 implements TestBed {
     return TestBedRender3 as any as TestBedStatic;
   }
 
+  static tearDownTestModule(): void {
+    _getTestBedRender3().tearDownTestModule();
+  }
+
   // Properties
 
   platform: PlatformRef = null!;
@@ -236,6 +240,11 @@ export class TestBedRender3 implements TestBed {
     }
     this._compiler = new R3TestBedCompiler(this.platform, this.ngModule);
     this._testModuleRef = null;
+    this.destroyActiveFixtures();
+  }
+
+  tearDownTestModule(): void {
+    this._testModuleRef?.destroy();
     this.destroyActiveFixtures();
   }
 
