@@ -8,7 +8,7 @@ The Angular API makes use of observables as an interface to handle a variety of 
 
 * The [Router](#router "Handling observables from router events") and [Reactive Forms](#forms "Handling observables from reactive form events") services use observables to listen for and respond to user-input events.
 
-In addition to handling the observables that the API passes or expects, you can use observables to implement your own asynchronous features. For example:
+In addition to working with the Angular APIs that create or consume observables, you can use them to implement your own asynchronous features. For example:
 
 * Observables are suitable for the implementation of [type-ahead suggestions](#type-ahead "Using observables for type-ahead").
 
@@ -33,7 +33,7 @@ The following example binds the `time` observable to the component's view. The o
 
 Angular’s `HttpClient` returns observables from HTTP method calls. For instance, `http.get(‘/api’)` returns an observable. This provides several advantages over promise-based HTTP APIs:
 
-* Observables do not mutate the server response (as can occur through chained `.then()` calls on promises). Instead, you can use a series of operators to transform values as needed.
+* Observables allow response data to be combined, filtered, and transformed through the composition of simple operators.
 * HTTP requests are cancellable through the `unsubscribe()` method.
 * Requests can be configured to get progress event updates.
 * Failed requests can be retried easily.
@@ -46,7 +46,7 @@ Angular’s `HttpClient` returns observables from HTTP method calls. For instanc
 
 <code-example path="observables-in-angular/src/main.ts" header="Router events" region="router"></code-example>
 
-The [ActivatedRoute](api/router/ActivatedRoute "API reference") is an injected router service that makes use of observables to get information about a route path and parameters. For example, in the following code, `ActivatedRoute.url` contains an observable that reports the route path or paths.
+The [ActivatedRoute](api/router/ActivatedRoute "API reference") is an injected router service that makes use of observables to deliver information about a route path and parameters. For example, in the following code, `ActivatedRoute.url` contains an observable that reports the route path or paths.
 
 <code-example path="observables-in-angular/src/main.ts" header="ActivatedRoute" region="activated_route"></code-example>
 
@@ -54,7 +54,7 @@ The [ActivatedRoute](api/router/ActivatedRoute "API reference") is an injected r
 
 ## Handling observables from reactive forms
 
-Reactive forms have properties that use observables to monitor form control values. The [`FormControl`](api/forms/FormControl "API reference") properties `valueChanges` and `statusChanges` contain observables that raise change events. Subscribing to an observable form-control property is a way of triggering application logic within the component class. For example:
+Reactive forms have properties that expose observables to monitor form control values. The [`FormControl`](api/forms/FormControl "API reference") properties `valueChanges` and `statusChanges` contain observables that emit change events. Subscribing to an observable form-control property is a way of triggering application logic within the component class. For example:
 
 <code-example path="observables-in-angular/src/main.ts" header="Reactive forms" region="forms"></code-example>
 
@@ -65,12 +65,13 @@ Reactive forms have properties that use observables to monitor form control valu
 Typically, to provide suggestions for completion of input strings, you need to do a series of separate tasks:
 
 * Listen for data from an input.
-* Trim whitespace from input string and make sure it is of a minimum length.
-* Debounce, so you can wait for a break in keystrokes rather than send off API requests for every keystroke.
+* Trim whitespace from the input string and ensure it is of a minimum length.
+* Debounce changes to the input value, so you can wait for a break in keystrokes rather than fire API requests for every keystroke.
 * Don’t send a request if the value stays the same; for instance, if the user rapidly hits a character, then a backspace.
-* Cancel ongoing AJAX requests if their results will be invalidated by the updated results.
+* Cancel outstanding AJAX requests if their results will be invalidated by a change in the input text.
 
-Writing this in full JavaScript can be quite involved. With observables, you can use a simple series of RxJS operators:
+Implementing this logic manually can be quite complex.
+With observables, you can use a straightforward series of RxJS operators, as in the following example.
 
 <code-example path="practical-observable-usage/src/typeahead.ts" header="Typeahead"></code-example>
 
@@ -78,8 +79,9 @@ Writing this in full JavaScript can be quite involved. With observables, you can
 
 ## Using observables for exponential backoff
 
-Exponential backoff is a technique in which you retry an API after failure, making the time in between retries longer after each consecutive failure, with a maximum number of retries after which the request is considered to have failed. This can be quite complex to implement with promises and other methods of tracking AJAX calls.
+Exponential backoff is a technique in which you retry an API request after failure, increasing the time in between retries after each consecutive failure, with a maximum number of retries before the request is considered to have failed.
 
+This can be quite complex to implement with promises and other methods of tracking AJAX calls.
 The following example shows how using observables can be more straightforward.
 
 <code-example path="practical-observable-usage/src/backoff.ts" header="Exponential backoff"></code-example>
