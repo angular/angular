@@ -81,7 +81,6 @@ está disponible para las declaraciones (<code>declarations</code>) de este mód
 </tr><tr>
 <td><code>&lt;div title="Hola <b>{{ponyName}}</b>"&gt;</code></td>
 <td><p>Vincula una propiedad a una cadena interpolada, por ejemplo, "Hola Seabiscuit". Equivalente a:
-<td><p>Binds a property to an interpolated string, for example, "Hello Seabiscuit". Equivalent to:
 <code>&lt;div [title]="'Hola ' + ponyName"&gt;</code></p>
 </td>
 </tr><tr>
