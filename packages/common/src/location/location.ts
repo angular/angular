@@ -25,8 +25,11 @@ export interface PopStateEvent {
  *
  * A service for interacting with or creating normalized URLs outside of the
  * `Router` subsystem.
- * An alternative to the router's [navigate() method](api/router/Router#navigate "API reference"),
- * which is the preferred way to trigger route changes.
+ *
+ * The preferred way to trigger route changes is to use the
+ * [Router.navigate() method](api/router/Router#navigate "API reference"),
+ * The `Location` service is an alternative that supports applications
+ * originally created with AngularJS.
  *
  * Depending on the `LocationStrategy` used, `Location` persists
  * to the URL's path or the URL's hash segment.

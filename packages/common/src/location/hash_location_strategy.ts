@@ -15,13 +15,13 @@ import {joinWithSlash, normalizeQueryParams} from './util';
 
 /**
  * @description
- * A {@link LocationStrategy} used to configure the {@link Location} service to
- * represent its state the browser's URL using the
+ * A  `LocationStrategy` that configures the `Location` service to
+ * represent a URL state using the
  * [hash fragment](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#Syntax)
- * URL syntax.
+ * of the URL.
  *
- * When using `HashLocationStrategy`, if you call `location.go('/foo')`, the browser's URL
- * is normalized to `example.com#/foo`.
+ * When using `HashLocationStrategy`, if you call `location.go('/foo')`, the `Location`
+ * normalizes the browser's URL to `example.com#/foo`.
  *
  * The following example displays the normalized URL produced with this strategy.
  *

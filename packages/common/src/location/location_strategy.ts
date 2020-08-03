@@ -16,6 +16,11 @@ import {joinWithSlash, normalizeQueryParams} from './util';
  * Applications can use either the `Router` service or the `Location` service to
  * interact with the application route state.
  *
+ * The preferred way to trigger route changes is to use the
+ * [Router.navigate() method](api/router/Router#navigate "API reference"),
+ * The `Location` service is an alternative that supports applications
+ * originally created with AngularJS.
+ *
  * When using the `Location` service, Angular provides strategies for different browser URL styles.
  *
  * * `HashLocationStrategy` produce a URL using hash notation. For example:
