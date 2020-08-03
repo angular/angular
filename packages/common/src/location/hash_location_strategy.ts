@@ -16,18 +16,19 @@ import {joinWithSlash, normalizeQueryParams} from './util';
 /**
  * @description
  * A {@link LocationStrategy} used to configure the {@link Location} service to
- * represent its state in the
+ * represent its state the browser's URL using the
  * [hash fragment](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#Syntax)
- * of the browser's URL.
+ * URL syntax.
  *
- * For instance, if you call `location.go('/foo')`, the browser's URL will become
- * `example.com#/foo`.
+ * When using `HashLocationStrategy`, if you call `location.go('/foo')`, the browser's URL
+ * is normalized to `example.com#/foo`.
  *
- * @usageNotes
- *
- * ### Example
+ * The following example displays the normalized URL produced with this strategy.
  *
  * {@example common/location/ts/hash_location_component.ts region='LocationComponent'}
+ *
+ * @see `LocationStrategy`
+ * @see [LocationStrategy and browser URL styles](guide/router#locationstrategy-and-browser-url-styles)
  *
  * @publicApi
  */

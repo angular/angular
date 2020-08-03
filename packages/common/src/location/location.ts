@@ -23,28 +23,29 @@ export interface PopStateEvent {
 /**
  * @description
  *
- * A service that applications can use to interact with a browser's URL.
+ * A service for interacting with or creating normalized URLs outside of the
+ * `Router` subsystem.
+ * An alternative to the router's [navigate() method](api/router/Router#navigate "API reference"),
+ * which is the preferred way to trigger route changes.
  *
  * Depending on the `LocationStrategy` used, `Location` persists
  * to the URL's path or the URL's hash segment.
  *
- * @usageNotes
- *
- * It's better to use the `Router#navigate` service to trigger route changes. Use
- * `Location` only if you need to interact with or create normalized URLs outside of
- * routing.
- *
- * `Location` is responsible for normalizing the URL against the application's base href.
+ * The `Location` service normalizes a URL against the application's base href.
  * A normalized URL is absolute from the URL host, includes the application's base href, and has no
  * trailing slash:
  * - `/my/app/user/123` is normalized
  * - `my/app/user/123` **is not** normalized
  * - `/my/app/user/123/` **is not** normalized
  *
- * ### Example
+ * The following example displays the result of normalizing a given path.
  *
  * <code-example path='common/location/ts/path_location_component.ts'
  * region='LocationComponent'></code-example>
+ *
+ * @see `LocationStrategy`
+ * @see `APP_BASE_HREF`
+ * @see [LocationStrategy and browser URL styles](guide/router#locationstrategy-and-browser-url-styles)
  *
  * @publicApi
  */

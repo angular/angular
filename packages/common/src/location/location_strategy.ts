@@ -13,18 +13,22 @@ import {joinWithSlash, normalizeQueryParams} from './util';
 
 /**
  * Enables the `Location` service to read route state from the browser's URL.
- * Angular provides two strategies:
- * `HashLocationStrategy` and `PathLocationStrategy`.
+ * Applications can use either the `Router` service or the `Location` service to
+ * interact with the application route state.
  *
- * Applications should use the `Router` or `Location` services to
- * interact with application route state.
+ * When using the `Location` service, Angular provides strategies for different browser URL styles.
  *
- * For instance, `HashLocationStrategy` produces URLs like
- * <code class="no-auto-link">http://example.com#/foo</code>,
- * and `PathLocationStrategy` produces
- * <code class="no-auto-link">http://example.com/foo</code> as an equivalent URL.
+ * * `HashLocationStrategy` produce a URL using hash notation. For example:
  *
- * See these two classes for more.
+ *    <code class="no-auto-link">http://example.com#/foo</code>,
+ * * `PathLocationStrategy` produces the equivalent URL without hash notation:
+ *
+ *    <code class="no-auto-link">http://example.com/foo</code>
+ *
+ * @see `HashLocationStrategy`
+ * @see `PathLocationStrategy`
+ * @see `APP_BASE_HREF`
+ * @see [LocationStrategy and browser URL styles](guide/router#locationstrategy-and-browser-url-styles)
  *
  * @publicApi
  */
@@ -49,12 +53,10 @@ export function provideLocationStrategy(platformLocation: PlatformLocation) {
 
 
 /**
- * A predefined [DI token](guide/glossary#di-token) for the base href
+ * A predefined [DI token](guide/glossary#di-token "Definition") for the base href
  * to be used with the `PathLocationStrategy`.
  * The base href is the URL prefix that should be preserved when generating
  * and recognizing URLs.
- *
- * @usageNotes
  *
  * The following example shows how to use this token to configure the root app injector
  * with a base href value, so that the DI framework can supply the dependency anywhere in the app.
@@ -80,27 +82,29 @@ export const APP_BASE_HREF = new InjectionToken<string>('appBaseHref');
  * [path](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#Syntax) of the
  * browser's URL.
  *
- * If you're using `PathLocationStrategy`, you must provide a {@link APP_BASE_HREF}
- * or add a `<base href>` element to the document.
+ * When using `PathLocationStrategy`, you must provide a {@link APP_BASE_HREF}
+ * or add a `<base href>` element to the document. The base href must
+ * end with a slash character (`/`).
+ * The base href is prepended to the URL produced by the `Location` service,
+ * with the trailing slash removed if necessary.
  *
- * For instance, if you provide an `APP_BASE_HREF` of `'/my/app/'` and call
- * `location.go('/foo')`, the browser's URL will become
- * `example.com/my/app/foo`. To ensure all relative URIs resolve correctly,
- * the `<base href>` and/or `APP_BASE_HREF` should end with a `/`.
+ * For example, if you provide an `APP_BASE_HREF` of `'/my/app/'` and call
+ * `location.go('/foo')`, the browser's URL is normalized to `example.com/my/app/foo`.
+ * The result is the same if you add `<base href='/my/app/'/>` to the document and call
+ * `location.go('/foo')`.
  *
- * Similarly, if you add `<base href='/my/app/'/>` to the document and call
- * `location.go('/foo')`, the browser's URL will become
- * `example.com/my/app/foo`.
- *
- * Note that when using `PathLocationStrategy`, neither the query nor
- * the fragment in the `<base href>` will be preserved, as outlined
+ * When using `PathLocationStrategy`, neither the query nor
+ * the fragment in the `<base href>` is preserved, as outlined
  * by the [RFC](https://tools.ietf.org/html/rfc3986#section-5.2.2).
  *
- * @usageNotes
- *
- * ### Example
+ * The following example displays the normalized URL produced with this strategy.
  *
  * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
+ *
+ * @see `LocationStrategy`
+ * @see `APP_BASE_HREF`
+ * @see [LocationStrategy and browser URL styles](guide/router#locationstrategy-and-browser-url-styles)
+ *
  *
  * @publicApi
  */
