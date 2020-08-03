@@ -75,14 +75,10 @@ function containsSegmentGroupHelper(
 /**
  * @description
  *
- * Represents the parsed URL.
+ * Represents a parsed URL in the router service.
+ * The router serializes the router state tree to form the URL for a specific routed view.
  *
- * Since a router state is a tree, and the URL is nothing but a serialized state, the URL is a
- * serialized tree.
- * UrlTree is a data structure that provides a lot of affordances in dealing with URLs
- *
- * @usageNotes
- * ### Example
+ * The following code deconstructs a URL tree to show the elements that formed it.
  *
  * ```
  * @Component({templateUrl:'template.html'})
@@ -99,6 +95,11 @@ function containsSegmentGroupHelper(
  *   }
  * }
  * ```
+ *
+ * @see `UrlSerializer`
+ * @see `DefaultUrlSerializer`
+ * @see `UrlSegment`
+ * @see `UrlSegmentGroup`
  *
  * @publicApi
  */
