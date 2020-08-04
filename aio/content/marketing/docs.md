@@ -48,19 +48,19 @@ Angular 가이드 문서는 프로토타입부터 대규모 기업용 앱에도 
       <p class="card-footer">로컬 개발환경 설정</p>
   </a>
   <a href="guide/architecture" class="docs-card" title="Angular Concepts">
-      <section>Learn and Explore</section>
-      <p>Learn about the fundamental design concepts and architecture of Angular apps.</p>
-      <p class="card-footer">Introduction to Angular concepts</p>
+      <section>가이드문서 학습하기</section>
+      <p>Angular의 설계 철학과 앱 구조에 대해 알아보세요.</p>
+      <p class="card-footer">Angular 컨셉 소개</p>
   </a>
   <a href="start" class="docs-card" title="Try out Angular">
-      <section>Take a Look</section>
-      <p>Examine and work with a small ready-made Angular app, without any setup.</p>
-      <p class="card-footer">Try it now</p>
+      <section>살펴보기</section>
+      <p>로컬 개발환경 설정 없이 미리 만들어둔 Angular 앱이 어떻게 동작하는지 확인해 보세요.</p>
+      <p class="card-footer">실행해보기</p>
   </a>
   <a href="tutorial" class="docs-card" title="Create an app">
       <section>Hello World</section>
-      <p>Work through a full tutorial to create your first app.</p>
-      <p class="card-footer">Tour of Heroes tutorial</p>
+      <p>튜토리얼을 단계별로 진행하면서 앱을 직접 만들어 보세요.</p>
+      <p class="card-footer">히어로들의 여행 튜토리얼</p>
   </a>
 
 

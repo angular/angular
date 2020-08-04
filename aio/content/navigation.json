@@ -1205,9 +1205,9 @@
         {
           "url": "analytics",
           "//title": "Usage Analytics",
-          "title": "통계 활용하기",
+          "title": "활용통계 제공하기",
           "//tooltip": "Angular Usage Analytics",
-          "tooltip": "Angular 사용 통계"
+          "tooltip": "Angular 사용경험 통계를 수집합니다."
         }
       ]
     },
