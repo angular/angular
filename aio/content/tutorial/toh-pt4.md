@@ -385,7 +385,6 @@ next section on [Routing](tutorial/toh-pt5).
 path="toh-pt4/src/app/heroes/heroes.component.ts">
 </code-example>
 
-The browser refreshes and the page displays the list of heroes.
 Refresh the browser to see the list of heroes, and scroll to the bottom to see the
 messages from the HeroService. Each time you click a hero, a new message appears to record
 the selection. Use the "clear" button to clear the message history.
