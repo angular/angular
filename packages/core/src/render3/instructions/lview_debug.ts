@@ -362,19 +362,24 @@ export function toDebug(obj: any): any {
  * (will not serialize child elements).
  */
 function toHtml(value: any, includeChildren: boolean = false): string|null {
-  const node: HTMLElement|null = unwrapRNode(value) as any;
+  const node: Node|null = unwrapRNode(value) as any;
   if (node) {
-    const isTextNode = node.nodeType === Node.TEXT_NODE;
-    const outerHTML = (isTextNode ? node.textContent : node.outerHTML) || '';
-    if (includeChildren || isTextNode) {
-      return outerHTML;
-    } else {
-      const innerHTML = '>' + node.innerHTML + '<';
-      return (outerHTML.split(innerHTML)[0]) + '>';
+    switch (node.nodeType) {
+      case Node.TEXT_NODE:
+        return node.textContent;
+      case Node.COMMENT_NODE:
+        return `<!--${(node as Comment).textContent}-->`;
+      case Node.ELEMENT_NODE:
+        const outerHTML = (node as Element).outerHTML;
+        if (includeChildren) {
+          return outerHTML;
+        } else {
+          const innerHTML = '>' + (node as Element).innerHTML + '<';
+          return (outerHTML.split(innerHTML)[0]) + '>';
+        }
     }
-  } else {
-    return null;
   }
+  return null;
 }
 
 export class LViewDebug implements ILViewDebug {
