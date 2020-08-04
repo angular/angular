@@ -19,6 +19,23 @@ describe('RouterPreloader', () => {
   class LazyLoadedCmp {
   }
 
+  describe('should properly handle', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule.withRoutes(
+            [{path: 'lazy', loadChildren: 'expected', canLoad: ['someGuard']}])],
+        providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
+      });
+    });
+
+    it('being destroyed before expected', () => {
+      const preloader: RouterPreloader = TestBed.get(RouterPreloader);
+      // Calling the RouterPreloader's ngOnDestroy method is done to simulate what would happen if
+      // the containing NgModule is destroyed.
+      expect(() => preloader.ngOnDestroy()).not.toThrow();
+    });
+  });
+
   describe('should not load configurations with canLoad guard', () => {
     @NgModule({
       declarations: [LazyLoadedCmp],
