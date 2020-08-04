@@ -7,7 +7,7 @@
  */
 
 import {devModeEqual} from '../change_detection/change_detection_util';
-import {assertDataInRange, assertLessThan, assertNotSame} from '../util/assert';
+import {assertIndexInRange, assertLessThan, assertNotSame} from '../util/assert';
 
 import {getExpressionChangedErrorDetails, throwErrorIfNoChangesMode} from './errors';
 import {LView} from './interfaces/view';
@@ -24,7 +24,7 @@ export function updateBinding(lView: LView, bindingIndex: number, value: any): a
 
 /** Gets the current binding value. */
 export function getBinding(lView: LView, bindingIndex: number): any {
-  ngDevMode && assertDataInRange(lView, bindingIndex);
+  ngDevMode && assertIndexInRange(lView, bindingIndex);
   ngDevMode &&
       assertNotSame(lView[bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
   return lView[bindingIndex];

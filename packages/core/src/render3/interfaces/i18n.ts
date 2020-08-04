@@ -347,6 +347,14 @@ export interface TIcu {
   vars: number[];
 
   /**
+   * Currently selected ICU case pointer.
+   *
+   * `lView[currentCaseLViewIndex]` stores the currently selected case. This is needed to know how
+   * to clean up the current case when transitioning no the new case.
+   */
+  currentCaseLViewIndex: number;
+
+  /**
    * An optional array of child/sub ICUs.
    *
    * In case of nested ICUs such as:
