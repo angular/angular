@@ -821,6 +821,11 @@
           "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
         },
         {
+          "url": "guide/roadmap",
+          "title": "Roadmap",
+          "tooltip": "Roadmap of the Angular team."
+        },
+        {
           "title": "Updating to Version 10",
           "tooltip": "Support for updating your application from version 9 to 10.",
           "children": [
