@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDataInRange} from '../util/assert';
+import {assertIndexInRange} from '../util/assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, getBinding, updateBinding} from './bindings';
 import {LView} from './interfaces/view';
 import {getBindingRoot, getLView} from './state';
@@ -287,7 +287,7 @@ export function ɵɵpureFunctionV(
  * it to `undefined`.
  */
 function getPureFunctionReturnValue(lView: LView, returnValueIndex: number) {
-  ngDevMode && assertDataInRange(lView, returnValueIndex);
+  ngDevMode && assertIndexInRange(lView, returnValueIndex);
   const lastReturnValue = lView[returnValueIndex];
   return lastReturnValue === NO_CHANGE ? undefined : lastReturnValue;
 }

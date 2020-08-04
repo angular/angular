@@ -261,7 +261,7 @@ describe('Runtime i18n', () => {
                       }, null, nbConsts, index) as TI18n;
 
       expect(opCodes).toEqual({
-        vars: 5,
+        vars: 6,
         update: debugMatch([
           'if (mask & 0b1) { icuSwitchCase(lView[1] as Comment, 0, `${lView[1]}`); }',
           'if (mask & 0b11) { icuUpdateCase(lView[1] as Comment, 0); }',
@@ -272,60 +272,61 @@ describe('Runtime i18n', () => {
         ]),
         icus: [<TIcu>{
           type: 1,
-          vars: [4, 3, 3],
+          currentCaseLViewIndex: 22,
+          vars: [5, 4, 4],
           childIcus: [[], [], []],
           cases: ['0', '1', 'other'],
           create: [
             debugMatch([
-              'lView[2] = document.createTextNode("no ")',
-              '(lView[1] as Element).appendChild(lView[2])',
-              'lView[3] = document.createElement("b")',
+              'lView[3] = document.createTextNode("no ")',
               '(lView[1] as Element).appendChild(lView[3])',
-              '(lView[3] as Element).setAttribute("title", "none")',
-              'lView[4] = document.createTextNode("emails")',
-              '(lView[3] as Element).appendChild(lView[4])',
-              'lView[5] = document.createTextNode("!")',
-              '(lView[1] as Element).appendChild(lView[5])'
+              'lView[4] = document.createElement("b")',
+              '(lView[1] as Element).appendChild(lView[4])',
+              '(lView[4] as Element).setAttribute("title", "none")',
+              'lView[5] = document.createTextNode("emails")',
+              '(lView[4] as Element).appendChild(lView[5])',
+              'lView[6] = document.createTextNode("!")',
+              '(lView[1] as Element).appendChild(lView[6])',
             ]),
             debugMatch([
-              'lView[2] = document.createTextNode("one ")',
-              '(lView[1] as Element).appendChild(lView[2])',
-              'lView[3] = document.createElement("i")',
+              'lView[3] = document.createTextNode("one ")',
               '(lView[1] as Element).appendChild(lView[3])',
-              'lView[4] = document.createTextNode("email")',
-              '(lView[3] as Element).appendChild(lView[4])'
+              'lView[4] = document.createElement("i")',
+              '(lView[1] as Element).appendChild(lView[4])',
+              'lView[5] = document.createTextNode("email")',
+              '(lView[4] as Element).appendChild(lView[5])',
             ]),
             debugMatch([
-              'lView[2] = document.createTextNode("")',
-              '(lView[1] as Element).appendChild(lView[2])',
-              'lView[3] = document.createElement("span")',
+              'lView[3] = document.createTextNode("")',
               '(lView[1] as Element).appendChild(lView[3])',
-              'lView[4] = document.createTextNode("emails")',
-              '(lView[3] as Element).appendChild(lView[4])'
+              'lView[4] = document.createElement("span")',
+              '(lView[1] as Element).appendChild(lView[4])',
+              'lView[5] = document.createTextNode("emails")',
+              '(lView[4] as Element).appendChild(lView[5])',
             ])
           ],
           remove: [
             debugMatch([
-              '(lView[0] as Element).remove(lView[2])',
-              '(lView[0] as Element).remove(lView[4])',
               '(lView[0] as Element).remove(lView[3])',
               '(lView[0] as Element).remove(lView[5])',
+              '(lView[0] as Element).remove(lView[4])',
+              '(lView[0] as Element).remove(lView[6])',
             ]),
             debugMatch([
-              '(lView[0] as Element).remove(lView[2])',
-              '(lView[0] as Element).remove(lView[4])',
               '(lView[0] as Element).remove(lView[3])',
+              '(lView[0] as Element).remove(lView[5])',
+              '(lView[0] as Element).remove(lView[4])',
             ]),
             debugMatch([
-              '(lView[0] as Element).remove(lView[2])',
-              '(lView[0] as Element).remove(lView[4])',
               '(lView[0] as Element).remove(lView[3])',
+              '(lView[0] as Element).remove(lView[5])',
+              '(lView[0] as Element).remove(lView[4])',
             ])
           ],
           update: [
             debugMatch([]), debugMatch([]), debugMatch([
-              'if (mask & 0b1) { (lView[2] as Text).textContent = `${lView[1]} `; }',
-              'if (mask & 0b10) { (lView[3] as Element).setAttribute(\'title\', `${lView[2]}`); }'
+              'if (mask & 0b1) { (lView[3] as Text).textContent = `${lView[1]} `; }',
+              'if (mask & 0b10) { (lView[4] as Element).setAttribute(\'title\', `${lView[2]}`); }'
             ])
           ]
         }]
@@ -355,7 +356,7 @@ describe('Runtime i18n', () => {
       const nestedTIcuIndex = 0;
 
       expect(opCodes).toEqual({
-        vars: 6,
+        vars: 9,
         create: debugMatch([
           'lView[1] = document.createComment("ICU 1")',
           '(lView[0] as Element).appendChild(lView[1])'
@@ -367,27 +368,28 @@ describe('Runtime i18n', () => {
         icus: [
           {
             type: 0,
-            vars: [1, 1, 1],
+            vars: [2, 2, 2],
+            currentCaseLViewIndex: 26,
             childIcus: [[], [], []],
             cases: ['cat', 'dog', 'other'],
             create: [
               debugMatch([
-                'lView[5] = document.createTextNode("cats")',
-                '(lView[3] as Element).appendChild(lView[5])'
+                'lView[7] = document.createTextNode("cats")',
+                '(lView[4] as Element).appendChild(lView[7])'
               ]),
               debugMatch([
-                'lView[5] = document.createTextNode("dogs")',
-                '(lView[3] as Element).appendChild(lView[5])'
+                'lView[7] = document.createTextNode("dogs")',
+                '(lView[4] as Element).appendChild(lView[7])'
               ]),
               debugMatch([
-                'lView[5] = document.createTextNode("animals")',
-                '(lView[3] as Element).appendChild(lView[5])'
+                'lView[7] = document.createTextNode("animals")',
+                '(lView[4] as Element).appendChild(lView[7])'
               ]),
             ],
             remove: [
-              debugMatch(['(lView[0] as Element).remove(lView[5])']),
-              debugMatch(['(lView[0] as Element).remove(lView[5])']),
-              debugMatch(['(lView[0] as Element).remove(lView[5])'])
+              debugMatch(['(lView[0] as Element).remove(lView[7])']),
+              debugMatch(['(lView[0] as Element).remove(lView[7])']),
+              debugMatch(['(lView[0] as Element).remove(lView[7])'])
             ],
             update: [
               debugMatch([]),
@@ -397,36 +399,37 @@ describe('Runtime i18n', () => {
           },
           {
             type: 1,
-            vars: [1, 4],
+            vars: [2, 6],
             childIcus: [[], [0]],
+            currentCaseLViewIndex: 22,
             cases: ['0', 'other'],
             create: [
               debugMatch([
-                'lView[2] = document.createTextNode("zero")',
-                '(lView[1] as Element).appendChild(lView[2])'
+                'lView[3] = document.createTextNode("zero")',
+                '(lView[1] as Element).appendChild(lView[3])'
               ]),
               debugMatch([
-                'lView[2] = document.createTextNode("")',
-                '(lView[1] as Element).appendChild(lView[2])',
-                'lView[3] = document.createComment("nested ICU 0")',
+                'lView[3] = document.createTextNode("")',
                 '(lView[1] as Element).appendChild(lView[3])',
-                'lView[4] = document.createTextNode("!")',
-                '(lView[1] as Element).appendChild(lView[4])'
+                'lView[4] = document.createComment("nested ICU 0")',
+                '(lView[1] as Element).appendChild(lView[4])',
+                'lView[5] = document.createTextNode("!")',
+                '(lView[1] as Element).appendChild(lView[5])'
               ]),
             ],
             remove: [
-              debugMatch(['(lView[0] as Element).remove(lView[2])']),
+              debugMatch(['(lView[0] as Element).remove(lView[3])']),
               debugMatch([
-                '(lView[0] as Element).remove(lView[2])', '(lView[0] as Element).remove(lView[4])',
-                'removeNestedICU(0)', '(lView[0] as Element).remove(lView[3])'
+                '(lView[0] as Element).remove(lView[3])', '(lView[0] as Element).remove(lView[5])',
+                'removeNestedICU(0)', '(lView[0] as Element).remove(lView[4])'
               ]),
             ],
             update: [
               debugMatch([]),
               debugMatch([
-                'if (mask & 0b1) { (lView[2] as Text).textContent = `${lView[1]} `; }',
-                'if (mask & 0b10) { icuSwitchCase(lView[3] as Comment, 0, `${lView[2]}`); }',
-                'if (mask & 0b10) { icuUpdateCase(lView[3] as Comment, 0); }'
+                'if (mask & 0b1) { (lView[3] as Text).textContent = `${lView[1]} `; }',
+                'if (mask & 0b10) { icuSwitchCase(lView[4] as Comment, 0, `${lView[2]}`); }',
+                'if (mask & 0b10) { icuUpdateCase(lView[4] as Comment, 0); }'
               ]),
             ]
           }

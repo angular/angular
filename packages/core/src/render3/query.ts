@@ -15,7 +15,7 @@ import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
-import {assertDataInRange, assertDefined, throwError} from '../util/assert';
+import {assertDefined, assertIndexInRange, throwError} from '../util/assert';
 import {stringify} from '../util/stringify';
 
 import {assertFirstCreatePass, assertLContainer} from './assert';
@@ -140,7 +140,7 @@ class TQueries_ implements TQueries {
   }
 
   getByIndex(index: number): TQuery {
-    ngDevMode && assertDataInRange(this.queries, index);
+    ngDevMode && assertIndexInRange(this.queries, index);
     return this.queries[index];
   }
 
@@ -358,7 +358,7 @@ function materializeViewResults<T>(
         // null as a placeholder
         result.push(null);
       } else {
-        ngDevMode && assertDataInRange(tViewData, matchedNodeIdx);
+        ngDevMode && assertIndexInRange(tViewData, matchedNodeIdx);
         const tNode = tViewData[matchedNodeIdx] as TNode;
         result.push(createResultForNode(lView, tNode, tQueryMatches[i + 1], tQuery.metadata.read));
       }
@@ -551,7 +551,7 @@ export function ɵɵloadQuery<T>(): QueryList<T> {
 function loadQueryInternal<T>(lView: LView, queryIndex: number): QueryList<T> {
   ngDevMode &&
       assertDefined(lView[QUERIES], 'LQueries should be defined when trying to load a query');
-  ngDevMode && assertDataInRange(lView[QUERIES]!.queries, queryIndex);
+  ngDevMode && assertIndexInRange(lView[QUERIES]!.queries, queryIndex);
   return lView[QUERIES]!.queries[queryIndex].queryList;
 }
 

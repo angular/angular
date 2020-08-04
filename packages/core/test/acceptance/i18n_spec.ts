@@ -14,7 +14,11 @@ import localeEs from '@angular/common/locales/es';
 import localeRo from '@angular/common/locales/ro';
 import {computeMsgId} from '@angular/compiler';
 import {Component, ContentChild, ContentChildren, Directive, ElementRef, HostBinding, Input, LOCALE_ID, NO_ERRORS_SCHEMA, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef, ɵsetDocument} from '@angular/core';
+import {getComponentDef} from '@angular/core/src/render3/definition';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
+import {TI18n, TIcu} from '@angular/core/src/render3/interfaces/i18n';
+import {DebugNode, HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
+import {getComponentLView, loadLContext} from '@angular/core/src/render3/util/discovery_utils';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By, ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
@@ -599,6 +603,217 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
   });
 
+  describe('dynamic TNodes', () => {
+    // When translation occurs the i18n system needs to create dynamic TNodes for the text
+    // nodes so that they can be correctly processed by the `addRemoveViewFromContainer`.
+
+    function toTypeContent(n: DebugNode): string {
+      return `${n.type}(${n.html})`;
+    }
+
+    it('should not create dynamic TNode when no i18n', () => {
+      const fixture = initWithTemplate(AppComp, `Hello <b>World</b>!`);
+      const lView = getComponentLView(fixture.componentInstance);
+      const hello_ = (fixture.nativeElement as Element).firstChild!;
+      const b = hello_.nextSibling!;
+      const world = b.firstChild!;
+      const exclamation = b.nextSibling!;
+      const lViewDebug = lView.debug!;
+      expect(lViewDebug.nodes.map(toTypeContent)).toEqual([
+        'Element(Hello )', 'Element(<b>)', 'Element(!)'
+      ]);
+      expect(lViewDebug.decls).toEqual({
+        start: HEADER_OFFSET,
+        end: HEADER_OFFSET + 4,
+        length: 4,
+        content: [
+          jasmine.objectContaining({index: HEADER_OFFSET + 0, l: hello_}),
+          jasmine.objectContaining({index: HEADER_OFFSET + 1, l: b}),
+          jasmine.objectContaining({index: HEADER_OFFSET + 2, l: world}),
+          jasmine.objectContaining({index: HEADER_OFFSET + 3, l: exclamation}),
+        ]
+      });
+      expect(lViewDebug.i18n)
+          .toEqual(
+              {start: lViewDebug.vars.end, end: lViewDebug.expando.start, length: 0, content: []});
+    });
+
+    it('should create dynamic TNode for text nodes', () => {
+      const fixture =
+          initWithTemplate(AppComp, `<ng-container i18n>Hello <b>World</b>!</ng-container>`);
+      const lView = getComponentLView(fixture.componentInstance);
+      const hello_ = (fixture.nativeElement as Element).firstChild!;
+      const b = hello_.nextSibling!;
+      const world = b.firstChild!;
+      const exclamation = b.nextSibling!;
+      const container = exclamation.nextSibling!;
+      const lViewDebug = lView.debug!;
+      expect(lViewDebug.nodes.map(toTypeContent)).toEqual([
+        'ElementContainer(<!--ng-container-->)'
+      ]);
+      // This assertion shows that the translated nodes are correctly linked into the TNode tree.
+      expect(lViewDebug.nodes[0].children.map(toTypeContent)).toEqual([
+        'Element(Hello )', 'Element(<b>)', 'Element(!)'
+      ]);
+      // This assertion shows that the translated text is not part of decls
+      expect(lViewDebug.decls).toEqual({
+        start: HEADER_OFFSET,
+        end: HEADER_OFFSET + 3,
+        length: 3,
+        content: [
+          jasmine.objectContaining({index: HEADER_OFFSET + 0, l: container}),
+          jasmine.objectContaining({index: HEADER_OFFSET + 1}),
+          jasmine.objectContaining({index: HEADER_OFFSET + 2, l: b}),
+        ]
+      });
+      // This assertion shows that the translated DOM elements (and corresponding TNode's are stored
+      // in i18n section of LView)
+      expect(lViewDebug.i18n).toEqual({
+        start: lViewDebug.vars.end,
+        end: lViewDebug.expando.start,
+        length: 3,
+        content: [
+          jasmine.objectContaining({index: HEADER_OFFSET + 3, l: hello_}),
+          jasmine.objectContaining({index: HEADER_OFFSET + 4, l: world}),
+          jasmine.objectContaining({index: HEADER_OFFSET + 5, l: exclamation}),
+        ]
+      });
+      // This assertion shows the DOM operations which the i18n subsystem performed to update the
+      // DOM with translated text. The offsets in the debug text should match the offsets in the
+      // above assertions.
+      expect((lView[TVIEW]!.data[HEADER_OFFSET + 1]! as TI18n).create.debug).toEqual([
+        'lView[3] = document.createTextNode("Hello ")',
+        '(lView[0] as Element).appendChild(lView[3])',
+        '(lView[0] as Element).appendChild(lView[2])',
+        'lView[4] = document.createTextNode("World")',
+        '(lView[2] as Element).appendChild(lView[4])',
+        'setPreviousOrParentTNode(tView.data[2] as TNode)',
+        'lView[5] = document.createTextNode("!")',
+        '(lView[0] as Element).appendChild(lView[5])',
+      ]);
+    });
+
+    describe('ICU', () => {
+      // In the case of ICUs we can't create TNodes for each ICU part, as different ICU instances
+      // may have different selections active and hence have different shape. In such a case
+      // a single `TIcuContainerNode` should be generated only.
+      it('should create a single dynamic TNode for ICU', () => {
+        const fixture = initWithTemplate(AppComp, `
+          {count, plural, 
+            =0 {just now} 
+            =1 {one minute ago} 
+            other {{{count}} minutes ago}
+          }
+        `);
+        const lView = getComponentLView(fixture.componentInstance);
+        const lViewDebug = lView.debug!;
+        expect((fixture.nativeElement as Element).textContent).toEqual('just now');
+        const text_just_now = (fixture.nativeElement as Element).firstChild!;
+        const icuComment = text_just_now.nextSibling!;
+        expect(lViewDebug.nodes.map(toTypeContent)).toEqual(['IcuContainer(<!--ICU 3-->)']);
+        // We want to ensure that the ICU container does not have any content!
+        // This is because the content is instance dependent and therefore can't be shared
+        // across `TNode`s.
+        expect(lViewDebug.nodes[0].children.map(toTypeContent)).toEqual([
+          'Element(just now)',  // FIXME(misko): This should not be here. The content of the ICU is
+                                // instance specific and as such can't be encoded in the tNodes.
+        ]);
+        expect(lViewDebug.decls).toEqual({
+          start: HEADER_OFFSET,
+          end: HEADER_OFFSET + 1,
+          length: 1,
+          content: [
+            jasmine.objectContaining({
+              t: jasmine.objectContaining({
+                vars: 3,  // one slot for: the `<!--ICU 3-->`
+                          // one slot for: the last selected ICU case.
+                          // one slot for: the actual text node to attach.
+                create: jasmine.any(Object),
+                update: jasmine.any(Object),
+                icus: [jasmine.any(Object)],
+              }),
+              l: null
+            }),
+          ]
+        });
+        expect(((lViewDebug.decls.content[0].t as TI18n).create.debug)).toEqual([
+          'lView[3] = document.createComment("ICU 3")',
+          '(lView[0] as Element).appendChild(lView[3])',
+        ]);
+        expect(((lViewDebug.decls.content[0].t as TI18n).update.debug)).toEqual([
+          'if (mask & 0b1) { icuSwitchCase(lView[3] as Comment, 0, `${lView[1]}`); }',
+          'if (mask & 0b11) { icuUpdateCase(lView[3] as Comment, 0); }',
+        ]);
+        const tIcu = (lViewDebug.decls.content[0].t as TI18n).icus![0];
+        expect(tIcu.cases).toEqual(['0', '1', 'other']);
+        // Case: '0'
+        expect(tIcu.create[0].debug).toEqual([
+          'lView[5] = document.createTextNode("just now")',
+          '(lView[3] as Element).appendChild(lView[5])',
+        ]);
+        expect(tIcu.remove[0].debug).toEqual(['(lView[0] as Element).remove(lView[5])']);
+        expect(tIcu.update[0].debug).toEqual([]);
+
+        // Case: '1'
+        expect(tIcu.create[1].debug).toEqual([
+          'lView[5] = document.createTextNode("one minute ago")',
+          '(lView[3] as Element).appendChild(lView[5])',
+        ]);
+        expect(tIcu.remove[1].debug).toEqual(['(lView[0] as Element).remove(lView[5])']);
+        expect(tIcu.update[1].debug).toEqual([]);
+
+        // Case: 'other'
+        expect(tIcu.create[2].debug).toEqual([
+          'lView[5] = document.createTextNode("")',
+          '(lView[3] as Element).appendChild(lView[5])',
+        ]);
+        expect(tIcu.remove[2].debug).toEqual(['(lView[0] as Element).remove(lView[5])']);
+        expect(tIcu.update[2].debug).toEqual([
+          'if (mask & 0b10) { (lView[5] as Text).textContent = `${lView[2]} minutes ago`; }'
+        ]);
+
+        expect(lViewDebug.i18n).toEqual({
+          start: lViewDebug.vars.end,
+          end: lViewDebug.expando.start,
+          length: 3,
+          content: [
+            // ICU anchor `<!--ICU 3-->`.
+            jasmine.objectContaining({index: HEADER_OFFSET + 3, l: icuComment}),
+            // ICU `TIcu.currentCaseLViewIndex` storage location
+            jasmine.objectContaining({
+              index: HEADER_OFFSET + 4,
+              t: null,
+              l: 0,  // The current ICU case
+            }),
+            jasmine.objectContaining({index: HEADER_OFFSET + 5, l: text_just_now}),
+          ]
+        });
+      });
+
+      // FIXME(misko): re-enable and fix this use case.
+      xit('should support multiple ICUs', () => {
+        const fixture = initWithTemplate(AppComp, `
+          {count, plural, 
+            =0 {just now} 
+            =1 {one minute ago} 
+            other {{{count}} minutes ago}
+          }
+          {count, plural, 
+            =0 {just now} 
+            =1 {one minute ago} 
+            other {{{count}} minutes ago}
+          }
+        `);
+        const lView = getComponentLView(fixture.componentInstance);
+        expect(lView.debug!.nodes.map(toTypeContent)).toEqual(['IcuContainer(<!--ICU 3-->)']);
+        // We want to ensure that the ICU container does not have any content!
+        // This is because the content is instance dependent and therefore can't be shared
+        // across `TNode`s.
+        expect(lView.debug!.nodes[0].children.map(toTypeContent)).toEqual([]);
+      });
+    });
+  });
+
   describe('should support ICU expressions', () => {
     it('with no root node', () => {
       loadTranslations({
@@ -690,19 +905,19 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         other {({{name}})}
       }</div>`);
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<div>aucun <b>email</b>!<!--ICU 7--> - (Angular)<!--ICU 13--></div>`);
+          .toEqual(`<div>aucun <b>email</b>!<!--ICU 7--> - (Angular)<!--ICU 14--></div>`);
 
       fixture.componentRef.instance.count = 4;
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
           .toEqual(
-              `<div>4 <span title="Angular">emails</span><!--ICU 7--> - (Angular)<!--ICU 13--></div>`);
+              `<div>4 <span title="Angular">emails</span><!--ICU 7--> - (Angular)<!--ICU 14--></div>`);
 
       fixture.componentRef.instance.count = 0;
       fixture.componentRef.instance.name = 'John';
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<div>aucun <b>email</b>!<!--ICU 7--> - (John)<!--ICU 13--></div>`);
+          .toEqual(`<div>aucun <b>email</b>!<!--ICU 7--> - (John)<!--ICU 14--></div>`);
     });
 
     it('with custom interpolation config', () => {
@@ -740,20 +955,20 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }</span></div>`);
       expect(fixture.nativeElement.innerHTML)
           .toEqual(
-              `<div><span>aucun <b>email</b>!<!--ICU 9--></span> - <span>(Angular)<!--ICU 15--></span></div>`);
+              `<div><span>aucun <b>email</b>!<!--ICU 9--></span> - <span>(Angular)<!--ICU 16--></span></div>`);
 
       fixture.componentRef.instance.count = 4;
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
           .toEqual(
-              `<div><span>4 <span title="Angular">emails</span><!--ICU 9--></span> - <span>(Angular)<!--ICU 15--></span></div>`);
+              `<div><span>4 <span title="Angular">emails</span><!--ICU 9--></span> - <span>(Angular)<!--ICU 16--></span></div>`);
 
       fixture.componentRef.instance.count = 0;
       fixture.componentRef.instance.name = 'John';
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
           .toEqual(
-              `<div><span>aucun <b>email</b>!<!--ICU 9--></span> - <span>(John)<!--ICU 15--></span></div>`);
+              `<div><span>aucun <b>email</b>!<!--ICU 9--></span> - <span>(John)<!--ICU 16--></span></div>`);
     });
 
     it('inside template directives', () => {
@@ -1434,6 +1649,54 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       fixture.detectChanges();
       // checking the second ICU case
       expect(fixture.nativeElement.textContent.trim()).toBe('deux articles');
+    });
+
+    // FIXME(misko): re-enable and fix this use case. Root cause is that
+    // `addRemoveViewFromContainer` needs to understand ICU
+    xit('should handle select expressions without an `other` parameter inside a template', () => {
+      const fixture = initWithTemplate(AppComp, `
+        <ng-container *ngFor="let item of items">{item.value, select, 0 {A} 1 {B} 2 {C}}</ng-container>
+      `);
+      fixture.componentInstance.items = [{value: 0}, {value: 1}, {value: 1337}];
+      fixture.detectChanges();
+      const p = fixture.nativeElement.querySelector('p');
+      const lContext = loadLContext(p);
+      const lView = lContext.lView;
+      const nodeIndex = lContext.nodeIndex;
+      const tView = lView[TVIEW];
+      const i18n = tView.data[nodeIndex + 1] as unknown as TI18n;
+      expect(fixture.nativeElement.textContent.trim()).toBe('AB');
+
+      fixture.componentInstance.items[0].value = 2;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('CB');
+      fail('testing');
+    });
+
+    it('should render an element whose case did not match initially', () => {
+      const fixture = initWithTemplate(AppComp, `
+        <p *ngFor="let item of items">{item.value, select, 0 {A} 1 {B} 2 {C}}</p>
+      `);
+      fixture.componentInstance.items = [{value: 0}, {value: 1}, {value: 1337}];
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('AB');
+
+      fixture.componentInstance.items[2].value = 2;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('ABC');
+    });
+
+    it('should remove an element whose case matched initially, but does not anymore', () => {
+      const fixture = initWithTemplate(AppComp, `
+        <p *ngFor="let item of items">{item.value, select, 0 {A} 1 {B} 2 {C}}</p>
+      `);
+      fixture.componentInstance.items = [{value: 0}, {value: 1}];
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('AB');
+
+      fixture.componentInstance.items[0].value = 1337;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('B');
     });
   });
 
