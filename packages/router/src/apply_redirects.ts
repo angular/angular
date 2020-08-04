@@ -7,7 +7,7 @@
  */
 
 import {Injector, NgModuleRef} from '@angular/core';
-import {combineLatest, EmptyError, Observable, Observer, of} from 'rxjs';
+import {combineLatest, EmptyError, Observable, Observer, of, throwError} from 'rxjs';
 import {catchError, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
@@ -148,20 +148,25 @@ class ApplyRedirects {
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[],
       segments: UrlSegment[], outlet: string,
       allowRedirects: boolean): Observable<UrlSegmentGroup> {
-    return combineLatest(routes.map((r: any) => {
-             const expanded$ = this.expandSegmentAgainstRoute(
-                 ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
-             return expanded$.pipe(catchError((e: any) => {
-               if (e instanceof NoMatch) {
-                 // TODO(i): this return type doesn't match the declared Observable<UrlSegmentGroup>
-                 // talk to Jason
-                 return of(null) as any;
-               }
-               throw e;
-             }));
-           }))
+    const expandedSegments$ = routes.map((r: any) => {
+      try {
+        const expanded$ = this.expandSegmentAgainstRoute(
+            ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
+        return expanded$.pipe(catchError((e: any) => {
+          if (e instanceof NoMatch) {
+            return of(null);
+          }
+          throw e;
+        }));
+      } catch (e) {
+        // Ensure any errors thrown outside of an Observable are converted to Observable errors.
+        return throwError(e);
+      }
+    });
+    return combineLatest(expandedSegments$)
         .pipe(
-            map(x => x.find((s: any) => !!s)), first((s: any) => !!s),
+            map(resolved => resolved.find((s): s is UrlSegmentGroup => s !== null)),
+            first((s): s is UrlSegmentGroup => s !== undefined),
             catchError((e: any, _: any) => {
               if (e instanceof EmptyError || e.name === 'EmptyError') {
                 if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
@@ -170,7 +175,8 @@ class ApplyRedirects {
                 throw new NoMatch(segmentGroup);
               }
               throw e;
-            }));
+            }),
+        );
   }
 
   private noLeftoversInUrl(segmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string):
@@ -181,6 +187,8 @@ class ApplyRedirects {
   private expandSegmentAgainstRoute(
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       paths: UrlSegment[], outlet: string, allowRedirects: boolean): Observable<UrlSegmentGroup> {
+    // Empty string segments are special because multiple outlets can match a single config, i.e.
+    // `[{path: '', component: B}, {path: '', loadChildren: () => {}, outlet: "about"}]`
     if (getOutlet(route) !== outlet && route.path !== '') {
       return noMatch(segmentGroup);
     }

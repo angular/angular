@@ -7,8 +7,9 @@
  */
 
 import {NgModuleRef} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Observable, of} from 'rxjs';
+import {delay, tap} from 'rxjs/operators';
 
 import {applyRedirects} from '../src/apply_redirects';
 import {LoadedRouterConfig, Route, Routes} from '../src/config';
@@ -463,26 +464,33 @@ describe('applyRedirects', () => {
           });
     });
 
-    it('should load the configuration of empty root path if the entry point is an auxiliary outlet',
-       () => {
+    it('should load all matching configurations of empty path, including an auxiliary outlets',
+       fakeAsync(() => {
          const loadedConfig =
              new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+         let loadCalls = 0;
+         let loaded: string[] = [];
          const loader = {
-           load: (injector: any, p: any) => {
-             return of(loadedConfig);
+           load: (injector: any, p: Route) => {
+             loadCalls++;
+             return of(loadedConfig)
+                 .pipe(
+                     delay(100 * loadCalls),
+                     tap(() => loaded.push(p.loadChildren! as string)),
+                 );
            }
          };
 
-         const config: Routes = [
-           {path: '', loadChildren: 'root'}, {path: 'modal', loadChildren: 'aux', outlet: 'popup'}
-         ];
+         const config: Routes =
+             [{path: '', loadChildren: 'root'}, {path: '', loadChildren: 'aux', outlet: 'popup'}];
 
-         applyRedirects(testModule.injector, <any>loader, serializer, tree('(popup:modal)'), config)
-             .forEach(r => {
-               expectTreeToBe(r, '/(popup:modal)');
-               expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
-             });
-       });
+         applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).subscribe();
+         expect(loadCalls).toBe(2);
+         tick(100);
+         expect(loaded).toEqual(['root']);
+         tick(100);
+         expect(loaded).toEqual(['root', 'aux']);
+       }));
   });
 
   describe('empty paths', () => {
