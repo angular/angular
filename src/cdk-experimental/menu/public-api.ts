@@ -17,5 +17,5 @@ export * from './menu-panel';
 export * from './menu-group';
 export * from './context-menu';
 
-export * from './menu-stack';
+export {MenuStack, MenuStackItem} from './menu-stack';
 export {CDK_MENU} from './menu-interface';

@@ -36,9 +36,8 @@ import {merge, Observable} from 'rxjs';
 import {CdkMenuGroup} from './menu-group';
 import {CdkMenuPanel} from './menu-panel';
 import {Menu, CDK_MENU} from './menu-interface';
-import {throwMissingMenuPanelError} from './menu-errors';
 import {CdkMenuItem} from './menu-item';
-import {MenuStack, MenuStackItem, FocusNext} from './menu-stack';
+import {MenuStack, MenuStackItem, FocusNext, NoopMenuStack} from './menu-stack';
 import {getItemPointerEntries} from './item-pointer-entries';
 
 /**
@@ -52,6 +51,7 @@ import {getItemPointerEntries} from './item-pointer-entries';
   selector: '[cdkMenu]',
   exportAs: 'cdkMenu',
   host: {
+    '[tabindex]': '_isInline() ? 0 : null',
     'role': 'menu',
     'class': 'cdk-menu',
     '[attr.aria-orientation]': 'orientation',
@@ -71,8 +71,11 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
   /** Event emitted when the menu is closed. */
   @Output() readonly closed: EventEmitter<void | 'click' | 'tab' | 'escape'> = new EventEmitter();
 
+  // We provide a default MenuStack implementation in case the menu is an inline menu.
+  // For Menus part of a MenuBar nested within a MenuPanel this will be overwritten
+  // to the correct parent MenuStack.
   /** Track the Menus making up the open menu stack. */
-  _menuStack: MenuStack;
+  _menuStack: MenuStack = new NoopMenuStack();
 
   /** Handles keyboard events for the menu. */
   private _keyManager: FocusKeyManager<CdkMenuItem>;
@@ -124,6 +127,11 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
     this._subscribeToMouseManager();
   }
 
+  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
+  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
+  // can move this back into `host`.
+  // tslint:disable:no-host-decorator-in-concrete
+  @HostListener('focus')
   /** Place focus on the first MenuItem in the menu and set the focus origin. */
   focusFirstItem(focusOrigin: FocusOrigin = 'program') {
     this._keyManager.setFocusOrigin(focusOrigin);
@@ -181,12 +189,7 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
 
   /** Register this menu with its enclosing parent menu panel */
   private _registerWithParentPanel() {
-    const parent = this._getMenuPanel();
-    if (parent) {
-      parent._registerMenu(this);
-    } else {
-      throwMissingMenuPanelError();
-    }
+    this._getMenuPanel()?._registerMenu(this);
   }
 
   /**
@@ -321,6 +324,16 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
   /** Return true if this menu has been configured in a horizontal orientation. */
   private _isHorizontal() {
     return this.orientation === 'horizontal';
+  }
+
+  /**
+   * Return true if this menu is an inline menu. That is, it does not exist in a pop-up and is
+   * always visible in the dom.
+   */
+  _isInline() {
+    // NoopMenuStack is the default. If this menu is not inline than the NoopMenuStack is replaced
+    // automatically.
+    return this._menuStack instanceof NoopMenuStack;
   }
 
   ngOnDestroy() {

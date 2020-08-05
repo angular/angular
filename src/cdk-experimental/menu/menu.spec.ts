@@ -1,5 +1,7 @@
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
+import {TAB} from '@angular/cdk/keycodes';
+import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {By} from '@angular/platform-browser';
 import {CdkMenu} from './menu';
 import {CdkMenuModule} from './menu-module';
@@ -158,6 +160,41 @@ describe('Menu', () => {
       expect(spy).withContext('Expected initial trigger only').toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('when configured inline', () => {
+    let fixture: ComponentFixture<InlineMenu>;
+    let nativeMenu: HTMLElement;
+    let nativeMenuItems: HTMLElement[];
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [InlineMenu],
+      }).compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(InlineMenu);
+      fixture.detectChanges();
+
+      nativeMenu = fixture.debugElement.query(By.directive(CdkMenu)).nativeElement;
+      nativeMenuItems = fixture.debugElement
+        .queryAll(By.directive(CdkMenuItem))
+        .map(e => e.nativeElement);
+    });
+
+    it('should have its tabindex set to 0', () => {
+      const item = fixture.debugElement.query(By.directive(CdkMenu)).nativeElement;
+      expect(item.getAttribute('tabindex')).toBe('0');
+    });
+
+    it('should focus the first menu item when it gets tabbed in', () => {
+      dispatchKeyboardEvent(document, 'keydown', TAB);
+      nativeMenu.focus();
+
+      expect(document.querySelector(':focus')).toEqual(nativeMenuItems[0]);
+    });
+  });
 });
 
 @Component({
@@ -229,3 +266,13 @@ class MenuWithConditionalGroup {
   @ViewChild(CdkMenuItem) readonly trigger: CdkMenuItem;
   @ViewChild(CdkMenuPanel) readonly panel: CdkMenuPanel;
 }
+
+@Component({
+  template: `
+    <div cdkMenu>
+      <button cdkMenuItem>Inbox</button>
+      <button cdkMenuItem>Starred</button>
+    </div>
+  `,
+})
+class InlineMenu {}

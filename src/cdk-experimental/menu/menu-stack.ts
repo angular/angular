@@ -122,7 +122,13 @@ export class MenuStack {
   }
 
   /** Get the top most element on the stack. */
-  peek() {
+  peek(): MenuStackItem | undefined {
     return this._elements[this._elements.length - 1];
   }
+}
+
+/** NoopMenuStack is a placeholder MenuStack used for inline menus. */
+export class NoopMenuStack extends MenuStack {
+  /** Noop push - does not add elements to the MenuStack. */
+  push(_: MenuStackItem) {}
 }
