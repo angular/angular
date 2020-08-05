@@ -97,6 +97,11 @@ describe('CdkContextMenuTrigger', () => {
 
       expect(getContextMenu()).toBeDefined();
     });
+
+    it('should focus the first menuitem when the context menu is opened', () => {
+      openContextMenu();
+      expect(document.querySelector(':focus')!.id).toEqual('first_menu_item');
+    });
   });
 
   describe('nested context menu triggers', () => {
@@ -250,7 +255,7 @@ describe('CdkContextMenuTrigger', () => {
 
     <ng-template cdkMenuPanel #context="cdkMenuPanel">
       <div cdkMenu [cdkMenuPanel]="context">
-        <button cdkMenuItem></button>
+        <button id="first_menu_item" cdkMenuItem></button>
       </div>
     </ng-template>
   `,

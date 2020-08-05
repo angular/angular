@@ -216,6 +216,15 @@ export class CdkContextMenuTrigger implements OnDestroy {
 
       this._contextMenuTracker.update(this);
       this.open({x: event.clientX, y: event.clientY});
+
+      // A context menu can be triggered via a mouse right click or a keyboard shortcut.
+      if (event.button === 2) {
+        this._menuPanel._menu?.focusFirstItem('mouse');
+      } else if (event.button === 0) {
+        this._menuPanel._menu?.focusFirstItem('keyboard');
+      } else {
+        this._menuPanel._menu?.focusFirstItem('program');
+      }
     }
   }
 
