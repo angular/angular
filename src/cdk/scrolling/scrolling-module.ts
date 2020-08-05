@@ -20,6 +20,9 @@ import {CdkVirtualScrollViewport} from './virtual-scroll-viewport';
 })
 export class CdkScrollableModule {}
 
+/**
+ * @docs-primary-export
+ */
 @NgModule({
   imports: [
     BidiModule,
