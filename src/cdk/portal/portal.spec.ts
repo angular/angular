@@ -678,8 +678,8 @@ class SaveParentNodeOnInit implements AfterViewInit {
   `
 })
 class ArbitraryViewContainerRefComponent {
-  @ViewChild('template', {static: false}) template: TemplateRef<any>;
-  @ViewChild(SaveParentNodeOnInit, {static: false}) saveParentNodeOnInit: SaveParentNodeOnInit;
+  @ViewChild('template') template: TemplateRef<any>;
+  @ViewChild(SaveParentNodeOnInit) saveParentNodeOnInit: SaveParentNodeOnInit;
 
   constructor(public viewContainerRef: ViewContainerRef, public injector: Injector) { }
 }

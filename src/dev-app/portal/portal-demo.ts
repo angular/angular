@@ -17,7 +17,7 @@ import {Component, QueryList, ViewChildren, ElementRef, ViewChild} from '@angula
 })
 export class PortalDemo {
   @ViewChildren(CdkPortal) templatePortals: QueryList<Portal<any>>;
-  @ViewChild('domPortalSource', {static: false}) domPortalSource: ElementRef<HTMLElement>;
+  @ViewChild('domPortalSource') domPortalSource: ElementRef<HTMLElement>;
 
   selectedPortal: Portal<any>;
 

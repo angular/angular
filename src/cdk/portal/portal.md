@@ -88,7 +88,7 @@ Usage:
 ```
 
 ```ts
-@ViewChild('domPortalContent', {static: false}) domPortalContent: ElementRef<HTMLElement>;
+@ViewChild('domPortalContent') domPortalContent: ElementRef<HTMLElement>;
 ngAfterViewInit() {
   this.domPortal = new DomPortal(this.domPortalContent);
 }

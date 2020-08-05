@@ -337,8 +337,8 @@ class SetOfItems {
   </mat-accordion>`})
 class NestedAccordions {
   @ViewChildren(MatExpansionPanelHeader) headers: QueryList<MatExpansionPanelHeader>;
-  @ViewChild('secondOuterHeader', {static: false}) secondOuterHeader: MatExpansionPanelHeader;
-  @ViewChild('firstInnerHeader', {static: false}) firstInnerHeader: MatExpansionPanelHeader;
+  @ViewChild('secondOuterHeader') secondOuterHeader: MatExpansionPanelHeader;
+  @ViewChild('firstInnerHeader') firstInnerHeader: MatExpansionPanelHeader;
 }
 
 @Component({template: `

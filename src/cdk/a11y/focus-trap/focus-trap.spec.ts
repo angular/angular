@@ -345,8 +345,8 @@ class FocusTrapWithoutFocusableElements {
   `,
 })
 class FocusTrapInsidePortal {
-  @ViewChild('template', {static: false}) template: TemplateRef<any>;
-  @ViewChild(CdkPortalOutlet, {static: false}) portalOutlet: CdkPortalOutlet;
+  @ViewChild('template') template: TemplateRef<any>;
+  @ViewChild(CdkPortalOutlet) portalOutlet: CdkPortalOutlet;
 
   constructor(public viewContainerRef: ViewContainerRef) {}
 }

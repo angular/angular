@@ -5449,9 +5449,9 @@ class StandaloneDraggableWithHandle {
   `
 })
 class StandaloneDraggableWithPreDisabledHandle {
-  @ViewChild('dragElement', {static: false}) dragElement: ElementRef<HTMLElement>;
-  @ViewChild('handleElement', {static: false}) handleElement: ElementRef<HTMLElement>;
-  @ViewChild(CdkDrag, {static: false}) dragInstance: CdkDrag;
+  @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
+  @ViewChild('handleElement') handleElement: ElementRef<HTMLElement>;
+  @ViewChild(CdkDrag) dragInstance: CdkDrag;
   disableHandle = true;
 }
 

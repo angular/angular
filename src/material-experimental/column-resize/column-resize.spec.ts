@@ -157,7 +157,7 @@ const MOUSE_START_OFFSET = 1000;
 
 @Directive()
 abstract class BaseTestComponent {
-  @ViewChild('table', {static: false}) table: ElementRef;
+  @ViewChild('table') table: ElementRef;
 
   abstract columnResize: AbstractMatColumnResize;
 
