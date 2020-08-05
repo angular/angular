@@ -9,6 +9,7 @@
 import {Inject, Injectable, OnDestroy, Provider} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {coerceCssPixelValue} from '@angular/cdk/coercion';
+import {CdkTable, _CoalescedStyleScheduler} from '@angular/cdk/table';
 
 import {ColumnResize} from './column-resize';
 
@@ -19,6 +20,10 @@ import {ColumnResize} from './column-resize';
 @Injectable()
 export abstract class ResizeStrategy {
   protected abstract readonly columnResize: ColumnResize;
+  protected abstract readonly styleScheduler: _CoalescedStyleScheduler;
+  protected abstract readonly table: CdkTable<unknown>;
+
+  private _pendingResizeDelta: number|null = null;
 
   /** Updates the width of the specified column. */
   abstract applyColumnSize(
@@ -40,11 +45,23 @@ export abstract class ResizeStrategy {
       minSizeInPx: number): void;
 
   /** Adjusts the width of the table element by the specified delta. */
-  protected updateTableWidth(delta: number): void {
-    const table = this.columnResize.elementRef.nativeElement;
-    const tableWidth = getElementWidth(table);
+  protected updateTableWidthAndStickyColumns(delta: number): void {
+    if (this._pendingResizeDelta === null) {
+      const tableElement = this.columnResize.elementRef.nativeElement;
+      const tableWidth = getElementWidth(tableElement);
 
-    table.style.width = coerceCssPixelValue(tableWidth + delta);
+      this.styleScheduler.schedule(() => {
+        tableElement.style.width = coerceCssPixelValue(tableWidth + this._pendingResizeDelta!);
+
+        this._pendingResizeDelta = null;
+      });
+
+      this.styleScheduler.scheduleEnd(() => {
+        this.table.updateStickyColumnStyles();
+      });
+    }
+
+    this._pendingResizeDelta = (this._pendingResizeDelta ?? 0) + delta;
   }
 }
 
@@ -57,7 +74,10 @@ export abstract class ResizeStrategy {
  */
 @Injectable()
 export class TableLayoutFixedResizeStrategy extends ResizeStrategy {
-  constructor(protected readonly columnResize: ColumnResize) {
+  constructor(
+      protected readonly columnResize: ColumnResize,
+      protected readonly styleScheduler: _CoalescedStyleScheduler,
+      protected readonly table: CdkTable<unknown>) {
     super();
   }
 
@@ -65,9 +85,15 @@ export class TableLayoutFixedResizeStrategy extends ResizeStrategy {
       previousSizeInPx?: number): void {
     const delta = sizeInPx - (previousSizeInPx ?? getElementWidth(columnHeader));
 
-    columnHeader.style.width = coerceCssPixelValue(sizeInPx);
+    if (delta === 0) {
+      return;
+    }
 
-    this.updateTableWidth(delta);
+    this.styleScheduler.schedule(() => {
+      columnHeader.style.width = coerceCssPixelValue(sizeInPx);
+    });
+
+    this.updateTableWidthAndStickyColumns(delta);
   }
 
   applyMinColumnSize(_: string, columnHeader: HTMLElement, sizeInPx: number): void {
@@ -105,6 +131,8 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
 
   constructor(
       protected readonly columnResize: ColumnResize,
+      protected readonly styleScheduler: _CoalescedStyleScheduler,
+      protected readonly table: CdkTable<unknown>,
       @Inject(DOCUMENT) document: any) {
     super();
     this._document = document;
@@ -117,10 +145,14 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
     const delta = sizeInPx - (previousSizeInPx ??
         (this._getAppliedWidth(cssFriendlyColumnName) || columnHeader.offsetWidth));
 
+    if (delta === 0) {
+      return;
+    }
+
     const cssSize = coerceCssPixelValue(sizeInPx);
 
     this._applyProperty(cssFriendlyColumnName, 'flex', `0 0.01 ${cssSize}`);
-    this.updateTableWidth(delta);
+    this.updateTableWidthAndStickyColumns(delta);
   }
 
   applyMinColumnSize(cssFriendlyColumnName: string, _: HTMLElement, sizeInPx: number): void {
@@ -128,6 +160,7 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
 
     this._applyProperty(cssFriendlyColumnName, 'min-width', cssSize,
         sizeInPx !== this.defaultMinSize);
+    this.updateTableWidthAndStickyColumns(0);
   }
 
   applyMaxColumnSize(cssFriendlyColumnName: string, _: HTMLElement, sizeInPx: number): void {
@@ -135,6 +168,7 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
 
     this._applyProperty(cssFriendlyColumnName, 'max-width', cssSize,
         sizeInPx !== this.defaultMaxSize);
+    this.updateTableWidthAndStickyColumns(0);
   }
 
   protected getColumnCssClass(cssFriendlyColumnName: string): string {
@@ -165,12 +199,14 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
       enable = true): void {
     const properties = this._getColumnPropertiesMap(cssFriendlyColumnName);
 
-    if (enable) {
-      properties.set(key, value);
-    } else {
-      properties.delete(key);
-    }
-    this._applySizeCss(cssFriendlyColumnName);
+    this.styleScheduler.schedule(() => {
+      if (enable) {
+        properties.set(key, value);
+      } else {
+        properties.delete(key);
+      }
+      this._applySizeCss(cssFriendlyColumnName);
+    });
   }
 
   private _getStyleSheet(): CSSStyleSheet {

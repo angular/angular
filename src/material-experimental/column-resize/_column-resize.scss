@@ -93,6 +93,7 @@
           transparent, transparent 7px,
           $resizable-active-divider, $resizable-active-divider 1px,
           transparent 8px, transparent);
+      will-change: transform;
     }
   }
 }

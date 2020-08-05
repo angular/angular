@@ -1,12 +1,12 @@
 <mat-table [dataSource]="dataSource" class="mat-elevation-z8 example-table">
   <!-- Position Column -->
-  <ng-container matColumnDef="position">
+  <ng-container matColumnDef="position" sticky>
     <mat-header-cell *matHeaderCellDef [matResizableMaxWidthPx]="100"> No. </mat-header-cell>
     <mat-cell *matCellDef="let element"> {{element.position}} </mat-cell>
   </ng-container>
 
   <!-- Name Column -->
-  <ng-container matColumnDef="name">
+  <ng-container matColumnDef="name" sticky>
     <mat-header-cell *matHeaderCellDef [matResizableMinWidthPx]="150"> Name </mat-header-cell>
     <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
   </ng-container>

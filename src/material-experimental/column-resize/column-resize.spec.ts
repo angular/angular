@@ -62,21 +62,21 @@ function getTableTemplate(defaultEnabled: boolean) {
         <table ${directives.table} mat-table [dataSource]="dataSource"
             style="table-layout: fixed;">
           <!-- Position Column -->
-          <ng-container matColumnDef="position">
+          <ng-container matColumnDef="position" sticky>
             <th mat-header-cell *matHeaderCellDef
                 ${directives.columnEnabled} [matResizableMaxWidthPx]="100"> No. </th>
             <td mat-cell *matCellDef="let element"> {{element.position}} </td>
           </ng-container>
 
           <!-- Name Column -->
-          <ng-container matColumnDef="name">
+          <ng-container matColumnDef="name" sticky>
             <th mat-header-cell *matHeaderCellDef
                 ${directives.columnEnabled} [matResizableMinWidthPx]="150"> Name </th>
             <td mat-cell *matCellDef="let element"> {{element.name}} </td>
           </ng-container>
 
           <!-- Weight Column (not resizable) -->
-          <ng-container matColumnDef="weight">
+          <ng-container matColumnDef="weight" sticky>
             <th mat-header-cell *matHeaderCellDef ${directives.columnDisabled}>
               Weight (Not resizable)
             </th>
@@ -117,21 +117,21 @@ function getFlexTemplate(defaultEnabled: boolean) {
       <div #table [dir]="direction">
         <mat-table ${directives.table} [dataSource]="dataSource">
           <!-- Position Column -->
-          <ng-container matColumnDef="position">
+          <ng-container matColumnDef="position" sticky>
             <mat-header-cell *matHeaderCellDef
                 ${directives.columnEnabled} [matResizableMaxWidthPx]="100"> No. </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.position}} </mat-cell>
           </ng-container>
 
           <!-- Name Column -->
-          <ng-container matColumnDef="name">
+          <ng-container matColumnDef="name" sticky>
             <mat-header-cell *matHeaderCellDef
                 ${directives.columnEnabled} [matResizableMinWidthPx]="150"> Name </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
           </ng-container>
 
           <!-- Weight Column (not resizable) -->
-          <ng-container matColumnDef="weight">
+          <ng-container matColumnDef="weight" sticky>
             <mat-header-cell *matHeaderCellDef ${directives.columnDisabled}>
               Weight (Not resizable)
             </mat-header-cell>
@@ -170,7 +170,7 @@ abstract class BaseTestComponent {
   }
 
   getColumnElement(index: number): HTMLElement {
-    return this.table.nativeElement!.querySelectorAll('.mat-resizable')[index] as HTMLElement;
+    return this.table.nativeElement!.querySelectorAll('.mat-header-cell')[index] as HTMLElement;
   }
 
   getColumnWidth(index: number): number {
@@ -196,8 +196,11 @@ abstract class BaseTestComponent {
   }
 
   getOverlayThumbPosition(index: number): number {
-    const thumbElement = this.getOverlayThumbElement(index);
-    return parseInt((thumbElement.parentNode as HTMLElement).style.left!, 10);
+    const thumbPositionElement = this.getOverlayThumbElement(index)!.parentNode as HTMLElement;
+    const left = parseInt(thumbPositionElement.style.left!, 10);
+    const translateX = Number(/translateX\((-?\d+)px\)/.exec(
+        thumbPositionElement.style.transform)?.[1] ?? 0);
+    return left + translateX;
   }
 
   beginColumnResizeWithMouse(index: number, button = 0): void {
@@ -329,7 +332,8 @@ const testCases: ReadonlyArray<[Type<object>, Type<BaseTestComponent>, string]> 
   ],
   [
     MatDefaultEnabledColumnResizeModule, MatResizeDefaultRtlTest,
-    'default enabled rtl table-based mat-table'],
+    'default enabled rtl table-based mat-table'
+  ],
   [
     MatDefaultEnabledColumnResizeModule, MatResizeDefaultFlexTest,
     'default enabled flex-based mat-table'
@@ -392,6 +396,7 @@ describe('Material Popover Edit', () => {
         component.completeResizeWithMouseInProgress(0);
         component.endHoverState();
         fixture.detectChanges();
+        flushMicrotasks();
 
         expect(component.getOverlayThumbElement(0)).toBeUndefined();
       }));
@@ -400,6 +405,7 @@ describe('Material Popover Edit', () => {
         const initialTableWidth = component.getTableWidth();
         const initialColumnWidth = component.getColumnWidth(1);
         const initialColumnPosition = component.getColumnOriginPosition(1);
+        const initialNextColumnPosition = component.getColumnOriginPosition(2);
 
         component.triggerHoverState();
         fixture.detectChanges();
@@ -407,24 +413,30 @@ describe('Material Popover Edit', () => {
 
         const initialThumbPosition = component.getOverlayThumbPosition(1);
         component.updateResizeWithMouseInProgress(5);
+        flushMicrotasks();
 
         let thumbPositionDelta = component.getOverlayThumbPosition(1) - initialThumbPosition;
         let columnPositionDelta = component.getColumnOriginPosition(1) - initialColumnPosition;
-        expect(thumbPositionDelta).toBe(columnPositionDelta);
+        let nextColumnPositionDelta =
+            component.getColumnOriginPosition(2) - initialNextColumnPosition;
+        (expect(thumbPositionDelta) as any).isApproximately(columnPositionDelta);
+        (expect(nextColumnPositionDelta) as any).isApproximately(columnPositionDelta);
 
         (expect(component.getTableWidth()) as any).isApproximately(initialTableWidth + 5);
         (expect(component.getColumnWidth(1)) as any).isApproximately(initialColumnWidth + 5);
 
         component.updateResizeWithMouseInProgress(1);
+        flushMicrotasks();
 
         thumbPositionDelta = component.getOverlayThumbPosition(1) - initialThumbPosition;
         columnPositionDelta = component.getColumnOriginPosition(1) - initialColumnPosition;
-        expect(thumbPositionDelta).toBe(columnPositionDelta);
+        (expect(thumbPositionDelta) as any).isApproximately(columnPositionDelta);
 
         (expect(component.getTableWidth()) as any).isApproximately(initialTableWidth + 1);
         (expect(component.getColumnWidth(1)) as any).isApproximately(initialColumnWidth + 1);
 
         component.completeResizeWithMouseInProgress(1);
+        flushMicrotasks();
 
         (expect(component.getColumnWidth(1)) as any).isApproximately(initialColumnWidth + 1);
 
@@ -459,15 +471,17 @@ describe('Material Popover Edit', () => {
         const initialThumbPosition = component.getOverlayThumbPosition(1);
 
         component.updateResizeWithMouseInProgress(5);
+        flushMicrotasks();
 
         let thumbPositionDelta = component.getOverlayThumbPosition(1) - initialThumbPosition;
         let columnPositionDelta = component.getColumnOriginPosition(1) - initialColumnPosition;
-        expect(thumbPositionDelta).toBe(columnPositionDelta);
+        (expect(thumbPositionDelta) as any).isApproximately(columnPositionDelta);
 
         (expect(component.getColumnWidth(1)) as any).isApproximately(initialColumnWidth + 5);
         (expect(component.getTableWidth()) as any).isApproximately(initialTableWidth + 5);
 
         dispatchKeyboardEvent(document, 'keyup', ESCAPE);
+        flushMicrotasks();
 
         (expect(component.getColumnWidth(1)) as any).isApproximately(initialColumnWidth);
         (expect(component.getTableWidth()) as any).isApproximately(initialTableWidth);
@@ -476,7 +490,7 @@ describe('Material Popover Edit', () => {
         fixture.detectChanges();
       }));
 
-      it('notifies subscribers of a completed resize via ColumnResizeNotifier', () => {
+      it('notifies subscribers of a completed resize via ColumnResizeNotifier', fakeAsync(() => {
         const initialColumnWidth = component.getColumnWidth(1);
 
         let resize: ColumnSize|null = null;
@@ -490,14 +504,15 @@ describe('Material Popover Edit', () => {
         expect(resize).toBe(null);
 
         component.resizeColumnWithMouse(1, 5);
+        flushMicrotasks();
 
         expect(resize).toEqual({columnId: 'name', size: initialColumnWidth + 5} as any);
 
         component.endHoverState();
         fixture.detectChanges();
-      });
+      }));
 
-      it('does not notify subscribers of a canceled resize', () => {
+      it('does not notify subscribers of a canceled resize', fakeAsync(() => {
         let resize: ColumnSize|null = null;
         component.columnResize.columnResizeNotifier.resizeCompleted.subscribe(size => {
           resize = size;
@@ -508,23 +523,26 @@ describe('Material Popover Edit', () => {
         component.beginColumnResizeWithMouse(0);
 
         component.updateResizeWithMouseInProgress(5);
+        flushMicrotasks();
 
         dispatchKeyboardEvent(document, 'keyup', ESCAPE);
+        flushMicrotasks();
 
         component.endHoverState();
         fixture.detectChanges();
 
         expect(resize).toBe(null);
-      });
+      }));
 
-      it('performs a column resize triggered via ColumnResizeNotifier', () => {
+      it('performs a column resize triggered via ColumnResizeNotifier', fakeAsync(() => {
         // Pre-verify that we are not updating the size to the initial size.
         (expect(component.getColumnWidth(1)) as any).not.isApproximately(173);
 
         component.columnResize.columnResizeNotifier.resize('name', 173);
+        flushMicrotasks();
 
         (expect(component.getColumnWidth(1)) as any).isApproximately(173);
-      });
+      }));
     });
   }
 });

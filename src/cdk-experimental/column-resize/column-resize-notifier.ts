@@ -29,6 +29,11 @@ export interface ColumnSizeAction extends ColumnSize {
    * for all programatically triggered resizes.
    */
   readonly completeImmediately?: boolean;
+
+  /**
+   * Whether the resize action is being applied to a sticky/stickyEnd column.
+   */
+  readonly isStickyColumn?: boolean;
 }
 
 /**
@@ -57,6 +62,7 @@ export class ColumnResizeNotifier {
 
   /** Instantly resizes the specified column. */
   resize(columnId: string, size: number): void {
-    this._source.triggerResize.next({columnId, size, completeImmediately: true});
+    this._source.triggerResize.next(
+        {columnId, size, completeImmediately: true, isStickyColumn: true});
   }
 }

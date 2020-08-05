@@ -13,6 +13,7 @@ ng_module(
     deps = [
         "//src/cdk-experimental/column-resize",
         "//src/cdk/overlay",
+        "//src/cdk/table",
         "//src/material/table",
         "@npm//@angular/core",
     ],

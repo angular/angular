@@ -20,7 +20,7 @@ import {
 import {Directionality} from '@angular/cdk/bidi';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {Overlay, OverlayRef} from '@angular/cdk/overlay';
-import {CdkColumnDef} from '@angular/cdk/table';
+import {CdkColumnDef, _CoalescedStyleScheduler} from '@angular/cdk/table';
 import {merge, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 
@@ -61,8 +61,11 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
   protected abstract readonly overlay: Overlay;
   protected abstract readonly resizeNotifier: ColumnResizeNotifierSource;
   protected abstract readonly resizeStrategy: ResizeStrategy;
+  protected abstract readonly styleScheduler: _CoalescedStyleScheduler;
   protected abstract readonly viewContainerRef: ViewContainerRef;
   protected abstract readonly changeDetectorRef: ChangeDetectorRef;
+
+  private _viewInitialized = false;
 
   /** The minimum width to allow the column to be sized to. */
   get minWidthPx(): number {
@@ -71,8 +74,8 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
   set minWidthPx(value: number) {
     this.minWidthPxInternal = value;
 
-    if (this.elementRef.nativeElement) {
-      this.columnResize.setResized();
+    this.columnResize.setResized();
+    if (this.elementRef.nativeElement && this._viewInitialized) {
       this._applyMinWidthPx();
     }
   }
@@ -84,13 +87,15 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
   set maxWidthPx(value: number) {
     this.maxWidthPxInternal = value;
 
-    if (this.elementRef.nativeElement) {
-      this.columnResize.setResized();
+    this.columnResize.setResized();
+    if (this.elementRef.nativeElement && this._viewInitialized) {
       this._applyMaxWidthPx();
     }
   }
 
   ngAfterViewInit() {
+    this._viewInitialized = true;
+
     this._listenForRowHoverEvents();
     this._listenForResizeEvents();
     this._appendInlineHandle();
@@ -255,12 +260,14 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
   }
 
   private _appendInlineHandle(): void {
-    this.inlineHandle = this.document.createElement('div');
-    this.inlineHandle.tabIndex = 0;
-    this.inlineHandle.className = this.getInlineHandleCssClassName();
+    this.styleScheduler.schedule(() => {
+      this.inlineHandle = this.document.createElement('div');
+      this.inlineHandle.tabIndex = 0;
+      this.inlineHandle.className = this.getInlineHandleCssClassName();
 
-    // TODO: Apply correct aria role (probably slider) after a11y spec questions resolved.
+      // TODO: Apply correct aria role (probably slider) after a11y spec questions resolved.
 
-    this.elementRef.nativeElement!.appendChild(this.inlineHandle);
+      this.elementRef.nativeElement!.appendChild(this.inlineHandle);
+    });
   }
 }

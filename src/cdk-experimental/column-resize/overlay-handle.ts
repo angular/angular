@@ -10,7 +10,7 @@ import {AfterViewInit, Directive, ElementRef, OnDestroy, NgZone} from '@angular/
 import {coerceCssPixelValue} from '@angular/cdk/coercion';
 import {Directionality} from '@angular/cdk/bidi';
 import {ESCAPE} from '@angular/cdk/keycodes';
-import {CdkColumnDef} from '@angular/cdk/table';
+import {CdkColumnDef, _CoalescedStyleScheduler} from '@angular/cdk/table';
 import {fromEvent, Subject, merge} from 'rxjs';
 import {
   distinctUntilChanged,
@@ -47,6 +47,7 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
   protected abstract readonly ngZone: NgZone;
   protected abstract readonly resizeNotifier: ColumnResizeNotifierSource;
   protected abstract readonly resizeRef: ResizeRef;
+  protected abstract readonly styleScheduler: _CoalescedStyleScheduler;
 
   ngAfterViewInit() {
     this._listenForMouseEvents();
@@ -91,7 +92,7 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
     const startX = mousedownEvent.screenX;
 
     const initialSize = this._getOriginWidth();
-    let overlayOffset = this._getOverlayOffset();
+    let overlayOffset = 0;
     let originOffset = this._getOriginOffset();
     let size = initialSize;
     let overshot = 0;
@@ -99,7 +100,9 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
     this.updateResizeActive(true);
 
     mouseup.pipe(takeUntil(merge(escape, this.destroyed))).subscribe(({screenX}) => {
-      this._notifyResizeEnded(size, screenX !== startX);
+      this.styleScheduler.scheduleEnd(() => {
+        this._notifyResizeEnded(size, screenX !== startX);
+      });
     });
 
     escape.pipe(takeUntil(merge(mouseup, this.destroyed))).subscribe(() => {
@@ -137,20 +140,26 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
       computedNewSize = Math.min(
           Math.max(computedNewSize, this.resizeRef.minWidthPx, 0), this.resizeRef.maxWidthPx);
 
-      this.resizeNotifier.triggerResize.next(
-          {columnId: this.columnDef.name, size: computedNewSize, previousSize: size});
+      this.resizeNotifier.triggerResize.next({
+        columnId: this.columnDef.name,
+        size: computedNewSize,
+        previousSize: size,
+        isStickyColumn: this.columnDef.sticky || this.columnDef.stickyEnd,
+      });
 
-      const originNewSize = this._getOriginWidth();
-      const originNewOffset = this._getOriginOffset();
-      const originOffsetDeltaX = originNewOffset - originOffset;
-      const originSizeDeltaX = originNewSize - size;
-      size = originNewSize;
-      originOffset = originNewOffset;
+      this.styleScheduler.scheduleEnd(() => {
+        const originNewSize = this._getOriginWidth();
+        const originNewOffset = this._getOriginOffset();
+        const originOffsetDeltaX = originNewOffset - originOffset;
+        const originSizeDeltaX = originNewSize - size;
+        size = originNewSize;
+        originOffset = originNewOffset;
 
-      overshot += deltaX + (this._isLtr() ? -originSizeDeltaX : originSizeDeltaX);
-      overlayOffset += originOffsetDeltaX + (this._isLtr() ? originSizeDeltaX : 0);
+        overshot += deltaX + (this._isLtr() ? -originSizeDeltaX : originSizeDeltaX);
+        overlayOffset += originOffsetDeltaX + (this._isLtr() ? originSizeDeltaX : 0);
 
-      this._updateOverlayOffset(overlayOffset);
+        this._updateOverlayOffset(overlayOffset);
+      });
     });
   }
 
@@ -167,12 +176,9 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
     return this.resizeRef.origin.nativeElement!.offsetLeft;
   }
 
-  private _getOverlayOffset(): number {
-    return parseInt(this.resizeRef.overlayRef.overlayElement.style.left!, 10);
-  }
-
   private _updateOverlayOffset(offset: number): void {
-    this.resizeRef.overlayRef.overlayElement.style.left = coerceCssPixelValue(offset);
+    this.resizeRef.overlayRef.overlayElement.style.transform =
+        `translateX(${coerceCssPixelValue(offset)})`;
   }
 
   private _isLtr(): boolean {
