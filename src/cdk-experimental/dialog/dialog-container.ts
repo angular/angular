@@ -10,14 +10,13 @@ import {animate, AnimationEvent, state, style, transition, trigger} from '@angul
 import {FocusTrapFactory} from '@angular/cdk/a11y';
 import {
   BasePortalOutlet,
-  ComponentPortal,
   CdkPortalOutlet,
-  TemplatePortal,
+  ComponentPortal,
   DomPortal,
+  TemplatePortal,
 } from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -73,7 +72,7 @@ export function throwDialogContentAlreadyAttachedError() {
     '(@dialog.done)': '_animationDone.next($event)',
   },
 })
-export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy, AfterViewInit {
+export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   private readonly _document: Document;
 
   /** State of the dialog animation. */
@@ -151,8 +150,8 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy, A
     });
   }
 
-  /** If the dialog view completes initialization, the open animation starts. */
-  ngAfterViewInit() {
+  /** Initializes the dialog container with the attached content. */
+  _initializeWithAttachedContent() {
     // Save the previously focused element. This element will be re-focused
     // when the dialog closes.
     this._savePreviouslyFocusedElement();

@@ -116,6 +116,8 @@ export class Dialog implements OnDestroy {
       overlayRef, config);
 
     this._registerDialogRef(dialogRef);
+    dialogContainer._initializeWithAttachedContent();
+
     return dialogRef;
   }
 
@@ -133,6 +135,8 @@ export class Dialog implements OnDestroy {
       overlayRef, config);
 
     this._registerDialogRef(dialogRef);
+    dialogContainer._initializeWithAttachedContent();
+
     return dialogRef;
   }
 
