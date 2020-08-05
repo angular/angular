@@ -35,9 +35,9 @@ export async function promptForNewVersion(currentVersion: Version): Promise<Vers
     }
   } else {
     versionChoices.push(
-      createVersionChoice(currentVersion, 'major', 'Major release'),
+      createVersionChoice(currentVersion, 'patch', 'Patch release'),
       createVersionChoice(currentVersion, 'minor', 'Minor release'),
-      createVersionChoice(currentVersion, 'patch', 'Patch release'));
+      createVersionChoice(currentVersion, 'major', 'Major release'));
   }
 
   // We always want to provide the option to use the current version. This is useful
