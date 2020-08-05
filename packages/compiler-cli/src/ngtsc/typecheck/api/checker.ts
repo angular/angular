@@ -29,6 +29,14 @@ export interface TemplateTypeChecker {
   resetOverrides(): void;
 
   /**
+   * Retrieve the template in use for the given component.
+   *
+   * If the template has been overridden via `overrideComponentTemplate`, this will retrieve the
+   * overridden template nodes.
+   */
+  getTemplate(component: ts.ClassDeclaration): TmplAstNode[]|null;
+
+  /**
    * Provide a new template string that will be used in place of the user-defined template when
    * checking or operating on the given component.
    *

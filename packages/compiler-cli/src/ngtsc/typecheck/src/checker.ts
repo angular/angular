@@ -48,6 +48,29 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
   }
 
+  getTemplate(component: ts.ClassDeclaration): TmplAstNode[]|null {
+    this.ensureShimForComponent(component);
+
+    const sf = component.getSourceFile();
+    const sfPath = absoluteFromSourceFile(sf);
+    const shimPath = this.typeCheckingStrategy.shimPathForComponent(component);
+
+    const fileRecord = this.getFileData(sfPath);
+
+    if (!fileRecord.shimData.has(shimPath)) {
+      return [];
+    }
+
+    const templateId = fileRecord.sourceManager.getTemplateId(component);
+    const shimRecord = fileRecord.shimData.get(shimPath)!;
+
+    if (!shimRecord.templates.has(templateId)) {
+      return null;
+    }
+
+    return shimRecord.templates.get(templateId)!.template;
+  }
+
   overrideComponentTemplate(component: ts.ClassDeclaration, template: string):
       {nodes: TmplAstNode[], errors?: ParseError[]} {
     const {nodes, errors} = parseTemplate(template, 'override.html', {

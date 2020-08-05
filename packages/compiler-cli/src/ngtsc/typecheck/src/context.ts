@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode} from '@angular/compiler';
+import {BoundTarget, ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {ComponentToShimMappingStrategy, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
+import {ComponentToShimMappingStrategy, TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
 
 import {TemplateDiagnostic} from './diagnostics';
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
@@ -41,6 +41,28 @@ export interface ShimTypeCheckingData {
    * Whether any inline operations for the input file were required to generate this shim.
    */
   hasInlines: boolean;
+
+  /**
+   * Map of `TemplateId` to information collected about the template during the template
+   * type-checking process.
+   */
+  templates: Map<TemplateId, TemplateData>;
+}
+
+/**
+ * Data tracked for each template processed by the template type-checking system.
+ */
+export interface TemplateData {
+  /**
+   * Template nodes for which the TCB was generated.
+   */
+  template: TmplAstNode[];
+
+  /**
+   * `BoundTarget` which was used to generate the TCB, and contains bindings for the associated
+   * template nodes.
+   */
+  boundTarget: BoundTarget<TypeCheckableDirectiveMeta>;
 }
 
 /**
@@ -79,6 +101,12 @@ export interface PendingShimData {
    * Shim file in the process of being generated.
    */
   file: TypeCheckFile;
+
+
+  /**
+   * Map of `TemplateId` to information collected about the template as it's ingested.
+   */
+  templates: Map<TemplateId, TemplateData>;
 }
 
 /**
@@ -195,6 +223,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const fileData = this.dataForFile(ref.node.getSourceFile());
     const shimData = this.pendingShimForComponent(ref.node);
     const boundTarget = binder.bind({template});
+
     // Get all of the directives used in the template and record type constructors for all of them.
     for (const dir of boundTarget.getUsedDirectives()) {
       const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
@@ -221,6 +250,11 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         });
       }
     }
+    const templateId = fileData.sourceManager.getTemplateId(ref.node);
+    shimData.templates.set(templateId, {
+      template,
+      boundTarget,
+    });
 
     const tcbRequiresInline = requiresInlineTypeCheckBlock(ref.node);
 
@@ -231,7 +265,6 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       // and inlining would be required.
 
       // Record diagnostics to indicate the issues with this template.
-      const templateId = fileData.sourceManager.getTemplateId(ref.node);
       if (tcbRequiresInline) {
         shimData.oobRecorder.requiresInlineTcb(templateId, ref.node);
       }
@@ -348,6 +381,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           ],
           hasInlines: pendingFileData.hasInlines,
           path: pendingShimData.file.fileName,
+          templates: pendingShimData.templates,
         });
         updates.set(pendingShimData.file.fileName, pendingShimData.file.render());
       }
@@ -380,6 +414,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager),
         file: new TypeCheckFile(
             shimPath, this.config, this.refEmitter, this.reflector, this.compilerHost),
+        templates: new Map<TemplateId, TemplateData>(),
       });
     }
     return fileData.shimData.get(shimPath)!;
