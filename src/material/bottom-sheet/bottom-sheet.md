@@ -75,7 +75,6 @@ inside your `NgModule`.
     ExampleBottomSheetComponent
   ],
 
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

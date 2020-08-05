@@ -38,7 +38,6 @@ export class ButtonBenchmarkApp {
     BrowserModule,
     MatButtonModule,
   ],
-  providers: [],
   bootstrap: [ButtonBenchmarkApp],
 })
 export class AppModule {}

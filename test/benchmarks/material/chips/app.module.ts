@@ -53,7 +53,6 @@ export class ChipsBenchmarkApp {
     BrowserModule,
     MatChipsModule,
   ],
-  providers: [],
   bootstrap: [ChipsBenchmarkApp],
 })
 export class AppModule {}

@@ -38,7 +38,6 @@ export class SlideToggleBenchmarkApp {
     BrowserModule,
     MatSlideToggleModule,
   ],
-  providers: [],
   bootstrap: [SlideToggleBenchmarkApp]
 })
 export class AppModule {}

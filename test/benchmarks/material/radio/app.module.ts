@@ -60,7 +60,6 @@ export class RadioBenchmarkApp {
     BrowserModule,
     MatRadioModule,
   ],
-  providers: [],
   bootstrap: [RadioBenchmarkApp],
 })
 export class AppModule {}

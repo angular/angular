@@ -37,7 +37,6 @@ export class CardBenchmarkApp {
     BrowserModule,
     MatCardModule,
   ],
-  providers: [],
   bootstrap: [CardBenchmarkApp],
 })
 export class AppModule {}

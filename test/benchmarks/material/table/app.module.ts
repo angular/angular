@@ -75,7 +75,6 @@ export class TableBenchmarkApp {
     BrowserModule,
     MatTableModule,
   ],
-  providers: [],
   bootstrap: [TableBenchmarkApp],
 })
 export class AppModule {}

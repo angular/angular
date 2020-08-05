@@ -64,7 +64,6 @@ the `ComponentFactory` for it.
     ExampleDialogComponent
   ],
 
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

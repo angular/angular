@@ -68,7 +68,6 @@ export class FormFieldBenchmarkApp {
     MatSelectModule,
     MatInputModule,
   ],
-  providers: [],
   bootstrap: [FormFieldBenchmarkApp],
 })
 export class AppModule {}
