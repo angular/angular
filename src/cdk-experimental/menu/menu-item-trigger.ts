@@ -113,7 +113,7 @@ export class CdkMenuItemTrigger implements OnDestroy {
 
       this._overlayRef!.detach();
     }
-    this._getMenuStack().closeSubMenuOf(this._parentMenu);
+    this._closeSiblingTriggers();
   }
 
   /** Return true if the trigger has an attached menu */
@@ -141,16 +141,7 @@ export class CdkMenuItemTrigger implements OnDestroy {
   _toggleOnMouseEnter() {
     const menuStack = this._getMenuStack();
     if (!menuStack.isEmpty() && !this.isMenuOpen()) {
-      // If nothing was removed from the stack and the last element is not the parent item
-      // that means that the parent menu is a menu bar since we don't put the menu bar on the
-      // stack
-      const isParentMenuBar =
-        !menuStack.closeSubMenuOf(this._parentMenu) && menuStack.peek() !== this._parentMenu;
-
-      if (isParentMenuBar) {
-        menuStack.closeAll();
-      }
-
+      this._closeSiblingTriggers();
       this.openMenu();
     }
   }
@@ -204,6 +195,21 @@ export class CdkMenuItemTrigger implements OnDestroy {
             : this.menuPanel?._menu?.focusLastItem('keyboard');
         }
         break;
+    }
+  }
+
+  /** Close out any sibling menu trigger menus. */
+  private _closeSiblingTriggers() {
+    const menuStack = this._getMenuStack();
+
+    // If nothing was removed from the stack and the last element is not the parent item
+    // that means that the parent menu is a menu bar since we don't put the menu bar on the
+    // stack
+    const isParentMenuBar =
+      !menuStack.closeSubMenuOf(this._parentMenu) && menuStack.peek() !== this._parentMenu;
+
+    if (isParentMenuBar) {
+      menuStack.closeAll();
     }
   }
 

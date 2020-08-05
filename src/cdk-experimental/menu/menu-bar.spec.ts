@@ -1026,6 +1026,21 @@ describe('MenuBar', () => {
         expect(document.querySelector(':focus')).toEqual(fileMenuNativeItems[1]);
       }
     );
+
+    it(
+      'should not re-open a menu when hovering over the trigger in the menubar after clicking to ' +
+        'open and then close it',
+      () => {
+        openFileMenu();
+        dispatchMouseEvent(menuBarNativeItems[0], 'click');
+        detectChanges();
+
+        dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
+        detectChanges();
+
+        expect(nativeMenus.length).toBe(0);
+      }
+    );
   });
 });
 
