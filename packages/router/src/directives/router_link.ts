@@ -178,7 +178,10 @@ export class RouterLink implements OnChanges {
     }
   }
 
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
+    // This is subscribed to by `RouterLinkActive` so that it knows to update when there are changes
+    // to the RouterLinks it's tracking.
     this.onChanges.next();
   }
 
