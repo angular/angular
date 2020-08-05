@@ -23,8 +23,9 @@ be configured globally using the `MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS` injection t
 <!-- example(button-toggle-appearance) -->
 
 ### Accessibility
-The button-toggles will present themselves as either checkboxes or radio-buttons based on the
-presence of the `multiple` attribute.
+The button-toggles internally use native `button` elements with `aria-pressed` to convey
+their toggled state. The button-toggle-group surrounding the individual buttons applies
+`role="group"` to convey the association between the individual toggles.
 
 For button toggles containing only icons, each button toggle should be given a meaningful label via
 `aria-label` or `aria-labelledby`.
