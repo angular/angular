@@ -99,10 +99,11 @@ describe('site App', function() {
   describe('scrolling to the top', () => {
     it('should scroll to the top when navigating to another page', () => {
       page.navigateTo('guide/security');
-
       page.scrollTo('bottom');
       expect(page.getScrollTop()).toBeGreaterThan(0);
-
+      // Navigate to Reference section, then check
+      // Find the navigation item that has the text "api"
+      page.click(page.getNavItem(/reference/i));
       page.click(page.getNavItem(/api/i));
       expect(page.locationPath()).toBe('/api');
       expect(page.getScrollTop()).toBe(0);
