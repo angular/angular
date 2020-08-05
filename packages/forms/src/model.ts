@@ -1149,8 +1149,15 @@ export class FormControl extends AbstractControl {
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
     this._applyFormState(formState);
     this._setUpdateStrategy(validatorOrOpts);
-    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
     this._initObservables();
+    this.updateValueAndValidity({
+      onlySelf: true,
+      // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
+      // `VALID` or `INVALID`.
+      // The status should be broadcasted via the `statusChanges` observable, so we set `emitEvent`
+      // to `true` to allow that during the control creation process.
+      emitEvent: !!asyncValidator
+    });
   }
 
   /**
@@ -1403,7 +1410,13 @@ export class FormGroup extends AbstractControl {
     this._initObservables();
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
-    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
+    this.updateValueAndValidity({
+      onlySelf: true,
+      // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
+      // `VALID` or `INVALID`. The status should be broadcasted via the `statusChanges` observable,
+      // so we set `emitEvent` to `true` to allow that during the control creation process.
+      emitEvent: !!asyncValidator
+    });
   }
 
   /**
@@ -1823,7 +1836,14 @@ export class FormArray extends AbstractControl {
     this._initObservables();
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
-    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
+    this.updateValueAndValidity({
+      onlySelf: true,
+      // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
+      // `VALID` or `INVALID`.
+      // The status should be broadcasted via the `statusChanges` observable, so we set `emitEvent`
+      // to `true` to allow that during the control creation process.
+      emitEvent: !!asyncValidator
+    });
   }
 
   /**

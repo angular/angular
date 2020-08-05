@@ -1825,6 +1825,391 @@ describe('FormGroup', () => {
     });
   });
 
+  describe('emit `statusChanges` and `valueChanges` with/without async/sync validators', () => {
+    const attachEventsLogger = (control: AbstractControl, log: string[], controlName?: string) => {
+      const name = controlName ? ` (${controlName})` : '';
+      control.statusChanges.subscribe(status => log.push(`status${name}: ${status}`));
+      control.valueChanges.subscribe(value => log.push(`value${name}: ${JSON.stringify(value)}`));
+    };
+
+    describe('stand alone controls', () => {
+      it('should run the async validator on stand alone controls and set status to `INVALID`',
+         fakeAsync(() => {
+           const logs: string[] = [];
+           const c =
+               new FormControl('', null, simpleAsyncValidator({timeout: 0, shouldFail: true}));
+
+           attachEventsLogger(c, logs);
+
+           expect(logs.length).toBe(0);
+
+           tick(1);
+
+           c.setValue('new!', {emitEvent: true});
+
+           tick(1);
+
+           // Note that above `simpleAsyncValidator` is called with `timeout:0`.  When the timeout
+           // is set to `0`, the function returns `of(error)`, and the function behaves in a
+           // synchronous manner. Because of this there is no `PENDING` state as seen in the
+           // `logs`.
+           expect(logs).toEqual([
+             'status: INVALID',  // status change emitted as a result of initial async validator run
+             'value: "new!"',    // value change emitted by `setValue`
+             'status: INVALID'   // async validator run after `setValue` call
+           ]);
+         }));
+
+      it('should run the async validator on stand alone controls and set status to `VALID`',
+         fakeAsync(() => {
+           const logs: string[] = [];
+           const c = new FormControl('', null, asyncValidator('new!'));
+
+           attachEventsLogger(c, logs);
+
+           expect(logs.length).toBe(0);
+
+           tick(1);
+
+           c.setValue('new!', {emitEvent: true});
+
+           tick(1);
+
+           expect(logs).toEqual([
+             'status: INVALID',  // status change emitted as a result of initial async validator run
+             'value: "new!"',    // value change emitted by `setValue`
+             'status: PENDING',  // status change emitted by `setValue`
+             'status: VALID'     // async validator run after `setValue` call
+           ]);
+         }));
+
+      it('should run the async validator on stand alone controls, include `PENDING` and set status to `INVALID`',
+         fakeAsync(() => {
+           const logs: string[] = [];
+           const c =
+               new FormControl('', null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+
+           attachEventsLogger(c, logs);
+
+           expect(logs.length).toBe(0);
+
+           tick(1);
+
+           c.setValue('new!', {emitEvent: true});
+
+           tick(1);
+
+           expect(logs).toEqual([
+             'status: INVALID',  // status change emitted as a result of initial async validator run
+             'value: "new!"',    // value change emitted by `setValue`
+             'status: PENDING',  // status change emitted by `setValue`
+             'status: INVALID'   // async validator run after `setValue` call
+           ]);
+         }));
+
+      it('should run setValue before the initial async validator and set status to `VALID`',
+         fakeAsync(() => {
+           const logs: string[] = [];
+           const c = new FormControl('', null, asyncValidator('new!'));
+
+           attachEventsLogger(c, logs);
+
+           expect(logs.length).toBe(0);
+
+           c.setValue('new!', {emitEvent: true});
+
+           tick(1);
+
+           // The `setValue` call invoked synchronously cancels the initial run of the
+           // `asyncValidator` (which would cause the control status to be changed to `INVALID`), so
+           // the log contains only events after calling `setValue`.
+           expect(logs).toEqual([
+             'value: "new!"',    // value change emitted by `setValue`
+             'status: PENDING',  // status change emitted by `setValue`
+             'status: VALID'     // async validator run after `setValue` call
+           ]);
+         }));
+
+      it('should run setValue before the initial async validator and set status to `INVALID`',
+         fakeAsync(() => {
+           const logs: string[] = [];
+           const c =
+               new FormControl('', null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+
+           attachEventsLogger(c, logs);
+
+           expect(logs.length).toBe(0);
+
+           c.setValue('new!', {emitEvent: true});
+
+           tick(1);
+
+           // The `setValue` call invoked synchronously cancels the initial run of the
+           // `asyncValidator` (which would cause the control status to be changed to `INVALID`), so
+           // the log contains only events after calling `setValue`.
+           expect(logs).toEqual([
+             'value: "new!"',    // value change emitted by `setValue`
+             'status: PENDING',  // status change emitted by `setValue`
+             'status: INVALID'   // async validator run after `setValue` call
+           ]);
+         }));
+
+      it('should cancel initial run of the async validator and not emit anything', fakeAsync(() => {
+           const logger: string[] = [];
+           const c =
+               new FormControl('', null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+
+           attachEventsLogger(c, logger);
+
+           expect(logger.length).toBe(0);
+
+           c.setValue('new!', {emitEvent: false});
+
+           tick(1);
+
+           // Because we are calling `setValue` with `emitEvent: false`, nothing is emitted
+           // and our logger remains empty
+           expect(logger).toEqual([]);
+         }));
+
+      it('should run the sync validator on stand alone controls and set status to `INVALID`',
+         fakeAsync(() => {
+           const logs: string[] = [];
+           const c = new FormControl('new!', Validators.required);
+
+           attachEventsLogger(c, logs);
+
+           expect(logs.length).toBe(0);
+
+           tick(1);
+
+           c.setValue('', {emitEvent: true});
+
+           tick(1);
+
+           expect(logs).toEqual([
+             'value: ""',       // value change emitted by `setValue`
+             'status: INVALID'  // status change emitted by `setValue`
+           ]);
+         }));
+
+      it('should run the sync validator on stand alone controls and set status to `VALID`',
+         fakeAsync(() => {
+           const logs: string[] = [];
+           const c = new FormControl('', Validators.required);
+
+           attachEventsLogger(c, logs);
+
+           expect(logs.length).toBe(0);
+
+           tick(1);
+
+           c.setValue('new!', {emitEvent: true});
+
+           tick(1);
+
+           expect(logs).toEqual([
+             'value: "new!"',  // value change emitted by `setValue`
+             'status: VALID'   // status change emitted by `setValue`
+           ]);
+         }));
+    });
+
+    describe('combination of multiple form controls', () => {
+      it('should run the async validator on the FormControl added to the FormGroup and set status to `VALID`',
+         fakeAsync(() => {
+           const logs: string[] = [];
+           const c1 = new FormControl('one');
+           const g1 = new FormGroup({'one': c1});
+
+           // Initial state of the controls
+           expect(currentStateOf([c1, g1])).toEqual([
+             {errors: null, pending: false, status: 'VALID'},  // Control 1
+             {errors: null, pending: false, status: 'VALID'},  // Group
+           ]);
+
+           attachEventsLogger(g1, logs, 'g1');
+
+           const c2 = new FormControl('new!', null, asyncValidator('new!'));
+
+           attachEventsLogger(c2, logs, 'c2');
+
+           // Initial state of the new control
+           expect(currentStateOf([c2])).toEqual([
+             {errors: null, pending: true, status: 'PENDING'},  // Control 2
+           ]);
+
+           expect(logs.length).toBe(0);
+
+           g1.setControl('one', c2);
+
+           tick(1);
+
+           expect(logs).toEqual([
+             'value (g1): {"one":"new!"}',  // value change emitted by `setControl`
+             'status (g1): PENDING',        // value change emitted by `setControl`
+             'status (c2): VALID',          // async validator run after `setControl` call
+             'status (g1): VALID'           // status changed from the `setControl` call
+           ]);
+
+           // Final state of all controls
+           expect(currentStateOf([g1, c2])).toEqual([
+             {errors: null, pending: false, status: 'VALID'},  // Group
+             {errors: null, pending: false, status: 'VALID'},  // Control 2
+           ]);
+         }));
+
+      it('should run the async validator on the FormControl added to the FormGroup and set status to `INVALID`',
+         fakeAsync(() => {
+           const logs: string[] = [];
+           const c1 = new FormControl('one');
+           const g1 = new FormGroup({'one': c1});
+
+           // Initial state of the controls
+           expect(currentStateOf([c1, g1])).toEqual([
+             {errors: null, pending: false, status: 'VALID'},  // Control 1
+             {errors: null, pending: false, status: 'VALID'},  // Group
+           ]);
+
+           attachEventsLogger(g1, logs, 'g1');
+
+           const c2 =
+               new FormControl('new!', null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+
+           attachEventsLogger(c2, logs, 'c2');
+
+           // Initial state of the new control
+           expect(currentStateOf([c2])).toEqual([
+             {errors: null, pending: true, status: 'PENDING'},  // Control 2
+           ]);
+
+           expect(logs.length).toBe(0);
+
+           g1.setControl('one', c2);
+
+           tick(1);
+
+           expect(logs).toEqual([
+             'value (g1): {"one":"new!"}',
+             'status (g1): PENDING',  // g1 async validator is invoked after `g1.setControl` call
+             'status (c2): INVALID',  // c2 async validator trigger at c2 init, completed with the
+                                      // `INVALID` status
+             'status (g1): INVALID'   // g1 validator completed with the `INVALID` status
+           ]);
+
+           // Final state of all controls
+           expect(currentStateOf([g1, c2])).toEqual([
+             {errors: null, pending: false, status: 'INVALID'},           // Group
+             {errors: {async: true}, pending: false, status: 'INVALID'},  // Control 2
+           ]);
+         }));
+
+      it('should run the async validator at `FormControl` and `FormGroup` level and set status to `INVALID`',
+         fakeAsync(() => {
+           const logs: string[] = [];
+           const c1 = new FormControl('one');
+           const g1 = new FormGroup(
+               {'one': c1}, null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+
+           // Initial state of the controls
+           expect(currentStateOf([c1, g1])).toEqual([
+             {errors: null, pending: false, status: 'VALID'},   // Control 1
+             {errors: null, pending: true, status: 'PENDING'},  // Group
+           ]);
+
+           attachEventsLogger(g1, logs, 'g1');
+
+           const c2 =
+               new FormControl('new!', null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+
+           attachEventsLogger(c2, logs, 'c2');
+
+           // Initial state of the new control
+           expect(currentStateOf([c2])).toEqual([
+             {errors: null, pending: true, status: 'PENDING'},  // Control 2
+           ]);
+
+           expect(logs.length).toBe(0);
+
+           g1.setControl('one', c2);
+
+           tick(1);
+
+           expect(logs).toEqual([
+             'value (g1): {"one":"new!"}',
+             'status (g1): PENDING',  // g1 async validator is invoked after `g1.setControl` call
+             'status (c2): INVALID',  // c2 async validator trigger at c2 init, completed with the
+                                      // `INVALID` status
+             'status (g1): PENDING',  // c2 update triggered g1 to re-run validation
+             'status (g1): INVALID'   // g1 validator completed with the `INVALID` status
+           ]);
+
+           // Final state of all controls
+           expect(currentStateOf([g1, c2])).toEqual([
+             {errors: {async: true}, pending: false, status: 'INVALID'},  // Group
+             {errors: {async: true}, pending: false, status: 'INVALID'},  // Control 2
+           ]);
+         }));
+
+      it('should run the async validator on a `FormArray` and a `FormControl` and status to `INVALID`',
+         fakeAsync(() => {
+           const logs: string[] = [];
+           const c1 = new FormControl('one');
+           const g1 = new FormGroup(
+               {'one': c1}, null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+           const fa =
+               new FormArray([g1], null!, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+
+           attachEventsLogger(g1, logs, 'g1');
+
+           // Initial state of the controls
+           expect(currentStateOf([c1, g1, fa])).toEqual([
+             {errors: null, pending: false, status: 'VALID'},   // Control 1
+             {errors: null, pending: true, status: 'PENDING'},  // Group
+             {errors: null, pending: true, status: 'PENDING'},  // FormArray
+           ]);
+
+           attachEventsLogger(fa, logs, 'fa');
+
+           const c2 =
+               new FormControl('new!', null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+
+           attachEventsLogger(c2, logs, 'c2');
+
+           // Initial state of the new control
+           expect(currentStateOf([c2])).toEqual([
+             {errors: null, pending: true, status: 'PENDING'},  // Control 2
+           ]);
+
+           expect(logs.length).toBe(0);
+
+           g1.setControl('one', c2);
+
+           tick(1);
+
+           expect(logs).toEqual([
+             'value (g1): {"one":"new!"}',    // g1's call to `setControl` triggered value update
+             'status (g1): PENDING',          // g1's call to `setControl` triggered status update
+             'value (fa): [{"one":"new!"}]',  // g1 update triggers the `FormArray` value update
+             'status (fa): PENDING',          // g1 update triggers the `FormArray` status update
+             'status (c2): INVALID',          // async validator run after `setControl` call
+             'status (g1): PENDING',          // async validator run after `setControl` call
+             'status (fa): PENDING',          // async validator run after `setControl` call
+             'status (g1): INVALID',          // g1 validator completed with the `INVALID` status
+             'status (fa): PENDING',          // fa validator still running
+             'status (fa): INVALID'           // fa validator completed with the `INVALID` status
+           ]);
+
+           // Final state of all controls
+           expect(currentStateOf([g1, fa, c2])).toEqual([
+             {errors: {async: true}, pending: false, status: 'INVALID'},  // Group
+             {errors: {async: true}, pending: false, status: 'INVALID'},  // FormArray
+             {errors: {async: true}, pending: false, status: 'INVALID'},  // Control 2
+           ]);
+         }));
+    });
+  });
+
   describe('pending', () => {
     let c: FormControl;
     let g: FormGroup;
