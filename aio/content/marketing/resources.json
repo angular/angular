@@ -22,22 +22,26 @@
             "url": "https://angular-ru.github.io/"
           },
           "made-with-angular": {
-            "desc": "A showcase of web apps built with Angular.",
+            "//desc": "A showcase of web apps built with Angular.",
+            "desc": "Angular로 만든 웹 앱을 확인해 보세요.",
             "title": "Made with Angular",
             "url": "https://www.madewithangular.com/"
           },
           "angular-subreddit": {
-            "desc": "An Angular-dedicated subreddit.",
+            "//desc": "An Angular-dedicated subreddit.",
+            "desc": "Angular 관련 서브레딧입니다.",
             "title": "Angular Subreddit",
             "url": "https://www.reddit.com/r/Angular2/"
           },
           "angular-devto": {
-            "desc": "Read and share content and chat about Angular on DEV Community.",
+            "//desc": "Read and share content and chat about Angular on DEV Community.",
+            "desc": "개발자 커뮤니티에서 Angular 관련 정보를 공유하고 커뮤니티 이용자들과 대화해 보세요.",
             "url": "https://dev.to/t/angular",
             "title": "DEV Community"
           },
           "angular-in-depth": {
-            "desc": "The place where advanced Angular concepts are explained",
+            "//desc": "The place where advanced Angular concepts are explained",
+            "desc": "Angular의 개념과 철학에 대해 깊이있게 분석하는 블로그입니다.",
             "url": "https://blog.angularindepth.com",
             "title": "Angular In Depth"
           }
@@ -62,13 +66,15 @@
             "url": "https://angularair.com/"
           },
           "sdlkfjsldfkz": {
-            "desc": "A weekly German podcast for Angular on the go",
+            "//desc": "A weekly German podcast for Angular on the go",
+            "desc": "독일에서 격주로 진행되는 팟캐스트입니다.",
             "logo": "",
             "title": "Happy Angular Podcast",
             "url": "https://happy-angular.de/"
           },
           "ngruair": {
-            "desc": "Russian language video podcast about Angular.",
+            "//desc": "Russian language video podcast about Angular.",
+            "desc": "러시아어로 진행되는 팟캐스트입니다.",
             "logo": "",
             "title": "NgRuAir",
             "url": "https://github.com/ngRuAir/ngruair"
@@ -113,12 +119,14 @@
         "order": 3,
         "resources": {
           "formly": {
-            "desc": "Formly is a dynamic (JSON powered) form library, built on top of Angular Reactive Forms.",
+            "//desc": "Formly is a dynamic (JSON powered) form library, built on top of Angular Reactive Forms.",
+            "desc": "Formly는 JSON과 Angular 반응형 폼을 활용해서 동적으로 폼을 구성하는 라이브러리입니다.",
             "title": "Formly",
             "url": "https://formly.dev"
           },
           "rx-web": {
-            "desc": "RxWeb Reactive Form Validators provides all types of complex, conditional, cross field, and dynamic validation on validator-based reactive forms, model-based reactive forms, and template driven forms.",
+            "//desc": "RxWeb Reactive Form Validators provides all types of complex, conditional, cross field, and dynamic validation on validator-based reactive forms, model-based reactive forms, and template driven forms.",
+            "desc": "RxWeb Reactive Form Validators는 복잡한 구조와 조건이 적용되어야 하는 폼 유효성 검사에 활용할 수 있습니다. Angular 반응형 폼을 사용하기 때문에 필드 교차 검증, 동적 유효성 검사 기능을 지원하며 모델 기반의 반응형 폼이나 템플릿 기반 폼에 관계없이 적용할 수 있습니다.",
             "title": "RxWeb Reactive Form Validators",
             "url": "https://www.rxweb.io"
           },
@@ -129,12 +137,14 @@
             "url": "https://ngrx.io/"
           },
           "ngxs": {
-            "desc": "NGXS is a state management pattern + library for Angular. NGXS is modeled after the CQRS pattern popularly implemented in libraries like Redux and NgRx but reduces boilerplate by using modern TypeScript features such as classes and decorators.",
+            "//desc": "NGXS is a state management pattern + library for Angular. NGXS is modeled after the CQRS pattern popularly implemented in libraries like Redux and NgRx but reduces boilerplate by using modern TypeScript features such as classes and decorators.",
+            "desc": "NGXS는 상태 관리 패턴을 제공하는 라이브러리입니다. NGXS는 Redux나 NgRx에 사용되며 유명해진 CQRS 패턴을 도입했으며 TypeScript 클래스와 데코레이터를 활용했기 때문에 더 적은 코드로 활용할 수 있습니다.",
             "title": "NGXS",
             "url": "https://ngxs.io/"
           },
           "akita": {
-            "desc": "Akita is a state management pattern, built on top of RxJS, which takes the idea of multiple data stores from Flux and the immutable updates from Redux, along with the concept of streaming data, to create the Observable Data Store model.",
+            "//desc": "Akita is a state management pattern, built on top of RxJS, which takes the idea of multiple data stores from Flux and the immutable updates from Redux, along with the concept of streaming data, to create the Observable Data Store model.",
+            "desc": "Akita는 RxJS로 개발된 상태관리 패턴입니다. 이 라이브러리는 Flux의 다중 데이터 스토어 개념과 Redux의 이뮤터블 갱신 개념을 도입했습니다. 옵저버블 데이터 스토어 모델을 활용해서 데이터를 스트리밍하는 방식으로 사용합니다.",
             "title": "Akita",
             "url": "https://netbasal.gitbook.io/akita/"
           },
@@ -282,7 +292,8 @@
             "url": "https://protractor.angular.io/"
           },
           "scully": {
-            "desc": "Scully (Jamstack Toolchain for Angular) makes building, testing, and deploying Jamstack apps extremely simple.",
+            "//desc": "Scully (Jamstack Toolchain for Angular) makes building, testing, and deploying Jamstack apps extremely simple.",
+            "desc": "Scully (Angular용 Jamstack Toolchain)를 사용하면 Jamstack 앱을 빌드, 테스트, 개발하는 과정이 정말 간단해집니다.",
             "title": "Scully",
             "logo": "https://raw.githubusercontent.com/scullyio/scully/main/assets/logos/PNG/Green/scullyio-logo-green.png",
             "url": "https://scully.io"
@@ -294,12 +305,14 @@
         "order": 4,
         "resources": {
           "AngularUIToolkit": {
-            "desc": "Angular UI Toolkit: 115 professionally maintained UI components ranging from a robust grid to charts and more. Try for free & build Angular apps faster.",
+            "//desc": "Angular UI Toolkit: 115 professionally maintained UI components ranging from a robust grid to charts and more. Try for free & build Angular apps faster.",
+            "desc": "Angular UI 툴킷: 그리드와 차트 등 115개의 UI 컴포넌트를 제공합니다. 무료로 사용할 수 있습니다.",
             "title": "Angular UI Toolkit",
             "url": "https://www.angular-ui-tools.com"
           },
           "SenchaforAngular": {
-            "desc": "Build modern web apps faster with 115+ pre-built UI components. Try for free and download today.",
+            "//desc": "Build modern web apps faster with 115+ pre-built UI components. Try for free and download today.",
+            "desc": "115개 이상 제공되는 UI 컴포넌트를 사용해서 모던 웹 앱을 빠르게 개발해 보세요. 무료로 사용할 수 있습니다.",
             "title": "Sencha for Angular",
             "url": "https://www.sencha.com/products/extangular/"
           },
@@ -335,7 +348,8 @@
             "url": "http://ng-lightning.github.io/ng-lightning/"
           },
           "7ab": {
-            "desc": "UI components for hybrid mobile apps with bindings for both Angular & AngularJS.",
+            "//desc": "UI components for hybrid mobile apps with bindings for both Angular & AngularJS.",
+            "desc": "Angular와 AngularJS를 동시에 활용하는 하이브리드 모바일 앱에 사용할 수 있는 UI 컴포넌트 라이브러리입니다.",
             "title": "Onsen UI",
             "url": "https://onsen.io/v2/"
           },
@@ -389,7 +403,8 @@
             "url": "https://github.com/tiaguinho/material-community-components"
           },
           "mosaic": {
-            "desc": "Positive Technologies UI components based on Angular",
+            "//desc": "Positive Technologies UI components based on Angular",
+            "desc": "Angular에 활용할 수 있는 진보적인 UI 컴포넌트입니다.",
             "logo": "https://i.ibb.co/fQNPgv6/logo-png-200.png",
             "title": "Mosaic - Angular UI Components",
             "url": "https://github.com/positive-js/mosaic"
@@ -413,7 +428,8 @@
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
           },
           "angular-slickgrid": {
-            "desc": "Angular-SlickGrid is a wrapper of the lightning fast & customizable SlickGrid datagrid library with Bootstrap 3,4 themes",
+            "//desc": "Angular-SlickGrid is a wrapper of the lightning fast & customizable SlickGrid datagrid library with Bootstrap 3,4 themes",
+            "desc": "Angular-SlickGrid는 SlickGrid 데이터그리드를 랩핑한 라이브러리입니다. 이 라이브러리는 Bootstrap 3, 4 테마를 지원하며 아주 빠르게 동작하고 커스터마이징 하기도 편합니다.",
             "title": "Angular-Slickgrid",
             "url": "https://github.com/ghiscoding/Angular-Slickgrid"
           },
@@ -436,7 +452,8 @@
             "url": "https://www.jqwidgets.com/angular/"
           },
           "amexio": {
-            "desc": "Amexio is a rich set of Angular components powered by HTML5 & CSS3 for Responsive Web Design and 80+ built-in Material Design Themes. Amexio has 3 Editions, Standard, Enterprise and Creative. Std Edition consists of basic UI Components which include Grid, Tabs, Form Inputs and so on. While Enterprise Edition consists of components like Calendar, Tree Tabs, Social Media Logins (Facebook, GitHub, Twitter and so on) and Creative Edition is focused building elegant and beautiful websites. With more than 200+ components/features. All the editions are open-sourced and free, based on Apache 2 License.",
+            "//desc": "Amexio is a rich set of Angular components powered by HTML5 & CSS3 for Responsive Web Design and 80+ built-in Material Design Themes. Amexio has 3 Editions, Standard, Enterprise and Creative. Std Edition consists of basic UI Components which include Grid, Tabs, Form Inputs and so on. While Enterprise Edition consists of components like Calendar, Tree Tabs, Social Media Logins (Facebook, GitHub, Twitter and so on) and Creative Edition is focused building elegant and beautiful websites. With more than 200+ components/features. All the editions are open-sourced and free, based on Apache 2 License.",
+            "desc": "Amexio는 HTML5와 CSS3로 개발된 Angular 컴포넌트 셋입니다. 이 라이브러리가 제공하는 컴포넌트들은 반응형으로 동작하며 80종류 이상의 매터리얼 디자인 테마도 제공합니다. Amexio는 Standard, Enterprise, Creative 에디션으로 구분됩니다. Standard 에디션은 그리드, 탭, 폼 필드와 같은 기본 UI 컴포넌트를 제공하며 Enterprise 에디션은 달력, 트리 탭, 소셜 로그인(Facebook, GitHub, Twitter 등)을 제공합니다. Creative 에디션은 좀 더 나은 디자인 컴포넌트를 제공합니다. 이 라이브러리는 컴포넌트와 추가 기능을 200종류 이상 제공합니다. 모든 에디션은 Apache 2 라이센스로 제공되는 오픈 소스이며 무료로 사용할 수 있습니다.",
             "title": "Amexio - Angular Extensions",
             "url": "http://www.amexio.tech/",
             "logo": "http://www.amexio.org/amexio-logo.png"
@@ -582,7 +599,8 @@
             "url": "https://www.packtpub.com/web-development/architecting-angular-applications-redux"
           },
           "dwa": {
-            "desc": "Practical journey with Angular framework, ES6, TypeScript, webpack and Angular CLI.",
+            "//desc": "Practical journey with Angular framework, ES6, TypeScript, webpack and Angular CLI.",
+            "desc": "Angular 프레임워크, ES6, TypeScript, webpack, Angular CLI를 직접 사용해보면서 학습해 보세요.",
             "title": "Developing with Angular",
             "url": "https://leanpub.com/developing-with-angular"
           }
@@ -593,8 +611,10 @@
         "order": 3,
         "resources": {
           "angular-dyma": {
-            "desc": "Learn Angular and all its ecosystem (Material, Flex-layout, Ngrx and more) from scratch.",
-            "title": "Dyma (French)",
+            "//desc": "Learn Angular and all its ecosystem (Material, Flex-layout, Ngrx and more) from scratch.",
+            "desc": "직접 실습해 보면서 Angular 생태계에 대해 학습해 보세요. Angular Material, Flex 레이아웃, NgRx도 다룹니다.",
+            "//title": "Dyma (French)",
+            "title": "Dyma (프랑스어)",
             "url": "https://dyma.fr/angular"
           },
           "-KLIBoTWXMiBcvG0dAM6": {
@@ -706,17 +726,20 @@
             "url": "https://loiane.training/course/angular/"
           },
           "web-dev-angular": {
-            "desc": "Build performant and progressive Angular applications.",
+            "//desc": "Build performant and progressive Angular applications.",
+            "desc": "빠르게 동작하는 Angular 애플리케이션 기본 틀을 제공합니다.",
             "title": "web.dev/angular",
             "url": "https://web.dev/angular"
           },
           "mdb-angular-boilerplate": {
-            "desc": "Angular CRUD application starter with NgRx state management, Firebase backend and installation guide.",
+            "//desc": "Angular CRUD application starter with NgRx state management, Firebase backend and installation guide.",
+            "desc": "Angular CRUD 애플리케이션 틀을 제공합니다. NgRx 상태 관리 라이브러리와 Firebase 백엔드가 구성되어 있으며 설치 안내 문서도 제공합니다.",
             "title": "MDB Angular Boilerplate",
             "url": "https://github.com/mdbootstrap/Angular-Bootstrap-Boilerplate"
           },
           "dotnettricks": {
-            "desc": "Online videos and training for Angular.",
+            "//desc": "Online videos and training for Angular.",
+            "desc": "Angular를 학습할 수 있는 온라인 코스입니다.",
             "logo": "",
             "title": "DotNetTricks",
             "url": "https://www.dotnettricks.com/courses/angular"
