@@ -18,6 +18,18 @@ describe('global function patch', () => {
           .toEqual(Function.prototype.toString.call(g[zoneSymbol('setTimeout')]));
     });
 
+    it('should not throw error if Promise is not a function', () => {
+      const P = g.Promise;
+      try {
+        g.Promise = undefined;
+        expect(() => {
+          const a = {}.toString();
+        }).not.toThrow();
+      } finally {
+        g.Promise = P;
+      }
+    });
+
     it('MutationObserver toString should be the same with native version',
        ifEnvSupports('MutationObserver', () => {
          const nativeMutationObserver = g[zoneSymbol('MutationObserver')];
