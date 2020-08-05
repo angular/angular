@@ -353,5 +353,40 @@ runInEachFileSystem(os => {
       expect(diags2[0].messageText).toContain('invalid-element-b');
       expect(diags2[0].messageText).not.toContain('invalid-element-a');
     });
+
+    describe('getTemplateOfComponent()', () => {
+      it('should provide access to a component\'s real template', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {program, templateTypeChecker} = setup([{
+          fileName,
+          templates: {
+            'Cmp': '<div>Template</div>',
+          },
+        }]);
+        const cmp = getClass(getSourceFileOrError(program, fileName), 'Cmp');
+
+        const nodes = templateTypeChecker.getTemplate(cmp)!;
+        expect(nodes).not.toBeNull();
+        expect(nodes[0].sourceSpan.start.file.content).toBe('<div>Template</div>');
+      });
+
+      it('should provide access to an overridden template', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {program, templateTypeChecker} = setup([{
+          fileName,
+          templates: {
+            'Cmp': '<div>Template</div>',
+          },
+        }]);
+        const cmp = getClass(getSourceFileOrError(program, fileName), 'Cmp');
+
+        templateTypeChecker.overrideComponentTemplate(cmp, '<div>Overridden</div>');
+        templateTypeChecker.getDiagnosticsForComponent(cmp);
+
+        const nodes = templateTypeChecker.getTemplate(cmp)!;
+        expect(nodes).not.toBeNull();
+        expect(nodes[0].sourceSpan.start.file.content).toBe('<div>Overridden</div>');
+      });
+    });
   });
 });
