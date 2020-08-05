@@ -126,6 +126,7 @@
 # CDK experimental package
 /src/cdk-experimental/*                            @jelbourn
 /src/cdk-experimental/column-resize/**             @kseamon @andrewseguin
+/src/cdk-experimental/combobox/**                  @nielsr98 @jelbourn
 /src/cdk-experimental/dialog/**                    @jelbourn @crisbeto
 /src/cdk-experimental/menu/**                      @jelbourn @andy9775
 /src/cdk-experimental/popover-edit/**              @kseamon @andrewseguin
