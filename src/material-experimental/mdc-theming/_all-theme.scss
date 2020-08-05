@@ -14,6 +14,7 @@
 @import '../mdc-progress-bar/progress-bar-theme';
 @import '../mdc-input/input-theme';
 @import '../mdc-form-field/form-field-theme';
+@import '../../material/core/core';
 @import '../../material/core/theming/check-duplicate-styles';
 
 @mixin angular-material-mdc-theme($theme-or-color-config) {
