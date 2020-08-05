@@ -18,6 +18,7 @@ import {
   Optional,
   OnInit,
   NgZone,
+  HostListener,
 } from '@angular/core';
 import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
 import {
@@ -51,7 +52,6 @@ import {getItemPointerEntries} from './item-pointer-entries';
   selector: '[cdkMenu]',
   exportAs: 'cdkMenu',
   host: {
-    '(keydown)': '_handleKeyEvent($event)',
     'role': 'menu',
     'class': 'cdk-menu',
     '[attr.aria-orientation]': 'orientation',
@@ -136,6 +136,11 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
     this._keyManager.setLastItemActive();
   }
 
+  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
+  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
+  // can move this back into `host`.
+  // tslint:disable:no-host-decorator-in-concrete
+  @HostListener('keydown', ['$event'])
   /** Handle keyboard events for the Menu. */
   _handleKeyEvent(event: KeyboardEvent) {
     const keyManager = this._keyManager;

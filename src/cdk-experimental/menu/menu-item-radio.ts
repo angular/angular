@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
-import {Directive, OnDestroy, ElementRef, Self, Optional, Inject, NgZone} from '@angular/core';
+import {
+  Directive,
+  OnDestroy,
+  ElementRef,
+  Self,
+  Optional,
+  Inject,
+  NgZone,
+  HostListener,
+} from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkMenuItemSelectable} from './menu-item-selectable';
 import {CdkMenuItem} from './menu-item';
@@ -22,7 +31,6 @@ import {CDK_MENU, Menu} from './menu-interface';
   selector: '[cdkMenuItemRadio]',
   exportAs: 'cdkMenuItemRadio',
   host: {
-    '(click)': 'trigger()',
     'type': 'button',
     'role': 'menuitemradio',
     '[attr.aria-checked]': 'checked || null',
@@ -60,6 +68,11 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
     );
   }
 
+  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
+  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
+  // can move this back into `host`.
+  // tslint:disable:no-host-decorator-in-concrete
+  @HostListener('click')
   /** Toggles the checked state of the radio-button. */
   trigger() {
     super.trigger();

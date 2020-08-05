@@ -15,6 +15,7 @@ import {
   OnDestroy,
   Optional,
   NgZone,
+  HostListener,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
@@ -46,9 +47,6 @@ function isMenuElement(target: Element) {
   selector: '[cdkMenuBar]',
   exportAs: 'cdkMenuBar',
   host: {
-    '(keydown)': '_handleKeyEvent($event)',
-    '(document:click)': '_closeOnBackgroundClick($event)',
-    '(focus)': 'focusFirstItem()',
     'role': 'menubar',
     'class': 'cdk-menu-bar',
     'tabindex': '0',
@@ -100,6 +98,11 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
     this._subscribeToMouseManager();
   }
 
+  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
+  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
+  // can move this back into `host`.
+  // tslint:disable:no-host-decorator-in-concrete
+  @HostListener('focus')
   /** Place focus on the first MenuItem in the menu and set the focus origin. */
   focusFirstItem(focusOrigin: FocusOrigin = 'program') {
     this._keyManager.setFocusOrigin(focusOrigin);
@@ -112,6 +115,11 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
     this._keyManager.setLastItemActive();
   }
 
+  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
+  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
+  // can move this back into `host`.
+  // tslint:disable:no-host-decorator-in-concrete
+  @HostListener('keydown', ['$event'])
   /**
    * Handle keyboard events, specifically changing the focused element and/or toggling the active
    * items menu.
@@ -248,6 +256,11 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
     return this.orientation === 'horizontal';
   }
 
+  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
+  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
+  // can move this back into `host`.
+  // tslint:disable:no-host-decorator-in-concrete
+  @HostListener('document:click', ['$event'])
   /** Close any open submenu if there was a click event which occurred outside the menu stack. */
   _closeOnBackgroundClick(event: MouseEvent) {
     if (this._hasOpenSubmenu()) {
