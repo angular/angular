@@ -51,7 +51,7 @@
            [(ngModel)]="date"
            [min]="minDate"
            [max]="maxDate"
-           [matDatepickerFilter]="filterOdd ? dateFilter : undefined"
+           [matDatepickerFilter]="filterOdd ? dateFilter : undefined!"
            [disabled]="inputDisabled"
            (dateInput)="onDateInput($event)"
            (dateChange)="onDateChange($event)">
@@ -81,7 +81,7 @@
          [min]="minDate"
          [max]="maxDate"
          [disabled]="inputDisabled"
-         [matDatepickerFilter]="filterOdd ? dateFilter : undefined"
+         [matDatepickerFilter]="filterOdd ? dateFilter : undefined!"
          placeholder="Pick a date">
   <mat-datepicker-toggle [for]="resultPicker2"></mat-datepicker-toggle>
   <mat-datepicker
@@ -99,7 +99,7 @@
   <mat-form-field>
     <mat-label>Input disabled</mat-label>
     <input matInput [matDatepicker]="datePicker1" [(ngModel)]="date" [min]="minDate" [max]="maxDate"
-           [matDatepickerFilter]="filterOdd ? dateFilter : undefined" disabled>
+           [matDatepickerFilter]="filterOdd ? dateFilter : undefined!" disabled>
     <mat-datepicker #datePicker1 [touchUi]="touch" [startAt]="startAt"
                     [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
@@ -111,7 +111,7 @@
   <mat-form-field>
     <mat-label>FormControl disabled</mat-label>
     <input matInput [matDatepicker]="datePicker2" [formControl]="dateCtrl" [min]="minDate"
-           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : undefined">
+           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : undefined!">
     <mat-datepicker #datePicker2 [touchUi]="touch" [startAt]="startAt"
                     [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
@@ -127,7 +127,7 @@
   <mat-form-field>
     <mat-label>Input disabled, datepicker enabled</mat-label>
     <input matInput disabled [matDatepicker]="datePicker3" [(ngModel)]="date" [min]="minDate"
-           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : undefined">
+           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : undefined!">
     <mat-datepicker #datePicker3 [touchUi]="touch" [disabled]="false" [startAt]="startAt"
                     [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
@@ -144,7 +144,7 @@
           This breaks strict template type checking. What should we do here?
     -->
     <input matInput [matDatepicker]="datePicker4" [value]="date" [min]="minDate"
-           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : undefined">
+           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : undefined!">
     <mat-datepicker #datePicker4 [touchUi]="touch" [startAt]="startAt"
                     [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
@@ -183,7 +183,7 @@
       [disabled]="inputDisabled"
       [comparisonStart]="comparisonStart"
       [comparisonEnd]="comparisonEnd"
-      [dateFilter]="filterOdd ? dateFilter : undefined">
+      [dateFilter]="filterOdd ? dateFilter : undefined!">
       <input matStartDate formControlName="start" placeholder="Start date"/>
       <input matEndDate formControlName="end" placeholder="End date"/>
     </mat-date-range-input>
@@ -207,7 +207,7 @@
       [disabled]="inputDisabled"
       [comparisonStart]="comparisonStart"
       [comparisonEnd]="comparisonEnd"
-      [dateFilter]="filterOdd ? dateFilter : undefined">
+      [dateFilter]="filterOdd ? dateFilter : undefined!">
       <input matStartDate formControlName="start" placeholder="Start date"/>
       <input matEndDate formControlName="end" placeholder="End date"/>
     </mat-date-range-input>
@@ -232,7 +232,7 @@
       [disabled]="inputDisabled"
       [comparisonStart]="comparisonStart"
       [comparisonEnd]="comparisonEnd"
-      [dateFilter]="filterOdd ? dateFilter : undefined">
+      [dateFilter]="filterOdd ? dateFilter : undefined!">
       <input matStartDate formControlName="start" placeholder="Start date"/>
       <input matEndDate formControlName="end" placeholder="End date"/>
     </mat-date-range-input>
