@@ -66,10 +66,10 @@ This field contains an array of asset groups, each of which defines a set of ass
 
 <div class="alert is-helpful">
 
-When the ServiceWorker is handling a request, it checks asset groups in the order in which they appear in `ngsw-config.json`.
+When the ServiceWorker handles a request, it checks asset groups in the order in which they appear in `ngsw-config.json`.
 The first asset group that matches the requested resource handles the request.
 
-Therefore, you should put the more specific asset groups higher in the list.
+It is recommended that you put the more specific asset groups higher in the list.
 For example, an asset group that matches `/foo.js` should appear before one that matches `*.js`.
 
 </div>
@@ -153,10 +153,10 @@ This field contains an array of data groups, each of which defines a set of data
 
 <div class="alert is-helpful">
 
-When the ServiceWorker is handling a request, it checks data groups in the order in which they appear in `ngsw-config.json`.
+When the ServiceWorker handles a request, it checks data groups in the order in which they appear in `ngsw-config.json`.
 The first data group that matches the requested resource handles the request.
 
-Therefore, you should put the more specific data groups higher in the list.
+It is recommended that you put the more specific data groups higher in the list.
 For example, a data group that matches `/api/foo.json` should appear before one that matches `/api/*.json`.
 
 </div>
