@@ -377,23 +377,6 @@ describe('MatStepper', () => {
       assertSelectKeyWithModifierInteraction(fixture, stepHeaders, 'vertical', SPACE);
     });
 
-    it('should set the proper tabindex', () => {
-      let stepContents = fixture.debugElement.queryAll(By.css(`.mat-vertical-stepper-content`));
-      let stepperComponent =
-          fixture.debugElement.query(By.directive(MatStepper))!.componentInstance;
-      let firstStepContentEl = stepContents[0].nativeElement;
-      let secondStepContentEl = stepContents[1].nativeElement;
-
-      expect(firstStepContentEl.getAttribute('tabindex')).toBe('0');
-      expect(secondStepContentEl.getAttribute('tabindex')).toBeFalsy();
-
-      stepperComponent.selectedIndex = 1;
-      fixture.detectChanges();
-
-      expect(firstStepContentEl.getAttribute('tabindex')).toBeFalsy();
-      expect(secondStepContentEl.getAttribute('tabindex')).toBe('0');
-    });
-
     it('should have a focus indicator', () => {
       const stepHeaderNativeElements =
           [...fixture.debugElement.nativeElement.querySelectorAll('.mat-vertical-stepper-header')];
