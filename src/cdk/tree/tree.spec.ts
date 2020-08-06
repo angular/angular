@@ -120,6 +120,15 @@ describe('CdkTree', () => {
         })).toBe(true);
       });
 
+      it('with the right aria-levels', () => {
+        // add a child to the first node
+        let data = dataSource.data;
+        dataSource.addChild(data[0], true);
+
+        const ariaLevels = getNodes(treeElement).map(n => n.getAttribute('aria-level'));
+        expect(ariaLevels).toEqual(['2', '3', '2', '2']);
+      });
+
       it('with the right data', () => {
         expect(dataSource.data.length).toBe(3);
 

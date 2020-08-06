@@ -22,18 +22,18 @@ import {
   OnDestroy,
   OnInit,
   QueryList,
+  TrackByFunction,
   ViewChild,
   ViewContainerRef,
-  ViewEncapsulation,
-  TrackByFunction
+  ViewEncapsulation
 } from '@angular/core';
 import {
   BehaviorSubject,
+  isObservable,
   Observable,
   of as observableOf,
   Subject,
   Subscription,
-  isObservable,
 } from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {TreeControl} from './control/tree-control';
@@ -299,7 +299,7 @@ export class CdkTree<T> implements AfterContentChecked, CollectionViewer, OnDest
   exportAs: 'cdkTreeNode',
   host: {
     '[attr.aria-expanded]': 'isExpanded',
-    '[attr.aria-level]': 'role === "treeitem" ? level : null',
+    '[attr.aria-level]': 'level + 1',
     '[attr.role]': 'role',
     'class': 'cdk-tree-node',
   },
@@ -337,9 +337,9 @@ export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
   }
 
   /**
-   * The role of the node should be 'group' if it's an internal node,
-   * and 'treeitem' if it's a leaf node.
+   * The role of the node should always be 'treeitem'.
    */
+  // TODO: mark as deprecated
   @Input() role: 'treeitem' | 'group' = 'treeitem';
 
   constructor(protected _elementRef: ElementRef<HTMLElement>,
@@ -364,24 +364,11 @@ export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
     this._elementRef.nativeElement.focus();
   }
 
+  // TODO: role should eventually just be set in the component host
   protected _setRoleFromData(): void {
-    if (this._tree.treeControl.isExpandable) {
-      this.role = this._tree.treeControl.isExpandable(this._data) ? 'group' : 'treeitem';
-    } else {
-      if (!this._tree.treeControl.getChildren) {
-        throw getTreeControlFunctionsMissingError();
-      }
-      const childrenNodes = this._tree.treeControl.getChildren(this._data);
-      if (Array.isArray(childrenNodes)) {
-        this._setRoleFromChildren(childrenNodes as T[]);
-      } else if (isObservable(childrenNodes)) {
-        childrenNodes.pipe(takeUntil(this._destroyed))
-            .subscribe(children => this._setRoleFromChildren(children));
-      }
+    if (!this._tree.treeControl.isExpandable && !this._tree.treeControl.getChildren) {
+      throw getTreeControlFunctionsMissingError();
     }
-  }
-
-  protected _setRoleFromChildren(children: T[]) {
-    this.role = children && children.length ? 'group' : 'treeitem';
+    this.role = 'treeitem';
   }
 }

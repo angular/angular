@@ -74,7 +74,6 @@ export declare class CdkTreeNode<T> implements FocusableOption, OnDestroy {
     get level(): number;
     role: 'treeitem' | 'group';
     constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T>);
-    protected _setRoleFromChildren(children: T[]): void;
     protected _setRoleFromData(): void;
     focus(): void;
     ngOnDestroy(): void;
