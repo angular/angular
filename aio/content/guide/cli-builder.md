@@ -46,7 +46,7 @@ For example, your `myBuilder` folder could contain the following files.
 | `package.json`           | Dependencies. See https://docs.npmjs.com/files/package.json. |
 | `tsconfig.json`          | [TypeScript configuration](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html). |
 
-You can publish the builder to `npm` (see [Publishing your Library](https://angular.io/guide/creating-libraries#publishing-your-library)). If you publish it as `@example/my-builder`, you can install it using the following command.
+You can publish the builder to `npm` (see [Publishing your Library](guide/creating-libraries#publishing-your-library)). If you publish it as `@example/my-builder`, you can install it using the following command.
 
 <code-example language="sh">
 

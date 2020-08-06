@@ -20,7 +20,7 @@ To ensure we provide a future-proof e2e testing strategy, we want to evaluate th
 
 ### Angular libraries use Ivy
 
-We are investing in the design and development of Ivy library distribution plan, which will include an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and [ngcc](https://angular.io/guide/glossary#ngcc).
+We are investing in the design and development of Ivy library distribution plan, which will include an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and [ngcc](guide/glossary#ngcc).
 
 ### Evaluate future RxJS changes (v7 and beyond)
 
@@ -72,7 +72,7 @@ We want to unify commit message requirements and conformance across Angular repo
 
 We are going to design and implement a plan to make Zone.js optional from Angular applications. This way, we will simplify the framework, improve debugging, and reduce application bundle size. Additionally, this will allow us to take advantage of native async/await syntax, which currently Zone.js does not support.
 
-### Remove legacy [View Engine](https://angular.io/guide/ivy)
+### Remove legacy [View Engine](guide/ivy)
 
 After the transition of all our internal tooling to Ivy has completed, we want to remove the legacy View Engine for smaller Angular conceptual overhead, smaller package size, lower maintenance cost, and lower complexity of the codebase.
 
