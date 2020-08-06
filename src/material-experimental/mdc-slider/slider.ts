@@ -240,6 +240,7 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
     getBoundingClientRect: () => null!,
     isRTL: () => false,
     setThumbStyleProperty: (_propertyName: string, _value: string, _thumb: Thumb) => {},
+    removeThumbStyleProperty: (_propertyName: string, _thumb: Thumb) => {},
     setTrackActiveStyleProperty: (_propertyName: string, _value: string) => {},
     setValueIndicatorText: (_value: number, _thumb: Thumb) => {},
     updateTickMarks: () => {},
