@@ -34,6 +34,9 @@ export class MatTable<T> extends CdkTable<T> implements OnInit {
   /** Overrides the sticky CSS class set by the `CdkTable`. */
   protected stickyCssClass = 'mat-mdc-table-sticky';
 
+  /** Overrides the need to add position: sticky on every sticky cell element in `CdkTable`. */
+  protected needsPositionStickyOnElement = false;
+
   // After ngOnInit, the `CdkTable` has created and inserted the table sections (thead, tbody,
   // tfoot). MDC requires the `mdc-data-table__content` class to be added to the body.
   ngOnInit() {

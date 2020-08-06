@@ -38,6 +38,7 @@ sass_library(
 sass_binary(
     name = "table_scss",
     src = "table.scss",
+    deps = ["//src/material/core:core_scss_lib"],
 )
 
 ng_test_library(

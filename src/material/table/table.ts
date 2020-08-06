@@ -42,4 +42,7 @@ import {_DisposeViewRepeaterStrategy, _VIEW_REPEATER_STRATEGY} from '@angular/cd
 export class MatTable<T> extends CdkTable<T> {
   /** Overrides the sticky CSS class set by the `CdkTable`. */
   protected stickyCssClass = 'mat-table-sticky';
+
+  /** Overrides the need to add position: sticky on every sticky cell element in `CdkTable`. */
+  protected needsPositionStickyOnElement = false;
 }

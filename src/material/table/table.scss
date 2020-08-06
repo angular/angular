@@ -1,3 +1,5 @@
+@use '../core/style/vendor-prefixes';
+
 $mat-header-row-height: 56px;
 $mat-row-height: 48px;
 $mat-row-horizontal-padding: 24px;
@@ -113,4 +115,8 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
     padding-right: 0;
     padding-left: $mat-row-horizontal-padding;
   }
+}
+
+.mat-table-sticky {
+  @include vendor-prefixes.position-sticky;
 }

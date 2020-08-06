@@ -321,6 +321,13 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    */
   protected stickyCssClass: string = 'cdk-table-sticky';
 
+  /**
+   * Whether to manually add positon: sticky to all sticky cell elements. Not needed if
+   * the position is set in a selector associated with the value of stickyCssClass. May be
+   * overridden by table subclasses
+   */
+  protected needsPositionStickyOnElement = true;
+
   /** Whether the no data row is currently showing anything. */
   private _isShowingNoDataRow = false;
 
@@ -1119,7 +1126,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     const direction: Direction = this._dir ? this._dir.value : 'ltr';
     this._stickyStyler = new StickyStyler(
         this._isNativeHtmlTable, this.stickyCssClass, direction, this._coalescedStyleScheduler,
-        this._platform.isBrowser);
+        this._platform.isBrowser, this.needsPositionStickyOnElement);
     (this._dir ? this._dir.change : observableOf<Direction>())
     .pipe(takeUntil(this._onDestroy))
     .subscribe(value => {

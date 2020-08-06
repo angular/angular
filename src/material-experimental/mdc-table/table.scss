@@ -1,4 +1,9 @@
+@use '../../material/core/style/vendor-prefixes';
 @import '@material/data-table/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @include mdc-data-table-core-styles($query: $mat-base-styles-without-animation-query);
+
+.mat-table-sticky {
+  @include vendor-prefixes.position-sticky;
+}
