@@ -53,13 +53,26 @@ This field contains an array of asset groups, each of which defines a set of ass
 
 ```json
 {
-  "assetGroups": [{
-    ...
-  }, {
-    ...
-  }]
+  "assetGroups": [
+    {
+      ...
+    },
+    {
+      ...
+    }
+  ]
 }
 ```
+
+<div class="alert is-helpful">
+
+When the ServiceWorker handles a request, it checks asset groups in the order in which they appear in `ngsw-config.json`.
+The first asset group that matches the requested resource handles the request.
+
+It is recommended that you put the more specific asset groups higher in the list.
+For example, an asset group that matches `/foo.js` should appear before one that matches `*.js`.
+
+</div>
 
 Each asset group specifies both a group of resources and a policy that governs them. This policy determines when the resources are fetched and what happens when changes are detected.
 
@@ -122,6 +135,31 @@ These options are used to modify the matching behavior of requests. They are pas
 ## `dataGroups`
 
 Unlike asset resources, data requests are not versioned along with the app. They're cached according to manually-configured policies that are more useful for situations such as API requests and other data dependencies.
+
+This field contains an array of data groups, each of which defines a set of data resources and the policy by which they are cached.
+
+```json
+{
+  "dataGroups": [
+    {
+      ...
+    },
+    {
+      ...
+    }
+  ]
+}
+```
+
+<div class="alert is-helpful">
+
+When the ServiceWorker handles a request, it checks data groups in the order in which they appear in `ngsw-config.json`.
+The first data group that matches the requested resource handles the request.
+
+It is recommended that you put the more specific data groups higher in the list.
+For example, a data group that matches `/api/foo.json` should appear before one that matches `/api/*.json`.
+
+</div>
 
 Data groups follow this Typescript interface:
 
