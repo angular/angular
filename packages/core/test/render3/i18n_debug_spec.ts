@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {i18nMutateOpCodesToString, i18nUpdateOpCodesToString} from '@angular/core/src/render3/i18n_debug';
+import {i18nMutateOpCodesToString, i18nUpdateOpCodesToString} from '@angular/core/src/render3/i18n/i18n_debug';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode} from '@angular/core/src/render3/interfaces/i18n';
 
 describe('i18n debug', () => {
