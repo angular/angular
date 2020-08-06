@@ -127,7 +127,8 @@
           "tooltip": "Angular에 자주 나오는 용어를 빠르게 찾아보세요."
         },
         {
-            "title": "Try it",
+            "//title": "Try it",
+            "title": "사용해보기",
             "tooltip": "Examine and work with a ready-made sample app, with no setup.",
             "children": [
               {
