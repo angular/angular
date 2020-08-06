@@ -16,7 +16,7 @@ import {getComponent, getDirectives, getHostElement, getRenderedText} from './ut
 
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
 export {ɵɵgetFactoryOf, ɵɵgetInheritedFactory} from './di';
-export {getLocaleId, setLocaleId, ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp, ɵɵi18nPostprocess, ɵɵi18nStart,} from './i18n';
+export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
 // clang-format off
 export {
   detectChanges,
@@ -129,6 +129,7 @@ export {
   ɵɵtextInterpolate8,
   ɵɵtextInterpolateV,
 } from './instructions/all';
+export {ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp,ɵɵi18nPostprocess, ɵɵi18nStart} from './instructions/i18n';
 export {RenderFlags} from './interfaces/definition';
 export {
   AttributeMarker

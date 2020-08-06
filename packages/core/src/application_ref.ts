@@ -30,7 +30,7 @@ import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
-import {setLocaleId} from './render3/i18n';
+import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
