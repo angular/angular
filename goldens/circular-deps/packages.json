@@ -1758,9 +1758,10 @@
     "packages/core/src/render3/index.ts"
   ],
   [
-    "packages/core/src/render3/i18n.ts",
+    "packages/core/src/render3/i18n/i18n_apply.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
-    "packages/core/src/render3/index.ts"
+    "packages/core/src/render3/index.ts",
+    "packages/core/src/render3/instructions/i18n.ts"
   ],
   [
     "packages/core/src/render3/interfaces/container.ts",

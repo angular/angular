@@ -411,3 +411,41 @@ export interface TIcu {
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
+
+export interface IcuExpression {
+  type: IcuType;
+  mainBinding: number;
+  cases: string[];
+  values: (string|IcuExpression)[][];
+}
+
+export interface IcuCase {
+  /**
+   * Number of slots to allocate in expando for this case.
+   *
+   * This is the max number of DOM elements which will be created by this i18n + ICU blocks. When
+   * the DOM elements are being created they are stored in the EXPANDO, so that update OpCodes can
+   * write into them.
+   */
+  vars: number;
+
+  /**
+   * An optional array of child/sub ICUs.
+   */
+  childIcus: number[];
+
+  /**
+   * A set of OpCodes to apply in order to build up the DOM render tree for the ICU
+   */
+  create: I18nMutateOpCodes;
+
+  /**
+   * A set of OpCodes to apply in order to destroy the DOM render tree for the ICU.
+   */
+  remove: I18nMutateOpCodes;
+
+  /**
+   * A set of OpCodes to apply in order to update the DOM render tree for the ICU bindings.
+   */
+  update: I18nUpdateOpCodes;
+}
