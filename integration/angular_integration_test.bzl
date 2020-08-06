@@ -24,6 +24,8 @@ NPM_PACKAGE_ARCHIVES = [
     "rollup",
     "rollup-plugin-commonjs",
     "rollup-plugin-node-resolve",
+    "@rollup/plugin-inject",
+    "@rollup/plugin-replace",
     "webdriver-manager",
     "@angular/cli",
     "@angular-devkit/build-angular",

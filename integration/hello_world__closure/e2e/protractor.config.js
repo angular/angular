@@ -2,7 +2,7 @@
 // https://github.com/angular/protractor/blob/master/lib/config.ts
 exports.config = {
   specs: [
-    '../built/e2e/*.e2e-spec.js'
+    '../dist/_e2e/*.e2e-spec.js'
   ],
   capabilities: {
     browserName: 'chrome',
