@@ -10,7 +10,7 @@ import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise
 import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
+import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 import {AbstractControl} from './model';
 
 function isEmptyInputValue(value: any): boolean {
@@ -435,7 +435,7 @@ export class Validators {
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
-      return _mergeErrors(_executeValidators(control, presentValidators));
+      return mergeErrors(executeValidators<ValidatorFn>(control, presentValidators));
     };
   }
 
@@ -456,8 +456,9 @@ export class Validators {
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
-      const observables = _executeAsyncValidators(control, presentValidators).map(toObservable);
-      return forkJoin(observables).pipe(map(_mergeErrors));
+      const observables =
+          executeValidators<AsyncValidatorFn>(control, presentValidators).map(toObservable);
+      return forkJoin(observables).pipe(map(mergeErrors));
     };
   }
 }
@@ -474,15 +475,7 @@ export function toObservable(r: any): Observable<any> {
   return obs;
 }
 
-function _executeValidators(control: AbstractControl, validators: ValidatorFn[]): any[] {
-  return validators.map(v => v(control));
-}
-
-function _executeAsyncValidators(control: AbstractControl, validators: AsyncValidatorFn[]): any[] {
-  return validators.map(v => v(control));
-}
-
-function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null {
+function mergeErrors(arrayOfErrors: (ValidationErrors|null)[]): ValidationErrors|null {
   let res: {[key: string]: any} = {};
 
   // Not using Array.reduce here due to a Chrome 80 bug
@@ -492,4 +485,31 @@ function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null 
   });
 
   return Object.keys(res).length === 0 ? null : res;
+}
+
+type GenericValidatorFn = (control: AbstractControl) => any;
+
+function executeValidators<V extends GenericValidatorFn>(
+    control: AbstractControl, validators: V[]): ReturnType<V>[] {
+  return validators.map(validator => validator(control));
+}
+
+function isValidatorFn<V>(validator: V|Validator|AsyncValidator): validator is V {
+  return !(validator as Validator).validate;
+}
+
+/**
+ * Given the list of validators that may contain both functions as well as classes, return the list
+ * of validator functions (convert validator classes into validator functions). This is needed to
+ * have consistent structure in validators list before composing them.
+ *
+ * @param validators The set of validators that may contain validators both in plain function form
+ *     as well as represented as a validator class.
+ */
+export function normalizeValidators<V>(validators: (V|Validator|AsyncValidator)[]): V[] {
+  return validators.map(validator => {
+    return isValidatorFn<V>(validator) ?
+        validator :
+        ((c: AbstractControl) => validator.validate(c)) as unknown as V;
+  });
 }
