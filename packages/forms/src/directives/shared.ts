@@ -9,7 +9,8 @@
 import {isDevMode} from '@angular/core';
 
 import {FormArray, FormControl, FormGroup} from '../model';
-import {Validators} from '../validators';
+import {normalizeValidators, Validators} from '../validators';
+
 import {AbstractControlDirective} from './abstract_control_directive';
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
@@ -17,7 +18,6 @@ import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
 import {DefaultValueAccessor} from './default_value_accessor';
 import {NgControl} from './ng_control';
-import {normalizeAsyncValidator, normalizeValidator} from './normalize_validator';
 import {NumberValueAccessor} from './number_value_accessor';
 import {RadioControlValueAccessor} from './radio_control_value_accessor';
 import {RangeValueAccessor} from './range_value_accessor';
@@ -142,13 +142,15 @@ function _throwError(dir: AbstractControlDirective, message: string): void {
 }
 
 export function composeValidators(validators: Array<Validator|ValidatorFn>): ValidatorFn|null {
-  return validators != null ? Validators.compose(validators.map(normalizeValidator)) : null;
+  return validators != null ? Validators.compose(normalizeValidators<ValidatorFn>(validators)) :
+                              null;
 }
 
 export function composeAsyncValidators(validators: Array<AsyncValidator|AsyncValidatorFn>):
     AsyncValidatorFn|null {
-  return validators != null ? Validators.composeAsync(validators.map(normalizeAsyncValidator)) :
-                              null;
+  return validators != null ?
+      Validators.composeAsync(normalizeValidators<AsyncValidatorFn>(validators)) :
+      null;
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
