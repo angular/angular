@@ -62,7 +62,7 @@
         "bundle": "TODO(i): we should define ngDevMode to false in Closure, but --define only works in the global scope.",
         "bundle": "TODO(i): (FW-2164) TS 3.9 new class shape seems to have broken Closure in big ways. The size went from 169991 to 252338",
         "bundle": "TODO(i): after removal of tsickle from ngc-wrapped / ng_package, we had to switch to SIMPLE optimizations which increased the size from 252338 to 1198917, see PR#37221 and PR#37317 for more info",
-        "bundle": 1212027
+        "bundle": 1213130
       }
     }
   }
