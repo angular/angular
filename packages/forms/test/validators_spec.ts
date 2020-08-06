@@ -8,11 +8,11 @@
 
 import {fakeAsync, tick} from '@angular/core/testing';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, AsyncValidatorFn, FormArray, FormControl, Validators} from '@angular/forms';
-import {normalizeAsyncValidator} from '@angular/forms/src/directives/normalize_validator';
-import {AsyncValidator, ValidationErrors, ValidatorFn} from '@angular/forms/src/directives/validators';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, FormArray, FormControl, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {Observable, of, timer} from 'rxjs';
 import {first, map} from 'rxjs/operators';
+
+import {normalizeValidators} from '../src/validators';
 
 (function() {
 function validator(key: string, error: any): ValidatorFn {
@@ -413,11 +413,12 @@ describe('Validators', () => {
          }));
 
       it('should normalize and evaluate async validator-directives correctly', fakeAsync(() => {
-           const v = Validators.composeAsync(
-               [normalizeAsyncValidator(new AsyncValidatorDirective('expected', {'one': true}))])!;
+           const normalizedValidators = normalizeValidators<AsyncValidatorFn>(
+               [new AsyncValidatorDirective('expected', {'one': true})]);
+           const validatorFn = Validators.composeAsync(normalizedValidators)!;
 
            let errorMap: {[key: string]: any}|null = undefined!;
-           (v(new FormControl('invalid')) as Observable<ValidationErrors|null>)
+           (validatorFn(new FormControl('invalid')) as Observable<ValidationErrors|null>)
                .pipe(first())
                .subscribe((errors: {[key: string]: any}|null) => errorMap = errors);
            tick();
@@ -475,11 +476,12 @@ describe('Validators', () => {
       });
 
       it('should normalize and evaluate async validator-directives correctly', () => {
-        const v = Validators.composeAsync(
-            [normalizeAsyncValidator(new AsyncValidatorDirective('expected', {'one': true}))])!;
+        const normalizedValidators = normalizeValidators<AsyncValidatorFn>(
+            [new AsyncValidatorDirective('expected', {'one': true})]);
+        const validatorFn = Validators.composeAsync(normalizedValidators)!;
 
         let errorMap: {[key: string]: any}|null = undefined!;
-        (v(new FormControl('invalid')) as Observable<ValidationErrors|null>)
+        (validatorFn(new FormControl('invalid')) as Observable<ValidationErrors|null>)
             .pipe(first())
             .subscribe((errors: {[key: string]: any}|null) => errorMap = errors)!;
 
