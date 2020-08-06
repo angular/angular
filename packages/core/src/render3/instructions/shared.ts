@@ -699,7 +699,9 @@ export function createTView(
              null,                                           // firstChild: TNode|null,
              schemas,                                        // schemas: SchemaMetadata[]|null,
              consts,                                         // consts: TConstants|null
-             false                                           // incompleteFirstPass: boolean
+             false,                                          // incompleteFirstPass: boolean
+             decls,                                          // ngDevMode only: decls
+             vars,                                           // ngDevMode only: vars
              ) :
       {
         type: type,
