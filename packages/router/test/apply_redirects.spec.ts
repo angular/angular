@@ -491,6 +491,32 @@ describe('applyRedirects', () => {
          tick(100);
          expect(loaded).toEqual(['root', 'aux']);
        }));
+
+    it('loads only the first match when two Routes with the same outlet have the same path',
+      fakeAsync(() => {
+        const loadedConfig =
+          new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+        let loadCalls = 0;
+        let loaded: string[] = [];
+        const loader = {
+          load: (injector: any, p: Route) => {
+            loadCalls++;
+            return of(loadedConfig)
+              .pipe(
+                tap(() => loaded.push(p.loadChildren! as string)),
+              );
+          }
+        };
+
+        const config: Routes =
+          [{path: 'a', loadChildren: 'first'}, {path: 'a', loadChildren: 'second'}];
+
+        applyRedirects(testModule.injector, <any>loader, serializer, tree('a'), config)
+          .subscribe();
+        expect(loadCalls).toBe(1);
+        tick();
+        expect(loaded).toEqual(['first']);
+      }))
   });
 
   describe('empty paths', () => {
