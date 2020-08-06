@@ -182,7 +182,7 @@ class ElementDataSource extends DataSource<PeriodicElement> {
 
 @Component({
   template: `
-  <div #table style="margin: 16px">
+  <div #table style="margin: 16px; max-width: 90vw; max-height: 90vh;">
     <mat-table editable [dataSource]="dataSource">
       <ng-container matColumnDef="before">
         <mat-cell *matCellDef="let element">
@@ -219,7 +219,12 @@ class ElementDataSource extends DataSource<PeriodicElement> {
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
   </div>
-  `
+  `,
+  styles: [`
+    mat-table {
+      margin: 16px;
+    }
+  `]
 })
 class MatFlexTableInCell extends BaseTestComponent {
   displayedColumns = ['before', 'name', 'weight'];
@@ -265,7 +270,12 @@ class MatFlexTableInCell extends BaseTestComponent {
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   <div>
-  `
+  `,
+  styles: [`
+    table {
+      margin: 16px;
+    }
+  `]
 })
 class MatTableInCell extends BaseTestComponent {
   displayedColumns = ['before', 'name', 'weight'];
