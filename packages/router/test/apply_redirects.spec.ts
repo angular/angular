@@ -7,9 +7,9 @@
  */
 
 import {NgModuleRef} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Observable, of} from 'rxjs';
-import {delay} from 'rxjs/operators';
+import {delay, tap} from 'rxjs/operators';
 
 import {applyRedirects} from '../src/apply_redirects';
 import {LoadedRouterConfig, Route, Routes} from '../src/config';
@@ -482,6 +482,89 @@ describe('applyRedirects', () => {
             expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
           });
     });
+
+    it('should load all matching configurations of empty path, including an auxiliary outlets',
+       fakeAsync(() => {
+         const loadedConfig =
+             new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+         let loadCalls = 0;
+         let loaded: string[] = [];
+         const loader = {
+           load: (injector: any, p: Route) => {
+             loadCalls++;
+             return of(loadedConfig)
+                 .pipe(
+                     delay(100 * loadCalls),
+                     tap(() => loaded.push(p.loadChildren! as string)),
+                 );
+           }
+         };
+
+         const config: Routes =
+             [{path: '', loadChildren: 'root'}, {path: '', loadChildren: 'aux', outlet: 'popup'}];
+
+         applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).subscribe();
+         expect(loadCalls).toBe(1);
+         tick(100);
+         expect(loaded).toEqual(['root']);
+         tick(200);
+         expect(loadCalls).toBe(2);
+         expect(loaded).toEqual(['root', 'aux']);
+       }));
+
+    it('loads only the first match when two Routes with the same outlet have the same path', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+      let loadCalls = 0;
+      let loaded: string[] = [];
+      const loader = {
+        load: (injector: any, p: Route) => {
+          loadCalls++;
+          return of(loadedConfig)
+              .pipe(
+                  tap(() => loaded.push(p.loadChildren! as string)),
+              );
+        }
+      };
+
+      const config: Routes =
+          [{path: 'a', loadChildren: 'first'}, {path: 'a', loadChildren: 'second'}];
+
+      applyRedirects(testModule.injector, <any>loader, serializer, tree('a'), config).subscribe();
+      expect(loadCalls).toBe(1);
+      expect(loaded).toEqual(['first']);
+    });
+
+    it('should load the configuration of empty root path if the entry is an aux outlet',
+       fakeAsync(() => {
+         const loadedConfig =
+             new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+         let loaded: string[] = [];
+         const rootDelay = 100;
+         const auxDelay = 1;
+         const loader = {
+           load: (injector: any, p: Route) => {
+             const delayMs = p.loadChildren! as string === 'aux' ? auxDelay : rootDelay;
+             return of(loadedConfig)
+                 .pipe(
+                     delay(delayMs),
+                     tap(() => loaded.push(p.loadChildren! as string)),
+                 );
+           }
+         };
+
+         const config: Routes = [
+           // Define aux route first so it matches before the primary outlet
+           {path: 'modal', loadChildren: 'aux', outlet: 'popup'},
+           {path: '', loadChildren: 'root'},
+         ];
+
+         applyRedirects(testModule.injector, <any>loader, serializer, tree('(popup:modal)'), config)
+             .subscribe();
+         tick(auxDelay);
+         expect(loaded).toEqual(['aux']);
+         tick(rootDelay);
+         expect(loaded).toEqual(['aux', 'root']);
+       }));
   });
 
   describe('empty paths', () => {
@@ -751,6 +834,46 @@ describe('applyRedirects', () => {
           '/a/1/b', (t: UrlTree) => {
             expectTreeToBe(t, 'a/1/b');
           });
+    });
+  });
+
+  describe('multiple matches with empty path named outlets', () => {
+    it('should work with redirects when other outlet comes before the one being activated', () => {
+      applyRedirects(
+          testModule.injector, null!, serializer, tree(''),
+          [
+            {
+              path: '',
+              children: [
+                {path: '', component: ComponentA, outlet: 'aux'},
+                {path: '', redirectTo: 'b', pathMatch: 'full'},
+                {path: 'b', component: ComponentB},
+              ],
+            },
+          ])
+          .subscribe(
+              (tree: UrlTree) => {
+                expect(tree.toString()).toEqual('/b');
+              },
+              () => {
+                fail('should not be reached');
+              });
+    });
+
+    it('should work when entry point is named outlet', () => {
+      applyRedirects(
+          testModule.injector, null!, serializer, tree('(popup:modal)'),
+          [
+            {path: '', component: ComponentA},
+            {path: 'modal', component: ComponentB, outlet: 'popup'},
+          ])
+          .subscribe(
+              (tree: UrlTree) => {
+                expect(tree.toString()).toEqual('/(popup:modal)');
+              },
+              (e) => {
+                fail('should not be reached' + e.message);
+              });
     });
   });
 
