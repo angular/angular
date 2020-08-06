@@ -1,0 +1,38 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {$, browser} from 'protractor';
+import {runBenchmark} from '@angular/dev-infra-private/benchmark/driver-utilities';
+
+describe('slide toggle performance benchmarks', () => {
+  beforeAll(() => {
+    browser.rootEl = '#root';
+  });
+
+  it('renders a slide toggle', async() => {
+    await runBenchmark({
+      id: 'slide-toggle-render',
+      url: '',
+      ignoreBrowserSynchronization: true,
+      params: [],
+      prepare: async () => await $('#hide').click(),
+      work: async () => await $('#show').click(),
+    });
+  });
+
+  it('clicks a slide toggle', async() => {
+    await runBenchmark({
+      id: 'slide-toggle-click',
+      url: '',
+      ignoreBrowserSynchronization: true,
+      params: [],
+      setup: async () => await $('#show').click(),
+      work: async () => await $('.mat-mdc-slide-toggle label').click(),
+    });
+  });
+});
