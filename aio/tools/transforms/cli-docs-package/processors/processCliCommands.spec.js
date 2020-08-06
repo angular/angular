@@ -258,18 +258,67 @@ describe('processCliCommands processor', () => {
          docType: 'navigation-json',
          data: {
            SideNav: [
-             {url: 'some/page', title: 'Some Page'}, {
+             {url: 'some/page', title: 'Some Page'},
+             {
                title: 'CLI Commands',
                tooltip: 'Angular CLI command reference',
-               children: [{'title': 'Overview', 'url': 'cli'}]
+               children: [{'title': 'Overview', 'url': 'cli'}],
              },
-             {url: 'other/page', title: 'Other Page'}
-           ]
-         }
+             {url: 'other/page', title: 'Other Page'},
+           ],
+         },
        };
        processor.$process([command, navigation]);
        expect(navigation.data.SideNav[1].title).toEqual('CLI Commands');
        expect(navigation.data.SideNav[1].children).toEqual([
+         {url: 'cli', title: 'Overview'},
+         {url: 'cli/command1', title: 'ng command1'},
+       ]);
+     });
+
+  it('should detect the CLI node if it is nested in another node (as long as there is a first child node with a `cli` url',
+     () => {
+       const command = {
+         docType: 'cli-command',
+         name: 'command1',
+         commandAliases: ['alias1', 'alias2'],
+         options: [],
+         path: 'cli/command1',
+       };
+       const navigation = {
+         docType: 'navigation-json',
+         data: {
+           SideNav: [
+             {url: 'some/page', title: 'Some Page'},
+             {
+               title: 'CLI Commands Grandparent',
+               children: [
+                 {url: 'some/nested/page', title: 'Some Nested Page'},
+                 {
+                   title: 'CLI Commands Parent',
+                   children: [
+                     {url: 'some/more/nested/page', title: 'Some More Nested Page'},
+                     {
+                       title: 'CLI Commands',
+                       tooltip: 'Angular CLI command reference',
+                       children: [{'title': 'Overview', 'url': 'cli'}],
+                     },
+                     {url: 'other/more/nested/page', title: 'Other More Nested Page'},
+                   ],
+                 },
+                 {url: 'other/nested/page', title: 'Other Nested Page'},
+               ],
+             },
+             {url: 'other/page', title: 'Other Page'},
+           ],
+         },
+       };
+
+       processor.$process([command, navigation]);
+
+       const cliCommandsNode = navigation.data.SideNav[1].children[1].children[1];
+       expect(cliCommandsNode.title).toEqual('CLI Commands');
+       expect(cliCommandsNode.children).toEqual([
          {url: 'cli', title: 'Overview'},
          {url: 'cli/command1', title: 'ng command1'},
        ]);
