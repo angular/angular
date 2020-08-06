@@ -111,15 +111,10 @@ export class BrowserViewportScroller implements ViewportScroller {
    */
   scrollToAnchor(anchor: string): void {
     if (this.supportScrollRestoration()) {
-      const elSelectedById = this.document.getElementById(anchor);
-      if (elSelectedById) {
-        this.scrollToElement(elSelectedById);
-        return;
-      }
-      const elSelectedByName = this.document.getElementsByName(anchor)[0];
-      if (elSelectedByName) {
-        this.scrollToElement(elSelectedByName);
-        return;
+      const elSelected =
+          this.document.getElementById(anchor) || this.document.getElementsByName(anchor)[0];
+      if (elSelected) {
+        this.scrollToElement(elSelected);
       }
     }
   }

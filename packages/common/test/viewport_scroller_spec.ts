@@ -14,14 +14,15 @@ describe('BrowserViewportScroller', () => {
   let documentSpy: any;
   let windowSpy: any;
 
+  beforeEach(() => {
+    windowSpy = jasmine.createSpyObj('window', ['history']);
+    windowSpy.scrollTo = 1;
+    windowSpy.history.scrollRestoration = 'auto';
+    documentSpy = jasmine.createSpyObj('document', ['getElementById', 'getElementsByName']);
+    scroller = new BrowserViewportScroller(documentSpy, windowSpy, null!);
+  });
+
   describe('setHistoryScrollRestoration', () => {
-    const anchor = 'anchor';
-    const el = document.createElement('a');
-
-    beforeEach(() => {
-      scroller = new BrowserViewportScroller(documentSpy, windowSpy, null!);
-    });
-
     it('should not crash when scrollRestoration is not writable', () => {
       Object.defineProperty(windowSpy.history, 'scrollRestoration', {
         value: 'auto',
@@ -34,11 +35,6 @@ describe('BrowserViewportScroller', () => {
   describe('scrollToAnchor', () => {
     const anchor = 'anchor';
     const el = document.createElement('a');
-
-    beforeEach(() => {
-      documentSpy = jasmine.createSpyObj('document', ['getElementById', 'getElementsByName']);
-      scroller = new BrowserViewportScroller(documentSpy, {scrollTo: 1}, null!);
-    });
 
     it('should only call getElementById when an element is found by id', () => {
       documentSpy.getElementById.and.returnValue(el);
