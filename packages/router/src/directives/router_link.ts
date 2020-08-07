@@ -359,9 +359,12 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   /** @nodoc */
-  @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey', '$event.shiftKey'])
-  onClick(button: number, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean): boolean {
-    if (button !== 0 || ctrlKey || metaKey || shiftKey) {
+  @HostListener(
+      'click',
+      ['$event.button', '$event.ctrlKey', '$event.shiftKey', '$event.altKey', '$event.metaKey'])
+  onClick(button: number, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, metaKey: boolean):
+      boolean {
+    if (button !== 0 || ctrlKey || shiftKey || altKey || metaKey) {
       return true;
     }
 
