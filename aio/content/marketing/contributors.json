@@ -86,24 +86,6 @@
     "groups": ["Angular"],
     "lead": "kara"
   },
-  "matsko": {
-    "name": "Matias Niemela",
-    "picture": "matias.jpg",
-    "twitter": "yearofmoo",
-    "website": "http://yearofmoo.com",
-    "bio": "Matias Niemela is a fullstack web developer who has been programming & building websites for over 10 years, and a core team member of AngularJS for two years. In the spring of 2015 Matias joined Angular full time at Google. In his free time Matias loves to build complex things and is always up for public speaking, travelling and tweaking his current Vim setup.",
-    "groups": ["Angular"],
-    "lead": "kara"
-  },
-  "kara": {
-    "name": "Kara Erickson",
-    "picture": "kara-erickson.jpg",
-    "twitter": "karaforthewin",
-    "website": "https://github.com/kara",
-    "bio": "Kara is a software engineer on the Angular team at Google and a co-organizer of the Angular-SF Meetup. Prior to Google, she helped build UI components in Angular for guest management systems at OpenTable.  She enjoys snacking indiscriminately and probably other things too.",
-    "groups": ["Angular"],
-    "lead": "igorminar"
-  },
   "pkozlowski-opensource": {
     "name": "Pawel Kozlowski",
     "picture": "pawel.jpg",
@@ -617,26 +599,6 @@
     "website": "https://schwarty.com",
     "bio": "Justin (aka Schwarty) is a Google Developer Expert in Web Technologies and Angular, the host and maintainer of the weekly AngularAir live video broadcast, educator, writer and content creator. He has Angular courses available on LinkedIn Learning and Pluralsight and loves passing on years of full stack development knowledge to help empower others to find their inner awesomeness!",
     "groups": ["GDE"]
-  },
-  "dennispbrown": {
-    "name": "Denny Brown",
-    "picture": "denny.jpg",
-    "bio": "Denny is founder of Expert Support, a professional services firm specializing in technical communication, and leads the Angular technical writing team. His lifelong passion has been to reduce the time and effort required to understand complex technical information. Early on, he was Associate Chairman of the Computer Science Department at Stanford, where he taught introductory courses in programming. He also plays old-timers baseball in local leagues and national tournaments.",
-    "groups": ["Angular"],
-    "lead": "aikidave"
-  },
-  "jbogarthyde": {
-    "name": "Judy Bogart",
-    "picture": "judy.png",
-    "groups": ["Angular"],
-    "lead": "dennispbrown"
-  },
-  "rockument69": {
-    "name": "Tony Bove",
-    "picture": "rockument69.jpg",
-    "bio": "Tony is a technical writer with Expert Support. His lifelong passions are helping people use technology, writing fiction, and playing music. When he's not working or playing the harmonica with friends in a bluegrass band, he's swimming and snorkeling on a Kauai beach and playing ball with his Irish Wolfhound. He's worked at home for decades before it became a thing.",
-    "groups": ["Angular"],
-    "lead": "aikidave"
   },
   "kapunahelewong": {
     "name": "Kapunahele Wong",
