@@ -922,7 +922,7 @@ export class Router {
             const {source, state, urlTree} = currentChange;
             const extras: NavigationExtras = {replaceUrl: true};
             if (state) {
-              const {navigationId, ...payload} = state || {};
+              const {navigationId, ...payload} = state;
               if (Object.keys(payload).length !== 0) {
                 extras.state = payload;
               }

@@ -159,7 +159,7 @@ describe('Integration', () => {
          expect(navigation.extras.state).toEqual({foo: 'bar'});
        })));
 
-    it('should set history.state if poulate brower history',
+    it('should set history.state when navigation with browser back and forward',
        fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
          router.resetConfig([
            {path: '', component: SimpleCmp},
@@ -174,7 +174,8 @@ describe('Integration', () => {
            }
          });
 
-         router.navigateByUrl('/simple', {state: {foo: 'bar'}});
+         const state = {foo: 'bar'};
+         router.navigateByUrl('/simple', {state});
          tick();
          location.back();
          tick();
@@ -182,7 +183,33 @@ describe('Integration', () => {
          tick();
 
          expect(navigation.extras.state).toBeDefined();
-         expect(navigation.extras.state).toEqual({foo: 'bar'});
+         expect(navigation.extras.state).toEqual(state);
+       })));
+
+    it('should not error if state is not {[key: string]: any}',
+       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'simple', component: SimpleCmp},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         let navigation: Navigation = null!;
+         router.events.subscribe(e => {
+           if (e instanceof NavigationStart) {
+             navigation = <Navigation>router.getCurrentNavigation()!;
+           }
+         });
+
+         location.replaceState('', '', 42);
+         router.navigateByUrl('/simple');
+         tick();
+         location.back();
+         advance(fixture);
+
+         // Angular does not support restoring state to the primitive.
+         expect(navigation.extras.state).toEqual(undefined);
+         expect(location.getState()).toEqual({navigationId: 3});
        })));
 
     it('should not pollute browser history when replaceUrl is set to true',
