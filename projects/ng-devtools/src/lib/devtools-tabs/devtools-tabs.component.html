@@ -23,7 +23,7 @@
   </button>
 </div>
 
-<mat-menu #menu="matMenu" [class]="'test'">
+<mat-menu #menu="matMenu" class="options-menu">
   <mat-slide-toggle (change)="toggleTimingAPI($event)" class="menu-toggle-button" (click)="$event.stopPropagation()">
     Enable timing API (Experimental)
   </mat-slide-toggle>
