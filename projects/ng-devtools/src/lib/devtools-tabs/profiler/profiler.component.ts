@@ -3,7 +3,7 @@ import { MessageBus, Events, ProfilerFrame } from 'protocol';
 import { FileApiService } from '../../file-api-service';
 import { MatDialog } from '@angular/material/dialog';
 import { ProfilerImportDialogComponent } from './profiler-import-dialog/profiler-import-dialog.component';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
 type State = 'idle' | 'recording' | 'visualizing';
 
@@ -18,6 +18,8 @@ const PROFILER_VERSION = 1;
 export class ProfilerComponent implements OnInit, OnDestroy {
   state: State = 'idle';
   stream = new Subject<ProfilerFrame[]>();
+
+  private _fileUploadSubscription: Subscription;
 
   // We collect this buffer so we can have it available for export.
   private _buffer: ProfilerFrame[] = [];
@@ -52,7 +54,7 @@ export class ProfilerComponent implements OnInit, OnDestroy {
       this._buffer.push(chunkOfRecords);
     });
 
-    this._fileApiService.uploadedData.subscribe((importedFile) => {
+    this._fileUploadSubscription = this._fileApiService.uploadedData.subscribe((importedFile) => {
       if (importedFile.error) {
         console.error('Could not process uploaded file');
         console.error(importedFile.error);
@@ -86,7 +88,7 @@ export class ProfilerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._fileApiService.uploadedData.unsubscribe();
+    this._fileUploadSubscription.unsubscribe();
   }
 
   exportProfilerResults(): void {
