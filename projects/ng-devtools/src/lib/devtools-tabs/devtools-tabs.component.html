@@ -30,6 +30,7 @@
   <br />
   <br />
   <mat-slide-toggle
+    [checked]="currentTheme === 'dark-theme'"
     (change)="themeService.toggleDarkMode($event.checked)"
     class="menu-toggle-button"
     (click)="$event.stopPropagation()"
