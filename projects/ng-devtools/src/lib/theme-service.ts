@@ -1,14 +1,14 @@
-import { Subject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
 import { Injectable, RendererFactory2, Renderer2 } from '@angular/core';
 
-export type Themes = 'dark-theme' | 'light-theme';
+export type Theme = 'dark-theme' | 'light-theme';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
   private renderer: Renderer2;
-  currentTheme: Subject<Themes> = new Subject();
+  currentTheme: Subject<Theme> = new ReplaySubject();
 
   constructor(private _rendererFactory: RendererFactory2) {
     this.renderer = this._rendererFactory.createRenderer(null, null);

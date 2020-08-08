@@ -1,21 +1,27 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Events, MessageBus } from 'protocol';
 import { MatTabGroup } from '@angular/material/tabs';
 import { DirectiveExplorerComponent } from './directive-explorer/directive-explorer.component';
 import { ApplicationEnvironment } from '../application-environment';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { TabUpdate } from './tab-update';
-import { ThemeService } from '../theme-service';
+import { Theme, ThemeService } from '../theme-service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'ng-devtools-tabs',
   templateUrl: './devtools-tabs.component.html',
   styleUrls: ['./devtools-tabs.component.scss'],
 })
-export class DevToolsTabsComponent {
+export class DevToolsTabsComponent implements OnInit, OnDestroy {
   @Input() angularVersion: string | undefined = undefined;
   @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
   @ViewChild(DirectiveExplorerComponent) directiveExplorer: DirectiveExplorerComponent;
+
+  inspectorRunning = false;
+
+  private _currentThemeSubscription: Subscription;
+  currentTheme: Theme;
 
   constructor(
     public tabUpdate: TabUpdate,
@@ -24,11 +30,17 @@ export class DevToolsTabsComponent {
     private _applicationEnvironment: ApplicationEnvironment
   ) {}
 
+  ngOnInit(): void {
+    this._currentThemeSubscription = this.themeService.currentTheme.subscribe((theme) => (this.currentTheme = theme));
+  }
+
+  ngOnDestroy(): void {
+    this._currentThemeSubscription.unsubscribe();
+  }
+
   get latestSHA(): string {
     return this._applicationEnvironment.environment.process.env.LATEST_SHA;
   }
-
-  inspectorRunning = false;
 
   toggleInspector(): void {
     this.toggleInspectorState();
