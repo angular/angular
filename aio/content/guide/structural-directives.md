@@ -318,6 +318,22 @@ When you write your own structural directives, use the following grammar:
 
 The following tables describe each portion of the microsyntax grammar.
 
+<!-- The items in this table seem different. Is there another name for how we should describe them? -->
+<table>
+  <tr>
+    <th></th>
+  </tr>
+  <tr>
+    <td colspan="3"><code>keyExp = :key ":"? :expression ("as" :local)? ";"? </code></td>
+  </tr>
+  <tr>
+    <td colspan="3"><code>let = "let" :local "=" :export ";"?</code></td>
+  </tr>
+  <tr>
+    <td colspan="3"><code>as = :export "as" :local ";"?</code></td>
+  </tr>
+</table>
+
 <!-- What should I put in the table headers? -->
 
 <table>
@@ -346,23 +362,6 @@ The following tables describe each portion of the microsyntax grammar.
     <td>standard Angular expression</td>
   </tr>
 </table>
-
-<!-- The items in this table seem different. Is there another name for how we should describe them? -->
-<table>
-  <tr>
-    <th></th>
-  </tr>
-  <tr>
-    <td colspan="3"><code>keyExp = :key ":"? :expression ("as" :local)? ";"? </code></td>
-  </tr>
-  <tr>
-    <td colspan="3"><code>let = "let" :local "=" :export ";"?</code></td>
-  </tr>
-  <tr>
-    <td colspan="3"><code>as = :export "as" :local ";"?</code></td>
-  </tr>
-</table>
-
 
 ### Translation
 
