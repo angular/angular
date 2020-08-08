@@ -70,13 +70,8 @@ mat-tab-group {
 }
 
 ::ng-deep {
-  .cdk-overlay-pane {
-    width: 500px;
-  }
-
-  .mat-menu-panel {
-    width: 100%;
-    padding: 15px;
+  .options-menu {
+    padding: 1rem 1.25rem;
   }
 }
 
