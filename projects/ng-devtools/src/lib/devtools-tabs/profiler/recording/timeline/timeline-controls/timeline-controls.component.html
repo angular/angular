@@ -1,5 +1,5 @@
 <div class="controls">
-  <button *ngIf="!empty" mat-stroked-button (click)="exportProfile.emit()">Export to JSON</button>
+  <button *ngIf="!empty" mat-stroked-button (click)="exportProfile.emit()">Save Profile</button>
   <mat-form-field *ngIf="record">
     <mat-select [value]="visualizationMode" (selectionChange)="this.changeVisualizationMode.emit($event.value)">
       <mat-option [value]="flameGraphMode">
