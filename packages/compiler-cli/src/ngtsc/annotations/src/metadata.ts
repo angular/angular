@@ -70,8 +70,8 @@ export function generateSetClassMetadataCall(
         `Duplicate decorated properties found on class '${clazz.name.text}': ` +
         duplicateDecoratedMemberNames.join(', '));
   }
-  const decoratedMembers =
-      classMembers.map(member => classMemberToMetadata(member.name, member.decorators!, isCore));
+  const decoratedMembers = classMembers.map(
+      member => classMemberToMetadata(member.nameNode ?? member.name, member.decorators!, isCore));
   if (decoratedMembers.length > 0) {
     metaPropDecorators = ts.createObjectLiteral(decoratedMembers);
   }
@@ -127,7 +127,7 @@ function ctorParameterToMetadata(
  * Convert a reflected class member to metadata.
  */
 function classMemberToMetadata(
-    name: string, decorators: Decorator[], isCore: boolean): ts.PropertyAssignment {
+    name: ts.PropertyName|string, decorators: Decorator[], isCore: boolean): ts.PropertyAssignment {
   const ngDecorators = decorators.filter(dec => isAngularDecorator(dec, isCore))
                            .map((decorator: Decorator) => decoratorToMetadata(decorator));
   const decoratorMeta = ts.createArrayLiteral(ngDecorators);
