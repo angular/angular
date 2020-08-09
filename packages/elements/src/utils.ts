@@ -7,12 +7,6 @@
  */
 import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
-const matches = (() => {
-  const elProto = Element.prototype as any;
-  return elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
-      elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
-})();
-
 /**
  * Provide methods for scheduling the execution of a callback.
  */
@@ -97,9 +91,19 @@ export function kebabToCamelCase(input: string): string {
 }
 
 /**
+ * Lazily check the correct `matches` method on `Element`.
+ */
+let matches: any;
+
+/**
  * Check whether an `Element` matches a CSS selector.
  */
 export function matchesSelector(element: Element, selector: string): boolean {
+  if (!matches) {
+    const elProto = Object.getPrototypeOf(element) as any;
+    matches = elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
+        elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
+  }
   return matches.call(element, selector);
 }
 
