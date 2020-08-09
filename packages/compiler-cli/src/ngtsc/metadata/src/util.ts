@@ -105,10 +105,12 @@ export function extractDirectiveTypeCheckMeta(
     const field = members.find(member => member.name === fieldName);
     if (field === undefined || field.node === null) {
       undeclaredInputFields.add(fieldName);
-    } else if (isRestricted(field.node)) {
+      continue;
+    }
+    if (isRestricted(field.node)) {
       restrictedInputFields.add(fieldName);
     }
-    if (field && field.nameNode !== null && ts.isStringLiteral(field.nameNode)) {
+    if (field.nameNode !== null && ts.isStringLiteral(field.nameNode)) {
       stringLiteralInputFields.add(fieldName);
     }
   }

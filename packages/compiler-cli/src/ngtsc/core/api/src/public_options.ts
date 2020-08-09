@@ -151,7 +151,9 @@ export interface StrictTemplateOptions {
    * Whether to check if the input binding attempts to assign to a restricted field (readonly,
    * private, or protected) on the directive/component.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" and/or "strictInputTypes" is set.
+   * Defaults to `false`, even if "fullTemplateTypeCheck", "strictTemplates" and/or
+   * "strictInputTypes" is set. Note that if `strictInputTypes` is not set, or set to `false`, this
+   * flag has no effect.
    */
   strictInputAccessModifiers?: boolean;
 
