@@ -922,9 +922,10 @@ export class Router {
             const {source, state, urlTree} = currentChange;
             const extras: NavigationExtras = {replaceUrl: true};
             if (state) {
-              const {navigationId, ...payload} = state;
-              if (Object.keys(payload).length !== 0) {
-                extras.state = payload;
+              const stateCopy = {...state};
+              delete stateCopy.navigationId;
+              if (Object.keys(stateCopy).length !== 0) {
+                extras.state = stateCopy;
               }
             }
             this.scheduleNavigation(urlTree, source, state, extras);
