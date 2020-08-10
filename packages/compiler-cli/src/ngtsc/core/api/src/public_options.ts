@@ -154,6 +154,8 @@ export interface StrictTemplateOptions {
    * Defaults to `false`, even if "fullTemplateTypeCheck", "strictTemplates" and/or
    * "strictInputTypes" is set. Note that if `strictInputTypes` is not set, or set to `false`, this
    * flag has no effect.
+   *
+   * Tracking issue for enabling this by default: https://github.com/angular/angular/issues/38400
    */
   strictInputAccessModifiers?: boolean;
 
