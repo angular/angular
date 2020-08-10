@@ -9,6 +9,7 @@ ts_library(
         "//dev-infra/pr/check-target-branches",
         "//dev-infra/pr/checkout",
         "//dev-infra/pr/discover-new-conflicts",
+        "//dev-infra/pr/fixup-commits",
         "//dev-infra/pr/merge",
         "//dev-infra/pr/rebase",
         "@npm//@types/yargs",

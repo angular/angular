@@ -19,6 +19,8 @@ export interface ParsedCommitMessage {
   isFixup: boolean;
   isSquash: boolean;
   isRevert: boolean;
+  raw: string;
+  message: string;
 }
 
 /** Regex determining if a commit is a fixup. */
@@ -37,10 +39,10 @@ const COMMIT_HEADER_RE = /^(.*)/i;
 const COMMIT_BODY_RE = /^.*\n\n([\s\S]*)$/;
 
 /** Parse a full commit message into its composite parts. */
-export function parseCommitMessage(commitMsg: string): ParsedCommitMessage {
+export function parseCommitMessage(rawCommitMsg: string): ParsedCommitMessage {
   // Ignore comments (i.e. lines starting with `#`). Comments are automatically removed by git and
   // should not be considered part of the final commit message.
-  commitMsg = commitMsg.split('\n').filter(line => !line.startsWith('#')).join('\n');
+  const commitMsg = rawCommitMsg.split('\n').filter(line => !line.startsWith('#')).join('\n');
 
   let header = '';
   let body = '';
@@ -72,6 +74,8 @@ export function parseCommitMessage(commitMsg: string): ParsedCommitMessage {
     type,
     scope,
     subject,
+    raw: rawCommitMsg,
+    message: commitMsg,
     isFixup: FIXUP_PREFIX_RE.test(commitMsg),
     isSquash: SQUASH_PREFIX_RE.test(commitMsg),
     isRevert: REVERT_PREFIX_RE.test(commitMsg),

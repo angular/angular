@@ -12,6 +12,7 @@ import {CheckTargetBranchesModule} from './check-target-branches/cli';
 import {CheckoutCommandModule} from './checkout/cli';
 import {buildDiscoverNewConflictsCommand, handleDiscoverNewConflictsCommand} from './discover-new-conflicts/cli';
 import {MergeCommandModule} from './merge/cli';
+import {FixupCommitsCommandModule} from './fixup-commits/cli';
 import {buildRebaseCommand, handleRebaseCommand} from './rebase/cli';
 
 /** Build the parser for pull request commands. */
@@ -28,5 +29,6 @@ export function buildPrParser(localYargs: yargs.Argv) {
           buildRebaseCommand, handleRebaseCommand)
       .command(MergeCommandModule)
       .command(CheckoutCommandModule)
-      .command(CheckTargetBranchesModule);
+      .command(CheckTargetBranchesModule)
+      .command(FixupCommitsCommandModule);
 }
