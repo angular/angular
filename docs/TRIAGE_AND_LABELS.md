@@ -162,13 +162,27 @@ This decision is then honored when the PR is being merged by the caretaker.
 
 To communicate the target we use the following labels:
 
-* `PR target: master & patch`: the PR should me merged into the master branch and cherry-picked into the most recent patch branch. All PRs with fixes, docs and refactorings should use this target.
-* `PR target: master-only`: the PR should be merged only into the `master` branch. All PRs with new features, API changes or high-risk changes should use this target.
-* `PR target: patch-only`: the PR should be merged only into the most recent patch branch (e.g. 5.0.x). This target is useful if a `master & patch` PR can't be cleanly cherry-picked into the stable branch and a new PR is needed.
-* `PR target: LTS-only`: the PR should be merged only into the active LTS branch(es). Only security and critical fixes are allowed in these branches. Always send a new PR targeting just the LTS branch and request review approval from @IgorMinar.
-* `PR target: TBD`: the target is yet to be determined.
+Targeting an active release train:
 
-If a PR is missing the `PR target: *` label, or if the label is set to "TBD" when the PR is sent to the caretaker, the caretaker should reject the PR and request the appropriate target label to be applied before the PR is merged.
+* `target: major`: Any breaking change
+* `target: minor`: Any new feature
+* `target: patch`: Bug fixes, refactorings, documentation changes, etc. that pose no or very low risk of adversely
+  affecting existing applications.
+
+Special Cases:
+* `target: rc`: A critical fix for an active release-train while it is in a feature freeze or RC phase
+* `target: lts`: A criticial fix for a specific release-train that is still within the long term support phase
+
+
+Notes:
+  - To land a change only in a patch/RC branch, without landing it in any other active release-train branch (such
+  as `master`), the patch/RC branch can be targeted in the Github UI with the appropriate
+  `target: patch`/`target: rc` label.
+  - `target: lts` PRs must target the specific LTS branch they would need to merge into in the Github UI, in
+  cases which a change is desired in multiple LTS branches, individual PRs for each LTS branch must be created
+
+
+If a PR is missing the `target:*` label, it will be marked as pending by the angular robot status checks.
 
 
 ## PR Approvals
