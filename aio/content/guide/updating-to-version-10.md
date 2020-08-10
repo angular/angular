@@ -77,6 +77,5 @@ Read about the migrations the CLI handles for you automatically:
 
 * [Migrating missing `@Directive()`/`@Component()` decorators](guide/migration-undecorated-classes)
 * [Migrating `ModuleWithProviders`](guide/migration-module-with-providers)
-* [Solution-style `tsconfig.json` migration](guide/migration-solution-style-tsconfig)
 * [`tslib` direct dependency migration](guide/migration-update-libraries-tslib)
 * [Update `module` and `target` compiler options migration](guide/migration-update-module-and-target-compiler-options)
