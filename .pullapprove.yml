@@ -509,8 +509,8 @@ groups:
       - >
         contains_any_globs(files, [
           'packages/core/src/i18n/**',
-          'packages/core/src/render3/i18n.ts',
-          'packages/core/src/render3/i18n.md',
+          'packages/core/src/render3/i18n/**',
+          'packages/core/src/render3/instructions/i18n.ts',
           'packages/core/src/render3/interfaces/i18n.ts',
           'packages/common/locales/**',
           'packages/common/src/i18n/**',
