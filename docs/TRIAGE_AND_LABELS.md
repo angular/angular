@@ -125,28 +125,28 @@ Triaging PRs is the same as triaging issues, except that the labels `frequency: 
 
 PRs also have additional label categories that should be used to signal their state.
 
-Every triaged PR must have a `PR action` label assigned to it:
+Every triaged PR must have a `action: *` label assigned to it:
 
-* `PR action: discuss`: Discussion is needed, to be led by the author.
+* `action: discuss`: Discussion is needed, to be led by the author.
   * _**Who adds it:** Typically the PR author._
   * _**Who removes it:** Whoever added it._
-* `PR action: review` (optional): One or more reviews are pending. The label is optional, since the review status can be derived from GitHub's Reviewers interface.
+* `action: review` (optional): One or more reviews are pending. The label is optional, since the review status can be derived from GitHub's Reviewers interface.
   * _**Who adds it:** Any team member. The caretaker can use it to differentiate PRs pending review from merge-ready PRs._
   * _**Who removes it:** Whoever added it or the reviewer adding the last missing review._
-* `PR action: cleanup`: More work is needed from the author.
+* `action: cleanup`: More work is needed from the author.
   * _**Who adds it:** The reviewer requesting changes to the PR._
   * _**Who removes it:** Either the author (after implementing the requested changes) or the reviewer (after confirming the requested changes have been implemented)._
-* `PR action: merge`: The PR author is ready for the changes to be merged by the caretaker as soon as the PR is green (or merge-assistance label is applied and caretaker has deemed it acceptable manually). In other words, this label indicates to "auto submit when ready".
+* `action: merge`: The PR author is ready for the changes to be merged by the caretaker as soon as the PR is green (or merge-assistance label is applied and caretaker has deemed it acceptable manually). In other words, this label indicates to "auto submit when ready".
   * _**Who adds it:** Typically the PR author._
   * _**Who removes it:** Whoever added it._
 
 
 In addition, PRs can have the following states:
 
-* `PR state: WIP`: PR is experimental or rapidly changing. Not ready for review or triage.
+* `state: WIP`: PR is experimental or rapidly changing. Not ready for review or triage.
   * _**Who adds it:** The PR author._
   * _**Who removes it:** Whoever added it._
-* `PR state: blocked`: PR is blocked on an issue or other PR. Not ready for merge.
+* `state: blocked`: PR is blocked on an issue or other PR. Not ready for merge.
   * _**Who adds it:** Any team member._
   * _**Who removes it:** Any team member._
 
@@ -162,13 +162,27 @@ This decision is then honored when the PR is being merged by the caretaker.
 
 To communicate the target we use the following labels:
 
-* `PR target: master & patch`: the PR should me merged into the master branch and cherry-picked into the most recent patch branch. All PRs with fixes, docs and refactorings should use this target.
-* `PR target: master-only`: the PR should be merged only into the `master` branch. All PRs with new features, API changes or high-risk changes should use this target.
-* `PR target: patch-only`: the PR should be merged only into the most recent patch branch (e.g. 5.0.x). This target is useful if a `master & patch` PR can't be cleanly cherry-picked into the stable branch and a new PR is needed.
-* `PR target: LTS-only`: the PR should be merged only into the active LTS branch(es). Only security and critical fixes are allowed in these branches. Always send a new PR targeting just the LTS branch and request review approval from @IgorMinar.
-* `PR target: TBD`: the target is yet to be determined.
+Targeting an active release train:
 
-If a PR is missing the `PR target: *` label, or if the label is set to "TBD" when the PR is sent to the caretaker, the caretaker should reject the PR and request the appropriate target label to be applied before the PR is merged.
+* `target: major`: Any breaking change
+* `target: minor`: Any new feature
+* `target: patch`: Bug fixes, refactorings, documentation changes, etc. that pose no or very low risk of adversely
+  affecting existing applications.
+
+Special Cases:
+* `target: rc`: A critical fix for an active release-train while it is in a feature freeze or RC phase
+* `target: lts`: A criticial fix for a specific release-train that is still within the long term support phase
+
+
+Notes:
+  - To land a change only in a patch/RC branch, without landing it in any other active release-train branch (such
+  as `master`), the patch/RC branch can be targeted in the Github UI with the appropriate
+  `target: patch`/`target: rc` label.
+  - `target: lts` PRs must target the specific LTS branch they would need to merge into in the Github UI, in
+  cases which a change is desired in multiple LTS branches, individual PRs for each LTS branch must be created
+
+
+If a PR is missing the `target:*` label, it will be marked as pending by the angular robot status checks.
 
 
 ## PR Approvals
@@ -182,7 +196,7 @@ In any case, the reviewer should actually look through the code and provide feed
 
 Note that approved state does not mean a PR is ready to be merged.
 For example, a reviewer might approve the PR but request a minor tweak that doesn't need further review, e.g., a rebase or small uncontroversial change.
-Only the `PR action: merge` label means that the PR is ready for merging.
+Only the `action: merge` label means that the PR is ready for merging.
 
 
 ## Special Labels
@@ -201,7 +215,7 @@ Only issues with `cla:yes` should be merged into master.
 
 Applying this label to a PR makes the angular.io preview available regardless of the author. [More info](../aio/aio-builds-setup/docs/overview--security-model.md)
 
-### `PR action: merge-assistance`
+### `action: merge-assistance`
 * _**Who adds it:** Any team member._
 * _**Who removes it:** Any team member._
 
@@ -211,7 +225,7 @@ The comment should be formatted like this: `merge-assistance: <explain what kind
 
 For example, the PR owner might not be a Googler and needs help to run g3sync; or one of the checks is failing due to external causes and the PR should still be merged.
 
-### `PR action: rerun CI at HEAD`
+### `action: rerun CI at HEAD`
 * _**Who adds it:** Any team member._
 * _**Who removes it:** The Angular Bot, once it triggers the CI rerun._
 
