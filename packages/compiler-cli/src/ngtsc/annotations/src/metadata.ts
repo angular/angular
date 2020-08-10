@@ -71,7 +71,7 @@ export function generateSetClassMetadataCall(
         duplicateDecoratedMemberNames.join(', '));
   }
   const decoratedMembers = classMembers.map(
-      member => classMemberToMetadata(member.nameNode || member.name, member.decorators!, isCore));
+      member => classMemberToMetadata(member.nameNode ?? member.name, member.decorators!, isCore));
   if (decoratedMembers.length > 0) {
     metaPropDecorators = ts.createObjectLiteral(decoratedMembers);
   }
