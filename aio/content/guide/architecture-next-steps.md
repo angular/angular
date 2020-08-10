@@ -37,7 +37,7 @@ Angular의 기본 구성요소들에 대해 이해하고 나면 Angular 애플�
 
 * The [Dependency injection](guide/dependency-injection) guide provides in-depth information on how to construct an application such that each component class can acquire the services and objects it needs to perform its function.
 -->
-* The [Components and templates](guide/displaying-data) guide explains how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application.
+* [컴포넌트와 템플릿](guide/displaying-data) 문서는 애플리케이션 데이터를 [컴포넌트](guide/glossary#component)와 어떻게 연결하는지, 이 데이터를 화면에 표시하려면 [템플릿](guide/glossary#template)을 어떻게 구성해야 하는지를 다룹니다. 
 
 * Angular 애플리케이션을 모듈 단위로 구성하는 방법에 대해 알아보려면 [NgModule](guide/ngmodules) 문서를 참고하세요.
 
@@ -116,6 +116,7 @@ Angular는 단일 페이지 애플리케이션을 만들때 사용하는 프레�
 -->
 ## 개발 단계에서 활용할 수 있는 팁
 
+<!--
 The **Development Workflow** section describes the tools and processes you use to compile, test, and deploy Angular applications.
 
 * [CLI Command Reference](cli): The Angular CLI is a command-line tool that you use to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.

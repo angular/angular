@@ -1,4 +1,7 @@
+<!--
 # Part 1: Getting started with a basic Angular app
+-->
+# 1단계: Angular 앱 개발 시작하기
 
 <!--
 Welcome to Angular!
@@ -145,7 +148,7 @@ Angular의 템플릿에 사용하는 문법은 HTML과 JavaScript를 확장한 �
 <!--
 To help you get going, the following steps use predefined product data from the `products.ts` file (already created in StackBlitz example) and methods from the `product-list.component.ts` file.
 -->
-과정을 진행하려면 StackBlitz 예제 앱이 생성한 `products.ts` 파일에 제품 데이터를 준비해야 합니다. 관련 메소드는 `product-list.component.ts` 파일에 정의되어 있습니다.
+과정을 진행하려면 StackBlitz 예제 앱이 생성한 `products.ts` 파일에 상품 데이터를 준비해야 합니다. 관련 메소드는 `product-list.component.ts` 파일에 정의되어 있습니다.
 
 </div>
 
@@ -196,7 +199,7 @@ To help you get going, the following steps use predefined product data from the 
       <code-example path="getting-started/src/app/product-list/product-list.component.2.html" header="src/app/product-list/product-list.component.html" region="interpolation">
       </code-example>
 
-      그러면 다음과 같이 미리보기 화면에 제품 이름이 표시됩니다:
+      그러면 다음과 같이 미리보기 화면에 상품 이름이 표시됩니다:
 
       <div class="lightbox">
         <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
@@ -230,7 +233,7 @@ To help you get going, the following steps use predefined product data from the 
 <!--
 4. Add the product descriptions. On the `<p>` element, use an `*ngIf` directive so that Angular only creates the `<p>` element if the current product has a description.
 -->
-4. 제품 설명을 추가합니다. 이 때 `<p>` 태그에 `*ngIf` 디렉티브를 사용했기 때문에, 실제로 제품 설명이 존재할 때만 `<p>` 태그가 생성됩니다.
+4. 상품 설명을 추가합니다. 이 때 `<p>` 태그에 `*ngIf` 디렉티브를 사용했기 때문에, 실제로 상품 설명이 존재할 때만 `<p>` 태그가 생성됩니다.
 
     <code-example path="getting-started/src/app/product-list/product-list.component.3.html" header="src/app/product-list/product-list.component.html">
     </code-example>
@@ -267,7 +270,7 @@ To help you get going, the following steps use predefined product data from the 
     <code-example path="getting-started/src/app/product-list/product-list.component.4.html" header="src/app/product-list/product-list.component.html">
     </code-example>
 
-    이제는 각 제품마다 "Share" 버튼이 추가되었습니다:
+    이제는 각 상품마다 "Share" 버튼이 추가되었습니다:
 
     <div class="lightbox">
       <img src="generated/images/guide/start/template-syntax-product-share-button.png" alt="Share button added for each product">
@@ -288,7 +291,7 @@ In the process, you've learned to use five common features of Angular's template
 * Property binding `[ ]`
 * Event binding `( )`
 -->
-이제 앱에는 제품 목록이 표시되며 공유할 수 있는 기능도 추가되었습니다.
+이제 앱에는 상품 목록이 표시되며 공유할 수 있는 기능도 추가되었습니다.
 그리고 이렇게 진행하는 동안 Angular 템플릿 문법 중 자주 사용하는 5가지 기본 기능에 대해 살펴봤습니다:
 * `*ngFor`
 * `*ngIf`
@@ -651,10 +654,10 @@ To continue exploring Angular, choose either of the following options:
 -->
 축하합니다! 첫번째 Angular 앱을 완성했습니다!
 
-지금까지 작성한 온라인 쇼핑몰 앱에는 제품 목록 화면, "Share" 버튼, "Notify Me" 버튼이 존재합니다.
+지금까지 작성한 온라인 쇼핑몰 앱에는 상품 목록 화면, "Share" 버튼, "Notify Me" 버튼이 존재합니다.
 그리고 이렇게 작성하는 동안 Angular 앱을 개발하는 기본 지식인 컴포넌트와 템플릿 문법에 대해 알아봤습니다.
 컴포넌트 클래스와 템플릿이 상호작용하는 방법, 컴포넌트가 다른 컴포넌트와 상호작용하는 방법도 알아봤습니다.
 
 이제 Angular에 대해 더 알아보기 위해 다음 코스 중 하나를 선택해 보세요:
-* 제품 목록 화면에서 제품 이름을 클릭했을 때 표시되는 제품 상세정보 화면을 만들려면 ["라우팅"](start/start-routing "시작하기: 라우팅") 문서를 참고하세요.
+* 상품 목록 화면에서 상품 이름을 클릭했을 때 표시되는 상품 상세정보 화면을 만들려면 ["라우팅"](start/start-routing "시작하기: 라우팅") 문서를 참고하세요.
 * 로컬 개발환경에 대해서 알아보거나 Angular 앱을 Firebase나 리모트 서버에 배포하는 방법에 대해 알아보려면 쭉 건너뛰고 ["배포"](start/start-deployment "시작하기: 배포") 문서를 참고하세요.

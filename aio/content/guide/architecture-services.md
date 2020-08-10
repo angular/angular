@@ -55,17 +55,20 @@ available to components through *dependency injection*.
 
 <!--
 Here's an example of a service class that logs to the browser console.
--->
-브라우저 콘솔에 로그를 출력하는 서비스 클래스를 예로 들어봅시다:
 
 <code-example path="architecture/src/app/logger.service.ts" header="src/app/logger.service.ts (class)" region="class"></code-example>
 
-<!--
 Services can depend on other services. For example, here's a `HeroService` that depends on the `Logger` service, and also uses `BackendService` to get heroes. That service in turn might depend on the `HttpClient` service to fetch heroes asynchronously from a server.
--->
-서비스는 다른 서비스와 독립적일 수 있습니다. 예를 들어 `HeroService`는 `Logger` 서비스를 사용하면서, 서버에서 히어로 목록을 받아오기 위해 `BackendService`라는 서비스를 함께 사용할 수 있습니다. 그리고 `BackendService`는 서버와 통신하기 위해 `HttpClient` 서비스를 다른 의존성으로 사용할 수도 있습니다.
 
 <code-example path="architecture/src/app/hero.service.ts" header="src/app/hero.service.ts (class)" region="class"></code-example>
+-->
+브라우저 콘솔에 로그를 출력하는 서비스 클래스를 예로 들어봅시다:
+
+<code-example path="architecture/src/app/logger.service.ts" header="src/app/logger.service.ts (클래스)" region="class"></code-example>
+
+서비스는 다른 서비스와 독립적일 수 있습니다. 예를 들어 `HeroService`는 `Logger` 서비스를 사용하면서, 서버에서 히어로 목록을 받아오기 위해 `BackendService`라는 서비스를 함께 사용할 수 있습니다. 그리고 `BackendService`는 서버와 통신하기 위해 `HttpClient` 서비스를 다른 의존성으로 사용할 수도 있습니다.
+
+<code-example path="architecture/src/app/hero.service.ts" header="src/app/hero.service.ts (클래스)" region="class"></code-example>
 
 <!--
 ## Dependency injection (DI)

@@ -133,34 +133,46 @@
             "children": [
               {
                 "url": "start",
-                "title": "A Sample App",
-                "tooltip": "Take a look at Angular's component model, template syntax, and component communication."
+                "//title": "A Sample App",
+                "title": "샘플 앱",
+                "//tooltip": "Take a look at Angular's component model, template syntax, and component communication.",
+                "tooltip": "Angular 컴포넌트 모델, 템플릿 문법, 컴포넌트 통신 방법에 대해 알아보세요."
               },
               {
                 "url": "start/start-routing",
-                "title": "In-app Navigation",
-                "tooltip": "Navigate among different page views using the browser's URL."
+                "//title": "In-app Navigation",
+                "title": "네비게이션",
+                "//tooltip": "Navigate among different page views using the browser's URL.",
+                "tooltip": "브라우저 주소표시줄에 URL을 입력하면 페이지를 전환할 수 있습니다."
               },
               {
                 "url": "start/start-data",
-                "title": "Manage Data",
-                "tooltip": "Use services and access external data via HTTP."
+                "//title": "Manage Data",
+                "title": "데이터 다루기",
+                "//tooltip": "Use services and access external data via HTTP.",
+                "tooltip": "서비스와 HTTP 모듈을 사용해서 외부 데이터를 가져와 봅시다."
               },
               {
                 "url": "start/start-forms",
-                "title": "Forms for User Input",
-                "tooltip": "Learn about fetching and managing data from users with forms."
+                "//title": "Forms for User Input",
+                "title": "폼으로 입력 받기",
+                "//tooltip": "Learn about fetching and managing data from users with forms.",
+                "tooltip": "폼을 사용해서 사용자가 입력하는 데이터를 관리해 봅시다."
               },
               {
                 "url": "start/start-deployment",
-                "title": "Deployment",
-                "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
+                "//title": "Deployment",
+                "title": "배포",
+                "//tooltip": "Move to local development, or deploy your application to Firebase or your own server.",
+                "tooltip": "로컬 개발환경을 벗어나서 Firebase에 애플리케이션을 배포해 봅시다."
               }
             ]
         },
         {
-          "title": "Tutorial: Tour of Heroes",
-          "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
+          "//title": "Tutorial: Tour of Heroes",
+          "title": "튜토리얼: 히어로들의 여행",
+          "//tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
+          "tooltip": "히어로들의 여행 앱을 살펴보면서 Angular의 다양한 기능을 알아봅시다.",
           "children": [
             {
               "url": "tutorial",

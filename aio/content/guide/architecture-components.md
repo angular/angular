@@ -78,7 +78,7 @@ Angular 컴포넌트는 컴포넌트 클래스에 `@Component` 데코레이터�
 
 `HeroListComponent`에 사용된 메타데이터를 간단하게 살펴봅시다:
 
-<code-example path="architecture/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts (metadata)" region="metadata"></code-example>
+<code-example path="architecture/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts (메타데이터)" region="metadata"></code-example>
 
 이 예제에 사용된 `@Component` 데코레이터의 메타데이터는 다른 컴포넌트에서도 많이 사용합니다:
 
@@ -349,7 +349,7 @@ The example template uses two built-in structural directives to add application 
 구조 디렉티브는 DOM 엘리먼트를 추가하거나 제거, 치환하는 용도로 사용합니다.
 Angular가 제공하는 구조 디렉티브를 템플릿에 사용하는 예제 코드를 확인해 보세요:
 
-<code-example path="architecture/src/app/hero-list.component.1.html" header="src/app/hero-list.component.html (structural)" region="structural"></code-example>
+<code-example path="architecture/src/app/hero-list.component.1.html" header="src/app/hero-list.component.html (구조 디렉티브)" region="structural"></code-example>
 
 * [`*ngFor`](guide/displaying-data#ngFor)는 배열을 순회합니다. 위 예제 코드에서는 `heroes` 배열에 있는 히어로마다 `<li>` 엘리먼트를 생성합니다.
 * [`*ngIf`](guide/displaying-data#ngIf)는 조건을 판단합니다. `HeroDetail` 컴포넌트는 히어로가 선택되었을 때만 표시됩니다.

@@ -53,7 +53,11 @@ Angular 애플리케이션에서는 여러가지 뷰를 계층으로 구성합�
 
 <div class="alert is-helpful">
 
+  <!--
   For the sample app that this page describes, see the <live-example></live-example>.
+  -->
+  이 문서에서 설명한 앱을 직접 실행해 보려면 <live-example></live-example>를 참고하세요.
+
 </div>
 
 {@a modules}
@@ -65,7 +69,7 @@ Angular 애플리케이션에서는 여러가지 뷰를 계층으로 구성합�
 <!--
 Angular *NgModules* differ from and complement JavaScript (ES2015) modules. An NgModule declares a compilation context for a set of components that is dedicated to an application domain, a workflow, or a closely related set of capabilities. An NgModule can associate its components with related code, such as services, to form functional units.
 -->
-Angular는 JavaScript (ES2015) 모듈과 다르면서 서로 보완적인 `NgModule` 체계를 마련해 두었습니다. NgModule은 기능적으로 관련되거나 작업 흐름이 연관된 컴포넌트를 묶어서 선언합니다. 그리고 이 NgModule에는 컴포넌트 외에 서비스나 폼 기능을 포함하기도 합니다.
+Angular는 JavaScript (ES2015) 모듈과 다르지만 서로 보완할 수 있는 `NgModule` 체계를 마련해 두었습니다. NgModule은 기능적으로 관련되거나 작업 흐름이 연관된 컴포넌트를 묶어서 선언합니다. 그리고 이 NgModule에는 컴포넌트 외에 서비스나 폼 기능을 포함하기도 합니다.
 
 <!--
 Every Angular app has a *root module*, conventionally named `AppModule`, which provides the bootstrap mechanism that launches the application. An app typically contains many functional modules.

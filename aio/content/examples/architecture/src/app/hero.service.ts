@@ -16,7 +16,7 @@ export class HeroService {
   getHeroes() {
     this.backend.getAll(Hero).then( (heroes: Hero[]) => {
       this.logger.log(`Fetched ${heroes.length} heroes.`);
-      this.heroes.push(...heroes); // fill cache
+      this.heroes.push(...heroes); // 캐시에 저장
     });
     return this.heroes;
   }
