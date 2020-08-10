@@ -31,7 +31,7 @@ For example:
 
 ```json
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "experimentalDecorators": true,
     ...
