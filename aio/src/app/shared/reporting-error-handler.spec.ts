@@ -1,4 +1,4 @@
-import { ErrorHandler, ReflectiveInjector } from '@angular/core';
+import { ErrorHandler, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { WindowToken } from 'app/shared/window';
 import { AppModule } from 'app/app.module';
@@ -14,11 +14,12 @@ describe('ReportingErrorHandler service', () => {
     onerrorSpy = jasmine.createSpy('onerror');
     superHandler = spyOn(ErrorHandler.prototype, 'handleError');
 
-    const injector = ReflectiveInjector.resolveAndCreate([
-      { provide: ErrorHandler, useClass: ReportingErrorHandler },
-      { provide: WindowToken, useFactory: () => ({ onerror: onerrorSpy }) }
-    ]);
-    handler = injector.get(ErrorHandler);
+    const injector = Injector.create({providers: [
+      { provide: ErrorHandler, useClass: ReportingErrorHandler, deps: [WindowToken] },
+      { provide: WindowToken, useFactory: () => ({ onerror: onerrorSpy }), deps: [] }
+    ]});
+
+    handler = injector.get(ErrorHandler) as unknown as ReportingErrorHandler;
   });
 
   it('should be registered on the AppModule', () => {

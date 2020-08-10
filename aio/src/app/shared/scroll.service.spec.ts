@@ -1,7 +1,7 @@
 import {Location, LocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
 import {DOCUMENT} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
-import {ReflectiveInjector} from '@angular/core';
+import {Injector} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 
 import {ScrollService, topMargin} from './scroll.service';
@@ -15,7 +15,7 @@ describe('ScrollService', () => {
   };
 
   const topOfPageElem = {} as Element;
-  let injector: ReflectiveInjector;
+  let injector: Injector;
   let document: MockDocument;
   let platformLocation: MockPlatformLocation;
   let scrollService: ScrollService;
@@ -41,21 +41,25 @@ describe('ScrollService', () => {
       jasmine.createSpyObj('viewportScroller', ['getScrollPosition', 'scrollToPosition']);
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
-      {
-        provide: ScrollService,
-        useFactory: createScrollService,
-        deps: [DOCUMENT, PlatformLocation, ViewportScroller, Location],
-      },
-      {provide: Location, useClass: SpyLocation}, {provide: DOCUMENT, useClass: MockDocument},
-      {provide: PlatformLocation, useClass: MockPlatformLocation},
-      {provide: ViewportScroller, useValue: viewportScrollerStub},
-      {provide: LocationStrategy, useClass: MockLocationStrategy}
-    ]);
+    injector = Injector.create( {
+      providers: [
+        {
+          provide: ScrollService,
+          useFactory: createScrollService,
+          deps: [DOCUMENT, PlatformLocation, ViewportScroller, Location],
+        },
+        {provide: Location, useClass: SpyLocation, deps: [] },
+        {provide: DOCUMENT, useClass: MockDocument, deps: []},
+        {provide: PlatformLocation, useClass: MockPlatformLocation, deps: []},
+        {provide: ViewportScroller, useValue: viewportScrollerStub},
+        {provide: LocationStrategy, useClass: MockLocationStrategy, deps: []}
+      ]
+    });
+
     platformLocation = injector.get(PlatformLocation);
-    document = injector.get(DOCUMENT);
+    document = injector.get(DOCUMENT) as unknown as MockDocument;
     scrollService = injector.get(ScrollService);
-    location = injector.get(Location);
+    location = injector.get(Location) as unknown as SpyLocation;
 
     spyOn(window, 'scrollBy');
   });
