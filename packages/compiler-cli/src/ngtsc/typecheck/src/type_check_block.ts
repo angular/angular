@@ -317,7 +317,7 @@ class TcbTextInterpolationOp extends TcbOp {
  * Executing this operation returns a reference to the directive instance variable with its inferred
  * type.
  */
-class TcbDirectiveOp extends TcbOp {
+class TcbDirectiveTypeOp extends TcbOp {
   constructor(
       private tcb: Context, private scope: Scope, private node: TmplAstTemplate|TmplAstElement,
       private dir: TypeCheckableDirectiveMeta) {
@@ -334,8 +334,10 @@ class TcbDirectiveOp extends TcbOp {
 }
 
 /**
- * A `TcbOp` which constructs an instance of a directive with types inferred from its inputs, which
- * also checks the bindings to the directive in the process.
+ * A `TcbOp` which constructs an instance of a directive with types inferred from its inputs. The
+ * inputs themselves are not checked here; checking of inputs is achieved in `TcbDirectiveInputsOp`.
+ * Any errors reported in this statement are ignored, as the type constructor call is only present
+ * for type-inference.
  *
  * When a Directive is generic, it is required that the TCB generates the instance using this method
  * in order to infer the type information correctly.
@@ -1112,7 +1114,7 @@ class Scope {
     const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
     for (const dir of directives) {
       const directiveOp = dir.isGeneric ? new TcbDirectiveCtorOp(this.tcb, this, node, dir) :
-                                          new TcbDirectiveOp(this.tcb, this, node, dir);
+                                          new TcbDirectiveTypeOp(this.tcb, this, node, dir);
       const dirIndex = this.opQueue.push(directiveOp) - 1;
       dirMap.set(dir, dirIndex);
 
@@ -1500,12 +1502,41 @@ function invertInputs(inputs: {[fieldName: string]: string|[string, string]}):
   return propertyToFieldNames;
 }
 
-type TcbDirectiveInput = {
-  type: 'binding'; field: string; expression: ts.Expression; sourceSpan: ParseSourceSpan;
-}|{
-  type: 'unset';
+/**
+ * An input binding that corresponds with a field of a directive.
+ */
+interface TcbDirectiveBoundInput {
+  type: 'binding';
+
+  /**
+   * The name of a field on the directive that is set.
+   */
   field: string;
-};
+
+  /**
+   * The `ts.Expression` corresponding with the input binding expression.
+   */
+  expression: ts.Expression;
+
+  /**
+   * The source span of the full attribute binding.
+   */
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Indicates that a certain field of a directive does not have a corresponding input binding.
+ */
+interface TcbDirectiveUnsetInput {
+  type: 'unset';
+
+  /**
+   * The name of a field on the directive for which no input binding is present.
+   */
+  field: string;
+}
+
+type TcbDirectiveInput = TcbDirectiveBoundInput|TcbDirectiveUnsetInput;
 
 const EVENT_PARAMETER = '$event';
 

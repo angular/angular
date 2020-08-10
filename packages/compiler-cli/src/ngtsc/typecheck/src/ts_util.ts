@@ -105,13 +105,13 @@ export function tsCreateTypeQueryForCoercedInput(
  * Create a `ts.VariableStatement` that initializes a variable with a given expression.
  *
  * Unlike with `tsDeclareVariable`, the type of the variable is inferred from the initializer
- * expression unless an explicit type is provided.
+ * expression.
  */
 export function tsCreateVariable(
-    id: ts.Identifier, initializer: ts.Expression, type?: ts.TypeNode): ts.VariableStatement {
+    id: ts.Identifier, initializer: ts.Expression): ts.VariableStatement {
   const decl = ts.createVariableDeclaration(
       /* name */ id,
-      /* type */ type,
+      /* type */ undefined,
       /* initializer */ initializer);
   return ts.createVariableStatement(
       /* modifiers */ undefined,
