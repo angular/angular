@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { ReflectiveInjector } from '@angular/core';
+import { Injector } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 
@@ -7,7 +7,7 @@ import { ScrollItem, ScrollSpyInfo, ScrollSpyService } from 'app/shared/scroll-s
 import { TocItem, TocService } from './toc.service';
 
 describe('TocService', () => {
-  let injector: ReflectiveInjector;
+  let injector: Injector;
   let scrollSpyService: MockScrollSpyService;
   let tocService: TocService;
   let lastTocList: TocItem[];
@@ -21,13 +21,14 @@ describe('TocService', () => {
   }
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
-      { provide: DomSanitizer, useClass: TestDomSanitizer },
+    injector = Injector.create({providers: [
+      { provide: DomSanitizer, useClass: TestDomSanitizer, deps: [] },
       { provide: DOCUMENT, useValue: document },
-      { provide: ScrollSpyService, useClass: MockScrollSpyService },
-      TocService,
-    ]);
-    scrollSpyService = injector.get(ScrollSpyService);
+      { provide: ScrollSpyService, useClass: MockScrollSpyService, deps: [] },
+      { provide: TocService, deps: [DOCUMENT, DomSanitizer, ScrollSpyService] },
+    ]});
+
+    scrollSpyService = injector.get(ScrollSpyService) as unknown as MockScrollSpyService;
     tocService = injector.get(TocService);
     tocService.tocList.subscribe(tocList => lastTocList = tocList);
   });
@@ -330,7 +331,7 @@ describe('TocService', () => {
     });
 
     it('should have bypassed HTML sanitizing of heading\'s innerHTML ', () => {
-      const domSanitizer: TestDomSanitizer = injector.get(DomSanitizer);
+      const domSanitizer: TestDomSanitizer = injector.get(DomSanitizer) as unknown as TestDomSanitizer;
       expect(domSanitizer.bypassSecurityTrustHtml)
         .toHaveBeenCalledWith('Setup to develop <i>locally</i>.');
     });

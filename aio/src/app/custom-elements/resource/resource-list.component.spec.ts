@@ -1,4 +1,4 @@
-import { ReflectiveInjector } from '@angular/core';
+import { Injector } from '@angular/core';
 
 import { of } from 'rxjs';
 
@@ -12,20 +12,22 @@ import { Category } from './resource.model';
 describe('ResourceListComponent', () => {
 
   let component: ResourceListComponent;
-  let injector: ReflectiveInjector;
+  let injector: Injector;
   let resourceService: TestResourceService;
   let locationService: TestLocationService;
   let categories: Category[];
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
-      ResourceListComponent,
-      {provide: ResourceService, useClass: TestResourceService },
-      {provide: LocationService, useClass: TestLocationService }
-    ]);
+    injector = Injector.create({
+      providers: [
+        {provide: ResourceListComponent, deps: [ResourceService, LocationService] },
+        {provide: ResourceService, useClass: TestResourceService, deps: [] },
+        {provide: LocationService, useClass: TestLocationService, deps: [] }
+      ]
+    });
 
-    locationService = injector.get(LocationService);
-    resourceService = injector.get(ResourceService);
+    locationService = injector.get(LocationService) as unknown as TestLocationService;
+    resourceService = injector.get(ResourceService) as unknown as TestResourceService;
     categories = resourceService.testCategories;
   });
 

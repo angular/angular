@@ -1,4 +1,4 @@
-import { ReflectiveInjector } from '@angular/core';
+import { Injector } from '@angular/core';
 
 import { of } from 'rxjs';
 
@@ -12,20 +12,22 @@ import { LocationService } from 'app/shared/location.service';
 describe('ContributorListComponent', () => {
 
   let component: ContributorListComponent;
-  let injector: ReflectiveInjector;
+  let injector: Injector;
   let contributorService: TestContributorService;
   let locationService: TestLocationService;
   let contributorGroups: ContributorGroup[];
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
-      ContributorListComponent,
-      {provide: ContributorService, useClass: TestContributorService },
-      {provide: LocationService, useClass: TestLocationService }
-    ]);
+    injector = Injector.create({
+      providers: [
+        {provide: ContributorListComponent, deps: [ContributorService, LocationService] },
+        {provide: ContributorService, useClass: TestContributorService, deps: [] },
+        {provide: LocationService, useClass: TestLocationService, deps: [] }
+      ]
+    });
 
-    locationService = injector.get(LocationService);
-    contributorService = injector.get(ContributorService);
+    locationService = injector.get(LocationService) as unknown as TestLocationService;
+    contributorService = injector.get(ContributorService) as unknown as TestContributorService;
     contributorGroups = contributorService.testContributors;
   });
 
