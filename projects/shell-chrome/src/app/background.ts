@@ -100,6 +100,9 @@ const getPopUpName = (ng: AngularDetection) => {
 };
 
 chrome.runtime.onMessage.addListener((req, sender) => {
+  if (!req.isAngularDevTools) {
+    return;
+  }
   if (sender && sender.tab) {
     chrome.browserAction.setPopup({
       tabId: sender.tab.id,

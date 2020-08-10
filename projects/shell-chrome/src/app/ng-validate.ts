@@ -1,4 +1,10 @@
 export interface AngularDetection {
+  // This is necessary because the runtime
+  // message listener handles messages globally
+  // including from other extensions. We don't
+  // want to set icon and/or popup based on
+  // a message coming from an unrelated extension.
+  isAngularDevTools: true;
   isIvy: boolean;
   isAngular: boolean;
   isDebugMode: boolean;
@@ -34,6 +40,7 @@ function detectAngular(win: Window): void {
       isAngular,
       isDebugMode,
       isSupportedAngularVersion,
+      isAngularDevTools: true,
     } as AngularDetection,
     '*'
   );
