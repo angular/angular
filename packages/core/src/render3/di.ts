@@ -510,7 +510,8 @@ export function locateDirectiveOrProvider<T>(
   // When the host special case applies, only the viewProviders and the component are visible
   const endIndex = isHostSpecialCase ? injectablesStart + cptViewProvidersCount : directiveEnd;
   for (let i = startingIndex; i < endIndex; i++) {
-    const providerTokenOrDef = tInjectables[i] as InjectionToken<any>| Type<any>| DirectiveDef<any>;
+    const providerTokenOrDef =
+        tInjectables[i] as InjectionToken<any>| Type<any>| DirectiveDef<any>| string;
     if (i < directivesStart && token === providerTokenOrDef ||
         i >= directivesStart && (providerTokenOrDef as DirectiveDef<any>).type === token) {
       return i;
