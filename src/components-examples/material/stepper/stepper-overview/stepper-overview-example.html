@@ -14,9 +14,10 @@
       </div>
     </form>
   </mat-step>
-  <mat-step [stepControl]="secondFormGroup">
+  <!-- #docregion label -->
+  <mat-step [stepControl]="secondFormGroup" label="Fill out your address">
+  <!-- #enddocregion label -->
     <form [formGroup]="secondFormGroup">
-      <ng-template matStepLabel>Fill out your address</ng-template>
       <mat-form-field>
         <mat-label>Address</mat-label>
         <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
