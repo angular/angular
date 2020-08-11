@@ -32,14 +32,6 @@
 
     &.mat-accordion {
       .mat-expansion-panel {
-        &:not(.mat-expanded) {
-          .mat-expansion-panel-header {
-            &:hover:not([aria-disabled='true']) {
-              background: #fff;
-            }
-          }
-        }
-
         .mat-expansion-panel-header {
           padding: 0;
 
