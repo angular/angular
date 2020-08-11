@@ -16,7 +16,7 @@ import * as ts from 'typescript';
 export function getModuleReferences(node: ts.SourceFile): string[] {
   const references: string[] = [];
   const visitNode = (node: ts.Node) => {
-    if ((ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+    if ((ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) && !isTypeOnlyImport(node) &&
         node.moduleSpecifier !== undefined && ts.isStringLiteral(node.moduleSpecifier)) {
       references.push(node.moduleSpecifier.text);
     }
@@ -24,4 +24,12 @@ export function getModuleReferences(node: ts.SourceFile): string[] {
   };
   ts.forEachChild(node, visitNode);
   return references;
+}
+
+function isTypeOnlyImport(node: ts.Node): boolean {
+  if (!ts.isImportDeclaration(node) || node.importClause === undefined) {
+    return false;
+  }
+
+  return node.importClause.isTypeOnly;
 }
