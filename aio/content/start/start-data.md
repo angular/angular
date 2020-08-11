@@ -1,5 +1,9 @@
+<!--
 # Try it: Manage data
+-->
+# 데이터 다루기
 
+<!--
 At the end of [In-app Navigation](start/start-routing "Try it: In-app Navigation"), the online store application has a product catalog with two views: a product list and product details.
 Users can click on a product name from the list to see details in a new view, with a distinct URL, or route.
 
@@ -8,17 +12,42 @@ This page guides you through creating the shopping cart in three phases:
 * Update the product details view to include a "Buy" button, which adds the current product to a list of products that a cart service manages.
 * Add a cart component, which displays the items in the cart.
 * Add a shipping component, which retrieves shipping prices for the items in the cart by using Angular's `HttpClient` to retrieve shipping data from a `.json` file.
+-->
+[네비게이션](start/start-routing "Try it: In-app Navigation") 단계를 끝내고 나면 온라인 샵 애플리케이션에는 상품 목록 화면과 상품 상세정보 화면이 존재합니다.
+사용자가 상품 목록 화면에서 상품 이름을 클릭하면 해당 상품과 연결된 주소로 이동하면서 상품 상세정보 화면이 표시됩니다.
+
+이 문서에서는 3단계를 거쳐 장바구니를 구현하는 방법에 대해 알아봅시다:
+
+* 상품 상세정보 화면에 "Buy" 버튼을 추가합니다. 이 버튼을 누르면 현재 화면에 표시된 상품을 장바구니 서비스과 관리하는 목록에 추가합니다.
+* 장바구니 컴포넌트를 추가합니다. 이 컴포넌트는 장바구니에 담긴 항목을 화면에 표시합니다.
+* 주문 컴포넌트를 추가합니다. 이 컴포넌트는 Angular `HttpClient`를 사용해서 `.json` 파일을 읽어 오는데, 이 파일의 내용을 활용해서 장바구니에 담긴 상품의 배송 금액을 가져옵니다.
+
 
 {@a services}
+<!--
 ## Services
+-->
+## 서비스(Services)
 
+<!--
 Services are an integral part of Angular applications. In Angular, a service is an instance of a class that you can make available to any part of your application using Angular's [dependency injection system](guide/glossary#dependency-injection-di "Dependency injection definition").
 
 Services are the place where you share data between parts of your application. For the online store, the cart service is where you store your cart data and methods.
+-->
+서비스는 Angular 애플리케이션의 구성요소를 통합하는 역할을 합니다.
+서비스는 클래스 인스턴스이며 Angular의 [의존성 주입 시스템](guide/glossary#dependency-injection-di "Dependency injection definition")으로 주입할 수 있기 때문에 애플리케이션의 어느 곳에서도 자유롭게 활용할 수 있습니다.
+
+서비스는 애플리케이션 구성요소끼리 데이터를 공유하는 용도로도 사용합니다.
+문서에서 예제로 다루는 온라인 샵 애플리케이션에서는 장바구니 데이터와 이 데이터를 관리하는 기능을 장바구니 서비스에 구현합니다.
+
 
 {@a create-cart-service}
+<!--
 ## Create the shopping cart service
+-->
+## 장바구니 서비스 생성하기
 
+<!--
 Up to this point, users can view product information, and
 simulate sharing and being notified about product changes.
 They cannot, however, buy products.
@@ -32,10 +61,25 @@ about products in the cart.
 A later part of this tutorial, [Use forms for user input](start/start-forms "Try it: Forms for user input"), guides you through accessing this cart service from the view where the user checks out.
 
 </div>
+-->
+지금까지 구현된 애플리케이션을 활용하면 사용자가 상품의 상세정보를 확인할 수 있지만 아직 구입할 수 없습니다.
+
+이 섹션에서는 상품 상세정보 화면에 "Buy" 버튼을 추가하고, 장바구니에 상품을 담을 수 있는 장바구니 서비스를 구현해 봅시다.
+
+<div class="alert is-helpful">
+
+이후에 진행할 [폼으로 입력 받기](start/start-forms "Try it: Forms for user input") 문서에서 사용자가 주문을 진행할 때 이 장바구니 서비스를 다시 사용합니다.
+
+</div>
+
 
 {@a generate-cart-service}
+<!--
 ### Define a cart service
+-->
+### 장바구니 서비스 생성하기
 
+<!--
 1. To generate a cart service, right click on the `app` folder, choose `Angular Generator`, and choose `Service`. Name the new service `cart`.
 
         <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.1.ts"></code-example>
@@ -60,10 +104,41 @@ A later part of this tutorial, [Use forms for user input](start/start-forms "Try
     * The `getItems()` method collects the items users add to the cart and returns each item with its associated quantity.
 
     * The `clearCart()` method returns an empty array of items.
+-->
+1. 장바구니 서비스를 생성하려면 `app` 폴더에 마우스 오른쪽 버튼을 클릭하고 `Angular Generator` - `Service`를 선택하면 됩니다. 이 때 서비스의 이름은 `cart`라고 지정합시다.
+
+    <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.1.ts"></code-example>
+
+    <div class="alert is-helpful">
+
+    StackBlitz에서 서비스를 생성하면 이 서비스가 `app.module.ts` 파일에 자동으로 등록됩니다.
+    하지만 Angular CLI를 사용해서 서비스를 생성하면 번들링 최적화를 위해 `@Injectable()` 데코레이터에 `{ providedIn: 'root' }`가 지정되기 때문에 서비스가 앱 모듈에 등록되지 않습니다.
+    더 자세한 내용은 [서비스와 의존성 주입](guide/architecture-services "Concepts > Intro to Services and DI") 문서를 참고하세요.
+
+    </div>
+
+1. `CartService` 클래스 안에 `items` 프로퍼티를 선언합니다. 이 프로퍼티는 장바구니에 담긴 상품을 저장할 때 사용합니다.
+
+    <code-example path="getting-started/src/app/cart.service.ts" header="src/app/cart.service.ts" region="props"></code-example>
+
+1. 장바구니에 상품을 추가하는 메소드, 장바구니에 담긴 상품 목록을 반환하는 메소드, 장바구니를 비우는 메소드를 선언합니다:
+
+    <code-example path="getting-started/src/app/cart.service.ts" header="src/app/cart.service.ts" region="methods"></code-example>
+
+    * `addToCart()` 메소드는 `items` 배열에 상품을 추가합니다.
+
+    * `getItems()` 메소드는 사용자가 장바구니에 추가한 상품 목록을 반환합니다.
+
+    * `clearCart()` 메소드는 장바구니를 비우고 빈 배열을 반환합니다.
+
 
 {@a product-details-use-cart-service}
+<!--
 ### Use the cart service
+-->
+### 장바구니 서비스 활용하기
 
+<!--
 This section walks you through using the cart service to add a product to the cart with a "Buy" button.
 
 1. Open `product-details.component.ts`.
@@ -80,9 +155,9 @@ This section walks you through using the cart service to add a product to the ca
         <code-example path="getting-started/src/app/product-details/product-details.component.ts" header="src/app/product-details/product-details.component.ts" region="inject-cart-service">
         </code-example>
 
-        <!--
+        <!-
         To do: Consider defining "inject" and describing the concept of "dependency injection"
-        -->
+        ->
 
 1. Define the `addToCart()` method, which adds the current product to the cart.
 
@@ -119,19 +194,95 @@ This section walks you through using the cart service to add a product to the ca
     <div class="lightbox">
       <img src='generated/images/guide/start/buy-alert.png' alt="Display details for selected product with a Buy button">
     </div>
+-->
+이번 섹션에서는 장바구니 서비스를 활용해서 화면에 표시된 상품을 장바구니에 추가해 봅시다.
+
+1. `product-details.component.ts` 파일을 엽니다.
+
+1. 장바구니 서비스를 사용할 수 있도록 컴포넌트 코드를 수정합니다.
+
+    1. 장바구니 서비스 심볼을 로드합니다.
+
+        <code-example header="src/app/product-details/product-details.component.ts" path="getting-started/src/app/product-details/product-details.component.ts" region="cart-service">
+        </code-example>
+
+    1. `constructor()`에 장바구니 서비스를 의존성으로 주입합니다.
+
+        <code-example path="getting-started/src/app/product-details/product-details.component.ts" header="src/app/product-details/product-details.component.ts" region="inject-cart-service">
+        </code-example>
+
+        <!--
+        To do: Consider defining "inject" and describing the concept of "dependency injection"
+        -->
+
+1. 화면에 표시된 상품을 장바구니에 추가하는 `addToCart()` 메소드를 추가합니다.
+
+    `addToCart()` 메소드는 다음 세 단계로 실행됩니다:
+    * 현재 화면에 표시된 상품 `product`를 가져옵니다.
+    * 장바구니 서비스의 `addToCart()` 메소드를 실행해서 장바구니에 상품을 추가합니다.
+    * 장바구니에 상품이 추가되었다는 메시지를 표시합니다.
+
+    <code-example path="getting-started/src/app/product-details/product-details.component.ts" header="src/app/product-details/product-details.component.ts" region="add-to-cart"></code-example>
+
+1. 상품 상세정보 화면의 템플릿에 "Buy" 버튼을 추가합니다. 이 버튼을 클릭하면 현재 화면에 표시된 상품을 장바구니에 추가합니다.
+
+    1. `product-details.component.html` 파일을 엽니다.
+
+    1. "Buy" 버튼을 추가하고 이 버튼에서 발생하는 `click` 이벤트를 `addToCart()` 메소드로 바인딩합니다:
+
+        <code-example header="src/app/product-details/product-details.component.html" path="getting-started/src/app/product-details/product-details.component.html">
+        </code-example>
+    
+    <div class="alert is-helpful">
+
+    `<h4>{{ product.price | currency }}</h4>` 코드에는 `product.price`에 있는 숫자값을 화폐 단위로 표시하기 위해 `currency` 파이프를 사용했습니다.
+    파이프는 HTML 템플릿에서 데이터를 원하는 형태로 변형할 때 사용합니다.
+    파이프에 대해 자세하게 알아보려면 [파이프](guide/pipes "Pipes") 문서를 참고하세요.
+
+    </div>
+
+1. 새로 추가한 "Buy" 버튼을 확인하기 위해 브라우저 새로고침 버튼을 클릭하고 상품 목록 화면에서 상품 이름을 클릭해서 상세정보 화면으로 이동합니다.
+
+    <div class="lightbox">
+      <img src='generated/images/guide/start/product-details-buy.png' alt="Display details for selected product with a Buy button">
+    </div>
+
+ 1. "Buy" 버튼을 클릭하면 장바구니에 상품이 추가되고 상품이 추가되었다는 메시지가 표시됩니다.
+
+    <div class="lightbox">
+      <img src='generated/images/guide/start/buy-alert.png' alt="Display details for selected product with a Buy button">
+    </div>
 
 
+<!--
 ## Create the cart view
+-->
+## 장바구니 화면 생성하기
 
+<!--
 At this point, users can put items in the cart by clicking "Buy", but they can't yet see their cart.
 
 Create the cart view in two steps:
 
 1. Create a cart component and configure routing to the new component. At this point, the cart view has only default text.
 1. Display the cart items.
+-->
+이제 사용자가 "Buy" 버튼을 클릭하면 장바구니에 상품을 추가할 수 있습니다.
+하지만 아직 장바구니에 어떤 상품이 담겼는지는 확인할 수 없습니다.
 
+다음 두 단계를 거쳐 장바구니 화면을 만들어 봅시다:
+
+1. 장바구니 컴포넌트를 생성하고 이 컴포넌트로 연결되는 라우팅 규칙을 추가합니다. 아직 장바구니 화면에는 컴포넌트를 생성할 때 함께 생성된 기본 텍스트만 존재합니다.
+
+1. 장바구니에 담긴 아이템을 표시합니다.
+
+
+<!--
 ### Set up the component
+-->
+### 컴포넌트 생성하기
 
+<!--
  To create the cart view, begin by following the same steps you did to create the product details component and configure routing for the new component.
 
 1. Generate a cart component, named `cart`.
@@ -162,9 +313,44 @@ Create the cart view in two steps:
     <div class="lightbox">
       <img src='generated/images/guide/start/cart-works.png' alt="Display cart view before customizing">
     </div>
+-->
+장바구니 화면을 생성하는 과정은 상품 상세정보 컴포넌트를 생성했을 때와 비슷합니다.
 
+1. `cart`라는 이름으로 장바구니 컴포넌트를 생성합니다.
+
+    참고: 파일 목록에서 `app` 폴더에 마우스 오른쪽 버튼을 클릭하고 `Angular Generator` - `Component`를 선택합니다.
+
+    <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.1.ts"></code-example>
+
+1. 장바구니 컴포넌트로 향하는 라우팅 규칙을 추가합니다.
+
+    `app.module.ts` 파일을 열고 `path: cart`주소에 `CartComponent`를 지정합니다:
+
+    <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="cart-route">
+    </code-example>
+
+1. `/cart` 주소로 이동하도록 "Checkout" 버튼을 수정합니다.
+
+    `top-bar.component.html` 파일을 열고 `routerLink`를 추가해서 `/cart`로 이동하도록 작성합니다.
+
+    <code-example
+        header="src/app/top-bar/top-bar.component.html"
+        path="getting-started/src/app/top-bar/top-bar.component.html"
+        region="cart-route">
+    </code-example>
+
+1. 이제 장바구니 컴포넌트로 이동하려면 "Checkout" 버튼을 클릭하면 됩니다. 그러면 `https://getting-started.stackblitz.io/cart` 형식의 주소로 이동하면서 기본 문구 `cart works!`가 화면에 표시됩니다. `getting-started.stackblitz.io` 부분은 StackBlitz 프로젝트에 따라 달라질 수 있습니다.
+
+    <div class="lightbox">
+      <img src='generated/images/guide/start/cart-works.png' alt="Display cart view before customizing">
+    </div>
+
+<!--
 ### Display the cart items
+-->
+### 장바구니 목록 표시하기
 
+<!--
 You can use services to share data across components:
 
 * The product details component already uses the cart service to add products to the cart.
@@ -228,6 +414,71 @@ StackBlitz tip: Any time the preview refreshes, the cart is cleared. If you make
 <div class="alert is-helpful">
 
 For more information about services, see [Introduction to Services and Dependency Injection](guide/architecture-services "Concepts > Intro to Services and DI").
+
+</div>
+-->
+서비스를 활용하면 컴포넌트끼리 데이터를 주고 받을 수 있습니다:
+
+* 상품 상세정보 컴포넌트는 장바구니에 상품을 추가할 때 장바구니 서비스를 활용합니다.
+* 이번 섹션에서는 장바구니에 담긴 상품 목록을 표시하는 방법에 대해 알아봅시다.
+
+1. `cart.component.ts` 파일을 엽니다.
+
+1. 컴포넌트를 사용할 수 있도록 컴포넌트 코드를 수정합니다.
+
+    1. `cart.service.ts` 파일에서 `CartService` 심볼을 로드합니다.
+
+        <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.2.ts" region="imports">
+        </code-example>
+
+    1. `CartService`를 장바구니 컴포넌트에 의존성으로 주입합니다.
+
+        <code-example path="getting-started/src/app/cart/cart.component.2.ts" header="src/app/cart/cart.component.ts" region="inject-cart">
+        </code-example>
+
+1. 장바구니에서 가져온 상품 목록을 저장할 `items` 프로퍼티를 선언합니다.
+
+    <code-example path="getting-started/src/app/cart/cart.component.2.ts" header="src/app/cart/cart.component.ts" region="items">
+    </code-example>
+
+1. `items` 프로퍼티에는 장바구니 서비스의 `getItems()` 메소드를 실행한 결과를 할당합니다. 이 메소드는 [`cart.service.ts` 파일을 생성할 때](#generate-cart-service) 정의했습니다.
+
+    그러면 `CartComponent` 클래스가 다음과 같이 완성됩니다:
+
+    <code-example path="getting-started/src/app/cart/cart.component.3.ts" header="src/app/cart/cart.component.ts" region="props-services">
+    </code-example>
+
+1. 장바구니에 담긴 상품의 이름과 가격을 표시하기 위해 헤더 `<div>` 엘리먼트에 `*ngFor` 디렉티브를 사용합니다.
+
+    The resulting `CartComponent` template is as follows:
+
+    <code-example header="src/app/cart/cart.component.html" path="getting-started/src/app/cart/cart.component.2.html" region="prices">
+    </code-example>
+
+1. 장바구니 컴포넌트가 동작하는 것을 확인해 봅시다.
+
+    1. "My Store"를 클릭하면 상품 목록 화면으로 이동합니다.
+    1. 상품 이름을 클릭하면 상품 상세정보 화면으로 이동합니다.
+    1. "Buy" 버튼을 클릭하면 화면에 표시된 상품을 장바구니에 추가합니다.
+    1. "Checkout" 버튼을 클릭하면 장바구니 화면으로 이동합니다.
+    1. 다른 상품을 추가하려면 "My Store"를 클릭하고 상품 목록 화면으로 이동해서 같은 과정을 반복하면 됩니다.
+
+  이 과정을 반복하면서 장바구니에 상품을 추가해 보세요.
+
+    <div class="lightbox">
+      <img src='generated/images/guide/start/cart-page-full.png' alt="Cart view with products added">
+    </div>
+
+
+<div class="alert is-helpful">
+
+StackBlitz 팁: 미리보기 화면을 갱신하면 장바구니가 초기화됩니다. 앱을 수정하면 미리보기 화면도 자동으로 갱신되기 때문에 장바구니에 상품을 다시 담아야 합니다.
+
+</div>
+
+<div class="alert is-helpful">
+
+서비스에 대해 자세하게 알아보려면 [서비스와 의존성 주입](guide/architecture-services "Concepts > Intro to Services and DI") 문서를 참고하세요.
 
 </div>
 
