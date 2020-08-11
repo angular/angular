@@ -209,6 +209,7 @@
   "cldr-data-coverage": "full",
   "husky": {
     "hooks": {
+      "pre-commit": "yarn -s ng-dev format staged",
       "commit-msg": "yarn -s ng-dev commit-message pre-commit-validate --file-env-variable HUSKY_GIT_PARAMS"
     }
   }
