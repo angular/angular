@@ -1,5 +1,6 @@
 export declare abstract class AbstractControl<T = any> {
-  asyncValidator: AsyncValidatorFn|null;
+  get asyncValidator(): AsyncValidatorFn|null;
+  set asyncValidator(asyncValidatorFn: AsyncValidatorFn|null);
   get dirty(): boolean;
   get disabled(): boolean;
   get enabled(): boolean;
@@ -15,10 +16,13 @@ export declare abstract class AbstractControl<T = any> {
   get untouched(): boolean;
   get updateOn(): FormHooks;
   get valid(): boolean;
-  validator: ValidatorFn|null;
+  get validator(): ValidatorFn|null;
+  set validator(validatorFn: ValidatorFn|null);
   readonly value: T|null;
   readonly valueChanges: Observable<T|null>;
-  constructor(validator: ValidatorFn|null, asyncValidator: AsyncValidatorFn|null);
+  constructor(
+      validators: ValidatorFn|ValidatorFn[]|null,
+      asyncValidators: AsyncValidatorFn|AsyncValidatorFn[]|null);
   clearAsyncValidators(): void;
   clearValidators(): void;
   disable(opts?: {onlySelf?: boolean; emitEvent?: boolean;}): void;

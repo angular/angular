@@ -1145,8 +1145,8 @@ describe('FormGroup', () => {
          const c2 =
              new FormControl('fcVal', null!, simpleAsyncValidator({timeout: 0, shouldFail: false}));
 
-         const a =
-             new FormArray([g, c2], null!, simpleAsyncValidator({timeout: 0, shouldFail: true}));
+         const a = new FormArray<any>(
+             [g, c2], null!, simpleAsyncValidator({timeout: 0, shouldFail: true}));
 
          expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
            {errors: {async: true}, pending: false, status: 'INVALID'},  // Array
@@ -1253,8 +1253,8 @@ describe('FormGroup', () => {
          const c2 =
              new FormControl('fcVal', null!, simpleAsyncValidator({timeout: 3, shouldFail: false}));
 
-         const a =
-             new FormArray([g, c2], null!, simpleAsyncValidator({timeout: 4, shouldFail: false}));
+         const a = new FormArray<any>(
+             [g, c2], null!, simpleAsyncValidator({timeout: 4, shouldFail: false}));
 
          // Initially, the form array and the tested form group and form control c2 are in pending
          // state
@@ -1301,8 +1301,8 @@ describe('FormGroup', () => {
          const c2 =
              new FormControl('fcVal', null!, simpleAsyncValidator({timeout: 3, shouldFail: false}));
 
-         const a =
-             new FormArray([g, c2], null!, simpleAsyncValidator({timeout: 4, shouldFail: true}));
+         const a = new FormArray<any>(
+             [g, c2], null!, simpleAsyncValidator({timeout: 4, shouldFail: true}));
 
          // Initially, the form array and the tested form group and form control c2 are in pending
          // state
