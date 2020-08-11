@@ -7,7 +7,7 @@
  */
 import * as yargs from 'yargs';
 
-import {allChangedFilesSince, allFiles} from '../utils/repo-files';
+import {allChangedFilesSince, allFiles, allStagedFiles} from '../utils/repo-files';
 
 import {checkFiles, formatFiles} from './format';
 
@@ -33,6 +33,12 @@ export function buildFormatParser(localYargs: yargs.Argv) {
             const sha = shaOrRef || 'master';
             const executionCmd = check ? checkFiles : formatFiles;
             executionCmd(allChangedFilesSince(sha));
+          })
+      .command(
+          'staged', 'Run the formatter on all staged files', {},
+          ({check}) => {
+            const executionCmd = check ? checkFiles : formatFiles;
+            executionCmd(allStagedFiles());
           })
       .command('files <files..>', 'Run the formatter on provided files', {}, ({check, files}) => {
         const executionCmd = check ? checkFiles : formatFiles;
