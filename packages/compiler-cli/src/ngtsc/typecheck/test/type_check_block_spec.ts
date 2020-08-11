@@ -585,7 +585,7 @@ describe('type check blocks', () => {
           type: 'invocation',
         }]
       }];
-      const TEMPLATE = `<div *ngIf="person"></div>`;
+      const TEMPLATE = `<div *ngIf="person">{{person.name}}</div>`;
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('if (NgIf.ngTemplateGuard_ngIf(_t1, ((ctx).person)))');
     });
@@ -601,9 +601,25 @@ describe('type check blocks', () => {
           type: 'binding',
         }]
       }];
-      const TEMPLATE = `<div *ngIf="person !== null"></div>`;
+      const TEMPLATE = `<div *ngIf="person !== null">{{person.name}}</div>`;
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('if ((((ctx).person)) !== (null))');
+    });
+
+    it('should not emit guards when the child scope is empty', () => {
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'NgIf',
+        selector: '[ngIf]',
+        inputs: {'ngIf': 'ngIf'},
+        ngTemplateGuards: [{
+          inputName: 'ngIf',
+          type: 'invocation',
+        }]
+      }];
+      const TEMPLATE = `<div *ngIf="person">static</div>`;
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).not.toContain('NgIf.ngTemplateGuard_ngIf');
     });
   });
 
@@ -681,7 +697,7 @@ describe('type check blocks', () => {
     };
 
     describe('config.applyTemplateContextGuards', () => {
-      const TEMPLATE = `<div *dir></div>`;
+      const TEMPLATE = `<div *dir>{{ value }}</div>`;
       const GUARD_APPLIED = 'if (Dir.ngTemplateContextGuard(';
 
       it('should apply template context guards when enabled', () => {
