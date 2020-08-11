@@ -182,15 +182,17 @@ const verify = (input: string, output: string, extra: any = {}): void => {
   }
 };
 
-// Describes a simple key-value object.
-type KVList = {
-  [key: string]: string
-};
+// Describes message metadata object.
+interface Meta {
+  desc?: string;
+  meaning?: string;
+  id?: string;
+}
 
 // Describes placeholder type used in tests. Note: the type is an array (not an object), since it's
 // important to preserve the order of placeholders (so that we can compare it with generated
 // output).
-type Placeholder = string[];
+type Placeholder = [string, string];
 
 // Unique message id index that is needed to avoid different i18n vars with the same name to appear
 // in the i18n block while generating an output string (used to verify compiler-generated code).
@@ -202,7 +204,7 @@ let msgIndex = 0;
 const quotedValue = (value: string) => value.startsWith('$') ? value : `"${value}"`;
 
 // Generates a string that represents expected Closure metadata output.
-const i18nMsgClosureMeta = (meta?: KVList): string => {
+const i18nMsgClosureMeta = (meta?: Meta): string => {
   if (!meta || !(meta.desc || meta.meaning)) return '';
   return `
     /**
@@ -220,7 +222,7 @@ const i18nPlaceholdersToString = (placeholders: Placeholder[]): string => {
 };
 
 // Generates a string that represents expected $localize metadata output.
-const i18nMsgLocalizeMeta = (meta?: KVList): string => {
+const i18nMsgLocalizeMeta = (meta?: Meta): string => {
   if (!meta) return '';
   let localizeMeta = '';
   if (meta.meaning) localizeMeta += `${meta.meaning}|`;
@@ -244,7 +246,7 @@ const i18nMsgInsertLocalizePlaceholders =
     };
 
 // Generates a string that represents expected i18n block content for simple message.
-const i18nMsg = (message: string, placeholders: Placeholder[] = [], meta?: KVList) => {
+const i18nMsg = (message: string, placeholders: Placeholder[] = [], meta?: Meta) => {
   const varName = `$I18N_${msgIndex++}$`;
   const closurePlaceholders = i18nPlaceholdersToString(placeholders);
   const locMessageWithPlaceholders = i18nMsgInsertLocalizePlaceholders(message, placeholders);
@@ -263,7 +265,7 @@ const i18nMsg = (message: string, placeholders: Placeholder[] = [], meta?: KVLis
 // Generates a string that represents expected i18n block content for a message that requires
 // post-processing (thus includes `ɵɵi18nPostprocess` in generated code).
 const i18nMsgWithPostprocess =
-    (message: string, placeholders: Placeholder[] = [], meta?: KVList,
+    (message: string, placeholders: Placeholder[] = [], meta?: Meta,
      postprocessPlaceholders?: Placeholder[]) => {
       const varName = `$I18N_${msgIndex}$`;
       const ppPaceholders =
@@ -275,10 +277,9 @@ const i18nMsgWithPostprocess =
     };
 
 // Generates a string that represents expected i18n block content for an ICU.
-const i18nIcuMsg =
-    (message: string, placeholders: string[][] = []) => {
-      return i18nMsgWithPostprocess(message, [], undefined, placeholders);
-    }
+const i18nIcuMsg = (message: string, placeholders: Placeholder[] = []) => {
+  return i18nMsgWithPostprocess(message, [], undefined, placeholders);
+};
 
 describe('i18n support in the template compiler', () => {
   describe('element attributes', () => {
@@ -303,7 +304,7 @@ describe('i18n support in the template compiler', () => {
 
       // Keeping this block as a raw string, since it checks escaping of special chars.
       const i18n_6 = String.raw`
-        var $I18N_23$;
+        var $i18n_23$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           /**
            * @desc [BACKUP_$` +
@@ -311,10 +312,10 @@ describe('i18n support in the template compiler', () => {
           '`' + String.raw`desc
            */
           const $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$ = goog.getMsg("Title G");
-          $I18N_23$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$;
+          $i18n_23$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$;
         }
         else {
-          $I18N_23$ = $localize \`:[BACKUP_$\{MESSAGE}_ID\:idH]\\\`desc@@idG:Title G\`;
+          $i18n_23$ = $localize \`:[BACKUP_$\{MESSAGE}_ID\:idH]\\\`desc@@idG:Title G\`;
         }
       `;
 
@@ -334,53 +335,58 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        const $_c5$ = ["title", $i18n_1$];
-        ${i18n_2}
-        const $_c9$ = ["title", $i18n_2$];
-        ${i18n_3}
-        const $_c13$ = ["title", $i18n_3$];
-        ${i18n_4}
-        const $_c17$ = ["title", $i18n_4$];
-        ${i18n_5}
-        const $_c21$ = ["title", $i18n_5$];
-        ${i18n_6}
-        const $_c25$ = ["title", $i18n_6$];
-        ${i18n_7}
-        …
-        consts: [[${AttributeMarker.I18n}, "title"]],
+        consts: function () {
+          ${i18n_0}
+          ${i18n_1}
+          ${i18n_2}
+          ${i18n_3}
+          ${i18n_4}
+          ${i18n_5}
+          ${i18n_6}
+          ${i18n_7}
+          return [
+            $i18n_0$,
+            [${AttributeMarker.I18n}, "title"],
+            ["title", $i18n_1$],
+            ["title", $i18n_2$],
+            ["title", $i18n_3$],
+            ["title", $i18n_4$],
+            ["title", $i18n_5$],
+            ["title", $i18n_6$],
+            $i18n_7$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(2, "div", 0);
-            $r3$.ɵɵi18nAttributes(3, $_c5$);
+            $r3$.ɵɵelementStart(2, "div", 1);
+            $r3$.ɵɵi18nAttributes(3, 2);
             $r3$.ɵɵtext(4, "Content B");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(5, "div", 0);
-            $r3$.ɵɵi18nAttributes(6, $_c9$);
+            $r3$.ɵɵelementStart(5, "div", 1);
+            $r3$.ɵɵi18nAttributes(6, 3);
             $r3$.ɵɵtext(7, "Content C");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(8, "div", 0);
-            $r3$.ɵɵi18nAttributes(9, $_c13$);
+            $r3$.ɵɵelementStart(8, "div", 1);
+            $r3$.ɵɵi18nAttributes(9, 4);
             $r3$.ɵɵtext(10, "Content D");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(11, "div", 0);
-            $r3$.ɵɵi18nAttributes(12, $_c17$);
+            $r3$.ɵɵelementStart(11, "div", 1);
+            $r3$.ɵɵi18nAttributes(12, 5);
             $r3$.ɵɵtext(13, "Content E");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(14, "div", 0);
-            $r3$.ɵɵi18nAttributes(15, $_c21$);
+            $r3$.ɵɵelementStart(14, "div", 1);
+            $r3$.ɵɵi18nAttributes(15, 6);
             $r3$.ɵɵtext(16, "Content F");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(17, "div", 0);
-            $r3$.ɵɵi18nAttributes(18, $_c25$);
+            $r3$.ɵɵelementStart(17, "div", 1);
+            $r3$.ɵɵi18nAttributes(18, 7);
             $r3$.ɵɵtext(19, "Content G");
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(20, "div");
-            $r3$.ɵɵi18n(21, $i18n_7$);
+            $r3$.ɵɵi18n(21, 8);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -396,14 +402,17 @@ describe('i18n support in the template compiler', () => {
 
       const i18n_0 = i18nMsg('Hello');
       const output = String.raw`
-        ${i18n_0}
-        const $_c2$ = ["title", $i18n_0$];
-        …
-        consts: [[${AttributeMarker.I18n}, "title"]],
+        consts: function () {
+          ${i18n_0}
+          return [
+            [${AttributeMarker.I18n}, "title"],
+            ["title", $i18n_0$]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", 0);
-            $r3$.ɵɵi18nAttributes(1, $_c2$);
+            $r3$.ɵɵi18nAttributes(1, 1);
           }
         }
       `;
@@ -417,9 +426,8 @@ describe('i18n support in the template compiler', () => {
           `;
 
          const i18n_0 = i18nMsg('Hello');
+
          const output = String.raw`
-            ${i18n_0}
-            const $_c2$ = ["title", $i18n_0$];
             function MyComponent_0_ng_template_0_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵtext(0, "Test");
@@ -428,11 +436,18 @@ describe('i18n support in the template compiler', () => {
             function MyComponent_0_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵtemplate(0, MyComponent_0_ng_template_0_Template, 1, 0, "ng-template", 1);
-                $r3$.ɵɵi18nAttributes(1, $_c2$);
+                $r3$.ɵɵi18nAttributes(1, 2);
               }
             }
             …
-            consts: [[${AttributeMarker.Template}, "ngIf"], [${AttributeMarker.I18n}, "title"]],
+            consts: function() {
+              ${i18n_0}
+              return [
+                [${AttributeMarker.Template}, "ngIf"],
+                [${AttributeMarker.I18n}, "title"],
+                ["title", $i18n_0$]
+              ];
+            },
             template: function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵtemplate(0, MyComponent_0_Template, 2, 0, undefined, 0);
@@ -454,14 +469,17 @@ describe('i18n support in the template compiler', () => {
          const i18n_0 =
              i18nMsg('Hello {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
          const output = String.raw`
-           ${i18n_0}
-           const $_c2$ = ["title", $i18n_0$];
-           …
-           consts: [[${AttributeMarker.Bindings}, "title"]],
+           consts: function() {
+             ${i18n_0}
+             return [
+               [${AttributeMarker.Bindings}, "title"],
+               ["title", $i18n_0$]
+             ];
+           },
            template: function MyComponent_Template(rf, ctx) {
              if (rf & 1) {
                $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", 0);
-               $r3$.ɵɵi18nAttributes(1, $_c2$);
+               $r3$.ɵɵi18nAttributes(1, 1);
              }
              if (rf & 2) {
                $r3$.ɵɵi18nExp(ctx.name);
@@ -481,13 +499,10 @@ describe('i18n support in the template compiler', () => {
          const i18n_0 =
              i18nMsg('Hello {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
          const output = String.raw`
-            ${i18n_0}
-            const $_c2$ = ["title", $i18n_0$];
-            …
             function MyComponent_0_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵtemplate(0, MyComponent_0_ng_template_0_Template, 0, 0, "ng-template", 1);
-                $r3$.ɵɵi18nAttributes(1, $_c2$);
+                $r3$.ɵɵi18nAttributes(1, 2);
               }
               if (rf & 2) {
                 const $ctx_r2$ = $r3$.ɵɵnextContext();
@@ -496,7 +511,14 @@ describe('i18n support in the template compiler', () => {
               }
             }
             …
-            consts: [[${AttributeMarker.Template}, "ngIf"], [${AttributeMarker.Bindings}, "title"]],
+            consts: function() {
+              ${i18n_0}
+              return [
+                [${AttributeMarker.Template}, "ngIf"],
+                [${AttributeMarker.Bindings}, "title"],
+                ["title", $i18n_0$]
+              ];
+            },
             template: function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵtemplate(0, MyComponent_0_Template, 2, 1, undefined, 0);
@@ -536,7 +558,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = `
-        …
         consts: [[3, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -558,15 +579,19 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const i18n_0 = i18nMsg('introduction', [], {meaning: 'm', desc: 'd'});
+
       const output = String.raw`
-        ${i18n_0}
-        const $_c1$ = ["title", $i18n_0$];
-        …
-        consts: [["id", "static", ${AttributeMarker.I18n}, "title"]],
+        consts: function() {
+          ${i18n_0}
+          return [
+            ["id", "static", ${AttributeMarker.I18n}, "title"],
+            ["title", $i18n_0$]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
-            $r3$.ɵɵi18nAttributes(1, $_c1$);
+            $r3$.ɵɵi18nAttributes(1, 1);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -606,35 +631,30 @@ describe('i18n support in the template compiler', () => {
       const i18n_4 = i18nMsg('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        ${i18n_2}
-        const $_c1$ = [
-          "aria-roledescription", $i18n_0$,
-          "title", $i18n_1$,
-          "aria-label", $i18n_2$
-        ];
-        ${i18n_3}
-        ${i18n_4}
-        const $_c3$ = [
-          "title", $i18n_3$,
-          "aria-roledescription", $i18n_4$
-        ];
-        …
         decls: 5,
         vars: 8,
-        consts: [["id", "dynamic-1", ${
-          AttributeMarker
-              .I18n}, "aria-roledescription", "title", "aria-label"], ["id", "dynamic-2", ${
-          AttributeMarker.I18n}, "title", "aria-roledescription"]],
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          ${i18n_2}
+          ${i18n_3}
+          ${i18n_4}
+          return [
+            ["id", "dynamic-1", ${AttributeMarker.I18n}, "aria-roledescription",
+                                                                "title", "aria-label"],
+            ["aria-roledescription", $i18n_0$, "title", $i18n_1$, "aria-label", $i18n_2$],
+            ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"],
+            ["title", $i18n_3$, "aria-roledescription", $i18n_4$]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵpipe(1, "uppercase");
-            $r3$.ɵɵi18nAttributes(2, $_c1$);
+            $r3$.ɵɵi18nAttributes(2, 1);
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(3, "div", 1);
-            $r3$.ɵɵi18nAttributes(4, $_c3$);
+            $r3$.ɵɵelementStart(3, "div", 2);
+            $r3$.ɵɵi18nAttributes(4, 3);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -658,16 +678,20 @@ describe('i18n support in the template compiler', () => {
       const i18n_0 = i18nMsg(
           'intro {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
           {meaning: 'm', desc: 'd'});
+
       const output = String.raw`
-        ${i18n_0}
-        const $_c3$ = ["title", $i18n_0$];
-        …
-        consts: [[${AttributeMarker.I18n}, "title"]],
+        consts: function() {
+          ${i18n_0}
+          return [
+            [${AttributeMarker.I18n}, "title"],
+            ["title", $i18n_0$]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵpipe(1, "uppercase");
-            $r3$.ɵɵi18nAttributes(2, $_c3$);
+            $r3$.ɵɵi18nAttributes(2, 1);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -691,14 +715,12 @@ describe('i18n support in the template compiler', () => {
           {meaning: 'm', desc: 'd'});
 
       const output = String.raw`
-        ${i18n_0}
-        const $_c2$ = ["title", $i18n_0$];
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵelementStart(1, "div", 1);
             $r3$.ɵɵpipe(2, "uppercase");
-            $r3$.ɵɵi18nAttributes(3, $_c2$);
+            $r3$.ɵɵi18nAttributes(3, 2);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementEnd();
           }
@@ -712,8 +734,14 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 1,
-        consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
-          AttributeMarker.I18n}, "title"]],
+        consts: function() {
+          ${i18n_0}
+          return [
+            [${AttributeMarker.Template}, "ngFor", "ngForOf"],
+            [${AttributeMarker.I18n}, "title"],
+            ["title", $i18n_0$]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", 0);
@@ -736,16 +764,19 @@ describe('i18n support in the template compiler', () => {
           i18nMsg('{$interpolation} title', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        const $_c3$ = ["title", $i18n_0$];
-        …
         decls: 2,
         vars: 1,
-        consts: [[${AttributeMarker.I18n}, "title"]],
+        consts: function() {
+          ${i18n_0}
+          return [
+            [${AttributeMarker.I18n}, "title"],
+            ["title", $i18n_0$]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
-            $r3$.ɵɵi18nAttributes(1, $_c3$);
+            $r3$.ɵɵi18nAttributes(1, 1);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -790,35 +821,30 @@ describe('i18n support in the template compiler', () => {
       const i18n_4 = i18nMsg('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        ${i18n_2}
-        const $_c1$ = [
-          "aria-roledescription", $i18n_0$,
-          "title", $i18n_1$,
-          "aria-label", $i18n_2$
-        ];
-        ${i18n_3}
-        ${i18n_4}
-        const $_c3$ = [
-          "title", $i18n_3$,
-          "aria-roledescription", $i18n_4$
-        ];
-        …
         decls: 5,
         vars: 8,
-        consts: [[
-          "id", "dynamic-1",
-          ${AttributeMarker.I18n}, "aria-roledescription", "title", "aria-label"
-        ], ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"]],
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          ${i18n_2}
+          ${i18n_3}
+          ${i18n_4}
+          return [
+            ["id", "dynamic-1", ${AttributeMarker.I18n}, "aria-roledescription",
+                                                                "title", "aria-label"],
+            ["aria-roledescription", $i18n_0$, "title", $i18n_1$, "aria-label", $i18n_2$],
+            ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"],
+            ["title", $i18n_3$, "aria-roledescription", $i18n_4$]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵpipe(1, "uppercase");
-            $r3$.ɵɵi18nAttributes(2, $_c1$);
+            $r3$.ɵɵi18nAttributes(2, 1);
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(3, "div", 1);
-            $r3$.ɵɵi18nAttributes(4, $_c3$);
+            $r3$.ɵɵelementStart(3, "div", 2);
+            $r3$.ɵɵi18nAttributes(4, 3);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -846,14 +872,12 @@ describe('i18n support in the template compiler', () => {
           {meaning: 'm', desc: 'd'});
 
       const output = String.raw`
-        ${i18n_0}
-        const $_c4$ = ["title", $i18n_0$];
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵelementStart(1, "div", 1);
             $r3$.ɵɵpipe(2, "uppercase");
-            $r3$.ɵɵi18nAttributes(3, $_c4$);
+            $r3$.ɵɵi18nAttributes(3, 2);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementEnd();
           }
@@ -867,8 +891,14 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 1,
-        consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
-          AttributeMarker.I18n}, "title"]],
+        consts: function() {
+          ${i18n_0}
+          return [
+            [${AttributeMarker.Template}, "ngFor", "ngForOf"],
+            [${AttributeMarker.I18n}, "title"],
+            ["title", $i18n_0$]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", 0);
@@ -891,16 +921,20 @@ describe('i18n support in the template compiler', () => {
       const i18n_1 = i18nMsg('Some content');
 
       const output = String.raw`
-        ${i18n_0}
-        const $_c1$ = ["title", $i18n_0$];
-        ${i18n_1}
-        …
-        consts: [[${AttributeMarker.I18n}, "title"]],
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          return [
+            [${AttributeMarker.I18n}, "title"],
+            ["title", $i18n_0$],
+            $i18n_1$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
-            $r3$.ɵɵi18nAttributes(1, $_c1$);
-            $r3$.ɵɵi18n(2, $i18n_1$);
+            $r3$.ɵɵi18nAttributes(1, 1);
+            $r3$.ɵɵi18n(2, 2);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -925,7 +959,7 @@ describe('i18n support in the template compiler', () => {
         else {
             $I18N_0$ = $localize \`:@@ID.WITH.INVALID.CHARS:Element title\`;
         }
-        const $_c1$ = ["title", $I18N_0$];
+        …
         var $I18N_2$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_4$ = goog.getMsg(" Some content ");
@@ -934,7 +968,6 @@ describe('i18n support in the template compiler', () => {
         else {
             $I18N_2$ = $localize \`:@@ID.WITH.INVALID.CHARS.2: Some content \`;
         }
-        …
       `;
 
       const exceptions = {
@@ -1030,26 +1063,32 @@ describe('i18n support in the template compiler', () => {
       const i18n_2 = i18nMsg('My i18n block #3');
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        ${i18n_2}
-        …
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          ${i18n_2}
+          return [
+            $i18n_0$,
+            $i18n_1$,
+            $i18n_2$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(2, "div");
             $r3$.ɵɵtext(3, "My non-i18n block #1");
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(4, "div");
-            $r3$.ɵɵi18n(5, $i18n_1$);
+            $r3$.ɵɵi18n(5, 1);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(6, "div");
             $r3$.ɵɵtext(7, "My non-i18n block #2");
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(8, "div");
-            $r3$.ɵɵi18n(9, $i18n_2$);
+            $r3$.ɵɵi18n(9, 2);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -1068,7 +1107,7 @@ describe('i18n support in the template compiler', () => {
 
       // Keeping raw content (avoiding `i18nMsg`) to illustrate how named interpolations are
       // generated.
-      const output = String.raw`
+      const i18n_0 = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7597881511811528589$$APP_SPEC_TS_0$ = goog.getMsg(" Named interpolation: {$phA} Named interpolation with spaces: {$phB} ", {
@@ -1082,13 +1121,21 @@ describe('i18n support in the template compiler', () => {
           String.raw`{"\uFFFD0\uFFFD"}:PH_A: Named interpolation with spaces: $` +
           String.raw`{"\uFFFD1\uFFFD"}:PH_B: \`;
         }
-        …
+      `;
+
+      const output = String.raw`
         decls: 2,
         vars: 2,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -1110,12 +1157,16 @@ describe('i18n support in the template compiler', () => {
       const i18n_0 = i18nMsg('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -1144,12 +1195,16 @@ describe('i18n support in the template compiler', () => {
       ]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵpipe(2, "async");
             $r3$.ɵɵelementEnd();
           }
@@ -1181,23 +1236,29 @@ describe('i18n support in the template compiler', () => {
           'My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        ${i18n_2}
-        …
         decls: 7,
         vars: 5,
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          ${i18n_2}
+          return [
+            $i18n_0$,
+            $i18n_1$,
+            $i18n_2$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(2, "div");
-            $r3$.ɵɵi18n(3, $i18n_1$);
+            $r3$.ɵɵi18n(3, 1);
             $r3$.ɵɵpipe(4, "uppercase");
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(5, "div");
-            $r3$.ɵɵi18n(6, $i18n_2$);
+            $r3$.ɵɵi18n(6, 2);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -1254,20 +1315,25 @@ describe('i18n support in the template compiler', () => {
           ]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        …
         decls: 9,
         vars: 5,
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          return [
+            $i18n_0$,
+            $i18n_1$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18nStart(1, $i18n_0$);
+            $r3$.ɵɵi18nStart(1, 0);
             $r3$.ɵɵelement(2, "span");
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(3, "div");
-            $r3$.ɵɵi18nStart(4, $i18n_1$);
+            $r3$.ɵɵi18nStart(4, 1);
             $r3$.ɵɵpipe(5, "uppercase");
             $r3$.ɵɵelementStart(6, "div");
             $r3$.ɵɵelementStart(7, "div");
@@ -1328,30 +1394,35 @@ describe('i18n support in the template compiler', () => {
           ]);
 
       const output = String.raw`
-        ${i18n_0}
-        const $_c4$ = ["title", $i18n_0$];
-        ${i18n_1}
-        ${i18n_2}
-        const $_c9$ = ["title", $i18n_2$];
-        ${i18n_3}
-        …
         decls: 9,
         vars: 7,
-        consts: [[${AttributeMarker.I18n}, "title"]],
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          ${i18n_2}
+          ${i18n_3}
+          return [
+            $i18n_0$,
+            [${AttributeMarker.I18n}, "title"],
+            ["title", $i18n_1$],
+            $i18n_2$,
+            ["title", $i18n_3$]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18nStart(1, $i18n_1$);
-            $r3$.ɵɵelementStart(2, "span", 0);
-            $r3$.ɵɵi18nAttributes(3, $_c4$);
+            $r3$.ɵɵi18nStart(1, 0);
+            $r3$.ɵɵelementStart(2, "span", 1);
+            $r3$.ɵɵi18nAttributes(3, 2);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(4, "div");
-            $r3$.ɵɵi18nStart(5, $i18n_3$);
+            $r3$.ɵɵi18nStart(5, 3);
             $r3$.ɵɵpipe(6, "uppercase");
-            $r3$.ɵɵelementStart(7, "span", 0);
-            $r3$.ɵɵi18nAttributes(8, $_c9$);
+            $r3$.ɵɵelementStart(7, "span", 1);
+            $r3$.ɵɵi18nAttributes(8, 4);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
@@ -1401,13 +1472,11 @@ describe('i18n support in the template compiler', () => {
           ]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵelementStart(1, "div");
-            $r3$.ɵɵi18nStart(2, $i18n_0$);
+            $r3$.ɵɵi18nStart(2, 1);
             $r3$.ɵɵelement(3, "div");
             $r3$.ɵɵpipe(4, "uppercase");
             $r3$.ɵɵi18nEnd();
@@ -1424,7 +1493,13 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 1,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: function() {
+          ${i18n_0}
+          return [
+            [${AttributeMarker.Template}, "ngIf"],
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -1458,12 +1533,11 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelement(0, "img", 0);
           }
         }
-        ${i18n_0}
-        const $_c4$ = ["title", $i18n_0$];
+        …
         function MyComponent_img_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "img", 3);
-            $r3$.ɵɵi18nAttributes(1, $_c4$);
+            $r3$.ɵɵi18nAttributes(1, 4);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -1475,11 +1549,17 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 2,
-        consts: [["src", "logo.png"], ["src", "logo.png", ${
-          AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${
-          AttributeMarker.Bindings}, "title", ${
-          AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${
-          AttributeMarker.I18n}, "title"]],
+        consts: function() {
+          ${i18n_0}
+          return [
+            ["src", "logo.png"],
+            ["src", "logo.png", ${AttributeMarker.Template}, "ngIf"],
+            ["src", "logo.png", ${AttributeMarker.Bindings}, "title",
+                                ${AttributeMarker.Template}, "ngIf"],
+            ["src", "logo.png", ${AttributeMarker.I18n}, "title"],
+            ["title", $i18n_0$]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelement(0, "img", 0);
@@ -1546,7 +1626,7 @@ describe('i18n support in the template compiler', () => {
       const output = String.raw`
         function MyComponent_div_2_div_4_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18nStart(0, $I18N_0$, 2);
+            $r3$.ɵɵi18nStart(0, 0, 2);
             $r3$.ɵɵelementStart(1, "div");
             $r3$.ɵɵelement(2, "div");
             $r3$.ɵɵelementEnd();
@@ -1561,11 +1641,11 @@ describe('i18n support in the template compiler', () => {
         }
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18nStart(0, $I18N_0$, 1);
+            $r3$.ɵɵi18nStart(0, 0, 1);
             $r3$.ɵɵelementStart(1, "div");
             $r3$.ɵɵelementStart(2, "div");
             $r3$.ɵɵpipe(3, "uppercase");
-            $r3$.ɵɵtemplate(4, MyComponent_div_2_div_4_Template, 3, 2, "div", 0);
+            $r3$.ɵɵtemplate(4, MyComponent_div_2_div_4_Template, 3, 2, "div", 1);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵi18nEnd();
@@ -1578,10 +1658,10 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵi18nApply(0);
           }
         }
-        ${i18n_0}
+        …
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18nStart(0, $I18N_0$, 3);
+            $r3$.ɵɵi18nStart(0, 0, 3);
             $r3$.ɵɵelementStart(1, "div");
             $r3$.ɵɵelement(2, "div");
             $r3$.ɵɵpipe(3, "uppercase");
@@ -1598,13 +1678,19 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 4,
         vars: 2,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$,
+            [${AttributeMarker.Template}, "ngIf"]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18nStart(1, $I18N_0$);
-            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 5, 5, "div", 0);
-            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 4, "div", 0);
+            $r3$.ɵɵi18nStart(1, 0);
+            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 5, 5, "div", 1);
+            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 4, "div", 1);
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
           }
@@ -1631,12 +1717,10 @@ describe('i18n support in the template compiler', () => {
       ]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
-              $r3$.ɵɵi18nStart(1, $i18n_0$);
+              $r3$.ɵɵi18nStart(1, 1);
               $r3$.ɵɵelement(2, "span");
               $r3$.ɵɵi18nEnd();
               $r3$.ɵɵelementEnd();
@@ -1651,7 +1735,13 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 1,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: function() {
+          ${i18n_0}
+          return [
+            [${AttributeMarker.Template}, "ngIf"],
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 1, "div", 0);
@@ -1673,14 +1763,18 @@ describe('i18n support in the template compiler', () => {
       const i18n_0 = i18nMsg('Hello');
 
       const output = String.raw`
-        ${i18n_0}
-        …
-        consts: [[${AttributeMarker.Bindings}, "click"]],
+        consts: function() {
+          ${i18n_0}
+          return [
+            [${AttributeMarker.Bindings}, "click"],
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵlistener("click", function MyComponent_Template_div_click_0_listener() { return ctx.onClick(); });
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 1);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -1699,12 +1793,16 @@ describe('i18n support in the template compiler', () => {
       const i18n_0 = i18nMsg('My i18n block #1');
 
       const output = String.raw`
-        ${i18n_0}
-        …
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -1723,14 +1821,18 @@ describe('i18n support in the template compiler', () => {
           [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
         decls: 2,
         vars: 1,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -1754,19 +1856,25 @@ describe('i18n support in the template compiler', () => {
       const i18n_1 = i18nMsg('My i18n block #1');
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18n(0, $i18n_1$);
+            $r3$.ɵɵi18n(0, 1);
           }
         }
         …
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          return [
+            $i18n_0$,
+            $i18n_1$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template");
             $r3$.ɵɵelementContainerStart(1);
-            $r3$.ɵɵi18n(2, $i18n_0$);
+            $r3$.ɵɵi18n(2, 0);
             $r3$.ɵɵelementContainerEnd();
           }
         }
@@ -1785,20 +1893,25 @@ describe('i18n support in the template compiler', () => {
       const i18n_1 = i18nMsg('Text #2');
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        …
         decls: 4,
         vars: 0,
-        consts: [[${AttributeMarker.Classes}, "myClass"], [${
-          AttributeMarker.Styles}, "padding", "10px"]],
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          return [
+            [${AttributeMarker.Classes}, "myClass"],
+            $i18n_0$,
+            [${AttributeMarker.Styles}, "padding", "10px"],
+            $i18n_1$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "span", 0);
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 1);
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(2, "span", 1);
-            $r3$.ɵɵi18n(3, $i18n_1$);
+            $r3$.ɵɵelementStart(2, "span", 2);
+            $r3$.ɵɵi18n(3, 3);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -1818,14 +1931,18 @@ describe('i18n support in the template compiler', () => {
           i18nMsg('Some content: {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
         decls: 3,
         vars: 3,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementContainerStart(0);
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵpipe(2, "uppercase");
             $r3$.ɵɵelementContainerEnd();
           }
@@ -1849,10 +1966,9 @@ describe('i18n support in the template compiler', () => {
           i18nMsg('Some content: {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18n(0, $i18n_0$);
+            $r3$.ɵɵi18n(0, 0);
             $r3$.ɵɵpipe(1, "uppercase");
           } if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
@@ -1864,6 +1980,12 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 0,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 2, 3, "ng-template");
@@ -1894,10 +2016,9 @@ describe('i18n support in the template compiler', () => {
           ]);
 
       const output = String.raw`
-        ${i18n_0}
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18n(0, $I18N_0$, 1);
+            $r3$.ɵɵi18n(0, 0, 1);
             $r3$.ɵɵpipe(1, "uppercase");
           }
           if (rf & 2) {
@@ -1910,10 +2031,16 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 5,
         vars: 3,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18nStart(1, $i18n_0$);
+            $r3$.ɵɵi18nStart(1, 0);
             $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_Template, 2, 3, "ng-template");
             $r3$.ɵɵelementContainer(3);
             $r3$.ɵɵpipe(4, "uppercase");
@@ -1945,11 +2072,9 @@ describe('i18n support in the template compiler', () => {
           [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18n(0, $i18n_1$);
+            $r3$.ɵɵi18n(0, 1);
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
@@ -1960,11 +2085,19 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 1,
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          return [
+            $i18n_0$,
+            $i18n_1$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 1, "ng-template");
             $r3$.ɵɵelementContainerStart(1);
-            $r3$.ɵɵi18n(2, $i18n_0$);
+            $r3$.ɵɵi18n(2, 0);
             $r3$.ɵɵelementContainerEnd();
           }
           if (rf & 2) {
@@ -2011,7 +2144,7 @@ describe('i18n support in the template compiler', () => {
       const output = String.raw`
         function MyComponent_ng_template_2_ng_template_2_ng_template_1_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18n(0, $i18n_0$, 3);
+            $r3$.ɵɵi18n(0, 0, 3);
           }
           if (rf & 2) {
             const $ctx_r2$ = $r3$.ɵɵnextContext(3);
@@ -2021,7 +2154,7 @@ describe('i18n support in the template compiler', () => {
         }
         function MyComponent_ng_template_2_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18nStart(0, $i18n_0$, 2);
+            $r3$.ɵɵi18nStart(0, 0, 2);
             $r3$.ɵɵtemplate(1, MyComponent_ng_template_2_ng_template_2_ng_template_1_Template, 1, 1, "ng-template");
             $r3$.ɵɵi18nEnd();
           }
@@ -2032,10 +2165,10 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵi18nApply(0);
           }
         }
-        ${i18n_0}
+        …
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18nStart(0, $i18n_0$, 1);
+            $r3$.ɵɵi18nStart(0, 0, 1);
             $r3$.ɵɵpipe(1, "uppercase");
             $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_ng_template_2_Template, 2, 1, "ng-template");
             $r3$.ɵɵi18nEnd();
@@ -2050,10 +2183,16 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 0,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18nStart(1, $i18n_0$);
+            $r3$.ɵɵi18nStart(1, 0);
             $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_Template, 3, 3, "ng-template");
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
@@ -2078,11 +2217,9 @@ describe('i18n support in the template compiler', () => {
           [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18n(0, $I18N_1$);
+            $r3$.ɵɵi18n(0, 1);
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
@@ -2093,10 +2230,18 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 1,
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          return [
+            $i18n_0$,
+            $i18n_1$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementContainerStart(0);
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementContainerEnd();
             $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_Template, 1, 1, "ng-template");
           }
@@ -2127,22 +2272,28 @@ describe('i18n support in the template compiler', () => {
           '{$tagImg} is my logo #2 ', [['tagImg', String.raw`\uFFFD#1\uFFFD\uFFFD/#1\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
         function MyComponent_ng_template_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18nStart(0, $i18n_1$);
-            $r3$.ɵɵelement(1, "img", 0);
+            $r3$.ɵɵi18nStart(0, 2);
+            $r3$.ɵɵelement(1, "img", 1);
             $r3$.ɵɵi18nEnd();
           }
         }
         …
-        consts: [["src", "logo.png", "title", "Logo"]],
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          return [
+            $i18n_0$,
+            ["src", "logo.png", "title", "Logo"],
+            $i18n_1$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementContainerStart(0);
-            $r3$.ɵɵi18nStart(1, $i18n_0$);
-            $r3$.ɵɵelement(2, "img", 0);
+            $r3$.ɵɵi18nStart(1, 0);
+            $r3$.ɵɵelement(2, "img", 1);
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementContainerEnd();
             $r3$.ɵɵtemplate(3, MyComponent_ng_template_3_Template, 2, 0, "ng-template");
@@ -2202,14 +2353,18 @@ describe('i18n support in the template compiler', () => {
       ]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
         decls: 3,
         vars: 0,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18nStart(1, $i18n_0$);
+            $r3$.ɵɵi18nStart(1, 0);
             $r3$.ɵɵelementContainer(2);
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
@@ -2238,14 +2393,18 @@ describe('i18n support in the template compiler', () => {
              ]);
 
          const output = String.raw`
-          ${i18n_0}
-          …
           decls: 4,
           vars: 0,
+          consts: function() {
+            ${i18n_0}
+            return [
+              $i18n_0$
+            ];
+          },
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
-              $r3$.ɵɵi18nStart(1, I18N_0);
+              $r3$.ɵɵi18nStart(1, 0);
               $r3$.ɵɵelementContainerStart(2);
               $r3$.ɵɵelement(3, "strong");
               $r3$.ɵɵelementContainerEnd();
@@ -2270,10 +2429,9 @@ describe('i18n support in the template compiler', () => {
       const i18n_1 = i18nMsg('Content B');
 
       const output = String.raw`
-        ${i18n_0}
         function MyComponent_0_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18n(0, $i18n_0$);
+            $r3$.ɵɵi18n(0, 1);
           }
         }
         function MyComponent_0_Template(rf, ctx) {
@@ -2281,18 +2439,26 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵtemplate(0, MyComponent_0_ng_template_0_Template, 1, 0, "ng-template");
           }
         }
-        ${i18n_1}
+        …
         function MyComponent_ng_container_1_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementContainerStart(0);
-            $r3$.ɵɵi18n(1, $i18n_1$);
+            $r3$.ɵɵi18n(1, 2);
             $r3$.ɵɵelementContainerEnd();
           }
         }
         …
         decls: 2,
         vars: 2,
-        consts: [[4, "ngIf"]],
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          return [
+            [${AttributeMarker.Template}, "ngIf"],
+            $i18n_0$,
+            $i18n_1$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_0_Template, 1, 0, undefined, 0);
@@ -2320,7 +2486,7 @@ describe('i18n support in the template compiler', () => {
 
       // Keeping raw content (avoiding `i18nMsg`) to illustrate message layout
       // in case of whitespace preserving mode.
-      const output = String.raw`
+      const i18n_0 = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$ = goog.getMsg("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
@@ -2337,12 +2503,20 @@ describe('i18n support in the template compiler', () => {
           String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_SPAN:
         \`;
         }
-        …
+      `;
+
+      const output = String.raw`
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtext(0, "\n        ");
             $r3$.ɵɵelementStart(1, "div");
-            $r3$.ɵɵi18nStart(2, $I18N_0$);
+            $r3$.ɵɵi18nStart(2, 0);
             $r3$.ɵɵelement(3, "span");
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
@@ -2366,14 +2540,18 @@ describe('i18n support in the template compiler', () => {
           [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
         decls: 2,
         vars: 1,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -2419,13 +2597,17 @@ describe('i18n support in the template compiler', () => {
           [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
         decls: 1,
         vars: 1,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18n(0, $i18n_0$);
+            $r3$.ɵɵi18n(0, 0);
           }
           if (rf & 2) {
             $r3$.ɵɵi18nExp(ctx.age);
@@ -2460,13 +2642,11 @@ describe('i18n support in the template compiler', () => {
           ]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", 2);
+            $r3$.ɵɵelementStart(0, "div", 3);
             $r3$.ɵɵtext(1, " ");
-            $r3$.ɵɵi18n(2, $i18n_1$);
+            $r3$.ɵɵi18n(2, 4);
             $r3$.ɵɵtext(3, " ");
             $r3$.ɵɵelementEnd();
           }
@@ -2477,12 +2657,12 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵi18nApply(2);
           }
         }
-        ${i18n_2}
+        …
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", 3);
+            $r3$.ɵɵelementStart(0, "div", 5);
             $r3$.ɵɵtext(1, " You have ");
-            $r3$.ɵɵi18n(2, $i18n_2$);
+            $r3$.ɵɵi18n(2, 6);
             $r3$.ɵɵtext(3, ". ");
             $r3$.ɵɵelementEnd();
           }
@@ -2496,16 +2676,27 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 4,
         vars: 3,
-        consts: [["title", "icu only", ${
-          AttributeMarker.Template}, "ngIf"], ["title", "icu and text", ${
-          AttributeMarker.Template}, "ngIf"], ["title", "icu only"], ["title", "icu and text"]],
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          ${i18n_2}
+          return [
+            $i18n_0$,
+            ["title", "icu only", ${AttributeMarker.Template}, "ngIf"],
+            ["title", "icu and text", ${AttributeMarker.Template}, "ngIf"],
+            ["title", "icu only"],
+            $i18n_1$,
+            ["title", "icu and text"],
+            $i18n_2$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 4, 1, "div", 0);
-            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 2, "div", 1);
+            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 4, 1, "div", 1);
+            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 2, "div", 2);
           }
           if (rf & 2) {
             $r3$.ɵɵadvance(1);
@@ -2533,12 +2724,16 @@ describe('i18n support in the template compiler', () => {
           ]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -2586,18 +2781,22 @@ describe('i18n support in the template compiler', () => {
           ]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        …
         decls: 5,
         vars: 1,
-        consts: [[1, "other"]],
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          return [
+            $i18n_1$,
+            [${AttributeMarker.Classes}, "other"]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18nStart(1, $i18n_1$);
+            $r3$.ɵɵi18nStart(1, 0);
             $r3$.ɵɵelement(2, "b");
-            $r3$.ɵɵelementStart(3, "div", 0);
+            $r3$.ɵɵelementStart(3, "div", 1);
             $r3$.ɵɵelement(4, "i");
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵi18nEnd();
@@ -2627,14 +2826,18 @@ describe('i18n support in the template compiler', () => {
           ]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
         decls: 2,
         vars: 2,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -2668,16 +2871,20 @@ describe('i18n support in the template compiler', () => {
       ]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        ${i18n_2}
-        …
         decls: 2,
         vars: 2,
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          ${i18n_2}
+          return [
+            $i18n_2$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_2$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -2704,7 +2911,9 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw`
+      // Keeping raw content here to illustrate the difference in placeholders generated for
+      // goog.getMsg and $localize calls (see last i18n block).
+      const i18n_0 = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
@@ -2761,9 +2970,12 @@ describe('i18n support in the template compiler', () => {
         $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "ICU": [$I18N_1$, $I18N_2$, $I18N_4$]
         });
+      `;
+
+      const output = String.raw`
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-              $r3$.ɵɵi18nStart(0, $I18N_0$, 1);
+              $r3$.ɵɵi18nStart(0, 0, 1);
               $r3$.ɵɵelement(1, "div");
               $r3$.ɵɵi18nEnd();
           }
@@ -2777,13 +2989,19 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 4,
         vars: 3,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$,
+            [${AttributeMarker.Template}, "ngIf"]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18nStart(1, $I18N_0$);
+            $r3$.ɵɵi18nStart(1, 0);
             $r3$.ɵɵelement(2, "div");
-            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 2, 1, "div", 0);
+            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 2, 1, "div", 1);
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
           }
@@ -2819,15 +3037,19 @@ describe('i18n support in the template compiler', () => {
       const i18n_1 = i18nMsg(' {$icu} ', [['icu', '$i18n_0$']]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        …
         decls: 2,
         vars: 2,
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          return [
+            $i18n_1$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_1$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -2865,14 +3087,18 @@ describe('i18n support in the template compiler', () => {
           ]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
         decls: 2,
         vars: 3,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -2910,13 +3136,9 @@ describe('i18n support in the template compiler', () => {
       ]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        ${i18n_2}
-        …
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18nStart(0, $i18n_2$, 1);
+            $r3$.ɵɵi18nStart(0, 0, 1);
             $r3$.ɵɵelement(1, "span");
             $r3$.ɵɵi18nEnd();
           }
@@ -2930,12 +3152,20 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 2,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          ${i18n_2}
+          return [
+            $i18n_2$,
+            [${AttributeMarker.Template}, "ngIf"]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18nStart(1, $i18n_2$);
-            $r3$.ɵɵtemplate(2, MyComponent_span_2_Template, 2, 1, "span", 0);
+            $r3$.ɵɵi18nStart(1, 0);
+            $r3$.ɵɵtemplate(2, MyComponent_span_2_Template, 2, 1, "span", 1);
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
           }
@@ -2981,12 +3211,9 @@ describe('i18n support in the template compiler', () => {
       ]);
 
       const output = String.raw`
-        ${i18n_0}
-        ${i18n_1}
-        ${i18n_2}
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18nStart(0, $i18n_2$, 1);
+            $r3$.ɵɵi18nStart(0, 0, 1);
             $r3$.ɵɵelement(1, "span");
             $r3$.ɵɵi18nEnd();
           }
@@ -3000,12 +3227,20 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 4,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: function() {
+          ${i18n_0}
+          ${i18n_1}
+          ${i18n_2}
+          return [
+            $i18n_2$,
+            [${AttributeMarker.Template}, "ngIf"]
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18nStart(1, $i18n_2$);
-            $r3$.ɵɵtemplate(2, MyComponent_span_2_Template, 2, 2, "span", 0);
+            $r3$.ɵɵi18nStart(1, 0);
+            $r3$.ɵɵtemplate(2, MyComponent_span_2_Template, 2, 2, "span", 1);
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
           }
@@ -3042,14 +3277,18 @@ describe('i18n support in the template compiler', () => {
           ]);
 
       const output = String.raw`
-        ${i18n_0}
-        …
         decls: 2,
         vars: 4,
+        consts: function() {
+          ${i18n_0}
+          return [
+            $i18n_0$
+          ];
+        },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, $i18n_0$);
+            $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -3283,7 +3522,7 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
         </svg>
       `;
 
-      const output = String.raw`
+      const i18n_0 = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$ = goog.getMsg("{$startTagXhtmlDiv} Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}{$closeTagXhtmlDiv}", {
@@ -3301,15 +3540,26 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
           String.raw`{"\uFFFD/#4\uFFFD"}:CLOSE_TAG__XHTML_SPAN:$` +
           String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG__XHTML_DIV:\`;
         }
+      `;
+
+      const output = String.raw`
         …
-        function MyComponent_Template(rf, ctx) {
+        consts: function() {
+          ${i18n_0}
+          return [
+            ["xmlns", "http://www.w3.org/2000/svg"],
+            $i18n_0$,
+            ["xmlns", "http://www.w3.org/1999/xhtml"]
+          ];
+        },
+        template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵnamespaceSVG();
             $r3$.ɵɵelementStart(0, "svg", 0);
             $r3$.ɵɵelementStart(1, "foreignObject");
-            $r3$.ɵɵi18nStart(2, $I18N_0$);
+            $r3$.ɵɵi18nStart(2, 1);
             $r3$.ɵɵnamespaceHTML();
-            $r3$.ɵɵelementStart(3, "div", 1);
+            $r3$.ɵɵelementStart(3, "div", 2);
             $r3$.ɵɵelement(4, "span");
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵi18nEnd();
@@ -3333,7 +3583,7 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
         </svg>
       `;
 
-      const output = String.raw`
+      const i18n_0 = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_EXTERNAL_7428861019045796010$$APP_SPEC_TS_1$ = goog.getMsg(" Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}", {
@@ -3347,15 +3597,25 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
           String.raw`{"\uFFFD#4\uFFFD"}:START_TAG__XHTML_SPAN:5$` +
           String.raw`{"\uFFFD/#4\uFFFD"}:CLOSE_TAG__XHTML_SPAN:\`;
         }
-        …
-        function MyComponent_Template(rf, ctx) {
+      `;
+
+      const output = String.raw`
+        consts: function() {
+          ${i18n_0}
+          return [
+            ["xmlns", "http://www.w3.org/2000/svg"],
+            ["xmlns", "http://www.w3.org/1999/xhtml"],
+            $i18n_0$
+          ];
+        },
+        template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵnamespaceSVG();
             $r3$.ɵɵelementStart(0, "svg", 0);
             $r3$.ɵɵelementStart(1, "foreignObject");
             $r3$.ɵɵnamespaceHTML();
             $r3$.ɵɵelementStart(2, "div", 1);
-            $r3$.ɵɵi18nStart(3, $I18N_0$);
+            $r3$.ɵɵi18nStart(3, 2);
             $r3$.ɵɵelement(4, "span");
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
@@ -3365,7 +3625,7 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
         }
       `;
 
-      verify(input, output, {verbose: true});
+      verify(input, output);
     });
   });
 });

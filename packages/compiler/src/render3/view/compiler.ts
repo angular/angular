@@ -196,10 +196,19 @@ export function compileComponentFromMetadata(
   // e.g. `vars: 2`
   definitionMap.set('vars', o.literal(templateBuilder.getVarCount()));
 
-  // e.g. `consts: [['one', 'two'], ['three', 'four']]
-  const consts = templateBuilder.getConsts();
-  if (consts.length > 0) {
-    definitionMap.set('consts', o.literalArr(consts));
+  // Generate `consts` section of ComponentDef:
+  // - either as an array:
+  //   `consts: [['one', 'two'], ['three', 'four']]`
+  // - or as a factory function in case additional statements are present (to support i18n):
+  //   `consts: function() { var i18n_0; if (ngI18nClosureMode) {...} else {...} return [i18n_0]; }`
+  const {constExpressions, prepareStatements} = templateBuilder.getConsts();
+  if (constExpressions.length > 0) {
+    let constsExpr: o.LiteralArrayExpr|o.FunctionExpr = o.literalArr(constExpressions);
+    // Prepare statements are present - turn `consts` into a function.
+    if (prepareStatements.length > 0) {
+      constsExpr = o.fn([], [...prepareStatements, new o.ReturnStatement(constsExpr)]);
+    }
+    definitionMap.set('consts', constsExpr);
   }
 
   definitionMap.set('template', templateFunctionExpression);

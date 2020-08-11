@@ -10,7 +10,7 @@ import {SchemaMetadata, ViewEncapsulation} from '../../core';
 import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
 
-import {TAttributes, TConstants} from './node';
+import {TAttributes, TConstantsOrFactory} from './node';
 import {CssSelectorList} from './projection';
 import {TView} from './view';
 
@@ -299,7 +299,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   readonly template: ComponentTemplate<T>;
 
   /** Constants associated with the component's view. */
-  readonly consts: TConstants|null;
+  readonly consts: TConstantsOrFactory|null;
 
   /**
    * An array of `ngContent[selector]` values that were found in the template.
