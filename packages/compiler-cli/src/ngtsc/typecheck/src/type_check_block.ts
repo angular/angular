@@ -304,8 +304,19 @@ class TcbTemplateBodyOp extends TcbOp {
     // children, as well as tracks bindings within the template.
     const tmplScope = Scope.forNodes(this.tcb, this.scope, this.template, guard);
 
-    // Render the template's `Scope` into a block.
-    let tmplBlock: ts.Statement = ts.createBlock(tmplScope.render());
+    // Render the template's `Scope` into its statements.
+    const statements = tmplScope.render();
+    if (statements.length === 0) {
+      // As an optimization, don't generate the scope's block if it has no statements. This is
+      // beneficial for templates that contain for example `<span *ngIf="first"></span>`, in which
+      // case there's no need to render the `NgIf` guard expression. This seems like a minor
+      // improvement, however it reduces the number of flow-node antecedents that TypeScript needs
+      // to keep into account for such cases, resulting in an overall reduction of
+      // type-checking time.
+      return null;
+    }
+
+    let tmplBlock: ts.Statement = ts.createBlock(statements);
     if (guard !== null) {
       // The scope has a guard that needs to be applied, so wrap the template block into an `if`
       // statement containing the guard expression.
