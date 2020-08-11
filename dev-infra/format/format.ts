@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {prompt} from 'inquirer';
-
-import {error, info} from '../utils/console';
+import {error, info, promptConfirm} from '../utils/console';
 
 import {runFormatterInParallel} from './run-commands-parallel';
 
@@ -57,11 +55,7 @@ export async function checkFiles(files: string[]) {
     // If the command is run in a non-CI environment, prompt to format the files immediately.
     let runFormatter = false;
     if (!process.env['CI']) {
-      runFormatter = (await prompt({
-                       type: 'confirm',
-                       name: 'runFormatter',
-                       message: 'Format the files now?',
-                     })).runFormatter;
+      runFormatter = await promptConfirm('Format the files now?', true);
     }
 
     if (runFormatter) {
