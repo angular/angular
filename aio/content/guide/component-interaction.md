@@ -301,7 +301,7 @@ the parent-child wiring must be done entirely within the parent template.
 The parent component *itself* has no access to the child.
 
 You can't use the *local variable* technique if an instance of the parent component *class*
-must read or write child component values or must call child component methods.
+must read or write child component values or must call child component methods globally.
 
 When the parent component *class* requires that kind of access,
 ***inject*** the child component into the parent as a *ViewChild*.
