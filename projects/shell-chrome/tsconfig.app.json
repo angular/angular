@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/app",
     "types": ["chrome"]
@@ -11,7 +11,7 @@
     "src/app/backend.ts",
     "src/app/background.ts",
     "src/app/content-script.ts",
-    "src/app/ng-validate.ts"
+    "src/app/ng-validate.ts",
   ],
   "include": ["src/**/*.d.ts"]
 }
