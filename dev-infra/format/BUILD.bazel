@@ -10,12 +10,10 @@ ts_library(
     deps = [
         "//dev-infra/utils",
         "@npm//@types/cli-progress",
-        "@npm//@types/inquirer",
         "@npm//@types/node",
         "@npm//@types/shelljs",
         "@npm//@types/yargs",
         "@npm//cli-progress",
-        "@npm//inquirer",
         "@npm//multimatch",
         "@npm//shelljs",
         "@npm//yargs",
