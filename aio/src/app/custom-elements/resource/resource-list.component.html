@@ -13,13 +13,8 @@
         <h3 class="subcategory-title">{{subCategory.title}}</h3>
 
         <div *ngFor="let resource of subCategory.resources">
-<<<<<<< HEAD
-          <div class="c-resource">
-            <a class="l-flex--column resource-row-link" rel="noopener" target="_blank" [href]="resource.url">
-=======
-          <div class="resource-item" *ngIf="resource.rev">
+          <div class="resource-item">
             <a class="resource-row-link" rel="noopener" target="_blank" [href]="resource.url">
->>>>>>> fixup! fix(docs-infra): typography and UI polish
               <div>
                 <h4>{{resource.title}}</h4>
                 <p class="resource-description">{{resource.desc || 'No Description'}}</p>
