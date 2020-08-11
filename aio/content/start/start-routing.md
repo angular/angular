@@ -86,6 +86,12 @@ The product details component handles the display of each product. The Angular R
     <code-example header="src/app/product-details/product-details.component.html" path="getting-started/src/app/product-details/product-details.component.html" region="details">
     </code-example>
 
+    <div class="alert is-helpful">
+
+    The line, `<h4>{{ product.price | currency }}</h4>`, uses the `currency` pipe to transform `product.price` from a number to a currency string. A pipe is a way you can transform data in your HTML template. For more information about Angular pipes, see [Pipes](guide/pipes "Pipes").
+
+    </div>
+
 Now, when users click on a name in the product list, the router navigates them to the distinct URL for the product, swaps out the product list component for the product details component, and displays the product details.
 
 <div class="lightbox">
