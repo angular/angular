@@ -26,7 +26,7 @@ import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} fr
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstants, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
 import {isProceduralRenderer, RComment, RElement, Renderer3, RendererFactory3, RNode, RText} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
@@ -650,7 +650,7 @@ export function createTView(
     type: TViewType, viewIndex: number, templateFn: ComponentTemplate<any>|null, decls: number,
     vars: number, directives: DirectiveDefListOrFactory|null, pipes: PipeDefListOrFactory|null,
     viewQuery: ViewQueriesFunction<any>|null, schemas: SchemaMetadata[]|null,
-    consts: TConstants|null): TView {
+    constsOrFactory: TConstantsOrFactory|null): TView {
   ngDevMode && ngDevMode.tView++;
   const bindingStartIndex = HEADER_OFFSET + decls;
   // This length does not yet contain host bindings from child directives because at this point,
@@ -658,6 +658,7 @@ export function createTView(
   // that has a host binding, we will update the blueprint with that def's hostVars count.
   const initialViewLength = bindingStartIndex + vars;
   const blueprint = createViewBlueprint(bindingStartIndex, initialViewLength);
+  const consts = typeof constsOrFactory === 'function' ? constsOrFactory() : constsOrFactory;
   const tView = blueprint[TVIEW as any] = ngDevMode ?
       new TViewConstructor(
           type,

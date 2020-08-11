@@ -15,6 +15,7 @@ import {i18nAttributesFirstPass, i18nStartFirstPass} from '../i18n/i18n_parse';
 import {i18nPostprocess} from '../i18n/i18n_postprocess';
 import {HEADER_OFFSET} from '../interfaces/view';
 import {getLView, getTView, nextBindingIndex} from '../state';
+import {getConstant} from '../util/view_utils';
 
 import {setDelayProjection} from './all';
 
@@ -42,14 +43,15 @@ import {setDelayProjection} from './all';
  *   `template` instruction index. A `block` that matches the sub-template in which it was declared.
  *
  * @param index A unique index of the translation in the static block.
- * @param message The translation message.
+ * @param messageIndex An index of the translation message from the `def.consts` array.
  * @param subTemplateIndex Optional sub-template index in the `message`.
  *
  * @codeGenApi
  */
-export function ɵɵi18nStart(index: number, message: string, subTemplateIndex?: number): void {
+export function ɵɵi18nStart(index: number, messageIndex: number, subTemplateIndex?: number): void {
   const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
+  const message = getConstant<string>(tView.consts, messageIndex)!;
   pushI18nIndex(index);
   // We need to delay projections until `i18nEnd`
   setDelayProjection(true);
@@ -96,13 +98,13 @@ export function ɵɵi18nEnd(): void {
  *   `template` instruction index. A `block` that matches the sub-template in which it was declared.
  *
  * @param index A unique index of the translation in the static block.
- * @param message The translation message.
+ * @param messageIndex An index of the translation message from the `def.consts` array.
  * @param subTemplateIndex Optional sub-template index in the `message`.
  *
  * @codeGenApi
  */
-export function ɵɵi18n(index: number, message: string, subTemplateIndex?: number): void {
-  ɵɵi18nStart(index, message, subTemplateIndex);
+export function ɵɵi18n(index: number, messageIndex: number, subTemplateIndex?: number): void {
+  ɵɵi18nStart(index, messageIndex, subTemplateIndex);
   ɵɵi18nEnd();
 }
 
@@ -114,11 +116,12 @@ export function ɵɵi18n(index: number, message: string, subTemplateIndex?: numb
  *
  * @codeGenApi
  */
-export function ɵɵi18nAttributes(index: number, values: string[]): void {
+export function ɵɵi18nAttributes(index: number, attrsIndex: number): void {
   const lView = getLView();
   const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
-  i18nAttributesFirstPass(lView, tView, index, values);
+  const attrs = getConstant<string[]>(tView.consts, attrsIndex)!;
+  i18nAttributesFirstPass(lView, tView, index, attrs);
 }
 
 
