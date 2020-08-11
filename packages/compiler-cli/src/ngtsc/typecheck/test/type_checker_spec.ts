@@ -276,11 +276,13 @@ runInEachFileSystem(os => {
                   selector: '[dir]',
                   file: dirFile,
                   type: 'directive',
+                  inputs: {'input': 'input'},
+                  isGeneric: true,
                 }]
               },
               {
                 fileName: dirFile,
-                source: `export class TestDir {}`,
+                source: `export class TestDir<T> {}`,
                 templates: {},
               }
             ],
@@ -294,7 +296,7 @@ runInEachFileSystem(os => {
         const tcbReal = templateTypeChecker.getTypeCheckBlock(cmp)!;
         expect(tcbReal.getSourceFile().text).not.toContain('TestDir');
 
-        templateTypeChecker.overrideComponentTemplate(cmp, '<div dir></div>');
+        templateTypeChecker.overrideComponentTemplate(cmp, '<div dir [input]="value"></div>');
 
         const tcbOverridden = templateTypeChecker.getTypeCheckBlock(cmp);
         expect(tcbOverridden).not.toBeNull();
