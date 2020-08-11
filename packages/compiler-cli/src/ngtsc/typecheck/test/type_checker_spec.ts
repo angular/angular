@@ -66,7 +66,7 @@ runInEachFileSystem(os => {
       const file1 = absoluteFrom('/file1.ts');
       const file2 = absoluteFrom('/file2.ts');
       const {program, templateTypeChecker, programStrategy} = setup([
-        {fileName: file1, templates: {'Cmp1': '<div></div>'}},
+        {fileName: file1, templates: {'Cmp1': '<div>{{value}}</div>'}},
         {fileName: file2, templates: {'Cmp2': '<span></span>'}}
       ]);
 
@@ -74,7 +74,7 @@ runInEachFileSystem(os => {
       const block = templateTypeChecker.getTypeCheckBlock(cmp1);
       expect(block).not.toBeNull();
       expect(block!.getText()).toMatch(/: i[0-9]\.Cmp1/);
-      expect(block!.getText()).toContain(`document.createElement("div")`);
+      expect(block!.getText()).toContain(`value`);
     });
 
     it('should clear old inlines when necessary', () => {
@@ -223,43 +223,43 @@ runInEachFileSystem(os => {
         const fileName = absoluteFrom('/main.ts');
         const {program, templateTypeChecker} = setup([{
           fileName,
-          templates: {'Cmp': '<div></div>'},
+          templates: {'Cmp': '<div>{{original}}</div>'},
         }]);
 
         const sf = getSourceFileOrError(program, fileName);
         const cmp = getClass(sf, 'Cmp');
 
         const tcbReal = templateTypeChecker.getTypeCheckBlock(cmp)!;
-        expect(tcbReal.getText()).toContain('div');
+        expect(tcbReal.getText()).toContain('original');
 
-        templateTypeChecker.overrideComponentTemplate(cmp, '<span></span>');
+        templateTypeChecker.overrideComponentTemplate(cmp, '<div>{{override}}</div>');
         const tcbOverridden = templateTypeChecker.getTypeCheckBlock(cmp);
         expect(tcbOverridden).not.toBeNull();
-        expect(tcbOverridden!.getText()).not.toContain('div');
-        expect(tcbOverridden!.getText()).toContain('span');
+        expect(tcbOverridden!.getText()).not.toContain('original');
+        expect(tcbOverridden!.getText()).toContain('override');
       });
 
       it('should clear overrides on request', () => {
         const fileName = absoluteFrom('/main.ts');
         const {program, templateTypeChecker} = setup([{
           fileName,
-          templates: {'Cmp': '<div></div>'},
+          templates: {'Cmp': '<div>{{original}}</div>'},
         }]);
 
         const sf = getSourceFileOrError(program, fileName);
         const cmp = getClass(sf, 'Cmp');
 
-        templateTypeChecker.overrideComponentTemplate(cmp, '<span></span>');
+        templateTypeChecker.overrideComponentTemplate(cmp, '<div>{{override}}</div>');
         const tcbOverridden = templateTypeChecker.getTypeCheckBlock(cmp)!;
-        expect(tcbOverridden.getText()).not.toContain('div');
-        expect(tcbOverridden.getText()).toContain('span');
+        expect(tcbOverridden.getText()).not.toContain('original');
+        expect(tcbOverridden.getText()).toContain('override');
 
         templateTypeChecker.resetOverrides();
 
-        // The template should be back to the original, which has <div> and not <span>.
+        // The template should be back to the original.
         const tcbReal = templateTypeChecker.getTypeCheckBlock(cmp)!;
-        expect(tcbReal.getText()).toContain('div');
-        expect(tcbReal.getText()).not.toContain('span');
+        expect(tcbReal.getText()).toContain('original');
+        expect(tcbReal.getText()).not.toContain('override');
       });
 
       it('should override a template and make use of previously unused directives', () => {
