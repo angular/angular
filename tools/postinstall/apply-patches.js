@@ -14,7 +14,7 @@ const chalk = require('chalk');
  * Version of the post install patch. Needs to be incremented when
  * existing patches or edits have been modified.
  */
-const PATCH_VERSION = 6;
+const PATCH_VERSION = 9;
 
 /** Path to the project directory. */
 const projectDir = path.join(__dirname, '../..');
@@ -109,6 +109,9 @@ function applyPatches() {
 
   // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1208.
   applyPatch(path.join(__dirname, './manifest_externs_hermeticity.patch'));
+
+  // Patches the changes from: https://github.com/bazelbuild/rules_typescript/pull/504.
+  applyPatch(path.join(__dirname, './@bazel_typescript_tsc_wrapped_worker_cache_fix.patch'));
 
   // Workaround for https://github.com/angular/angular/issues/33452:
   searchAndReplace(
