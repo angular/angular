@@ -29,12 +29,15 @@ import {MenuStack, MenuStackItem, FocusNext} from './menu-stack';
 import {getItemPointerEntries} from './item-pointer-entries';
 
 /**
- * Check if the given element is part of the cdk menu module.
+ * Whether the element is a menu bar or a popup menu.
  * @param target the element to check.
  * @return true if the given element is part of the menu module.
  */
 function isMenuElement(target: Element) {
-  return target.className.indexOf('cdk-menu') !== -1;
+  return (
+    target.classList.contains('cdk-menu-bar') ||
+    (target.classList.contains('cdk-menu') && !target.classList.contains('cdk-menu-inline'))
+  );
 }
 
 /**

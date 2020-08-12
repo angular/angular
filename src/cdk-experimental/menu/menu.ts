@@ -54,6 +54,7 @@ import {getItemPointerEntries} from './item-pointer-entries';
     '[tabindex]': '_isInline() ? 0 : null',
     'role': 'menu',
     'class': 'cdk-menu',
+    '[class.cdk-menu-inline]': '_isInline()',
     '[attr.aria-orientation]': 'orientation',
   },
   providers: [
