@@ -5,6 +5,7 @@ ts_library(
     testonly = True,
     srcs = glob(["*.ts"]),
     deps = [
+        "//packages/compiler",
         "//packages/language-service/ivy",
         "@npm//typescript",
     ],
