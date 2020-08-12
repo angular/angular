@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, InjectionToken} from '@angular/core';
+import {Injectable, InjectionToken, Optional, SkipSelf, FactoryProvider} from '@angular/core';
 import {DateAdapter} from '@angular/material/core';
 import {DateRange} from './date-selection-model';
 
@@ -70,3 +70,17 @@ export class DefaultMatCalendarRangeStrategy<D> implements MatDateRangeSelection
     return new DateRange<D>(start, end);
   }
 }
+
+
+/** @docs-private */
+export function MAT_CALENDAR_RANGE_STRATEGY_PROVIDER_FACTORY(
+  parent: MatDateRangeSelectionStrategy<unknown>, adapter: DateAdapter<unknown>) {
+  return parent || new DefaultMatCalendarRangeStrategy(adapter);
+}
+
+/** @docs-private */
+export const MAT_CALENDAR_RANGE_STRATEGY_PROVIDER: FactoryProvider = {
+  provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
+  deps: [[new Optional(), new SkipSelf(), MAT_DATE_RANGE_SELECTION_STRATEGY], DateAdapter],
+  useFactory: MAT_CALENDAR_RANGE_STRATEGY_PROVIDER_FACTORY,
+};

@@ -30,10 +30,6 @@ import {MatYearView} from './year-view';
 import {MatDateRangeInput} from './date-range-input';
 import {MatStartDate, MatEndDate} from './date-range-input-parts';
 import {MatDateRangePicker} from './date-range-picker';
-import {
-  MAT_DATE_RANGE_SELECTION_STRATEGY,
-  DefaultMatCalendarRangeStrategy
-} from './date-range-selection-strategy';
 
 
 @NgModule({
@@ -82,11 +78,7 @@ import {
   ],
   providers: [
     MatDatepickerIntl,
-    MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY_PROVIDER,
-    {
-      provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-      useClass: DefaultMatCalendarRangeStrategy
-    }
+    MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY_PROVIDER
   ],
   entryComponents: [
     MatDatepickerContent,

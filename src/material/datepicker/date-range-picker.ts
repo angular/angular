@@ -9,6 +9,7 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 import {MatDatepickerBase, MatDatepickerContent, MatDatepickerControl} from './datepicker-base';
 import {MAT_RANGE_DATE_SELECTION_MODEL_PROVIDER, DateRange} from './date-selection-model';
+import {MAT_CALENDAR_RANGE_STRATEGY_PROVIDER} from './date-range-selection-strategy';
 
 /**
  * Input that can be associated with a date range picker.
@@ -29,7 +30,10 @@ export interface MatDateRangePickerInput<D> extends MatDatepickerControl<D> {
   exportAs: 'matDateRangePicker',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  providers: [MAT_RANGE_DATE_SELECTION_MODEL_PROVIDER]
+  providers: [
+    MAT_RANGE_DATE_SELECTION_MODEL_PROVIDER,
+    MAT_CALENDAR_RANGE_STRATEGY_PROVIDER,
+  ]
 })
 export class MatDateRangePicker<D> extends MatDatepickerBase<MatDateRangePickerInput<D>,
   DateRange<D>, D> {
