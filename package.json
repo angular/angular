@@ -15,6 +15,7 @@
   "scripts": {
     "postinstall": "node tools/postinstall/apply-patches.js && ngcc --properties module main --create-ivy-entry-points && node tools/postinstall/update-ngcc-main-fields.js",
     "build": "node ./scripts/build-packages-dist.js",
+    "build-docs-content": "node ./scripts/build-docs-content.js",
     "dev-app": "ibazel run //src/dev-app:devserver",
     "test": "node ./scripts/run-component-tests.js",
     "test-local": "yarn -s test --local",

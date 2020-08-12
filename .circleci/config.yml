@@ -440,7 +440,7 @@ jobs:
       # The components examples package is not a release package, but we publish it
       # as part of this job to the docs-content repository. It's not contained in the
       # attached release output, so we need to build it here.
-      - run: bazel build src/components-examples:npm_package --config=snapshot-build
+      - run: yarn build-docs-content
 
       # Ensures that we do not push the snapshot artifacts upstream until all previous
       # snapshot build jobs have completed. This helps avoiding conflicts when multiple
