@@ -12,8 +12,8 @@
   * Links to any relevant issues.
   * Screenshots (for visual changes or new additions)
 2. Reviews provide comments and the author responds / makes changes. Repeat until LGTM.
-3. One or more of the reviewers applies the "LGTM" label.
-4. Once the LGTM label is applied, either the author or the reviewer can add the "merge-ready"
+3. One or more of the reviewers approve the pull request.
+4. Once the PR is approved, either the author or the reviewer can add the "merge-ready"
    label to indicate that the PR is ready to be merged.
 5. The party responsible for merging PRs will do so.
 
