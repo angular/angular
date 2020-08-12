@@ -894,7 +894,7 @@ describe('MenuBar', () => {
     it('should close the open menu when clicking on an inline menu item', () => {
       openMenu();
 
-      nativeInlineMenuItem.click();
+      dispatchMouseEvent(nativeInlineMenuItem, 'mousedown');
       detectChanges();
 
       expect(popoutMenus.length).toBe(0);
