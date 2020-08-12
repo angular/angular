@@ -1,0 +1,23 @@
+load("@npm_angular_dev_infra_private//benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
+
+component_benchmark(
+    name = "benchmark",
+    driver = ":table.perf-spec.ts",
+    driver_deps = [
+        "@npm//@angular/dev-infra-private",
+        "@npm//protractor",
+        "@npm//@types/jasmine",
+    ],
+    ng_deps = [
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+        "//src/material-experimental/mdc-table",
+    ],
+    ng_srcs = [
+        ":app.module.ts",
+        ":basic-table.ts",
+        ":fake-table-data.ts",
+    ],
+    prefix = "",
+    styles = ["//src/material-experimental/mdc-theming:indigo_pink_prebuilt"],
+)
