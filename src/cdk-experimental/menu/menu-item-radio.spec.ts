@@ -74,7 +74,7 @@ describe('MenuItemRadio', () => {
 
   it('should emit on clicked emitter when triggered', () => {
     const spy = jasmine.createSpy('cdkMenuItemRadio clicked spy');
-    radioButton.clicked.subscribe(spy);
+    radioButton.toggled.subscribe(spy);
 
     radioButton.trigger();
 
@@ -83,7 +83,7 @@ describe('MenuItemRadio', () => {
 
   it('should not emit on clicked emitter when disabled', () => {
     const spy = jasmine.createSpy('cdkMenuItemRadio clicked spy');
-    radioButton.clicked.subscribe(spy);
+    radioButton.toggled.subscribe(spy);
     radioButton.disabled = true;
 
     radioButton.trigger();

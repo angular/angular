@@ -63,7 +63,7 @@ export class CdkMenuGroup implements AfterContentInit, OnDestroy {
 
   /** Register each selectable to emit on the change Emitter when clicked */
   private _registerClickListener(selectable: CdkMenuItemSelectable) {
-    selectable.clicked
+    selectable.toggled
       .pipe(takeUntil(this._selectableChanges))
       .subscribe(() => this.change.next(selectable));
   }

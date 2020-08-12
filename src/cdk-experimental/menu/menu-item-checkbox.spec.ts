@@ -78,7 +78,7 @@ describe('MenuItemCheckbox', () => {
 
   it('should emit on clicked emitter when triggered', () => {
     const spy = jasmine.createSpy('cdkMenuItemCheckbox clicked spy');
-    checkbox.clicked.subscribe(spy);
+    checkbox.toggled.subscribe(spy);
 
     checkbox.trigger();
 
@@ -87,7 +87,7 @@ describe('MenuItemCheckbox', () => {
 
   it('should not emit on clicked emitter when disabled', () => {
     const spy = jasmine.createSpy('cdkMenuItemCheckbox clicked spy');
-    checkbox.clicked.subscribe(spy);
+    checkbox.toggled.subscribe(spy);
     checkbox.disabled = true;
 
     checkbox.trigger();

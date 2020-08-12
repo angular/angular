@@ -20,7 +20,7 @@ let nextId = 0;
 @Directive()
 export abstract class CdkMenuItemSelectable extends CdkMenuItem {
   /** Event emitted when the selectable item is clicked */
-  @Output() clicked: EventEmitter<CdkMenuItemSelectable> = new EventEmitter();
+  @Output('cdkMenuItemToggled') toggled: EventEmitter<CdkMenuItemSelectable> = new EventEmitter();
 
   /** Whether the element is checked */
   @Input()
@@ -41,7 +41,7 @@ export abstract class CdkMenuItemSelectable extends CdkMenuItem {
   /** If the element is not disabled emit the click event */
   trigger() {
     if (!this.disabled) {
-      this.clicked.next(this);
+      this.toggled.next(this);
     }
   }
 
