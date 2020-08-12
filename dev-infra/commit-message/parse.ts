@@ -6,8 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/** A parse commit message. */
-export type ParsedCommitMessage = ReturnType<typeof parseCommitMessage>;
+/** A parsed commit message. */
+export interface ParsedCommitMessage {
+  header: string;
+  body: string;
+  bodyWithoutLinking: string;
+  type: string;
+  scope: string;
+  subject: string;
+  isFixup: boolean;
+  isSquash: boolean;
+  isRevert: boolean;
+}
 
 /** Regex determining if a commit is a fixup. */
 const FIXUP_PREFIX_RE = /^fixup! /i;
@@ -25,7 +35,7 @@ const COMMIT_HEADER_RE = /^(.*)/i;
 const COMMIT_BODY_RE = /^.*\n\n([\s\S]*)$/;
 
 /** Parse a full commit message into its composite parts. */
-export function parseCommitMessage(commitMsg: string) {
+export function parseCommitMessage(commitMsg: string): ParsedCommitMessage {
   let header = '';
   let body = '';
   let bodyWithoutLinking = '';
