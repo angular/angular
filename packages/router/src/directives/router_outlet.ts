@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, Input, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, Input, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
 
 import {Data} from '../config';
 import {ChildrenOutletContexts} from '../router_outlet_context';
@@ -19,7 +19,9 @@ import {PRIMARY_OUTLET} from '../shared';
  * Acts as a placeholder that Angular dynamically fills based on the current router state.
  *
  * Each outlet can have a unique name, determined by the optional `name` attribute.
- * The name cannot be set or changed dynamically. If not set, default value is "primary".
+ * To set it dynamically use the `lazy` attribute plus the `[name]` input.
+ * If no name is set, default value is "primary".
+ * The name cannot be changed dynamically. It will figure the name in the initialization only.
  *
  * ```
  * <router-outlet></router-outlet>
@@ -65,22 +67,30 @@ export class RouterOutlet implements OnDestroy, OnInit {
   private _activatedRoute: ActivatedRoute|null = null;
   private _name!: string;
 
-  @Input() name!: string;
+  @Input() name?: string;
 
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
 
   constructor(
       private parentContexts: ChildrenOutletContexts, private location: ViewContainerRef,
-      private resolver: ComponentFactoryResolver, private changeDetector: ChangeDetectorRef) {}
+      private resolver: ComponentFactoryResolver, private changeDetector: ChangeDetectorRef,
+      @Attribute('name') name: string, @Attribute('lazy') lazy: string|null) {
+    if (lazy === null) {
+      this._name = name || PRIMARY_OUTLET;
+      this.parentContexts.onChildOutletCreated(this._name, this);
+    }
+  }
 
   ngOnDestroy(): void {
     this.parentContexts.onChildOutletDestroyed(this._name);
   }
 
   ngOnInit(): void {
-    this._name = this.name || PRIMARY_OUTLET;
-    this.parentContexts.onChildOutletCreated(this._name, this);
+    if (!this._name) {
+      this._name = this.name || PRIMARY_OUTLET;
+      this.parentContexts.onChildOutletCreated(this._name, this);
+    }
 
     if (!this.activated) {
       // If the outlet was not instantiated at the time the route got activated we need to populate

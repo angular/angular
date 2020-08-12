@@ -18,7 +18,7 @@ import {ActivatedRoute} from '../router_state';
  * In order to render, there needs to be a component on this config, which will default
  * to this `EmptyOutletComponent`.
  */
-@Component({template: `<router-outlet [name]="route.outlet"></router-outlet>`})
+@Component({template: `<router-outlet lazy [name]="route.outlet"></router-outlet>`})
 export class ɵEmptyOutletComponent {
   constructor(public route: ActivatedRoute) {}
 }
