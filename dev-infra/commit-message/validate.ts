@@ -16,7 +16,7 @@ export interface ValidateCommitMessageOptions {
   nonFixupCommitHeaders?: string[];
 }
 
-/** Regex determining if a string that is entirely a URL. */
+/** Regex matching a URL for an entire commit body line. */
 const COMMIT_BODY_URL_LINE_RE = /^https?:\/\/.*$/;
 
 /** Validate a commit message against using the local repo's config. */
