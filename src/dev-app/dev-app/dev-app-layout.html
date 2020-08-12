@@ -33,7 +33,9 @@
           <button mat-icon-button (click)="toggleFullscreen()" title="Toggle fullscreen">
             <mat-icon>fullscreen</mat-icon>
           </button>
-          <button mat-button (click)="toggleTheme()">{{dark ? 'Light' : 'Dark'}} theme</button>
+          <button mat-button (click)="isDark = !isDark">
+            {{isDark ? 'Light' : 'Dark'}} theme
+          </button>
           <button mat-button (click)="rippleOptions.disabled = !rippleOptions.disabled">
             {{rippleOptions.disabled ? 'Enable' : 'Disable'}} ripples
           </button>

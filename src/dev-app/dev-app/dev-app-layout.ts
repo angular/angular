@@ -10,6 +10,9 @@ import {Directionality} from '@angular/cdk/bidi';
 import {ChangeDetectorRef, Component, ElementRef, Inject, ViewEncapsulation} from '@angular/core';
 import {DevAppRippleOptions} from './ripple-options';
 import {DevAppDirectionality} from './dev-app-directionality';
+import {DOCUMENT} from '@angular/common';
+
+const isDarkThemeKey = 'ANGULAR_COMPONENTS_DEV_APP_DARK_THEME';
 
 /** Root component for the dev-app demos. */
 @Component({
@@ -19,7 +22,8 @@ import {DevAppDirectionality} from './dev-app-directionality';
   encapsulation: ViewEncapsulation.None,
 })
 export class DevAppLayout {
-  dark = false;
+  readonly darkThemeClass = 'demo-unicorn-dark-theme';
+  _isDark = false;
   strongFocus = false;
   navItems = [
     {name: 'Examples', route: '/examples'},
@@ -101,9 +105,39 @@ export class DevAppLayout {
 
   constructor(
       private _element: ElementRef<HTMLElement>, public rippleOptions: DevAppRippleOptions,
-      @Inject(Directionality) public dir: DevAppDirectionality, cdr: ChangeDetectorRef) {
+      @Inject(Directionality) public dir: DevAppDirectionality, cdr: ChangeDetectorRef,
+      @Inject(DOCUMENT) private _document: Document) {
     dir.change.subscribe(() => cdr.markForCheck());
     this.updateDensityClasses();
+    try {
+      const isDark = localStorage.getItem(isDarkThemeKey);
+      if (isDark != null) {
+        // We avoid calling the setter and apply the themes directly here.
+        // This avoids writing the same value, that we just read, back to localStorage.
+        this._isDark = isDark === 'true';
+        this.updateThemeClass(this._isDark);
+      }
+    } catch (error) {
+      console.error(`Failed to read ${isDarkThemeKey} from localStorage: `, error);
+    }
+  }
+
+  get isDark(): boolean {
+    return this._isDark;
+  }
+
+  set isDark(value: boolean) {
+    // Noop if the value is the same as is already set.
+    if (value !== this._isDark) {
+      this._isDark = value;
+      this.updateThemeClass(this._isDark);
+
+      try {
+        localStorage.setItem(isDarkThemeKey, String(value));
+      } catch (error) {
+        console.error(`Failed to write ${isDarkThemeKey} to localStorage: `, error);
+      }
+    }
   }
 
   toggleFullscreen() {
@@ -120,15 +154,11 @@ export class DevAppLayout {
     }
   }
 
-  toggleTheme() {
-    const darkThemeClass = 'demo-unicorn-dark-theme';
-
-    this.dark = !this.dark;
-
-    if (this.dark) {
-      document.body.classList.add(darkThemeClass);
+  updateThemeClass(isDark?: boolean) {
+    if (isDark) {
+      this._document.body.classList.add(this.darkThemeClass);
     } else {
-      document.body.classList.remove(darkThemeClass);
+      this._document.body.classList.remove(this.darkThemeClass);
     }
   }
 
@@ -138,9 +168,9 @@ export class DevAppLayout {
     this.strongFocus = !this.strongFocus;
 
     if (this.strongFocus) {
-      document.body.classList.add(strongFocusClass);
+      this._document.body.classList.add(strongFocusClass);
     } else {
-      document.body.classList.remove(strongFocusClass);
+      this._document.body.classList.remove(strongFocusClass);
     }
   }
 
@@ -164,9 +194,9 @@ export class DevAppLayout {
     for (let i = 0; i < this.densityScales.length; i++) {
       const className = `demo-density-${this.densityScales[i]}`;
       if (i === this.currentDensityIndex) {
-        document.body.classList.add(className);
+        this._document.body.classList.add(className);
       } else {
-        document.body.classList.remove(className);
+        this._document.body.classList.remove(className);
       }
     }
   }
