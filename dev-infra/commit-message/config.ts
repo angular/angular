@@ -12,7 +12,6 @@ export interface CommitMessageConfig {
   maxLineLength: number;
   minBodyLength: number;
   minBodyLengthTypeExcludes?: string[];
-  types: string[];
   scopes: string[];
 }
 
@@ -30,3 +29,56 @@ export function getCommitMessageConfig() {
   assertNoErrors(errors);
   return config as Required<typeof config>;
 }
+
+/** Scope requirement level to be set for each commit type.  */
+export enum SCOPE_REQUIREMENT {
+  Required,
+  Optional,
+  Forbidden,
+}
+
+/** A commit type */
+export interface CommitType {
+  value: string;
+  scope: SCOPE_REQUIREMENT;
+}
+
+/** The valid commit types for Angular commit messages. */
+export const COMMIT_TYPES: {[key: string]: CommitType} = {
+  build: {
+    value: 'build',
+    scope: SCOPE_REQUIREMENT.Forbidden,
+  },
+  ci: {
+    value: 'ci',
+    scope: SCOPE_REQUIREMENT.Forbidden,
+  },
+  docs: {
+    value: 'docs',
+    scope: SCOPE_REQUIREMENT.Optional,
+  },
+  feat: {
+    value: 'feat',
+    scope: SCOPE_REQUIREMENT.Required,
+  },
+  fix: {
+    value: 'fix',
+    scope: SCOPE_REQUIREMENT.Required,
+  },
+  perf: {
+    value: 'perf',
+    scope: SCOPE_REQUIREMENT.Required,
+  },
+  refactor: {
+    value: 'refactor',
+    scope: SCOPE_REQUIREMENT.Required,
+  },
+  release: {
+    value: 'release',
+    scope: SCOPE_REQUIREMENT.Forbidden,
+  },
+  test: {
+    value: 'test',
+    scope: SCOPE_REQUIREMENT.Required,
+  },
+};

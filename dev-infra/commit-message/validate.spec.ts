@@ -18,13 +18,6 @@ const config: {commitMessage: CommitMessageConfig} = {
   commitMessage: {
     maxLineLength: 120,
     minBodyLength: 0,
-    types: [
-      'feat',
-      'fix',
-      'refactor',
-      'release',
-      'style',
-    ],
     scopes: [
       'common',
       'compiler',
@@ -33,7 +26,7 @@ const config: {commitMessage: CommitMessageConfig} = {
     ]
   }
 };
-const TYPES = config.commitMessage.types.join(', ');
+const TYPES = Object.keys(validateConfig.COMMIT_TYPES).join(', ');
 const SCOPES = config.commitMessage.scopes.join(', ');
 const INVALID = false;
 const VALID = true;
@@ -47,7 +40,8 @@ describe('validate-commit-message.js', () => {
     lastError = '';
 
     spyOn(console, 'error').and.callFake((msg: string) => lastError = msg);
-    spyOn(validateConfig, 'getCommitMessageConfig').and.returnValue(config);
+    spyOn(validateConfig, 'getCommitMessageConfig')
+        .and.returnValue(config as ReturnType<typeof validateConfig.getCommitMessageConfig>);
   });
 
   describe('validateMessage()', () => {
@@ -55,16 +49,16 @@ describe('validate-commit-message.js', () => {
       expect(validateCommitMessage('feat(packaging): something')).toBe(VALID);
       expect(lastError).toBe('');
 
-      expect(validateCommitMessage('release(packaging): something')).toBe(VALID);
+      expect(validateCommitMessage('fix(packaging): something')).toBe(VALID);
       expect(lastError).toBe('');
 
-      expect(validateCommitMessage('fixup! release(packaging): something')).toBe(VALID);
+      expect(validateCommitMessage('fixup! fix(packaging): something')).toBe(VALID);
       expect(lastError).toBe('');
 
-      expect(validateCommitMessage('squash! release(packaging): something')).toBe(VALID);
+      expect(validateCommitMessage('squash! fix(packaging): something')).toBe(VALID);
       expect(lastError).toBe('');
 
-      expect(validateCommitMessage('Revert: "release(packaging): something"')).toBe(VALID);
+      expect(validateCommitMessage('Revert: "fix(packaging): something"')).toBe(VALID);
       expect(lastError).toBe('');
     });
 
@@ -110,8 +104,8 @@ describe('validate-commit-message.js', () => {
       expect(validateCommitMessage('feat(bah): something')).toBe(INVALID);
       expect(lastError).toContain(errorMessageFor('bah', 'feat(bah): something'));
 
-      expect(validateCommitMessage('style(webworker): something')).toBe(INVALID);
-      expect(lastError).toContain(errorMessageFor('webworker', 'style(webworker): something'));
+      expect(validateCommitMessage('fix(webworker): something')).toBe(INVALID);
+      expect(lastError).toContain(errorMessageFor('webworker', 'fix(webworker): something'));
 
       expect(validateCommitMessage('refactor(security): something')).toBe(INVALID);
       expect(lastError).toContain(errorMessageFor('security', 'refactor(security): something'));
@@ -119,12 +113,12 @@ describe('validate-commit-message.js', () => {
       expect(validateCommitMessage('refactor(docs): something')).toBe(INVALID);
       expect(lastError).toContain(errorMessageFor('docs', 'refactor(docs): something'));
 
-      expect(validateCommitMessage('release(angular): something')).toBe(INVALID);
-      expect(lastError).toContain(errorMessageFor('angular', 'release(angular): something'));
+      expect(validateCommitMessage('feat(angular): something')).toBe(INVALID);
+      expect(lastError).toContain(errorMessageFor('angular', 'feat(angular): something'));
     });
 
     it('should allow empty scope', () => {
-      expect(validateCommitMessage('fix: blablabla')).toBe(VALID);
+      expect(validateCommitMessage('build: blablabla')).toBe(VALID);
       expect(lastError).toBe('');
     });
 
@@ -243,7 +237,6 @@ describe('validate-commit-message.js', () => {
           maxLineLength: 120,
           minBodyLength: 30,
           minBodyLengthTypeExcludes: ['docs'],
-          types: ['fix', 'docs'],
           scopes: ['core']
         }
       };
