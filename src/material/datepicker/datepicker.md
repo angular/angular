@@ -1,5 +1,5 @@
 The datepicker allows users to enter a date either through text input, or by choosing a date from
-the calendar. It is made up of several components and directives that work together.
+the calendar. It is made up of several components, directives and [the date implementation module](#choosing-a-date-implementation-and-date-format-settings) that work together.
 
 <!-- example(datepicker-overview) -->
 
