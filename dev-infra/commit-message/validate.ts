@@ -7,7 +7,7 @@
  */
 import {error} from '../utils/console';
 
-import {getCommitMessageConfig} from './config';
+import {COMMIT_TYPES, getCommitMessageConfig, ScopeRequirement} from './config';
 import {parseCommitMessage} from './parse';
 
 /** Options for commit message validation. */
@@ -86,8 +86,26 @@ export function validateCommitMessage(
     return false;
   }
 
-  if (!config.types.includes(commit.type)) {
-    printError(`'${commit.type}' is not an allowed type.\n => TYPES: ${config.types.join(', ')}`);
+
+
+  if (COMMIT_TYPES[commit.type] === undefined) {
+    printError(`'${commit.type}' is not an allowed type.\n => TYPES: ${
+        Object.keys(COMMIT_TYPES).join(', ')}`);
+    return false;
+  }
+
+  /** The scope requirement level for the provided type of the commit message. */
+  const scopeRequirementForType = COMMIT_TYPES[commit.type].scope;
+
+  if (scopeRequirementForType === ScopeRequirement.Forbidden && commit.scope) {
+    printError(`Scopes are forbidden for commits with type '${commit.type}', but a scope of '${
+        commit.scope}' was provided.`);
+    return false;
+  }
+
+  if (scopeRequirementForType === ScopeRequirement.Required && !commit.scope) {
+    printError(
+        `Scopes are required for commits with type '${commit.type}', but no scope was provided.`);
     return false;
   }
 
