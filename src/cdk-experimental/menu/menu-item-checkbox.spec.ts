@@ -53,7 +53,7 @@ describe('MenuItemCheckbox', () => {
   it('should toggle the aria checked attribute', () => {
     expect(checkboxElement.getAttribute('aria-checked')).toBeNull();
 
-    checkbox.trigger();
+    checkboxElement.click();
     fixture.detectChanges();
 
     expect(checkboxElement.getAttribute('aria-checked')).toBe('true');

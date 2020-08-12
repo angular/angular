@@ -51,7 +51,7 @@ describe('MenuItemRadio', () => {
   it('should toggle the aria checked attribute', () => {
     expect(radioElement.getAttribute('aria-checked')).toBeNull();
 
-    radioButton.trigger();
+    radioElement.click();
     fixture.detectChanges();
 
     expect(radioElement.getAttribute('aria-checked')).toBe('true');
