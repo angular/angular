@@ -28,7 +28,7 @@ by using the `matDatepickerToggleIcon` directive:
 ### Date range selection
 
 If you want your users to select a range of dates, instead of a single date, you can use the
-`mat-date-range-input` and `mat-date-range-picker` components. They work in similarly to the
+`mat-date-range-input` and `mat-date-range-picker` components. They work in tandem, similarly to the
 `mat-datepicker` and the basic datepicker input.
 
 The `mat-date-range-input` component requires two `input` elements for the start and end dates,
@@ -41,7 +41,7 @@ respectively:
 </mat-date-range-input>
 ```
 
-The `mat-date-range-picker` component acts the the pop-up panel for selecting dates. This works in
+The `mat-date-range-picker` component acts as the pop-up panel for selecting dates. This works in
 the same way as `mat-datepicker`, but allows the user to select multiple times:
 
 ```html
