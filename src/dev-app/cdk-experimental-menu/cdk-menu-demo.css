@@ -1,5 +1,19 @@
-.example-menu-bar {
+.example-menu {
   display: flex;
-  flex-direction: row;
-  list-style: none;
+  flex-direction: column;
+}
+
+.example-menu-container + .example-menu-container {
+  /* add some buffer for the opened menu */
+  margin-top: 140px;
+}
+
+.example-menu-inline > button {
+  display: block;
+}
+
+.example-context {
+  /* delineate where the context is */
+  border: solid 2px black;
+  padding: 6px;
 }

@@ -1,23 +1,88 @@
-<ul cdkMenuBar class="example-menu-bar">
-  <li role="none"><button id="file_button" cdkMenuItem [cdkMenuTriggerFor]="file">File</button></li>
-  <li role="none"><button id="edit_button" cdkMenuItem [cdkMenuTriggerFor]="edit">Edit</button></li>
-</ul>
+<div class="example-menu-container">
+  <h3>MenuBar Example</h3>
 
-<ng-template cdkMenuPanel #file="cdkMenuPanel">
-  <ul cdkMenu [cdkMenuPanel]="file" id="file_menu">
-    <li role="none"><button id="share_button" cdkMenuItem>Share</button></li>
-    <li role="none"><button id="open_button" cdkMenuItem>Open</button></li>
-    <li role="none"><button id="rename_button" cdkMenuItem>Rename</button></li>
-    <li role="none"><button id="print_button" cdkMenuItem>Print</button></li>
-  </ul>
-</ng-template>
+  <div cdkMenuBar>
+    <button id="file_button" cdkMenuItem [cdkMenuTriggerFor]="file">File</button>
+    <button id="edit_button" cdkMenuItem [cdkMenuTriggerFor]="edit">Edit</button>
+  </div>
 
-<ng-template cdkMenuPanel #edit="cdkMenuPanel">
-  <ul cdkMenu [cdkMenuPanel]="edit" id="edit_menu">
-    <li role="none"><button id="undo_button" cdkMenuItem>Undo</button></li>
-    <li role="none"><button id="redo_button" cdkMenuItem>Redo</button></li>
-    <li role="none"><button id="cut_button" cdkMenuItem>Cut</button></li>
-    <li role="none"><button id="copy_button" cdkMenuItem>Copy</button></li>
-    <li role="none"><button id="paste_button" cdkMenuItem>Paste</button></li>
-  </ul>
-</ng-template>
+  <ng-template cdkMenuPanel #file="cdkMenuPanel">
+    <div cdkMenu class="example-menu" [cdkMenuPanel]="file" id="file_menu">
+      <button id="share_button" cdkMenuItem [cdkMenuTriggerFor]="share">Share</button>
+      <button id="open_button" cdkMenuItem>Open</button>
+      <button id="rename_button" cdkMenuItem>Rename</button>
+      <button id="print_button" cdkMenuItem>Print</button>
+    </div>
+  </ng-template>
+
+  <ng-template cdkMenuPanel #edit="cdkMenuPanel">
+    <div cdkMenu class="example-menu" [cdkMenuPanel]="edit" id="edit_menu">
+      <button id="undo_button" cdkMenuItem>Undo</button>
+      <button id="redo_button" cdkMenuItem>Redo</button>
+      <button id="cut_button" cdkMenuItem>Cut</button>
+      <button id="copy_button" cdkMenuItem>Copy</button>
+      <button id="paste_button" cdkMenuItem>Paste</button>
+    </div>
+  </ng-template>
+  <ng-template cdkMenuPanel #share="cdkMenuPanel">
+    <div cdkMenu class="example-menu" [cdkMenuPanel]="share" id="share_menu">
+      <button id="undo_button" cdkMenuItem>GVC</button>
+      <button id="redo_button" cdkMenuItem>Gmail</button>
+      <button id="redo_button" cdkMenuItem>Twitter</button>
+    </div>
+  </ng-template>
+</div>
+
+<div class="example-menu-container">
+  <h3>Inline Menu Example</h3>
+
+  <div cdkMenu class="example-menu" class="example-menu-inline">
+    <button cdkMenuItem>Inbox</button>
+    <button cdkMenuItem>Starred</button>
+    <button cdkMenuItem>Snoozed</button>
+    <button cdkMenuItem>Important</button>
+    <button cdkMenuItem>Chats</button>
+    <button cdkMenuItem>Sent</button>
+  </div>
+</div>
+
+<div class="example-menu-container">
+  <h3>Context Menu Example</h3>
+
+  <div class="example-context" [cdkContextMenuTriggerFor]="outer">
+    <h4>Outer Context</h4>
+
+    Lucas ipsum dolor sit amet maul jade jawa ben wookiee binks lando jinn baba tatooine. Jade biggs
+    padmé sebulba cade dagobah. Baba lars mothma yoda. Bothan calrissian c-3p0 maul fisto lando
+    obi-wan. Skywalker solo darth bothan droid obi-wan ahsoka. Maul solo obi-wan calrissian antilles
+    yavin chewbacca lando. Mustafar ponda kit jango. C-3p0 skywalker baba grievous moff. Hutt ben
+    darth solo skywalker bothan skywalker maul organa. Grievous cade antilles utapau skywalker
+    grievous antilles chewbacca.
+
+    <div class="example-context" [cdkContextMenuTriggerFor]="inner">
+      <h4>Inner Context</h4>
+
+      R2-d2 skywalker hutt luke calamari kit antilles jawa. Fett ackbar secura gonk. Jawa dagobah
+      sidious jabba mace tusken raider fett calamari kashyyyk. Yoda ponda fett moff binks darth
+      organa lando. Dantooine hutt bothan yoda watto leia padmé. Calrissian mustafar ewok c-3po
+      twi'lek yoda. Dantooine lars watto ewok dantooine. Aayla amidala dantooine luke bespin bespin
+      obi-wan boba. Moff darth ventress jabba darth aayla. Mara mustafar darth amidala darth fisto
+      wampa darth mara. Lando kessel wampa sidious.
+    </div>
+  </div>
+
+  <ng-template cdkMenuPanel #outer="cdkMenuPanel">
+    <div cdkMenu class="example-menu" [cdkMenuPanel]="outer" id="outer_menu">
+      <button id="undo_button" cdkMenuItem>Undo</button>
+      <button id="redo_button" cdkMenuItem>Redo</button>
+    </div>
+  </ng-template>
+
+  <ng-template cdkMenuPanel #inner="cdkMenuPanel">
+    <div cdkMenu class="example-menu" [cdkMenuPanel]="inner" id="inner_menu">
+      <button id="cut_button" cdkMenuItem>Cut</button>
+      <button id="copy_button" cdkMenuItem>Copy</button>
+      <button id="paste_button" cdkMenuItem>Paste</button>
+    </div>
+  </ng-template>
+</div>
