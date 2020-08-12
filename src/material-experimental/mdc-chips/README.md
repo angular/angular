@@ -39,14 +39,14 @@ Assuming your application is already up and running using Angular Material, you 
    ```
 
 4. Use the chips in your component's template:
-   
-   ```html   
+
+   ```html
    <mat-chip-set>
      <mat-chip> Chip 1 </mat-chip>
      <mat-chip> Chip 2 </mat-chip>
    </mat-chip-set>
-   ``` 
-   
+   ```
+
 5. Add the theme mixins to your Sass:
 
    ```scss
@@ -63,7 +63,7 @@ Assuming your application is already up and running using Angular Material, you 
    ));
 
 
-   @include mat-mdc-chips-theme($candy-app-theme); 
+   @include mat-mdc-chips-theme($candy-app-theme);
    ```
 
 ## API differences
@@ -72,14 +72,14 @@ The API for the MDC-based chips are mostly the same as the current chips impleme
 one notable difference is that the names of the container and chips have been changed to clarify
 when and how they should be used.
 
-The most basic container that you can use for the chips is with the `<mat-chip-set>` containing a 
+The most basic container that you can use for the chips is with the `<mat-chip-set>` containing a
 list of `<mat-chip>`:
 
 ```html
   <mat-chip-set>
-    <mat-chip> John </mat-basic-chip>
-    <mat-chip> Paul </mat-basic-chip>
-    <mat-chip> James </mat-basic-chip>
+    <mat-chip> John </mat-chip>
+    <mat-chip> Paul </mat-chip>
+    <mat-chip> James </mat-chip>
   </mat-chip-set>
 ```
 
