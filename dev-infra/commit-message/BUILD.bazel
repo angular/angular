@@ -6,6 +6,7 @@ ts_library(
     srcs = [
         "cli.ts",
         "config.ts",
+        "parse.ts",
         "validate.ts",
         "validate-file.ts",
         "validate-range.ts",
@@ -36,11 +37,25 @@ ts_library(
     ],
 )
 
+ts_library(
+    name = "parse-test",
+    testonly = True,
+    srcs = ["parse.spec.ts"],
+    deps = [
+        ":commit-message",
+        "//dev-infra/utils",
+        "@npm//@types/events",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//inquirer",
+    ],
+)
+
 jasmine_node_test(
     name = "test",
     bootstrap = ["//tools/testing:node_no_angular_es5"],
     deps = [
-        ":commit-message",
+        ":parse-test",
         ":validate-test",
     ],
 )
