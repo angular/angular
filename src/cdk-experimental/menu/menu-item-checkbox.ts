@@ -18,6 +18,7 @@ import {CdkMenuItem} from './menu-item';
   selector: '[cdkMenuItemCheckbox]',
   exportAs: 'cdkMenuItemCheckbox',
   host: {
+    '[tabindex]': '_tabindex',
     'type': 'button',
     'role': 'menuitemcheckbox',
     '[attr.aria-checked]': 'checked || null',
