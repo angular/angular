@@ -566,6 +566,23 @@ describe('MatCalendarBody', () => {
       expect(cells[5].classList).toContain(previewEndClass);
     });
 
+    it('should mark a cell as being identical to the comparison range', () => {
+      testComponent.comparisonStart = testComponent.comparisonEnd = 3;
+      fixture.detectChanges();
+
+      const comparisonIdenticalCells: NodeListOf<HTMLElement> =
+          fixture.nativeElement.querySelectorAll('.mat-calendar-body-comparison-identical');
+
+      expect(comparisonIdenticalCells.length).toBe(1);
+      expect(cells[2].contains(comparisonIdenticalCells[0])).toBe(true);
+      expect(cells.some(cell => {
+        const classList = cell.classList;
+        return classList.contains(startClass) || classList.contains(inRangeClass) ||
+               classList.contains(endClass) || classList.contains(comparisonStartClass) ||
+               classList.contains(inComparisonClass) || classList.contains(comparisonEndClass);
+      })).toBe(false);
+    });
+
   });
 
 });

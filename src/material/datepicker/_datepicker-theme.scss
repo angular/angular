@@ -40,10 +40,18 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 }
 
+// Utility mixin to target cells that aren't selected. Used to make selector easier to follow.
+@mixin _mat-datepicker-unselected-cell {
+  &:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+    @content;
+  }
+}
+
 @mixin mat-datepicker-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
   $foreground: map-get($config, foreground);
   $background: map-get($config, background);
+  $disabled-color: mat-color($foreground, disabled-text);
 
   .mat-calendar-arrow {
     border-top-color: mat-color($foreground, icon);
@@ -75,16 +83,23 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     border-color: transparent;
   }
 
-  .mat-calendar-body-disabled > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected),
+  .mat-calendar-body-disabled > .mat-calendar-body-cell-content {
+    @include _mat-datepicker-unselected-cell {
+      color: $disabled-color;
+    }
+  }
+
   .mat-form-field-disabled .mat-date-range-input-separator {
-    color: mat-color($foreground, disabled-text);
+    color: $disabled-color;
   }
 
   .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover,
   .cdk-keyboard-focused .mat-calendar-body-active,
   .cdk-program-focused .mat-calendar-body-active {
-    & > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
-      background-color: mat-color($background, hover);
+    & > .mat-calendar-body-cell-content {
+      @include _mat-datepicker-unselected-cell {
+        background-color: mat-color($background, hover);
+      }
     }
   }
 
@@ -102,24 +117,28 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     }
   }
 
-  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-    // Note: though it's not text, the border is a hint about the fact that this is today's date,
-    // so we use the hint color.
-    border-color: mat-color($foreground, hint-text);
+  .mat-calendar-body-today {
+    @include _mat-datepicker-unselected-cell {
+      // Note: though it's not text, the border is a hint about the fact that this is today's date,
+      // so we use the hint color.
+      border-color: mat-color($foreground, hint-text);
+    }
   }
 
-  .mat-calendar-body-disabled > .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-    $color: mat-color($foreground, hint-text);
+  .mat-calendar-body-disabled > .mat-calendar-body-today {
+    @include _mat-datepicker-unselected-cell {
+      $color: mat-color($foreground, hint-text);
 
-    @if (type-of($color) == color) {
-      border-color: fade-out($color, $mat-datepicker-today-fade-amount);
-    }
-    @else {
-      // If the color didn't resolve to a color value, but something like a CSS variable, we can't
-      // fade it out so we fall back to reducing the element opacity. Note that we don't use the
-      // $mat-datepicker-today-fade-amount, because hint text usually has some opacity applied
-      // to it already and we don't want them to stack on top of each other.
-      opacity: 0.5;
+      @if (type-of($color) == color) {
+        border-color: fade-out($color, $mat-datepicker-today-fade-amount);
+      }
+      @else {
+        // If the color didn't resolve to a color value, but something like a CSS variable, we can't
+        // fade it out so we fall back to reducing the element opacity. Note that we don't use the
+        // $mat-datepicker-today-fade-amount, because hint text usually has some opacity applied
+        // to it already and we don't want them to stack on top of each other.
+        opacity: 0.5;
+      }
     }
   }
 
@@ -196,6 +215,7 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     background: $range-color;
   }
 
+  .mat-calendar-body-comparison-identical,
   .mat-calendar-body-in-comparison-range::before {
     background: $comparison-color;
   }
@@ -210,13 +230,14 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     background: linear-gradient(to left, $range-color 50%, $comparison-color 50%);
   }
 
+  .mat-calendar-body-in-range > .mat-calendar-body-comparison-identical,
   .mat-calendar-body-in-comparison-range.mat-calendar-body-in-range::after {
     background: $overlap-color;
   }
 
+  .mat-calendar-body-comparison-identical.mat-calendar-body-selected,
   .mat-calendar-body-in-comparison-range > .mat-calendar-body-selected {
     background: $overlap-selected-color;
-
   }
 }
 

@@ -149,8 +149,8 @@ export class MatCalendarBody implements OnChanges, OnDestroy {
   }
 
   /** Returns whether a cell should be marked as selected. */
-  _isSelected(cell: MatCalendarCell) {
-    return this.startValue === cell.compareValue || this.endValue === cell.compareValue;
+  _isSelected(value: number) {
+    return this.startValue === value || this.endValue === value;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -268,6 +268,22 @@ export class MatCalendarBody implements OnChanges, OnDestroy {
   /** Gets whether a value is within the current comparison range. */
   _isInComparisonRange(value: number) {
     return isInRange(value, this.comparisonStart, this.comparisonEnd, this.isRange);
+  }
+
+  /**
+   * Gets whether a value is the same as the start and end of the comparison range.
+   * For context, the functions that we use to determine whether something is the start/end of
+   * a range don't allow for the start and end to be on the same day, because we'd have to use
+   * much more specific CSS selectors to style them correctly in all scenarios. This is fine for
+   * the regular range, because when it happens, the selected styles take over and still show where
+   * the range would've been, however we don't have these selected styles for a comparison range.
+   * This function is used to apply a class that serves the same purpose as the one for selected
+   * dates, but it only applies in the context of a comparison range.
+   */
+  _isComparisonIdentical(value: number) {
+    // Note that we don't need to null check the start/end
+    // here, because the `value` will always be defined.
+    return this.comparisonStart === this.comparisonEnd && value === this.comparisonStart;
   }
 
   /** Gets whether a value is the start of the preview range. */

@@ -121,6 +121,7 @@ export declare class MatCalendarBody implements OnChanges, OnDestroy {
     _isComparisonBridgeEnd(value: number, rowIndex: number, colIndex: number): boolean;
     _isComparisonBridgeStart(value: number, rowIndex: number, colIndex: number): boolean;
     _isComparisonEnd(value: number): boolean;
+    _isComparisonIdentical(value: number): boolean;
     _isComparisonStart(value: number): boolean;
     _isInComparisonRange(value: number): boolean;
     _isInPreview(value: number): boolean;
@@ -129,7 +130,7 @@ export declare class MatCalendarBody implements OnChanges, OnDestroy {
     _isPreviewStart(value: number): boolean;
     _isRangeEnd(value: number): boolean;
     _isRangeStart(value: number): boolean;
-    _isSelected(cell: MatCalendarCell): boolean;
+    _isSelected(value: number): boolean;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCalendarBody, "[mat-calendar-body]", ["matCalendarBody"], { "label": "label"; "rows": "rows"; "todayValue": "todayValue"; "startValue": "startValue"; "endValue": "endValue"; "labelMinRequiredCells": "labelMinRequiredCells"; "numCols": "numCols"; "activeCell": "activeCell"; "isRange": "isRange"; "cellAspectRatio": "cellAspectRatio"; "comparisonStart": "comparisonStart"; "comparisonEnd": "comparisonEnd"; "previewStart": "previewStart"; "previewEnd": "previewEnd"; }, { "selectedValueChange": "selectedValueChange"; "previewChange": "previewChange"; }, never, never>;

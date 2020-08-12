@@ -49,13 +49,14 @@
       [class.mat-calendar-body-in-preview]="_isInPreview(item.compareValue)"
       [attr.aria-label]="item.ariaLabel"
       [attr.aria-disabled]="!item.enabled || null"
-      [attr.aria-selected]="_isSelected(item)"
+      [attr.aria-selected]="_isSelected(item.compareValue)"
       (click)="_cellClicked(item, $event)"
       [style.width]="_cellWidth"
       [style.paddingTop]="_cellPadding"
       [style.paddingBottom]="_cellPadding">
       <div class="mat-calendar-body-cell-content mat-focus-indicator"
-        [class.mat-calendar-body-selected]="_isSelected(item)"
+        [class.mat-calendar-body-selected]="_isSelected(item.compareValue)"
+        [class.mat-calendar-body-comparison-identical]="_isComparisonIdentical(item.compareValue)"
         [class.mat-calendar-body-today]="todayValue === item.compareValue">
         {{item.displayValue}}
       </div>
