@@ -263,7 +263,7 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
   // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
   // can move this back into `host`.
   // tslint:disable:no-host-decorator-in-concrete
-  @HostListener('document:click', ['$event'])
+  @HostListener('document:mousedown', ['$event'])
   /** Close any open submenu if there was a click event which occurred outside the menu stack. */
   _closeOnBackgroundClick(event: MouseEvent) {
     if (this._hasOpenSubmenu()) {

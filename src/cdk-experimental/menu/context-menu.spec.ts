@@ -7,6 +7,7 @@ import {dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {By} from '@angular/platform-browser';
 import {CdkMenuItem} from './menu-item';
 import {CdkMenuItemTrigger} from './menu-item-trigger';
+import {CdkMenuBar} from './menu-bar';
 
 describe('CdkContextMenuTrigger', () => {
   describe('with simple context menu trigger', () => {
@@ -246,6 +247,110 @@ describe('CdkContextMenuTrigger', () => {
       expect(instance.copyMenu).toBeDefined();
     });
   });
+
+  describe('with menubar and inline menu on page', () => {
+    let fixture: ComponentFixture<ContextMenuWithMenuBarAndInlineMenu>;
+    let nativeMenuBar: HTMLElement;
+    let nativeMenuBarTrigger: HTMLElement;
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [ContextMenuWithMenuBarAndInlineMenu],
+      }).compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(ContextMenuWithMenuBarAndInlineMenu);
+      fixture.detectChanges();
+
+      nativeMenuBar = fixture.componentInstance.nativeMenuBar.nativeElement;
+      nativeMenuBarTrigger = fixture.componentInstance.nativeMenuBarTrigger.nativeElement;
+    });
+
+    /** Get the menu opened by the context menu trigger. */
+    function getContextMenu() {
+      return fixture.componentInstance.contextMenu;
+    }
+
+    /** Get the menu opened by the menu bar item trigger. */
+    function getFileMenu() {
+      return fixture.componentInstance.fileMenu;
+    }
+
+    /** Get the context in which the context menu should trigger. */
+    function getMenuContext() {
+      return fixture.componentInstance.trigger.nativeElement;
+    }
+
+    /** Get the inline menus trigger element. */
+    function getInlineMenuTrigger() {
+      return fixture.componentInstance.nativeInlineMenuButton.nativeElement;
+    }
+
+    /** Return the native element for the inline menu. */
+    function getInlineMenuElement() {
+      return fixture.componentInstance.nativeInlineMenu.nativeElement;
+    }
+
+    /** Open up the context menu and run change detection. */
+    function openContextMenu() {
+      // right click triggers a context menu event
+      dispatchMouseEvent(getMenuContext(), 'contextmenu');
+      dispatchMouseEvent(getMenuContext(), 'mousedown');
+      fixture.detectChanges();
+    }
+
+    /** Open up the file menu from the menu bar. */
+    function openFileMenu() {
+      nativeMenuBarTrigger.click();
+      fixture.detectChanges();
+    }
+
+    it('should close the open context menu when clicking on the menubar element', () => {
+      openContextMenu();
+
+      dispatchMouseEvent(nativeMenuBar, 'click');
+      fixture.detectChanges();
+
+      expect(getContextMenu()).not.toBeDefined();
+    });
+
+    it('should close the open context menu when clicking on the menubar menu item', () => {
+      openContextMenu();
+
+      nativeMenuBarTrigger.click();
+      fixture.detectChanges();
+
+      expect(getContextMenu()).not.toBeDefined();
+    });
+
+    it('should close the open context menu when clicking on the inline menu element', () => {
+      openContextMenu();
+
+      getInlineMenuElement().click();
+      fixture.detectChanges();
+
+      expect(getContextMenu()).not.toBeDefined();
+    });
+
+    it('should close the open context menu when clicking on an inline menu item', () => {
+      openContextMenu();
+
+      getInlineMenuTrigger().click();
+      fixture.detectChanges();
+
+      expect(getContextMenu()).not.toBeDefined();
+    });
+
+    it('should close the open menu when opening a context menu', () => {
+      openFileMenu();
+
+      openContextMenu();
+
+      expect(getFileMenu()).not.toBeDefined();
+    });
+  });
 });
 
 @Component({
@@ -316,4 +421,39 @@ class ContextMenuWithSubmenu {
 
   @ViewChild('cut_menu', {read: CdkMenu}) cutMenu: CdkMenu;
   @ViewChild('copy_menu', {read: CdkMenu}) copyMenu: CdkMenu;
+}
+
+@Component({
+  template: `
+    <div cdkMenuBar id="menu_bar">
+      <button #trigger cdkMenuItem [cdkMenuTriggerFor]="file">File</button>
+    </div>
+
+    <ng-template cdkMenuPanel #file="cdkMenuPanel">
+      <div cdkMenu #file_menu id="file_menu" [cdkMenuPanel]="file"></div>
+    </ng-template>
+
+    <div [cdkContextMenuTriggerFor]="context"></div>
+    <ng-template cdkMenuPanel #context="cdkMenuPanel">
+      <div cdkMenu #context_menu [cdkMenuPanel]="context">
+        <button cdkMenuItem></button>
+      </div>
+    </ng-template>
+
+    <div #inline_menu cdkMenu>
+      <button #inline_menu_button cdkMenuItem></button>
+    </div>
+  `,
+})
+class ContextMenuWithMenuBarAndInlineMenu {
+  @ViewChild(CdkMenuBar, {read: ElementRef}) nativeMenuBar: ElementRef;
+  @ViewChild('trigger', {read: ElementRef}) nativeMenuBarTrigger: ElementRef;
+
+  @ViewChild('context_menu') contextMenu?: CdkMenu;
+  @ViewChild(CdkContextMenuTrigger, {read: ElementRef}) trigger: ElementRef<HTMLElement>;
+
+  @ViewChild('file_menu') fileMenu?: CdkMenu;
+
+  @ViewChild('inline_menu') nativeInlineMenu: ElementRef;
+  @ViewChild('inline_menu_button') nativeInlineMenuButton: ElementRef;
 }

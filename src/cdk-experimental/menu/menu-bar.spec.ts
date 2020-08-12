@@ -829,7 +829,10 @@ describe('MenuBar', () => {
       openMenu();
       expect(popoutMenus.length).toBe(1);
 
-      fixture.debugElement.query(By.css('#container')).nativeElement.click();
+      dispatchMouseEvent(
+        fixture.debugElement.query(By.css('#container')).nativeElement,
+        'mousedown'
+      );
       detectChanges();
 
       expect(popoutMenus.length).toBe(0);

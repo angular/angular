@@ -41,7 +41,7 @@ import {MenuStack, MenuStackItem} from './menu-stack';
  */
 function isWithinMenuElement(target: Element | null) {
   while (target instanceof Element) {
-    if (target.className.indexOf('cdk-menu') !== -1) {
+    if (target.classList.contains('cdk-menu') && !target.classList.contains('cdk-menu-inline')) {
       return true;
     }
     target = target.parentElement;
