@@ -70,7 +70,6 @@ export const MAT_DIALOG_SCROLL_STRATEGY_PROVIDER = {
  * for arbitrary dialog refs and dialog container components.
  */
 @Directive()
-// tslint:disable-next-line:class-name
 export abstract class _MatDialogBase<C extends _MatDialogContainerBase> implements OnDestroy {
   private _openDialogsAtThisLevel: MatDialogRef<any>[] = [];
   private readonly _afterAllClosedAtThisLevel = new Subject<void>();

@@ -62,7 +62,6 @@ export const MAT_OPTION_PARENT_COMPONENT =
 
 
 @Directive()
-// tslint:disable-next-line:class-name
 export class _MatOptionBase implements FocusableOption, AfterViewChecked, OnDestroy {
   private _selected = false;
   private _active = false;

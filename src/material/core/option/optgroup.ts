@@ -28,7 +28,6 @@ const _MatOptgroupMixinBase: CanDisableCtor & typeof MatOptgroupBase =
 let _uniqueOptgroupIdCounter = 0;
 
 @Directive()
-// tslint:disable-next-line:class-name
 export class _MatOptgroupBase extends _MatOptgroupMixinBase implements CanDisable {
   /** Label for the option group. */
   @Input() label: string;

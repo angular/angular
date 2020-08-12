@@ -53,7 +53,6 @@ export function throwMatDialogContentAlreadyAttachedError() {
  * animations as these are left to implementers of the dialog container.
  */
 @Directive()
-// tslint:disable-next-line:class-name
 export abstract class _MatDialogContainerBase extends BasePortalOutlet {
   protected _document: Document;
 
