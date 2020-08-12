@@ -89,8 +89,11 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   /** The list of step headers of the steps in the stepper. */
   @ViewChildren(MatStepHeader) _stepHeader: QueryList<MatStepHeader>;
 
-  /** Steps that the stepper holds. */
+  /** Full list of steps inside the stepper, including inside nested steppers. */
   @ContentChildren(MatStep, {descendants: true}) _steps: QueryList<MatStep>;
+
+  /** Steps that belong to the current stepper, excluding ones from nested steppers. */
+  readonly steps: QueryList<MatStep> = new QueryList<MatStep>();
 
   /** Custom icon overrides passed in by the consumer. */
   @ContentChildren(MatStepperIcon, {descendants: true}) _icons: QueryList<MatStepperIcon>;
@@ -108,10 +111,11 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   _animationDone = new Subject<AnimationEvent>();
 
   ngAfterContentInit() {
+    super.ngAfterContentInit();
     this._icons.forEach(({name, templateRef}) => this._iconOverrides[name] = templateRef);
 
     // Mark the component for change detection whenever the content children query changes
-    this._steps.changes.pipe(takeUntil(this._destroyed)).subscribe(() => {
+    this.steps.changes.pipe(takeUntil(this._destroyed)).subscribe(() => {
       this._stateChanged();
     });
 

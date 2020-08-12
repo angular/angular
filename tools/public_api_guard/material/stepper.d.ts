@@ -65,6 +65,7 @@ export declare class MatStepper extends CdkStepper implements AfterContentInit {
     _steps: QueryList<MatStep>;
     readonly animationDone: EventEmitter<void>;
     disableRipple: boolean;
+    readonly steps: QueryList<MatStep>;
     ngAfterContentInit(): void;
     static ngAcceptInputType_completed: BooleanInput;
     static ngAcceptInputType_editable: BooleanInput;

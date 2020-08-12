@@ -2,6 +2,7 @@ export declare class CdkStep implements OnChanges {
     _completedOverride: boolean | null;
     _displayDefaultIndicatorType: boolean;
     _showError: boolean;
+    _stepper: CdkStepper;
     ariaLabel: string;
     ariaLabelledby: string;
     get completed(): boolean;
@@ -46,7 +47,7 @@ export declare class CdkStepLabel {
     static ɵfac: i0.ɵɵFactoryDef<CdkStepLabel, never>;
 }
 
-export declare class CdkStepper implements AfterViewInit, OnDestroy {
+export declare class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
     protected _destroyed: Subject<void>;
     _groupId: number;
     protected _orientation: StepperOrientation;
@@ -59,7 +60,7 @@ export declare class CdkStepper implements AfterViewInit, OnDestroy {
     get selectedIndex(): number;
     set selectedIndex(index: number);
     selectionChange: EventEmitter<StepperSelectionEvent>;
-    get steps(): QueryList<CdkStep>;
+    readonly steps: QueryList<CdkStep>;
     constructor(_dir: Directionality, _changeDetectorRef: ChangeDetectorRef, _elementRef?: ElementRef<HTMLElement> | undefined, _document?: any);
     _getAnimationDirection(index: number): StepContentPositionState;
     _getFocusIndex(): number | null;
@@ -69,6 +70,7 @@ export declare class CdkStepper implements AfterViewInit, OnDestroy {
     _onKeydown(event: KeyboardEvent): void;
     _stateChanged(): void;
     next(): void;
+    ngAfterContentInit(): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
     previous(): void;

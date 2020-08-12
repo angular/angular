@@ -20,7 +20,16 @@ import {
   createKeyboardEvent,
   dispatchEvent,
 } from '@angular/cdk/testing/private';
-import {Component, DebugElement, EventEmitter, OnInit, Type, Provider} from '@angular/core';
+import {
+  Component,
+  DebugElement,
+  EventEmitter,
+  OnInit,
+  Type,
+  Provider,
+  ViewChildren,
+  QueryList,
+} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
 import {
   AbstractControl,
@@ -1178,6 +1187,15 @@ describe('MatStepper', () => {
 
     expect(fixture.nativeElement.querySelectorAll('.mat-step-header').length).toBe(2);
   });
+
+  it('should not pick up the steps from descendant steppers', () => {
+    const fixture = createComponent(NestedSteppers);
+    fixture.detectChanges();
+    const steppers = fixture.componentInstance.steppers.toArray();
+
+    expect(steppers[0].steps.length).toBe(3);
+    expect(steppers[1].steps.length).toBe(2);
+  });
 });
 
 /** Asserts that keyboard interaction works correctly. */
@@ -1664,4 +1682,23 @@ class StepperWithIndirectDescendantSteps {
 })
 class StepperWithNgIf {
   showStep2 = false;
+}
+
+
+@Component({
+  template: `
+    <mat-vertical-stepper>
+      <mat-step label="Step 1">Content 1</mat-step>
+      <mat-step label="Step 2">Content 2</mat-step>
+      <mat-step label="Step 3">
+        <mat-horizontal-stepper>
+          <mat-step label="Sub-Step 1">Sub-Content 1</mat-step>
+          <mat-step label="Sub-Step 2">Sub-Content 2</mat-step>
+        </mat-horizontal-stepper>
+      </mat-step>
+    </mat-vertical-stepper>
+  `
+})
+class NestedSteppers {
+  @ViewChildren(MatStepper) steppers: QueryList<MatStepper>;
 }
