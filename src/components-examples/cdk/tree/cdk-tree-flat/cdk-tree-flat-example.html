@@ -12,7 +12,7 @@
                  [style.display]="shouldRender(node) ? 'flex' : 'none'"
                  class="example-tree-node">
     <button mat-icon-button cdkTreeNodeToggle
-            [attr.aria-label]="'toggle ' + node.filename"
+            [attr.aria-label]="'Toggle ' + node.name"
             (click)="node.isExpanded = !node.isExpanded"
             [style.visibility]="node.expandable ? 'visible' : 'hidden'">
       <mat-icon class="mat-icon-rtl-mirror">

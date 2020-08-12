@@ -7,7 +7,7 @@
   </cdk-nested-tree-node>
   <!-- This is the tree node template for expandable nodes -->
   <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="example-tree-node">
-    <button mat-icon-button [attr.aria-label]="'toggle ' + node.name" cdkTreeNodeToggle>
+    <button mat-icon-button [attr.aria-label]="'Toggle ' + node.name" cdkTreeNodeToggle>
       <mat-icon class="mat-icon-rtl-mirror">
         {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
       </mat-icon>

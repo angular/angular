@@ -8,7 +8,7 @@
   <!-- expandable node -->
   <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
     <button mat-icon-button
-            [attr.aria-label]="'toggle ' + node.filename"
+            [attr.aria-label]="'Toggle ' + node.item"
             (click)="loadChildren(node)"
             matTreeNodeToggle>
       <mat-icon class="mat-icon-rtl-mirror">
