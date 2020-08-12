@@ -16,11 +16,11 @@ This page guides you through creating the shopping cart in three phases:
 [네비게이션](start/start-routing "Try it: In-app Navigation") 단계를 끝내고 나면 온라인 샵 애플리케이션에는 상품 목록 화면과 상품 상세정보 화면이 존재합니다.
 사용자가 상품 목록 화면에서 상품 이름을 클릭하면 해당 상품과 연결된 주소로 이동하면서 상품 상세정보 화면이 표시됩니다.
 
-이 문서에서는 3단계를 거쳐 장바구니를 구현하는 방법에 대해 알아봅시다:
+이 문서에서는 3단계를 거쳐 장바구니 기능을 구현하는 방법에 대해 알아봅시다:
 
-* 상품 상세정보 화면에 "Buy" 버튼을 추가합니다. 이 버튼을 누르면 현재 화면에 표시된 상품을 장바구니 서비스과 관리하는 목록에 추가합니다.
+* 상품 상세정보 화면에 "Buy" 버튼을 추가합니다. 이 버튼을 누르면 현재 화면에 표시된 상품을 장바구니 목록에 추가합니다.
 * 장바구니 컴포넌트를 추가합니다. 이 컴포넌트는 장바구니에 담긴 항목을 화면에 표시합니다.
-* 주문 컴포넌트를 추가합니다. 이 컴포넌트는 Angular `HttpClient`를 사용해서 `.json` 파일을 읽어 오는데, 이 파일의 내용을 활용해서 장바구니에 담긴 상품의 배송 금액을 가져옵니다.
+* 배송 컴포넌트를 추가합니다. 이 컴포넌트는 Angular `HttpClient`를 사용해서 `.json` 파일을 읽어 오는데, 이 파일의 내용을 활용해서 장바구니에 담긴 상품의 배송 금액을 가져옵니다.
 
 
 {@a services}
@@ -37,8 +37,8 @@ Services are the place where you share data between parts of your application. F
 서비스는 Angular 애플리케이션의 구성요소를 통합하는 역할을 합니다.
 서비스는 클래스 인스턴스이며 Angular의 [의존성 주입 시스템](guide/glossary#dependency-injection-di "Dependency injection definition")으로 주입할 수 있기 때문에 애플리케이션의 어느 곳에서도 자유롭게 활용할 수 있습니다.
 
-서비스는 애플리케이션 구성요소끼리 데이터를 공유하는 용도로도 사용합니다.
-문서에서 예제로 다루는 온라인 샵 애플리케이션에서는 장바구니 데이터와 이 데이터를 관리하는 기능을 장바구니 서비스에 구현합니다.
+서비스는 일반적으로 애플리케이션 구성요소끼리 데이터를 공유하는 용도로도 사용합니다.
+그래서 이 문서에서는 장바구니 데이터를 저장하고 관리하는 기능을 장바구니 서비스에 구현해 봅시다.
 
 
 {@a create-cart-service}
@@ -62,7 +62,7 @@ A later part of this tutorial, [Use forms for user input](start/start-forms "Try
 
 </div>
 -->
-지금까지 구현된 애플리케이션을 활용하면 사용자가 상품의 상세정보를 확인할 수 있지만 아직 구입할 수 없습니다.
+지금까지 구현된 애플리케이션에서는 사용자가 상품의 상세정보를 확인할 수 있지만 아직 구입할 수 없습니다.
 
 이 섹션에서는 상품 상세정보 화면에 "Buy" 버튼을 추가하고, 장바구니에 상품을 담을 수 있는 장바구니 서비스를 구현해 봅시다.
 
@@ -318,13 +318,13 @@ Create the cart view in two steps:
 
 1. `cart`라는 이름으로 장바구니 컴포넌트를 생성합니다.
 
-    참고: 파일 목록에서 `app` 폴더에 마우스 오른쪽 버튼을 클릭하고 `Angular Generator` - `Component`를 선택합니다.
+    참고: 파일 목록에서 `app` 폴더에 마우스 오른쪽 버튼을 클릭하고 `Angular Generator` - `Component`를 선택하면 됩니다.
 
     <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.1.ts"></code-example>
 
 1. 장바구니 컴포넌트로 향하는 라우팅 규칙을 추가합니다.
 
-    `app.module.ts` 파일을 열고 `path: cart`주소에 `CartComponent`를 지정합니다:
+    `app.module.ts` 파일을 열고 `path: cart` 주소에 `CartComponent`를 지정합니다:
 
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="cart-route">
     </code-example>
@@ -450,7 +450,7 @@ For more information about services, see [Introduction to Services and Dependenc
 
 1. 장바구니에 담긴 상품의 이름과 가격을 표시하기 위해 헤더 `<div>` 엘리먼트에 `*ngFor` 디렉티브를 사용합니다.
 
-    The resulting `CartComponent` template is as follows:
+    `CartComponent` 템플릿을 이렇게 작성하면 됩니다:
 
     <code-example header="src/app/cart/cart.component.html" path="getting-started/src/app/cart/cart.component.2.html" region="prices">
     </code-example>
@@ -472,7 +472,7 @@ For more information about services, see [Introduction to Services and Dependenc
 
 <div class="alert is-helpful">
 
-StackBlitz 팁: 미리보기 화면을 갱신하면 장바구니가 초기화됩니다. 앱을 수정하면 미리보기 화면도 자동으로 갱신되기 때문에 장바구니에 상품을 다시 담아야 합니다.
+StackBlitz 팁: 앱을 수정하면 미리보기 화면이 자동으로 갱신되기 때문에 장바구니가 초기화됩니다. 미리보기 화면을 갱신하면 장바구니에 상품을 다시 담아야 합니다.
 
 </div>
 
@@ -483,26 +483,48 @@ StackBlitz 팁: 미리보기 화면을 갱신하면 장바구니가 초기화됩
 </div>
 
 
+<!--
 ## Retrieve shipping prices
+-->
+## 배송 가격 데이터 가져오기
 <!-- Accessing data with the HTTP client -->
 
+<!--
 Servers often return data in the form of a stream.
 Streams are useful because they make it easy to transform the returned data and  make modifications to the way you request that data.
 The Angular HTTP client, `HttpClient`, is a built-in way to fetch data from external APIs and provide them to your app as a stream.
 
 This section shows you how to use the HTTP client to retrieve shipping prices from an external file.
+-->
+일반적으로 서버는 데이터를 스트림 형태로 제공합니다.
+그런데 스트림은 그 흐름을 유지한 채로 다른 형태로 변환해서 다른 곳에 활용할 수 있다는 점에서 특히 유용합니다.
+Angular가 제공하는 HTTP 클라이언트 `HttpClient`를 활용하면 외부 서버에서 제공하는 데이터를 스트림 형태로 가져올 수 있습니다.
 
+이번 섹션에서는 HTTP 클라이언트를 활용해서 외부 파일에 있는 배송 가격 데이터를 가져와 봅시다.
+
+
+<!--
 ### Predefined shipping data
+-->
+### 배송 가격 파일
 
+<!--
 The application that StackBlitz generates for this guide comes with predefined shipping data in `assets/shipping.json`.
 Use this data to add shipping prices for items in the cart.
+-->
+이 문서에서 다루는 앱에는 `assets/shipping.json` 파일에 배송 가격이 저장되어 있습니다.
+장바구니에 있는 상품와 이 데이터를 조합해 봅시다.
 
 <code-example header="src/assets/shipping.json" path="getting-started/src/assets/shipping.json">
 </code-example>
 
 
+<!--
 ### Use `HttpClient` in the `AppModule`
+-->
+### `AppModule`에 `HttpClient` 등록하기
 
+<!--
 Before you can use Angular's HTTP client, you must configure your app to use `HttpClientModule`.
 
 Angular's `HttpClientModule` registers the providers your app needs to use a single instance of the `HttpClient` service throughout your app.
@@ -520,9 +542,32 @@ Angular's `HttpClientModule` registers the providers your app needs to use a sin
 
     <code-example path="getting-started/src/app/app.module.ts" header="src/app/app.module.ts" region="http-client-module">
     </code-example>
+-->
+Angular HTTP 클라이언트를 사용하려면 앱에 `HttpClientModule`을 로드해야 합니다.
 
+`HttpClientModule`을 로드하면 `HttpClient`가 자동으로 앱에 등록되기 때문에 앱 전체 범위에서 `HttpClient` 인스턴스를 자유롭게 사용할 수 있습니다.
+
+1. `app.module.ts` 파일을 엽니다.
+
+  이 파일에는 앱 전역에 필요한 심볼과 기능이 등록됩니다.
+
+1. `@angular/common/http` 패키지에 있는 `HttpClientModule`을 로드합니다. `app.module.ts` 파일에는 이 코드 말고도 심볼을 로드하는 코드가 많지만, 간단하게 `HttpClientModule`을 로드하는 부분만 살펴보면 이렇습니다.
+
+    <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="http-client-module-import">
+    </code-example>
+
+1. `HttpClientModule`을 `AppModule`에 붙은 `@NgModule()` 데코레이터 `imports` 배열에 추가합니다. 이 배열에  추가하면 `HttpClient`가 앱 전역 범위에 등록됩니다.
+
+    <code-example path="getting-started/src/app/app.module.ts" header="src/app/app.module.ts" region="http-client-module">
+    </code-example>
+
+
+<!--
 ### Use `HttpClient` in the cart service
+-->
+### 장바구니 서비스에서 `HttpClient` 사용하기
 
+<!--
 Now that the `AppModule` imports the `HttpClientModule`, the next step is to inject the `HttpClient` service into your service so your app can fetch data and interact with external APIs and resources.
 
 
@@ -537,10 +582,29 @@ Now that the `AppModule` imports the `HttpClientModule`, the next step is to inj
 
     <code-example path="getting-started/src/app/cart.service.ts" header="src/app/cart.service.ts" region="inject-http">
     </code-example>
+-->
+`AppModule`에 `HttpClientModule`을 등록하고 나면 이제 데이터를 가져올 서비스에 `HttpClient` 서비스를 의존성으로 주입해야 합니다.
 
 
+1. `cart.service.ts` 파일을 엽니다.
+
+1. `@angular/common/http` 패키지에 있는 `HttpClient` 심볼을 로드합니다:
+
+    <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.ts" region="import-http">
+    </code-example>
+
+1. `CardService` 생성자에 `HttpClient`를 의존성으로 주입합니다:
+
+    <code-example path="getting-started/src/app/cart.service.ts" header="src/app/cart.service.ts" region="inject-http">
+    </code-example>
+
+
+<!--
 ### Define the `get()` method
+-->
+### `get()` 메소드 정의하기
 
+<!--
 Multiple components can leverage the same service.
 Later in this tutorial, the shipping component uses the cart service to retrieve shipping data via HTTP from the `shipping.json` file.
 First, define a `get()` method.
@@ -557,9 +621,30 @@ First, define a `get()` method.
 For more information about Angular's `HttpClient`, see the [Client-Server Interaction](guide/http "Server interaction through HTTP") guide.
 
 </div>
+-->
+서비스를 한 번 만들어두면 여러 컴포넌트가 이 서비스를 활용할 수 있습니다.
+그래서 이 튜토리얼 뒷부분에서는 배송 컴포넌트에서도 장바구니 서비스를 사용해서 `shipping.json` 파일에 있는 데이터를 다시 한 번 사용할 것입니다.
+먼저, `get()` 메소드를 정의합니다.
 
+1. `cart.service.ts` 파일을 계속 수정합니다.
+
+1. `clearCart()` 메소드 아래에 `getShippingPrices()` 메소드를 추가합니다. 이 함수는 `HttpClient` `get()` 메소드를 사용해서 데이터를 가져옵니다.
+
+    <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.ts" region="get-shipping"></code-example>
+
+
+<div class="alert is-helpful">
+
+Angular `HttpClient`에 대해 자세하게 알아보려면 [클라이언트-서버 통신](guide/http "Server interaction through HTTP") 문서를 참고하세요.
+
+</div>
+
+<!--
 ## Define the shipping view
+-->
+## 배송 화면 생성하기
 
+<!--
 Now that your app can retrieve shipping data, create a shipping component and  template.
 
 1. Generate a new component named `shipping`.
@@ -615,12 +700,84 @@ Now that your app can retrieve shipping data, create a shipping component and  t
     <div class="lightbox">
       <img src='generated/images/guide/start/shipping-prices.png' alt="Display shipping prices">
     </div>
+-->
+이제 배송 가격 데이터를 불러올 수 있습니다. 배송 화면 컴포넌트와 템플릿을 만들어 봅시다.
+
+1. `shipping`이라는 이름으로 컴포넌트를 생성합니다.
+
+    참고: 파일 목록에서 `app` 폴더에 마우스 오른쪽 버튼을 클릭하고 `Angular Generator` - `Component`를 선택하면 됩니다.
+
+    <code-example header="src/app/shipping/shipping.component.ts" path="getting-started/src/app/shipping/shipping.component.1.ts"></code-example>
+
+1. `app.module.ts` 파일을 열고 배송 화면으로 연결되는 라우팅 규칙을 추가합니다. 이 때 `path`에는 `shipping`을 지정하고 `component`에는 `ShippingComponent`를 지정합니다.
+
+    <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="shipping-route"></code-example>
+
+    아직 배송 화면으로 이동하는 링크가 없지만 주소 표시줄에 URL을 입력하면 이 컴포넌트가 동작하는 것을 확인할 수 있습니다. URL 형식은 `https://getting-started.stackblitz.io/shipping`과 같은 형식입니다. `getting-started.stackblitz.io` 부분은 StackBlitz 프로젝트에 따라 다를 수 있습니다.
+
+1. 배송 컴포넌트를 수정합니다. 장바구니 서비스에서 HTTP 클라이언트로 가져온 `shipping.json` 파일의 내용을 활용해 봅시다.
+
+    1. 장바구니 서비스를 로드합니다.
+
+        <code-example header="src/app/shipping/shipping.component.ts" path="getting-started/src/app/shipping/shipping.component.ts" region="imports"></code-example>
+
+    1. `shippingCosts` 프로퍼티를 선언합니다.
+
+        <code-example path="getting-started/src/app/shipping/shipping.component.ts" header="src/app/shipping/shipping.component.ts" region="props"></code-example>
+
+    1. `ShippingComponent` 생성자에 장바구니 서비스를 의존성으로 주입합니다:
+
+        <code-example path="getting-started/src/app/shipping/shipping.component.ts" header="src/app/shipping/shipping.component.ts" region="inject-cart-service"></code-example>
+
+    1. 장바구니 서비스의 `getShippingPrices()` 메소드 실행 결과를 `shippingCosts` 프로퍼티에 할당합니다.
+
+        <code-example path="getting-started/src/app/shipping/shipping.component.ts" header="src/app/shipping/shipping.component.ts" region="ctor"></code-example>
+
+1. 배송 형식과 가격을 화면에 표시하기 위해 컴포넌트 템플릿에 `async` 파이프를 다음과 같이 사용합니다:
+
+    <code-example header="src/app/shipping/shipping.component.html" path="getting-started/src/app/shipping/shipping.component.html"></code-example>
+
+    `async` 파이프는 스트림에서 전달되는 마지막 데이터를 반환하며 이 동작은 컴포넌트가 종료될 때까지 계속 실행됩니다.
+    그리고 Angular가 컴포넌트를 종료하면 `async` 파이프도 자동으로 동작을 멈춥니다.
+    `async` 파이프에 대해 자세하게 알아보려면 [AsyncPipe API  문서](/api/common/AsyncPipe)를 참고하세요.
+
+1. 장바구니 화면에서 배송 화면으로 이동하는 링크를 추가합니다:
+
+    <code-example header="src/app/cart/cart.component.html" path="getting-started/src/app/cart/cart.component.2.html"></code-example>
+
+1. 배송 가격이 제대로 표시되는지 확인해 보세요:
+
+    장바구니를 확인하려면 "Checkout" 버튼을 클릭하면 됩니다.
+    앱이 갱신되면 장바구니가 비워지는 것을 잊지 마세요.
+
+    <div class="lightbox">
+      <img src='generated/images/guide/start/cart-empty-with-shipping-prices.png' alt="Cart with link to shipping prices">
+    </div>
+
+    배송 컴포넌트로 이동하는 링크를 클릭합니다.
+
+    <div class="lightbox">
+      <img src='generated/images/guide/start/shipping-prices.png' alt="Display shipping prices">
+    </div>
 
 
+<!--
 ## Next steps
+-->
+## 다음 단계
 
+<!--
 Congratulations! You have an online store application with a product catalog and shopping cart. You can also look up and display shipping prices.
 
 To continue exploring Angular, choose either of the following options:
 * [Continue to the "Forms" section](start/start-forms "Try it: Forms for User Input") to finish the app by adding the shopping cart view and a checkout form.
 * [Skip ahead to the "Deployment" section](start/start-deployment "Try it: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+-->
+축하합니다!
+온라인 샵 애플리케이션에는 이제 상품 목록과 장바구니 화면이 추가되었습니다.
+배송 금액이 얼마인지 확인할 수도 있습니다.
+
+다음 내용에 대해서도 알아보세요:
+
+* 장바구니 화면에 주문 폼을 추가하려면 ["Forms" 문서](start/start-forms "Try it: Forms for User Input")를 확인해 보세요.
+* 로컬 환경에서 개발하던 앱을 Firebase에 배포하려면 [배포 문서](start/start-deployment "Try it: Deployment")를 참고하세요.
