@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export * from './combobox-module';
 export * from './combobox';
 export * from './combobox-panel';
-export * from './combobox-module';
