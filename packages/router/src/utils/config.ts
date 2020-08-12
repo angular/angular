@@ -105,11 +105,16 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
 /**
  * Makes a copy of the config and adds any default required properties.
  */
-export function standardizeConfig(r: Route): Route {
-  const children = r.children && r.children.map(standardizeConfig);
-  const c = children ? {...r, children} : {...r};
-  if (!c.component && (children || c.loadChildren) && (c.outlet && c.outlet !== PRIMARY_OUTLET)) {
-    c.component = EmptyOutletComponent;
+export function standardizeConfig(i: Route): Route {
+  const children = i.children && i.children.map(c => {
+    if (i.outlet && i.outlet !== PRIMARY_OUTLET && (c.outlet === PRIMARY_OUTLET || c.outlet === undefined)) {
+      c.outlet = i.outlet;
+    }
+    return standardizeConfig(c);
+  });
+  const r = children ? {...i, children} : {...i};
+  if (!r.component && (children || r.loadChildren) && (r.outlet && r.outlet !== PRIMARY_OUTLET)) {
+    r.component = EmptyOutletComponent;
   }
-  return c;
+  return r;
 }

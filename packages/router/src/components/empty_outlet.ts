@@ -8,6 +8,7 @@
 
 import {Component} from '@angular/core';
 import {ActivatedRoute} from '../router_state';
+import {PRIMARY_OUTLET} from '../shared';
 
 /**
  * This component is used internally within the router to be a placeholder when an empty
@@ -18,9 +19,16 @@ import {ActivatedRoute} from '../router_state';
  * In order to render, there needs to be a component on this config, which will default
  * to this `EmptyOutletComponent`.
  */
-@Component({template: `<router-outlet lazy [name]="route.outlet"></router-outlet>`})
+@Component({template: `<router-outlet lazy [name]="name"></router-outlet>`})
 export class ɵEmptyOutletComponent {
-  constructor(public route: ActivatedRoute) {}
+  name!: string;
+
+  constructor(public route: ActivatedRoute) {
+    // lazy loaded children are handled as primary routes
+    this.name = route.snapshot.routeConfig?.loadChildren
+      ? PRIMARY_OUTLET
+      : route.outlet;
+  }
 }
 
 export {ɵEmptyOutletComponent as EmptyOutletComponent};

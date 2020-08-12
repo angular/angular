@@ -189,7 +189,7 @@ export class ActivateRoutes {
           } else if (isDevMode() && console && console.warn) {
             console.warn(
                 `A router outlet has not been instantiated during routes activation. URL Segment: '${
-                    future.snapshot._urlSegment}'`);
+                    context.route.outlet}: ${future.snapshot._urlSegment}'`);
           }
 
           this.activateChildRoutes(futureNode, null, context.children);
