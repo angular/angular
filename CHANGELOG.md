@@ -1,3 +1,25 @@
+<a name="10.0.9"></a>
+## 10.0.9 (2020-08-12)
+
+
+### Bug Fixes
+
+* **common:** ensure scrollRestoration is writable ([#30630](https://github.com/angular/angular/issues/30630)) ([#38357](https://github.com/angular/angular/issues/38357)) ([58f4b3a](https://github.com/angular/angular/commit/58f4b3a)), closes [#30629](https://github.com/angular/angular/issues/30629)
+* **compiler:** evaluate safe navigation expressions in correct binding order ([#37911](https://github.com/angular/angular/issues/37911)) ([f5b9d87](https://github.com/angular/angular/commit/f5b9d87)), closes [#37194](https://github.com/angular/angular/issues/37194)
+* **compiler-cli:** avoid creating value expressions for symbols from type-only imports ([#38415](https://github.com/angular/angular/issues/38415)) ([ca2b4bc](https://github.com/angular/angular/commit/ca2b4bc)), closes [#37912](https://github.com/angular/angular/issues/37912)
+* **compiler-cli:** infer quote expressions as any type in type checker ([#37917](https://github.com/angular/angular/issues/37917)) ([5b87c67](https://github.com/angular/angular/commit/5b87c67)), closes [#36568](https://github.com/angular/angular/issues/36568)
+* **compiler-cli:** mark eager `NgModuleFactory` construction as not side effectful ([#38320](https://github.com/angular/angular/issues/38320)) ([016a41b](https://github.com/angular/angular/commit/016a41b)), closes [#38147](https://github.com/angular/angular/issues/38147)
+* **compiler-cli:** match wrapHost parameter types within plugin interface ([#38004](https://github.com/angular/angular/issues/38004)) ([df01a82](https://github.com/angular/angular/commit/df01a82))
+* **compiler-cli:** preserve quotes in class member names ([#38387](https://github.com/angular/angular/issues/38387)) ([c9acb7b](https://github.com/angular/angular/commit/c9acb7b)), closes [#38311](https://github.com/angular/angular/issues/38311)
+* **core:** prevent NgModule scope being overwritten in JIT compiler ([#37795](https://github.com/angular/angular/issues/37795)) ([3acebdc](https://github.com/angular/angular/commit/3acebdc)), closes [#37105](https://github.com/angular/angular/issues/37105)
+* **core:** queries not matching string injection tokens ([#38321](https://github.com/angular/angular/issues/38321)) ([32109dc](https://github.com/angular/angular/commit/32109dc)), closes [#38313](https://github.com/angular/angular/issues/38313) [#38315](https://github.com/angular/angular/issues/38315)
+* **core:** Store the currently selected ICU in `LView` ([#38345](https://github.com/angular/angular/issues/38345)) ([ee5123f](https://github.com/angular/angular/commit/ee5123f))
+* **platform-server:** remove styles added by ServerStylesHost on destruction ([#38367](https://github.com/angular/angular/issues/38367)) ([7f11149](https://github.com/angular/angular/commit/7f11149))
+* **router:** prevent calling unsubscribe on undefined subscription in RouterPreloader ([#38344](https://github.com/angular/angular/issues/38344)) ([4151314](https://github.com/angular/angular/commit/4151314))
+* **service-worker:** fix the chrome debugger syntax highlighter ([#38332](https://github.com/angular/angular/issues/38332)) ([f5d5bac](https://github.com/angular/angular/commit/f5d5bac))
+
+
+
 <a name="10.1.0-next.4"></a>
 # 10.1.0-next.4 (2020-08-04)
 
