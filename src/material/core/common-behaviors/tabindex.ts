@@ -15,6 +15,9 @@ import {CanDisable} from './disabled';
 export interface HasTabIndex {
   /** Tabindex of the component. */
   tabIndex: number;
+
+  /** Tabindex to which to fall back to if no value is set. */
+  defaultTabIndex: number;
 }
 
 /** @docs-private */
@@ -25,11 +28,12 @@ export function mixinTabIndex<T extends Constructor<CanDisable>>(base: T, defaul
     : HasTabIndexCtor & T {
   return class extends base {
     private _tabIndex: number = defaultTabIndex;
+    defaultTabIndex = defaultTabIndex;
 
     get tabIndex(): number { return this.disabled ? -1 : this._tabIndex; }
     set tabIndex(value: number) {
       // If the specified tabIndex value is null or undefined, fall back to the default value.
-      this._tabIndex = value != null ? coerceNumberProperty(value) : defaultTabIndex;
+      this._tabIndex = value != null ? coerceNumberProperty(value) : this.defaultTabIndex;
     }
 
     constructor(...args: any[]) {

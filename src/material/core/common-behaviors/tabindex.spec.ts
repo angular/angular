@@ -41,6 +41,18 @@ describe('mixinTabIndex', () => {
       .toBe(0, 'Expected tabIndex to still support 0 as value');
   });
 
+  it('should allow for the default tabIndex to change after init', () => {
+    const classWithMixin = mixinTabIndex(TestClass, 20);
+    const instance = new classWithMixin();
+
+    expect(instance.tabIndex).toBe(20);
+
+    instance.defaultTabIndex = 50;
+    instance.tabIndex = undefined!;
+
+    expect(instance.tabIndex).toBe(50);
+  });
+
 });
 
 class TestClass {

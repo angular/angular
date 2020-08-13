@@ -216,7 +216,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     this._options = this._options || {};
 
     if (this._options.color) {
-      this.color = this._options.color;
+      this.color = this.defaultColor = this._options.color;
     }
 
     this.tabIndex = parseInt(tabIndex) || 0;

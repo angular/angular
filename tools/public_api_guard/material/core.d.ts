@@ -61,6 +61,7 @@ export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL =
 
 export interface CanColor {
     color: ThemePalette;
+    defaultColor: ThemePalette | undefined;
 }
 
 export declare type CanColorCtor = Constructor<CanColor>;
@@ -152,6 +153,7 @@ export interface HasInitialized {
 export declare type HasInitializedCtor = Constructor<HasInitialized>;
 
 export interface HasTabIndex {
+    defaultTabIndex: number;
     tabIndex: number;
 }
 

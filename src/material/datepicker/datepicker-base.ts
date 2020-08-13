@@ -238,7 +238,7 @@ export interface MatDatepickerControl<D> {
 /** Base class for a datepicker. */
 @Directive()
 export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
-  D = ExtractDateTypeFromSelection<S>> implements OnDestroy, CanColor, OnChanges {
+  D = ExtractDateTypeFromSelection<S>> implements OnDestroy, OnChanges {
   private _scrollStrategy: () => ScrollStrategy;
   private _inputStateChanges = Subscription.EMPTY;
 

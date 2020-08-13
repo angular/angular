@@ -67,6 +67,18 @@ describe('MixinColor', () => {
       .toContain('mat-accent', 'Expected the default color "mat-accent" to be set.');
   });
 
+  it('should allow for the default color to change after init', () => {
+    const classWithColor = mixinColor(TestClass, 'accent');
+    const instance = new classWithColor();
+
+    expect(instance.testElement.classList).toContain('mat-accent');
+
+    instance.defaultColor = 'warn';
+    instance.color = undefined;
+
+    expect(instance.testElement.classList).toContain('mat-warn');
+  });
+
 });
 
 class TestClass {

@@ -13,6 +13,9 @@ import {ElementRef} from '@angular/core';
 export interface CanColor {
   /** Theme color palette for the component. */
   color: ThemePalette;
+
+  /** Default color to fall back to if no value is set. */
+  defaultColor: ThemePalette | undefined;
 }
 
 /** @docs-private */
@@ -31,10 +34,11 @@ export function mixinColor<T extends Constructor<HasElementRef>>(
     base: T, defaultColor?: ThemePalette): CanColorCtor & T {
   return class extends base {
     private _color: ThemePalette;
+    defaultColor = defaultColor;
 
     get color(): ThemePalette { return this._color; }
     set color(value: ThemePalette) {
-      const colorPalette = value || defaultColor;
+      const colorPalette = value || this.defaultColor;
 
       if (colorPalette !== this._color) {
         if (this._color) {
