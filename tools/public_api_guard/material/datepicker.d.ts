@@ -378,7 +378,7 @@ export declare class MatEndDate<D> extends _MatDateRangeInputBase<D> implements 
     static ɵfac: i0.ɵɵFactoryDef<MatEndDate<any>, [null, null, null, null, { optional: true; }, { optional: true; }, { optional: true; }, { optional: true; }]>;
 }
 
-export declare class MatMonthView<D> implements AfterContentInit, OnDestroy {
+export declare class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
     _comparisonRangeEnd: number | null;
     _comparisonRangeStart: number | null;
     _dateAdapter: DateAdapter<D>;
@@ -418,6 +418,7 @@ export declare class MatMonthView<D> implements AfterContentInit, OnDestroy {
     _init(): void;
     _previewChanged({ event, value: cell }: MatCalendarUserEvent<MatCalendarCell<D> | null>): void;
     ngAfterContentInit(): void;
+    ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMonthView<any>, "mat-month-view", ["matMonthView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; "dateClass": "dateClass"; "comparisonStart": "comparisonStart"; "comparisonEnd": "comparisonEnd"; }, { "selectedChange": "selectedChange"; "_userSelection": "_userSelection"; "activeDateChange": "activeDateChange"; }, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatMonthView<any>, [null, { optional: true; }, { optional: true; }, { optional: true; }, { optional: true; }]>;

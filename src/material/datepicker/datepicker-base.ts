@@ -366,6 +366,9 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   /** The element that was focused before the datepicker was opened. */
   private _focusedElementBeforeOpen: HTMLElement | null = null;
 
+  /** Unique class that will be added to the backdrop so that the test harnesses can look it up. */
+  private _backdropHarnessClass = `${this.id}-backdrop`;
+
   /** The input element this datepicker is associated with. */
   _datepickerInput: C;
 
@@ -516,6 +519,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
       // datepicker dialog behaves consistently even if the user changed the defaults.
       hasBackdrop: true,
       disableClose: false,
+      backdropClass: ['cdk-overlay-dark-backdrop', this._backdropHarnessClass],
       width: '',
       height: '',
       minWidth: '',
@@ -572,7 +576,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     const overlayConfig = new OverlayConfig({
       positionStrategy: this._setConnectedPositions(positionStrategy),
       hasBackdrop: true,
-      backdropClass: 'mat-overlay-transparent-backdrop',
+      backdropClass: ['mat-overlay-transparent-backdrop', this._backdropHarnessClass],
       direction: this._dir,
       scrollStrategy: this._scrollStrategy(),
       panelClass: 'mat-datepicker-popup',

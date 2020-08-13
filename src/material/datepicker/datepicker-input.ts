@@ -55,10 +55,14 @@ export const MAT_DATEPICKER_VALIDATORS: any = {
     {provide: MAT_INPUT_VALUE_ACCESSOR, useExisting: MatDatepickerInput},
   ],
   host: {
+    'class': 'mat-datepicker-input',
     '[attr.aria-haspopup]': '_datepicker ? "dialog" : null',
     '[attr.aria-owns]': '(_datepicker?.opened && _datepicker.id) || null',
     '[attr.min]': 'min ? _dateAdapter.toIso8601(min) : null',
     '[attr.max]': 'max ? _dateAdapter.toIso8601(max) : null',
+    // Used by the test harness to tie this input to its calendar. We can't depend on
+    // `aria-owns` for this, because it's only defined while the calendar is open.
+    '[attr.data-mat-calendar]': '_datepicker ? _datepicker.id : null',
     '[disabled]': 'disabled',
     '(input)': '_onInput($event.target.value)',
     '(change)': '_onChange()',

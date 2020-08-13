@@ -32,6 +32,8 @@ import {
   ViewEncapsulation,
   ViewChild,
   OnDestroy,
+  SimpleChanges,
+  OnChanges,
 } from '@angular/core';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 import {Directionality} from '@angular/cdk/bidi';
@@ -65,7 +67,7 @@ const DAYS_PER_WEEK = 7;
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MatMonthView<D> implements AfterContentInit, OnDestroy {
+export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
   private _rerenderSubscription = Subscription.EMPTY;
 
   /**
@@ -197,6 +199,14 @@ export class MatMonthView<D> implements AfterContentInit, OnDestroy {
     this._rerenderSubscription = this._dateAdapter.localeChanges
       .pipe(startWith(null))
       .subscribe(() => this._init());
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    const comparisonChange = changes['comparisonStart'] || changes['comparisonEnd'];
+
+    if (comparisonChange && !comparisonChange.firstChange) {
+      this._setRanges(this.selected);
+    }
   }
 
   ngOnDestroy() {

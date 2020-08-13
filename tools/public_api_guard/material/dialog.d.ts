@@ -99,7 +99,7 @@ export declare class MatDialogConfig<D = any> {
     ariaLabel?: string | null;
     ariaLabelledBy?: string | null;
     autoFocus?: boolean;
-    backdropClass?: string;
+    backdropClass?: string | string[];
     closeOnNavigation?: boolean;
     componentFactoryResolver?: ComponentFactoryResolver;
     data?: D | null;

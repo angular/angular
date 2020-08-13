@@ -47,6 +47,8 @@ export class MatDatepickerToggleIcon {}
     '[class.mat-datepicker-toggle-active]': 'datepicker && datepicker.opened',
     '[class.mat-accent]': 'datepicker && datepicker.color === "accent"',
     '[class.mat-warn]': 'datepicker && datepicker.color === "warn"',
+    // Used by the test harness to tie this toggle to its datepicker.
+    '[attr.data-mat-calendar]': 'datepicker ? datepicker.id : null',
     '(focus)': '_button.focus()',
   },
   exportAs: 'matDatepickerToggle',

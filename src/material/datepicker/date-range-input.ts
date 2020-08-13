@@ -48,10 +48,14 @@ let nextUniqueId = 0;
   host: {
     'class': 'mat-date-range-input',
     '[class.mat-date-range-input-hide-placeholders]': '_shouldHidePlaceholders()',
+    '[class.mat-date-range-input-required]': 'required',
     '[attr.id]': 'null',
     'role': 'group',
     '[attr.aria-labelledby]': '_getAriaLabelledby()',
     '[attr.aria-describedby]': '_ariaDescribedBy',
+    // Used by the test harness to tie this input to its calendar. We can't depend on
+    // `aria-owns` for this, because it's only defined while the calendar is open.
+    '[attr.data-mat-calendar]': 'rangePicker ? rangePicker.id : null',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,

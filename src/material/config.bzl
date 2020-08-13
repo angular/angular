@@ -18,6 +18,7 @@ entryPoints = [
     "core",
     "core/testing",
     "datepicker",
+    "datepicker/testing",
     "dialog",
     "dialog/testing",
     "divider",

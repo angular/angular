@@ -179,7 +179,7 @@ const _MatDateRangeInputBase:
 @Directive({
   selector: 'input[matStartDate]',
   host: {
-    'class': 'mat-date-range-input-inner',
+    'class': 'mat-start-date mat-date-range-input-inner',
     '[disabled]': 'disabled',
     '(input)': '_onInput($event.target.value)',
     '(change)': '_onChange()',
@@ -265,7 +265,7 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpd
 @Directive({
   selector: 'input[matEndDate]',
   host: {
-    'class': 'mat-date-range-input-inner',
+    'class': 'mat-end-date mat-date-range-input-inner',
     '[disabled]': 'disabled',
     '(input)': '_onInput($event.target.value)',
     '(change)': '_onChange()',
