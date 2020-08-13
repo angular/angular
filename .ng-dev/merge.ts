@@ -1,20 +1,12 @@
-import {MergeConfig} from '@angular/dev-infra-private/pr/merge/config';
-import {determineMergeBranches} from '@angular/dev-infra-private/pr/merge/determine-merge-branches';
+import {DevInfraMergeConfig} from '@angular/dev-infra-private/pr/merge/config';
+import {getDefaultTargetLabelConfiguration} from '@angular/dev-infra-private/pr/merge/defaults';
+import {github} from './github';
 
 /**
  * Configuration for the merge tool in `ng-dev`. This sets up the labels which
  * are respected by the merge script (e.g. the target labels).
  */
-export const merge = (): MergeConfig => {
-  const currentVersion = require('../package.json').version;
-  // We use the `@angular/cdk` as source of truth for the latest published version in NPM.
-  // Any package from the monorepo could technically work and result in the same version.
-
-  // TODO(devversion) Clean this up once the label/branching has been finalized.
-  // let {minor, patch} = determineMergeBranches(currentVersion, '@angular/cdk');
-  const patch = '10.1.x';
-  const minor = 'master';
-
+export const merge: DevInfraMergeConfig['merge'] = async api => {
   return {
     // By default, the merge script merges locally with `git cherry-pick` and autosquash.
     // This has the downside of pull requests showing up as `Closed` instead of `Merged`.
@@ -30,26 +22,6 @@ export const merge = (): MergeConfig => {
     mergeReadyLabel: 'merge ready',
     commitMessageFixupLabel: 'commit message fixup',
     caretakerNoteLabel: 'caretaker note',
-    labels: [
-      {
-        pattern: 'target: patch',
-        branches: ['master', patch],
-      },
-      {
-        pattern: 'target: minor',
-        // TODO: Clean this up after the labels/branching has been finalized.
-        branches: minor === 'master' ? ['master'] : ['master', minor],
-      },
-      {
-        pattern: 'target: major',
-        branches: ['master'],
-      },
-      {
-        pattern: 'target: development-branch',
-        // Merge PRs with the given label only into the target branch that has
-        // been specified through the Github UI.
-        branches: (target) => [target],
-      }
-    ],
+    labels: await getDefaultTargetLabelConfiguration(api, github, '@angular/cdk'),
   };
 };

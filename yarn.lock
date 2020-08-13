@@ -135,9 +135,9 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#0612a30aaf7a7e7eb2a4a5a9fa0f58622ce59590":
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#d0855af987db4e426477da1780bcd02941c31271":
   version "0.0.0"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#0612a30aaf7a7e7eb2a4a5a9fa0f58622ce59590"
+  resolved "https://github.com/angular/dev-infra-private-builds.git#d0855af987db4e426477da1780bcd02941c31271"
   dependencies:
     "@angular/benchpress" "0.2.0"
     "@octokit/graphql" "^4.3.1"
@@ -149,6 +149,7 @@
     inquirer "^7.1.0"
     minimatch "^3.0.4"
     multimatch "^4.0.0"
+    node-fetch "^2.6.0"
     node-uuid "1.4.8"
     semver "^6.3.0"
     shelljs "^0.8.3"
