@@ -1,0 +1,15 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "cdk-experimental-combobox",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "cdk-combobox-demo.html",
+    ],
+    deps = [
+        "//src/cdk-experimental/combobox",
+        "@npm//@angular/router",
+    ],
+)
