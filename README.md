@@ -7,12 +7,14 @@
   <i>Angular is a development platform for building mobile and desktop web applications
     <br> using Typescript/JavaScript and other languages.</i>
   <br>
-  <br>
+</p>
 
+<p align="center">
   <a href="https://www.angular.io"><strong>www.angular.io</strong></a>
   <br>
-  <br>
+</p>
 
+<p align="center">
   <a href="https://github.com/">Contributing Guidelines</a>
   ·
   <a href="https://github.com/">Submit an Issue</a>
