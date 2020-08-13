@@ -23,6 +23,7 @@ entryPoints = [
     "mdc-progress-spinner",
     "mdc-progress-spinner/testing",
     "mdc-radio",
+    "mdc-radio/testing",
     "mdc-select",
     "mdc-sidenav",
     "mdc-slide-toggle",
