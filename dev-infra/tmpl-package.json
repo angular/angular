@@ -9,7 +9,7 @@
     "ts-circular-deps": "./ts-circular-dependencies/index.js"
   },
   "dependencies": {
-    "@angular/benchpress": "0.2.0",
+    "@angular/benchpress": "0.2.1",
     "@octokit/graphql": "<from-root>",
     "@octokit/types": "<from-root>",
     "brotli": "<from-root>",
