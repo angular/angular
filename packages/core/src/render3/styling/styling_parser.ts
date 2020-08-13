@@ -210,7 +210,8 @@ export function consumeStyleKey(text: string, startIndex: number, endIndex: numb
   let ch: number;
   while (startIndex < endIndex &&
          ((ch = text.charCodeAt(startIndex)) === CharCode.DASH || ch === CharCode.UNDERSCORE ||
-          ((ch & CharCode.UPPER_CASE) >= CharCode.A && (ch & CharCode.UPPER_CASE) <= CharCode.Z))) {
+          ((ch & CharCode.UPPER_CASE) >= CharCode.A && (ch & CharCode.UPPER_CASE) <= CharCode.Z) ||
+          (ch >= CharCode.ZERO && ch <= CharCode.NINE))) {
     startIndex++;
   }
   return startIndex;
