@@ -28,9 +28,9 @@ describe('LocationService', () => {
       ]
     });
 
-    location  = injector.get(LocationStrategy) as unknown as MockLocationStrategy;
-    service  = injector.get(LocationService);
-    swUpdates  = injector.get(SwUpdatesService) as unknown as MockSwUpdatesService;
+    location = injector.get(LocationStrategy) as unknown as MockLocationStrategy;
+    service = injector.get(LocationService);
+    swUpdates = injector.get(SwUpdatesService) as unknown as MockSwUpdatesService;
     scrollService = injector.get(ScrollService);
   });
 
