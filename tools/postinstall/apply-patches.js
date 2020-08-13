@@ -247,12 +247,18 @@ async function readAndValidatePatchMarker() {
     console.error(chalk.red('cleaned up.'));
   }
 
-  const {cleanupModules} = await inquirer.prompt({
-    name: 'cleanupModules',
-    type: 'confirm',
-    message: 'Clean up node modules automatically?',
-    default: false
-  });
+  let cleanupModules = true;
+
+  // Do not prompt if there is no TTY. Inquirer does not skip in non-tty environments.
+  // TODO: Remove once inquirer has been updated to v8.x where TTY is respected.
+  if (process.stdin.isTTY) {
+    cleanupModules = (await inquirer.prompt({
+      name: 'result',
+      type: 'confirm',
+      message: 'Clean up node modules automatically?',
+      default: false
+    })).result;
+  }
 
   if (cleanupModules) {
     // This re-runs Yarn with `--check-files` mode. The postinstall will rerun afterwards,
