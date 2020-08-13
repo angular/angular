@@ -46,7 +46,6 @@ export class ChipsBenchmarkApp {
   hideMultiple() { this.isMultipleVisible = false; }
 }
 
-
 @NgModule({
   declarations: [ChipsBenchmarkApp],
   imports: [

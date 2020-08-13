@@ -31,7 +31,6 @@ export class SlideToggleBenchmarkApp {
   hide() { this.isVisible = false; }
 }
 
-
 @NgModule({
   declarations: [SlideToggleBenchmarkApp],
   imports: [

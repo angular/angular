@@ -53,7 +53,6 @@ export class RadioBenchmarkApp {
   hideTen() { this.isTenVisible = false; }
 }
 
-
 @NgModule({
   declarations: [RadioBenchmarkApp],
   imports: [

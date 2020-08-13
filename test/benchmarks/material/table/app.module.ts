@@ -54,7 +54,6 @@ export class TableBenchmarkApp {
   showTenRowsTwentyCols() { this.isTenRowsTwentyColsVisible = true; }
 }
 
-
 @NgModule({
   declarations: [BasicTable, TableBenchmarkApp],
   imports: [

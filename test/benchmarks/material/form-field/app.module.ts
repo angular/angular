@@ -59,7 +59,6 @@ export class FormFieldBenchmarkApp {
   }
 }
 
-
 @NgModule({
   declarations: [FormFieldBenchmarkApp],
   imports: [

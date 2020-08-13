@@ -8,9 +8,9 @@
 
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
 
-/** component: mat-checkbox */
+/** component: mdc-checkbox */
 
 @Component({
   selector: 'app-root',
@@ -26,7 +26,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     Check me!</mat-checkbox>
   `,
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['//src/material/core/theming/prebuilt/indigo-pink.css'],
+  styleUrls: ['//src/material-experimental/mdc-theming/prebuilt/indigo-pink.css'],
 })
 export class CheckboxBenchmarkApp {
 

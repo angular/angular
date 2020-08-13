@@ -30,7 +30,6 @@ export class CardBenchmarkApp {
   hide() { this.isVisible = false; }
 }
 
-
 @NgModule({
   declarations: [CardBenchmarkApp],
   imports: [
