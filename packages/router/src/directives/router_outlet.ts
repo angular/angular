@@ -76,10 +76,12 @@ export class RouterOutlet implements OnDestroy, OnInit {
     parentContexts.onChildOutletCreated(this.name, this);
   }
 
+  /** @nodoc */
   ngOnDestroy(): void {
     this.parentContexts.onChildOutletDestroyed(this.name);
   }
 
+  /** @nodoc */
   ngOnInit(): void {
     if (!this.activated) {
       // If the outlet was not instantiated at the time the route got activated we need to populate

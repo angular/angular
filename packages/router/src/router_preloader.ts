@@ -97,6 +97,7 @@ export class RouterPreloader implements OnDestroy {
     return this.processRoutes(ngModule, this.router.config);
   }
 
+  /** @nodoc */
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
