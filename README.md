@@ -3,15 +3,15 @@
 
 <p align="center">
   <img src="aio/src/assets/images/logos/angular/angular.png" alt="angular-logo" width="120px" height="120px"/>
-  </br>
+  <br>
   <i>Angular is a development platform for building mobile and desktop web applications
-    </br> using Typescript/JavaScript and other languages.</i>
-  </br>
-  </br>
+    <br> using Typescript/JavaScript and other languages.</i>
+  <br>
+  <br>
 
   <a href="https://www.angular.io"><strong>www.angular.io</strong></a>
-  </br>
-  </br>
+  <br>
+  <br>
 
   <a href="https://github.com/">Contributing Guidelines</a>
   ·
@@ -19,8 +19,8 @@
   ·
   <a href="https://blog.angular.io/">Blog</a>
   </p>
-  </br>
-  </br>
+  <br>
+  <br>
 </p>
 
 <p align="center">
@@ -117,7 +117,7 @@ Join the conversation and help the community.
 
 
  <a href="https://www.github.com/angular/angular"><img src="https://img.shields.io/badge/angular-love-blue?logo=angular&angular=love"></a>
-<p><strong>Love Angular? Give our repo a star.</strong></p>
+<p><strong>Love Angular? Give our repo a star :star: :arrow_up:.</strong></p>
 
 [contributing]: https://github.com/angular/angular/blob/master/CONTRIBUTING.md
 [quickstart]: https://angular.io/start
@@ -125,6 +125,7 @@ Join the conversation and help the community.
 [ng]: https://angular.io
 [documentation]: https://angular.io/docs
 [angularmaterial]: https://material.angular.io/
+[cli]: https://cli.angular.io/
 
 [architecture]: https://angular.io/guide/architecture
 [componentstemplates]: https://angular.io/guide/displaying-data
