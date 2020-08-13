@@ -19,30 +19,30 @@ placed inside either one of the two stepper components.
 ### Labels
 If a step's label is only text, then the `label` attribute can be used.
 <!-- example({"example": "stepper-overview",
-              "file": "stepper-overview-example.html", 
+              "file": "stepper-overview-example.html",
               "region": "label"}) -->
 
 For more complex labels, add a template with the `matStepLabel` directive inside the
 `mat-step`.
 <!-- example({"example": "stepper-editable",
-              "file": "stepper-editable-example.html", 
-              "region": "ng-template"}) -->
+              "file": "stepper-editable-example.html",
+              "region": "step-label"}) -->
 
 #### Label position
 For `mat-horizontal-stepper` it's possible to define the position of the label. `end` is the
 default value, while `bottom` will place it under the step icon instead of at its side.
 This behaviour is controlled by `labelPosition` property.
 
-<!-- example({"example": "stepper-label-position",
-              "file": "stepper-label-position-example.html", 
+<!-- example({"example": "stepper-label-position-bottom",
+              "file": "stepper-label-position-bottom-example.html",
               "region": "label-position"}) -->
 
 ### Stepper buttons
 There are two button directives to support navigation between different steps:
 `matStepperPrevious` and `matStepperNext`.
-<!-- example({"example": "stepper-label-position",
-              "file": "stepper-label-position-example.html", 
-              "region": "mat-stepper"}) -->
+<!-- example({"example": "stepper-label-position-bottom",
+              "file": "stepper-label-position-bottom-example.html",
+              "region": "buttons"}) -->
 
 ### Linear stepper
 The `linear` attribute can be set on `mat-horizontal-stepper` and `mat-vertical-stepper` to create
@@ -105,7 +105,7 @@ If completion of a step in linear stepper is not required, then the `optional` a
 on `mat-step`.
 
 <!-- example({"example": "stepper-optional",
-              "file": "stepper-optional-example.html", 
+              "file": "stepper-optional-example.html",
               "region": "optional"}) -->
 
 
@@ -114,7 +114,7 @@ By default, steps are editable, which means users can return to previously compl
 edit their responses. `editable="false"` can be set on `mat-step` to change the default.
 
 <!-- example({"example": "stepper-editable",
-              "file": "stepper-editable-example.html", 
+              "file": "stepper-editable-example.html",
               "region": "editable"}) -->
 
 #### Completed step
@@ -129,7 +129,7 @@ by placing a `matStepperIcon` for each of the icons that you want to override. T
 `active`, and `optional` values of the individual steps are available through template variables:
 
 <!-- example({"example": "stepper-states",
-              "file": "stepper-states-example.html", 
+              "file": "stepper-states-example.html",
               "region": "override-icons"}) -->
 
 Note that you aren't limited to using the `mat-icon` component when providing custom icons.
@@ -139,7 +139,7 @@ You can set the state of a step to whatever you want. The given state by default
 However, it can be overridden the same way as mentioned above.
 
 <!-- example({"example": "stepper-states",
-              "file": "stepper-states-example.html", 
+              "file": "stepper-states-example.html",
               "region": "states"}) -->
 
 In order to use the custom step states, you must add the `displayDefaultIndicatorType` option to

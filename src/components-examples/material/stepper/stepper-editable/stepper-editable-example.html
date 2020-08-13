@@ -7,9 +7,9 @@
   <mat-step [stepControl]="firstFormGroup" [editable]="isEditable">
 <!-- #enddocregion editable -->
     <form [formGroup]="firstFormGroup">
-<!-- #docregion ng-template -->
+<!-- #docregion step-label -->
       <ng-template matStepLabel>Fill out your name</ng-template>
-<!-- #enddocregion ng-template -->
+<!-- #enddocregion step-label -->
       <mat-form-field>
         <mat-label>Name</mat-label>
         <input matInput formControlName="firstCtrl" placeholder="Last name, First name" required>
