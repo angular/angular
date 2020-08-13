@@ -1,4 +1,5 @@
 import {Component, NgModule, ErrorHandler} from '@angular/core';
+import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomplete';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCardModule} from '@angular/material-experimental/mdc-card';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
@@ -34,6 +35,7 @@ export class KitchenSinkMdc {
 
 @NgModule({
   imports: [
+    MatAutocompleteModule,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,

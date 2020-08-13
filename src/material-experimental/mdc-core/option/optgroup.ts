@@ -7,7 +7,7 @@
  */
 
 import {Component, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
-import {_MatOptgroupBase} from '@angular/material/core';
+import {_MatOptgroupBase, MAT_OPTGROUP} from '@angular/material/core';
 
 
 /**
@@ -26,7 +26,9 @@ import {_MatOptgroupBase} from '@angular/material/core';
     'role': 'group',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-labelledby]': '_labelId',
-  }
+  },
+  providers: [
+    {provide: MAT_OPTGROUP, useExisting: MatOptgroup}
+  ]
 })
-export class MatOptgroup extends _MatOptgroupBase {
-}
+export class MatOptgroup extends _MatOptgroupBase {}

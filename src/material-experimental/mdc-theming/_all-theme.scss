@@ -1,4 +1,5 @@
 @import '../mdc-core/core';
+@import '../mdc-autocomplete/autocomplete-theme';
 @import '../mdc-button/button-theme';
 @import '../mdc-card/card-theme';
 @import '../mdc-checkbox/checkbox-theme';
@@ -20,6 +21,7 @@
 @mixin angular-material-mdc-theme($theme-or-color-config) {
   @include _mat-check-duplicate-theme-styles($theme-or-color-config, 'angular-material-mdc-theme') {
     @include mat-mdc-core-theme($theme-or-color-config);
+    @include mat-mdc-autocomplete-theme($theme-or-color-config);
     @include mat-mdc-button-theme($theme-or-color-config);
     @include mat-mdc-dialog-theme($theme-or-color-config);
     @include mat-mdc-fab-theme($theme-or-color-config);

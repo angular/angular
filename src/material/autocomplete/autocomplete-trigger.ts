@@ -49,8 +49,8 @@ import {MAT_FORM_FIELD, MatFormField} from '@angular/material/form-field';
 import {defer, fromEvent, merge, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {delay, filter, map, switchMap, take, tap} from 'rxjs/operators';
 
-import {MatAutocomplete} from './autocomplete';
-import {MatAutocompleteOrigin} from './autocomplete-origin';
+import {_MatAutocompleteBase} from './autocomplete';
+import {_MatAutocompleteOriginBase} from './autocomplete-origin';
 
 
 /**
@@ -101,30 +101,11 @@ export function getMatAutocompleteMissingPanelError(): Error {
                'you\'re attempting to open it after the ngAfterContentInit hook.');
 }
 
+/** Base class with all of the `MatAutocompleteTrigger` functionality. */
+@Directive()
+export abstract class _MatAutocompleteTriggerBase implements ControlValueAccessor, AfterViewInit,
+  OnChanges, OnDestroy {
 
-@Directive({
-  selector: `input[matAutocomplete], textarea[matAutocomplete]`,
-  host: {
-    'class': 'mat-autocomplete-trigger',
-    '[attr.autocomplete]': 'autocompleteAttribute',
-    '[attr.role]': 'autocompleteDisabled ? null : "combobox"',
-    '[attr.aria-autocomplete]': 'autocompleteDisabled ? null : "list"',
-    '[attr.aria-activedescendant]': '(panelOpen && activeOption) ? activeOption.id : null',
-    '[attr.aria-expanded]': 'autocompleteDisabled ? null : panelOpen.toString()',
-    '[attr.aria-owns]': '(autocompleteDisabled || !panelOpen) ? null : autocomplete?.id',
-    '[attr.aria-haspopup]': '!autocompleteDisabled',
-    // Note: we use `focusin`, as opposed to `focus`, in order to open the panel
-    // a little earlier. This avoids issues where IE delays the focusing of the input.
-    '(focusin)': '_handleFocus()',
-    '(blur)': '_onTouched()',
-    '(input)': '_handleInput($event)',
-    '(keydown)': '_handleKeydown($event)',
-  },
-  exportAs: 'matAutocompleteTrigger',
-  providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR]
-})
-export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewInit, OnChanges,
-  OnDestroy {
   private _overlayRef: OverlayRef | null;
   private _portal: TemplatePortal;
   private _componentDestroyed = false;
@@ -178,7 +159,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
   _onTouched = () => {};
 
   /** The autocomplete panel to be attached to this trigger. */
-  @Input('matAutocomplete') autocomplete: MatAutocomplete;
+  @Input('matAutocomplete') autocomplete: _MatAutocompleteBase;
 
   /**
    * Position of the autocomplete panel relative to the trigger element. A position of `auto`
@@ -193,7 +174,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
    * Reference relative to which to position the autocomplete panel.
    * Defaults to the autocomplete trigger element.
    */
-  @Input('matAutocompleteConnectedTo') connectedTo: MatAutocompleteOrigin;
+  @Input('matAutocompleteConnectedTo') connectedTo: _MatAutocompleteOriginBase;
 
   /**
    * `autocomplete` attribute to be set on the input element.
@@ -222,6 +203,12 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
               private _viewportRuler: ViewportRuler) {
     this._scrollStrategy = scrollStrategy;
   }
+
+  /** Scrolls to an option at a particular index. */
+  protected abstract _scrollToOption(index: number): void;
+
+  /** Class to apply to the panel when it's above the input. */
+  protected abstract _aboveClass: string;
 
   ngAfterViewInit() {
     const window = this._getWindow();
@@ -329,7 +316,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
   /** Stream of autocomplete option selections. */
   readonly optionSelections: Observable<MatOptionSelectionChange> = defer(() => {
     if (this.autocomplete && this.autocomplete.options) {
-     return merge(...this.autocomplete.options.map(option => option.onSelectionChange));
+      return merge(...this.autocomplete.options.map(option => option.onSelectionChange));
     }
 
     // If there are any subscribers before `ngAfterViewInit`, the `autocomplete` will be undefined.
@@ -351,8 +338,8 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
   /** Stream of clicks outside of the autocomplete panel. */
   private _getOutsideClickStream(): Observable<any> {
     return merge(
-               fromEvent(this._document, 'click') as Observable<MouseEvent>,
-               fromEvent(this._document, 'touchend') as Observable<TouchEvent>)
+            fromEvent(this._document, 'click') as Observable<MouseEvent>,
+            fromEvent(this._document, 'touchend') as Observable<TouchEvent>)
         .pipe(filter(event => {
           // If we're in the Shadow DOM, the event target will be the shadow root, so we have to
           // fall back to check the first element in the path of the click event.
@@ -415,7 +402,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
       }
 
       if (isArrowKey || this.autocomplete._keyManager.activeItem !== prevActiveItem) {
-        this._scrollToOption();
+        this._scrollToOption(this.autocomplete._keyManager.activeItemIndex || 0);
       }
     }
   }
@@ -477,37 +464,6 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
     if (this._manuallyFloatingLabel) {
       this._formField.floatLabel = 'auto';
       this._manuallyFloatingLabel = false;
-    }
-  }
-
-  /**
-   * Given that we are not actually focusing active options, we must manually adjust scroll
-   * to reveal options below the fold. First, we find the offset of the option from the top
-   * of the panel. If that offset is below the fold, the new scrollTop will be the offset -
-   * the panel height + the option height, so the active option will be just visible at the
-   * bottom of the panel. If that offset is above the top of the visible panel, the new scrollTop
-   * will become the offset. If that offset is visible within the panel already, the scrollTop is
-   * not adjusted.
-   */
-  private _scrollToOption(): void {
-    const index = this.autocomplete._keyManager.activeItemIndex || 0;
-    const labelCount = _countGroupLabelsBeforeOption(index,
-        this.autocomplete.options, this.autocomplete.optionGroups);
-
-    if (index === 0 && labelCount === 1) {
-      // If we've got one group label before the option and we're at the top option,
-      // scroll the list to the top. This is better UX than scrolling the list to the
-      // top of the option, because it allows the user to read the top group's label.
-      this.autocomplete._setScrollTop(0);
-    } else {
-      const newScrollPosition = _getOptionScrollPosition(
-        index + labelCount,
-        AUTOCOMPLETE_OPTION_HEIGHT,
-        this.autocomplete._getScrollTop(),
-        AUTOCOMPLETE_PANEL_HEIGHT
-      );
-
-      this.autocomplete._setScrollTop(newScrollPosition);
     }
   }
 
@@ -705,7 +661,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
     // The overlay edge connected to the trigger should have squared corners, while
     // the opposite end has rounded corners. We apply a CSS class to swap the
     // border-radius based on the overlay position.
-    const panelClass = 'mat-autocomplete-panel-above';
+    const panelClass = this._aboveClass;
     const abovePositions: ConnectedPosition[] = [
       {originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', panelClass},
       {originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', panelClass}
@@ -761,4 +717,58 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
   }
 
   static ngAcceptInputType_autocompleteDisabled: BooleanInput;
+}
+
+
+@Directive({
+  selector: `input[matAutocomplete], textarea[matAutocomplete]`,
+  host: {
+    'class': 'mat-autocomplete-trigger',
+    '[attr.autocomplete]': 'autocompleteAttribute',
+    '[attr.role]': 'autocompleteDisabled ? null : "combobox"',
+    '[attr.aria-autocomplete]': 'autocompleteDisabled ? null : "list"',
+    '[attr.aria-activedescendant]': '(panelOpen && activeOption) ? activeOption.id : null',
+    '[attr.aria-expanded]': 'autocompleteDisabled ? null : panelOpen.toString()',
+    '[attr.aria-owns]': '(autocompleteDisabled || !panelOpen) ? null : autocomplete?.id',
+    '[attr.aria-haspopup]': '!autocompleteDisabled',
+    // Note: we use `focusin`, as opposed to `focus`, in order to open the panel
+    // a little earlier. This avoids issues where IE delays the focusing of the input.
+    '(focusin)': '_handleFocus()',
+    '(blur)': '_onTouched()',
+    '(input)': '_handleInput($event)',
+    '(keydown)': '_handleKeydown($event)',
+  },
+  exportAs: 'matAutocompleteTrigger',
+  providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR]
+})
+export class MatAutocompleteTrigger extends _MatAutocompleteTriggerBase {
+  protected _aboveClass = 'mat-autocomplete-panel-above';
+
+  protected _scrollToOption(index: number): void {
+    // Given that we are not actually focusing active options, we must manually adjust scroll
+    // to reveal options below the fold. First, we find the offset of the option from the top
+    // of the panel. If that offset is below the fold, the new scrollTop will be the offset -
+    // the panel height + the option height, so the active option will be just visible at the
+    // bottom of the panel. If that offset is above the top of the visible panel, the new scrollTop
+    // will become the offset. If that offset is visible within the panel already, the scrollTop is
+    // not adjusted.
+    const labelCount = _countGroupLabelsBeforeOption(index,
+        this.autocomplete.options, this.autocomplete.optionGroups);
+
+    if (index === 0 && labelCount === 1) {
+      // If we've got one group label before the option and we're at the top option,
+      // scroll the list to the top. This is better UX than scrolling the list to the
+      // top of the option, because it allows the user to read the top group's label.
+      this.autocomplete._setScrollTop(0);
+    } else {
+      const newScrollPosition = _getOptionScrollPosition(
+        (index + labelCount) * AUTOCOMPLETE_OPTION_HEIGHT,
+        AUTOCOMPLETE_OPTION_HEIGHT,
+        this.autocomplete._getScrollTop(),
+        AUTOCOMPLETE_PANEL_HEIGHT
+      );
+
+      this.autocomplete._setScrollTop(newScrollPosition);
+    }
+  }
 }

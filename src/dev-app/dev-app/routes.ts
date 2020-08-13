@@ -69,6 +69,10 @@ export const DEV_APP_ROUTES: Routes = [
     path: 'menubar',
     loadChildren: 'menubar/mat-menubar-demo-module#MatMenuBarDemoModule'
   },
+  {
+    path: 'mdc-autocomplete',
+    loadChildren: 'mdc-autocomplete/mdc-autocomplete-demo-module#MdcAutocompleteDemoModule'
+  },
   {path: 'mdc-button', loadChildren: 'mdc-button/mdc-button-demo-module#MdcButtonDemoModule'},
   {path: 'mdc-card', loadChildren: 'mdc-card/mdc-card-demo-module#MdcCardDemoModule'},
   {

@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "mdc-autocomplete",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "mdc-autocomplete-demo.html",
+        ":mdc_autocomplete_demo_scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-autocomplete",
+        "//src/material-experimental/mdc-button",
+        "//src/material-experimental/mdc-card",
+        "//src/material-experimental/mdc-form-field",
+        "//src/material-experimental/mdc-input",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "mdc_autocomplete_demo_scss",
+    src = "mdc-autocomplete-demo.scss",
+)

@@ -1092,10 +1092,11 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     const activeOptionIndex = this._keyManager.activeItemIndex || 0;
     const labelCount = _countGroupLabelsBeforeOption(activeOptionIndex, this.options,
         this.optionGroups);
+    const itemHeight = this._getItemHeight();
 
     this.panel.nativeElement.scrollTop = _getOptionScrollPosition(
-      activeOptionIndex + labelCount,
-      this._getItemHeight(),
+      (activeOptionIndex + labelCount) * itemHeight,
+      itemHeight,
       this.panel.nativeElement.scrollTop,
       SELECT_PANEL_MAX_HEIGHT
     );

@@ -144,6 +144,7 @@
 /src/dev-app/baseline/**                           @mmalerba
 /src/dev-app/bottom-sheet/**                       @jelbourn @crisbeto
 /src/dev-app/button-toggle/**                      @jelbourn
+/src/dev-app/mdc-autocomplete/**                   @crisbeto
 /src/dev-app/button/**                             @jelbourn
 /src/dev-app/card/**                               @jelbourn
 /src/dev-app/cdk-experimental-listbox/**           @jelbourn @nielsr98

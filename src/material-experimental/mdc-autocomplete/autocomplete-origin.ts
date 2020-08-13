@@ -6,15 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef} from '@angular/core';
-
-/** Base class containing all of the functionality for `MatAutocompleteOrigin`. */
-@Directive()
-export abstract class _MatAutocompleteOriginBase {
-  constructor(
-    /** Reference to the element on which the directive is applied. */
-    public elementRef: ElementRef<HTMLElement>) {}
-}
+import {Directive} from '@angular/core';
+import {_MatAutocompleteOriginBase} from '@angular/material/autocomplete';
 
 /**
  * Directive applied to an element to make it usable

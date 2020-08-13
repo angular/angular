@@ -46,6 +46,7 @@ ng_module(
         "//src/dev-app/input",
         "//src/dev-app/list",
         "//src/dev-app/live-announcer",
+        "//src/dev-app/mdc-autocomplete",
         "//src/dev-app/mdc-button",
         "//src/dev-app/mdc-card",
         "//src/dev-app/mdc-checkbox",

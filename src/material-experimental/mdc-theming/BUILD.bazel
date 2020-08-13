@@ -16,6 +16,7 @@ sass_library(
         "_all-theme.scss",
     ],
     deps = [
+        "//src/material-experimental/mdc-autocomplete:mdc_autocomplete_scss_lib",
         "//src/material-experimental/mdc-button:mdc_button_scss_lib",
         "//src/material-experimental/mdc-card:mdc_card_scss_lib",
         "//src/material-experimental/mdc-checkbox:mdc_checkbox_scss_lib",
