@@ -11,7 +11,7 @@ import {ChipHarnessFilters} from './chip-harness-filters';
 
 /** Harness for interacting with a mat-chip in tests. */
 export class MatChipHarness extends ComponentHarness {
-  static hostSelector = 'mat-basic-chip, mat-chip';
+  static hostSelector = '.mat-mdc-basic-chip, .mat-mdc-chip';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a chip with specific attributes.

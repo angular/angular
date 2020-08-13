@@ -12,7 +12,7 @@ import {ProgressBarHarnessFilters} from '@angular/material/progress-bar/testing'
 
 /** Harness for interacting with an MDC-based `mat-progress-bar` in tests. */
 export class MatProgressBarHarness extends ComponentHarness {
-  static hostSelector = 'mat-progress-bar';
+  static hostSelector = '.mat-mdc-progress-bar';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a progress bar with specific

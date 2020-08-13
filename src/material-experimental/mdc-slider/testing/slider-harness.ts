@@ -12,7 +12,7 @@ import {SliderHarnessFilters} from '@angular/material/slider/testing';
 
 /** Harness for interacting with a MDC mat-slider in tests. */
 export class MatSliderHarness extends ComponentHarness {
-  static hostSelector = 'mat-slider';
+  static hostSelector = '.mat-mdc-slider';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a mat-slider with

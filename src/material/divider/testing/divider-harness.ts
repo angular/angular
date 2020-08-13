@@ -14,7 +14,7 @@ import {DividerHarnessFilters} from './divider-harness-filters';
  * @dynamic
  */
 export class MatDividerHarness extends ComponentHarness {
-  static hostSelector = 'mat-divider';
+  static hostSelector = '.mat-divider';
 
   static with(options: DividerHarnessFilters = {}) {
     return new HarnessPredicate(MatDividerHarness, options);

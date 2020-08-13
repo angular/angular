@@ -20,7 +20,7 @@ export const enum MatCardSection {
 /** Harness for interacting with a standard mat-card in tests. */
 export class MatCardHarness extends ContentContainerComponentHarness<MatCardSection> {
   /** The selector for the host element of a `MatCard` instance. */
-  static hostSelector = 'mat-card';
+  static hostSelector = '.mat-card';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatCardHarness` that meets

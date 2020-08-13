@@ -50,6 +50,7 @@ export interface MatChipEditedEvent extends MatChipEvent {
   inputs: ['color', 'disableRipple', 'tabIndex'],
   host: {
     'role': 'row',
+    'class': 'mat-mdc-chip-row',
     '[class.mat-mdc-chip-disabled]': 'disabled',
     '[class.mat-mdc-chip-highlighted]': 'highlighted',
     '[class.mat-mdc-chip-with-avatar]': 'leadingIcon',

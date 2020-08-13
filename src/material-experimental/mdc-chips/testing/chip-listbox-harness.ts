@@ -12,7 +12,7 @@ import {MatChipOptionHarness} from './chip-option-harness';
 
 /** Harness for interacting with a mat-chip-listbox in tests. */
 export class MatChipListboxHarness extends ComponentHarness {
-  static hostSelector = 'mat-chip-listbox';
+  static hostSelector = '.mat-mdc-chip-listbox';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a chip listbox with specific

@@ -12,7 +12,7 @@ import {CheckboxHarnessFilters} from '@angular/material/checkbox/testing';
 
 /** Harness for interacting with a MDC-based mat-checkbox in tests. */
 export class MatCheckboxHarness extends ComponentHarness {
-  static hostSelector = 'mat-checkbox';
+  static hostSelector = '.mat-mdc-checkbox';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a checkbox with specific attributes.

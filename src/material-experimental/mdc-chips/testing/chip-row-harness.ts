@@ -12,7 +12,7 @@ import {MatChipHarness} from './chip-harness';
 
 /** Harness for interacting with a mat-chip-row in tests. */
 export class MatChipRowHarness extends MatChipHarness {
-  static hostSelector = 'mat-chip-row, mat-basic-chip-row';
+  static hostSelector = '.mat-mdc-chip-row';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a chip row with specific attributes.

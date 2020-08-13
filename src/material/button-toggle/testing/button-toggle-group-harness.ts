@@ -16,7 +16,7 @@ import {MatButtonToggleHarness} from './button-toggle-harness';
 /** Harness for interacting with a standard mat-button-toggle in tests. */
 export class MatButtonToggleGroupHarness extends ComponentHarness {
   /** The selector for the host element of a `MatButton` instance. */
-  static hostSelector = 'mat-button-toggle-group';
+  static hostSelector = '.mat-button-toggle-group';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatButtonToggleGroupHarness`

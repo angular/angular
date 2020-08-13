@@ -17,7 +17,7 @@ export const enum MatToolbarSection {
 
 /** Harness for interacting with a standard mat-toolbar in tests. */
 export class MatToolbarHarness extends ContentContainerComponentHarness<MatToolbarSection> {
-  static hostSelector = 'mat-toolbar';
+  static hostSelector = '.mat-toolbar';
 
   private _getRows = this.locatorForAll(MatToolbarSection.ROW);
 

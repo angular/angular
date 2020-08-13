@@ -13,7 +13,7 @@ import {RadioButtonHarnessFilters, RadioGroupHarnessFilters} from './radio-harne
 /** Harness for interacting with a standard mat-radio-group in tests. */
 export class MatRadioGroupHarness extends ComponentHarness {
   /** The selector for the host element of a `MatRadioGroup` instance. */
-  static hostSelector = 'mat-radio-group';
+  static hostSelector = '.mat-radio-group';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatRadioGroupHarness` that meets
@@ -156,7 +156,7 @@ export class MatRadioGroupHarness extends ComponentHarness {
 /** Harness for interacting with a standard mat-radio-button in tests. */
 export class MatRadioButtonHarness extends ComponentHarness {
   /** The selector for the host element of a `MatRadioButton` instance. */
-  static hostSelector = 'mat-radio-button';
+  static hostSelector = '.mat-radio-button';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatRadioButtonHarness` that meets

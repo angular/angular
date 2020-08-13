@@ -15,7 +15,7 @@ import {getListItemPredicate, MatListItemHarnessBase} from './list-item-harness-
 export class MatActionListHarness extends MatListHarnessBase<
     typeof MatActionListItemHarness, MatActionListItemHarness, ActionListItemHarnessFilters> {
   /** The selector for the host element of a `MatActionList` instance. */
-  static hostSelector = 'mat-action-list';
+  static hostSelector = 'mat-action-list.mat-list';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatActionListHarness` that meets

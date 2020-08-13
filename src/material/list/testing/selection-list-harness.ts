@@ -19,7 +19,7 @@ import {getListItemPredicate, MatListItemHarnessBase} from './list-item-harness-
 export class MatSelectionListHarness extends MatListHarnessBase<
     typeof MatListOptionHarness, MatListOptionHarness, ListOptionHarnessFilters> {
   /** The selector for the host element of a `MatSelectionList` instance. */
-  static hostSelector = 'mat-selection-list';
+  static hostSelector = '.mat-selection-list';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatSelectionListHarness` that meets
@@ -70,7 +70,7 @@ export class MatSelectionListHarness extends MatListHarnessBase<
 /** Harness for interacting with a list option. */
 export class MatListOptionHarness extends MatListItemHarnessBase {
   /** The selector for the host element of a `MatListOption` instance. */
-  static hostSelector = 'mat-list-option';
+  static hostSelector = '.mat-list-option';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatListOptionHarness` that

@@ -13,7 +13,7 @@ import {ProgressBarHarnessFilters} from './progress-bar-harness-filters';
 /** Harness for interacting with a standard mat-progress-bar in tests. */
 export class MatProgressBarHarness extends ComponentHarness {
   /** The selector for the host element of a `MatProgressBar` instance. */
-  static hostSelector = 'mat-progress-bar';
+  static hostSelector = '.mat-progress-bar';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatProgressBarHarness` that meets

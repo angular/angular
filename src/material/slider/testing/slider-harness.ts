@@ -13,7 +13,7 @@ import {SliderHarnessFilters} from './slider-harness-filters';
 /** Harness for interacting with a standard mat-slider in tests. */
 export class MatSliderHarness extends ComponentHarness {
   /** The selector for the host element of a `MatSlider` instance. */
-  static hostSelector = 'mat-slider';
+  static hostSelector = '.mat-slider';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatSliderHarness` that meets

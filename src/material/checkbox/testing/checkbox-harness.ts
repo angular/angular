@@ -13,7 +13,7 @@ import {CheckboxHarnessFilters} from './checkbox-harness-filters';
 /** Harness for interacting with a standard mat-checkbox in tests. */
 export class MatCheckboxHarness extends ComponentHarness {
   /** The selector for the host element of a `MatCheckbox` instance. */
-  static hostSelector = 'mat-checkbox';
+  static hostSelector = '.mat-checkbox';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatCheckboxHarness` that meets

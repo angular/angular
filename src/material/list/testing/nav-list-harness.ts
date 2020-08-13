@@ -15,7 +15,7 @@ import {getListItemPredicate, MatListItemHarnessBase} from './list-item-harness-
 export class MatNavListHarness extends MatListHarnessBase<
     typeof MatNavListItemHarness, MatNavListItemHarness, NavListItemHarnessFilters> {
   /** The selector for the host element of a `MatNavList` instance. */
-  static hostSelector = 'mat-nav-list';
+  static hostSelector = '.mat-nav-list';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatNavListHarness` that meets

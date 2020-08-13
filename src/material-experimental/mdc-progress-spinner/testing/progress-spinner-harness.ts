@@ -14,7 +14,7 @@ import {ProgressSpinnerHarnessFilters} from '@angular/material/progress-spinner/
 /** Harness for interacting with a MDC based mat-progress-spinner in tests. */
 export class MatProgressSpinnerHarness extends ComponentHarness {
   /** The selector for the host element of a `MatProgressSpinner` instance. */
-  static hostSelector = 'mat-progress-spinner,mat-spinner';
+  static hostSelector = '.mat-mdc-progress-spinner';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatProgressSpinnerHarness` that

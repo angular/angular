@@ -32,7 +32,7 @@ export function getListItemPredicate<H extends MatListItemHarnessBase>(
 
 /** Harness for interacting with a list subheader. */
 export class MatSubheaderHarness extends ComponentHarness {
-  static hostSelector = '[mat-subheader], [matSubheader]';
+  static hostSelector = '.mat-subheader';
 
   static with(options: SubheaderHarnessFilters = {}): HarnessPredicate<MatSubheaderHarness> {
     return new HarnessPredicate(MatSubheaderHarness, options)
