@@ -214,27 +214,50 @@ describe('styling', () => {
     });
   });
 
-  describe('css variables', () => {
-    onlyInIvy('css variables').it('should support css variables', () => {
+  onlyInIvy('CSS variables are only supported in Ivy').describe('css variables', () => {
+    const supportsCssVariables = typeof getComputedStyle !== 'undefined' &&
+        typeof CSS !== 'undefined' && typeof CSS.supports !== 'undefined' &&
+        CSS.supports('color', 'var(--fake-var)');
+
+    it('should support css variables', () => {
       // This test only works in browsers which support CSS variables.
-      if (!(typeof getComputedStyle !== 'undefined' && typeof CSS !== 'undefined' &&
-            typeof CSS.supports !== 'undefined' && CSS.supports('color', 'var(--fake-var)')))
+      if (!supportsCssVariables) {
         return;
+      }
+
       @Component({
         template: `
-            <div [style.--my-var]=" '100px' ">
-              <span style="width: var(--my-var)">CONTENT</span>
-            </div>`
+          <div [style.--my-var]="'100px'">
+            <span style="width: var(--my-var)">CONTENT</span>
+          </div>
+        `
       })
       class Cmp {
       }
       TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
-      // document.body.appendChild(fixture.nativeElement);
       fixture.detectChanges();
 
       const span = fixture.nativeElement.querySelector('span') as HTMLElement;
       expect(getComputedStyle(span).getPropertyValue('width')).toEqual('100px');
+    });
+
+    it('should support css variables with numbers in their name inside a host binding', () => {
+      // This test only works in browsers which support CSS variables.
+      if (!supportsCssVariables) {
+        return;
+      }
+
+      @Component({template: `<h1 style="width: var(--my-1337-var)">Hello</h1>`})
+      class Cmp {
+        @HostBinding('style') style = '--my-1337-var: 100px;';
+      }
+      TestBed.configureTestingModule({declarations: [Cmp]});
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      const header = fixture.nativeElement.querySelector('h1') as HTMLElement;
+      expect(getComputedStyle(header).getPropertyValue('width')).toEqual('100px');
     });
   });
 
