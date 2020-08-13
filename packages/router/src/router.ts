@@ -948,7 +948,7 @@ export class Router {
     this.lastSuccessfulId = -1;
   }
 
-  /** @docsNotRequired */
+  /** @nodoc */
   ngOnDestroy(): void {
     this.dispose();
   }

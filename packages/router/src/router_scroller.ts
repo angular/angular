@@ -87,6 +87,7 @@ export class RouterScroller implements OnDestroy {
         routerEvent, this.lastSource === 'popstate' ? this.store[this.restoredId] : null, anchor));
   }
 
+  /** @nodoc */
   ngOnDestroy() {
     if (this.routerEventsSubscription) {
       this.routerEventsSubscription.unsubscribe();
