@@ -1476,6 +1476,21 @@ describe('MDC-based MatDialog', () => {
          expect(container.hasAttribute('aria-labelledby')).toBe(false);
        }));
   });
+
+  it('should dispose backdrop if containing dialog view is destroyed', fakeAsync(() => {
+    const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBeDefined();
+
+    dialogRef.close();
+    viewContainerFixture.componentInstance.showChildView = false;
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBe(null);
+  }));
 });
 
 describe('MDC-based MatDialog with a parent MatDialog', () => {
@@ -1744,9 +1759,11 @@ class ComponentWithOnPushViewContainer {
 
 @Component({
   selector: 'arbitrary-component',
-  template: `<dir-with-view-container></dir-with-view-container>`,
+  template: `<dir-with-view-container *ngIf="showChildView"></dir-with-view-container>`,
 })
 class ComponentWithChildViewContainer {
+  showChildView = true;
+
   @ViewChild(DirectiveWithViewContainer) childWithViewContainer: DirectiveWithViewContainer;
 
   get childViewContainer() {

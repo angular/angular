@@ -280,7 +280,7 @@ export class MatDialogContainer extends _MatDialogContainerBase {
   _onAnimationStart({toState, totalTime}: AnimationEvent) {
     if (toState === 'enter') {
       this._animationStateChanged.next({state: 'opening', totalTime});
-    } else if (toState === 'exit') {
+    } else if (toState === 'exit' || toState === 'void') {
       this._animationStateChanged.next({state: 'closing', totalTime});
     }
   }
