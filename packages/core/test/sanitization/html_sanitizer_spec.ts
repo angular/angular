@@ -173,6 +173,27 @@ import {isDOMParserAvailable} from '../../src/sanitization/inert_body';
       expect(logMsgs.join('\n')).toMatch(/sanitizing HTML stripped some content/);
     });
 
+    it('should strip unclosed iframe tag', () => {
+      expect(_sanitizeHtml(defaultDoc, '<iframe>')).toEqual('');
+      expect([
+        '&lt;iframe&gt;',
+        // Double-escaped on IE
+        '&amp;lt;iframe&amp;gt;'
+      ]).toContain(_sanitizeHtml(defaultDoc, '<iframe><iframe>'));
+      expect([
+        '&lt;script&gt;evil();&lt;/script&gt;',
+        // Double-escaped on IE
+        '&amp;lt;script&amp;gt;evil();&amp;lt;/script&amp;gt;'
+      ]).toContain(_sanitizeHtml(defaultDoc, '<iframe><script>evil();</script>'));
+    });
+
+    it('should ignore extraneous body tags', () => {
+      expect(_sanitizeHtml(defaultDoc, '</body>')).toEqual('');
+      expect(_sanitizeHtml(defaultDoc, 'foo</body>bar')).toEqual('foobar');
+      expect(_sanitizeHtml(defaultDoc, 'foo<body>bar')).toEqual('foobar');
+      expect(_sanitizeHtml(defaultDoc, 'fo<body>ob</body>ar')).toEqual('foobar');
+    });
+
     it('should not enter an infinite loop on clobbered elements', () => {
       // Some browsers are vulnerable to clobbered elements and will throw an expected exception
       // IE and EDGE does not seems to be affected by those cases
