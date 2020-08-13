@@ -23,7 +23,16 @@
   }
 
   h2 .header-link {
-    top: 4px;
+    top: 46px;
+  }
+
+  // Adjust the header-link placement for marketing pages that do not have the header line before
+  aio-shell {
+    &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute, &.page-about {
+      h2 .header-link {
+        top: 4px;
+      }
+    }
   }
 
   h3 .header-link {

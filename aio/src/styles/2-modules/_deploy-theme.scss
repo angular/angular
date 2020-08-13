@@ -2,49 +2,49 @@
 aio-shell.mode-archive {
 
   .mat-toolbar.mat-primary, footer {
-    background: linear-gradient(145deg,#263238,#78909C);
+    background: linear-gradient(145deg, $blue-grey-900, $blue-grey-400);
   }
 
   .vertical-menu-item {
     &.selected, &:hover {
-      color: #263238;
+      color: $blue-grey-900;
     }
   }
 
   .toc-inner ul.toc-list li.active a {
-    color: #263238;
+    color: $blue-grey-900;
 
     &:before {
-      background-color: #263238;
+      background-color: $blue-grey-900;
     }
   }
 
   .toc-inner ul.toc-list li:hover a {
-    color: #263238;
+    color: $blue-grey-900;
   }
 }
 
 aio-shell.mode-next {
 
   .mat-toolbar.mat-primary, footer {
-    background: linear-gradient(145deg,#DD0031,#C3002F);
+    background: linear-gradient(145deg, $brightred, $darkred);
   }
 
   .vertical-menu-item {
     &.selected, &:hover {
-      color: #DD0031;
+      color: $brightred;
     }
   }
 
   .toc-inner ul.toc-list li.active a {
-    color: #DD0031;
+    color: $brightred;
 
     &:before {
-      background-color: #DD0031;
+      background-color: $brightred;
     }
   }
 
   .toc-inner ul.toc-list li:hover a {
-    color: #DD0031;
+    color: $brightred;
   }
 }

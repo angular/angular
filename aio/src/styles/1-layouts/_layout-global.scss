@@ -7,7 +7,8 @@ body,
     background-color: $white;
 }
 
-main:not(#features):not(#resources):not(#events):not(#home):not(#presskit):not(#contribute),
+// Default center layout
+aio-shell main,
 .center-layout {
   max-width: 50em;
   margin: 0 auto;

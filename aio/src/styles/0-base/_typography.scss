@@ -34,12 +34,20 @@ h2 {
   clear: both;
 }
 
-main:not(#features):not(#resources):not(#events):not(#home):not(#presskit):not(#contribute) h2 {
+h2 {
   &:before {
     content: "";
     display: block;
     border-bottom: 1px solid $lightgray;
     margin: 40px 0;
+  }
+}
+
+aio-shell {
+  &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute, &.page-about {
+    main h2:before {
+      display: none;
+    }
   }
 }
 
@@ -187,7 +195,7 @@ code {
   color: $darkgray;
 }
 
-.content a:not(.button):not(.docs-card):not(.resource-row-link):not(.header-link) {
+.content a:not(.button):not(.docs-card):not(.resource-row-link):not(.header-link):not(.info-item) {
   color: $blue;
 
   &:hover {
@@ -206,7 +214,7 @@ code {
 .folder-guide,
 .folder-start,
 .folder-tutorial {
-  
+
   aio-doc-viewer{
     a {
       &[href^="http:"]::after,
@@ -216,7 +224,7 @@ code {
         margin-left: 2px;
         position: relative;
         @include line-height(24);
-        vertical-align: bottom; 
+        vertical-align: bottom;
       }
     }
 
@@ -229,4 +237,8 @@ code {
       }
     }
   }
+}
+
+.error-text {
+  color: $brightred;
 }

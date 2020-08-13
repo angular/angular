@@ -222,7 +222,7 @@ aio-api-list {
 .code-links {
   a {
     code, .api-doc-code {
-      color: #1E88E5 !important;
+      color: $accentblue !important;
     }
   }
 }
@@ -282,7 +282,7 @@ p {
   padding: 0 5px 0;
 
   span.pln {
-    color: #1E88E5 !important;
+    color: $accentblue !important;
   }
 }
 
@@ -298,6 +298,7 @@ p {
 
 .api-doc-code {
   @include font-size(14);
+  // Should replace with variable
   color: #1a2326;
 
   // the last .pln (white space) creates additional spacing between sections of the api doc. Remove it.
