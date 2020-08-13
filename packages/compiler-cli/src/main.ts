@@ -172,7 +172,6 @@ export function readCommandLineAndConfiguration(
       emitFlags: api.EmitFlags.Default
     };
   }
-  const allDiagnostics: Diagnostics = [];
   const config = readConfiguration(project, cmdConfig.options);
   const options = {...config.options, ...existingOptions};
   if (options.locale) {
