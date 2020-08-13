@@ -31,7 +31,7 @@ export function getCommitMessageConfig() {
 }
 
 /** Scope requirement level to be set for each commit type.  */
-export enum SCOPE_REQUIREMENT {
+export enum ScopeRequirement {
   Required,
   Optional,
   Forbidden,
@@ -39,46 +39,36 @@ export enum SCOPE_REQUIREMENT {
 
 /** A commit type */
 export interface CommitType {
-  value: string;
-  scope: SCOPE_REQUIREMENT;
+  scope: ScopeRequirement;
 }
 
 /** The valid commit types for Angular commit messages. */
 export const COMMIT_TYPES: {[key: string]: CommitType} = {
   build: {
-    value: 'build',
-    scope: SCOPE_REQUIREMENT.Forbidden,
+    scope: ScopeRequirement.Forbidden,
   },
   ci: {
-    value: 'ci',
-    scope: SCOPE_REQUIREMENT.Forbidden,
+    scope: ScopeRequirement.Forbidden,
   },
   docs: {
-    value: 'docs',
-    scope: SCOPE_REQUIREMENT.Optional,
+    scope: ScopeRequirement.Optional,
   },
   feat: {
-    value: 'feat',
-    scope: SCOPE_REQUIREMENT.Required,
+    scope: ScopeRequirement.Required,
   },
   fix: {
-    value: 'fix',
-    scope: SCOPE_REQUIREMENT.Required,
+    scope: ScopeRequirement.Required,
   },
   perf: {
-    value: 'perf',
-    scope: SCOPE_REQUIREMENT.Required,
+    scope: ScopeRequirement.Required,
   },
   refactor: {
-    value: 'refactor',
-    scope: SCOPE_REQUIREMENT.Required,
+    scope: ScopeRequirement.Required,
   },
   release: {
-    value: 'release',
-    scope: SCOPE_REQUIREMENT.Forbidden,
+    scope: ScopeRequirement.Forbidden,
   },
   test: {
-    value: 'test',
-    scope: SCOPE_REQUIREMENT.Required,
+    scope: ScopeRequirement.Required,
   },
 };
