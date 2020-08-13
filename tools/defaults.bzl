@@ -245,7 +245,10 @@ def karma_web_test_suite(name, **kwargs):
         runtime_deps = runtime_deps,
         bootstrap = bootstrap,
         deps = deps,
-        browsers = ["//dev-infra/browsers/firefox:firefox"],
+        browsers = [
+            "//dev-infra/browsers/chromium:chromium",
+            "//dev-infra/browsers/firefox:firefox",
+        ],
         data = data,
         tags = tags,
         **kwargs
