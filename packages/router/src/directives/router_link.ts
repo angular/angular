@@ -202,6 +202,7 @@ export class RouterLink {
     this.preserve = value;
   }
 
+  /** @nodoc */
   @HostListener('click')
   onClick(): boolean {
     const extras = {
@@ -334,13 +335,16 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     this.preserve = value;
   }
 
+  /** @nodoc */
   ngOnChanges(changes: {}): any {
     this.updateTargetUrlAndHref();
   }
+  /** @nodoc */
   ngOnDestroy(): any {
     this.subscription.unsubscribe();
   }
 
+  /** @nodoc */
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey', '$event.shiftKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean): boolean {
     if (button !== 0 || ctrlKey || metaKey || shiftKey) {

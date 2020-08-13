@@ -102,7 +102,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     });
   }
 
-
+  /** @nodoc */
   ngAfterContentInit(): void {
     this.links.changes.subscribe(_ => this.update());
     this.linksWithHrefs.changes.subscribe(_ => this.update());
@@ -115,9 +115,11 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     this.classes = classes.filter(c => !!c);
   }
 
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
     this.update();
   }
+  /** @nodoc */
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
