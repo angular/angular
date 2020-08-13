@@ -22,12 +22,12 @@ import {assertLContainer} from './assert';
 import {getParentInjectorLocation, NodeInjector} from './di';
 import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
-import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
+import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {isProceduralRenderer, RComment, RElement} from './interfaces/renderer';
 import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, LView, LViewFlags, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
-import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
+import {addRemoveViewFromContainer, appendChild, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from './node_manipulation';
 import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
@@ -304,8 +304,18 @@ export function createContainerRef(
       remove(index?: number): void {
         this.allocateContainerIfNeeded();
         const adjustedIdx = this._adjustIndex(index, -1);
-        removeView(this._lContainer, adjustedIdx);
-        removeFromArray(this._lContainer[VIEW_REFS]!, adjustedIdx);
+        const detachedView = detachView(this._lContainer, adjustedIdx);
+
+        if (detachedView) {
+          // Before destroying the view, remove it from the container's array of `ViewRef`s.
+          // This ensures the view container length is updated before calling
+          // `destroyLView`, which could recursively call view container methods that
+          // rely on an accurate container length.
+          // (e.g. a method on this view container being called by a child directive's OnDestroy
+          // lifecycle hook)
+          removeFromArray(this._lContainer[VIEW_REFS]!, adjustedIdx);
+          destroyLView(detachedView[TVIEW], detachedView);
+        }
       }
 
       detach(index?: number): viewEngine_ViewRef|null {

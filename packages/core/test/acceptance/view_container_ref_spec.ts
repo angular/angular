@@ -8,7 +8,7 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
-import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, Injector, NgModule, NO_ERRORS_SCHEMA, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, Injector, NgModule, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed, TestComponentRenderer} from '@angular/core/testing';
@@ -933,6 +933,62 @@ describe('ViewContainerRef', () => {
       viewA.destroy();
       fixture.detectChanges();
       expect(() => vcRefDir.vcref.insert(viewA)).toThrow();
+    });
+  });
+
+  describe('dependant views', () => {
+    it('should not throw when view removes another view upon removal', () => {
+      @Component({
+        template: `
+          <div *ngIf="visible" [template]="parent">I host a template</div>
+          <ng-template #parent>
+              <div [template]="child">I host a child template</div>
+          </ng-template>
+          <ng-template #child>
+              I am child template
+          </ng-template>
+        `
+      })
+      class AppComponent {
+        visible = true;
+
+        constructor(private readonly vcr: ViewContainerRef) {}
+
+        add<C>(template: TemplateRef<C>): EmbeddedViewRef<C> {
+          return this.vcr.createEmbeddedView(template);
+        }
+
+        remove<C>(viewRef: EmbeddedViewRef<C>) {
+          this.vcr.remove(this.vcr.indexOf(viewRef));
+        }
+      }
+
+      @Directive({selector: '[template]'})
+      class TemplateDirective<C> implements OnInit, OnDestroy {
+        @Input() template !: TemplateRef<C>;
+        ref!: EmbeddedViewRef<C>;
+
+        constructor(private readonly host: AppComponent) {}
+
+        ngOnInit() {
+          this.ref = this.host.add(this.template);
+          this.ref.detectChanges();
+        }
+
+        ngOnDestroy() {
+          this.host.remove(this.ref);
+        }
+      }
+
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        declarations: [AppComponent, TemplateDirective],
+      });
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      fixture.componentRef.instance.visible = false;
+      fixture.detectChanges();
     });
   });
 
