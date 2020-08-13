@@ -7,18 +7,6 @@ export const commitMessage: CommitMessageConfig = {
   maxLineLength: 120,
   minBodyLength: 20,
   minBodyLengthTypeExcludes: ['docs'],
-  types: [
-    'build',
-    'ci',
-    'docs',
-    'feat',
-    'fix',
-    'perf',
-    'refactor',
-    'release',
-    'style',
-    'test',
-  ],
   scopes: [
     'animations',
     'bazel',
