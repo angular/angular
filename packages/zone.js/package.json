@@ -1,6 +1,6 @@
 {
   "name": "zone.js",
-  "version": "0.10.3",
+  "version": "0.11.0",
   "description": "Zones for JavaScript",
   "main": "./bundles/zone.umd.js",
   "module": "./fesm2015/zone.js",
@@ -38,8 +38,8 @@
     "url": "git://github.com/angular/angular.git",
     "directory": "packages/zone.js"
   },
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
   },
   "author": "Brian Ford",
   "license": "MIT",
