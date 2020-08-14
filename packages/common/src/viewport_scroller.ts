@@ -88,7 +88,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @returns The position in screen coordinates.
    */
   getScrollPosition(): [number, number] {
-    if (this.supportScrollRestoration()) {
+    if (this.supportsScrolling()) {
       return [this.window.scrollX, this.window.scrollY];
     } else {
       return [0, 0];
@@ -100,7 +100,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @param position The new position in screen coordinates.
    */
   scrollToPosition(position: [number, number]): void {
-    if (this.supportScrollRestoration()) {
+    if (this.supportsScrolling()) {
       this.window.scrollTo(position[0], position[1]);
     }
   }
@@ -110,7 +110,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @param anchor The ID of the anchor element.
    */
   scrollToAnchor(anchor: string): void {
-    if (this.supportScrollRestoration()) {
+    if (this.supportsScrolling()) {
       const elSelected =
           this.document.getElementById(anchor) || this.document.getElementsByName(anchor)[0];
       if (elSelected) {
@@ -159,6 +159,14 @@ export class BrowserViewportScroller implements ViewportScroller {
       // setter function.
       return !!scrollRestorationDescriptor &&
           !!(scrollRestorationDescriptor.writable || scrollRestorationDescriptor.set);
+    } catch {
+      return false;
+    }
+  }
+
+  private supportsScrolling(): boolean {
+    try {
+      return !!this.window.scrollTo;
     } catch {
       return false;
     }
