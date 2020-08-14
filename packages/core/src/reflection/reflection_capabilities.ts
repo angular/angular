@@ -29,7 +29,7 @@ import {GetterFn, MethodFn, SetterFn} from './types';
  * it intends to capture the pattern where existing constructors have been downleveled from
  * ES2015 to ES5 using TypeScript w/ downlevel iteration. e.g.
  *
- *  * ```
+ * ```
  *   function MyClass() {
  *     var _this = _super.apply(this, arguments) || this;
  * ```

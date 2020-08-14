@@ -1417,83 +1417,233 @@ runInEachFileSystem(() => {
         });
       });
 
-      describe('synthesized constructors', () => {
-        function getConstructorParameters(constructor: string) {
-          const file = {
-            name: _('/synthesized_constructors.js'),
-            contents: `
+      function getConstructorParameters(
+          constructor: string,
+          mode?: 'inlined'|'inlined_with_suffix'|'imported'|'imported_namespace') {
+        let fileHeader = '';
+
+        switch (mode) {
+          case 'imported':
+            fileHeader = `import {__spread} from 'tslib';`;
+            break;
+          case 'imported_namespace':
+            fileHeader = `import * as tslib from 'tslib';`;
+            break;
+          case 'inlined':
+            fileHeader =
+                `var __spread = (this && this.__spread) || function (...args) { /* ... */ }`;
+            break;
+          case 'inlined_with_suffix':
+            fileHeader =
+                `var __spread$1 = (this && this.__spread$1) || function (...args) { /* ... */ }`;
+            break;
+        }
+
+        const file = {
+          name: _('/synthesized_constructors.js'),
+          contents: `
+            ${fileHeader}
             var TestClass = /** @class */ (function (_super) {
               __extends(TestClass, _super);
               ${constructor}
               return TestClass;
             }(null));
           `,
-          };
+        };
 
-          loadTestFiles([file]);
-          const bundle = makeTestBundleProgram(file.name);
-          const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
-          const classNode =
-              getDeclaration(bundle.program, file.name, 'TestClass', isNamedVariableDeclaration);
-          return host.getConstructorParameters(classNode);
-        }
+        loadTestFiles([file]);
+        const bundle = makeTestBundleProgram(file.name);
+        const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
+        const classNode =
+            getDeclaration(bundle.program, file.name, 'TestClass', isNamedVariableDeclaration);
+        return host.getConstructorParameters(classNode);
+      }
 
+      describe('TS -> ES5: synthesized constructors', () => {
         it('recognizes _this assignment from super call', () => {
           const parameters = getConstructorParameters(`
-          function TestClass() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.synthesizedProperty = null;
-            return _this;
-          }`);
+            function TestClass() {
+              var _this = _super !== null && _super.apply(this, arguments) || this;
+              _this.synthesizedProperty = null;
+              return _this;
+            }
+          `);
 
           expect(parameters).toBeNull();
         });
 
         it('recognizes super call as return statement', () => {
           const parameters = getConstructorParameters(`
-          function TestClass() {
-            return _super !== null && _super.apply(this, arguments) || this;
-          }`);
+            function TestClass() {
+              return _super !== null && _super.apply(this, arguments) || this;
+            }
+          `);
 
           expect(parameters).toBeNull();
         });
 
         it('handles the case where a unique name was generated for _super or _this', () => {
           const parameters = getConstructorParameters(`
-          function TestClass() {
-            var _this_1 = _super_1 !== null && _super_1.apply(this, arguments) || this;
-            _this_1._this = null;
-            _this_1._super = null;
-            return _this_1;
-          }`);
+            function TestClass() {
+              var _this_1 = _super_1 !== null && _super_1.apply(this, arguments) || this;
+              _this_1._this = null;
+              _this_1._super = null;
+              return _this_1;
+            }
+          `);
 
           expect(parameters).toBeNull();
         });
 
         it('does not consider constructors with parameters as synthesized', () => {
           const parameters = getConstructorParameters(`
-          function TestClass(arg) {
-            return _super !== null && _super.apply(this, arguments) || this;
-          }`);
+            function TestClass(arg) {
+              return _super !== null && _super.apply(this, arguments) || this;
+            }
+          `);
 
           expect(parameters!.length).toBe(1);
         });
 
         it('does not consider manual super calls as synthesized', () => {
           const parameters = getConstructorParameters(`
-          function TestClass() {
-            return _super.call(this) || this;
-          }`);
+            function TestClass() {
+              return _super.call(this) || this;
+            }
+          `);
 
           expect(parameters!.length).toBe(0);
         });
 
         it('does not consider empty constructors as synthesized', () => {
-          const parameters = getConstructorParameters(`
-          function TestClass() {
-          }`);
-
+          const parameters = getConstructorParameters(`function TestClass() {}`);
           expect(parameters!.length).toBe(0);
+        });
+      });
+
+      // See: https://github.com/angular/angular/issues/38453.
+      describe('ES2015 -> ES5: synthesized constructors through TSC downleveling', () => {
+        it('recognizes delegate super call using inline spread helper', () => {
+          const parameters = getConstructorParameters(
+              `
+            function TestClass() {
+              return _super.apply(this, __spread(arguments)) || this;
+            }`,
+              'inlined');
+
+          expect(parameters).toBeNull();
+        });
+
+        it('recognizes delegate super call using inline spread helper with suffix', () => {
+          const parameters = getConstructorParameters(
+              `
+            function TestClass() {
+              return _super.apply(this, __spread$1(arguments)) || this;
+            }`,
+              'inlined_with_suffix');
+
+          expect(parameters).toBeNull();
+        });
+
+        it('recognizes delegate super call using imported spread helper', () => {
+          const parameters = getConstructorParameters(
+              `
+            function TestClass() {
+              return _super.apply(this, __spread(arguments)) || this;
+            }`,
+              'imported');
+
+          expect(parameters).toBeNull();
+        });
+
+        it('recognizes delegate super call using namespace imported spread helper', () => {
+          const parameters = getConstructorParameters(
+              `
+            function TestClass() {
+              return _super.apply(this, tslib.__spread(arguments)) || this;
+            }`,
+              'imported_namespace');
+
+          expect(parameters).toBeNull();
+        });
+
+        describe('with class member assignment', () => {
+          it('recognizes delegate super call using inline spread helper', () => {
+            const parameters = getConstructorParameters(
+                `
+              function TestClass() {
+                var _this = _super.apply(this, __spread(arguments)) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                'inlined');
+
+            expect(parameters).toBeNull();
+          });
+
+          it('recognizes delegate super call using inline spread helper with suffix', () => {
+            const parameters = getConstructorParameters(
+                `
+              function TestClass() {
+                var _this = _super.apply(this, __spread$1(arguments)) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                'inlined_with_suffix');
+
+            expect(parameters).toBeNull();
+          });
+
+          it('recognizes delegate super call using imported spread helper', () => {
+            const parameters = getConstructorParameters(
+                `
+              function TestClass() {
+                var _this = _super.apply(this, __spread(arguments)) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                'imported');
+
+            expect(parameters).toBeNull();
+          });
+
+          it('recognizes delegate super call using namespace imported spread helper', () => {
+            const parameters = getConstructorParameters(
+                `
+              function TestClass() {
+                var _this = _super.apply(this, tslib.__spread(arguments)) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                'imported_namespace');
+
+            expect(parameters).toBeNull();
+          });
+        });
+
+        it('handles the case where a unique name was generated for _super or _this', () => {
+          const parameters = getConstructorParameters(
+              `
+            function TestClass() {
+              var _this_1 = _super_1.apply(this, __spread(arguments)) || this;
+              _this_1._this = null;
+              _this_1._super = null;
+              return _this_1;
+            }`,
+              'inlined');
+
+          expect(parameters).toBeNull();
+        });
+
+        it('does not consider constructors with parameters as synthesized', () => {
+          const parameters = getConstructorParameters(
+              `
+            function TestClass(arg) {
+              return _super.apply(this, __spread(arguments)) || this;
+            }`,
+              'inlined');
+
+          expect(parameters!.length).toBe(1);
         });
       });
 
