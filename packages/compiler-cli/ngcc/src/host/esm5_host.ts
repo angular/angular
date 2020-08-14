@@ -373,6 +373,20 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * according to the structure that TypeScript's ES2015 to ES5 transformer generates in
    * https://github.com/Microsoft/TypeScript/blob/v3.2.2/src/compiler/transformers/es2015.ts#L1082-L1098
    *
+   * Additionally, we handle synthetic delegate constructors that are emitted when TypeScript
+   * downlevel's ES2015 synthetically generated to ES5. These vary slightly from the default
+   * structure mentioned above because the ES2015 output uses a spread operator, for delegating
+   * to the parent constructor, that is preserved through a TypeScript helper in ES5. e.g.
+   *
+   * ```
+   * return _super.apply(this, tslib.__spread(arguments)) || this;
+   * ```
+   *
+   * Such constructs can be still considered as synthetic delegate constructors as they are
+   * the product of a common TypeScript to ES5 synthetic constructor, just being downleveled
+   * to ES5 using `tsc`. See: https://github.com/angular/angular/issues/38453.
+   *
+   *
    * @param constructor a constructor function to test
    * @returns true if the constructor appears to have been synthesized
    */
@@ -387,7 +401,19 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   }
 
   /**
-   * Identifies synthesized super calls which pass function arguments directly.
+   * Identifies synthesized super calls which pass-through function arguments directly and are
+   * being assigned to a common `_this` variable. The following patterns we intend to match:
+   *
+   * 1. Delegate call emitted by TypeScript when it emits ES5 directly.
+   *   ```
+   *   var _this = _super !== null && _super.apply(this, arguments) || this;
+   *   ```
+   *
+   * 2. Delegate call emitted by TypeScript when it downlevel's ES2015 to ES5.
+   *   ```
+   *   var _this = _super.apply(this, tslib.__spread(arguments)) || this;
+   *   ```
+   *
    *
    * @param statement a statement that may be a synthesized super call
    * @returns true if the statement looks like a synthesized super call
@@ -409,7 +435,18 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     return this.isSynthesizedDefaultSuperCall(initializer);
   }
   /**
-   * Identifies synthesized super calls which pass function arguments directly.
+   * Identifies synthesized super calls which pass-through function arguments directly and
+   * are being returned. The following patterns correspond to synthetic super return calls:
+   *
+   * 1. Delegate call emitted by TypeScript when it emits ES5 directly.
+   *   ```
+   *   return _super !== null && _super.apply(this, arguments) || this;
+   *   ```
+   *
+   * 2. Delegate call emitted by TypeScript when it downlevel's ES2015 to ES5.
+   *   ```
+   *   return _super.apply(this, tslib.__spread(arguments)) || this;
+   *   ```
    *
    * @param statement a statement that may be a synthesized super call
    * @returns true if the statement looks like a synthesized super call
@@ -424,7 +461,18 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   }
 
   /**
-   * Identifies synthesized super calls which pass function arguments directly.
+   * Identifies synthesized super calls which pass-through function arguments directly. The
+   * synthetic delegate super call match the following patterns we intend to match:
+   *
+   * 1. Delegate call emitted by TypeScript when it emits ES5 directly.
+   *   ```
+   *   _super !== null && _super.apply(this, arguments) || this;
+   *   ```
+   *
+   * 2. Delegate call emitted by TypeScript when it downlevel's ES2015 to ES5.
+   *   ```
+   *   _super.apply(this, tslib.__spread(arguments)) || this;
+   *   ```
    *
    * @param expression an expression that may represent a default super call
    * @returns true if the expression corresponds with the above form
@@ -436,13 +484,14 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     const left = expression.left;
     if (isBinaryExpr(left, ts.SyntaxKind.AmpersandAmpersandToken)) {
       return isSuperNotNull(left.left) && this.isSuperApplyCall(left.right);
+    } else {
+      return this.isSuperApplyCall(left);
     }
-    return this.isSuperApplyCall(left);
   }
 
   /**
-   * Tests whether the expression corresponds to a `super` call passing-through
-   * function arguments as is. e.g.
+   * Tests whether the expression corresponds to a `super` call passing through
+   * function arguments without any modification. e.g.
    *
    * ```
    * _super !== null && _super.apply(this, arguments) || this;
