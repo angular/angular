@@ -25,6 +25,7 @@ ng_test_library(
     ),
     deps = [
         ":combobox",
+        "//src/cdk/keycodes",
         "//src/cdk/testing/private",
         "@npm//@angular/platform-browser",
     ],

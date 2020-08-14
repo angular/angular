@@ -12,6 +12,9 @@ import {Directive, TemplateRef} from '@angular/core';
 import {Subject} from 'rxjs';
 
 @Directive({
+  host: {
+    'class': 'cdk-combobox-panel'
+  },
   selector: 'ng-template[cdkComboboxPanel]',
   exportAs: 'cdkComboboxPanel',
 })
@@ -24,11 +27,19 @@ export class CdkComboboxPanel<T = unknown> {
   contentId: string = '';
   contentType: AriaHasPopupValue;
 
-  constructor(readonly _templateRef: TemplateRef<unknown>) {}
+  constructor(
+    readonly _templateRef: TemplateRef<unknown>
+  ) {}
 
-  /** Tells the parent combobox to closet he panel and sends back the content value. */
+  /** Tells the parent combobox to close the panel and sends back the content value. */
   closePanel(data?: T) {
     this.valueUpdated.next(data);
+  }
+
+  // TODO: instead of using a focus function, potentially use cdk/a11y focus trapping
+  focusContent() {
+    // TODO: Use an injected document here
+    document.getElementById(this.contentId)?.focus();
   }
 
   /** Registers the content's id and the content type with the panel. */
