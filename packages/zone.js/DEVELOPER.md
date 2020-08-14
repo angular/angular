@@ -75,7 +75,7 @@ Releasing `zone.js` is a two step process.
 #### 1. Creating a PR for release
 
 ```
-export PREVIOUS_ZONE_TAG=`git tag -l 'zone.js-0.10.*' | tail -n1`
+export PREVIOUS_ZONE_TAG=`git tag -l 'zone.js-0.11.*' | tail -n1`
 export VERSION=`(cd packages/zone.js; npm version patch --no-git-tag-version)`
 export VERSION=${VERSION#v}
 export TAG="zone.js-${VERSION}"

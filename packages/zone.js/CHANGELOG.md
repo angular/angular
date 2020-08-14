@@ -1,3 +1,29 @@
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/angular/angular/compare/zone.js-0.10.3...zone.js-0.11.0) (2020-08-14)
+
+
+### Bug Fixes
+
+* **zone.js:** add issue numbers of `[@types](https://github.com/types)/jasmine` to the test cases ([#34625](https://github.com/angular/angular/issues/34625)) ([41667de](https://github.com/angular/angular/commit/41667de))
+* **zone.js:** clearTimeout/clearInterval should call on object global ([#37858](https://github.com/angular/angular/issues/37858)) ([a71f114](https://github.com/angular/angular/commit/a71f114)), closes [#37333](https://github.com/angular/angular/issues/37333)
+* **zone.js:** fix 2 bluebird test cases for each/mapSeries ([#36295](https://github.com/angular/angular/issues/36295)) ([b44f7b5](https://github.com/angular/angular/commit/b44f7b5))
+* **zone.js:** patch nodejs EventEmtter.prototype.off ([#37863](https://github.com/angular/angular/issues/37863)) ([1822cbc](https://github.com/angular/angular/commit/1822cbc)), closes [#35473](https://github.com/angular/angular/issues/35473)
+* **zone.js:** remove unused Promise overwritten setter logic ([#36851](https://github.com/angular/angular/issues/36851)) ([31796e8](https://github.com/angular/angular/commit/31796e8))
+* **zone.js:** should not try to patch fetch if it is not writable ([#36311](https://github.com/angular/angular/issues/36311)) ([416c786](https://github.com/angular/angular/commit/416c786)), closes [#36142](https://github.com/angular/angular/issues/36142)
+* **zone.js:** UNPATCHED_EVENTS and PASSIVE_EVENTS should be string[] not boolean ([#36258](https://github.com/angular/angular/issues/36258)) ([36e927a](https://github.com/angular/angular/commit/36e927a))
+* **zone.js:** zone patch rxjs should return null _unsubscribe correctly. ([#37091](https://github.com/angular/angular/issues/37091)) ([96aa14d](https://github.com/angular/angular/commit/96aa14d)), closes [#31684](https://github.com/angular/angular/issues/31684)
+* **zone.js:** zone.js patch jest should handle done correctly ([#36022](https://github.com/angular/angular/issues/36022)) ([4374931](https://github.com/angular/angular/commit/4374931))
+
+
+### Features
+
+* **zone.js:** move all zone optional bundles to plugins folders ([#36540](https://github.com/angular/angular/issues/36540)) ([b199ef6](https://github.com/angular/angular/commit/b199ef6))
+* **zone.js:** move MutationObserver/FileReader to different module ([#31657](https://github.com/angular/angular/issues/31657)) ([253337d](https://github.com/angular/angular/commit/253337d))
+* **zone.js:** patch jasmine.createSpyObj to make properties enumerable to be true ([#34624](https://github.com/angular/angular/issues/34624)) ([c2b4d92](https://github.com/angular/angular/commit/c2b4d92)), closes [#33657](https://github.com/angular/angular/issues/33657)
+* **zone.js:** upgrade zone.js to angular package format(APF) ([#36540](https://github.com/angular/angular/issues/36540)) ([583a9d3](https://github.com/angular/angular/commit/583a9d3)), closes [#35157](https://github.com/angular/angular/issues/35157) [/github.com/angular/angular-cli/blob/5376a8b1392ac7bd252782d8474161ce03a4d1cb/packages/schematics/angular/application/files/src/polyfills.ts.template#L55-L58](https://github.com//github.com/angular/angular-cli/blob/5376a8b1392ac7bd252782d8474161ce03a4d1cb/packages/schematics/angular/application/files/src/polyfills.ts.template/issues/L55-L58)
+
+
+
 ## [0.10.3](https://github.com/angular/angular/compare/zone.js-0.10.2...zone.js-0.10.3) (2020-02-27)
 
 
