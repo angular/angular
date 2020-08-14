@@ -37,6 +37,9 @@ module.exports = function(config) {
 
       'node_modules/core-js/client/core.js',
       'node_modules/jasmine-ajax/lib/mock-ajax.js',
+
+      // Dependencies built by Bazel. See `config.yml` for steps running before
+      // the legacy Saucelabs tests run.
       'dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js',
       'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
       'dist/bin/packages/zone.js/npm_package/bundles/task-tracking.umd.js',
