@@ -1,0 +1,45 @@
+<h3><code>native input</code></h3>
+Selected: {{selected1}}
+<ul cdkSelection [dataSource]="data" [cdkSelectionMultiple]="true" (cdkSelectionChange)="selected1 = getCurrentSelected($event)">
+  <input type="checkbox" cdkSelectAll #allToggler="cdkSelectAll"
+      [checked]="allToggler.checked | async"
+      [indeterminate]="allToggler.indeterminate | async"
+      (click)="allToggler.toggle($event)">
+  <li *ngFor="let item of data">
+    <input type="checkbox" cdkSelectionToggle #toggler="cdkSelectionToggle" [cdkSelectionToggleValue]="item"
+      [checked]="toggler.checked | async" (click)="toggler.toggle()">
+    {{item}}
+  </li>
+</ul>
+
+<h3><code>mat-checkbox</code></h3>
+Selected: {{selected2}}
+<ul cdkSelection [dataSource]="data" [cdkSelectionMultiple]="true" (cdkSelectionChange)="selected2 = getCurrentSelected($event)">
+  <mat-checkbox cdkSelectAll #toggle1="cdkSelectAll" [indeterminate]="toggle1.indeterminate | async"></mat-checkbox>
+  <li *ngFor="let item of data">
+    <mat-checkbox cdkSelectionToggle [cdkSelectionToggleValue]="item"></mat-checkbox>
+    {{item}}
+  </li>
+</ul>
+
+<h3><code>Single select with mat-checkbox</code></h3>
+Selected: {{selected3}}
+<ul cdkSelection [dataSource]="data" [cdkSelectionMultiple]="false" (cdkSelectionChange)="selected3 = getCurrentSelected($event)">
+  <li *ngFor="let item of data">
+    <mat-checkbox cdkSelectionToggle [cdkSelectionToggleValue]="item"></mat-checkbox>
+    {{item}}
+  </li>
+</ul>
+
+<h3><code>with trackBy</code></h3>
+Selected: {{selected4}}
+<ul cdkSelection [dataSource]="data" [cdkSelectionMultiple]="true" [trackBy]="trackByFn" (cdkSelectionChange)="selected4 = getCurrentSelected($event)">
+  <mat-checkbox cdkSelectAll #toggle2="cdkSelectAll" [indeterminate]="toggle2.indeterminate | async"></mat-checkbox>
+  <li *ngFor="let item of data; index as i; trackBy: trackByFn">
+    <mat-checkbox cdkSelectionToggle [cdkSelectionToggleValue]="item" [cdkSelectionToggleIndex]="i"></mat-checkbox>
+    {{item}}
+  </li>
+</ul>
+
+<button (click)="changeElementName()">Change element names and the already selected stays</button>
+<button (click)="reset()">reset</button>

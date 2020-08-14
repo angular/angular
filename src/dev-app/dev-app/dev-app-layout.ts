@@ -8,8 +8,9 @@
 
 import {Directionality} from '@angular/cdk/bidi';
 import {ChangeDetectorRef, Component, ElementRef, Inject, ViewEncapsulation} from '@angular/core';
-import {DevAppRippleOptions} from './ripple-options';
+
 import {DevAppDirectionality} from './dev-app-directionality';
+import {DevAppRippleOptions} from './ripple-options';
 import {DOCUMENT} from '@angular/common';
 
 const isDarkThemeKey = 'ANGULAR_COMPONENTS_DEV_APP_DARK_THEME';
@@ -66,6 +67,7 @@ export class DevAppLayout {
     {name: 'Ripple', route: '/ripple'},
     {name: 'Screen Type', route: '/screen-type'},
     {name: 'Select', route: '/select'},
+    {name: 'Selection', route: '/selection'},
     {name: 'Sidenav', route: '/sidenav'},
     {name: 'Slide Toggle', route: '/slide-toggle'},
     {name: 'Slider', route: '/slider'},

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Input} from '@angular/core';
-import {EXAMPLE_COMPONENTS} from '@angular/components-examples';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {EXAMPLE_COMPONENTS} from '@angular/components-examples';
+import {Component, Input} from '@angular/core';
 
 /** Displays a set of components-examples in a mat-accordion. */
 @Component({
@@ -60,8 +60,12 @@ export class ExampleList {
   @Input() ids: string[];
 
   @Input()
-  get expandAll(): boolean { return this._expandAll; }
-  set expandAll(v: boolean) { this._expandAll = coerceBooleanProperty(v); }
+  get expandAll(): boolean {
+    return this._expandAll;
+  }
+  set expandAll(v: boolean) {
+    this._expandAll = coerceBooleanProperty(v);
+  }
   _expandAll: boolean;
 
   exampleComponents = EXAMPLE_COMPONENTS;

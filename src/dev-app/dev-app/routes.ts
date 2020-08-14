@@ -56,10 +56,7 @@ export const DEV_APP_ROUTES: Routes = [
     path: 'focus-origin',
     loadChildren: 'focus-origin/focus-origin-demo-module#FocusOriginDemoModule'
   },
-  {
-    path: 'focus-trap',
-    loadChildren: 'focus-trap/focus-trap-demo-module#FocusTrapDemoModule'
-  },
+  {path: 'focus-trap', loadChildren: 'focus-trap/focus-trap-demo-module#FocusTrapDemoModule'},
   {path: 'google-map', loadChildren: 'google-map/google-map-demo-module#GoogleMapDemoModule'},
   {path: 'grid-list', loadChildren: 'grid-list/grid-list-demo-module#GridListDemoModule'},
   {path: 'icon', loadChildren: 'icon/icon-demo-module#IconDemoModule'},
@@ -156,6 +153,7 @@ export const DEV_APP_ROUTES: Routes = [
     path: 'youtube-player',
     loadChildren: 'youtube-player/youtube-player-demo-module#YouTubePlayerDemoModule',
   },
+  {path: 'selection', loadChildren: 'selection/selection-demo-module#SelectionDemoModule'},
   {path: 'examples', loadChildren: 'examples-page/examples-page-module#ExamplesPageModule'},
   {path: '**', component: DevApp404},
 ];

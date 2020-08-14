@@ -7,6 +7,7 @@ CDK_EXPERIMENTAL_ENTRYPOINTS = [
     "listbox",
     "popover-edit",
     "scrolling",
+    "selection",
 ]
 
 # List of all entry-point targets of the Angular cdk-experimental package.

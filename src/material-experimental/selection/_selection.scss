@@ -1,0 +1,8 @@
+@import '../../material/core/theming/check-duplicate-styles';
+
+@mixin mat-selection-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-selection');
+}
+
+@mixin mat-selection-typography($config-or-theme) {}

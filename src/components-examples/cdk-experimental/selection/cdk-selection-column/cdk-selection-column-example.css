@@ -1,0 +1,7 @@
+.example-table {
+  border-collapse: collapse;
+}
+
+tr.cdk-selected {
+  background-color: yellow;
+}

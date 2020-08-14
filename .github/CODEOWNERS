@@ -122,6 +122,7 @@
 /src/material-experimental/mdc-typography/**       @mmalerba
 /src/material-experimental/menubar/**              @jelbourn @andy9775
 /src/material-experimental/popover-edit/**         @kseamon @andrewseguin
+/src/material-experimental/selection/**            @yifange @jelbourn
 
 # CDK experimental package
 /src/cdk-experimental/*                            @jelbourn
@@ -132,6 +133,7 @@
 /src/cdk-experimental/popover-edit/**              @kseamon @andrewseguin
 /src/cdk-experimental/scrolling/**                 @mmalerba
 /src/cdk-experimental/listbox/**                   @nielsr98 @jelbourn
+/src/cdk-experimental/selection/**                 @yifange @jelbourn
 
 # Docs examples & guides
 /guides/**                                         @jelbourn
@@ -217,6 +219,7 @@
 /src/dev-app/typography/**                         @crisbeto
 /src/dev-app/virtual-scroll/**                     @mmalerba
 /src/dev-app/youtube-player/**                     @nathantate
+/src/dev-app/selection/**                          @yifange @jelbourn
 
 # E2E app
 /src/e2e-app/*                                     @jelbourn
