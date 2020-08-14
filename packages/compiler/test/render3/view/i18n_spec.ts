@@ -424,6 +424,15 @@ describe('serializeI18nMessageForLocalize', () => {
     });
   });
 
+  it('should serialize ICU with nested interpolation for `$localize()`', () => {
+    expect(serialize('{age, plural, 10 {<b>ten</b>} other {{{age}} years old}}')).toEqual({
+      messageParts: [
+        '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{INTERPOLATION} years old}}'
+      ],
+      placeHolders: []
+    });
+  });
+
   it('should serialize ICU with nested HTML containing further ICUs for `$localize()`', () => {
     expect(
         serialize(
@@ -447,7 +456,7 @@ describe('serializeIcuNode', () => {
         .toEqual('{VAR_PLURAL, plural, 10 {ten} other {other}}');
   });
 
-  it('should serialize a next ICU', () => {
+  it('should serialize a nested ICU', () => {
     expect(serialize(
                '{age, plural, 10 {ten {size, select, 1 {one} 2 {two} other {2+}}} other {other}}'))
         .toEqual(
@@ -458,5 +467,10 @@ describe('serializeIcuNode', () => {
     expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}'))
         .toEqual(
             '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}');
+  });
+
+  it('should serialize an ICU with embedded interpolations', () => {
+    expect(serialize('{age, select, 10 {ten} other {{{age}} years old}}'))
+        .toEqual('{VAR_SELECT, select, 10 {ten} other {{INTERPOLATION} years old}}');
   });
 });
