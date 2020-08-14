@@ -952,10 +952,17 @@ For usage of the `$location` service as a provider in AngularJS, you need to dow
 ```ts
 // Other imports ...
 import { $locationShim } from '@angular/common/upgrade';
+import { setUpLocationSync } from '@angular/router/upgrade';
 import { downgradeInjectable } from '@angular/upgrade/static';
 
 angular.module('myHybridApp', [...])
   .factory('$location', downgradeInjectable($locationShim));
+
+...
+// if running in hybrid routing mode (optional):
+// call setUpLocationSync after bootstrap or routing won't be synced.
+this.upgrade.bootstrap(...);
+setUpLocationSync(this.upgrade);
 ```
 
 Once you introduce the Angular Router, using the Angular Router triggers navigations through the unified location service, still providing a single source for navigating with AngularJS and Angular.
