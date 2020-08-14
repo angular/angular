@@ -7,10 +7,12 @@
  */
 
 import {NgModule} from '@angular/core';
+import {CdkMenuModule} from '@angular/cdk-experimental/menu';
 import {MatMenuBar} from './menubar';
 import {MatMenuBarItem} from './menubar-item';
 
 @NgModule({
+  imports: [CdkMenuModule],
   exports: [MatMenuBar, MatMenuBarItem],
   declarations: [MatMenuBar, MatMenuBarItem],
 })

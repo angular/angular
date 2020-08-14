@@ -7,6 +7,7 @@
  */
 
 import {Component, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
+import {CdkMenuBar, CdkMenuGroup, CDK_MENU, MenuStack} from '@angular/cdk-experimental/menu';
 
 /**
  * A material design Menubar adhering to the functionality of CdkMenuBar. MatMenubar
@@ -19,5 +20,17 @@ import {Component, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/co
   styleUrls: ['menubar.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    'role': 'menubar',
+    'class': 'cdk-menu-bar mat-menubar',
+    'tabindex': '0',
+    '[attr.aria-orientation]': 'orientation',
+  },
+  providers: [
+    {provide: CdkMenuGroup, useExisting: MatMenuBar},
+    {provide: CdkMenuBar, useExisting: MatMenuBar},
+    {provide: CDK_MENU, useExisting: MatMenuBar},
+    {provide: MenuStack, useClass: MenuStack},
+  ],
 })
-export class MatMenuBar {}
+export class MatMenuBar extends CdkMenuBar {}
