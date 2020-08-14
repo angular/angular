@@ -15,6 +15,23 @@ circular_dependency_test(
     deps = ["//packages/core/testing"],
 )
 
+genrule(
+    name = "downleveled_es5_fixture",
+    srcs = ["reflection/es2015_inheritance_fixture.ts"],
+    outs = ["reflection/es5_downleveled_inheritance_fixture.js"],
+    cmd = """
+        es2015_out_dir="/tmp/downleveled_es5_fixture/"
+        es2015_out_file="$$es2015_out_dir/es2015_inheritance_fixture.js"
+
+        # Build the ES2015 output and then downlevel it to ES5.
+        $(execpath @npm//typescript/bin:tsc) $< --outDir $$es2015_out_dir --target ES2015 \
+            --types --module umd
+        $(execpath @npm//typescript/bin:tsc) --outFile $@ $$es2015_out_file --allowJs \
+            --types --target ES5
+    """,
+    tools = ["@npm//typescript/bin:tsc"],
+)
+
 ts_library(
     name = "test_lib",
     testonly = True,
@@ -22,6 +39,7 @@ ts_library(
         ["**/*.ts"],
         exclude = [
             "**/*_node_only_spec.ts",
+            "reflection/es2015_inheritance_fixture.ts",
         ],
     ),
     # Visible to //:saucelabs_unit_tests_poc target
@@ -73,6 +91,9 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["//tools/testing:node_es5"],
+    data = [
+        ":downleveled_es5_fixture",
+    ],
     shard_count = 4,
     deps = [
         ":test_lib",
@@ -87,6 +108,7 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "test_web",
+    runtime_deps = [":downleveled_es5_fixture"],
     deps = [
         ":test_lib",
     ],

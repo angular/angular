@@ -656,6 +656,18 @@ jobs:
       - run: yarn tsc -p packages
       - run: yarn tsc -p modules
       - run: yarn bazel build //packages/zone.js:npm_package
+      # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
+      # specific tests which are reliant on such generated fixtures is not an option as SystemJS
+      # in the Saucelabs legacy job always fetches referenced files, even if the imports would be
+      # guarded by an check to skip in the Saucelabs legacy job. We should be good running such
+      # test in all supported browsers on Saucelabs anyway until this job can be removed.
+      - run:
+          name: Preparing Bazel-generated fixtures required in legacy tests
+          command: |
+            yarn bazel build //packages/core/test:downleveled_es5_fixture
+            # Needed for the ES5 downlevel reflector test in `packages/core/test/reflection`.
+            cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
+              dist/all/@angular/core/test/reflection/es5_downleveled_inheritance_fixture.js
       - run:
           # Waiting on ready ensures that we don't run tests too early without Saucelabs not being ready.
           name: Waiting for Saucelabs tunnel to connect
