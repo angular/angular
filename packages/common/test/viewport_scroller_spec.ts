@@ -15,20 +15,29 @@ describe('BrowserViewportScroller', () => {
   let windowSpy: any;
 
   beforeEach(() => {
-    windowSpy = jasmine.createSpyObj('window', ['history']);
-    windowSpy.scrollTo = 1;
+    windowSpy = jasmine.createSpyObj('window', ['history', 'scrollTo']);
     windowSpy.history.scrollRestoration = 'auto';
     documentSpy = jasmine.createSpyObj('document', ['getElementById', 'getElementsByName']);
     scroller = new BrowserViewportScroller(documentSpy, windowSpy, null!);
   });
 
   describe('setHistoryScrollRestoration', () => {
-    it('should not crash when scrollRestoration is not writable', () => {
+    function createNonWritableScrollRestoration() {
       Object.defineProperty(windowSpy.history, 'scrollRestoration', {
         value: 'auto',
         configurable: true,
       });
+    }
+
+    it('should not crash when scrollRestoration is not writable', () => {
+      createNonWritableScrollRestoration();
       expect(() => scroller.setHistoryScrollRestoration('manual')).not.toThrow();
+    });
+
+    it('should still allow scrolling if scrollRestoration is not writable', () => {
+      createNonWritableScrollRestoration();
+      scroller.scrollToPosition([10, 10]);
+      expect(windowSpy.scrollTo as jasmine.Spy).toHaveBeenCalledWith(10, 10);
     });
   });
 
