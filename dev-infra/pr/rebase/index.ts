@@ -55,7 +55,7 @@ export async function rebasePr(
    */
   const previousBranchOrRevision = git.getCurrentBranchOrRevision();
   /* Get the PR information from Github. */
-  const pr = await getPr(PR_SCHEMA, prNumber, config.github);
+  const pr = await getPr(PR_SCHEMA, prNumber, git);
 
   const headRefName = pr.headRef.name;
   const baseRefName = pr.baseRef.name;

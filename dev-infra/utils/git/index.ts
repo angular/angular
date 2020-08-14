@@ -151,6 +151,25 @@ export class GitClient {
   }
 
   /**
+   * Checks out a requested branch or revision, optionally cleaning the state of the repository
+   * before attempting the checking. Returns a boolean indicating whether the branch or revision
+   * was cleanly checked out.
+   */
+  checkout(branchOrRevision: string, cleanState: boolean): boolean {
+    if (cleanState) {
+      // Abort any outstanding ams.
+      this.runGraceful(['am', '--abort'], {stdio: 'ignore'});
+      // Abort any outstanding cherry-picks.
+      this.runGraceful(['cherry-pick', '--abort'], {stdio: 'ignore'});
+      // Abort any outstanding rebases.
+      this.runGraceful(['rebase', '--abort'], {stdio: 'ignore'});
+      // Clear any changes in the current repo.
+      this.runGraceful(['reset', '--hard'], {stdio: 'ignore'});
+    }
+    return this.runGraceful(['checkout', branchOrRevision], {stdio: 'ignore'}).status === 0;
+  }
+
+  /**
    * Assert the GitClient instance is using a token with permissions for the all of the
    * provided OAuth scopes.
    */
