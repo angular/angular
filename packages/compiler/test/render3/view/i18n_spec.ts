@@ -415,10 +415,19 @@ describe('serializeI18nMessageForLocalize', () => {
   });
 
 
-  it('should serialize ICU with nested HTML for `$localize()`', () => {
+  it('should serialize ICU with embedded HTML for `$localize()`', () => {
     expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}')).toEqual({
       messageParts: [
         '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}'
+      ],
+      placeHolders: []
+    });
+  });
+
+  it('should serialize ICU with embedded interpolation for `$localize()`', () => {
+    expect(serialize('{age, plural, 10 {<b>ten</b>} other {{{age}} years old}}')).toEqual({
+      messageParts: [
+        '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{INTERPOLATION} years old}}'
       ],
       placeHolders: []
     });
@@ -431,6 +440,18 @@ describe('serializeI18nMessageForLocalize', () => {
         .toEqual({
           messageParts: ['', '', '', '', ''],
           placeHolders: ['ICU', 'START_TAG_DIV', 'ICU', 'CLOSE_TAG_DIV']
+        });
+  });
+
+  it('should serialize nested ICUs with embedded interpolation for `$localize()`', () => {
+    expect(
+        serialize(
+            '{age, plural, 10 {ten {size, select, 1 {{{ varOne }}} 2 {{{ varTwo }}} other {2+}}} other {other}}'))
+        .toEqual({
+          messageParts: [
+            '{VAR_PLURAL, plural, 10 {ten {VAR_SELECT, select, 1 {{INTERPOLATION}} 2 {{INTERPOLATION_1}} other {2+}}} other {other}}'
+          ],
+          placeHolders: []
         });
   });
 });
@@ -447,7 +468,7 @@ describe('serializeIcuNode', () => {
         .toEqual('{VAR_PLURAL, plural, 10 {ten} other {other}}');
   });
 
-  it('should serialize a next ICU', () => {
+  it('should serialize a nested ICU', () => {
     expect(serialize(
                '{age, plural, 10 {ten {size, select, 1 {one} 2 {two} other {2+}}} other {other}}'))
         .toEqual(
@@ -458,5 +479,10 @@ describe('serializeIcuNode', () => {
     expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}'))
         .toEqual(
             '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}');
+  });
+
+  it('should serialize an ICU with embedded interpolations', () => {
+    expect(serialize('{age, select, 10 {ten} other {{{age}} years old}}'))
+        .toEqual('{VAR_SELECT, select, 10 {ten} other {{INTERPOLATION} years old}}');
   });
 });
