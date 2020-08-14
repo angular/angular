@@ -11,8 +11,8 @@ import {
   ContentChildren,
   Directive,
   ElementRef, EventEmitter, forwardRef,
-  Inject,
-  Input, OnDestroy, OnInit, Output,
+  Inject, InjectionToken,
+  Input, OnDestroy, OnInit, Optional, Output,
   QueryList
 } from '@angular/core';
 import {ActiveDescendantKeyManager, Highlightable, ListKeyManagerOption} from '@angular/cdk/a11y';
@@ -22,14 +22,18 @@ import {SelectionChange, SelectionModel} from '@angular/cdk/collections';
 import {defer, merge, Observable, Subject} from 'rxjs';
 import {startWith, switchMap, takeUntil} from 'rxjs/operators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {CdkComboboxPanel} from '@angular/cdk-experimental/combobox';
 
 let nextId = 0;
+let listboxId = 0;
 
 export const CDK_LISTBOX_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => CdkListbox),
   multi: true
 };
+
+export const PANEL = new InjectionToken<CdkComboboxPanel>('CdkComboboxPanel');
 
 @Directive({
   selector: '[cdkOption]',
@@ -172,6 +176,10 @@ export class CdkOption<T = unknown> implements ListKeyManagerOption, Highlightab
     }
   }
 
+  getElementRef() {
+    return this._elementRef;
+  }
+
   /** Sets the active property to true to enable the active css class. */
   setActiveStyles() {
     this._active = true;
@@ -191,6 +199,7 @@ export class CdkOption<T = unknown> implements ListKeyManagerOption, Highlightab
   exportAs: 'cdkListbox',
   host: {
     'role': 'listbox',
+    '[id]': 'id',
     '(keydown)': '_keydown($event)',
     '[attr.tabindex]': '_tabIndex',
     '[attr.aria-disabled]': 'disabled',
@@ -231,6 +240,8 @@ export class CdkListbox<T> implements AfterContentInit, OnDestroy, OnInit, Contr
   @Output() readonly selectionChange: EventEmitter<ListboxSelectionChangeEvent<T>> =
       new EventEmitter<ListboxSelectionChangeEvent<T>>();
 
+  @Input() id = `cdk-option-${listboxId++}`;
+
   /**
    * Whether the listbox allows multiple options to be selected.
    * If `multiple` switches from `true` to `false`, all options are deselected.
@@ -263,6 +274,10 @@ export class CdkListbox<T> implements AfterContentInit, OnDestroy, OnInit, Contr
 
   @Input() compareWith: (o1: T, o2: T) => boolean = (a1, a2) => a1 === a2;
 
+  @Input('parentPanel') private readonly _explicitPanel: CdkComboboxPanel;
+
+  constructor(@Optional() @Inject(PANEL) readonly _parentPanel?: CdkComboboxPanel<T>) { }
+
   ngOnInit() {
     this._selectionModel = new SelectionModel<CdkOption<T>>(this.multiple);
   }
@@ -270,11 +285,13 @@ export class CdkListbox<T> implements AfterContentInit, OnDestroy, OnInit, Contr
   ngAfterContentInit() {
     this._initKeyManager();
     this._initSelectionModel();
+    this._registerWithPanel();
 
     this.optionSelectionChanges.subscribe(event => {
       this._emitChangeEvent(event.source);
       this._updateSelectionModel(event.source);
       this.setActiveOption(event.source);
+      this._updatePanelForSelection(event.source);
     });
   }
 
@@ -282,6 +299,11 @@ export class CdkListbox<T> implements AfterContentInit, OnDestroy, OnInit, Contr
     this._listKeyManager.change.complete();
     this._destroyed.next();
     this._destroyed.complete();
+  }
+
+  private _registerWithPanel(): void {
+    const panel = this._parentPanel || this._explicitPanel;
+    panel?._registerContent(this.id, 'listbox');
   }
 
   private _initKeyManager() {
@@ -358,6 +380,13 @@ export class CdkListbox<T> implements AfterContentInit, OnDestroy, OnInit, Contr
                       this._selectionModel.deselect(option);
   }
 
+  _updatePanelForSelection(option: CdkOption<T>) {
+    if (!this.multiple) {
+      const panel = this._parentPanel || this._explicitPanel;
+      option.selected ? panel?.closePanel(option.value) : panel?.closePanel();
+    }
+  }
+
   /** Toggles the selected state of the active option if not disabled. */
   private _toggleActiveOption() {
     const activeOption = this._listKeyManager.activeItem;
@@ -420,6 +449,7 @@ export class CdkListbox<T> implements AfterContentInit, OnDestroy, OnInit, Contr
   /** Updates the key manager's active item to the given option. */
   setActiveOption(option: CdkOption<T>) {
     this._listKeyManager.updateActiveItem(option);
+    this._updateActiveOption();
   }
 
   /**
@@ -448,6 +478,11 @@ export class CdkListbox<T> implements AfterContentInit, OnDestroy, OnInit, Contr
   /** Disables the select. Required to implement ControlValueAccessor. */
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+  }
+
+  /** Returns the values of the currently selected options. */
+  getSelectedValues(): T[] {
+    return this._options.filter(option => option.selected).map(option => option.value);
   }
 
   /** Selects an option that has the corresponding given value. */
