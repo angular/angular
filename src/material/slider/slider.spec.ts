@@ -763,11 +763,12 @@ describe('MatSlider', () => {
       sliderNativeElement = sliderDebugElement.nativeElement;
     });
 
-    it('should emit change on mousedown', () => {
+    it('should emit change on mouseup', () => {
       expect(testComponent.onChange).not.toHaveBeenCalled();
 
       dispatchMousedownEventSequence(sliderNativeElement, 0.2);
       fixture.detectChanges();
+      dispatchSlideEndEvent(sliderNativeElement, 0.2);
 
       expect(testComponent.onChange).toHaveBeenCalledTimes(1);
     });
@@ -799,11 +800,14 @@ describe('MatSlider', () => {
       dispatchMousedownEventSequence(sliderNativeElement, 0.2);
       fixture.detectChanges();
 
-      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
+      expect(testComponent.onChange).not.toHaveBeenCalled();
       expect(testComponent.onInput).toHaveBeenCalledTimes(1);
 
       dispatchSlideEndEvent(sliderNativeElement, 0.2);
       fixture.detectChanges();
+
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
 
       testComponent.slider.value = 0;
       fixture.detectChanges();
@@ -813,6 +817,7 @@ describe('MatSlider', () => {
 
       dispatchMousedownEventSequence(sliderNativeElement, 0.2);
       fixture.detectChanges();
+      dispatchSlideEndEvent(sliderNativeElement, 0.2);
 
       expect(testComponent.onChange).toHaveBeenCalledTimes(2);
       expect(testComponent.onInput).toHaveBeenCalledTimes(2);
@@ -857,8 +862,8 @@ describe('MatSlider', () => {
       expect(testComponent.onChange).not.toHaveBeenCalled();
 
       dispatchMousedownEventSequence(sliderNativeElement, 0.75);
-
       fixture.detectChanges();
+      dispatchSlideEndEvent(sliderNativeElement, 0.75);
 
       // The `onInput` event should be emitted once due to a single click.
       expect(testComponent.onInput).toHaveBeenCalledTimes(1);
@@ -1270,11 +1275,12 @@ describe('MatSlider', () => {
       sliderNativeElement = sliderDebugElement.nativeElement;
     });
 
-    it('should update the model on mousedown', () => {
+    it('should update the model on mouseup', () => {
       expect(testComponent.val).toBe(0);
 
       dispatchMousedownEventSequence(sliderNativeElement, 0.76);
       fixture.detectChanges();
+      dispatchSlideEndEvent(sliderNativeElement, 0.76);
 
       expect(testComponent.val).toBe(76);
     });
@@ -1342,11 +1348,12 @@ describe('MatSlider', () => {
       expect(testComponent.control.value).toBe(0);
     });
 
-    it('should update the control on mousedown', () => {
+    it('should update the control on mouseup', () => {
       expect(testComponent.control.value).toBe(0);
 
       dispatchMousedownEventSequence(sliderNativeElement, 0.76);
       fixture.detectChanges();
+      dispatchSlideEndEvent(sliderNativeElement, 0.76);
 
       expect(testComponent.control.value).toBe(76);
     });
@@ -1399,6 +1406,7 @@ describe('MatSlider', () => {
       // but remain untouched.
       dispatchMousedownEventSequence(sliderNativeElement, 0.5);
       fixture.detectChanges();
+      dispatchSlideEndEvent(sliderNativeElement, 0.5);
 
       expect(sliderControl.valid).toBe(true);
       expect(sliderControl.pristine).toBe(false);
@@ -1435,6 +1443,7 @@ describe('MatSlider', () => {
 
       dispatchMousedownEventSequence(sliderNativeElement, 0.1);
       fixture.detectChanges();
+      dispatchSlideEndEvent(sliderNativeElement, 0.1);
 
       expect(testComponent.value).toBe(10);
       expect(testComponent.slider.value).toBe(10);

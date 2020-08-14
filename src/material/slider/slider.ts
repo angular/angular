@@ -470,9 +470,6 @@ export class MatSlider extends _MatSliderMixinBase
   /** The value of the slider when the slide start event fires. */
   private _valueOnSlideStart: number | null;
 
-  /** Position of the pointer when the dragging started. */
-  private _pointerPositionOnStart: {x: number, y: number} | null;
-
   /** Reference to the inner slider wrapper element. */
   @ViewChild('sliderWrapper') private _sliderWrapper: ElementRef;
 
@@ -639,13 +636,11 @@ export class MatSlider extends _MatSliderMixinBase
       this._bindGlobalEvents(event);
       this._focusHostElement();
       this._updateValueFromPosition(pointerPosition);
-      this._valueOnSlideStart = this.value;
-      this._pointerPositionOnStart = pointerPosition;
+      this._valueOnSlideStart = oldValue;
 
       // Emit a change and input event if the value changed.
       if (oldValue != this.value) {
         this._emitInputEvent();
-        this._emitChangeEvent();
       }
     });
   }
@@ -672,19 +667,15 @@ export class MatSlider extends _MatSliderMixinBase
   /** Called when the user has lifted their pointer. Bound on the document level. */
   private _pointerUp = (event: TouchEvent | MouseEvent) => {
     if (this._isSliding) {
-      const pointerPositionOnStart = this._pointerPositionOnStart;
-      const currentPointerPosition = getPointerPositionOnPage(event);
-
       event.preventDefault();
       this._removeGlobalEvents();
-      this._valueOnSlideStart = this._pointerPositionOnStart = this._lastPointerEvent = null;
       this._isSliding = false;
 
-      if (this._valueOnSlideStart != this.value && !this.disabled &&
-          pointerPositionOnStart && (pointerPositionOnStart.x !== currentPointerPosition.x ||
-          pointerPositionOnStart.y !== currentPointerPosition.y)) {
+      if (this._valueOnSlideStart != this.value && !this.disabled) {
         this._emitChangeEvent();
       }
+
+      this._valueOnSlideStart = this._lastPointerEvent = null;
     }
   }
 
