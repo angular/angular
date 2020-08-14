@@ -22,28 +22,31 @@ export function buildFormatParser(localYargs: yargs.Argv) {
         description: 'Run the formatter to check formatting rather than updating code format'
       })
       .command(
-          'all', 'Run the formatter on all files in the repository', {},
+          'all', 'Run the formatter on all files in the repository', args => args,
           ({check}) => {
             const executionCmd = check ? checkFiles : formatFiles;
             executionCmd(allFiles());
           })
       .command(
-          'changed [shaOrRef]', 'Run the formatter on files changed since the provided sha/ref', {},
+          'changed [shaOrRef]', 'Run the formatter on files changed since the provided sha/ref',
+          args => args.positional('shaOrRef', {type: 'string'}),
           ({shaOrRef, check}) => {
             const sha = shaOrRef || 'master';
             const executionCmd = check ? checkFiles : formatFiles;
             executionCmd(allChangedFilesSince(sha));
           })
       .command(
-          'staged', 'Run the formatter on all staged files', {},
+          'staged', 'Run the formatter on all staged files', args => args,
           ({check}) => {
             const executionCmd = check ? checkFiles : formatFiles;
             executionCmd(allStagedFiles());
           })
-      .command('files <files..>', 'Run the formatter on provided files', {}, ({check, files}) => {
-        const executionCmd = check ? checkFiles : formatFiles;
-        executionCmd(files);
-      });
+      .command(
+          'files <files..>', 'Run the formatter on provided files',
+          args => args.positional('files', {array: true, type: 'string'}), ({check, files}) => {
+            const executionCmd = check ? checkFiles : formatFiles;
+            executionCmd(files!);
+          });
 }
 
 if (require.main === module) {

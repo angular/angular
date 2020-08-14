@@ -88,7 +88,7 @@
     "@types/shelljs": "^0.8.6",
     "@types/systemjs": "0.19.32",
     "@types/yaml": "^1.2.0",
-    "@types/yargs": "^11.1.1",
+    "@types/yargs": "^15.0.5",
     "@webcomponents/custom-elements": "^1.1.0",
     "angular": "npm:angular@1.7",
     "angular-1.5": "npm:angular@1.5",
@@ -153,7 +153,7 @@
     "typescript": "~3.9.5",
     "xhr2": "0.2.0",
     "yaml": "^1.7.2",
-    "yargs": "15.3.0"
+    "yargs": "^15.4.1"
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
