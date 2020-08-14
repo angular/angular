@@ -7,7 +7,9 @@ import {MatCardHarness, MatCardSection} from '@angular/material/card/testing/car
 
 /** Shared tests to run on both the original and MDC-based cards. */
 export function runHarnessTests(
-    cardModule: typeof MatCardModule, cardHarness: typeof MatCardHarness) {
+    cardModule: typeof MatCardModule,
+    cardHarness: typeof MatCardHarness,
+    contentSelectors: {header: string, content: string, actions: string, footer: string}) {
   let fixture: ComponentFixture<CardHarnessTest>;
   let loader: HarnessLoader;
 
@@ -73,28 +75,28 @@ export function runHarnessTests(
 
   it('should get a harness loader for the card header', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
-    const headerLoader = await card.getChildLoader(MatCardSection.HEADER);
+    const headerLoader = await card.getChildLoader(contentSelectors.header as MatCardSection);
     const headerSubcomponents = await headerLoader?.getAllHarnesses(DummyHarness) ?? [];
     expect(headerSubcomponents.length).toBe(2);
   });
 
   it('should get a harness loader for the card content', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
-    const contentLoader = await card.getChildLoader(MatCardSection.CONTENT);
+    const contentLoader = await card.getChildLoader(contentSelectors.content as MatCardSection);
     const contentSubcomponents = await contentLoader?.getAllHarnesses(DummyHarness) ?? [];
     expect(contentSubcomponents.length).toBe(1);
   });
 
   it('should get a harness loader for the card actions', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
-    const actionLoader = await card.getChildLoader(MatCardSection.ACTIONS);
+    const actionLoader = await card.getChildLoader(contentSelectors.actions as MatCardSection);
     const actionSubcomponents = await actionLoader?.getAllHarnesses(DummyHarness) ?? [];
     expect(actionSubcomponents.length).toBe(2);
   });
 
   it('should get a harness loader for the card footer', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
-    const footerLoader = await card.getChildLoader(MatCardSection.FOOTER);
+    const footerLoader = await card.getChildLoader(contentSelectors.footer as MatCardSection);
     const footerSubcomponents = await footerLoader?.getAllHarnesses(DummyHarness) ?? [];
     expect(footerSubcomponents.length).toBe(1);
   });
