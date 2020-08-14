@@ -26,7 +26,7 @@ export class GithubApiRequestError extends Error {
  **/
 export class GithubClient extends Octokit {
   /** The Github GraphQL (v4) API. */
-  graqhql: GithubGraphqlClient;
+  graphql: GithubGraphqlClient;
 
   /** The current user based on checking against the Github API. */
   private _currentUser: string|null = null;
@@ -42,7 +42,7 @@ export class GithubClient extends Octokit {
     });
 
     // Create authenticated graphql client.
-    this.graqhql = new GithubGraphqlClient(token);
+    this.graphql = new GithubGraphqlClient(token);
   }
 
   /** Retrieve the login of the current user from Github. */
@@ -51,7 +51,7 @@ export class GithubClient extends Octokit {
     if (this._currentUser !== null) {
       return this._currentUser;
     }
-    const result = await this.graqhql.query({
+    const result = await this.graphql.query({
       viewer: {
         login: types.string,
       }
@@ -80,7 +80,7 @@ class GithubGraphqlClient {
     // Set the default headers to include authorization with the provided token for all
     // graphQL calls.
     if (token) {
-      this.graqhql.defaults({headers: {authorization: `token ${token}`}});
+      this.graqhql = this.graqhql.defaults({headers: {authorization: `token ${token}`}});
     }
   }
 
