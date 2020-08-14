@@ -91,7 +91,6 @@ class AngularCompilerProgram implements Program {
   private _analyzedModules: NgAnalyzedModules|undefined;
   private _analyzedInjectables: NgAnalyzedFileWithInjectables[]|undefined;
   private _structuralDiagnostics: Diagnostic[]|undefined;
-  private _programWithStubs: ts.Program|undefined;
   private _optionsDiagnostics: Diagnostic[] = [];
   private _transformTsDiagnostics: ts.Diagnostic[] = [];
 
@@ -593,13 +592,6 @@ class AngularCompilerProgram implements Program {
     // Note: This is important to not produce a memory leak!
     const oldTsProgram = this.oldTsProgram;
     this.oldTsProgram = undefined;
-
-    const codegen: CodeGenerator = {
-      generateFile: (genFileName, baseFileName) =>
-          this.compiler.emitBasicStub(genFileName, baseFileName),
-      findGeneratedFileNames: (fileName) => this.compiler.findGeneratedFileNames(fileName),
-    };
-
 
     let rootNames = [...this.rootNames];
     if (this.options.generateCodeForLibraries !== false) {
