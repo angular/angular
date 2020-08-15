@@ -110,48 +110,24 @@ class EventEmitter_ extends Subject<any> {
     let completeFn = (): any => null;
 
     if (generatorOrNext && typeof generatorOrNext === 'object') {
-      schedulerFn = this.__isAsync ? (value: any) => {
-        setTimeout(() => generatorOrNext.next(value));
-      } : (value: any) => {
-        generatorOrNext.next(value);
-      };
+      schedulerFn = this.createHanlder(value => generatorOrNext.next(value));
 
       if (generatorOrNext.error) {
-        errorFn = this.__isAsync ? (err) => {
-          setTimeout(() => generatorOrNext.error(err));
-        } : (err) => {
-          generatorOrNext.error(err);
-        };
+        errorFn = this.createHanlder(err => generatorOrNext.error(err));
       }
 
       if (generatorOrNext.complete) {
-        completeFn = this.__isAsync ? () => {
-          setTimeout(() => generatorOrNext.complete());
-        } : () => {
-          generatorOrNext.complete();
-        };
+        completeFn = this.createHanlder(() => generatorOrNext.complete());
       }
     } else {
-      schedulerFn = this.__isAsync ? (value: any) => {
-        setTimeout(() => generatorOrNext(value));
-      } : (value: any) => {
-        generatorOrNext(value);
-      };
+      schedulerFn = this.createHanlder(value => generatorOrNext(value));
 
       if (error) {
-        errorFn = this.__isAsync ? (err) => {
-          setTimeout(() => error(err));
-        } : (err) => {
-          error(err);
-        };
+        errorFn = this.createHanlder(err => error(err));
       }
 
       if (complete) {
-        completeFn = this.__isAsync ? () => {
-          setTimeout(() => complete());
-        } : () => {
-          complete();
-        };
+        completeFn = this.createHanlder(() => complete());
       }
     }
 
@@ -162,6 +138,17 @@ class EventEmitter_ extends Subject<any> {
     }
 
     return sink;
+  }
+
+  private createHanlder(callback: (...args: any) => void) {
+    if (this.__isAsync) {
+      return (...args: any) => {
+        setTimeout(() => callback(...args));
+      };
+    }
+    return (...args: any) => {
+      callback(...args);
+    };
   }
 }
 
