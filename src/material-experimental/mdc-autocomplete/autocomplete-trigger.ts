@@ -24,7 +24,7 @@ export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
 @Directive({
   selector: `input[matAutocomplete], textarea[matAutocomplete]`,
   host: {
-    'class': 'mat-autocomplete-trigger',
+    'class': 'mat-mdc-autocomplete-trigger',
     '[attr.autocomplete]': 'autocompleteAttribute',
     '[attr.role]': 'autocompleteDisabled ? null : "combobox"',
     '[attr.aria-autocomplete]': 'autocompleteDisabled ? null : "list"',
