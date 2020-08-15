@@ -383,6 +383,7 @@ interface UncaughtPromiseError extends Error {
   task: Task;
   promise: Promise<any>;
   rejection: any;
+  throwOriginal?: boolean;
 }
 
 /**

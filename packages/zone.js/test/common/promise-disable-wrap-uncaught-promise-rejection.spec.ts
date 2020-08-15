@@ -42,9 +42,9 @@ describe('disable wrap uncaught promise rejection', () => {
     setTimeout((): any => null);
     setTimeout(() => {
       expect(promiseError).toBe(error);
-      expect((promiseError as any)['rejection']).toBe(error);
-      expect((promiseError as any)['zone']).toBe(zone);
-      expect((promiseError as any)['task']).toBe(task);
+      expect((promiseError as any)['rejection']).toBe(undefined);
+      expect((promiseError as any)['zone']).toBe(undefined);
+      expect((promiseError as any)['task']).toBe(undefined);
       done();
     });
   });
@@ -73,6 +73,29 @@ describe('disable wrap uncaught promise rejection', () => {
     setTimeout((): any => null);
     setTimeout(() => {
       expect(promiseError).toEqual(rejectObj as any);
+      done();
+    });
+  });
+
+  it('should print original information when a primitive value is used for rejection', (done) => {
+    let promiseError: number|null = null;
+    Zone.current
+        .fork({
+          name: 'promise-error',
+          onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone, error: any):
+              boolean => {
+                promiseError = error;
+                delegate.handleError(target, error);
+                return false;
+              }
+        })
+        .run(() => {
+          Promise.reject(42);
+          expect(promiseError).toBe(null);
+        });
+    setTimeout((): any => null);
+    setTimeout(() => {
+      expect(promiseError).toBe(42);
       done();
     });
   });
