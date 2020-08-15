@@ -101,9 +101,14 @@ Notice that if you subscribe twice, there will be two separate streams, each emi
 
 <code-example path="observables/src/multicasting.ts" region="multicast_sequence" header="Create a multicast subscriber"></code-example>
 
-<div class="alert is-helpful">
-   Multicasting observables take a bit more setup, but they can be useful for certain applications. Later we will look at tools that simplify the process of multicasting, allowing you to take any observable and make it multicasting.
-</div>
+### Multicasting with a subject
+
+In RxJS, a `subject` is a special type of observable that allows values to be multicast to many Observers.
+
+In the following example, the `subject` emits the same current-page value to several observers.
+Each observer handles the received value differently when logging the current-page value, the next-page value, and the previous-page value.
+
+<code-example path="observables/src/multicasting-with-subject.ts" region="multicast_with_subject" header="Multicasting values to all subscriber"></code-example>
 
 ## Error handling
 
