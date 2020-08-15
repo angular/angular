@@ -2,7 +2,7 @@ load("//:packages.bzl", "ANGULAR_PACKAGE_BUNDLES")
 load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS")
 load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_ENTRYPOINTS")
 load("//src/material:config.bzl", "MATERIAL_ENTRYPOINTS", "MATERIAL_TESTING_ENTRYPOINTS")
-load("//src/material-experimental:config.bzl", "MATERIAL_EXPERIMENTAL_ENTRYPOINTS")
+load("//src/material-experimental:config.bzl", "MATERIAL_EXPERIMENTAL_ENTRYPOINTS", "MATERIAL_EXPERIMENTAL_TESTING_ENTRYPOINTS")
 load("//tools:expand_template.bzl", "expand_template")
 
 """
@@ -34,7 +34,7 @@ def create_system_config(
             "$CDK_ENTRYPOINTS_TMPL": str(CDK_ENTRYPOINTS),
             "$CDK_EXPERIMENTAL_ENTRYPOINTS_TMPL": str(CDK_EXPERIMENTAL_ENTRYPOINTS),
             "$MATERIAL_ENTRYPOINTS_TMPL": str(MATERIAL_ENTRYPOINTS + MATERIAL_TESTING_ENTRYPOINTS),
-            "$MATERIAL_EXPERIMENTAL_ENTRYPOINTS_TMPL": str(MATERIAL_EXPERIMENTAL_ENTRYPOINTS),
+            "$MATERIAL_EXPERIMENTAL_ENTRYPOINTS_TMPL": str(MATERIAL_EXPERIMENTAL_ENTRYPOINTS + MATERIAL_EXPERIMENTAL_TESTING_ENTRYPOINTS),
             "$NODE_MODULES_BASE_PATH": node_modules_base_path,
             "$PACKAGES_DIR": packages_dir,
         },
