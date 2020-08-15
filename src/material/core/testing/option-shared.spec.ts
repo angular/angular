@@ -12,7 +12,9 @@ import {MatOptionHarness} from './option-harness';
 
 /** Shared tests to run on both the original and MDC-based options. */
 export function runHarnessTests(
-    optionModule: typeof MatOptionModule, optionHarness: typeof MatOptionHarness) {
+    optionModule: typeof MatOptionModule,
+    optionHarness: typeof MatOptionHarness,
+    optionComponent: typeof MatOption) {
   let fixture: ComponentFixture<OptionHarnessTest>;
   let loader: HarnessLoader;
 
@@ -102,21 +104,19 @@ export function runHarnessTests(
 
     expect(await option.isMultiple()).toBe(true);
   });
+
+  @Component({
+    providers: [{
+      provide: MAT_OPTION_PARENT_COMPONENT,
+      useExisting: OptionHarnessTest
+    }],
+    template: `
+      <mat-option>Plain option</mat-option>
+      <mat-option disabled>Disabled option</mat-option>
+    `
+  })
+  class OptionHarnessTest implements MatOptionParentComponent {
+    @ViewChildren(optionComponent) options: QueryList<{setActiveStyles(): void}>;
+    multiple = false;
+  }
 }
-
-
-@Component({
-  providers: [{
-    provide: MAT_OPTION_PARENT_COMPONENT,
-    useExisting: OptionHarnessTest
-  }],
-  template: `
-    <mat-option>Plain option</mat-option>
-    <mat-option disabled>Disabled option</mat-option>
-  `
-})
-class OptionHarnessTest implements MatOptionParentComponent {
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
-  multiple = false;
-}
-
