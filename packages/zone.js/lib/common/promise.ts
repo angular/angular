@@ -1,5 +1,3 @@
-import {patchMethod} from './utils';
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -7,6 +5,8 @@ import {patchMethod} from './utils';
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {patchMethod} from './utils';
+
 Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const ObjectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
   const ObjectDefineProperty = Object.defineProperty;
@@ -48,6 +48,9 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
       const uncaughtPromiseError: UncaughtPromiseError = _uncaughtPromiseErrors.shift()!;
       try {
         uncaughtPromiseError.zone.runGuarded(() => {
+          if (uncaughtPromiseError.throwOriginal) {
+            throw uncaughtPromiseError.rejection;
+          }
           throw uncaughtPromiseError;
         });
       } catch (error) {
@@ -191,20 +194,20 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
         if (queue.length == 0 && state == REJECTED) {
           (promise as any)[symbolState] = REJECTED_NO_CATCH;
           let uncaughtPromiseError = value;
-          if (!isDisableWrappingUncaughtPromiseRejection) {
+          try {
+            // Here we throws a new Error to print more readable error log
+            // and if the value is not an error, zone.js builds an `Error`
+            // Object here to attach the stack information.
+            throw new Error(
+                'Uncaught (in promise): ' + readableObjectToString(value) +
+                (value && value.stack ? '\n' + value.stack : ''));
+          } catch (err) {
+            uncaughtPromiseError = err;
+          }
+          if (isDisableWrappingUncaughtPromiseRejection) {
             // If disable wrapping uncaught promise reject
-            // and the rejected value is an Error object,
             // use the value instead of wrapping it.
-            try {
-              // Here we throws a new Error to print more readable error log
-              // and if the value is not an error, zone.js builds an `Error`
-              // Object here to attach the stack information.
-              throw new Error(
-                  'Uncaught (in promise): ' + readableObjectToString(value) +
-                  (value && value.stack ? '\n' + value.stack : ''));
-            } catch (err) {
-              uncaughtPromiseError = err;
-            }
+            uncaughtPromiseError.throwOriginal = true;
           }
           uncaughtPromiseError.rejection = value;
           uncaughtPromiseError.promise = promise;
