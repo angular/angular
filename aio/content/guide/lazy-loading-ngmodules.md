@@ -87,7 +87,7 @@ To make one, enter the following command in the terminal, where `customers` is t
 ng generate module customers --route customers --module app.module
 </code-example>
 
-This creates a `customers` folder with the new lazy-loadable module `CustomersModule` defined in the `customers.module.ts` file. The command automatically declares the `CustomersComponent` inside the new feature module.
+This creates a `customers` folder having the new lazy-loadable feature module `CustomersModule` defined in the `customers.module.ts` file and the routing module `CustomersRoutingModule` defined in the `customers-routing.module.ts` file. The command automatically declares the `CustomersComponent` and imports `CustomersRoutingModule` inside the new feature module.
 
 Because the new module is meant to be lazy-loaded, the command does NOT add a reference to the new feature module in the application's root module file, `app.module.ts`.
 Instead, it adds the declared route, `customers` to the `routes` array declared in the module provided as the `--module` option.
