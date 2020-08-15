@@ -93,7 +93,7 @@ describe('create router state', () => {
   });
 
   it('should not retrieve routes when `shouldAttach` is always false', () => {
-    const config = [
+    const config: Routes = [
       {path: 'a', component: ComponentA}, {path: 'b', component: ComponentB, outlet: 'left'},
       {path: 'c', component: ComponentC, outlet: 'left'}
     ];
@@ -107,7 +107,7 @@ describe('create router state', () => {
   });
 
   it('should consistently represent future and current state', () => {
-    const config = [
+    const config: Routes = [
       {path: '', pathMatch: 'full', component: ComponentA},
       {path: 'product/:id', component: ComponentB}
     ];
