@@ -34,7 +34,19 @@ runInEachFileSystem(() => {
             mockMessage('13579', ['', 'b', ''], ['START_BOLD_TEXT', 'CLOSE_BOLD_TEXT'], {}),
             mockMessage('24680', ['a'], [], {meaning: 'meaning', description: 'and description'}),
             mockMessage('80808', ['multi\nlines'], [], {}),
-            mockMessage('90000', ['<escape', 'me>'], ['double-quotes-"'], {})
+            mockMessage('90000', ['<escape', 'me>'], ['double-quotes-"'], {}),
+            mockMessage(
+                '100000',
+                [
+                  'pre-ICU {VAR_SELECT, select, a {a} b {{INTERPOLATION}} c {pre {INTERPOLATION_1} post}} post-ICU'
+                ],
+                [], {}),
+            mockMessage(
+                '100001',
+                [
+                  '{VAR_PLURAL, plural, one {{START_BOLD_TEXT}something bold{CLOSE_BOLD_TEXT}} other {pre {START_TAG_SPAN}middle{CLOSE_TAG_SPAN} post}}'
+                ],
+                [], {}),
           ];
           const serializer =
               new Xliff1TranslationSerializer('xx', absoluteFrom('/project'), useLegacyIds);
@@ -72,6 +84,12 @@ runInEachFileSystem(() => {
             `      </trans-unit>`,
             `      <trans-unit id="90000" datatype="html">`,
             `        <source>&lt;escape<x id="double-quotes-&quot;"/>me&gt;</source>`,
+            `      </trans-unit>`,
+            `      <trans-unit id="100000" datatype="html">`,
+            `        <source>pre-ICU {VAR_SELECT, select, a {a} b {<x id="INTERPOLATION"/>} c {pre <x id="INTERPOLATION_1"/> post}} post-ICU</source>`,
+            `      </trans-unit>`,
+            `      <trans-unit id="100001" datatype="html">`,
+            `        <source>{VAR_PLURAL, plural, one {<x id="START_BOLD_TEXT"/>something bold<x id="CLOSE_BOLD_TEXT"/>} other {pre <x id="START_TAG_SPAN"/>middle<x id="CLOSE_TAG_SPAN"/> post}}</source>`,
             `      </trans-unit>`,
             `    </body>`,
             `  </file>`,

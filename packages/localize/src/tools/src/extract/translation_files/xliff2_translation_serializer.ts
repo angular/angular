@@ -8,6 +8,7 @@
 import {AbsoluteFsPath, relative} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage} from '@angular/localize';
 
+import {extractIcuPlaceholders} from './icu_parsing';
 import {TranslationSerializer} from './translation_serializer';
 import {XmlFile} from './xml_file';
 
@@ -22,6 +23,7 @@ const MAX_LEGACY_XLIFF_2_MESSAGE_LENGTH = 20;
  * @see Xliff2TranslationParser
  */
 export class Xliff2TranslationSerializer implements TranslationSerializer {
+  private currentPlaceholderId = 0;
   constructor(
       private sourceLocale: string, private basePath: AbsoluteFsPath,
       private useLegacyIds: boolean) {}
@@ -74,21 +76,38 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
   }
 
   private serializeMessage(xml: XmlFile, message: ɵParsedMessage): void {
-    xml.text(message.messageParts[0]);
-    for (let i = 1; i < message.messageParts.length; i++) {
-      const placeholderName = message.placeholderNames[i - 1];
-      if (placeholderName.startsWith('START_')) {
-        xml.startTag('pc', {
-          id: `${i}`,
-          equivStart: placeholderName,
-          equivEnd: placeholderName.replace(/^START/, 'CLOSE')
-        });
-      } else if (placeholderName.startsWith('CLOSE_')) {
-        xml.endTag('pc');
-      } else {
-        xml.startTag('ph', {id: `${i}`, equiv: placeholderName}, {selfClosing: true});
-      }
-      xml.text(message.messageParts[i]);
+    this.currentPlaceholderId = 0;
+    const length = message.messageParts.length - 1;
+    for (let i = 0; i < length; i++) {
+      this.serializeTextPart(xml, message.messageParts[i]);
+      this.serializePlaceholder(xml, message.placeholderNames[i]);
+    }
+    this.serializeTextPart(xml, message.messageParts[length]);
+  }
+
+  private serializeTextPart(xml: XmlFile, text: string): void {
+    const pieces = extractIcuPlaceholders(text);
+    const length = pieces.length - 1;
+    for (let i = 0; i < length; i += 2) {
+      xml.text(pieces[i]);
+      this.serializePlaceholder(xml, pieces[i + 1]);
+    }
+    xml.text(pieces[length]);
+  }
+
+  private serializePlaceholder(xml: XmlFile, placeholderName: string): void {
+    if (placeholderName.startsWith('START_')) {
+      xml.startTag('pc', {
+        id: `${this.currentPlaceholderId++}`,
+        equivStart: placeholderName,
+        equivEnd: placeholderName.replace(/^START/, 'CLOSE')
+      });
+    } else if (placeholderName.startsWith('CLOSE_')) {
+      xml.endTag('pc');
+    } else {
+      xml.startTag(
+          'ph', {id: `${this.currentPlaceholderId++}`, equiv: placeholderName},
+          {selfClosing: true});
     }
   }
 
