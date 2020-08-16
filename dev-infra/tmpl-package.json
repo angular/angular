@@ -19,6 +19,7 @@
     "inquirer": "<from-root>",
     "minimatch": "<from-root>",
     "multimatch": "<from-root>",
+    "node-fetch": "<from-root>",
     "node-uuid": "<from-root>",
     "semver": "<from-root>",
     "shelljs": "<from-root>",

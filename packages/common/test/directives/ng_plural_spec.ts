@@ -8,7 +8,7 @@
 
 import {CommonModule, NgLocalization} from '@angular/common';
 import {Component, Injectable} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
@@ -36,7 +36,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       });
     });
 
-    it('should display the template according to the exact value', async(() => {
+    it('should display the template according to the exact value', waitForAsync(() => {
          const template = '<ul [ngPlural]="switchValue">' +
              '<ng-template ngPluralCase="=0"><li>you have no messages.</li></ng-template>' +
              '<ng-template ngPluralCase="=1"><li>you have one message.</li></ng-template>' +
@@ -51,7 +51,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          detectChangesAndExpectText('you have one message.');
        }));
 
-    it('should display the template according to the exact numeric value', async(() => {
+    it('should display the template according to the exact numeric value', waitForAsync(() => {
          const template = '<div>' +
              '<ul [ngPlural]="switchValue">' +
              '<ng-template ngPluralCase="0"><li>you have no messages.</li></ng-template>' +
@@ -69,7 +69,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
     // https://github.com/angular/angular/issues/9868
     // https://github.com/angular/angular/issues/9882
-    it('should not throw when ngPluralCase contains expressions', async(() => {
+    it('should not throw when ngPluralCase contains expressions', waitForAsync(() => {
          const template = '<ul [ngPlural]="switchValue">' +
              '<ng-template ngPluralCase="=0"><li>{{ switchValue }}</li></ng-template>' +
              '</ul>';
@@ -81,7 +81,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
        }));
 
 
-    it('should be applicable to <ng-container> elements', async(() => {
+    it('should be applicable to <ng-container> elements', waitForAsync(() => {
          const template = '<ng-container [ngPlural]="switchValue">' +
              '<ng-template ngPluralCase="=0">you have no messages.</ng-template>' +
              '<ng-template ngPluralCase="=1">you have one message.</ng-template>' +
@@ -96,7 +96,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          detectChangesAndExpectText('you have one message.');
        }));
 
-    it('should display the template according to the category', async(() => {
+    it('should display the template according to the category', waitForAsync(() => {
          const template = '<ul [ngPlural]="switchValue">' +
              '<ng-template ngPluralCase="few"><li>you have a few messages.</li></ng-template>' +
              '<ng-template ngPluralCase="many"><li>you have many messages.</li></ng-template>' +
@@ -111,7 +111,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          detectChangesAndExpectText('you have many messages.');
        }));
 
-    it('should default to other when no matches are found', async(() => {
+    it('should default to other when no matches are found', waitForAsync(() => {
          const template = '<ul [ngPlural]="switchValue">' +
              '<ng-template ngPluralCase="few"><li>you have a few messages.</li></ng-template>' +
              '<ng-template ngPluralCase="other"><li>default message.</li></ng-template>' +
@@ -123,7 +123,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          detectChangesAndExpectText('default message.');
        }));
 
-    it('should prioritize value matches over category matches', async(() => {
+    it('should prioritize value matches over category matches', waitForAsync(() => {
          const template = '<ul [ngPlural]="switchValue">' +
              '<ng-template ngPluralCase="few"><li>you have a few messages.</li></ng-template>' +
              '<ng-template ngPluralCase="=2">you have two messages.</ng-template>' +

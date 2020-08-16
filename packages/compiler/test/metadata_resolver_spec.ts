@@ -8,7 +8,7 @@
 
 import {LIFECYCLE_HOOKS_VALUES, LifecycleHooks} from '@angular/compiler/src/lifecycle_reflector';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
-import {async, inject, TestBed} from '@angular/core/testing';
+import {inject, TestBed, waitForAsync} from '@angular/core/testing';
 
 import {CompileDiDependencyMetadata, identifierName} from '../src/compile_metadata';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
@@ -77,7 +77,7 @@ import {TEST_COMPILER_PROVIDERS} from './test_bindings';
        }));
 
     it('should read external metadata when sync=false',
-       async(inject(
+       waitForAsync(inject(
            [CompileMetadataResolver, ResourceLoader],
            (resolver: CompileMetadataResolver, resourceLoader: MockResourceLoader) => {
              @NgModule({declarations: [ComponentWithExternalResources]})
@@ -96,7 +96,7 @@ import {TEST_COMPILER_PROVIDERS} from './test_bindings';
            })));
 
     it('should use `./` as base url for templates during runtime compilation if no moduleId is given',
-       async(inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+       waitForAsync(inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @Component({selector: 'someComponent', templateUrl: 'someUrl'})
          class ComponentWithoutModuleId {
          }

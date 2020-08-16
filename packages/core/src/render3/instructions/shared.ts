@@ -236,6 +236,13 @@ export function getOrCreateTNode(
   const tNode = tView.data[adjustedIndex] as TNode ||
       createTNodeAtIndex(tView, tHostNode, adjustedIndex, type, name, attrs);
   setPreviousOrParentTNode(tNode, true);
+  if (ngDevMode) {
+    // For performance reasons it is important that the tNode retains the same shape during runtime.
+    // (To make sure that all of the code is monomorphic.) For this reason we seal the object to
+    // prevent class transitions.
+    // FIXME(misko): re-enable this once i18n code is compliant with this.
+    // Object.seal(tNode);
+  }
   return tNode as TElementNode & TViewNode & TContainerNode & TElementContainerNode &
       TProjectionNode & TIcuContainerNode;
 }
@@ -692,7 +699,9 @@ export function createTView(
              null,                                           // firstChild: TNode|null,
              schemas,                                        // schemas: SchemaMetadata[]|null,
              consts,                                         // consts: TConstants|null
-             false                                           // incompleteFirstPass: boolean
+             false,                                          // incompleteFirstPass: boolean
+             decls,                                          // ngDevMode only: decls
+             vars,                                           // ngDevMode only: vars
              ) :
       {
         type: type,

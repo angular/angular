@@ -10,7 +10,7 @@ import {EventEmitter} from '@angular/core';
 import {Injectable} from '@angular/core/src/di';
 import {PendingMacrotask, Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {async, fakeAsync, flush, tick} from '@angular/core/testing';
+import {fakeAsync, flush, tick, waitForAsync} from '@angular/core/testing';
 import {beforeEach, describe, expect, it, SpyObject} from '@angular/core/testing/src/testing_internal';
 
 import {scheduleMicroTask} from '../../src/util/microtask';
@@ -55,7 +55,7 @@ class MockNgZone extends NgZone {
     let updateCallback: any;
     let ngZone: MockNgZone;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       ngZone = new MockNgZone();
       testability = new Testability(ngZone);
       execute = new SpyObject().spy('execute');
@@ -68,7 +68,7 @@ class MockNgZone extends NgZone {
         expect(testability.getPendingRequestCount()).toEqual(0);
       });
 
-      it('should fire whenstable callbacks if pending count is 0', async(() => {
+      it('should fire whenstable callbacks if pending count is 0', waitForAsync(() => {
            testability.whenStable(execute);
 
            microTask(() => {
@@ -81,7 +81,7 @@ class MockNgZone extends NgZone {
         expect(execute).not.toHaveBeenCalled();
       });
 
-      it('should not call whenstable callbacks when there are pending counts', async(() => {
+      it('should not call whenstable callbacks when there are pending counts', waitForAsync(() => {
            testability.increasePendingRequestCount();
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
@@ -96,7 +96,7 @@ class MockNgZone extends NgZone {
            });
          }));
 
-      it('should fire whenstable callbacks when pending drops to 0', async(() => {
+      it('should fire whenstable callbacks when pending drops to 0', waitForAsync(() => {
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
 
@@ -110,7 +110,8 @@ class MockNgZone extends NgZone {
            });
          }));
 
-      it('should not fire whenstable callbacks synchronously when pending drops to 0', async(() => {
+      it('should not fire whenstable callbacks synchronously when pending drops to 0',
+         waitForAsync(() => {
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
            testability.decreasePendingRequestCount();
@@ -118,7 +119,7 @@ class MockNgZone extends NgZone {
            expect(execute).not.toHaveBeenCalled();
          }));
 
-      it('should fire whenstable callbacks with didWork if pending count is 0', async(() => {
+      it('should fire whenstable callbacks with didWork if pending count is 0', waitForAsync(() => {
            microTask(() => {
              testability.whenStable(execute);
 
@@ -128,7 +129,8 @@ class MockNgZone extends NgZone {
            });
          }));
 
-      it('should fire whenstable callbacks with didWork when pending drops to 0', async(() => {
+      it('should fire whenstable callbacks with didWork when pending drops to 0',
+         waitForAsync(() => {
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
 
@@ -165,7 +167,7 @@ class MockNgZone extends NgZone {
              clearTimeout(id);
            }));
 
-        it('should fire if Angular is already stable', async(() => {
+        it('should fire if Angular is already stable', waitForAsync(() => {
              testability.whenStable(execute, 200);
 
              microTask(() => {
@@ -363,7 +365,7 @@ class MockNgZone extends NgZone {
     let registry: TestabilityRegistry;
     let ngZone: MockNgZone;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       ngZone = new MockNgZone();
       testability1 = new Testability(ngZone);
       testability2 = new Testability(ngZone);

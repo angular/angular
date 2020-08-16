@@ -306,9 +306,9 @@ If you develop angular locally with `ng serve`, a `websocket` connection is set 
 In Windows, by default, one application can only have 6 websocket connections, <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket Settings</a>.
 So when IE is refreshed (manually or automatically by `ng serve`), sometimes the websocket does not close properly. When websocket connections exceed the limitations, a `SecurityError` will be thrown. This error will not affect the angular application, you can just restart IE to clear this error, or modify the windows registry to update the limitations.
 
-## Appendix: Test using `fakeAsync()/async()`
+## Appendix: Test using `fakeAsync()/waitForAsync()`
 
-If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read the [Testing guide](guide/testing-components-scenarios#fake-async)), you need to import `zone.js/dist/zone-testing` in your test setup file.
+If you use the `fakeAsync()/waitForAsync()` helper function to run unit tests (for details, read the [Testing guide](guide/testing-components-scenarios#fake-async)), you need to import `zone.js/dist/zone-testing` in your test setup file.
 
 <div class="alert is-important">
 If you create project with `Angular/CLI`, it is already imported in `src/test.ts`.

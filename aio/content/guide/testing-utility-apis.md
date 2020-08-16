@@ -25,7 +25,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
     <td>
 
       Runs the body of a test (`it`) or setup (`beforeEach`) function within a special _async test zone_.
-      See [discussion above](guide/testing-components-scenarios#async).
+      See [discussion above](guide/testing-components-scenarios#waitForAsync).
 
     </td>
   </tr>

@@ -7,7 +7,7 @@
  */
 
 import {Component, destroyPlatform, Directive, ElementRef, Injector, Input, NgModule, NgZone, SimpleChanges} from '@angular/core';
-import {async} from '@angular/core/testing';
+import {waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
@@ -22,7 +22,7 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should not break if a $digest is already in progress', async(() => {
+    it('should not break if a $digest is already in progress', waitForAsync(() => {
          const element = html('<my-app></my-app>');
 
          @Component({selector: 'my-app', template: ''})
@@ -77,7 +77,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should interleave scope and component expressions', async(() => {
+    it('should interleave scope and component expressions', waitForAsync(() => {
          const log: string[] = [];
          const l = (value: string) => {
            log.push(value);
@@ -132,7 +132,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should propagate changes to a downgraded component inside the ngZone', async(() => {
+    it('should propagate changes to a downgraded component inside the ngZone', waitForAsync(() => {
          const element = html('<my-app></my-app>');
          let appComponent: AppComponent;
 

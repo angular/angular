@@ -6,7 +6,7 @@ import {CommitMessageConfig} from '../dev-infra/commit-message/config';
 export const commitMessage: CommitMessageConfig = {
   maxLineLength: 120,
   minBodyLength: 20,
-  minBodyLengthTypeExcludes: ['docs'],
+  minBodyLengthTypeExcludes: ['docs', 'upstream'],
   types: [
     'build',
     'ci',
@@ -18,6 +18,7 @@ export const commitMessage: CommitMessageConfig = {
     'release',
     'style',
     'test',
+    'upstream',
   ],
   scopes: [
     'animations',

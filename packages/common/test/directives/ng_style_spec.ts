@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
 {
   describe('NgStyle', () => {
@@ -30,14 +30,14 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
       TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});
     });
 
-    it('should add styles specified in an object literal', async(() => {
+    it('should add styles specified in an object literal', waitForAsync(() => {
          const template = `<div [ngStyle]="{'max-width': '40px'}"></div>`;
          fixture = createTestComponent(template);
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
        }));
 
-    it('should add and change styles specified in an object expression', async(() => {
+    it('should add and change styles specified in an object expression', waitForAsync(() => {
          const template = `<div [ngStyle]="expr"></div>`;
          fixture = createTestComponent(template);
 
@@ -51,7 +51,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '30%'});
        }));
 
-    it('should add and remove styles specified using style.unit notation', async(() => {
+    it('should add and remove styles specified using style.unit notation', waitForAsync(() => {
          const template = `<div [ngStyle]="{'max-width.px': expr}"></div>`;
 
          fixture = createTestComponent(template);
@@ -66,7 +66,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
        }));
 
     // https://github.com/angular/angular/issues/21064
-    it('should add and remove styles which names are not dash-cased', async(() => {
+    it('should add and remove styles which names are not dash-cased', waitForAsync(() => {
          fixture = createTestComponent(`<div [ngStyle]="{'color': expr}"></div>`);
 
          getComponent().expr = 'green';
@@ -78,7 +78,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
          expectNativeEl(fixture).not.toHaveCssStyle('color');
        }));
 
-    it('should update styles using style.unit notation when unit changes', async(() => {
+    it('should update styles using style.unit notation when unit changes', waitForAsync(() => {
          const template = `<div [ngStyle]="expr"></div>`;
 
          fixture = createTestComponent(template);
@@ -93,7 +93,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
        }));
 
     // keyValueDiffer is sensitive to key order #9115
-    it('should change styles specified in an object expression', async(() => {
+    it('should change styles specified in an object expression', waitForAsync(() => {
          const template = `<div [ngStyle]="expr"></div>`;
 
          fixture = createTestComponent(template);
@@ -117,7 +117,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
          expectNativeEl(fixture).toHaveCssStyle({'height': '5px', 'width': '5px'});
        }));
 
-    it('should remove styles when deleting a key in an object expression', async(() => {
+    it('should remove styles when deleting a key in an object expression', waitForAsync(() => {
          const template = `<div [ngStyle]="expr"></div>`;
 
          fixture = createTestComponent(template);
@@ -131,7 +131,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
          expectNativeEl(fixture).not.toHaveCssStyle('max-width');
        }));
 
-    it('should co-operate with the style attribute', async(() => {
+    it('should co-operate with the style attribute', waitForAsync(() => {
          const template = `<div style="font-size: 12px" [ngStyle]="expr"></div>`;
 
          fixture = createTestComponent(template);
@@ -147,7 +147,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
        }));
 
     it('should co-operate with the style.[styleName]="expr" special-case in the compiler',
-       async(() => {
+       waitForAsync(() => {
          const template = `<div [style.font-size.px]="12" [ngStyle]="expr"></div>`;
 
          fixture = createTestComponent(template);

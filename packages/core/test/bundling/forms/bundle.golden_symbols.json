@@ -702,9 +702,6 @@
     "name": "_keyMap"
   },
   {
-    "name": "_mergeErrors"
-  },
-  {
     "name": "_noControlError"
   },
   {
@@ -913,6 +910,9 @@
   },
   {
     "name": "executeTemplate"
+  },
+  {
+    "name": "executeValidators"
   },
   {
     "name": "executeViewQueryFn"
@@ -1347,6 +1347,9 @@
     "name": "mergeAll"
   },
   {
+    "name": "mergeErrors"
+  },
+  {
     "name": "mergeHostAttribute"
   },
   {
@@ -1401,10 +1404,7 @@
     "name": "noop"
   },
   {
-    "name": "normalizeAsyncValidator"
-  },
-  {
-    "name": "normalizeValidator"
+    "name": "normalizeValidators"
   },
   {
     "name": "observable"

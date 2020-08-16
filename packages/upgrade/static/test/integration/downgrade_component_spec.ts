@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Compiler, Component, destroyPlatform, Directive, ElementRef, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
-import {async, fakeAsync, tick} from '@angular/core/testing';
+import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
@@ -22,7 +22,7 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should bind properties, events', async(() => {
+    it('should bind properties, events', waitForAsync(() => {
          const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
            $rootScope['name'] = 'world';
            $rootScope['dataA'] = 'A';
@@ -146,7 +146,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should bind properties to onpush components', async(() => {
+    it('should bind properties to onpush components', waitForAsync(() => {
          const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
            $rootScope['dataB'] = 'B';
          });
@@ -188,7 +188,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should support two-way binding and event listener', async(() => {
+    it('should support two-way binding and event listener', waitForAsync(() => {
          const listenerSpy = jasmine.createSpy('$rootScope.listener');
          const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
            $rootScope['value'] = 'world';
@@ -240,7 +240,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should run change-detection on every digest (by default)', async(() => {
+    it('should run change-detection on every digest (by default)', waitForAsync(() => {
          let ng2Component: Ng2Component;
 
          @Component({selector: 'ng2', template: '{{ value1 }} | {{ value2 }}'})
@@ -305,7 +305,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should not run change-detection on every digest when opted out', async(() => {
+    it('should not run change-detection on every digest when opted out', waitForAsync(() => {
          let ng2Component: Ng2Component;
 
          @Component({selector: 'ng2', template: '{{ value1 }} | {{ value2 }}'})
@@ -408,7 +408,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should initialize inputs in time for `ngOnChanges`', async(() => {
+    it('should initialize inputs in time for `ngOnChanges`', waitForAsync(() => {
          @Component({
            selector: 'ng2',
            template: `
@@ -468,7 +468,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should bind to ng-model', async(() => {
+    it('should bind to ng-model', waitForAsync(() => {
          const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
            $rootScope['modelA'] = 'A';
          });
@@ -534,7 +534,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should properly run cleanup when ng1 directive is destroyed', async(() => {
+    it('should properly run cleanup when ng1 directive is destroyed', waitForAsync(() => {
          let destroyed = false;
          @Component({selector: 'ng2', template: 'test'})
          class Ng2Component implements OnDestroy {
@@ -574,7 +574,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should properly run cleanup with multiple levels of nesting', async(() => {
+    it('should properly run cleanup with multiple levels of nesting', waitForAsync(() => {
          let destroyed = false;
 
          @Component({
@@ -628,7 +628,7 @@ withEachNg1Version(() => {
        }));
 
     it('should work when compiled outside the dom (by fallback to the root ng2.injector)',
-       async(() => {
+       waitForAsync(() => {
          @Component({selector: 'ng2', template: 'test'})
          class Ng2Component {
          }
@@ -674,7 +674,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should allow attribute selectors for downgraded components', async(() => {
+    it('should allow attribute selectors for downgraded components', waitForAsync(() => {
          @Component({selector: '[itWorks]', template: 'It works'})
          class WorksComponent {
          }
@@ -698,7 +698,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should allow attribute selectors for components in ng2', async(() => {
+    it('should allow attribute selectors for components in ng2', waitForAsync(() => {
          @Component({selector: '[itWorks]', template: 'It works'})
          class WorksComponent {
          }
@@ -726,7 +726,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should respect hierarchical dependency injection for ng2', async(() => {
+    it('should respect hierarchical dependency injection for ng2', waitForAsync(() => {
          @Component({selector: 'parent', template: 'parent(<ng-content></ng-content>)'})
          class ParentComponent {
          }
@@ -757,7 +757,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should be compiled synchronously, if possible', async(() => {
+    it('should be compiled synchronously, if possible', waitForAsync(() => {
          @Component({selector: 'ng2A', template: '<ng-content></ng-content>'})
          class Ng2ComponentA {
          }
@@ -786,7 +786,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should work with ng2 lazy loaded components', async(() => {
+    it('should work with ng2 lazy loaded components', waitForAsync(() => {
          let componentInjector: Injector;
 
          @Component({selector: 'ng2', template: ''})
@@ -836,7 +836,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should throw if `downgradedModule` is specified', async(() => {
+    it('should throw if `downgradedModule` is specified', waitForAsync(() => {
          @Component({selector: 'ng2', template: ''})
          class Ng2Component {
          }

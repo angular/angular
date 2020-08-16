@@ -15,15 +15,14 @@ import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
-import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
-import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
+import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TNodeTypeAsString, TViewNode} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {LQueries, TQueries} from '../interfaces/query';
 import {RComment, RElement, Renderer3, RendererFactory3, RNode} from '../interfaces/renderer';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, DestroyHookData, ExpandoInstructions, FLAGS, HEADER_OFFSET, HookData, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TVIEW, TView as ITView, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, ExpandoInstructions, FLAGS, HEADER_OFFSET, HookData, HOST, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType} from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
-import {getTNode, unwrapRNode} from '../util/view_utils';
+import {unwrapRNode} from '../util/view_utils';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
 
@@ -143,7 +142,10 @@ export const TViewConstructor = class TView implements ITView {
       public firstChild: ITNode|null,                        //
       public schemas: SchemaMetadata[]|null,                 //
       public consts: TConstants|null,                        //
-      public incompleteFirstPass: boolean                    //
+      public incompleteFirstPass: boolean,                   //
+      public _decls: number,                                 //
+      public _vars: number,                                  //
+
   ) {}
 
   get template_(): string {
@@ -335,9 +337,9 @@ export function attachLContainerDebug(lContainer: LContainer) {
   attachDebugObject(lContainer, new LContainerDebug(lContainer));
 }
 
-export function toDebug(obj: LView): LViewDebug;
-export function toDebug(obj: LView|null): LViewDebug|null;
-export function toDebug(obj: LView|LContainer|null): LViewDebug|LContainerDebug|null;
+export function toDebug(obj: LView): ILViewDebug;
+export function toDebug(obj: LView|null): ILViewDebug|null;
+export function toDebug(obj: LView|LContainer|null): ILViewDebug|ILContainerDebug|null;
 export function toDebug(obj: any): any {
   if (obj) {
     const debug = (obj as any).debug;
@@ -375,7 +377,7 @@ function toHtml(value: any, includeChildren: boolean = false): string|null {
   }
 }
 
-export class LViewDebug {
+export class LViewDebug implements ILViewDebug {
   constructor(private readonly _raw_lView: LView) {}
 
   /**
@@ -396,10 +398,10 @@ export class LViewDebug {
       indexWithinInitPhase: flags >> LViewFlags.IndexWithinInitPhaseShift,
     };
   }
-  get parent(): LViewDebug|LContainerDebug|null {
+  get parent(): ILViewDebug|ILContainerDebug|null {
     return toDebug(this._raw_lView[PARENT]);
   }
-  get host(): string|null {
+  get hostHTML(): string|null {
     return toHtml(this._raw_lView[HOST], true);
   }
   get html(): string {
@@ -410,10 +412,9 @@ export class LViewDebug {
   }
   /**
    * The tree of nodes associated with the current `LView`. The nodes have been normalized into
-   * a
-   * tree structure with relevant details pulled out for readability.
+   * a tree structure with relevant details pulled out for readability.
    */
-  get nodes(): DebugNode[]|null {
+  get nodes(): DebugNode[] {
     const lView = this._raw_lView;
     const tNode = lView[TVIEW].firstChild;
     return toDebugNodes(tNode, lView);
@@ -437,16 +438,16 @@ export class LViewDebug {
   get sanitizer(): Sanitizer|null {
     return this._raw_lView[SANITIZER];
   }
-  get childHead(): LViewDebug|LContainerDebug|null {
+  get childHead(): ILViewDebug|ILContainerDebug|null {
     return toDebug(this._raw_lView[CHILD_HEAD]);
   }
-  get next(): LViewDebug|LContainerDebug|null {
+  get next(): ILViewDebug|ILContainerDebug|null {
     return toDebug(this._raw_lView[NEXT]);
   }
-  get childTail(): LViewDebug|LContainerDebug|null {
+  get childTail(): ILViewDebug|ILContainerDebug|null {
     return toDebug(this._raw_lView[CHILD_TAIL]);
   }
-  get declarationView(): LViewDebug|null {
+  get declarationView(): ILViewDebug|null {
     return toDebug(this._raw_lView[DECLARATION_VIEW]);
   }
   get queries(): LQueries|null {
@@ -456,11 +457,35 @@ export class LViewDebug {
     return this._raw_lView[T_HOST];
   }
 
+  get decls(): LViewDebugRange {
+    const tView = this.tView as any as {_decls: number, _vars: number};
+    const start = HEADER_OFFSET;
+    return toLViewRange(this.tView, this._raw_lView, start, start + tView._decls);
+  }
+
+  get vars(): LViewDebugRange {
+    const tView = this.tView as any as {_decls: number, _vars: number};
+    const start = HEADER_OFFSET + tView._decls;
+    return toLViewRange(this.tView, this._raw_lView, start, start + tView._vars);
+  }
+
+  get i18n(): LViewDebugRange {
+    const tView = this.tView as any as {_decls: number, _vars: number};
+    const start = HEADER_OFFSET + tView._decls + tView._vars;
+    return toLViewRange(this.tView, this._raw_lView, start, this.tView.expandoStartIndex);
+  }
+
+  get expando(): LViewDebugRange {
+    const tView = this.tView as any as {_decls: number, _vars: number};
+    return toLViewRange(
+        this.tView, this._raw_lView, this.tView.expandoStartIndex, this._raw_lView.length);
+  }
+
   /**
    * Normalized view of child views (and containers) attached at this location.
    */
-  get childViews(): Array<LViewDebug|LContainerDebug> {
-    const childViews: Array<LViewDebug|LContainerDebug> = [];
+  get childViews(): Array<ILViewDebug|ILContainerDebug> {
+    const childViews: Array<ILViewDebug|ILContainerDebug> = [];
     let child = this.childHead;
     while (child) {
       childViews.push(child);
@@ -470,11 +495,12 @@ export class LViewDebug {
   }
 }
 
-export interface DebugNode {
-  html: string|null;
-  native: Node;
-  nodes: DebugNode[]|null;
-  component: LViewDebug|null;
+function toLViewRange(tView: TView, lView: LView, start: number, end: number): LViewDebugRange {
+  let content: LViewDebugRangeContent[] = [];
+  for (let index = start; index < end; index++) {
+    content.push({index: index, t: tView.data[index], l: lView[index]});
+  }
+  return {start: start, end: end, length: end - start, content: content};
 }
 
 /**
@@ -483,7 +509,7 @@ export interface DebugNode {
  * @param tNode
  * @param lView
  */
-export function toDebugNodes(tNode: ITNode|null, lView: LView): DebugNode[]|null {
+export function toDebugNodes(tNode: ITNode|null, lView: LView): DebugNode[] {
   if (tNode) {
     const debugNodes: DebugNode[] = [];
     let tNodeCursor: ITNode|null = tNode;
@@ -493,33 +519,32 @@ export function toDebugNodes(tNode: ITNode|null, lView: LView): DebugNode[]|null
     }
     return debugNodes;
   } else {
-    return null;
+    return [];
   }
 }
 
 export function buildDebugNode(tNode: ITNode, lView: LView, nodeIndex: number): DebugNode {
   const rawValue = lView[nodeIndex];
   const native = unwrapRNode(rawValue);
-  const componentLViewDebug = toDebug(readLViewValue(rawValue));
   return {
     html: toHtml(native),
+    type: TNodeTypeAsString[tNode.type],
     native: native as any,
-    nodes: toDebugNodes(tNode.child, lView),
-    component: componentLViewDebug,
+    children: toDebugNodes(tNode.child, lView),
   };
 }
 
-export class LContainerDebug {
+export class LContainerDebug implements ILContainerDebug {
   constructor(private readonly _raw_lContainer: LContainer) {}
 
   get hasTransplantedViews(): boolean {
     return this._raw_lContainer[HAS_TRANSPLANTED_VIEWS];
   }
-  get views(): LViewDebug[] {
+  get views(): ILViewDebug[] {
     return this._raw_lContainer.slice(CONTAINER_HEADER_OFFSET)
-        .map(toDebug as (l: LView) => LViewDebug);
+        .map(toDebug as (l: LView) => ILViewDebug);
   }
-  get parent(): LViewDebug|LContainerDebug|null {
+  get parent(): ILViewDebug|null {
     return toDebug(this._raw_lContainer[PARENT]);
   }
   get movedViews(): LView[]|null {
@@ -549,207 +574,4 @@ export function readLViewValue(value: any): LView|null {
     value = value[HOST];
   }
   return null;
-}
-
-export class I18NDebugItem {
-  [key: string]: any;
-
-  get tNode() {
-    return getTNode(this._lView[TVIEW], this.nodeIndex);
-  }
-
-  constructor(
-      public __raw_opCode: any, private _lView: LView, public nodeIndex: number,
-      public type: string) {}
-}
-
-/**
- * Turns a list of "Create" & "Update" OpCodes into a human-readable list of operations for
- * debugging purposes.
- * @param mutateOpCodes mutation opCodes to read
- * @param updateOpCodes update opCodes to read
- * @param icus list of ICU expressions
- * @param lView The view the opCodes are acting on
- */
-export function attachI18nOpCodesDebug(
-    mutateOpCodes: I18nMutateOpCodes, updateOpCodes: I18nUpdateOpCodes, icus: TIcu[]|null,
-    lView: LView) {
-  attachDebugObject(mutateOpCodes, new I18nMutateOpCodesDebug(mutateOpCodes, lView));
-  attachDebugObject(updateOpCodes, new I18nUpdateOpCodesDebug(updateOpCodes, icus, lView));
-
-  if (icus) {
-    icus.forEach(icu => {
-      icu.create.forEach(icuCase => {
-        attachDebugObject(icuCase, new I18nMutateOpCodesDebug(icuCase, lView));
-      });
-      icu.update.forEach(icuCase => {
-        attachDebugObject(icuCase, new I18nUpdateOpCodesDebug(icuCase, icus, lView));
-      });
-    });
-  }
-}
-
-export class I18nMutateOpCodesDebug implements I18nOpCodesDebug {
-  constructor(private readonly __raw_opCodes: I18nMutateOpCodes, private readonly __lView: LView) {}
-
-  /**
-   * A list of operation information about how the OpCodes will act on the view.
-   */
-  get operations() {
-    const {__lView, __raw_opCodes} = this;
-    const results: any[] = [];
-
-    for (let i = 0; i < __raw_opCodes.length; i++) {
-      const opCode = __raw_opCodes[i];
-      let result: any;
-      if (typeof opCode === 'string') {
-        result = {
-          __raw_opCode: opCode,
-          type: 'Create Text Node',
-          nodeIndex: __raw_opCodes[++i],
-          text: opCode,
-        };
-      }
-
-      if (typeof opCode === 'number') {
-        switch (opCode & I18nMutateOpCode.MASK_OPCODE) {
-          case I18nMutateOpCode.AppendChild:
-            const destinationNodeIndex = opCode >>> I18nMutateOpCode.SHIFT_PARENT;
-            result = new I18NDebugItem(opCode, __lView, destinationNodeIndex, 'AppendChild');
-            break;
-          case I18nMutateOpCode.Select:
-            const nodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
-            result = new I18NDebugItem(opCode, __lView, nodeIndex, 'Select');
-            break;
-          case I18nMutateOpCode.ElementEnd:
-            let elementIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
-            result = new I18NDebugItem(opCode, __lView, elementIndex, 'ElementEnd');
-            break;
-          case I18nMutateOpCode.Attr:
-            elementIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
-            result = new I18NDebugItem(opCode, __lView, elementIndex, 'Attr');
-            result['attrName'] = __raw_opCodes[++i];
-            result['attrValue'] = __raw_opCodes[++i];
-            break;
-        }
-      }
-
-      if (!result) {
-        switch (opCode) {
-          case COMMENT_MARKER:
-            result = {
-              __raw_opCode: opCode,
-              type: 'COMMENT_MARKER',
-              commentValue: __raw_opCodes[++i],
-              nodeIndex: __raw_opCodes[++i],
-            };
-            break;
-          case ELEMENT_MARKER:
-            result = {
-              __raw_opCode: opCode,
-              type: 'ELEMENT_MARKER',
-            };
-            break;
-        }
-      }
-
-      if (!result) {
-        result = {
-          __raw_opCode: opCode,
-          type: 'Unknown Op Code',
-          code: opCode,
-        };
-      }
-
-      results.push(result);
-    }
-
-    return results;
-  }
-}
-
-export class I18nUpdateOpCodesDebug implements I18nOpCodesDebug {
-  constructor(
-      private readonly __raw_opCodes: I18nUpdateOpCodes, private readonly icus: TIcu[]|null,
-      private readonly __lView: LView) {}
-
-  /**
-   * A list of operation information about how the OpCodes will act on the view.
-   */
-  get operations() {
-    const {__lView, __raw_opCodes, icus} = this;
-    const results: any[] = [];
-
-    for (let i = 0; i < __raw_opCodes.length; i++) {
-      // bit code to check if we should apply the next update
-      const checkBit = __raw_opCodes[i] as number;
-      // Number of opCodes to skip until next set of update codes
-      const skipCodes = __raw_opCodes[++i] as number;
-      let value = '';
-      for (let j = i + 1; j <= (i + skipCodes); j++) {
-        const opCode = __raw_opCodes[j];
-        if (typeof opCode === 'string') {
-          value += opCode;
-        } else if (typeof opCode == 'number') {
-          if (opCode < 0) {
-            // It's a binding index whose value is negative
-            // We cannot know the value of the binding so we only show the index
-            value += `�${- opCode - 1}�`;
-          } else {
-            const nodeIndex = opCode >>> I18nUpdateOpCode.SHIFT_REF;
-            let tIcuIndex: number;
-            let tIcu: TIcu;
-            switch (opCode & I18nUpdateOpCode.MASK_OPCODE) {
-              case I18nUpdateOpCode.Attr:
-                const attrName = __raw_opCodes[++j] as string;
-                const sanitizeFn = __raw_opCodes[++j];
-                results.push({
-                  __raw_opCode: opCode,
-                  checkBit,
-                  type: 'Attr',
-                  attrValue: value,
-                  attrName,
-                  sanitizeFn,
-                });
-                break;
-              case I18nUpdateOpCode.Text:
-                results.push({
-                  __raw_opCode: opCode,
-                  checkBit,
-                  type: 'Text',
-                  nodeIndex,
-                  text: value,
-                });
-                break;
-              case I18nUpdateOpCode.IcuSwitch:
-                tIcuIndex = __raw_opCodes[++j] as number;
-                tIcu = icus![tIcuIndex];
-                let result = new I18NDebugItem(opCode, __lView, nodeIndex, 'IcuSwitch');
-                result['tIcuIndex'] = tIcuIndex;
-                result['checkBit'] = checkBit;
-                result['mainBinding'] = value;
-                result['tIcu'] = tIcu;
-                results.push(result);
-                break;
-              case I18nUpdateOpCode.IcuUpdate:
-                tIcuIndex = __raw_opCodes[++j] as number;
-                tIcu = icus![tIcuIndex];
-                result = new I18NDebugItem(opCode, __lView, nodeIndex, 'IcuUpdate');
-                result['tIcuIndex'] = tIcuIndex;
-                result['checkBit'] = checkBit;
-                result['tIcu'] = tIcu;
-                results.push(result);
-                break;
-            }
-          }
-        }
-      }
-      i += skipCodes;
-    }
-    return results;
-  }
-}
-
-export interface I18nOpCodesDebug {
-  operations: any[];
 }

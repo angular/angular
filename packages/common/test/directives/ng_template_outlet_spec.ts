@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, ContentChildren, Directive, Injectable, NO_ERRORS_SCHEMA, OnDestroy, QueryList, TemplateRef} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('NgTemplateOutlet', () => {
@@ -36,7 +36,7 @@ describe('NgTemplateOutlet', () => {
   });
 
   // https://github.com/angular/angular/issues/14778
-  it('should accept the component as the context', async(() => {
+  it('should accept the component as the context', waitForAsync(() => {
        const template = `<ng-container *ngTemplateOutlet="tpl; context: this"></ng-container>` +
            `<ng-template #tpl>{{context.foo}}</ng-template>`;
 
@@ -44,20 +44,20 @@ describe('NgTemplateOutlet', () => {
        detectChangesAndExpectText('bar');
      }));
 
-  it('should do nothing if templateRef is `null`', async(() => {
+  it('should do nothing if templateRef is `null`', waitForAsync(() => {
        const template = `<ng-container [ngTemplateOutlet]="null"></ng-container>`;
        fixture = createTestComponent(template);
        detectChangesAndExpectText('');
      }));
 
-  it('should insert content specified by TemplateRef', async(() => {
+  it('should insert content specified by TemplateRef', waitForAsync(() => {
        const template = `<ng-template #tpl>foo</ng-template>` +
            `<ng-container [ngTemplateOutlet]="tpl"></ng-container>`;
        fixture = createTestComponent(template);
        detectChangesAndExpectText('foo');
      }));
 
-  it('should clear content if TemplateRef becomes `null`', async(() => {
+  it('should clear content if TemplateRef becomes `null`', waitForAsync(() => {
        const template = `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template></tpl-refs>` +
            `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
        fixture = createTestComponent(template);
@@ -71,7 +71,7 @@ describe('NgTemplateOutlet', () => {
        detectChangesAndExpectText('');
      }));
 
-  it('should swap content if TemplateRef changes', async(() => {
+  it('should swap content if TemplateRef changes', waitForAsync(() => {
        const template =
            `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template><ng-template>bar</ng-template></tpl-refs>` +
            `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
@@ -87,14 +87,14 @@ describe('NgTemplateOutlet', () => {
        detectChangesAndExpectText('bar');
      }));
 
-  it('should display template if context is `null`', async(() => {
+  it('should display template if context is `null`', waitForAsync(() => {
        const template = `<ng-template #tpl>foo</ng-template>` +
            `<ng-container *ngTemplateOutlet="tpl; context: null"></ng-container>`;
        fixture = createTestComponent(template);
        detectChangesAndExpectText('foo');
      }));
 
-  it('should reflect initial context and changes', async(() => {
+  it('should reflect initial context and changes', waitForAsync(() => {
        const template = `<ng-template let-foo="foo" #tpl>{{foo}}</ng-template>` +
            `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
        fixture = createTestComponent(template);
@@ -106,7 +106,7 @@ describe('NgTemplateOutlet', () => {
        detectChangesAndExpectText('alter-bar');
      }));
 
-  it('should reflect user defined `$implicit` property in the context', async(() => {
+  it('should reflect user defined `$implicit` property in the context', waitForAsync(() => {
        const template = `<ng-template let-ctx #tpl>{{ctx.foo}}</ng-template>` +
            `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
        fixture = createTestComponent(template);
@@ -114,7 +114,7 @@ describe('NgTemplateOutlet', () => {
        detectChangesAndExpectText('bra');
      }));
 
-  it('should reflect context re-binding', async(() => {
+  it('should reflect context re-binding', waitForAsync(() => {
        const template = `<ng-template let-shawshank="shawshank" #tpl>{{shawshank}}</ng-template>` +
            `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
        fixture = createTestComponent(template);
@@ -222,7 +222,8 @@ describe('NgTemplateOutlet', () => {
     }).not.toThrow();
   });
 
-  it('should not throw when switching from template to null and back to template', async(() => {
+  it('should not throw when switching from template to null and back to template',
+     waitForAsync(() => {
        const template = `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template></tpl-refs>` +
            `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
        fixture = createTestComponent(template);

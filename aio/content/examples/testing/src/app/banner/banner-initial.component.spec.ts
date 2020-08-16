@@ -1,14 +1,16 @@
 // #docplaster
 // #docregion import-by
-import { By } from '@angular/platform-browser';
 // #enddocregion import-by
 // #docregion import-debug-element
 import { DebugElement } from '@angular/core';
 // #enddocregion import-debug-element
 // #docregion v1
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+
 // #enddocregion v1
 import { BannerComponent } from './banner-initial.component';
+
 /*
 // #docregion v1
 import { BannerComponent } from './banner.component';
@@ -17,15 +19,12 @@ describe('BannerComponent', () => {
 // #enddocregion v1
 */
 describe('BannerComponent (initial CLI generated)', () => {
-// #docregion v1
+  // #docregion v1
   let component: BannerComponent;
   let fixture: ComponentFixture<BannerComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ BannerComponent ]
-    })
-    .compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({declarations: [BannerComponent]}).compileComponents();
   }));
 
   beforeEach(() => {
@@ -44,9 +43,7 @@ describe('BannerComponent (initial CLI generated)', () => {
 describe('BannerComponent (minimal)', () => {
   it('should create', () => {
     // #docregion configureTestingModule
-    TestBed.configureTestingModule({
-      declarations: [ BannerComponent ]
-    });
+    TestBed.configureTestingModule({declarations: [BannerComponent]});
     // #enddocregion configureTestingModule
     // #docregion createComponent
     const fixture = TestBed.createComponent(BannerComponent);
@@ -65,9 +62,7 @@ describe('BannerComponent (with beforeEach)', () => {
   let fixture: ComponentFixture<BannerComponent>;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [ BannerComponent ]
-    });
+    TestBed.configureTestingModule({declarations: [BannerComponent]});
     fixture = TestBed.createComponent(BannerComponent);
     component = fixture.componentInstance;
   });

@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, EventEmitter, Input, Output, Type, ViewChild} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
@@ -1078,7 +1078,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
       });
 
       describe('in template-driven forms', () => {
-        it('should support standard writing to view and model', async(() => {
+        it('should support standard writing to view and model', waitForAsync(() => {
              const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
              fixture.componentInstance.name = 'Nancy';
              fixture.detectChanges();

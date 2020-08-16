@@ -11,7 +11,7 @@ import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostListener, Inject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation} from '@angular/core';
-import {async, inject} from '@angular/core/testing';
+import {inject, waitForAsync} from '@angular/core/testing';
 import {BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, renderModuleFactory, ServerModule, ServerTransferStateModule} from '@angular/platform-server';
 import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
@@ -409,7 +409,7 @@ describe('platform-server integration', () => {
     if (getPlatform()) destroyPlatform();
   });
 
-  it('should bootstrap', async(() => {
+  it('should bootstrap', waitForAsync(() => {
        const platform =
            platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
 
@@ -426,7 +426,7 @@ describe('platform-server integration', () => {
        });
      }));
 
-  it('should allow multiple platform instances', async(() => {
+  it('should allow multiple platform instances', waitForAsync(() => {
        const platform =
            platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
 
@@ -447,7 +447,7 @@ describe('platform-server integration', () => {
        });
      }));
 
-  it('adds title to the document using Title service', async(() => {
+  it('adds title to the document using Title service', waitForAsync(() => {
        const platform = platformDynamicServer([{
          provide: INITIAL_CONFIG,
          useValue: {document: '<html><head><title></title></head><body><app></app></body></html>'}
@@ -461,7 +461,7 @@ describe('platform-server integration', () => {
        });
      }));
 
-  it('should get base href from document', async(() => {
+  it('should get base href from document', waitForAsync(() => {
        const platform = platformDynamicServer([{
          provide: INITIAL_CONFIG,
          useValue: {document: '<html><head><base href="/"></head><body><app></app></body></html>'}
@@ -473,7 +473,7 @@ describe('platform-server integration', () => {
        });
      }));
 
-  it('adds styles with ng-transition attribute', async(() => {
+  it('adds styles with ng-transition attribute', waitForAsync(() => {
        const platform = platformDynamicServer([{
          provide: INITIAL_CONFIG,
          useValue: {document: '<html><head></head><body><app></app></body></html>'}
@@ -488,7 +488,7 @@ describe('platform-server integration', () => {
        });
      }));
 
-  it('copies known properties to attributes', async(() => {
+  it('copies known properties to attributes', waitForAsync(() => {
        const platform =
            platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
        platform.bootstrapModule(ImageExampleModule).then(ref => {
@@ -500,7 +500,7 @@ describe('platform-server integration', () => {
      }));
 
   describe('PlatformLocation', () => {
-    it('is injectable', async(() => {
+    it('is injectable', waitForAsync(() => {
          const platform = platformDynamicServer(
              [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
          platform.bootstrapModule(ExampleModule).then(appRef => {
@@ -551,7 +551,7 @@ describe('platform-server integration', () => {
             expect(location.hash).toBe('');
           });
     });
-    it('pushState causes the URL to update', async(() => {
+    it('pushState causes the URL to update', waitForAsync(() => {
          const platform = platformDynamicServer(
              [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
          platform.bootstrapModule(ExampleModule).then(appRef => {
@@ -601,7 +601,7 @@ describe('platform-server integration', () => {
       expect(called).toBe(true);
     });
 
-    it('using long form should work', async(() => {
+    it('using long form should work', waitForAsync(() => {
          const platform =
              platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
 
@@ -618,7 +618,7 @@ describe('platform-server integration', () => {
              });
        }));
 
-    it('using renderModule should work', async(() => {
+    it('using renderModule should work', waitForAsync(() => {
          renderModule(AsyncServerModule, {document: doc}).then(output => {
            expect(output).toBe(expectedOutput);
            called = true;
@@ -626,7 +626,7 @@ describe('platform-server integration', () => {
        }));
 
     modifiedInIvy('Will not support binding to innerText in Ivy since domino does not')
-        .it('should support binding to innerText', async(() => {
+        .it('should support binding to innerText', waitForAsync(() => {
               renderModule(InnerTextModule, {document: doc}).then(output => {
                 expect(output).toBe(
                     '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER"><div innertext="Some text">Some text</div></app></body></html>');
@@ -635,7 +635,7 @@ describe('platform-server integration', () => {
             }));
 
     it('using renderModuleFactory should work',
-       async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
+       waitForAsync(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
          const compilerFactory: CompilerFactory =
              defaultPlatform.injector.get(CompilerFactory, null)!;
          const moduleFactory =
@@ -646,7 +646,7 @@ describe('platform-server integration', () => {
          });
        })));
 
-    it('works with SVG elements', async(() => {
+    it('works with SVG elements', waitForAsync(() => {
          renderModule(SVGServerModule, {document: doc}).then(output => {
            expect(output).toBe(
                '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
@@ -655,7 +655,7 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('works with animation', async(() => {
+    it('works with animation', waitForAsync(() => {
          renderModule(AnimationServerModule, {document: doc}).then(output => {
            expect(output).toContain('Works!');
            expect(output).toContain('ng-trigger-myAnimation');
@@ -666,7 +666,7 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('should handle ViewEncapsulation.Native', async(() => {
+    it('should handle ViewEncapsulation.Native', waitForAsync(() => {
          renderModule(NativeExampleModule, {document: doc}).then(output => {
            expect(output).not.toBe('');
            expect(output).toContain('color: red');
@@ -675,7 +675,7 @@ describe('platform-server integration', () => {
        }));
 
 
-    it('sets a prefix for the _nghost and _ngcontent attributes', async(() => {
+    it('sets a prefix for the _nghost and _ngcontent attributes', waitForAsync(() => {
          renderModule(ExampleStylesModule, {document: doc}).then(output => {
            expect(output).toMatch(
                /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
@@ -683,7 +683,7 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('should handle false values on attributes', async(() => {
+    it('should handle false values on attributes', waitForAsync(() => {
          renderModule(FalseAttributesModule, {document: doc}).then(output => {
            expect(output).toBe(
                '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
@@ -692,7 +692,7 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('should handle element property "name"', async(() => {
+    it('should handle element property "name"', waitForAsync(() => {
          renderModule(NameModule, {document: doc}).then(output => {
            expect(output).toBe(
                '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
@@ -701,7 +701,7 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('should work with sanitizer to handle "innerHTML"', async(() => {
+    it('should work with sanitizer to handle "innerHTML"', waitForAsync(() => {
          // Clear out any global states. These should be set when platform-server
          // is initialized.
          (global as any).Node = undefined;
@@ -714,7 +714,7 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('should handle element property "hidden"', async(() => {
+    it('should handle element property "hidden"', waitForAsync(() => {
          renderModule(HiddenModule, {document: doc}).then(output => {
            expect(output).toBe(
                '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
@@ -723,7 +723,7 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('should call render hook', async(() => {
+    it('should call render hook', waitForAsync(() => {
          renderModule(RenderHookModule, {document: doc}).then(output => {
            // title should be added by the render hook.
            expect(output).toBe(
@@ -733,7 +733,7 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('should call multiple render hooks', async(() => {
+    it('should call multiple render hooks', waitForAsync(() => {
          const consoleSpy = spyOn(console, 'warn');
          renderModule(MultiRenderHookModule, {document: doc}).then(output => {
            // title should be added by the render hook.
@@ -745,7 +745,7 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('should call async render hooks', async(() => {
+    it('should call async render hooks', waitForAsync(() => {
          renderModule(AsyncRenderHookModule, {document: doc}).then(output => {
            // title should be added by the render hook.
            expect(output).toBe(
@@ -755,7 +755,7 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('should call multiple async and sync render hooks', async(() => {
+    it('should call multiple async and sync render hooks', waitForAsync(() => {
          const consoleSpy = spyOn(console, 'warn');
          renderModule(AsyncMultiRenderHookModule, {document: doc}).then(output => {
            // title should be added by the render hook.
@@ -769,7 +769,7 @@ describe('platform-server integration', () => {
   });
 
   describe('HttpClient', () => {
-    it('can inject HttpClient', async(() => {
+    it('can inject HttpClient', waitForAsync(() => {
          const platform = platformDynamicServer(
              [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
          platform.bootstrapModule(HttpClientExampleModule).then(ref => {
@@ -777,7 +777,7 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('can make HttpClient requests', async(() => {
+    it('can make HttpClient requests', waitForAsync(() => {
          const platform = platformDynamicServer(
              [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
          platform.bootstrapModule(HttpClientExampleModule).then(ref => {
@@ -938,7 +938,7 @@ describe('platform-server integration', () => {
          });
     });
 
-    it('requests are macrotasks', async(() => {
+    it('requests are macrotasks', waitForAsync(() => {
          const platform = platformDynamicServer(
              [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
          platform.bootstrapModule(HttpClientExampleModule).then(ref => {
@@ -984,7 +984,7 @@ describe('platform-server integration', () => {
       expect(called).toBe(true);
     });
 
-    it('adds transfer script tag when using renderModule', async(() => {
+    it('adds transfer script tag when using renderModule', waitForAsync(() => {
          renderModule(TransferStoreModule, {document: '<app></app>'}).then(output => {
            expect(output).toBe(defaultExpectedOutput);
            called = true;
@@ -992,7 +992,7 @@ describe('platform-server integration', () => {
        }));
 
     it('adds transfer script tag when using renderModuleFactory',
-       async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
+       waitForAsync(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
          const compilerFactory: CompilerFactory =
              defaultPlatform.injector.get(CompilerFactory, null)!;
          const moduleFactory =
@@ -1003,7 +1003,7 @@ describe('platform-server integration', () => {
          });
        })));
 
-    it('cannot break out of <script> tag in serialized output', async(() => {
+    it('cannot break out of <script> tag in serialized output', waitForAsync(() => {
          renderModule(EscapedTransferStoreModule, {
            document: '<esc-app></esc-app>'
          }).then(output => {

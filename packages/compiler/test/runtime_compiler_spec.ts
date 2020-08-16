@@ -8,7 +8,7 @@
 
 import {DirectiveResolver, ResourceLoader} from '@angular/compiler';
 import {Compiler, Component, Injector, NgModule, NgModuleFactory, ɵstringify as stringify} from '@angular/core';
-import {async, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {fakeAsync, inject, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {MockDirectiveResolver} from '../testing';
@@ -42,7 +42,8 @@ class SomeCompWithUrlTemplate {
               {providers: [{provide: ResourceLoader, useClass: StubResourceLoader, deps: []}]});
         });
 
-        it('should throw when using a templateUrl that has not been compiled before', async(() => {
+        it('should throw when using a templateUrl that has not been compiled before',
+           waitForAsync(() => {
              TestBed.configureTestingModule({declarations: [SomeCompWithUrlTemplate]});
              TestBed.compileComponents().then(() => {
                expect(() => TestBed.createComponent(SomeCompWithUrlTemplate))
@@ -76,7 +77,8 @@ class SomeCompWithUrlTemplate {
               {providers: [{provide: ResourceLoader, useClass: StubResourceLoader, deps: []}]});
         });
 
-        it('should allow to use templateUrl components that have been loaded before', async(() => {
+        it('should allow to use templateUrl components that have been loaded before',
+           waitForAsync(() => {
              TestBed.configureTestingModule({declarations: [SomeCompWithUrlTemplate]});
              TestBed.compileComponents().then(() => {
                const fixture = TestBed.createComponent(SomeCompWithUrlTemplate);

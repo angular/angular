@@ -20,6 +20,7 @@ ts_library(
         "//packages/compiler/testing",
         "//packages/core",
         "//packages/core/src/util",
+        "//packages/core/test/render3:matchers",
         "//packages/core/testing",
         "//packages/localize",
         "//packages/localize/init",

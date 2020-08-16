@@ -223,8 +223,23 @@
     "packages/core/src/render3/assert.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/node.ts",
-    "packages/core/src/render3/interfaces/definition.ts",
-    "packages/core/src/core.ts",
+    "packages/core/src/render3/interfaces/view.ts",
+    "packages/core/src/di/injector.ts",
+    "packages/core/src/di/r3_injector.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/metadata/ng_module.ts"
+  ],
+  [
+    "packages/core/src/application_ref.ts",
+    "packages/core/src/application_tokens.ts",
+    "packages/core/src/linker/component_factory.ts",
+    "packages/core/src/change_detection/change_detection.ts",
+    "packages/core/src/change_detection/change_detector_ref.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/assert.ts",
+    "packages/core/src/render3/interfaces/container.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/view.ts",
     "packages/core/src/metadata.ts",
     "packages/core/src/di.ts",
     "packages/core/src/di/index.ts",
@@ -247,25 +262,9 @@
     "packages/core/src/render3/assert.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/node.ts",
-    "packages/core/src/render3/interfaces/definition.ts",
     "packages/core/src/render3/interfaces/view.ts",
-    "packages/core/src/di/injector.ts",
-    "packages/core/src/di/r3_injector.ts",
-    "packages/core/src/render3/definition.ts",
-    "packages/core/src/metadata/ng_module.ts"
-  ],
-  [
-    "packages/core/src/application_ref.ts",
-    "packages/core/src/application_tokens.ts",
-    "packages/core/src/linker/component_factory.ts",
-    "packages/core/src/change_detection/change_detection.ts",
-    "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
-    "packages/core/src/render3/assert.ts",
-    "packages/core/src/render3/interfaces/container.ts",
-    "packages/core/src/render3/interfaces/node.ts",
     "packages/core/src/render3/interfaces/definition.ts",
-    "packages/core/src/render3/interfaces/view.ts",
+    "packages/core/src/core.ts",
     "packages/core/src/metadata.ts",
     "packages/core/src/di.ts",
     "packages/core/src/di/index.ts",
@@ -1766,27 +1765,25 @@
   [
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/node.ts",
-    "packages/core/src/render3/interfaces/definition.ts",
     "packages/core/src/render3/interfaces/view.ts"
   ],
   [
     "packages/core/src/render3/interfaces/definition.ts",
-    "packages/core/src/render3/interfaces/node.ts"
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/view.ts"
   ],
   [
     "packages/core/src/render3/interfaces/definition.ts",
     "packages/core/src/render3/interfaces/view.ts"
   ],
   [
-    "packages/core/src/render3/interfaces/definition.ts",
-    "packages/core/src/render3/interfaces/view.ts",
-    "packages/core/src/render3/interfaces/node.ts"
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/view.ts"
   ],
   [
-    "packages/core/src/render3/interfaces/definition.ts",
+    "packages/core/src/render3/interfaces/node.ts",
     "packages/core/src/render3/interfaces/view.ts",
-    "packages/core/src/render3/interfaces/query.ts",
-    "packages/core/src/render3/interfaces/node.ts"
+    "packages/core/src/render3/interfaces/query.ts"
   ],
   [
     "packages/core/src/render3/interfaces/query.ts",
@@ -1857,11 +1854,6 @@
     "packages/forms/src/directives/ng_form.ts",
     "packages/forms/src/directives/ng_model.ts",
     "packages/forms/src/directives/ng_model_group.ts"
-  ],
-  [
-    "packages/forms/src/directives/normalize_validator.ts",
-    "packages/forms/src/model.ts",
-    "packages/forms/src/directives/shared.ts"
   ],
   [
     "packages/forms/src/directives/reactive_directives/form_control_directive.ts",
