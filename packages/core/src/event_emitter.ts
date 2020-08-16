@@ -105,7 +105,7 @@ class EventEmitter_ extends Subject<any> {
   }
 
   subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription {
-    let schedulerFn: (t: any) => any;
+    let schedulerFn = (t: any) => {};
     let errorFn = (err: any): any => null;
     let completeFn = (): any => null;
 
@@ -120,7 +120,9 @@ class EventEmitter_ extends Subject<any> {
         completeFn = this.createHanlder(() => generatorOrNext.complete());
       }
     } else {
-      schedulerFn = this.createHanlder(value => generatorOrNext(value));
+      if (generatorOrNext) {
+        schedulerFn = this.createHanlder(value => generatorOrNext(value));
+      }
 
       if (error) {
         errorFn = this.createHanlder(err => error(err));

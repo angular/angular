@@ -30,6 +30,12 @@ import {EventEmitter} from '../src/event_emitter';
          emitter.emit(99);
        }));
 
+    it('shouldn\'t throw an error when no next callback is provided', () => {
+      emitter.subscribe();
+      emitter.next('something');
+      expect(true).toBeTruthy();
+    });
+
     it('should call the throw callback',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          emitter.subscribe({
