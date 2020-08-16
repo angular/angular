@@ -40,7 +40,19 @@ runInEachFileSystem(() => {
             mockMessage('13579', ['', 'b', ''], ['START_BOLD_TEXT', 'CLOSE_BOLD_TEXT'], {}),
             mockMessage('24680', ['a'], [], {meaning: 'meaning', description: 'and description'}),
             mockMessage('80808', ['multi\nlines'], [], {}),
-            mockMessage('90000', ['<escape', 'me>'], ['double-quotes-"'], {})
+            mockMessage('90000', ['<escape', 'me>'], ['double-quotes-"'], {}),
+            mockMessage(
+                '100000',
+                [
+                  'pre-ICU {VAR_SELECT, select, a {a} b {{INTERPOLATION}} c {pre {INTERPOLATION_1} post}} post-ICU'
+                ],
+                [], {}),
+            mockMessage(
+                '100001',
+                [
+                  '{VAR_PLURAL, plural, one {{START_BOLD_TEXT}something bold{CLOSE_BOLD_TEXT}} other {pre {START_TAG_SPAN}middle{CLOSE_TAG_SPAN} post}}'
+                ],
+                [], {}),
           ];
           const serializer =
               new Xliff2TranslationSerializer('xx', absoluteFrom('/project'), useLegacyIds);
@@ -55,7 +67,7 @@ runInEachFileSystem(() => {
             `        <note category="meaning">some meaning</note>`,
             `      </notes>`,
             `      <segment>`,
-            `        <source>a<ph id="1" equiv="PH"/>b<ph id="2" equiv="PH_1"/>c</source>`,
+            `        <source>a<ph id="0" equiv="PH"/>b<ph id="1" equiv="PH_1"/>c</source>`,
             `      </segment>`,
             `    </unit>`,
             `    <unit id="67890">`,
@@ -64,12 +76,12 @@ runInEachFileSystem(() => {
             `        <note category="description">some description</note>`,
             `      </notes>`,
             `      <segment>`,
-            `        <source>a<pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN"></pc>c</source>`,
+            `        <source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN"></pc>c</source>`,
             `      </segment>`,
             `    </unit>`,
             `    <unit id="13579">`,
             `      <segment>`,
-            `        <source><pc id="1" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT">b</pc></source>`,
+            `        <source><pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT">b</pc></source>`,
             `      </segment>`,
             `    </unit>`,
             `    <unit id="24680">`,
@@ -89,7 +101,17 @@ runInEachFileSystem(() => {
             `    </unit>`,
             `    <unit id="90000">`,
             `      <segment>`,
-            `        <source>&lt;escape<ph id="1" equiv="double-quotes-&quot;"/>me&gt;</source>`,
+            `        <source>&lt;escape<ph id="0" equiv="double-quotes-&quot;"/>me&gt;</source>`,
+            `      </segment>`,
+            `    </unit>`,
+            `    <unit id="100000">`,
+            `      <segment>`,
+            `        <source>pre-ICU {VAR_SELECT, select, a {a} b {<ph id="0" equiv="INTERPOLATION"/>} c {pre <ph id="1" equiv="INTERPOLATION_1"/> post}} post-ICU</source>`,
+            `      </segment>`,
+            `    </unit>`,
+            `    <unit id="100001">`,
+            `      <segment>`,
+            `        <source>{VAR_PLURAL, plural, one {<pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT">something bold</pc>} other {pre <pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN">middle</pc> post}}</source>`,
             `      </segment>`,
             `    </unit>`,
             `  </file>`,

@@ -8,6 +8,7 @@
 import {AbsoluteFsPath, relative} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
+import {extractIcuPlaceholders} from './icu_parsing';
 import {TranslationSerializer} from './translation_serializer';
 import {XmlFile} from './xml_file';
 
@@ -77,11 +78,22 @@ export class XmbTranslationSerializer implements TranslationSerializer {
   }
 
   private serializeMessage(xml: XmlFile, message: ɵParsedMessage): void {
-    xml.text(message.messageParts[0]);
-    for (let i = 1; i < message.messageParts.length; i++) {
-      xml.startTag('ph', {name: message.placeholderNames[i - 1]}, {selfClosing: true});
-      xml.text(message.messageParts[i]);
+    const length = message.messageParts.length - 1;
+    for (let i = 0; i < length; i++) {
+      this.serializeTextPart(xml, message.messageParts[i]);
+      xml.startTag('ph', {name: message.placeholderNames[i]}, {selfClosing: true});
     }
+    this.serializeTextPart(xml, message.messageParts[length]);
+  }
+
+  private serializeTextPart(xml: XmlFile, text: string): void {
+    const pieces = extractIcuPlaceholders(text);
+    const length = pieces.length - 1;
+    for (let i = 0; i < length; i += 2) {
+      xml.text(pieces[i]);
+      xml.startTag('ph', {name: pieces[i + 1]}, {selfClosing: true});
+    }
+    xml.text(pieces[length]);
   }
 
   /**
