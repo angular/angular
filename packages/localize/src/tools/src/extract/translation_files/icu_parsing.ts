@@ -60,7 +60,8 @@ export function extractIcuPlaceholders(text: string): string[] {
     if (match[0] == '{') {
       state.enterBlock();
     } else {
-      state.leaveBlock()!;
+      // We must have hit a `}`
+      state.leaveBlock();
     }
 
     if (state.getCurrent() === 'placeholder') {
