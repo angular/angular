@@ -71,3 +71,7 @@ import '@webcomponents/custom-elements';
 //       - Samsung browser 5.0-8.1 (~0.43% global usage)
 //       - Opera 41-47 (~0.02% global usage)
 import '@webcomponents/custom-elements/src/native-shim';
+// Polyfill for browser performance API for tracking First Input Delay
+import 'first-input-delay';
+// Proxy polyfill is required to support IE11 with Angular Fire
+import 'proxy-polyfill/proxy.min';

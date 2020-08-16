@@ -3,7 +3,6 @@ import { Location, LocationStrategy, PlatformLocation } from '@angular/common';
 import { MockLocationStrategy } from '@angular/common/testing';
 import { Subject } from 'rxjs';
 
-import { GaService } from 'app/shared/ga.service';
 import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { LocationService } from './location.service';
 import { ScrollService } from './scroll.service';
@@ -19,7 +18,6 @@ describe('LocationService', () => {
     injector = ReflectiveInjector.resolveAndCreate([
         LocationService,
         Location,
-        { provide: GaService, useClass: TestGaService },
         { provide: LocationStrategy, useClass: MockLocationStrategy },
         { provide: PlatformLocation, useClass: MockPlatformLocation },
         { provide: SwUpdatesService, useClass: MockSwUpdatesService },
@@ -571,55 +569,6 @@ describe('LocationService', () => {
       });
     });
   });
-
-  describe('google analytics - GaService#locationChanged', () => {
-
-    let gaLocationChanged: jasmine.Spy;
-
-    beforeEach(() => {
-      const gaService = injector.get(GaService);
-      gaLocationChanged = gaService.locationChanged;
-      // execute currentPath observable so that gaLocationChanged is called
-      service.currentPath.subscribe();
-    });
-
-    it('should call locationChanged with initial URL', () => {
-      const initialUrl = location.path().replace(/^\/+/, '');  // strip leading slashes
-
-      expect(gaLocationChanged.calls.count()).toBe(1, 'gaService.locationChanged');
-      const args = gaLocationChanged.calls.first().args;
-      expect(args[0]).toBe(initialUrl);
-    });
-
-    it('should call locationChanged when `go` to a page', () => {
-      service.go('some-new-url');
-      expect(gaLocationChanged.calls.count()).toBe(2, 'gaService.locationChanged');
-      const args = gaLocationChanged.calls.argsFor(1);
-      expect(args[0]).toBe('some-new-url');
-    });
-
-    it('should call locationChanged with url stripped of hash or query', () => {
-      // Important to keep GA service from sending tracking event when the doc hasn't changed
-      // e.g., when the user navigates within the page via # fragments.
-      service.go('some-new-url#one');
-      service.go('some-new-url#two');
-      service.go('some-new-url/?foo="true"');
-      expect(gaLocationChanged.calls.count()).toBe(4, 'gaService.locationChanged called');
-      const args = gaLocationChanged.calls.allArgs();
-      expect(args[1]).toEqual(args[2], 'same url for hash calls');
-      expect(args[1]).toEqual(args[3], 'same url for query string call');
-    });
-
-    it('should call locationChanged when window history changes', () => {
-      location.simulatePopState('/next-url');
-
-      expect(gaLocationChanged.calls.count()).toBe(2, 'gaService.locationChanged');
-      const args = gaLocationChanged.calls.argsFor(1);
-      expect(args[0]).toBe('next-url');
-    });
-
-  });
-
 });
 
 /// Test Helpers ///
@@ -634,8 +583,4 @@ class MockSwUpdatesService {
 
 class MockScrollService {
   removeStoredScrollInfo() { }
-}
-
-class TestGaService {
-  locationChanged = jasmine.createSpy('locationChanged');
 }

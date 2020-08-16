@@ -11,6 +11,9 @@ import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireAnalyticsModule, ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
+import { AngularFirePerformanceModule } from '@angular/fire/performance';
 
 import { AppComponent } from 'app/app.component';
 import { CustomIconRegistry, SVG_ICONS } from 'app/shared/custom-icon-registry';
@@ -18,7 +21,6 @@ import { Deployment } from 'app/shared/deployment.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { DtComponent } from 'app/layout/doc-viewer/dt.component';
 import { ModeBannerComponent } from 'app/layout/mode-banner/mode-banner.component';
-import { GaService } from 'app/shared/ga.service';
 import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
 import { NavigationService } from 'app/navigation/navigation.service';
@@ -143,6 +145,9 @@ export const svgIconProviders = [
     MatToolbarModule,
     SwUpdatesModule,
     SharedModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAnalyticsModule,
+    AngularFirePerformanceModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {enabled: environment.production}),
   ],
   declarations: [
@@ -161,7 +166,6 @@ export const svgIconProviders = [
     Deployment,
     DocumentService,
     { provide: ErrorHandler, useClass: ReportingErrorHandler },
-    GaService,
     Logger,
     Location,
     { provide: LocationStrategy, useClass: PathLocationStrategy },
@@ -175,6 +179,8 @@ export const svgIconProviders = [
     TocService,
     { provide: CurrentDateToken, useFactory: currentDateProvider },
     { provide: WindowToken, useFactory: windowProvider },
+    ScreenTrackingService,
+    UserTrackingService,
   ],
   bootstrap: [ AppComponent ]
 })

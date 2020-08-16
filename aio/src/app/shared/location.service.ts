@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { Location, PlatformLocation } from '@angular/common';
 
 import { ReplaySubject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
-import { GaService } from 'app/shared/ga.service';
 import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { ScrollService } from './scroll.service';
 
@@ -20,11 +19,9 @@ export class LocationService {
 
   currentPath = this.currentUrl.pipe(
     map(url => (url.match(/[^?#]*/) || [])[0]),  // strip query and hash
-    tap(path => this.gaService.locationChanged(path)),
   );
 
   constructor(
-    private gaService: GaService,
     private location: Location,
     private scrollService: ScrollService,
     private platformLocation: PlatformLocation,

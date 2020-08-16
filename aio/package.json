@@ -93,6 +93,7 @@
     "@angular/compiler": "10.0.2",
     "@angular/core": "10.0.2",
     "@angular/elements": "10.0.2",
+    "@angular/fire": "6.0.0",
     "@angular/forms": "10.0.2",
     "@angular/material": "10.0.1",
     "@angular/platform-browser": "10.0.2",
@@ -100,6 +101,9 @@
     "@angular/router": "10.0.2",
     "@angular/service-worker": "10.0.2",
     "@webcomponents/custom-elements": "1.2.1",
+    "firebase": "~7.18.0",
+    "first-input-delay": "^0.1.3",
+    "proxy-polyfill": "^0.3.2",
     "rxjs": "^6.5.3",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.3"
