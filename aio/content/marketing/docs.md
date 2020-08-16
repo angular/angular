@@ -1,8 +1,10 @@
 <h1 class="no-toc">Introducción a la Documentación de Angular</h1>
 
-Angular es un framework de diseño de aplicaciones y plataforma de desarrollo para crear aplicaciones de una sola página eficientes y sofisticadas
+Angular es un framework de diseño de aplicaciones y plataforma de desarrollo para crear aplicaciones de una
+sola página eficientes y sofisticadas
 
-Esta documentación de Angular te ayuda a aprender y usar el framework y la plataforma de desarrollo, desde su primera aplicación hasta la optimización de aplicaciones complejas de una sola página, para empresas.
+Esta documentación de Angular te ayuda a aprender y usar el framework y la plataforma de desarrollo, desde su
+primera aplicación hasta la optimización de aplicaciones complejas de una sola página, para empresas.
 Los tutoriales y guías incluyen ejemplos descargables para acelerar tus proyectos.
 
 
@@ -36,22 +38,34 @@ Los tutoriales y guías incluyen ejemplos descargables para acelerar tus proyect
 ## Supuestos
 
 
-Esta documentación asume que estas familiarizado con [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML "Aprende HTML"), [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps "Aprende CSS"), [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript "Aprende JavaScript"),
-y algunas herramientas de los [últimos estándares javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Language_Resources "Últimos estándares JavaScript"), como son las [clases](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes "Clases ES2015") y [modulos](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import "Modulos ES2015").
+Esta documentación asume que estas familiarizado con
+[HTML](https://developer.mozilla.org/es/docs/Learn/HTML/Introduccion_a_HTML "Aprende HTML"),
+[CSS](https://developer.mozilla.org/es/docs/Learn/CSS/First_steps "Aprende CSS"),
+[JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript/Una_re-introducci%C3%B3n_a_JavaScript "Aprende JavaScript"),
+y algunas herramientas de los
+[últimos estándares javascript](https://developer.mozilla.org/es/docs/Web/JavaScript/Language_Resources "Últimos estándares JavaScript"),
+como son las [clases](https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Classes "Clases ES2015")
+y [modulos](https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Sentencias/import "Modulos ES2015").
 Los ejemplos de código son escritos usando [TypeScript](https://www.typescriptlang.org/ "TypeScript").
-La mayor parte del código Angular se puede escribir tan solo con la versión más reciente de JavaScript, usando [tipos](https://www.typescriptlang.org/docs/handbook/classes.html "Tipos TypeScript") para inyección de dependencia, y usando [decoradores](https://www.typescriptlang.org/docs/handbook/decorators.html "Decoradores") para metadatos.
+La mayor parte del código Angular se puede escribir tan solo con la versión más reciente de JavaScript, usando
+[tipos](https://www.typescriptlang.org/docs/handbook/classes.html "Tipos TypeScript") para inyección de
+dependencia, y usando [decoradores](https://www.typescriptlang.org/docs/handbook/decorators.html "Decoradores")
+para metadatos.
 
 
 ## Retrolimentación
 
 <h3>Puedes sentarte con nosotros!</h3>
 
-Queremos saber de ti. [Informa problemas o envía sugerencias para nueva documentación.](https://github.com/angular-hispano/angular/issues/new/choose "Repositorio GitHub de Angular, form para nuevo issue")
+Queremos saber de ti. 
+[Informa problemas o envía sugerencias para nueva documentación.](https://github.com/angular-hispano/angular/issues/new/choose "Repositorio GitHub de Angular, form para nuevo issue")
 
-Colabora con la documentación de Angular creando [pull requests](https://github.com/angular-hispano/angular/pulls "Angular Github pull requests")
+Colabora con la documentación de Angular creando
+[pull requests](https://github.com/angular-hispano/angular/pulls "Angular Github pull requests")
 en el repositorio Github de Angular en español.
 Mira [Colaborando a Angular](https://github.com/angular-hispano/angular/blob/master/CONTRIBUTING.md "Guía de Colaboración")
 para obtener información sobre las pautas de envío de nuevas colaboraciones.
 
 Nuestra comunidad valora la comunicación respetuosa y solidaria.
-Consulta y adhierete al [Código de Conducta](https://github.com/angular-hispano/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md "Código de Conducta del Colaborador").
+Consulta y adhierete al
+[Código de Conducta](https://angular.lat/coc "Código de Conducta del comunidad").
