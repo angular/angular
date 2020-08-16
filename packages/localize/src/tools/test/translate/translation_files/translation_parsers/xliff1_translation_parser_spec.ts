@@ -212,6 +212,46 @@ describe('Xliff1TranslationParser', () => {
                 ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
       });
 
+      it('should extract nested placeholder containers (i.e. nested HTML elements)', () => {
+        /**
+         * Source HTML:
+         *
+         * ```
+         * <div i18n>
+         *   translatable <span>element <b>with placeholders</b></span> {{ interpolation}}
+         * </div>
+         * ```
+         */
+        const XLIFF = [
+          `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
+          `  <file source-language="en" target-language="fr" datatype="plaintext" original="ng2.template">`,
+          `    <body>`,
+          `      <trans-unit id="9051630253697141670" datatype="html">`,
+          `        <source>translatable <x id="START_TAG_SPAN"/>element <x id="START_BOLD_TEXT"/>with placeholders<x id="CLOSE_BOLD_TEXT"/><x id="CLOSE_TAG_SPAN"/> <x id="INTERPOLATION"/></source>`,
+          `        <target><x id="START_TAG_SPAN"/><x id="INTERPOLATION"/> tnemele<x id="CLOSE_TAG_SPAN"/> elbatalsnart <x id="START_BOLD_TEXT"/>sredlohecalp htiw<x id="CLOSE_BOLD_TEXT"/></target>`,
+          `        <context-group purpose="location">`,
+          `          <context context-type="sourcefile">file.ts</context>`,
+          `          <context context-type="linenumber">3</context>`,
+          `        </context-group>`,
+          `      </trans-unit>`,
+          `    </body>`,
+          `  </file>`,
+          `</xliff>`,
+        ].join('\n');
+        const result = doParse('/some/file.xlf', XLIFF);
+        expect(result.translations[ɵcomputeMsgId(
+                   'translatable {$START_TAG_SPAN}element {$START_BOLD_TEXT}with placeholders' +
+                   '{$CLOSE_BOLD_TEXT}{$CLOSE_TAG_SPAN} {$INTERPOLATION}')])
+            .toEqual(ɵmakeParsedTranslation(
+                ['', '', ' tnemele', ' elbatalsnart ', 'sredlohecalp htiw', ''], [
+                  'START_TAG_SPAN',
+                  'INTERPOLATION',
+                  'CLOSE_TAG_SPAN',
+                  'START_BOLD_TEXT',
+                  'CLOSE_BOLD_TEXT',
+                ]));
+      });
+
       it('should extract translations with placeholders containing hyphens', () => {
         /**
          * Source HTML:
