@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {computeMsgId, makeTemplateObject, ParsedTranslation, parseTranslation, TargetMessage, translate} from '..';
+import {computeMsgId, makeParsedTranslation, makeTemplateObject, ParsedTranslation, parseTranslation, TargetMessage, translate} from '..';
 
 describe('utils', () => {
   describe('makeTemplateObject', () => {
@@ -19,6 +19,24 @@ describe('utils', () => {
       const template =
           makeTemplateObject(['cooked-a', 'cooked-b', 'cooked-c'], ['raw-a', 'raw-b', 'raw-c']);
       expect(template.raw).toEqual(['raw-a', 'raw-b', 'raw-c']);
+    });
+  });
+
+  describe('makeParsedTranslation()', () => {
+    it('should compute a template object from the parts', () => {
+      expect(makeParsedTranslation(['a', 'b', 'c'], ['ph1', 'ph2']).messageParts)
+          .toEqual(makeTemplateObject(['a', 'b', 'c'], ['a', 'b', 'c']));
+    });
+
+    it('should include the placeholder names', () => {
+      expect(makeParsedTranslation(['a', 'b', 'c'], ['ph1', 'ph2']).placeholderNames).toEqual([
+        'ph1', 'ph2'
+      ]);
+    });
+
+    it('should compute the message string from the parts and placeholder names', () => {
+      expect(makeParsedTranslation(['a', 'b', 'c'], ['ph1', 'ph2']).text)
+          .toEqual('a{$ph1}b{$ph2}c');
     });
   });
 
