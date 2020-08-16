@@ -10,12 +10,12 @@ import {Injector} from '../../di/injector';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
 import {NodeInjector} from '../di';
-import {buildDebugNode, DebugNode} from '../instructions/lview_debug';
+import {buildDebugNode} from '../instructions/lview_debug';
 import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {isLView} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, T_HOST, TVIEW} from '../interfaces/view';
+import {CLEANUP, CONTEXT, DebugNode, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, T_HOST, TVIEW} from '../interfaces/view';
 
 import {stringifyForError} from './misc_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';

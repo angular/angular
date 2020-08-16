@@ -7,7 +7,7 @@
  */
 
 import {Component, destroyPlatform, Directive, ElementRef, EventEmitter, Inject, Injector, Input, NgModule, NO_ERRORS_SCHEMA, Output, SimpleChanges} from '@angular/core';
-import {async, fakeAsync, tick} from '@angular/core/testing';
+import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -25,7 +25,7 @@ withEachNg1Version(() => {
     afterEach(() => destroyPlatform());
 
     describe('template/templateUrl', () => {
-      it('should support `template` (string)', async(() => {
+      it('should support `template` (string)', waitForAsync(() => {
            // Define `ng1Component`
            const ng1Component: angular.IComponent = {template: 'Hello, Angular!'};
 
@@ -65,7 +65,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support `template` (function)', async(() => {
+      it('should support `template` (function)', waitForAsync(() => {
            // Define `ng1Component`
            const ng1Component: angular.IComponent = {template: () => 'Hello, Angular!'};
 
@@ -105,7 +105,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should pass $element to `template` function and not $attrs', async(() => {
+      it('should pass $element to `template` function and not $attrs', waitForAsync(() => {
            // Define `ng1Component`
            const ng1Component: angular.IComponent = {
              template: ($attrs: angular.IAttributes, $element: angular.IAugmentedJQuery) => {
@@ -152,7 +152,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support `templateUrl` (string) fetched from `$templateCache`', async(() => {
+      it('should support `templateUrl` (string) fetched from `$templateCache`', waitForAsync(() => {
            // Define `ng1Component`
            const ng1Component: angular.IComponent = {templateUrl: 'ng1.component.html'};
 
@@ -196,7 +196,8 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support `templateUrl` (function) fetched from `$templateCache`', async(() => {
+      it('should support `templateUrl` (function) fetched from `$templateCache`',
+         waitForAsync(() => {
            // Define `ng1Component`
            const ng1Component: angular.IComponent = {templateUrl: () => 'ng1.component.html'};
 
@@ -240,7 +241,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should pass $element to `templateUrl` function and not $attrs', async(() => {
+      it('should pass $element to `templateUrl` function and not $attrs', waitForAsync(() => {
            // Define `ng1Component`
            const ng1Component: angular.IComponent = {
              templateUrl: ($attrs: angular.IAttributes, $element: angular.IAugmentedJQuery) => {
@@ -393,7 +394,7 @@ withEachNg1Version(() => {
             });
           }));
 
-      it('should support empty templates', async(() => {
+      it('should support empty templates', waitForAsync(() => {
            // Define `ng1Component`s
            const ng1ComponentA: angular.IComponent = {template: ''};
            const ng1ComponentB: angular.IComponent = {template: () => ''};
@@ -1063,7 +1064,7 @@ withEachNg1Version(() => {
     });
 
     describe('compiling', () => {
-      it('should compile the ng1 template in the correct DOM context', async(() => {
+      it('should compile the ng1 template in the correct DOM context', waitForAsync(() => {
            let grandParentNodeName: string;
 
            // Define `ng1Component`
@@ -1114,7 +1115,7 @@ withEachNg1Version(() => {
     });
 
     describe('linking', () => {
-      it('should run the pre-linking after instantiating the controller', async(() => {
+      it('should run the pre-linking after instantiating the controller', waitForAsync(() => {
            const log: string[] = [];
 
            // Define `ng1Directive`
@@ -1164,7 +1165,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should run the pre-linking function before linking', async(() => {
+      it('should run the pre-linking function before linking', waitForAsync(() => {
            const log: string[] = [];
 
            // Define `ng1Directive`
@@ -1212,7 +1213,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should run the post-linking function after linking (link: object)', async(() => {
+      it('should run the post-linking function after linking (link: object)', waitForAsync(() => {
            const log: string[] = [];
 
            // Define `ng1Directive`
@@ -1260,7 +1261,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should run the post-linking function after linking (link: function)', async(() => {
+      it('should run the post-linking function after linking (link: function)', waitForAsync(() => {
            const log: string[] = [];
 
            // Define `ng1Directive`
@@ -1308,7 +1309,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should run the post-linking function before `$postLink`', async(() => {
+      it('should run the post-linking function before `$postLink`', waitForAsync(() => {
            const log: string[] = [];
 
            // Define `ng1Directive`
@@ -1360,7 +1361,7 @@ withEachNg1Version(() => {
     });
 
     describe('controller', () => {
-      it('should support `controllerAs`', async(() => {
+      it('should support `controllerAs`', waitForAsync(() => {
            // Define `ng1Directive`
            const ng1Directive: angular.IDirective = {
              template:
@@ -1425,7 +1426,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support `bindToController` (boolean)', async(() => {
+      it('should support `bindToController` (boolean)', waitForAsync(() => {
            // Define `ng1Directive`
            const ng1DirectiveA: angular.IDirective = {
              template: 'Scope: {{ title }}; Controller: {{ $ctrl.title }}',
@@ -1501,7 +1502,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support `bindToController` (object)', async(() => {
+      it('should support `bindToController` (object)', waitForAsync(() => {
            // Define `ng1Directive`
            const ng1Directive: angular.IDirective = {
              template: '{{ $ctrl.title }}',
@@ -1552,7 +1553,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support `controller` as string', async(() => {
+      it('should support `controller` as string', waitForAsync(() => {
            // Define `ng1Directive`
            const ng1Directive: angular.IDirective = {
              template: '{{ $ctrl.title }} {{ $ctrl.text }}',
@@ -1605,7 +1606,8 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should insert the compiled content before instantiating the controller', async(() => {
+      it('should insert the compiled content before instantiating the controller',
+         waitForAsync(() => {
            let compiledContent: string;
            let getCurrentContent: () => string;
 
@@ -1663,7 +1665,7 @@ withEachNg1Version(() => {
     describe('require', () => {
       // NOT YET SUPPORTED
       xdescribe('in pre-/post-link', () => {
-        it('should resolve to its own controller if falsy', async(() => {
+        it('should resolve to its own controller if falsy', waitForAsync(() => {
              // Define `ng1Directive`
              const ng1Directive: angular.IDirective = {
                template: 'Pre: {{ pre }} | Post: {{ post }}',
@@ -1720,7 +1722,7 @@ withEachNg1Version(() => {
       });
 
       describe('in controller', () => {
-        it('should be available to children', async(() => {
+        it('should be available to children', waitForAsync(() => {
              // Define `ng1Component`
              const ng1ComponentA: angular.IComponent = {
                template: '<ng1-b></ng1-b>',
@@ -1771,7 +1773,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should throw if required controller cannot be found', async(() => {
+        it('should throw if required controller cannot be found', waitForAsync(() => {
              // Define `ng1Component`
              const ng1ComponentA: angular.IComponent = {require: {foo: 'iDoNotExist'}};
              const ng1ComponentB: angular.IComponent = {require: {foo: '^iDoNotExist'}};
@@ -1861,7 +1863,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should not throw if missing required controller is optional', async(() => {
+        it('should not throw if missing required controller is optional', waitForAsync(() => {
              // Define `ng1Component`
              const ng1Component: angular.IComponent = {
                require: {
@@ -1910,7 +1912,7 @@ withEachNg1Version(() => {
            }));
 
         it('should assign resolved values to the controller instance (if `require` is not object)',
-           async(() => {
+           waitForAsync(() => {
              // Define `ng1Component`
              const ng1ComponentA: angular.IComponent = {
                template: 'ng1A(<div><ng2></ng2></div>)',
@@ -1988,7 +1990,7 @@ withEachNg1Version(() => {
            }));
 
         it('should assign resolved values to the controller instance (if `require` is object)',
-           async(() => {
+           waitForAsync(() => {
              // Define `ng1Component`
              const ng1ComponentA: angular.IComponent = {
                template: 'ng1A(<div><ng2></ng2></div>)',
@@ -2058,7 +2060,7 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should assign to controller before calling `$onInit()`', async(() => {
+        it('should assign to controller before calling `$onInit()`', waitForAsync(() => {
              // Define `ng1Component`
              const ng1ComponentA: angular.IComponent = {
                template: '<ng2></ng2>',
@@ -2115,7 +2117,8 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should use the key as name if the required controller name is omitted', async(() => {
+        it('should use the key as name if the required controller name is omitted',
+           waitForAsync(() => {
              // Define `ng1Component`
              const ng1ComponentA: angular.IComponent = {
                template: '<ng1-b></ng1-b>',
@@ -2185,7 +2188,7 @@ withEachNg1Version(() => {
     });
 
     describe('transclusion', () => {
-      it('should support single-slot transclusion', async(() => {
+      it('should support single-slot transclusion', waitForAsync(() => {
            let ng2ComponentAInstance: Ng2ComponentA;
            let ng2ComponentBInstance: Ng2ComponentB;
 
@@ -2256,7 +2259,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support single-slot transclusion with fallback content', async(() => {
+      it('should support single-slot transclusion with fallback content', waitForAsync(() => {
            let ng1ControllerInstances: any[] = [];
            let ng2ComponentInstance: Ng2Component;
 
@@ -2318,7 +2321,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support multi-slot transclusion', async(() => {
+      it('should support multi-slot transclusion', waitForAsync(() => {
            let ng2ComponentInstance: Ng2Component;
 
            // Define `ng1Component`
@@ -2387,7 +2390,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support default slot (with fallback content)', async(() => {
+      it('should support default slot (with fallback content)', waitForAsync(() => {
            let ng1ControllerInstances: any[] = [];
            let ng2ComponentInstance: Ng2Component;
 
@@ -2471,7 +2474,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support optional transclusion slots (with fallback content)', async(() => {
+      it('should support optional transclusion slots (with fallback content)', waitForAsync(() => {
            let ng1ControllerInstances: any[] = [];
            let ng2ComponentInstance: Ng2Component;
 
@@ -2553,7 +2556,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should throw if a non-optional slot is not filled', async(() => {
+      it('should throw if a non-optional slot is not filled', waitForAsync(() => {
            let errorMessage: string;
 
            // Define `ng1Component`
@@ -2601,7 +2604,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support structural directives in transcluded content', async(() => {
+      it('should support structural directives in transcluded content', waitForAsync(() => {
            let ng2ComponentInstance: Ng2Component;
 
            // Define `ng1Component`
@@ -2984,7 +2987,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should call `$onInit()` on controller', async(() => {
+      it('should call `$onInit()` on controller', waitForAsync(() => {
            // Define `ng1Directive`
            const ng1DirectiveA: angular.IDirective = {
              template: 'Called: {{ called }}',
@@ -3055,7 +3058,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should not call `$onInit()` on scope', async(() => {
+      it('should not call `$onInit()` on scope', waitForAsync(() => {
            // Define `ng1Directive`
            const ng1DirectiveA: angular.IDirective = {
              template: 'Called: {{ called }}',
@@ -3125,7 +3128,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should call `$postLink()` on controller', async(() => {
+      it('should call `$postLink()` on controller', waitForAsync(() => {
            // Define `ng1Directive`
            const ng1DirectiveA: angular.IDirective = {
              template: 'Called: {{ called }}',
@@ -3196,7 +3199,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should not call `$postLink()` on scope', async(() => {
+      it('should not call `$postLink()` on scope', waitForAsync(() => {
            // Define `ng1Directive`
            const ng1DirectiveA: angular.IDirective = {
              template: 'Called: {{ called }}',
@@ -3267,7 +3270,7 @@ withEachNg1Version(() => {
          }));
 
 
-      it('should call `$doCheck()` on controller', async(() => {
+      it('should call `$doCheck()` on controller', waitForAsync(() => {
            const controllerDoCheckA = jasmine.createSpy('controllerDoCheckA');
            const controllerDoCheckB = jasmine.createSpy('controllerDoCheckB');
 
@@ -3354,7 +3357,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should not call `$doCheck()` on scope', async(() => {
+      it('should not call `$doCheck()` on scope', waitForAsync(() => {
            const scopeDoCheck = jasmine.createSpy('scopeDoCheck');
 
            // Define `ng1Directive`
@@ -3432,7 +3435,7 @@ withEachNg1Version(() => {
          }));
 
 
-      it('should call `$onDestroy()` on controller', async(() => {
+      it('should call `$onDestroy()` on controller', waitForAsync(() => {
            const controllerOnDestroyA = jasmine.createSpy('controllerOnDestroyA');
            const controllerOnDestroyB = jasmine.createSpy('controllerOnDestroyB');
 
@@ -3532,7 +3535,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should not call `$onDestroy()` on scope', async(() => {
+      it('should not call `$onDestroy()` on scope', waitForAsync(() => {
            const scopeOnDestroy = jasmine.createSpy('scopeOnDestroy');
 
            // Define `ng1Directive`
@@ -3628,7 +3631,7 @@ withEachNg1Version(() => {
          }));
 
       it('should be called in order `$onChanges()` > `$onInit()` > `$doCheck()` > `$postLink()`',
-         async(() => {
+         waitForAsync(() => {
            // Define `ng1Component`
            const ng1Component: angular.IComponent = {
              // `$doCheck()` will keep getting called as long as the interpolated value keeps
@@ -3697,7 +3700,7 @@ withEachNg1Version(() => {
     });
 
     describe('destroying the upgraded component', () => {
-      it('should destroy `$componentScope`', async(() => {
+      it('should destroy `$componentScope`', waitForAsync(() => {
            const scopeDestroyListener = jasmine.createSpy('scopeDestroyListener');
            let ng2ComponentAInstance: Ng2ComponentA;
 
@@ -3760,7 +3763,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should emit `$destroy` on `$element` and descendants', async(() => {
+      it('should emit `$destroy` on `$element` and descendants', waitForAsync(() => {
            const elementDestroyListener = jasmine.createSpy('elementDestroyListener');
            const descendantDestroyListener = jasmine.createSpy('descendantDestroyListener');
            let ng2ComponentAInstance: Ng2ComponentA;
@@ -3828,7 +3831,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should clear data on `$element` and descendants`', async(() => {
+      it('should clear data on `$element` and descendants`', waitForAsync(() => {
            let ng1ComponentElement: angular.IAugmentedJQuery;
            let ng2ComponentAInstance: Ng2ComponentA;
 
@@ -3897,7 +3900,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should clear dom listeners on `$element` and descendants`', async(() => {
+      it('should clear dom listeners on `$element` and descendants`', waitForAsync(() => {
            const elementClickListener = jasmine.createSpy('elementClickListener');
            const descendantClickListener = jasmine.createSpy('descendantClickListener');
            let ng1DescendantElement: angular.IAugmentedJQuery;
@@ -3970,7 +3973,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should clean up `$doCheck()` watchers from the parent scope', async(() => {
+      it('should clean up `$doCheck()` watchers from the parent scope', waitForAsync(() => {
            let ng2Component: Ng2Component;
 
            // Define `ng1Component`
@@ -4041,7 +4044,7 @@ withEachNg1Version(() => {
          }));
     });
 
-    it('should support ng2 > ng1 > ng2 (no inputs/outputs)', async(() => {
+    it('should support ng2 > ng1 > ng2 (no inputs/outputs)', waitForAsync(() => {
          // Define `ng1Component`
          const ng1Component: angular.IComponent = {template: 'ng1X(<ng2-b></ng2-b>)'};
 
@@ -4283,7 +4286,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should support ng2 > ng1 > ng2 > ng1 (with `require`)', async(() => {
+    it('should support ng2 > ng1 > ng2 > ng1 (with `require`)', waitForAsync(() => {
          // Define `ng1Component`
          const ng1ComponentA: angular.IComponent = {
            template: 'ng1A(<ng2-b></ng2-b>)',

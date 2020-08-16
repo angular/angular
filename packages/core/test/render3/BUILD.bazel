@@ -11,10 +11,13 @@ ts_library(
             "**/*_perf.ts",
             "domino.d.ts",
             "load_domino.ts",
+            "is_shape_of.ts",
             "jit_spec.ts",
+            "matchers.ts",
         ],
     ),
     deps = [
+        ":matchers",
         "//packages:types",
         "//packages/animations",
         "//packages/animations/browser",
@@ -31,6 +34,18 @@ ts_library(
         "//packages/platform-browser/testing",
         "//packages/private/testing",
         "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "matchers",
+    testonly = True,
+    srcs = [
+        "is_shape_of.ts",
+        "matchers.ts",
+    ],
+    deps = [
+        "//packages/core",
     ],
 )
 

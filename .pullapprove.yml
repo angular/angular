@@ -882,6 +882,7 @@ groups:
       - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
+          'aio/content/guide/roadmap.md',
           'aio/content/marketing/**',
           'aio/content/images/bios/**',
           'aio/content/images/marketing/**',

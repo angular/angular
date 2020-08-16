@@ -1,10 +1,10 @@
-import { ReflectiveInjector } from '@angular/core';
-import { Location, LocationStrategy, PlatformLocation, ViewportScroller } from '@angular/common';
-import { DOCUMENT } from '@angular/common';
-import { MockLocationStrategy, SpyLocation } from '@angular/common/testing';
-import { fakeAsync, tick } from '@angular/core/testing';
+import {Location, LocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
+import {DOCUMENT} from '@angular/common';
+import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
+import {ReflectiveInjector} from '@angular/core';
+import {fakeAsync, tick} from '@angular/core/testing';
 
-import { ScrollService, topMargin } from './scroll.service';
+import {ScrollService, topMargin} from './scroll.service';
 
 describe('ScrollService', () => {
   const scrollServiceInstances: ScrollService[] = [];
@@ -32,27 +32,25 @@ describe('ScrollService', () => {
   }
 
   class MockElement {
-    getBoundingClientRect = jasmine.createSpy('Element getBoundingClientRect')
-                                   .and.returnValue({top: 0});
+    getBoundingClientRect =
+        jasmine.createSpy('Element getBoundingClientRect').and.returnValue({top: 0});
     scrollIntoView = jasmine.createSpy('Element scrollIntoView');
   }
 
-  const viewportScrollerStub = jasmine.createSpyObj(
-    'viewportScroller',
-    ['getScrollPosition', 'scrollToPosition']);
+  const viewportScrollerStub =
+      jasmine.createSpyObj('viewportScroller', ['getScrollPosition', 'scrollToPosition']);
 
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
-        {
-          provide: ScrollService,
-          useFactory: createScrollService,
-          deps: [DOCUMENT, PlatformLocation, ViewportScroller, Location],
-        },
-        { provide: Location, useClass: SpyLocation },
-        { provide: DOCUMENT, useClass: MockDocument },
-        { provide: PlatformLocation, useClass: MockPlatformLocation },
-        { provide: ViewportScroller, useValue: viewportScrollerStub },
-        { provide: LocationStrategy, useClass: MockLocationStrategy }
+      {
+        provide: ScrollService,
+        useFactory: createScrollService,
+        deps: [DOCUMENT, PlatformLocation, ViewportScroller, Location],
+      },
+      {provide: Location, useClass: SpyLocation}, {provide: DOCUMENT, useClass: MockDocument},
+      {provide: PlatformLocation, useClass: MockPlatformLocation},
+      {provide: ViewportScroller, useValue: viewportScrollerStub},
+      {provide: LocationStrategy, useClass: MockLocationStrategy}
     ]);
     platformLocation = injector.get(PlatformLocation);
     document = injector.get(DOCUMENT);
@@ -68,18 +66,39 @@ describe('ScrollService', () => {
   });
 
   it('should debounce `updateScrollPositonInHistory()`', fakeAsync(() => {
-    const updateScrollPositionInHistorySpy = spyOn(scrollService, 'updateScrollPositionInHistory');
+       const updateScrollPositionInHistorySpy =
+           spyOn(scrollService, 'updateScrollPositionInHistory');
 
-    window.dispatchEvent(new Event('scroll'));
-    tick(249);
-    window.dispatchEvent(new Event('scroll'));
-    tick(249);
-    window.dispatchEvent(new Event('scroll'));
-    tick(249);
-    expect(updateScrollPositionInHistorySpy).not.toHaveBeenCalled();
-    tick(1);
-    expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
-  }));
+       window.dispatchEvent(new Event('scroll'));
+       tick(249);
+       window.dispatchEvent(new Event('scroll'));
+       tick(249);
+       window.dispatchEvent(new Event('scroll'));
+       tick(249);
+       expect(updateScrollPositionInHistorySpy).not.toHaveBeenCalled();
+       tick(1);
+       expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
+     }));
+
+  it('should not support `manual` scrollRestoration when it is not writable', () => {
+    const original = Object.getOwnPropertyDescriptor(window.history, 'scrollRestoration');
+    try {
+      Object.defineProperty(window.history, 'scrollRestoration', {
+        value: 'auto',
+        configurable: true,
+      });
+      scrollService = createScrollService(
+          document, platformLocation as PlatformLocation, viewportScrollerStub, location);
+
+      expect(scrollService.supportManualScrollRestoration).toBe(false);
+    } finally {
+      if (original !== undefined) {
+        Object.defineProperty(window.history, 'scrollRestoration', original);
+      } else {
+        delete window.history.scrollRestoration;
+      }
+    }
+  });
 
   it('should set `scrollRestoration` to `manual` if supported', () => {
     if (scrollService.supportManualScrollRestoration) {
@@ -96,7 +115,9 @@ describe('ScrollService', () => {
       try {
         // Simulate `window.sessionStorage` being inaccessible, when cookies are disabled.
         Object.defineProperty(window, 'sessionStorage', {
-          get() { throw new Error('The operation is insecure'); },
+          get() {
+            throw new Error('The operation is insecure');
+          },
         });
 
         const platformLoc = platformLocation as PlatformLocation;
@@ -198,8 +219,7 @@ describe('ScrollService', () => {
       platformLocation.hash = '';
 
       const topOfPage = new MockElement();
-      document.getElementById.and
-              .callFake((id: string) => id === 'top-of-page' ? topOfPage : null);
+      document.getElementById.and.callFake((id: string) => id === 'top-of-page' ? topOfPage : null);
 
       scrollService.scroll();
       expect(topOfPage.scrollIntoView).toHaveBeenCalled();
@@ -227,7 +247,7 @@ describe('ScrollService', () => {
 
     it('should scroll to the element whose id matches the hash with encoded characters', () => {
       const element = new MockElement();
-      platformLocation.hash = '%F0%9F%91%8D'; // 👍
+      platformLocation.hash = '%F0%9F%91%8D';  // 👍
       document.getElementById.and.returnValue(element);
 
       scrollService.scroll();
@@ -289,8 +309,7 @@ describe('ScrollService', () => {
     it('should scroll to top', () => {
       const topOfPageElement = new MockElement() as any as Element;
       document.getElementById.and.callFake(
-        (id: string) => id === 'top-of-page' ? topOfPageElement : null
-      );
+          (id: string) => id === 'top-of-page' ? topOfPageElement : null);
 
       scrollService.scrollToTop();
       expect(topOfPageElement.scrollIntoView).toHaveBeenCalled();
@@ -312,58 +331,55 @@ describe('ScrollService', () => {
 
   describe('#needToFixScrollPosition', async () => {
     it('should return true when popState event was fired after a back navigation if the browser supports ' +
-      'scrollRestoration`. Otherwise, needToFixScrollPosition() returns false', () => {
+           'scrollRestoration`. Otherwise, needToFixScrollPosition() returns false',
+       () => {
+         if (scrollService.supportManualScrollRestoration) {
+           location.go('/initial-url1');
+           // We simulate a scroll down
+           location.replaceState('/initial-url1', 'hack', {scrollPosition: [2000, 0]});
+           location.go('/initial-url2');
+           location.back();
 
-      if (scrollService.supportManualScrollRestoration) {
-        location.go('/initial-url1');
-        // We simulate a scroll down
-        location.replaceState('/initial-url1', 'hack', {scrollPosition: [2000, 0]});
-        location.go('/initial-url2');
-        location.back();
+           expect(scrollService.poppedStateScrollPosition).toEqual([2000, 0]);
+           expect(scrollService.needToFixScrollPosition()).toBe(true);
+         } else {
+           location.go('/initial-url1');
+           location.go('/initial-url2');
+           location.back();
 
-        expect(scrollService.poppedStateScrollPosition).toEqual([2000, 0]);
-        expect(scrollService.needToFixScrollPosition()).toBe(true);
-      } else {
-        location.go('/initial-url1');
-        location.go('/initial-url2');
-        location.back();
-
-        expect(scrollService.poppedStateScrollPosition).toBe(null);
-        expect(scrollService.needToFixScrollPosition()).toBe(false);
-      }
-
-    });
+           expect(scrollService.poppedStateScrollPosition).toBe(null);
+           expect(scrollService.needToFixScrollPosition()).toBe(false);
+         }
+       });
 
     it('should return true when popState event was fired after a forward navigation if the browser supports ' +
-      'scrollRestoration`. Otherwise, needToFixScrollPosition() returns false', () => {
+           'scrollRestoration`. Otherwise, needToFixScrollPosition() returns false',
+       () => {
+         if (scrollService.supportManualScrollRestoration) {
+           location.go('/initial-url1');
+           location.go('/initial-url2');
+           // We simulate a scroll down
+           location.replaceState('/initial-url1', 'hack', {scrollPosition: [2000, 0]});
 
-      if (scrollService.supportManualScrollRestoration) {
-        location.go('/initial-url1');
-        location.go('/initial-url2');
-        // We simulate a scroll down
-        location.replaceState('/initial-url1', 'hack', {scrollPosition: [2000, 0]});
+           location.back();
+           scrollService.poppedStateScrollPosition = [0, 0];
+           location.forward();
 
-        location.back();
-        scrollService.poppedStateScrollPosition = [0, 0];
-        location.forward();
+           expect(scrollService.poppedStateScrollPosition).toEqual([2000, 0]);
+           expect(scrollService.needToFixScrollPosition()).toBe(true);
+         } else {
+           location.go('/initial-url1');
+           location.go('/initial-url2');
+           location.back();
+           location.forward();
 
-        expect(scrollService.poppedStateScrollPosition).toEqual([2000, 0]);
-        expect(scrollService.needToFixScrollPosition()).toBe(true);
-      } else {
-        location.go('/initial-url1');
-        location.go('/initial-url2');
-        location.back();
-        location.forward();
-
-        expect(scrollService.poppedStateScrollPosition).toBe(null);
-        expect(scrollService.needToFixScrollPosition()).toBe(false);
-      }
-
-    });
+           expect(scrollService.poppedStateScrollPosition).toBe(null);
+           expect(scrollService.needToFixScrollPosition()).toBe(false);
+         }
+       });
   });
 
   describe('#scrollAfterRender', async () => {
-
     let scrollSpy: jasmine.Spy;
     let scrollToTopSpy: jasmine.Spy;
     let needToFixScrollPositionSpy: jasmine.Spy;
@@ -383,69 +399,69 @@ describe('ScrollService', () => {
 
 
     it('should call `scroll` when we navigate to a location with anchor', fakeAsync(() => {
-      needToFixScrollPositionSpy.and.returnValue(false);
-      getStoredScrollPositionSpy.and.returnValue(null);
-      isLocationWithHashSpy.and.returnValue(true);
+         needToFixScrollPositionSpy.and.returnValue(false);
+         getStoredScrollPositionSpy.and.returnValue(null);
+         isLocationWithHashSpy.and.returnValue(true);
 
-      scrollService.scrollAfterRender(scrollDelay);
+         scrollService.scrollAfterRender(scrollDelay);
 
-      expect(scrollSpy).not.toHaveBeenCalled();
-      tick(scrollDelay);
-      expect(scrollSpy).toHaveBeenCalled();
-    }));
+         expect(scrollSpy).not.toHaveBeenCalled();
+         tick(scrollDelay);
+         expect(scrollSpy).toHaveBeenCalled();
+       }));
 
     it('should call `scrollToTop` when we navigate to a location without anchor', fakeAsync(() => {
-      needToFixScrollPositionSpy.and.returnValue(false);
-      getStoredScrollPositionSpy.and.returnValue(null);
-      isLocationWithHashSpy.and.returnValue(false);
+         needToFixScrollPositionSpy.and.returnValue(false);
+         getStoredScrollPositionSpy.and.returnValue(null);
+         isLocationWithHashSpy.and.returnValue(false);
 
-      scrollService.scrollAfterRender(scrollDelay);
+         scrollService.scrollAfterRender(scrollDelay);
 
-      expect(scrollToTopSpy).toHaveBeenCalled();
-      tick(scrollDelay);
-      expect(scrollSpy).not.toHaveBeenCalled();
-    }));
+         expect(scrollToTopSpy).toHaveBeenCalled();
+         tick(scrollDelay);
+         expect(scrollSpy).not.toHaveBeenCalled();
+       }));
 
     it('should call `viewportScroller.scrollToPosition` when we reload a page', fakeAsync(() => {
-      getStoredScrollPositionSpy.and.returnValue([0, 1000]);
+         getStoredScrollPositionSpy.and.returnValue([0, 1000]);
 
-      scrollService.scrollAfterRender(scrollDelay);
+         scrollService.scrollAfterRender(scrollDelay);
 
-      expect(viewportScrollerStub.scrollToPosition).toHaveBeenCalled();
-      expect(getStoredScrollPositionSpy).toHaveBeenCalled();
-    }));
+         expect(viewportScrollerStub.scrollToPosition).toHaveBeenCalled();
+         expect(getStoredScrollPositionSpy).toHaveBeenCalled();
+       }));
 
     it('should call `scrollToPosition` after a popState', fakeAsync(() => {
-      needToFixScrollPositionSpy.and.returnValue(true);
-      getStoredScrollPositionSpy.and.returnValue(null);
-      scrollService.scrollAfterRender(scrollDelay);
-      expect(scrollToPosition).toHaveBeenCalled();
-      tick(scrollDelay);
-      expect(scrollSpy).not.toHaveBeenCalled();
-      expect(scrollToTopSpy).not.toHaveBeenCalled();
-    }));
+         needToFixScrollPositionSpy.and.returnValue(true);
+         getStoredScrollPositionSpy.and.returnValue(null);
+         scrollService.scrollAfterRender(scrollDelay);
+         expect(scrollToPosition).toHaveBeenCalled();
+         tick(scrollDelay);
+         expect(scrollSpy).not.toHaveBeenCalled();
+         expect(scrollToTopSpy).not.toHaveBeenCalled();
+       }));
   });
 
   describe('once destroyed', () => {
     it('should stop updating scroll position', fakeAsync(() => {
-      const updateScrollPositionInHistorySpy =
-          spyOn(scrollService, 'updateScrollPositionInHistory');
+         const updateScrollPositionInHistorySpy =
+             spyOn(scrollService, 'updateScrollPositionInHistory');
 
-      window.dispatchEvent(new Event('scroll'));
-      tick(250);
-      expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
+         window.dispatchEvent(new Event('scroll'));
+         tick(250);
+         expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
 
-      window.dispatchEvent(new Event('scroll'));
-      tick(250);
-      expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(2);
+         window.dispatchEvent(new Event('scroll'));
+         tick(250);
+         expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(2);
 
-      updateScrollPositionInHistorySpy.calls.reset();
-      scrollService.ngOnDestroy();
+         updateScrollPositionInHistorySpy.calls.reset();
+         scrollService.ngOnDestroy();
 
-      window.dispatchEvent(new Event('scroll'));
-      tick(250);
-      expect(updateScrollPositionInHistorySpy).not.toHaveBeenCalled();
-    }));
+         window.dispatchEvent(new Event('scroll'));
+         tick(250);
+         expect(updateScrollPositionInHistorySpy).not.toHaveBeenCalled();
+       }));
 
     it('should stop updating the stored location href', () => {
       const updateScrollLocationHrefSpy = spyOn(scrollService, 'updateScrollLocationHref');

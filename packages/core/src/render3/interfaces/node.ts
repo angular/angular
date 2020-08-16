@@ -7,12 +7,9 @@
  */
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
-
-import {DirectiveDef} from './definition';
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {LView, TView} from './view';
-
 
 
 /**
@@ -44,6 +41,20 @@ export const enum TNodeType {
    */
   IcuContainer = 5,
 }
+
+/**
+ * Converts `TNodeType` into human readable text.
+ * Make sure this matches with `TNodeType`
+ */
+export const TNodeTypeAsString = [
+  'Container',         // 0
+  'Projection',        // 1
+  'View',              // 2
+  'Element',           // 3
+  'ElementContainer',  // 4
+  'IcuContainer'       // 5
+] as const;
+
 
 /**
  * Corresponds to the TNode.flags property.
@@ -701,7 +712,9 @@ export interface TIcuContainerNode extends TNode {
   /**
    * Indicates the current active case for an ICU expression.
    * It is null when there is no active case.
+   *
    */
+  // FIXME(misko): This is at a wrong location as activeCase is `LView` (not `TView`) concern
   activeCaseIndex: number|null;
 }
 

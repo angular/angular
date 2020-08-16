@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
 import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NgModule, NgModuleFactory, NO_ERRORS_SCHEMA, Optional, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
-import {async, TestBed} from '@angular/core/testing';
+import {TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('insert/remove', () => {
@@ -17,7 +17,7 @@ describe('insert/remove', () => {
     TestBed.configureTestingModule({imports: [TestModule]});
   });
 
-  it('should do nothing if component is null', async(() => {
+  it('should do nothing if component is null', waitForAsync(() => {
        const template = `<ng-template *ngComponentOutlet="currentComponent"></ng-template>`;
        TestBed.overrideComponent(TestComponent, {set: {template: template}});
        let fixture = TestBed.createComponent(TestComponent);
@@ -28,7 +28,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('');
      }));
 
-  it('should insert content specified by a component', async(() => {
+  it('should insert content specified by a component', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        fixture.detectChanges();
@@ -40,7 +40,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('foo');
      }));
 
-  it('should emit a ComponentRef once a component was created', async(() => {
+  it('should emit a ComponentRef once a component was created', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        fixture.detectChanges();
@@ -56,7 +56,7 @@ describe('insert/remove', () => {
      }));
 
 
-  it('should clear view if component becomes null', async(() => {
+  it('should clear view if component becomes null', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        fixture.detectChanges();
@@ -74,7 +74,7 @@ describe('insert/remove', () => {
      }));
 
 
-  it('should swap content if component changes', async(() => {
+  it('should swap content if component changes', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        fixture.detectChanges();
@@ -91,7 +91,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('bar');
      }));
 
-  it('should use the injector, if one supplied', async(() => {
+  it('should use the injector, if one supplied', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        const uniqueValue = {};
@@ -107,7 +107,7 @@ describe('insert/remove', () => {
      }));
 
 
-  it('should resolve with an injector', async(() => {
+  it('should resolve with an injector', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        // We are accessing a ViewChild (ngComponentOutlet) before change detection has run
@@ -120,7 +120,7 @@ describe('insert/remove', () => {
        expect(cmpRef.instance.testToken).toBeNull();
      }));
 
-  it('should render projectable nodes, if supplied', async(() => {
+  it('should render projectable nodes, if supplied', waitForAsync(() => {
        const template = `<ng-template>projected foo</ng-template>${TEST_CMP_TEMPLATE}`;
        TestBed.overrideComponent(TestComponent, {set: {template: template}})
            .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
@@ -144,7 +144,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('projected foo');
      }));
 
-  it('should resolve components from other modules, if supplied', async(() => {
+  it('should resolve components from other modules, if supplied', waitForAsync(() => {
        const compiler = TestBed.inject(Compiler);
        let fixture = TestBed.createComponent(TestComponent);
 
@@ -158,7 +158,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('baz');
      }));
 
-  it('should clean up moduleRef, if supplied', async(() => {
+  it('should clean up moduleRef, if supplied', waitForAsync(() => {
        let destroyed = false;
        const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
@@ -174,7 +174,7 @@ describe('insert/remove', () => {
        expect(moduleRef.destroy).toHaveBeenCalled();
      }));
 
-  it('should not re-create moduleRef when it didn\'t actually change', async(() => {
+  it('should not re-create moduleRef when it didn\'t actually change', waitForAsync(() => {
        const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
 
@@ -191,7 +191,7 @@ describe('insert/remove', () => {
        expect(moduleRef).toBe(fixture.componentInstance.ngComponentOutlet['_moduleRef']);
      }));
 
-  it('should re-create moduleRef when changed', async(() => {
+  it('should re-create moduleRef when changed', waitForAsync(() => {
        const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
        fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);

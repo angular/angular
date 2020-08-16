@@ -7,14 +7,14 @@
  */
 
 import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
-import {async} from '@angular/core/testing';
+import {waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {configureCompiler, createComponent, HTML, serializeTranslations, validateHtml} from './integration_common';
 
 describe('i18n XMB/XTB integration spec', () => {
   describe('(with LF line endings)', () => {
-    beforeEach(async(() => configureCompiler(XTB + LF_LINE_ENDING_XTB, 'xtb')));
+    beforeEach(waitForAsync(() => configureCompiler(XTB + LF_LINE_ENDING_XTB, 'xtb')));
 
     it('should extract from templates', () => {
       const serializer = new Xmb();
@@ -33,7 +33,7 @@ describe('i18n XMB/XTB integration spec', () => {
   });
 
   describe('(with CRLF line endings', () => {
-    beforeEach(async(() => configureCompiler(XTB + CRLF_LINE_ENDING_XTB, 'xtb')));
+    beforeEach(waitForAsync(() => configureCompiler(XTB + CRLF_LINE_ENDING_XTB, 'xtb')));
 
     it('should extract from templates (with CRLF line endings)', () => {
       const serializer = new Xmb();

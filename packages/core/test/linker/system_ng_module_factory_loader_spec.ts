@@ -8,7 +8,7 @@
 
 import {Compiler, SystemJsNgModuleLoader} from '@angular/core';
 import {global} from '@angular/core/src/util/global';
-import {async} from '@angular/core/testing';
+import {waitForAsync} from '@angular/core/testing';
 import {afterEach, beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -36,19 +36,19 @@ describe('SystemJsNgModuleLoader', () => {
       global['System'] = oldSystem;
     });
 
-    it('loads a default factory by appending the factory suffix', async(() => {
+    it('loads a default factory by appending the factory suffix', waitForAsync(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());
          loader.load('test').then(contents => {
            expect(contents).toBe('test module factory' as any);
          });
        }));
-    it('loads a named factory by appending the factory suffix', async(() => {
+    it('loads a named factory by appending the factory suffix', waitForAsync(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());
          loader.load('test#Named').then(contents => {
            expect(contents).toBe('test NamedNgFactory' as any);
          });
        }));
-    it('loads a named factory with a configured prefix and suffix', async(() => {
+    it('loads a named factory with a configured prefix and suffix', waitForAsync(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler(), {
            factoryPathPrefix: 'prefixed/',
            factoryPathSuffix: '/suffixed',
@@ -70,13 +70,13 @@ describe('SystemJsNgModuleLoader', () => {
       global['System'] = oldSystem;
     });
 
-    it('loads a default module', async(() => {
+    it('loads a default module', waitForAsync(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());
          loader.load('test').then(contents => {
            expect(contents.moduleType).toBe('test module' as any);
          });
        }));
-    it('loads a named module', async(() => {
+    it('loads a named module', waitForAsync(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());
          loader.load('test#NamedModule').then(contents => {
            expect(contents.moduleType).toBe('test NamedModule' as any);

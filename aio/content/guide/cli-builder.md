@@ -42,11 +42,11 @@ For example, your `myBuilder` folder could contain the following files.
 | `src/my-builder.ts`      | Main source file for the builder definition. |
 | `src/my-builder.spec.ts` | Source file for tests. |
 | `src/schema.json`        | Definition of builder input options. |
-| `builders.json`          | Testing configuration. |
+| `builders.json`          | Builders definition. |
 | `package.json`           | Dependencies. See https://docs.npmjs.com/files/package.json. |
 | `tsconfig.json`          | [TypeScript configuration](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html). |
 
-You can publish the builder to `npm` (see [Publishing your Library](https://angular.io/guide/creating-libraries#publishing-your-library)). If you publish it as `@example/my-builder`, you can install it using the following command.
+You can publish the builder to `npm` (see [Publishing your Library](guide/creating-libraries#publishing-your-library)). If you publish it as `@example/my-builder`, you can install it using the following command.
 
 <code-example language="sh">
 

@@ -8,7 +8,7 @@
 
 import {ResourceLoader} from '@angular/compiler';
 import {Compiler, Component, NgModule} from '@angular/core';
-import {async, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {fakeAsync, inject, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {ResourceLoaderImpl} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_impl';
 
 
@@ -54,7 +54,7 @@ if (isBrowser) {
         expect(actuallyDone).toEqual(true);
       });
 
-      it('should run async tests with ResourceLoaders', async(() => {
+      it('should run async tests with ResourceLoaders', waitForAsync(() => {
            const resourceLoader = new ResourceLoaderImpl();
            resourceLoader
                .get('/base/angular/packages/platform-browser/test/static_assets/test.html')
@@ -132,7 +132,7 @@ if (isBrowser) {
       it('should fail when an ResourceLoader fails', done => {
         const itPromise = patchJasmineIt();
 
-        it('should fail with an error from a promise', async(() => {
+        it('should fail with an error from a promise', waitForAsync(() => {
              TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
              TestBed.compileComponents();
            }));
@@ -151,7 +151,7 @@ if (isBrowser) {
     });
 
     describe('TestBed createComponent', function() {
-      it('should allow an external templateUrl', async(() => {
+      it('should allow an external templateUrl', waitForAsync(() => {
            TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
            TestBed.compileComponents().then(() => {
              const componentFixture = TestBed.createComponent(ExternalTemplateComp);

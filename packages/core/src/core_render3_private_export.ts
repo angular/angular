@@ -292,5 +292,8 @@ export {
   ɵɵsanitizeUrl,
   ɵɵsanitizeUrlOrResourceUrl,
 } from './sanitization/sanitization';
+export {
+  noSideEffects as ɵnoSideEffects,
+} from './util/closure';
 
 // clang-format on

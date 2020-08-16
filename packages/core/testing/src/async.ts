@@ -16,7 +16,7 @@ import {asyncFallback} from './async_fallback';
  * Example:
  *
  * ```
- * it('...', async(inject([AClass], (object) => {
+ * it('...', waitForAsync(inject([AClass], (object) => {
  *   object.doSomething.then(() => {
  *     expect(...);
  *   })
@@ -25,12 +25,12 @@ import {asyncFallback} from './async_fallback';
  *
  * @publicApi
  */
-export function async(fn: Function): (done: any) => any {
+export function waitForAsync(fn: Function): (done: any) => any {
   const _Zone: any = typeof Zone !== 'undefined' ? Zone : null;
   if (!_Zone) {
     return function() {
       return Promise.reject(
-          'Zone is needed for the async() test helper but could not be found. ' +
+          'Zone is needed for the waitForAsync() test helper but could not be found. ' +
           'Please make sure that your environment includes zone.js/dist/zone.js');
     };
   }
@@ -42,4 +42,13 @@ export function async(fn: Function): (done: any) => any {
   // TODO @JiaLiPassion, remove this after all library updated to
   // newest version of zone.js(0.8.25)
   return asyncFallback(fn);
+}
+
+/**
+ * @deprecated use `waitForAsync()`, (expected removal in v12)
+ * @see {@link waitForAsync}
+ * @publicApi
+ * */
+export function async(fn: Function): (done: any) => any {
+  return waitForAsync(fn);
 }

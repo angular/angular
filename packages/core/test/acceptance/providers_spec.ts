@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, Directive, forwardRef, Inject, Injectable, InjectionToken, Injector, NgModule, Optional} from '@angular/core';
-import {async, inject, TestBed} from '@angular/core/testing';
+import {inject, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
@@ -603,7 +603,7 @@ describe('providers', () => {
       });
 
       it('should support injecting without bootstrapping',
-         async(inject([MyComp, MyService], (comp: MyComp, service: MyService) => {
+         waitForAsync(inject([MyComp, MyService], (comp: MyComp, service: MyService) => {
            expect(comp.svc.value).toEqual('some value');
          })));
     });
