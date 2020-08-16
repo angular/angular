@@ -1,243 +1,243 @@
-# Contributing to Angular
+# Contribuye a Angular
 
-We would love for you to contribute to Angular and help make it even better than it is today!
-As a contributor, here are the guidelines we would like you to follow:
+¡Nos encantaría que contribuyeras a Angular y que ayudaras a hacerlo aún mejor de lo que es hoy!
+Como colaborador, estos son los lineamientos que nos gustaría que siguieras:
 
- - [Code of Conduct](#coc)
- - [Question or Problem?](#question)
- - [Issues and Bugs](#issue)
- - [Feature Requests](#feature)
- - [Submission Guidelines](#submit)
- - [Coding Rules](#rules)
- - [Commit Message Guidelines](#commit)
- - [Signing the CLA](#cla)
-
-
-## <a name="coc"></a> Code of Conduct
-
-Help us keep Angular open and inclusive.
-Please read and follow our [Code of Conduct][coc].
+ - [Código de conducta](#coc)
+ - [¿Preguntas o problemas?](#question)
+ - [_Issues_ y _bugs_](#issue)
+ - [Solicitud de funcionalidades](#feature)
+ - [Lineamientos para la creación de _issues_ y _PR_](#submit)
+ - [Reglas del código](#rules)
+ - [Convención para el mensaje de los _commits_](#commit)
+ - [Firma del Acuerdo de Licencia de Colaborador (CLA)](#cla)
 
 
-## <a name="question"></a> Got a Question or Problem?
+## <a name="coc"></a> Código de conducta
 
-Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests.
-Instead, we recommend using [Stack Overflow](https://stackoverflow.com/questions/tagged/angular) to ask support-related questions. When creating a new question on Stack Overflow, make sure to add the `angular` tag.
-
-Stack Overflow is a much better place to ask questions since:
-
-- there are thousands of people willing to help on Stack Overflow
-- questions and answers stay available for public viewing so your question/answer might help someone else
-- Stack Overflow's voting system assures that the best answers are prominently visible.
-
-To save your and our time, we will systematically close all issues that are requests for general support and redirect people to Stack Overflow.
-
-If you would like to chat about the question in real-time, you can reach out via [our gitter channel][gitter].
+Ayúdanos a mantener Angular abierto e inclusivo.
+Por favor lee y sigue nuestro [Código de conducta][coc].
 
 
-## <a name="issue"></a> Found a Bug?
+## <a name="question"></a> ¿Tienes alguna pregunta o problema?
 
-If you find a bug in the source code, you can help us by [submitting an issue](#submit-issue) to our [GitHub Repository][github].
-Even better, you can [submit a Pull Request](#submit-pr) with a fix.
+No abras *issues* para preguntas de soporte general ya que queremos mantener los *issues* de GitHub para reporte de *bugs* y solicitud de funcionalidades.
+En su lugar, recomendamos utilizar [Stack Overflow](https://stackoverflow.com/questions/tagged/angular) para hacer preguntas relacionadas con soporte. Al crear una nueva pregunta en Stack Overflow, asegúrate de agregar el etiqueta (tag) de `angular`.
 
+Stack Overflow es mucho mejor para hacer preguntas ya que:
 
-## <a name="feature"></a> Missing a Feature?
-You can *request* a new feature by [submitting an issue](#submit-issue) to our GitHub Repository.
-If you would like to *implement* a new feature, please consider the size of the change in order to determine the right steps to proceed:
+- Hay miles de personas dispuestas a ayudar en preguntas y respuestas de Stack Overflow
+que  permanecen disponibles para el público, por lo que tu pregunta o respuesta podría ayudar a otra persona.
+- El sistema de votación de Stack Overflow asegura que las mejores respuestas sobresalgan y sean visibles.
 
-* For a **Major Feature**, first open an issue and outline your proposal so that it can be discussed.
-  This process allows us to better coordinate our efforts, prevent duplication of work, and help you to craft the change so that it is successfully accepted into the project.
+Para ahorrar tu tiempo y el nuestro, cerraremos sistemáticamente todos los *issues* que sean solicitudes de soporte general y redirigiremos a las personas a Stack Overflow.
 
-  **Note**: Adding a new topic to the documentation, or significantly re-writing a topic, counts as a major feature.
-
-* **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
+Si deseas chatear sobre alguna pregunta en tiempo real, puedes hacerlo a través de nuestro [canal de Gitter][gitter].
 
 
-## <a name="submit"></a> Submission Guidelines
+## <a name="issue"></a> ¿Encontraste un Bug?
+
+Si encontraste un error en el código fuente, puedes ayudarnos [creando un *issue*](#submit-issue) en nuestro [repositorio de GitHub][github].
+O incluso mejor, puedes [crear un *Pull Request*](#submit-pr) con la solución.
 
 
-### <a name="submit-issue"></a> Submitting an Issue
+## <a name="feature"></a> ¿Falta alguna funcionalidad?
+Puedes solicitar una nueva funcionalidad [creando un *issue*](#submit-issue) en nuestro repositorio de GitHub.
+Si deseas implementar una nueva funcionalidad, por favor considera el tamaño del cambio para determinar los pasos correctos para continuar:
 
-Before you submit an issue, please search the issue tracker, maybe an issue for your problem already exists and the discussion might inform you of workarounds readily available.
+* Para un **cambio significativo**, primero abre un *issue* y describe tu propuesta para que pueda ser discutida.
+  Este proceso nos permite coordinar mejor nuestros esfuerzos, evitar trabajo duplicado y ayudarte a diseñar el cambio para que sea aceptado con éxito en el proyecto.
 
-We want to fix all the issues as soon as possible, but before fixing a bug we need to reproduce and confirm it.
-In order to reproduce bugs, we require that you provide a minimal reproduction.
-Having a minimal reproducible scenario gives us a wealth of important information without going back and forth to you with additional questions.
+  **Nota**: Agregar un nuevo tema a la documentación o reescribir significativamente un tema, también cuenta como *cambio significativo*.
 
-A minimal reproduction allows us to quickly confirm a bug (or point out a coding problem) as well as confirm that we are fixing the right problem.
-
-We require a minimal reproduction to save maintainers' time and ultimately be able to fix more bugs.
-Often, developers find coding problems themselves while preparing a minimal reproduction.
-We understand that sometimes it might be hard to extract essential bits of code from a larger codebase but we really need to isolate the problem before we can fix it.
-
-Unfortunately, we are not able to investigate / fix bugs without a minimal reproduction, so if we don't hear back from you, we are going to close an issue that doesn't have enough info to be reproduced.
-
-You can file new issues by selecting from our [new issue templates](https://github.com/angular/angular/issues/new/choose) and filling out the issue template.
+* **Cambios pequeños** pueden ser elaborados y directamente [creados como un _pull request_](#submit-pr).
 
 
-### <a name="submit-pr"></a> Submitting a Pull Request (PR)
+## <a name="submit"></a> Lineamientos para la creación de _issues_ y _pull requests_
 
-Before you submit your Pull Request (PR) consider the following guidelines:
 
-1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR that relates to your submission.
-   You don't want to duplicate existing efforts.
+### <a name="submit-issue"></a> Creación de _issues_
 
-2. Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
-   Discussing the design upfront helps to ensure that we're ready to accept your work.
+Antes de crear un *issue*, por favor busca en el el *issue tracker*, quizá un *issue* para tu problema ya existe y la discusión puede informarte sobre soluciones alternativas disponibles.
 
-3. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
-   We cannot accept code without a signed CLA.
-   Make sure you author all contributed Git commits with email address associated with your CLA signature.
+Queremos solucionar todos los problemas lo antes posible, pero antes de corregir un bug necesitamos reproducirlo y confirmarlo.
+Para reproducir errores, requerimos que proporciones una reproducción mínima.
+Tener un escenario reproducible mínimo nos brinda una gran cantidad de información importante sin tener que ir y venir con preguntas adicionales.
 
-4. Fork the angular/angular repo.
+Una reproducción mínima nos permite confirmar rápidamente un bug (o señalar un problema de código), así también confirmar que estamos solucionando el problema correcto.
 
-5. Make your changes in a new git branch:
+Requerimos una reproducción mínima para ahorrar tiempo a los encargados del mantenimiento y en última instancia, poder corregir más bugs.
+A menudo los desarrolladores encuentran problemas de código mientras preparan una reproducción mínima.
+Entendemos que a veces puede ser difícil extraer porciones esenciales de código de un código más grande, pero realmente necesitamos aislar el problema antes de poder solucionarlo.
+
+Desafortunadamente no podemos investigar/corregir errores sin una reproducción mínima, por lo que si no tenemos tu retroalimentación del bug, vamos a cerrar el *issue* ya que no tiene suficiente información para reproducirse.
+
+Puedes presentar nuevos *issues* seleccionando nuestra [plantilla de _issues_](https://github.com/angular/angular/issues/new/choose) y complentando la plantilla.
+
+
+### <a name="submit-pr"></a> Creación de un Pull Requests (PR)
+
+Antes de crear tu Pull Request (PR) considera los siguientes lineamientos:
+
+1. Busca en [GitHub](https://github.com/angular/angular/pulls) PRs que estén abiertos o cerrados y que estén relacionados con el que vas a crear.
+  No deseas duplicar los esfuerzos existentes.
+
+2. Asegúrate de que el PR describa el problema que estás solucionando o que documente el diseño de la funcionalidad que deseas agregar.
+   Discutir el diseño por adelantado ayuda a garantizar que estemos listos para aceptar tu trabajo.
+
+3. Por favor firma nuestro [Acuerdo de Licencia de Colaborador (CLA)](#cla) antes de crear PRs.
+   No podemos aceptar el código sin el Acuerdo de Licencia de Colaborador (CLA) firmado.
+   Asegúrate de crear todas las contribuciones de Git con la dirección de correo electrónico asociada con tu firma del Acuerdo de Licencia de Colaborador (CLA).
+
+4. Haz *fork* del repositorio angular/angular.
+
+5. Haz tus cambios en una nueva rama de Git:
 
      ```shell
      git checkout -b my-fix-branch master
      ```
 
-6. Create your patch, **including appropriate test cases**.
+6. Crea tu correción, **incluyendo casos de prueba apropiados**.
 
-7. Follow our [Coding Rules](#rules).
+7. Sigue nuestras [Reglas de código](#rules).
 
-8. Run the full Angular test suite, as described in the [developer documentation][dev-doc], and ensure that all tests pass.
+8. Ejecuta todo el conjunto de pruebas de Angular, tal como está descrito en la [documentación del desarrollador][dev-doc], y asegúrate de que todas las pruebas pasen.
 
-9. Commit your changes using a descriptive commit message that follows our [commit message conventions](#commit).
-   Adherence to these conventions is necessary because release notes are automatically generated from these messages.
+9. Crea un commit de tus cambios utilizando un mensaje de commit descriptivo que siga nuestra [convención para el mensaje de los commits](#commit).
+   Es necesario cumplir con estas convenciones porque las notas de las versiones se generan automáticamente a partir de estos mensajes.
 
      ```shell
      git commit -a
      ```
-    Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
+    Nota: la opción de la línea de comandos de Git `-a` automaticamente hará "add" y "rm" a los archivos editados.
 
-10. Push your branch to GitHub:
+10. Haz push de tu rama a GitHub:
 
     ```shell
     git push origin my-fix-branch
     ```
 
-11. In GitHub, send a pull request to `angular:master`.
+11. En GitHub, crea un pull request a `angular:master`.
 
-   If we ask for changes via code reviews then:
+   Si solicitamos cambios a través de revisiones de código, sigue las siguientes indicaciones:
 
-   * Make the required updates.
-   * Re-run the Angular test suites to ensure tests are still passing.
-   * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
+   * Haz los cambios requeridos.
+   * Ejecuta nuevamente el conjunto de pruebas de Angular para asegurar que todas las pruebas aún están pasando.
+   * Haz rebase de tu rama a la rama master y haz push con la opción `-f` a tu repositorio de Github (esto actualizará tu Pull Request):
 
       ```shell
       git rebase master -i
       git push -f
       ```
 
-That's it! Thank you for your contribution!
+¡Es todo! ¡Muchas gracias por tu contribución!
 
 
-#### After your pull request is merged
+#### Después del merge de tu pull request
 
-After your pull request is merged, you can safely delete your branch and pull the changes from the main (upstream) repository:
+Después de que se hizo merge de tu pull request, puedes eliminar de forma segura tu rama y hacer pull de los cambios del repositorio principal (upstream):
 
-* Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
+* Elimina la rama remota en GitHub a través de la interfaz de usuario web de GitHub o en tu línea de comandos de la siguiente manera:
 
     ```shell
     git push origin --delete my-fix-branch
     ```
 
-* Check out the master branch:
+* Muévete a la rama master:
 
     ```shell
     git checkout master -f
     ```
 
-* Delete the local branch:
+* Elimina tu rama local:
 
     ```shell
     git branch -D my-fix-branch
     ```
 
-* Update your master with the latest upstream version:
+* Actualiza tu rama master con la última versión del fork (upstream):
 
     ```shell
     git pull --ff upstream master
     ```
 
 
-## <a name="rules"></a> Coding Rules
-To ensure consistency throughout the source code, keep these rules in mind as you are working:
+## <a name="rules"></a> Reglas del código
+Para garantizar la coherencia en todo el código fuente, ten en cuenta estas reglas mientras trabajas:
 
-* All features or bug fixes **must be tested** by one or more specs (unit-tests).
-* All public API methods **must be documented**.
-* We follow [Google's JavaScript Style Guide][js-style-guide], but wrap all code at **100 characters**.
+* Todas las funcionalidades o solución de bugs **deben ser probadas** por una o más pruebas (pruebas unitarias).
+* Todos los métodos públicos del API **deben ser documentados**.
+* Seguimos la [guía de estilo JavaScript de Google][js-style-guide], pero cada línea no debe exceder **100 caracteres**.
 
-   An automated formatter is available, see [DEVELOPER.md](docs/DEVELOPER.md#clang-format).
+   Un formateador automatizado está disponible, revisar [DEVELOPER.md](docs/DEVELOPER.md#clang-format).
 
 
-## <a name="commit"></a> Commit Message Format
+## <a name="commit"></a> Formato para el mensaje de los commits
 
-*This specification is inspired and supersedes the [AngularJS commit message format][commit-message-format].*
+*Esta especificación está inspirada y reemplaza el [Formato de mensaje de commits de AngularJS][commit-message-format].*
 
-We have very precise rules over how our Git commit messages must be formatted.
-This format leads to **easier to read commit history**.
+Tenemos reglas muy precisas sobre cómo deben formatearse nuestros mensajes de los commits de Git.
+Este formato permite tener **un historial de commits más facil de leer**.
 
-Each commit message consists of a **header**, a **body**, and a **footer**.
+Cada mensaje de un commit consta del **header**, el **body**, y el **footer**.
 
 
 ```
 <header>
-<BLANK LINE>
+<LINEA VACIA>
 <body>
-<BLANK LINE>
+<LINEA VACIA>
 <footer>
 ```
 
-The `header` is mandatory and must conform to the [Commit Message Header](#commit-header) format.
+El `header` es obligatorio y debe ajustarse al formato del [mensaje del header del commit](#commit-header).
 
-The `body` is mandatory for all commits except for those of scope "docs".
-When the body is required it must be at least 20 characters long.
+El `body` es obligatorio para todos los commits excepto los que tenga scope "docs".
+Cuando el body es requerido debe tener al menos 20 caracteres.
 
-The `footer` is optional.
+El `footer` es opcional.
 
-Any line of the commit message cannot be longer than 100 characters.
+Cualquier línea del mensaje del commit no puede tener más de 100 caracteres.
 
 
-#### <a href="commit-header"></a>Commit Message Header
+#### <a href="commit-header"></a>Mensaje del header del commit
 
 ```
-<type>(<scope>): <short summary>
+<tipo>(<alcance>): <resumen>
   │       │             │
-  │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
+  │       │             └─⫸ Resumen corto escrito en modo imperativo, tiempo presente. Sin mayúsculas. Sin punto final.
   │       │
-  │       └─⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
+  │       └─⫸ Alcance del commit: animations|bazel|benchpress|common|compiler|compiler-cli|core|
   │                          elements|forms|http|language-service|localize|platform-browser|
   │                          platform-browser-dynamic|platform-server|platform-webworker|
   │                          platform-webworker-dynamic|router|service-worker|upgrade|zone.js|
   │                          packaging|changelog|dev-infra|docs-infra|migrations|ngcc|ve
   │
-  └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test
+  └─⫸ Tipo de commit: build|ci|docs|feat|fix|perf|refactor|style|test
 ```
 
-The `<type>` and `<summary>` fields are mandatory, the `(<scope>)` field is optional.
+El `<tipo>` y `<resumen>` son obligatorios, el `(<alcance>)` es opcional.
 
 
-##### Type
+##### Tipo
 
-Must be one of the following:
+El tipo debe ser uno de los siguientes:
 
-* **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
-* **ci**: Changes to our CI configuration files and scripts (example scopes: Circle, BrowserStack, SauceLabs)
-* **docs**: Documentation only changes
-* **feat**: A new feature
-* **fix**: A bug fix
-* **perf**: A code change that improves performance
-* **refactor**: A code change that neither fixes a bug nor adds a feature
-* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
-* **test**: Adding missing tests or correcting existing tests
+* **build**: cambios que afectan el sistema de compilación o dependencias externas (ejemplos de scopes: gulp, broccoli, npm)
+* **ci**: cambios en nuestros archivos y scripts de configuración de CI (ejemplos de scopes: Circle, BrowserStack, SauceLabs)
+* **docs**: cambios en la documentación
+* **feat**: una nueva funcionalidad
+* **fix**: una solución de un bug
+* **perf**: un cambio de código que mejora el rendimiento.
+* **refactor**: un cambio de código que no corrige ningún error ni agrega ninguna funcionalidad
+* **style**: cambios que no afectan el significado del código (espacios en blanco, formato, falta de punto y coma, etc.)
+* **test**: se agregan pruebas faltantes o se corrigen pruebas existentes
 
 
-##### Scope
-The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages).
+##### Alcance
+El alcance debe ser el nombre del paquete npm afectado (tal como lo percibe la persona que lee el registro de cambios generado a partir de los mensajes de commit).
 
-The following is the list of supported scopes:
+La siguiente es la lista de alcances permitidos:
 
 * `animations`
 * `bazel`
@@ -261,80 +261,79 @@ The following is the list of supported scopes:
 * `upgrade`
 * `zone.js`
 
-There are currently a few exceptions to the "use package name" rule:
+Actualmente hay algunas excepciones a la regla "usar el nombre de paquete":
 
-* `packaging`: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
+* `packaging`: usado para cambios que cambian el diseño de los paquetes de npm en todos nuestros paquetes. Ejemplos: cambios de la ruta públic, package.json cambios hechos a todos los paquetes, cambios a archivos o formatos d.ts, cambios a bundles, etc.
 
-* `changelog`: used for updating the release notes in CHANGELOG.md
+* `changelog`: utilizado para actualizar las notas de la versión en CHANGELOG.md
 
-* `dev-infra`: used for dev-infra related changes within the directories /scripts, /tools and /dev-infra
+* `dev-infra`: utilizado para cambios relacionados con dev-infra dentro de los directorios /scripts, /tools y /dev-infra
 
-* `docs-infra`: used for docs-app (angular.io) related changes within the /aio directory of the repo
+* `docs-infra`: utilizado para cambios relacionados con la documentación (angular.io) dentro del directorio /aio del repositorio
 
-* `migrations`: used for changes to the `ng update` migrations.
+* `migrations`: utilizado para los cambios en las migraciones `ng update`.
 
-* `ngcc`: used for changes to the [Angular Compatibility Compiler](./packages/compiler-cli/ngcc/README.md)
+* `ngcc`: usado para los cambios del [Compilador de compatibilidad de Angular](./packages/compiler-cli/ngcc/README.md)
 
-* `ve`: used for changes specific to ViewEngine (legacy compiler/renderer).
+* `ve`: utilizado para cambios específicos de ViewEngine (legacy compiler/renderer).
 
-* none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`) and for docs changes that are not related to a specific package (e.g. `docs: fix typo in tutorial`).
-
-
-##### Summary
-
-Use the summary field to provide a succinct description of the change:
-
-* use the imperative, present tense: "change" not "changed" nor "changes"
-* don't capitalize the first letter
-* no dot (.) at the end
+* alcance vacío: útil para cambios de `style`, `test` y `refactor` que se realizan en todos los paquetes (ejemplo: `style: add missing semicolons`) y para cambios de la documentación que no están relacionados a un paquete en específico(ejemplo: `docs: corrige error gramatical en el tutorial`).
 
 
-#### Commit Message Body
+##### Resumen
 
-Just as in the summary, use the imperative, present tense: "fix" not "fixed" nor "fixes".
+Usa el campo resumen para proporcionar una descripción breve del cambio:
 
-Explain the motivation for the change in the commit message body. This commit message should explain _why_ you are making the change.
-You can include a comparison of the previous behavior with the new behavior in order to illustrate the impact of the change.
+* usa el modo imperativo, tiempo presente: "cambia" no "cambió" o "cambios"
+* no debe de contener ninguna letra mayúscula
+* no debe de conter punto (.) al final
 
 
-#### Commit Message Footer
+#### Mensaje del cuerpo del commit
 
-The footer can contain information about breaking changes and is also the place to reference GitHub issues, Jira tickets, and other PRs that this commit closes or is related to.
+Tal como en el resumen, usa el modo imperativo, tiempo presente: "cambia" no "cambió" o "cambios".
+
+Explica la razón del cambio en el el mensaje del cuerpo del commit. Este mensaje de confirmación debe explicar _por qué_ está realizando el cambio.
+Puedes incluir una comparación del comportamiento anterior con el nuevo comportamiento para ilustrar el impacto del cambio.
+
+
+#### Mensaje del footer del commit
+
+El footer puede contener información sobre cambios significativos y también es el lugar para hacer referencia a issues de GitHub, tickets de Jira y otros PRs que están relacionados con el commit.
 
 ```
-BREAKING CHANGE: <breaking change summary>
-<BLANK LINE>
-<breaking change description + migration instructions>
-<BLANK LINE>
-<BLANK LINE>
-Fixes #<issue number>
+CAMBIO SIGNIFICATIVO: <resumen del cambio significativo>
+<LINEA VACIA>
+<descripción del cambio significativo + instrucciones para la migración>
+<LINEA VACIA>
+<LINEA VACIA>
+Soluciona #<issue número>
 ```
 
-Breaking Change section should start with the phrase "BREAKING CHANGE: " followed by a summary of the breaking change, a blank line, and a detailed description of the breaking change that also includes migration instructions.
+La sección de cambios significativos debería comenzar con la frase "CAMBIO SIGNIFICATIVO: " seguido de un resumen del cambio significativo, una línea en blanco y una descripción detallada del cambio significativo que también incluya instrucciones de migración.
 
 
-### Revert commits
+### Revirtiendo commits
 
-If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit.
+Si el commit revierte un commit previo, el commit debería comenzar con `revert: `, seguido por el header del commit revertido.
 
-The content of the commit message body should contain:
+El contenido del mensaje del commit debería contener:
 
-- information about the SHA of the commit being reverted in the following format: `This reverts commit <SHA>`,
-- a clear description of the reason for reverting the commit message.
+- Información sobre el SHA del commit que se revierte en el siguiente formato: `Esto revierte el commit <SHA>`,
+- Una descripción clara de la razón para revertir el mensaje del _commit_.
 
 
-## <a name="cla"></a> Signing the CLA
+## <a name="cla"></a> Firma del Acuerdo de Licencia de Colaborador (CLA)
 
-Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code
-changes to be accepted, the CLA must be signed. It's a quick process, we promise!
+Por favor firma nuestro Acuerdo de Licencia de Colaborador (CLA) antes de crear _pull requests_. Para que cualquier cambio de código sea aceptado, el Acuerdo de Licencia de Colaborador (CLA) debe ser firmado. ¡Es un proceso rápido, lo prometemos!
 
-* For individuals, we have a [simple click-through form][individual-cla].
-* For corporations, we'll need you to
-  [print, sign and one of scan+email, fax or mail the form][corporate-cla].
+* Para las personas, tenemos un [formulario simple][individual-cla].
+* Para corporaciones, necesitaremos que
+  [impriman, firmen, escaneen y envíen por email, fax o correo el formulario][corporate-cla].
 
-If you have more than one GitHub accounts, or multiple email addresses associated with a single GitHub account, you must sign the CLA using the primary email address of the GitHub account used to author Git commits and send pull requests.
+Si tiene más de una cuenta de GitHub o varias direcciones de correo electrónico asociadas con una sola cuenta de GitHub, debes firmar el CLA utilizando la dirección de correo electrónico principal de la cuenta de GitHub utilizada para crear los commits de Git y la creación de PRs.
 
-The following documents can help you sort out issues with GitHub accounts and multiple email addresses:
+Los siguientes documentos pueden ayudarte a resolver problemas con cuentas de GitHub y múltiples direcciones de correo electrónico:
 
   * https://help.github.com/articles/setting-your-commit-email-address-in-git/
   * https://stackoverflow.com/questions/37245303/what-does-usera-committed-with-userb-13-days-ago-on-github-mean
