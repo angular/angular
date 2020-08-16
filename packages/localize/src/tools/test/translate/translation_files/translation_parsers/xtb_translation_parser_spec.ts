@@ -140,6 +140,38 @@ describe('XtbTranslationParser', () => {
                 ɵmakeParsedTranslation(['', 'rab', ''], ['START_PARAGRAPH', 'CLOSE_PARAGRAPH']));
       });
 
+      it('should extract nested placeholder containers (i.e. nested HTML elements)', () => {
+        /**
+         * Source HTML:
+         *
+         * ```
+         * <div i18n>
+         *   translatable <span>element <b>with placeholders</b></span> {{ interpolation}}
+         * </div>
+         * ```
+         */
+        const XLIFF = [
+          `<?xml version="1.0" encoding="UTF-8"?>`,
+          `<translationbundle>`,
+          `  <translation id="9051630253697141670">` +
+              `<ph name="START_TAG_SPAN"/><ph name="INTERPOLATION"/> tnemele<ph name="CLOSE_TAG_SPAN"/> elbatalsnart <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/>` +
+              `</translation>`,
+          `</translationbundle>`,
+        ].join('\n');
+        const result = doParse('/some/file.xtb', XLIFF);
+        expect(result.translations[ɵcomputeMsgId(
+                   'translatable {$START_TAG_SPAN}element {$START_BOLD_TEXT}with placeholders' +
+                   '{$CLOSE_BOLD_TEXT}{$CLOSE_TAG_SPAN} {$INTERPOLATION}')])
+            .toEqual(ɵmakeParsedTranslation(
+                ['', '', ' tnemele', ' elbatalsnart ', 'sredlohecalp htiw', ''], [
+                  'START_TAG_SPAN',
+                  'INTERPOLATION',
+                  'CLOSE_TAG_SPAN',
+                  'START_BOLD_TEXT',
+                  'CLOSE_BOLD_TEXT',
+                ]));
+      });
+
       it('should extract translations with simple ICU expressions', () => {
         const XTB = [
           `<?xml version="1.0" encoding="UTF-8" ?>`,
