@@ -457,7 +457,7 @@ The object reference did not change when the value of its own `name` property ch
 
 ### Responding to view changes
 
-As Angular traverses the [view hierarchy](guide/glossary#view-hierarchy "Definition of view hierarchy definition") during change detection, it needs to be sure that a change in a child does not attempt to cause a change in its own parent. Such a change would not be rendered properly, because of how [unidirectional data flow](guide/glossary#unidirectional-data-flow "Definition") works.
+As Angular traverses the [view hierarchy](guide/glossary#view-tree "Definition of view hierarchy definition") during change detection, it needs to be sure that a change in a child does not attempt to cause a change in its own parent. Such a change would not be rendered properly, because of how [unidirectional data flow](guide/glossary#unidirectional-data-flow "Definition") works.
 
 If you need to make a change that inverts the expected data flow, you must trigger a new change detection cycle to allow that change to be rendered.
 The examples illustrate how to make such changes safely.

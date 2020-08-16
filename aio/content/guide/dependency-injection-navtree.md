@@ -14,7 +14,7 @@ established through the components' [view objects](guide/glossary#view).
 Each component has a *host view*, and can have additional *embedded views*.
 An embedded view in component A is the
 host view of component B, which can in turn have embedded view.
-This means that there is a [view hierarchy](guide/glossary#view-hierarchy) for each component,
+This means that there is a [view hierarchy](guide/glossary#view-tree) for each component,
 of which that component's host view is the root.
 
 There is an API for navigating *down* the view hierarchy.

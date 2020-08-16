@@ -12,7 +12,7 @@ This page guides you through creating the shopping cart in three phases:
 {@a services}
 ## Services
 
-Services are an integral part of Angular applications. In Angular, a service is an instance of a class that you can make available to any part of your application using Angular's [dependency injection system](guide/glossary#dependency-injection-di "Dependency injection definition").
+Services are an integral part of Angular applications. In Angular, a service is an instance of a class that you can make available to any part of your application using Angular's [dependency injection system](guide/glossary#dependency-injection "Dependency injection definition").
 
 Services are the place where you share data between parts of your application. For the online store, the cart service is where you store your cart data and methods.
 
