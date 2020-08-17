@@ -9,3 +9,4 @@
 export * from './api';
 export * from './checker';
 export * from './context';
+export * from './symbols';
