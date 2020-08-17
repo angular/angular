@@ -99,6 +99,8 @@ export class XmbTranslationSerializer implements TranslationSerializer {
   /**
    * Get the id for the given `message`.
    *
+   * If there was a custom id provided, use that.
+   *
    * If we have requested legacy message ids, then try to return the appropriate id
    * from the list of legacy ids that were extracted.
    *
@@ -109,7 +111,8 @@ export class XmbTranslationSerializer implements TranslationSerializer {
    * https://github.com/google/closure-compiler/blob/master/src/com/google/javascript/jscomp/GoogleJsMessageIdGenerator.java
    */
   private getMessageId(message: ɵParsedMessage): string {
-    return this.useLegacyIds && message.legacyIds !== undefined &&
+    return message.customId ||
+        this.useLegacyIds && message.legacyIds !== undefined &&
         message.legacyIds.find(id => id.length <= 20 && !/[^0-9]/.test(id)) ||
         message.id;
   }

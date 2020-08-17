@@ -55,138 +55,189 @@ runInEachFileSystem(() => {
       ].join('\n'));
     });
 
-    it('should extract translations from source code, and write as JSON format', () => {
-      extractTranslations({
-        rootPath,
-        sourceLocale: 'en-GB',
-        sourceFilePaths: [sourceFilePath],
-        format: 'json',
-        outputPath,
-        logger,
-        useSourceMaps: false,
-        useLegacyIds: false,
-        duplicateMessageHandling: 'ignore',
-      });
-      expect(fs.readFile(outputPath)).toEqual([
-        `{`,
-        `  "locale": "en-GB",`,
-        `  "translations": {`,
-        `    "3291030485717846467": "Hello, {$PH}!",`,
-        `    "8669027859022295761": "try{$PH}me"`,
-        `  }`,
-        `}`,
-      ].join('\n'));
-    });
+    for (const useLegacyIds of [true, false]) {
+      describe(useLegacyIds ? '[using legacy ids]' : '', () => {
+        it('should extract translations from source code, and write as JSON format', () => {
+          extractTranslations({
+            rootPath,
+            sourceLocale: 'en-GB',
+            sourceFilePaths: [sourceFilePath],
+            format: 'json',
+            outputPath,
+            logger,
+            useSourceMaps: false,
+            useLegacyIds,
+            duplicateMessageHandling: 'ignore',
+          });
+          expect(fs.readFile(outputPath)).toEqual([
+            `{`,
+            `  "locale": "en-GB",`,
+            `  "translations": {`,
+            `    "3291030485717846467": "Hello, {$PH}!",`,
+            `    "8669027859022295761": "try{$PH}me",`,
+            `    "custom-id": "Custom id message",`,
+            `    "273296103957933077": "Legacy id message",`,
+            `    "custom-id-2": "Custom and legacy message"`,
+            `  }`,
+            `}`,
+          ].join('\n'));
+        });
 
-    it('should extract translations from source code, and write as xmb format', () => {
-      extractTranslations({
-        rootPath,
-        sourceLocale: 'en',
-        sourceFilePaths: [sourceFilePath],
-        format: 'xmb',
-        outputPath,
-        logger,
-        useSourceMaps: false,
-        useLegacyIds: false,
-        duplicateMessageHandling: 'ignore',
-      });
-      expect(fs.readFile(outputPath)).toEqual([
-        `<?xml version="1.0" encoding="UTF-8" ?>`,
-        `<!DOCTYPE messagebundle [`,
-        `<!ELEMENT messagebundle (msg)*>`,
-        `<!ATTLIST messagebundle class CDATA #IMPLIED>`,
-        ``,
-        `<!ELEMENT msg (#PCDATA|ph|source)*>`,
-        `<!ATTLIST msg id CDATA #IMPLIED>`,
-        `<!ATTLIST msg seq CDATA #IMPLIED>`,
-        `<!ATTLIST msg name CDATA #IMPLIED>`,
-        `<!ATTLIST msg desc CDATA #IMPLIED>`,
-        `<!ATTLIST msg meaning CDATA #IMPLIED>`,
-        `<!ATTLIST msg obsolete (obsolete) #IMPLIED>`,
-        `<!ATTLIST msg xml:space (default|preserve) "default">`,
-        `<!ATTLIST msg is_hidden CDATA #IMPLIED>`,
-        ``,
-        `<!ELEMENT source (#PCDATA)>`,
-        ``,
-        `<!ELEMENT ph (#PCDATA|ex)*>`,
-        `<!ATTLIST ph name CDATA #REQUIRED>`,
-        ``,
-        `<!ELEMENT ex (#PCDATA)>`,
-        `]>`,
-        `<messagebundle>`,
-        `  <msg id="3291030485717846467"><source>test_files/test.js:1</source>Hello, <ph name="PH"/>!</msg>`,
-        `  <msg id="8669027859022295761"><source>test_files/test.js:2</source>try<ph name="PH"/>me</msg>`,
-        `</messagebundle>\n`,
-      ].join('\n'));
-    });
+        it('should extract translations from source code, and write as xmb format', () => {
+          extractTranslations({
+            rootPath,
+            sourceLocale: 'en',
+            sourceFilePaths: [sourceFilePath],
+            format: 'xmb',
+            outputPath,
+            logger,
+            useSourceMaps: false,
+            useLegacyIds,
+            duplicateMessageHandling: 'ignore',
+          });
+          expect(fs.readFile(outputPath)).toEqual([
+            `<?xml version="1.0" encoding="UTF-8" ?>`,
+            `<!DOCTYPE messagebundle [`,
+            `<!ELEMENT messagebundle (msg)*>`,
+            `<!ATTLIST messagebundle class CDATA #IMPLIED>`,
+            ``,
+            `<!ELEMENT msg (#PCDATA|ph|source)*>`,
+            `<!ATTLIST msg id CDATA #IMPLIED>`,
+            `<!ATTLIST msg seq CDATA #IMPLIED>`,
+            `<!ATTLIST msg name CDATA #IMPLIED>`,
+            `<!ATTLIST msg desc CDATA #IMPLIED>`,
+            `<!ATTLIST msg meaning CDATA #IMPLIED>`,
+            `<!ATTLIST msg obsolete (obsolete) #IMPLIED>`,
+            `<!ATTLIST msg xml:space (default|preserve) "default">`,
+            `<!ATTLIST msg is_hidden CDATA #IMPLIED>`,
+            ``,
+            `<!ELEMENT source (#PCDATA)>`,
+            ``,
+            `<!ELEMENT ph (#PCDATA|ex)*>`,
+            `<!ATTLIST ph name CDATA #REQUIRED>`,
+            ``,
+            `<!ELEMENT ex (#PCDATA)>`,
+            `]>`,
+            `<messagebundle>`,
+            `  <msg id="3291030485717846467"><source>test_files/test.js:1</source>Hello, <ph name="PH"/>!</msg>`,
+            `  <msg id="8669027859022295761"><source>test_files/test.js:2</source>try<ph name="PH"/>me</msg>`,
+            `  <msg id="custom-id"><source>test_files/test.js:3</source>Custom id message</msg>`,
+            `  <msg id="${
+                useLegacyIds ?
+                    '12345678901234567890' :
+                    '273296103957933077'}"><source>test_files/test.js:5</source>Legacy id message</msg>`,
+            `  <msg id="custom-id-2"><source>test_files/test.js:7</source>Custom and legacy message</msg>`,
+            `</messagebundle>\n`,
+          ].join('\n'));
+        });
 
-    it('should extract translations from source code, and write as XLIFF 1.2 format', () => {
-      extractTranslations({
-        rootPath,
-        sourceLocale: 'en-CA',
-        sourceFilePaths: [sourceFilePath],
-        format: 'xliff',
-        outputPath,
-        logger,
-        useSourceMaps: false,
-        useLegacyIds: false,
-        duplicateMessageHandling: 'ignore',
-      });
-      expect(fs.readFile(outputPath)).toEqual([
-        `<?xml version="1.0" encoding="UTF-8" ?>`,
-        `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
-        `  <file source-language="en-CA" datatype="plaintext">`,
-        `    <body>`,
-        `      <trans-unit id="3291030485717846467" datatype="html">`,
-        `        <source>Hello, <x id="PH"/>!</source>`,
-        `        <context-group purpose="location">`,
-        `          <context context-type="sourcefile">test_files/test.js</context>`,
-        `          <context context-type="linenumber">2</context>`,
-        `        </context-group>`,
-        `      </trans-unit>`,
-        `      <trans-unit id="8669027859022295761" datatype="html">`,
-        `        <source>try<x id="PH"/>me</source>`,
-        `        <context-group purpose="location">`,
-        `          <context context-type="sourcefile">test_files/test.js</context>`,
-        `          <context context-type="linenumber">3</context>`,
-        `        </context-group>`,
-        `      </trans-unit>`,
-        `    </body>`,
-        `  </file>`,
-        `</xliff>\n`,
-      ].join('\n'));
-    });
+        it('should extract translations from source code, and write as XLIFF 1.2 format', () => {
+          extractTranslations({
+            rootPath,
+            sourceLocale: 'en-CA',
+            sourceFilePaths: [sourceFilePath],
+            format: 'xliff',
+            outputPath,
+            logger,
+            useSourceMaps: false,
+            useLegacyIds,
+            duplicateMessageHandling: 'ignore',
+          });
+          expect(fs.readFile(outputPath)).toEqual([
+            `<?xml version="1.0" encoding="UTF-8" ?>`,
+            `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
+            `  <file source-language="en-CA" datatype="plaintext">`,
+            `    <body>`,
+            `      <trans-unit id="3291030485717846467" datatype="html">`,
+            `        <source>Hello, <x id="PH"/>!</source>`,
+            `        <context-group purpose="location">`,
+            `          <context context-type="sourcefile">test_files/test.js</context>`,
+            `          <context context-type="linenumber">2</context>`,
+            `        </context-group>`,
+            `      </trans-unit>`,
+            `      <trans-unit id="8669027859022295761" datatype="html">`,
+            `        <source>try<x id="PH"/>me</source>`,
+            `        <context-group purpose="location">`,
+            `          <context context-type="sourcefile">test_files/test.js</context>`,
+            `          <context context-type="linenumber">3</context>`,
+            `        </context-group>`,
+            `      </trans-unit>`,
+            `      <trans-unit id="custom-id" datatype="html">`,
+            `        <source>Custom id message</source>`,
+            `        <context-group purpose="location">`,
+            `          <context context-type="sourcefile">test_files/test.js</context>`,
+            `          <context context-type="linenumber">4</context>`,
+            `        </context-group>`,
+            `      </trans-unit>`,
+            `      <trans-unit id="${
+                useLegacyIds ? '1234567890123456789012345678901234567890' :
+                               '273296103957933077'}" datatype="html">`,
+            `        <source>Legacy id message</source>`,
+            `        <context-group purpose="location">`,
+            `          <context context-type="sourcefile">test_files/test.js</context>`,
+            `          <context context-type="linenumber">6</context>`,
+            `        </context-group>`,
+            `      </trans-unit>`,
+            `      <trans-unit id="custom-id-2" datatype="html">`,
+            `        <source>Custom and legacy message</source>`,
+            `        <context-group purpose="location">`,
+            `          <context context-type="sourcefile">test_files/test.js</context>`,
+            `          <context context-type="linenumber">8</context>`,
+            `        </context-group>`,
+            `      </trans-unit>`,
+            `    </body>`,
+            `  </file>`,
+            `</xliff>\n`,
+          ].join('\n'));
+        });
 
-    it('should extract translations from source code, and write as XLIFF 2 format', () => {
-      extractTranslations({
-        rootPath,
-        sourceLocale: 'en-AU',
-        sourceFilePaths: [sourceFilePath],
-        format: 'xliff2',
-        outputPath,
-        logger,
-        useSourceMaps: false,
-        useLegacyIds: false,
-        duplicateMessageHandling: 'ignore',
+        it('should extract translations from source code, and write as XLIFF 2 format', () => {
+          extractTranslations({
+            rootPath,
+            sourceLocale: 'en-AU',
+            sourceFilePaths: [sourceFilePath],
+            format: 'xliff2',
+            outputPath,
+            logger,
+            useSourceMaps: false,
+            useLegacyIds,
+            duplicateMessageHandling: 'ignore',
+          });
+          expect(fs.readFile(outputPath)).toEqual([
+            `<?xml version="1.0" encoding="UTF-8" ?>`,
+            `<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en-AU">`,
+            `  <file>`,
+            `    <unit id="3291030485717846467">`,
+            `      <segment>`,
+            `        <source>Hello, <ph id="0" equiv="PH"/>!</source>`,
+            `      </segment>`,
+            `    </unit>`,
+            `    <unit id="8669027859022295761">`,
+            `      <segment>`,
+            `        <source>try<ph id="0" equiv="PH"/>me</source>`,
+            `      </segment>`,
+            `    </unit>`,
+            `    <unit id="custom-id">`,
+            `      <segment>`,
+            `        <source>Custom id message</source>`,
+            `      </segment>`,
+            `    </unit>`,
+            `    <unit id="${useLegacyIds ? '12345678901234567890' : '273296103957933077'}">`,
+            `      <segment>`,
+            `        <source>Legacy id message</source>`,
+            `      </segment>`,
+            `    </unit>`,
+            `    <unit id="custom-id-2">`,
+            `      <segment>`,
+            `        <source>Custom and legacy message</source>`,
+            `      </segment>`,
+            `    </unit>`,
+            `  </file>`,
+            `</xliff>\n`,
+          ].join('\n'));
+        });
       });
-      expect(fs.readFile(outputPath)).toEqual([
-        `<?xml version="1.0" encoding="UTF-8" ?>`,
-        `<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en-AU">`,
-        `  <file>`,
-        `    <unit id="3291030485717846467">`,
-        `      <segment>`,
-        `        <source>Hello, <ph id="0" equiv="PH"/>!</source>`,
-        `      </segment>`,
-        `    </unit>`,
-        `    <unit id="8669027859022295761">`,
-        `      <segment>`,
-        `        <source>try<ph id="0" equiv="PH"/>me</source>`,
-        `      </segment>`,
-        `    </unit>`,
-        `  </file>`,
-        `</xliff>\n`,
-      ].join('\n'));
-    });
+    }
 
     for (const target of ['es2015', 'es5']) {
       it(`should render the original location of translations, when processing an ${

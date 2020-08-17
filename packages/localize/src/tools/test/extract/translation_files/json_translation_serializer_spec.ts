@@ -16,6 +16,9 @@ describe('JsonTranslationSerializer', () => {
     it('should convert a set of parsed messages into a JSON string', () => {
       const messages: ɵParsedMessage[] = [
         mockMessage('12345', ['a', 'b', 'c'], ['PH', 'PH_1'], {meaning: 'some meaning'}),
+        mockMessage('54321', ['a', 'b', 'c'], ['PH', 'PH_1'], {
+          customId: 'someId',
+        }),
         mockMessage(
             '67890', ['a', '', 'c'], ['START_TAG_SPAN', 'CLOSE_TAG_SPAN'],
             {description: 'some description'}),
@@ -49,7 +52,8 @@ describe('JsonTranslationSerializer', () => {
         `    "80808": "multi\\nlines",`,
         `    "90000": "<escape{$double-quotes-\\"}me>",`,
         `    "100000": "pre-ICU {VAR_SELECT, select, a {a} b {{INTERPOLATION}} c {pre {INTERPOLATION_1} post}} post-ICU",`,
-        `    "100001": "{VAR_PLURAL, plural, one {{START_BOLD_TEXT}something bold{CLOSE_BOLD_TEXT}} other {pre {START_TAG_SPAN}middle{CLOSE_TAG_SPAN} post}}"`,
+        `    "100001": "{VAR_PLURAL, plural, one {{START_BOLD_TEXT}something bold{CLOSE_BOLD_TEXT}} other {pre {START_TAG_SPAN}middle{CLOSE_TAG_SPAN} post}}",`,
+        `    "someId": "a{$PH}b{$PH_1}c"`,
         `  }`,
         `}`,
       ].join('\n'));

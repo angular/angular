@@ -28,6 +28,10 @@ runInEachFileSystem(() => {
               },
               legacyIds: ['1234567890ABCDEF1234567890ABCDEF12345678', '615790887472569365'],
             }),
+            mockMessage('54321', ['a', 'b', 'c'], ['PH', 'PH_1'], {
+              customId: 'someId',
+              legacyIds: ['87654321FEDCBA0987654321FEDCBA0987654321', '563965274788097516'],
+            }),
             mockMessage(
                 '67890', ['a', '', 'c'], ['START_TAG_SPAN', 'CLOSE_TAG_SPAN'],
                 {description: 'some description'}),
@@ -65,6 +69,9 @@ runInEachFileSystem(() => {
             `          <context context-type="linenumber">6</context>`,
             `        </context-group>`,
             `        <note priority="1" from="meaning">some meaning</note>`,
+            `      </trans-unit>`,
+            `      <trans-unit id="someId" datatype="html">`,
+            `        <source>a<x id="PH"/>b<x id="PH_1"/>c</source>`,
             `      </trans-unit>`,
             `      <trans-unit id="67890" datatype="html">`,
             `        <source>a<x id="START_TAG_SPAN"/><x id="CLOSE_TAG_SPAN"/>c</source>`,

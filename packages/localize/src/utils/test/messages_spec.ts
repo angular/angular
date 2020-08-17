@@ -9,13 +9,14 @@ import {findEndOfBlock, makeTemplateObject, parseMessage, parseMetadata, splitBl
 
 describe('messages utils', () => {
   describe('parseMessage', () => {
-    it('should use the custom id parsed from the metadata if available', () => {
+    it('should use the custom id parsed from the metadata for the message id, if available', () => {
       const message = parseMessage(
           makeTemplateObject(
               [':@@custom-message-id:a', ':one:b', ':two:c'],
               [':@@custom-message-id:a', ':one:b', ':two:c']),
           [1, 2]);
-      expect(message.id).toEqual('custom-message-id');
+      expect(message.customId).toEqual('custom-message-id');
+      expect(message.id).toEqual(message.customId!);
     });
 
     it('should compute the translation key if no metadata', () => {
@@ -24,7 +25,7 @@ describe('messages utils', () => {
       expect(message.id).toEqual('8865273085679272414');
     });
 
-    it('should compute the translation key if no id in the metadata', () => {
+    it('should compute the translation key if no custom id in the metadata', () => {
       const message = parseMessage(
           makeTemplateObject(
               [':description:a', ':one:b', ':two:c'], [':description:a', ':one:b', ':two:c']),
@@ -181,21 +182,21 @@ describe('messages utils', () => {
         text: 'abc def',
         description: 'description',
         meaning: undefined,
-        id: undefined,
+        customId: undefined,
         legacyIds: []
       });
       expect(parseMetadata(':meaning|:abc def', ':meaning|:abc def')).toEqual({
         text: 'abc def',
         description: undefined,
         meaning: 'meaning',
-        id: undefined,
+        customId: undefined,
         legacyIds: []
       });
       expect(parseMetadata(':@@message-id:abc def', ':@@message-id:abc def')).toEqual({
         text: 'abc def',
         description: undefined,
         meaning: undefined,
-        id: 'message-id',
+        customId: 'message-id',
         legacyIds: []
       });
       expect(parseMetadata(':meaning|description:abc def', ':meaning|description:abc def'))
@@ -203,7 +204,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: 'description',
             meaning: 'meaning',
-            id: undefined,
+            customId: undefined,
             legacyIds: []
           });
       expect(parseMetadata(':description@@message-id:abc def', ':description@@message-id:abc def'))
@@ -211,7 +212,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: 'description',
             meaning: undefined,
-            id: 'message-id',
+            customId: 'message-id',
             legacyIds: []
           });
       expect(parseMetadata(':meaning|@@message-id:abc def', ':meaning|@@message-id:abc def'))
@@ -219,7 +220,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: undefined,
             meaning: 'meaning',
-            id: 'message-id',
+            customId: 'message-id',
             legacyIds: []
           });
       expect(parseMetadata(
@@ -229,7 +230,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: 'description',
             meaning: undefined,
-            id: 'message-id',
+            customId: 'message-id',
             legacyIds: ['legacy-1', 'legacy-2', 'legacy-3']
           });
       expect(parseMetadata(
@@ -239,7 +240,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: undefined,
             meaning: 'meaning',
-            id: 'message-id',
+            customId: 'message-id',
             legacyIds: ['legacy-message-id']
           });
       expect(parseMetadata(
@@ -248,7 +249,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: undefined,
             meaning: 'meaning',
-            id: undefined,
+            customId: undefined,
             legacyIds: ['legacy-message-id']
           });
 
@@ -256,7 +257,7 @@ describe('messages utils', () => {
         text: 'abc def',
         description: undefined,
         meaning: undefined,
-        id: undefined,
+        customId: undefined,
         legacyIds: ['legacy-message-id']
       });
     });
@@ -266,7 +267,7 @@ describe('messages utils', () => {
         text: 'abc def',
         meaning: undefined,
         description: undefined,
-        id: undefined,
+        customId: undefined,
         legacyIds: []
       });
     });
