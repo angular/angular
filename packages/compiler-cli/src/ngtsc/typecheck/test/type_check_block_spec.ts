@@ -13,33 +13,33 @@ import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from './test_ut
 
 describe('type check blocks', () => {
   it('should generate a basic block for a binding', () => {
-    expect(tcb('{{hello}} {{world}}')).toContain('"" + ((ctx).hello) + ((ctx).world);');
+    expect(tcb('{{hello}} {{world}}')).toContain('"" + (((ctx).hello)) + (((ctx).world));');
   });
 
   it('should generate literal map expressions', () => {
     const TEMPLATE = '{{ method({foo: a, bar: b}) }}';
-    expect(tcb(TEMPLATE)).toContain('(ctx).method({ "foo": ((ctx).a), "bar": ((ctx).b) });');
+    expect(tcb(TEMPLATE)).toContain('(ctx).method({ "foo": ((ctx).a), "bar": ((ctx).b) })');
   });
 
   it('should generate literal array expressions', () => {
     const TEMPLATE = '{{ method([a, b]) }}';
-    expect(tcb(TEMPLATE)).toContain('(ctx).method([((ctx).a), ((ctx).b)]);');
+    expect(tcb(TEMPLATE)).toContain('(ctx).method([((ctx).a), ((ctx).b)])');
   });
 
   it('should handle non-null assertions', () => {
     const TEMPLATE = `{{a!}}`;
-    expect(tcb(TEMPLATE)).toContain('((((ctx).a))!);');
+    expect(tcb(TEMPLATE)).toContain('((((ctx).a))!)');
   });
 
   it('should handle keyed property access', () => {
     const TEMPLATE = `{{a[b]}}`;
-    expect(tcb(TEMPLATE)).toContain('(((ctx).a))[((ctx).b)];');
+    expect(tcb(TEMPLATE)).toContain('(((ctx).a))[((ctx).b)]');
   });
 
   it('should handle nested ternary expressions', () => {
     const TEMPLATE = `{{a ? b : c ? d : e}}`;
     expect(tcb(TEMPLATE))
-        .toContain('(((ctx).a) ? ((ctx).b) : (((ctx).c) ? ((ctx).d) : ((ctx).e)))');
+        .toContain('(((ctx).a) ? ((ctx).b) : ((((ctx).c) ? ((ctx).d) : (((ctx).e)))))');
   });
 
   it('should handle quote expressions as any type', () => {
@@ -101,7 +101,7 @@ describe('type check blocks', () => {
   it('should handle method calls of template variables', () => {
     const TEMPLATE = `<ng-template let-a>{{a(1)}}</ng-template>`;
     expect(tcb(TEMPLATE)).toContain('var _t2 = _t1.$implicit;');
-    expect(tcb(TEMPLATE)).toContain('(_t2).a(1);');
+    expect(tcb(TEMPLATE)).toContain('(_t2).a(1)');
   });
 
   it('should handle implicit vars when using microsyntax', () => {
@@ -320,7 +320,7 @@ describe('type check blocks', () => {
       <input #i>
     `;
     expect(tcb(TEMPLATE))
-        .toContain('var _t1 = document.createElement("input"); "" + ((_t1).value);');
+        .toContain('var _t1 = document.createElement("input"); "" + (((_t1).value));');
   });
 
   it('should generate a forward directive reference correctly', () => {
@@ -334,7 +334,7 @@ describe('type check blocks', () => {
       selector: '[dir]',
       exportAs: ['dir'],
     }];
-    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('var _t1: Dir = (null!); "" + ((_t1).value);');
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('var _t1: Dir = (null!); "" + (((_t1).value));');
   });
 
   it('should handle style and class bindings specially', () => {
@@ -561,7 +561,7 @@ describe('type check blocks', () => {
   it('should handle $any casts', () => {
     const TEMPLATE = `{{$any(a)}}`;
     const block = tcb(TEMPLATE);
-    expect(block).toContain('(((ctx).a) as any);');
+    expect(block).toContain('(((ctx).a) as any)');
   });
 
   describe('experimental DOM checking via lib.dom.d.ts', () => {
@@ -717,12 +717,12 @@ describe('type check blocks', () => {
 
       it('should descend into template bodies when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('((ctx).a);');
+        expect(block).toContain('((ctx).a)');
       });
       it('should not descend into template bodies when disabled', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTemplateBodies: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).not.toContain('((ctx).a);');
+        expect(block).not.toContain('((ctx).a)');
       });
     });
 
@@ -909,12 +909,12 @@ describe('type check blocks', () => {
 
       it('should check types of pipes when enabled', () => {
         const block = tcb(TEMPLATE, PIPES);
-        expect(block).toContain('(null as TestPipe).transform(((ctx).a), ((ctx).b), ((ctx).c));');
+        expect(block).toContain('(null as TestPipe).transform(((ctx).a), ((ctx).b), ((ctx).c))');
       });
       it('should not check types of pipes when disabled', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfPipes: false};
         const block = tcb(TEMPLATE, PIPES, DISABLED_CONFIG);
-        expect(block).toContain('(null as any).transform(((ctx).a), ((ctx).b), ((ctx).c));');
+        expect(block).toContain('(null as any).transform(((ctx).a), ((ctx).b), ((ctx).c))');
       });
     });
 

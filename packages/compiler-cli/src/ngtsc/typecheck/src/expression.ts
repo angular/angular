@@ -96,7 +96,9 @@ class AstTranslator implements AstVisitor {
   visitConditional(ast: Conditional): ts.Expression {
     const condExpr = this.translate(ast.condition);
     const trueExpr = this.translate(ast.trueExp);
-    const falseExpr = this.translate(ast.falseExp);
+    // Wrap `falseExpr` in parens so that the trailing parse span info is not attributed to the
+    // whole conditional.
+    const falseExpr = wrapForDiagnostics(this.translate(ast.falseExp));
     const node = ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
@@ -118,8 +120,13 @@ class AstTranslator implements AstVisitor {
     // Build up a chain of binary + operations to simulate the string concatenation of the
     // interpolation's expressions. The chain is started using an actual string literal to ensure
     // the type is inferred as 'string'.
+    // Each RHS expression needs to be wrapped in Parens so the trailing parse span info is not
+    // attributed to the whole binary expression. For example, a single interpolation without parens
+    // on the RHS would be `'"" + ((ctx).hello /*3,8*/) /*3,8*/`. The last 3,8 is ambiguous -- it
+    // could be either for the RHS or the whole binary.
     return ast.expressions.reduce(
-        (lhs, ast) => ts.createBinary(lhs, ts.SyntaxKind.PlusToken, this.translate(ast)),
+        (lhs, ast) =>
+            ts.createBinary(lhs, ts.SyntaxKind.PlusToken, wrapForDiagnostics(this.translate(ast))),
         ts.createLiteral(''));
   }
 
