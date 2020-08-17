@@ -155,7 +155,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    * rather than the identity of the object itself.
    *
    * The function receives two inputs,
-   * the iteration index and the node object ID.
+   * the iteration index and the associated node data.
    */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
