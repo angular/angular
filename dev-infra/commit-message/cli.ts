@@ -18,14 +18,16 @@ export function buildCommitMessageParser(localYargs: yargs.Argv) {
   return localYargs.help()
       .strict()
       .command(
-          'restore-commit-message-draft', false, {
-            'file-env-variable': {
+          'restore-commit-message-draft', false,
+          args => {
+            return args.option('file-env-variable', {
               type: 'string',
+              array: true,
               conflicts: ['file'],
               required: true,
               description:
-                  'The key for the environment variable which holds the arguments for the ' +
-                  'prepare-commit-msg hook as described here: ' +
+                  'The key for the environment variable which holds the arguments for the\n' +
+                  'prepare-commit-msg hook as described here:\n' +
                   'https://git-scm.com/docs/githooks#_prepare_commit_msg',
               coerce: arg => {
                 const [file, source] = (process.env[arg] || '').split(' ');
@@ -34,10 +36,10 @@ export function buildCommitMessageParser(localYargs: yargs.Argv) {
                 }
                 return [file, source];
               },
-            }
+            });
           },
           args => {
-            restoreCommitMessage(args.fileEnvVariable[0], args.fileEnvVariable[1]);
+            restoreCommitMessage(args['file-env-variable'][0], args['file-env-variable'][1] as any);
           })
       .command(
           'pre-commit-validate', 'Validate the most recent commit message', {
@@ -61,7 +63,7 @@ export function buildCommitMessageParser(localYargs: yargs.Argv) {
             }
           },
           args => {
-            const file = args.file || args.fileEnvVariable || '.git/COMMIT_EDITMSG';
+            const file = args.file || args['file-env-variable'] || '.git/COMMIT_EDITMSG';
             validateFile(file);
           })
       .command(
