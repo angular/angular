@@ -1,3 +1,26 @@
+<a name="10.1.0-next.6"></a>
+# 10.1.0-next.6 (2020-08-17)
+
+
+### Bug Fixes
+
+* **core:** detect DI parameters in JIT mode for downleveled ES2015 classes ([#38463](https://github.com/angular/angular/issues/38463)) ([ca07da4](https://github.com/angular/angular/commit/ca07da4)), closes [#38453](https://github.com/angular/angular/issues/38453)
+* **core:** move generated i18n statements to the `consts` field of ComponentDef ([#38404](https://github.com/angular/angular/issues/38404)) ([cb05c01](https://github.com/angular/angular/commit/cb05c01))
+* **localize:** render ICU placeholders in extracted translation files ([#38484](https://github.com/angular/angular/issues/38484)) ([81c3e80](https://github.com/angular/angular/commit/81c3e80))
+* **ngcc:** detect synthesized delegate constructors for downleveled ES2015 classes ([#38463](https://github.com/angular/angular/issues/38463)) ([3b9c802](https://github.com/angular/angular/commit/3b9c802)), closes [#38453](https://github.com/angular/angular/issues/38453) [#38453](https://github.com/angular/angular/issues/38453)
+
+
+### Performance Improvements
+
+* **compiler-cli:** don't emit template guards when child scope is empty ([#38418](https://github.com/angular/angular/issues/38418)) ([1388c17](https://github.com/angular/angular/commit/1388c17))
+* **compiler-cli:** only generate directive declarations when used ([#38418](https://github.com/angular/angular/issues/38418)) ([fb8f4b4](https://github.com/angular/angular/commit/fb8f4b4))
+* **compiler-cli:** only generate type-check code for referenced DOM elements ([#38418](https://github.com/angular/angular/issues/38418)) ([f42e6ce](https://github.com/angular/angular/commit/f42e6ce))
+
+### Code Refactoring
+* **router:** export DefaultRouteReuseStrategy to Router public_api ([#31575](https://github.com/angular/angular/issues/31575)) ([ca79880](https://github.com/angular/angular/commit/ca79880))
+
+
+
 <a name="10.0.10"></a>
 ## 10.0.10 (2020-08-17)
 
