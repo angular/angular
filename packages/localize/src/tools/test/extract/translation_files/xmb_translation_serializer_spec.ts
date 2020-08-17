@@ -23,6 +23,10 @@ runInEachFileSystem(() => {
               meaning: 'some meaning',
               legacyIds: ['1234567890ABCDEF1234567890ABCDEF12345678', '615790887472569365'],
             }),
+            mockMessage('54321', ['a', 'b', 'c'], ['PH', 'PH_1'], {
+              customId: 'someId',
+              legacyIds: ['87654321FEDCBA0987654321FEDCBA0987654321', '563965274788097516'],
+            }),
             mockMessage(
                 '67890', ['a', '', 'c'], ['START_TAG_SPAN', 'CLOSE_TAG_SPAN'],
                 {description: 'some description'}),
@@ -51,6 +55,7 @@ runInEachFileSystem(() => {
                 useLegacyIds ?
                     '615790887472569365' :
                     '12345'}" meaning="some meaning">a<ph name="PH"/>b<ph name="PH_1"/>c</msg>`,
+            `  <msg id="someId">a<ph name="PH"/>b<ph name="PH_1"/>c</msg>`,
             `  <msg id="67890" desc="some description">a<ph name="START_TAG_SPAN"/><ph name="CLOSE_TAG_SPAN"/>c</msg>`,
             `  <msg id="13579"><ph name="START_BOLD_TEXT"/>b<ph name="CLOSE_BOLD_TEXT"/></msg>`,
             `  <msg id="24680" desc="and description" meaning="meaning">a</msg>`,

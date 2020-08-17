@@ -23,14 +23,16 @@ runInEachFileSystem(() => {
       fs.ensureDir(absoluteFrom('/root/path/relative'));
       fs.writeFile(file, [
         '$localize`:meaning|description:a${1}b${2}c`;',
-        '$localize(__makeTemplateObject(["a", ":custom-placeholder:b", "c"], ["a", ":custom-placeholder:b", "c"]), 1, 2);'
+        '$localize(__makeTemplateObject(["a", ":custom-placeholder:b", "c"], ["a", ":custom-placeholder:b", "c"]), 1, 2);',
+        '$localize`:@@custom-id:a${1}b${2}c`;',
       ].join('\n'));
       const messages = extractor.extractMessages(filename);
 
-      expect(messages.length).toEqual(2);
+      expect(messages.length).toEqual(3);
 
       expect(messages[0]).toEqual({
         id: '2714330828844000684',
+        customId: undefined,
         description: 'description',
         meaning: 'meaning',
         messageParts: ['a', 'b', 'c'],
@@ -43,6 +45,7 @@ runInEachFileSystem(() => {
 
       expect(messages[1]).toEqual({
         id: '5692770902395945649',
+        customId: undefined,
         description: '',
         meaning: '',
         messageParts: ['a', 'b', 'c'],
@@ -51,6 +54,19 @@ runInEachFileSystem(() => {
         substitutions: jasmine.any(Object),
         legacyIds: [],
         location: {start: {line: 1, column: 0}, end: {line: 1, column: 111}, file},
+      });
+
+      expect(messages[2]).toEqual({
+        id: 'custom-id',
+        customId: 'custom-id',
+        description: '',
+        meaning: '',
+        messageParts: ['a', 'b', 'c'],
+        text: 'a{$PH}b{$PH_1}c',
+        placeholderNames: ['PH', 'PH_1'],
+        substitutions: jasmine.any(Object),
+        legacyIds: [],
+        location: {start: {line: 2, column: 9}, end: {line: 2, column: 35}, file},
       });
     });
   });

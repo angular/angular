@@ -107,6 +107,8 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
   /**
    * Get the id for the given `message`.
    *
+   * If there was a custom id provided, use that.
+   *
    * If we have requested legacy message ids, then try to return the appropriate id
    * from the list of legacy ids that were extracted.
    *
@@ -116,7 +118,8 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
    * https://csrc.nist.gov/csrc/media/publications/fips/180/4/final/documents/fips180-4-draft-aug2014.pdf
    */
   private getMessageId(message: ɵParsedMessage): string {
-    return this.useLegacyIds && message.legacyIds !== undefined &&
+    return message.customId ||
+        this.useLegacyIds && message.legacyIds !== undefined &&
         message.legacyIds.find(id => id.length === LEGACY_XLIFF_MESSAGE_LENGTH) ||
         message.id;
   }
