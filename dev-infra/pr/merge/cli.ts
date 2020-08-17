@@ -13,7 +13,7 @@ import {error, red, yellow} from '../../utils/console';
 import {GITHUB_TOKEN_GENERATE_URL, mergePullRequest} from './index';
 
 /** The options available to the merge command via CLI. */
-interface MergeCommandOptions {
+export interface MergeCommandOptions {
   'github-token'?: string;
   'pr-number': number;
 }

@@ -13,7 +13,7 @@ import {error} from '../../utils/console';
 import {discoverNewConflictsForPr} from './index';
 
 /** The options available to the discover-new-conflicts command via CLI. */
-interface DiscoverNewConflictsCommandOptions {
+export interface DiscoverNewConflictsCommandOptions {
   date: number;
   'pr-number': number;
 }

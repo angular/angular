@@ -16,7 +16,7 @@ import {rebasePr} from './index';
 export const GITHUB_TOKEN_GENERATE_URL = `https://github.com/settings/tokens`;
 
 /** The options available to the rebase command via CLI. */
-interface RebaseCommandOptions {
+export interface RebaseCommandOptions {
   'github-token'?: string;
   prNumber: number;
 }
