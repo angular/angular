@@ -49,3 +49,9 @@
     }
   }
 }
+
+:host-context(.dark-theme) {
+  .mat-icon-button {
+    fill: #fff;
+  }
+}

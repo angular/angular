@@ -16,7 +16,7 @@
 
       .mat-icon {
         font-size: 12px;
-        width: 16px;
+        width: 8px;
         height: 16px;
       }
     }
@@ -28,23 +28,26 @@
 }
 
 .non-expandable {
-  margin-left: 13px;
+  margin-left: 18px;
 }
 
 .property-list {
   margin: 5px 5px 5px 15px;
   mat-tree-node {
     .name {
-      color: #3f51b5;
+      color: #880e4f;
       font-weight: 500;
     }
+  }
+  .value {
+    color: #848484 !important;
   }
 }
 
 :host-context(.dark-theme) {
   .property-list {
     .name {
-      color: #ffffff !important;
+      color: #54c9bd !important;
     }
     .value {
       color: #ffffff40 !important;
