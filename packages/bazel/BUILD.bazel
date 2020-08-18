@@ -18,7 +18,8 @@ pkg_npm(
     substitutions = {
         "(#|\/\/)\\s+BEGIN-DEV-ONLY[\\w\W]+?(#|\/\/)\\s+END-DEV-ONLY": "",
         "//packages/bazel/src/ngc-wrapped": "@npm//@angular/bazel/bin:ngc-wrapped",
-        "//packages/bazel/": "//",
+        "//packages/bazel/src/ng_package:": "@npm//@angular//bazel:src/ng_package/",
+        "//packages/bazel/src:": "@npm//@angular//bazel:src/",
         "angular/packages/bazel/": "npm_angular_bazel/",
     },
     tags = ["release-with-framework"],
