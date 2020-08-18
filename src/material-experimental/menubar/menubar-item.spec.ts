@@ -64,7 +64,6 @@ describe('MatMenuBarItem', () => {
   template: `
     <mat-menubar>
       <mat-menubar-item [cdkMenuTriggerFor]="sub">File</mat-menubar-item>
-      <mat-menubar-item [cdkMenuTriggerFor]="sub">File</mat-menubar-item>
     </mat-menubar>
 
     <ng-template cdkMenuPanel #sub="cdkMenuPanel">
