@@ -378,7 +378,7 @@ export declare class RouterEvent {
     url: string);
 }
 
-export declare class RouterLink implements OnChanges {
+export declare class RouterLink {
     fragment: string;
     preserveFragment: boolean;
     /** @deprecated */ set preserveQueryParams(value: boolean);
@@ -394,7 +394,6 @@ export declare class RouterLink implements OnChanges {
     };
     get urlTree(): UrlTree;
     constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer2, el: ElementRef);
-    ngOnChanges(changes: SimpleChanges): void;
     onClick(): boolean;
 }
 
@@ -430,7 +429,7 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     target: string;
     get urlTree(): UrlTree;
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
-    ngOnChanges(changes: SimpleChanges): any;
+    ngOnChanges(changes: {}): any;
     ngOnDestroy(): any;
     onClick(button: number, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean): boolean;
 }
