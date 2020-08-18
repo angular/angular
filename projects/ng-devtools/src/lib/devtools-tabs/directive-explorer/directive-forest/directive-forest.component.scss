@@ -32,62 +32,50 @@
     }
 
     &:hover {
-      background-color: #d4e7ff;
+      background-color: #cce7df;
       color: rgba(0, 0, 0, 0.87);
       cursor: pointer;
     }
 
     &.matched {
-      background-color: #b298e4;
+      background-color: #d2e6e4;
       color: rgba(0, 0, 0, 0.87);
-      color: #fff;
 
       &:hover {
-        background-color: #8463be;
-        color: rgba(0, 0, 0, 0.87);
+        background-color: #85CDC9;
       }
 
-      &.selected {
-        background-color: #6f56bb;
-        color: rgba(0, 0, 0, 0.87);
-        color: #fcd736;
-      }
-
-      .dir-names {
-        opacity: 0.8;
-      }
-
-      .console-reference {
-        opacity: 0.8;
+      .dir-names, .console-reference {
+        opacity: 0.7;
       }
     }
 
     &.selected,
     &.highlighted {
-      background-color: #92bdff;
+      background-color: #4db6ac;
       color: rgba(0, 0, 0, 0.87);
+
+      .dir-names, .console-reference {
+        opacity: 1.0;
+      }
     }
   }
 }
 
 @keyframes appear {
   0% {
-    background-color: #fff;
+    background-color: transparent;
   }
   50% {
-    background-color: #fcd736;
+    background-color: #FECF4A;
   }
   100% {
-    background-color: #fff;
+    background-color: transparent;
   }
 }
 
 .new-node {
-  animation: appear 0.5s;
-}
-
-.dir-names {
-  opacity: 0.4;
+  animation: appear 1.5s;
 }
 
 .filter {
@@ -125,7 +113,7 @@
 
 .angular-element {
   content: '';
-  color: blue;
+  color: #3f51b5;
 
   &::before {
     content: '<';
@@ -135,27 +123,40 @@
     content: '/>';
   }
 }
+
+.dir-names {
+  opacity: 0.7;
+}
+
 .console-reference {
   padding-left: 8px;
-  opacity: 0.4;
+  opacity: 0.7;
   font-style: italic;
 }
 
 :host-context(.dark-theme) {
-  .tree-node .mat-icon {
-    color: #ccc;
-  }
+  .tree-node, .tree-node .mat-icon {
+    color: #fff;
 
-  .tree-node .angular-element {
-    color: #7e7eff;
-  }
+    .angular-element {
+      color: #F9CB9C;
+    }
+    
+    &:hover {
+      background-color: #5c1b3c;
+    }
 
-  .tree-node.selected .angular-element {
-    color: blue;
-  }
+    &.matched {
+      background-color: #53265c;
 
-  .tree-node:hover .mat-icon,
-  .tree-node.selected .mat-icon {
-    color: #000;
+      &:hover {
+        background-color: #710786;
+      }
+    }
+
+    &.selected,
+    &.highlighted {
+      background-color: #880e4f;
+    }
   }
 }

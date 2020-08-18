@@ -17,12 +17,16 @@
     margin-right: 5px;
     width: fit-content;
   }
+
+  .mat-card.breadcrumb-card span {
+    color: #3f51b5;
+  }
 }
 
 :host-context(.dark-theme) {
   ::ng-deep {
     .mat-card.breadcrumb-card span {
-      color: #ff5497;
+      color: #F9CB9C;
     }
   }
 }

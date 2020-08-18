@@ -1,4 +1,4 @@
-<mat-tab-group (selectedIndexChange)="tabUpdate.notify()" animationDuration="0ms">
+<mat-tab-group color="accent" (selectedIndexChange)="tabUpdate.notify()" animationDuration="0ms">
   <mat-tab label="Components">
     <ng-directive-explorer (toggleInspector)="toggleInspector()"></ng-directive-explorer>
   </mat-tab>
@@ -19,12 +19,18 @@
     </mat-icon>
   </button>
   <button mat-icon-button color="primary" [matMenuTriggerFor]="menu">
-    <mat-icon>miscellaneous_services</mat-icon>
+    <mat-icon>
+      settings
+    </mat-icon>
   </button>
 </div>
 
 <mat-menu #menu="matMenu" class="options-menu">
-  <mat-slide-toggle (change)="toggleTimingAPI($event)" class="menu-toggle-button" (click)="$event.stopPropagation()">
+  <mat-slide-toggle 
+    (change)="toggleTimingAPI($event)" 
+    class="menu-toggle-button" 
+    (click)="$event.stopPropagation()"
+  >
     Enable timing API
   </mat-slide-toggle>
   <br />

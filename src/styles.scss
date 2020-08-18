@@ -10,13 +10,13 @@ body {
 }
 
 // Light theme
-$light-primary: mat-palette($mat-indigo);
-$light-accent: mat-palette($mat-indigo, A200, A100, A400);
+$light-primary: mat-palette($mat-grey, 700);
+$light-accent: mat-palette($mat-teal, 300);
 $light-theme: mat-light-theme($light-primary, $light-accent);
 
 // Dark theme
-$dark-primary: mat-palette($mat-pink, 700, 500, 900);
-$dark-accent: mat-palette($mat-blue-grey, A200, A100, A400);
+$dark-primary: mat-palette($mat-amber, 700, 500, 900);
+$dark-accent: mat-palette($mat-pink, 900);
 $dark-theme: mat-dark-theme($dark-primary, $dark-accent);
 
 .light-theme {

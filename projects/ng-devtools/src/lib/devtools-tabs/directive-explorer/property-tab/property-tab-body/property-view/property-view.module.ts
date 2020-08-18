@@ -7,6 +7,7 @@ import { PropertyViewHeaderComponent } from './property-view-header/property-vie
 import { PropertyViewComponent } from './property-view.component';
 import { PropertyViewTreeComponent } from './property-view-body/property-view-tree/property-view-tree.component';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { PropertyEditorComponent } from './property-view-body/property-view-tree/property-editor/property-editor.component';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +22,15 @@ import { PropertyPreviewComponent } from './property-view-body/property-view-tre
     PropertyEditorComponent,
     PropertyPreviewComponent,
   ],
-  imports: [MatToolbarModule, MatTreeModule, CommonModule, MatExpansionModule, DragDropModule, FormsModule],
+  imports: [
+    MatToolbarModule,
+    MatIconModule,
+    MatTreeModule,
+    CommonModule,
+    MatExpansionModule,
+    DragDropModule,
+    FormsModule
+  ],
   exports: [PropertyViewBodyComponent, PropertyViewHeaderComponent, PropertyViewComponent],
 })
 export class PropertyViewModule {}

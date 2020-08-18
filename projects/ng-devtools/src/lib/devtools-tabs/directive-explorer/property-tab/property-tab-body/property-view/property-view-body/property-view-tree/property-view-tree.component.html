@@ -16,9 +16,9 @@
 
   <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
     <div (click)="toggle(node)">
-      <span class="arrow">
-        {{ treeControl.isExpanded(node) ? '▼' : '►' }}
-      </span>
+      <mat-icon class="mat-icon-rtl-mirror">
+        {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+      </mat-icon>
       &nbsp;
       <span class="name"> {{ node.prop.name }} </span>:&nbsp;
       <span class="value">
