@@ -63,7 +63,6 @@ export class MyTelInput
   parts: FormGroup;
   stateChanges = new Subject<void>();
   focused = false;
-  errorState = false;
   controlType = 'example-tel-input';
   id = `example-tel-input-${MyTelInput.nextId++}`;
   describedBy = '';
@@ -129,6 +128,10 @@ export class MyTelInput
     this.stateChanges.next();
   }
 
+  get errorState(): boolean {
+    return this.parts.invalid && this.parts.dirty;
+  }
+
   constructor(
     formBuilder: FormBuilder,
     private _focusMonitor: FocusMonitor,
@@ -185,7 +188,7 @@ export class MyTelInput
     this.describedBy = ids.join(' ');
   }
 
-  onContainerClick(event: MouseEvent) {
+  onContainerClick() {
     if (this.parts.controls.subscriber.valid) {
       this._focusMonitor.focusVia(this.subscriberInput, 'program');
     } else if (this.parts.controls.exchange.valid) {
