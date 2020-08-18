@@ -9,7 +9,7 @@
 import {Arguments, Argv, CommandModule} from 'yargs';
 
 import {error} from '../../utils/console';
-import {checkOutPrLocally} from '../common/checkout-pr';
+import {checkOutPullRequestLocally} from '../common/checkout-pr';
 
 export interface CheckoutOptions {
   prNumber: number;
@@ -38,7 +38,7 @@ async function handler({prNumber, 'github-token': token}: Arguments<CheckoutOpti
     return;
   }
   const prCheckoutOptions = {allowIfMaintainerCannotModify: true, branchName: `pr-${prNumber}`};
-  await checkOutPrLocally(prNumber, githubToken, prCheckoutOptions);
+  await checkOutPullRequestLocally(prNumber, githubToken, prCheckoutOptions);
 }
 
 /** yargs command module for checking out a PR  */

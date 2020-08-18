@@ -35,20 +35,23 @@ const PR_SCHEMA = {
   },
 };
 
-export class HasLocalChangesError extends Error {
-  constructor(msg: string) {
-    super(msg);
+
+export class UnexpectedLocalChangesError extends Error {
+  constructor(m: string) {
+    super(m);
+    Object.setPrototypeOf(this, UnexpectedLocalChangesError.prototype);
   }
 }
 
 export class MaintainerModifyAccessError extends Error {
-  constructor(msg: string) {
-    super(msg);
+  constructor(m: string) {
+    super(m);
+    Object.setPrototypeOf(this, MaintainerModifyAccessError.prototype);
   }
 }
 
 /** Options for checking out a PR */
-export interface PrCheckoutOptions {
+export interface PullRequestCheckoutOptions {
   /** The local name for the branch when checking out a pr. */
   branchName?: string;
   /** Whether the PR should be checked out if the maintainer cannot modify. */
@@ -59,15 +62,15 @@ export interface PrCheckoutOptions {
  * Rebase the provided PR onto its merge target branch, and push up the resulting
  * commit to the PRs repository.
  */
-export async function checkOutPrLocally(
-    prNumber: number, githubToken: string, opts: PrCheckoutOptions = {}) {
+export async function checkOutPullRequestLocally(
+    prNumber: number, githubToken: string, opts: PullRequestCheckoutOptions = {}) {
   /** Authenticated Git client for git and Github interactions. */
   const git = new GitClient(githubToken);
 
   // In order to preserve local changes, checkouts cannot occur if local changes are present in the
-  // git environment.  Checked before retrieving the PR to fail fast.
+  // git environment. Checked before retrieving the PR to fail fast.
   if (git.hasLocalChanges()) {
-    throw new HasLocalChangesError('Cannot checkout requested PR because of local changes in git');
+    throw new UnexpectedLocalChangesError('Unable to checkout PR due to uncommitted changes.');
   }
 
   /**
@@ -103,19 +106,18 @@ export async function checkOutPrLocally(
     info(`Checking out PR #${prNumber} from ${fullHeadRef}`);
     git.run(['fetch', headRefUrl, headRefName]);
     if (opts.branchName) {
-      git.run(['checkout', '-b', opts.branchName, 'FETCH_HEAD']);
+      git.run(['checkout', '-B', opts.branchName, 'FETCH_HEAD']);
     } else {
       git.run(['checkout', '--detach', 'FETCH_HEAD']);
     }
-  } catch (err) {
+  } catch (e) {
     cleanUpGitState();
-    throw Error('git didnt work');
+    throw e;
   }
 
   return {
     pushToUpstream: () => {
       git.run(['push', headRefUrl, `HEAD:${headRefName}`, forceWithLeaseFlag]);
-      cleanUpGitState();
     },
     reset: () => {
       cleanUpGitState();
