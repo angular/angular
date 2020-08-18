@@ -20,7 +20,7 @@ import {Subject} from 'rxjs';
 })
 export class CdkComboboxPanel<T = unknown> {
 
-  valueUpdated: Subject<T> = new Subject<T>();
+  valueUpdated: Subject<T | T[]> = new Subject<T | T[]>();
   contentIdUpdated: Subject<string> = new Subject<string>();
   contentTypeUpdated: Subject<AriaHasPopupValue> = new Subject<AriaHasPopupValue>();
 
@@ -32,7 +32,7 @@ export class CdkComboboxPanel<T = unknown> {
   ) {}
 
   /** Tells the parent combobox to close the panel and sends back the content value. */
-  closePanel(data?: T) {
+  closePanel(data?: T | T[]) {
     this.valueUpdated.next(data);
   }
 
@@ -44,6 +44,11 @@ export class CdkComboboxPanel<T = unknown> {
 
   /** Registers the content's id and the content type with the panel. */
   _registerContent(contentId: string, contentType: AriaHasPopupValue) {
+    // If content has already been registered, no further contentIds are registered.
+    if (this.contentType && this.contentType !== contentType) {
+      return;
+    }
+
     this.contentId = contentId;
     if (contentType !== 'listbox' && contentType !== 'dialog') {
       throw Error('CdkComboboxPanel currently only supports listbox or dialog content.');

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 export type OpenAction = 'focus' | 'click' | 'downKey' | 'toggle';
 export type OpenActionInput = OpenAction | OpenAction[] | string | null | undefined;
 
@@ -30,7 +31,7 @@ import {
 } from '@angular/cdk/overlay';
 import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty, coerceArray} from '@angular/cdk/coercion';
-import {DOWN_ARROW, ESCAPE} from '@angular/cdk/keycodes';
+import {DOWN_ARROW, ENTER, ESCAPE, TAB} from '@angular/cdk/keycodes';
 
 const allowedOpenActions = ['focus', 'click', 'downKey', 'toggle'];
 
@@ -58,7 +59,7 @@ export class CdkCombobox<T = unknown> implements OnDestroy, AfterContentInit {
   private _panel: CdkComboboxPanel<T> | undefined;
 
   @Input()
-  value: T;
+  value: T | T[];
 
   @Input()
   get disabled(): boolean { return this._disabled; }
@@ -74,9 +75,16 @@ export class CdkCombobox<T = unknown> implements OnDestroy, AfterContentInit {
   }
   private _openActions: OpenAction[] = ['click'];
 
+  /** Whether the textContent is automatically updated upon change of the combobox value. */
+  @Input()
+  get autoSetText(): boolean { return this._autoSetText; }
+  set autoSetText(value: boolean) { this._autoSetText = coerceBooleanProperty(value); }
+  private _autoSetText: boolean = true;
+
   @Output('comboboxPanelOpened') readonly opened: EventEmitter<void> = new EventEmitter<void>();
   @Output('comboboxPanelClosed') readonly closed: EventEmitter<void> = new EventEmitter<void>();
-  @Output('panelValueChanged') readonly panelValueChanged: EventEmitter<T> = new EventEmitter<T>();
+  @Output('panelValueChanged') readonly panelValueChanged: EventEmitter<T[]>
+      = new EventEmitter<T[]>();
 
   private _overlayRef: OverlayRef;
   private _panelContent: TemplatePortal;
@@ -114,14 +122,28 @@ export class CdkCombobox<T = unknown> implements OnDestroy, AfterContentInit {
   _keydown(event: KeyboardEvent) {
     const {keyCode} = event;
 
-    if (keyCode === DOWN_ARROW && this._openActions.indexOf('downKey') !== -1) {
-      this.open();
+    if (keyCode === DOWN_ARROW) {
+      if (this.isOpen()) {
+        this._panel?.focusContent();
+      } else if (this._openActions.indexOf('downKey') !== -1) {
+        this.open();
+      }
+    } else if (keyCode === ENTER) {
+      if (this._openActions.indexOf('toggle') !== -1) {
+        this.toggle();
+      } else if (this._openActions.indexOf('click') !== -1) {
+        this.open();
+      }
+
     } else if (keyCode === ESCAPE) {
       event.preventDefault();
+      this.close();
+    } else if (keyCode === TAB) {
       this.close();
     }
   }
 
+  /** Handles click or focus interactions. */
   _handleInteractions(interaction: OpenAction) {
     if (interaction === 'click') {
       if (this._openActions.indexOf('toggle') !== -1) {
@@ -136,6 +158,7 @@ export class CdkCombobox<T = unknown> implements OnDestroy, AfterContentInit {
     }
   }
 
+  /** Given a click in the document, determines if the click was inside a combobox. */
   _attemptClose(event: MouseEvent) {
     if (this.isOpen()) {
       let target = event.composedPath ? event.composedPath()[0] : event.target;
@@ -163,7 +186,9 @@ export class CdkCombobox<T = unknown> implements OnDestroy, AfterContentInit {
       this.opened.next();
       this._overlayRef = this._overlayRef || this._overlay.create(this._getOverlayConfig());
       this._overlayRef.attach(this._getPanelContent());
-      this._panel?.focusContent();
+      if (!this._isTextTrigger()) {
+        this._panel?.focusContent();
+      }
     }
   }
 
@@ -189,20 +214,28 @@ export class CdkCombobox<T = unknown> implements OnDestroy, AfterContentInit {
     return this.disabled ? null : '0';
   }
 
-  private _setComboboxValue(value: T) {
+  private _setComboboxValue(value: T | T[]) {
 
     const valueChanged = (this.value !== value);
     this.value = value;
 
     if (valueChanged) {
-      this.panelValueChanged.emit(value);
-      this._setTextContent(value);
+      this.panelValueChanged.emit(coerceArray(value));
+      if (this._autoSetText) {
+        this._setTextContent(value);
+      }
     }
   }
 
-  private _setTextContent(content: T) {
+  private _setTextContent(content: T | T[]) {
     const contentArray = coerceArray(content);
     this._elementRef.nativeElement.textContent = contentArray.join(' ');
+  }
+
+  private _isTextTrigger() {
+    // TODO: Should check if the trigger is contenteditable.
+    const tagName = this._elementRef.nativeElement.tagName.toLowerCase();
+    return tagName === 'input' || tagName === 'textarea' ? true : false;
   }
 
   private _getOverlayConfig() {
@@ -247,5 +280,6 @@ export class CdkCombobox<T = unknown> implements OnDestroy, AfterContentInit {
   }
 
   static ngAcceptInputType_openActions: OpenActionInput;
+  static ngAcceptInputType_autoSetText: OpenActionInput;
   static ngAcceptInputType_disabled: BooleanInput;
 }

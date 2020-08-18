@@ -5,7 +5,7 @@ Toggle Combobox!
 </button>
 
 <ng-template cdkComboboxPanel #panel="cdkComboboxPanel">
-    <div panelContent [parentPanel]="panel">
+    <div cdkComboboxPopup [parentPanel]="panel" [firstFocus]="input">
         <input #input>
         <button (click)="panel.closePanel(input.value)">Apply</button>
     </div>

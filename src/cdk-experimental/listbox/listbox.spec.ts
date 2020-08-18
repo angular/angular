@@ -16,7 +16,7 @@ import {
 } from '@angular/cdk/testing/private';
 import {A, DOWN_ARROW, END, HOME, SPACE} from '@angular/cdk/keycodes';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CdkCombobox, CdkComboboxModule} from '@angular/cdk-experimental/combobox';
+import {CdkCombobox, CdkComboboxModule, CdkComboboxPanel} from '@angular/cdk-experimental/combobox';
 
 
 describe('CdkOption and CdkListbox', () => {
@@ -853,7 +853,7 @@ describe('CdkOption and CdkListbox', () => {
       expect(comboboxInstance.value).toBe('solar');
     });
 
-    it('should not update combobox if listbox is in multiple mode', () => {
+    it('should not close panel if listbox is in multiple mode', () => {
       expect(comboboxInstance.value).toBeUndefined();
       expect(comboboxInstance.isOpen()).toBeFalse();
 
@@ -875,10 +875,11 @@ describe('CdkOption and CdkListbox', () => {
 
       listboxInstance.setActiveOption(optionInstances[1]);
       dispatchKeyboardEvent(listboxElement, 'keydown', SPACE);
+      testComponent.panel.closePanel(testComponent.listbox.getSelectedValues());
       fixture.detectChanges();
 
-      expect(comboboxInstance.isOpen()).toBeTrue();
-      expect(comboboxInstance.value).toBeUndefined();
+      expect(comboboxInstance.isOpen()).toBeFalse();
+      expect(comboboxInstance.value).toEqual(['solar']);
     });
   });
 });
@@ -1009,6 +1010,7 @@ class ListboxInsideCombobox {
   isDisabled: boolean = false;
   isMultiselectable: boolean = false;
   @ViewChild(CdkListbox) listbox: CdkListbox<string>;
+  @ViewChild('panel') panel: CdkComboboxPanel<string>;
 
   onSelectionChange(event: ListboxSelectionChangeEvent<string>) {
     this.changedOption = event.option;
