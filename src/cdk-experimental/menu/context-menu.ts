@@ -17,6 +17,7 @@ import {
   Inject,
   Injectable,
   InjectionToken,
+  isDevMode,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {Directionality} from '@angular/cdk/bidi';
@@ -33,6 +34,7 @@ import {fromEvent, merge, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {CdkMenuPanel} from './menu-panel';
 import {MenuStack, MenuStackItem} from './menu-stack';
+import {throwExistingMenuStackError} from './menu-errors';
 
 /**
  * Check if the given element is part of the cdk menu module or nested within a cdk menu element.
@@ -108,6 +110,11 @@ export class CdkContextMenuTrigger implements OnDestroy {
     return this._menuPanel;
   }
   set menuPanel(panel: CdkMenuPanel) {
+    // If the provided panel already has a stack, that means it already has a trigger configured
+    // TODO refactor once https://github.com/angular/components/pull/20146 lands
+    if (isDevMode() && panel._menuStack) {
+      throwExistingMenuStackError();
+    }
     this._menuPanel = panel;
 
     if (this._menuPanel) {
@@ -324,6 +331,7 @@ export class CdkContextMenuTrigger implements OnDestroy {
 
   ngOnDestroy() {
     this._destroyOverlay();
+    this._resetPanelMenuStack();
 
     this._destroyed.next();
     this._destroyed.complete();
@@ -334,6 +342,19 @@ export class CdkContextMenuTrigger implements OnDestroy {
     if (this._overlayRef) {
       this._overlayRef.dispose();
       this._overlayRef = null;
+    }
+  }
+
+  /** Set the menu panels menu stack back to null. */
+  private _resetPanelMenuStack() {
+    // If a ContextMenuTrigger is placed in a conditionally rendered view, each time the trigger is
+    // rendered the panel setter for ContextMenuTrigger is called. From the first render onward,
+    // the attached CdkMenuPanel has the MenuStack set. Since we throw an error if a panel already
+    // has a stack set, we want to reset the attached stack here to prevent the error from being
+    // thrown if the trigger re-configures its attached panel (in the case where there is a 1:1
+    // relationship between the panel and trigger).
+    if (this._menuPanel) {
+      this._menuPanel._menuStack = null;
     }
   }
 

@@ -1,4 +1,4 @@
-import {Component, ViewChild, ElementRef} from '@angular/core';
+import {Component, ViewChild, ElementRef, Type} from '@angular/core';
 import {CdkMenuModule} from './menu-module';
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 import {CdkMenu} from './menu';
@@ -351,6 +351,29 @@ describe('CdkContextMenuTrigger', () => {
       expect(getFileMenu()).not.toBeDefined();
     });
   });
+
+  describe('with shared triggered menu', () => {
+    /**
+     * Return a function which builds the given component and renders it.
+     * @param componentClass the component to create
+     */
+    function createComponent<T>(componentClass: Type<T>) {
+      return function () {
+        TestBed.configureTestingModule({
+          imports: [CdkMenuModule],
+          declarations: [componentClass],
+        }).compileComponents();
+
+        TestBed.createComponent(componentClass).detectChanges();
+      };
+    }
+
+    it('should throw an error if context and menubar trigger share a menu', () => {
+      expect(createComponent(MenuBarAndContextTriggerShareMenu)).toThrowError(
+        /CdkMenuPanel is already referenced by different CdkMenuTrigger/
+      );
+    });
+  });
 });
 
 @Component({
@@ -457,3 +480,20 @@ class ContextMenuWithMenuBarAndInlineMenu {
   @ViewChild('inline_menu') nativeInlineMenu: ElementRef;
   @ViewChild('inline_menu_button') nativeInlineMenuButton: ElementRef;
 }
+
+@Component({
+  template: `
+    <div cdkMenuBar>
+      <button cdkMenuItem [cdkMenuTriggerFor]="menu">First</button>
+    </div>
+
+    <div [cdkContextMenuTriggerFor]="menu"></div>
+
+    <ng-template cdkMenuPanel #menu="cdkMenuPanel">
+      <div cdkMenu [cdkMenuPanel]="menu">
+        <button cdkMenuItem></button>
+      </div>
+    </ng-template>
+  `,
+})
+class MenuBarAndContextTriggerShareMenu {}

@@ -16,6 +16,7 @@ import {
   Inject,
   OnDestroy,
   Optional,
+  isDevMode,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {TemplatePortal} from '@angular/cdk/portal';
@@ -30,6 +31,7 @@ import {SPACE, ENTER, RIGHT_ARROW, LEFT_ARROW, DOWN_ARROW, UP_ARROW} from '@angu
 import {CdkMenuPanel} from './menu-panel';
 import {Menu, CDK_MENU} from './menu-interface';
 import {FocusNext} from './menu-stack';
+import {throwExistingMenuStackError} from './menu-errors';
 
 /**
  * A directive to be combined with CdkMenuItem which opens the Menu it is bound to. If the
@@ -59,8 +61,15 @@ export class CdkMenuItemTrigger implements OnDestroy {
     return this._menuPanel;
   }
   set menuPanel(panel: CdkMenuPanel | undefined) {
-    this._menuPanel = panel;
+    // If the provided panel already has a stack, that means it already has a trigger configured.
+    // Note however that there are some edge cases where two triggers **may** share the same menu,
+    // e.g. two triggers in two separate menus.
+    // TODO refactor once https://github.com/angular/components/pull/20146 lands
+    if (isDevMode() && panel?._menuStack) {
+      throwExistingMenuStackError();
+    }
 
+    this._menuPanel = panel;
     if (this._menuPanel) {
       this._menuPanel._menuStack = this._getMenuStack();
     }
@@ -140,7 +149,8 @@ export class CdkMenuItemTrigger implements OnDestroy {
    */
   _toggleOnMouseEnter() {
     const menuStack = this._getMenuStack();
-    if (!menuStack.isEmpty() && !this.isMenuOpen()) {
+    const isSiblingMenuOpen = !menuStack?.isEmpty() && !this.isMenuOpen();
+    if (isSiblingMenuOpen) {
       this._closeSiblingTriggers();
       this.openMenu();
     }
@@ -165,7 +175,7 @@ export class CdkMenuItemTrigger implements OnDestroy {
         if (this._isParentVertical()) {
           event.preventDefault();
           if (this._directionality?.value === 'rtl') {
-            this._getMenuStack().close(this._parentMenu, FocusNext.currentItem);
+            this._getMenuStack()?.close(this._parentMenu, FocusNext.currentItem);
           } else {
             this.openMenu();
             this.menuPanel?._menu?.focusFirstItem('keyboard');
@@ -180,7 +190,7 @@ export class CdkMenuItemTrigger implements OnDestroy {
             this.openMenu();
             this.menuPanel?._menu?.focusFirstItem('keyboard');
           } else {
-            this._getMenuStack().close(this._parentMenu, FocusNext.currentItem);
+            this._getMenuStack()?.close(this._parentMenu, FocusNext.currentItem);
           }
         }
         break;
@@ -206,10 +216,10 @@ export class CdkMenuItemTrigger implements OnDestroy {
     // that means that the parent menu is a menu bar since we don't put the menu bar on the
     // stack
     const isParentMenuBar =
-      !menuStack.closeSubMenuOf(this._parentMenu) && menuStack.peek() !== this._parentMenu;
+      !menuStack?.closeSubMenuOf(this._parentMenu) && menuStack?.peek() !== this._parentMenu;
 
     if (isParentMenuBar) {
-      menuStack.closeAll();
+      menuStack?.closeAll();
     }
   }
 
@@ -278,6 +288,20 @@ export class CdkMenuItemTrigger implements OnDestroy {
 
   ngOnDestroy() {
     this._destroyOverlay();
+    this._resetPanelMenuStack();
+  }
+
+  /** Set the menu panels menu stack back to null. */
+  private _resetPanelMenuStack() {
+    // If a CdkMenuTrigger is placed in a submenu, each time the trigger is rendered (its parent
+    // menu is opened) the panel setter for CdkMenuPanel is called. From the first render onward,
+    // the attached CdkMenuPanel has the MenuStack set. Since we throw an error if a panel already
+    // has a stack set, we want to reset the attached stack here to prevent the error from being
+    // thrown if the trigger re-configures its attached panel (in the case where there is a 1:1
+    // relationship between the panel and trigger).
+    if (this._menuPanel) {
+      this._menuPanel._menuStack = null;
+    }
   }
 
   /** Destroy and unset the overlay reference it if exists */

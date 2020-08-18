@@ -125,7 +125,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, OnDestroy
     }
 
     // don't set the tabindex if there are no open sibling or parent menus
-    if (!event || (event && !this._getMenuStack().isEmpty())) {
+    if (!event || !this._getMenuStack()?.isEmpty()) {
       this._tabindex = 0;
     }
   }
@@ -142,7 +142,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, OnDestroy
   trigger() {
     if (!this.disabled && !this.hasMenu()) {
       this.triggered.next();
-      this._getMenuStack().closeAll();
+      this._getMenuStack()?.closeAll();
     }
   }
 
@@ -202,8 +202,8 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, OnDestroy
         if (this._isParentVertical() && !this.hasMenu()) {
           event.preventDefault();
           this._dir?.value === 'rtl'
-            ? this._getMenuStack().close(this._parentMenu, FocusNext.previousItem)
-            : this._getMenuStack().closeAll(FocusNext.nextItem);
+            ? this._getMenuStack()?.close(this._parentMenu, FocusNext.previousItem)
+            : this._getMenuStack()?.closeAll(FocusNext.nextItem);
         }
         break;
 
@@ -211,8 +211,8 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, OnDestroy
         if (this._isParentVertical() && !this.hasMenu()) {
           event.preventDefault();
           this._dir?.value === 'rtl'
-            ? this._getMenuStack().closeAll(FocusNext.nextItem)
-            : this._getMenuStack().close(this._parentMenu, FocusNext.previousItem);
+            ? this._getMenuStack()?.closeAll(FocusNext.nextItem)
+            : this._getMenuStack()?.close(this._parentMenu, FocusNext.previousItem);
         }
         break;
     }
@@ -226,11 +226,11 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, OnDestroy
     this._ngZone.runOutsideAngular(() =>
       fromEvent(this._elementRef.nativeElement, 'mouseenter')
         .pipe(
-          filter(() => !this._getMenuStack().isEmpty() && !this.hasMenu()),
+          filter(() => !this._getMenuStack()?.isEmpty() && !this.hasMenu()),
           takeUntil(this._destroyed)
         )
         .subscribe(() => {
-          this._ngZone.run(() => this._getMenuStack().closeSubMenuOf(this._parentMenu));
+          this._ngZone.run(() => this._getMenuStack()?.closeSubMenuOf(this._parentMenu));
         })
     );
   }

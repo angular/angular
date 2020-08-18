@@ -20,7 +20,7 @@ export class CdkMenuPanel {
   _menu?: Menu;
 
   /** Keep track of open Menus. */
-  _menuStack: MenuStack;
+  _menuStack: MenuStack | null;
 
   constructor(readonly _templateRef: TemplateRef<unknown>) {}
 
@@ -35,6 +35,6 @@ export class CdkMenuPanel {
     // inject the menu stack reference into the child menu and menu items, however this isn't
     // possible at this time.
     this._menu._menuStack = this._menuStack;
-    this._menuStack.push(child);
+    this._menuStack?.push(child);
   }
 }

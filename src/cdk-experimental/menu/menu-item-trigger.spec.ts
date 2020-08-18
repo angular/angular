@@ -1,4 +1,4 @@
-import {Component, ViewChildren, QueryList, ElementRef} from '@angular/core';
+import {Component, ViewChildren, QueryList, ElementRef, Type} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {CdkMenuModule} from './menu-module';
@@ -293,6 +293,42 @@ describe('MenuItemTrigger', () => {
         .toEqual(Math.floor(nativeMenus[1].getBoundingClientRect().top));
     });
   });
+
+  describe('with shared triggered menu', () => {
+    /**
+     * Return a function which builds the given component and renders it.
+     * @param componentClass the component to create
+     */
+    function createComponent<T>(componentClass: Type<T>) {
+      return function () {
+        TestBed.configureTestingModule({
+          imports: [CdkMenuModule],
+          declarations: [componentClass],
+        }).compileComponents();
+
+        TestBed.createComponent(componentClass).detectChanges();
+      };
+    }
+
+    it('should throw an error if two triggers in different menubars open the same menu', () => {
+      expect(createComponent(TriggersWithSameMenuDifferentMenuBars)).toThrowError(
+        /CdkMenuPanel is already referenced by different CdkMenuTrigger/
+      );
+    });
+
+    it('should throw an error if two triggers in the same menubar open the same menu', () => {
+      expect(createComponent(TriggersWithSameMenuSameMenuBar)).toThrowError(
+        /CdkMenuPanel is already referenced by different CdkMenuTrigger/
+      );
+    });
+
+    // TODO uncomment once we figure out why this is failing in Ivy
+    // it('should throw an error if a trigger in a submenu references its parent menu', () => {
+    //   expect(createComponent(TriggerOpensItsMenu)).toThrowError(
+    //     /CdkMenuPanel is already referenced by different CdkMenuTrigger/
+    //   );
+    // });
+  });
 });
 
 @Component({
@@ -331,3 +367,62 @@ class MenuBarWithNestedSubMenus {
 
   @ViewChildren(CdkMenuItem) menuItems: QueryList<CdkMenuItem>;
 }
+
+@Component({
+  template: `
+    <div cdkMenuBar>
+      <button cdkMenuItem [cdkMenuTriggerFor]="menu">First</button>
+    </div>
+    <div cdkMenuBar>
+      <button cdkMenuItem [cdkMenuTriggerFor]="menu">Second</button>
+    </div>
+
+    <ng-template cdkMenuPanel #menu="cdkMenuPanel">
+      <div cdkMenu [cdkMenuPanel]="menu">
+        <button cdkMenuItem></button>
+      </div>
+    </ng-template>
+  `,
+})
+class TriggersWithSameMenuDifferentMenuBars {}
+
+@Component({
+  template: `
+    <div cdkMenuBar>
+      <button cdkMenuItem [cdkMenuTriggerFor]="menu">First</button>
+      <button cdkMenuItem [cdkMenuTriggerFor]="menu">Second</button>
+    </div>
+
+    <ng-template cdkMenuPanel #menu="cdkMenuPanel">
+      <div cdkMenu [cdkMenuPanel]="menu">
+        <button cdkMenuItem></button>
+      </div>
+    </ng-template>
+  `,
+})
+class TriggersWithSameMenuSameMenuBar {}
+
+// TODO uncomment once we figure out why this is failing in Ivy
+// @Component({
+//   template: `
+//     <div cdkMenuBar>
+//       <button cdkMenuItem [cdkMenuTriggerFor]="menu"></button>
+//     </div>
+
+//     <ng-template cdkMenuPanel #menu="cdkMenuPanel">
+//       <div cdkMenu [cdkMenuPanel]="menu">
+//         <button cdkMenuItem [cdkMenuTriggerFor]="menu"></button>
+//       </div>
+//     </ng-template>
+//   `,
+// })
+// class TriggerOpensItsMenu implements AfterViewInit {
+//   @ViewChild(CdkMenuItem, {read: ElementRef}) trigger: ElementRef<HTMLButtonElement>;
+
+//   constructor(private readonly _changeDetector: ChangeDetectorRef) {}
+
+//   ngAfterViewInit() {
+//     this.trigger.nativeElement.click();
+//     this._changeDetector.detectChanges();
+//   }
+// }
