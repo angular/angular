@@ -7,8 +7,8 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, isDevMode, OnChanges, OnDestroy, Renderer2} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, isDevMode, OnChanges, OnDestroy, Renderer2, SimpleChanges} from '@angular/core';
+import {Subject, Subscription} from 'rxjs';
 
 import {QueryParamsHandling} from '../config';
 import {Event, NavigationEnd} from '../events';
@@ -115,7 +115,7 @@ import {UrlTree} from '../url_tree';
  * @publicApi
  */
 @Directive({selector: ':not(a):not(area)[routerLink]'})
-export class RouterLink {
+export class RouterLink implements OnChanges {
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the `NavigationExtras`.
    * @see {@link NavigationExtras#queryParams NavigationExtras#queryParams}
@@ -167,12 +167,22 @@ export class RouterLink {
   private commands: any[] = [];
   private preserve!: boolean;
 
+  /** @internal */
+  onChanges = new Subject<RouterLink>();
+
   constructor(
       private router: Router, private route: ActivatedRoute,
       @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef) {
     if (tabIndex == null) {
       renderer.setAttribute(el.nativeElement, 'tabindex', '0');
     }
+  }
+
+  /** @nodoc */
+  ngOnChanges(changes: SimpleChanges) {
+    // This is subscribed to by `RouterLinkActive` so that it knows to update when there are changes
+    // to the RouterLinks it's tracking.
+    this.onChanges.next(this);
   }
 
   /**
@@ -298,6 +308,9 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   // TODO(issue/24571): remove '!'.
   @HostBinding() href!: string;
 
+  /** @internal */
+  onChanges = new Subject<RouterLinkWithHref>();
+
   constructor(
       private router: Router, private route: ActivatedRoute,
       private locationStrategy: LocationStrategy) {
@@ -336,8 +349,9 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   /** @nodoc */
-  ngOnChanges(changes: {}): any {
+  ngOnChanges(changes: SimpleChanges): any {
     this.updateTargetUrlAndHref();
+    this.onChanges.next(this);
   }
   /** @nodoc */
   ngOnDestroy(): any {
