@@ -7,8 +7,7 @@
  */
 
 import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, Optional, QueryList, Renderer2, SimpleChanges} from '@angular/core';
-import {from, of, Subscription} from 'rxjs';
-import {mergeAll} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
 
 import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
@@ -80,13 +79,14 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
   exportAs: 'routerLinkActive',
 })
 export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
+  // TODO(issue/24571): remove '!'.
   @ContentChildren(RouterLink, {descendants: true}) links!: QueryList<RouterLink>;
+  // TODO(issue/24571): remove '!'.
   @ContentChildren(RouterLinkWithHref, {descendants: true})
   linksWithHrefs!: QueryList<RouterLinkWithHref>;
 
   private classes: string[] = [];
-  private routerEventsSubscription: Subscription;
-  private linkInputChangesSubscription?: Subscription;
+  private subscription: Subscription;
   public readonly isActive: boolean = false;
 
   @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
@@ -95,7 +95,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
       private router: Router, private element: ElementRef, private renderer: Renderer2,
       private readonly cdr: ChangeDetectorRef, @Optional() private link?: RouterLink,
       @Optional() private linkWithHref?: RouterLinkWithHref) {
-    this.routerEventsSubscription = router.events.subscribe((s: Event) => {
+    this.subscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.update();
       }
@@ -104,23 +104,9 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
   /** @nodoc */
   ngAfterContentInit(): void {
-    // `of(null)` is used to force subscribe body to execute once immediately (like `startWith`).
-    from([this.links.changes, this.linksWithHrefs.changes, of(null)])
-        .pipe(mergeAll())
-        .subscribe(_ => {
-          this.update();
-          this.subscribeToEachLinkOnChanges();
-        });
-  }
-
-  private subscribeToEachLinkOnChanges() {
-    this.linkInputChangesSubscription?.unsubscribe();
-    const allLinkChanges =
-        [...this.links.toArray(), ...this.linksWithHrefs.toArray(), this.link, this.linkWithHref]
-            .filter((link): link is RouterLink|RouterLinkWithHref => !!link)
-            .map(link => link.onChanges);
-    this.linkInputChangesSubscription =
-        from(allLinkChanges).pipe(mergeAll()).subscribe(() => this.update());
+    this.links.changes.subscribe(_ => this.update());
+    this.linksWithHrefs.changes.subscribe(_ => this.update());
+    this.update();
   }
 
   @Input()
@@ -135,8 +121,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
   /** @nodoc */
   ngOnDestroy(): void {
-    this.routerEventsSubscription.unsubscribe();
-    this.linkInputChangesSubscription?.unsubscribe();
+    this.subscription.unsubscribe();
   }
 
   private update(): void {
