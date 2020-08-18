@@ -105,7 +105,7 @@ export async function checkOutPullRequestLocally(
     git.run(['fetch', headRefUrl, headRefName]);
     git.run(['checkout', '--detach', 'FETCH_HEAD']);
   } catch (e) {
-    resetGitState();
+    git.checkout(previousBranchOrRevision, true);
     throw e;
   }
 
@@ -121,22 +121,10 @@ export async function checkOutPullRequestLocally(
       return true;
     },
     /** Restores the state of the local repository to before the PR checkout occured. */
-    resetGitState
+    resetGitState: (): boolean => {
+      return git.checkout(previousBranchOrRevision, true);
+    }
   };
-
-  /** Restores the state of the local repository to before the PR checkout occured. */
-  function resetGitState() {
-    // Ensure that any outstanding ams are aborted.
-    git.runGraceful(['am', '--abort'], {stdio: 'ignore'});
-    // Ensure that any outstanding cherry-picks are aborted.
-    git.runGraceful(['cherry-pick', '--abort'], {stdio: 'ignore'});
-    // Ensure that any outstanding rebases are aborted.
-    git.runGraceful(['rebase', '--abort'], {stdio: 'ignore'});
-    // Ensure that any changes in the current repo state are cleared.
-    git.runGraceful(['reset', '--hard'], {stdio: 'ignore'});
-    // Checkout the original branch from before the run began.
-    git.runGraceful(['checkout', previousBranchOrRevision], {stdio: 'ignore'});
-  }
 }
 
 /** Adds the provided token as username to the provided url. */
