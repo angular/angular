@@ -17,12 +17,13 @@ function init(): void {
   overlay.style.zIndex = '2147483647';
   overlay.style.pointerEvents = 'none';
   overlay.style.display = 'flex';
-  overlay.style.alignItems = 'center';
-  overlay.style.justifyContent = 'center';
   overlay.style.borderRadius = '3px';
   overlay.setAttribute('id', DEV_TOOLS_HIGHLIGHT_NODE_ID);
   overlayContent = document.createElement('div');
   overlayContent.style.backgroundColor = 'rgba(104, 182, 255, 0.9)';
+  overlayContent.style.position = 'absolute';
+  overlayContent.style.bottom = '-23px';
+  overlayContent.style.right = '0px';
   overlayContent.style.fontFamily = 'monospace';
   overlayContent.style.fontSize = '11px';
   overlayContent.style.padding = '2px 3px';
