@@ -495,36 +495,49 @@ export class ComponentDecoratorHandler implements
       // Set up the R3TargetBinder, as well as a 'directives' array and a 'pipes' map that are later
       // fed to the TemplateDefinitionBuilder. First, a SelectorMatcher is constructed to match
       // directives that are in scope.
-      const matcher = new SelectorMatcher<DirectiveMeta&{expression: Expression}>();
-      const directives: {selector: string, expression: Expression}[] = [];
+      type MatchedDirective = DirectiveMeta&{selector: string};
+      const matcher = new SelectorMatcher<MatchedDirective>();
 
       for (const dir of scope.compilation.directives) {
-        const {ref, selector} = dir;
-        if (selector !== null) {
-          const expression = this.refEmitter.emit(ref, context);
-          directives.push({selector, expression});
-          matcher.addSelectables(CssSelector.parse(selector), {...dir, expression});
+        if (dir.selector !== null) {
+          matcher.addSelectables(CssSelector.parse(dir.selector), dir as MatchedDirective);
         }
       }
-      const pipes = new Map<string, Expression>();
+      const pipes = new Map<string, Reference<ClassDeclaration>>();
       for (const pipe of scope.compilation.pipes) {
-        pipes.set(pipe.name, this.refEmitter.emit(pipe.ref, context));
+        pipes.set(pipe.name, pipe.ref);
       }
 
-      // Next, the component template AST is bound using the R3TargetBinder. This produces an
+      // Next, the component template AST is bound using the R3TargetBinder. This produces a
       // BoundTarget, which is similar to a ts.TypeChecker.
       const binder = new R3TargetBinder(matcher);
       const bound = binder.bind({template: metadata.template.nodes});
 
       // The BoundTarget knows which directives and pipes matched the template.
-      const usedDirectives = bound.getUsedDirectives();
-      const usedPipes = bound.getUsedPipes().map(name => pipes.get(name)!);
+      const usedDirectives = bound.getUsedDirectives().map(directive => {
+        return {
+          selector: directive.selector,
+          expression: this.refEmitter.emit(directive.ref, context),
+        };
+      });
+
+      const usedPipes: {pipeName: string, expression: Expression}[] = [];
+      for (const pipeName of bound.getUsedPipes()) {
+        if (!pipes.has(pipeName)) {
+          continue;
+        }
+        const pipe = pipes.get(pipeName)!;
+        usedPipes.push({
+          pipeName,
+          expression: this.refEmitter.emit(pipe, context),
+        });
+      }
 
       // Scan through the directives/pipes actually used in the template and check whether any
       // import which needs to be generated would create a cycle.
       const cycleDetected =
           usedDirectives.some(dir => this._isCyclicImport(dir.expression, context)) ||
-          usedPipes.some(pipe => this._isCyclicImport(pipe, context));
+          usedPipes.some(pipe => this._isCyclicImport(pipe.expression, context));
 
       if (!cycleDetected) {
         // No cycle was detected. Record the imports that need to be created in the cycle detector
@@ -532,8 +545,8 @@ export class ComponentDecoratorHandler implements
         for (const {expression} of usedDirectives) {
           this._recordSyntheticImport(expression, context);
         }
-        for (const pipe of usedPipes) {
-          this._recordSyntheticImport(pipe, context);
+        for (const {expression} of usedPipes) {
+          this._recordSyntheticImport(expression, context);
         }
 
         // Check whether the directive/pipe arrays in ɵcmp need to be wrapped in closures.
@@ -542,16 +555,11 @@ export class ComponentDecoratorHandler implements
         const wrapDirectivesAndPipesInClosure =
             usedDirectives.some(
                 dir => isExpressionForwardReference(dir.expression, node.name, context)) ||
-            usedPipes.some(pipe => isExpressionForwardReference(pipe, node.name, context));
+            usedPipes.some(
+                pipe => isExpressionForwardReference(pipe.expression, node.name, context));
 
-        // Actual compilation still uses the full scope, not the narrowed scope determined by
-        // R3TargetBinder. This is a hedge against potential issues with the R3TargetBinder - right
-        // now the TemplateDefinitionBuilder is the "source of truth" for which directives/pipes are
-        // actually used (though the two should agree perfectly).
-        //
-        // TODO(alxhub): switch TemplateDefinitionBuilder over to using R3TargetBinder directly.
-        data.directives = directives;
-        data.pipes = pipes;
+        data.directives = usedDirectives;
+        data.pipes = new Map(usedPipes.map(pipe => [pipe.pipeName, pipe.expression]));
         data.wrapDirectivesAndPipesInClosure = wrapDirectivesAndPipesInClosure;
       } else {
         // Declaring the directiveDefs/pipeDefs arrays directly would require imports that would
