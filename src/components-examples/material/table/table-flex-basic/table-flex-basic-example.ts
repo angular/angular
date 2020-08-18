@@ -24,11 +24,11 @@ const ELEMENT_DATA: PeriodicElement[] = [
  * @title Basic use of `<mat-table>` (uses display flex)
  */
 @Component({
-  selector: 'table-basic-flex-example',
-  styleUrls: ['table-basic-flex-example.css'],
-  templateUrl: 'table-basic-flex-example.html',
+  selector: 'table-flex-basic-example',
+  styleUrls: ['table-flex-basic-example.css'],
+  templateUrl: 'table-flex-basic-example.html',
 })
-export class TableBasicFlexExample {
+export class TableFlexBasicExample {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = ELEMENT_DATA;
 }

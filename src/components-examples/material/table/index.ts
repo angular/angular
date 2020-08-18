@@ -12,7 +12,7 @@ import {MatTableModule} from '@angular/material/table';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CdkTableModule} from '@angular/cdk/table';
 
-import {TableBasicFlexExample} from './table-basic-flex/table-basic-flex-example';
+import {TableFlexBasicExample} from './table-flex-basic/table-flex-basic-example';
 import {TableBasicExample} from './table-basic/table-basic-example';
 import {TableDynamicColumnsExample} from './table-dynamic-columns/table-dynamic-columns-example';
 import {TableExpandableRowsExample} from './table-expandable-rows/table-expandable-rows-example';
@@ -42,7 +42,7 @@ import {TableWrappedExample, WrapperTable} from './table-wrapped/table-wrapped-e
 import {TableReorderableExample} from './table-reorderable/table-reorderable-example';
 
 export {
-  TableBasicExample,          TableBasicFlexExample,
+  TableBasicExample,          TableFlexBasicExample,
   TableDynamicColumnsExample, TableExpandableRowsExample,
   TableFilteringExample,      TableFooterRowExample,
   TableHttpExample,           TableMultipleHeaderFooterExample,
@@ -57,7 +57,7 @@ export {
 };
 
 const EXAMPLES = [
-  TableBasicExample,          TableBasicFlexExample,
+  TableBasicExample,          TableFlexBasicExample,
   TableDynamicColumnsExample, TableExpandableRowsExample,
   TableFilteringExample,      TableFooterRowExample,
   TableHttpExample,           TableMultipleHeaderFooterExample,

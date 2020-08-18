@@ -26,11 +26,11 @@ const ELEMENT_DATA: PeriodicElement[] = [
  * @title Basic use of `<cdk-table>` (uses display flex)
  */
 @Component({
-  selector: 'cdk-table-basic-flex-example',
-  styleUrls: ['cdk-table-basic-flex-example.css'],
-  templateUrl: 'cdk-table-basic-flex-example.html',
+  selector: 'cdk-table-flex-basic-example',
+  styleUrls: ['cdk-table-flex-basic-example.css'],
+  templateUrl: 'cdk-table-flex-basic-example.html',
 })
-export class CdkTableBasicFlexExample {
+export class CdkTableFlexBasicExample {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = new ExampleDataSource();
 }
