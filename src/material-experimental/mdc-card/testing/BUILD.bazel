@@ -26,7 +26,6 @@ ng_test_library(
         ["**/*.spec.ts"],
         exclude = [
             "**/*.e2e.spec.ts",
-            "shared.spec.ts",
         ],
     ),
     deps = [

@@ -35,6 +35,7 @@ entryPoints = [
     "mdc-slider/testing",
     "mdc-snack-bar",
     "mdc-table",
+    "mdc-table/testing",
     "mdc-tabs",
     "mdc-tabs/testing",
     "menubar",
