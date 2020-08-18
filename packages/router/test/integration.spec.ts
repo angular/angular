@@ -4344,7 +4344,7 @@ describe('Integration', () => {
        })));
   });
 
-  describe('routerActiveLink', () => {
+  describe('routerLinkActive', () => {
     it('should set the class when the link is active (a tag)',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = createRoot(router, RootCmp);
@@ -4493,6 +4493,29 @@ describe('Integration', () => {
          advance(fixture);
          advance(fixture);
          expect(paragraph.textContent).toEqual('false');
+       }));
+
+    it('should not trigger change detection when active state has not changed', fakeAsync(() => {
+         @Component({
+           template: `<div id="link" routerLinkActive="active" [routerLink]="link"></div>`,
+         })
+         class LinkComponent {
+           link = 'notactive';
+         }
+
+         @Component({template: ''})
+         class SimpleComponent {
+         }
+
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([{path: '', component: SimpleComponent}])],
+           declarations: [LinkComponent, SimpleComponent]
+         });
+
+         const fixture = createRoot(TestBed.inject(Router), LinkComponent);
+         fixture.componentInstance.link = 'stillnotactive';
+         fixture.detectChanges(false /** checkNoChanges */);
+         expect(TestBed.inject(NgZone).hasPendingMicrotasks).toBe(false);
        }));
   });
 
