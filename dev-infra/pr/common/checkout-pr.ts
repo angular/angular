@@ -52,8 +52,6 @@ export class MaintainerModifyAccessError extends Error {
 
 /** Options for checking out a PR */
 export interface PullRequestCheckoutOptions {
-  /** The local name for the branch when checking out a pr. */
-  branchName?: string;
   /** Whether the PR should be checked out if the maintainer cannot modify. */
   allowIfMaintainerCannotModify?: boolean;
 }
@@ -105,37 +103,39 @@ export async function checkOutPullRequestLocally(
     // Fetch the branch at the commit of the PR, and check it out in a detached state.
     info(`Checking out PR #${prNumber} from ${fullHeadRef}`);
     git.run(['fetch', headRefUrl, headRefName]);
-    if (opts.branchName) {
-      git.run(['checkout', '-B', opts.branchName, 'FETCH_HEAD']);
-    } else {
-      git.run(['checkout', '--detach', 'FETCH_HEAD']);
-    }
+    git.run(['checkout', '--detach', 'FETCH_HEAD']);
   } catch (e) {
-    cleanUpGitState();
+    resetGitState();
     throw e;
   }
 
   return {
-    pushToUpstream: () => {
+    /**
+     * Pushes the current local branch to the PR on the upstream repository.
+     *
+     * @returns true If the command did not fail causing a GitCommandError to be thrown.
+     * @throws GitCommandError Thrown when the push back to upstream fails.
+     */
+    pushToUpstream: (): true => {
       git.run(['push', headRefUrl, `HEAD:${headRefName}`, forceWithLeaseFlag]);
+      return true;
     },
-    reset: () => {
-      cleanUpGitState();
-    }
+    /** Restores the state of the local repository to before the PR checkout occured. */
+    resetGitState
   };
 
-  /** Reset git back to the original branch. */
-  function cleanUpGitState() {
+  /** Restores the state of the local repository to before the PR checkout occured. */
+  function resetGitState() {
+    // Ensure that any outstanding ams are aborted.
+    git.runGraceful(['am', '--abort'], {stdio: 'ignore'});
+    // Ensure that any outstanding cherry-picks are aborted.
+    git.runGraceful(['cherry-pick', '--abort'], {stdio: 'ignore'});
     // Ensure that any outstanding rebases are aborted.
     git.runGraceful(['rebase', '--abort'], {stdio: 'ignore'});
     // Ensure that any changes in the current repo state are cleared.
     git.runGraceful(['reset', '--hard'], {stdio: 'ignore'});
     // Checkout the original branch from before the run began.
     git.runGraceful(['checkout', previousBranchOrRevision], {stdio: 'ignore'});
-    // If a named branch was created, delete the branch.
-    if (opts.branchName) {
-      git.runGraceful(['branch', '-D', opts.branchName]);
-    }
   }
 }
 
