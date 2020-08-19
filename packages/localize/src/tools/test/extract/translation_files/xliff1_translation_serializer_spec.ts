@@ -7,7 +7,7 @@
  */
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {ɵParsedMessage} from '@angular/localize';
+import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
 import {Xliff1TranslationSerializer} from '../../../src/extract/translation_files/xliff1_translation_serializer';
 
@@ -18,6 +18,18 @@ runInEachFileSystem(() => {
     [false, true].forEach(useLegacyIds => {
       describe(`renderFile() [using ${useLegacyIds ? 'legacy' : 'canonical'} ids]`, () => {
         it('should convert a set of parsed messages into an XML string', () => {
+          const phLocation: ɵSourceLocation = {
+            start: {line: 0, column: 10},
+            end: {line: 1, column: 15},
+            file: absoluteFrom('/project/file.ts'),
+            text: 'placeholder + 1'
+          };
+          const messagePartLocation: ɵSourceLocation = {
+            start: {line: 0, column: 5},
+            end: {line: 0, column: 10},
+            file: absoluteFrom('/project/file.ts'),
+            text: 'message part'
+          };
           const messages: ɵParsedMessage[] = [
             mockMessage('12345', ['a', 'b', 'c'], ['PH', 'PH_1'], {
               meaning: 'some meaning',
@@ -31,6 +43,8 @@ runInEachFileSystem(() => {
             mockMessage('54321', ['a', 'b', 'c'], ['PH', 'PH_1'], {
               customId: 'someId',
               legacyIds: ['87654321FEDCBA0987654321FEDCBA0987654321', '563965274788097516'],
+              messagePartLocations: [undefined, messagePartLocation, undefined],
+              substitutionLocations: {'PH': phLocation, 'PH_1': undefined},
             }),
             mockMessage(
                 '67890', ['a', '', 'c'], ['START_TAG_SPAN', 'CLOSE_TAG_SPAN'],
@@ -71,7 +85,7 @@ runInEachFileSystem(() => {
             `        <note priority="1" from="meaning">some meaning</note>`,
             `      </trans-unit>`,
             `      <trans-unit id="someId" datatype="html">`,
-            `        <source>a<x id="PH"/>b<x id="PH_1"/>c</source>`,
+            `        <source>a<x id="PH" equiv-text="placeholder + 1"/>b<x id="PH_1"/>c</source>`,
             `      </trans-unit>`,
             `      <trans-unit id="67890" datatype="html">`,
             `        <source>a<x id="START_TAG_SPAN"/><x id="CLOSE_TAG_SPAN"/>c</source>`,

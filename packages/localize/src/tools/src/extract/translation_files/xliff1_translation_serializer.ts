@@ -67,7 +67,8 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
     const length = message.messageParts.length - 1;
     for (let i = 0; i < length; i++) {
       this.serializeTextPart(xml, message.messageParts[i]);
-      xml.startTag('x', {id: message.placeholderNames[i]}, {selfClosing: true});
+      const location = message.substitutionLocations?.[message.placeholderNames[i]];
+      this.serializePlaceholder(xml, message.placeholderNames[i], location?.text);
     }
     this.serializeTextPart(xml, message.messageParts[length]);
   }
@@ -77,9 +78,17 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
     const length = pieces.length - 1;
     for (let i = 0; i < length; i += 2) {
       xml.text(pieces[i]);
-      xml.startTag('x', {id: pieces[i + 1]}, {selfClosing: true});
+      this.serializePlaceholder(xml, pieces[i + 1], undefined);
     }
     xml.text(pieces[length]);
+  }
+
+  private serializePlaceholder(xml: XmlFile, id: string, text: string|undefined): void {
+    const attrs: Record<string, string> = {id};
+    if (text !== undefined) {
+      attrs['equiv-text'] = text;
+    }
+    xml.startTag('x', attrs, {selfClosing: true});
   }
 
   private serializeNote(xml: XmlFile, name: string, value: string): void {
