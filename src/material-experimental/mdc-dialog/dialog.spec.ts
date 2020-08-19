@@ -37,12 +37,12 @@ import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-b
 import {numbers} from '@material/dialog';
 import {Subject} from 'rxjs';
 import {
-  MAT_DIALOG_DATA,
-  MAT_DIALOG_DEFAULT_OPTIONS,
   MatDialog,
   MatDialogModule,
   MatDialogRef,
-  MatDialogState
+  MatDialogState,
+  MAT_DIALOG_DATA,
+  MAT_DIALOG_DEFAULT_OPTIONS
 } from './index';
 
 describe('MDC-based MatDialog', () => {
@@ -63,7 +63,7 @@ describe('MDC-based MatDialog', () => {
         {provide: Location, useClass: SpyLocation},
         {
           provide: ScrollDispatcher,
-          useFactory: () => ({scrolled: () => scrolledSubject.asObservable()})
+          useFactory: () => ({scrolled: () => scrolledSubject})
         },
       ],
     });

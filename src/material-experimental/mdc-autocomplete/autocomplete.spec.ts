@@ -4,12 +4,12 @@ import {Overlay, OverlayContainer} from '@angular/cdk/overlay';
 import {_supportsShadowDom} from '@angular/cdk/platform';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
-  MockNgZone,
   clearElement,
   createKeyboardEvent,
   dispatchEvent,
   dispatchFakeEvent,
   dispatchKeyboardEvent,
+  MockNgZone,
   typeInElement,
 } from '@angular/cdk/testing/private';
 import {
@@ -37,22 +37,20 @@ import {
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatOption, MatOptionSelectionChange} from '@angular/material-experimental/mdc-core';
 import {MatFormField, MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
-import {By} from '@angular/platform-browser';
 import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {EMPTY, Observable, Subject, Subscription} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-
-
 import {
   getMatAutocompleteMissingPanelError,
-  MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
-  MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
   MatAutocomplete,
   MatAutocompleteModule,
   MatAutocompleteOrigin,
   MatAutocompleteSelectedEvent,
   MatAutocompleteTrigger,
+  MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
+  MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
 } from './index';
 
 
@@ -1566,7 +1564,7 @@ describe('MDC-based MatAutocomplete', () => {
       let spacer = document.createElement('div');
       let fixture = createComponent(SimpleAutocomplete, [{
         provide: ScrollDispatcher,
-        useValue: {scrolled: () => scrolledSubject.asObservable()}
+        useValue: {scrolled: () => scrolledSubject}
       }]);
 
       fixture.detectChanges();
@@ -2234,7 +2232,7 @@ describe('MDC-based MatAutocomplete', () => {
       const fixture = createComponent(SimpleAutocomplete, [
         {
           provide: ScrollDispatcher,
-          useValue: {scrolled: () => scrolledSubject.asObservable()}
+          useValue: {scrolled: () => scrolledSubject}
         },
         {
           provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
