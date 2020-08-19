@@ -112,8 +112,6 @@ export interface MessageMetadata {
 export interface ParsedMessage extends MessageMetadata {
   /**
    * The key used to look up the appropriate translation target.
-   *
-   * In `ParsedMessage` this is a required field, whereas it is optional in `MessageMetadata`.
    */
   id: MessageId;
   /**
