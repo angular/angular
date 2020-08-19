@@ -147,11 +147,15 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   /** Whether the _mat-animation-noopable class should be applied, disabling animations.  */
   _noopAnimations: boolean;
 
+  /** A string that is used for setting the spinner animation-name CSS property */
+  _spinnerAnimationLabel: string;
+
   /** The diameter of the progress spinner (will set width and height of svg). */
   @Input()
   get diameter(): number { return this._diameter; }
   set diameter(size: number) {
     this._diameter = coerceNumberProperty(size);
+    this._spinnerAnimationLabel = this._getSpinnerAnimationLabel();
 
     // If this is set before `ngOnInit`, the style root may not have been resolved yet.
     if (!this._fallbackAnimation && this._styleRoot) {
@@ -190,6 +194,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
     super(_elementRef);
 
     const trackedDiameters = MatProgressSpinner._diameters;
+    this._spinnerAnimationLabel = this._getSpinnerAnimationLabel();
 
     // The base size is already inserted via the component's structural styles. We still
     // need to track it so we don't end up adding the same styles again.
@@ -273,7 +278,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
 
     if (!diametersForElement || !diametersForElement.has(currentDiameter)) {
       const styleTag: HTMLStyleElement = this._document.createElement('style');
-      styleTag.setAttribute('mat-spinner-animation', currentDiameter + '');
+      styleTag.setAttribute('mat-spinner-animation', this._spinnerAnimationLabel);
       styleTag.textContent = this._getAnimationText();
       styleRoot.appendChild(styleTag);
 
@@ -293,7 +298,14 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
         // Animation should begin at 5% and end at 80%
         .replace(/START_VALUE/g, `${0.95 * strokeCircumference}`)
         .replace(/END_VALUE/g, `${0.2 * strokeCircumference}`)
-        .replace(/DIAMETER/g, `${this.diameter}`);
+        .replace(/DIAMETER/g, `${this._spinnerAnimationLabel}`);
+  }
+
+  /** Returns the circle diameter formatted for use with the animation-name CSS property. */
+  private _getSpinnerAnimationLabel(): string {
+    // The string of a float point number will include a period ‘.’ character,
+    // which is not valid for a CSS animation-name.
+    return this.diameter.toString().replace('.', '_');
   }
 
   static ngAcceptInputType_diameter: NumberInput;

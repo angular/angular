@@ -5,6 +5,7 @@ export declare function MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatProgr
 export declare class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements OnInit, CanColor {
     _elementRef: ElementRef<HTMLElement>;
     _noopAnimations: boolean;
+    _spinnerAnimationLabel: string;
     get diameter(): number;
     set diameter(size: number);
     mode: ProgressSpinnerMode;

@@ -25,7 +25,7 @@
     cx="50%"
     cy="50%"
     [attr.r]="_getCircleRadius()"
-    [style.animation-name]="'mat-progress-spinner-stroke-rotate-' + diameter"
+    [style.animation-name]="'mat-progress-spinner-stroke-rotate-' + _spinnerAnimationLabel"
     [style.stroke-dashoffset.px]="_getStrokeDashOffset()"
     [style.stroke-dasharray.px]="_getStrokeCircumference()"
     [style.stroke-width.%]="_getCircleStrokeWidth()"></circle>
