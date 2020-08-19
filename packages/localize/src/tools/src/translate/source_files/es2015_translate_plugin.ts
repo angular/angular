@@ -23,7 +23,8 @@ export function makeEs2015TranslatePlugin(
         try {
           const tag = path.get('tag');
           if (isLocalize(tag, localizeName)) {
-            const messageParts = unwrapMessagePartsFromTemplateLiteral(path.node.quasi.quasis);
+            const [messageParts] =
+                unwrapMessagePartsFromTemplateLiteral(path.get('quasi').get('quasis'));
             const translated = translate(
                 diagnostics, translations, messageParts, path.node.quasi.expressions,
                 missingTranslation);
