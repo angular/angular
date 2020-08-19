@@ -6,17 +6,8 @@
   "module": "./fesm2015/zone.js",
   "es2015": "./fesm2015/zone.js",
   "fesm2015": "./fesm2015/zone.js",
-  "files": [
-    "./zone.js.d.ts",
-    "./zone.api.extensions.ts",
-    "./zone.configurations.api.ts"
-  ],
   "dependencies": {
     "tslib": "^2.0.0"
-  },
-  "directories": {
-    "lib": "lib",
-    "test": "test"
   },
   "devDependencies": {
     "@types/node": "^10.9.4",
