@@ -21,6 +21,7 @@
       [dateFilter]="dateFilter"
       [maxDate]="maxDate"
       [minDate]="minDate"
+      [dateClass]="dateClass"
       (monthSelected)="_monthSelectedInYearView($event)"
       (selectedChange)="_goToDateInView($event, 'month')">
   </mat-year-view>
@@ -32,6 +33,7 @@
       [dateFilter]="dateFilter"
       [maxDate]="maxDate"
       [minDate]="minDate"
+      [dateClass]="dateClass"
       (yearSelected)="_yearSelectedInMultiYearView($event)"
       (selectedChange)="_goToDateInView($event, 'year')">
   </mat-multi-year-view>

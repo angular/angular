@@ -33,6 +33,7 @@ describe('MatYearView', () => {
         // Test components.
         StandardYearView,
         YearViewWithDateFilter,
+        YearViewWithDateClass,
       ],
       providers: [
         {provide: Directionality, useFactory: () => dir = {value: 'ltr'}}
@@ -329,6 +330,32 @@ describe('MatYearView', () => {
     });
 
   });
+
+  describe('year view with custom date classes', () => {
+    let fixture: ComponentFixture<YearViewWithDateClass>;
+    let yearViewNativeElement: Element;
+    let dateClassSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(YearViewWithDateClass);
+      dateClassSpy = spyOn(fixture.componentInstance, 'dateClass').and.callThrough();
+      fixture.detectChanges();
+
+      let yearViewDebugElement = fixture.debugElement.query(By.directive(MatYearView))!;
+      yearViewNativeElement = yearViewDebugElement.nativeElement;
+    });
+
+    it('should be able to add a custom class to some month cells', () => {
+      let cells = yearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
+      expect(cells[0].classList).toContain('even');
+      expect(cells[1].classList).not.toContain('even');
+    });
+
+    it('should call dateClass with the correct view name', () => {
+      expect(dateClassSpy).toHaveBeenCalledWith(jasmine.any(Date), 'year');
+    });
+  });
+
 });
 
 
@@ -366,5 +393,16 @@ class YearViewWithDateFilter {
       return false;
     }
     return true;
+  }
+}
+
+
+@Component({
+  template: `<mat-year-view [activeDate]="activeDate" [dateClass]="dateClass"></mat-year-view>`
+})
+class YearViewWithDateClass {
+  activeDate = new Date(2017, JAN, 1);
+  dateClass(date: Date) {
+    return date.getMonth() % 2 == 0 ? 'even' : undefined;
   }
 }

@@ -441,9 +441,11 @@ describe('MatMonthView', () => {
   describe('month view with custom date classes', () => {
     let fixture: ComponentFixture<MonthViewWithDateClass>;
     let monthViewNativeElement: Element;
+    let dateClassSpy: jasmine.Spy;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(MonthViewWithDateClass);
+      dateClassSpy = spyOn(fixture.componentInstance, 'dateClass').and.callThrough();
       fixture.detectChanges();
 
       let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView))!;
@@ -454,6 +456,10 @@ describe('MatMonthView', () => {
       let cells = monthViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
       expect(cells[0].classList).not.toContain('even');
       expect(cells[1].classList).toContain('even');
+    });
+
+    it('should call dateClass with the correct view name', () => {
+      expect(dateClassSpy).toHaveBeenCalledWith(jasmine.any(Date), 'month');
     });
   });
 

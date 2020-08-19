@@ -33,7 +33,12 @@ import {
 } from '@angular/core';
 import {DateAdapter} from '@angular/material/core';
 import {Directionality} from '@angular/cdk/bidi';
-import {MatCalendarBody, MatCalendarCell, MatCalendarUserEvent} from './calendar-body';
+import {
+  MatCalendarBody,
+  MatCalendarCell,
+  MatCalendarUserEvent,
+  MatCalendarCellClassFunction,
+} from './calendar-body';
 import {createMissingDateImplError} from './datepicker-errors';
 import {Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
@@ -108,6 +113,9 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
 
   /** A function used to filter which dates are selectable. */
   @Input() dateFilter: (date: D) => boolean;
+
+  /** Function that can be used to add custom CSS classes to date cells. */
+  @Input() dateClass: MatCalendarCellClassFunction<D>;
 
   /** Emits when a new year is selected. */
   @Output() readonly selectedChange: EventEmitter<D> = new EventEmitter<D>();
@@ -251,8 +259,11 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
 
   /** Creates an MatCalendarCell for the given year. */
   private _createCellForYear(year: number) {
-    let yearName = this._dateAdapter.getYearName(this._dateAdapter.createDate(year, 0, 1));
-    return new MatCalendarCell(year, yearName, yearName, this._shouldEnableYear(year));
+    const date = this._dateAdapter.createDate(year, 0, 1);
+    const yearName = this._dateAdapter.getYearName(date);
+    const cellClasses = this.dateClass ? this.dateClass(date, 'multi-year') : undefined;
+
+    return new MatCalendarCell(year, yearName, yearName, this._shouldEnableYear(year), cellClasses);
   }
 
   /** Whether the given year is enabled. */

@@ -53,7 +53,7 @@ import {filter, take} from 'rxjs/operators';
 import {MatCalendar} from './calendar';
 import {matDatepickerAnimations} from './datepicker-animations';
 import {createMissingDateImplError} from './datepicker-errors';
-import {MatCalendarCellCssClasses, MatCalendarUserEvent} from './calendar-body';
+import {MatCalendarUserEvent, MatCalendarCellClassFunction} from './calendar-body';
 import {DateFilterFn} from './datepicker-input-base';
 import {
   ExtractDateTypeFromSelection,
@@ -322,7 +322,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   @Input() panelClass: string | string[];
 
   /** Function that can be used to add custom CSS classes to dates. */
-  @Input() dateClass: (date: D) => MatCalendarCellCssClasses;
+  @Input() dateClass: MatCalendarCellClassFunction<D>;
 
   /** Emits when the datepicker has been opened. */
   @Output('opened') openedStream: EventEmitter<void> = new EventEmitter<void>();

@@ -40,8 +40,8 @@ import {Directionality} from '@angular/cdk/bidi';
 import {
   MatCalendarBody,
   MatCalendarCell,
-  MatCalendarCellCssClasses,
   MatCalendarUserEvent,
+  MatCalendarCellClassFunction,
 } from './calendar-body';
 import {createMissingDateImplError} from './datepicker-errors';
 import {Subscription} from 'rxjs';
@@ -122,7 +122,7 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
   @Input() dateFilter: (date: D) => boolean;
 
   /** Function that can be used to add custom CSS classes to dates. */
-  @Input() dateClass: (date: D) => MatCalendarCellCssClasses;
+  @Input() dateClass: MatCalendarCellClassFunction<D>;
 
   /** Start of the comparison range. */
   @Input() comparisonStart: D | null;
@@ -380,7 +380,7 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
             this._dateAdapter.getMonth(this.activeDate), i + 1);
       const enabled = this._shouldEnableDate(date);
       const ariaLabel = this._dateAdapter.format(date, this._dateFormats.display.dateA11yLabel);
-      const cellClasses = this.dateClass ? this.dateClass(date) : undefined;
+      const cellClasses = this.dateClass ? this.dateClass(date, 'month') : undefined;
 
       this._weeks[this._weeks.length - 1].push(new MatCalendarCell<D>(i + 1, dateNames[i],
           ariaLabel, enabled, cellClasses, this._getCellCompareValue(date)!, date));

@@ -60,7 +60,7 @@ export declare class MatCalendar<D> implements AfterContentInit, AfterViewChecke
     comparisonStart: D | null;
     get currentView(): MatCalendarView;
     set currentView(value: MatCalendarView);
-    dateClass: (date: D) => MatCalendarCellCssClasses;
+    dateClass: MatCalendarCellClassFunction<D>;
     dateFilter: (date: D) => boolean;
     headerComponent: ComponentType<any>;
     get maxDate(): D | null;
@@ -147,6 +147,8 @@ export declare class MatCalendarCell<D = any> {
     value: number;
     constructor(value: number, displayValue: string, ariaLabel: string, enabled: boolean, cssClasses?: MatCalendarCellCssClasses, compareValue?: number, rawValue?: D | undefined);
 }
+
+export declare type MatCalendarCellClassFunction<D> = (date: D, view: 'month' | 'year' | 'multi-year') => MatCalendarCellCssClasses;
 
 export declare type MatCalendarCellCssClasses = string | string[] | Set<string> | {
     [key: string]: any;
@@ -402,7 +404,7 @@ export declare class MatMonthView<D> implements AfterContentInit, OnChanges, OnD
     readonly activeDateChange: EventEmitter<D>;
     comparisonEnd: D | null;
     comparisonStart: D | null;
-    dateClass: (date: D) => MatCalendarCellCssClasses;
+    dateClass: MatCalendarCellClassFunction<D>;
     dateFilter: (date: D) => boolean;
     get maxDate(): D | null;
     set maxDate(value: D | null);
@@ -433,6 +435,7 @@ export declare class MatMultiYearView<D> implements AfterContentInit, OnDestroy 
     get activeDate(): D;
     set activeDate(value: D);
     readonly activeDateChange: EventEmitter<D>;
+    dateClass: MatCalendarCellClassFunction<D>;
     dateFilter: (date: D) => boolean;
     get maxDate(): D | null;
     set maxDate(value: D | null);
@@ -450,7 +453,7 @@ export declare class MatMultiYearView<D> implements AfterContentInit, OnDestroy 
     _yearSelected(event: MatCalendarUserEvent<number>): void;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMultiYearView<any>, "mat-multi-year-view", ["matMultiYearView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; }, { "selectedChange": "selectedChange"; "yearSelected": "yearSelected"; "activeDateChange": "activeDateChange"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMultiYearView<any>, "mat-multi-year-view", ["matMultiYearView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; "dateClass": "dateClass"; }, { "selectedChange": "selectedChange"; "yearSelected": "yearSelected"; "activeDateChange": "activeDateChange"; }, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatMultiYearView<any>, [null, { optional: true; }, { optional: true; }]>;
 }
 
@@ -495,6 +498,7 @@ export declare class MatYearView<D> implements AfterContentInit, OnDestroy {
     get activeDate(): D;
     set activeDate(value: D);
     readonly activeDateChange: EventEmitter<D>;
+    dateClass: MatCalendarCellClassFunction<D>;
     dateFilter: (date: D) => boolean;
     get maxDate(): D | null;
     set maxDate(value: D | null);
@@ -511,7 +515,7 @@ export declare class MatYearView<D> implements AfterContentInit, OnDestroy {
     _monthSelected(event: MatCalendarUserEvent<number>): void;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatYearView<any>, "mat-year-view", ["matYearView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; }, { "selectedChange": "selectedChange"; "monthSelected": "monthSelected"; "activeDateChange": "activeDateChange"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatYearView<any>, "mat-year-view", ["matYearView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; "dateClass": "dateClass"; }, { "selectedChange": "selectedChange"; "monthSelected": "monthSelected"; "activeDateChange": "activeDateChange"; }, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatYearView<any>, [null, { optional: true; }, { optional: true; }, { optional: true; }]>;
 }
 

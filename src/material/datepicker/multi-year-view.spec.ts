@@ -34,6 +34,7 @@ describe('MatMultiYearView', () => {
         StandardMultiYearView,
         MultiYearViewWithDateFilter,
         MultiYearViewWithMinMaxDate,
+        MultiYearViewWithDateClass,
       ],
       providers: [
         {provide: Directionality, useFactory: () => dir = {value: 'ltr'}}
@@ -343,6 +344,32 @@ describe('MatMultiYearView', () => {
       expect(cells[9].classList).not.toContain('mat-calendar-body-disabled');
     });
   });
+
+  describe('multi-year view with custom date classes', () => {
+    let fixture: ComponentFixture<MultiYearViewWithDateClass>;
+    let multiYearViewNativeElement: Element;
+    let dateClassSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(MultiYearViewWithDateClass);
+      dateClassSpy = spyOn(fixture.componentInstance, 'dateClass').and.callThrough();
+      fixture.detectChanges();
+
+      let multiYearViewDebugElement = fixture.debugElement.query(By.directive(MatMultiYearView))!;
+      multiYearViewNativeElement = multiYearViewDebugElement.nativeElement;
+    });
+
+    it('should be able to add a custom class to some dates', () => {
+      let cells = multiYearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
+      expect(cells[0].classList).toContain('even');
+      expect(cells[1].classList).not.toContain('even');
+    });
+
+    it('should call dateClass with the correct view name', () => {
+      expect(dateClassSpy).toHaveBeenCalledWith(jasmine.any(Date), 'multi-year');
+    });
+  });
+
 });
 
 @Component({
@@ -386,4 +413,17 @@ class MultiYearViewWithMinMaxDate {
   activeDate = new Date(2019, JAN, 1);
   minDate: Date | null;
   maxDate: Date | null;
+}
+
+
+@Component({
+  template: `
+    <mat-multi-year-view [activeDate]="activeDate" [dateClass]="dateClass"></mat-multi-year-view>
+  `
+})
+class MultiYearViewWithDateClass {
+  activeDate = new Date(2017, JAN, 1);
+  dateClass(date: Date) {
+    return date.getFullYear() % 2 == 0 ? 'even' : undefined;
+  }
 }

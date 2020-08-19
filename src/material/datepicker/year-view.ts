@@ -34,7 +34,12 @@ import {
 } from '@angular/core';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 import {Directionality} from '@angular/cdk/bidi';
-import {MatCalendarBody, MatCalendarCell, MatCalendarUserEvent} from './calendar-body';
+import {
+  MatCalendarBody,
+  MatCalendarCell,
+  MatCalendarUserEvent,
+  MatCalendarCellClassFunction,
+} from './calendar-body';
 import {createMissingDateImplError} from './datepicker-errors';
 import {Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
@@ -102,6 +107,9 @@ export class MatYearView<D> implements AfterContentInit, OnDestroy {
 
   /** A function used to filter which dates are selectable. */
   @Input() dateFilter: (date: D) => boolean;
+
+  /** Function that can be used to add custom CSS classes to date cells. */
+  @Input() dateClass: MatCalendarCellClassFunction<D>;
 
   /** Emits when a new month is selected. */
   @Output() readonly selectedChange: EventEmitter<D> = new EventEmitter<D>();
@@ -254,11 +262,12 @@ export class MatYearView<D> implements AfterContentInit, OnDestroy {
 
   /** Creates an MatCalendarCell for the given month. */
   private _createCellForMonth(month: number, monthName: string) {
-    let ariaLabel = this._dateAdapter.format(
-        this._dateAdapter.createDate(this._dateAdapter.getYear(this.activeDate), month, 1),
-        this._dateFormats.display.monthYearA11yLabel);
-    return new MatCalendarCell(
-        month, monthName.toLocaleUpperCase(), ariaLabel, this._shouldEnableMonth(month));
+    const date = this._dateAdapter.createDate(this._dateAdapter.getYear(this.activeDate), month, 1);
+    const ariaLabel = this._dateAdapter.format(date, this._dateFormats.display.monthYearA11yLabel);
+    const cellClasses = this.dateClass ? this.dateClass(date, 'year') : undefined;
+
+    return new MatCalendarCell(month, monthName.toLocaleUpperCase(), ariaLabel,
+        this._shouldEnableMonth(month), cellClasses);
   }
 
   /** Whether the given month is enabled. */
