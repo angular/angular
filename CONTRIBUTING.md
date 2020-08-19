@@ -7,7 +7,7 @@ Como colaborador, estos son los lineamientos que nos gustaría que siguieras:
  - [¿Preguntas o problemas?](#question)
  - [_Issues_ y _bugs_](#issue)
  - [Solicitud de funcionalidades](#feature)
- - [Lineamientos para la creación de _issues_ y _PR_](#submit)
+ - [Guía para la creación de issues y PRs](#submit)
  - [Reglas del código](#rules)
  - [Convención para el mensaje de los _commits_](#commit)
  - [Firma del Acuerdo de Licencia de Colaborador (CLA)](#cla)
@@ -53,7 +53,7 @@ Si deseas implementar una nueva funcionalidad, por favor considera el tamaño de
 * **Cambios pequeños** pueden ser elaborados y directamente [creados como un _pull request_](#submit-pr).
 
 
-## <a name="submit"></a> Lineamientos para la creación de _issues_ y _pull requests_
+## <a name="submit"></a> Guía para la creación de issues y PRs
 
 
 ### <a name="submit-issue"></a> Creación de _issues_
@@ -307,7 +307,7 @@ CAMBIO SIGNIFICATIVO: <resumen del cambio significativo>
 <descripción del cambio significativo + instrucciones para la migración>
 <LINEA VACIA>
 <LINEA VACIA>
-Soluciona #<issue número>
+Fix #<issue número>
 ```
 
 La sección de cambios significativos debería comenzar con la frase "CAMBIO SIGNIFICATIVO: " seguido de un resumen del cambio significativo, una línea en blanco y una descripción detallada del cambio significativo que también incluya instrucciones de migración.
@@ -325,13 +325,7 @@ El contenido del mensaje del commit debería contener:
 
 ## <a name="cla"></a> Firma del Acuerdo de Licencia de Colaborador (CLA)
 
-Por favor firma nuestro Acuerdo de Licencia de Colaborador (CLA) antes de crear _pull requests_. Para que cualquier cambio de código sea aceptado, el Acuerdo de Licencia de Colaborador (CLA) debe ser firmado. ¡Es un proceso rápido, lo prometemos!
-
-* Para las personas, tenemos un [formulario simple][individual-cla].
-* Para corporaciones, necesitaremos que
-  [impriman, firmen, escaneen y envíen por email, fax o correo el formulario][corporate-cla].
-
-Si tiene más de una cuenta de GitHub o varias direcciones de correo electrónico asociadas con una sola cuenta de GitHub, debes firmar el CLA utilizando la dirección de correo electrónico principal de la cuenta de GitHub utilizada para crear los commits de Git y la creación de PRs.
+Por favor firma nuestro Acuerdo de Licencia de Colaborador (CLA) cuando creas tu primer pull request. Para que cualquier cambio de código sea aceptado, el Acuerdo de Licencia de Colaborador (CLA) debe ser firmado. Es un proceso rápido con nuestro CLA assistant que está integrado con nuestro CI.
 
 Los siguientes documentos pueden ayudarte a resolver problemas con cuentas de GitHub y múltiples direcciones de correo electrónico:
 
