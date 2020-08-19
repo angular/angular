@@ -35,6 +35,8 @@ export function makeEs2015TranslatePlugin(
             // since there must be something wrong with the structure of the AST generated
             // by Babel parsing a TaggedTemplateExpression.
             throw buildCodeFrameError(path, e);
+          } else {
+            throw e;
           }
         }
       }
