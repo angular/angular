@@ -47,319 +47,319 @@
   "SideNav": [
     {
       "url": "docs",
-      "title": "Introduction",
-      "tooltip": "Introduction to the Angular documentation",
+      "title": "Introducción",
+      "tooltip": "Introducción a la documentación angular.",
       "hidden": false
     },
     {
-      "title": "Getting Started",
-      "tooltip": "Set up your environment and learn basic concepts",
+      "title": "Comenzando",
+      "tooltip": "Configura tu entorno y aprende conceptos básicos",
       "children": [
         {
           "url": "guide/setup-local",
-          "title": "Setup",
-          "tooltip": "Setting up for local development with the Angular CLI."
+          "title": "Configurar",
+          "tooltip": "Configuración para desarrollo local con el CLI de Angular."
         },
         {
-          "title": "Angular Concepts",
-          "tooltip": "Introduction to basic concepts for Angular applications.",
+          "title": "Conceptos Angular",
+          "tooltip": "Introducción a los conceptos básicos de las aplicaciones angular.",
           "children": [
             {
               "url": "guide/architecture",
-              "title": "Intro to Basic Concepts",
-              "tooltip": "Basic building blocks of Angular applications."
+              "title": "Introducción a los conceptos básicos",
+              "tooltip": "Bloques de construcción básicos de aplicaciones angular"
             },
             {
               "url": "guide/architecture-modules",
-              "title": "Intro to Modules",
-              "tooltip": "About NgModules."
+              "title": "Introducción a los módulos",
+              "tooltip": "Sobre NgModules."
             },
             {
               "url": "guide/architecture-components",
               "title": "Intro to Components",
-              "tooltip": "About Components, Templates, and Views."
+              "tooltip": "Acerca de componentes, Plantillas y Vistas."
             },
             {
               "url": "guide/architecture-services",
-              "title": "Intro to Services and DI",
-              "tooltip": "About services and dependency injection."
+              "title": "Introducción a los servicios de ID",
+              "tooltip": "Sobre los servicios e inyección de dependencias."
             },
             {
               "url": "guide/architecture-next-steps",
-              "title": "Next Steps",
-              "tooltip": "Beyond the basics."
+              "title": "Próximos pasos",
+              "tooltip": "Mas allá de lo básico."
             }
           ]
         },
         {
           "url": "guide/glossary",
-          "title": "Angular Glossary",
-          "tooltip": "Brief definitions of the most important words in the Angular vocabulary."
+          "title": "Glosario Angular",
+          "tooltip": "Breves definiciones de las palabras más importantes del vocabulario de Angular."
         },
         {
-            "title": "Try it",
-            "tooltip": "Examine and work with a ready-made sample app, with no setup.",
+            "title": "Pruébalo",
+            "tooltip": "Examine y trabaje con una aplicación de muestra lista para usar, sin configuración.",
             "children": [
               {
                 "url": "start",
-                "title": "A Sample App",
-                "tooltip": "Take a look at Angular's component model, template syntax, and component communication."
+                "title": "Aplicación de muestra",
+                "tooltip": "Eche un vistazo al modelo de componentes de Angular, la sintaxis de la plantilla y la comunicación de componentes."
               },
               {
                 "url": "start/start-routing",
-                "title": "In-app Navigation",
-                "tooltip": "Navigate among different page views using the browser's URL."
+                "title": "Navegación en la aplicación",
+                "tooltip": "Navegación entre diferentes páginas vistas usando la URL del navegador."
               },
               {
                 "url": "start/start-data",
-                "title": "Manage Data",
-                "tooltip": "Use services and access external data via HTTP."
+                "title": "Gestión de datos",
+                "tooltip": "Utilice servicios y acceda a datos externos a través de HTTP."
               },
               {
                 "url": "start/start-forms",
-                "title": "Forms for User Input",
-                "tooltip": "Learn about fetching and managing data from users with forms."
+                "title": "Formularios para la entrada del usuario",
+                "tooltip": "Obtenga información sobre cómo obtener y administrar datos de usuarios con formularios."
               },
               {
                 "url": "start/start-deployment",
-                "title": "Deployment",
-                "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
+                "title": "Desplegar",
+                "tooltip": "Migre al desarrollo local, o despliegue su aplicación en Firebase o en su propio servidor"
               }
             ]
         },
         {
-          "title": "Tutorial: Tour of Heroes",
-          "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
+          "title": "Tutorial: Tour de Héroes",
+          "tooltip": "La aplicación Tour de Héroes se utiliza como punto de referencia en muchos ejemplos de Angular",
           "children": [
             {
               "url": "tutorial",
-              "title": "Introduction",
-              "tooltip": "Introduction to the Tour of Heroes app and tutorial"
+              "title": "Introducción",
+              "tooltip": "Presentamos la aplicación y el tutorial del Tour de Héroes"
             },
             {
               "url": "tutorial/toh-pt0",
-              "title": "Create a Project",
-              "tooltip": "Creating the application shell"
+              "title": "Crear un Proyecto",
+              "tooltip": "Creando el armazón de la aplicación"
             },
             {
               "url": "tutorial/toh-pt1",
-              "title": "1. The Hero Editor",
-              "tooltip": "Part 1: Build a simple editor"
+              "title": "1. El Editor de Héroe",
+              "tooltip": "Parte 1: Construir un editor simple"
             },
             {
               "url": "tutorial/toh-pt2",
-              "title": "2. Display a List",
-              "tooltip": "Part 2: Build a master/detail page with a list of heroes."
+              "title": "2. Mostrar una lista",
+              "tooltip": "Parte 2: Construye una página maestra de detalles con una lista de héroes."
             },
             {
               "url": "tutorial/toh-pt3",
-              "title": "3. Create a Feature Component",
-              "tooltip": "Part 3: Refactor the master/detail views into separate components."
+              "title": "3. Crear un componente de función ",
+              "tooltip": "Parte 3: Refactorice las vistas maestra detallada en componentes separados."
             },
             {
               "url": "tutorial/toh-pt4",
-              "title": "4. Add Services",
-              "tooltip": "Part 4: Create a reusable service to manage hero data."
+              "title": "4. Agregar servicios",
+              "tooltip": "Parte 4: Crea un servicio reutilizable para administrar datos de héroes."
             },
             {
               "url": "tutorial/toh-pt5",
-              "title": "5. Add In-app Navigation",
-              "tooltip": "Part 5: Add the Angular router and navigate among the views."
+              "title": "5. Agregar navegación en la aplicación",
+              "tooltip": "Parte 5: Agregue el enrutador angular para moverse entre vistas."
             },
             {
               "url": "tutorial/toh-pt6",
-              "title": "6. Get Data from a Server",
-              "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
+              "title": "6. Obtener datos del servidor",
+              "tooltip": "Parte 6: Utilice HTTP para recuperar y guardar datos de héroe."
             }
           ]
         }
       ]
     },
     {
-      "title": "Fundamentals",
-      "tooltip": "The fundamentals of Angular",
+      "title": "Fundamentos",
+      "tooltip": "Los fundamentos de Angular",
       "children": [
         {
-          "title": "Components & Templates",
-          "tooltip": "Building dynamic views with data binding",
+          "title": "Componentes & Plantillas",
+          "tooltip": "Construyendo vistas dinámicas con enlaces de datos",
           "children": [
             {
               "url": "guide/displaying-data",
-              "title": "Displaying Data",
-              "tooltip": "Property binding helps show app data in the UI."
+              "title": "Mostrar Datos",
+              "tooltip": "Los enlaces de propiedades ayudan a mostrar los datos de la aplicación en la interfaz de usuario."
             },
             {
-              "title": "Template Syntax",
-              "tooltip": "Syntax to use in templates for binding, expressions, and directives.",
+              "title": "Sintaxis de plantilla ",
+              "tooltip": "Sintaxis para usar en plantillas para enlaces, expresiones y directivas.",
               "children": [
                 {
                   "url": "guide/template-syntax",
-                  "title": "Introduction",
-                  "tooltip": "Introduction to writing templates that display data and consume user events with the help of data binding."
+                  "title": "Introducción",
+                  "tooltip": "Introducción a la escritura de plantillas que muestran datos y consumen eventos de usuario con la ayuda del enlace de datos."
                 },
                 {
                   "url": "guide/interpolation",
-                  "title": "Interpolation",
-                  "tooltip": "An introduction to interpolation and expressions in HTML."
+                  "title": "Interpolación",
+                  "tooltip": "Introducción a la interpolación y expresiones en HTML."
                 },
                 {
                   "url": "guide/template-statements",
-                  "title": "Template statements",
-                  "tooltip": "Introductory guide to statements in templates that respond to events that components, directives, or elements raise."
+                  "title": " Declaraciones de plantilla",
+                  "tooltip": "Guía introductoria de declaraciones en plantillas que responden a eventos que generan componentes, directivas o elementos."
                 },
                 {
                   "url": "guide/binding-syntax",
-                  "title": "Binding syntax",
-                  "tooltip": "Introductory guide to coordinating app values."
+                  "title": "Sintaxis de enlace",
+                  "tooltip": "Guía introductoria para coordinar los valores de las aplicaciones."
                 },
                 {
                   "url": "guide/property-binding",
-                  "title": "Property binding",
-                  "tooltip": "Introductory guide to setting element or input properties."
+                  "title": "Vinculación de propiedad",
+                  "tooltip": "Guía introductoria para configurar propiedades de entrada o elemento."
                 },
                 {
                   "url": "guide/attribute-binding",
-                  "title": "Attribute, class, and style bindings",
-                  "tooltip": "Introductory guide to setting the value of HTML attributes."
+                  "title": "Enlaces de estilo, clase y atributo",
+                  "tooltip": "Guía introductoria para configurar el valor de los atributos HTML."
                 },
                 {
                   "url": "guide/event-binding",
-                  "title": "Event binding",
-                  "tooltip": "Introductory guide to listening for user interaction."
+                  "title": "Enlace de eventos",
+                  "tooltip": "Guía introductoria para escuchar la interacción del usuario."
                 },
                 {
                   "url": "guide/two-way-binding",
-                  "title": "Two-way binding",
-                  "tooltip": "Introductory guide to sharing data between a class and a template."
+                  "title": "Unión Bidireccional",
+                  "tooltip": "Guía introductoria para compartir datos entre una clase y una plantilla."
                 },
                 {
                   "url": "guide/built-in-directives",
-                  "title": "Built-in directives",
-                  "tooltip": "Introductory guide to some of the most popular built-in directives."
+                  "title": "Directivas integradas",
+                  "tooltip": "Guía introductoria a algunas de las directivas integradas más populares."
                 },
                 {
                   "url": "guide/template-reference-variables",
-                  "title": "Template reference variables",
-                  "tooltip": "Introductory guide to referring to DOM elements within a template."
+                  "title": "Variables de referencia de plantilla",
+                  "tooltip": "Guía introductoria para hacer referencia a elementos DOM dentro de una plantilla."
                 },
                 {
                   "url": "guide/inputs-outputs",
-                  "title": "Inputs and Outputs",
-                  "tooltip": "Introductory guide to sharing data between parent and child directives or components."
+                  "title": "Entradas y salidas",
+                  "tooltip": "Guía introductoria para compartir datos entre directivas o componentes de padres e hijos."
                 },
                 {
                   "url": "guide/template-expression-operators",
-                  "title": "Template expression operators",
-                  "tooltip": "Introductory guide to transforming data, ensuring safe navigation, and guarding against null variables in templates."
+                  "title": "Operadores de expresión de plantilla",
+                  "tooltip": "Guía introductoria para transformar datos, garantizar una navegación segura y protegerse contra variables nulas en plantillas."
                 },
                 {
                   "url": "guide/svg-in-templates",
-                  "title": "SVG in templates",
-                  "tooltip": "Guide to using SVGs as templates to create interactive graphics."
+                  "title": "SVG en plantillas",
+                  "tooltip": "Guía para usar SVG como plantillas para crear gráficos interactivos."
                 }
               ]
             },
             {
               "url": "guide/user-input",
-              "title": "User Input",
-              "tooltip": "User input triggers DOM events. Angular listens to those events with event bindings that funnel updated values back into your app's components and models."
+              "title": "Entrada del usuario",
+              "tooltip": "La entrada del usuario desencadena eventos DOM. Angular escucha esos eventos con enlaces de eventos que canalizan los valores actualizados hacia los componentes y modelos de su aplicación."
             },
             {
               "url": "guide/attribute-directives",
-              "title": "Attribute Directives",
-              "tooltip": "Attribute directives attach behavior to elements."
+              "title": "Directivas de atributos",
+              "tooltip": "Las directivas de atributo adjuntan comportamiento a los elementos."
             },
             {
               "url": "guide/structural-directives",
-              "title": "Structural Directives",
-              "tooltip": "Structural directives manipulate the layout of the page."
+              "title": "Directivas estructurales",
+              "tooltip": "Las directivas estructurales manipulan el diseño de la página."
             },
             {
               "url": "guide/pipes",
-              "title": "Pipes",
-              "tooltip": "Pipes transform displayed values within a template."
+              "title": "tuberías",
+              "tooltip": "Las tuberías transforman los valores mostrados dentro de una plantilla."
             },
             {
               "url": "guide/lifecycle-hooks",
-              "title": "Hook into the Component Lifecycle",
-              "tooltip": "Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them."
+              "title": "Conectarse al ciclo de vida de los componentes",
+              "tooltip": "Angular llama a métodos de enlace de ciclo de vida en directivas y componentes a medida que los crea, cambia y destruye."
             },
             {
               "url": "guide/component-interaction",
-              "title": "Component Interaction",
-              "tooltip": "Share information between different directives and components."
+              "title": "Interacción de componentes",
+              "tooltip": "Comparta información entre diferentes directivas y componentes."
             },
             {
               "url": "guide/component-styles",
-              "title": "Component Styles",
-              "tooltip": "Add CSS styles that are specific to a component."
+              "title": "Estilos de componentes",
+              "tooltip": "Agregue estilos CSS que sean específicos de un componente."
             },
             {
               "url": "guide/dynamic-component-loader",
-              "title": "Dynamic Components",
-              "tooltip": "Load components dynamically."
+              "title": "Componentes dinámicos",
+              "tooltip": "Cargue componentes de forma dinámica."
             },
             {
               "url": "guide/elements",
-              "title": "Angular Elements",
-              "tooltip": "Convert components to Custom Elements."
+              "title": "Elementos Angular",
+              "tooltip": "Convierta componentes en elementos personalizados."
             }
           ]
         },
         {
-          "title": "Forms for User Input",
-          "tooltip": "Forms creates a cohesive, effective, and compelling data entry experience.",
+          "title": "Formularios para la entrada del usuario",
+          "tooltip": "Forms crea una experiencia de entrada de datos coherente, eficaz y convincente.",
           "children": [
             {
               "url": "guide/forms-overview",
-              "title": "Introduction",
-              "tooltip": "An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
+              "title": "Introducción",
+              "tooltip": "Una forma angular coordina un conjunto de controles de usuario vinculados a datos, realiza un seguimiento de los cambios, valida la entrada y presenta errores."
             },
             {
               "url": "guide/reactive-forms",
-              "title": "Reactive Forms",
-              "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
+              "title": "Formularios Reactivos",
+              "tooltip": "Cree un formulario reactivo utilizando FormBuilder, grupos y arrays."
             },
             {
               "url": "guide/form-validation",
-              "title": "Validate form input",
-              "tooltip": "Validate user's form entries."
+              "title": "Validar entrada de formulario",
+              "tooltip": "Validar las entradas del formulario del usuario."
             },
             {
               "url": "guide/dynamic-form",
-              "title": "Building Dynamic Forms",
-              "tooltip": "Create dynamic form templates using FormGroup."
+              "title": "Construyendo formularios dinámicos",
+              "tooltip": "Cree plantillas de formulario dinámicas con FormGroup."
             }
           ]
         },
         {
           "title": "Observables & RxJS",
-          "tooltip": "Using observables for message passing in Angular.",
+          "tooltip": "Usando observables para el paso de mensajes en Angular.",
           "children": [
             {
               "url": "guide/observables",
-              "title": "Observables Overview",
-              "tooltip": "Using observables to pass values synchronously or asynchronously."
+              "title": "Resumen de Observables",
+              "tooltip": "Uso de observables para pasar valores de forma sincrónica o asincrónica."
             },
             {
               "url": "guide/rx-library",
-              "title": "The RxJS Library",
-              "tooltip": "A library for reactive programming using observables to compose asynchronous or callback-based code."
+              "title": "La biblioteca RxJS",
+              "tooltip": "Una biblioteca para programación reactiva que utiliza observables para componer código asincrónico o basado en devolución de llamada."
             },
             {
               "url": "guide/observables-in-angular",
-              "title": "Observables in Angular",
-              "tooltip": "How Angular subsystems use and expect observables."
+              "title": "Observables en Angular",
+              "tooltip": "Cómo los subsistemas de Angular usan y esperan observables."
             },
             {
               "url": "guide/practical-observable-usage",
               "title": "Practical Usage",
-              "tooltip": "Domains in which observables are particularly useful."
+              "tooltip": "Dominios en los que los observables son particularmente útiles."
             },
             {
               "url": "guide/comparing-observables",
-              "title": "Compare to Other Techniques",
-              "tooltip": "How observables compare to promises and other message passing techniques."
+              "title": "Comparar con otras técnicas",
+              "tooltip": "Cómo se comparan los observables con las promesas y otras técnicas de transmisión de mensajes."
             }
           ]
         },
@@ -369,316 +369,316 @@
           "children": [
             {
               "url": "guide/ngmodules",
-              "title": "NgModules Introduction",
-              "tooltip": "Use NgModules to make your apps efficient."
+              "title": "Introducción a NgModules",
+              "tooltip": "Utilice NgModules para hacer que sus aplicaciones sean eficientes."
             },
             {
               "url": "guide/ngmodule-vs-jsmodule",
-              "title": "JS Modules vs NgModules",
-              "tooltip": "Differentiate between JavaScript modules and NgModules."
+              "title": "Modules JS vs NgModules",
+              "tooltip": "Diferenciar entre módulos JavaScript y NgModules."
             },
             {
               "url": "guide/bootstrapping",
-              "title": "Launching Apps with a Root Module",
-              "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
+              "title": "Lanzamiento de aplicaciones con un módulo raíz",
+              "tooltip": "Dígale a Angular cómo construir y arrancar la aplicación en la raíz \"AppModule\"."
             },
             {
               "url": "guide/frequent-ngmodules",
-              "title": "Frequently Used NgModules",
-              "tooltip": "Introduction to the most frequently used NgModules."
+              "title": "NgModules de uso frecuente",
+              "tooltip": "Introducción a los NgModules más utilizados."
             },
             {
               "url": "guide/module-types",
-              "title": "Types of Feature Modules",
-              "tooltip": "Description of the different types of feature modules."
+              "title": "Tipos de módulos de funciones",
+              "tooltip": "Descripción de los diferentes tipos de módulos de funciones."
             },
             {
               "url": "guide/entry-components",
-              "title": "Entry Components",
-              "tooltip": "All about entry components in Angular."
+              "title": "Componentes de entrada",
+              "tooltip": "Todo sobre componentes de entrada en Angular."
             },
             {
               "url": "guide/feature-modules",
-              "title": "Feature Modules",
-              "tooltip": "Create feature modules to organize your code."
+              "title": "Módulos de funciones",
+              "tooltip": "Cree módulos de funciones para organizar su código."
             },
             {
               "url": "guide/providers",
-              "title": "Providing Dependencies",
-              "tooltip": "Providing dependencies to NgModules."
+              "title": "Proporcionar dependencias",
+              "tooltip": "Proporcionar dependencias a NgModules."
             },
             {
               "url": "guide/singleton-services",
-              "title": "Singleton Services",
-              "tooltip": "Creating singleton services."
+              "title": "Servicios Únicos",
+              "tooltip": "Creando servicios únicos."
             },
             {
               "url": "guide/lazy-loading-ngmodules",
-              "title": "Lazy Loading Feature Modules",
-              "tooltip": "Lazy load modules to speed up your apps."
+              "title": "Módulos de funciones de carga diferida",
+              "tooltip": "Módulos de carga diferida para acelerar sus aplicaciones."
             },
             {
               "url": "guide/sharing-ngmodules",
-              "title": "Sharing NgModules",
+              "title": "Compartiendo NgModules",
               "tooltip": "Share NgModules to streamline your apps."
             },
             {
               "url": "guide/ngmodule-api",
-              "title": "NgModule API",
-              "tooltip": "Understand the details of NgModules."
+              "title": "API NgModule",
+              "tooltip": "Comprenda los detalles de NgModules."
             },
             {
               "url": "guide/ngmodule-faq",
               "title": "NgModule FAQs",
-              "tooltip": "Answers to frequently asked questions about NgModules."
+              "tooltip": "Respuestas a preguntas frecuentes sobre NgModules."
             }
           ]
         },
         {
-          "title": "Dependency Injection",
-          "tooltip": "Dependency Injection: creating and injecting services",
+          "title": "Inyección de dependencia",
+          "tooltip": "Inyección de dependencia: creación e inyección de servicios",
           "children": [
             {
               "url": "guide/dependency-injection",
-              "title": "Angular Dependency Injection",
-              "tooltip": "Angular's dependency injection system creates and delivers dependent services to Angular-created classes."
+              "title": "Inyección de dependencia Angular",
+              "tooltip": "El sistema de inyección de dependencia Angular crea y entrega servicios dependientes a clases creadas por Angular."
             },
             {
               "url": "guide/hierarchical-dependency-injection",
-              "title": "Hierarchical Injectors",
-              "tooltip": "An injector tree parallels the component tree and supports nested dependencies."
+              "title": "Inyectores jerárquicos",
+              "tooltip": "Un árbol de inyectores es paralelo al árbol de componentes y admite dependencias anidadas."
             },
             {
               "url": "guide/dependency-injection-providers",
-              "title": "DI Providers",
-              "tooltip": "More about the different kinds of providers."
+              "title": "Proveedores de ID",
+              "tooltip": "Más sobre los diferentes tipos de proveedores."
             },
             {
               "url": "guide/dependency-injection-in-action",
-              "title": "DI in Action",
-              "tooltip": "Techniques for dependency injection."
+              "title": "ID en Acción",
+              "tooltip": "Técnicas de inyección de dependencia."
             },
             {
               "url": "guide/dependency-injection-navtree",
-              "title": "Navigate the Component Tree",
-              "tooltip": "Use the injection tree to find parent components."
+              "title": "Navegar por el árbol de componentes",
+              "tooltip": "Utilice el árbol de inyección para encontrar los componentes principales."
             }
           ]
         },
         {
           "url": "guide/http",
-          "title": "Access Servers over HTTP",
-          "tooltip": "Use HTTP to talk to a remote server."
+          "title": "Acceder a los servidores a través de HTTP",
+          "tooltip": "Utilice HTTP para comunicarse con un servidor remoto."
         },
         {
           "url": "guide/router",
-          "title": "Routing & Navigation",
-          "tooltip": "Build in-app navigation among views using the Angular Router."
+          "title": "Enrutamiento & navegación",
+          "tooltip": "Cree una navegación dentro de la aplicación entre vistas usando el enrutador Angular."
         },
         {
           "url": "guide/security",
-          "title": "Security",
-          "tooltip": "Developing for content security in Angular applications."
+          "title": "Seguridad",
+          "tooltip": "Desarrollo para seguridad de contenido en aplicaciones Angular."
         }
       ]
     },
     {
-      "title": "Techniques",
-      "tooltip": "Techniques for putting Angular to work in your environment",
+      "title": "Técnicas",
+      "tooltip": "Técnicas para poner Angular a trabajar en su entorno",
       "children": [
         {
-          "title": "Animations",
-          "tooltip": "Enhance the user experience with animation.",
+          "title": "Animaciones",
+          "tooltip": "Mejore la experiencia del usuario con animación.",
           "children": [
             {
               "url": "guide/animations",
               "title": "Introduction",
-              "tooltip": "Basic techniques in Angular animations."
+              "tooltip": "Técnicas básicas en animaciones Angular."
             },
             {
               "url": "guide/transition-and-triggers",
-              "title": "Transition and Triggers",
-              "tooltip": "Advanced techniques in transition and triggers."
+              "title": "Transición y disparadores",
+              "tooltip": "Técnicas avanzadas en transición y disparadores."
             },
             {
               "url": "guide/complex-animation-sequences",
-              "title": "Complex Sequences",
-              "tooltip": "Complex Angular animation sequences."
+              "title": "Secuencias complejas",
+              "tooltip": "Secuencias de animación Angular complejas."
             },
             {
               "url": "guide/reusable-animations",
-              "title": "Reusable Animations",
-              "tooltip": "Creating reusable animations."
+              "title": "Animaciones reutilizables",
+              "tooltip": "Creando animaciones reutilizables."
             },
             {
               "url": "guide/route-animations",
-              "title": "Route Transition Animations",
-              "tooltip": "Animate route transitions."
+              "title": "Animaciones de transición de ruta",
+              "tooltip": "Animar transiciones de ruta."
             }
           ]
         },
         {
           "url": "guide/i18n",
           "title": "Internationalization (i18n)",
-          "tooltip": "Translate the app's template text into multiple languages."
+          "tooltip": "Traduce el texto de la plantilla de la aplicación a varios idiomas."
         },
         {
           "url": "guide/accessibility",
-          "title": "Accessibility",
-          "tooltip": "Design apps to be accessible to all users."
+          "title": "Accesibilidad",
+          "tooltip": "Diseñe aplicaciones para que sean accesibles a todos los usuarios."
         },
         {
-          "title": "Service Workers & PWA",
-          "tooltip": "Angular service workers: Controlling caching of application resources.",
+          "title": "Trabajadores de servicios & PWA",
+          "tooltip": "Trabajadores de servicios Angular: control del almacenamiento en caché de los recursos de la aplicación.",
           "children": [
             {
               "url": "guide/service-worker-intro",
-              "title": "Introduction",
-              "tooltip": "Angular's implementation of service workers improves user experience with slow or unreliable network connectivity."
+              "title": "Introducción",
+              "tooltip": "La implementación de Angular de los trabajadores del servicio mejora la experiencia del usuario con una conectividad de red lenta o poco confiable."
             },
             {
               "url": "guide/service-worker-getting-started",
-              "title": "Getting Started",
-              "tooltip": "Enabling the service worker in a CLI project and observing behavior in the browser."
+              "title": "Comenzando",
+              "tooltip": "Habilitar al trabajador del servicio en un proyecto CLI y observar el comportamiento en el navegador."
             },
             {
               "url": "guide/app-shell",
-              "title": "App Shell",
-              "tooltip": "Render a portion of your app quickly to improve the startup experience."
+              "title": "Armazón de la aplicación",
+              "tooltip": "Renderice una parte de su aplicación rápidamente para mejorar la experiencia de inicio."
             },
             {
               "url": "guide/service-worker-communications",
-              "title": "Service Worker Communication",
-              "tooltip": "Services that enable you to interact with an Angular service worker."
+              "title": "Comunicación del trabajador de servicios",
+              "tooltip": "Servicios que le permiten interactuar con un trabajador de servicios de Angular."
             },
             {
               "url": "guide/service-worker-devops",
-              "title": "Service Worker in Production",
-              "tooltip": "Running apps with service workers, managing app update, debugging, and killing apps."
+              "title": "Trabajador de servicio en producción",
+              "tooltip": "Ejecución de aplicaciones con trabajadores de servicio, gestión de actualizaciones de aplicaciones, depuración y eliminación de aplicaciones."
             },
             {
               "url": "guide/service-worker-config",
-              "title": "Service Worker Configuration",
-              "tooltip": "Configuring service worker caching behavior."
+              "title": "Configuración del trabajador de servicio",
+              "tooltip": "Configuración del comportamiento de almacenamiento en caché del trabajador de servicio."
             }
           ]
         },
         {
           "url": "guide/web-worker",
-          "title": "Web Workers",
-          "tooltip": "Using web workers for background processing."
+          "title": "Trabajadores web",
+          "tooltip": "Uso de trabajadores web para procesamiento en segundo plano."
         },
         {
           "url": "guide/universal",
-          "title": "Server-side Rendering",
-          "tooltip": "Render HTML server-side with Angular Universal."
+          "title": "Representación del lado del servidor",
+          "tooltip": "Renderice HTML del lado del servidor con Angular Universal."
         }
       ]
     },
     {
-      "title": "Dev Workflow",
-      "tooltip": "Build, testing, and deployment information.",
+      "title": "Flujo de trabajo de desarrollo",
+      "tooltip": "Información de construcción, prueba e implementación.",
       "children": [
         {
-          "title": "AOT Compiler",
-          "tooltip": "Understanding ahead-of-time compilation.",
+          "title": "Compilador AOT",
+          "tooltip": "Entender la compilación anticipada.",
           "children": [
             {
               "url": "guide/aot-compiler",
-              "title": "Ahead-of-Time Compilation",
-              "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
+              "title": "Compilación anticipada (AOT)",
+              "tooltip": "Aprenda por qué y cómo utilizar el compilador Ahead-of-Time (AOT)."
             },
             {
               "url": "guide/angular-compiler-options",
-              "title": "Angular Compiler Options",
-              "tooltip": "Configuring AOT compilation."
+              "title": "Opciones del compilador angular",
+              "tooltip": "Configuración de la compilación AOT."
             },
             {
               "url": "guide/aot-metadata-errors",
-              "title": "AOT Metadata Errors",
-              "tooltip": "Troubleshooting AOT compilation."
+              "title": "AOT Errores de metadatos",
+              "tooltip": "Solución de problemas de compilación AOT."
             },
             {
               "url": "guide/template-typecheck",
-              "title": "Template Type-checking",
-              "tooltip": "Template type-checking in Angular."
+              "title": "Verificación de tipo de plantilla",
+              "tooltip": "Verificación de tipo de plantilla en Angular."
             }
           ]
         },
         {
           "url": "guide/build",
-          "title": "Building & Serving",
-          "tooltip": "Building and serving Angular apps."
+          "title": "Construyendo y sirviendo",
+          "tooltip": "Construyendo y sirviendo aplicaciones Angular."
         },
         {
-          "title": "Testing",
-          "tooltip": "Testing your Angular apps.",
+          "title": "Pruebas",
+          "tooltip": "Probando sus aplicaciones Angulars.",
           "children": [
             {
               "url": "guide/testing",
-              "title": "Intro to Testing",
-              "tooltip": "Introduction to testing an Angular app."
+              "title": "Introducción a las pruebas",
+              "tooltip": "Introducción a la prueba de una aplicación Angular."
             },
             {
               "url": "guide/testing-code-coverage",
-              "title": "Code Coverage",
-              "tooltip": "Determine how much of your code is tested."
+              "title": "Cobertura de código",
+              "tooltip": "Determina cuánto de tu código se prueba."
             },
             {
               "url": "guide/testing-services",
-              "title": "Testing Services",
-              "tooltip": "How to test services."
+              "title": "Probando Servicios",
+              "tooltip": "Cómo probar los servicios."
             },
             {
               "url": "guide/testing-components-basics",
-              "title": "Basics of Testing Components",
-              "tooltip": "The fundamentals of how to test components."
+              "title": "Conceptos básicos de prueba de componentes",
+              "tooltip": "Los fundamentos de cómo probar componentes."
             },
             {
               "url": "guide/testing-components-scenarios",
-              "title": "Component Testing Scenarios",
-              "tooltip": "Use cases for testing components."
+              "title": "Escenarios de prueba de componentes",
+              "tooltip": "Casos de uso para probar componentes."
             },
             {
               "url": "guide/testing-attribute-directives",
-              "title": "Testing Attribute Directives",
-              "tooltip": "How to test attribute directives."
+              "title": "Prueba de directivas de atributos",
+              "tooltip": "Cómo probar las directivas de atributos."
             },
             {
               "url": "guide/testing-pipes",
-              "title": "Testing Pipes",
-              "tooltip": "Writing tests for pipes."
+              "title": "Prueba de tuberías",
+              "tooltip": "Escribir pruebas para tuberías."
             },
             {
               "url": "guide/test-debugging",
-              "title": "Debugging Tests",
-              "tooltip": "How to debug tests."
+              "title": "Prueba de depuración",
+              "tooltip": "Cómo depurar pruebas."
             },
             {
               "url": "guide/testing-utility-apis",
-              "title": "Testing Utility APIs",
-              "tooltip": "Features of the Angular testing utilities."
+              "title": "Prueba de APIs de utilidad ",
+              "tooltip": "Características de las utilidades de prueba Angular."
             }
           ]
         },
         {
           "url": "guide/deployment",
-          "title": "Deployment",
-          "tooltip": "Learn how to deploy your Angular app."
+          "title": "Despliegue",
+          "tooltip": "Aprenda a desplegar su aplicación Angular."
         },
         {
-          "title": "Dev Tool Integration",
-          "tooltip": "Integrate with your development environment and tools.",
+          "title": "Integración de herramientas de desarrollo",
+          "tooltip": "Integre con su entorno y herramientas de desarrollo.",
           "children": [
             {
               "url": "guide/language-service",
-              "title": "Language Service",
+              "title": "Servicio de Idiomas",
               "tooltip": "Use Angular Language Service to speed up dev time."
             },
             {
               "url": "guide/visual-studio-2015",
               "title": "Visual Studio 2015",
-              "tooltip": "Using Angular with Visual Studio 2015.",
+              "tooltip": "Usando Angular con Visual Studio 2015.",
               "hidden": true
             }
           ]
@@ -686,172 +686,172 @@
       ]
     },
     {
-      "title": "Configuration",
-      "tooltip": "Workspace and project file structure and configuration.",
+      "title": "Configuración",
+      "tooltip": "Estructura y configuración de archivos de proyecto y espacio de trabajo.",
       "children": [
         {
           "url": "guide/file-structure",
-          "title": "Project File Structure",
-          "tooltip": "How your Angular workspace looks on your filesystem."
+          "title": "Estructura del archivo del proyecto",
+          "tooltip": "Cómo se ve su espacio de trabajo Angular en su sistema de archivos."
         },
         {
           "url": "guide/workspace-config",
-          "title": "Workspace Configuration",
-          "tooltip": "The \"angular.json\" file contains workspace and project configuration defaults for Angular CLI commands."
+          "title": "Configuración del espacio de trabajo",
+          "tooltip": "El archivo \"angular.json\" contiene valores predeterminados de configuración del proyecto y del espacio de trabajo para los comandos CLI de Angular."
         },
         {
           "url": "guide/npm-packages",
-          "title": "npm Dependencies",
-          "tooltip": "Description of npm packages required at development time and at runtime."
+          "title": "Dependencias npm",
+          "tooltip": "Descripción de los paquetes npm necesarios en tiempo de desarrollo y en tiempo de ejecución."
         },
         {
           "url": "guide/typescript-configuration",
-          "title": "TypeScript Configuration",
-          "tooltip": "TypeScript configuration for Angular developers."
+          "title": "Configuración TypeScript",
+          "tooltip": "Configuración de TypeScript para desarrolladores Angular."
         },
         {
           "url": "guide/browser-support",
-          "title": "Browser Support",
-          "tooltip": "Browser support and polyfills guide."
+          "title": "Soporte del navegador",
+          "tooltip": "Soporte de navegador y guía de polyfills."
         },
         {
           "url": "guide/strict-mode",
-          "title": "Strict mode",
-          "tooltip": "Reference documentation for Angular's strict mode."
+          "title": "Modo estricto",
+          "tooltip": "Documentación de referencia para el modo estricto angular."
         }
       ]
     },
     {
-      "title": "Extending Angular",
-      "tooltip": "Working with libraries and extending the CLI.",
+      "title": "Extendiendo Angular",
+      "tooltip": "Trabajar con bibliotecas y ampliar la CLI.",
       "children": [
         {
-          "title": "Angular Libraries",
-          "tooltip": "Extending Angular with shared libraries.",
+          "title": "Bibliotecas Angular ",
+          "tooltip": "Ampliación de Angular con bibliotecas compartidas.",
           "children": [
             {
               "url": "guide/libraries",
-              "title": "Libraries Overview",
-              "tooltip": "Understand how and when to use or create libraries."
+              "title": "Descripción general de las bibliotecas",
+              "tooltip": "Comprenda cómo y cuándo usar o crear bibliotecas."
             },
             {
               "url": "guide/using-libraries",
-              "title": "Using Published Libraries",
-              "tooltip": "Integrate published libraries into an app."
+              "title": "Usar bibliotecas publicadas",
+              "tooltip": "Integra bibliotecas publicadas en una aplicación."
             },
             {
               "url": "guide/creating-libraries",
-              "title": "Creating Libraries",
-              "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
+              "title": "Creando Bibliotecas",
+              "tooltip": "Amplíe Angular creando, publicando y usando sus propias bibliotecas."
             },
             {
               "url": "guide/lightweight-injection-tokens",
-              "title": "Lightweight Injection Tokens for Libraries",
-              "tooltip": "Optimize client app size by designing library services with lightweight injection tokens."
+              "title": "Tokens de inyección ligeros para bibliotecas",
+              "tooltip": "Optimice el tamaño de la aplicación cliente diseñando servicios de biblioteca con tokens de inyección ligeros."
             }
           ]
         },
         {
-          "title": "Schematics",
-          "tooltip": "Understanding schematics.",
+          "title": "Esquemas",
+          "tooltip": "Entendiendo esquemas.",
           "children": [
             {
               "url": "guide/schematics",
-              "title": "Schematics Overview",
-              "tooltip": "Extending CLI generation capabilities."
+              "title": "Descripción general de esquemas",
+              "tooltip": "Ampliación de las capacidades de generación de CLI."
             },
             {
               "url": "guide/schematics-authoring",
-              "title": "Authoring Schematics",
-              "tooltip": "Understand the structure of a schematic."
+              "title": "Esquemas de autoría",
+              "tooltip": "Entender la estructura de un esquema."
             },
             {
               "url": "guide/schematics-for-libraries",
-              "title": "Schematics for Libraries",
-              "tooltip": "Use schematics to integrate your library with the Angular CLI."
+              "title": "Esquemas para bibliotecas",
+              "tooltip": "Use esquemas para integrar su biblioteca con el CLI Angular."
             }
           ]
         },
         {
           "url": "guide/cli-builder",
-          "title": "CLI Builders",
-          "tooltip": "Using builders to customize Angular CLI."
+          "title": "Constructores de CLI",
+          "tooltip": "Uso de constructores para personalizar Angular CLI."
         }
       ]
     },
     {
-      "title": "Tutorials",
-      "tooltip": "End-to-end tutorials for learning Angular concepts and patterns.",
+      "title": "Tutoriales",
+      "tooltip": "Tutoriales de principio a fin para aprender conceptos y patrones de Angular.",
       "children": [
         {
-          "title": "Routing",
+          "title": "Enrutamiento",
           "tooltip": "End-to-end tutorials for learning about Angular's router.",
           "children": [
             {
               "url": "guide/router-tutorial",
-              "title": "Using Angular Routes in a Single-page Application",
-              "tooltip": "A tutorial that covers many patterns associated with Angular routing."
+              "title": "Usar de rutas de Angular en una aplicación de una sola página",
+              "tooltip": "Un tutorial que cubre muchos patrones asociados con el enrutamiento angular."
             },
             {
               "url": "guide/router-tutorial-toh",
-              "title": "Router tutorial: tour of heroes",
-              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
+              "title": "Tutorial de enrutador: tour de héroes",
+              "tooltip": "Explore cómo usar el enrutador de Angular. Basado en el ejemplo de Tour de Héroes."
             }
           ]
         },
         {
           "url": "guide/forms",
-          "title": "Building a Template-driven Form",
-          "tooltip": "Create a template-driven form using directives and Angular template syntax."
+          "title": "Creación de un formulario basado en plantillas",
+          "tooltip": "Cree un formulario basado en plantillas utilizando directivas y sintaxis de plantilla angular."
         }
       ]
     },
     {
-      "title": "Release Information",
-      "tooltip": "Angular release practices, updating, and upgrading.",
+      "title": "Información de lanzamiento",
+      "tooltip": "Prácticas de lanzamiento angular, actualización y actualización.",
       "children": [
         {
           "url": "guide/updating",
-          "title": "Keeping Up-to-Date",
-          "tooltip": "Information about updating Angular applications and libraries to the latest version."
+          "title": "Mantenerse al día",
+          "tooltip": "Información sobre cómo actualizar las aplicaciones y bibliotecas de Angular a la última versión."
         },
         {
           "url": "guide/releases",
-          "title": "Release Practices",
-          "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+          "title": "Prácticas de lanzamiento",
+          "tooltip": "Políticas y prácticas de control de versiones, lanzamiento, soporte y obsolescencia de Angular."
         },
         {
           "url": "guide/roadmap",
-          "title": "Roadmap",
-          "tooltip": "Roadmap of the Angular team."
+          "title": "Hoja de rutas",
+          "tooltip": "Hoja de ruta del equipo de Angular."
         },
         {
-          "title": "Updating to Version 10",
-          "tooltip": "Support for updating your application from version 9 to 10.",
+          "title": "Actualización a la versión 10",
+          "tooltip": "Soporte para actualizar su aplicación de la versión 9 a la 10.",
           "children": [
             {
               "url": "guide/updating-to-version-10",
-              "title": "Overview",
-              "tooltip": "Everything you need to know for updating your application from version 9 to 10."
+              "title": "Visión general",
+              "tooltip": "Todo lo que necesita saber para actualizar su aplicación de la versión 9 a la 10."
             },
             {
               "url": "guide/ivy-compatibility",
-              "title": "Ivy Compatibility Guide",
-              "tooltip": "Details to help you make sure your application is compatible with Ivy."
+              "title": "Guía de compatibilidad de Ivy",
+              "tooltip": "Detalles para ayudarlo a asegurarse de que su aplicación sea compatible con Ivy."
             },
             {
-              "title": "Migrations",
-              "tooltip": "Migration details regarding updating to version 10.",
+              "title": "Migraciones",
+              "tooltip": "Detalles de la migración relacionados con la actualización a la versión 10.",
               "children": [
                 {
                   "url": "guide/migration-module-with-providers",
-                  "title": "Missing ModuleWithProviders Generic",
-                  "tooltip": "Migration to add a generic type to any ModuleWithProviders usages that are missing the generic."
+                  "title": "Falta ModuleWithProviders Generic",
+                  "tooltip": "Migración para agregar un tipo genérico a cualquier uso de ModuleWithProviders que no tenga el genérico."
                 },
                 {
                   "url": "guide/migration-undecorated-classes",
-                  "title": "Missing @Directive() Decorators",
-                  "tooltip": "Migration to add missing @Directive()/@Component() decorators."
+                  "title": "Decoradores @Directive() faltantes",
+                  "tooltip": "Migración para agregar decoradores @Directive()/@Component() faltantes."
                 },
                 {
                   "url": "guide/migration-injectable",
@@ -860,18 +860,18 @@
                 },
                 {
                   "url": "guide/migration-solution-style-tsconfig",
-                  "title": "Solution-style `tsconfig.json`",
-                  "tooltip": "Migration to create a solution-style `tsconfig.json`."
+                  "title": "Estilo de solución `tsconfig.json`",
+                  "tooltip": "Migración para crear un estilo de solución `tsconfig.json`."
                 },
                 {
                   "url": "guide/migration-update-libraries-tslib",
-                  "title": "`tslib` direct dependency",
+                  "title": "`tslib` dependencia directa",
                   "tooltip": "Migration to a direct dependency on the `tslib` npm package."
                 },
                 {
                   "url": "guide/migration-update-module-and-target-compiler-options",
-                  "title": "`module` and `target` compiler options",
-                  "tooltip": "Migration to update `module` and `target` compiler options."
+                  "title": "Opciones del compilador `module` y` target`",
+                  "tooltip": "Migración para actualizar las opciones del compilador `module` y` target`."
                 }
               ]
             }
@@ -879,81 +879,81 @@
         },
         {
           "url": "guide/deprecations",
-          "title": "Deprecations",
-          "tooltip": "Summary of Angular APIs and features that are deprecated."
+          "title": "Deprecación",
+          "tooltip": "Resumen de las API y las características de Angular que están en obsoletas."
         },
         {
           "url": "guide/ivy",
           "title": "Angular Ivy",
-          "tooltip": "About the Angular Ivy compilation and rendering pipeline."
+          "tooltip": "Acerca de la canalización de compilación y renderizado de Angular Ivy."
         },
         {
-          "title": "Upgrading from AngularJS",
-          "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
+          "title": "Actualización desde AngularJS",
+          "tooltip": "Actualice gradualmente una aplicación AngularJS a Angular.",
           "children": [
             {
               "url": "guide/upgrade",
-              "title": "Upgrading Instructions",
-              "tooltip": "Incrementally upgrade an AngularJS application to Angular."
+              "title": "Instrucciones de actualización",
+              "tooltip": "Actualice gradualmente una aplicación AngularJS a Angular."
             },
             {
               "url": "guide/upgrade-setup",
-              "title": "Setup for Upgrading from AngularJS",
-              "tooltip": "Use code from the Angular QuickStart seed as part of upgrading from AngularJS."
+              "title": "Configuración para actualizar desde AngularJS",
+              "tooltip": "Use el código de la semilla Angular QuickStart como parte de la actualización de AngularJS."
             },
             {
               "url": "guide/upgrade-performance",
-              "title": "Upgrading for Performance",
-              "tooltip": "Upgrade from AngularJS to Angular in a more flexible way."
+              "title": "Actualización para mejorar el rendimiento",
+              "tooltip": "Actualice de AngularJS a Angular de una manera más flexible."
             },
             {
               "url": "guide/ajs-quick-reference",
-              "title": "AngularJS-Angular Concepts",
-              "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
+              "title": "Conceptos de AngularJS-Angular",
+              "tooltip": "Aprenda cómo los conceptos y técnicas de AngularJS se asignan a Angular."
             }
           ]
         }
       ]
     },
     {
-      "title": "Angular Style and Usage",
-      "tooltip": "Summaries of Angular syntax, coding, and doc styles.",
+      "title": "Estilo y uso de Angular",
+      "tooltip": "Resúmenes de sintaxis Angular, codificación y estilos doc.",
       "children": [
         {
           "url": "guide/cheatsheet",
-          "title": "Quick Reference",
-          "tooltip": "A quick guide to common Angular coding techniques."
+          "title": "Reference",
+          "tooltip": "Una guía rápida de técnicas comunes de codificación en Angular."
         },
         {
           "url": "guide/styleguide",
-          "title": "Coding Style Guide",
-          "tooltip": "Guidelines for writing Angular code."
+          "title": "Guía de estilo de codificación",
+          "tooltip": "Directrices para escribir código en Angular."
         },
         {
           "url": "guide/docs-style-guide",
-          "title": "Documentation Style Guide",
-          "tooltip": "Style guide for documentation authors."
+          "title": "Guía de estilo de documentación",
+          "tooltip": "Guía de estilo para autores de documentación."
         }
       ]
     },
     {
-      "title": "CLI Command Reference",
-      "tooltip": "Angular CLI command reference.",
+      "title": "Referencia de comandos de CLI",
+      "tooltip": "Referencia de comando de CLI Angular.",
       "children": [
         {
-          "title": "Overview",
-          "tooltip": "An introduction to the CLI tool, commands, and syntax.",
+          "title": "Visión general",
+          "tooltip": "Una introducción a la herramienta CLI, los comandos y la sintaxis.",
           "url": "cli"
         },
         {
-          "title": "Usage Analytics",
-          "tooltip": "For administrators, guide to gathering usage analytics from your users.",
+          "title": "Análisis de Uso",
+          "tooltip": "Para los administradores, guía para recopilar análisis de uso de sus usuarios.",
           "url": "cli/usage-analytics-gathering"
         }
       ]
     },
     {
-      "title": "API Reference",
+      "title": "Referencia de API",
       "tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
       "url": "api"
     }
@@ -1059,8 +1059,8 @@
         },
         {
           "url": "contribute",
-          "title": "Contribute",
-          "tooltip": "Contribute to Angular"
+          "title": "Colaborar",
+          "tooltip": "Colaborar a Angular"
         }
       ]
     },
