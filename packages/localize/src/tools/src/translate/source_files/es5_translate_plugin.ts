@@ -23,8 +23,8 @@ export function makeEs5TranslatePlugin(
         try {
           const calleePath = callPath.get('callee');
           if (isLocalize(calleePath, localizeName)) {
-            const messageParts = unwrapMessagePartsFromLocalizeCall(callPath);
-            const expressions = unwrapSubstitutionsFromLocalizeCall(callPath.node);
+            const [messageParts] = unwrapMessagePartsFromLocalizeCall(callPath);
+            const [expressions] = unwrapSubstitutionsFromLocalizeCall(callPath);
             const translated =
                 translate(diagnostics, translations, messageParts, expressions, missingTranslation);
             callPath.replaceWith(buildLocalizeReplacement(translated[0], translated[1]));

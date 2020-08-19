@@ -18,9 +18,13 @@ export function makeEs2015ExtractPlugin(
       TaggedTemplateExpression(path: NodePath<TaggedTemplateExpression>) {
         const tag = path.get('tag');
         if (isNamedIdentifier(tag, localizeName) && isGlobalIdentifier(tag)) {
-          const messageParts = unwrapMessagePartsFromTemplateLiteral(path.node.quasi.quasis);
+          const [messageParts, messagePartLocations] =
+              unwrapMessagePartsFromTemplateLiteral(path.get('quasi').get('quasis'));
+          const expressions = path.node.quasi.expressions;
+          const expressionLocations = path.get('quasi').get('expressions').map(e => getLocation(e));
           const location = getLocation(path.get('quasi'));
-          const message = ɵparseMessage(messageParts, path.node.quasi.expressions, location);
+          const message = ɵparseMessage(
+              messageParts, expressions, location, messagePartLocations, expressionLocations);
           messages.push(message);
         }
       }
