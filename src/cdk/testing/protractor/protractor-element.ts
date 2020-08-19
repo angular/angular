@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementDimensions, ModifierKeys, TestElement, TestKey} from '@angular/cdk/testing';
+import {
+  _getTextWithExcludedElements,
+  ElementDimensions,
+  ModifierKeys,
+  TestElement,
+  TestKey,
+  TextOptions
+} from '@angular/cdk/testing';
 import {browser, ElementFinder, Key} from 'protractor';
 
 /** Maps the `TestKey` constants to Protractor's `Key` constants. */
@@ -129,7 +136,10 @@ export class ProtractorElement implements TestElement {
     return this.element.sendKeys(...keys);
   }
 
-  async text(): Promise<string> {
+  async text(options?: TextOptions): Promise<string> {
+    if (options?.exclude) {
+      return browser.executeScript(_getTextWithExcludedElements, this.element, options.exclude);
+    }
     return this.element.getText();
   }
 

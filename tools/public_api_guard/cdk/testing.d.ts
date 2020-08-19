@@ -1,3 +1,5 @@
+export declare function _getTextWithExcludedElements(element: Element, excludeSelector: string): string;
+
 export declare type AsyncFactoryFn<T> = () => Promise<T>;
 
 export declare type AsyncOptionPredicate<T, O> = (item: T, option: O) => Promise<boolean>;
@@ -131,7 +133,7 @@ export interface TestElement {
     sendKeys(...keys: (string | TestKey)[]): Promise<void>;
     sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
     setInputValue?(value: string): Promise<void>;
-    text(): Promise<string>;
+    text(options?: TextOptions): Promise<string>;
 }
 
 export declare enum TestKey {
@@ -165,4 +167,8 @@ export declare enum TestKey {
     F11 = 27,
     F12 = 28,
     META = 29
+}
+
+export interface TextOptions {
+    exclude?: string;
 }

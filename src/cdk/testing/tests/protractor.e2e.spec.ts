@@ -44,6 +44,14 @@ describe('ProtractorHarnessEnvironment', () => {
         const globalEl = await harness.globalEl();
         expect(await globalEl.text()).toBe('I am a sibling!');
       });
+
+      it('should get correct text excluding certain selectors', async () => {
+        const results = await harness.subcomponentAndSpecialHarnesses();
+        const subHarnessHost = await results[0].host();
+
+        expect(await subHarnessHost.text({exclude: 'h2'})).toBe('ProtractorTestBedOther');
+        expect(await subHarnessHost.text({exclude: 'li'})).toBe('List of test tools');
+      });
     });
 
     describe('shadow DOM interaction', () => {

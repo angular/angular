@@ -101,8 +101,11 @@ export interface TestElement {
    */
   sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
 
-  /** Gets the text from the element. */
-  text(): Promise<string>;
+  /**
+   * Gets the text from the element.
+   * @param options Options that affect what text is included.
+   */
+  text(options?: TextOptions): Promise<string>;
 
   /** Gets the value for the given attribute from the element. */
   getAttribute(name: string): Promise<string | null>;
@@ -127,4 +130,9 @@ export interface TestElement {
 
   /** Checks whether the element is focused. */
   isFocused(): Promise<boolean>;
+}
+
+export interface TextOptions {
+  /** Optional selector for elements to exclude. */
+  exclude?: string;
 }
