@@ -1,3 +1,9 @@
+<a name="10.1.0-next.7"></a>
+# 10.1.0-next.7 (2020-08-19)
+
+This release contains various API docs improvements.
+
+
 <a name="10.0.11"></a>
 ## 10.0.11 (2020-08-19)
 
