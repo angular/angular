@@ -16,7 +16,6 @@ import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {ClassPropertyMapping, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
-import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
@@ -31,6 +30,7 @@ import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagno
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
+import {TypeCheckScopes} from './typecheck_scopes';
 import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
@@ -95,6 +95,7 @@ export class ComponentDecoratorHandler implements
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
+  private typeCheckScopes = new TypeCheckScopes(this.scopeReader, this.metaReader);
 
   /**
    * During the asynchronous preanalyze phase, it's necessary to parse the template to extract
@@ -423,36 +424,15 @@ export class ComponentDecoratorHandler implements
       return;
     }
 
-    const matcher = new SelectorMatcher<DirectiveMeta>();
-    const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
-    let schemas: SchemaMetadata[] = [];
-
-    const scope = this.scopeReader.getScopeForComponent(node);
+    const scope = this.typeCheckScopes.getTypeCheckScope(node);
     if (scope === 'error') {
       // Don't type-check components that had errors in their scopes.
       return;
     }
 
-    if (scope !== null) {
-      for (const meta of scope.compilation.directives) {
-        if (meta.selector !== null) {
-          const extMeta = flattenInheritedDirectiveMetadata(this.metaReader, meta.ref);
-          matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
-        }
-      }
-      for (const {name, ref} of scope.compilation.pipes) {
-        if (!ts.isClassDeclaration(ref.node)) {
-          throw new Error(`Unexpected non-class declaration ${
-              ts.SyntaxKind[ref.node.kind]} for pipe ${ref.debugName}`);
-        }
-        pipes.set(name, ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
-      }
-      schemas = scope.schemas;
-    }
-
-    const binder = new R3TargetBinder(matcher);
+    const binder = new R3TargetBinder(scope.matcher);
     ctx.addTemplate(
-        new Reference(node), binder, meta.template.diagNodes, pipes, schemas,
+        new Reference(node), binder, meta.template.diagNodes, scope.pipes, scope.schemas,
         meta.template.sourceMapping, meta.template.file);
   }
 
