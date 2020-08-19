@@ -32,7 +32,7 @@ export class LinkedList<T extends LinkedListNode<T>> {
    * Insert a new node (`insert`) before another (`before`).
    */
   insertBefore(before: T, insert: T): void {
-    assertNodeIsEmpty(insert);
+    assertNodeIsDetached(insert);
 
     if (this.head === before) {
       this.head = insert;
@@ -51,7 +51,7 @@ export class LinkedList<T extends LinkedListNode<T>> {
    * Insert a new node (`insert`) after another (`before`).
    */
   insertAfter(after: T, insert: T): void {
-    assertNodeIsEmpty(insert);
+    assertNodeIsDetached(insert);
 
     if (this.tail === after) {
       this.tail = insert;
@@ -70,7 +70,7 @@ export class LinkedList<T extends LinkedListNode<T>> {
    * Append the given node at the tail of the list.
    */
   append(node: T): void {
-    assertNodeIsEmpty(node);
+    assertNodeIsDetached(node);
 
     if (this.tail !== null) {
       node.prev = this.tail;
@@ -252,25 +252,24 @@ export class LinkedList<T extends LinkedListNode<T>> {
   }
 
   /**
-   * Convert the list to an array.
-   */
-  toArray(): T[] {
-    const arr: T[] = [];
-    for (let node = this.head; node !== null; node = node.next) {
-      arr.push(node);
-    }
-    return arr;
-  }
-
-  /**
    * Stringify the list for debugging purposes.
    */
   toString(printer: (node: T) => string): string {
     const strings: string[] = [];
-    for (let node = this.head; node !== null; node = node.next) {
+    for (const node of this) {
       strings.push(printer(node));
     }
     return strings.join('\n');
+  }
+
+  /**
+   * Generator function implementation of the iterator protocol, which allows `LinkedList`s to be
+   * used in for-of loops.
+   */
+  * [Symbol.iterator](): Iterator<T> {
+    for (let node = this.head; node !== null; node = node.next) {
+      yield node;
+    }
   }
 }
 
@@ -331,7 +330,7 @@ export interface Transform<T extends LinkedListNode<T>> {
 /**
  * Throw an error if the given `node` does not have empty `prev` and `next` pointers.
  */
-function assertNodeIsEmpty<T extends LinkedListNode<T>>(node: LinkedListNode<T>): void {
+function assertNodeIsDetached<T extends LinkedListNode<T>>(node: LinkedListNode<T>): void {
   if (node.prev !== null || node.next !== null) {
     throw new Error(`AssertionError: attempt to insert a non-empty ${
         Object.getPrototypeOf(node).constructor.name} node in a LinkedList`);

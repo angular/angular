@@ -11,6 +11,9 @@ import {RootTemplate} from '../root';
 
 import {TemplateAspect, TemplateWithIdAspect} from './template';
 
+// Note: this exists in a separate file because of the value dependency on `RootTemplate` here.
+// Because `RootTemplate` also has a value dependency on `TemplateAspect`, `hasTemplateAspect` needs
+// to be in a separate file to prevent a cycle.
 
 export function hasTemplateAspect(node: RootTemplate): node is RootTemplate&TemplateAspect;
 export function hasTemplateAspect<T extends CreateNode>(node: T): node is T&TemplateWithIdAspect;
@@ -22,7 +25,7 @@ export function hasTemplateAspect<T extends CreateNode>(node: T): node is T&Temp
  */
 export function hasTemplateAspect(node: CreateNode|RootTemplate): boolean {
   if (node instanceof RootTemplate) {
-    return (node as any)[TemplateAspect] === true;
+    return node[TemplateAspect];
   } else {
     return (node as any)[TemplateWithIdAspect] === true;
   }

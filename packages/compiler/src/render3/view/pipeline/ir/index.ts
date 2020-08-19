@@ -17,3 +17,4 @@ export * from './aspect/binding_slot';
 export * from './aspect/data_slot';
 export * from './aspect/orderable';
 export * from './aspect/template';
+export * from './aspect/template_util';

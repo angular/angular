@@ -35,7 +35,7 @@ function makeList(...args: number[]): LinkedList<TestNode> {
 }
 
 function expectListToEqual(list: LinkedList<TestNode>, expected: number[]): void {
-  const actual = list.toArray().map(n => n.value);
+  const actual = Array.from(list).map(n => n.value);
   expect(actual).toEqual(expected);
 }
 
@@ -55,13 +55,13 @@ describe('LinkedList', () => {
 
     it('should sort a beginning subset of the list', () => {
       const list = makeList(2, 1, 5, 7, 6, 3, 4);
-      list.sortSubset(list.head!, list.toArray()[4], compare);
+      list.sortSubset(list.head!, Array.from(list)[4], compare);
       expectListToEqual(list, [1, 2, 5, 6, 7, 3, 4]);
     });
 
     it('should sort an ending subset of the list', () => {
       const list = makeList(2, 1, 5, 7, 6, 3, 4);
-      list.sortSubset(list.toArray()[3], list.tail!, compare);
+      list.sortSubset(Array.from(list)[3], list.tail!, compare);
       expectListToEqual(list, [2, 1, 5, 3, 4, 6, 7]);
     });
   });
