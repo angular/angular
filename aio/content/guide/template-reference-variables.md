@@ -37,9 +37,9 @@ by HTML.
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ngForm" header="src/app/hero-form.component.html"></code-example>
 
-The reference value of itemForm, without the ngForm attribute value, would be
+The reference value of `itemForm`, without the `ngForm` attribute value, would be
 the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement).
-There is, however, a difference between a Component and a Directive in that a `Component`
+There is, however, a difference between a `Component` and a `Directive` in that a `Component`
 will be referenced without specifying the attribute value, and a `Directive` will not
 change the implicit reference (that is, the element).
 
