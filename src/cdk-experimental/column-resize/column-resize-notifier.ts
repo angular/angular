@@ -56,7 +56,7 @@ export class ColumnResizeNotifierSource {
 @Injectable()
 export class ColumnResizeNotifier {
   /** Emits whenever a column is resized. */
-  readonly resizeCompleted: Observable<ColumnSize> = this._source.resizeCompleted.asObservable();
+  readonly resizeCompleted: Observable<ColumnSize> = this._source.resizeCompleted;
 
   constructor(private readonly _source: ColumnResizeNotifierSource) {}
 

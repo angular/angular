@@ -21,11 +21,11 @@ import {EditEventDispatcher} from './edit-event-dispatcher';
 export class EditRef<FormValue> implements OnDestroy {
   /** Emits the final value of this edit instance before closing. */
   private readonly _finalValueSubject = new Subject<FormValue>();
-  readonly finalValue: Observable<FormValue> = this._finalValueSubject.asObservable();
+  readonly finalValue: Observable<FormValue> = this._finalValueSubject;
 
   /** Emits when the user tabs out of this edit lens before closing. */
   private readonly _blurredSubject = new Subject<void>();
-  readonly blurred: Observable<void> = this._blurredSubject.asObservable();
+  readonly blurred: Observable<void> = this._blurredSubject;
 
   /** The value to set the form back to on revert. */
   private _revertFormValue: FormValue;

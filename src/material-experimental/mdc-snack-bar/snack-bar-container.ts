@@ -147,7 +147,7 @@ export class MatSnackBarContainer extends BasePortalOutlet
   exit(): Observable<void> {
     this._exiting = true;
     this._mdcFoundation.close();
-    return this._onExit.asObservable();
+    return this._onExit;
   }
 
   /** Attach a component portal as content to this snack bar container. */

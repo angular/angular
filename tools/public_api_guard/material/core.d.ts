@@ -90,7 +90,7 @@ export declare type CanUpdateErrorStateCtor = Constructor<CanUpdateErrorState>;
 export declare abstract class DateAdapter<D> {
     protected _localeChanges: Subject<void>;
     protected locale: any;
-    get localeChanges(): Observable<void>;
+    readonly localeChanges: Observable<void>;
     abstract addCalendarDays(date: D, days: number): D;
     abstract addCalendarMonths(date: D, months: number): D;
     abstract addCalendarYears(date: D, years: number): D;

@@ -103,7 +103,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   @ViewChild('contentWrapper', {static: true}) _contentWrapper: ElementRef<HTMLElement>;
 
   /** A stream that emits whenever the rendered range changes. */
-  renderedRangeStream: Observable<ListRange> = this._renderedRangeSubject.asObservable();
+  renderedRangeStream: Observable<ListRange> = this._renderedRangeSubject;
 
   /**
    * The total size of all content (in pixels), including content that is not currently rendered.

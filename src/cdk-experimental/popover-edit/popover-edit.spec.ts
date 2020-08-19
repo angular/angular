@@ -253,7 +253,7 @@ class ElementDataSource extends DataSource<PeriodicElement> {
 
   /** Connect function called by the table to retrieve one stream containing the data to render. */
   connect() {
-    return this.data.asObservable();
+    return this.data;
   }
 
   disconnect() {}

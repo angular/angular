@@ -2407,7 +2407,7 @@ describe('CdkDrag', () => {
       const itemInstance = fixture.componentInstance.dragItems.toArray()[1];
       const item = itemInstance.element.nativeElement;
       const spy = jasmine.createSpy('dropped spy');
-      const subscription = itemInstance.dropped.asObservable().subscribe(spy);
+      const subscription = itemInstance.dropped.subscribe(spy);
 
       // Do an initial drag and drop sequence.
       dragElementViaMouse(fixture, item, 50, 50);

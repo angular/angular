@@ -32,10 +32,10 @@ export const MAT_DATE_LOCALE_PROVIDER = {provide: MAT_DATE_LOCALE, useExisting: 
 export abstract class DateAdapter<D> {
   /** The locale to use for all dates. */
   protected locale: any;
+  protected _localeChanges = new Subject<void>();
 
   /** A stream that emits when the locale changes. */
-  get localeChanges(): Observable<void> { return this._localeChanges; }
-  protected _localeChanges = new Subject<void>();
+  readonly localeChanges: Observable<void> = this._localeChanges;
 
   /**
    * Gets the year component of the given date.

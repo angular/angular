@@ -12,7 +12,7 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     _openedStream: Observable<void>;
     get autoFocus(): boolean;
     set autoFocus(value: boolean);
-    get closedStart(): Observable<void>;
+    readonly closedStart: Observable<void>;
     get disableClose(): boolean;
     set disableClose(value: boolean);
     get mode(): MatDrawerMode;
@@ -21,7 +21,7 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     get opened(): boolean;
     set opened(value: boolean);
     readonly openedChange: EventEmitter<boolean>;
-    get openedStart(): Observable<void>;
+    readonly openedStart: Observable<void>;
     get position(): 'start' | 'end';
     set position(value: 'start' | 'end');
     constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory, _focusMonitor: FocusMonitor, _platform: Platform, _ngZone: NgZone, _doc: any,

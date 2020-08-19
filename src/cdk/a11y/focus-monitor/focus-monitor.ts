@@ -247,7 +247,7 @@ export class FocusMonitor implements OnDestroy {
         cachedInfo.checkChildren = true;
       }
 
-      return cachedInfo.subject.asObservable();
+      return cachedInfo.subject;
     }
 
     // Create monitored element info.
@@ -259,7 +259,7 @@ export class FocusMonitor implements OnDestroy {
     this._elementInfo.set(nativeElement, info);
     this._registerGlobalListeners(info);
 
-    return info.subject.asObservable();
+    return info.subject;
   }
 
   /**

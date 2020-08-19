@@ -75,7 +75,7 @@ export class AutofillMonitor implements OnDestroy {
     const info = this._monitoredElements.get(element);
 
     if (info) {
-      return info.subject.asObservable();
+      return info.subject;
     }
 
     const result = new Subject<AutofillEvent>();
@@ -107,7 +107,7 @@ export class AutofillMonitor implements OnDestroy {
       }
     });
 
-    return result.asObservable();
+    return result;
   }
 
   /**

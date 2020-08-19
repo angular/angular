@@ -127,7 +127,6 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     // before attempting to position it, as the position may depend on the size of the rendered
     // content.
     this._ngZone.onStable
-      .asObservable()
       .pipe(take(1))
       .subscribe(() => {
         // The overlay could've been detached before the zone has stabilized.
@@ -258,27 +257,27 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
 
   /** Gets an observable that emits when the backdrop has been clicked. */
   backdropClick(): Observable<MouseEvent> {
-    return this._backdropClick.asObservable();
+    return this._backdropClick;
   }
 
   /** Gets an observable that emits when the overlay has been attached. */
   attachments(): Observable<void> {
-    return this._attachments.asObservable();
+    return this._attachments;
   }
 
   /** Gets an observable that emits when the overlay has been detached. */
   detachments(): Observable<void> {
-    return this._detachments.asObservable();
+    return this._detachments;
   }
 
   /** Gets an observable of keydown events targeted to this overlay. */
   keydownEvents(): Observable<KeyboardEvent> {
-    return this._keydownEvents.asObservable();
+    return this._keydownEvents;
   }
 
   /** Gets an observable of pointer events targeted outside this overlay. */
   outsidePointerEvents(): Observable<MouseEvent> {
-    return this._outsidePointerEvents.asObservable();
+    return this._outsidePointerEvents;
   }
 
   /** Gets the current overlay configuration, which is immutable. */
@@ -510,7 +509,6 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
       // might still be animating. This stream helps us avoid interrupting the animation
       // by waiting for the pane to become empty.
       const subscription = this._ngZone.onStable
-        .asObservable()
         .pipe(takeUntil(merge(this._attachments, this._detachments)))
         .subscribe(() => {
           // Needs a couple of checks for the pane and host, because

@@ -63,7 +63,7 @@ describe('MatDialog', () => {
       providers: [
         {provide: Location, useClass: SpyLocation},
         {provide: ScrollDispatcher, useFactory: () => ({
-          scrolled: () => scrolledSubject.asObservable()
+          scrolled: () => scrolledSubject
         })},
       ],
     });

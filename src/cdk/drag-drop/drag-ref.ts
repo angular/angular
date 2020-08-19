@@ -292,7 +292,7 @@ export class DragRef<T = any> {
     event: MouseEvent | TouchEvent;
     distance: Point;
     delta: {x: -1 | 0 | 1, y: -1 | 0 | 1};
-  }> = this._moveEvents.asObservable();
+  }> = this._moveEvents;
 
   /** Arbitrary data that can be attached to the drag item. */
   data: T;

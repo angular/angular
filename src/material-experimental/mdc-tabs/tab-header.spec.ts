@@ -44,7 +44,7 @@ describe('MDC-based MatTabHeader', () => {
       ],
       providers: [
         ViewportRuler,
-        {provide: Directionality, useFactory: () => ({value: dir, change: change.asObservable()})},
+        {provide: Directionality, useFactory: () => ({value: dir, change: change})},
       ]
     });
 

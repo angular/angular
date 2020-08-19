@@ -354,7 +354,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   focusFirstItem(origin: FocusOrigin = 'program'): void {
     // When the content is rendered lazily, it takes a bit before the items are inside the DOM.
     if (this.lazyContent) {
-      this._ngZone.onStable.asObservable()
+      this._ngZone.onStable
         .pipe(take(1))
         .subscribe(() => this._focusFirstItem(origin));
     } else {

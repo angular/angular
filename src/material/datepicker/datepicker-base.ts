@@ -553,7 +553,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     this._forwardContentValues(this._popupComponentRef.instance);
 
     // Update the position once the calendar has rendered.
-    this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(() => {
+    this._ngZone.onStable.pipe(take(1)).subscribe(() => {
       this._popupRef!.updatePosition();
     });
   }

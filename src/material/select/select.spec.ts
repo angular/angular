@@ -104,7 +104,7 @@ describe('MatSelect', () => {
         {provide: Directionality, useFactory: () => dir = {value: 'ltr', change: EMPTY}},
         {
           provide: ScrollDispatcher, useFactory: () => ({
-            scrolled: () => scrolledSubject.asObservable(),
+            scrolled: () => scrolledSubject,
           }),
         },
         ...providers

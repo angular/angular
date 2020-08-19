@@ -91,7 +91,7 @@ export interface ConnectedPosition {
 export declare class ConnectedPositionStrategy implements PositionStrategy {
     _positionStrategy: FlexibleConnectedPositionStrategy;
     _preferredPositions: ConnectionPositionPair[];
-    get onPositionChange(): Observable<ConnectedOverlayPositionChange>;
+    readonly onPositionChange: Observable<ConnectedOverlayPositionChange>;
     get positions(): ConnectionPositionPair[];
     constructor(originPos: OriginConnectionPosition, overlayPos: OverlayConnectionPosition, connectedTo: ElementRef<HTMLElement>, viewportRuler: ViewportRuler, document: Document, platform: Platform, overlayContainer: OverlayContainer);
     apply(): void;

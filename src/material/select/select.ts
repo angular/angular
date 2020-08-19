@@ -495,7 +495,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     }
 
     return this._ngZone.onStable
-      .asObservable()
       .pipe(take(1), switchMap(() => this.optionSelectionChanges));
   }) as Observable<MatOptionSelectionChange>;
 
@@ -654,7 +653,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     this._changeDetectorRef.markForCheck();
 
     // Set the font size on the panel element once it exists.
-    this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(() => {
+    this._ngZone.onStable.pipe(take(1)).subscribe(() => {
       if (this._triggerFontSize && this.overlayDir.overlayRef &&
           this.overlayDir.overlayRef.overlayElement) {
         this.overlayDir.overlayRef.overlayElement.style.fontSize = `${this._triggerFontSize}px`;

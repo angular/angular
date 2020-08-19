@@ -322,7 +322,6 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     // If there are any subscribers before `ngAfterViewInit`, the `autocomplete` will be undefined.
     // Return a stream that we'll replace with the real one once everything is in place.
     return this._zone.onStable
-        .asObservable()
         .pipe(take(1), switchMap(() => this.optionSelections));
   }) as Observable<MatOptionSelectionChange>;
 
@@ -472,7 +471,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
    * stream every time the option list changes.
    */
   private _subscribeToClosingActions(): Subscription {
-    const firstStable = this._zone.onStable.asObservable().pipe(take(1));
+    const firstStable = this._zone.onStable.pipe(take(1));
     const optionChanges = this.autocomplete.options.changes.pipe(
       tap(() => this._positionStrategy.reapplyLastPosition()),
       // Defer emitting to the stream until the next tick, because changing

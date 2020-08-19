@@ -25,7 +25,7 @@ describe('CloseScrollStrategy', () => {
       imports: [OverlayModule, PortalModule, OverlayTestModule],
       providers: [
         {provide: ScrollDispatcher, useFactory: () => ({
-          scrolled: () => scrolledSubject.asObservable()
+          scrolled: () => scrolledSubject
         })},
         {provide: ViewportRuler, useFactory: () => ({
           getViewportScrollPosition: () => ({top: scrollPosition})

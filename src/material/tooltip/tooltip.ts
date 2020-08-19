@@ -510,7 +510,7 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
       this._tooltipInstance.message = this.message;
       this._tooltipInstance._markForCheck();
 
-      this._ngZone.onMicrotaskEmpty.asObservable().pipe(
+      this._ngZone.onMicrotaskEmpty.pipe(
         take(1),
         takeUntil(this._destroyed)
       ).subscribe(() => {
@@ -742,7 +742,7 @@ export class TooltipComponent implements OnDestroy {
 
   /** Returns an observable that notifies when the tooltip has been hidden from view. */
   afterHidden(): Observable<void> {
-    return this._onHide.asObservable();
+    return this._onHide;
   }
 
   /** Whether the tooltip is being displayed. */

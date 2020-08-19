@@ -116,7 +116,7 @@ export class MatSnackBarRef<T> {
 
   /** Gets an observable that is notified when the snack bar is finished closing. */
   afterDismissed(): Observable<MatSnackBarDismiss> {
-    return this._afterDismissed.asObservable();
+    return this._afterDismissed;
   }
 
   /** Gets an observable that is notified when the snack bar has opened and appeared. */
@@ -126,6 +126,6 @@ export class MatSnackBarRef<T> {
 
   /** Gets an observable that is notified when the snack bar action is called. */
   onAction(): Observable<void> {
-    return this._onAction.asObservable();
+    return this._onAction;
   }
 }

@@ -133,12 +133,12 @@ export class DialogRef<T, R = any> {
 
   /** Gets an observable that emits when dialog begins opening. */
   beforeOpened(): Observable<void> {
-    return this._containerInstance._beforeEnter.asObservable();
+    return this._containerInstance._beforeEnter;
   }
 
   /** Gets an observable that emits when dialog is finished opening. */
   afterOpened(): Observable<void> {
-    return this._containerInstance._afterEnter.asObservable();
+    return this._containerInstance._afterEnter;
   }
 
   /** Gets an observable that emits when dialog begins closing. */

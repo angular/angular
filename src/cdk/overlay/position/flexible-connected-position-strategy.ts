@@ -128,8 +128,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   private _previousPushAmount: {x: number, y: number} | null;
 
   /** Observable sequence of position changes. */
-  positionChanges: Observable<ConnectedOverlayPositionChange> =
-      this._positionChanges.asObservable();
+  positionChanges: Observable<ConnectedOverlayPositionChange> = this._positionChanges;
 
   /** Ordered list of preferred positions, from most to least desirable. */
   get positions(): ConnectionPositionPair[] {

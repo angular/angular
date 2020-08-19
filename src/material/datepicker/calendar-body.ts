@@ -193,7 +193,7 @@ export class MatCalendarBody implements OnChanges, OnDestroy {
   /** Focuses the active cell after the microtask queue is empty. */
   _focusActiveCell(movePreview = true) {
     this._ngZone.runOutsideAngular(() => {
-      this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(() => {
+      this._ngZone.onStable.pipe(take(1)).subscribe(() => {
         const activeCell: HTMLElement | null =
             this._elementRef.nativeElement.querySelector('.mat-calendar-body-active');
 

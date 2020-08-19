@@ -23,7 +23,7 @@ describe('RepositionScrollStrategy', () => {
       imports: [OverlayModule, PortalModule, OverlayTestModule],
       providers: [
         {provide: ScrollDispatcher, useFactory: () => ({
-          scrolled: () => scrolledSubject.asObservable()
+          scrolled: () => scrolledSubject
         })}
       ]
     });

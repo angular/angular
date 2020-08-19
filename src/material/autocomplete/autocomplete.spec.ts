@@ -1559,7 +1559,7 @@ describe('MatAutocomplete', () => {
       let spacer = document.createElement('div');
       let fixture = createComponent(SimpleAutocomplete, [{
         provide: ScrollDispatcher,
-        useValue: {scrolled: () => scrolledSubject.asObservable()}
+        useValue: {scrolled: () => scrolledSubject}
       }]);
 
       fixture.detectChanges();
@@ -2242,7 +2242,7 @@ describe('MatAutocomplete', () => {
       const fixture = createComponent(SimpleAutocomplete, [
         {
           provide: ScrollDispatcher,
-          useValue: {scrolled: () => scrolledSubject.asObservable()}
+          useValue: {scrolled: () => scrolledSubject}
         },
         {
           provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,

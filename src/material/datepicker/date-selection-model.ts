@@ -48,7 +48,7 @@ export abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSelection<
   private _selectionChanged = new Subject<DateSelectionModelChange<S>>();
 
   /** Emits when the selection has changed. */
-  selectionChanged: Observable<DateSelectionModelChange<S>> = this._selectionChanged.asObservable();
+  selectionChanged: Observable<DateSelectionModelChange<S>> = this._selectionChanged;
 
   protected constructor(
     /** The current selection. */

@@ -35,7 +35,7 @@ export class TaskStateZoneInterceptor {
       this._lastState ? this._getTaskStateFromInternalZoneState(this._lastState) : {stable: true});
 
   /** Public observable that emits whenever the task state changes. */
-  readonly state: Observable<TaskState> = this._stateSubject.asObservable();
+  readonly state: Observable<TaskState> = this._stateSubject;
 
   constructor(private _lastState: HasTaskState|null) {}
 

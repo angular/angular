@@ -47,6 +47,7 @@ import {
   take,
   takeUntil,
   distinctUntilChanged,
+  mapTo,
 } from 'rxjs/operators';
 import {matDrawerAnimations} from './drawer-animations';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
@@ -227,12 +228,10 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 
   /** Event emitted when the drawer has started opening. */
   @Output()
-  get openedStart(): Observable<void> {
-    return this._animationStarted.pipe(
-      filter(e => e.fromState !== e.toState && e.toState.indexOf('open') === 0),
-      map(() => {})
-    );
-  }
+  readonly openedStart: Observable<void> = this._animationStarted.pipe(
+    filter(e => e.fromState !== e.toState && e.toState.indexOf('open') === 0),
+    mapTo(undefined)
+  );
 
   /** Event emitted when the drawer has been closed. */
   @Output('closed')
@@ -240,12 +239,10 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 
   /** Event emitted when the drawer has started closing. */
   @Output()
-  get closedStart(): Observable<void> {
-    return this._animationStarted.pipe(
-      filter(e => e.fromState !== e.toState && e.toState === 'void'),
-      map(() => {})
-    );
-  }
+  readonly closedStart: Observable<void> = this._animationStarted.pipe(
+    filter(e => e.fromState !== e.toState && e.toState === 'void'),
+    mapTo(undefined)
+  );
 
   /** Emits when the component is destroyed. */
   private readonly _destroyed = new Subject<void>();
@@ -775,7 +772,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     // NOTE: We need to wait for the microtask queue to be empty before validating,
     // since both drawers may be swapping positions at the same time.
     drawer.onPositionChanged.pipe(takeUntil(this._drawers.changes)).subscribe(() => {
-      this._ngZone.onMicrotaskEmpty.asObservable().pipe(take(1)).subscribe(() => {
+      this._ngZone.onMicrotaskEmpty.pipe(take(1)).subscribe(() => {
         this._validateDrawers();
       });
     });

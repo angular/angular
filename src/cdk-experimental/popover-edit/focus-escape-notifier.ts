@@ -46,7 +46,7 @@ export class FocusEscapeNotifier extends FocusTrap {
   }
 
   escapes(): Observable<FocusEscapeNotifierDirection> {
-    return this._escapeSubject.asObservable();
+    return this._escapeSubject;
   }
 }
 

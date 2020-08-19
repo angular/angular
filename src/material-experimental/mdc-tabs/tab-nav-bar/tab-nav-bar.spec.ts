@@ -31,7 +31,7 @@ describe('MDC-based MatTabNavBar', () => {
       providers: [
         {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
         {provide: Directionality, useFactory: () =>
-            ({value: dir, change: dirChange.asObservable()})},
+            ({value: dir, change: dirChange})},
       ]
     });
 

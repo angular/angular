@@ -39,7 +39,7 @@ describe('Overlay directives', () => {
       declarations: [ConnectedOverlayDirectiveTest, ConnectedOverlayPropertyInitOrder],
       providers: [{provide: Directionality, useFactory: () => dir = {value: 'ltr'}},
         {provide: ScrollDispatcher, useFactory: () => ({
-          scrolled: () => scrolledSubject.asObservable()
+          scrolled: () => scrolledSubject
         })}
       ],
     });

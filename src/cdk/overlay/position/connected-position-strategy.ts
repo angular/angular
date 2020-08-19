@@ -49,9 +49,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   _preferredPositions: ConnectionPositionPair[] = [];
 
   /** Emits an event when the connection point changes. */
-  get onPositionChange(): Observable<ConnectedOverlayPositionChange> {
-    return this._positionStrategy.positionChanges;
-  }
+  readonly onPositionChange: Observable<ConnectedOverlayPositionChange>;
 
   constructor(
       originPos: OriginConnectionPosition, overlayPos: OverlayConnectionPosition,
@@ -68,6 +66,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
                                  .withViewportMargin(0);
 
     this.withFallbackPosition(originPos, overlayPos);
+    this.onPositionChange = this._positionStrategy.positionChanges;
   }
 
   /** Ordered list of preferred positions, from most to least desirable. */

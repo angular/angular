@@ -341,7 +341,7 @@ export class FocusTrap {
     if (this._ngZone.isStable) {
       fn();
     } else {
-      this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(fn);
+      this._ngZone.onStable.pipe(take(1)).subscribe(fn);
     }
   }
 }

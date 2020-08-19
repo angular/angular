@@ -126,14 +126,15 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
         throwMatMenuRecursiveError();
       }
 
-      this._menuCloseSubscription = menu.close.asObservable().subscribe(reason => {
-        this._destroyMenu();
+      this._menuCloseSubscription = menu.close.subscribe(
+        (reason: 'click' | 'tab' | 'keydown' | undefined) => {
+          this._destroyMenu();
 
-        // If a click closed the menu, we should close the entire chain of nested menus.
-        if ((reason === 'click' || reason === 'tab') && this._parentMenu) {
-          this._parentMenu.closed.emit(reason);
-        }
-      });
+          // If a click closed the menu, we should close the entire chain of nested menus.
+          if ((reason === 'click' || reason === 'tab') && this._parentMenu) {
+            this._parentMenu.closed.emit(reason);
+          }
+        });
     }
   }
   private _menu: MatMenuPanel;

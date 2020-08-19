@@ -186,7 +186,7 @@ export class MatSnackBarContainer extends BasePortalOutlet
    * errors where we end up removing an element which is in the middle of an animation.
    */
   private _completeExit() {
-    this._ngZone.onMicrotaskEmpty.asObservable().pipe(take(1)).subscribe(() => {
+    this._ngZone.onMicrotaskEmpty.pipe(take(1)).subscribe(() => {
       this._onExit.next();
       this._onExit.complete();
     });

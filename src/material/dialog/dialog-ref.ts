@@ -139,21 +139,21 @@ export class MatDialogRef<T, R = any> {
    * Gets an observable that is notified when the dialog is finished opening.
    */
   afterOpened(): Observable<void> {
-    return this._afterOpened.asObservable();
+    return this._afterOpened;
   }
 
   /**
    * Gets an observable that is notified when the dialog is finished closing.
    */
   afterClosed(): Observable<R | undefined> {
-    return this._afterClosed.asObservable();
+    return this._afterClosed;
   }
 
   /**
    * Gets an observable that is notified when the dialog has started closing.
    */
   beforeClosed(): Observable<R | undefined> {
-    return this._beforeClosed.asObservable();
+    return this._beforeClosed;
   }
 
   /**
