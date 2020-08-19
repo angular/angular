@@ -194,7 +194,7 @@ which explains the following:
 * Using [`<ng-container>`](guide/structural-directives#ngcontainer "<ng-container>")
 to group elements when there is no suitable host element for the directive.
 * How to write your own structural directive.
-* That you can only apply [one structural directive](guide/structural-directives#one-per-element "one per host element") to an element.
+* Why you [can only apply one structural directive](guide/structural-directives#one-per-element "one per host element") to an element.
 
 </div>
 
@@ -281,7 +281,7 @@ You define a block of HTML that defines how a single item should be displayed
 and then you tell Angular to use that block as a template for rendering each item in the list.
 The text assigned to `*ngFor` is the instruction that guides the repeater process.
 
-The following example shows `NgFor` applied to a simple `<div>`. (Don't forget the asterisk (`*`) in front of `ngFor`.)
+The following example shows `NgFor` applied to a simple `<div>`.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1" header="src/app/app.component.html"></code-example>
 
