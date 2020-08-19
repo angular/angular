@@ -2272,6 +2272,37 @@ describe('CdkDrag', () => {
       expect(previewSelect.value).toBe(value);
     }));
 
+    it('should preserve checked state for radio inputs in the content', fakeAsync(() => {
+      const fixture = createComponent(DraggableWithRadioInputsInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[2].element.nativeElement;
+      const sourceRadioInput =
+        item.querySelector<HTMLInputElement>('input[type="radio"]')!;
+
+      expect(sourceRadioInput.checked).toBeTruthy();
+
+      startDraggingViaMouse(fixture, item);
+
+      const preview = document.querySelector('.cdk-drag-preview')!;
+      const previewRadioInput = preview.querySelector<HTMLInputElement>('input[type="radio"]')!;
+      expect(previewRadioInput.checked).toBeTruthy(
+        'Expected cloned radio input in preview has the same state as original radio input');
+
+      const placeholder = document.querySelector('.cdk-drag-placeholder')!;
+      const placeholderRadioInput =
+        placeholder.querySelector<HTMLInputElement>('input[type="radio"]')!;
+      expect(placeholderRadioInput.checked).toBeTruthy(
+        'Expected cloned radio input in placeholder has the same state as original radio input');
+
+      dispatchMouseEvent(document, 'mouseup');
+      // Important to tick with 0 since we don't want to flush any pending timeouts.
+      // It also makes sure that all clones have been removed from the DOM.
+      tick(0);
+
+      expect(sourceRadioInput.checked)
+        .toBeTruthy('Expected original radio input has preserved its original checked state');
+    }));
+
     it('should clear the ids from descendants of the preview', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
@@ -6462,6 +6493,31 @@ class DraggableWithInputsInDropZone extends DraggableInDropZone {
   inputValue = 'hello';
 }
 
+
+@Component({
+  template: `
+    <div
+      cdkDropList
+      class="drop-list scroll-container"
+      [cdkDropListData]="items">
+      <div
+        *ngFor="let item of items"
+        cdkDrag
+        [cdkDragData]="item">
+          {{item.id}}
+          <input type="radio" name="radio" [checked]="item.checked"/>
+        </div>
+    </div>
+  `
+})
+class DraggableWithRadioInputsInDropZone {
+  @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
+  items = [
+    {id: 1, checked: false},
+    {id: 2, checked: false},
+    {id: 3, checked: true},
+  ];
+}
 
 /**
  * Drags an element to a position on the page using the mouse.
