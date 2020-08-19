@@ -39,23 +39,25 @@ mat-row, mat-header-row, mat-footer-row {
   }
 }
 
-// Note: we use `first-of-type`/`last-of-type` here in order to prevent extra
-// elements like ripples or badges from throwing off the layout (see #11165).
-mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-type {
-  padding-left: $mat-row-horizontal-padding;
-
-  [dir='rtl'] & {
-    padding-left: 0;
-    padding-right: $mat-row-horizontal-padding;
-  }
-}
-
-mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-type {
-  padding-right: $mat-row-horizontal-padding;
-
-  [dir='rtl'] & {
-    padding-right: 0;
+mat-cell, mat-header-cell, mat-footer-cell {
+  // Note: we use `first-of-type`/`last-of-type` here in order to prevent extra
+  // elements like ripples or badges from throwing off the layout (see #11165).
+  &:first-of-type {
     padding-left: $mat-row-horizontal-padding;
+
+    [dir='rtl'] &:not(:only-of-type) {
+      padding-left: 0;
+      padding-right: $mat-row-horizontal-padding;
+    }
+  }
+
+  &:last-of-type {
+    padding-right: $mat-row-horizontal-padding;
+
+    [dir='rtl'] &:not(:only-of-type) {
+      padding-right: 0;
+      padding-left: $mat-row-horizontal-padding;
+    }
   }
 }
 
@@ -95,25 +97,25 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
   padding: 0;
   border-bottom-width: 1px;
   border-bottom-style: solid;
-}
 
-// Note: we use `first-of-type`/`last-of-type` here in order to prevent extra
-// elements like ripples or badges from throwing off the layout (see #11165).
-th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
-  padding-left: $mat-row-horizontal-padding;
-
-  [dir='rtl'] & {
-    padding-left: 0;
-    padding-right: $mat-row-horizontal-padding;
-  }
-}
-
-th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type {
-  padding-right: $mat-row-horizontal-padding;
-
-  [dir='rtl'] & {
-    padding-right: 0;
+  // Note: we use `first-of-type`/`last-of-type` here in order to prevent extra
+  // elements like ripples or badges from throwing off the layout (see #11165).
+  &:first-of-type {
     padding-left: $mat-row-horizontal-padding;
+
+    [dir='rtl'] &:not(:only-of-type) {
+      padding-left: 0;
+      padding-right: $mat-row-horizontal-padding;
+    }
+  }
+
+  &:last-of-type {
+    padding-right: $mat-row-horizontal-padding;
+
+    [dir='rtl'] &:not(:only-of-type) {
+      padding-right: 0;
+      padding-left: $mat-row-horizontal-padding;
+    }
   }
 }
 
