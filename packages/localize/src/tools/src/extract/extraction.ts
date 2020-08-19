@@ -77,6 +77,20 @@ export class MessageExtractor {
     for (const message of messages) {
       if (message.location !== undefined) {
         message.location = this.getOriginalLocation(sourceFile, message.location);
+
+        if (message.messagePartLocations) {
+          message.messagePartLocations = message.messagePartLocations.map(
+              location => location && this.getOriginalLocation(sourceFile, location));
+        }
+
+        if (message.substitutionLocations) {
+          const placeholderNames = Object.keys(message.substitutionLocations);
+          for (const placeholderName of placeholderNames) {
+            const location = message.substitutionLocations[placeholderName];
+            message.substitutionLocations[placeholderName] =
+                location && this.getOriginalLocation(sourceFile, location);
+          }
+        }
       }
     }
   }
