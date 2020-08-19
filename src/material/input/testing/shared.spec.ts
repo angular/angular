@@ -43,9 +43,26 @@ export function runHarnessTests(
     expect(inputs.length).toBe(1);
   });
 
-  it('should load input with specific value', async () => {
+  it('should load input with a specific value', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness.with({value: 'Sushi'}));
     expect(inputs.length).toBe(1);
+  });
+
+  it('should load input with a value that matches a regex', async () => {
+    const inputs = await loader.getAllHarnesses(inputHarness.with({value: /shi$/}));
+    expect(inputs.length).toBe(1);
+    expect(await inputs[0].getValue()).toBe('Sushi');
+  });
+
+  it('should load input with a specific placeholder', async () => {
+    const inputs = await loader.getAllHarnesses(inputHarness.with({placeholder: 'Favorite food'}));
+    expect(inputs.length).toBe(1);
+  });
+
+  it('should load input with a placeholder that matches a regex', async () => {
+    const inputs = await loader.getAllHarnesses(inputHarness.with({placeholder: / food$/}));
+    expect(inputs.length).toBe(1);
+    expect(await inputs[0].getPlaceholder()).toBe('Favorite food');
   });
 
   it('should be able to get id of input', async () => {
