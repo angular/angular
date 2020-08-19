@@ -1,3 +1,13 @@
+<a name="0.11.1"></a>
+## [0.11.1](https://github.com/angular/angular/compare/zone.js-0.11.0...zone.js-0.11.1) (2020-08-19)
+
+
+### Bug Fixes
+
+* **zone.js:** zone.js package.json should not include files/directories field ([#38528](https://github.com/angular/angular/issues/38528)) ([6b662d1](https://github.com/angular/angular/commit/6b662d1)), closes [#38526](https://github.com/angular/angular/issues/38526) [#38516](https://github.com/angular/angular/issues/38516) [#38513](https://github.com/angular/angular/issues/38513)
+
+
+
 <a name="0.11.0"></a>
 # [0.11.0](https://github.com/angular/angular/compare/zone.js-0.10.3...zone.js-0.11.0) (2020-08-14)
 
