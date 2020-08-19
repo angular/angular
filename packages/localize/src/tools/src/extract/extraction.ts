@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, PathSegment} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {Logger} from '@angular/compiler-cli/src/ngtsc/logging';
 import {SourceFile, SourceFileLoader} from '@angular/compiler-cli/src/ngtsc/sourcemaps';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
@@ -103,6 +103,11 @@ export class MessageExtractor {
     const end = (originalEnd !== null && originalEnd.file === originalStart.file) ?
         {line: originalEnd.line, column: originalEnd.column} :
         start;
-    return {file: originalStart.file, start, end};
+    const originalSourceFile =
+        sourceFile.sources.find(sf => sf?.sourcePath === originalStart.file)!;
+    const startPos = originalSourceFile.startOfLinePositions[start.line] + start.column;
+    const endPos = originalSourceFile.startOfLinePositions[end.line] + end.column;
+    const text = originalSourceFile.contents.substring(startPos, endPos);
+    return {file: originalStart.file, start, end, text};
   }
 }
