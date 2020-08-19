@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, NgZone, OnDestroy} from '@angular/core';
-import {MediaMatcher} from './media-matcher';
-import {combineLatest, concat, Observable, Subject, Observer} from 'rxjs';
-import {debounceTime, map, skip, startWith, take, takeUntil} from 'rxjs/operators';
 import {coerceArray} from '@angular/cdk/coercion';
+import {Injectable, NgZone, OnDestroy} from '@angular/core';
+import {combineLatest, concat, Observable, Observer, Subject} from 'rxjs';
+import {debounceTime, map, skip, startWith, take, takeUntil} from 'rxjs/operators';
+import {MediaMatcher} from './media-matcher';
 
 
 /** The current state of a layout breakpoint. */
@@ -60,7 +60,7 @@ export class BreakpointObserver implements OnDestroy {
    * @param value One or more media queries to check.
    * @returns Whether any of the media queries match.
    */
-  isMatched(value: string | string[]): boolean {
+  isMatched(value: string | readonly string[]): boolean {
     const queries = splitQueries(coerceArray(value));
     return queries.some(mediaQuery => this._registerQuery(mediaQuery).mql.matches);
   }
@@ -71,7 +71,7 @@ export class BreakpointObserver implements OnDestroy {
    * @param value One or more media queries to check.
    * @returns A stream of matches for the given queries.
    */
-  observe(value: string | string[]): Observable<BreakpointState> {
+  observe(value: string | readonly string[]): Observable<BreakpointState> {
     const queries = splitQueries(coerceArray(value));
     const observables = queries.map(query => this._registerQuery(query).observable);
 
@@ -80,14 +80,14 @@ export class BreakpointObserver implements OnDestroy {
     stateObservable = concat(
       stateObservable.pipe(take(1)),
       stateObservable.pipe(skip(1), debounceTime(0)));
-    return stateObservable.pipe(map((breakpointStates: InternalBreakpointState[]) => {
+    return stateObservable.pipe(map(breakpointStates => {
       const response: BreakpointState = {
         matches: false,
         breakpoints: {},
       };
-      breakpointStates.forEach((state: InternalBreakpointState) => {
-        response.matches = response.matches || state.matches;
-        response.breakpoints[state.query] = state.matches;
+      breakpointStates.forEach(({matches, query}) => {
+        response.matches = response.matches || matches;
+        response.breakpoints[query] = matches;
       });
       return response;
     }));
@@ -100,10 +100,10 @@ export class BreakpointObserver implements OnDestroy {
       return this._queries.get(query)!;
     }
 
-    const mql: MediaQueryList = this._mediaMatcher.matchMedia(query);
+    const mql = this._mediaMatcher.matchMedia(query);
 
     // Create callback for match changes and add it is as a listener.
-    const queryObservable = new Observable<MediaQueryList>((observer: Observer<MediaQueryList>) => {
+    const queryObservable = new Observable((observer: Observer<MediaQueryList>) => {
       // Listener callback methods are wrapped to be placed back in ngZone. Callbacks must be placed
       // back into the zone because matchMedia is only included in Zone.js by loading the
       // webapis-media-query.js file alongside the zone.js file.  Additionally, some browsers do not
@@ -117,7 +117,7 @@ export class BreakpointObserver implements OnDestroy {
       };
     }).pipe(
       startWith(mql),
-      map((nextMql: MediaQueryList) => ({query, matches: nextMql.matches})),
+      map(({matches}) => ({query, matches})),
       takeUntil(this._destroySubject)
     );
 
@@ -132,8 +132,8 @@ export class BreakpointObserver implements OnDestroy {
  * Split each query string into separate query strings if two queries are provided as comma
  * separated.
  */
-function splitQueries(queries: string[]): string[] {
-  return queries.map((query: string) => query.split(','))
-                .reduce((a1: string[], a2: string[]) => a1.concat(a2))
+function splitQueries(queries: readonly string[]): readonly string[] {
+  return queries.map(query => query.split(','))
+                .reduce((a1, a2) => a1.concat(a2))
                 .map(query => query.trim());
 }

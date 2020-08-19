@@ -1,8 +1,8 @@
 export declare class BreakpointObserver implements OnDestroy {
     constructor(_mediaMatcher: MediaMatcher, _zone: NgZone);
-    isMatched(value: string | string[]): boolean;
+    isMatched(value: string | readonly string[]): boolean;
     ngOnDestroy(): void;
-    observe(value: string | string[]): Observable<BreakpointState>;
+    observe(value: string | readonly string[]): Observable<BreakpointState>;
     static ɵfac: i0.ɵɵFactoryDef<BreakpointObserver, never>;
     static ɵprov: i0.ɵɵInjectableDef<BreakpointObserver>;
 }
