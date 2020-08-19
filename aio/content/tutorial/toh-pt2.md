@@ -17,7 +17,7 @@ allow users to select a hero and display the hero's details.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  이 문서에서 설명하는 앱은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 </div>
 
@@ -260,7 +260,7 @@ display the hero that was defined in the `*ngFor` expression.
 -->
 `<li>`태그에 다음과 같이 클릭 이벤트를 바인딩합니다.
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (일부 템플릿)"></code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (템플릿 일부)"></code-example>
 
 위 코드는 Angular의 [이벤트 바인딩](guide/event-binding) 문법입니다.
 

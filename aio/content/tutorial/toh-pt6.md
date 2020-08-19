@@ -25,7 +25,7 @@ Angular's `HttpClient`.
 
 <div class="alert is-helpful">
 
-  이번 튜토리얼에서 만들 앱은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+  이 문서에서 설명하는 앱은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 </div>
 

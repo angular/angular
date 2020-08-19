@@ -191,7 +191,7 @@
             {
               "url": "tutorial/toh-pt1",
               "//title": "1. The Hero Editor",
-              "title": "1. 히어로 편집기",
+              "title": "1. 히어로 에디터",
               "//tooltip": "Part 1: Build a simple editor",
               "tooltip": "1단계: 간단한 에디터를 만들어 봅시다."
             },
@@ -219,7 +219,7 @@
             {
               "url": "tutorial/toh-pt5",
               "//title": "5. Add In-app Navigation",
-              "title": "5. 앱 네비게이션 추가하기",
+              "title": "5. 네비게이션 추가하기",
               "//tooltip": "Part 5: Add the Angular router and navigate among the views.",
               "tooltip": ": Angular 라우터를 추가하고 화면을 전환해 봅시다."
             },

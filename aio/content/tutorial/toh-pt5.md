@@ -1,7 +1,7 @@
 <!--
 # Add in-app navigation with routing
 -->
-# 화면 전환하기 (라우팅)
+# 네비게이션 추가하기
 
 <!--
 There are new requirements for the Tour of Heroes app:
@@ -32,7 +32,7 @@ When you’re done, users will be able to navigate the app like this:
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  이 문서에서 설명하는 앱은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 </div>
 

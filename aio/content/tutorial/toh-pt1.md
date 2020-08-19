@@ -19,7 +19,7 @@ and place that component in the application shell.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  이 문서에서 설명하는 앱은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 </div>
 
@@ -64,7 +64,7 @@ The CLI generated three metadata properties:
 
 자동으로 생성된 `HeroesComponent` 클래스 파일의 내용은 다음과 같습니다.
 
-<code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="v1" header="app/heroes/heroes.component.ts (initial version)"></code-example>
+<code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="v1" header="app/heroes/heroes.component.ts (초기 버전)"></code-example>
 
 Angular 컴포넌트를 선언하려면 반드시 Angular 코어 라이브러리에서 `Component` 심볼을 로드하고 컴포넌트 클래스에 `@Component` 와 같이 지정해야 합니다.
 

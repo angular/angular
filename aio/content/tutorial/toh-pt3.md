@@ -1,7 +1,7 @@
 <!--
 # Create a feature component
 -->
-# 기능 컴포넌트 만들기
+# 컴포넌트 만들기
 
 <!--
 At the moment, the `HeroesComponent` displays both the list of heroes and the selected hero's details.
@@ -31,7 +31,7 @@ The `HeroDetailComponent` will present details of a selected hero.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  이 문서에서 설명하는 앱은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 </div>
 
@@ -148,7 +148,7 @@ This component simply receives a hero object through its `hero` property and dis
 `HeroDetailComponent` 클래스 파일을 열어서 `Hero` 심볼을 로드합니다.
 
 <code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts"
-region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (import Hero)">
+region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (Hero 심볼 로드하기)">
 </code-example>
 
 이 때 `hero` 프로퍼티의 값은 _외부_ 컴포넌트인 `HeroesComponent`에서 [바인딩되어](#heroes-component-template) 전달됩니다.

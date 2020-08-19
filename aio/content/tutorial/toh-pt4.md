@@ -1,7 +1,7 @@
 <!--
 # Add services
 -->
-# 서비스 생성하기
+# 서비스 추가하기
 
 <!--
 The Tour of Heroes `HeroesComponent` is currently getting and displaying fake data.
@@ -22,7 +22,7 @@ It will also be easier to unit-test with a mock service.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  이 문서에서 설명하는 앱은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 </div>
 
@@ -405,7 +405,7 @@ In the [HTTP tutorial](tutorial/toh-pt6), you'll call `HttpClient.get<Hero[]>()`
 [이후에 HTTP에 대해서 알아볼 때](tutorial/toh-pt6) Angular의 `HttpClient` 클래스가 제공하는 메소드는 모두 RxJS가 제공하는 `Observable` 타입을 반환한다는 것을 다시 한 번 살펴볼 것입니다.
 이 튜토리얼에서는 리모트 서버를 사용하지 않고 RxJS의 `of()` 함수로 데이터를 즉시 반환해 봅시다.
 
-<code-example path="toh-pt4/src/app/hero.service.ts" header="src/app/hero.service.ts (Observable imports)" region="import-observable">
+<code-example path="toh-pt4/src/app/hero.service.ts" header="src/app/hero.service.ts (Observable 심볼 로드하기)" region="import-observable">
 </code-example>
 
 `getHeroes()` 메소드를 다음과 같이 수정합니다:
@@ -697,7 +697,7 @@ Angular only binds to _public_ component properties.
 <code-example path="toh-pt4/src/app/messages/messages.component.ts" header="src/app/messages/messages.component.ts" region="ctor">
 </code-example>
 
-이 때 `messageService` 프로퍼티는 템플릿에 바인딩되기 때문에 반드시 **public으로 선언되어야** 합니다.
+이 때 `messageService` 프로퍼티는 템플릿에 바인딩되기 때문에 반드시 **public으로 선언해야** 합니다.
 
 <div class="alert is-important">
 

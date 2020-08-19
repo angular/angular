@@ -1,7 +1,7 @@
 <!--
 # Create a new project
 -->
-# 새 프로젝트 만들기
+# 프로젝트 생성하기
 
 <!--
 You begin by creating an initial application using the Angular CLI. Throughout this tutorial, you’ll modify and extend that starter application to create the Tour of Heroes app.
@@ -19,7 +19,7 @@ In this part of the tutorial, you'll do the following:
 
 </div>
 -->
-Angular CLI를 사용하면 애플리케이션의 기본 틀을 구성할 수 있습니다. 그리고 이 튜토리얼을 진행하면서 기본 틀을 히어로들의 여행 앱으로 확장해 봅시다.
+Angular CLI를 사용하면 애플리케이션의 기본 틀을 구성할 수 있습니다. 이렇게 만든 기본 틀을 기반으로 히어로들의 여행 앱을 구현해 봅시다.
 
 이 문서에서는 다음 내용에 대해 다룹니다.
 
@@ -30,7 +30,7 @@ Angular CLI를 사용하면 애플리케이션의 기본 틀을 구성할 수 �
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  이 문서에서 설명하는 앱은 <live-example></live-example>에서 직접 확인할 수 있습니다.
 
 </div>
 
@@ -76,7 +76,7 @@ It also creates the following workspace and starter project files:
 
 The initial app project contains a simple Welcome app, ready to run.
 -->
-애플리케이션은 Angular [워크스페이스](guide/glossary#workspace) 안에서 개발합니다.
+Angular 애플리케이션은 Angular [워크스페이스](guide/glossary#workspace) 안에서 개발합니다.
 워크스페이스는 여러 개의 [프로젝트](guide/glossary#project)로 구성되는 단위이며, 프로젝트는 애플리케이션이나 라이브러리, 엔드-투-엔드(e2e) 테스트를 구성하는 파일들의 집합을 의미합니다.
 이 튜토리얼에서는 새로운 워크스페이스를 만드는 것부터 시작합니다.
 
@@ -84,17 +84,17 @@ The initial app project contains a simple Welcome app, ready to run.
 
   1. 아직 Angular 워크스페이스 폴더 안에 있지 않은 것을 전제로 합니다. 이전에 시작하기 문서를 진행하면서 이미 만든 워크스페이스가 있다면, 이 폴더 밖에서 작업하세요.
 
-  2. Angular CLI 명령 `ng new`를 사용해서 `angular-tour-of-heroes` 라는 이름으로 워크스페이스를 생성합니다:
+  2. Angular CLI 명령 `ng new`를 실행해서 `angular-tour-of-heroes` 라는 이름으로 워크스페이스를 생성합니다:
 
   <code-example language="sh" class="code-shell">
      ng new angular-tour-of-heroes
   </code-example>
 
-  3. 커맨드 창에서 `ng new` 명령을 실행하면 프로젝트에 어떤 설정을 추가할지 물어봅니다. 엔터키를 눌러서 기본값으로 진행합시다.
+  3. 커맨드 창에서 `ng new` 명령을 실행하면 프로젝트에 어떤 설정값을 추가로 지정할지 물어봅니다. 엔터키를 눌러서 기본값으로 진행합시다.
 
-이 과정을 진행하면서 Angular CLI가 Angular `npm` 패키지와 서드파티 패키지를 모두 설치하기 때문에 시간이 약간 걸릴 수 있습니다.
+이 과정을 진행하면 Angular CLI가 Angular `npm` 패키지와 서드파티 패키지를 설치하기 때문에 시간이 약간 걸릴 수 있습니다.
 
-그리고 이 명령은 다음과 같은 프로젝트 파일을 준비하기도 합니다:
+그리고 이 명령은 몇가지 프로젝트 파일을 준비하기도 합니다:
 
   * `angular-tour-of-heroes`라는 폴더 이름으로 새로운 워크스페이스를 생성합니다.
   * 서브 폴더 `src`를 생성하고 이 폴더에 애플리케이션 초기 코드를 생성합니다.
@@ -104,6 +104,7 @@ The initial app project contains a simple Welcome app, ready to run.
 이제 간단한 Welcome 앱이 완성되었습니다.
 
 
+<!--
 ## Serve the application
 -->
 ## 애플리케이션 실행하기
@@ -158,7 +159,7 @@ _Components_ are the fundamental building blocks of Angular applications.
 They display data on the screen, listen for user input, and take action based on that input.
 -->
 처음 보이는 페이지는 _애플리케이션 셸_ 입니다.
-애플리케이션 셸은 `AppComponent`란 이름의 컴포넌트이며, Angular에 의해 관리됩니다.
+애플리케이션 셸은 `AppComponent`란 이름의 컴포넌트이며, Angular가 직접 관리하는 컴포넌트입니다.
 
 _컴포넌트_ 는 Angular 애플리케이션의 기본 구성 요소입니다.
 컴포넌트는 화면에 데이터를 표시하고, 유저의 입력을 기다리며, 유저의 입력에 반응하면서 어떤 동작을 수행합니다.
@@ -182,9 +183,9 @@ You'll find the implementation of the shell `AppComponent` distributed over thre
 
 `AppComponent`는 3개의 파일로 구성됩니다 : 
 
-1. `app.component.ts`&mdash; TypeScript로 작성하는 컴포넌트 클래스 코드입니다.
-1. `app.component.html`&mdash; HTML로 작성하는 컴포넌트 템플릿입니다.
-1. `app.component.css`&mdash; 이 컴포넌트에만 적용되는 CSS 스타일입니다.
+1. `app.component.ts`&mdash; TypeScript로 컴포넌트 클래스 코드를 작성합니다.
+1. `app.component.html`&mdash; HTML로 컴포넌트 템플릿을 작성합니다.
+1. `app.component.css`&mdash; 이 컴포넌트에만 적용되는 CSS 스타일을 작성합니다.
 
 
 <!--
@@ -220,10 +221,10 @@ The browser refreshes and displays the new application title.
 <code-example path="toh-pt0/src/app/app.component.html"
   header="app.component.html (템플릿)"></code-example>
 
-이중 중괄호는 Angular에서 제공하는 *문자열 바인딩(interpolation binding)* 문법입니다.
+이중 중괄호(`{{}}`)는 Angular가 제공하는 *문자열 바인딩(interpolation binding)* 문법입니다.
 문자열 바인딩을 사용하면 컴포넌트의 `title` 프로퍼티 값을 HTML 헤더 태그에 표시할 수 있습니다.
 
-변경된 내용을 저장하면 브라우저가 자동으로 새로고침되며 수정한 애플리케이션 타이틀이 표시됩니다.
+변경된 내용을 저장하면 브라우저가 자동으로 갱신되며 수정한 애플리케이션 타이틀이 표시됩니다.
 
 
 {@a app-wide-styles}
@@ -274,7 +275,7 @@ Here are the code files discussed on this page.
   </code-pane>
 </code-tabs>
 -->
-아래는 이 튜토리얼에서 언급된 소스코드 파일들입니다.
+이 튜토리얼에서 언급한 소스코드를 확인해 보세요.
 
 <code-tabs>
 
