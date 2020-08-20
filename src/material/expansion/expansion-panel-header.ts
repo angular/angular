@@ -6,43 +6,41 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
-import {ENTER, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
+import {FocusableOption, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
+import {ENTER, hasModifierKey, SPACE} from '@angular/cdk/keycodes';
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Directive,
   ElementRef,
   Host,
+  Inject,
   Input,
   OnDestroy,
-  ViewEncapsulation,
   Optional,
-  Inject,
-  AfterViewInit,
+  ViewEncapsulation,
 } from '@angular/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {merge, Subscription, EMPTY} from 'rxjs';
+import {EMPTY, merge, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
+import {MatAccordionTogglePosition} from './accordion-base';
 import {matExpansionAnimations} from './expansion-animations';
 import {
   MatExpansionPanel,
   MatExpansionPanelDefaultOptions,
   MAT_EXPANSION_PANEL_DEFAULT_OPTIONS,
 } from './expansion-panel';
-import {MatAccordionTogglePosition} from './accordion-base';
 
 
 /**
- * `<mat-expansion-panel-header>`
- *
- * This component corresponds to the header element of an `<mat-expansion-panel>`.
+ * Header element of a `<mat-expansion-panel>`.
  */
 @Component({
   selector: 'mat-expansion-panel-header',
-  styleUrls: ['./expansion-panel-header.css'],
-  templateUrl: './expansion-panel-header.html',
+  styleUrls: ['expansion-panel-header.css'],
+  templateUrl: 'expansion-panel-header.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
@@ -211,9 +209,7 @@ export class MatExpansionPanelHeader implements AfterViewInit, OnDestroy, Focusa
 }
 
 /**
- * `<mat-panel-description>`
- *
- * This directive is to be used inside of the MatExpansionPanelHeader component.
+ * Description element of a `<mat-expansion-panel-header>`.
  */
 @Directive({
   selector: 'mat-panel-description',
@@ -224,9 +220,7 @@ export class MatExpansionPanelHeader implements AfterViewInit, OnDestroy, Focusa
 export class MatExpansionPanelDescription {}
 
 /**
- * `<mat-panel-title>`
- *
- * This directive is to be used inside of the MatExpansionPanelHeader component.
+ * Title element of a `<mat-expansion-panel-header>`.
  */
 @Directive({
   selector: 'mat-panel-title',
