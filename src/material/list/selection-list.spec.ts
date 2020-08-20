@@ -13,7 +13,15 @@ import {
   QueryList,
   ViewChildren,
 } from '@angular/core';
-import {async, ComponentFixture, fakeAsync, TestBed, tick, flush} from '@angular/core/testing';
+import {
+  async,
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+  flush,
+  inject,
+} from '@angular/core/testing';
 import {MatRipple, defaultRippleAnimationConfig, ThemePalette} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {
@@ -23,6 +31,7 @@ import {
   MatSelectionListChange
 } from './index';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {FocusMonitor} from '@angular/cdk/a11y';
 
 describe('MatSelectionList without forms', () => {
   describe('with list option', () => {
@@ -301,6 +310,21 @@ describe('MatSelectionList without forms', () => {
       expect(manager.activeItemIndex).toBe(0);
       expect(listOptions[0].componentInstance.focus).toHaveBeenCalled();
     });
+
+    it('should not move focus to the first item if focus originated from a mouse interaction',
+      fakeAsync(inject([FocusMonitor], (focusMonitor: FocusMonitor) => {
+        spyOn(listOptions[0].componentInstance, 'focus').and.callThrough();
+
+        const manager = selectionList.componentInstance._keyManager;
+        expect(manager.activeItemIndex).toBe(-1);
+
+        focusMonitor.focusVia(selectionList.nativeElement, 'mouse');
+        fixture.detectChanges();
+        flush();
+
+        expect(manager.activeItemIndex).toBe(-1);
+        expect(listOptions[0].componentInstance.focus).not.toHaveBeenCalled();
+      })));
 
     it('should focus the previously focused option when the list takes focus a second time', () => {
       spyOn(listOptions[1].componentInstance, 'focus').and.callThrough();
@@ -731,6 +755,7 @@ describe('MatSelectionList without forms', () => {
 
         dispatchMouseEvent(rippleTarget, 'mousedown');
         dispatchMouseEvent(rippleTarget, 'mouseup');
+        flush();
 
         expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
             .toBe(0, 'Expected no ripples after list ripples are disabled.');

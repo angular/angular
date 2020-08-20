@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusableOption, FocusKeyManager} from '@angular/cdk/a11y';
+import {FocusableOption, FocusKeyManager, FocusMonitor} from '@angular/cdk/a11y';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {
@@ -319,7 +319,6 @@ export class MatListOption extends _MatListOptionMixinBase implements AfterConte
   host: {
     'role': 'listbox',
     'class': 'mat-selection-list mat-list-base',
-    '(focus)': '_onFocus()',
     '(keydown)': '_keydown($event)',
     '[attr.aria-multiselectable]': 'multiple',
     '[attr.aria-disabled]': 'disabled.toString()',
@@ -417,7 +416,9 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
   constructor(private _element: ElementRef<HTMLElement>,
     // @breaking-change 11.0.0 Remove `tabIndex` parameter.
     @Attribute('tabindex') tabIndex: string,
-    private _changeDetector: ChangeDetectorRef) {
+    private _changeDetector: ChangeDetectorRef,
+    // @breaking-change 11.0.0 `_focusMonitor` parameter to become required.
+    private _focusMonitor?: FocusMonitor) {
     super();
   }
 
@@ -460,6 +461,23 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
         }
       }
     });
+
+    // @breaking-change 11.0.0 Remove null assertion once _focusMonitor is required.
+    this._focusMonitor?.monitor(this._element)
+      .pipe(takeUntil(this._destroyed))
+      .subscribe(origin => {
+        if (origin === 'keyboard' || origin === 'program') {
+          const activeIndex = this._keyManager.activeItemIndex;
+
+          if (!activeIndex || activeIndex === -1) {
+            // If there is no active index, set focus to the first option.
+            this._keyManager.setFirstItemActive();
+          } else {
+            // Otherwise, set focus to the active option.
+            this._keyManager.setActiveItem(activeIndex);
+          }
+        }
+      });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -473,6 +491,8 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
   }
 
   ngOnDestroy() {
+    // @breaking-change 11.0.0 Remove null assertion once _focusMonitor is required.
+    this._focusMonitor?.stopMonitoring(this._element);
     this._destroyed.next();
     this._destroyed.complete();
     this._isDestroyed = true;
@@ -573,22 +593,6 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
   /** Emits a change event if the selected state of an option changed. */
   _emitChangeEvent(option: MatListOption) {
     this.selectionChange.emit(new MatSelectionListChange(this, option));
-  }
-
-  /**
-   * When the selection list is focused, we want to move focus to an option within the list. Do this
-   * by setting the appropriate option to be active.
-   */
-  _onFocus(): void {
-    const activeIndex = this._keyManager.activeItemIndex;
-
-    if (!activeIndex || (activeIndex === -1)) {
-      // If there is no active index, set focus to the first option.
-      this._keyManager.setFirstItemActive();
-    } else {
-      // Otherwise, set focus to the active option.
-      this._keyManager.setActiveItem(activeIndex);
-    }
   }
 
   /** Implemented as part of ControlValueAccessor. */
