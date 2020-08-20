@@ -1,32 +1,27 @@
-# Introduction to services and dependency injection
+# Introducción a servicios e inyección de dependencias
 
-*Service* is a broad category encompassing any value, function, or feature that an app needs.
-A service is typically a class with a narrow, well-defined purpose.
-It should do something specific and do it well.
+*Servicio* es una categoría amplia que abarca cualquier valor, función o característica que necesite una aplicación.
+Un servicio es típicamente una clase con un propósito limitado y bien definido.
+Debe hacer algo específico y hacerlo bien.
 
-Angular distinguishes components from services to increase modularity and reusability.
-By separating a component's view-related functionality from other kinds of processing,
-you can make your component classes lean and efficient.
+Angular distingue los componentes de los servicios para aumentar la modularidad y la reutilización.
+Al separar la funcionalidad relacionada con la vista de un componente de otros tipos de procesamiento, puedes hacer que tus componentes sean ágiles y eficientes.
 
-Ideally, a component's job is to enable the user experience and nothing more.
-A component should present properties and methods for data binding,
-in order to mediate between the view (rendered by the template)
-and the application logic (which often includes some notion of a *model*).
+Idealmente, el trabajo de un componente es permitir la experiencia del usuario y nada más.
+Un componente debe presentar propiedades y métodos para el enlace de datos,
+para mediar entre la vista (representada por la plantilla)
+y la lógica de la aplicación (que a menudo incluye alguna noción de * modelo *).
 
-A component can delegate certain tasks to services, such as fetching data from the server,
-validating user input, or logging directly to the console.
-By defining such processing tasks in an *injectable service class*, you make those tasks
-available to any component.
-You can also make your app more adaptable by injecting different providers of the same kind of service,
-as appropriate in different circumstances.
+Un componente puede delegar ciertas tareas a los servicios, como obtener datos del servidor, validar la entrada del usuario o iniciar sesión directamente en la consola.
+Al definir tales tareas de procesamiento en una * clase de servicio inyectable *, hace que esas tareas sean disponibles para cualquier componente.
+También puedes hacer que tu aplicación sea más adaptable inyectando diferentes proveedores del mismo tipo de servicio, según corresponda en diferentes circunstancias.
 
-Angular doesn't *enforce* these principles. Angular does help you *follow* these principles
-by making it easy to factor your application logic into services and make those services
-available to components through *dependency injection*.
+Angular no * impone * estos principios. Angular te ayuda a * seguir * estos principios
+al facilitar la integración de la lógica de tu aplicación en los servicios y hacer que esos servicios sean disponibles para los componentes a través de * inyección de dependencia *.
 
-## Service examples
+## Ejemplos de servicios
 
-Here's an example of a service class that logs to the browser console.
+A continuación, se muestra un ejemplo de una clase de servicio que se registra en la consola del navegador.
 
 <code-example path="architecture/src/app/logger.service.ts" header="src/app/logger.service.ts (class)" region="class"></code-example>
 
