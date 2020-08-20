@@ -82,4 +82,24 @@ describe('commit message parsing:', () => {
     const message2 = buildCommitMessage({prefix: 'squash! '});
     expect(parseCommitMessage(message2).isSquash).toBe(true);
   });
+
+  it('ignores comment lines', () => {
+    const message = buildCommitMessage({
+      prefix: '# This is a comment line before the header.\n' +
+          '## This is another comment line before the headers.\n',
+      body: '# This is a comment line befor the body.\n' +
+          'This is line 1 of the actual body.\n' +
+          '## This is another comment line inside the body.\n' +
+          'This is line 2 of the actual body (and it also contains a # but it not a comment).\n' +
+          '### This is yet another comment line after the body.\n',
+    });
+    const parsedMessage = parseCommitMessage(message);
+
+    expect(parsedMessage.header)
+        .toBe(`${commitValues.type}(${commitValues.scope}): ${commitValues.summary}`);
+    expect(parsedMessage.body)
+        .toBe(
+            'This is line 1 of the actual body.\n' +
+            'This is line 2 of the actual body (and it also contains a # but it not a comment).\n');
+  });
 });

@@ -16,13 +16,7 @@ import {validateCommitMessage} from './validate';
 
 /** Validate commit message at the provided file path. */
 export function validateFile(filePath: string) {
-  // Read the commit message from the specified file and remove any comments (i.e. lines starting
-  // with `#`). Comments are automatically removed by git and are not part of the final commit
-  // message.
-  const commitMessage = readFileSync(resolve(getRepoBaseDir(), filePath), 'utf8')
-                            .split('\n')
-                            .filter(line => !line.startsWith('#'))
-                            .join('\n');
+  const commitMessage = readFileSync(resolve(getRepoBaseDir(), filePath), 'utf8');
   if (validateCommitMessage(commitMessage)) {
     info('√  Valid commit message');
     deleteCommitMessageDraft(filePath);
