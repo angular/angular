@@ -9,10 +9,15 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {MatMenuBarModule} from '@angular/material-experimental/menubar';
-import {MatMenuBarDemo} from './mat-menubar-demo';
+import {CdkMenuModule} from '@angular/cdk-experimental/menu';
+import {MatMenuBarDemo, DemoMenu, DemoMenuItem} from './mat-menubar-demo';
 
 @NgModule({
-  imports: [MatMenuBarModule, RouterModule.forChild([{path: '', component: MatMenuBarDemo}])],
-  declarations: [MatMenuBarDemo],
+  imports: [
+    CdkMenuModule,
+    MatMenuBarModule,
+    RouterModule.forChild([{path: '', component: MatMenuBarDemo}]),
+  ],
+  declarations: [MatMenuBarDemo, DemoMenu, DemoMenuItem],
 })
 export class MatMenuBarDemoModule {}

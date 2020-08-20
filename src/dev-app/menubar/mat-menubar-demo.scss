@@ -1,0 +1,28 @@
+.mat-menu {
+  display: flex;
+  flex-direction: column;
+
+  max-height: 808px;
+  min-height: 64px;
+  max-width: 280px;
+  min-width: 112px;
+
+  padding: 8px 0;
+
+  border-radius: 4px;
+  box-shadow: #0003 0 2px 4px -1px, #00000024 0 4px 5px 0, #0000001f 0 1px 10px 0;
+
+  cursor: pointer;
+
+  &[aria-orientation='horizontal'] {
+    flex-direction: row;
+  }
+}
+
+.mat-menu-item {
+  display: block;
+  padding: 16px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}

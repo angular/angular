@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -7,9 +7,16 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     assets = [
         "mat-menubar-demo.html",
+        ":mat_menubar_demo_scss",
     ],
     deps = [
+        "//src/cdk-experimental/menu",
         "//src/material-experimental/menubar",
         "@npm//@angular/router",
     ],
+)
+
+sass_binary(
+    name = "mat_menubar_demo_scss",
+    src = "mat-menubar-demo.scss",
 )
