@@ -7,9 +7,9 @@
  */
 
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Directive, ElementRef, EventEmitter, Inject, Input, OnChanges, Output} from '@angular/core';
 import {hasModifierKey, TAB} from '@angular/cdk/keycodes';
-import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
+import {Directive, ElementRef, EventEmitter, Inject, Input, OnChanges, Output} from '@angular/core';
+import {MatChipsDefaultOptions, MAT_CHIPS_DEFAULT_OPTIONS} from './chip-default-options';
 import {MatChipGrid} from './chip-grid';
 import {MatChipTextControl} from './chip-text-control';
 
@@ -74,7 +74,8 @@ export class MatChipInput implements MatChipTextControl, OnChanges {
    * Defaults to `[ENTER]`.
    */
   @Input('matChipInputSeparatorKeyCodes')
-  separatorKeyCodes: number[] | Set<number> = this._defaultOptions.separatorKeyCodes;
+  separatorKeyCodes: readonly number[] | ReadonlySet<number> =
+      this._defaultOptions.separatorKeyCodes;
 
   /** Emitted when a chip is to be added. */
   @Output('matChipInputTokenEnd')
@@ -163,13 +164,7 @@ export class MatChipInput implements MatChipTextControl, OnChanges {
 
   /** Checks whether a keycode is one of the configured separators. */
   private _isSeparatorKey(event: KeyboardEvent) {
-    if (hasModifierKey(event)) {
-      return false;
-    }
-
-    const separators = this.separatorKeyCodes;
-    const keyCode = event.keyCode;
-    return Array.isArray(separators) ? separators.indexOf(keyCode) > -1 : separators.has(keyCode);
+    return !hasModifierKey(event) && new Set(this.separatorKeyCodes).has(event.keyCode);
   }
 
   static ngAcceptInputType_addOnBlur: BooleanInput;

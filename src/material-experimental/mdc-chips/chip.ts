@@ -137,7 +137,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   /** Emits when the chip is blurred. */
   readonly _onBlur = new Subject<MatChipEvent>();
 
-  readonly REMOVE_ICON_HANDLED_KEYS: Set<number> = new Set([SPACE, ENTER]);
+  readonly REMOVE_ICON_HANDLED_KEYS: ReadonlySet<number> = new Set([SPACE, ENTER]);
 
   /** Whether this chip is a basic (unstyled) chip. */
   readonly _isBasicChip: boolean;

@@ -85,7 +85,7 @@ export declare class MatChipInput implements MatChipTextControl, OnChanges {
     focused: boolean;
     id: string;
     placeholder: string;
-    separatorKeyCodes: number[] | Set<number>;
+    separatorKeyCodes: readonly number[] | ReadonlySet<number>;
     constructor(_elementRef: ElementRef<HTMLInputElement>, _defaultOptions: MatChipsDefaultOptions);
     _blur(): void;
     _emitChipEnd(event?: KeyboardEvent): void;
@@ -200,7 +200,7 @@ export declare class MatChipRemove {
 }
 
 export interface MatChipsDefaultOptions {
-    separatorKeyCodes: number[] | Set<number>;
+    separatorKeyCodes: readonly number[] | ReadonlySet<number>;
 }
 
 export declare class MatChipSelectionChange {
