@@ -55,6 +55,7 @@ entryPoints = [
     "sort",
     "sort/testing",
     "stepper",
+    "stepper/testing",
     "table",
     "table/testing",
     "tabs",

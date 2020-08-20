@@ -13,6 +13,7 @@ import {Directive} from '@angular/core';
 @Directive({
   selector: 'button[matStepperNext]',
   host: {
+    'class': 'mat-stepper-next',
     '[type]': 'type',
   },
   inputs: ['type']
@@ -24,6 +25,7 @@ export class MatStepperNext extends CdkStepperNext {
 @Directive({
   selector: 'button[matStepperPrevious]',
   host: {
+    'class': 'mat-stepper-previous',
     '[type]': 'type',
   },
   inputs: ['type']
