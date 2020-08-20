@@ -118,7 +118,7 @@
 
     <mat-selection-list #groceries [ngModel]="selectedOptions"
                         (ngModelChange)="onSelectedOptionsChange($event)"
-                        (change)="changeEventCount = changeEventCount + 1"
+                        (selectionChange)="changeEventCount = changeEventCount + 1"
                         [disabled]="selectionListDisabled"
                         [disableRipple]="selectionListRippleDisabled"
                         color="primary">
@@ -148,14 +148,16 @@
     <p>Change Event Count {{changeEventCount}}</p>
     <p>Model Change Event Count {{modelChangeEventCount}}</p>
     <p>
-      <mat-checkbox [(ngModel)]="selectionListDisabled">
-        Disable Selection List
-      </mat-checkbox>
+      <label>
+        Disable selection list
+        <input type="checkbox" [(ngModel)]="selectionListDisabled">
+      </label>
     </p>
     <p>
-      <mat-checkbox [(ngModel)]="selectionListRippleDisabled">
+      <label>
         Disable Selection List ripples
-      </mat-checkbox>
+        <input type="checkbox" [(ngModel)]="selectionListRippleDisabled">
+      </label>
     </p>
     <p>
       <button mat-raised-button (click)="groceries.selectAll()">Select all</button>
@@ -179,5 +181,24 @@
     </mat-selection-list>
 
     <p>Selected: {{favoriteOptions | json}}</p>
+  </div>
+
+  <div>
+    <h2>Line alignment</h2>
+
+    <mat-list>
+      <mat-list-item *ngFor="let link of links">
+        <span mat-line>{{ link.name }}</span>
+        <span>Not in an <i>matLine</i></span>
+      </mat-list-item>
+    </mat-list>
+
+    <mat-selection-list>
+      <mat-list-option value="first">First</mat-list-option>
+      <mat-list-option value="second">
+        <span matLine>Second</span>
+        <span>Not in an <i>matLine</i></span>
+      </mat-list-option>
+    </mat-selection-list>
   </div>
 </div>

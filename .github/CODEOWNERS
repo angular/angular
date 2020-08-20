@@ -106,7 +106,7 @@
 /src/material-experimental/mdc-form-field/**       @devversion @mmalerba
 /src/material-experimental/mdc-helpers/**          @mmalerba
 /src/material-experimental/mdc-input/**            @devversion @mmalerba
-/src/material-experimental/mdc-list/**             @mmalerba
+/src/material-experimental/mdc-list/**             @mmalerba @devversion
 /src/material-experimental/mdc-menu/**             @crisbeto
 /src/material-experimental/mdc-select/**           @crisbeto
 /src/material-experimental/mdc-progress-spinner/** @andrewseguin

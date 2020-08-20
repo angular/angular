@@ -1,34 +1,33 @@
 @import '@material/density/functions.import';
 @import '@material/list/variables.import';
 @import '@material/list/mixins.import';
-@import '@material/ripple/variables.import';
+
+@import './interactive-list-theme';
+@import './list-option-theme';
 @import '../mdc-helpers/mdc-helpers';
+
 
 // TODO: implement mat-list[dense] once density system is in master
 
+
 @mixin mat-mdc-list-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
-  $is-dark-theme: map-get($config, is-dark);
-  $state-opacities:
-      if($is-dark-theme, $mdc-ripple-light-ink-opacities, $mdc-ripple-dark-ink-opacities);
+
+  // MDC's state styles are tied in with their ripple. Since we don't use the MDC
+  // ripple, we need to add the hover, focus and selected states manually.
+  @include _mat-mdc-interactive-list-item-state-colors($config);
 
   @include mat-using-mdc-theme($config) {
     @include mdc-list-without-ripple($query: $mat-theme-styles-query);
-  }
 
-  // MDC's state styles are tied in with their ripple. Since we don't use the MDC ripple, we need to
-  // add the hover and focus states manually.
-  .mat-mdc-list-item-interactive {
-    &::before {
-      background: if($is-dark-theme, white, black);
+    .mat-mdc-list-option {
+      @include _mat-mdc-list-option-color-override(primary);
     }
-
-    &:hover::before {
-      opacity: map-get($state-opacities, hover);
+    .mat-mdc-list-option.mat-accent {
+      @include _mat-mdc-list-option-color-override(secondary);
     }
-
-    &:focus::before {
-      opacity: map-get($state-opacities, focus);
+    .mat-mdc-list-option.mat-warn {
+      @include _mat-mdc-list-option-color-override(error);
     }
   }
 }
@@ -42,18 +41,21 @@
   );
 
   // MDC list provides a mixin called `mdc-list-single-line-density`, but we cannot use
-  // that mixin the generated generated density styles are scoped to `.mdc-list-item`, while
+  // that mixin, as the generated generated density styles are scoped to `.mdc-list-item`, while
   // the styles should actually only affect single-line list items. This has been reported as
   // a bug in the MDC repository: https://github.com/material-components/material-components-web/issues/5737.
   .mat-mdc-list-item-single-line {
     @include mdc-list-single-line-height($height);
   }
+
+  @include _mat-mdc-list-option-density-styles($density-scale);
 }
 
 @mixin mat-mdc-list-typography($config-or-theme) {
   $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
     @include mdc-list-without-ripple($query: $mat-typography-styles-query);
+    @include _mat-mdc-list-option-typography-styles();
   }
 }
 

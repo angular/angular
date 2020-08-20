@@ -1,0 +1,41 @@
+@import '@material/theme/mixins.import';
+@import '@material/list/mixins.import';
+@import '@material/checkbox/mixins.import';
+
+@import '../mdc-checkbox/checkbox-theme';
+
+// Mixin that overrides the selected item and checkbox colors for list options. By
+// default, the MDC list uses the `primary` color for list items. The MDC checkbox
+// inside list options by default uses the `primary` color too.
+@mixin _mat-mdc-list-option-color-override($color) {
+  & .mdc-list-item__meta, & .mdc-list-item__graphic {
+    @include _mdc-checkbox-styles-with-color($color);
+  }
+
+  &.mdc-list-item--selected {
+    @include mdc-list-item-primary-text-ink-color($color);
+    @include mdc-list-item-graphic-ink-color($color);
+
+    &::before {
+      @include mdc-theme-prop(background, $color);
+    }
+  }
+}
+
+@mixin _mat-mdc-list-option-density-styles($density-scale) {
+  .mat-mdc-list-option {
+    .mdc-list-item__meta, .mdc-list-item__graphic {
+      .mdc-checkbox {
+        @include mdc-checkbox-density($density-scale, $query: $mat-base-styles-query);
+      }
+    }
+  }
+}
+
+@mixin _mat-mdc-list-option-typography-styles() {
+  .mat-mdc-list-option {
+    .mdc-list-item__meta, .mdc-list-item__graphic {
+      @include mdc-checkbox-without-ripple($query: $mat-typography-styles-query);
+    }
+  }
+}

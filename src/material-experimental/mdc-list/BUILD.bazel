@@ -19,7 +19,10 @@ ng_module(
             "**/*.spec.ts",
         ],
     ),
-    assets = [":list_scss"] + glob(["**/*.html"]),
+    assets = [
+        ":list_scss",
+        ":list_option_scss",
+    ] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-list",
     deps = [
         "//src/cdk/collections",
@@ -34,6 +37,7 @@ sass_library(
     name = "mdc_list_scss_lib",
     srcs = glob(["**/_*.scss"]),
     deps = [
+        "//src/material-experimental/mdc-checkbox:mdc_checkbox_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     ],
@@ -51,6 +55,18 @@ sass_binary(
     ],
 )
 
+sass_binary(
+    name = "list_option_scss",
+    src = "list-option.scss",
+    include_paths = [
+        "external/npm/node_modules",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+    ],
+)
+
 ng_test_library(
     name = "list_tests_lib",
     srcs = glob(
@@ -59,9 +75,13 @@ ng_test_library(
     ),
     deps = [
         ":mdc-list",
+        "//src/cdk/keycodes",
         "//src/cdk/testing/private",
         "//src/cdk/testing/testbed",
+        "//src/material/core",
+        "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
+        "@npm//@material/list",
     ],
 )
 

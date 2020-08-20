@@ -5,6 +5,7 @@ import {MatCardModule} from '@angular/material-experimental/mdc-card';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatListModule} from '@angular/material-experimental/mdc-list';
 import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-bar';
 import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
 import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
@@ -44,6 +45,7 @@ export class KitchenSinkMdc {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatListModule,
     MatMenuModule,
     MatRadioModule,
     MatSlideToggleModule,

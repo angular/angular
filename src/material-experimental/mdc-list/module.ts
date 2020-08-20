@@ -19,7 +19,8 @@ import {
   MatListSubheaderCssMatStyler,
 } from './list';
 import {MatNavList} from './nav-list';
-import {MatListOption, MatSelectionList} from './selection-list';
+import {MatSelectionList} from './selection-list';
+import {MatListOption} from './list-option';
 
 @NgModule({
   imports: [

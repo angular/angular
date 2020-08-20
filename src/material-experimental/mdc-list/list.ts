@@ -14,7 +14,7 @@ import {
   Directive,
   ElementRef,
   NgZone,
-  QueryList,
+  QueryList, ViewChild,
   ViewEncapsulation
 } from '@angular/core';
 import {MatLine} from '@angular/material/core';
@@ -77,13 +77,11 @@ export class MatList extends MatListBase {}
   templateUrl: 'list-item.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    {provide: MatListItemBase, useExisting: MatListItem},
-  ]
 })
 export class MatListItem extends MatListItemBase {
   @ContentChildren(MatLine, {read: ElementRef, descendants: true}) lines:
       QueryList<ElementRef<Element>>;
+  @ViewChild('text') _itemText: ElementRef<HTMLElement>;
 
   constructor(element: ElementRef, ngZone: NgZone, listBase: MatListBase, platform: Platform) {
     super(element, ngZone, listBase, platform);

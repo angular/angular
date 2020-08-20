@@ -1,0 +1,6 @@
+@import '@material/checkbox/mixins.import';
+@import '../mdc-helpers/mdc-helpers';
+
+// The MDC-based list-option uses the MDC checkbox for the selection indicators.
+// We need to ensure that the checkbox styles are included for the list-option.
+@include mdc-checkbox-without-ripple($query: $mat-base-styles-query);

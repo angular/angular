@@ -11,3 +11,4 @@ export * from './action-list';
 export * from './nav-list';
 export * from './selection-list';
 export * from './module';
+export * from './list-option';

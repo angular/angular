@@ -9,7 +9,8 @@
   If lines were not explicitly given, assume the remaining content is the text, otherwise assume it
   is an action that belongs in the "meta" section.
 -->
-<span [class.mdc-list-item__text]="!lines.length" [class.mdc-list-item__meta]="lines.length">
+<span [class.mdc-list-item__text]="!lines.length"
+      [class.mdc-list-item__meta]="lines.length" #text>
   <ng-content></ng-content>
 </span>
 
