@@ -145,7 +145,11 @@ export class MatListOption extends _MatListOptionMixinBase implements AfterConte
   @Input()
   get value(): any { return this._value; }
   set value(newValue: any) {
-    if (this.selected && newValue !== this.value && this._inputsInitialized) {
+    if (
+      this.selected &&
+      !this.selectionList.compareWith(newValue, this.value) &&
+      this._inputsInitialized
+    ) {
       this.selected = false;
     }
 

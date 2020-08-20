@@ -814,6 +814,39 @@ describe('MatSelectionList without forms', () => {
     });
   });
 
+  describe('with changing option value', () => {
+    let fixture: ComponentFixture<SelectionListWithChangingOptionValue>;
+    let selectionList: MatSelectionList;
+    let listOption: MatListOption;
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [MatListModule],
+        declarations: [SelectionListWithChangingOptionValue],
+      });
+
+      TestBed.compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SelectionListWithChangingOptionValue);
+      fixture.detectChanges();
+
+      selectionList = fixture.debugElement.query(By.directive(MatSelectionList))!.componentInstance;
+      listOption = fixture.debugElement.query(By.directive(MatListOption))!.componentInstance;
+    });
+
+    it('should use `compareWith` function when updating option selection state', () => {
+      expect(selectionList.selectedOptions.isSelected(listOption)).toBeTrue();
+      fixture.componentInstance.value = {id: 1};
+      fixture.detectChanges();
+      expect(selectionList.selectedOptions.isSelected(listOption)).toBeTrue();
+      fixture.componentInstance.value = {id: 2};
+      fixture.detectChanges();
+      expect(selectionList.selectedOptions.isSelected(listOption)).toBeFalse();
+    });
+  });
+
   describe('with option disabled', () => {
     let fixture: ComponentFixture<SelectionListWithDisabledOption>;
     let listOptionEl: HTMLElement;
@@ -1675,6 +1708,20 @@ class SelectionListWithCustomComparator {
     {id: 2, label: 'Two'},
     {id: 3, label: 'Three'}
   ];
+}
+
+
+@Component({
+  template: `
+    <mat-selection-list [compareWith]="compareWith">
+      <mat-list-option [value]="value" [selected]="value.id === 1">
+        One
+      </mat-list-option>
+    </mat-selection-list>`
+})
+class SelectionListWithChangingOptionValue {
+  compareWith = (o1: any, o2: any) => o1 && o2 && o1.id === o2.id;
+  value = {id: 1};
 }
 
 
