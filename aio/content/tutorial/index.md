@@ -1,88 +1,90 @@
-<h1 class="no-toc">Tour of Heroes app and tutorial</h1>
+<h1 class="no-toc">Aplicación y tutorial Tour de héroes</h1>
 
 <div class="callout is-helpful">
-<header>Getting Started</header>
+<header>Primeros Pasos </header>
 
-In this tutorial, you build your own app from the ground up, providing experience with the typical development process, as well as an introduction to basic app-design concepts, tools, and terminology.
+En este tutorial, creará su propia aplicación desde cero, proporcionando experiencia con el proceso de desarrollo típico, así como una introducción a los conceptos básicos de diseño de aplicaciones, herramientas y terminología.
 
-If you're completely new to Angular, you might want to try the [**Try it now**](start) quick-start app first.
-It is based on a ready-made  partially-completed project, which you can examine and modify in the StackBlitz interactive development environment, where you can see the results in real time.
+Si es completamente nuevo en Angular, es posible que desee probar la aplicación de inicio rápido [**Pruébelo ahora **](start) primero.
+Se basa en un proyecto listo y parcialmente completado, que puede examinar y modificar en el entorno de desarrollo interactivo de StackBlitz, donde puede ver los resultados en tiempo real.
 
-The "Try it" tutorial covers the same major topics&mdash;components, template syntax, routing, services, and accessing data via HTTP&mdash;in a condensed format, following the most current best practices.
+El tutorial "Pruébalo" cubre los mismos temas principales&mdash;componentes, sintaxis de plantilla, enrutamiento, servicios y acceso a datos a través de HTTP&mdash; en un formato condensado, siguiendo las mejores prácticas más actuales.
+
 
 </div>
 
-This _Tour of Heroes_ tutorial shows you how to set up your local development environment and develop an app using the [Angular CLI tool](cli "CLI command reference"), and provides an introduction to the fundamentals of Angular.
+Este tutorial de _Tour de héroes_ le muestra cómo configurar su entorno de desarrollo local y desarrollar una aplicación utilizando la [Herramienta CLI de Angular](cli "referencia de comando de CLI"), y proporciona una introducción a los fundamentos de Angular.
 
-The _Tour of Heroes_ app that you build helps a staffing agency manage its stable of heroes.
-The app has many of the features you'd expect to find in any data-driven application.
-The finished app acquires and displays a list of heroes, edits a selected hero's detail, and navigates among different views of heroic data.
+La aplicación _Tour de héroes_ que construyes ayuda a una agencia de personal a administrar su grupo de héroes.
+La aplicación tiene muchas de las características que esperaría encontrar en cualquier aplicación basada en datos.
+La aplicación final adquiere y muestra una lista de héroes, edita los detalles de un héroe seleccionado y navega entre diferentes vistas de datos heroicos.
 
-You will find references to and expansions of this app domain in many of the examples used throughout the Angular documentation, but you don't necessarily need to work through this tutorial to understand those examples.
+Encontrará referencias y expansiones de este dominio de aplicación en muchos de los ejemplos utilizados en toda la documentación de Angular, pero no necesariamente necesita trabajar en este tutorial para comprender esos ejemplos.
 
-By the end of this tutorial you will be able to do the following:
+Al final de este tutorial, podrá hacer lo siguiente:
 
-* Use built-in Angular [directives](guide/glossary#directive "Directives definition") to show and hide elements and display lists of hero data.
-* Create Angular [components](guide/glossary#component "Components definition") to display hero details and show an array of heroes.
-* Use one-way [data binding](guide/glossary#data-binding "Data binding definition") for read-only data.
-* Add editable fields to update a model with two-way data binding.
-* Bind component methods to user events, like keystrokes and clicks.
-* Enable users to select a hero from a master list and edit that hero in the details view.
-* Format data with [pipes](guide/glossary#pipe "Pipe definition").
-* Create a shared [service](guide/glossary#service "Service definition") to assemble the heroes.
-* Use [routing](guide/glossary#router "Router definition") to navigate among different views and their components.
+* Utilizar las [directivas](guide/glossary#directive "Directives definition") Angular integradas para mostrar y ocultar elementos y mostrar listas de datos de héroes.
+* Crear [componentes](guide/glossary#component "Components definition") angular para mostrar los detalles del héroe y mostrar una serie de héroes.
+* Usar el [enlace de datos](guide/glossary#data-binding "Data binding definition")(data binding) unidireccional para datos de solo lectura.
+* Agregar campos editables para actualizar un modelo con enlace de datos bidireccional.
+* Enlazar métodos de componentes a eventos de usuario, como pulsaciones de teclas y clics.
+* Permitir a los usuarios seleccionar un héroe de una lista maestra y editar ese héroe en la vista de detalles.
+* Dar Formato a datos con [tuberías](guide/glossary#pipe "Pipe definition")(pipes)
+* Crear un [servicio](guide/glossary#service "Service definition") compartido para reunir a los héroes.
+* Utilizar [enrutamiento](guide/glossary#router "Router definition")(routing) para navegar entre diferentes vistas y sus componentes.
 
-You'll learn enough Angular to get started and gain confidence that
-Angular can do whatever you need it to do.
+Aprenderá suficiente Angular para comenzar y ganará la confianza de que
+Angular puede hacer lo que sea necesario.
 
 <div class="callout is-helpful">
-<header>Solution</header>
+<header>Solución</header>
 
-After completing all tutorial steps, the final app will look like this: <live-example name="toh-pt6"></live-example>.
+Después de completar todos los pasos del tutorial, la aplicación final se verá así: <live-example name="toh-pt6"> </live-example>.
 
 </div>
 
-## What you'll build
+## Lo que construirás
 
-Here's a visual idea of where this tutorial leads, beginning with the "Dashboard"
-view and the most heroic heroes:
+Aquí hay una idea visual de a dónde conduce este tutorial, comenzando con el "Tablero(Dashboard)"
+ver y los héroes más heroicos:
 
 <div class="lightbox">
-  <img src='generated/images/guide/toh/heroes-dashboard-1.png' alt="Output of heroes dashboard">
+  <img src='generated/images/guide/toh/heroes-dashboard-1.png' alt="Salida del panel de héroes">
 </div>
 
-You can click the two links above the dashboard ("Dashboard" and "Heroes")
-to navigate between this Dashboard view and a Heroes view.
+Puede hacer clic en los dos enlaces que se encuentran sobre el tablero ("Tablero"(Dashboard) y "Héroes")
+para navegar entre esta vista de Panel y una vista de Héroes.
 
-If you click the dashboard hero "Magneta," the router opens a "Hero Details" view
-where you can change the hero's name.
+Si hace clic en el héroe del panel "Magneta", el enrutador abre una vista de "Detalles del héroe"
+donde puedes cambiar el nombre del héroe.
+
 
 <div class="lightbox">
-  <img src='generated/images/guide/toh/hero-details-1.png' alt="Details of hero in app">
+  <img src='generated/images/guide/toh/hero-details-1.png' alt="Detalles del héroe en la aplicación">
 </div>
 
-Clicking the "Back" button returns you to the Dashboard.
-Links at the top take you to either of the main views.
-If you click "Heroes," the app displays the "Heroes" master list view.
+Al hacer clic en el botón "Atrás", vuelve al Panel de control.
+Los enlaces en la parte superior lo llevan a cualquiera de las vistas principales.
+Si hace clic en "Héroes", la aplicación muestra la vista de lista maestra "Héroes".
 
 
 <div class="lightbox">
-  <img src='generated/images/guide/toh/heroes-list-2.png' alt="Output of heroes list app">
+  <img src='generated/images/guide/toh/heroes-list-2.png' alt="Salida de la aplicación de lista de héroes">
 </div>
 
-When you click a different hero name, the read-only mini detail beneath the list reflects the new choice.
+Cuando haces clic en un nombre de héroe diferente, el mini detalle de solo lectura debajo de la lista refleja la nueva opción.
 
-You can click the "View Details" button to drill into the
-editable details of the selected hero.
+Puede hacer clic en el botón "Ver detalles" para profundizar en
+detalles editables del héroe seleccionado.
 
-The following diagram captures all of the navigation options.
+El siguiente diagrama captura todas las opciones de navegación.
 
 <div class="lightbox">
-  <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations">
+  <img src='generated/images/guide/toh/nav-diagram.png' alt="Ver navegación">
 </div>
 
-Here's the app in action:
+Aquí está la aplicación en acción:
 
 <div class="lightbox">
-  <img src='generated/images/guide/toh/toh-anim.gif' alt="Tour of Heroes in Action">
+  <img src='generated/images/guide/toh/toh-anim.gif' alt="Tour de Heroes en acción">
 </div>
