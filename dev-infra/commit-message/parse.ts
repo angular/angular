@@ -36,6 +36,10 @@ const COMMIT_BODY_RE = /^.*\n\n([\s\S]*)$/;
 
 /** Parse a full commit message into its composite parts. */
 export function parseCommitMessage(commitMsg: string): ParsedCommitMessage {
+  // Ignore comments (i.e. lines starting with `#`). Comments are automatically removed by git and
+  // should not be considered part of the final commit message.
+  commitMsg = commitMsg.split('\n').filter(line => !line.startsWith('#')).join('\n');
+
   let header = '';
   let body = '';
   let bodyWithoutLinking = '';
