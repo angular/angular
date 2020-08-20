@@ -7,3 +7,9 @@
 .mat-table-sticky {
   @include vendor-prefixes.position-sticky;
 }
+
+// MDC Table applies `table-layout: fixed`, but this is a backwards incompatible
+// change since the table did not previously apply it.
+.mdc-data-table__table {
+  table-layout: auto;
+}
