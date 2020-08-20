@@ -140,8 +140,16 @@ function createCtorParametersClassPropertyType(): ts.TypeNode {
             undefined),
       ])),
       undefined));
+
+  // TODO(alan-agius4): Remove when we no longer support TS 3.9
+  // Use: ts.createLiteralTypeNode(ts.createNull()) directly.
+  const nullLiteral = ts.createNull() as any;
+  const nullType = ts.isLiteralTypeNode(nullLiteral) ?
+      ts.createLiteralTypeNode(nullLiteral as any) :
+      nullLiteral;
   return ts.createFunctionTypeNode(undefined, [], ts.createArrayTypeNode(ts.createUnionTypeNode([
-    ts.createTypeLiteralNode(typeElements), ts.createLiteralTypeNode(ts.createNull())
+    ts.createTypeLiteralNode(typeElements),
+    nullType,
   ])));
 }
 

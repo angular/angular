@@ -513,7 +513,12 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
 
   visitLiteralExpr(ast: LiteralExpr, context: Context): ts.TypeNode {
     if (ast.value === null) {
-      return ts.createLiteralTypeNode(ts.createNull());
+      // TODO(alan-agius4): Remove when we no longer support TS 3.9
+      // Use: return ts.createLiteralTypeNode(ts.createNull()) directly.
+      const nullLiteral = ts.createNull() as any;
+      return ts.isLiteralTypeNode(nullLiteral) ?
+          ts.createLiteralTypeNode(nullLiteral as any) :
+          ts.createKeywordTypeNode(ts.SyntaxKind.NullKeyword);
     } else if (ast.value === undefined) {
       return ts.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword);
     } else if (typeof ast.value === 'boolean') {
