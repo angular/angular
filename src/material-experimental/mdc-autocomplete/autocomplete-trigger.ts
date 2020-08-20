@@ -44,38 +44,4 @@ export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
 })
 export class MatAutocompleteTrigger extends _MatAutocompleteTriggerBase {
   protected _aboveClass = 'mat-mdc-autocomplete-panel-above';
-
-  protected _scrollToOption(index: number): void {
-    // Given that we are not actually focusing active options, we must manually adjust scroll
-    // to reveal options below the fold. First, we find the offset of the option from the top
-    // of the panel. If that offset is below the fold, the new scrollTop will be the offset -
-    // the panel height + the option height, so the active option will be just visible at the
-    // bottom of the panel. If that offset is above the top of the visible panel, the new scrollTop
-    // will become the offset. If that offset is visible within the panel already, the scrollTop is
-    // not adjusted.
-    const autocomplete = this.autocomplete;
-    const labelCount = _countGroupLabelsBeforeOption(index,
-      autocomplete.options, autocomplete.optionGroups);
-
-    if (index === 0 && labelCount === 1) {
-      // If we've got one group label before the option and we're at the top option,
-      // scroll the list to the top. This is better UX than scrolling the list to the
-      // top of the option, because it allows the user to read the top group's label.
-      autocomplete._setScrollTop(0);
-    } else {
-      const option = autocomplete.options.toArray()[index];
-
-      if (option) {
-        const element = option._getHostElement();
-        const newScrollPosition = _getOptionScrollPosition(
-          element.offsetTop,
-          element.offsetHeight,
-          autocomplete._getScrollTop(),
-          autocomplete.panel.nativeElement.offsetHeight
-        );
-
-        autocomplete._setScrollTop(newScrollPosition);
-      }
-    }
-  }
 }

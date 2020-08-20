@@ -61,7 +61,6 @@ export declare abstract class _MatAutocompleteTriggerBase implements ControlValu
     _handleFocus(): void;
     _handleInput(event: KeyboardEvent): void;
     _handleKeydown(event: KeyboardEvent): void;
-    protected abstract _scrollToOption(index: number): void;
     closePanel(): void;
     ngAfterViewInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
@@ -137,7 +136,6 @@ export declare class MatAutocompleteSelectedEvent {
 
 export declare class MatAutocompleteTrigger extends _MatAutocompleteTriggerBase {
     protected _aboveClass: string;
-    protected _scrollToOption(index: number): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatAutocompleteTrigger, "input[matAutocomplete], textarea[matAutocomplete]", ["matAutocompleteTrigger"], {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatAutocompleteTrigger, never>;
 }

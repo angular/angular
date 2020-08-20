@@ -1080,6 +1080,31 @@ describe('MDC-based MatAutocomplete', () => {
           .toEqual(40, `Expected panel to reveal the sixth option.`);
     });
 
+    it('should scroll to active options below if the option height is variable', () => {
+      // Make every other option a bit taller than the base of 48.
+      fixture.componentInstance.states.forEach((state, index) => {
+        if (index % 2 === 0) {
+          state.height = 64;
+        }
+      });
+      fixture.detectChanges();
+
+      const trigger = fixture.componentInstance.trigger;
+      const scrollContainer =
+          document.querySelector('.cdk-overlay-pane .mat-mdc-autocomplete-panel')!;
+
+      trigger._handleKeydown(DOWN_ARROW_EVENT);
+      fixture.detectChanges();
+      expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
+
+      // These down arrows will set the 6th option active, below the fold.
+      [1, 2, 3, 4, 5].forEach(() => trigger._handleKeydown(DOWN_ARROW_EVENT));
+
+      // Expect option bottom minus the panel height (336 - 256 + 8 = 88)
+      expect(scrollContainer.scrollTop)
+          .toEqual(88, `Expected panel to reveal the sixth option.`);
+    });
+
     it('should scroll to active options on UP arrow', () => {
       const scrollContainer =
           document.querySelector('.cdk-overlay-pane .mat-mdc-autocomplete-panel')!;
@@ -2617,7 +2642,10 @@ const SIMPLE_AUTOCOMPLETE_TEMPLATE = `
 
   <mat-autocomplete [class]="panelClass" #auto="matAutocomplete" [displayWith]="displayFn"
     [disableRipple]="disableRipple" (opened)="openedSpy()" (closed)="closedSpy()">
-    <mat-option *ngFor="let state of filteredStates" [value]="state">
+    <mat-option
+      *ngFor="let state of filteredStates"
+      [value]="state"
+      [style.height.px]="state.height">
       <span>{{ state.code }}: {{ state.name }}</span>
     </mat-option>
   </mat-autocomplete>
@@ -2642,7 +2670,7 @@ class SimpleAutocomplete implements OnDestroy {
   @ViewChild(MatFormField) formField: MatFormField;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
 
-  states = [
+  states: {code: string, name: string, height?: number}[] = [
     {code: 'AL', name: 'Alabama'},
     {code: 'CA', name: 'California'},
     {code: 'FL', name: 'Florida'},
