@@ -298,15 +298,20 @@ function typeReferenceToExpression(
 }
 
 /**
- * Returns true if the given symbol refers to a value (as distinct from a type).
+ * Checks whether a given symbol refers to a value that exists at runtime (as distinct from a type).
  *
  * Expands aliases, which is important for the case where
  *   import * as x from 'some-module';
  * and x is now a value (the module object).
  */
-function symbolIsValue(tc: ts.TypeChecker, sym: ts.Symbol): boolean {
-  if (sym.flags & ts.SymbolFlags.Alias) sym = tc.getAliasedSymbol(sym);
-  return (sym.flags & ts.SymbolFlags.Value) !== 0;
+function symbolIsRuntimeValue(typeChecker: ts.TypeChecker, symbol: ts.Symbol): boolean {
+  if (symbol.flags & ts.SymbolFlags.Alias) {
+    symbol = typeChecker.getAliasedSymbol(symbol);
+  }
+
+  // Note that const enums are a special case, because
+  // while they have a value, they don't exist at runtime.
+  return (symbol.flags & ts.SymbolFlags.Value & ts.SymbolFlags.ConstEnumExcludes) !== 0;
 }
 
 /** ParameterDecorationInfo describes the information for a single constructor parameter. */
@@ -351,7 +356,7 @@ export function getDownlevelDecoratorsTransform(
       const symbol = typeChecker.getSymbolAtLocation(name);
       // Check if the entity name references a symbol that is an actual value. If it is not, it
       // cannot be referenced by an expression, so return undefined.
-      if (!symbol || !symbolIsValue(typeChecker, symbol) || !symbol.declarations ||
+      if (!symbol || !symbolIsRuntimeValue(typeChecker, symbol) || !symbol.declarations ||
           symbol.declarations.length === 0) {
         return undefined;
       }
