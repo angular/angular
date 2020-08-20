@@ -1,7 +1,7 @@
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {Component, TemplateRef, ViewChild} from '@angular/core';
+import {Component, TemplateRef, ViewChild, Injector} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {MatSnackBar, MatSnackBarConfig, MatSnackBarModule} from '@angular/material/snack-bar';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -13,6 +13,7 @@ import {MatSnackBarHarness} from './snack-bar-harness';
  */
 export function runHarnessTests(
     snackBarModule: typeof MatSnackBarModule,
+    snackBarToken: typeof MatSnackBar,
     snackBarHarness: typeof MatSnackBarHarness) {
   let fixture: ComponentFixture<SnackbarHarnessTest>;
   let loader: HarnessLoader;
@@ -140,25 +141,24 @@ export function runHarnessTests(
     snackBar = await loader.getHarness(snackBarHarness);
     await expectAsync(snackBar.dismissWithAction()).toBeRejectedWithError(/without action/);
   });
-}
 
-@Component({
-  template: `
-      <ng-template>
-          My custom snack-bar.
-      </ng-template>
-  `
-})
-class SnackbarHarnessTest {
-  @ViewChild(TemplateRef) customTmpl: TemplateRef<any>;
+  @Component({
+    template: `<ng-template>My custom snack-bar.</ng-template>`
+  })
+  class SnackbarHarnessTest {
+    @ViewChild(TemplateRef) customTmpl: TemplateRef<any>;
+    snackBar: MatSnackBar;
 
-  constructor(readonly snackBar: MatSnackBar) {}
+    constructor(injector: Injector) {
+      this.snackBar = injector.get(snackBarToken);
+    }
 
-  openSimple(message: string, action = '', config?: MatSnackBarConfig) {
-    return this.snackBar.open(message, action, config);
-  }
+    openSimple(message: string, action = '', config?: MatSnackBarConfig) {
+      return this.snackBar.open(message, action, config);
+    }
 
-  openCustom(config?: MatSnackBarConfig) {
-    return this.snackBar.openFromTemplate(this.customTmpl, config);
+    openCustom(config?: MatSnackBarConfig) {
+      return this.snackBar.openFromTemplate(this.customTmpl, config);
+    }
   }
 }
