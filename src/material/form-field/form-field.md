@@ -27,7 +27,7 @@ There are a couple differences to be aware of between the `legacy` appearance an
 `standard`, `fill`, and `outline` appearances. The `matPrefix` and `matSuffix` elements are center
 aligned by default for the newer appearances. The Material Design spec shows this as being the
 standard way to align prefix and suffix icons in the newer appearance variants. We do not recommend
-using text prefix and suffixes in the new variants because the label and input do not have the same
+using text prefix and suffixes in the `fill` and `outline` variants because the label and input do not have the same
 alignment. It is therefore impossible to align the prefix or suffix in a way that looks good when
 compared with both the label and input text.
 
