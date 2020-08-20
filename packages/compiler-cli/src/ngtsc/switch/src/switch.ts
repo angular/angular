@@ -42,8 +42,7 @@ function flipIvySwitchInFile(sf: ts.SourceFile): ts.SourceFile {
 
   // Only update the statements in the SourceFile if any have changed.
   if (newStatements !== undefined) {
-    sf = ts.getMutableClone(sf);
-    sf.statements = ts.createNodeArray(newStatements);
+    return ts.updateSourceFileNode(sf, newStatements);
   }
   return sf;
 }
@@ -105,7 +104,7 @@ function flipIvySwitchesInVariableStatement(
 
     // Find the post-switch variable identifier. If one can't be found, it's an error. This is
     // reported as a thrown error and not a diagnostic as transformers cannot output diagnostics.
-    let newIdentifier = findPostSwitchIdentifier(statements, postSwitchName);
+    const newIdentifier = findPostSwitchIdentifier(statements, postSwitchName);
     if (newIdentifier === null) {
       throw new Error(`Unable to find identifier ${postSwitchName} in ${
           stmt.getSourceFile().fileName} for the Ivy switch.`);

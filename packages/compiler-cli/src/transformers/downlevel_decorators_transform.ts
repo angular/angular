@@ -140,10 +140,9 @@ function createCtorParametersClassPropertyType(): ts.TypeNode {
             undefined),
       ])),
       undefined));
-  return ts.createFunctionTypeNode(
-      undefined, [],
-      ts.createArrayTypeNode(
-          ts.createUnionTypeNode([ts.createTypeLiteralNode(typeElements), ts.createNull()])));
+  return ts.createFunctionTypeNode(undefined, [], ts.createArrayTypeNode(ts.createUnionTypeNode([
+    ts.createTypeLiteralNode(typeElements), ts.createLiteralTypeNode(ts.createNull())
+  ])));
 }
 
 /**
@@ -287,8 +286,13 @@ function typeReferenceToExpression(
       // Ignore any generic types, just return the base type.
       return entityNameToExpression(typeRef.typeName);
     case ts.SyntaxKind.UnionType:
+      // TODO(alan-agius4): remove `t.kind !== ts.SyntaxKind.NullKeyword` when
+      // TS 3.9 support is dropped. In TS 4.0 NullKeyword is a child of LiteralType.
       const childTypeNodes =
-          (node as ts.UnionTypeNode).types.filter(t => t.kind !== ts.SyntaxKind.NullKeyword);
+          (node as ts.UnionTypeNode)
+              .types.filter(
+                  t => t.kind !== ts.SyntaxKind.NullKeyword &&
+                      !(ts.isLiteralTypeNode(t) && t.literal.kind === ts.SyntaxKind.NullKeyword));
       return childTypeNodes.length === 1 ?
           typeReferenceToExpression(entityNameToExpression, childTypeNodes[0]) :
           undefined;
@@ -429,7 +433,7 @@ export function getDownlevelDecoratorsTransform(
 
       const name = (element.name as ts.Identifier).text;
       const mutable = ts.getMutableClone(element);
-      mutable.decorators = decoratorsToKeep.length ?
+      (mutable as any).decorators = decoratorsToKeep.length ?
           ts.setTextRange(ts.createNodeArray(decoratorsToKeep), mutable.decorators) :
           undefined;
       return [name, mutable, toLower];
@@ -546,8 +550,6 @@ export function getDownlevelDecoratorsTransform(
         }
       }
 
-      const newClassDeclaration = ts.getMutableClone(classDecl);
-
       if (decoratorsToLower.length) {
         newMembers.push(createDecoratorClassProperty(decoratorsToLower));
       }
@@ -562,12 +564,13 @@ export function getDownlevelDecoratorsTransform(
       if (decoratedProperties.size) {
         newMembers.push(createPropDecoratorsClassProperty(diagnostics, decoratedProperties));
       }
-      newClassDeclaration.members = ts.setTextRange(
-          ts.createNodeArray(newMembers, newClassDeclaration.members.hasTrailingComma),
-          classDecl.members);
-      newClassDeclaration.decorators =
-          decoratorsToKeep.length ? ts.createNodeArray(decoratorsToKeep) : undefined;
-      return newClassDeclaration;
+
+      const members = ts.setTextRange(
+          ts.createNodeArray(newMembers, classDecl.members.hasTrailingComma), classDecl.members);
+
+      return ts.updateClassDeclaration(
+          classDecl, decoratorsToKeep.length ? decoratorsToKeep : undefined, classDecl.modifiers,
+          classDecl.name, classDecl.typeParameters, classDecl.heritageClauses, members);
     }
 
     /**

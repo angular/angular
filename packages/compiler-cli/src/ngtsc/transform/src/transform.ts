@@ -187,8 +187,8 @@ class IvyTransformationVisitor extends Visitor {
 
     // Create a new `NodeArray` with the filtered decorators that sourcemaps back to the original.
     const array = ts.createNodeArray(filtered);
-    array.pos = node.decorators.pos;
-    array.end = node.decorators.end;
+    (array.pos as number) = node.decorators.pos;
+    (array.end as number) = node.decorators.end;
     return array;
   }
 

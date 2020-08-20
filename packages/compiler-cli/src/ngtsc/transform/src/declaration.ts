@@ -239,7 +239,7 @@ export class ReturnTypeTransform implements DtsTransform {
   }
 
   transformClassElement(element: ts.ClassElement, imports: ImportManager): ts.ClassElement {
-    if (!ts.isMethodSignature(element)) {
+    if (!ts.isMethodDeclaration(element)) {
       return element;
     }
 
@@ -250,21 +250,10 @@ export class ReturnTypeTransform implements DtsTransform {
     const returnType = this.typeReplacements.get(original)!;
     const tsReturnType = translateType(returnType, imports);
 
-    const methodSignature = ts.updateMethodSignature(
-        /* node */ element,
-        /* typeParameters */ element.typeParameters,
-        /* parameters */ element.parameters,
-        /* type */ tsReturnType,
-        /* name */ element.name,
-        /* questionToken */ element.questionToken);
-
-    // Copy over any modifiers, these cannot be set during the `ts.updateMethodSignature` call.
-    methodSignature.modifiers = element.modifiers;
-
-    // A bug in the TypeScript declaration causes `ts.MethodSignature` not to be assignable to
-    // `ts.ClassElement`. Since `element` was a `ts.MethodSignature` already, transforming it into
-    // this type is actually correct.
-    return methodSignature as unknown as ts.ClassElement;
+    return ts.updateMethod(
+        element, element.decorators, element.modifiers, element.asteriskToken, element.name,
+        element.questionToken, element.typeParameters, element.parameters, tsReturnType,
+        element.body);
   }
 
   transformFunctionDeclaration(element: ts.FunctionDeclaration, imports: ImportManager):

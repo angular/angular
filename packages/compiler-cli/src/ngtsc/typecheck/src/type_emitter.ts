@@ -36,6 +36,7 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
       visitTypeReferenceNode: type => canEmitTypeReference(type),
       visitArrayTypeNode: type => canEmitTypeWorker(type.elementType),
       visitKeywordType: () => true,
+      visitLiteralType: () => true,
       visitOtherType: () => false,
     });
   }
@@ -111,6 +112,7 @@ export class TypeEmitter {
       visitTypeReferenceNode: type => this.emitTypeReference(type),
       visitArrayTypeNode: type => ts.updateArrayTypeNode(type, this.emitType(type.elementType)),
       visitKeywordType: type => type,
+      visitLiteralType: type => type,
       visitOtherType: () => {
         throw new Error('Unable to emit a complex type');
       },
@@ -159,6 +161,7 @@ interface TypeEmitterVisitor<R> {
   visitTypeReferenceNode(type: ts.TypeReferenceNode): R;
   visitArrayTypeNode(type: ts.ArrayTypeNode): R;
   visitKeywordType(type: ts.KeywordTypeNode): R;
+  visitLiteralType(type: ts.LiteralTypeNode): R;
   visitOtherType(type: ts.TypeNode): R;
 }
 
@@ -167,6 +170,8 @@ function visitTypeNode<R>(type: ts.TypeNode, visitor: TypeEmitterVisitor<R>): R 
     return visitor.visitTypeReferenceNode(type);
   } else if (ts.isArrayTypeNode(type)) {
     return visitor.visitArrayTypeNode(type);
+  } else if (ts.isLiteralTypeNode(type)) {
+    return visitor.visitLiteralType(type);
   }
 
   switch (type.kind) {
