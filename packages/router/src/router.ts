@@ -921,8 +921,8 @@ export class Router {
             const {source, state, urlTree} = currentChange;
             const extras: NavigationExtras = {replaceUrl: true};
             if (state) {
-              const stateCopy = {...state} as Omit<RestoredState, 'navigationId'>;
-              delete stateCopy.navigationId;
+              const stateCopy = {...state} as Partial<RestoredState>;
+              delete stateCopy['navigationId'];
               if (Object.keys(stateCopy).length !== 0) {
                 extras.state = stateCopy;
               }
