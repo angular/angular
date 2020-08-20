@@ -4369,6 +4369,53 @@ runInEachFileSystem(os => {
          expect(jsContents).toMatch(setClassMetadataRegExp('type: undefined'));
        });
 
+    it('should use `undefined` in setClassMetadata for const enums', () => {
+      env.write(`keycodes.ts`, `
+        export const enum KeyCodes {A, B};
+      `);
+      env.write(`test.ts`, `
+        import {Component, Inject} from '@angular/core';
+        import {KeyCodes} from './keycodes';
+
+        @Component({
+          selector: 'some-comp',
+          template: '...',
+        })
+        export class SomeComp {
+          constructor(@Inject('arg-token') arg: KeyCodes) {}
+        }
+      `);
+
+      env.driveMain();
+      const jsContents = trim(env.getContents('test.js'));
+      expect(jsContents).not.toContain(`import { KeyCodes } from './keycodes';`);
+      // Note: `type: undefined` below, since KeyCodes can't be represented as a value
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: undefined'));
+    });
+
+    it('should preserve the types of non-const enums in setClassMetadata', () => {
+      env.write(`keycodes.ts`, `
+        export enum KeyCodes {A, B};
+      `);
+      env.write(`test.ts`, `
+        import {Component, Inject} from '@angular/core';
+        import {KeyCodes} from './keycodes';
+
+        @Component({
+          selector: 'some-comp',
+          template: '...',
+        })
+        export class SomeComp {
+          constructor(@Inject('arg-token') arg: KeyCodes) {}
+        }
+      `);
+
+      env.driveMain();
+      const jsContents = trim(env.getContents('test.js'));
+      expect(jsContents).toContain(`import { KeyCodes } from './keycodes';`);
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.KeyCodes'));
+    });
+
     it('should use `undefined` in setClassMetadata if types originate from type-only imports',
        () => {
          env.write(`types.ts`, `
