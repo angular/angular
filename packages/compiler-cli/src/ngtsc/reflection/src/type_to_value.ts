@@ -35,8 +35,9 @@ export function typeToValue(
 
   const {local, decl} = symbols;
   // It's only valid to convert a type reference to a value reference if the type actually
-  // has a value declaration associated with it.
-  if (decl.valueDeclaration === undefined) {
+  // has a value declaration associated with it. Note that const enums are an exception,
+  // because while they do have a value declaration, they don't exist at runtime.
+  if (decl.valueDeclaration === undefined || decl.flags & ts.SymbolFlags.ConstEnum) {
     return noValueDeclaration(typeNode, decl.declarations[0]);
   }
 
