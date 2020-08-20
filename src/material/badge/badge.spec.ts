@@ -27,15 +27,34 @@ describe('MatBadge', () => {
   }));
 
   it('should update the badge based on attribute', () => {
-    let badgeContentDebugElement = badgeNativeElement.querySelector('.mat-badge-content')!;
-
-    expect(badgeContentDebugElement.textContent).toContain('1');
+    const badgeElement = badgeNativeElement.querySelector('.mat-badge-content')!;
+    expect(badgeElement.textContent).toContain('1');
 
     testComponent.badgeContent = '22';
     fixture.detectChanges();
+    expect(badgeElement.textContent).toContain('22');
+  });
 
-    badgeContentDebugElement = badgeNativeElement.querySelector('.mat-badge-content')!;
-    expect(badgeContentDebugElement.textContent).toContain('22');
+  it('should be able to pass in falsy values to the badge content', () => {
+    const badgeElement = badgeNativeElement.querySelector('.mat-badge-content')!;
+    expect(badgeElement.textContent).toContain('1');
+
+    testComponent.badgeContent = 0;
+    fixture.detectChanges();
+    expect(badgeElement.textContent).toContain('0');
+  });
+
+  it('should treat null and undefined as empty strings in the badge content', () => {
+    const badgeElement = badgeNativeElement.querySelector('.mat-badge-content')!;
+    expect(badgeElement.textContent).toContain('1');
+
+    testComponent.badgeContent = null;
+    fixture.detectChanges();
+    expect(badgeElement.textContent?.trim()).toBe('');
+
+    testComponent.badgeContent = undefined;
+    fixture.detectChanges();
+    expect(badgeElement.textContent?.trim()).toBe('');
   });
 
   it('should apply class based on color attribute', () => {
@@ -234,7 +253,7 @@ describe('MatBadge', () => {
 class BadgeTestApp {
   @ViewChild(MatBadge) badgeInstance: MatBadge;
   badgeColor: ThemePalette;
-  badgeContent: string | number = '1';
+  badgeContent: string | number | undefined | null = '1';
   badgeDirection = 'above after';
   badgeHidden = false;
   badgeSize = 'medium';

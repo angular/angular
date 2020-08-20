@@ -3,7 +3,7 @@ export declare class MatBadge extends _MatBadgeMixinBase implements OnDestroy, O
     _id: number;
     get color(): ThemePalette;
     set color(value: ThemePalette);
-    content: string;
+    content: string | number | undefined | null;
     get description(): string;
     set description(newDescription: string);
     get hidden(): boolean;
