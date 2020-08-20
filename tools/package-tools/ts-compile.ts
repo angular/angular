@@ -10,7 +10,7 @@ import chalk from 'chalk';
  */
 export function tsCompile(binary: 'tsc' | 'ngc', flags: string[]) {
   return new Promise((resolve, reject) => {
-    const binaryPath = resolvePath(`./node_modules/.bin/${binary}`);
+    const binaryPath = resolvePath(`./node_modules/typescript/bin/${binary}`);
     const childProcess = spawn(binaryPath, flags, {shell: true});
 
     // Pipe stdout and stderr from the child process.

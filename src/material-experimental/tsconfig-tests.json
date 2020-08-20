@@ -9,7 +9,7 @@
       "../../dist/packages/material-experimental"
     ],
     "importHelpers": false,
-    "module": "commonjs",
+    "module": "umd",
     "target": "es5",
     "types": ["jasmine"],
     "experimentalDecorators": true,
