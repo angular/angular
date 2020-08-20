@@ -8,7 +8,7 @@
 
 import {Injector, NgModuleRef} from '@angular/core';
 import {defer, EmptyError, Observable, Observer, of} from 'rxjs';
-import {catchError, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {catchError, concatAll, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
 import {CanLoadFn} from './interfaces';
@@ -148,47 +148,28 @@ class ApplyRedirects {
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[],
       segments: UrlSegment[], outlet: string,
       allowRedirects: boolean): Observable<UrlSegmentGroup> {
-    type MatchedSegment = {segment: UrlSegmentGroup, outlet: string};
-    // This logic takes each route and switches to a new observable that depends on the result of
-    // the previous route expansion. In this way, we compose a list of results where each one can
-    // depend on and look at the previous to determine how to proceed with expansion of the
-    // current route.
-    return routes
-        .reduce(
-            (accumulatedResults: Observable<Array<MatchedSegment>>, r: Route) => {
-              return accumulatedResults.pipe(switchMap(resultsThusFar => {
-                // If we already matched a previous `Route` with the same outlet as the current,
-                // we should not process the current one.
-                if (resultsThusFar.some(result => result && result.outlet === getOutlet(r))) {
-                  return of(resultsThusFar);
-                }
-                const expanded$ = this.expandSegmentAgainstRoute(
-                    ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
-                return expanded$.pipe(
-                    map((segment) => resultsThusFar.concat({segment, outlet: getOutlet(r)})),
-                    catchError((e: any) => {
-                      if (e instanceof NoMatch) {
-                        return of(resultsThusFar);
-                      }
-                      throw e;
-                    }));
-              }));
-            },
-            of([] as MatchedSegment[]))
-        .pipe(
-            // Find the matched segment whose outlet matches the one we're looking for.
-            map(results => results.find(s => s.outlet === outlet)?.segment),
-            first((s): s is UrlSegmentGroup => s !== undefined),
-            catchError((e: any, _: any) => {
-              if (e instanceof EmptyError || e.name === 'EmptyError') {
-                if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
-                  return of(new UrlSegmentGroup([], {}));
-                }
-                throw new NoMatch(segmentGroup);
-              }
-              throw e;
-            }),
-        );
+    return of(...routes).pipe(
+        map((r: any) => {
+          const expanded$ = this.expandSegmentAgainstRoute(
+              ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
+          return expanded$.pipe(catchError((e: any) => {
+            if (e instanceof NoMatch) {
+              // TODO(i): this return type doesn't match the declared Observable<UrlSegmentGroup> -
+              // talk to Jason
+              return of(null) as any;
+            }
+            throw e;
+          }));
+        }),
+        concatAll(), first((s: any) => !!s), catchError((e: any, _: any) => {
+          if (e instanceof EmptyError || e.name === 'EmptyError') {
+            if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
+              return of(new UrlSegmentGroup([], {}));
+            }
+            throw new NoMatch(segmentGroup);
+          }
+          throw e;
+        }));
   }
 
   private noLeftoversInUrl(segmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string):
@@ -199,9 +180,7 @@ class ApplyRedirects {
   private expandSegmentAgainstRoute(
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       paths: UrlSegment[], outlet: string, allowRedirects: boolean): Observable<UrlSegmentGroup> {
-    // Empty string segments are special because multiple outlets can match a single path, i.e.
-    // `[{path: '', component: B}, {path: '', loadChildren: () => {}, outlet: "about"}]`
-    if (getOutlet(route) !== outlet && route.path !== '') {
+    if (getOutlet(route) !== outlet) {
       return noMatch(segmentGroup);
     }
 
