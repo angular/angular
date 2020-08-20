@@ -713,11 +713,18 @@ describe('CdkDrag', () => {
       }).not.toThrow();
     }));
 
-    it('should enable native drag interactions when there is a drag handle', () => {
+    it('should enable native drag interactions on the drag item when there is a handle', () => {
       const fixture = createComponent(StandaloneDraggableWithHandle);
       fixture.detectChanges();
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
       expect(dragElement.style.touchAction).not.toBe('none');
+    });
+
+    it('should disable native drag interactions on the drag handle', () => {
+      const fixture = createComponent(StandaloneDraggableWithHandle);
+      fixture.detectChanges();
+      const styles = fixture.componentInstance.handleElement.nativeElement.style;
+      expect(styles.touchAction || (styles as any).webkitUserDrag).toBe('none');
     });
 
     it('should be able to reset a freely-dragged item to its initial position', fakeAsync(() => {
