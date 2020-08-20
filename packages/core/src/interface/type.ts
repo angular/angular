@@ -26,7 +26,7 @@ export function isType(v: any): v is Type<any> {
  * @description
  *
  * Represents an abstract class `T`, if applied to a concrete class it would stop being
- * instantiatable.
+ * instantiable.
  *
  * @publicApi
  */
