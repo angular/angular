@@ -25,12 +25,12 @@ export class PropertyViewBodyComponent {
   get panels(): { title: string; hidden: boolean; controls: DirectiveTreeData }[] {
     return [
       {
-        title: 'Inputs',
+        title: '@Inputs',
         hidden: this.directiveInputControls.dataSource.data.length === 0,
         controls: this.directiveInputControls,
       },
       {
-        title: 'Outputs',
+        title: '@Outputs',
         hidden: this.directiveOutputControls.dataSource.data.length === 0,
         controls: this.directiveOutputControls,
       },
