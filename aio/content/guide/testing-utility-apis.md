@@ -19,7 +19,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
   <tr>
     <td style="vertical-align: top">
-      <code>async</code>
+      <code>waitForAsync</code>
     </td>
 
     <td>
