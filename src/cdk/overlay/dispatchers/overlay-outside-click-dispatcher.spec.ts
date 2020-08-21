@@ -1,9 +1,9 @@
 import {TestBed, inject} from '@angular/core/testing';
 import {Component, NgModule} from '@angular/core';
+import {dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {OverlayModule, OverlayContainer, Overlay} from '../index';
 import {OverlayOutsideClickDispatcher} from './overlay-outside-click-dispatcher';
 import {ComponentPortal} from '@angular/cdk/portal';
-
 
 describe('OverlayOutsideClickDispatcher', () => {
   let outsideClickDispatcher: OverlayOutsideClickDispatcher;
@@ -151,6 +151,37 @@ describe('OverlayOutsideClickDispatcher', () => {
     overlayRef.outsidePointerEvents().subscribe(spy);
 
     overlayRef.overlayElement.click();
+    expect(spy).not.toHaveBeenCalled();
+
+    overlayRef.dispose();
+  });
+
+  it('should dispatch an event when a context menu is triggered outside the overlay', () => {
+    const portal = new ComponentPortal(TestComponent);
+    const overlayRef = overlay.create();
+    overlayRef.attach(portal);
+    const context = document.createElement('div');
+    document.body.appendChild(context);
+
+    const spy = jasmine.createSpy('overlay contextmenu spy');
+    overlayRef.outsidePointerEvents().subscribe(spy);
+
+    dispatchMouseEvent(context, 'contextmenu');
+    expect(spy).toHaveBeenCalled();
+
+    context.parentNode!.removeChild(context);
+    overlayRef.dispose();
+  });
+
+  it('should not dispatch an event when a context menu is triggered inside the overlay', () => {
+    const portal = new ComponentPortal(TestComponent);
+    const overlayRef = overlay.create();
+    overlayRef.attach(portal);
+
+    const spy = jasmine.createSpy('overlay contextmenu spy');
+    overlayRef.outsidePointerEvents().subscribe(spy);
+
+    dispatchMouseEvent(overlayRef.overlayElement, 'contextmenu');
     expect(spy).not.toHaveBeenCalled();
 
     overlayRef.dispose();
