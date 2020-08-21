@@ -50,7 +50,7 @@
     "semver-dsl": "^1.0.1",
     "tslib": "^2.0.0",
     "webtreemap": "^2.0.1",
-    "zone.js": "~0.10.2"
+    "zone.js": "~0.11.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "github:angular/angular-devkit-build-angular-builds#6a8e520d3c24deb60e5f08b885b43bdba62e3144",
