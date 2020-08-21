@@ -25,6 +25,9 @@ export interface TestingWindow extends Window {
       Circle?: jasmine.Spy;
       GroundOverlay?: jasmine.Spy;
       KmlLayer?: jasmine.Spy;
+      TrafficLayer?: jasmine.Spy;
+      TransitLayer?: jasmine.Spy;
+      BicyclingLayer?: jasmine.Spy;
     };
   };
 }
@@ -325,4 +328,88 @@ export function createKmlLayerConstructorSpy(kmlLayerSpy: jasmine.SpyObj<google.
     };
   }
   return kmlLayerConstructorSpy;
+}
+
+/** Creates a jasmine.SpyObj for a google.maps.TrafficLayer */
+export function createTrafficLayerSpy(options?: google.maps.TrafficLayerOptions):
+    jasmine.SpyObj<google.maps.TrafficLayer> {
+  const trafficLayerSpy = jasmine.createSpyObj('google.maps.TrafficLayer', [
+    'setOptions',
+    'setMap',
+  ]);
+  return trafficLayerSpy;
+}
+
+/** Creates a jasmine.Spy to watch for the constructor of a google.maps.TrafficLayer */
+export function createTrafficLayerConstructorSpy(
+    trafficLayerSpy: jasmine.SpyObj<google.maps.TrafficLayer>): jasmine.Spy {
+  const trafficLayerConstructorSpy =
+      jasmine.createSpy('TrafficLayer constructor', (_options: google.maps.TrafficLayerOptions) => {
+        return trafficLayerSpy;
+      });
+  const testingWindow: TestingWindow = window;
+  if (testingWindow.google && testingWindow.google.maps) {
+    testingWindow.google.maps['TrafficLayer'] = trafficLayerConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        'TrafficLayer': trafficLayerConstructorSpy,
+      },
+    };
+  }
+  return trafficLayerConstructorSpy;
+}
+
+/** Creates a jasmine.SpyObj for a google.maps.TransitLayer */
+export function createTransitLayerSpy(): jasmine.SpyObj<google.maps.TransitLayer> {
+  const transitLayerSpy = jasmine.createSpyObj('google.maps.TransitLayer', [
+    'setMap',
+  ]);
+  return transitLayerSpy;
+}
+
+/** Creates a jasmine.Spy to watch for the constructor of a google.maps.TransitLayer */
+export function createTransitLayerConstructorSpy(
+    transitLayerSpy: jasmine.SpyObj<google.maps.TransitLayer>): jasmine.Spy {
+  const transitLayerConstructorSpy = jasmine.createSpy('TransitLayer constructor', () => {
+    return transitLayerSpy;
+  });
+  const testingWindow: TestingWindow = window;
+  if (testingWindow.google && testingWindow.google.maps) {
+    testingWindow.google.maps['TransitLayer'] = transitLayerConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        'TransitLayer': transitLayerConstructorSpy,
+      },
+    };
+  }
+  return transitLayerConstructorSpy;
+}
+
+/** Creates a jasmine.SpyObj for a google.maps.BicyclingLayer */
+export function createBicyclingLayerSpy(): jasmine.SpyObj<google.maps.BicyclingLayer> {
+  const bicylingLayerSpy = jasmine.createSpyObj('google.maps.BicyclingLayer', [
+    'setMap',
+  ]);
+  return bicylingLayerSpy;
+}
+
+/** Creates a jasmine.Spy to watch for the constructor of a google.maps.BicyclingLayer */
+export function createBicyclingLayerConstructorSpy(
+    bicylingLayerSpy: jasmine.SpyObj<google.maps.BicyclingLayer>): jasmine.Spy {
+  const bicylingLayerConstructorSpy = jasmine.createSpy('BicyclingLayer constructor', () => {
+    return bicylingLayerSpy;
+  });
+  const testingWindow: TestingWindow = window;
+  if (testingWindow.google && testingWindow.google.maps) {
+    testingWindow.google.maps['BicyclingLayer'] = bicylingLayerConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        'BicyclingLayer': bicylingLayerConstructorSpy,
+      },
+    };
+  }
+  return bicylingLayerConstructorSpy;
 }

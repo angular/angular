@@ -53,11 +53,33 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
 export declare class GoogleMapsModule {
     static ɵinj: i0.ɵɵInjectorDef<GoogleMapsModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapGroundOverlay, typeof i4.MapInfoWindow, typeof i5.MapKmlLayer, typeof i6.MapMarker, typeof i7.MapPolygon, typeof i8.MapPolyline, typeof i9.MapRectangle], never, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapGroundOverlay, typeof i4.MapInfoWindow, typeof i5.MapKmlLayer, typeof i6.MapMarker, typeof i7.MapPolygon, typeof i8.MapPolyline, typeof i9.MapRectangle]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapBaseLayer, typeof i3.MapBicyclingLayer, typeof i4.MapCircle, typeof i5.MapGroundOverlay, typeof i6.MapInfoWindow, typeof i7.MapKmlLayer, typeof i8.MapMarker, typeof i9.MapPolygon, typeof i10.MapPolyline, typeof i11.MapRectangle, typeof i12.MapTrafficLayer, typeof i13.MapTransitLayer], never, [typeof i1.GoogleMap, typeof i2.MapBaseLayer, typeof i3.MapBicyclingLayer, typeof i4.MapCircle, typeof i5.MapGroundOverlay, typeof i6.MapInfoWindow, typeof i7.MapKmlLayer, typeof i8.MapMarker, typeof i9.MapPolygon, typeof i10.MapPolyline, typeof i11.MapRectangle, typeof i12.MapTrafficLayer, typeof i13.MapTransitLayer]>;
 }
 
 export interface MapAnchorPoint {
     getAnchor(): google.maps.MVCObject;
+}
+
+export declare class MapBaseLayer implements OnInit, OnDestroy {
+    protected readonly _map: GoogleMap;
+    protected readonly _ngZone: NgZone;
+    constructor(_map: GoogleMap, _ngZone: NgZone);
+    protected _initializeObject(): void;
+    protected _setMap(): void;
+    protected _unsetMap(): void;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapBaseLayer, "map-base-layer", ["mapBaseLayer"], {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MapBaseLayer, never>;
+}
+
+export declare class MapBicyclingLayer extends MapBaseLayer {
+    bicyclingLayer?: google.maps.BicyclingLayer;
+    protected _initializeObject(): void;
+    protected _setMap(): void;
+    protected _unsetMap(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapBicyclingLayer, "map-bicycling-layer", ["mapBicyclingLayer"], {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MapBicyclingLayer, never>;
 }
 
 export declare class MapCircle implements OnInit, OnDestroy {
@@ -275,4 +297,23 @@ export declare class MapRectangle implements OnInit, OnDestroy {
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapRectangle, "map-rectangle", ["mapRectangle"], { "options": "options"; "bounds": "bounds"; }, { "boundsChanged": "boundsChanged"; "rectangleClick": "rectangleClick"; "rectangleDblclick": "rectangleDblclick"; "rectangleDrag": "rectangleDrag"; "rectangleDragend": "rectangleDragend"; "rectangleDragstart": "rectangleDragstart"; "rectangleMousedown": "rectangleMousedown"; "rectangleMousemove": "rectangleMousemove"; "rectangleMouseout": "rectangleMouseout"; "rectangleMouseover": "rectangleMouseover"; "rectangleMouseup": "rectangleMouseup"; "rectangleRightclick": "rectangleRightclick"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapRectangle, never>;
+}
+
+export declare class MapTrafficLayer implements OnInit, OnDestroy {
+    set autoRefresh(autoRefresh: boolean);
+    trafficLayer?: google.maps.TrafficLayer;
+    constructor(_map: GoogleMap, _ngZone: NgZone);
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapTrafficLayer, "map-traffic-layer", ["mapTrafficLayer"], { "autoRefresh": "autoRefresh"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MapTrafficLayer, never>;
+}
+
+export declare class MapTransitLayer extends MapBaseLayer {
+    transitLayer?: google.maps.TransitLayer;
+    protected _initializeObject(): void;
+    protected _setMap(): void;
+    protected _unsetMap(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapTransitLayer, "map-transit-layer", ["mapTransitLayer"], {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MapTransitLayer, never>;
 }

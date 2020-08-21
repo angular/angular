@@ -83,6 +83,9 @@ export class GoogleMapDemo {
   isKmlLayerDisplayed = false;
   demoKml =
       'https://developers.google.com/maps/documentation/javascript/examples/kml/westcampus.kml';
+  isTrafficLayerDisplayed = false;
+  isTransitLayerDisplayed = false;
+  isBicyclingLayerDisplayed = false;
 
   mapTypeId: google.maps.MapTypeId;
   mapTypeIds = [
@@ -171,5 +174,17 @@ export class GoogleMapDemo {
 
   toggleKmlLayerDisplay() {
     this.isKmlLayerDisplayed = !this.isKmlLayerDisplayed;
+  }
+
+  toggleTrafficLayerDisplay() {
+    this.isTrafficLayerDisplayed = !this.isTrafficLayerDisplayed;
+  }
+
+  toggleTransitLayerDisplay() {
+    this.isTransitLayerDisplayed = !this.isTransitLayerDisplayed;
+  }
+
+  toggleBicyclingLayerDisplay() {
+    this.isBicyclingLayerDisplayed = !this.isBicyclingLayerDisplayed;
   }
 }
