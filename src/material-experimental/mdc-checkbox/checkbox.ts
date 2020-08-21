@@ -30,7 +30,16 @@ import {
   MAT_CHECKBOX_DEFAULT_OPTIONS,
   MatCheckboxClickAction, MatCheckboxDefaultOptions
 } from '@angular/material/checkbox';
-import {ThemePalette, RippleAnimationConfig} from '@angular/material/core';
+import {
+  ThemePalette,
+  RippleAnimationConfig,
+  CanColorCtor,
+  CanDisableCtor,
+  mixinColor,
+  mixinDisabled,
+  CanColor,
+  CanDisable,
+} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MDCCheckboxAdapter, MDCCheckboxFoundation} from '@material/checkbox';
 import {numbers} from '@material/ripple';
@@ -51,6 +60,18 @@ export class MatCheckboxChange {
   checked: boolean;
 }
 
+// Boilerplate for applying mixins to MatCheckbox.
+/** @docs-private */
+class MatCheckboxBase {
+  constructor(public _elementRef: ElementRef) {}
+}
+const _MatCheckboxMixinBase:
+    CanColorCtor &
+    CanDisableCtor &
+    typeof MatCheckboxBase =
+        mixinColor(mixinDisabled(MatCheckboxBase));
+
+
 /** Configuration for the ripple animation. */
 const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
   enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
@@ -61,12 +82,10 @@ const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
   selector: 'mat-checkbox',
   templateUrl: 'checkbox.html',
   styleUrls: ['checkbox.css'],
+  inputs: ['color', 'disabled'],
   host: {
     'class': 'mat-mdc-checkbox',
     '[attr.tabindex]': 'null',
-    '[class.mat-primary]': 'color == "primary"',
-    '[class.mat-accent]': 'color == "accent"',
-    '[class.mat-warn]': 'color == "warn"',
     '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
     '[class.mdc-checkbox--disabled]': 'disabled',
     '[id]': 'id',
@@ -76,7 +95,8 @@ const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccessor {
+export class MatCheckbox extends _MatCheckboxMixinBase implements AfterViewInit, OnDestroy,
+  ControlValueAccessor, CanColor, CanDisable {
   /**
    * The `aria-label` attribute to use for the input element. In most cases, `aria-labelledby` will
    * take precedence so this may be omitted.
@@ -134,16 +154,6 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
     this._syncIndeterminate(this._indeterminate);
   }
   private _indeterminate = false;
-
-  /** Whether the checkbox is disabled. */
-  @Input()
-  get disabled(): boolean {
-    return this._disabled;
-  }
-  set disabled(disabled) {
-    this._disabled = coerceBooleanProperty(disabled);
-  }
-  private _disabled = false;
 
   /** Whether the checkbox is required. */
   @Input()
@@ -235,6 +245,7 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
 
   constructor(
       private _changeDetectorRef: ChangeDetectorRef,
+      elementRef: ElementRef<HTMLElement>,
       @Attribute('tabindex') tabIndex: string,
       /**
        * @deprecated `_clickAction` parameter to be removed, use
@@ -245,6 +256,7 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
       @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
       @Optional() @Inject(MAT_CHECKBOX_DEFAULT_OPTIONS)
           private _options?: MatCheckboxDefaultOptions) {
+    super(elementRef);
     // Note: We don't need to set up the MDCFormFieldFoundation. Its only purpose is to manage the
     // ripple, which we do ourselves instead.
     this.tabIndex = parseInt(tabIndex) || 0;
@@ -253,7 +265,7 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
     this._options = this._options || {};
 
     if (this._options.color) {
-      this.color = this._options.color;
+      this.color = this.defaultColor = this._options.color;
     }
 
     // @breaking-change 10.0.0: Remove this after the `_clickAction` parameter is removed as an

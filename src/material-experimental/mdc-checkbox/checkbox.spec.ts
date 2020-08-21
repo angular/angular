@@ -7,6 +7,7 @@ import {
   flushMicrotasks,
   TestBed,
 } from '@angular/core/testing';
+import {ThemePalette} from '@angular/material/core';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {
@@ -467,6 +468,13 @@ describe('MDC-based MatCheckbox', () => {
            expect(checkboxNativeElement.classList.contains('mat-accent')).toBe(true);
            expect(checkboxNativeElement.classList.contains('custom-class')).toBe(true);
          }));
+
+      it('should default to accent if no color is passed in', fakeAsync(() => {
+        testComponent.checkboxColor = undefined;
+        fixture.detectChanges();
+        expect(checkboxNativeElement.classList).toContain('mat-accent');
+      }));
+
     });
 
     describe(`when MAT_CHECKBOX_CLICK_ACTION is set`, () => {
@@ -1078,7 +1086,7 @@ class SingleCheckbox {
   parentElementClicked: boolean = false;
   parentElementKeyedUp: boolean = false;
   checkboxId: string|null = 'simple-check';
-  checkboxColor: string = 'primary';
+  checkboxColor: ThemePalette = 'primary';
   checkboxValue: string = 'single_checkbox';
 
   onCheckboxClick: (event?: Event) => void = () => {};

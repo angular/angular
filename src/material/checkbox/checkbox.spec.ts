@@ -465,8 +465,14 @@ describe('MatCheckbox', () => {
         expect(checkboxNativeElement.classList.contains('mat-primary')).toBe(false);
         expect(checkboxNativeElement.classList.contains('mat-accent')).toBe(true);
         expect(checkboxNativeElement.classList.contains('custom-class')).toBe(true);
-
       });
+
+      it('should default to accent if no color is passed in', () => {
+        testComponent.checkboxColor = undefined;
+        fixture.detectChanges();
+        expect(checkboxNativeElement.classList).toContain('mat-accent');
+      });
+
     });
 
     describe('state transition css classes', () => {
