@@ -178,7 +178,7 @@ describe('FormArray', () => {
     let a: FormArray;
 
     it('should work with nested form groups/arrays', () => {
-      a = new FormArray<{c2: string, c3: string}|string[]>([
+      a = new FormArray([
         new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
         new FormArray([new FormControl('v4'), new FormControl('v5')])
       ]);
@@ -191,7 +191,7 @@ describe('FormArray', () => {
 
   describe('markAllAsTouched', () => {
     it('should mark all descendants as touched', () => {
-      const formArray: FormArray = new FormArray<string|{c1: string}|{c2: string}[]>([
+      const formArray: FormArray = new FormArray([
         new FormControl('v1'), new FormControl('v2'), new FormGroup({'c1': new FormControl('v1')}),
         new FormArray([new FormGroup({'c2': new FormControl('v2')})])
       ]);
@@ -731,7 +731,7 @@ describe('FormArray', () => {
       const simpleValidator = (c: FormArray) =>
           c.controls[0].value != 'correct' ? {'broken': true} : null;
 
-      const c = new FormControl<string>(null);
+      const c = new FormControl(null);
       const g = new FormArray([c], simpleValidator as ValidatorFn);
 
       c.setValue('correct');
@@ -1124,7 +1124,7 @@ describe('FormArray', () => {
     });
 
     it('should ignore disabled controls when serializing value', () => {
-      const g = new FormGroup<{nested?: string[], two: string}>(
+      const g = new FormGroup(
           {nested: new FormArray([new FormControl('one')]), two: new FormControl('two')});
       expect(g.value).toEqual({'nested': ['one'], 'two': 'two'});
 

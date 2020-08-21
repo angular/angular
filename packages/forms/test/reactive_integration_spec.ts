@@ -262,7 +262,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
       it('should strip named controls that are not found', () => {
         const fixture = initTest(NestedFormGroupComp, LoginIsEmptyValidator);
-        const form = new FormGroup<{signin: {login: string, password: string}, email?: string}>({
+        const form = new FormGroup({
           'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
         });
         fixture.componentInstance.form = form;
@@ -1356,8 +1356,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should not emit valueChanges or statusChanges until blur', () => {
           const fixture = initTest(FormControlComp);
-          const control =
-              new FormControl<string>('', {validators: Validators.required, updateOn: 'blur'});
+          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
           const values: string[] = [];
@@ -1383,8 +1382,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should not emit valueChanges or statusChanges on blur if value unchanged', () => {
           const fixture = initTest(FormControlComp);
-          const control =
-              new FormControl<string>('', {validators: Validators.required, updateOn: 'blur'});
+          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
           const values: string[] = [];
@@ -1682,7 +1680,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should reset properly', () => {
           const fixture = initTest(FormGroupComp);
-          const formGroup = new FormGroup<{login: string}>(
+          const formGroup = new FormGroup(
               {login: new FormControl('', {validators: Validators.required, updateOn: 'submit'})});
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
@@ -1699,7 +1697,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.detectChanges();
 
           expect(input.value).toEqual('', 'Expected view value to reset.');
-          expect(formGroup.value).toEqual({login: null} as any, 'Expected form value to reset');
+          expect(formGroup.value).toEqual({login: null}, 'Expected form value to reset');
           expect(formGroup.dirty).toBe(false, 'Expected dirty to stay false on reset.');
           expect(formGroup.touched).toBe(false, 'Expected touched to stay false on reset.');
 
@@ -1708,7 +1706,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.detectChanges();
 
           expect(formGroup.value)
-              .toEqual({login: null} as any, 'Expected form value to stay empty on submit');
+              .toEqual({login: null}, 'Expected form value to stay empty on submit');
           expect(formGroup.dirty).toBe(false, 'Expected dirty to stay false on submit.');
           expect(formGroup.touched).toBe(false, 'Expected touched to stay false on submit.');
         });
@@ -1754,7 +1752,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           const fixture = initTest(FormGroupComp);
           const control =
               new FormControl('', {validators: Validators.required, updateOn: 'submit'});
-          const formGroup = new FormGroup<{login: string}>({login: control});
+          const formGroup = new FormGroup({login: control});
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
