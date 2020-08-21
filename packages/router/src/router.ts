@@ -921,8 +921,7 @@ export class Router {
             const {source, state, urlTree} = currentChange;
             const extras: NavigationExtras = {replaceUrl: true};
             if (state) {
-              //TODO: remove cast once G3 is using TS 4.0+
-              const stateCopy = {...state} as any;
+              const stateCopy = {...state} as Partial<RestoredState>;
               delete stateCopy.navigationId;
               if (Object.keys(stateCopy).length !== 0) {
                 extras.state = stateCopy;
