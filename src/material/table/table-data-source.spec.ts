@@ -47,6 +47,10 @@ describe('MatTableDataSource', () => {
     it('should be able to correctly sort an array of string', () => {
       testSortWithValues(['apples', 'bananas', 'cherries', 'lemons', 'strawberries']);
     });
+
+    it('should be able to correctly sort an array of strings and numbers', () => {
+      testSortWithValues([3, 'apples', 'bananas', 'cherries', 'lemons', 'strawberries']);
+    });
   });
 });
 

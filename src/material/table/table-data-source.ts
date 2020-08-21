@@ -148,6 +148,17 @@ export class MatTableDataSource<T> extends DataSource<T> {
       let valueA = this.sortingDataAccessor(a, active);
       let valueB = this.sortingDataAccessor(b, active);
 
+      // If there are data in the column that can be converted to a number,
+      // it must be ensured that the rest of the data
+      // is of the same type so as not to order incorrectly.
+      const valueAType = typeof valueA;
+      const valueBType = typeof valueB;
+
+      if (valueAType !== valueBType) {
+        if (valueAType === 'number') { valueA += ''; }
+        if (valueBType === 'number') { valueB += ''; }
+      }
+
       // If both valueA and valueB exist (truthy), then compare the two. Otherwise, check if
       // one value exists while the other doesn't. In this case, existing value should come last.
       // This avoids inconsistent results when comparing values to undefined/null.
