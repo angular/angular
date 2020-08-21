@@ -96,6 +96,7 @@ export declare abstract class MatFormFieldControl<T> {
     readonly required: boolean;
     readonly shouldLabelFloat: boolean;
     readonly stateChanges: Observable<void>;
+    readonly userAriaDescribedBy?: string;
     value: T | null;
     abstract onContainerClick(event: MouseEvent): void;
     abstract setDescribedByIds(ids: string[]): void;

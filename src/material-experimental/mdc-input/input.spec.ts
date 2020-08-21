@@ -474,10 +474,44 @@ describe('MatMdcInput without forms', () => {
     fixture.componentInstance.label = 'label';
     fixture.detectChanges();
 
-    let hint = fixture.debugElement.query(By.css('.mat-mdc-form-field-hint'))!.nativeElement;
-    let input = fixture.debugElement.query(By.css('input'))!.nativeElement;
+    const hint = fixture.debugElement.query(By.css('.mat-mdc-form-field-hint'))!.nativeElement;
+    const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
+    const hintId = hint.getAttribute('id');
 
-    expect(input.getAttribute('aria-describedby')).toBe(hint.getAttribute('id'));
+    expect(input.getAttribute('aria-describedby')).toBe(`initial ${hintId}`);
+  }));
+
+  it('supports user binding to aria-describedby', fakeAsync(() => {
+    let fixture = createComponent(MatInputWithSubscriptAndAriaDescribedBy);
+
+    fixture.componentInstance.label = 'label';
+    fixture.detectChanges();
+
+    const hint = fixture.debugElement.query(By.css('.mat-mdc-form-field-hint'))!.nativeElement;
+    const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
+    const hintId = hint.getAttribute('id');
+
+    expect(input.getAttribute('aria-describedby')).toBe(hintId);
+
+    fixture.componentInstance.userDescribedByValue = 'custom-error custom-error-two';
+    fixture.detectChanges();
+    expect(input.getAttribute('aria-describedby')).toBe(`custom-error custom-error-two ${hintId}`);
+
+    fixture.componentInstance.userDescribedByValue = 'custom-error';
+    fixture.detectChanges();
+    expect(input.getAttribute('aria-describedby')).toBe(`custom-error ${hintId}`);
+
+    fixture.componentInstance.showError = true;
+    fixture.componentInstance.formControl.markAsTouched();
+    fixture.componentInstance.formControl.setErrors({invalid: true});
+    fixture.detectChanges();
+    expect(input.getAttribute('aria-describedby')).toMatch(/^custom-error mat-mdc-error-\d+$/);
+
+    fixture.componentInstance.label = '';
+    fixture.componentInstance.userDescribedByValue = '';
+    fixture.componentInstance.showError = false;
+    fixture.detectChanges();
+    expect(input.hasAttribute('aria-describedby')).toBe(false);
   }));
 
   it('sets the aria-describedby to the id of the mat-hint', fakeAsync(() => {
@@ -1253,10 +1287,27 @@ class MatInputHintLabel2TestController {
 }
 
 @Component({
-  template: `<mat-form-field [hintLabel]="label"><input matInput></mat-form-field>`
+  template: `
+    <mat-form-field [hintLabel]="label">
+      <input matInput aria-describedby="initial">
+    </mat-form-field>`
 })
 class MatInputHintLabelTestController {
   label: string = '';
+}
+
+@Component({
+  template: `
+    <mat-form-field [hintLabel]="label">
+      <input matInput [formControl]="formControl" [aria-describedby]="userDescribedByValue">
+      <mat-error *ngIf="showError">Some error</mat-error>
+    </mat-form-field>`
+})
+class MatInputWithSubscriptAndAriaDescribedBy {
+  label: string = '';
+  userDescribedByValue: string = '';
+  showError = false;
+  formControl = new FormControl();
 }
 
 @Component({template: `<mat-form-field><input matInput [type]="t"></mat-form-field>`})

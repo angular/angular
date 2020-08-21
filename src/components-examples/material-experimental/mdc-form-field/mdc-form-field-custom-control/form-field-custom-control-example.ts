@@ -38,7 +38,6 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
   errorState = false;
   controlType = 'example-tel-input';
   id = `example-tel-input-${MyTelInput.nextId++}`;
-  describedBy = '';
   onChange = (_: any) => {};
   onTouched = () => {};
 
@@ -49,6 +48,8 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
   }
 
   get shouldLabelFloat() { return this.focused || !this.empty; }
+
+  @Input('aria-describedby') userAriaDescribedBy: string;
 
   @Input()
   get placeholder(): string { return this._placeholder; }
@@ -121,7 +122,9 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
   }
 
   setDescribedByIds(ids: string[]) {
-    this.describedBy = ids.join(' ');
+    const controlElement = this._elementRef.nativeElement
+      .querySelector('.example-tel-input-container')!;
+    controlElement.setAttribute('aria-describedby', ids.join(' '));
   }
 
   onContainerClick(event: MouseEvent) {

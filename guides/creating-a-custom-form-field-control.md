@@ -339,20 +339,33 @@ controlType = 'example-tel-input';
 
 #### `setDescribedByIds(ids: string[])`
 
-This method is used by the `<mat-form-field>` to specify the IDs that should be used for the
-`aria-describedby` attribute of your component. The method has one parameter, the list of IDs, we
-just need to apply the given IDs to the element that represents our control.
+This method is used by the `<mat-form-field>` to set element ids that should be used for the
+`aria-describedby` attribute of your control. The ids are controlled through the form field
+as hints or errors are conditionally displayed and should be reflected in the control's
+`aria-describedby` attribute for an improved accessibility experience. 
 
-In our concrete example, these IDs would need to be applied to the group element. 
+The `setDescribedByIds` method is invoked whenever the control's state changes. Custom controls
+need to implement this method and update the `aria-describedby` attribute based on the specified
+element ids. Below is an example that shows how this can be achieved.
+
+Note that the method by default will not respect element ids that have been set manually on the
+control element through the `aria-describedby` attribute. To ensure that your control does not
+accidentally override existing element ids specified by consumers of your control, create an
+input called `userAriaDescribedby`  like followed:
+
+```ts
+@Input('aria-describedby') userAriaDescribedBy: string;
+```
+
+The form field will then pick up the user specified `aria-describedby` ids and merge
+them with ids for hints or errors whenever `setDescribedByIds` is invoked.
 
 ```ts
 setDescribedByIds(ids: string[]) {
-  this.describedBy = ids.join(' ');
+  const controlElement = this._elementRef.nativeElement
+    .querySelector('.example-tel-input-container')!;
+  controlElement.setAttribute('aria-describedby', ids.join(' '));
 }
-```
-
-```html
-<div role="group" [formGroup]="parts" [attr.aria-describedby]="describedBy">
 ```
 
 #### `onContainerClick(event: MouseEvent)`

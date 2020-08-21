@@ -584,6 +584,10 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     if (this._control) {
       let ids: string[] = [];
 
+      if (this._control.userAriaDescribedBy) {
+        ids.push(...this._control.userAriaDescribedBy.split(' '));
+      }
+
       if (this._getDisplayedMessages() === 'hint') {
         const startHint = this._hintChildren ?
           this._hintChildren.find(hint => hint.align === 'start') : null;
@@ -600,7 +604,7 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
           ids.push(endHint.id);
         }
       } else if (this._errorChildren) {
-        ids = this._errorChildren.map(error => error.id);
+        ids.push(...this._errorChildren.map(error => error.id));
       }
 
       this._control.setDescribedByIds(ids);

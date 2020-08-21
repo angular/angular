@@ -1,7 +1,6 @@
 <div role="group" class="example-tel-input-container"
      [formGroup]="parts"
-     [attr.aria-labelledby]="_formField?.getLabelId()"
-     [attr.aria-describedby]="describedBy">
+     [attr.aria-labelledby]="_formField?.getLabelId()">
   <input class="example-tel-input-element"
          formControlName="area" size="3"
          maxLength="3"
