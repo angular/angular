@@ -18,8 +18,6 @@ When you use the [Angular CLI](cli) command `ng new` to generate an app, the def
 /* JavaScript imports */
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 
@@ -29,9 +27,7 @@ import { AppComponent } from './app.component';
     AppComponent
   ],
   imports: [
-    BrowserModule,
-    FormsModule,
-    HttpClientModule
+    BrowserModule
   ],
   providers: [],
   bootstrap: [AppComponent]
@@ -120,15 +116,18 @@ Now you could use your `ItemDirective` in a component. This example uses `AppMod
 
 Remember, components, directives, and pipes belong to one module only. You only need to declare them once in your app because you share them by importing the necessary modules. This saves you time and helps keep your app lean.
 
-
-
-
 {@a imports}
 
 ## The `imports` array
 
 The module's `imports` array appears exclusively in the `@NgModule` metadata object.
 It tells Angular about other NgModules that this particular module needs to function properly.
+
+<code-example
+    path="bootstrapping/src/app/app.module.ts"
+    region="imports"
+    header="src/app/app.module.ts (excerpt)">
+</code-example>
 
 This list of modules are those that export components, directives, or pipes
 that component templates in this module reference. In this case, the component is
@@ -137,6 +136,8 @@ that component templates in this module reference. In this case, the component i
 A component template can reference another component, directive,
 or pipe when the referenced class is declared in this module or
 the class was imported from another module.
+
+
 
 {@a bootstrap-array}
 
