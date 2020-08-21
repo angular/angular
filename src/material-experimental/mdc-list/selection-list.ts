@@ -19,7 +19,6 @@ import {
   forwardRef,
   Inject,
   Input,
-  isDevMode,
   OnChanges,
   OnDestroy,
   Output,
@@ -98,7 +97,7 @@ export class MatSelectionList extends MatInteractiveListBase<MatListOption>
     const newValue = coerceBooleanProperty(value);
 
     if (newValue !== this._multiple) {
-      if (isDevMode() && this._initialized) {
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && this._initialized) {
         throw new Error(
           'Cannot change `multiple` mode of mat-selection-list after initialization.');
       }

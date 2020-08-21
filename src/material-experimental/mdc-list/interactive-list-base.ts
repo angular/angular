@@ -11,7 +11,8 @@ import {
   AfterViewInit,
   Directive,
   ElementRef,
-  HostListener, Inject, isDevMode,
+  HostListener,
+  Inject,
   OnDestroy,
   QueryList
 } from '@angular/core';
@@ -89,8 +90,7 @@ export abstract class MatInteractiveListBase<T extends MatListItemBase>
   }
 
   ngAfterViewInit() {
-    // TODO: Replace with `ngDevMode` build time check once #20146 is available.
-    if (isDevMode() && !this._foundation) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !this._foundation) {
       throw Error('MDC list foundation not initialized for Angular Material list.');
     }
 

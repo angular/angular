@@ -25,6 +25,7 @@ ng_module(
     ] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-list",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/collections",
         "//src/material/divider",
         "@npm//@angular/core",
