@@ -39,18 +39,12 @@
       font-weight: 500;
     }
   }
-  .value {
-    color: #848484 !important;
-  }
 }
 
 :host-context(.dark-theme) {
   .property-list {
     .name {
       color: #54c9bd !important;
-    }
-    .value {
-      color: #ffffff40 !important;
     }
   }
 }
