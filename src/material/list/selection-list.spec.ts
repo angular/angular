@@ -477,7 +477,7 @@ describe('MatSelectionList without forms', () => {
       const manager = selectionList.componentInstance._keyManager;
       expect(manager.activeItemIndex).toBe(-1);
 
-      const event = createKeyboardEvent('keydown', HOME, undefined, {shift: true});
+      const event = createKeyboardEvent('keydown', HOME, undefined, {alt: true});
 
       dispatchEvent(selectionList.nativeElement, event);
       fixture.detectChanges();
@@ -501,7 +501,7 @@ describe('MatSelectionList without forms', () => {
       const manager = selectionList.componentInstance._keyManager;
       expect(manager.activeItemIndex).toBe(-1);
 
-      const event = createKeyboardEvent('keydown', END, undefined, {shift: true});
+      const event = createKeyboardEvent('keydown', END, undefined, {alt: true});
 
       dispatchEvent(selectionList.nativeElement, event);
       fixture.detectChanges();

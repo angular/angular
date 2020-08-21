@@ -9,7 +9,6 @@
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {END, HOME} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -354,15 +353,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
    */
   _keydown(event: KeyboardEvent) {
     if (this._originatesFromChip(event)) {
-      if (event.keyCode === HOME) {
-        this._keyManager.setFirstItemActive();
-        event.preventDefault();
-      } else if (event.keyCode === END) {
-        this._keyManager.setLastItemActive();
-        event.preventDefault();
-      } else {
-        this._keyManager.onKeydown(event);
-      }
+      this._keyManager.onKeydown(event);
     }
   }
 
@@ -457,6 +448,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
     this._keyManager = new FocusKeyManager<MatChip>(this._chips)
       .withWrap()
       .withVerticalOrientation()
+      .withHomeAndEnd()
       .withHorizontalOrientation(this._dir ? this._dir.value : 'ltr');
 
     if (this._dir) {

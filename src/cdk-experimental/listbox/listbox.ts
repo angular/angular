@@ -16,16 +16,7 @@ import {
   QueryList
 } from '@angular/core';
 import {ActiveDescendantKeyManager, Highlightable, ListKeyManagerOption} from '@angular/cdk/a11y';
-import {
-  DOWN_ARROW,
-  END,
-  ENTER,
-  HOME,
-  LEFT_ARROW,
-  RIGHT_ARROW,
-  SPACE,
-  UP_ARROW
-} from '@angular/cdk/keycodes';
+import {DOWN_ARROW, ENTER, SPACE, UP_ARROW, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {BooleanInput, coerceBooleanProperty, coerceArray} from '@angular/cdk/coercion';
 import {SelectionChange, SelectionModel} from '@angular/cdk/collections';
 import {defer, merge, Observable, Subject} from 'rxjs';
@@ -340,6 +331,7 @@ export class CdkListbox<T> implements AfterContentInit, OnDestroy, OnInit, Contr
     this._listKeyManager = new ActiveDescendantKeyManager(this._options)
         .withWrap()
         .withTypeAhead()
+        .withHomeAndEnd()
         .withAllowedModifierKeys(['shiftKey']);
 
     if (this.orientation === 'vertical') {
@@ -376,11 +368,7 @@ export class CdkListbox<T> implements AfterContentInit, OnDestroy, OnInit, Contr
     const {keyCode} = event;
     const previousActiveIndex = manager.activeItemIndex;
 
-    if (keyCode === HOME || keyCode === END) {
-      event.preventDefault();
-      keyCode === HOME ? manager.setFirstItemActive() : manager.setLastItemActive();
-
-    } else if (keyCode === SPACE || keyCode === ENTER) {
+    if (keyCode === SPACE || keyCode === ENTER) {
       if (manager.activeItem && !manager.isTyping()) {
         this._toggleActiveOption();
       }

@@ -18,10 +18,8 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {
   A,
   DOWN_ARROW,
-  END,
   ENTER,
   hasModifierKey,
-  HOME,
   LEFT_ARROW,
   RIGHT_ARROW,
   SPACE,
@@ -771,14 +769,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       this.open();
     } else if (!this.multiple) {
       const previouslySelectedOption = this.selected;
-
-      if (keyCode === HOME || keyCode === END) {
-        keyCode === HOME ? manager.setFirstItemActive() : manager.setLastItemActive();
-        event.preventDefault();
-      } else {
-        manager.onKeydown(event);
-      }
-
+      manager.onKeydown(event);
       const selectedOption = this.selected;
 
       // Since the value has changed, we need to announce it ourselves.
@@ -797,10 +788,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     const isArrowKey = keyCode === DOWN_ARROW || keyCode === UP_ARROW;
     const isTyping = manager.isTyping();
 
-    if (keyCode === HOME || keyCode === END) {
-      event.preventDefault();
-      keyCode === HOME ? manager.setFirstItemActive() : manager.setLastItemActive();
-    } else if (isArrowKey && event.altKey) {
+    if (isArrowKey && event.altKey) {
       // Close the select on ALT + arrow key to match the native <select>
       event.preventDefault();
       this.close();
@@ -944,6 +932,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       .withTypeAhead(this._typeaheadDebounceInterval)
       .withVerticalOrientation()
       .withHorizontalOrientation(this._isRtl() ? 'rtl' : 'ltr')
+      .withHomeAndEnd()
       .withAllowedModifierKeys(['shiftKey']);
 
     this._keyManager.tabOut.pipe(takeUntil(this._destroy)).subscribe(() => {

@@ -25,7 +25,7 @@ import {Direction, Directionality} from '@angular/cdk/bidi';
 import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {FocusKeyManager, FocusableOption} from '@angular/cdk/a11y';
-import {END, ENTER, HOME, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
+import {ENTER, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
 import {merge, of as observableOf, Subject, timer, fromEvent} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
@@ -193,6 +193,7 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
 
     this._keyManager = new FocusKeyManager<MatPaginatedTabHeaderItem>(this._items)
       .withHorizontalOrientation(this._getLayoutDirection())
+      .withHomeAndEnd()
       .withWrap();
 
     this._keyManager.updateActiveItem(0);
@@ -259,14 +260,6 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
     }
 
     switch (event.keyCode) {
-      case HOME:
-        this._keyManager.setFirstItemActive();
-        event.preventDefault();
-        break;
-      case END:
-        this._keyManager.setLastItemActive();
-        event.preventDefault();
-        break;
       case ENTER:
       case SPACE:
         if (this.focusIndex !== this.selectedIndex) {

@@ -179,11 +179,12 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   }
 
   /**
-   * Configures the key manager to focus the first and last items
-   * respectively when the Home key and End Key are pressed.
+   * Configures the key manager to activate the first and last items
+   * respectively when the Home or End key is pressed.
+   * @param enabled Whether pressing the Home or End key activates the first/last item.
    */
-  withHomeAndEnd(): this {
-    this._homeAndEnd = true;
+  withHomeAndEnd(enabled: boolean = true): this {
+    this._homeAndEnd = enabled;
     return this;
   }
 

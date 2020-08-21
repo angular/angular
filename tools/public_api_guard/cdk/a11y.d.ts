@@ -214,7 +214,7 @@ export declare class ListKeyManager<T extends ListKeyManagerOption> {
     updateActiveItem(index: number): void;
     updateActiveItem(item: T): void;
     withAllowedModifierKeys(keys: ListKeyManagerModifierKey[]): this;
-    withHomeAndEnd(): this;
+    withHomeAndEnd(enabled?: boolean): this;
     withHorizontalOrientation(direction: 'ltr' | 'rtl' | null): this;
     withTypeAhead(debounceInterval?: number): this;
     withVerticalOrientation(enabled?: boolean): this;

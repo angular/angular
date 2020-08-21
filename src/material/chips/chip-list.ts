@@ -10,7 +10,7 @@ import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
-import {BACKSPACE, END, HOME} from '@angular/cdk/keycodes';
+import {BACKSPACE} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -351,6 +351,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
     this._keyManager = new FocusKeyManager<MatChip>(this.chips)
       .withWrap()
       .withVerticalOrientation()
+      .withHomeAndEnd()
       .withHorizontalOrientation(this._dir ? this._dir.value : 'ltr');
 
     if (this._dir) {
@@ -503,16 +504,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       this._keyManager.setLastItemActive();
       event.preventDefault();
     } else if (target && target.classList.contains('mat-chip')) {
-      if (event.keyCode === HOME) {
-        this._keyManager.setFirstItemActive();
-        event.preventDefault();
-      } else if (event.keyCode === END) {
-        this._keyManager.setLastItemActive();
-        event.preventDefault();
-      } else {
-        this._keyManager.onKeydown(event);
-      }
-
+      this._keyManager.onKeydown(event);
       this.stateChanges.next();
     }
   }

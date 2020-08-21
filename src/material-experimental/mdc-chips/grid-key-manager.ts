@@ -13,6 +13,8 @@ import {
   DOWN_ARROW,
   LEFT_ARROW,
   RIGHT_ARROW,
+  HOME,
+  END,
 } from '@angular/cdk/keycodes';
 
 
@@ -37,6 +39,7 @@ export class GridKeyManager<T> {
   private _activeRow: GridKeyManagerRow<T> | null = null;
   private _activeCell: T | null = null;
   private _dir: 'ltr' | 'rtl' = 'ltr';
+  private _homeAndEnd = false;
 
   constructor(private _rows: QueryList<GridKeyManagerRow<T>> | GridKeyManagerRow<T>[]) {
     // We allow for the rows to be an array because, in some cases, the consumer may
@@ -94,6 +97,16 @@ export class GridKeyManager<T> {
   }
 
   /**
+   * Configures the key manager to activate the first and last items
+   * respectively when the Home or End key is pressed.
+   * @param enabled Whether pressing the Home or End key activates the first/last item.
+   */
+  withHomeAndEnd(enabled: boolean = true): this {
+    this._homeAndEnd = enabled;
+    return this;
+  }
+
+  /**
    * Sets the active cell depending on the key event passed in.
    * @param event Keyboard event to be used for determining which element should be active.
    */
@@ -116,6 +129,22 @@ export class GridKeyManager<T> {
       case LEFT_ARROW:
         this._dir === 'rtl' ? this.setNextColumnActive() : this.setPreviousColumnActive();
         break;
+
+      case HOME:
+        if (this._homeAndEnd) {
+          this.setFirstCellActive();
+          break;
+        } else {
+          return;
+        }
+
+      case END:
+        if (this._homeAndEnd) {
+          this.setLastCellActive();
+          break;
+        } else {
+          return;
+        }
 
       default:
         // Note that we return here, in order to avoid preventing

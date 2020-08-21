@@ -15,8 +15,6 @@ import {
   RIGHT_ARROW,
   DOWN_ARROW,
   UP_ARROW,
-  HOME,
-  END,
   hasModifierKey,
 } from '@angular/cdk/keycodes';
 import {
@@ -265,7 +263,10 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
 
   ngAfterContentInit() {
     this._updateDirectDescendants();
-    this._keyManager = new FocusKeyManager(this._directDescendantItems).withWrap().withTypeAhead();
+    this._keyManager = new FocusKeyManager(this._directDescendantItems)
+      .withWrap()
+      .withTypeAhead()
+      .withHomeAndEnd();
     this._tabSubscription = this._keyManager.tabOut.subscribe(() => this.closed.emit('tab'));
 
     // If a user manually (programatically) focuses a menu item, we need to reflect that focus
@@ -329,13 +330,6 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
       case RIGHT_ARROW:
         if (this.parentMenu && this.direction === 'rtl') {
           this.closed.emit('keydown');
-        }
-      break;
-      case HOME:
-      case END:
-        if (!hasModifierKey(event)) {
-          keyCode === HOME ? manager.setFirstItemActive() : manager.setLastItemActive();
-          event.preventDefault();
         }
       break;
       default:

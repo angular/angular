@@ -8,7 +8,7 @@
 
 import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {BACKSPACE, TAB, HOME, END} from '@angular/cdk/keycodes';
+import {BACKSPACE, TAB} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   AfterViewInit,
@@ -419,15 +419,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
       }
       event.preventDefault();
     } else if (this._originatesFromChip(event)) {
-      if (keyCode === HOME) {
-        manager.setFirstCellActive();
-        event.preventDefault();
-      } else if (keyCode === END) {
-        manager.setLastCellActive();
-        event.preventDefault();
-      } else {
-        manager.onKeydown(event);
-      }
+      manager.onKeydown(event);
     }
     this.stateChanges.next();
   }
@@ -456,6 +448,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
   /** Initializes the key manager to manage focus. */
   private _initKeyManager() {
     this._keyManager = new GridFocusKeyManager(this._chips)
+      .withHomeAndEnd()
       .withDirectionality(this._dir ? this._dir.value : 'ltr');
 
     if (this._dir) {

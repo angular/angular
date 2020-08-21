@@ -12,10 +12,8 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {
   A,
   DOWN_ARROW,
-  END,
   ENTER,
   hasModifierKey,
-  HOME,
   SPACE,
   UP_ARROW,
 } from '@angular/cdk/keycodes';
@@ -431,6 +429,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
     this._keyManager = new FocusKeyManager<MatListOption>(this.options)
       .withWrap()
       .withTypeAhead()
+      .withHomeAndEnd()
       // Allow disabled items to be focusable. For accessibility reasons, there must be a way for
       // screenreader users, that allows reading the different options of the list.
       .skipPredicate(() => false)
@@ -553,13 +552,6 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
         if (!hasModifier && !manager.isTyping()) {
           this._toggleFocusedOption();
           // Always prevent space from scrolling the page since the list has focus
-          event.preventDefault();
-        }
-        break;
-      case HOME:
-      case END:
-        if (!hasModifier) {
-          keyCode === HOME ? manager.setFirstItemActive() : manager.setLastItemActive();
           event.preventDefault();
         }
         break;

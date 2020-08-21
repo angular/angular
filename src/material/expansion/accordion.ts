@@ -10,7 +10,6 @@ import {Directive, Input, ContentChildren, QueryList, AfterContentInit} from '@a
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CdkAccordion} from '@angular/cdk/accordion';
 import {FocusKeyManager} from '@angular/cdk/a11y';
-import {HOME, END, hasModifierKey} from '@angular/cdk/keycodes';
 import {startWith} from 'rxjs/operators';
 import {
   MAT_ACCORDION,
@@ -75,27 +74,12 @@ export class MatAccordion extends CdkAccordion implements MatAccordionBase, Afte
         this._ownHeaders.notifyOnChanges();
       });
 
-    this._keyManager = new FocusKeyManager(this._ownHeaders).withWrap();
+    this._keyManager = new FocusKeyManager(this._ownHeaders).withWrap().withHomeAndEnd();
   }
 
   /** Handles keyboard events coming in from the panel headers. */
   _handleHeaderKeydown(event: KeyboardEvent) {
-    const {keyCode} = event;
-    const manager = this._keyManager;
-
-    if (keyCode === HOME) {
-      if (!hasModifierKey(event)) {
-        manager.setFirstItemActive();
-        event.preventDefault();
-      }
-    } else if (keyCode === END) {
-      if (!hasModifierKey(event)) {
-        manager.setLastItemActive();
-        event.preventDefault();
-      }
-    } else {
-      this._keyManager.onKeydown(event);
-    }
+    this._keyManager.onKeydown(event);
   }
 
   _handleHeaderFocus(header: MatExpansionPanelHeader) {
