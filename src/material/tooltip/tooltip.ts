@@ -458,14 +458,14 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
       (position == 'right' && isLtr) ||
       (position == 'left' && !isLtr)) {
       originPosition = {originX: 'end', originY: 'center'};
-    } else {
+    } else if (typeof ngDevMode === 'undefined' || ngDevMode) {
       throw getMatTooltipInvalidPositionError(position);
     }
 
-    const {x, y} = this._invertPosition(originPosition.originX, originPosition.originY);
+    const {x, y} = this._invertPosition(originPosition!.originX, originPosition!.originY);
 
     return {
-      main: originPosition,
+      main: originPosition!,
       fallback: {originX: x, originY: y}
     };
   }
@@ -490,14 +490,14 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
       (position == 'right' && isLtr) ||
       (position == 'left' && !isLtr)) {
       overlayPosition = {overlayX: 'start', overlayY: 'center'};
-    } else {
+    } else if (typeof ngDevMode === 'undefined' || ngDevMode) {
       throw getMatTooltipInvalidPositionError(position);
     }
 
-    const {x, y} = this._invertPosition(overlayPosition.overlayX, overlayPosition.overlayY);
+    const {x, y} = this._invertPosition(overlayPosition!.overlayX, overlayPosition!.overlayY);
 
     return {
-      main: overlayPosition,
+      main: overlayPosition!,
       fallback: {overlayX: x, overlayY: y}
     };
   }

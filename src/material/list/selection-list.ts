@@ -32,7 +32,6 @@ import {
   forwardRef,
   Inject,
   Input,
-  isDevMode,
   OnChanges,
   OnDestroy,
   OnInit,
@@ -386,7 +385,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
     const newValue = coerceBooleanProperty(value);
 
     if (newValue !== this._multiple) {
-      if (isDevMode() && this._contentInitialized) {
+      if (this._contentInitialized && (typeof ngDevMode === 'undefined' || ngDevMode)) {
         throw new Error(
             'Cannot change `multiple` mode of mat-selection-list after initialization.');
       }

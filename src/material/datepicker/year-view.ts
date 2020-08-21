@@ -142,11 +142,14 @@ export class MatYearView<D> implements AfterContentInit, OnDestroy {
               @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
               @Optional() public _dateAdapter: DateAdapter<D>,
               @Optional() private _dir?: Directionality) {
-    if (!this._dateAdapter) {
-      throw createMissingDateImplError('DateAdapter');
-    }
-    if (!this._dateFormats) {
-      throw createMissingDateImplError('MAT_DATE_FORMATS');
+
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._dateAdapter) {
+        throw createMissingDateImplError('DateAdapter');
+      }
+      if (!this._dateFormats) {
+        throw createMissingDateImplError('MAT_DATE_FORMATS');
+      }
     }
 
     this._activeDate = this._dateAdapter.today();

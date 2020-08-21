@@ -132,7 +132,7 @@ export class CdkTree<T> implements AfterContentChecked, CollectionViewer, OnDest
 
   ngOnInit() {
     this._dataDiffer = this._differs.find([]).create(this.trackBy);
-    if (!this.treeControl) {
+    if (!this.treeControl && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getTreeControlMissingError();
     }
   }
@@ -156,7 +156,7 @@ export class CdkTree<T> implements AfterContentChecked, CollectionViewer, OnDest
 
   ngAfterContentChecked() {
     const defaultNodeDefs = this._nodeDefs.filter(def => !def.when);
-    if (defaultNodeDefs.length > 1) {
+    if (defaultNodeDefs.length > 1 && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getTreeMultipleDefaultNodeDefsError();
     }
     this._defaultNodeDef = defaultNodeDefs[0];
@@ -211,7 +211,7 @@ export class CdkTree<T> implements AfterContentChecked, CollectionViewer, OnDest
     if (dataStream) {
       this._dataSubscription = dataStream.pipe(takeUntil(this._onDestroy))
         .subscribe(data => this.renderNodeChanges(data));
-    } else {
+    } else if (typeof ngDevMode === 'undefined' || ngDevMode) {
       throw getTreeNoValidDataSourceError();
     }
   }
@@ -251,9 +251,12 @@ export class CdkTree<T> implements AfterContentChecked, CollectionViewer, OnDest
 
     const nodeDef =
       this._nodeDefs.find(def => def.when && def.when(i, data)) || this._defaultNodeDef;
-    if (!nodeDef) { throw getTreeMissingMatchingNodeDefError(); }
 
-    return nodeDef;
+    if (!nodeDef && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw getTreeMissingMatchingNodeDefError();
+    }
+
+    return nodeDef!;
   }
 
   /**
@@ -366,7 +369,8 @@ export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
 
   // TODO: role should eventually just be set in the component host
   protected _setRoleFromData(): void {
-    if (!this._tree.treeControl.isExpandable && !this._tree.treeControl.getChildren) {
+    if (!this._tree.treeControl.isExpandable && !this._tree.treeControl.getChildren &&
+      (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getTreeControlFunctionsMissingError();
     }
     this.role = 'treeitem';

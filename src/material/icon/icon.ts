@@ -222,7 +222,11 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
     switch (parts.length) {
       case 1: return ['', parts[0]]; // Use default namespace.
       case 2: return <[string, string]>parts;
-      default: throw Error(`Invalid icon name: "${iconName}"`);
+      default:
+        if (typeof ngDevMode === 'undefined' || ngDevMode) {
+          throw Error(`Invalid icon name: "${iconName}"`);
+        }
+        return ['', ''];
     }
   }
 

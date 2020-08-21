@@ -157,18 +157,20 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
   createDate(year: number, month: number, date: number): Moment {
     // Moment.js will create an invalid date if any of the components are out of bounds, but we
     // explicitly check each case so we can throw more descriptive errors.
-    if (month < 0 || month > 11) {
-      throw Error(`Invalid month index "${month}". Month index has to be between 0 and 11.`);
-    }
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (month < 0 || month > 11) {
+        throw Error(`Invalid month index "${month}". Month index has to be between 0 and 11.`);
+      }
 
-    if (date < 1) {
-      throw Error(`Invalid date "${date}". Date has to be greater than 0.`);
+      if (date < 1) {
+        throw Error(`Invalid date "${date}". Date has to be greater than 0.`);
+      }
     }
 
     const result = this._createMoment({year, month, date}).locale(this.locale);
 
     // If the result isn't valid, the date must have been out of bounds for this month.
-    if (!result.isValid()) {
+    if (!result.isValid() && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error(`Invalid date "${date}" for month with index "${month}".`);
     }
 
@@ -188,7 +190,7 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
 
   format(date: Moment, displayFormat: string): string {
     date = this.clone(date);
-    if (!this.isValid(date)) {
+    if (!this.isValid(date) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('MomentDateAdapter: Cannot format invalid date.');
     }
     return date.format(displayFormat);

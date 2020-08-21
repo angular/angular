@@ -67,7 +67,7 @@ export class FixedSizeVirtualScrollStrategy implements VirtualScrollStrategy {
    * @param maxBufferPx The amount of buffer (in pixels) to render when rendering more.
    */
   updateItemAndBufferSize(itemSize: number, minBufferPx: number, maxBufferPx: number) {
-    if (maxBufferPx < minBufferPx) {
+    if (maxBufferPx < minBufferPx && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('CDK virtual scroll: maxBufferPx must be greater than or equal to minBufferPx');
     }
     this._itemSize = itemSize;

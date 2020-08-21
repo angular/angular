@@ -141,7 +141,7 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
   constructor(private _changeDetectorRef: ChangeDetectorRef,
               @Optional() public _dateAdapter: DateAdapter<D>,
               @Optional() private _dir?: Directionality) {
-    if (!this._dateAdapter) {
+    if (!this._dateAdapter && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw createMissingDateImplError('DateAdapter');
     }
 

@@ -12,5 +12,5 @@
       "@angular/material": ["../material/public-api.ts"]
     }
   },
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts", "../dev-mode-types.d.ts"]
 }

@@ -250,11 +250,14 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
       protected _elementRef: ElementRef<HTMLInputElement>,
       @Optional() public _dateAdapter: DateAdapter<D>,
       @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats) {
-    if (!this._dateAdapter) {
-      throw createMissingDateImplError('DateAdapter');
-    }
-    if (!this._dateFormats) {
-      throw createMissingDateImplError('MAT_DATE_FORMATS');
+
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._dateAdapter) {
+        throw createMissingDateImplError('DateAdapter');
+      }
+      if (!this._dateFormats) {
+        throw createMissingDateImplError('MAT_DATE_FORMATS');
+      }
     }
 
     // Update the displayed date when the locale changes.

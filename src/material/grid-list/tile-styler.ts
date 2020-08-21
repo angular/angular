@@ -175,7 +175,8 @@ export class FixedTileStyler extends TileStyler {
     super.init(gutterSize, tracker, cols, direction);
     this.fixedRowHeight = normalizeUnits(this.fixedRowHeight);
 
-    if (!cssCalcAllowedValue.test(this.fixedRowHeight)) {
+    if (!cssCalcAllowedValue.test(this.fixedRowHeight) &&
+      (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error(`Invalid value "${this.fixedRowHeight}" set as rowHeight.`);
     }
   }
@@ -250,7 +251,7 @@ export class RatioTileStyler extends TileStyler {
   private _parseRatio(value: string): void {
     const ratioParts = value.split(':');
 
-    if (ratioParts.length !== 2) {
+    if (ratioParts.length !== 2 && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error(`mat-grid-list: invalid ratio given for row-height: "${value}"`);
     }
 

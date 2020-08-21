@@ -331,7 +331,7 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
     }
 
     if (this.multiple && value) {
-      if (!Array.isArray(value)) {
+      if (!Array.isArray(value) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
         throw Error('Value must be an array in multiple-selection mode.');
       }
 

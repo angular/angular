@@ -243,7 +243,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
     if (this._isBrowser) {
       const googleMapsWindow: GoogleMapsWindow = window;
-      if (!googleMapsWindow.google) {
+      if (!googleMapsWindow.google && (typeof ngDevMode === 'undefined' || ngDevMode)) {
         throw Error(
             'Namespace google not found, cannot construct embedded google ' +
             'map. Please install the Google Maps JavaScript API: ' +
@@ -508,7 +508,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
   /** Asserts that the map has been initialized. */
   private _assertInitialized(): asserts this is {googleMap: google.maps.Map} {
-    if (!this.googleMap) {
+    if (!this.googleMap && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Cannot access Google Map information before the API has been initialized. ' +
                   'Please wait for the API to load before trying to interact with it.');
     }

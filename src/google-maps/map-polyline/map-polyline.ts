@@ -227,15 +227,17 @@ export class MapPolyline implements OnInit, OnDestroy {
   }
 
   private _assertInitialized(): asserts this is {polyline: google.maps.Polyline} {
-    if (!this._map.googleMap) {
-      throw Error(
-          'Cannot access Google Map information before the API has been initialized. ' +
-          'Please wait for the API to load before trying to interact with it.');
-    }
-    if (!this.polyline) {
-      throw Error(
-          'Cannot interact with a Google Map Polyline before it has been ' +
-          'initialized. Please wait for the Polyline to load before trying to interact with it.');
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._map.googleMap) {
+        throw Error(
+            'Cannot access Google Map information before the API has been initialized. ' +
+            'Please wait for the API to load before trying to interact with it.');
+      }
+      if (!this.polyline) {
+        throw Error(
+            'Cannot interact with a Google Map Polyline before it has been ' +
+            'initialized. Please wait for the Polyline to load before trying to interact with it.');
+      }
     }
   }
 }

@@ -18,6 +18,7 @@ ng_module(
     assets = [":virtual-scroll-viewport.css"] + glob(["**/*.html"]),
     module_name = "@angular/cdk/scrolling",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/bidi",
         "//src/cdk/coercion",
         "//src/cdk/collections",

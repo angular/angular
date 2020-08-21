@@ -16,7 +16,8 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "../dev-mode-types.d.ts"
   ],
   "exclude": [
     "**/*.e2e.spec.ts"

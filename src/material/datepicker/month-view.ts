@@ -185,11 +185,14 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
               @Optional() private _dir?: Directionality,
               @Inject(MAT_DATE_RANGE_SELECTION_STRATEGY) @Optional()
                   private _rangeStrategy?: MatDateRangeSelectionStrategy<D>) {
-    if (!this._dateAdapter) {
-      throw createMissingDateImplError('DateAdapter');
-    }
-    if (!this._dateFormats) {
-      throw createMissingDateImplError('MAT_DATE_FORMATS');
+
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._dateAdapter) {
+        throw createMissingDateImplError('DateAdapter');
+      }
+      if (!this._dateFormats) {
+        throw createMissingDateImplError('MAT_DATE_FORMATS');
+      }
     }
 
     this._activeDate = this._dateAdapter.today();

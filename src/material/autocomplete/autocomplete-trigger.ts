@@ -572,7 +572,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
   }
 
   private _attachOverlay(): void {
-    if (!this.autocomplete) {
+    if (!this.autocomplete && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getMatAutocompleteMissingPanelError();
     }
 

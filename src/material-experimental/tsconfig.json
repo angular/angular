@@ -12,5 +12,5 @@
       "@material/*": ["../../node_modules/@material/*/index.d.ts"]
     }
   },
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts", "../dev-mode-types.d.ts"]
 }

@@ -34,7 +34,6 @@ import {
   EmbeddedViewRef,
   Inject,
   Input,
-  isDevMode,
   IterableChangeRecord,
   IterableDiffer,
   IterableDiffers,
@@ -342,8 +341,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     return this._trackByFn;
   }
   set trackBy(fn: TrackByFunction<T>) {
-    if (isDevMode() && fn != null && typeof fn !== 'function' && <any>console &&
-        <any>console.warn) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && fn != null && typeof fn !== 'function') {
       console.warn(`trackBy must be a function, but received ${JSON.stringify(fn)}.`);
     }
     this._trackByFn = fn;
@@ -482,7 +480,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     this._cacheColumnDefs();
 
     // Make sure that the user has at least added header, footer, or data row def.
-    if (!this._headerRowDefs.length && !this._footerRowDefs.length && !this._rowDefs.length) {
+    if (!this._headerRowDefs.length && !this._footerRowDefs.length && !this._rowDefs.length &&
+        (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getTableMissingRowDefsError();
     }
 
@@ -788,7 +787,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     const columnDefs = mergeArrayAndSet(
         this._getOwnDefs(this._contentColumnDefs), this._customColumnDefs);
     columnDefs.forEach(columnDef => {
-      if (this._columnDefsByName.has(columnDef.name)) {
+      if (this._columnDefsByName.has(columnDef.name) &&
+        (typeof ngDevMode === 'undefined' || ngDevMode)) {
         throw getTableDuplicateColumnNameError(columnDef.name);
       }
       this._columnDefsByName.set(columnDef.name, columnDef);
@@ -806,7 +806,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
     // After all row definitions are determined, find the row definition to be considered default.
     const defaultRowDefs = this._rowDefs.filter(def => !def.when);
-    if (!this.multiTemplateDataRows && defaultRowDefs.length > 1) {
+    if (!this.multiTemplateDataRows && defaultRowDefs.length > 1 &&
+        (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getTableMultipleDefaultRowDefsError();
     }
     this._defaultRowDef = defaultRowDefs[0];
@@ -885,14 +886,15 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       dataStream = observableOf(this.dataSource);
     }
 
-    if (dataStream === undefined) {
+    if (dataStream === undefined && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getTableUnknownDataSourceError();
     }
 
-    this._renderChangeSubscription = dataStream.pipe(takeUntil(this._onDestroy)).subscribe(data => {
-      this._data = data || [];
-      this.renderRows();
-    });
+    this._renderChangeSubscription = dataStream!.pipe(takeUntil(this._onDestroy))
+      .subscribe(data => {
+        this._data = data || [];
+        this.renderRows();
+      });
   }
 
   /**
@@ -927,7 +929,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   private _addStickyColumnStyles(rows: HTMLElement[], rowDef: BaseRowDef) {
     const columnDefs = Array.from(rowDef.columns || []).map(columnName => {
       const columnDef = this._columnDefsByName.get(columnName);
-      if (!columnDef) {
+      if (!columnDef && (typeof ngDevMode === 'undefined' || ngDevMode)) {
         throw getTableUnknownColumnError(columnName);
       }
       return columnDef!;
@@ -971,7 +973,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       }
     }
 
-    if (!rowDefs.length) {
+    if (!rowDefs.length && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getTableMissingMatchingRowDefError(data);
     }
 
@@ -1046,11 +1048,11 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     return Array.from(rowDef.columns, columnId => {
       const column = this._columnDefsByName.get(columnId);
 
-      if (!column) {
+      if (!column && (typeof ngDevMode === 'undefined' || ngDevMode)) {
         throw getTableUnknownColumnError(columnId);
       }
 
-      return rowDef.extractCellTemplate(column);
+      return rowDef.extractCellTemplate(column!);
     });
   }
 

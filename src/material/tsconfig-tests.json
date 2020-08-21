@@ -22,7 +22,8 @@
   },
   "include": [
     "**/index.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "../dev-mode-types.d.ts"
   ],
   "exclude": [
     "core/theming/tests/**/*.ts",

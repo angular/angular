@@ -11,7 +11,6 @@ import {
   Directive,
   Inject,
   Input,
-  isDevMode,
   OnDestroy,
   OnInit,
   Optional,
@@ -77,7 +76,7 @@ export class CdkSelectionToggle<T> implements OnDestroy, OnInit {
   }
 
   private _assertValidParentSelection() {
-    if (!this._selection && isDevMode()) {
+    if (!this._selection && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('CdkSelectAll: missing CdkSelection in the parent');
     }
   }

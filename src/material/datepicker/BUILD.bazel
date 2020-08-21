@@ -25,6 +25,7 @@ ng_module(
     ] + glob(["**/*.html"]),
     module_name = "@angular/material/datepicker",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/a11y",
         "//src/cdk/bidi",
         "//src/cdk/coercion",

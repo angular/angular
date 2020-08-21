@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode, TrackByFunction} from '@angular/core';
+import {TrackByFunction} from '@angular/core';
 import {Subject} from 'rxjs';
 
 /**
@@ -55,7 +55,7 @@ export class SelectionSet<T> implements TrackBySelection<T> {
   }
 
   select(...selects: SelectableWithIndex<T>[]) {
-    if (!this._multiple && selects.length > 1 && isDevMode()) {
+    if (!this._multiple && selects.length > 1 && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('SelectionSet: not multiple selection');
     }
 
@@ -81,7 +81,7 @@ export class SelectionSet<T> implements TrackBySelection<T> {
   }
 
   deselect(...selects: SelectableWithIndex<T>[]) {
-    if (!this._multiple && selects.length > 1 && isDevMode()) {
+    if (!this._multiple && selects.length > 1 && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('SelectionSet: not multiple selection');
     }
 
@@ -114,7 +114,7 @@ export class SelectionSet<T> implements TrackBySelection<T> {
       return select.value;
     }
 
-    if (select.index == null && isDevMode()) {
+    if (select.index == null && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('SelectionSet: index required when trackByFn is used.');
     }
 

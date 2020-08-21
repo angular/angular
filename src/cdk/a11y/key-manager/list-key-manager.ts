@@ -140,7 +140,8 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * @param debounceInterval Time to wait after the last keystroke before setting the active item.
    */
   withTypeAhead(debounceInterval: number = 200): this {
-    if (this._items.length && this._items.some(item => typeof item.getLabel !== 'function')) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && (this._items.length &&
+        this._items.some(item => typeof item.getLabel !== 'function'))) {
       throw Error('ListKeyManager items in typeahead mode must implement the `getLabel` method.');
     }
 

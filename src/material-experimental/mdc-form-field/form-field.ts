@@ -20,7 +20,6 @@ import {
   Inject,
   InjectionToken,
   Input,
-  isDevMode,
   NgZone,
   OnDestroy,
   Optional,
@@ -445,7 +444,7 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
 
   /** Throws an error if the form field's control is missing. */
   private _assertFormFieldControl() {
-    if (!this._control) {
+    if (!this._control && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getMatFormFieldMissingControlError();
     }
   }
@@ -558,7 +557,7 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
    * This method is a noop if Angular runs in production mode.
    */
   private _validateHints() {
-    if (isDevMode() && this._hintChildren) {
+    if (this._hintChildren && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       let startHint: MatHint;
       let endHint: MatHint;
       this._hintChildren.forEach((hint: MatHint) => {

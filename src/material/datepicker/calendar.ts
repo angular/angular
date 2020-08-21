@@ -315,12 +315,14 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
               @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
               private _changeDetectorRef: ChangeDetectorRef) {
 
-    if (!this._dateAdapter) {
-      throw createMissingDateImplError('DateAdapter');
-    }
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._dateAdapter) {
+        throw createMissingDateImplError('DateAdapter');
+      }
 
-    if (!this._dateFormats) {
-      throw createMissingDateImplError('MAT_DATE_FORMATS');
+      if (!this._dateFormats) {
+        throw createMissingDateImplError('MAT_DATE_FORMATS');
+      }
     }
 
     this._intlChanges = _intl.changes.subscribe(() => {

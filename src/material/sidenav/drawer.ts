@@ -808,12 +808,12 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     // Ensure that we have at most one start and one end drawer.
     this._drawers.forEach(drawer => {
       if (drawer.position == 'end') {
-        if (this._end != null) {
+        if (this._end != null && (typeof ngDevMode === 'undefined' || ngDevMode)) {
           throwMatDuplicatedDrawerError('end');
         }
         this._end = drawer;
       } else {
-        if (this._start != null) {
+        if (this._start != null && (typeof ngDevMode === 'undefined' || ngDevMode)) {
           throwMatDuplicatedDrawerError('start');
         }
         this._start = drawer;

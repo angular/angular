@@ -16,7 +16,6 @@ import {
   Inject,
   OnDestroy,
   Optional,
-  isDevMode,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {TemplatePortal} from '@angular/cdk/portal';
@@ -64,8 +63,7 @@ export class CdkMenuItemTrigger implements OnDestroy {
     // If the provided panel already has a stack, that means it already has a trigger configured.
     // Note however that there are some edge cases where two triggers **may** share the same menu,
     // e.g. two triggers in two separate menus.
-    // TODO refactor once https://github.com/angular/components/pull/20146 lands
-    if (isDevMode() && panel?._menuStack) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && panel?._menuStack) {
       throwExistingMenuStackError();
     }
 

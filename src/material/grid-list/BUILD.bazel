@@ -21,6 +21,7 @@ ng_module(
     assets = [":grid-list.css"] + glob(["**/*.html"]),
     module_name = "@angular/material/grid-list",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/bidi",
         "//src/cdk/coercion",
         "//src/material/core",

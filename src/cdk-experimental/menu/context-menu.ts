@@ -17,7 +17,6 @@ import {
   Inject,
   Injectable,
   InjectionToken,
-  isDevMode,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {Directionality} from '@angular/cdk/bidi';
@@ -110,9 +109,7 @@ export class CdkContextMenuTrigger implements OnDestroy {
     return this._menuPanel;
   }
   set menuPanel(panel: CdkMenuPanel) {
-    // If the provided panel already has a stack, that means it already has a trigger configured
-    // TODO refactor once https://github.com/angular/components/pull/20146 lands
-    if (isDevMode() && panel._menuStack) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && panel._menuStack) {
       throwExistingMenuStackError();
     }
     this._menuPanel = panel;

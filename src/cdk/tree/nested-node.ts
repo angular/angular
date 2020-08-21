@@ -64,7 +64,7 @@ export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContent
 
   ngAfterContentInit() {
     this._dataDiffer = this._differs.find([]).create(this._tree.trackBy);
-    if (!this._tree.treeControl.getChildren) {
+    if (!this._tree.treeControl.getChildren && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getTreeControlFunctionsMissingError();
     }
     const childrenNodes = this._tree.treeControl.getChildren(this.data);

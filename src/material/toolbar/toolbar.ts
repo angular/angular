@@ -16,7 +16,6 @@ import {
   Directive,
   ElementRef,
   Inject,
-  isDevMode,
   QueryList,
   ViewEncapsulation,
 } from '@angular/core';
@@ -68,31 +67,27 @@ export class MatToolbar extends _MatToolbarMixinBase implements CanColor, AfterV
   }
 
   ngAfterViewInit() {
-    if (!isDevMode() || !this._platform.isBrowser) {
-      return;
+    if (this._platform.isBrowser) {
+      this._checkToolbarMixedModes();
+      this._toolbarRows.changes.subscribe(() => this._checkToolbarMixedModes());
     }
-
-    this._checkToolbarMixedModes();
-    this._toolbarRows.changes.subscribe(() => this._checkToolbarMixedModes());
   }
 
   /**
    * Throws an exception when developers are attempting to combine the different toolbar row modes.
    */
   private _checkToolbarMixedModes() {
-    if (!this._toolbarRows.length) {
-      return;
-    }
+    if (this._toolbarRows.length && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      // Check if there are any other DOM nodes that can display content but aren't inside of
+      // a <mat-toolbar-row> element.
+      const isCombinedUsage = Array.from<HTMLElement>(this._elementRef.nativeElement.childNodes)
+        .filter(node => !(node.classList && node.classList.contains('mat-toolbar-row')))
+        .filter(node => node.nodeType !== (this._document ? this._document.COMMENT_NODE : 8))
+        .some(node => !!(node.textContent && node.textContent.trim()));
 
-    // Check if there are any other DOM nodes that can display content but aren't inside of
-    // a <mat-toolbar-row> element.
-    const isCombinedUsage = Array.from<HTMLElement>(this._elementRef.nativeElement.childNodes)
-      .filter(node => !(node.classList && node.classList.contains('mat-toolbar-row')))
-      .filter(node => node.nodeType !== (this._document ? this._document.COMMENT_NODE : 8))
-      .some(node => !!(node.textContent && node.textContent.trim()));
-
-    if (isCombinedUsage) {
-      throwToolbarMixedModesError();
+      if (isCombinedUsage) {
+        throwToolbarMixedModesError();
+      }
     }
   }
 }

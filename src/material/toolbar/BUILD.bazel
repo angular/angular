@@ -21,6 +21,7 @@ ng_module(
     assets = [":toolbar.css"] + glob(["**/*.html"]),
     module_name = "@angular/material/toolbar",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/platform",
         "//src/material/core",
         "@npm//@angular/common",

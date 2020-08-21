@@ -155,7 +155,7 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
     // of this single reference.
     super();
 
-    if (!_sort) {
+    if (!_sort && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getSortHeaderNotContainedWithinSortError();
     }
 

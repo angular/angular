@@ -26,6 +26,7 @@ ng_module(
     ] + glob(["**/*.html"]),
     module_name = "@angular/material/core",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk",
         "//src/cdk/a11y",
         "//src/cdk/bidi",

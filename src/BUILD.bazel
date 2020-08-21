@@ -2,6 +2,7 @@ load("@npm_bazel_typescript//:index.bzl", "ts_config")
 load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS")
 load("//src/material:config.bzl", "MATERIAL_ENTRYPOINTS", "MATERIAL_TESTING_ENTRYPOINTS")
 load("//tools/dgeni:index.bzl", "dgeni_api_docs")
+load("//tools:defaults.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -42,4 +43,9 @@ dgeni_api_docs(
         "material": materialApiEntryPoints,
     },
     tags = ["docs-package"],
+)
+
+ts_library(
+    name = "dev_mode_types",
+    srcs = ["dev-mode-types.d.ts"],
 )

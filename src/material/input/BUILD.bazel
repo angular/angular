@@ -20,6 +20,7 @@ ng_module(
     assets = glob(["**/*.html"]),
     module_name = "@angular/material/input",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/coercion",
         "//src/cdk/platform",
         "//src/cdk/text-field",

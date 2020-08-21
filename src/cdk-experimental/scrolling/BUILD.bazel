@@ -11,6 +11,7 @@ ng_module(
     ),
     module_name = "@angular/cdk-experimental/scrolling",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/coercion",
         "//src/cdk/collections",
         "//src/cdk/scrolling",

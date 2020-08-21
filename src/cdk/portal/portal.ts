@@ -38,12 +38,14 @@ export abstract class Portal<T> {
 
   /** Attach this portal to a host. */
   attach(host: PortalOutlet): T {
-    if (host == null) {
-      throwNullPortalOutletError();
-    }
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (host == null) {
+        throwNullPortalOutletError();
+      }
 
-    if (host.hasAttached()) {
-      throwPortalAlreadyAttachedError();
+      if (host.hasAttached()) {
+        throwPortalAlreadyAttachedError();
+      }
     }
 
     this._attachedHost = host;
@@ -54,11 +56,11 @@ export abstract class Portal<T> {
   detach(): void {
     let host = this._attachedHost;
 
-    if (host == null) {
-      throwNoPortalAttachedError();
-    } else {
+    if (host != null) {
       this._attachedHost = null;
       host.detach();
+    } else if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      throwNoPortalAttachedError();
     }
   }
 
@@ -215,16 +217,18 @@ export abstract class BasePortalOutlet implements PortalOutlet {
 
   /** Attaches a portal. */
   attach(portal: Portal<any>): any {
-    if (!portal) {
-      throwNullPortalError();
-    }
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!portal) {
+        throwNullPortalError();
+      }
 
-    if (this.hasAttached()) {
-      throwPortalAlreadyAttachedError();
-    }
+      if (this.hasAttached()) {
+        throwPortalAlreadyAttachedError();
+      }
 
-    if (this._isDisposed) {
-      throwPortalOutletAlreadyDisposedError();
+      if (this._isDisposed) {
+        throwPortalOutletAlreadyDisposedError();
+      }
     }
 
     if (portal instanceof ComponentPortal) {
@@ -239,7 +243,9 @@ export abstract class BasePortalOutlet implements PortalOutlet {
       return this.attachDomPortal(portal);
     }
 
-    throwUnknownPortalTypeError();
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      throwUnknownPortalTypeError();
+    }
   }
 
   abstract attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;

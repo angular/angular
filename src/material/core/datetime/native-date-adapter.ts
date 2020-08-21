@@ -160,19 +160,21 @@ export class NativeDateAdapter extends DateAdapter<Date> {
   }
 
   createDate(year: number, month: number, date: number): Date {
-    // Check for invalid month and date (except upper bound on date which we have to check after
-    // creating the Date).
-    if (month < 0 || month > 11) {
-      throw Error(`Invalid month index "${month}". Month index has to be between 0 and 11.`);
-    }
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      // Check for invalid month and date (except upper bound on date which we have to check after
+      // creating the Date).
+      if (month < 0 || month > 11) {
+        throw Error(`Invalid month index "${month}". Month index has to be between 0 and 11.`);
+      }
 
-    if (date < 1) {
-      throw Error(`Invalid date "${date}". Date has to be greater than 0.`);
+      if (date < 1) {
+        throw Error(`Invalid date "${date}". Date has to be greater than 0.`);
+      }
     }
 
     let result = this._createDateWithOverflow(year, month, date);
     // Check that the date wasn't above the upper bound for the month, causing the month to overflow
-    if (result.getMonth() != month) {
+    if (result.getMonth() != month && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error(`Invalid date "${date}" for month with index "${month}".`);
     }
 

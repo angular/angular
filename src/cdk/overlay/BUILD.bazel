@@ -20,6 +20,7 @@ ng_module(
     ),
     module_name = "@angular/cdk/overlay",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/bidi",
         "//src/cdk/coercion",
         "//src/cdk/keycodes",

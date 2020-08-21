@@ -122,7 +122,7 @@ export class MatGridList implements MatGridListBase, OnInit, AfterContentChecked
 
   /** Throw a friendly error if cols property is missing */
   private _checkCols() {
-    if (!this.cols) {
+    if (!this.cols && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error(`mat-grid-list: must pass in number of columns. ` +
                   `Example: <mat-grid-list cols="3">`);
     }

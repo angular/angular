@@ -16,7 +16,6 @@ import {
   Optional,
   ViewChild,
   ViewEncapsulation,
-  isDevMode,
 } from '@angular/core';
 import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef} from './cell';
 import {CdkTable} from './table';
@@ -138,7 +137,7 @@ export class CdkTextColumn<T> implements OnDestroy, OnInit {
       this.columnDef.cell = this.cell;
       this.columnDef.headerCell = this.headerCell;
       this._table.addColumnDef(this.columnDef);
-    } else {
+    } else if (typeof ngDevMode === 'undefined' || ngDevMode) {
       throw getTableTextColumnMissingParentTableError();
     }
   }
@@ -156,7 +155,7 @@ export class CdkTextColumn<T> implements OnDestroy, OnInit {
   _createDefaultHeaderText() {
     const name = this.name;
 
-    if (isDevMode() && !name) {
+    if (!name && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getTableTextColumnMissingNameError();
     }
 

@@ -19,6 +19,7 @@ ng_module(
     assets = [":autocomplete.css"] + glob(["**/*.html"]),
     module_name = "@angular/material/autocomplete",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/a11y",
         "//src/cdk/bidi",
         "//src/cdk/coercion",

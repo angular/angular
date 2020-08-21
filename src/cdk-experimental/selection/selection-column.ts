@@ -10,7 +10,6 @@ import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef, CdkTable} from '@angular/cdk
 import {
   Component,
   Input,
-  isDevMode,
   OnDestroy,
   OnInit,
   Optional,
@@ -77,7 +76,7 @@ export class CdkSelectionColumn<T> implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    if (!this.selection && isDevMode()) {
+    if (!this.selection && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('CdkSelectionColumn: missing CdkSelection in the parent');
     }
 
@@ -87,10 +86,8 @@ export class CdkSelectionColumn<T> implements OnInit, OnDestroy {
       this._columnDef.cell = this._cell;
       this._columnDef.headerCell = this._headerCell;
       this._table.addColumnDef(this._columnDef);
-    } else {
-      if (isDevMode()) {
-        throw Error('CdkSelectionColumn: missing parent table');
-      }
+    } else if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw Error('CdkSelectionColumn: missing parent table');
     }
   }
 

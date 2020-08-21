@@ -458,7 +458,8 @@ export class MatFormField extends _MatFormFieldMixinBase
    * or child element with the `mat-placeholder` directive).
    */
   private _validatePlaceholders() {
-    if (this._control.placeholder && this._placeholderChild) {
+    if (this._control.placeholder && this._placeholderChild &&
+      (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getMatFormFieldPlaceholderConflictError();
     }
   }
@@ -474,7 +475,7 @@ export class MatFormField extends _MatFormFieldMixinBase
    * attribute being considered as `align="start"`.
    */
   private _validateHints() {
-    if (this._hintChildren) {
+    if (this._hintChildren && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       let startHint: MatHint;
       let endHint: MatHint;
       this._hintChildren.forEach((hint: MatHint) => {
@@ -531,7 +532,7 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   /** Throws an error if the form field's control is missing. */
   protected _validateControlChild() {
-    if (!this._control) {
+    if (!this._control && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getMatFormFieldMissingControlError();
     }
   }

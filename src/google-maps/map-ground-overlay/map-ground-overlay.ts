@@ -77,7 +77,7 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
   constructor(private readonly _map: GoogleMap, private readonly _ngZone: NgZone) {}
 
   ngOnInit() {
-    if (!this.bounds) {
+    if (!this.bounds && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Image bounds are required');
     }
     if (this._map._isBrowser) {
@@ -170,15 +170,17 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
   }
 
   private _assertInitialized(): asserts this is {groundOverlay: google.maps.GroundOverlay} {
-    if (!this._map.googleMap) {
-      throw Error(
-          'Cannot access Google Map information before the API has been initialized. ' +
-          'Please wait for the API to load before trying to interact with it.');
-    }
-    if (!this.groundOverlay) {
-      throw Error(
-          'Cannot interact with a Google Map GroundOverlay before it has been initialized. ' +
-          'Please wait for the GroundOverlay to load before trying to interact with it.');
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._map.googleMap) {
+        throw Error(
+            'Cannot access Google Map information before the API has been initialized. ' +
+            'Please wait for the API to load before trying to interact with it.');
+      }
+      if (!this.groundOverlay) {
+        throw Error(
+            'Cannot interact with a Google Map GroundOverlay before it has been initialized. ' +
+            'Please wait for the GroundOverlay to load before trying to interact with it.');
+      }
     }
   }
 }

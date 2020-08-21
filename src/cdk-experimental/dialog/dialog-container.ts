@@ -171,7 +171,7 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
    * @param portal Portal to be attached as the dialog content.
    */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
-    if (this._portalHost.hasAttached()) {
+    if (this._portalHost.hasAttached() && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throwDialogContentAlreadyAttachedError();
     }
 
@@ -183,7 +183,7 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
    * @param portal Portal to be attached as the dialog content.
    */
   attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
-    if (this._portalHost.hasAttached()) {
+    if (this._portalHost.hasAttached() && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throwDialogContentAlreadyAttachedError();
     }
 
@@ -197,7 +197,7 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
    * @breaking-change 10.0.0
    */
   attachDomPortal = (portal: DomPortal) => {
-    if (this._portalHost.hasAttached()) {
+    if (this._portalHost.hasAttached() && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throwDialogContentAlreadyAttachedError();
     }
 

@@ -91,7 +91,8 @@
       ["xdescribe"],
       {"name": ["first"], "message": "Use take(1) instead."},
       {"name": ["Object", "assign"], "message": "Use the spread operator instead."},
-      {"name": ["*", "asObservable"], "message": "Cast to Observable type instead."}
+      {"name": ["*", "asObservable"], "message": "Cast to Observable type instead."},
+      {"name": ["isDevMode"], "message": "Use `typeof ngDevMode === 'undefined' || ngDevMode` instead"}
     ],
     // Avoids inconsistent linebreak styles in source files. Forces developers to use LF linebreaks.
     "linebreak-style": [true, "LF"],

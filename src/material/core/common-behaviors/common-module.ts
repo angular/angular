@@ -106,6 +106,10 @@ export class MatCommonModule {
 
   /** Whether any sanity checks are enabled. */
   private _checksAreEnabled(): boolean {
+    // TODO(crisbeto): we can't use `ngDevMode` here yet, because ViewEngine apps might not support
+    // it. Since these checks can have performance implications and they aren't tree shakeable
+    // in their current form, we can leave the `isDevMode` check in for now.
+    // tslint:disable-next-line:ban
     return isDevMode() && !this._isTestEnv();
   }
 

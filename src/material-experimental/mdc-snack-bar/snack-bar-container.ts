@@ -184,7 +184,7 @@ export class MatSnackBarContainer extends BasePortalOutlet
 
   /** Asserts that no content is already attached to the container. */
   private _assertNotAttached() {
-    if (this._portalOutlet.hasAttached()) {
+    if (this._portalOutlet.hasAttached() && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Attempting to attach snack bar content after content is already attached');
     }
   }

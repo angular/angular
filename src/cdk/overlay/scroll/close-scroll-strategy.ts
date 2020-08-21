@@ -35,7 +35,7 @@ export class CloseScrollStrategy implements ScrollStrategy {
 
   /** Attaches this scroll strategy to an overlay. */
   attach(overlayRef: OverlayReference) {
-    if (this._overlayRef) {
+    if (this._overlayRef && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getMatScrollStrategyAlreadyAttachedError();
     }
 

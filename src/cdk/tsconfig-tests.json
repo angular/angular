@@ -21,7 +21,8 @@
   "include": [
     "**/index.ts",
     "**/*.spec.ts",
-    "**/*.d.ts"
+    "**/*.d.ts",
+    "../dev-mode-types.d.ts"
   ],
   "exclude": [
     "testing/protractor/**.ts",

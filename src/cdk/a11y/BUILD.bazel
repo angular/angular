@@ -18,6 +18,7 @@ ng_module(
     ),
     module_name = "@angular/cdk/a11y",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/coercion",
         "//src/cdk/keycodes",
         "//src/cdk/observers",

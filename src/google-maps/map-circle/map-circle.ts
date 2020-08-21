@@ -280,15 +280,17 @@ export class MapCircle implements OnInit, OnDestroy {
   }
 
   private _assertInitialized(): asserts this is {circle: google.maps.Circle} {
-    if (!this._map.googleMap) {
-      throw Error(
-        'Cannot access Google Map information before the API has been initialized. ' +
-        'Please wait for the API to load before trying to interact with it.');
-    }
-    if (!this.circle) {
-      throw Error(
-        'Cannot interact with a Google Map Circle before it has been ' +
-        'initialized. Please wait for the Circle to load before trying to interact with it.');
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._map.googleMap) {
+        throw Error(
+          'Cannot access Google Map information before the API has been initialized. ' +
+          'Please wait for the API to load before trying to interact with it.');
+      }
+      if (!this.circle) {
+        throw Error(
+          'Cannot interact with a Google Map Circle before it has been ' +
+          'initialized. Please wait for the Circle to load before trying to interact with it.');
+      }
     }
   }
 }

@@ -14,6 +14,7 @@ ng_module(
     # because "moment" does not have a typed default import.
     tsconfig = ":tsconfig",
     deps = [
+        "//src:dev_mode_types",
         "//src/material/core",
         "@npm//@angular/core",
         "@npm//moment",

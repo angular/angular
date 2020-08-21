@@ -49,7 +49,6 @@ import {
   Inject,
   InjectionToken,
   Input,
-  isDevMode,
   NgZone,
   OnChanges,
   OnDestroy,
@@ -405,7 +404,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   @Input()
   get multiple(): boolean { return this._multiple; }
   set multiple(value: boolean) {
-    if (this._selectionModel) {
+    if (this._selectionModel && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getMatSelectDynamicMultipleError();
     }
 
@@ -427,7 +426,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   @Input()
   get compareWith() { return this._compareWith; }
   set compareWith(fn: (o1: any, o2: any) => boolean) {
-    if (typeof fn !== 'function') {
+    if (typeof fn !== 'function' && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getMatSelectNonFunctionValueError();
     }
     this._compareWith = fn;
@@ -889,7 +888,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    */
   private _setSelectionByValue(value: any | any[]): void {
     if (this.multiple && value) {
-      if (!Array.isArray(value)) {
+      if (!Array.isArray(value) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
         throw getMatSelectNonArrayValueError();
       }
 
@@ -924,7 +923,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
         // Treat null as a special reset value.
         return option.value != null && this._compareWith(option.value,  value);
       } catch (error) {
-        if (isDevMode()) {
+        if (typeof ngDevMode === 'undefined' || ngDevMode) {
           // Notify developers of errors in their comparator.
           console.warn(error);
         }

@@ -26,6 +26,7 @@ ng_module(
     ] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-tabs",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/a11y",
         "//src/cdk/bidi",
         "//src/cdk/coercion",

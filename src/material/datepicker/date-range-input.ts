@@ -215,7 +215,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
     @Optional() private _dateAdapter: DateAdapter<D>,
     @Optional() @Inject(MAT_FORM_FIELD) private _formField?: MatFormField) {
 
-    if (!_dateAdapter) {
+    if (!_dateAdapter && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw createMissingDateImplError('DateAdapter');
     }
 
@@ -246,12 +246,14 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   }
 
   ngAfterContentInit() {
-    if (!this._startInput) {
-      throw Error('mat-date-range-input must contain a matStartDate input');
-    }
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._startInput) {
+        throw Error('mat-date-range-input must contain a matStartDate input');
+      }
 
-    if (!this._endInput) {
-      throw Error('mat-date-range-input must contain a matEndDate input');
+      if (!this._endInput) {
+        throw Error('mat-date-range-input must contain a matEndDate input');
+      }
     }
 
     if (this._model) {

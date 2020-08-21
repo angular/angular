@@ -20,6 +20,7 @@ ng_module(
     assets = [":chips_scss"] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-chips",
     deps = [
+        "//src:dev_mode_types",
         "//src/material/core",
         "//src/material/form-field",
         "@npm//@angular/animations",

@@ -163,7 +163,7 @@ export class MatInkBarFoundation {
    * the ink bar should fit to content.
    */
   private _appendInkBarElement() {
-    if (!this._inkBarElement) {
+    if (!this._inkBarElement && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Ink bar element has not been created and cannot be appended');
     }
 
@@ -171,10 +171,10 @@ export class MatInkBarFoundation {
         this._hostElement.querySelector('.mdc-tab__content') :
         this._hostElement;
 
-    if (!parentElement) {
+    if (!parentElement && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Missing element to host the ink bar');
     }
 
-    parentElement.appendChild(this._inkBarElement);
+    parentElement!.appendChild(this._inkBarElement);
   }
 }

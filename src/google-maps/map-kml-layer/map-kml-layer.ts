@@ -176,15 +176,17 @@ export class MapKmlLayer implements OnInit, OnDestroy {
   }
 
   private _assertInitialized(): asserts this is { kmlLayer: google.maps.KmlLayer } {
-    if (!this._map.googleMap) {
-      throw Error(
-          'Cannot access Google Map information before the API has been initialized. ' +
-          'Please wait for the API to load before trying to interact with it.');
-    }
-    if (!this.kmlLayer) {
-      throw Error(
-          'Cannot interact with a Google Map KmlLayer before it has been ' +
-          'initialized. Please wait for the KmlLayer to load before trying to interact with it.');
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._map.googleMap) {
+        throw Error(
+            'Cannot access Google Map information before the API has been initialized. ' +
+            'Please wait for the API to load before trying to interact with it.');
+      }
+      if (!this.kmlLayer) {
+        throw Error(
+            'Cannot interact with a Google Map KmlLayer before it has been ' +
+            'initialized. Please wait for the KmlLayer to load before trying to interact with it.');
+      }
     }
   }
 }

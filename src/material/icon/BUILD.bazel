@@ -21,6 +21,7 @@ ng_module(
     assets = [":icon.css"] + glob(["**/*.html"]),
     module_name = "@angular/material/icon",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/coercion",
         "//src/material/core",
         "@npm//@angular/common",

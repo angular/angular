@@ -236,15 +236,17 @@ export class MapPolygon implements OnInit, OnDestroy {
   }
 
   private _assertInitialized(): asserts this is {polygon: google.maps.Polygon} {
-    if (!this._map.googleMap) {
-      throw Error(
-          'Cannot access Google Map information before the API has been initialized. ' +
-          'Please wait for the API to load before trying to interact with it.');
-    }
-    if (!this.polygon) {
-      throw Error(
-          'Cannot interact with a Google Map Polygon before it has been ' +
-          'initialized. Please wait for the Polygon to load before trying to interact with it.');
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._map.googleMap) {
+        throw Error(
+            'Cannot access Google Map information before the API has been initialized. ' +
+            'Please wait for the API to load before trying to interact with it.');
+      }
+      if (!this.polygon) {
+        throw Error(
+            'Cannot interact with a Google Map Polygon before it has been ' +
+            'initialized. Please wait for the Polygon to load before trying to interact with it.');
+      }
     }
   }
 }

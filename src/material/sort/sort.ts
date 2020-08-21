@@ -11,7 +11,6 @@ import {
   Directive,
   EventEmitter,
   Input,
-  isDevMode,
   OnChanges,
   OnDestroy,
   OnInit,
@@ -88,7 +87,8 @@ export class MatSort extends _MatSortMixinBase
   @Input('matSortDirection')
   get direction(): SortDirection { return this._direction; }
   set direction(direction: SortDirection) {
-    if (isDevMode() && direction && direction !== 'asc' && direction !== 'desc') {
+    if (direction && direction !== 'asc' && direction !== 'desc' &&
+      (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getSortInvalidDirectionError(direction);
     }
     this._direction = direction;
@@ -112,13 +112,16 @@ export class MatSort extends _MatSortMixinBase
    * collection of MatSortables.
    */
   register(sortable: MatSortable): void {
-    if (!sortable.id) {
-      throw getSortHeaderMissingIdError();
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!sortable.id) {
+        throw getSortHeaderMissingIdError();
+      }
+
+      if (this.sortables.has(sortable.id)) {
+        throw getSortDuplicateSortableIdError(sortable.id);
+      }
     }
 
-    if (this.sortables.has(sortable.id)) {
-      throw getSortDuplicateSortableIdError(sortable.id);
-    }
     this.sortables.set(sortable.id, sortable);
   }
 

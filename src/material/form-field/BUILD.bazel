@@ -24,6 +24,7 @@ ng_module(
     ] + glob(["**/*.html"]),
     module_name = "@angular/material/form-field",
     deps = [
+        "//src:dev_mode_types",
         "//src/cdk/bidi",
         "//src/cdk/coercion",
         "//src/cdk/observers",

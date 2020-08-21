@@ -239,15 +239,17 @@ export class MapRectangle implements OnInit, OnDestroy {
   }
 
   private _assertInitialized(): asserts this is {rectangle: google.maps.Rectangle} {
-    if (!this._map.googleMap) {
-      throw Error(
-          'Cannot access Google Map information before the API has been initialized. ' +
-          'Please wait for the API to load before trying to interact with it.');
-    }
-    if (!this.rectangle) {
-      throw Error(
-          'Cannot interact with a Google Map Rectangle before it has been ' +
-          'initialized. Please wait for the Rectangle to load before trying to interact with it.');
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._map.googleMap) {
+        throw Error(
+            'Cannot access Google Map information before the API has been initialized. ' +
+            'Please wait for the API to load before trying to interact with it.');
+      }
+      if (!this.rectangle) {
+        throw Error(
+            'Cannot interact with a Google Map Rectangle before it has been initialized. ' +
+            'Please wait for the Rectangle to load before trying to interact with it.');
+      }
     }
   }
 }

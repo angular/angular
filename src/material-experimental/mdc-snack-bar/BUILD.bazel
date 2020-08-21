@@ -21,6 +21,7 @@ ng_module(
     ] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-snack-bar",
     deps = [
+        "//src:dev_mode_types",
         "//src/material/core",
         "//src/material/snack-bar",
         "@npm//@angular/core",

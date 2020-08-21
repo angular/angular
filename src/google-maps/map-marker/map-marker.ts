@@ -441,15 +441,17 @@ export class MapMarker implements OnInit, OnDestroy, MapAnchorPoint {
   }
 
   private _assertInitialized(): asserts this is {marker: google.maps.Marker} {
-    if (!this._googleMap.googleMap) {
-      throw Error(
-          'Cannot access Google Map information before the API has been initialized. ' +
-          'Please wait for the API to load before trying to interact with it.');
-    }
-    if (!this.marker) {
-      throw Error(
-          'Cannot interact with a Google Map Marker before it has been ' +
-          'initialized. Please wait for the Marker to load before trying to interact with it.');
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!this._googleMap.googleMap) {
+        throw Error(
+            'Cannot access Google Map information before the API has been initialized. ' +
+            'Please wait for the API to load before trying to interact with it.');
+      }
+      if (!this.marker) {
+        throw Error(
+            'Cannot interact with a Google Map Marker before it has been ' +
+            'initialized. Please wait for the Marker to load before trying to interact with it.');
+      }
     }
   }
 }

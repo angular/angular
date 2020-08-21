@@ -166,7 +166,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
               viewportRuler?: ViewportRuler) {
     super(elementRef, scrollDispatcher, ngZone, dir);
 
-    if (!_scrollStrategy) {
+    if (!_scrollStrategy && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Error: cdk-virtual-scroll-viewport requires the "itemSize" property to be set.');
     }
 
@@ -217,7 +217,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
 
   /** Attaches a `CdkVirtualScrollRepeater` to this viewport. */
   attach(forOf: CdkVirtualScrollRepeater<any>) {
-    if (this._forOf) {
+    if (this._forOf && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('CdkVirtualScrollViewport is already attached.');
     }
 

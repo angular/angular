@@ -386,7 +386,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
               @Optional() private _dir: Directionality,
               @Optional() @Inject(DOCUMENT) private _document: any,
               private _model: MatDateSelectionModel<S, D>) {
-    if (!this._dateAdapter) {
+    if (!this._dateAdapter && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw createMissingDateImplError('DateAdapter');
     }
 
@@ -436,7 +436,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
    * @returns Selection model that the input should hook itself up to.
    */
   _registerInput(input: C): MatDateSelectionModel<S, D> {
-    if (this._datepickerInput) {
+    if (this._datepickerInput && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('A MatDatepicker can only be associated with a single input.');
     }
     this._inputStateChanges.unsubscribe();
@@ -451,7 +451,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     if (this._opened || this.disabled) {
       return;
     }
-    if (!this._datepickerInput) {
+    if (!this._datepickerInput && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Attempted to open an MatDatepicker with no associated input.');
     }
     if (this._document) {

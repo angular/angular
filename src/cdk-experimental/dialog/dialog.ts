@@ -106,7 +106,7 @@ export class Dialog implements OnDestroy {
   openFromComponent<T>(component: ComponentType<T>, config?: DialogConfig): DialogRef<any> {
     config = this._applyConfigDefaults(config);
 
-    if (config.id && this.getById(config.id)) {
+    if (config.id && this.getById(config.id) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error(`Dialog with id "${config.id}" exists already. The dialog id must be unique.`);
     }
 
@@ -125,7 +125,7 @@ export class Dialog implements OnDestroy {
   openFromTemplate<T>(template: TemplateRef<T>, config?: DialogConfig): DialogRef<any> {
     config = this._applyConfigDefaults(config);
 
-    if (config.id && this.getById(config.id)) {
+    if (config.id && this.getById(config.id) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error(`Dialog with id "${config.id}" exists already. The dialog id must be unique.`);
     }
 

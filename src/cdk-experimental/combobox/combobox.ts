@@ -15,7 +15,7 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
-  Input, isDevMode,
+  Input,
   OnDestroy,
   Optional,
   Output, ViewContainerRef
@@ -273,7 +273,8 @@ export class CdkCombobox<T = unknown> implements OnDestroy, AfterContentInit {
 
   private _coerceOpenActionProperty(input: string | OpenAction[]): OpenAction[] {
     let actions = typeof input === 'string' ? input.trim().split(/[ ,]+/) : input;
-    if (isDevMode() && actions.some(a => allowedOpenActions.indexOf(a) === -1)) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+      actions.some(a => allowedOpenActions.indexOf(a) === -1)) {
       throw Error(`${input} is not a support open action for CdkCombobox`);
     }
     return actions as OpenAction[];

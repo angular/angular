@@ -215,7 +215,8 @@ export class CdkVirtualForOf<T> implements
     if (range.start >= range.end) {
       return 0;
     }
-    if (range.start < this._renderedRange.start || range.end > this._renderedRange.end) {
+    if ((range.start < this._renderedRange.start || range.end > this._renderedRange.end) &&
+      (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error(`Error: attempted to measure an item that isn't rendered.`);
     }
 

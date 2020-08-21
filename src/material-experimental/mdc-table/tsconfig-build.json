@@ -2,7 +2,7 @@
   "extends": "../tsconfig-build",
   "files": [
     "public-api.ts",
-    "../typings.d.ts"
+    "../dev-mode-types.d.ts"
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,

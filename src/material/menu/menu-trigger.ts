@@ -32,7 +32,6 @@ import {
   Output,
   Self,
   ViewContainerRef,
-  isDevMode,
 } from '@angular/core';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {asapScheduler, merge, of as observableOf, Subscription} from 'rxjs';
@@ -122,7 +121,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     this._menuCloseSubscription.unsubscribe();
 
     if (menu) {
-      if (isDevMode() && menu === this._parentMenu) {
+      if (menu === this._parentMenu && (typeof ngDevMode === 'undefined' || ngDevMode)) {
         throwMatMenuRecursiveError();
       }
 
@@ -380,7 +379,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
    * matMenuTriggerFor. If not, an exception is thrown.
    */
   private _checkMenu() {
-    if (isDevMode() && !this.menu) {
+    if (!this.menu && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throwMatMenuMissingError();
     }
   }

@@ -18,7 +18,6 @@ import {
   NgZone,
   OnDestroy,
   DoCheck,
-  isDevMode,
   SimpleChanges,
   OnChanges,
 } from '@angular/core';
@@ -213,7 +212,8 @@ export class FocusTrap {
 
       // Warn the consumer if the element they've pointed to
       // isn't focusable, when not in production mode.
-      if (isDevMode() && !this._checker.isFocusable(redirectToElement)) {
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+        !this._checker.isFocusable(redirectToElement)) {
         console.warn(`Element matching '[cdkFocusInitial]' is not focusable.`, redirectToElement);
       }
 

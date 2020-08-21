@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Inject, isDevMode, OnDestroy, OnInit, Optional, Self} from '@angular/core';
+import {Directive, Inject, OnDestroy, OnInit, Optional, Self} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Observable, of as observableOf, Subject} from 'rxjs';
 import {switchMap, takeUntil} from 'rxjs/operators';
@@ -90,11 +90,11 @@ export class CdkSelectAll<T> implements OnDestroy, OnInit {
   }
 
   private _assertValidParentSelection() {
-    if (!this._selection && isDevMode()) {
+    if (!this._selection && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('CdkSelectAll: missing CdkSelection in the parent');
     }
 
-    if (!this._selection.multiple && isDevMode()) {
+    if (!this._selection.multiple && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('CdkSelectAll: CdkSelection must have cdkSelectionMultiple set to true');
     }
   }

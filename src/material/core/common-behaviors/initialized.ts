@@ -68,7 +68,7 @@ export function mixinInitialized<T extends Constructor<{}>>(base: T):
      * @docs-private
      */
     _markInitialized(): void {
-      if (this._isInitialized) {
+      if (this._isInitialized && (typeof ngDevMode === 'undefined' || ngDevMode)) {
         throw Error('This directive has already been marked as initialized and ' +
             'should not be called twice.');
       }

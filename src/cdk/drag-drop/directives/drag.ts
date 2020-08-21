@@ -27,7 +27,6 @@ import {
   OnChanges,
   SimpleChanges,
   ChangeDetectorRef,
-  isDevMode,
   Self,
 } from '@angular/core';
 import {
@@ -326,7 +325,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     const rootElement = this.rootElementSelector ?
         getClosestMatchingAncestor(element, this.rootElementSelector) : element;
 
-    if (rootElement && rootElement.nodeType !== this._document.ELEMENT_NODE) {
+    if (rootElement && rootElement.nodeType !== this._document.ELEMENT_NODE &&
+        (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error(`cdkDrag must be attached to an element node. ` +
                   `Currently attached to "${rootElement.nodeName}".`);
     }
@@ -348,7 +348,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
 
     const element = coerceElement(boundary);
 
-    if (isDevMode() && !element.contains(this.element.nativeElement)) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+      !element.contains(this.element.nativeElement)) {
       throw Error('Draggable element is not inside of the node passed into cdkDragBoundary.');
     }
 

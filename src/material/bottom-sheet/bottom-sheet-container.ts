@@ -175,7 +175,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
   }
 
   private _validatePortalAttached() {
-    if (this._portalOutlet.hasAttached()) {
+    if (this._portalOutlet.hasAttached() && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Attempting to attach bottom sheet content after content is already attached');
     }
   }

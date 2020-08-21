@@ -126,7 +126,8 @@ export abstract class _MatDialogBase<C extends _MatDialogContainerBase> implemen
 
     config = _applyConfigDefaults(config, this._defaultOptions || new MatDialogConfig());
 
-    if (config.id && this.getDialogById(config.id)) {
+    if (config.id && this.getDialogById(config.id) &&
+      (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error(`Dialog with id "${config.id}" exists already. The dialog id must be unique.`);
     }
 
