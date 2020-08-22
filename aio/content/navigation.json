@@ -48,7 +48,7 @@
     {
       "url": "docs",
       "title": "Introducción",
-      "tooltip": "Introducción a la documentación angular.",
+      "tooltip": "Introducción a la documentación Angular.",
       "hidden": false
     },
     {
@@ -62,12 +62,12 @@
         },
         {
           "title": "Conceptos Angular",
-          "tooltip": "Introducción a los conceptos básicos de las aplicaciones angular.",
+          "tooltip": "Introducción a los conceptos básicos de las aplicaciones Angular.",
           "children": [
             {
               "url": "guide/architecture",
               "title": "Introducción a los conceptos básicos",
-              "tooltip": "Bloques de construcción básicos de aplicaciones angular"
+              "tooltip": "Bloques de construcción básicos de aplicaciones Angular"
             },
             {
               "url": "guide/architecture-modules",
@@ -164,7 +164,7 @@
             {
               "url": "tutorial/toh-pt5",
               "title": "5. Agregar navegación en la aplicación",
-              "tooltip": "Parte 5: Agregue el enrutador angular para moverse entre vistas."
+              "tooltip": "Parte 5: Agregue el enrutador Angular para moverse entre vistas."
             },
             {
               "url": "tutorial/toh-pt6",
@@ -214,7 +214,7 @@
                 },
                 {
                   "url": "guide/property-binding",
-                  "title": "Vinculación de propiedad",
+                  "title": "Enlace de propiedad",
                   "tooltip": "Guía introductoria para configurar propiedades de entrada o elemento."
                 },
                 {
@@ -229,7 +229,7 @@
                 },
                 {
                   "url": "guide/two-way-binding",
-                  "title": "Unión Bidireccional",
+                  "title": "Enlace Bidireccional",
                   "tooltip": "Guía introductoria para compartir datos entre una clase y una plantilla."
                 },
                 {
@@ -313,7 +313,7 @@
             {
               "url": "guide/forms-overview",
               "title": "Introducción",
-              "tooltip": "Una forma angular coordina un conjunto de controles de usuario vinculados a datos, realiza un seguimiento de los cambios, valida la entrada y presenta errores."
+              "tooltip": "Una forma Angular coordina un conjunto de controles de usuario vinculados a datos, realiza un seguimiento de los cambios, valida la entrada y presenta errores."
             },
             {
               "url": "guide/reactive-forms",
@@ -590,7 +590,7 @@
             },
             {
               "url": "guide/angular-compiler-options",
-              "title": "Opciones del compilador angular",
+              "title": "Opciones del compilador Angular",
               "tooltip": "Configuración de la compilación AOT."
             },
             {
@@ -717,7 +717,7 @@
         {
           "url": "guide/strict-mode",
           "title": "Modo estricto",
-          "tooltip": "Documentación de referencia para el modo estricto angular."
+          "tooltip": "Documentación de referencia para el modo estricto Angular."
         }
       ]
     },
@@ -790,7 +790,7 @@
             {
               "url": "guide/router-tutorial",
               "title": "Usar de rutas de Angular en una aplicación de una sola página",
-              "tooltip": "Un tutorial que cubre muchos patrones asociados con el enrutamiento angular."
+              "tooltip": "Un tutorial que cubre muchos patrones asociados con el enrutamiento Angular."
             },
             {
               "url": "guide/router-tutorial-toh",
@@ -802,13 +802,13 @@
         {
           "url": "guide/forms",
           "title": "Creación de un formulario basado en plantillas",
-          "tooltip": "Cree un formulario basado en plantillas utilizando directivas y sintaxis de plantilla angular."
+          "tooltip": "Cree un formulario basado en plantillas utilizando directivas y sintaxis de plantilla Angular."
         }
       ]
     },
     {
       "title": "Información de lanzamiento",
-      "tooltip": "Prácticas de lanzamiento angular, actualización y actualización.",
+      "tooltip": "Prácticas de lanzamiento Angular, actualización y actualización.",
       "children": [
         {
           "url": "guide/updating",
