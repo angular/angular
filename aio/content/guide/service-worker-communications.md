@@ -69,7 +69,18 @@ Therefore, it is recommended to reload the page once the promise returned by `ac
 
 ### Handling an unrecoverable state
 
-This can happen when the browser evicts eagerly cached assets from the cache, which can also not be found on the server anymore. This can lead to broken state where only parts of the application will load and others will fail. In such cases, the best way to fix this is to reload the browser.
+In some cases, the version of the app used by the service worker to serve a client might be in a broken state that cannot be recovered from without a full page reload.
+
+For example, imagine the following scenario:
+- A user opens the app for the first time and the service worker caches the latest version of the app. Let's assume the app's cached assets include `index.html`, `main.<main-hash-1>.js` and `lazy-chunk.<lazy-hash-1>.js`.
+- The user closes the app and does not open it for a while.
+- After some time, a new version of the app is deployed to the server. This newer version includes the files `index.html`, `main.<main-hash-2>.js` and `lazy-chunk.<lazy-hash-2>.js` (note that the hashes are different now, because the content of the files has changed). The old version is no longer available on the server.
+- In the meantime, the user's browser decides to evict `lazy-chunk.<lazy-hash-1>.js` from its cache. Browsers may decide to evict specific (or all) resources from a cache in order to reclaim disk space.
+- The user opens the app again. The service worker serves the latest version known to it at this point, namely the old version (`index.html` and `main.<main-hash-1>.js`).
+- At some later point, the app requests the lazy bundle, `lazy-chunk.<lazy-hash-1>.js`.
+- The service worker is unable to find the asset in the cache (remember that the browser evicted it). Nor is it able to retrieve it from the server (since the server now only has `lazy-chunk.<lazy-hash-2>.js` from the newer version).
+
+In the above scenario, the service worker is not able to serve an asset that would normally be cached. That particular app version is broken and there is no way to fix it without reloading the page. In such cases, the service worker notifies the client by sending a `UnrecoverableStateEvent` event. You can subscribe to `SwUpdate#unrecoverable` to be notified and handle these errors.
 
 <code-example path="service-worker-getting-started/src/app/unrecoverable-state.service.ts" header="unrecoverable-state.service.ts" region="sw-unrecoverable-state"></code-example>
 
