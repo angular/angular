@@ -240,7 +240,7 @@ export class ReturnTypeTransform implements DtsTransform {
 
   transformClassElement(element: ts.ClassElement, imports: ImportManager): ts.ClassElement {
     // // TODO(alan-agius4): Remove when we no longer support TS 3.9
-    // TS < 3.9
+    // TS <= 3.9
     if (ts.isMethodSignature(element)) {
       const original = ts.getOriginalNode(element) as ts.MethodDeclaration;
       if (!this.typeReplacements.has(original)) {
@@ -248,7 +248,6 @@ export class ReturnTypeTransform implements DtsTransform {
       }
       const returnType = this.typeReplacements.get(original)!;
       const tsReturnType = translateType(returnType, imports);
-
       const methodSignature = ts.updateMethodSignature(
           /* node */ element,
           /* typeParameters */ element.typeParameters,
