@@ -79,8 +79,14 @@ export function downgradeInjectable(token: any, downgradedModule: string = ''): 
 
     validateInjectionKey($injector, downgradedModule, injectorKey, attemptedAction);
 
-    const injector: Injector = $injector.get(injectorKey);
-    return injector.get(token);
+    try {
+      const injector: Injector = $injector.get(injectorKey);
+      return injector.get(token);
+    } catch (e) {
+      throw new Error(
+          `Trying to get the Angular injector before bootstrapping the corresponding Angular module. Injector name: ${
+              token}`);
+    }
   };
   (factory as any)['$inject'] = [$INJECTOR];
 
