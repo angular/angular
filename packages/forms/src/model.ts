@@ -19,7 +19,6 @@ import {composeAsyncValidators, composeValidators, toObservable} from './validat
 export type FormControlState<T> = null|T|{
   value: null|T;
   disabled: boolean;
-  [k: string]: any;
 };
 
 /**
@@ -234,7 +233,7 @@ export abstract class AbstractControl<T = any> {
    * * For a `FormArray`, the values of enabled controls as an array.
    *
    */
-  public readonly value: T|null|any = null;
+  public readonly value: T|null = null;
 
   /**
    * Initialize the AbstractControl instance.
@@ -1174,6 +1173,9 @@ export class FormControl<T = any> extends AbstractControl<T> {
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null)
   constructor(
+      formState?: T, validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null)
+  constructor(
       formState: FormControlState<T>|null = null,
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
@@ -1457,6 +1459,10 @@ export class FormGroup<T extends object = any> extends AbstractControl<T> {
    *
    */
   constructor(
+      controls: {[key in keyof T]: AbstractControl<T[key]>},
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null)
+  constructor(
       controls: {[key: string]: AbstractControl},
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null)
@@ -1507,6 +1513,10 @@ export class FormGroup<T extends object = any> extends AbstractControl<T> {
    * `valueChanges` observables emit events with the latest status and value when the control is
    * added. When false, no events are emitted.
    */
+  addControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>, options: {
+    emitEvent?: boolean
+  }): void;
+  addControl(name: string, control: AbstractControl, options: {emitEvent?: boolean}): void;
   addControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>, options: {
     emitEvent?: boolean
   } = {}): void {
@@ -1926,14 +1936,6 @@ export class FormArray<Item = any> extends AbstractControl<Item[]> {
    * @param asyncValidator A single async validator or array of async validator functions
    *
    */
-  constructor(
-      controls: AbstractControl[],
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null)
-  constructor(
-      controls: (AbstractControl|null)[],
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null)
   constructor(
       public controls: AbstractControl<Item>[],
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,

@@ -18,7 +18,7 @@ export declare abstract class AbstractControl<T = any> {
   get valid(): boolean;
   get validator(): ValidatorFn|null;
   set validator(validatorFn: ValidatorFn|null);
-  readonly value: T|null|any;
+  readonly value: T|null;
   readonly valueChanges: Observable<T|null>;
   constructor(
       validators: ValidatorFn|ValidatorFn[]|null,
@@ -156,11 +156,7 @@ export declare class FormArray<Item = any> extends AbstractControl<Item[]> {
   readonly value: Item[];
   readonly valueChanges: Observable<Item[]>;
   constructor(
-      controls: (AbstractControl|null)[],
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null);
-  constructor(
-      controls: AbstractControl[],
+      controls: AbstractControl<Item>[],
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null);
   at(index: number): AbstractControl<Item>;
@@ -212,6 +208,9 @@ export declare class FormControl<T = any> extends AbstractControl<T> {
   constructor(
       formState: FormControlState<T>,
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null);
+  constructor(
+      formState?: T, validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null);
   constructor(
       formState?: null, validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
@@ -273,7 +272,6 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
 export declare type FormControlState<T> = null | T | {
   value: null|T;
   disabled: boolean;
-  [k: string]: any;
 };
 
 export declare class FormGroup<T extends object = any> extends AbstractControl<T> {
@@ -281,10 +279,15 @@ export declare class FormGroup<T extends object = any> extends AbstractControl<T
   readonly value: T;
   readonly valueChanges: Observable<T>;
   constructor(
+      controls: {[key in keyof T]: AbstractControl<T[key]>;},
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null);
+  constructor(
       controls: {[key: string]: AbstractControl;},
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null);
   addControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): void;
+  addControl(name: string, control: AbstractControl): void;
   contains(controlName: keyof T): boolean;
   getRawValue(): T;
   patchValue<K extends keyof T>(
