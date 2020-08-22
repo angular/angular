@@ -192,6 +192,7 @@ export class JsonpClientBackend implements HttpBackend {
       // and add it to the page.
       node.addEventListener('load', onLoad);
       node.addEventListener('error', onError);
+      node.addEventListener('abort', onError);
       this.document.body.appendChild(node);
 
       // The request has now been successfully sent.
@@ -205,6 +206,7 @@ export class JsonpClientBackend implements HttpBackend {
         // Remove the event listeners so they won't run if the events later fire.
         node.removeEventListener('load', onLoad);
         node.removeEventListener('error', onError);
+        node.removeEventListener('abort', onError);
 
         // And finally, clean up the page.
         cleanup();
