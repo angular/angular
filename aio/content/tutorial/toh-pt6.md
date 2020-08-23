@@ -66,7 +66,7 @@ a el arreglo de `AppModule` justo en `imports` y configúrelo con el `InMemoryDa
 <code-example path="toh-pt6/src/app/app.module.ts" header="src/app/app.module.ts (imports array excerpt)" region="in-mem-web-api-imports">
 </code-example>
 
-El método de configuración `forRoot ()` toma una clase `InMemoryDataService`
+El método de configuración `forRoot()` toma una clase `InMemoryDataService`
 eso prepara la base de datos en memoria.
 
 Genere la clase `src/app/in-memory-data.service.ts` con el siguiente comando:
@@ -86,7 +86,7 @@ Cuando el servidor esté listo, desconectará la API web en memoria y las solici
 
 
 {@a import-heroes}
-## Heroes and HTTP
+## Heroes y HTTP
 
 En el `HeroService`, importe` HttpClient` y `HttpHeaders`:
 
@@ -137,10 +137,10 @@ Todos los métodos `HttpClient` devuelven un RxJS `Observable` de algo.
 HTTP es un protocolo de solicitud/respuesta.
 Realiza una solicitud, devuelve una sola respuesta.
 
-En general, un _can_ observable puede devolver múltiples valores a lo largo del tiempo.
+En general, un observable _puede_ devolver múltiples valores a lo largo del tiempo.
 Un observable de `HttpClient` siempre emite un único valor y luego se completa, para nunca volver a emitir.
 
-Esta llamada particular a `HttpClient.get()` devuelve un `Observable <Hero[]>`; es decir, "un observable de un arreglo de héroes". En la práctica, solo devolverá un único conjunto de héroes.
+Esta llamada particular a `HttpClient.get()` devuelve un `Observable<Hero[]>`; es decir, "un observable de un arreglo de héroes". En la práctica, solo devolverá un único conjunto de héroes.
 
 ### `HttpClient.get()` devuelve datos de respuesta
 
@@ -199,7 +199,7 @@ Después de informar el error a la consola, el controlador construye
 un mensaje fácil de usar y devuelve un valor seguro a la aplicación para que la aplicación pueda seguir funcionando.
 
 Como cada método de servicio devuelve un tipo diferente de resultado 'Observable',
-`handleError ()` toma un parámetro de tipo para que pueda devolver el valor seguro como el tipo que la aplicación espera.
+`handleError()` toma un parámetro de tipo para que pueda devolver el valor seguro como el tipo que la aplicación espera.
 
 ### Tap en el Observable
 
@@ -223,7 +223,7 @@ La mayoría de las API web admiten una solicitud _get by id_ en la forma `: base
 Aquí, la _base URL_ es el `heroesURL` definido en la  [Heroes y HTTP](tutorial/toh-pt6#heroes-and-http) sección (`api/heroes`) y _id_ es
 El número del héroe que quieres recuperar. Por ejemplo, `api/heroes/11`.
 
-Actualice el método `HeroService`` getHero()` con lo siguiente para hacer esa solicitud:
+Actualice el método `HeroService` `getHero()` con lo siguiente para hacer esa solicitud:
 
 <code-example path="toh-pt6/src/app/hero.service.ts" region="getHero" header="src/app/hero.service.ts"></code-example>
 
@@ -231,7 +231,7 @@ Hay tres diferencias significativas de `getHeroes()`:
 
 * `getHero()` construye una URL de solicitud con la identificación del héroe deseado.
 * El servidor debe responder con un solo héroe en lugar de una serie de héroes.
-* `getHero()` devuelve un `Observable <Hero>` ("_un observable de objetos Hero_")
+* `getHero()` devuelve un `Observable<Hero>` ("_un observable de objetos Hero_")
   en lugar de un observable de _arreglos_ de héroes.
 
 ## Actualizar héroes
@@ -253,7 +253,7 @@ En la clase de componente `HeroDetail`, agregue el siguiente método `save()`, q
 
 <code-example path="toh-pt6/src/app/hero-detail/hero-detail.component.ts" region="save" header="src/app/hero-detail/hero-detail.component.ts (save)"></code-example>
 
-#### Agregar `HeroService.updateHero ()`
+#### Agregar `HeroService.updateHero()`
 
 La estructura general del método `updateHero()` es similar a la de
 `getHeroes()`, pero usa `http.put()` para persistir el héroe cambiado
@@ -296,7 +296,7 @@ Clase `Componente de héroes`:
 <code-example path="toh-pt6/src/app/heroes/heroes.component.ts" region="add" header="src/app/heroes/heroes.component.ts (add)"></code-example>
 
 Cuando el nombre de pila no está en blanco, el controlador crea un objeto similar a un "Héroe"
-del nombre (sólo falta el `id`) y lo pasa al método de servicios `addHero()`.
+del nombre (sólo falta el `id`) y lo pasa al método `addHero()` del servicio.
 
 Cuando `addHero()` se guarda correctamente, la devolución de llamada `subscribe()`
 recibe el nuevo héroe y lo empuja a la lista de "héroes" para mostrarlo.
@@ -445,14 +445,14 @@ Observe la declaración de `heroes$` como un `Observable`:
 Lo configurará en [`ngOnInit()`](#search-pipe).
 Antes de hacerlo, concéntrese en la definición de `searchTerms`.
 
-### El sujeto RxJS `searchTerms`
+### El subject  RxJS `searchTerms`
 
-La propiedad `searchTerms` es un `Sujeto` de RxJS.
+La propiedad `searchTerms` es un `Subject` de RxJS.
 
 <code-example path="toh-pt6/src/app/hero-search/hero-search.component.ts" header="src/app/hero-search/hero-search.component.ts" region="searchTerms"></code-example>
 
-Un `Sujeto` es tanto una fuente de valores observables como un `Observable` en sí mismo.
-Puede suscribirse a un `Sujeto` como lo haría con cualquier `Observable`.
+Un `Subject` es tanto una fuente de valores observables como un `Observable` en sí mismo.
+Puede suscribirse a un `Subject` como lo haría con cualquier `Observable`.
 
 También puede insertar valores en ese `Observable` llamando a su método `next(value)`
 como lo hace el método `search()`.
@@ -481,26 +481,26 @@ Aquí hay un vistazo más de cerca al código.
 
 Cada operador funciona de la siguiente manera:
 
-* `debounceTime (300)` espera hasta que el flujo de nuevos eventos de cadena se detenga durante 300 milisegundos
+* `debounceTime(300)` espera hasta que el flujo de nuevos eventos de cadena se detenga durante 300 milisegundos
 antes de pasar por la última cuerda. Nunca hará solicitudes con más frecuencia que 300 ms.
 
-* `distinctUntilChanged ()` asegura que una solicitud se envíe solo si el texto del filtro cambió.
+* `distinctUntilChanged()` asegura que una solicitud se envíe solo si el texto del filtro cambió.
 
-* `switchMap ()` llama al servicio de búsqueda para cada término de búsqueda que pasa por `debounce ()` y 'distinctUntilChanged () `.
+* `switchMap()` llama al servicio de búsqueda para cada término de búsqueda que pasa por `debounce()` y `distinctUntilChanged()`.
 Cancela y descarta los observables de búsqueda anteriores, devolviendo solo el último servicio de búsqueda observable.
 
 
 <div class="alert is-helpful">
 
   Con el [operador de switchMap](http://www.learnrxjs.io/operators/transformation/switchmap.html),
-   cada evento clave que califique puede activar una llamada al método `HttpClient.get ()`.
+   cada evento clave que califique puede activar una llamada al método `HttpClient.get()`.
    Incluso con una pausa de 300 ms entre solicitudes, podría tener varias solicitudes HTTP en vuelo
    y no pueden regresar en el orden enviado.
 
-   `switchMap ()` conserva el orden de solicitud original mientras devuelve solo lo observable de la llamada al método HTTP más reciente.
+   `switchMap()` conserva el orden de solicitud original mientras devuelve solo lo observable de la llamada al método HTTP más reciente.
    Los resultados de llamadas anteriores se cancelan y descartan.
 
-   Tenga en cuenta que cancelar un `searchHeroes ()` anterior observable
+   Tenga en cuenta que cancelar un `searchHeroes()` anterior observable
    en realidad no aborta una solicitud HTTP pendiente.
    Los resultados no deseados simplemente se descartan antes de que lleguen al código de su aplicación.
 
