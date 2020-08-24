@@ -2,11 +2,6 @@
 # 10.1.0-next.8 (2020-08-24)
 
 
-
-<a name="10.1.0-next.8"></a>
-# 10.1.0-next.8 (2020-08-24)
-
-
 ### Bug Fixes
 
 * **localize:** extract the correct message ids ([#38498](https://github.com/angular/angular/issues/38498)) ([ac461e1](https://github.com/angular/angular/commit/ac461e1))
