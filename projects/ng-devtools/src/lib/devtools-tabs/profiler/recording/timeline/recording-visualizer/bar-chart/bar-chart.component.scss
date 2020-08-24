@@ -5,7 +5,7 @@
   display: flex;
   padding-top: 3px;
   padding-bottom: 3px;
-  opacity: 0.8;
+  opacity: 0.7;
   cursor: pointer;
   transition: opacity 0.3s ease-out, width 0.3s ease;
 }
@@ -17,6 +17,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  opacity: 1.0;
 }
 
 .bar:hover {
@@ -31,7 +32,7 @@
 }
 
 :host-context(.dark-theme) {
-  .bar {
-    color: #424242 !important;
+  .bar span {
+    color: black !important;
   }
 }

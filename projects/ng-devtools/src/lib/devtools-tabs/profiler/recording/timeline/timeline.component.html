@@ -14,6 +14,7 @@
     [visualizationMode]="visualizationMode"
     (changeVisualizationMode)="visualizationMode = $event"
     (exportProfile)="exportProfile.emit($event)"
+    (toggleChangeDetection)="changeDetection = $event"
   ></ng-timeline-controls>
 
   <ng-frame-selector
@@ -32,5 +33,6 @@
     *ngIf="hasFrames && currentFrameIndex >= 0"
     [visualizationMode]="visualizationMode"
     [frame]="frame"
+    [changeDetection]="changeDetection"
   ></ng-timeline-visualizer>
 </div>

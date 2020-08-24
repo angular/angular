@@ -15,7 +15,7 @@
       font-family: Menlo, monospace;
 
       .mat-icon {
-        font-size: 12px;
+        font-size: 0.9em;
         width: 8px;
         height: 16px;
       }
@@ -56,11 +56,11 @@
 
 .arrow {
   font-family: monospace;
-  font-size: 7px;
+  font-size: 0.5em;
   color: #6e6e6e;
 }
 
 :host ::ng-deep .mat-tree-node,
 .mat-nested-tree-node {
-  font-size: 11px;
+  font-size: 0.8em;
 }

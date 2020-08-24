@@ -1,22 +1,32 @@
 <div class="profiler-wrapper">
   <mat-card>
-    <span *ngIf="state === 'idle'" (click)="startRecording()" class="profiler-control start-recording-button"></span>
-    <span *ngIf="state === 'recording'" (click)="stopRecording()" class="profiler-control recording-button"></span>
-    <span *ngIf="state === 'visualizing'" (click)="discardRecording()" class="profiler-control discard-button"
-      >&#10060;</span
-    >
-  </mat-card>
-  <div id="profiler-content-wrapper">
+    <mat-icon *ngIf="state === 'idle'" (click)="startRecording()" class="profiler-control start-recording-button">
+      play_circle_outline
+    </mat-icon>
+    <mat-icon *ngIf="state === 'recording'" (click)="stopRecording()" class="profiler-control recording-button">
+      stop_circle
+    </mat-icon>
+    <mat-icon *ngIf="state === 'visualizing'" (click)="discardRecording()" class="profiler-control discard-button">
+      refresh
+    </mat-icon>
     <p class="instructions" [class.hidden]="state !== 'idle'">
-      <span
-        >Click the record button <span class="start-recording-button"></span> to start a new recording, or upload a json
-        file containing profiler data
+      <span>
+        Click the play button to start a new recording, or upload a json
+        file containing profiler data.
       </span>
       <br />
       <span>
         <input type="file" (change)="importProfilerResults($event)" placeholder="Upload file" accept=".json" />
       </span>
     </p>
+    <p class="instructions" [class.hidden]="state !== 'recording'">
+      Interact to preview change detection. Clicking stop ends this Profiler recording.
+    </p>
+    <p class="instructions" [class.hidden]="state !== 'visualizing'">
+      Click Save Profile to save your recording or click refresh to clear the current recording.
+    </p>
+  </mat-card>
+  <div id="profiler-content-wrapper">
     <p class="visualization" *ngIf="state !== 'idle'">
       <ng-recording-timeline [stream]="stream" (exportProfile)="exportProfilerResults()"> </ng-recording-timeline>
     </p>

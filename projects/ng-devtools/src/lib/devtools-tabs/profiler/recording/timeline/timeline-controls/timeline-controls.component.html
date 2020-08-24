@@ -14,14 +14,25 @@
     </mat-select>
   </mat-form-field>
 
-  <label *ngIf="estimatedFrameRate >= 60 && record"> Time spent: {{ record?.duration | number }} ms </label>
+  <div class="details">
+    <label *ngIf="estimatedFrameRate >= 60 && record">
+      Time spent: <span class="value">{{ record?.duration | number }} ms</span>
+    </label>
+  
+    <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60 && record">
+      Time spent: <span class="value">{{ record?.duration | number }} ms</span>
+    </label>
+  
+    <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60 && record">
+      Frame rate: <span class="value">{{ estimatedFrameRate }} fps</span>
+    </label>
+  
+    <label *ngIf="record?.source && record">
+      Source: <span class="value">{{ record?.source }}</span>
+    </label>
 
-  <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60 && record">
-    Time spent: {{ record?.duration | number }} ms
-  </label>
-
-  <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60 && record">
-    Frame rate: {{ estimatedFrameRate }} fps
-  </label>
-  <label *ngIf="record?.source && record">Source: {{ record?.source }}</label>
+    <mat-checkbox *ngIf="visualizationMode == flameGraphMode" (change)="this.toggleChangeDetection.emit($event.checked)">
+      Show only components with change detection
+    </mat-checkbox>
+  </div>
 </div>

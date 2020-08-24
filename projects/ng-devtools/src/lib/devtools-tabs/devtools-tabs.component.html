@@ -46,6 +46,9 @@
 </mat-menu>
 
 <section *ngIf="angularVersion" id="app-angular-version">
-  Angular version: {{ angularVersion }}
+  Angular version:
+    <span id="version-number">
+      {{ angularVersion }}
+    </span>
   <ng-container *ngIf="latestSHA; let sha"> | DevTools SHA: {{ sha }} </ng-container>
 </section>

@@ -1,9 +1,7 @@
-<mat-checkbox (change)="updateView($event)" class="show-change-detection">Change detection</mat-checkbox>
-
 <div class="level-profile-wrapper" [class.split-width]="selectedEntry">
   <ngx-flamegraph
     (frameClick)="selectFrame($event)"
-    [config]="{ data: profilerBars }"
+    [config]="{ data: profilerBars, color: colors }"
     [width]="availableWidth"
     siblingLayout="equal"
   >
@@ -11,10 +9,10 @@
 </div>
 
 <mat-card class="selected-entry" *ngIf="selectedEntry">
-  <mat-toolbar color="primary">{{ selectedEntry.label }} details</mat-toolbar>
+  <mat-toolbar color="accent">{{ selectedEntry.label }} details</mat-toolbar>
   <section class="entry-statistics">
     <div class="txt-total-time" *ngIf="selectedEntry.changeDetected">
-      <label>Total time spent:</label> {{ selectedEntry.value | number }}ms
+      <label>Total time spent:</label><span> {{ selectedEntry.value | number }}ms</span>
     </div>
     <div class="txt-total-time" *ngIf="!selectedEntry.changeDetected">
       <label>Did not run change detection</label>

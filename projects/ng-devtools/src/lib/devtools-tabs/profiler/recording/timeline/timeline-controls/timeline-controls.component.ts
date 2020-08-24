@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { VisualizationMode } from '../timeline.component';
 import { ProfilerFrame } from 'protocol';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'ng-timeline-controls',
@@ -15,6 +16,7 @@ export class TimelineControlsComponent {
   @Input() empty: boolean;
   @Output() changeVisualizationMode = new EventEmitter<VisualizationMode>();
   @Output() exportProfile = new EventEmitter<void>();
+  @Output() toggleChangeDetection = new EventEmitter<boolean>();
 
   flameGraphMode = VisualizationMode.FlameGraph;
   treeMapMode = VisualizationMode.TreeMap;

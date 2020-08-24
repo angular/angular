@@ -13,7 +13,7 @@
   .mat-stroked-button {
     height: 20px;
     line-height: 20px;
-    font-size: 11px;
+    font-size: 0.8em;
     margin-right: 5px;
     width: fit-content;
   }
@@ -26,7 +26,7 @@
 :host-context(.dark-theme) {
   ::ng-deep {
     .mat-card.breadcrumb-card span {
-      color: #F9CB9C;
+      color: #5CAACE;
     }
   }
 }
