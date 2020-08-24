@@ -175,7 +175,8 @@ export class MatIconRegistry implements OnDestroy {
                                options?: IconOptions): this {
     const cleanLiteral = this._sanitizer.sanitize(SecurityContext.HTML, literal);
 
-    if (!cleanLiteral && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    // TODO: add an ngDevMode check
+    if (!cleanLiteral) {
       throw getMatIconFailedToSanitizeLiteralError(literal);
     }
 
@@ -217,7 +218,7 @@ export class MatIconRegistry implements OnDestroy {
                                   options?: IconOptions): this {
     const cleanLiteral = this._sanitizer.sanitize(SecurityContext.HTML, literal);
 
-    if (!cleanLiteral && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    if (!cleanLiteral) {
       throw getMatIconFailedToSanitizeLiteralError(literal);
     }
 
@@ -381,11 +382,12 @@ export class MatIconRegistry implements OnDestroy {
     return forkJoin(iconSetFetchRequests).pipe(map(() => {
       const foundIcon = this._extractIconWithNameFromAnySet(name, iconSetConfigs);
 
-      if (!foundIcon && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      // TODO: add an ngDevMode check
+      if (!foundIcon) {
         throw getMatIconNameNotFoundError(name);
       }
 
-      return foundIcon!;
+      return foundIcon;
     }));
   }
 
@@ -491,7 +493,8 @@ export class MatIconRegistry implements OnDestroy {
     div.innerHTML = str;
     const svg = div.querySelector('svg') as SVGElement;
 
-    if (!svg && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    // TODO: add an ngDevMode check
+    if (!svg) {
       throw Error('<svg> tag not found');
     }
 
@@ -552,31 +555,33 @@ export class MatIconRegistry implements OnDestroy {
       throw getMatIconNoHttpProviderError();
     }
 
-    if (safeUrl == null && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    // TODO: add an ngDevMode check
+    if (safeUrl == null) {
       throw Error(`Cannot fetch icon from URL "${safeUrl}".`);
     }
 
     const url = this._sanitizer.sanitize(SecurityContext.RESOURCE_URL, safeUrl);
 
-    if (!url && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      throw getMatIconFailedToSanitizeUrlError(safeUrl!);
+    // TODO: add an ngDevMode check
+    if (!url) {
+      throw getMatIconFailedToSanitizeUrlError(safeUrl);
     }
 
     // Store in-progress fetches to avoid sending a duplicate request for a URL when there is
     // already a request in progress for that URL. It's necessary to call share() on the
     // Observable returned by http.get() so that multiple subscribers don't cause multiple XHRs.
-    const inProgressFetch = this._inProgressUrlFetches.get(url!);
+    const inProgressFetch = this._inProgressUrlFetches.get(url);
 
     if (inProgressFetch) {
       return inProgressFetch;
     }
 
-    const req = this._httpClient.get(url!, {responseType: 'text', withCredentials}).pipe(
-      finalize(() => this._inProgressUrlFetches.delete(url!)),
+    const req = this._httpClient.get(url, {responseType: 'text', withCredentials}).pipe(
+      finalize(() => this._inProgressUrlFetches.delete(url)),
       share(),
     );
 
-    this._inProgressUrlFetches.set(url!, req);
+    this._inProgressUrlFetches.set(url, req);
     return req;
   }
 
