@@ -248,6 +248,7 @@ export function tmpManifestSingleAssetGroup(fs: MockFileSystem): Manifest {
       },
     ],
     navigationUrls: [],
+    navigationRequestStrategy: 'performance',
     hashTable,
   };
 }

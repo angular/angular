@@ -47,6 +47,7 @@ const manifest: Manifest = {
     cacheQueryOptions: {ignoreVary: true},
   }],
   navigationUrls: [],
+  navigationRequestStrategy: 'performance',
   hashTable: tmpHashTableForFs(dist),
 };
 
@@ -64,6 +65,7 @@ const manifestUpdate: Manifest = {
     cacheQueryOptions: {ignoreVary: true},
   }],
   navigationUrls: [],
+  navigationRequestStrategy: 'performance',
   hashTable: tmpHashTableForFs(distUpdate),
 };
 

@@ -185,6 +185,18 @@ export class AppVersion implements UpdateSource {
     // Next, check if this is a navigation request for a route. Detect circular
     // navigations by checking if the request URL is the same as the index URL.
     if (this.adapter.normalizeUrl(req.url) !== this.indexUrl && this.isNavigationRequest(req)) {
+      if (this.manifest.navigationRequestStrategy === 'freshness') {
+        // For navigation requests the freshness was configured. The request will always go trough
+        // the network and fallback to default `handleFetch` behavior in case of failure.
+        try {
+          return await this.scope.fetch(req);
+        } catch {
+          // Navigation request failed - application is likely offline.
+          // Proceed forward to the default `handleFetch` behavior, where
+          // `indexUrl` will be requested and it should be available in the cache.
+        }
+      }
+
       // This was a navigation request. Re-enter `handleFetch` with a request for
       // the URL.
       return this.handleFetch(this.adapter.newRequest(this.indexUrl), context);
