@@ -37,9 +37,9 @@ export interface UpdateActivatedEvent {
  * An event emitted when the version of the app used by the service worker to serve this client is
  * in a broken state that cannot be recovered from and a full page reload is required.
  *
- * For example, the ServiceWorker may not be able to retrieve a required resource, neither from the
+ * For example, the service worker may not be able to retrieve a required resource, neither from the
  * cache nor from the server. This could happen if a new version is deployed to the server and the
- * ServiceWorker cache has been partially cleaned by the browser, removing some files of a previous
+ * service worker cache has been partially cleaned by the browser, removing some files of a previous
  * app version but not all.
  *
  * @publicApi
