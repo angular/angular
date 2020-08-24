@@ -7,7 +7,7 @@
       <aio-embedded-stackblitz [src]="stackblitz"></aio-embedded-stackblitz>
     </div>
     <p *ngIf="enableDownload">
-      You can also <a [href]="zip" download title="Download example">download this example</a>.
+      También puedes <a [href]="zip" download title="Descargar ejemplo">descarga este ejemplo</a>.
     </p>
   </span>
   <span *ngSwitchCase="'downloadOnly'">
@@ -16,7 +16,7 @@
   <span *ngSwitchDefault>
     <a [href]="stackblitz" target="_blank" title="{{title}}">{{title}}</a>
     <span *ngIf="enableDownload">
-      / <a [href]="zip" download title="Download example">download example</a>
+      / <a [href]="zip" download title="Descargar ejemplo">descargar ejemplo</a>
     </span>
   </span>
 </span>

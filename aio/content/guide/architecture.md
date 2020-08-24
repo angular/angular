@@ -1,157 +1,157 @@
-# Introduction to Angular concepts
+# Introducción a los conceptos de Angular
 
-Angular is a platform and framework for building single-page client applications using HTML and TypeScript.
-Angular is written in TypeScript.
-It implements core and optional functionality as a set of TypeScript libraries that you import into your apps.
+Angular es una plataforma y un framework para crear aplicaciones de una sola página en el lado del cliente usando HTML y TypeScript.
+Angular está escrito en TypeScript.
+Implementa la funcionalidad básica y opcional como un conjunto de bibliotecas TypeScript que importas en tus aplicaciones.
 
-The architecture of an Angular application relies on certain fundamental concepts.
-The basic building blocks are *NgModules*, which provide a compilation context for *components*. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.
+La arquitectura de una aplicación en Angular se basa en ciertos conceptos fundamentales.
+Los bloques de construcción básicos son los *NgModules*, que proporcionan un contexto de compilación para los *componentes*. Los NgModules recopilan código relacionado en conjuntos funcionales; una aplicación de Angular se define por un conjunto de NgModules. Una aplicación siempre tiene al menos un *módulo raíz* que permite el arranque y generalmente tiene muchos más *módulos de funcionalidad*.
 
-* Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data.
+* Los componentes definen *vistas*, que son conjuntos de elementos de la pantalla que Angular puede elegir y modificar de acuerdo con la lógica y los datos de tu programa.
 
-* Components use *services*, which provide specific functionality not directly related to views. Service providers can be *injected* into components as *dependencies*, making your code modular, reusable, and efficient.
+* Los componentes usan *servicios*, los cuales proporcionan una funcionalidad específica que no está directamente relacionada con las vistas. Los proveedores de servicios pueden *inyectarse* en componentes como *dependencias*, haciendo que tu código sea modular, reutilizable y eficiente.
 
-Modules, components and services are classes that use *decorators*. These decorators mark their type and provide metadata that tells Angular how to use them.
+Los módulos, componentes y servicios son clases que usan *decoradores*. Estos decoradores indican su tipo y proporcionan metadatos que le indican a Angular cómo usarlos.
 
-* The metadata for a component class associates it with a *template* that defines a view. A template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before rendering it for display.
+* Los metadatos para una clase componente son asociados con una *plantilla* que define una vista. Una plantilla combina HTML ordinario con *directivas* de Angular y *enlace markup* que permiten a Angular modificar el HTML antes de mostrarlo para su visualización.
 
-* The metadata for a service class provides the information Angular needs to make it available to components through *dependency injection (DI)*.
+* Los metadatos para una clase servicio proporcionan la información que Angular necesita para que esté disponible para los componentes a través de la *Inyección de Dependencia (ID)*.
 
-An app's components typically define many views, arranged hierarchically. Angular provides the `Router` service to help you define navigation paths among views. The router provides sophisticated in-browser navigational capabilities.
+Los componentes de una aplicación suelen definir muchas vistas, ordenadas jerárquicamente. Angular proporciona el servicio `Router` para ayudarlo a definir rutas de navegación entre vistas. El enrutador proporciona capacidades de navegación sofisticadas en el navegador.
 
 <div class="alert is-helpful">
 
-  See the [Angular Glossary](guide/glossary) for basic definitions of important Angular terms and usage.
+  Visita el [Glosario de Angular](guide/glossary) para ver las definiciones básicas de términos importantes en Angular y su uso.
 
 </div>
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  Para ver la aplicación de ejemplo que describe esta página, consulta el <live-example>ejemplo</live-example>.
 </div>
 
-## Modules
+## Módulos
 
-Angular *NgModules* differ from and complement JavaScript (ES2015) modules. An NgModule declares a compilation context for a set of components that is dedicated to an application domain, a workflow, or a closely related set of capabilities. An NgModule can associate its components with related code, such as services, to form functional units.
+Los *NgModules* de Angular difieren y complementan los módulos JavaScript (ES2015). Un NgModule declara un contexto de compilación para un conjunto de componentes que está dedicado a un dominio de aplicación, un flujo de trabajo o un conjunto de capacidades estrechamente relacionadas. Un NgModule puede asociar sus componentes con código relacionado, como servicios, para formar unidades funcionales.
 
-Every Angular app has a *root module*, conventionally named `AppModule`, which provides the bootstrap mechanism that launches the application. An app typically contains many functional modules.
+Cada aplicación en Angular tiene un *módulo raíz*, convencionalmente nombrado `AppModule`, que proporciona el mecanismo de arranque que inicia la aplicación. Una aplicación generalmente contiene muchos módulos funcionales.
 
-Like JavaScript modules, NgModules can import functionality from other NgModules, and allow their own functionality to be exported and used by other NgModules. For example, to use the router service in your app, you import the `Router` NgModule.
+Como en los módulos de JavaScript, los NgModules pueden importar la funcionalidad de otros, y permiten que su propia funcionalidad sea exportada y utilizada por otros NgModules. Por ejemplo, para utilizar el servicio de enrutamiento en su aplicación, importa el NgModule `Router`.
 
-Organizing your code into distinct functional modules helps in managing development of complex applications, and in designing for reusability. In addition, this technique lets you take advantage of *lazy-loading*&mdash;that is, loading modules on demand&mdash;to minimize the amount of code that needs to be loaded at startup.
+Organizar su código en distintos módulos funcionales ayuda a gestionar el desarrollo de aplicaciones complejas, y en el diseño para su reutilización. Además, esta técnica te permite aprovechar la *carga diferida*&mdash;es decir, cargar módulos bajo demanda&mdash;para minimizar la cantidad de código que debe cargarse al inicio.
 
 <div class="alert is-helpful">
 
-  For a more detailed discussion, see [Introduction to modules](guide/architecture-modules).
+  Para más información, visita [Introducción a los módulos](guide/architecture-modules).
 
 </div>
 
-## Components
+## Componentes
 
-Every Angular application has at least one component, the *root component* that connects a component hierarchy with the page document object model (DOM). Each component defines a class that contains application data and logic, and is associated with an HTML *template* that defines a view to be displayed in a target environment.
+Cada aplicación de Angular tiene al menos un componente, el *componente raíz* que conecta una jerarquía de componentes con el modelo de objetos del documento de la página (DOM). Cada componente define una clase que contiene datos y lógica de la aplicación, y está asociado con una *plantilla* HTML que define una vista que se mostrará en un entorno de destino.
 
-The `@Component()` decorator identifies the class immediately below it as a component, and provides the template and related component-specific metadata.
+El decorador `@Component()` identifica la clase inmediatamente debajo de ella como un componente, y proporciona la plantilla y los metadatos específicos del componente relacionado.
 
 <div class="alert is-helpful">
 
-   Decorators are functions that modify JavaScript classes. Angular defines a number of decorators that attach specific kinds of metadata to classes, so that the system knows what those classes mean and how they should work.
+   Los decoradores son funciones que modifican las clases de JavaScript. Angular define una serie de decoradores que adjuntan tipos específicos de metadatos a las clases, para que el sistema sepa qué significan esas clases y cómo deberían funcionar.
 
-   <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">Learn more about decorators on the web.</a>
+   <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">Obten más información sobre decoradores en la web.</a>
 
 </div>
 
-### Templates, directives, and data binding
+### Plantillas, directivas y enlace de datos
 
-A template combines HTML with Angular markup that can modify HTML elements before they are displayed.
-Template *directives* provide program logic, and *binding markup* connects your application data and the DOM.
-There are two types of data binding:
+Una plantilla combina HTML con markup de Angular que puede modificar elementos HTML antes de que se muestren.
+Las *directivas* de la plantilla proporcionan la lógica de programa y el *enlace markup* conecta los datos de tu aplicación y el DOM.
+Hay dos tipos de enlace de datos:
 
-* *Event binding* lets your app respond to user input in the target environment by updating your application data.
-* *Property binding* lets you interpolate values that are computed from your application data into the HTML.
+* *Manejador de eventos* permite que tu aplicación responda a la entrada del usuario en el entorno objetivo actualizando los datos de tu aplicación.
+* *Vincular propiedades* te permite interpolar valores que se calculan a partir de los datos de tu aplicación en HTML.
 
-Before a view is displayed, Angular evaluates the directives and resolves the binding syntax in the template to modify the HTML elements and the DOM, according to your program data and logic. Angular supports *two-way data binding*, meaning that changes in the DOM, such as user choices, are also reflected in your program data.
+Antes de mostrar una vista, Angular evalúa las directivas y resuelve la sintaxis de enlace en la plantilla para modificar los elementos HTML y el DOM, de acuerdo con los datos y la lógica de tu programa. Angular soporta *enlace de datos en dos sentidos*, lo que significa que los cambios en el DOM, como las elecciones del usuario, también se reflejan en los datos de su programa.
 
-Your templates can use *pipes* to improve the user experience by transforming values for display.
-For example, use pipes to display dates and currency values that are appropriate for a user's locale.
-Angular provides predefined pipes for common transformations, and you can also define your own pipes.
+Tus plantillas pueden usar *pipes* para mejorar la experiencia del usuario mediante la transformación de valores para mostrar.
+Por ejemplo, usa pipes para mostrar fechas y valores de moneda que sean apropiados para la configuración regional de un usuario.
+Angular proporciona pipes predefinidas para transformaciones comunes, y también puedes definir tus propias pipes.
 
 <div class="alert is-helpful">
 
-  For a more detailed discussion of these concepts, see [Introduction to components](guide/architecture-components).
+  Para más información sobre estos conseptos, visita [Introducción a los componentes](guide/architecture-components).
 
 </div>
 
 {@a dependency-injection}
 
 
-## Services and dependency injection
+## Servicios e inyección de dependencia
 
-For data or logic that isn't associated with a specific view, and that you want to share across components, you create a *service* class. A service class definition is immediately preceded by the `@Injectable()` decorator. The decorator provides the metadata that allows other providers to be **injected** as dependencies into your class.
+Para los datos o la lógica que no están asociados con una vista específica y que desea compartir entre componentes, crea una clase *servicio*. Una definición de clase servicio está inmediatamente precedida por el decorador `@Injectable()`. El decorador proporciona los metadatos que permiten **inyectar** otros proveedores como dependencias en su clase.
 
- *Dependency injection* (DI) lets you keep your component classes lean and efficient. They don't fetch data from the server, validate user input, or log directly to the console; they delegate such tasks to services.
+ *Inyección de Dependecia* (ID) le permite mantener sus clases componente ligeras y eficientes. No obtienen datos del servidor, validan la entrada del usuario o inician sesión directamente en la consola; tales tareas son delegadas a los servicios.
 
 <div class="alert is-helpful">
 
-  For a more detailed discussion, see [Introduction to services and DI](guide/architecture-services).
+  Para más información, visita [Introducción a los servicios e ID](guide/architecture-services).
 
 </div>
 
-### Routing
+### Enrutamiento
 
-The Angular `Router` NgModule provides a service that lets you define a navigation path among the different application states and view hierarchies in your app. It is modeled on the familiar browser navigation conventions:
+El NgModule `Router` de Angular proporciona un servicio que le permite definir una ruta de navegación entre los diferentes estados de la aplicación y ver sus jerarquías. Se basa en las convenciones frecuentes de navegación del navegador:
 
-* Enter a URL in the address bar and the browser navigates to a corresponding page.
+* Ingresa una URL en la barra de direcciones para que el navegador vaya a la página correspondiente.
 
-* Click links on the page and the browser navigates to a new page.
+* Haz clic en los enlaces de la página para que el navegador vaya a una nueva página.
 
-* Click the browser's back and forward buttons and the browser navigates backward and forward through the history of pages you've seen.
+* Haz clic en los botones atrás y adelante del navegador para que el navegador vaya hacia atrás y hacia adelante a través del historial de las páginas que has visto.
 
-The router maps URL-like paths to views instead of pages. When a user performs an action, such as clicking a link, that would load a new page in the browser, the router intercepts the browser's behavior, and shows or hides view hierarchies.
+El enrutador mapea rutas similares a URL para las vistas en lugar de páginas. Cuando un usuario realiza una acción, como hacer clic en un enlace, que cargaría una nueva página en el navegador, el enrutador intercepta el comportamiento del navegador y muestra u oculta las jerarquías de vista.
 
-If the router determines that the current application state requires particular functionality, and the module that defines it hasn't been loaded, the router can *lazy-load* the module on demand.
+Si el enrutador determina que el estado actual de la aplicación requiere una funcionalidad particular, y el módulo que lo define no se ha cargado, el enrutador puede hacer *cargar diferida* sobre el módulo bajo demanda.
 
-The router interprets a link URL according to your app's view navigation rules and data state. You can navigate to new views when the user clicks a button or selects from a drop box, or in response to some other stimulus from any source. The router logs activity in the browser's history, so the back and forward buttons work as well.
+El enrutador interpreta una URL de enlace de acuerdo con las reglas de navegación de visualización de la aplicación y el estado de los datos. Puedes navegar a las nuevas vistas cuando el usuario hace clic en un botón o selecciona desde un cuadro desplegable, o en respuesta a algún otro estímulo de cualquier fuente. El enrutador registra la actividad en el historial del navegador, por lo que los botones de retroceso y avance también funcionan.
 
-To define navigation rules, you associate *navigation paths* with your components. A path uses a URL-like syntax that integrates your program data, in much the same way that template syntax integrates your views with your program data. You can then apply program logic to choose which views to show or to hide, in response to user input and your own access rules.
+Para definir reglas de navegación, asocia *rutas de navegación* a tus componentes. Una ruta utiliza una sintaxis similar a una URL que integra los datos de tu programa, de la misma manera que la sintaxis de la plantilla integra tus vistas con los datos de tu programa. Luego puedes aplicar la lógica del programa para elegir qué vistas mostrar u ocultar, en respuesta a la entrada del usuario y a tus propias reglas de acceso.
 
  <div class="alert is-helpful">
 
-   For a more detailed discussion, see [Routing and navigation](guide/router).
+   Para más información, visita [Enrutamiento y navegación](guide/router).
 
  </div>
 
 <hr/>
 
-## What's next
+## ¿Qué sigue?
 
-You've learned the basics about the main building blocks of an Angular application. The following diagram shows how these basic pieces are related.
+Has aprendido los conceptos básicos sobre los bloques de construcción de una aplicación en Angular. El siguiente diagrama muestra cómo se relacionan estos conceptos básicos.
 
 <div class="lightbox">
   <img src="generated/images/guide/architecture/overview2.png" alt="overview">
 </div>
 
-* Together, a component and template define an Angular view.
-  * A decorator on a component class adds the metadata, including a pointer to the associated template.
-  * Directives and binding markup in a component's template modify views based on program data and logic.
-* The dependency injector provides services to a component, such as the router service that lets you define navigation among views.
+* Juntos, un componente y una plantilla definen una vista en Angular.
+  * Un decorador en una clase componente agrega los metadatos, incluido un apuntador a la plantilla asociada.
+  * Las directivas y el enlace markup en la plantilla de un componente modifican las vistas basadas en los datos y la lógica del programa.
+* El inyector de dependencia proporciona servicios a un componente, como el servicio de enrutamiento que le permite definir la navegación entre vistas.
 
-Each of these subjects is introduced in more detail in the following pages.
+Cada uno de estos temas se presenta con más detalle en las siguientes páginas.
 
-* [Introduction to Modules](guide/architecture-modules)
+* [Introducción a los Módulos](guide/architecture-modules)
 
-* [Introduction to Components](guide/architecture-components)
+* [Introducción a los Componentes](guide/architecture-components)
 
-  * [Templates and views](guide/architecture-components#templates-and-views)
+  * [Plantillas y Vistas](guide/architecture-components#templates-and-views)
 
-  * [Component metadata](guide/architecture-components#component-metadata)
+  * [Metadatos de Componentes](guide/architecture-components#component-metadata)
 
-  * [Data binding](guide/architecture-components#data-binding)
+  * [Enlace de Datos](guide/architecture-components#data-binding)
 
-  * [Directives](guide/architecture-components#directives)
+  * [Directivas](guide/architecture-components#directives)
 
   * [Pipes](guide/architecture-components#pipes)
 
-* [Introduction to services and dependency injection](guide/architecture-services)
+* [Introducción a los Servicios e Inyección de Dependencias.](guide/architecture-services)
 
-When you're familiar with these fundamental building blocks, you can explore them in more detail in the documentation. To learn about more tools and techniques that are available to help you build and deploy Angular applications, see [Next steps: tools and techniques](guide/architecture-next-steps).
+Cuando estés familiarizado con estos bloques de construcción fundamentales, podrás explorarlos con más detalle en la documentación. Para saber más acerca de las herramientas y técnicas disponibles para ayudarte a crear y desplegar aplicaciones de Angular, visita [Próximos pasos: herramientas y técnicas](guide/architecture-next-steps).
 </div>

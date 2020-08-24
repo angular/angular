@@ -341,7 +341,7 @@ The following are some of the key AngularJS built-in directives and their equiva
       In Angular, the template no longer specifies its associated controller.
       Rather, the component specifies its associated template as part of the component class decorator.
 
-      For more information, see [Architecture Overview](guide/architecture#components).
+      For more information, see [Architecture Overview](guide/architecture#componentes).
 
     </td>
 
@@ -1035,7 +1035,7 @@ The Angular code is shown using TypeScript.
       This is a nonissue in Angular because ES 2015 modules
       handle the namespacing for you.
 
-      For more information on modules, see the [Modules](guide/architecture#modules) section of the
+      For more information on modules, see the [Modules](guide/architecture#módulos) section of the
       [Architecture Overview](guide/architecture).
     </td>
 
@@ -1112,7 +1112,7 @@ The Angular code is shown using TypeScript.
 
       This is how you associate a template with logic, which is defined in the component class.
 
-      For more information, see the [Components](guide/architecture#components)
+      For more information, see the [Components](guide/architecture#componentes)
       section of the [Architecture Overview](guide/architecture) page.
     </td>
 
@@ -1144,7 +1144,7 @@ The Angular code is shown using TypeScript.
 
       In Angular, you create a component class to contain the data model and control methods. Use the TypeScript <code>export</code> keyword to export the class so that the functionality can be imported into NgModules.
 
-      For more information, see the [Components](guide/architecture#components)
+      For more information, see the [Components](guide/architecture#componentes)
       section of the [Architecture Overview](guide/architecture) page.
     </td>
 
