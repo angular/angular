@@ -1,33 +1,28 @@
-# Attribute, class, and style bindings
+# Enlaces de atributos, clases y estilos
 
-The template syntax provides specialized one-way bindings for scenarios less well-suited to property binding.
+La sintaxis de la plantilla proporciona enlaces one-way especializados para escenarios menos adecuados para el enlace de propiedades.
 
 <div class="alert is-helpful">
 
-See the <live-example></live-example> for a working example containing the code snippets in this guide.
+Consulta el <live-example></live-example> para ver un ejemplo práctico que contiene los fragmentos de código de esta guía.
 
 </div>
 
 
-## Attribute binding
+## Enlace de atributo
 
-Set the value of an attribute directly with an **attribute binding**. This is the only exception to the rule that a binding sets a target property and the only binding that creates and sets an attribute.
+Establece el valor de un atributo directamente con un **enlace de atributo**. Esta es la única excepción a la regla de que un enlace establece una propiedad de destino y el único enlace que crea y establece un atributo.
 
-Usually, setting an element property with a [property binding](guide/property-binding)
-is preferable to setting the attribute with a string. However, sometimes
-there is no element property to bind, so attribute binding is the solution.
+Por lo general, establecer una propiedad de elemento con un [enlace de propiedad](guide/property-binding) es preferible establecer el atributo con una string. Sin embargo, a veces
+no hay ninguna propiedad de elemento para vincular, por lo que la vinculación de atributos es la solución.
 
-Consider the [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) and
-[SVG](https://developer.mozilla.org/en-US/docs/Web/SVG). They are purely attributes, don't correspond to element properties, and don't set element properties. In these cases, there are no property targets to bind to.
+Considera el [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) y
+[SVG](https://developer.mozilla.org/en-US/docs/Web/SVG). Son puramente atributos, no corresponden a las propiedades del elemento y no establecen las propiedades del elemento. En estos casos, no hay objetivos de propiedad a los que vincularse.
 
-Attribute binding syntax resembles property binding, but
-instead of an element property between brackets, start with the prefix `attr`,
-followed by a dot (`.`), and the name of the attribute.
-You then set the attribute value, using an expression that resolves to a string,
-or remove the attribute when the expression resolves to `null`.
+La sintaxis de enlace de atributo se parece al enlace de propiedad, pero en lugar de una propiedad de elemento entre paréntesis, comienza con el prefijo `attr`, seguido de un punto (`.`) y el nombre del atributo.
+Luego establece el valor del atributo, utilizando una expresión que se resuelve en una string, o elimina el atributo cuando la expresión se resuelva en `null`.
 
-One of the primary use cases for attribute binding
-is to set ARIA attributes, as in this example:
+Uno de los casos de uso principales para el enlace de atributos es establecer atributos ARIA, como en este ejemplo:
 
 <code-example path="attribute-binding/src/app/app.component.html" region="attrib-binding-aria" header="src/app/app.component.html"></code-example>
 
@@ -35,28 +30,27 @@ is to set ARIA attributes, as in this example:
 
 <div class="alert is-helpful">
 
-#### `colspan` and `colSpan`
+#### `colspan` y `colSpan`
 
-Notice the difference between the `colspan` attribute and the `colSpan` property.
+Observa la diferencia entre el atributo `colspan` y la propiedad `colSpan`.
 
-If you wrote something like this:
+Si escribes algo como esto:
 
 <code-example language="html">
   &lt;tr&gt;&lt;td colspan="{{1 + 1}}"&gt;Three-Four&lt;/td&gt;&lt;/tr&gt;
 </code-example>
 
-You'd get this error:
+Recibirías este error:
 
 <code-example language="bash">
   Template parse errors:
   Can't bind to 'colspan' since it isn't a known native property
 </code-example>
 
-As the message says, the `<td>` element does not have a `colspan` property. This is true
-because `colspan` is an attribute&mdash;`colSpan`, with a capital `S`, is the
-corresponding property. Interpolation and property binding can set only *properties*, not attributes.
+Como dice el mensaje, el elemento `<td>` no tiene una propiedad `colspan`. Esto es verdad
+porque `colspan` es un atributo&mdash;`colSpan`, con una `S` mayúscula, es la propiedad correspondiente. La interpolación y el enlace de propiedades solo pueden establecer *propiedades*, no atributos.
 
-Instead, you'd use property binding and write it like this:
+En su lugar, puedes usar el enlace de propiedad y lo escribirías así:
 
 <code-example path="attribute-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html"></code-example>
 
@@ -66,28 +60,28 @@ Instead, you'd use property binding and write it like this:
 
 {@a class-binding}
 
-## Class binding
+## Enlace de clase
 
-Here's how to set the `class` attribute without a binding in plain HTML:
+Aquí se explica cómo configurar el atributo `class` sin un enlace en HTML simple:
 
 ```html
 <!-- standard class attribute setting -->
-<div class="foo bar">Some text</div>
+<div class="foo bar">Algún texto</div>
 ```
 
-You can also add and remove CSS class names from an element's `class` attribute with a **class binding**.
+También puedes agregar y eliminar nombres de clase CSS del atributo `class` de un elemento con un **enlace de clase**.
 
-To create a single class binding, start with the prefix `class` followed by a dot (`.`) and the name of the CSS class (for example, `[class.foo]="hasFoo"`).
-Angular adds the class when the bound expression is truthy, and it removes the class when the expression is falsy (with the exception of `undefined`, see [styling delegation](#styling-delegation)).
+Para crear un enlace de clase único, comienza con el prefijo `class` seguido de un punto (`.`) y el nombre de la clase CSS (por ejemplo, `[class.foo]="hasFoo"`).
+Angular agrega la clase cuando la expresión enlazada es verdadera y elimina la clase cuando la expresión es falsa (con la excepción de `undefined`, vea [delegación de estilo](#styling-delegation)).
 
-To create a binding to multiple classes, use a generic `[class]` binding without the dot (for example, `[class]="classExpr"`).
-The expression can be a space-delimited string of class names, or you can format it as an object with class names as the keys and truthy/falsy expressions as the values.
-With object format, Angular will add a class only if its associated value is truthy.
+Para crear un enlace a varias clases, usa un enlace genérico `[class]` sin el punto (por ejemplo, `[class]="classExpr"`).
+La expresión puede ser una string de nombres de clase delimitada por espacios, o puede formatearla como un objeto con nombres de clase como claves y expresiones de verdad / falsedad como valores.
+Con el formato de objeto, Angular agregará una clase solo si su valor asociado es verdadero.
 
-It's important to note that with any object-like expression (`object`, `Array`, `Map`, `Set`, etc), the identity of the object must change for the class list to be updated.
-Updating the property without changing object identity will have no effect.
+Es importante tener en cuenta que con cualquier expresión similar a un objeto (`object`,`Array`, `Map`, `Set`, etc.), la identidad del objeto debe cambiar para que se actualice la lista de clases.
+Actualizar la propiedad sin cambiar la identidad del objeto no tendrá ningún efecto.
 
-If there are multiple bindings to the same class name, conflicts are resolved using [styling precedence](#styling-precedence).
+Si hay varios enlaces al mismo nombre de clase, los conflictos se resuelven usando [precedencia de estilo](#styling-precedence).
 
 <style>
   td, th {vertical-align: top}
@@ -104,26 +98,26 @@ If there are multiple bindings to the same class name, conflicts are resolved us
   </col>
   <tr>
     <th>
-      Binding Type
+      Tipo de enlace
     </th>
     <th>
-      Syntax
+      Sintaxis
     </th>
     <th>
-      Input Type
+      Tipo de entrada
     </th>
     <th>
-      Example Input Values
+      Ejemplo de valores de entrada
     </th>
   </tr>
   <tr>
-    <td>Single class binding</td>
+    <td>Enlace de clase única</td>
     <td><code>[class.foo]="hasFoo"</code></td>
     <td><code>boolean | undefined | null</code></td>
     <td><code>true</code>, <code>false</code></td>
   </tr>
   <tr>
-    <td rowspan=3>Multi-class binding</td>
+    <td rowspan=3>Enlace de clases múltiples</td>
     <td rowspan=3><code>[class]="classExpr"</code></td>
     <td><code>string</code></td>
     <td><code>"my-class-1 my-class-2 my-class-3"</code></td>
@@ -139,43 +133,43 @@ If there are multiple bindings to the same class name, conflicts are resolved us
 </table>
 
 
-The [NgClass](guide/built-in-directives/#ngclass) directive can be used as an alternative to direct `[class]` bindings.
-However, using the above class binding syntax without `NgClass` is preferred because due to improvements in class binding in Angular, `NgClass` no longer provides significant value, and might eventually be removed in the future.
+La directiva [NgClass](guide/built-in-directives/#ngclass) se puede utilizar como alternativa a los enlaces directos `[class]`.
+Sin embargo, se prefiere usar la sintaxis de enlace de clase anterior sin `NgClass` porque debido a las mejoras en el enlace de clase en Angular, `NgClass` ya no proporciona un valor significativo y podría eliminarse en el futuro.
 
 
 <hr/>
 
-## Style binding
+{@a style-binding}
 
-Here's how to set the `style` attribute without a binding in plain HTML:
+## Enlace de estilo
+
+Aquí se explica cómo configurar el atributo `style` sin un enlace en HTML simple:
 
 ```html
 <!-- standard style attribute setting -->
-<div style="color: blue">Some text</div>
+<div style="color: blue">Algún texto</div>
 ```
 
-You can also set styles dynamically with a **style binding**.
+También se puede establecer estilos dinámicamente con un **enlace de estilo**.
 
-To create a single style binding, start with the prefix `style` followed by a dot (`.`) and the name of the CSS style property (for example, `[style.width]="width"`).
-The property will be set to the value of the bound expression, which is normally a string.
-Optionally, you can add a unit extension like `em` or `%`, which requires a number type.
+Para crear un enlace de estilo único, comienza con el prefijo `style` seguido de un punto (`.`) y el nombre de la propiedad de estilo CSS (por ejemplo, `[style.width]="width"`).
+La propiedad se establecerá en el valor de la expresión enlazada, que normalmente es una string.
+Opcionalmente, se puede agregar una extensión de unidad como `em` o `%`, que requiere un tipo de número.
 
 <div class="alert is-helpful">
 
-Note that a _style property_ name can be written in either
-[dash-case](guide/glossary#dash-case), as shown above, or
-[camelCase](guide/glossary#camelcase), such as `fontSize`.
+Ten en cuenta que se puede escribir una _propiedad de estilo_ en [dash-case](guide/glossary#dash-case), como se muestra arriba, o [camelCase](guide/glossary#camelcase), como `fontSize`.
 
 </div>
 
-If there are multiple styles you'd like to toggle, you can bind to the `[style]` property directly without the dot (for example, `[style]="styleExpr"`).
-The expression attached to the `[style]` binding is most often a string list of styles like `"width: 100px; height: 100px;"`.
+Si deseas alternar múltiples estilos, puedes vincular la propiedad `[style]` directamente sin el punto (por ejemplo,  `[style]="styleExpr"`).
+La expresión asociada al enlace `[style]` suele ser una lista de string de estilos como `"width: 100px; height: 100px;"`.
 
-You can also format the expression as an object with style names as the keys and style values as the values, like `{width: '100px', height: '100px'}`.
-It's important to note that with any object-like expression (`object`, `Array`, `Map`, `Set`, etc), the identity of the object must change for the class list to be updated.
-Updating the property without changing object identity will have no effect.
+También se puede formatear la expresión como un objeto con nombres de estilo como claves y valores de estilo como los valores, como `{width: '100px', height: '100px'}`.
+Es importante tener en cuenta que con cualquier expresión similar a un objeto (`object`, `Array`, `Map`, `Set`, etc), la identidad del objeto debe cambiar para que se actualice la lista de clases.
+Actualizar la propiedad sin cambiar la identidad del objeto no tendrá ningún efecto.
 
-If there are multiple bindings to the same style property, conflicts are resolved using [styling precedence rules](#styling-precedence).
+Si hay varios enlaces a la misma propiedad de estilo, los conflictos se resuelven usando [reglas de precedencia de estilo](#styling-precedence).
 
 <style>
   td, th {vertical-align: top}
@@ -192,33 +186,33 @@ If there are multiple bindings to the same style property, conflicts are resolve
   </col>
   <tr>
     <th>
-      Binding Type
+      Tipo de enlace
     </th>
     <th>
-      Syntax
+      Sintaxis
     </th>
     <th>
-      Input Type
+      Tipo de entrada
     </th>
     <th>
-      Example Input Values
+      Ejemplo de valores de entrada
     </th>
   </tr>
   <tr>
-    <td>Single style binding</td>
+    <td>Enlace de estilo único</td>
     <td><code>[style.width]="width"</code></td>
     <td><code>string | undefined | null</code></td>
     <td><code>"100px"</code></td>
   </tr>
   <tr>
   <tr>
-    <td>Single style binding with units</td>
+    <td>Enlace de estilo único con unidades</td>
     <td><code>[style.width.px]="width"</code></td>
     <td><code>number | undefined | null</code></td>
     <td><code>100</code></td>
   </tr>
     <tr>
-    <td rowspan=3>Multi-style binding</td>
+    <td rowspan=3>Enlace de múltiples estilos</td>
     <td rowspan=3><code>[style]="styleExpr"</code></td>
     <td><code>string</code></td>
     <td><code>"width: 100px; height: 100px"</code></td>
@@ -233,71 +227,71 @@ If there are multiple bindings to the same style property, conflicts are resolve
   </tr>
 </table>
 
-The [NgStyle](guide/built-in-directives/#ngstyle) directive can be used as an alternative to direct `[style]` bindings.
-However, using the above style binding syntax without `NgStyle` is preferred because due to improvements in style binding in Angular, `NgStyle` no longer provides significant value, and might eventually be removed in the future.
+La directiva [NgStyle](guide/built-in-directives/#ngstyle) se puede utilizar como alternativa a los enlaces directos `[style]`.
+Sin embargo, se prefiere usar la sintaxis de enlace de estilos anterior sin `NgStyle` porque debido a las mejoras en el enlace de estilos en Angular, `NgStyle` ya no proporciona un valor significativo y podría eliminarse en el futuro.
 
 
 <hr/>
 
 {@a styling-precedence}
 
-## Styling Precedence
+## Precedencia de estilo
 
-A single HTML element can have its CSS class list and style values bound to multiple sources (for example, host bindings from multiple directives).
+Un único elemento HTML puede tener su lista de clases CSS y valores de estilo vinculados a múltiples fuentes (por ejemplo, enlaces de host de múltiples directivas).
 
-When there are multiple bindings to the same class name or style property, Angular uses a set of precedence rules to resolve conflicts and determine which classes or styles are ultimately applied to the element.
+Cuando hay varios enlaces al mismo nombre de clase o propiedad de estilo, Angular usa un conjunto de reglas de precedencia para resolver conflictos y determinar qué clases o estilos se aplican finalmente al elemento.
 
 <div class="alert is-helpful">
-<h4>Styling precedence (highest to lowest)</h4>
+<h4>Precedencia de estilo (de mayor a menor)</h4>
 
-1. Template bindings
-    1. Property binding (for example, `<div [class.foo]="hasFoo">` or `<div [style.color]="color">`)
-    1. Map binding (for example, `<div [class]="classExpr">` or `<div [style]="styleExpr">`)
-    1. Static value (for example, `<div class="foo">` or `<div style="color: blue">`)
-1. Directive host bindings
-    1. Property binding (for example, `host: {'[class.foo]': 'hasFoo'}` or `host: {'[style.color]': 'color'}`)
-    1. Map binding (for example, `host: {'[class]': 'classExpr'}` or `host: {'[style]': 'styleExpr'}`)
-    1. Static value (for example, `host: {'class': 'foo'}` or `host: {'style': 'color: blue'}`)
-1. Component host bindings
-    1. Property binding (for example, `host: {'[class.foo]': 'hasFoo'}` or `host: {'[style.color]': 'color'}`)
-    1. Map binding (for example, `host: {'[class]': 'classExpr'}` or `host: {'[style]': 'styleExpr'}`)
-    1. Static value (for example, `host: {'class': 'foo'}` or `host: {'style': 'color: blue'}`)
+1. Enlaces de plantillas
+    1. Enlace de propiedad (por ejemplo, `<div [class.foo]="hasFoo">` o `<div [style.color]="color">`)
+    1. Enlace de mapa (por ejemplo, `<div [class]="classExpr">` o `<div [style]="styleExpr">`)
+    1. Valor estático (por ejemplo, `<div class="foo">` o `<div style="color: blue">`)
+1. Enlaces de directivas hosts
+    1. Enlace de propiedad (por ejemplo, `host: {'[class.foo]': 'hasFoo'}` o `host: {'[style.color]': 'color'}`)
+    1. Enlace de mapa (por ejemplo, `host: {'[class]': 'classExpr'}` o `host: {'[style]': 'styleExpr'}`)
+    1. Valor estático (por ejemplo, `host: {'class': 'foo'}` o `host: {'style': 'color: blue'}`)
+1. Enlaces de componentes hosts
+    1. Enlace de propiedad (por ejemplo, `host: {'[class.foo]': 'hasFoo'}` o `host: {'[style.color]': 'color'}`)
+    1. Enlace de mapa (por ejemplo, `host: {'[class]': 'classExpr'}` o `host: {'[style]': 'styleExpr'}`)
+    1. Valor estático (por ejemplo, `host: {'class': 'foo'}` o `host: {'style': 'color: blue'}`)
 
 </div>
 
-The more specific a class or style binding is, the higher its precedence.
+Cuanto más específico sea un enlace de clase o estilo, mayor será su precedencia.
 
-A binding to a specific class (for example, `[class.foo]`) will take precedence over a generic `[class]` binding, and a binding to a specific style (for example, `[style.bar]`) will take precedence over a generic `[style]` binding.
+Un enlace a una clase específica (por ejemplo, `[class.foo]`) tendrá prioridad sobre un enlace genérico `[class]`, y un enlace a un estilo específico (por ejemplo, `[style.bar]`)  tendrá prioridad sobre un enlace genérico `[style]`.
 
 <code-example path="attribute-binding/src/app/app.component.html" region="basic-specificity" header="src/app/app.component.html"></code-example>
 
-Specificity rules also apply when it comes to bindings that originate from different sources.
-It's possible for an element to have bindings in the template where it's declared, from host bindings on matched directives, and from host bindings on matched components.
+Las reglas de especificidad también se aplican cuando se trata de enlaces que se originan de diferentes fuentes.
+Es posible que un elemento tenga enlaces en la plantilla donde se declara, desde enlaces de host en directivas coincidentes y desde enlaces de host en componentes coincidentes.
 
-Template bindings are the most specific because they apply to the element directly and exclusively, so they have the highest precedence.
+Los enlaces de plantilla son los más específicos porque se aplican al elemento directa y exclusivamente, por lo que tienen la mayor prioridad.
 
-Directive host bindings are considered less specific because directives can be used in multiple locations, so they have a lower precedence than template bindings.
+Los enlaces de host de directiva se consideran menos específicos porque las directivas se pueden usar en varias ubicaciones, por lo que tienen una precedencia menor que los enlaces de plantilla.
 
-Directives often augment component behavior, so host bindings from components have the lowest precedence.
+Las directivas a menudo aumentan el comportamiento de los componentes, por lo que los enlaces de host de los componentes tienen la prioridad más baja.
 
 <code-example path="attribute-binding/src/app/app.component.html" region="source-specificity" header="src/app/app.component.html"></code-example>
 
-In addition, bindings take precedence over static attributes.
+Además, los enlaces tienen prioridad sobre los atributos estáticos.
 
-In the following case, `class` and `[class]` have similar specificity, but the `[class]` binding will take precedence because it is dynamic.
+En el siguiente caso, `class` y `[class]` tienen una especificidad similar, pero el enlace `[class]` tendrá prioridad porque es dinámico.
 
 <code-example path="attribute-binding/src/app/app.component.html" region="dynamic-priority" header="src/app/app.component.html"></code-example>
 
 {@a styling-delegation}
-### Delegating to styles with lower precedence
+### Delegar a estilos con menor prioridad
 
-It is possible for higher precedence styles to "delegate" to lower precedence styles using `undefined` values.
-Whereas setting a style property to `null` ensures the style is removed, setting it to `undefined` will cause Angular to fall back to the next-highest precedence binding to that style.
+Es posible que los estilos de precedencia más alta "deleguen" a los estilos de precedencia más bajos utilizando valores `undefined`.
+Mientras que establecer una propiedad de estilo en `null` asegura que el estilo se elimine, establecerlo en `undefined` hará que Angular vuelva al siguiente enlace de precedencia más alto para ese estilo.
 
-For example, consider the following template:
+Por ejemplo, considera la siguiente plantilla:
 
 <code-example path="attribute-binding/src/app/app.component.html" region="style-delegation" header="src/app/app.component.html"></code-example>
 
-Imagine that the `dirWithHostBinding` directive and the `comp-with-host-binding` component both have a `[style.width]` host binding.
-In that case, if `dirWithHostBinding` sets its binding to `undefined`, the `width` property will fall back to the value of the `comp-with-host-binding` host binding.
-However, if `dirWithHostBinding` sets its binding to `null`, the `width` property will be removed entirely.
+Imagina que la directiva `dirWithHostBinding`  y el componente `comp-with-host-binding`  tienen un enlace de host `[style.width]`.
+En ese caso, si `dirWithHostBinding` establece su enlace en `undefined`, la propiedad `width` volverá al valor del enlace de host del componente `comp-with-host-binding`.
+Sin embargo, si `dirWithHostBinding` establece su enlace en `null`, la propiedad `width` se eliminará por completo.
