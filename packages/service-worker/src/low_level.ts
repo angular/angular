@@ -14,6 +14,8 @@ export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not support
 /**
  * An event emitted when a new version of the app is available.
  *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
  * @publicApi
  */
 export interface UpdateAvailableEvent {
@@ -24,6 +26,8 @@ export interface UpdateAvailableEvent {
 
 /**
  * An event emitted when a new version of the app has been downloaded and activated.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -41,6 +45,8 @@ export interface UpdateActivatedEvent {
  * cache nor from the server. This could happen if a new version is deployed to the server and the
  * service worker cache has been partially cleaned by the browser, removing some files of a previous
  * app version but not all.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
  *
  * @publicApi
  */
