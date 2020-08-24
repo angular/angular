@@ -39,6 +39,7 @@ export class Generator {
       dataGroups: this.processDataGroups(config),
       hashTable: withOrderedKeys(unorderedHashTable),
       navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
+      navigationRequestStrategy: config.navigationRequestStrategy ?? 'performance',
     };
   }
 

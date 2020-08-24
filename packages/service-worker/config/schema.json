@@ -161,6 +161,14 @@
         "type": "string"
       },
       "uniqueItems": true
+    },
+    "navigationRequestStrategy": {
+      "enum": [
+        "freshness",
+        "performance"
+      ],
+      "default": "performance",
+      "description": "The Angular service worker can use two request strategies for navigation requests. 'performance', the default, skips navigation requests. The other strategy, 'freshness', forces all navigation requests through the network."
     }
   },
   "required": [

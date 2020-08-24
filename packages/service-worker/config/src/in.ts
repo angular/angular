@@ -27,6 +27,7 @@ export interface Config {
   assetGroups?: AssetGroup[];
   dataGroups?: DataGroup[];
   navigationUrls?: string[];
+  navigationRequestStrategy?: 'freshness'|'performance';
 }
 
 /**

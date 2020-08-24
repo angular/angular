@@ -14,6 +14,7 @@ export declare interface Config {
     assetGroups?: AssetGroup[];
     dataGroups?: DataGroup[];
     index: string;
+    navigationRequestStrategy?: 'freshness' | 'performance';
     navigationUrls?: string[];
 }
 
