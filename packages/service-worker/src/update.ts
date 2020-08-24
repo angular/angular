@@ -17,6 +17,8 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateAc
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
  * @publicApi
  */
 @Injectable()
