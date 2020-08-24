@@ -19,7 +19,7 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
       value: 0,
       label: ROOT_LEVEL_ELEMENT_LABEL,
       children: [],
-      color: '#ccc',
+      color: '#4db6ac',
       instances: 1,
       changeDetected: false,
       original: {
@@ -61,8 +61,8 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
   }
 }
 
-const CHANGE_DETECTION_COLOR = '#3A8249';
-const NO_CHANGE_DETECTION_COLOR = '#ccc';
+const CHANGE_DETECTION_COLOR = '#4db675';
+const NO_CHANGE_DETECTION_COLOR = '#FAFAFA';
 
 const didRunChangeDetection = (profile: ElementProfile) => {
   const components = profile.directives.filter((d) => d.isComponent);

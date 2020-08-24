@@ -1,11 +1,9 @@
 :host {
   height: 60px;
-  display: block;
 }
 
 .controls {
-  top: 0;
-  left: 300px;
+  display: flex;
   white-space: nowrap;
   padding: 5px;
 
@@ -14,7 +12,19 @@
     margin-right: 15px;
   }
 
-  label {
+  .details {
+    display: flex;
+    flex-direction: column;
     font-weight: 500;
+
+    .value {
+      color: #880e4f;
+    }
+  }
+}
+
+:host-context(.dark-theme) {
+  .details .value {
+    color: #54c9bd;
   }
 }

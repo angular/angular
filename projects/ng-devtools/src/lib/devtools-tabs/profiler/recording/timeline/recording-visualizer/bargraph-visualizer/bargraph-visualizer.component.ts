@@ -14,7 +14,7 @@ export interface GraphNode {
   styleUrls: ['./bargraph-visualizer.component.scss'],
 })
 export class BargraphVisualizerComponent {
-  barColor = 'rgb(237, 213, 94)';
+  barColor = '#FFC400';
   profileRecords: BargraphNode[];
   selectedEntry: BargraphNode | null = null;
   selectedDirectives: GraphNode[] = [];

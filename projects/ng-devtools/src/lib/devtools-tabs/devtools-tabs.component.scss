@@ -22,9 +22,22 @@ mat-tab-group {
   position: absolute;
   top: 8px;
   right: 10px;
-  font-size: 11px;
+  font-size: 0.8em;
   font-weight: bold;
-  // color: #5128a5;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  z-index: 999;
+}
+
+#version-number {
+  color: #3f51b5;
+  cursor: text;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 ::ng-deep {
@@ -52,7 +65,7 @@ mat-tab-group {
       min-width: unset;
       line-height: 30px;
       height: 30px;
-      font-size: 12px;
+      font-size: 0.9em;
       padding: 0px 10px;
     }
   }
@@ -62,7 +75,7 @@ mat-tab-group {
   position: absolute;
   left: 60px;
   top: -3px;
-  font-size: 17px;
+  font-size: 1.5em;
   outline: none;
   width: 13px;
   height: 33px;
@@ -76,9 +89,29 @@ mat-tab-group {
 }
 
 .menu-toggle-button {
-  font-size: 12px;
+  font-size: 0.7em;
+  font-weight: 500;
+  color: #777;
+}
+
+:host-context(.dark-theme) {
+  #version-number {
+    color: #5CAACE;
+  }
 }
 
 ::ng-deep body.dark-theme .menu-toggle-button {
   color: white;
+}
+
+@media only screen and (max-width: 525px) {
+  #app-angular-version {
+    width: 135px;
+  }
+}
+
+@media only screen and (max-width: 420px) {
+  #app-angular-version {
+    display: none;
+  }
 }

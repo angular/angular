@@ -1,6 +1,6 @@
 <ng-container [ngSwitch]="visualizationMode">
   <ng-container *ngSwitchCase="cmpVisualizationModes.FlameGraph">
-    <ng-flamegraph-visualizer [frame]="frame"></ng-flamegraph-visualizer>
+    <ng-flamegraph-visualizer [frame]="frame" [changeDetection]="changeDetection"></ng-flamegraph-visualizer>
   </ng-container>
   <ng-container *ngSwitchCase="cmpVisualizationModes.TreeMap">
     <ng-tree-map-visualizer [frame]="frame"></ng-tree-map-visualizer>

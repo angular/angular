@@ -1,58 +1,46 @@
 :host,
 .profiler-wrapper {
-  font-size: 12px;
+  font-size: 1em;
   width: 100%;
   height: 100%;
-  display: block;
 }
 
-label {
-  margin-left: 15px;
+.mat-card {
+  display: flex;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  height: wrap-content;
+  margin: 0 !important;
+  padding: 5px !important;
+  box-shadow: none !important;
+  border-radius: 0;
 }
 
-.instructions {
-  text-align: center;
+.profiler-control {
+  padding: 8px;
+  cursor: pointer;
 
-  .start-recording-button {
-    top: 2px;
+  &.start-recording-button {
+    color: #4db675;
+  }
+  
+  &.recording-button {
+    color: #d83c34;
   }
 }
 
-.start-recording-button,
-.recording-button {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 6px;
-  background-color: #6e6e6e;
-  position: relative;
-  top: 2px;
-  margin-left: 3px;
-  margin-right: 3px;
-}
+.instructions {
+  margin-bottom: 0 !important;
+  align-self: center;
 
-.discard-button {
-  margin-left: 9px;
-}
+  &.hidden {
+    display: none;
+  }
 
-.recording-button {
-  background-color: #c7291c;
-  box-shadow: 0px 0px 3px #c7291c;
-}
-
-menu .start-recording-button,
-menu .recording-button {
-  top: 5px;
-  left: 3px;
-}
-
-mat-card {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  height: 23px;
-  margin: 0 !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-  border-radius: 0;
+  input, span {
+    margin-top: 5px;
+    font-size: 1em;
+    cursor: pointer;
+  }
 }
 
 #profiler-content-wrapper {
@@ -72,10 +60,10 @@ mat-card {
   height: 100%;
 }
 
-.hidden {
-  display: none;
-}
-
-.profiler-control {
-  margin-left: 8px;
+:host-context(.dark-theme) {
+  .profiler-control {
+    &.recording-button {
+      color: #FF625A;
+    }
+  }
 }

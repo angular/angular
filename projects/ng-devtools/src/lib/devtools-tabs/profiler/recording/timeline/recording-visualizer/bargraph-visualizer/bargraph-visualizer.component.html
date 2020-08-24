@@ -3,9 +3,9 @@
 </div>
 
 <mat-card class="selected-entry" *ngIf="selectedEntry">
-  <mat-toolbar color="primary">{{ selectedEntry.label }} details</mat-toolbar>
+  <mat-toolbar color="accent">{{ selectedEntry.label }} details</mat-toolbar>
   <section class="entry-statistics">
-    <div class="txt-total-time"><label>Total time spent:</label> {{ selectedEntry.value | number }}ms</div>
+    <div class="txt-total-time"><label>Total time spent:</label><span> {{ selectedEntry.value | number }}ms</span></div>
     <div *ngIf="selectedEntry.value > 0">
       <ng-execution-details [data]="selectedDirectives"> </ng-execution-details>
     </div>

@@ -3,6 +3,7 @@ import { ProfilerFrame } from 'protocol';
 import { GraphNode } from './record-formatter/record-formatter';
 import { Observable, Subscription, BehaviorSubject } from 'rxjs';
 import { share } from 'rxjs/operators';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 export enum VisualizationMode {
   FlameGraph,
@@ -37,6 +38,7 @@ export class TimelineComponent implements OnDestroy {
 
   visualizationMode = VisualizationMode.BarGraph;
   currentFrameIndex = -1;
+  changeDetection = false;
 
   private _maxDuration = -Infinity;
   private _subscription: Subscription;
@@ -71,13 +73,13 @@ export class TimelineComponent implements OnDestroy {
 
   getColorByFrameRate(framerate: number): string {
     if (framerate >= 60) {
-      return 'green';
+      return '#4db6ac';
     } else if (framerate < 60 && framerate >= 30) {
-      return 'orange';
+      return '#FFBE2F';
     } else if (framerate < 30 && framerate >= 15) {
-      return 'darkorange';
+      return '#ff8d00';
     }
-    return 'red';
+    return '#FF625A';
   }
 
   ngOnDestroy(): void {
@@ -119,14 +121,13 @@ export class TimelineComponent implements OnDestroy {
     multiplicationFactor: number
   ): { style: { [key: string]: string }; toolTip: string } {
     const height = record.duration * multiplicationFactor;
-    const colorPercentage = Math.round((height / MAX_HEIGHT) * 100);
+    const colorPercentage = Math.max(10, Math.round((height / MAX_HEIGHT) * 100));
     const backgroundColor = this.getColorByFrameRate(this.estimateFrameRate(record.duration));
 
     const style = {
       'margin-left': '1px',
       'margin-right': '1px',
-      background: `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, #f3f3f3 ${colorPercentage}%)`,
-      border: '1px solid #d0d0d0',
+      background: `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, transparent ${colorPercentage}%)`,
       cursor: 'pointer',
       'min-width': '25px',
       width: '25px',

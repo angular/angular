@@ -1,13 +1,11 @@
-.name {
-  width: 80px;
+table {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.value {
-  width: 30px;
-}
-
-.method {
-  width: 50px;
+th, td {
+  border-bottom: 1px solid #ddd;
 }

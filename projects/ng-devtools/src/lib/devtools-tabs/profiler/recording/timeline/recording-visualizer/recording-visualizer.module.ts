@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 
@@ -22,7 +21,7 @@ import { ExecutionDetailsComponent } from './execution-details/execution-details
     TreeMapVisualizerComponent,
     BargraphVisualizerComponent,
   ],
-  imports: [CommonModule, NgxFlamegraphModule, MatCheckboxModule, MatToolbarModule, MatCardModule],
+  imports: [CommonModule, NgxFlamegraphModule, MatToolbarModule, MatCardModule],
   exports: [TimelineVisualizerComponent],
 })
 export class RecordingVisualizerModule {}

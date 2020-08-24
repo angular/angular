@@ -30,6 +30,11 @@ export class FlamegraphVisualizerComponent {
   colorScheme = {
     domain: ['#E71D36', '#2EC4B6', '#FF9F1C', '#011627'],
   };
+  colors = {
+    hue: [50, 0],
+    saturation: 280,
+    lightness: 75
+  };
 
   private _formatter = new FlamegraphFormatter();
   private _showChangeDetection = false;
@@ -85,8 +90,8 @@ export class FlamegraphVisualizerComponent {
     return `${data.data.name} ${data.data.value}ms`;
   }
 
-  updateView(event: MatCheckboxChange): void {
-    this._showChangeDetection = event.checked;
+  @Input() set changeDetection(changeDetection: boolean) {
+    this._showChangeDetection = changeDetection;
     this._selectFrame();
   }
 

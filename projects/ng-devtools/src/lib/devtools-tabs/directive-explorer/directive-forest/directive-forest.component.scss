@@ -10,7 +10,7 @@
 
     cursor: default;
     font-family: Menlo, monospace;
-    font-size: 11px;
+    font-size: 0.8em;
 
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -25,7 +25,7 @@
     }
 
     .mat-icon {
-      font-size: 11px;
+      font-size: 0.8em;
       width: 16px;
       height: 13px;
       display: inline-block;
@@ -93,7 +93,7 @@
     background: rgba(0, 0, 0, 0.003);
     box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
     width: 100%;
-    font-size: 20px;
+    font-size: 2em;
     font-family: inherit;
     font-weight: inherit;
     line-height: 1.4em;
@@ -139,24 +139,28 @@
     color: #fff;
 
     .angular-element {
-      color: #F9CB9C;
+      color: #5CAACE;
     }
     
     &:hover {
-      background-color: #5c1b3c;
+      background-color: #7b5681;
     }
 
     &.matched {
-      background-color: #53265c;
+      background-color: #61193f;
 
       &:hover {
-        background-color: #710786;
+        background-color: #880e4f;
       }
     }
 
     &.selected,
     &.highlighted {
-      background-color: #880e4f;
+      background-color: #ce93d8;
+      color: black;
+      .mat-icon {
+        color: black;
+      }
     }
   }
 }

@@ -4,6 +4,7 @@ import { TimelineComponent } from './timeline.component';
 import { RecordingVisualizerModule } from './recording-visualizer/recording-visualizer.module';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { NgxFlamegraphModule } from 'ngx-flamegraph';
 import { MatSelectModule } from '@angular/material/select';
@@ -30,6 +31,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     CommonModule,
     FormsModule,
     RecordingVisualizerModule,
+    MatCheckboxModule,
     MatDialogModule,
     MatProgressBarModule,
     MatButtonModule,
