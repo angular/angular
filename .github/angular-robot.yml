@@ -94,14 +94,14 @@ merge:
 
     # whether the PR shouldn't have a conflict with the base branch
     noConflict: true
-    # list of labels that a PR needs to have, checked with a regexp (e.g. "PR target:" will work for the label "PR target: master")
+    # list of labels that a PR needs to have, checked with a regexp (e.g. "target:" will work for the label "target: master")
     requiredLabels:
-      - "PR target: *"
+      - "target: *"
       - "cla: yes"
 
     # list of labels that a PR shouldn't have, checked after the required labels with a regexp
     forbiddenLabels:
-      - "PR target: TBD"
+      - "target: TBD"
       - "PR action: cleanup"
       - "PR action: review"
       - "PR state: blocked"
