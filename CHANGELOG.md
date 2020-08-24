@@ -1,3 +1,30 @@
+<a name="10.1.0-next.8"></a>
+# 10.1.0-next.8 (2020-08-24)
+
+
+
+<a name="10.1.0-next.8"></a>
+# 10.1.0-next.8 (2020-08-24)
+
+
+### Bug Fixes
+
+* **localize:** extract the correct message ids ([#38498](https://github.com/angular/angular/issues/38498)) ([ac461e1](https://github.com/angular/angular/commit/ac461e1))
+* **router:** support lazy loading for empty path named outlets ([#38379](https://github.com/angular/angular/issues/38379)) ([7ad3264](https://github.com/angular/angular/commit/7ad3264)), closes [#12842](https://github.com/angular/angular/issues/12842)
+
+
+### Features
+
+* **compiler:** support unary operators for more accurate type checking ([#37918](https://github.com/angular/angular/issues/37918)) ([874792d](https://github.com/angular/angular/commit/874792d)), closes [#20845](https://github.com/angular/angular/issues/20845) [#36178](https://github.com/angular/angular/issues/36178)
+* **compiler-cli:** add support for TypeScript 4.0 ([#38076](https://github.com/angular/angular/issues/38076)) ([0fc44e0](https://github.com/angular/angular/commit/0fc44e0))
+
+
+### Performance Improvements
+
+* **forms:** use internal `ngDevMode` flag to tree-shake error messages in prod builds ([#37821](https://github.com/angular/angular/issues/37821)) ([201a546](https://github.com/angular/angular/commit/201a546)), closes [#37697](https://github.com/angular/angular/issues/37697)
+
+
+
 <a name="10.0.12"></a>
 ## 10.0.12 (2020-08-24)
 
