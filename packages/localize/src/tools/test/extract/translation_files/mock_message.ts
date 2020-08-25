@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵParsedMessage} from '@angular/localize';
-import {SourceLocation} from '@angular/localize/src/utils';
+import {MessageId, SourceLocation} from '@angular/localize/src/utils';
 
 export interface MockMessageOptions {
   customId?: string;
@@ -14,6 +14,8 @@ export interface MockMessageOptions {
   description?: string;
   location?: SourceLocation;
   legacyIds?: string[];
+  messagePartLocations?: (SourceLocation|undefined)[];
+  substitutionLocations?: Record<string, SourceLocation|undefined>;
 }
 
 /**
@@ -21,23 +23,18 @@ export interface MockMessageOptions {
  * `TranslationSerializer` tests.
  */
 export function mockMessage(
-    id: string, messageParts: string[], placeholderNames: string[],
-    {customId, meaning = '', description = '', location, legacyIds = []}: MockMessageOptions):
-    ɵParsedMessage {
+    id: MessageId, messageParts: string[], placeholderNames: string[],
+    options: MockMessageOptions): ɵParsedMessage {
   let text = messageParts[0];
   for (let i = 1; i < messageParts.length; i++) {
     text += `{$${placeholderNames[i - 1]}}${messageParts[i]}`;
   }
   return {
-    id: customId || id,  // customId trumps id
+    substitutions: [],
+    ...options,
+    id: options.customId || id,  // customId trumps id
     text,
     messageParts,
     placeholderNames,
-    customId,
-    description,
-    meaning,
-    substitutions: [],
-    legacyIds,
-    location,
   };
 }
