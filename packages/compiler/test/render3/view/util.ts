@@ -101,7 +101,14 @@ export function parseR3(
       ['onEvent'], ['onEvent']);
   const bindingParser =
       new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, null, []);
-  return htmlAstToRender3Ast(htmlNodes, bindingParser);
+  const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser);
+
+  if (r3Result.errors.length > 0) {
+    const msg = r3Result.errors.map(e => e.toString()).join('\n');
+    throw new Error(msg);
+  }
+
+  return r3Result;
 }
 
 export function processI18nMeta(
