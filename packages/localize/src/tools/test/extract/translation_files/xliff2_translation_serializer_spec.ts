@@ -77,7 +77,7 @@ runInEachFileSystem(() => {
           expect(output).toEqual([
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="xx">`,
-            `  <file>`,
+            `  <file id="ngi18n" original="ng.template">`,
             `    <unit id="${useLegacyIds ? '615790887472569365' : '12345'}">`,
             `      <notes>`,
             `        <note category="location">file.ts:6</note>`,

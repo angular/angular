@@ -72,7 +72,7 @@ runInEachFileSystem(() => {
           expect(output).toEqual([
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
-            `  <file source-language="xx" datatype="plaintext">`,
+            `  <file source-language="xx" datatype="plaintext" original="ng2.template">`,
             `    <body>`,
             `      <trans-unit id="${
                 useLegacyIds ? '1234567890ABCDEF1234567890ABCDEF12345678' :

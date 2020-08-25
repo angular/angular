@@ -149,7 +149,7 @@ runInEachFileSystem(() => {
           expect(fs.readFile(outputPath)).toEqual([
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
-            `  <file source-language="en-CA" datatype="plaintext">`,
+            `  <file source-language="en-CA" datatype="plaintext" original="ng2.template">`,
             `    <body>`,
             `      <trans-unit id="3291030485717846467" datatype="html">`,
             `        <source>Hello, <x id="PH" equiv-text="name"/>!</source>`,
@@ -218,7 +218,7 @@ runInEachFileSystem(() => {
           expect(fs.readFile(outputPath)).toEqual([
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en-AU">`,
-            `  <file>`,
+            `  <file id="ngi18n" original="ng.template">`,
             `    <unit id="3291030485717846467">`,
             `      <segment>`,
             `        <source>Hello, <ph id="0" equiv="PH" disp="name"/>!</source>`,
@@ -276,7 +276,7 @@ runInEachFileSystem(() => {
            expect(fs.readFile(outputPath)).toEqual([
              `<?xml version="1.0" encoding="UTF-8" ?>`,
              `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
-             `  <file source-language="en-CA" datatype="plaintext">`,
+             `  <file source-language="en-CA" datatype="plaintext" original="ng2.template">`,
              `    <body>`,
              `      <trans-unit id="157258427077572998" datatype="html">`,
              `        <source>Message in <x id="a-file" equiv-text="file"/>!</source>`,
