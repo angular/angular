@@ -8,10 +8,13 @@
 
 import {Compiler, Component, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
-import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '@angular/router';
+import {DefaultUrlSerializer, PreloadAllModules, PreloadingStrategy, RouterPreloader, UrlTree} from '@angular/router';
+import {Observable, of, timer} from 'rxjs';
+import {catchError, switchMapTo} from 'rxjs/operators';
 
 import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
-import {LoadedRouterConfig} from '../src/config';
+import {applyRedirects} from '../src/apply_redirects';
+import {LoadedRouterConfig, Routes} from '../src/config';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('RouterPreloader', () => {
@@ -259,6 +262,64 @@ describe('RouterPreloader', () => {
              expect(c[0]._loadedConfig!.routes).not.toBe(configs);
              expect(c[0]._loadedConfig!.routes[0]).not.toBe(configs[0]);
              expect(c[0]._loadedConfig!.routes[0].component).toBe(configs[0].component);
+           })));
+  });
+
+  describe('should use loaded configs when preload not done but navigate works', () => {
+    class PreloadAllModulesAsync implements PreloadingStrategy {
+      preload(_: Route, fn: () => Observable<any>): Observable<any> {
+        return timer(3000).pipe(switchMapTo(fn()), catchError(() => of(null)));
+      }
+    }
+
+    @NgModule({imports: [RouterModule.forChild([])]})
+    class LoadedModule {
+    }
+
+    const routeConfig: Routes = [{path: 'loadedModule1', loadChildren: 'expected'}];
+    const serializer = new DefaultUrlSerializer();
+    let testModule: NgModuleRef<any>;
+
+    function tree(url: string): UrlTree {
+      return new DefaultUrlSerializer().parse(url);
+    }
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule.withRoutes(routeConfig)],
+        providers: [{provide: PreloadingStrategy, useClass: PreloadAllModulesAsync}]
+      });
+      testModule = TestBed.inject(NgModuleRef);
+    });
+
+
+    it('should work',
+       fakeAsync(inject(
+           [
+             NgModuleFactoryLoader,
+             RouterPreloader,
+             Router,
+           ],
+           (lazyLoader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
+             const loadedConfig = new LoadedRouterConfig(routeConfig, testModule);
+             const loader = {load: () => of(loadedConfig)};
+             const c = router.config as {_loadedConfig: LoadedRouterConfig}[];
+
+             lazyLoader.stubbedModules = {expected: LoadedModule};
+             preloader.preload().subscribe(() => {});
+
+             tick(500);
+             expect(c[0]._loadedConfig).not.toBeDefined();
+             applyRedirects(
+                 testModule.injector, <any>loader, serializer, tree('loadedModule1'), router.config)
+                 .forEach(r => {
+                   expect((c[0] as any)._loadedConfig).toBe(loadedConfig);
+                 });
+
+             tick(2500);
+
+             expect(c[0]._loadedConfig).toBeDefined();
+             expect(c[0]._loadedConfig).toBe(loadedConfig);
            })));
   });
 });

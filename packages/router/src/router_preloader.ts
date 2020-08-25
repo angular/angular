@@ -15,7 +15,6 @@ import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
 
-
 /**
  * @description
  *
@@ -128,7 +127,10 @@ export class RouterPreloader implements OnDestroy {
     return this.preloadingStrategy.preload(route, () => {
       const loaded$ = this.loader.load(ngModule.injector, route);
       return loaded$.pipe(mergeMap((config: LoadedRouterConfig) => {
-        route._loadedConfig = config;
+        // should use loaded config
+        if (!route._loadedConfig) {
+          route._loadedConfig = config;
+        }
         return this.processRoutes(config.module, config.routes);
       }));
     });
