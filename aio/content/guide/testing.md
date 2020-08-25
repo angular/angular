@@ -75,7 +75,7 @@ The tests run again, the browser refreshes, and the new test results appear.
 
 The CLI takes care of Jasmine and Karma configuration for you.
 
-You can fine-tune many options by editing the `karma.conf.js` and
+You can fine-tune many options by editing the `karma.conf.js` in the root folder of the project and
 the `test.ts` files in the `src/` folder.
 
 The `karma.conf.js` file is a partial Karma configuration file.
