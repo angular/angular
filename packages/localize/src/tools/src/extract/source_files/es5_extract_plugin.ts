@@ -20,7 +20,8 @@ export function makeEs5ExtractPlugin(
         if (isNamedIdentifier(calleePath, localizeName) && isGlobalIdentifier(calleePath)) {
           const [messageParts, messagePartLocations] = unwrapMessagePartsFromLocalizeCall(callPath);
           const [expressions, expressionLocations] = unwrapSubstitutionsFromLocalizeCall(callPath);
-          const location = getLocation(callPath.get('arguments')[0], callPath.get('arguments')[1]);
+          const [messagePartsArg, expressionsArg] = callPath.get('arguments');
+          const location = getLocation(messagePartsArg, expressionsArg);
           const message = ɵparseMessage(
               messageParts, expressions, location, messagePartLocations, expressionLocations);
           messages.push(message);
