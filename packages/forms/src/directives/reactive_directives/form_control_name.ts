@@ -65,7 +65,6 @@ export const controlNameBinding: any = {
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _added = false;
   /**
-   * @description
    * Internal reference to the view model value.
    * @internal
    */
@@ -142,12 +141,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  /**
-   * @description
-   * A lifecycle method called when the directive's inputs change. For internal use only.
-   *
-   * @param changes A object of key/value pairs for the set of changed inputs.
-   */
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
     if (!this._added) this._setUpControl();
     if (isPropertyUpdated(changes, this.viewModel)) {
@@ -157,10 +151,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     }
   }
 
-  /**
-   * @description
-   * Lifecycle method called before the directive's instance is destroyed. For internal use only.
-   */
+  /** @nodoc */
   ngOnDestroy(): void {
     if (this.formDirective) {
       this.formDirective.removeControl(this);

@@ -86,12 +86,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     super();
   }
 
-  /**
-   * @description
-   * A lifecycle method called when the directive's inputs change. For internal use only.
-   *
-   * @param changes A object of key/value pairs for the set of changed inputs.
-   */
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
     this._checkFormPresent();
     if (changes.hasOwnProperty('form')) {

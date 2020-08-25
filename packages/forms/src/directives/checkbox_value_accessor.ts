@@ -47,14 +47,14 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
 })
 export class CheckboxControlValueAccessor implements ControlValueAccessor {
   /**
-   * @description
    * The registered callback function called when a change event occurs on the input element.
+   * @nodoc
    */
   onChange = (_: any) => {};
 
   /**
-   * @description
    * The registered callback function called when a blur event occurs on the input element.
+   * @nodoc
    */
   onTouched = () => {};
 
@@ -62,28 +62,23 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
 
   /**
    * Sets the "checked" property on the input element.
-   *
-   * @param value The checked value
+   * @nodoc
    */
   writeValue(value: any): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'checked', value);
   }
 
   /**
-   * @description
    * Registers a function called when the control value changes.
-   *
-   * @param fn The callback function
+   * @nodoc
    */
   registerOnChange(fn: (_: any) => {}): void {
     this.onChange = fn;
   }
 
   /**
-   * @description
    * Registers a function called when the control is touched.
-   *
-   * @param fn The callback function
+   * @nodoc
    */
   registerOnTouched(fn: () => {}): void {
     this.onTouched = fn;
@@ -91,8 +86,7 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
 
   /**
    * Sets the "disabled" property on the input element.
-   *
-   * @param isDisabled The disabled value
+   * @nodoc
    */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
