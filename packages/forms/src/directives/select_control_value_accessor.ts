@@ -90,21 +90,24 @@ function _extractId(valueString: string): string {
   providers: [SELECT_VALUE_ACCESSOR]
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
+  /** @nodoc */
   value: any;
+
   /** @internal */
   _optionMap: Map<string, any> = new Map<string, any>();
+
   /** @internal */
   _idCounter: number = 0;
 
   /**
-   * @description
    * The registered callback function called when a change event occurs on the input element.
+   * @nodoc
    */
   onChange = (_: any) => {};
 
   /**
-   * @description
    * The registered callback function called when a blur event occurs on the input element.
+   * @nodoc
    */
   onTouched = () => {};
 
@@ -128,8 +131,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   /**
    * Sets the "value" property on the input element. The "selectedIndex"
    * property is also set if an ID is provided on the option element.
-   *
-   * @param value The checked value
+   * @nodoc
    */
   writeValue(value: any): void {
     this.value = value;
@@ -142,10 +144,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   }
 
   /**
-   * @description
    * Registers a function called when the control value changes.
-   *
-   * @param fn The callback function
+   * @nodoc
    */
   registerOnChange(fn: (value: any) => any): void {
     this.onChange = (valueString: string) => {
@@ -155,10 +155,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   }
 
   /**
-   * @description
    * Registers a function called when the control is touched.
-   *
-   * @param fn The callback function
+   * @nodoc
    */
   registerOnTouched(fn: () => any): void {
     this.onTouched = fn;
@@ -166,8 +164,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   /**
    * Sets the "disabled" property on the select input element.
-   *
-   * @param isDisabled The disabled value
+   * @nodoc
    */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
@@ -247,10 +244,7 @@ export class NgSelectOption implements OnDestroy {
     this._renderer.setProperty(this._element.nativeElement, 'value', value);
   }
 
-  /**
-   * @description
-   * Lifecycle method called before the directive's instance is destroyed. For internal use only.
-   */
+  /** @nodoc */
   ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);
