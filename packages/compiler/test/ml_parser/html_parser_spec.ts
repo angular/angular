@@ -332,40 +332,75 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
           ]);
         });
 
-        it('should normalize line-endings in expansion forms in inline templates', () => {
-          const parsed = parser.parse(
-              `<div>\r\n` +
-                  `  {\r\n` +
-                  `    messages.length,\r\n` +
-                  `    plural,\r\n` +
-                  `    =0 {You have \r\nno\r\n messages}\r\n` +
-                  `    =1 {One {{message}}}}\r\n` +
-                  `</div>`,
-              'TestComp', {
-                tokenizeExpansionForms: true,
-                escapedString: true,
-              });
+        it('should normalize line-endings in expansion forms in inline templates if `i18nNormalizeLineEndingsInICUs` is true',
+           () => {
+             const parsed = parser.parse(
+                 `<div>\r\n` +
+                     `  {\r\n` +
+                     `    messages.length,\r\n` +
+                     `    plural,\r\n` +
+                     `    =0 {You have \r\nno\r\n messages}\r\n` +
+                     `    =1 {One {{message}}}}\r\n` +
+                     `</div>`,
+                 'TestComp', {
+                   tokenizeExpansionForms: true,
+                   escapedString: true,
+                   i18nNormalizeLineEndingsInICUs: true,
+                 });
 
-          expect(humanizeDom(parsed)).toEqual([
-            [html.Element, 'div', 0],
-            [html.Text, '\n  ', 1],
-            [html.Expansion, '\n    messages.length', 'plural', 1],
-            [html.ExpansionCase, '=0', 2],
-            [html.ExpansionCase, '=1', 2],
-            [html.Text, '\n', 1],
-          ]);
-          const cases = (<any>parsed.rootNodes[0]).children[1].cases;
+             expect(humanizeDom(parsed)).toEqual([
+               [html.Element, 'div', 0],
+               [html.Text, '\n  ', 1],
+               [html.Expansion, '\n    messages.length', 'plural', 1],
+               [html.ExpansionCase, '=0', 2],
+               [html.ExpansionCase, '=1', 2],
+               [html.Text, '\n', 1],
+             ]);
+             const cases = (<any>parsed.rootNodes[0]).children[1].cases;
 
-          expect(humanizeDom(new ParseTreeResult(cases[0].expression, []))).toEqual([
-            [html.Text, 'You have \nno\n messages', 0],
-          ]);
+             expect(humanizeDom(new ParseTreeResult(cases[0].expression, []))).toEqual([
+               [html.Text, 'You have \nno\n messages', 0],
+             ]);
 
-          expect(humanizeDom(new ParseTreeResult(cases[1].expression, []))).toEqual([
-            [html.Text, 'One {{message}}', 0]
-          ]);
+             expect(humanizeDom(new ParseTreeResult(cases[1].expression, []))).toEqual([
+               [html.Text, 'One {{message}}', 0]
+             ]);
 
-          expect(parsed.errors).toEqual([]);
-        });
+             expect(parsed.errors).toEqual([]);
+           });
+
+        it('should not normalize line-endings in ICU expressions in external templates when `i18nNormalizeLineEndingsInICUs` is not set',
+           () => {
+             const parsed = parser.parse(
+                 `<div>\r\n` +
+                     `  {\r\n` +
+                     `    messages.length,\r\n` +
+                     `    plural,\r\n` +
+                     `    =0 {You have \r\nno\r\n messages}\r\n` +
+                     `    =1 {One {{message}}}}\r\n` +
+                     `</div>`,
+                 'TestComp', {tokenizeExpansionForms: true, escapedString: true});
+
+             expect(humanizeDom(parsed)).toEqual([
+               [html.Element, 'div', 0],
+               [html.Text, '\n  ', 1],
+               [html.Expansion, '\r\n    messages.length', 'plural', 1],
+               [html.ExpansionCase, '=0', 2],
+               [html.ExpansionCase, '=1', 2],
+               [html.Text, '\n', 1],
+             ]);
+             const cases = (<any>parsed.rootNodes[0]).children[1].cases;
+
+             expect(humanizeDom(new ParseTreeResult(cases[0].expression, []))).toEqual([
+               [html.Text, 'You have \nno\n messages', 0],
+             ]);
+
+             expect(humanizeDom(new ParseTreeResult(cases[1].expression, []))).toEqual([
+               [html.Text, 'One {{message}}', 0]
+             ]);
+
+             expect(parsed.errors).toEqual([]);
+           });
 
         it('should normalize line-endings in expansion forms in external templates if `i18nNormalizeLineEndingsInICUs` is true',
            () => {
@@ -468,33 +503,67 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
           ]);
         });
 
-        it('should normalize line endings in nested expansion forms for inline templates', () => {
-          const parsed = parser.parse(
-              `{\r\n` +
-                  `  messages.length, plural,\r\n` +
-                  `  =0 { zero \r\n` +
-                  `       {\r\n` +
-                  `         p.gender, select,\r\n` +
-                  `         male {m}\r\n` +
-                  `       }\r\n` +
-                  `     }\r\n` +
-                  `}`,
-              'TestComp', {tokenizeExpansionForms: true, escapedString: true});
-          expect(humanizeDom(parsed)).toEqual([
-            [html.Expansion, '\n  messages.length', 'plural', 0],
-            [html.ExpansionCase, '=0', 1],
-          ]);
+        it('should normalize line endings in nested expansion forms for inline templates, when `i18nNormalizeLineEndingsInICUs` is true',
+           () => {
+             const parsed = parser.parse(
+                 `{\r\n` +
+                     `  messages.length, plural,\r\n` +
+                     `  =0 { zero \r\n` +
+                     `       {\r\n` +
+                     `         p.gender, select,\r\n` +
+                     `         male {m}\r\n` +
+                     `       }\r\n` +
+                     `     }\r\n` +
+                     `}`,
+                 'TestComp', {
+                   tokenizeExpansionForms: true,
+                   escapedString: true,
+                   i18nNormalizeLineEndingsInICUs: true
+                 });
+             expect(humanizeDom(parsed)).toEqual([
+               [html.Expansion, '\n  messages.length', 'plural', 0],
+               [html.ExpansionCase, '=0', 1],
+             ]);
 
-          const expansion = parsed.rootNodes[0] as html.Expansion;
-          expect(humanizeDom(new ParseTreeResult(expansion.cases[0].expression, []))).toEqual([
-            [html.Text, 'zero \n       ', 0],
-            [html.Expansion, '\n         p.gender', 'select', 0],
-            [html.ExpansionCase, 'male', 1],
-            [html.Text, '\n     ', 0],
-          ]);
+             const expansion = parsed.rootNodes[0] as html.Expansion;
+             expect(humanizeDom(new ParseTreeResult(expansion.cases[0].expression, []))).toEqual([
+               [html.Text, 'zero \n       ', 0],
+               [html.Expansion, '\n         p.gender', 'select', 0],
+               [html.ExpansionCase, 'male', 1],
+               [html.Text, '\n     ', 0],
+             ]);
 
-          expect(parsed.errors).toEqual([]);
-        });
+             expect(parsed.errors).toEqual([]);
+           });
+
+        it('should not normalize line endings in nested expansion forms for inline templates, when `i18nNormalizeLineEndingsInICUs` is not defined',
+           () => {
+             const parsed = parser.parse(
+                 `{\r\n` +
+                     `  messages.length, plural,\r\n` +
+                     `  =0 { zero \r\n` +
+                     `       {\r\n` +
+                     `         p.gender, select,\r\n` +
+                     `         male {m}\r\n` +
+                     `       }\r\n` +
+                     `     }\r\n` +
+                     `}`,
+                 'TestComp', {tokenizeExpansionForms: true, escapedString: true});
+             expect(humanizeDom(parsed)).toEqual([
+               [html.Expansion, '\r\n  messages.length', 'plural', 0],
+               [html.ExpansionCase, '=0', 1],
+             ]);
+
+             const expansion = parsed.rootNodes[0] as html.Expansion;
+             expect(humanizeDom(new ParseTreeResult(expansion.cases[0].expression, []))).toEqual([
+               [html.Text, 'zero \n       ', 0],
+               [html.Expansion, '\r\n         p.gender', 'select', 0],
+               [html.ExpansionCase, 'male', 1],
+               [html.Text, '\n     ', 0],
+             ]);
+
+             expect(parsed.errors).toEqual([]);
+           });
 
         it('should not normalize line endings in nested expansion forms for external templates, when `i18nNormalizeLineEndingsInICUs` is not set',
            () => {
