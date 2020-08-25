@@ -1,5 +1,4 @@
 import { Component, ElementRef, Input } from '@angular/core';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 
 import {
   FlamegraphNode,
@@ -33,7 +32,7 @@ export class FlamegraphVisualizerComponent {
   colors = {
     hue: [50, 0],
     saturation: 280,
-    lightness: 75
+    lightness: 75,
   };
 
   private _formatter = new FlamegraphFormatter();
