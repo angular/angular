@@ -957,11 +957,11 @@ as happens in the `search()` method.
 Rather than forward every `searchText` value directly to the injected `PackageSearchService`,
 the code in `ngOnInit()` pipes search values through three operators, so that a search value reaches the service only if it's a new value and the user has stopped typing.
 
-* `debounceTime(500)` &mdash; Wait for the user to stop typing (1/2 second in this case).
+* `debounceTime(500)`&mdash;Wait for the user to stop typing (1/2 second in this case).
 
-* `distinctUntilChanged()` &mdash; Wait until the search text changes.
+* `distinctUntilChanged()`&mdash;Wait until the search text changes.
 
-* `switchMap()` &mdash; Send the search request to the service.
+* `switchMap()`&mdash;Send the search request to the service.
 
 The code sets `packages$` to this re-composed `Observable` of search results.
 The template subscribes to `packages$` with the [AsyncPipe](api/common/AsyncPipe)
