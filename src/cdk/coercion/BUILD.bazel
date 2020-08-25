@@ -16,7 +16,7 @@ ts_library(
 
 ts_library(
     name = "unit_test_sources",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         ["**/*.spec.ts"],
         exclude = ["**/*.e2e.spec.ts"],

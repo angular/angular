@@ -136,7 +136,7 @@ def ng_test_library(deps = [], tsconfig = None, **kwargs):
     ] + deps
 
     ts_library(
-        testonly = 1,
+        testonly = True,
         deps = local_deps,
         **kwargs
     )
@@ -149,7 +149,7 @@ def ng_e2e_test_library(deps = [], tsconfig = None, **kwargs):
     ] + deps
 
     ts_library(
-        testonly = 1,
+        testonly = True,
         deps = local_deps,
         **kwargs
     )
