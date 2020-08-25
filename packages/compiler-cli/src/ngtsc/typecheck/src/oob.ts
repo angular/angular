@@ -12,8 +12,9 @@ import * as ts from 'typescript';
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
 import {ClassDeclaration} from '../../reflection';
 import {TemplateId} from '../api';
+import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
 
-import {makeTemplateDiagnostic, TemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
+import {TemplateSourceResolver} from './diagnostics';
 
 
 
