@@ -190,7 +190,7 @@ It knows who the user is based on a property of the injected `UserService`:
 <code-example path="testing/src/app/welcome/welcome.component.ts" header="app/welcome/welcome.component.ts"></code-example>
 
 The `WelcomeComponent` has decision logic that interacts with the service, logic that makes this component worth testing.
-Here's the testing module configuration for the spec file, `app/welcome/welcome.component.spec.ts`:
+Here's the testing module configuration for the spec file:
 
 <code-example path="testing/src/app/welcome/welcome.component.spec.ts" region="config-test-module" header="app/welcome/welcome.component.spec.ts"></code-example>
 
@@ -415,7 +415,7 @@ You do have to call [tick()](api/core/testing/tick) to advance the (virtual) clo
 Calling [tick()](api/core/testing/tick) simulates the passage of time until all pending asynchronous activities finish.
 In this case, it waits for the error handler's `setTimeout()`.
 
-The [tick()](api/core/testing/tick) function accepts milliseconds and tickOptions as parameters, the millisecond (defaults to 0 if not provided) parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback. The tickOptions is an optional parameter with a property called `processNewMacroTasksSynchronously` (defaults to true) represents whether to invoke new generated macro tasks when ticking.
+The [tick()](api/core/testing/tick) function accepts milliseconds and tickOptions as parameters, the millisecond (defaults to 0 if not provided) parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback. The tickOptions is an optional parameter with a property called `processNewMacroTasksSynchronously` (defaults to true) that represents whether to invoke new generated macro tasks when ticking.
 
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
@@ -593,11 +593,6 @@ Then you can assert that the quote element displays the expected text.
 
 To use `waitForAsync()` functionality, you must import `zone.js/dist/zone-testing` in your test setup file.
 If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
-
-The `fakeAsync()` utility function has a few limitations.
-In particular, it won't work if the test body makes an `XMLHttpRequest` (XHR) call.
-XHR calls within a test are rare so you can generally stick with [`fakeAsync()`](#fake-async).
-But if you ever do need to call `XMLHttpRequest`, you'll want to know about `waitForAsync()`.
 
 <div class="alert is-helpful">
 
@@ -1231,7 +1226,7 @@ and provide for _all_ services injected in _any_ component in the tree.
 That's too much effort just to answer a few simple questions about links.
 
 This section describes two techniques for minimizing the setup.
-Use them, alone or in combination, to stay focused on the testing the primary component.
+Use them, alone or in combination, to stay focused on testing the primary component.
 
 {@a stub-component}
 
@@ -1340,7 +1335,7 @@ The `HostListener` wires the click event of the host element
 Clicking the anchor should trigger the `onClick()` method,
 which sets the stub's telltale `navigatedTo` property.
 Tests inspect `navigatedTo` to confirm that clicking the anchor
-set the expected route definition.
+sets the expected route definition.
 
 <div class="alert is-helpful">
 
@@ -1573,7 +1568,7 @@ calls to other `TestBed` static methods such as `compileComponents()`.
 In this example, the `BannerComponent` is the only component to compile.
 Other examples configure the testing module with multiple components
 and may import application modules that hold yet more components.
-Any of them could be require external files.
+Any of them could require external files.
 
 The `TestBed.compileComponents` method asynchronously compiles all components configured in the testing module.
 
