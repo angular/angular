@@ -1,22 +1,24 @@
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { ApplicationOperations } from 'ng-devtools';
 
 describe('AppComponent', () => {
-  beforeEach(async(() => {
-    const applicationOperationsSPy = jasmine.createSpyObj('messageBus', ['viewSource']);
-    TestBed.configureTestingModule({
-      declarations: [AppComponent],
-      imports: [RouterTestingModule],
-      providers: [
-        {
-          provide: ApplicationOperations,
-          useClass: applicationOperationsSPy,
-        },
-      ],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      const applicationOperationsSPy = jasmine.createSpyObj('messageBus', ['viewSource']);
+      TestBed.configureTestingModule({
+        declarations: [AppComponent],
+        imports: [RouterTestingModule],
+        providers: [
+          {
+            provide: ApplicationOperations,
+            useClass: applicationOperationsSPy,
+          },
+        ],
+      }).compileComponents();
+    })
+  );
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);

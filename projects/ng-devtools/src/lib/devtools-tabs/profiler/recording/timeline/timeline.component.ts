@@ -3,7 +3,6 @@ import { ProfilerFrame } from 'protocol';
 import { GraphNode } from './record-formatter/record-formatter';
 import { Observable, Subscription, BehaviorSubject } from 'rxjs';
 import { share } from 'rxjs/operators';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 
 export enum VisualizationMode {
   FlameGraph,
