@@ -276,8 +276,8 @@
             },
             {
               "url": "guide/pipes",
-              "title": "tuberías",
-              "tooltip": "Las tuberías transforman los valores mostrados dentro de una plantilla."
+              "title": "Pipes",
+              "tooltip": "Los pipes transforman los valores mostrados dentro de una plantilla."
             },
             {
               "url": "guide/lifecycle-hooks",
@@ -343,8 +343,8 @@
             },
             {
               "url": "guide/rx-library",
-              "title": "La biblioteca RxJS",
-              "tooltip": "Una biblioteca para programación reactiva que utiliza observables para componer código asincrónico o basado en devolución de llamada."
+              "title": "La librería RxJS",
+              "tooltip": "Una librería para programación reactiva que utiliza observables para componer código asincrónico o basado en devolución de llamada."
             },
             {
               "url": "guide/observables-in-angular",
@@ -646,8 +646,8 @@
             },
             {
               "url": "guide/testing-pipes",
-              "title": "Prueba de tuberías",
-              "tooltip": "Escribir pruebas para tuberías."
+              "title": "Prueba de Pipes",
+              "tooltip": "Escribir pruebas para Pipes."
             },
             {
               "url": "guide/test-debugging",
@@ -747,7 +747,7 @@
             {
               "url": "guide/lightweight-injection-tokens",
               "title": "Tokens de inyección ligeros para bibliotecas",
-              "tooltip": "Optimice el tamaño de la aplicación cliente diseñando servicios de biblioteca con tokens de inyección ligeros."
+              "tooltip": "Optimice el tamaño de la aplicación cliente diseñando servicios de librería con tokens de inyección ligeros."
             }
           ]
         },
@@ -768,7 +768,7 @@
             {
               "url": "guide/schematics-for-libraries",
               "title": "Esquemas para bibliotecas",
-              "tooltip": "Use esquemas para integrar su biblioteca con el CLI Angular."
+              "tooltip": "Use esquemas para integrar su librería con el CLI Angular."
             }
           ]
         },
