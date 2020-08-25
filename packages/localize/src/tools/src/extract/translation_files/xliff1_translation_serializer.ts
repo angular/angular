@@ -32,7 +32,18 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
     const ids = new Set<string>();
     const xml = new XmlFile();
     xml.startTag('xliff', {'version': '1.2', 'xmlns': 'urn:oasis:names:tc:xliff:document:1.2'});
-    xml.startTag('file', {'source-language': this.sourceLocale, 'datatype': 'plaintext'});
+    // NOTE: the `original` property is set to the legacy `ng2.template` value for backward
+    // compatibility.
+    // We could compute the file from the `message.location` property, but there could
+    // be multiple values for this in the collection of `messages`. In that case we would probably
+    // need to change the serializer to output a new `<file>` element for each collection of
+    // messages that come from a particular original file, and the translation file parsers may not
+    // be able to cope with this.
+    xml.startTag('file', {
+      'source-language': this.sourceLocale,
+      'datatype': 'plaintext',
+      'original': 'ng2.template',
+    });
     xml.startTag('body');
     for (const message of messages) {
       const id = this.getMessageId(message);
