@@ -58,8 +58,7 @@ export class MatSelectHarness extends MatFormFieldControlHarness {
 
   /** Gets a boolean promise indicating if the select is in multi-selection mode. */
   async isMultiple(): Promise<boolean> {
-    const ariaMultiselectable = (await this.host()).getAttribute('aria-multiselectable');
-    return (await ariaMultiselectable) === 'true';
+    return (await this.host()).hasClass('mat-select-multiple');
   }
 
   /** Gets a promise for the select's value text. */

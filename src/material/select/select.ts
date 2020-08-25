@@ -212,7 +212,6 @@ export const MAT_SELECT_TRIGGER = new InjectionToken<MatSelectTrigger>('MatSelec
 })
 export class MatSelectTrigger {}
 
-
 @Component({
   selector: 'mat-select',
   exportAs: 'matSelect',
@@ -222,23 +221,29 @@ export class MatSelectTrigger {}
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'role': 'listbox',
+    'role': 'combobox',
+    'aria-autocomplete': 'none',
+    // TODO(crisbeto): the value for aria-haspopup should be `listbox`, but currently it's difficult
+    // to sync into g3, because of an outdated automated a11y check which flags it as an invalid
+    // value. At some point we should try to switch it back to being `listbox`. When doing the
+    // MDC-based `mat-select`, we can get away with starting it off as `listbox`.
+    'aria-haspopup': 'true',
+    'class': 'mat-select',
     '[attr.id]': 'id',
     '[attr.tabindex]': 'tabIndex',
-    '[attr.aria-label]': '_getAriaLabel()',
-    '[attr.aria-labelledby]': '_getAriaLabelledby()',
+    '[attr.aria-controls]': 'panelOpen ? id + "-panel" : null',
+    '[attr.aria-expanded]': 'panelOpen',
+    '[attr.aria-label]': 'ariaLabel || null',
     '[attr.aria-required]': 'required.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-invalid]': 'errorState',
-    '[attr.aria-owns]': 'panelOpen ? _optionIds : null',
-    '[attr.aria-multiselectable]': 'multiple',
     '[attr.aria-describedby]': '_ariaDescribedby || null',
     '[attr.aria-activedescendant]': '_getAriaActiveDescendant()',
     '[class.mat-select-disabled]': 'disabled',
     '[class.mat-select-invalid]': 'errorState',
     '[class.mat-select-required]': 'required',
     '[class.mat-select-empty]': 'empty',
-    'class': 'mat-select',
+    '[class.mat-select-multiple]': 'multiple',
     '(keydown)': '_handleKeydown($event)',
     '(focus)': '_onFocus()',
     '(blur)': '_onBlur()',
@@ -278,6 +283,9 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Unique id for this input. */
   private _uid = `mat-select-${nextUniqueId++}`;
 
+  /** Current `ariar-labelledby` value for the select trigger. */
+  private _triggerAriaLabelledBy: string | null = null;
+
   /** Emits whenever the component is destroyed. */
   private readonly _destroy = new Subject<void>();
 
@@ -302,8 +310,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** `View -> model callback called when select has been touched` */
   _onTouched = () => {};
 
-  /** The IDs of child options to be passed to the aria-owns attribute. */
-  _optionIds: string = '';
+  _valueId = `mat-select-value-${nextUniqueId++}`;
 
   /** The value of the select panel's transform-origin property. */
   _transformOrigin: string = 'top';
@@ -604,6 +611,21 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   }
 
   ngDoCheck() {
+    const newAriaLabelledby = this._getTriggerAriaLabelledby();
+
+    // We have to manage setting the `aria-labelledby` ourselves, because part of its value
+    // is computed as a result of a content query which can cause this binding to trigger a
+    // "changed after checked" error.
+    if (newAriaLabelledby !== this._triggerAriaLabelledBy) {
+      const element: HTMLElement = this._elementRef.nativeElement;
+      this._triggerAriaLabelledBy = newAriaLabelledby;
+      if (newAriaLabelledby) {
+        element.setAttribute('aria-labelledby', newAriaLabelledby);
+      } else {
+        element.removeAttribute('aria-labelledby');
+      }
+    }
+
     if (this.ngControl) {
       this.updateErrorState();
     }
@@ -980,8 +1002,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
         this._changeDetectorRef.markForCheck();
         this.stateChanges.next();
       });
-
-    this._setOptionIds();
   }
 
   /** Invoked when an option is clicked. */
@@ -1053,11 +1073,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     this._onChange(valueToEmit);
     this.selectionChange.emit(new MatSelectChange(this, valueToEmit));
     this._changeDetectorRef.markForCheck();
-  }
-
-  /** Records option IDs to pass to the aria-owns property. */
-  private _setOptionIds() {
-    this._optionIds = this.options.map(option => option.id).join(' ');
   }
 
   /**
@@ -1152,27 +1167,14 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     return Math.min(Math.max(0, optimalScrollPosition), maxScroll);
   }
 
-  /** Returns the aria-label of the select component. */
-  _getAriaLabel(): string | null {
-    // If an ariaLabelledby value has been set by the consumer, the select should not overwrite the
-    // `aria-labelledby` value by setting the ariaLabel to the placeholder.
-    return this.ariaLabelledby ? null : this.ariaLabel || this.placeholder;
-  }
-
-  /** Returns the aria-labelledby of the select component. */
-  _getAriaLabelledby(): string | null {
-    if (this.ariaLabelledby) {
-      return this.ariaLabelledby;
-    }
-
-    // Note: we use `_getAriaLabel` here, because we want to check whether there's a
-    // computed label. `this.ariaLabel` is only the user-specified label.
-    if (!this._parentFormField || !this._parentFormField._hasFloatingLabel() ||
-      this._getAriaLabel()) {
+  /** Gets the aria-labelledby for the select panel. */
+  _getPanelAriaLabelledby(): string | null {
+    if (this.ariaLabel) {
       return null;
     }
 
-    return this._parentFormField.getLabelId();
+    const labelId = this._getLabelId();
+    return this.ariaLabelledby ? labelId + ' ' + this.ariaLabelledby : labelId;
   }
 
   /** Determines the `aria-activedescendant` to be set on the host. */
@@ -1182,6 +1184,11 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     }
 
     return null;
+  }
+
+  /** Gets the ID of the element that is labelling the select. */
+  private _getLabelId(): string {
+    return this._parentFormField?.getLabelId() || '';
   }
 
   /**
@@ -1365,6 +1372,21 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Calculates the height of the select's options. */
   private _getItemHeight(): number {
     return this._triggerFontSize * SELECT_ITEM_HEIGHT_EM;
+  }
+
+  /** Gets the aria-labelledby of the select component trigger. */
+  private _getTriggerAriaLabelledby(): string | null {
+    if (this.ariaLabel) {
+      return null;
+    }
+
+    let value = this._getLabelId() + ' ' + this._valueId;
+
+    if (this.ariaLabelledby) {
+      value += ' ' + this.ariaLabelledby;
+    }
+
+    return value;
   }
 
   /**

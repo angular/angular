@@ -20,7 +20,6 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
     _onChange: (value: any) => void;
     _onTouched: () => void;
     readonly _openedStream: Observable<void>;
-    _optionIds: string;
     _panelDoneAnimatingStream: Subject<string>;
     _positions: ConnectedPosition[];
     _scrollStrategy: ScrollStrategy;
@@ -28,6 +27,7 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
     _transformOrigin: string;
     _triggerFontSize: number;
     _triggerRect: ClientRect;
+    _valueId: string;
     ariaLabel: string;
     ariaLabelledby: string;
     get compareWith(): (o1: any, o2: any) => boolean;
@@ -72,8 +72,7 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
     constructor(_viewportRuler: ViewportRuler, _changeDetectorRef: ChangeDetectorRef, _ngZone: NgZone, _defaultErrorStateMatcher: ErrorStateMatcher, elementRef: ElementRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _parentFormField: MatFormField, ngControl: NgControl, tabIndex: string, scrollStrategyFactory: any, _liveAnnouncer: LiveAnnouncer, defaults?: MatSelectConfig);
     _calculateOverlayScroll(selectedIndex: number, scrollBuffer: number, maxScroll: number): number;
     _getAriaActiveDescendant(): string | null;
-    _getAriaLabel(): string | null;
-    _getAriaLabelledby(): string | null;
+    _getPanelAriaLabelledby(): string | null;
     _getPanelTheme(): string;
     _handleKeydown(event: KeyboardEvent): void;
     _isRtl(): boolean;

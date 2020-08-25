@@ -1,10 +1,9 @@
 <div cdk-overlay-origin
      class="mat-select-trigger"
-     aria-hidden="true"
      (click)="toggle()"
      #origin="cdkOverlayOrigin"
      #trigger>
-  <div class="mat-select-value" [ngSwitch]="empty">
+  <div class="mat-select-value" [ngSwitch]="empty" [attr.id]="_valueId">
     <span class="mat-select-placeholder" *ngSwitchCase="true">{{placeholder || '\u00A0'}}</span>
     <span class="mat-select-value-text" *ngSwitchCase="false" [ngSwitch]="!!customTrigger">
       <span *ngSwitchDefault>{{triggerValue || '\u00A0'}}</span>
@@ -32,8 +31,13 @@
   <div class="mat-select-panel-wrap" [@transformPanelWrap]>
     <div
       #panel
-      [attr.id]="id + '-panel'"
+      role="listbox"
+      tabindex="-1"
       class="mat-select-panel {{ _getPanelTheme() }}"
+      [attr.id]="id + '-panel'"
+      [attr.aria-multiselectable]="multiple"
+      [attr.aria-label]="ariaLabel || null"
+      [attr.aria-labelledby]="_getPanelAriaLabelledby()"
       [ngClass]="panelClass"
       [@transformPanel]="multiple ? 'showing-multiple' : 'showing'"
       (@transformPanel.done)="_panelDoneAnimatingStream.next($event.toState)"

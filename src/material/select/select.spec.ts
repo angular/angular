@@ -145,12 +145,32 @@ describe('MatSelect', () => {
           select = fixture.debugElement.query(By.css('mat-select'))!.nativeElement;
         }));
 
-        it('should set the role of the select to listbox', fakeAsync(() => {
-          expect(select.getAttribute('role')).toEqual('listbox');
+        it('should set the role of the select to combobox', fakeAsync(() => {
+          expect(select.getAttribute('role')).toEqual('combobox');
+          expect(select.getAttribute('aria-autocomplete')).toBe('none');
+          expect(select.getAttribute('aria-haspopup')).toBe('true');
         }));
 
-        it('should set the aria label of the select to the placeholder', fakeAsync(() => {
-          expect(select.getAttribute('aria-label')).toEqual('Food');
+        it('should point the aria-controls attribute to the listbox', fakeAsync(() => {
+          expect(select.hasAttribute('aria-controls')).toBe(false);
+
+          fixture.componentInstance.select.open();
+          fixture.detectChanges();
+          flush();
+
+          const ariaControls = select.getAttribute('aria-controls');
+          expect(ariaControls).toBeTruthy();
+          expect(ariaControls).toBe(document.querySelector('.mat-select-panel')!.id);
+        }));
+
+        it('should set aria-expanded based on the select open state', fakeAsync(() => {
+          expect(select.getAttribute('aria-expanded')).toBe('false');
+
+          fixture.componentInstance.select.open();
+          fixture.detectChanges();
+          flush();
+
+          expect(select.getAttribute('aria-expanded')).toBe('true');
         }));
 
         it('should support setting a custom aria-label', fakeAsync(() => {
@@ -158,19 +178,25 @@ describe('MatSelect', () => {
           fixture.detectChanges();
 
           expect(select.getAttribute('aria-label')).toEqual('Custom Label');
+          expect(select.hasAttribute('aria-labelledby')).toBeFalsy();
         }));
 
-        it('should not set an aria-label if aria-labelledby is specified', fakeAsync(() => {
+        it('should be able to add an extra aria-labelledby on top of the default', fakeAsync(() => {
           fixture.componentInstance.ariaLabelledby = 'myLabelId';
           fixture.detectChanges();
 
-          expect(select.getAttribute('aria-label')).toBeFalsy('Expected no aria-label to be set.');
-          expect(select.getAttribute('aria-labelledby')).toBe('myLabelId');
+          const labelId = fixture.nativeElement.querySelector('.mat-form-field-label').id;
+          const valueId = fixture.nativeElement.querySelector('.mat-select-value').id;
+
+          expect(select.getAttribute('aria-labelledby')).toBe(`${labelId} ${valueId} myLabelId`);
         }));
 
-        it('should not have aria-labelledby in the DOM if it`s not specified', fakeAsync(() => {
+        it('should set aria-labelledby to the value and label IDs', fakeAsync(() => {
           fixture.detectChanges();
-          expect(select.hasAttribute('aria-labelledby')).toBeFalsy();
+
+          const labelId = fixture.nativeElement.querySelector('.mat-form-field-label').id;
+          const valueId = fixture.nativeElement.querySelector('.mat-select-value').id;
+          expect(select.getAttribute('aria-labelledby')).toBe(`${labelId} ${valueId}`);
         }));
 
         it('should set the tabindex of the select to 0 by default', fakeAsync(() => {
@@ -237,37 +263,15 @@ describe('MatSelect', () => {
           expect(select.getAttribute('tabindex')).toEqual('0');
         }));
 
-        it('should set `aria-labelledby` to form field label if there is no placeholder', () => {
-          fixture.destroy();
-
-          const labelFixture = TestBed.createComponent(SelectWithFormFieldLabel);
-          labelFixture.detectChanges();
-          select = labelFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
-
-          expect(select.getAttribute('aria-labelledby')).toBeTruthy();
-          expect(select.getAttribute('aria-labelledby'))
-              .toBe(labelFixture.nativeElement.querySelector('label').getAttribute('id'));
-        });
-
-        it('should not set `aria-labelledby` if there is a placeholder', () => {
-          fixture.destroy();
-
-          const labelFixture = TestBed.createComponent(SelectWithFormFieldLabel);
-          labelFixture.componentInstance.placeholder = 'Thing selector';
-          labelFixture.detectChanges();
-          select = labelFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
-
-          expect(select.getAttribute('aria-labelledby')).toBeFalsy();
-        });
-
-        it('should not set `aria-labelledby` if there is no form field label', () => {
+        it('should set `aria-labelledby` to the value ID if there is no form field', () => {
           fixture.destroy();
 
           const labelFixture = TestBed.createComponent(SelectWithChangeEvent);
           labelFixture.detectChanges();
           select = labelFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
+          const valueId = labelFixture.nativeElement.querySelector('.mat-select-value').id;
 
-          expect(select.getAttribute('aria-labelledby')).toBeFalsy();
+          expect(select.getAttribute('aria-labelledby')?.trim()).toBe(valueId);
         });
 
         it('should select options via the UP/DOWN arrow keys on a closed select', fakeAsync(() => {
@@ -812,28 +816,28 @@ describe('MatSelect', () => {
           expect(document.activeElement).toBe(select, 'Expected select element to be focused.');
         }));
 
-        // Having `aria-hidden` on the trigger avoids issues where
-        // screen readers read out the wrong amount of options.
-        it('should set aria-hidden on the trigger element', fakeAsync(() => {
-          const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
+        it('should set `aria-multiselectable` to true on the listbox inside multi select',
+          fakeAsync(() => {
+            fixture.destroy();
 
-          expect(trigger.getAttribute('aria-hidden'))
-              .toBe('true', 'Expected aria-hidden to be true when the select is open.');
-        }));
+            const multiFixture = TestBed.createComponent(MultiSelect);
+            multiFixture.detectChanges();
+            select = multiFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
+            multiFixture.componentInstance.select.open();
+            multiFixture.detectChanges();
+            flush();
 
-        it('should set `aria-multiselectable` to true on multi-select instances', fakeAsync(() => {
-          fixture.destroy();
-
-          const multiFixture = TestBed.createComponent(MultiSelect);
-
-          multiFixture.detectChanges();
-          select = multiFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
-
-          expect(select.getAttribute('aria-multiselectable')).toBe('true');
-        }));
+            const panel = document.querySelector('.mat-select-panel')!;
+            expect(panel.getAttribute('aria-multiselectable')).toBe('true');
+          }));
 
         it('should set aria-multiselectable false on single-selection instances', fakeAsync(() => {
-          expect(select.getAttribute('aria-multiselectable')).toBe('false');
+          fixture.componentInstance.select.open();
+          fixture.detectChanges();
+          flush();
+
+          const panel = document.querySelector('.mat-select-panel')!;
+          expect(panel.getAttribute('aria-multiselectable')).toBe('false');
         }));
 
         it('should set aria-activedescendant only while the panel is open', fakeAsync(() => {
@@ -928,6 +932,47 @@ describe('MatSelect', () => {
 
             expect(document.activeElement).toBe(select, 'Expected trigger to be focused.');
           }));
+
+        it('should set a role of listbox on the select panel', fakeAsync(() => {
+          fixture.componentInstance.select.open();
+          fixture.detectChanges();
+          flush();
+
+          const panel = document.querySelector('.mat-select-panel')!;
+          expect(panel.getAttribute('role')).toBe('listbox');
+        }));
+
+        it('should point the aria-labelledby of the panel to the field label', fakeAsync(() => {
+          fixture.componentInstance.select.open();
+          fixture.detectChanges();
+          flush();
+
+          const labelId = fixture.nativeElement.querySelector('.mat-form-field-label').id;
+          const panel = document.querySelector('.mat-select-panel')!;
+          expect(panel.getAttribute('aria-labelledby')).toBe(labelId);
+        }));
+
+        it('should add a custom aria-labelledby to the panel', fakeAsync(() => {
+          fixture.componentInstance.ariaLabelledby = 'myLabelId';
+          fixture.componentInstance.select.open();
+          fixture.detectChanges();
+          flush();
+
+          const labelId = fixture.nativeElement.querySelector('.mat-form-field-label').id;
+          const panel = document.querySelector('.mat-select-panel')!;
+          expect(panel.getAttribute('aria-labelledby')).toBe(`${labelId} myLabelId`);
+        }));
+
+        it('should clear aria-labelledby from the panel if an aria-label is set', fakeAsync(() => {
+          fixture.componentInstance.ariaLabel = 'My label';
+          fixture.componentInstance.select.open();
+          fixture.detectChanges();
+          flush();
+
+          const panel = document.querySelector('.mat-select-panel')!;
+          expect(panel.getAttribute('aria-label')).toBe('My label');
+          expect(panel.hasAttribute('aria-labelledby')).toBe(false);
+        }));
 
       });
 
@@ -2223,49 +2268,7 @@ describe('MatSelect', () => {
         options = overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
       }));
 
-      it('should set aria-owns properly', fakeAsync(() => {
-        const selects = fixture.debugElement.queryAll(By.css('mat-select'));
-
-        expect(selects[0].nativeElement.getAttribute('aria-owns'))
-            .toContain(options[0].id, `Expected aria-owns to contain IDs of its child options.`);
-        expect(selects[0].nativeElement.getAttribute('aria-owns'))
-            .toContain(options[1].id, `Expected aria-owns to contain IDs of its child options.`);
-
-        const backdrop =
-            overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
-        backdrop.click();
-        fixture.detectChanges();
-        flush();
-
-        triggers[1].nativeElement.click();
-        fixture.detectChanges();
-        flush();
-
-        options =
-            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
-        expect(selects[1].nativeElement.getAttribute('aria-owns'))
-            .toContain(options[0].id, `Expected aria-owns to contain IDs of its child options.`);
-        expect(selects[1].nativeElement.getAttribute('aria-owns'))
-            .toContain(options[1].id, `Expected aria-owns to contain IDs of its child options.`);
-      }));
-
-      it('should remove aria-owns when the options are not visible', fakeAsync(() => {
-        const select = fixture.debugElement.query(By.css('mat-select'))!;
-
-        expect(select.nativeElement.hasAttribute('aria-owns'))
-            .toBe(true, 'Expected select to have aria-owns while open.');
-
-        const backdrop =
-            overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
-        backdrop.click();
-        fixture.detectChanges();
-        flush();
-
-        expect(select.nativeElement.hasAttribute('aria-owns'))
-            .toBe(false, 'Expected select not to have aria-owns when closed.');
-      }));
-
-      it('should set the option id properly', fakeAsync(() => {
+      it('should set the option id', fakeAsync(() => {
         let firstOptionID = options[0].id;
 
         expect(options[0].id)
@@ -4590,6 +4593,13 @@ describe('MatSelect', () => {
     expect(select.disableOptionCentering).toBe(true);
     expect(select.typeaheadDebounceInterval).toBe(1337);
   });
+
+  it('should not not throw if the select is inside an ng-container with ngIf', fakeAsync(() => {
+    configureMatSelectTestingModule([SelectInNgContainer]);
+    const fixture = TestBed.createComponent(SelectInNgContainer);
+    expect(() => fixture.detectChanges()).not.toThrow();
+  }));
+
 });
 
 
@@ -5430,3 +5440,20 @@ class SelectWithResetOptionAndFormControl {
   @ViewChildren(MatOption) options: QueryList<MatOption>;
   control = new FormControl();
 }
+
+
+@Component({
+  selector: 'select-with-placeholder-in-ngcontainer-with-ngIf',
+  template: `
+    <mat-form-field>
+      <ng-container *ngIf="true">
+        <mat-select placeholder="Product Area">
+          <mat-option value="a">A</mat-option>
+          <mat-option value="b">B</mat-option>
+          <mat-option value="c">C</mat-option>
+        </mat-select>
+      </ng-container>
+    </mat-form-field>
+  `
+})
+class SelectInNgContainer {}
