@@ -80,7 +80,7 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
     const length = message.messageParts.length - 1;
     for (let i = 0; i < length; i++) {
       this.serializeTextPart(xml, message.messageParts[i]);
-      this.serializePlaceholder(xml, message.placeholderNames, message.substitutionLocations, i);
+      this.serializePlaceholder(xml, message.placeholderNames[i], message.substitutionLocations);
     }
     this.serializeTextPart(xml, message.messageParts[length]);
   }
@@ -90,16 +90,14 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
     const length = pieces.length - 1;
     for (let i = 0; i < length; i += 2) {
       xml.text(pieces[i]);
-      this.serializePlaceholder(xml, pieces, undefined, i + 1);
+      this.serializePlaceholder(xml, pieces[i + 1], undefined);
     }
     xml.text(pieces[length]);
   }
 
   private serializePlaceholder(
-      xml: XmlFile, placeholderNames: string[],
-      substitutionLocations: Record<string, ɵSourceLocation|undefined>|undefined,
-      index: number): void {
-    const placeholderName = placeholderNames[index];
+      xml: XmlFile, placeholderName: string,
+      substitutionLocations: Record<string, ɵSourceLocation|undefined>|undefined): void {
     const text = substitutionLocations?.[placeholderName]?.text;
 
     if (placeholderName.startsWith('START_')) {
