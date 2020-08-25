@@ -172,6 +172,11 @@ export function unwrapMessagePartsFromTemplateLiteral(elements: NodePath<t.Templ
   return [ɵmakeTemplateObject(cooked, raw), locations];
 }
 
+export function unwrapExpressionsFromTemplateLiteral(quasi: NodePath<t.TemplateLiteral>):
+    [t.Expression[], (ɵSourceLocation | undefined)[]] {
+  return [quasi.node.expressions, quasi.get('expressions').map(e => getLocation(e))];
+}
+
 /**
  * Wrap the given `expression` in parentheses if it is a binary expression.
  *
