@@ -105,7 +105,7 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
     if (placeholderName.startsWith('START_')) {
       const closingPlaceholderName = placeholderName.replace(/^START/, 'CLOSE');
       const closingText = substitutionLocations?.[closingPlaceholderName]?.text;
-      const attrs: any = {
+      const attrs: Record<string, string> = {
         id: `${this.currentPlaceholderId++}`,
         equivStart: placeholderName,
         equivEnd: closingPlaceholderName,
@@ -120,7 +120,8 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
     } else if (placeholderName.startsWith('CLOSE_')) {
       xml.endTag('pc');
     } else {
-      const attrs: any = {id: `${this.currentPlaceholderId++}`, equiv: placeholderName};
+      const attrs:
+          Record<string, string> = {id: `${this.currentPlaceholderId++}`, equiv: placeholderName};
       if (text !== undefined) {
         attrs.disp = text;
       }

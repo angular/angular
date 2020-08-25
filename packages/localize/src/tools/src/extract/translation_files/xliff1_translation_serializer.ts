@@ -84,8 +84,8 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
   }
 
   private serializePlaceholder(xml: XmlFile, id: string, text: string|undefined): void {
-    const attrs: any = {id};
-    if (text !== null) {
+    const attrs: Record<string, string> = {id};
+    if (text !== undefined) {
       attrs['equiv-text'] = text;
     }
     xml.startTag('x', attrs, {selfClosing: true});
