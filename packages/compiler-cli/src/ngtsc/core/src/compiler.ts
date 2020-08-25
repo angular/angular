@@ -28,8 +28,9 @@ import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeRe
 import {generatedFactoryTransform} from '../../shims';
 import {ivySwitchTransform} from '../../switch';
 import {aliasTransformFactory, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
-import {isTemplateDiagnostic, TemplateTypeCheckerImpl} from '../../typecheck';
+import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck/api';
+import {isTemplateDiagnostic} from '../../typecheck/diagnostics';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 

@@ -16,9 +16,10 @@ import {ReflectionHost} from '../../reflection';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
 import {OptimizeFor, ProgramTypeCheckAdapter, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
+import {TemplateDiagnostic} from '../diagnostics';
 
 import {InliningMode, ShimTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from './context';
-import {findTypeCheckBlock, shouldReportDiagnostic, TemplateDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
+import {findTypeCheckBlock, shouldReportDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
 import {TemplateSourceManager} from './source';
 
 /**

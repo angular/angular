@@ -34,6 +34,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/diagnostics",
         "//packages/compiler-cli/src/ngtsc/util",
         "@npm//typescript",
     ],
