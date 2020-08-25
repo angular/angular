@@ -642,13 +642,11 @@ class _Tokenizer {
     this._beginToken(TokenType.RAW_TEXT);
     const condition = this._readUntil(chars.$COMMA);
     const normalizedCondition = this._processCarriageReturns(condition);
-    if (this._escapedString || this._i18nNormalizeLineEndingsInICUs) {
-      // Either the template is inline or,
-      // we explicitly want to normalize line endings for this text.
+    if (this._i18nNormalizeLineEndingsInICUs) {
+      // We explicitly want to normalize line endings for this text.
       this._endToken([normalizedCondition]);
     } else {
-      // The expression is in an external template and, for backward compatibility,
-      // we are not normalizing line endings.
+      // We are not normalizing line endings.
       const conditionToken = this._endToken([condition]);
       if (normalizedCondition !== condition) {
         this.nonNormalizedIcuExpressions.push(conditionToken);
