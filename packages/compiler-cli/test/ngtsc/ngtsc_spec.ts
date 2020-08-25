@@ -7378,6 +7378,54 @@ export const Foo = Foo__PRE_R3__;
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(0);
          });
+
+      describe('template parsing diagnostics', () => {
+        // These tests validate that errors which occur during template parsing are expressed as
+        // diagnostics instead of a compiler crash (which used to be the case). They only assert
+        // that the error is produced with an accurate span - the exact semantics of the errors are
+        // tested separately, via the parser tests.
+        it('should emit a diagnostic for a template parsing error', () => {
+          env.write('test.ts', `
+            import {Component} from '@angular/core';
+            @Component({
+              template: '<div></span>',
+              selector: 'test-cmp',
+            })
+            export class TestCmp {}
+          `);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(getDiagnosticSourceCode(diags[0])).toBe('</span>');
+        });
+
+        it('should emit a diagnostic for an expression parsing error', () => {
+          env.write('test.ts', `
+            import {Component} from '@angular/core';
+            @Component({
+              template: '<cmp [input]="x ? y">',
+              selector: 'test-cmp',
+            })
+            export class TestCmp {}
+          `);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(getDiagnosticSourceCode(diags[0])).toBe('x ? y');
+        });
+
+        it('should use a single character span for an unexpected EOF parsing error', () => {
+          env.write('test.ts', `
+              import {Component} from '@angular/core';
+              @Component({
+                template: '<cmp [input]="x>',
+                selector: 'test-cmp',
+              })
+              export class TestCmp {}
+            `);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(getDiagnosticSourceCode(diags[0])).toBe('\'');
+        });
+      });
     });
   });
 
