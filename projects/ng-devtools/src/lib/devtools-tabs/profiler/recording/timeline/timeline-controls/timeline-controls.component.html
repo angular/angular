@@ -1,5 +1,4 @@
 <div class="controls">
-  <button *ngIf="!empty" mat-stroked-button (click)="exportProfile.emit()">Save Profile</button>
   <mat-form-field *ngIf="record">
     <mat-select [value]="visualizationMode" (selectionChange)="this.changeVisualizationMode.emit($event.value)">
       <mat-option [value]="flameGraphMode">
@@ -14,7 +13,9 @@
     </mat-select>
   </mat-form-field>
 
-  <div class="details">
+  <div class="details" 
+    [class.flame-details]="visualizationMode == flameGraphMode"
+    [class.bar-details]="visualizationMode == barGraphMode">
     <label *ngIf="estimatedFrameRate >= 60 && record">
       Time spent: <span class="value">{{ record?.duration | number }} ms</span>
     </label>
@@ -32,7 +33,9 @@
     </label>
 
     <mat-checkbox *ngIf="visualizationMode == flameGraphMode" (change)="this.toggleChangeDetection.emit($event.checked)">
-      Show only components with change detection
+      Show only change detection
     </mat-checkbox>
   </div>
+
+  <button *ngIf="!empty" mat-stroked-button (click)="exportProfile.emit()">Save Profile</button>
 </div>
