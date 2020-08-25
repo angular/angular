@@ -57,6 +57,11 @@ export enum ErrorCode {
   HOST_BINDING_PARSE_ERROR = 5001,
 
   /**
+   * Raised when the compiler cannot parse a component's template.
+   */
+  TEMPLATE_PARSE_ERROR = 5002,
+
+  /**
    * Raised when an NgModule contains an invalid reference in `declarations`.
    */
   NGMODULE_INVALID_DECLARATION = 6001,

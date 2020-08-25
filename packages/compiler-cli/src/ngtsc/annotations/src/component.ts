@@ -10,7 +10,7 @@ import {compileComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPO
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
-import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
@@ -22,6 +22,7 @@ import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from 
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck/api';
+import {getTemplateId, makeTemplateDiagnostic} from '../../typecheck/diagnostics';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
@@ -254,9 +255,26 @@ export class ComponentDecoratorHandler implements
       }
     }
 
+    let diagnostics: ts.Diagnostic[]|undefined = undefined;
+
     if (template.errors !== undefined) {
-      throw new Error(
-          `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
+      // If there are any template parsing errors, convert them to `ts.Diagnostic`s for display.
+      const id = getTemplateId(node);
+      diagnostics = template.errors.map(error => {
+        const span = error.span;
+
+        if (span.start.offset === span.end.offset) {
+          // Template errors can contain zero-length spans, if the error occurs at a single point.
+          // However, TypeScript does not handle displaying a zero-length diagnostic very well, so
+          // increase the ending offset by 1 for such errors, to ensure the position is shown in the
+          // diagnostic.
+          span.end.offset++;
+        }
+
+        return makeTemplateDiagnostic(
+            id, template.sourceMapping, span, ts.DiagnosticCategory.Error,
+            ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR), error.msg);
+      });
     }
 
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
@@ -335,6 +353,7 @@ export class ComponentDecoratorHandler implements
         providersRequiringFactory,
         viewProvidersRequiringFactory,
       },
+      diagnostics,
     };
     if (changeDetection !== null) {
       output.analysis!.meta.changeDetection = changeDetection;
