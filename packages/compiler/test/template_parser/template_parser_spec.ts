@@ -140,7 +140,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
 
   private _appendSourceSpan(ast: TemplateAst, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
-    input.push(ast.sourceSpan!.toString());
+    input.push(ast.sourceSpan.toString());
     return input;
   }
 }

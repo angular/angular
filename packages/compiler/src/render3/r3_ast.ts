@@ -79,13 +79,8 @@ export class Element implements Node {
   constructor(
       public name: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
       public outputs: BoundEvent[], public children: Node[], public references: Reference[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
-      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {
-    // If the element is empty then the source span should include any closing tag
-    if (children.length === 0 && startSourceSpan && endSourceSpan) {
-      this.sourceSpan = new ParseSourceSpan(sourceSpan.start, endSourceSpan.end);
-    }
-  }
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitElement(this);
   }
@@ -96,7 +91,7 @@ export class Template implements Node {
       public tagName: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
       public outputs: BoundEvent[], public templateAttrs: (BoundAttribute|TextAttribute)[],
       public children: Node[], public references: Reference[], public variables: Variable[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
       public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitTemplate(this);

@@ -231,9 +231,9 @@ class XliffParser implements ml.Visitor {
         break;
 
       case _TARGET_TAG:
-        const innerTextStart = element.startSourceSpan!.end.offset;
+        const innerTextStart = element.startSourceSpan.end.offset;
         const innerTextEnd = element.endSourceSpan!.start.offset;
-        const content = element.startSourceSpan!.start.file.content;
+        const content = element.startSourceSpan.start.file.content;
         const innerText = content.slice(innerTextStart, innerTextEnd);
         this._unitMlString = innerText;
         break;
@@ -264,7 +264,7 @@ class XliffParser implements ml.Visitor {
   visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {}
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan!, message));
+    this._errors.push(new I18nError(node.sourceSpan, message));
   }
 }
 
@@ -288,14 +288,14 @@ class XmlToI18n implements ml.Visitor {
   }
 
   visitText(text: ml.Text, context: any) {
-    return new i18n.Text(text.value, text.sourceSpan!);
+    return new i18n.Text(text.value, text.sourceSpan);
   }
 
   visitElement(el: ml.Element, context: any): i18n.Placeholder|ml.Node[]|null {
     if (el.name === _PLACEHOLDER_TAG) {
       const nameAttr = el.attrs.find((attr) => attr.name === 'id');
       if (nameAttr) {
-        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan!);
+        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan);
       }
 
       this._addError(el, `<${_PLACEHOLDER_TAG}> misses the "id" attribute`);
@@ -332,7 +332,7 @@ class XmlToI18n implements ml.Visitor {
   visitAttribute(attribute: ml.Attribute, context: any) {}
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan!, message));
+    this._errors.push(new I18nError(node.sourceSpan, message));
   }
 }
 

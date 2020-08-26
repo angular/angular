@@ -65,7 +65,7 @@ function getBoundedWordSpan(
     // The HTML tag may include `-` (e.g. `app-root`),
     // so use the HtmlAst to get the span before ayazhafiz refactor the code.
     return {
-      start: templateInfo.template.span.start + ast.startSourceSpan!.start.offset + 1,
+      start: templateInfo.template.span.start + ast.startSourceSpan.start.offset + 1,
       length: ast.name.length
     };
   }

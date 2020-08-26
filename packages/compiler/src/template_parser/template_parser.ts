@@ -244,9 +244,9 @@ class TemplateParseVisitor implements html.Visitor {
   visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR())!;
     const valueNoNgsp = replaceNgsp(text.value);
-    const expr = this._bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan!);
-    return expr ? new t.BoundTextAst(expr, ngContentIndex, text.sourceSpan!) :
-                  new t.TextAst(valueNoNgsp, ngContentIndex, text.sourceSpan!);
+    const expr = this._bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan);
+    return expr ? new t.BoundTextAst(expr, ngContentIndex, text.sourceSpan) :
+                  new t.TextAst(valueNoNgsp, ngContentIndex, text.sourceSpan);
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
@@ -335,14 +335,14 @@ class TemplateParseVisitor implements html.Visitor {
     const boundDirectivePropNames = new Set<string>();
     const directiveAsts = this._createDirectiveAsts(
         isTemplateElement, element.name, directiveMetas, elementOrDirectiveProps,
-        elementOrDirectiveRefs, element.sourceSpan!, references, boundDirectivePropNames);
+        elementOrDirectiveRefs, element.sourceSpan, references, boundDirectivePropNames);
     const elementProps: t.BoundElementPropertyAst[] = this._createElementPropertyAsts(
         element.name, elementOrDirectiveProps, boundDirectivePropNames);
     const isViewRoot = parent.isTemplateElement || hasInlineTemplates;
 
     const providerContext = new ProviderElementContext(
         this.providerViewContext, parent.providerContext!, isViewRoot, directiveAsts, attrs,
-        references, isTemplateElement, queryStartIndex, element.sourceSpan!);
+        references, isTemplateElement, queryStartIndex, element.sourceSpan);
 
     const children: t.TemplateAst[] = html.visitAll(
         preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children,
@@ -360,26 +360,26 @@ class TemplateParseVisitor implements html.Visitor {
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       // `<ng-content>` element
       if (element.children && !element.children.every(_isEmptyTextNode)) {
-        this._reportError(`<ng-content> element cannot have content.`, element.sourceSpan!);
+        this._reportError(`<ng-content> element cannot have content.`, element.sourceSpan);
       }
 
       parsedElement = new t.NgContentAst(
-          this.ngContentCount++, hasInlineTemplates ? null! : ngContentIndex, element.sourceSpan!);
+          this.ngContentCount++, hasInlineTemplates ? null! : ngContentIndex, element.sourceSpan);
     } else if (isTemplateElement) {
       // `<ng-template>` element
       this._assertAllEventsPublishedByDirectives(directiveAsts, events);
       this._assertNoComponentsNorElementBindingsOnTemplate(
-          directiveAsts, elementProps, element.sourceSpan!);
+          directiveAsts, elementProps, element.sourceSpan);
 
       parsedElement = new t.EmbeddedTemplateAst(
           attrs, events, references, elementVars, providerContext.transformedDirectiveAsts,
           providerContext.transformProviders, providerContext.transformedHasViewContainer,
           providerContext.queryMatches, children, hasInlineTemplates ? null! : ngContentIndex,
-          element.sourceSpan!);
+          element.sourceSpan);
     } else {
       // element other than `<ng-content>` and `<ng-template>`
       this._assertElementExists(matchElement, element);
-      this._assertOnlyOneComponent(directiveAsts, element.sourceSpan!);
+      this._assertOnlyOneComponent(directiveAsts, element.sourceSpan);
 
       const ngContentIndex =
           hasInlineTemplates ? null : parent.findNgContentIndex(projectionSelector);
@@ -397,22 +397,22 @@ class TemplateParseVisitor implements html.Visitor {
       const {directives} = this._parseDirectives(this.selectorMatcher, templateSelector);
       const templateBoundDirectivePropNames = new Set<string>();
       const templateDirectiveAsts = this._createDirectiveAsts(
-          true, elName, directives, templateElementOrDirectiveProps, [], element.sourceSpan!, [],
+          true, elName, directives, templateElementOrDirectiveProps, [], element.sourceSpan, [],
           templateBoundDirectivePropNames);
       const templateElementProps: t.BoundElementPropertyAst[] = this._createElementPropertyAsts(
           elName, templateElementOrDirectiveProps, templateBoundDirectivePropNames);
       this._assertNoComponentsNorElementBindingsOnTemplate(
-          templateDirectiveAsts, templateElementProps, element.sourceSpan!);
+          templateDirectiveAsts, templateElementProps, element.sourceSpan);
       const templateProviderContext = new ProviderElementContext(
           this.providerViewContext, parent.providerContext!, parent.isTemplateElement,
-          templateDirectiveAsts, [], [], true, templateQueryStartIndex, element.sourceSpan!);
+          templateDirectiveAsts, [], [], true, templateQueryStartIndex, element.sourceSpan);
       templateProviderContext.afterElement();
 
       parsedElement = new t.EmbeddedTemplateAst(
           [], [], [], templateElementVars, templateProviderContext.transformedDirectiveAsts,
           templateProviderContext.transformProviders,
           templateProviderContext.transformedHasViewContainer, templateProviderContext.queryMatches,
-          [parsedElement], ngContentIndex, element.sourceSpan!);
+          [parsedElement], ngContentIndex, element.sourceSpan);
     }
 
     return parsedElement;
@@ -707,7 +707,7 @@ class TemplateParseVisitor implements html.Visitor {
         errorMsg +=
             `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
       }
-      this._reportError(errorMsg, element.sourceSpan!);
+      this._reportError(errorMsg, element.sourceSpan);
     }
   }
 
@@ -815,7 +815,7 @@ class NonBindableVisitor implements html.Visitor {
 
   visitText(text: html.Text, parent: ElementContext): t.TextAst {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR())!;
-    return new t.TextAst(text.value, ngContentIndex, text.sourceSpan!);
+    return new t.TextAst(text.value, ngContentIndex, text.sourceSpan);
   }
 
   visitExpansion(expansion: html.Expansion, context: any): any {
