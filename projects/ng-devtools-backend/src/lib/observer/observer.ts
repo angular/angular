@@ -1,7 +1,11 @@
 import { ElementPosition, LifecycleProfile } from 'protocol';
 import { componentMetadata, runOutsideAngular } from '../utils';
 import { IdentityTracker, IndexedNode } from './identity-tracker';
-import { getLViewFromDirectiveOrElementInstance, getDirectiveHostElement } from '../lview-transform';
+import {
+  getLViewFromDirectiveOrElementInstance,
+  getDirectiveHostElement,
+  METADATA_PROPERTY_NAME,
+} from '../lview-transform';
 import { DEV_TOOLS_HIGHLIGHT_NODE_ID } from '../highlighter';
 import { Subject } from 'rxjs';
 
@@ -264,6 +268,14 @@ export class DirectiveForestObserver {
         if (typeof el === 'function') {
           const self = this;
           current[idx] = function (): any {
+            // We currently don't want to notify the consumer
+            // for execution of lifecycle hooks of services and pipes.
+            // These two abstractions don't have `__ngContext__`, and
+            // currently we won't be able to extract the required
+            // metadata by the UI.
+            if (!this[METADATA_PROPERTY_NAME]) {
+              return;
+            }
             const id = self._tracker.getDirectiveId(this);
             const lifecycleHookName = getLifeCycleName(this, el);
             const element = getDirectiveHostElement(this);
