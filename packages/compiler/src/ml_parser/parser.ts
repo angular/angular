@@ -10,7 +10,7 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import * as html from './ast';
 import * as lex from './lexer';
-import {getNsPrefix, isNgContainer, mergeNsAndName, TagDefinition} from './tags';
+import {getNsPrefix, mergeNsAndName, splitNsName, TagDefinition} from './tags';
 
 export class TreeError extends ParseError {
   static create(elementName: string|null, span: ParseSourceSpan, msg: string): TreeError {
@@ -353,7 +353,11 @@ class _TreeBuilder {
     if (prefix === '') {
       prefix = this.getTagDefinition(localName).implicitNamespacePrefix || '';
       if (prefix === '' && parentElement != null) {
-        prefix = getNsPrefix(parentElement.name);
+        const parentTagName = splitNsName(parentElement.name)[1];
+        const parentTagDefinition = this.getTagDefinition(parentTagName);
+        if (!parentTagDefinition.preventNamespaceInheritance) {
+          prefix = getNsPrefix(parentElement.name);
+        }
       }
     }
 

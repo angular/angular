@@ -2017,6 +2017,28 @@ export declare class AnimationEvent {
         expect(diags.length).toBe(0);
       });
 
+      it('should allow HTML elements without explicit namespace inside SVG foreignObject', () => {
+        env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          template: \`
+            <svg>
+              <foreignObject>
+                <div>Hello</div>
+              </foreignObject>
+            </svg>
+          \`,
+        })
+        export class FooCmp {}
+        @NgModule({
+          declarations: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
       it('should check for unknown elements inside an SVG foreignObject', () => {
         env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
@@ -2042,6 +2064,33 @@ export declare class AnimationEvent {
 1. If 'foo' is an Angular component, then verify that it is part of this module.
 2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
       });
+
+      it('should check for unknown elements without explicit namespace inside an SVG foreignObject',
+         () => {
+           env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: \`
+            <svg>
+              <foreignObject>
+                <foo>Hello</foo>
+              </foreignObject>
+            </svg>
+          \`,
+        })
+        export class FooCmp {}
+        @NgModule({
+          declarations: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText).toBe(`'foo' is not a known element:
+1. If 'foo' is an Angular component, then verify that it is part of this module.
+2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+         });
     });
 
     // Test both sync and async compilations, see https://github.com/angular/angular/issues/32538
