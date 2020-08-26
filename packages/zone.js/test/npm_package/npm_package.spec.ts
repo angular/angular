@@ -40,20 +40,18 @@ describe('Zone.js npm_package', () => {
     it('should contain module resolution mappings', () => {
       expect(shx.grep('"main":', packageJson)).toContain(`zone.umd.js`);
     });
+
+    it('should contain typings', () => {
+      expect(shx.grep('"typings":', packageJson)).toContain(`./zone.d.ts`);
+    });
   });
 
   describe('check npm_package root folder', () => {
     describe('typescript support', () => {
-      it('should have an zone.js.d.ts file', () => {
-        expect(shx.cat('zone.js.d.ts')).toContain('declare const');
-      });
-
-      it('should have an zone.api.extensions.ts file', () => {
-        expect(shx.cat('zone.api.extensions.ts')).toContain('EventTarget');
-      });
-
-      it('should have an zone.configurations.api.ts file', () => {
-        expect(shx.cat('zone.configurations.api.ts')).toContain('ZoneGlobalConfigurations');
+      it('should have an zone.d.ts file', () => {
+        expect(shx.cat('zone.d.ts')).toContain('declare const');
+        expect(shx.cat('zone.d.ts')).toContain('interface EventTarget');
+        expect(shx.cat('zone.d.ts')).toContain('ZoneGlobalConfigurations');
       });
     });
 
