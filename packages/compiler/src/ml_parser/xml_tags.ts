@@ -20,6 +20,7 @@ export class XmlTagDefinition implements TagDefinition {
   isVoid: boolean = false;
   ignoreFirstLf: boolean = false;
   canSelfClose: boolean = true;
+  preventNamespaceInheritance: boolean = false;
 
   requireExtraParent(currentParent: string): boolean {
     return false;
