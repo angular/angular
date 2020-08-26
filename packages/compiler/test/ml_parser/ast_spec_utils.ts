@@ -42,7 +42,7 @@ class _Humanizer implements html.Visitor {
   visitElement(element: html.Element, context: any): any {
     const res = this._appendContext(element, [html.Element, element.name, this.elDepth++]);
     if (this.includeSourceSpan) {
-      res.push(element.startSourceSpan?.toString() ?? null);
+      res.push(element.startSourceSpan.toString() ?? null);
       res.push(element.endSourceSpan?.toString() ?? null);
     }
     this.result.push(res);
@@ -82,7 +82,7 @@ class _Humanizer implements html.Visitor {
 
   private _appendContext(ast: html.Node, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
-    input.push(ast.sourceSpan!.toString());
+    input.push(ast.sourceSpan.toString());
     return input;
   }
 }

@@ -48,7 +48,7 @@ export function parseInnerRange(element: Element): ParseTreeResult {
  * @param element The element whose inner range we want to compute.
  */
 function getInnerRange(element: Element): LexerRange {
-  const start = element.startSourceSpan!.end;
+  const start = element.startSourceSpan.end;
   const end = element.endSourceSpan!.start;
   return {
     startPos: start.offset,

@@ -667,8 +667,8 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         it('should set the start and end source spans', () => {
           const node = <html.Element>parser.parse('<div>a</div>', 'TestComp').rootNodes[0];
 
-          expect(node.startSourceSpan!.start.offset).toEqual(0);
-          expect(node.startSourceSpan!.end.offset).toEqual(5);
+          expect(node.startSourceSpan.start.offset).toEqual(0);
+          expect(node.startSourceSpan.end.offset).toEqual(5);
 
           expect(node.endSourceSpan!.start.offset).toEqual(6);
           expect(node.endSourceSpan!.end.offset).toEqual(12);
