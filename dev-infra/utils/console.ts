@@ -19,6 +19,7 @@ import {getRepoBaseDir} from './config';
 export const red: typeof chalk = chalk.red;
 export const green: typeof chalk = chalk.green;
 export const yellow: typeof chalk = chalk.yellow;
+export const bold: typeof chalk = chalk.bold;
 
 /** Prompts the user with a confirmation question and a specified message. */
 export async function promptConfirm(message: string, defaultValue = false): Promise<boolean> {

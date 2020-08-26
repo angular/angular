@@ -86,10 +86,10 @@ export class GitClient {
   /**
    * Spawns a given Git command process. Does not throw if the command fails. Additionally,
    * if there is any stderr output, the output will be printed. This makes it easier to
-   * debug failed commands.
+   * info failed commands.
    */
   runGraceful(args: string[], options: SpawnSyncOptions = {}): SpawnSyncReturns<string> {
-    // To improve the debugging experience in case something fails, we print all executed
+    // To improve the infoging experience in case something fails, we print all executed
     // Git commands. Note that we do not want to print the token if is contained in the
     // command. It's common to share errors with others if the tool failed.
     info('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
