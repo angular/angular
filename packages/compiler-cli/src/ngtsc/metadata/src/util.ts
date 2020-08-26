@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
-import {nodeDebugInfo} from '../../util/src/typescript';
+import {getTupleTypeNodeElements, nodeDebugInfo} from '../../util/src/typescript';
 
 import {DirectiveMeta, DirectiveTypeCheckMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 
@@ -21,25 +21,22 @@ export function extractReferencesFromType(
     return [];
   }
 
-  // TODO(alan-agius4): remove `def.elementTypes` and casts when TS 3.9 support is dropped and G3 is
-  // using TS 4.0.
-  return (((def as any).elements || (def as any).elementTypes) as ts.NodeArray<ts.TypeNode>)
-      .map(element => {
-        if (!ts.isTypeQueryNode(element)) {
-          throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
-        }
-        const type = element.exprName;
-        const {node, from} = reflectTypeEntityToDeclaration(type, checker);
-        if (!isNamedClassDeclaration(node)) {
-          throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
-        }
-        const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
-        if (specifier !== null) {
-          return new Reference(node, {specifier, resolutionContext});
-        } else {
-          return new Reference(node);
-        }
-      });
+  return getTupleTypeNodeElements(def).map(element => {
+    if (!ts.isTypeQueryNode(element)) {
+      throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
+    }
+    const type = element.exprName;
+    const {node, from} = reflectTypeEntityToDeclaration(type, checker);
+    if (!isNamedClassDeclaration(node)) {
+      throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
+    }
+    const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
+    if (specifier !== null) {
+      return new Reference(node, {specifier, resolutionContext});
+    } else {
+      return new Reference(node);
+    }
+  });
 }
 
 export function readStringType(type: ts.TypeNode): string|null {
@@ -73,15 +70,12 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
     return [];
   }
   const res: string[] = [];
-  // TODO(alan-agius4): remove `def.elementTypes` and casts when TS 3.9 support is dropped and G3 is
-  // using TS 4.0.
-  (((type as any).elements || (type as any).elementTypes) as ts.NodeArray<ts.TypeNode>)
-      .forEach(el => {
-        if (!ts.isLiteralTypeNode(el) || !ts.isStringLiteral(el.literal)) {
-          return;
-        }
-        res.push(el.literal.text);
-      });
+  getTupleTypeNodeElements(type).forEach(el => {
+    if (!ts.isLiteralTypeNode(el) || !ts.isStringLiteral(el.literal)) {
+      return;
+    }
+    res.push(el.literal.text);
+  });
   return res;
 }
 

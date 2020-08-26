@@ -240,8 +240,8 @@ export class ReturnTypeTransform implements DtsTransform {
 
   transformClassElement(element: ts.ClassElement, imports: ImportManager): ts.ClassElement {
     // // TODO(alan-agius4): Remove when we no longer support TS 3.9
-    // TS <= 3.9
     if (ts.isMethodSignature(element)) {
+      // TS <= 3.9
       const original = ts.getOriginalNode(element) as ts.MethodDeclaration;
       if (!this.typeReplacements.has(original)) {
         return element;
@@ -263,10 +263,8 @@ export class ReturnTypeTransform implements DtsTransform {
       // `ts.ClassElement`. Since `element` was a `ts.MethodSignature` already, transforming it into
       // this type is actually correct.
       return methodSignature as unknown as ts.ClassElement;
-    }
-
-    // TS 4.0 +
-    if (ts.isMethodDeclaration(element)) {
+    } else if (ts.isMethodDeclaration(element)) {
+      // TS 4.0 +
       const original = ts.getOriginalNode(element, ts.isMethodDeclaration);
       if (!this.typeReplacements.has(original)) {
         return element;
@@ -275,9 +273,16 @@ export class ReturnTypeTransform implements DtsTransform {
       const tsReturnType = translateType(returnType, imports);
 
       return ts.updateMethod(
-          element, element.decorators, element.modifiers, element.asteriskToken, element.name,
-          element.questionToken, element.typeParameters, element.parameters, tsReturnType,
-          element.body);
+          /* node */ element,
+          /* decorators */ element.decorators,
+          /* modifiers */ element.modifiers,
+          /* asteriskToken */ element.asteriskToken,
+          /* name */ element.name,
+          /* questionToken */ element.questionToken,
+          /* typeParameters */ element.typeParameters,
+          /* parameters */ element.parameters,
+          /* type */ tsReturnType,
+          /* body */ element.body);
     }
 
     return element;

@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {DefaultImportRecorder, ImportRewriter} from '../../imports';
 import {Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateStatement} from '../../translator';
+import {setNodeArraySourceMapRange} from '../../util/src/typescript';
 import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
 
 import {CompileResult} from './api';
@@ -187,8 +188,7 @@ class IvyTransformationVisitor extends Visitor {
 
     // Create a new `NodeArray` with the filtered decorators that sourcemaps back to the original.
     const array = ts.createNodeArray(filtered);
-    (array.pos as number) = node.decorators.pos;
-    (array.end as number) = node.decorators.end;
+    setNodeArraySourceMapRange(array, node.decorators.pos, node.decorators.end);
     return array;
   }
 

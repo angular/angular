@@ -8,6 +8,8 @@
 
 import * as ts from 'typescript';
 
+import {isLiteralNullTypeNode} from '../../util/src/typescript';
+
 import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
 import {typeToValue} from './type_to_value';
 import {isNamedClassDeclaration} from './util';
@@ -63,12 +65,8 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       // We also don't need to support `foo: Foo|undefined` because Angular's DI injects `null` for
       // optional tokes that don't have providers.
       if (typeNode && ts.isUnionTypeNode(typeNode)) {
-        let childTypeNodes = typeNode.types.filter(
-            // TODO(alan-agius4): remove `childTypeNode.kind !== ts.SyntaxKind.NullKeyword` when
-            // TS 3.9 support is dropped. In TS 4.0 NullKeyword is a child of LiteralType.
-            childTypeNode => childTypeNode.kind !== ts.SyntaxKind.NullKeyword &&
-                !(ts.isLiteralTypeNode(childTypeNode) &&
-                  childTypeNode.literal.kind === ts.SyntaxKind.NullKeyword));
+        let childTypeNodes =
+            typeNode.types.filter(childTypeNode => !isLiteralNullTypeNode(childTypeNode));
 
         if (childTypeNodes.length === 1) {
           typeNode = childTypeNodes[0];

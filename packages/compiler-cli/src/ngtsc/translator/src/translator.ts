@@ -11,6 +11,7 @@ import {LocalizedString, UnaryOperator, UnaryOperatorExpr} from '@angular/compil
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder, ImportRewriter, NOOP_DEFAULT_IMPORT_RECORDER, NoopImportRewriter} from '../../imports';
+import {createNullTypeNode} from '../../util/src/typescript';
 
 export class Context {
   constructor(readonly isStatement: boolean) {}
@@ -526,11 +527,7 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
 
   visitLiteralExpr(ast: LiteralExpr, context: Context): ts.TypeNode {
     if (ast.value === null) {
-      // TODO(alan-agius4): Remove when we no longer support TS 3.9
-      // Use: return ts.createLiteralTypeNode(ts.createNull()) directly.
-      return ts.versionMajorMinor.charAt(0) === '4' ?
-          ts.createLiteralTypeNode(ts.createNull() as any) :
-          ts.createKeywordTypeNode(ts.SyntaxKind.NullKeyword as any);
+      return createNullTypeNode();
     } else if (ast.value === undefined) {
       return ts.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword);
     } else if (typeof ast.value === 'boolean') {

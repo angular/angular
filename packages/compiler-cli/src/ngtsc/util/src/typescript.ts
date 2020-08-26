@@ -143,3 +143,72 @@ export function resolveModuleName(
  * Asserts that the keys `K` form a subset of the keys of `T`.
  */
 export type SubsetOfKeys<T, K extends keyof T> = K;
+
+/**
+ * Extract the `ts.TypeNode` array of types from a `ts.TupleTypeNode`.
+ *
+ * This is a slightly specialized operation currently due to incompatibilities between TypeScript
+ * 4.0 and prior versions.
+ *
+ * TODO(alan-agius4): remove `def.elementTypes` and casts when TS 3.9 support is dropped and G3 is
+ * using TS 4.0.
+ */
+export function getTupleTypeNodeElements(node: ts.TupleTypeNode): ts.NodeArray<ts.TypeNode> {
+  const nodeAny = node as any;
+  if (nodeAny.elements !== undefined) {
+    // TypeScript 4.0 uses `node.elements` for tuple elements.
+    return nodeAny.elements;
+  } else {
+    // TypeScript < 4.0 used `node.elementTypes` instead.
+    const elementTypes: ts.NodeArray<ts.TypeNode>|undefined = nodeAny.elementTypes;
+    if (!Array.isArray(elementTypes)) {
+      throw new Error(`AssertionError: Expected ts.TupleTypeNode to have an array of elementTypes`);
+    }
+
+    return elementTypes;
+  }
+}
+
+/**
+ * Create a `ts.TypeNode` for a `null` literal.
+ *
+ * This is a slightly specialized operation currently due to incompatibilities between TypeScript
+ * 4.0 and prior versions. Because g3 builds against TS 3.9 still, care must be taken to not make
+ * use of any TS 4.0 APIs just yet. Therefore, both cases here utilize casts to `any` to ensure they
+ * will both be accepted by either compiler.
+ *
+ * TODO(alan-agius4): remove once TS 3.9 support is no longer needed.
+ */
+export function createNullTypeNode(): ts.TypeNode {
+  if (!ts.versionMajorMinor.startsWith('3.')) {
+    // TypeScript 4.0+ uses `ts.createLiteralTypeNode(ts.createNull())` for `null` type literals.
+    return ts.createLiteralTypeNode(ts.createNull() as any);
+  } else {
+    // TypeScript < 4.0 uses `ts.createKeywordTypeNode(ts.SyntaxKind.NullKeyword)` instead.
+    return ts.createKeywordTypeNode(ts.SyntaxKind.NullKeyword as any);
+  }
+}
+
+/**
+ * Check if a `ts.TypeNode` is a literal `null` type.
+ *
+ * See `createNullTypeNode` for information on why this is a specialized operation.
+ *
+ * TODO(alan-agius4): remove once TS 3.9 support is no longer needed.
+ */
+export function isLiteralNullTypeNode(node: ts.TypeNode): boolean {
+  return node.kind === ts.SyntaxKind.NullKeyword ||
+      (ts.isLiteralTypeNode(node) && node.literal.kind === ts.SyntaxKind.NullKeyword);
+}
+
+/**
+ * Mutate the `pos` and `end` of a `ts.NodeArray`.
+ *
+ * This operation is not strictly legal per the type declaration of `ts.NodeArray`, but is supported
+ * for single nodes via `ts.setSourceMapRange`. Likely this is just an omission from the TS API.
+ */
+export function setNodeArraySourceMapRange(
+    array: ts.NodeArray<ts.Node>, pos: number, end: number): void {
+  (array.pos as number) = pos;
+  (array.end as number) = end;
+}
