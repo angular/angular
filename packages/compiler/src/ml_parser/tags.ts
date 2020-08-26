@@ -19,6 +19,7 @@ export interface TagDefinition {
   isVoid: boolean;
   ignoreFirstLf: boolean;
   canSelfClose: boolean;
+  preventNamespaceInheritance: boolean;
 
   isClosedByChild(name: string): boolean;
 }
