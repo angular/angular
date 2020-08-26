@@ -7,9 +7,13 @@
  */
 
 import chalk from 'chalk';
+import {existsSync, readFileSync, writeFileSync} from 'fs-extra';
 import {createPromptModule, ListChoiceOptions, prompt} from 'inquirer';
 import * as inquirerAutocomplete from 'inquirer-autocomplete-prompt';
+import {join} from 'path';
+import {Arguments} from 'yargs';
 
+import {getRepoBaseDir} from './config';
 
 /** Reexport of chalk colors for convenient access. */
 export const red: typeof chalk = chalk.red;
@@ -140,6 +144,7 @@ function runConsoleCommand(loadCommand: () => Function, logLevel: LOG_LEVELS, ..
   if (getLogLevel() >= logLevel) {
     loadCommand()(...text);
   }
+  printToLogFile(logLevel, ...text);
 }
 
 /**
@@ -154,4 +159,42 @@ function getLogLevel() {
     return DEFAULT_LOG_LEVEL;
   }
   return logLevel;
+}
+
+/** All text to write to the log file. */
+let LOGGED_TEXT = '';
+
+/** Enable the writing to the log file, setting the initial lines from the command execution. */
+export function enableFileLogging(argv: Arguments) {
+  /** The current date time when the file was initialized. */
+  const now = new Date();
+  /** Header line to separate command runs in log files. */
+  const headerLine = Array(100).fill('#').join('');
+  LOGGED_TEXT += `${headerLine}\nCommand: ${argv.$0} ${argv._.join(' ')}\nRan at: ${now}\n`;
+
+  // On process exit, write the logged output to the appropriate log files
+  process.on('exit', (code: number) => {
+    /** Path to the log file location. */
+    const logFilePath = join(getRepoBaseDir(), '.ng-dev.log');
+    /** The current contents of the log file. */
+    const logContents = existsSync(logFilePath) ? readFileSync(logFilePath).toString() : '';
+    /**
+     * The new contents of the log file, the last 10,000 lines of the combined current and new
+     * logged lines.
+     */
+    const combinedLog = (logContents + LOGGED_TEXT).split('\n').slice(-10000).join('\n');
+    writeFileSync(logFilePath, combinedLog);
+
+    // For failure codes greater than 1, the new logged lines should be written to a specific log
+    // file for the command run failure.
+    if (code > 1) {
+      writeFileSync(join(getRepoBaseDir(), `.ng-dev.err-${now.getTime()}.log`), LOGGED_TEXT);
+    }
+  });
+}
+
+/** Write the provided text to the log file, prepending each line with the log level.  */
+function printToLogFile(logLevel: LOG_LEVELS, ...text: string[]) {
+  const logLevelText = `${LOG_LEVELS[logLevel]}:`.padEnd(7);
+  LOGGED_TEXT += text.join(' ').split('\n').map(l => `${logLevelText} ${l}\n`).join('');
 }
