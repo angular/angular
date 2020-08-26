@@ -6,6 +6,7 @@
   "module": "./fesm2015/zone.js",
   "es2015": "./fesm2015/zone.js",
   "fesm2015": "./fesm2015/zone.js",
+  "typings": "./zone.d.ts",
   "dependencies": {
     "tslib": "^2.0.0"
   },
