@@ -37,7 +37,7 @@ describe('YoutubePlayer', () => {
     });
 
     afterEach(() => {
-      delete window.YT;
+      (window as any).YT = undefined;
       window.onYouTubeIframeAPIReady = undefined;
     });
 
@@ -368,15 +368,15 @@ describe('YoutubePlayer', () => {
   });
 
   describe('API loaded asynchronously', () => {
-    let api: typeof YT | undefined;
+    let api: typeof YT;
 
     beforeEach(() => {
       api = window.YT;
-      delete window.YT;
+      (window as any).YT = undefined;
     });
 
     afterEach(() => {
-      delete window.YT;
+      (window as any).YT = undefined;
       window.onYouTubeIframeAPIReady = undefined;
     });
 

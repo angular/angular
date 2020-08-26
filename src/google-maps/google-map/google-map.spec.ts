@@ -38,7 +38,7 @@ describe('GoogleMap', () => {
   });
 
   afterEach(() => {
-    delete window.google;
+    (window.google as any) = undefined;
   });
 
   it('throws an error is the Google Maps JavaScript API was not loaded', () => {

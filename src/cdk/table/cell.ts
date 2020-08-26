@@ -70,19 +70,9 @@ const _CdkColumnDefBase: CanStickCtor&typeof CdkColumnDefBase =
 export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
   /** Unique name for this column. */
   @Input('cdkColumnDef')
-  get name(): string {
-    return this._name;
-  }
-  set name(name: string) {
-    // If the directive is set without a name (updated programatically), then this setter will
-    // trigger with an empty string and should not overwrite the programatically set value.
-    if (name) {
-      this._name = name;
-      this.cssClassFriendlyName = name.replace(/[^a-z0-9_-]/ig, '-');
-      this._updateColumnCssClassName();
-    }
-  }
-  _name: string;
+  get name(): string { return this._name; }
+  set name(name: string) { this._setNameInput(name); }
+  protected _name: string;
 
   /**
    * Whether this column should be sticky positioned on the end of the row. Should make sure
@@ -135,6 +125,22 @@ export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
    */
   protected _updateColumnCssClassName() {
     this._columnCssClassName = [`cdk-column-${this.cssClassFriendlyName}`];
+  }
+
+  /**
+   * This has been extracted to a util because of TS 4 and VE.
+   * View Engine doesn't support property rename inheritance.
+   * TS 4.0 doesn't allow properties to override accessors or vice-versa.
+   * @docs-private
+   */
+  protected _setNameInput(value: string) {
+    // If the directive is set without a name (updated programatically), then this setter will
+    // trigger with an empty string and should not overwrite the programatically set value.
+    if (value) {
+      this._name = value;
+      this.cssClassFriendlyName = value.replace(/[^a-z0-9_-]/ig, '-');
+      this._updateColumnCssClassName();
+    }
   }
 
   static ngAcceptInputType_sticky: BooleanInput;

@@ -44,7 +44,7 @@ export class CdkSelectionToggle<T> implements OnDestroy, OnInit {
   @Input('cdkSelectionToggleIndex')
   get index(): number|undefined { return this._index; }
   set index(index: number|undefined) { this._index = coerceNumberProperty(index); }
-  private _index?: number;
+  protected _index?: number;
 
   /** The checked state of the selection toggle */
   readonly checked: Observable<boolean> = this._selection.change.pipe(

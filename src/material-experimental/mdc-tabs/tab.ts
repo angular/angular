@@ -37,5 +37,7 @@ export class MatTab extends BaseMatTab {
   _explicitContent: TemplateRef<any>;
 
   /** Content for the tab label given by `<ng-template mat-tab-label>`. */
-  @ContentChild(MatTabLabel) templateLabel: MatTabLabel;
+  @ContentChild(MatTabLabel)
+  get templateLabel(): MatTabLabel { return this._templateLabel; }
+  set templateLabel(value: MatTabLabel) { this._setTemplateLabelInput(value); }
 }

@@ -38,7 +38,7 @@ describe('MapKmlLayer', () => {
   });
 
   afterEach(() => {
-    delete window.google;
+    (window.google as any) = undefined;
   });
 
   it('initializes a Google Map Kml Layer', () => {

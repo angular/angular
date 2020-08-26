@@ -311,13 +311,13 @@ export declare function mixinColor<T extends Constructor<HasElementRef>>(base: T
 
 export declare function mixinDisabled<T extends Constructor<{}>>(base: T): CanDisableCtor & T;
 
-export declare function mixinDisableRipple<T extends Constructor<{}>>(base: T): CanDisableRippleCtor & T;
+export declare function mixinDisableRipple<T extends AbstractConstructor<{}>>(base: T): CanDisableRippleCtor & T;
 
 export declare function mixinErrorState<T extends Constructor<HasErrorState>>(base: T): CanUpdateErrorStateCtor & T;
 
 export declare function mixinInitialized<T extends Constructor<{}>>(base: T): HasInitializedCtor & T;
 
-export declare function mixinTabIndex<T extends Constructor<CanDisable>>(base: T, defaultTabIndex?: number): HasTabIndexCtor & T;
+export declare function mixinTabIndex<T extends AbstractConstructor<CanDisable>>(base: T, defaultTabIndex?: number): HasTabIndexCtor & T;
 
 export declare class NativeDateAdapter extends DateAdapter<Date> {
     useUtcForDisplay: boolean;

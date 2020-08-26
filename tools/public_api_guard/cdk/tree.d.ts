@@ -117,6 +117,8 @@ export declare class CdkTreeNodePadding<T> implements OnDestroy {
     constructor(_treeNode: CdkTreeNode<T>, _tree: CdkTree<T>,
     _renderer: Renderer2, _element: ElementRef<HTMLElement>, _dir: Directionality);
     _paddingIndent(): string | null;
+    protected _setIndentInput(indent: number | string): void;
+    protected _setLevelInput(value: number): void;
     _setPadding(forceChange?: boolean): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_level: NumberInput;

@@ -32,7 +32,7 @@ describe('MapInfoWindow', () => {
   });
 
   afterEach(() => {
-    delete window.google;
+    (window.google as any) = undefined;
   });
 
   it('initializes a Google Map Info Window', () => {

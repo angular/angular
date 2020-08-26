@@ -9,7 +9,8 @@ export declare class MatCellDef extends CdkCellDef {
 }
 
 export declare class MatColumnDef extends CdkColumnDef {
-    name: string;
+    get name(): string;
+    set name(name: string);
     protected _updateColumnCssClassName(): void;
     static ngAcceptInputType_sticky: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatColumnDef, "[matColumnDef]", never, { "sticky": "sticky"; "name": "matColumnDef"; }, {}, never>;

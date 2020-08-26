@@ -36,8 +36,8 @@ let uid = 0;
  * Boilerplate for applying mixins to MatChipSet.
  * @docs-private
  */
-class MatChipSetBase {
-  disabled!: boolean;
+abstract class MatChipSetBase {
+  abstract disabled: boolean;
   constructor(_elementRef: ElementRef) {}
 }
 const _MatChipSetMixinBase: HasTabIndexCtor & typeof MatChipSetBase =

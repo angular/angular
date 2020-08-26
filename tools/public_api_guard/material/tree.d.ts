@@ -83,14 +83,17 @@ export declare class MatTreeNodeOutlet implements CdkTreeNodeOutlet {
 }
 
 export declare class MatTreeNodePadding<T> extends CdkTreeNodePadding<T> {
-    indent: number;
-    level: number;
+    get indent(): number | string;
+    set indent(indent: number | string);
+    get level(): number;
+    set level(value: number);
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNodePadding<any>, "[matTreeNodePadding]", never, { "level": "matTreeNodePadding"; "indent": "matTreeNodePaddingIndent"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTreeNodePadding<any>, never>;
 }
 
 export declare class MatTreeNodeToggle<T> extends CdkTreeNodeToggle<T> {
-    recursive: boolean;
+    get recursive(): boolean;
+    set recursive(value: boolean);
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNodeToggle<any>, "[matTreeNodeToggle]", never, { "recursive": "matTreeNodeToggleRecursive"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTreeNodeToggle<any>, never>;
 }

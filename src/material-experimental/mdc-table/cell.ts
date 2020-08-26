@@ -60,7 +60,9 @@ export class MatFooterCellDef extends CdkFooterCellDef {}
 })
 export class MatColumnDef extends CdkColumnDef {
   /** Unique name for this column. */
-  @Input('matColumnDef') name: string;
+  @Input('matColumnDef')
+  get name(): string { return this._name; }
+  set name(name: string) { this._setNameInput(name); }
 
   /**
    * Add "mat-column-" prefix in addition to "cdk-column-" prefix.

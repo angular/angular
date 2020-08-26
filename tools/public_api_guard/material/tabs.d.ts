@@ -134,6 +134,7 @@ export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisab
     _explicitContent: TemplateRef<any>;
     _implicitContent: TemplateRef<any>;
     readonly _stateChanges: Subject<void>;
+    protected _templateLabel: MatTabLabel;
     ariaLabel: string;
     ariaLabelledby: string;
     get content(): TemplatePortal | null;
@@ -145,6 +146,7 @@ export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisab
     textLabel: string;
     constructor(_viewContainerRef: ViewContainerRef,
     _closestTabGroup?: any);
+    protected _setTemplateLabelInput(value: MatTabLabel): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     ngOnInit(): void;

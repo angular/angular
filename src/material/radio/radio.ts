@@ -334,12 +334,11 @@ export class MatRadioGroup extends _MatRadioGroupBase<MatRadioButton> {
 
 // Boilerplate for applying mixins to MatRadioButton.
 /** @docs-private */
-class MatRadioButtonBase {
+abstract class MatRadioButtonBase {
   // Since the disabled property is manually defined for the MatRadioButton and isn't set up in
   // the mixin base class. To be able to use the tabindex mixin, a disabled property must be
   // defined to properly work.
-  disabled: boolean;
-
+  abstract disabled: boolean;
   constructor(public _elementRef: ElementRef) {}
 }
 // As per Material design specifications the selection control radio should use the accent color

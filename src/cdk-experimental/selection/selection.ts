@@ -57,7 +57,7 @@ export class CdkSelection<T> implements OnInit, AfterContentChecked, CollectionV
   set multiple(multiple: boolean) {
     this._multiple = coerceBooleanProperty(multiple);
   }
-  private _multiple: boolean;
+  protected _multiple: boolean;
 
   /** Emits when selection changes. */
   @Output('cdkSelectionChange') change = new EventEmitter<SelectionChange<T>>();

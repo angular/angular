@@ -88,8 +88,8 @@ export const MAT_CHIP_TRAILING_ICON =
 
 // Boilerplate for applying mixins to MatChip.
 /** @docs-private */
-class MatChipBase {
-  disabled: boolean;
+abstract class MatChipBase {
+  abstract disabled: boolean;
   constructor(public _elementRef: ElementRef) {}
 }
 

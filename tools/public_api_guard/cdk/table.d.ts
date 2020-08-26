@@ -90,7 +90,7 @@ export interface CdkCellOutletRowContext<T> {
 
 export declare class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
     _columnCssClassName: string[];
-    _name: string;
+    protected _name: string;
     _stickyEnd: boolean;
     _table?: any;
     cell: CdkCellDef;
@@ -102,6 +102,7 @@ export declare class CdkColumnDef extends _CdkColumnDefBase implements CanStick 
     get stickyEnd(): boolean;
     set stickyEnd(v: boolean);
     constructor(_table?: any);
+    protected _setNameInput(value: string): void;
     protected _updateColumnCssClassName(): void;
     static ngAcceptInputType_sticky: BooleanInput;
     static ngAcceptInputType_stickyEnd: BooleanInput;

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CdkSelection, SelectionChange} from '@angular/cdk-experimental/selection';
 import {Directive, Input, Output, EventEmitter} from '@angular/core';
 
@@ -21,9 +22,12 @@ import {Directive, Input, Output, EventEmitter} from '@angular/core';
   exportAs: 'matSelection',
   providers: [{provide: CdkSelection, useExisting: MatSelection}]
 })
+// tslint:disable-next-line: coercion-types
 export class MatSelection<T> extends CdkSelection<T> {
   /** Whether to support multiple selection */
-  @Input('matSelectionMultiple') multiple: boolean;
+  @Input('matSelectionMultiple')
+  get multiple(): boolean { return this._multiple; }
+  set multiple(multiple: boolean) { this._multiple = coerceBooleanProperty(multiple); }
 
   /** Emits when selection changes. */
   @Output('matSelectionChange') change = new EventEmitter<SelectionChange<T>>();

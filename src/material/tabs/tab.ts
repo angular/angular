@@ -57,16 +57,8 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
   /** Content for the tab label given by `<ng-template mat-tab-label>`. */
   @ContentChild(MAT_TAB_LABEL as any)
   get templateLabel(): MatTabLabel { return this._templateLabel; }
-  set templateLabel(value: MatTabLabel) {
-    // Only update the templateLabel via query if there is actually
-    // a MatTabLabel found. This works around an issue where a user may have
-    // manually set `templateLabel` during creation mode, which would then get clobbered
-    // by `undefined` when this query resolves.
-    if (value) {
-      this._templateLabel = value;
-    }
-  }
-  private _templateLabel: MatTabLabel;
+  set templateLabel(value: MatTabLabel) { this._setTemplateLabelInput(value); }
+  protected _templateLabel: MatTabLabel;
 
   // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /**
@@ -141,6 +133,22 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
   ngOnInit(): void {
     this._contentPortal = new TemplatePortal(
         this._explicitContent || this._implicitContent, this._viewContainerRef);
+  }
+
+  /**
+   * This has been extracted to a util because of TS 4 and VE.
+   * View Engine doesn't support property rename inheritance.
+   * TS 4.0 doesn't allow properties to override accessors or vice-versa.
+   * @docs-private
+   */
+  protected _setTemplateLabelInput(value: MatTabLabel) {
+    // Only update the templateLabel via query if there is actually
+    // a MatTabLabel found. This works around an issue where a user may have
+    // manually set `templateLabel` during creation mode, which would then get clobbered
+    // by `undefined` when this query resolves.
+    if (value) {
+      this._templateLabel = value;
+    }
   }
 
   static ngAcceptInputType_disabled: BooleanInput;
