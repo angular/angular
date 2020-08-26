@@ -58,7 +58,7 @@ const getNode = (lView: any, data: any, idx: number): ComponentTreeNode => {
   const directives: DirectiveInstanceType[] = [];
   let component: ComponentInstanceType | null = null;
   const tNode = data[idx];
-  const node = lView[idx][ELEMENT] || lView[idx][ELEMENT];
+  const node = lView[idx][ELEMENT];
   const elementName = (node.tagName || node.nodeName).toLowerCase();
   for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
     const dir = lView[i];
