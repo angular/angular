@@ -3,7 +3,7 @@
 
 {%- macro renderHeritage(exportDoc) -%}
   {%- if exportDoc.extendsClauses.length %} extends {% for clause in exportDoc.extendsClauses -%}
-  <a class="code-anchor" href="{$ clause.doc.path $}">{$ clause.text $}</a>{% if not loop.last %}, {% endif -%}
+  {% if clause.doc.path %}<a class="code-anchor" href="{$ clause.doc.path $}">{$ clause.text $}</a>{% else %}{$ clause.text $}{% endif %}{% if not loop.last %}, {% endif -%}
   {% endfor %}{% endif %}
   {%- if exportDoc.implementsClauses.length %} implements {% for clause in exportDoc.implementsClauses -%}
   <a class="code-anchor" href="{$ clause.doc.path $}">{$ clause.text $}</a>{% if not loop.last %}, {% endif -%}
