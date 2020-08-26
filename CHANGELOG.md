@@ -1,3 +1,14 @@
+<a name="10.1.0-rc.0"></a>
+# 10.1.0-rc.0 (2020-08-26)
+
+
+### Bug Fixes
+
+* **localize:** ensure required XLIFF parameters are serialized ([#38575](https://github.com/angular/angular/issues/38575)) ([f0af387](https://github.com/angular/angular/commit/f0af387)), closes [#38570](https://github.com/angular/angular/issues/38570)
+* **localize:** render text of extracted placeholders ([#38536](https://github.com/angular/angular/issues/38536)) ([14e90be](https://github.com/angular/angular/commit/14e90be))
+
+
+
 <a name="10.0.14"></a>
 ## 10.0.14 (2020-08-26)
 
