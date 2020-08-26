@@ -2025,13 +2025,7 @@ export interface ParseTemplateOptions {
  * @param options options to modify how the template is parsed
  */
 export function parseTemplate(
-    template: string, templateUrl: string, options: ParseTemplateOptions = {}): {
-  errors?: ParseError[],
-        nodes: t.Node[],
-        styleUrls: string[],
-        styles: string[],
-        ngContentSelectors: string[]
-} {
+    template: string, templateUrl: string, options: ParseTemplateOptions = {}): ParsedTemplate {
   const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
@@ -2041,6 +2035,9 @@ export function parseTemplate(
 
   if (parseResult.errors && parseResult.errors.length > 0) {
     return {
+      interpolationConfig,
+      preserveWhitespaces,
+      template,
       errors: parseResult.errors,
       nodes: [],
       styleUrls: [],
@@ -2076,10 +2073,28 @@ export function parseTemplate(
   const {nodes, errors, styleUrls, styles, ngContentSelectors} =
       htmlAstToRender3Ast(rootNodes, bindingParser);
   if (errors && errors.length > 0) {
-    return {errors, nodes: [], styleUrls: [], styles: [], ngContentSelectors: []};
+    return {
+      interpolationConfig,
+      preserveWhitespaces,
+      template,
+      errors,
+      nodes: [],
+      styleUrls: [],
+      styles: [],
+      ngContentSelectors: []
+    };
   }
 
-  return {nodes, styleUrls, styles, ngContentSelectors};
+  return {
+    interpolationConfig,
+    preserveWhitespaces,
+    errors: null,
+    template,
+    nodes,
+    styleUrls,
+    styles,
+    ngContentSelectors
+  };
 }
 
 const elementRegistry = new DomElementSchemaRegistry();
@@ -2195,4 +2210,55 @@ function createClosureModeGuard(): o.BinaryOperatorExpr {
   return o.typeofExpr(o.variable(NG_I18N_CLOSURE_MODE))
       .notIdentical(o.literal('undefined', o.STRING_TYPE))
       .and(o.variable(NG_I18N_CLOSURE_MODE));
+}
+
+/**
+ * Information about the template which was extracted during parsing.
+ *
+ * This contains the actual parsed template as well as any metadata collected during its parsing,
+ * some of which might be useful for re-parsing the template with different options.
+ */
+export interface ParsedTemplate {
+  /**
+   * Include whitespace nodes in the parsed output.
+   */
+  preserveWhitespaces?: boolean;
+
+  /**
+   * How to parse interpolation markers.
+   */
+  interpolationConfig?: InterpolationConfig;
+
+  /**
+   * The string contents of the template.
+   *
+   * This is the "logical" template string, after expansion of any escaped characters (for inline
+   * templates). This may differ from the actual template bytes as they appear in the .ts file.
+   */
+  template: string;
+
+  /**
+   * Any errors from parsing the template the first time.
+   */
+  errors: ParseError[]|null;
+
+  /**
+   * The template AST, parsed from the template.
+   */
+  nodes: t.Node[];
+
+  /**
+   * Any styleUrls extracted from the metadata.
+   */
+  styleUrls: string[];
+
+  /**
+   * Any inline styles extracted from the metadata.
+   */
+  styles: string[];
+
+  /**
+   * Any ng-content selectors extracted from the template.
+   */
+  ngContentSelectors: string[];
 }

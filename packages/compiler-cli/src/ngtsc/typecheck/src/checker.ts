@@ -79,7 +79,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       leadingTriviaChars: [],
     });
 
-    if (errors !== undefined) {
+    if (errors !== null) {
       return {nodes, errors};
     }
 

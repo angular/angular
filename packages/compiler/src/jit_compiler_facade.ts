@@ -129,7 +129,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const template = parseTemplate(
         facade.template, sourceMapUrl,
         {preserveWhitespaces: facade.preserveWhitespaces, interpolationConfig});
-    if (template.errors !== undefined) {
+    if (template.errors !== null) {
       const errors = template.errors.map(err => err.toString()).join(', ');
       throw new Error(`Errors during JIT compilation of template for ${facade.name}: ${errors}`);
     }

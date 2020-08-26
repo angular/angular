@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParseError, ParseSourceFile, parseTemplate, ParseTemplateOptions, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, SchemaMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {compileComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, SchemaMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
@@ -31,7 +31,7 @@ import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagno
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, makeDuplicateDeclarationError, readBaseClass, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -260,7 +260,7 @@ export class ComponentDecoratorHandler implements
 
     let diagnostics: ts.Diagnostic[]|undefined = undefined;
 
-    if (template.errors !== undefined) {
+    if (template.errors !== null) {
       // If there are any template parsing errors, convert them to `ts.Diagnostic`s for display.
       const id = getTemplateId(node);
       diagnostics = template.errors.map(error => {
@@ -336,11 +336,11 @@ export class ComponentDecoratorHandler implements
         meta: {
           ...metadata,
           template: {
-            nodes: template.emitNodes,
+            nodes: template.nodes,
             ngContentSelectors: template.ngContentSelectors,
           },
           encapsulation,
-          interpolation: template.interpolation,
+          interpolation: template.interpolationConfig ?? DEFAULT_INTERPOLATION_CONFIG,
           styles: styles || [],
 
           // These will be replaced during the compilation step, after all `NgModule`s have been
@@ -772,7 +772,7 @@ export class ComponentDecoratorHandler implements
 
   private _parseTemplate(
       component: Map<string, ts.Expression>, templateStr: string, templateUrl: string,
-      templateRange: LexerRange|undefined, escapedString: boolean): ParsedTemplate {
+      templateRange: LexerRange|undefined, escapedString: boolean): ParsedComponentTemplate {
     let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
     if (component.has('preserveWhitespaces')) {
       const expr = component.get('preserveWhitespaces')!;
@@ -783,7 +783,7 @@ export class ComponentDecoratorHandler implements
       preserveWhitespaces = value;
     }
 
-    let interpolation: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG;
+    let interpolationConfig = DEFAULT_INTERPOLATION_CONFIG;
     if (component.has('interpolation')) {
       const expr = component.get('interpolation')!;
       const value = this.evaluator.evaluate(expr);
@@ -792,21 +792,20 @@ export class ComponentDecoratorHandler implements
         throw createValueHasWrongTypeError(
             expr, value, 'interpolation must be an array with 2 elements of string type');
       }
-      interpolation = InterpolationConfig.fromArray(value as [string, string]);
+      interpolationConfig = InterpolationConfig.fromArray(value as [string, string]);
     }
 
     // We always normalize line endings if the template has been escaped (i.e. is inline).
     const i18nNormalizeLineEndingsInICUs = escapedString || this.i18nNormalizeLineEndingsInICUs;
 
-    const {errors, nodes: emitNodes, styleUrls, styles, ngContentSelectors} =
-        parseTemplate(templateStr, templateUrl, {
-          preserveWhitespaces,
-          interpolationConfig: interpolation,
-          range: templateRange,
-          escapedString,
-          enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-          i18nNormalizeLineEndingsInICUs,
-        });
+    const parsedTemplate = parseTemplate(templateStr, templateUrl, {
+      preserveWhitespaces,
+      interpolationConfig,
+      range: templateRange,
+      escapedString,
+      enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+      i18nNormalizeLineEndingsInICUs,
+    });
 
     // Unfortunately, the primary parse of the template above may not contain accurate source map
     // information. If used directly, it would result in incorrect code locations in template
@@ -823,7 +822,7 @@ export class ComponentDecoratorHandler implements
 
     const {nodes: diagNodes} = parseTemplate(templateStr, templateUrl, {
       preserveWhitespaces: true,
-      interpolationConfig: interpolation,
+      interpolationConfig,
       range: templateRange,
       escapedString,
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -832,13 +831,8 @@ export class ComponentDecoratorHandler implements
     });
 
     return {
-      interpolation,
-      emitNodes,
+      ...parsedTemplate,
       diagNodes,
-      styleUrls,
-      styles,
-      ngContentSelectors,
-      errors,
       template: templateStr,
       templateUrl,
       isInline: component.has('template'),
@@ -905,12 +899,7 @@ function sourceMapUrl(resourceUrl: string): string {
  * This contains the actual parsed template as well as any metadata collected during its parsing,
  * some of which might be useful for re-parsing the template with different options.
  */
-export interface ParsedTemplate {
-  /**
-   * The `InterpolationConfig` specified by the user.
-   */
-  interpolation: InterpolationConfig;
-
+export interface ParsedComponentTemplate extends ParsedTemplate {
   /**
    * A full path to the file which contains the template.
    *
@@ -920,22 +909,10 @@ export interface ParsedTemplate {
   templateUrl: string;
 
   /**
-   * The string contents of the template.
-   *
-   * This is the "logical" template string, after expansion of any escaped characters (for inline
-   * templates). This may differ from the actual template bytes as they appear in the .ts file.
+   * True if the original template was stored inline;
+   * False if the template was in an external file.
    */
-  template: string;
-
-  /**
-   * Any errors from parsing the template the first time.
-   */
-  errors?: ParseError[]|undefined;
-
-  /**
-   * The template AST, parsed according to the user's specifications.
-   */
-  emitNodes: TmplAstNode[];
+  isInline: boolean;
 
   /**
    * The template AST, parsed in a manner which preserves source map information for diagnostics.
@@ -945,35 +922,11 @@ export interface ParsedTemplate {
   diagNodes: TmplAstNode[];
 
   /**
-   *
-   */
-
-  /**
-   * Any styleUrls extracted from the metadata.
-   */
-  styleUrls: string[];
-
-  /**
-   * Any inline styles extracted from the metadata.
-   */
-  styles: string[];
-
-  /**
-   * Any ng-content selectors extracted from the template.
-   */
-  ngContentSelectors: string[];
-
-  /**
-   * Whether the template was inline.
-   */
-  isInline: boolean;
-
-  /**
    * The `ParseSourceFile` for the template.
    */
   file: ParseSourceFile;
 }
 
-export interface ParsedTemplateWithSource extends ParsedTemplate {
+export interface ParsedTemplateWithSource extends ParsedComponentTemplate {
   sourceMapping: TemplateSourceMapping;
 }
