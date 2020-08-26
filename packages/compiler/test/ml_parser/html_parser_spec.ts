@@ -653,7 +653,8 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
                      '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div>', 'TestComp')))
               .toEqual([
                 [
-                  html.Element, 'div', 0, '<div [prop]="v1" (e)="do()" attr="v2" noValue>',
+                  html.Element, 'div', 0,
+                  '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div>',
                   '<div [prop]="v1" (e)="do()" attr="v2" noValue>', '</div>'
                 ],
                 [html.Attribute, '[prop]', 'v1', '[prop]="v1"'],
@@ -676,14 +677,14 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
 
         it('should not set the end source span for void elements', () => {
           expect(humanizeDomSourceSpans(parser.parse('<div><br></div>', 'TestComp'))).toEqual([
-            [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
+            [html.Element, 'div', 0, '<div><br></div>', '<div>', '</div>'],
             [html.Element, 'br', 1, '<br>', '<br>', null],
           ]);
         });
 
         it('should not set the end source span for multiple void elements', () => {
           expect(humanizeDomSourceSpans(parser.parse('<div><br><hr></div>', 'TestComp'))).toEqual([
-            [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
+            [html.Element, 'div', 0, '<div><br><hr></div>', '<div>', '</div>'],
             [html.Element, 'br', 1, '<br>', '<br>', null],
             [html.Element, 'hr', 1, '<hr>', '<hr>', null],
           ]);
@@ -703,19 +704,19 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
 
         it('should set the end source span for self-closing elements', () => {
           expect(humanizeDomSourceSpans(parser.parse('<div><br/></div>', 'TestComp'))).toEqual([
-            [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
+            [html.Element, 'div', 0, '<div><br/></div>', '<div>', '</div>'],
             [html.Element, 'br', 1, '<br/>', '<br/>', '<br/>'],
           ]);
         });
 
         it('should not set the end source span for elements that are implicitly closed', () => {
           expect(humanizeDomSourceSpans(parser.parse('<div><p></div>', 'TestComp'))).toEqual([
-            [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
+            [html.Element, 'div', 0, '<div><p></div>', '<div>', '</div>'],
             [html.Element, 'p', 1, '<p>', '<p>', null],
           ]);
           expect(humanizeDomSourceSpans(parser.parse('<div><li>A<li>B</div>', 'TestComp')))
               .toEqual([
-                [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
+                [html.Element, 'div', 0, '<div><li>A<li>B</div>', '<div>', '</div>'],
                 [html.Element, 'li', 1, '<li>', '<li>', null],
                 [html.Text, 'A', 2, 'A'],
                 [html.Element, 'li', 1, '<li>', '<li>', null],
@@ -728,7 +729,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
                      '<div>{count, plural, =0 {msg}}</div>', 'TestComp',
                      {tokenizeExpansionForms: true})))
               .toEqual([
-                [html.Element, 'div', 0, '<div>', '<div>', '</div>'],
+                [html.Element, 'div', 0, '<div>{count, plural, =0 {msg}}</div>', '<div>', '</div>'],
                 [html.Expansion, 'count', 'plural', 1, '{count, plural, =0 {msg}}'],
                 [html.ExpansionCase, '=0', 2, '=0 {msg}'],
               ]);

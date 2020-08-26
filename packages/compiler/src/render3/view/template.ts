@@ -544,7 +544,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private addNamespaceInstruction(nsInstruction: o.ExternalReference, element: t.Element) {
     this._namespace = nsInstruction;
-    this.creationInstruction(element.sourceSpan, nsInstruction);
+    this.creationInstruction(element.startSourceSpan, nsInstruction);
   }
 
   /**
@@ -671,15 +671,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           trimTrailingNulls(parameters));
     } else {
       this.creationInstruction(
-          element.sourceSpan, isNgContainer ? R3.elementContainerStart : R3.elementStart,
+          element.startSourceSpan, isNgContainer ? R3.elementContainerStart : R3.elementStart,
           trimTrailingNulls(parameters));
 
       if (isNonBindableMode) {
-        this.creationInstruction(element.sourceSpan, R3.disableBindings);
+        this.creationInstruction(element.startSourceSpan, R3.disableBindings);
       }
 
       if (i18nAttrs.length > 0) {
-        this.i18nAttributesInstruction(elementIndex, i18nAttrs, element.sourceSpan);
+        this.i18nAttributesInstruction(
+            elementIndex, i18nAttrs, element.startSourceSpan ?? element.sourceSpan);
       }
 
       // Generate Listeners (outputs)
@@ -695,7 +696,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Note: it's important to keep i18n/i18nStart instructions after i18nAttributes and
       // listeners, to make sure i18nAttributes instruction targets current element at runtime.
       if (isI18nRootElement) {
-        this.i18nStart(element.sourceSpan, element.i18n!, createSelfClosingI18nInstruction);
+        this.i18nStart(element.startSourceSpan, element.i18n!, createSelfClosingI18nInstruction);
       }
     }
 
@@ -827,7 +828,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     if (!createSelfClosingInstruction) {
       // Finish element construction mode.
-      const span = element.endSourceSpan || element.sourceSpan;
+      const span = element.endSourceSpan ?? element.sourceSpan;
       if (isI18nRootElement) {
         this.i18nEnd(span, createSelfClosingI18nInstruction);
       }
@@ -919,7 +920,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // elements, in case of inline templates, corresponding instructions will be generated in the
       // nested template function.
       if (i18nAttrs.length > 0) {
-        this.i18nAttributesInstruction(templateIndex, i18nAttrs, template.sourceSpan);
+        this.i18nAttributesInstruction(
+            templateIndex, i18nAttrs, template.startSourceSpan ?? template.sourceSpan);
       }
 
       // Add the input bindings

@@ -2046,7 +2046,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
 
     it('should support embedded template', () => {
       expect(humanizeTplAstSourceSpans(parse('<ng-template></ng-template>', []))).toEqual([
-        [EmbeddedTemplateAst, '<ng-template>']
+        [EmbeddedTemplateAst, '<ng-template></ng-template>']
       ]);
     });
 
@@ -2058,14 +2058,14 @@ Property binding a not used by any directive on an embedded template. Make sure 
 
     it('should support references', () => {
       expect(humanizeTplAstSourceSpans(parse('<div #a></div>', []))).toEqual([
-        [ElementAst, 'div', '<div #a>'], [ReferenceAst, 'a', null, '#a']
+        [ElementAst, 'div', '<div #a></div>'], [ReferenceAst, 'a', null, '#a']
       ]);
     });
 
     it('should support variables', () => {
       expect(humanizeTplAstSourceSpans(parse('<ng-template let-a="b"></ng-template>', [])))
           .toEqual([
-            [EmbeddedTemplateAst, '<ng-template let-a="b">'],
+            [EmbeddedTemplateAst, '<ng-template let-a="b"></ng-template>'],
             [VariableAst, 'a', 'b', 'let-a="b"'],
           ]);
     });
@@ -2128,7 +2128,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
       expect(humanizeTplAstSourceSpans(
                  parse('<svg><circle /><use xlink:href="Port" /></svg>', [tagSel, attrSel])))
           .toEqual([
-            [ElementAst, ':svg:svg', '<svg>'],
+            [ElementAst, ':svg:svg', '<svg><circle /><use xlink:href="Port" /></svg>'],
             [ElementAst, ':svg:circle', '<circle />'],
             [DirectiveAst, tagSel, '<circle />'],
             [ElementAst, ':svg:use', '<use xlink:href="Port" />'],
@@ -2144,7 +2144,8 @@ Property binding a not used by any directive on an embedded template. Make sure 
                      inputs: ['aProp']
                    }).toSummary();
       expect(humanizeTplAstSourceSpans(parse('<div [aProp]="foo"></div>', [dirA]))).toEqual([
-        [ElementAst, 'div', '<div [aProp]="foo">'], [DirectiveAst, dirA, '<div [aProp]="foo">'],
+        [ElementAst, 'div', '<div [aProp]="foo"></div>'],
+        [DirectiveAst, dirA, '<div [aProp]="foo"></div>'],
         [BoundDirectivePropertyAst, 'aProp', 'foo', '[aProp]="foo"']
       ]);
     });

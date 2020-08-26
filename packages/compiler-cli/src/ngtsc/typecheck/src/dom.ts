@@ -93,7 +93,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
       }
 
       const diag = makeTemplateDiagnostic(
-          id, mapping, element.sourceSpan, ts.DiagnosticCategory.Error,
+          id, mapping, element.startSourceSpan, ts.DiagnosticCategory.Error,
           ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT), errorMsg);
       this._diagnostics.push(diag);
     }
