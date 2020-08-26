@@ -17,6 +17,7 @@ export class HtmlTagDefinition implements TagDefinition {
   isVoid: boolean;
   ignoreFirstLf: boolean;
   canSelfClose: boolean = false;
+  preventNamespaceInheritance: boolean;
 
   constructor({
     closedByChildren,
@@ -24,14 +25,16 @@ export class HtmlTagDefinition implements TagDefinition {
     contentType = TagContentType.PARSABLE_DATA,
     closedByParent = false,
     isVoid = false,
-    ignoreFirstLf = false
+    ignoreFirstLf = false,
+    preventNamespaceInheritance = false
   }: {
     closedByChildren?: string[],
     closedByParent?: boolean,
     implicitNamespacePrefix?: string,
     contentType?: TagContentType,
     isVoid?: boolean,
-    ignoreFirstLf?: boolean
+    ignoreFirstLf?: boolean,
+    preventNamespaceInheritance?: boolean
   } = {}) {
     if (closedByChildren && closedByChildren.length > 0) {
       closedByChildren.forEach(tagName => this.closedByChildren[tagName] = true);
@@ -41,6 +44,7 @@ export class HtmlTagDefinition implements TagDefinition {
     this.implicitNamespacePrefix = implicitNamespacePrefix || null;
     this.contentType = contentType;
     this.ignoreFirstLf = ignoreFirstLf;
+    this.preventNamespaceInheritance = preventNamespaceInheritance;
   }
 
   isClosedByChild(name: string): boolean {
@@ -88,6 +92,17 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
       'th': new HtmlTagDefinition({closedByChildren: ['td', 'th'], closedByParent: true}),
       'col': new HtmlTagDefinition({isVoid: true}),
       'svg': new HtmlTagDefinition({implicitNamespacePrefix: 'svg'}),
+      'foreignObject': new HtmlTagDefinition({
+        // Usually the implicit namespace here would be redundant since it will be inherited from
+        // the parent `svg`, but we have to do it for `foreignObject`, because the way the parser
+        // works is that the parent node of an end tag is its own start tag which means that
+        // the `preventNamespaceInheritance` on `foreignObject` would have it default to the
+        // implicit namespace which is `html`, unless specified otherwise.
+        implicitNamespacePrefix: 'svg',
+        // We want to prevent children of foreignObject from inheriting its namespace, because
+        // the point of the element is to allow nodes from other namespaces to be inserted.
+        preventNamespaceInheritance: true,
+      }),
       'math': new HtmlTagDefinition({implicitNamespacePrefix: 'math'}),
       'li': new HtmlTagDefinition({closedByChildren: ['li'], closedByParent: true}),
       'dt': new HtmlTagDefinition({closedByChildren: ['dt', 'dd']}),
@@ -111,5 +126,8 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
           {contentType: TagContentType.ESCAPABLE_RAW_TEXT, ignoreFirstLf: true}),
     };
   }
-  return TAG_DEFINITIONS[tagName.toLowerCase()] || _DEFAULT_TAG_DEFINITION;
+  // We have to make both a case-sensitive and a case-insesitive lookup, because
+  // HTML tag names are case insensitive, whereas some SVG tags are case sensitive.
+  return TAG_DEFINITIONS[tagName] ?? TAG_DEFINITIONS[tagName.toLowerCase()] ??
+      _DEFAULT_TAG_DEFINITION;
 }
