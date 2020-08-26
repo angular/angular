@@ -1,0 +1,21 @@
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
+
+ts_library(
+    name = "check",
+    srcs = glob(["*.ts"]),
+    module_name = "@angular/dev-infra-private/caretaker/service-statuses",
+    visibility = ["//dev-infra:__subpackages__"],
+    deps = [
+        "//dev-infra/caretaker:config",
+        "//dev-infra/utils",
+        "@npm//@types/fs-extra",
+        "@npm//@types/node",
+        "@npm//@types/node-fetch",
+        "@npm//@types/yargs",
+        "@npm//multimatch",
+        "@npm//node-fetch",
+        "@npm//typed-graphqlify",
+        "@npm//yaml",
+        "@npm//yargs",
+    ],
+)
