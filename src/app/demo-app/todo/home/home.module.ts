@@ -5,6 +5,7 @@ import { TodoComponent } from './todos/todo/todo.component';
 import { TodosFilter } from './todos/todos.pipe';
 import { TooltipDirective } from './todos/todo/tooltip.directive';
 import { CommonModule } from '@angular/common';
+import { SamplePipe } from './sample.pipe';
 
 @NgModule({
   imports: [
@@ -17,7 +18,7 @@ import { CommonModule } from '@angular/common';
       },
     ]),
   ],
-  declarations: [TodosComponent, TodoComponent, TodosFilter, TooltipDirective],
+  declarations: [SamplePipe, TodosComponent, TodoComponent, TodosFilter, TooltipDirective],
   exports: [TodosComponent],
 })
 export class HomeModule {}
