@@ -352,7 +352,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
         const templateUrl = `${className}.html`;
         const templateFile = new ParseSourceFile(template, templateUrl);
         const {nodes, errors} = parseTemplate(template, templateUrl);
-        if (errors !== undefined) {
+        if (errors !== null) {
           throw new Error('Template parse errors: \n' + errors.join('\n'));
         }
 

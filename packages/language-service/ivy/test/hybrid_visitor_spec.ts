@@ -14,7 +14,7 @@ import {findNodeAtPosition, isExpressionNode, isTemplateNode} from '../hybrid_vi
 
 interface ParseResult {
   nodes: t.Node[];
-  errors?: ParseError[];
+  errors: ParseError[]|null;
   position: number;
 }
 
@@ -34,7 +34,7 @@ function parse(template: string): ParseResult {
 describe('findNodeAtPosition for template AST', () => {
   it('should locate element in opening tag', () => {
     const {errors, nodes, position} = parse(`<di¦v></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Element);
@@ -42,7 +42,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate element in closing tag', () => {
     const {errors, nodes, position} = parse(`<div></di¦v>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Element);
@@ -50,7 +50,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate element when cursor is at the beginning', () => {
     const {errors, nodes, position} = parse(`<¦div></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Element);
@@ -58,7 +58,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate element when cursor is at the end', () => {
     const {errors, nodes, position} = parse(`<div¦></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Element);
@@ -66,7 +66,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate attribute key', () => {
     const {errors, nodes, position} = parse(`<div cla¦ss="foo"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.TextAttribute);
@@ -74,7 +74,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate attribute value', () => {
     const {errors, nodes, position} = parse(`<div class="fo¦o"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     // TODO: Note that we do not have the ability to detect the RHS (yet)
@@ -83,7 +83,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate bound attribute key', () => {
     const {errors, nodes, position} = parse(`<test-cmp [fo¦o]="bar"></test-cmp>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.BoundAttribute);
@@ -91,7 +91,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate bound attribute value', () => {
     const {errors, nodes, position} = parse(`<test-cmp [foo]="b¦ar"></test-cmp>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.PropertyRead);
@@ -99,7 +99,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate bound event key', () => {
     const {errors, nodes, position} = parse(`<test-cmp (fo¦o)="bar()"></test-cmp>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.BoundEvent);
@@ -107,7 +107,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate bound event value', () => {
     const {errors, nodes, position} = parse(`<test-cmp (foo)="b¦ar()"></test-cmp>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.MethodCall);
@@ -115,7 +115,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate element children', () => {
     const {errors, nodes, position} = parse(`<div><sp¦an></span></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Element);
@@ -124,7 +124,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate element reference', () => {
     const {errors, nodes, position} = parse(`<div #my¦div></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Reference);
@@ -132,7 +132,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template text attribute', () => {
     const {errors, nodes, position} = parse(`<ng-template ng¦If></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.TextAttribute);
@@ -140,7 +140,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template bound attribute key', () => {
     const {errors, nodes, position} = parse(`<ng-template [ng¦If]="foo"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.BoundAttribute);
@@ -148,7 +148,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template bound attribute value', () => {
     const {errors, nodes, position} = parse(`<ng-template [ngIf]="f¦oo"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.PropertyRead);
@@ -156,7 +156,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template bound attribute key in two-way binding', () => {
     const {errors, nodes, position} = parse(`<ng-template [(f¦oo)]="bar"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.BoundAttribute);
@@ -165,7 +165,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template bound attribute value in two-way binding', () => {
     const {errors, nodes, position} = parse(`<ng-template [(foo)]="b¦ar"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.PropertyRead);
@@ -174,7 +174,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template bound event key', () => {
     const {errors, nodes, position} = parse(`<ng-template (cl¦ick)="foo()"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.BoundEvent);
@@ -182,14 +182,14 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template bound event value', () => {
     const {errors, nodes, position} = parse(`<ng-template (click)="f¦oo()"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(node).toBeInstanceOf(e.MethodCall);
   });
 
   it('should locate template attribute key', () => {
     const {errors, nodes, position} = parse(`<ng-template i¦d="foo"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.TextAttribute);
@@ -197,7 +197,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template attribute value', () => {
     const {errors, nodes, position} = parse(`<ng-template id="f¦oo"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     // TODO: Note that we do not have the ability to detect the RHS (yet)
@@ -206,7 +206,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template reference key via the # notation', () => {
     const {errors, nodes, position} = parse(`<ng-template #f¦oo></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Reference);
@@ -215,7 +215,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template reference key via the ref- notation', () => {
     const {errors, nodes, position} = parse(`<ng-template ref-fo¦o></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Reference);
@@ -224,7 +224,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template reference value via the # notation', () => {
     const {errors, nodes, position} = parse(`<ng-template #foo="export¦As"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Reference);
@@ -234,7 +234,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template reference value via the ref- notation', () => {
     const {errors, nodes, position} = parse(`<ng-template ref-foo="export¦As"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Reference);
@@ -244,7 +244,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template variable key', () => {
     const {errors, nodes, position} = parse(`<ng-template let-f¦oo="bar"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Variable);
@@ -252,7 +252,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template variable value', () => {
     const {errors, nodes, position} = parse(`<ng-template let-foo="b¦ar"></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Variable);
@@ -260,7 +260,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate template children', () => {
     const {errors, nodes, position} = parse(`<ng-template><d¦iv></div></ng-template>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Element);
@@ -268,7 +268,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate ng-content', () => {
     const {errors, nodes, position} = parse(`<ng-co¦ntent></ng-content>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Content);
@@ -276,7 +276,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate ng-content attribute key', () => {
     const {errors, nodes, position} = parse('<ng-content cla¦ss="red"></ng-content>');
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.TextAttribute);
@@ -284,7 +284,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate ng-content attribute value', () => {
     const {errors, nodes, position} = parse('<ng-content class="r¦ed"></ng-content>');
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     // TODO: Note that we do not have the ability to detect the RHS (yet)
     expect(isTemplateNode(node!)).toBe(true);
@@ -293,7 +293,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should not locate implicit receiver', () => {
     const {errors, nodes, position} = parse(`<div [foo]="¦bar"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.PropertyRead);
@@ -301,7 +301,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate bound attribute key in two-way binding', () => {
     const {errors, nodes, position} = parse(`<cmp [(f¦oo)]="bar"></cmp>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.BoundAttribute);
@@ -310,7 +310,7 @@ describe('findNodeAtPosition for template AST', () => {
 
   it('should locate bound attribute value in two-way binding', () => {
     const {errors, nodes, position} = parse(`<cmp [(foo)]="b¦ar"></cmp>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.PropertyRead);
@@ -321,7 +321,7 @@ describe('findNodeAtPosition for template AST', () => {
 describe('findNodeAtPosition for expression AST', () => {
   it('should not locate implicit receiver', () => {
     const {errors, nodes, position} = parse(`{{ ¦title }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.PropertyRead);
@@ -330,7 +330,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate property read', () => {
     const {errors, nodes, position} = parse(`{{ ti¦tle }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.PropertyRead);
@@ -339,7 +339,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate safe property read', () => {
     const {errors, nodes, position} = parse(`{{ foo?¦.bar }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.SafePropertyRead);
@@ -348,7 +348,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate keyed read', () => {
     const {errors, nodes, position} = parse(`{{ foo['bar']¦ }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.KeyedRead);
@@ -356,7 +356,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate property write', () => {
     const {errors, nodes, position} = parse(`<div (foo)="b¦ar=$event"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.PropertyWrite);
@@ -364,7 +364,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate keyed write', () => {
     const {errors, nodes, position} = parse(`<div (foo)="bar['baz']¦=$event"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.KeyedWrite);
@@ -372,7 +372,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate binary', () => {
     const {errors, nodes, position} = parse(`{{ 1 +¦ 2 }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.Binary);
@@ -380,7 +380,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate binding pipe with an identifier', () => {
     const {errors, nodes, position} = parse(`{{ title | p¦ }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.BindingPipe);
@@ -391,7 +391,7 @@ describe('findNodeAtPosition for expression AST', () => {
          // TODO: We are not able to locate pipe if identifier is missing because the
          // parser throws an error. This case is important for autocomplete.
          // const {errors, nodes, position} = parse(`{{ title | ¦ }}`);
-         // expect(errors).toBeUndefined();
+         // expect(errors).toBe(null);
          // const node = findNodeAtPosition(nodes, position);
          // expect(isExpressionNode(node!)).toBe(true);
          // expect(node).toBeInstanceOf(e.BindingPipe);
@@ -399,7 +399,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate method call', () => {
     const {errors, nodes, position} = parse(`{{ title.toString(¦) }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.MethodCall);
@@ -407,7 +407,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate safe method call', () => {
     const {errors, nodes, position} = parse(`{{ title?.toString(¦) }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.SafeMethodCall);
@@ -415,7 +415,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate literal primitive in interpolation', () => {
     const {errors, nodes, position} = parse(`{{ title.indexOf('t¦') }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.LiteralPrimitive);
@@ -424,7 +424,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate literal primitive in binding', () => {
     const {errors, nodes, position} = parse(`<div [id]="'t¦'"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.LiteralPrimitive);
@@ -433,7 +433,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate empty expression', () => {
     const {errors, nodes, position} = parse(`<div [id]="¦"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.EmptyExpr);
@@ -441,7 +441,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate literal array', () => {
     const {errors, nodes, position} = parse(`{{ [1, 2,¦ 3] }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.LiteralArray);
@@ -449,7 +449,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate literal map', () => {
     const {errors, nodes, position} = parse(`{{ { hello:¦ "world" } }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.LiteralMap);
@@ -457,7 +457,7 @@ describe('findNodeAtPosition for expression AST', () => {
 
   it('should locate conditional', () => {
     const {errors, nodes, position} = parse(`{{ cond ?¦ true : false }}`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.Conditional);
@@ -467,7 +467,7 @@ describe('findNodeAtPosition for expression AST', () => {
 describe('findNodeAtPosition for microsyntax expression', () => {
   it('should locate template key', () => {
     const {errors, nodes, position} = parse(`<div *ng¦If="foo"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.BoundAttribute);
@@ -475,7 +475,7 @@ describe('findNodeAtPosition for microsyntax expression', () => {
 
   it('should locate template value', () => {
     const {errors, nodes, position} = parse(`<div *ngIf="f¦oo"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.PropertyRead);
@@ -485,7 +485,7 @@ describe('findNodeAtPosition for microsyntax expression', () => {
     const {errors, nodes, position} = parse(`<div *ng¦For="let item of items"></div>`);
     // ngFor is a text attribute because the desugared form is
     // <ng-template ngFor let-item [ngForOf]="items">
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     // TODO: this is currently wrong because it should point to ngFor text
     // attribute instead of ngForOf bound attribute
@@ -493,7 +493,7 @@ describe('findNodeAtPosition for microsyntax expression', () => {
 
   it('should locate not let keyword', () => {
     const {errors, nodes, position} = parse(`<div *ngFor="l¦et item of items"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     // TODO: this is currently wrong because node is currently pointing to
     // "item". In this case, it should return undefined.
@@ -501,7 +501,7 @@ describe('findNodeAtPosition for microsyntax expression', () => {
 
   it('should locate let variable', () => {
     const {errors, nodes, position} = parse(`<div *ngFor="let i¦tem of items"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Variable);
@@ -510,7 +510,7 @@ describe('findNodeAtPosition for microsyntax expression', () => {
 
   it('should locate bound attribute key', () => {
     const {errors, nodes, position} = parse(`<div *ngFor="let item o¦f items"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.BoundAttribute);
@@ -519,7 +519,7 @@ describe('findNodeAtPosition for microsyntax expression', () => {
 
   it('should locate bound attribute value', () => {
     const {errors, nodes, position} = parse(`<div *ngFor="let item of it¦ems"></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.PropertyRead);
@@ -528,7 +528,7 @@ describe('findNodeAtPosition for microsyntax expression', () => {
 
   it('should locate template children', () => {
     const {errors, nodes, position} = parse(`<di¦v *ngIf></div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Element);
@@ -540,7 +540,7 @@ describe('findNodeAtPosition for microsyntax expression', () => {
       <div *ngFor="let item of items; let i=index">
         {{ i¦ }}
       </div>`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.PropertyRead);
@@ -548,7 +548,7 @@ describe('findNodeAtPosition for microsyntax expression', () => {
 
   it('should locate LHS of variable declaration', () => {
     const {errors, nodes, position} = parse(`<div *ngFor="let item of items; let i¦=index">`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Variable);
@@ -558,7 +558,7 @@ describe('findNodeAtPosition for microsyntax expression', () => {
 
   it('should locate RHS of variable declaration', () => {
     const {errors, nodes, position} = parse(`<div *ngFor="let item of items; let i=in¦dex">`);
-    expect(errors).toBeUndefined();
+    expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(t.Variable);
