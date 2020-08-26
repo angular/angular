@@ -83,7 +83,7 @@ class _I18nVisitor implements html.Visitor {
     const isVoid: boolean = getHtmlTagDefinition(el.name).isVoid;
     const startPhName =
         context.placeholderRegistry.getStartTagPlaceholderName(el.name, attrs, isVoid);
-    context.placeholderToContent[startPhName] = el.sourceSpan.toString();
+    context.placeholderToContent[startPhName] = el.startSourceSpan.toString();
 
     let closePhName = '';
 

@@ -246,7 +246,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       name = node.name;
       kind = IdentifierKind.Element;
     }
-    const {sourceSpan} = node;
+    const sourceSpan = node.startSourceSpan;
     // An element's or template's source span can be of the form `<element>`, `<element />`, or
     // `<element></element>`. Only the selector is interesting to the indexer, so the source is
     // searched for the first occurrence of the element (selector) name.

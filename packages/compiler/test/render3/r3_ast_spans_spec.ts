@@ -173,7 +173,7 @@ describe('R3 AST source spans', () => {
   describe('templates', () => {
     it('is correct for * directives', () => {
       expectFromHtml('<div *ngIf></div>').toEqual([
-        ['Template', '0:11', '0:11', '11:17'],
+        ['Template', '0:17', '0:11', '11:17'],
         ['TextAttribute', '5:10', '<empty>'],
         ['Element', '0:17', '0:11', '11:17'],
       ]);
@@ -181,48 +181,48 @@ describe('R3 AST source spans', () => {
 
     it('is correct for <ng-template>', () => {
       expectFromHtml('<ng-template></ng-template>').toEqual([
-        ['Template', '0:13', '0:13', '13:27'],
+        ['Template', '0:27', '0:13', '13:27'],
       ]);
     });
 
     it('is correct for reference via #...', () => {
       expectFromHtml('<ng-template #a></ng-template>').toEqual([
-        ['Template', '0:16', '0:16', '16:30'],
+        ['Template', '0:30', '0:16', '16:30'],
         ['Reference', '13:15', '<empty>'],
       ]);
     });
 
     it('is correct for reference with name', () => {
       expectFromHtml('<ng-template #a="b"></ng-template>').toEqual([
-        ['Template', '0:20', '0:20', '20:34'],
+        ['Template', '0:34', '0:20', '20:34'],
         ['Reference', '13:19', '17:18'],
       ]);
     });
 
     it('is correct for reference via ref-...', () => {
       expectFromHtml('<ng-template ref-a></ng-template>').toEqual([
-        ['Template', '0:19', '0:19', '19:33'],
+        ['Template', '0:33', '0:19', '19:33'],
         ['Reference', '13:18', '<empty>'],
       ]);
     });
 
     it('is correct for variables via let-...', () => {
       expectFromHtml('<ng-template let-a="b"></ng-template>').toEqual([
-        ['Template', '0:23', '0:23', '23:37'],
+        ['Template', '0:37', '0:23', '23:37'],
         ['Variable', '13:22', '20:21'],
       ]);
     });
 
     it('is correct for attributes', () => {
       expectFromHtml('<ng-template k1="v1"></ng-template>').toEqual([
-        ['Template', '0:21', '0:21', '21:35'],
+        ['Template', '0:35', '0:21', '21:35'],
         ['TextAttribute', '13:20', '17:19'],
       ]);
     });
 
     it('is correct for bound attributes', () => {
       expectFromHtml('<ng-template [k1]="v1"></ng-template>').toEqual([
-        ['Template', '0:23', '0:23', '23:37'],
+        ['Template', '0:37', '0:23', '23:37'],
         ['BoundAttribute', '13:22', '19:21'],
       ]);
     });
@@ -236,7 +236,7 @@ describe('R3 AST source spans', () => {
       //   <div></div>
       // </ng-template>
       expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
-        ['Template', '0:32', '0:32', '32:38'],
+        ['Template', '0:38', '0:32', '32:38'],
         ['TextAttribute', '5:31', '<empty>'],
         ['BoundAttribute', '5:31', '25:30'],  // *ngFor="let item of items" -> items
         ['Variable', '13:22', '<empty>'],     // let item
@@ -250,7 +250,7 @@ describe('R3 AST source spans', () => {
       //   <div></div>
       // </ng-template>
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
-        ['Template', '0:28', '0:28', '28:34'],
+        ['Template', '0:34', '0:28', '28:34'],
         ['BoundAttribute', '5:27', '13:17'],  // ngFor="item of items" -> item
         ['BoundAttribute', '5:27', '21:26'],  // ngFor="item of items" -> items
         ['Element', '0:34', '0:28', '28:34'],
@@ -259,7 +259,7 @@ describe('R3 AST source spans', () => {
 
     it('is correct for variables via let ...', () => {
       expectFromHtml('<div *ngIf="let a=b"></div>').toEqual([
-        ['Template', '0:21', '0:21', '21:27'],
+        ['Template', '0:27', '0:21', '21:27'],
         ['TextAttribute', '5:20', '<empty>'],
         ['Variable', '12:19', '18:19'],  // let a=b -> b
         ['Element', '0:27', '0:21', '21:27'],
@@ -268,7 +268,7 @@ describe('R3 AST source spans', () => {
 
     it('is correct for variables via as ...', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
-        ['Template', '0:27', '0:27', '27:33'],
+        ['Template', '0:33', '0:27', '27:33'],
         ['BoundAttribute', '5:26', '12:16'],  // ngIf="expr as local" -> expr
         ['Variable', '6:25', '6:10'],         // ngIf="expr as local -> ngIf
         ['Element', '0:33', '0:27', '27:33'],
