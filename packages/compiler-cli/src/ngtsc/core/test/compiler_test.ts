@@ -49,7 +49,7 @@ runInEachFileSystem(() => {
       const program = ts.createProgram({host, options, rootNames: host.inputFiles});
       const compiler = new NgCompiler(
           host, options, program, new ReusedProgramStrategy(program, host, options, []),
-          new NoopIncrementalBuildStrategy());
+          new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false);
 
       const diags = compiler.getDiagnostics(getSourceFileOrError(program, COMPONENT));
       expect(diags.length).toBe(1);

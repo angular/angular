@@ -186,6 +186,22 @@ export interface TypeCheckingConfig {
   checkTypeOfNonDomReferences: boolean;
 
   /**
+   * Whether to adjust the output of the TCB to ensure compatibility with the `TemplateTypeChecker`.
+   *
+   * The statements generated in the TCB are optimized for performance and producing diagnostics.
+   * These optimizations can result in generating a TCB that does not have all the information
+   * needed by the `TemplateTypeChecker` for retrieving `Symbol`s. For example, as an optimization,
+   * the TCB will not generate variable declaration statements for directives that have no
+   * references, inputs, or outputs. However, the `TemplateTypeChecker` always needs these
+   * statements to be present in order to provide `ts.Symbol`s and `ts.Type`s for the directives.
+   *
+   * When set to `false`, enables TCB optimizations for template diagnostics.
+   * When set to `true`, ensures all information required by `TemplateTypeChecker` to
+   * retrieve symbols for template nodes is available in the TCB.
+   */
+  enableTemplateTypeChecker: boolean;
+
+  /**
    * Whether to include type information from pipes in the type-checking operation.
    *
    * If this is `true`, then the pipe's type signature for `transform()` will be used to check the

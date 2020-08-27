@@ -10,7 +10,7 @@ import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional,
 import * as ts from 'typescript';
 import {TypeCheckingConfig} from '../api';
 
-import {addParseSpanInfo, wrapForDiagnostics} from './diagnostics';
+import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
 import {tsCastToAny} from './ts_util';
 
 export const NULL_AS_ANY =
@@ -112,7 +112,14 @@ class AstTranslator implements AstVisitor {
   visitConditional(ast: Conditional): ts.Expression {
     const condExpr = this.translate(ast.condition);
     const trueExpr = this.translate(ast.trueExp);
-    const falseExpr = this.translate(ast.falseExp);
+    // Wrap `falseExpr` in parens so that the trailing parse span info is not attributed to the
+    // whole conditional.
+    // In the following example, the last source span comment (5,6) could be seen as the
+    // trailing comment for _either_ the whole conditional expression _or_ just the `falseExpr` that
+    // is immediately before it:
+    // `conditional /*1,2*/ ? trueExpr /*3,4*/ : falseExpr /*5,6*/`
+    // This should be instead be `conditional /*1,2*/ ? trueExpr /*3,4*/ : (falseExpr /*5,6*/)`
+    const falseExpr = wrapForTypeChecker(this.translate(ast.falseExp));
     const node = ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
@@ -135,7 +142,8 @@ class AstTranslator implements AstVisitor {
     // interpolation's expressions. The chain is started using an actual string literal to ensure
     // the type is inferred as 'string'.
     return ast.expressions.reduce(
-        (lhs, ast) => ts.createBinary(lhs, ts.SyntaxKind.PlusToken, this.translate(ast)),
+        (lhs, ast) =>
+            ts.createBinary(lhs, ts.SyntaxKind.PlusToken, wrapForTypeChecker(this.translate(ast))),
         ts.createLiteral(''));
   }
 

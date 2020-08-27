@@ -52,7 +52,9 @@ export class LanguageService {
         program,
         this.strategy,
         new PatchedProgramIncrementalBuildStrategy(),
+        /** enableTemplateTypeChecker */ true,
         this.lastKnownProgram,
+        /** perfRecorder (use default) */ undefined,
     );
   }
 
