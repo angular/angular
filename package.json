@@ -47,7 +47,7 @@
     "integration-tests:view-engine": "bazel test --test_tag_filters=view-engine-only --build_tests_only -- //integration/... -//integration/size-test/...",
     "integration-tests:size-test": "bazel test //integration/size-test/..."
   },
-  "version": "10.2.0-rc.0",
+  "version": "11.0.0-next.0",
   "dependencies": {
     "@angular/animations": "^10.1.0-next.8",
     "@angular/common": "^10.1.0-next.8",
