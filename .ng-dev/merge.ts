@@ -10,8 +10,8 @@ export const merge: DevInfraMergeConfig['merge'] = async api => {
   return {
     githubApiMerge: false,
     claSignedLabel: 'cla: yes',
-    mergeReadyLabel: /^PR action: merge(-assistance)?/,
-    caretakerNoteLabel: 'PR action: merge-assistance',
+    mergeReadyLabel: /^action: merge(-assistance)?/,
+    caretakerNoteLabel: 'action: merge-assistance',
     commitMessageFixupLabel: 'commit message fixup',
     labels: await getDefaultTargetLabelConfiguration(api, github, '@angular/core'),
     requiredBaseCommits: {
@@ -19,7 +19,7 @@ export const merge: DevInfraMergeConfig['merge'] = async api => {
       // on top of the latest commit message validation fix.
       // These SHAs are the commits that update the required license text in the header.
       'master': '5aeb9a4124922d8ac08eb73b8f322905a32b0b3a',
-      '10.0.x': '27b95ba64a5d99757f4042073fd1860e20e3ed24'
+      '10.0.x': '27b95ba64a5d99757f4042073fd1860e20e3ed24',
     },
   };
 };
