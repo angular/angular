@@ -714,9 +714,6 @@
     "name": "stringifyForError"
   },
   {
-    "name": "throwMultipleComponentError"
-  },
-  {
     "name": "toTStylingRange"
   },
   {
