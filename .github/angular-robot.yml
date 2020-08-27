@@ -77,11 +77,11 @@ merge:
 \nPlease help to unblock it by resolving these conflicts. Thanks!"
 
   # label to monitor
-  mergeLabel: "PR action: merge"
+  mergeLabel: "action: merge"
 
   # adding any of these labels will also add the merge label
   mergeLinkedLabels:
-    - "PR action: merge-assistance"
+    - "action: merge-assistance"
 
   # list of checks that will determine if the merge label can be added
   checks:
@@ -102,9 +102,9 @@ merge:
     # list of labels that a PR shouldn't have, checked after the required labels with a regexp
     forbiddenLabels:
       - "target: TBD"
-      - "PR action: cleanup"
-      - "PR action: review"
-      - "PR state: blocked"
+      - "action: cleanup"
+      - "action: review"
+      - "state: blocked"
       - "cla: no"
 
     # list of PR statuses that need to be successful
@@ -186,4 +186,4 @@ rerunCircleCI:
   # set to true to disable
   disabled: false
   # the label which when added triggers a rerun of the default CircleCI workflow
-  triggerRerunLabel: "PR action: rerun CI at HEAD"
+  triggerRerunLabel: "action: rerun CI at HEAD"
