@@ -351,9 +351,6 @@
     "name": "setUpAttributes"
   },
   {
-    "name": "throwMultipleComponentError"
-  },
-  {
     "name": "unwrapRNode"
   },
   {

@@ -384,7 +384,7 @@ export class R3Injector {
       let multiRecord = this.records.get(token);
       if (multiRecord) {
         // It has. Throw a nice error if
-        if (multiRecord.multi === undefined) {
+        if (ngDevMode && multiRecord.multi === undefined) {
           throwMixedMultiProviderError();
         }
       } else {
@@ -396,7 +396,7 @@ export class R3Injector {
       multiRecord.multi!.push(provider);
     } else {
       const existing = this.records.get(token);
-      if (existing && existing.multi !== undefined) {
+      if (ngDevMode && existing && existing.multi !== undefined) {
         throwMixedMultiProviderError();
       }
     }
@@ -404,7 +404,7 @@ export class R3Injector {
   }
 
   private hydrate<T>(token: Type<T>|InjectionToken<T>, record: Record<T>): T {
-    if (record.value === CIRCULAR) {
+    if (ngDevMode && record.value === CIRCULAR) {
       throwCyclicDependencyError(stringify(token));
     } else if (record.value === NOT_YET) {
       record.value = CIRCULAR;
@@ -511,7 +511,7 @@ export function providerToFactory(
       const classRef = resolveForwardRef(
           provider &&
           ((provider as StaticClassProvider | ClassProvider).useClass || provider.provide));
-      if (!classRef) {
+      if (ngDevMode && !classRef) {
         throwInvalidProviderError(ngModuleType, providers, provider);
       }
       if (hasDeps(provider)) {

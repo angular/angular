@@ -129,9 +129,6 @@
     "name": "stringify"
   },
   {
-    "name": "throwMixedMultiProviderError"
-  },
-  {
     "name": "ɵɵdefineInjectable"
   },
   {
