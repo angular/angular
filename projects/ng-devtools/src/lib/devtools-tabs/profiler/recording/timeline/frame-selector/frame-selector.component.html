@@ -1,10 +1,5 @@
 <mat-card class="bar-graph-container">
-  <p class="txt-frames">
-    {{ startFrameIndex + 1 }}
-    <span *ngIf="startFrameIndex !== endFrameIndex"> - {{ endFrameIndex + 1 }} </span>/{{
-      (graphData$ | async)?.length
-    }}
-  </p>
+  <p class="txt-frames">{{ selectionLabel }} / {{ (graphData$ | async)?.length }}</p>
   <button mat-icon-button (click)="move.emit(-1)" [disabled]="startFrameIndex <= 0">
     <mat-icon>chevron_left</mat-icon>
   </button>
@@ -14,7 +9,7 @@
       *cdkVirtualFor="let d of graphData$ | async; let i = index"
       [ngStyle]="d.style"
       [class.selected]="i >= startFrameIndex && i <= endFrameIndex"
-      (click)="selectFrame.emit(i)"
+      (click)="handleFrameSelection(i)"
     ></div>
   </cdk-virtual-scroll-viewport>
 
