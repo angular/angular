@@ -11,11 +11,12 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {isAssignment} from '../../util/src/typescript';
-import {DirectiveSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, Symbol, SymbolKind, TsNodeSymbolInfo, VariableSymbol} from '../api';
+import {DirectiveSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo} from '../api';
 
-import {ExpressionIdentifier, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
+import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
 import {TemplateData} from './context';
 import {TcbDirectiveOutputsOp} from './type_check_block';
+
 
 /**
  * A class which extracts information from a type check block.
@@ -26,6 +27,8 @@ export class SymbolBuilder {
       private readonly typeChecker: ts.TypeChecker, private readonly shimPath: AbsoluteFsPath,
       private readonly typeCheckBlock: ts.Node, private readonly templateData: TemplateData) {}
 
+  getSymbol(node: TmplAstTemplate|TmplAstElement): TemplateSymbol|ElementSymbol|null;
+  getSymbol(node: AST|TmplAstNode): Symbol|null;
   getSymbol(node: AST|TmplAstNode): Symbol|null {
     if (node instanceof TmplAstBoundAttribute) {
       // TODO(atscott): input and output bindings only return the first directive match but should
@@ -33,8 +36,63 @@ export class SymbolBuilder {
       return this.getSymbolOfInputBinding(node);
     } else if (node instanceof TmplAstBoundEvent) {
       return this.getSymbolOfBoundEvent(node);
+    } else if (node instanceof TmplAstElement) {
+      return this.getSymbolOfElement(node);
+    } else if (node instanceof TmplAstTemplate) {
+      return this.getSymbolOfAstTemplate(node);
     }
     return null;
+  }
+
+  private getSymbolOfAstTemplate(template: TmplAstTemplate): TemplateSymbol|null {
+    const directives = this.getDirectivesOfNode(template);
+    return {kind: SymbolKind.Template, directives};
+  }
+
+  private getSymbolOfElement(element: TmplAstElement): ElementSymbol|null {
+    const elementSourceSpan = element.startSourceSpan ?? element.sourceSpan;
+
+    const node = findFirstMatchingNode(
+        this.typeCheckBlock, {withSpan: elementSourceSpan, filter: ts.isVariableDeclaration});
+    if (node === null) {
+      return null;
+    }
+
+    const symbolFromDeclaration = this.getSymbolOfVariableDeclaration(node);
+    if (symbolFromDeclaration === null || symbolFromDeclaration.tsSymbol === null) {
+      return null;
+    }
+
+    const directives = this.getDirectivesOfNode(element);
+    // All statements in the TCB are `Expression`s that optionally include more information.
+    // An `ElementSymbol` uses the information returned for the variable declaration expression,
+    // adds the directives for the element, and updates the `kind` to be `SymbolKind.Element`.
+    return {
+      ...symbolFromDeclaration,
+      kind: SymbolKind.Element,
+      directives,
+    };
+  }
+
+  private getDirectivesOfNode(element: TmplAstElement|TmplAstTemplate): DirectiveSymbol[] {
+    const elementSourceSpan = element.startSourceSpan ?? element.sourceSpan;
+    const tcbSourceFile = this.typeCheckBlock.getSourceFile();
+    const isDirectiveDeclaration = (node: ts.Node): node is ts.TypeNode => ts.isTypeNode(node) &&
+        hasExpressionIdentifier(tcbSourceFile, node, ExpressionIdentifier.DIRECTIVE);
+
+    const nodes = findAllMatchingNodes(
+        this.typeCheckBlock, {withSpan: elementSourceSpan, filter: isDirectiveDeclaration});
+    return nodes
+        .map(node => {
+          const symbol = this.getSymbolOfTsNode(node);
+          if (symbol === null || symbol.tsSymbol === null) {
+            return null;
+          }
+          const directiveSymbol:
+              DirectiveSymbol = {...symbol, tsSymbol: symbol.tsSymbol, kind: SymbolKind.Directive};
+          return directiveSymbol;
+        })
+        .filter((d): d is DirectiveSymbol => d !== null);
   }
 
   private getSymbolOfBoundEvent(eventBinding: TmplAstBoundEvent): OutputBindingSymbol|null {
@@ -110,10 +168,9 @@ export class SymbolBuilder {
     }
 
     const consumer = this.templateData.boundTarget.getConsumerOfBinding(attributeBinding);
-    let target: ElementSymbol|DirectiveSymbol|null;
+    let target: ElementSymbol|TemplateSymbol|DirectiveSymbol|null;
     if (consumer instanceof TmplAstTemplate || consumer instanceof TmplAstElement) {
-      // TODO(atscott): handle bindings to elements and templates
-      target = null;
+      target = this.getSymbol(consumer);
     } else {
       target = this.getDirectiveSymbolForAccessExpression(node.left);
     }
@@ -154,15 +211,15 @@ export class SymbolBuilder {
     }
 
     const symbol = this.getSymbolOfVariableDeclaration(declaration);
-    if (symbol === null || symbol.tsSymbol === null || symbol.tsType === null) {
+    if (symbol === null || symbol.tsSymbol === null) {
       return null;
     }
 
     return {
-      ...symbol,
       kind: SymbolKind.Directive,
       tsSymbol: symbol.tsSymbol,
       tsType: symbol.tsType,
+      shimLocation: symbol.shimLocation,
     };
   }
 

@@ -88,14 +88,7 @@ export interface FindOptions<T extends ts.Node> {
   withSpan?: AbsoluteSourceSpan|ParseSourceSpan;
 }
 
-/**
- * Given a `ts.Node` with finds the first node whose matching the criteria specified
- * by the `FindOptions`.
- *
- * Returns `null` when no `ts.Node` matches the given conditions.
- */
-export function findFirstMatchingNode<T extends ts.Node>(tcb: ts.Node, opts: FindOptions<T>): T|
-    null {
+function getSpanFromOptions(opts: FindOptions<ts.Node>) {
   let withSpan: {start: number, end: number}|null = null;
   if (opts.withSpan !== undefined) {
     if (opts.withSpan instanceof AbsoluteSourceSpan) {
@@ -104,6 +97,18 @@ export function findFirstMatchingNode<T extends ts.Node>(tcb: ts.Node, opts: Fin
       withSpan = {start: opts.withSpan.start.offset, end: opts.withSpan.end.offset};
     }
   }
+  return withSpan;
+}
+
+/**
+ * Given a `ts.Node` with finds the first node whose matching the criteria specified
+ * by the `FindOptions`.
+ *
+ * Returns `null` when no `ts.Node` matches the given conditions.
+ */
+export function findFirstMatchingNode<T extends ts.Node>(tcb: ts.Node, opts: FindOptions<T>): T|
+    null {
+  const withSpan = getSpanFromOptions(opts);
   const sf = tcb.getSourceFile();
   const visitor = makeRecursiveVisitor<T>(node => {
     if (!opts.filter(node)) {
@@ -118,6 +123,41 @@ export function findFirstMatchingNode<T extends ts.Node>(tcb: ts.Node, opts: Fin
     return node;
   });
   return tcb.forEachChild(visitor) ?? null;
+}
+
+/**
+ * Given a `ts.Node` with source span comments, finds the first node whose source span comment
+ * matches the given `sourceSpan`. Additionally, the `filter` function allows matching only
+ * `ts.Nodes` of a given type, which provides the ability to select only matches of a given type
+ * when there may be more than one.
+ *
+ * Returns `null` when no `ts.Node` matches the given conditions.
+ */
+export function findAllMatchingNodes<T extends ts.Node>(tcb: ts.Node, opts: FindOptions<T>): T[] {
+  const withSpan = getSpanFromOptions(opts);
+  const results: T[] = [];
+  const stack: ts.Node[] = [tcb];
+  const sf = tcb.getSourceFile();
+
+  while (stack.length > 0) {
+    const node = stack.pop()!;
+
+    if (!opts.filter(node)) {
+      stack.push(...node.getChildren());
+      continue;
+    }
+    if (withSpan !== null) {
+      const comment = readSpanComment(node, sf);
+      if (comment === null || withSpan.start !== comment.start || withSpan.end !== comment.end) {
+        stack.push(...node.getChildren());
+        continue;
+      }
+    }
+
+    results.push(node);
+  }
+
+  return results;
 }
 
 export function hasExpressionIdentifier(
