@@ -153,6 +153,16 @@ export function ngForDts(): TestFile {
   };
 }
 
+export function ngForTypeCheckTarget(): TypeCheckingTarget {
+  const dts = ngForDts();
+  return {
+    ...dts,
+    fileName: dts.name,
+    source: dts.contents,
+    templates: {},
+  };
+}
+
 export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   applyTemplateContextGuards: true,
   checkQueries: false,
