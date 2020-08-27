@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, parseTemplate, TmplAstNode} from '@angular/compiler';
+import {AST, ParseError, parseTemplate, TmplAstNode} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
@@ -15,12 +15,13 @@ import {IncrementalBuild} from '../../incremental/api';
 import {ReflectionHost} from '../../reflection';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
-import {OptimizeFor, ProgramTypeCheckAdapter, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
+import {OptimizeFor, ProgramTypeCheckAdapter, Symbol, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
 import {TemplateDiagnostic} from '../diagnostics';
 
-import {InliningMode, ShimTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from './context';
+import {InliningMode, ShimTypeCheckingData, TemplateData, TypeCheckContextImpl, TypeCheckingHost} from './context';
 import {findTypeCheckBlock, shouldReportDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
 import {TemplateSourceManager} from './source';
+import {SymbolBuilder} from './template_symbol_builder';
 
 /**
  * Primary template type-checking engine, which performs type-checking using a
@@ -50,6 +51,14 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getTemplate(component: ts.ClassDeclaration): TmplAstNode[]|null {
+    const templateData = this.getTemplateData(component);
+    if (templateData === null) {
+      return null;
+    }
+    return templateData.template;
+  }
+
+  private getTemplateData(component: ts.ClassDeclaration): TemplateData|null {
     this.ensureShimForComponent(component);
 
     const sf = component.getSourceFile();
@@ -59,7 +68,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const fileRecord = this.getFileData(sfPath);
 
     if (!fileRecord.shimData.has(shimPath)) {
-      return [];
+      return null;
     }
 
     const templateId = fileRecord.sourceManager.getTemplateId(component);
@@ -69,7 +78,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return null;
     }
 
-    return shimRecord.templates.get(templateId)!.template;
+    return shimRecord.templates.get(templateId)!;
   }
 
   overrideComponentTemplate(component: ts.ClassDeclaration, template: string):
@@ -348,6 +357,22 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       });
     }
     return this.state.get(path)!;
+  }
+
+  getSymbolOfNode(node: AST|TmplAstNode, component: ts.ClassDeclaration): Symbol|null {
+    const tcb = this.getTypeCheckBlock(component);
+    if (tcb === null) {
+      return null;
+    }
+
+    const typeChecker = this.typeCheckingStrategy.getProgram().getTypeChecker();
+    const shimPath = this.typeCheckingStrategy.shimPathForComponent(component);
+    const data = this.getTemplateData(component);
+    if (data === null) {
+      return null;
+    }
+
+    return new SymbolBuilder(typeChecker, shimPath, tcb, data).getSymbol(node);
   }
 }
 

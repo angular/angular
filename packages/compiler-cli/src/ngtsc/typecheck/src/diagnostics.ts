@@ -162,7 +162,7 @@ function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLoc
       return null;
     }
 
-    const span = readSpanComment(sourceFile, node);
+    const span = readSpanComment(node, sourceFile);
     if (span !== null) {
       // Once the positional information has been extracted, search further up the TCB to extract
       // the unique id that is attached with the TCB's function declaration.

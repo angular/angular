@@ -139,6 +139,11 @@ export function resolveModuleName(
   }
 }
 
+/** Returns true if the node is an assignment expression. */
+export function isAssignment(node: ts.Node): node is ts.BinaryExpression {
+  return ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken;
+}
+
 /**
  * Asserts that the keys `K` form a subset of the keys of `T`.
  */

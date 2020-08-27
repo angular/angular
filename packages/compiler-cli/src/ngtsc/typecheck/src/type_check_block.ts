@@ -376,8 +376,8 @@ class TcbDirectiveTypeOp extends TcbOp {
     const id = this.tcb.allocateId();
 
     const type = this.tcb.env.referenceType(this.dir.ref);
-    addParseSpanInfo(type, this.node.startSourceSpan || this.node.sourceSpan);
     addExpressionIdentifier(type, ExpressionIdentifier.DIRECTIVE);
+    addParseSpanInfo(type, this.node.startSourceSpan || this.node.sourceSpan);
     this.scope.addStatement(tsDeclareVariable(id, type));
     return id;
   }
@@ -477,6 +477,8 @@ class TcbDirectiveCtorOp extends TcbOp {
 
   execute(): ts.Identifier {
     const id = this.tcb.allocateId();
+    addExpressionIdentifier(id, ExpressionIdentifier.DIRECTIVE);
+    addParseSpanInfo(id, this.node.startSourceSpan || this.node.sourceSpan);
 
     const genericInputs = new Map<string, TcbDirectiveInput>();
 

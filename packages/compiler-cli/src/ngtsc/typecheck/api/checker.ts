@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, TmplAstNode} from '@angular/compiler';
+import {AST, ParseError, TmplAstNode,} from '@angular/compiler';
 import * as ts from 'typescript';
+
+import {Symbol} from './symbols';
 
 /**
  * Interface to the Angular Template Type Checker to extract diagnostics and intelligence from the
@@ -77,6 +79,15 @@ export interface TemplateTypeChecker {
    * This method always runs in `OptimizeFor.SingleFile` mode.
    */
   getTypeCheckBlock(component: ts.ClassDeclaration): ts.Node|null;
+
+  /**
+   * Retrieves a `Symbol` for the node in a component's template.
+   *
+   * This method can return `null` if a valid `Symbol` cannot be determined for the node.
+   *
+   * @see Symbol
+   */
+  getSymbolOfNode(node: AST|TmplAstNode, component: ts.ClassDeclaration): Symbol|null;
 }
 
 /**

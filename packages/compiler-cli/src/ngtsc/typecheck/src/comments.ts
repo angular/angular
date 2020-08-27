@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan} from '@angular/compiler';
+import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
 const parseSpanComment = /^(\d+),(\d+)$/;
@@ -17,7 +17,8 @@ const parseSpanComment = /^(\d+),(\d+)$/;
  *
  * Will return `null` if no trailing comments on the node match the expected form of a source span.
  */
-export function readSpanComment(sourceFile: ts.SourceFile, node: ts.Node): AbsoluteSourceSpan|null {
+export function readSpanComment(
+    node: ts.Node, sourceFile: ts.SourceFile = node.getSourceFile()): AbsoluteSourceSpan|null {
   return ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
     if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
       return null;
@@ -51,7 +52,7 @@ export function addExpressionIdentifier(node: ts.Node, identifier: ExpressionIde
       /* hasTrailingNewLine */ false);
 }
 
-export const IGNORE_MARKER = `${CommentTriviaType.DIAGNOSTIC}:ignore`;
+const IGNORE_MARKER = `${CommentTriviaType.DIAGNOSTIC}:ignore`;
 
 /**
  * Tag the `ts.Node` with an indication that any errors arising from the evaluation of the node
@@ -71,4 +72,61 @@ export function hasIgnoreMarker(node: ts.Node, sourceFile: ts.SourceFile): boole
     const commentText = sourceFile.text.substring(pos + 2, end - 2);
     return commentText === IGNORE_MARKER;
   }) === true;
+}
+
+function makeRecursiveVisitor<T extends ts.Node>(visitor: (node: ts.Node) => T | null):
+    (node: ts.Node) => T | undefined {
+  function recursiveVisitor(node: ts.Node): T|undefined {
+    const res = visitor(node);
+    return res !== null ? res : node.forEachChild(recursiveVisitor);
+  }
+  return recursiveVisitor;
+}
+
+export interface FindOptions<T extends ts.Node> {
+  filter: (node: ts.Node) => node is T;
+  withSpan?: AbsoluteSourceSpan|ParseSourceSpan;
+}
+
+/**
+ * Given a `ts.Node` with finds the first node whose matching the criteria specified
+ * by the `FindOptions`.
+ *
+ * Returns `null` when no `ts.Node` matches the given conditions.
+ */
+export function findFirstMatchingNode<T extends ts.Node>(tcb: ts.Node, opts: FindOptions<T>): T|
+    null {
+  let withSpan: {start: number, end: number}|null = null;
+  if (opts.withSpan !== undefined) {
+    if (opts.withSpan instanceof AbsoluteSourceSpan) {
+      withSpan = opts.withSpan;
+    } else {
+      withSpan = {start: opts.withSpan.start.offset, end: opts.withSpan.end.offset};
+    }
+  }
+  const sf = tcb.getSourceFile();
+  const visitor = makeRecursiveVisitor<T>(node => {
+    if (!opts.filter(node)) {
+      return null;
+    }
+    if (withSpan !== null) {
+      const comment = readSpanComment(node, sf);
+      if (comment === null || withSpan.start !== comment.start || withSpan.end !== comment.end) {
+        return null;
+      }
+    }
+    return node;
+  });
+  return tcb.forEachChild(visitor) ?? null;
+}
+
+export function hasExpressionIdentifier(
+    sourceFile: ts.SourceFile, node: ts.Node, identifier: ExpressionIdentifier): boolean {
+  return ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
+    if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
+      return false;
+    }
+    const commentText = sourceFile.text.substring(pos + 2, end - 2);
+    return commentText === `${CommentTriviaType.EXPRESSION_TYPE_IDENTIFIER}:${identifier}`;
+  }) || false;
 }
