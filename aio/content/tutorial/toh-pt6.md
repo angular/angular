@@ -618,7 +618,7 @@ Refresh the browser and add some heroes.
 
 `addHero()`는 `updateHero()`와 두 가지가 다릅니다:
 
-* `HttpClient.post()` 대센 `put()`을 실행합니다.
+* `HttpClient.put()` 대신 `post()`를 실행합니다.
 * 이 함수를 실행하면 새로운 히어로에 대한 id가 생성되어야 하며, `Observable<Hero>` 타입으로 반환됩니다.
 
 브라우저를 새로고침하고 히어로를 추가해 보세요.
