@@ -22,12 +22,12 @@ describe('type check blocks diagnostics', () => {
     it('should annotate conditions', () => {
       expect(tcbWithSpans('{{ a ? b : c }}'))
           .toContain(
-              '(((ctx).a /*3,4*/) /*3,4*/ ? ((ctx).b /*7,8*/) /*7,8*/ : ((ctx).c /*11,12*/) /*11,12*/) /*3,12*/');
+              '(((ctx).a /*3,4*/) /*3,4*/ ? ((ctx).b /*7,8*/) /*7,8*/ : (((ctx).c /*11,12*/) /*11,12*/)) /*3,12*/');
     });
 
     it('should annotate interpolations', () => {
       expect(tcbWithSpans('{{ hello }} {{ world }}'))
-          .toContain('"" + ((ctx).hello /*3,8*/) /*3,8*/ + ((ctx).world /*15,20*/) /*15,20*/');
+          .toContain('"" + (((ctx).hello /*3,8*/) /*3,8*/) + (((ctx).world /*15,20*/) /*15,20*/)');
     });
 
     it('should annotate literal map expressions', () => {
@@ -47,7 +47,7 @@ describe('type check blocks diagnostics', () => {
 
     it('should annotate literals', () => {
       const TEMPLATE = '{{ 123 }}';
-      expect(tcbWithSpans(TEMPLATE)).toContain('123 /*3,6*/;');
+      expect(tcbWithSpans(TEMPLATE)).toContain('123 /*3,6*/');
     });
 
     it('should annotate non-null assertions', () => {
@@ -57,7 +57,7 @@ describe('type check blocks diagnostics', () => {
 
     it('should annotate prefix not', () => {
       const TEMPLATE = `{{ !a }}`;
-      expect(tcbWithSpans(TEMPLATE)).toContain('!(((ctx).a /*4,5*/) /*4,5*/) /*3,5*/;');
+      expect(tcbWithSpans(TEMPLATE)).toContain('!(((ctx).a /*4,5*/) /*4,5*/) /*3,5*/');
     });
 
     it('should annotate method calls', () => {
@@ -141,7 +141,7 @@ describe('type check blocks diagnostics', () => {
       }];
       const block = tcbWithSpans(TEMPLATE, PIPES);
       expect(block).toContain(
-          '(null as TestPipe).transform(((ctx).a /*3,4*/) /*3,4*/, ((ctx).b /*12,13*/) /*12,13*/) /*3,13*/;');
+          '((null as TestPipe).transform(((ctx).a /*3,4*/) /*3,4*/, ((ctx).b /*12,13*/) /*12,13*/) /*3,13*/);');
     });
 
     describe('attaching multiple comments for multiple references', () => {

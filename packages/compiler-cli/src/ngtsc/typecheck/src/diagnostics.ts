@@ -9,8 +9,11 @@ import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {getTokenAtPosition} from '../../util/src/typescript';
-import {ExternalTemplateSourceMapping, TemplateId, TemplateSourceMapping} from '../api';
+import {TemplateId, TemplateSourceMapping} from '../api';
 import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
+
+import {hasIgnoreMarker, readSpanComment} from './comments';
+
 
 /**
  * Adapter interface which allows the template type-checking diagnostics code to interpret offsets
@@ -47,14 +50,14 @@ export function wrapForDiagnostics(expr: ts.Expression): ts.Expression {
   return ts.createParen(expr);
 }
 
-const IGNORE_MARKER = 'ignore';
-
 /**
- * Adds a marker to the node that signifies that any errors within the node should not be reported.
+ * Wraps the node in parenthesis such that inserted span comments become attached to the proper
+ * node. This is an alias for `ts.createParen` with the benefit that it signifies that the
+ * inserted parenthesis are for use by the type checker, not for correctness of the rendered TCB
+ * code.
  */
-export function ignoreDiagnostics(node: ts.Node): void {
-  ts.addSyntheticTrailingComment(
-      node, ts.SyntaxKind.MultiLineCommentTrivia, IGNORE_MARKER, /* hasTrailingNewLine */ false);
+export function wrapForTypeChecker(expr: ts.Expression): ts.Expression {
+  return ts.createParen(expr);
 }
 
 /**
@@ -199,31 +202,4 @@ function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|nul
     const commentText = sourceFile.text.substring(pos + 2, end - 2);
     return commentText;
   }) as TemplateId || null;
-}
-
-const parseSpanComment = /^(\d+),(\d+)$/;
-
-function readSpanComment(sourceFile: ts.SourceFile, node: ts.Node): AbsoluteSourceSpan|null {
-  return ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
-    if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
-      return null;
-    }
-    const commentText = sourceFile.text.substring(pos + 2, end - 2);
-    const match = commentText.match(parseSpanComment);
-    if (match === null) {
-      return null;
-    }
-
-    return new AbsoluteSourceSpan(+match[1], +match[2]);
-  }) || null;
-}
-
-function hasIgnoreMarker(node: ts.Node, sourceFile: ts.SourceFile): boolean {
-  return ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
-    if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
-      return null;
-    }
-    const commentText = sourceFile.text.substring(pos + 2, end - 2);
-    return commentText === IGNORE_MARKER;
-  }) === true;
 }
