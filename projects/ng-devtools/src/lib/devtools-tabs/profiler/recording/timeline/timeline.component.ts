@@ -36,7 +36,8 @@ export class TimelineComponent implements OnDestroy {
   @Output() exportProfile = new EventEmitter<void>();
 
   visualizationMode = VisualizationMode.BarGraph;
-  currentFrameIndex = -1;
+  startFrame = -1;
+  endFrame = -1;
   changeDetection = false;
 
   private _maxDuration = -Infinity;
@@ -51,7 +52,7 @@ export class TimelineComponent implements OnDestroy {
   }
 
   get frame(): ProfilerFrame {
-    return this._allRecords[this.currentFrameIndex];
+    return this._allRecords[this.startFrame];
   }
 
   estimateFrameRate(timeSpent: number): number {
@@ -60,14 +61,14 @@ export class TimelineComponent implements OnDestroy {
   }
 
   move(value: number): void {
-    const newVal = this.currentFrameIndex + value;
+    const newVal = this.startFrame + value;
     if (newVal > -1 && newVal < this._allRecords.length) {
-      this.currentFrameIndex = newVal;
+      this.selectFrame(newVal);
     }
   }
 
   selectFrame(index: number): void {
-    this.currentFrameIndex = index;
+    this.startFrame = this.endFrame = index;
   }
 
   getColorByFrameRate(framerate: number): string {

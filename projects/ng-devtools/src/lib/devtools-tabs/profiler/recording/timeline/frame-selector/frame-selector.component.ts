@@ -13,9 +13,12 @@ const ITEM_WIDTH = 29;
 })
 export class FrameSelectorComponent implements OnInit, OnDestroy {
   @ViewChild('barContainer') barContainer: ElementRef;
-  @Input() set currentFrame(value: number) {
-    this.currentFrameIndex = value;
+  @Input() set startFrame(value: number) {
+    this.startFrameIndex = value;
     this._ensureVisible(value);
+  }
+  @Input() set endFrame(value: number) {
+    this.endFrameIndex = value;
   }
   @Input() set graphData$(graphData: Observable<GraphNode[]>) {
     this._graphData$ = graphData;
@@ -31,10 +34,11 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
   }
 
   @Output() move = new EventEmitter<number>();
-  @Output() selectFrame = new EventEmitter<number>();
+  @Output() selectFrame = new EventEmitter<[number, number]>();
   @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
 
-  currentFrameIndex: number;
+  startFrameIndex: number;
+  endFrameIndex: number;
 
   get itemWidth(): number {
     return ITEM_WIDTH;
