@@ -6,6 +6,7 @@ type AnyEventCallback<Ev> = <E extends keyof Ev>(topic: E, args: Parameters<Ev[E
 const runOutsideAngular = (f: () => any) => {
   const w = window as any;
   if (!w.Zone || w.Zone.current._name !== 'angular') {
+    f();
     return;
   }
   w.Zone.current._parent.run(f);
