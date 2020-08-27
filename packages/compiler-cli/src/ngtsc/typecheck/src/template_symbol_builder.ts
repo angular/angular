@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, AST, ASTWithSource, BindingPipe, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
+import {AbsoluteSourceSpan, AST, ASTWithSource, BindingPipe, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {isAssignment} from '../../util/src/typescript';
-import {DirectiveSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo} from '../api';
+import {DirectiveSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, VariableSymbol} from '../api';
 
 import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
 import {TemplateData} from './context';
@@ -28,6 +28,7 @@ export class SymbolBuilder {
       private readonly typeCheckBlock: ts.Node, private readonly templateData: TemplateData) {}
 
   getSymbol(node: TmplAstTemplate|TmplAstElement): TemplateSymbol|ElementSymbol|null;
+  getSymbol(node: TmplAstReference|TmplAstVariable): ReferenceSymbol|VariableSymbol|null;
   getSymbol(node: AST|TmplAstNode): Symbol|null;
   getSymbol(node: AST|TmplAstNode): Symbol|null {
     if (node instanceof TmplAstBoundAttribute) {
@@ -40,6 +41,10 @@ export class SymbolBuilder {
       return this.getSymbolOfElement(node);
     } else if (node instanceof TmplAstTemplate) {
       return this.getSymbolOfAstTemplate(node);
+    } else if (node instanceof TmplAstVariable) {
+      return this.getSymbolOfVariable(node);
+    } else if (node instanceof TmplAstReference) {
+      return this.getSymbolOfReference(node);
     } else if (node instanceof AST) {
       return this.getSymbolOfTemplateExpression(node);
     }
@@ -226,9 +231,68 @@ export class SymbolBuilder {
     };
   }
 
-  private getSymbolOfTemplateExpression(expression: AST): ExpressionSymbol|null {
+  private getSymbolOfVariable(variable: TmplAstVariable): VariableSymbol|null {
+    const node = findFirstMatchingNode(
+        this.typeCheckBlock, {withSpan: variable.sourceSpan, filter: ts.isVariableDeclaration});
+    if (node === null) {
+      return null;
+    }
+
+    const expressionSymbol = this.getSymbolOfVariableDeclaration(node);
+    if (expressionSymbol === null) {
+      return null;
+    }
+
+    return {...expressionSymbol, kind: SymbolKind.Variable, declaration: variable};
+  }
+
+  private getSymbolOfReference(ref: TmplAstReference): ReferenceSymbol|null {
+    const target = this.templateData.boundTarget.getReferenceTarget(ref);
+    // Find the node for the reference declaration, i.e. `var _t2 = _t1;`
+    let node = findFirstMatchingNode(
+        this.typeCheckBlock, {withSpan: ref.sourceSpan, filter: ts.isVariableDeclaration});
+    if (node === null || target === null || node.initializer === undefined) {
+      return null;
+    }
+
+    // TODO(atscott): Shim location will need to be adjusted
+    const symbol = this.getSymbolOfTsNode(node.name);
+    if (symbol === null || symbol.tsSymbol === null) {
+      return null;
+    }
+
+    if (target instanceof TmplAstTemplate || target instanceof TmplAstElement) {
+      return {
+        ...symbol,
+        tsSymbol: symbol.tsSymbol,
+        kind: SymbolKind.Reference,
+        target,
+        declaration: ref,
+      };
+    } else {
+      if (!ts.isClassDeclaration(target.directive.ref.node)) {
+        return null;
+      }
+
+      return {
+        ...symbol,
+        kind: SymbolKind.Reference,
+        tsSymbol: symbol.tsSymbol,
+        declaration: ref,
+        target: target.directive.ref.node,
+      };
+    }
+  }
+
+  private getSymbolOfTemplateExpression(expression: AST): VariableSymbol|ReferenceSymbol
+      |ExpressionSymbol|null {
     if (expression instanceof ASTWithSource) {
       expression = expression.ast;
+    }
+
+    const expressionTarget = this.templateData.boundTarget.getExpressionTarget(expression);
+    if (expressionTarget !== null) {
+      return this.getSymbol(expressionTarget);
     }
 
     let node = findFirstMatchingNode(
