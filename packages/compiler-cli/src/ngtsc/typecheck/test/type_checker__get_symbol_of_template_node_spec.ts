@@ -6,17 +6,69 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TmplAstBoundAttribute, TmplAstElement, TmplAstTemplate} from '@angular/compiler';
+import {TmplAstBoundAttribute, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {InputBindingSymbol, OutputBindingSymbol, Symbol, SymbolKind, TypeCheckingConfig} from '../api';
+import {ClassDeclaration} from '../../reflection';
+import {DirectiveSymbol, ElementSymbol, InputBindingSymbol, OutputBindingSymbol, Symbol, SymbolKind, TemplateSymbol, TemplateTypeChecker, TypeCheckingConfig} from '../api';
 
 import {getClass, ngForDeclaration, ngForTypeCheckTarget, setup as baseTestSetup, TypeCheckingTarget} from './test_utils';
 
 runInEachFileSystem(() => {
-  describe('TemplateTypeChecker.getSymbolOfNodeInComponentTemplate', () => {
+  describe('TemplateTypeChecker.getSymbolOfNode', () => {
+    describe('templates', () => {
+      describe('ng-templates', () => {
+        let templateTypeChecker: TemplateTypeChecker;
+        let cmp: ClassDeclaration<ts.ClassDeclaration>;
+        let templateNode: TmplAstTemplate;
+        let program: ts.Program;
+
+        beforeEach(() => {
+          const fileName = absoluteFrom('/main.ts');
+          const dirFile = absoluteFrom('/dir.ts');
+          const templateString = `
+              <ng-template dir #ref0 #ref1="dir" let-contextFoo="bar">
+                <div [input0]="contextFoo" [input1]="ref0" [input2]="ref1"></div>
+              </ng-template>`;
+          const testValues = setup([
+            {
+              fileName,
+              templates: {'Cmp': templateString},
+              source: `
+                    export class Cmp { }`,
+              declarations: [{
+                name: 'TestDir',
+                selector: '[dir]',
+                file: dirFile,
+                type: 'directive',
+                exportAs: ['dir'],
+              }]
+            },
+            {
+              fileName: dirFile,
+              source: `export class TestDir {}`,
+              templates: {},
+            }
+          ]);
+          templateTypeChecker = testValues.templateTypeChecker;
+          program = testValues.program;
+          const sf = getSourceFileOrError(testValues.program, fileName);
+          cmp = getClass(sf, 'Cmp');
+          templateNode = getAstTemplates(templateTypeChecker, cmp)[0];
+        });
+
+        it('should get symbol for the template itself', () => {
+          const symbol = templateTypeChecker.getSymbolOfNode(templateNode, cmp)!;
+          assertTemplateSymbol(symbol);
+          expect(symbol.directives.length).toBe(1);
+          assertDirectiveSymbol(symbol.directives[0]);
+          expect(symbol.directives[0].tsSymbol.getName()).toBe('TestDir');
+        });
+      });
+    });
+
     describe('input bindings', () => {
       it('can retrieve a symbol for an input binding', () => {
         const fileName = absoluteFrom('/main.ts');
@@ -473,8 +525,116 @@ runInEachFileSystem(() => {
         expect(symbol).toBeNull();
       });
     });
+
+    describe('for elements', () => {
+      it('for elements that are components with no inputs', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const {program, templateTypeChecker} = setup(
+            [
+              {
+                fileName,
+                templates: {'Cmp': `<child-component></child-component>`},
+                declarations: [
+                  {
+                    name: 'ChildComponent',
+                    selector: 'child-component',
+                    file: dirFile,
+                    type: 'directive',
+                  },
+                ]
+              },
+              {
+                fileName: dirFile,
+                source: `
+              export class ChildComponent {}
+            `,
+                templates: {'ChildComponent': ''},
+              }
+            ],
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        const nodes = templateTypeChecker.getTemplate(cmp)!;
+
+        const symbol = templateTypeChecker.getSymbolOfNode(nodes[0] as TmplAstElement, cmp)!;
+        assertElementSymbol(symbol);
+        expect(symbol.directives.length).toBe(1);
+        assertDirectiveSymbol(symbol.directives[0]);
+        expect(program.getTypeChecker().typeToString(symbol.directives[0].tsType))
+            .toEqual('ChildComponent');
+      });
+
+      it('element with directive matches', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const {program, templateTypeChecker} = setup(
+            [
+              {
+                fileName,
+                templates: {'Cmp': `<div dir dir2></div>`},
+                declarations: [
+                  {
+                    name: 'TestDir',
+                    selector: '[dir]',
+                    file: dirFile,
+                    type: 'directive',
+                  },
+                  {
+                    name: 'TestDir2',
+                    selector: '[dir2]',
+                    file: dirFile,
+                    type: 'directive',
+                  },
+                  {
+                    name: 'TestDirAllDivs',
+                    selector: 'div',
+                    file: dirFile,
+                    type: 'directive',
+                  },
+                ]
+              },
+              {
+                fileName: dirFile,
+                source: `
+              export class TestDir {}
+              export class TestDir2 {}
+              export class TestDirAllDivs {}
+            `,
+                templates: {},
+              }
+            ],
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        const nodes = templateTypeChecker.getTemplate(cmp)!;
+
+        const symbol = templateTypeChecker.getSymbolOfNode(nodes[0] as TmplAstElement, cmp)!;
+        assertElementSymbol(symbol);
+        expect(symbol.directives.length).toBe(3);
+        const expectedDirectives = ['TestDir', 'TestDir2', 'TestDirAllDivs'].sort();
+        const actualDirectives =
+            symbol.directives.map(dir => program.getTypeChecker().typeToString(dir.tsType)).sort();
+        expect(actualDirectives).toEqual(expectedDirectives);
+      });
+    });
   });
 });
+
+function onlyAstTemplates(nodes: TmplAstNode[]): TmplAstTemplate[] {
+  return nodes.filter((n): n is TmplAstTemplate => n instanceof TmplAstTemplate);
+}
+
+function getAstTemplates(
+    templateTypeChecker: TemplateTypeChecker, cmp: ts.ClassDeclaration&{name: ts.Identifier}) {
+  return onlyAstTemplates(templateTypeChecker.getTemplate(cmp)!);
+}
+
+function assertDirectiveSymbol(tSymbol: Symbol): asserts tSymbol is DirectiveSymbol {
+  expect(tSymbol.kind).toEqual(SymbolKind.Directive);
+}
 
 function assertInputBindingSymbol(tSymbol: Symbol): asserts tSymbol is InputBindingSymbol {
   expect(tSymbol.kind).toEqual(SymbolKind.Input);
@@ -482,6 +642,14 @@ function assertInputBindingSymbol(tSymbol: Symbol): asserts tSymbol is InputBind
 
 function assertOutputBindingSymbol(tSymbol: Symbol): asserts tSymbol is OutputBindingSymbol {
   expect(tSymbol.kind).toEqual(SymbolKind.Output);
+}
+
+function assertTemplateSymbol(tSymbol: Symbol): asserts tSymbol is TemplateSymbol {
+  expect(tSymbol.kind).toEqual(SymbolKind.Template);
+}
+
+function assertElementSymbol(tSymbol: Symbol): asserts tSymbol is ElementSymbol {
+  expect(tSymbol.kind).toEqual(SymbolKind.Element);
 }
 
 export function setup(targets: TypeCheckingTarget[], config?: Partial<TypeCheckingConfig>) {
