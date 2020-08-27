@@ -17,7 +17,7 @@
 <p align="center">
   <a href="CONTRIBUTING.md">Contributing Guidelines</a>
   ·
-  <a href="https://github.com/angular/angular/issue">Submit an Issue</a>
+  <a href="https://github.com/angular/angular/issues">Submit an Issue</a>
   ·
   <a href="https://blog.angular.io/">Blog</a>
   <br>
@@ -51,8 +51,7 @@ Get started with Angular, learn the fundamentals and explore advanced topics on 
  ## Development Setup
 
  ### Prerequisites
-- Install [Node.js]
-- Install [Node Package Manager]
+- Install [Node.js] which includes [Node Package Manager][npm]
 
 ### Setting Up a Project
 Intall the Angular CLI globally:
@@ -104,8 +103,7 @@ Want to file a bug, contribute some code, or improve documentation? Excellent! R
 
 ### Code of Conduct
 
-Help us keep Angular open and inclusive. Please read and follow our [Code of 
-Conduct][codeofconduct].
+Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct][codeofconduct].
 
 
 ## Community
@@ -122,7 +120,7 @@ Join the conversation and help the community.
 
 [contributing]: CONTRIBUTING.md
 [quickstart]: https://angular.io/start
-[changelog]: https://github.com/angular/angular/blob/master/CHANGELOG.md
+[changelog]: CHANGELOG.md
 [ng]: https://angular.io
 [documentation]: https://angular.io/docs
 [angularmaterial]: https://material.angular.io/
@@ -136,8 +134,8 @@ Join the conversation and help the community.
 [ssr]: https://angular.io/guide/universal
 [schematics]: https://angular.io/guide/schematics
 [lazyloading]: https://angular.io/guide/lazy-loading-ngmodules
-[Node.js]: https://nodejs.org/en/
-[Node Package Manager]: https://docs.npmjs.com/cli/install
+[Node.js]: https://nodejs.org/
+[npm]: https://www.npmjs.com/get-npm
 [gitter]: https://gitter.im/angular/angular
 [meetup]: https://www.meetup.com/find/?keywords=angular"
 [twitter]: https://www.twitter.com/angular
