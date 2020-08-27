@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output, OnDestroy } from '@angular/core';
 import { ProfilerFrame } from 'protocol';
-import { GraphNode, mergeFrames } from './record-formatter/record-formatter';
+import { GraphNode } from './record-formatter/record-formatter';
 import { Observable, Subscription, BehaviorSubject } from 'rxjs';
 import { share } from 'rxjs/operators';
+import { mergeFrames } from './record-formatter/frame-merger';
 
 export enum VisualizationMode {
   FlameGraph,

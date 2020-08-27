@@ -3,7 +3,6 @@ import { GraphNode } from '../record-formatter/record-formatter';
 import { Observable, Subscription } from 'rxjs';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { TabUpdate } from '../../../../tab-update';
-import { map, tap } from 'rxjs/operators';
 
 const ITEM_WIDTH = 29;
 
