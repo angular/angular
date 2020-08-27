@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
+import {AbsoluteSourceSpan, AST, ASTWithSource, BindingPipe, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -40,7 +40,10 @@ export class SymbolBuilder {
       return this.getSymbolOfElement(node);
     } else if (node instanceof TmplAstTemplate) {
       return this.getSymbolOfAstTemplate(node);
+    } else if (node instanceof AST) {
+      return this.getSymbolOfTemplateExpression(node);
     }
+    // TODO(atscott): TmplAstContent, TmplAstIcu
     return null;
   }
 
@@ -221,6 +224,54 @@ export class SymbolBuilder {
       tsType: symbol.tsType,
       shimLocation: symbol.shimLocation,
     };
+  }
+
+  private getSymbolOfTemplateExpression(expression: AST): ExpressionSymbol|null {
+    if (expression instanceof ASTWithSource) {
+      expression = expression.ast;
+    }
+
+    let node = findFirstMatchingNode(
+        this.typeCheckBlock,
+        {withSpan: expression.sourceSpan, filter: (n: ts.Node): n is ts.Node => true});
+    if (node === null) {
+      return null;
+    }
+
+    while (ts.isParenthesizedExpression(node)) {
+      node = node.expression;
+    }
+
+    // - If we have safe property read ("a?.b") we want to get the Symbol for b, the `whenTrue`
+    // expression.
+    // - If our expression is a pipe binding ("a | test:b:c"), we want the Symbol for the
+    // `transform` on the pipe.
+    // - Otherwise, we retrieve the symbol for the node itself with no special considerations
+    if ((expression instanceof SafePropertyRead || expression instanceof SafeMethodCall) &&
+        ts.isConditionalExpression(node)) {
+      const whenTrueSymbol =
+          (expression instanceof SafeMethodCall && ts.isCallExpression(node.whenTrue)) ?
+          this.getSymbolOfTsNode(node.whenTrue.expression) :
+          this.getSymbolOfTsNode(node.whenTrue);
+      if (whenTrueSymbol === null) {
+        return null;
+      }
+
+      return {
+        ...whenTrueSymbol,
+        kind: SymbolKind.Expression,
+        // Rather than using the type of only the `whenTrue` part of the expression, we should
+        // still get the type of the whole conditional expression to include `|undefined`.
+        tsType: this.typeChecker.getTypeAtLocation(node)
+      };
+    } else if (expression instanceof BindingPipe && ts.isCallExpression(node)) {
+      // TODO(atscott): Create a PipeSymbol to include symbol for the Pipe class
+      const symbolInfo = this.getSymbolOfTsNode(node.expression);
+      return symbolInfo === null ? null : {...symbolInfo, kind: SymbolKind.Expression};
+    } else {
+      const symbolInfo = this.getSymbolOfTsNode(node);
+      return symbolInfo === null ? null : {...symbolInfo, kind: SymbolKind.Expression};
+    }
   }
 
   private getSymbolOfTsNode(node: ts.Node): TsNodeSymbolInfo|null {
