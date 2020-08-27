@@ -7,7 +7,7 @@ describe('promises', () => {
     pr.then((value) => {
       expect(consoleLogSpy).toHaveBeenCalledTimes(1);
       expect(consoleLogSpy).toHaveBeenCalledWith(2);
-      expect(value).toHaveBeenCalledWith(4);
+      expect(value).toBe(4);
       doneFn();
     });
   });
