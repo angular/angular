@@ -1375,6 +1375,7 @@ function findDirectiveDefMatches(
   ngDevMode &&
       assertNodeOfPossibleTypes(
           tNode, [TNodeType.Element, TNodeType.ElementContainer, TNodeType.Container]);
+
   const registry = tView.directiveRegistry;
   let matches: any[]|null = null;
   if (registry) {
@@ -1385,13 +1386,14 @@ function findDirectiveDefMatches(
         diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, viewData), tView, def.type);
 
         if (isComponentDef(def)) {
-          ngDevMode &&
-              assertNodeOfPossibleTypes(
-                  tNode, [TNodeType.Element],
-                  `"${tNode.tagName}" tags cannot be used as component hosts. ` +
-                      `Please use a different tag to activate the ${
-                          stringify(def.type)} component.`);
-          if (tNode.flags & TNodeFlags.isComponentHost) throwMultipleComponentError(tNode);
+          if (ngDevMode) {
+            assertNodeOfPossibleTypes(
+                tNode, [TNodeType.Element],
+                `"${tNode.tagName}" tags cannot be used as component hosts. ` +
+                    `Please use a different tag to activate the ${stringify(def.type)} component.`);
+
+            if (tNode.flags & TNodeFlags.isComponentHost) throwMultipleComponentError(tNode);
+          }
           markAsComponentHost(tView, tNode);
           // The component is always stored first with directives after.
           matches.unshift(def);

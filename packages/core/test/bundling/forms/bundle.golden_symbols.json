@@ -1587,12 +1587,6 @@
     "name": "syncPendingControls"
   },
   {
-    "name": "throwMixedMultiProviderError"
-  },
-  {
-    "name": "throwMultipleComponentError"
-  },
-  {
     "name": "toObservable"
   },
   {
