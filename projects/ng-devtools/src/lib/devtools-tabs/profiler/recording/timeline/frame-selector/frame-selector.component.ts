@@ -3,6 +3,7 @@ import { GraphNode } from '../record-formatter/record-formatter';
 import { Observable, Subscription } from 'rxjs';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { TabUpdate } from '../../../../tab-update';
+import { map, tap } from 'rxjs/operators';
 
 const ITEM_WIDTH = 29;
 
@@ -34,7 +35,7 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
   }
 
   @Output() move = new EventEmitter<number>();
-  @Output() selectFrame = new EventEmitter<[number, number]>();
+  @Output() selectFrames = new EventEmitter<{ start: number; end: number }>();
   @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
 
   startFrameIndex: number;
@@ -47,6 +48,9 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
   private _graphData$: Observable<GraphNode[]>;
   private _graphDataSubscription: Subscription;
   private _tabUpdateSubscription: Subscription;
+  private _keydownCallback: (e: KeyboardEvent) => void;
+  private _keyupCallback: (e: KeyboardEvent) => void;
+  private _shiftDown = false;
 
   constructor(private _tabUpdate: TabUpdate) {}
 
@@ -59,6 +63,8 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
         });
       }
     });
+    window.addEventListener('keydown', (this._keydownCallback = (e: KeyboardEvent) => (this._shiftDown = e.shiftKey)));
+    window.addEventListener('keyup', (this._keyupCallback = (e: KeyboardEvent) => (this._shiftDown = e.shiftKey)));
   }
 
   ngOnDestroy(): void {
@@ -68,6 +74,26 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
     if (this._graphDataSubscription) {
       this._graphDataSubscription.unsubscribe();
     }
+    window.removeEventListener('keydown', this._keydownCallback);
+    window.removeEventListener('keyup', this._keyupCallback);
+  }
+
+  get selectionLabel(): string {
+    if (this.startFrameIndex !== this.endFrameIndex) {
+      return `${this.startFrameIndex + 1}-${this.endFrameIndex + 1}`;
+    }
+    return `${this.startFrameIndex + 1}`;
+  }
+
+  handleFrameSelection(idx: number): void {
+    if (!this._shiftDown) {
+      this.startFrameIndex = this.endFrameIndex = idx;
+    } else {
+      const start = Math.min(this.startFrameIndex, idx);
+      this.endFrameIndex = Math.max(this.startFrameIndex, this.endFrameIndex, idx);
+      this.startFrameIndex = start;
+    }
+    this.selectFrames.emit({ start: this.startFrameIndex, end: this.endFrameIndex });
   }
 
   private _ensureVisible(index: number): void {
