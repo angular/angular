@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, OnDestroy } from '@angular/core';
 import { ProfilerFrame } from 'protocol';
-import { GraphNode } from './record-formatter/record-formatter';
+import { GraphNode, mergeFrames } from './record-formatter/record-formatter';
 import { Observable, Subscription, BehaviorSubject } from 'rxjs';
 import { share } from 'rxjs/operators';
 
@@ -39,6 +39,7 @@ export class TimelineComponent implements OnDestroy {
   startFrame = -1;
   endFrame = -1;
   changeDetection = false;
+  frame: ProfilerFrame | null = null;
 
   private _maxDuration = -Infinity;
   private _subscription: Subscription;
@@ -51,10 +52,6 @@ export class TimelineComponent implements OnDestroy {
     return this._allRecords.length > 0;
   }
 
-  get frame(): ProfilerFrame {
-    return this._allRecords[this.startFrame];
-  }
-
   estimateFrameRate(timeSpent: number): number {
     const multiplier = Math.max(Math.ceil(timeSpent / 16) - 1, 0);
     return Math.floor(60 / 2 ** multiplier);
@@ -63,12 +60,14 @@ export class TimelineComponent implements OnDestroy {
   move(value: number): void {
     const newVal = this.startFrame + value;
     if (newVal > -1 && newVal < this._allRecords.length) {
-      this.selectFrame(newVal);
+      this.selectFrames({ start: newVal, end: newVal });
     }
   }
 
-  selectFrame(index: number): void {
-    this.startFrame = this.endFrame = index;
+  selectFrames(range: { start: number; end: number }): void {
+    this.startFrame = range.start;
+    this.endFrame = range.end;
+    this.frame = mergeFrames(this._allRecords.slice(range.start, range.end + 1));
   }
 
   getColorByFrameRate(framerate: number): string {
