@@ -1,4 +1,4 @@
-import {TestBed, inject} from '@angular/core/testing';
+import {TestBed, inject, fakeAsync} from '@angular/core/testing';
 import {Component, NgModule} from '@angular/core';
 import {dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {OverlayModule, OverlayContainer, Overlay} from '../index';
@@ -55,7 +55,10 @@ describe('OverlayOutsideClickDispatcher', () => {
     'should dispatch mouse click events to the attached overlays',
     () => {
     const overlayOne = overlay.create();
+    overlayOne.attach(new ComponentPortal(TestComponent));
     const overlayTwo = overlay.create();
+    overlayTwo.attach(new ComponentPortal(TestComponent));
+
     const overlayOneSpy = jasmine.createSpy('overlayOne mouse click event spy');
     const overlayTwoSpy = jasmine.createSpy('overlayTwo mouse click event spy');
 
@@ -81,6 +84,7 @@ describe('OverlayOutsideClickDispatcher', () => {
     'should dispatch mouse click events to the attached overlays even when propagation is stopped',
     () => {
     const overlayRef = overlay.create();
+    overlayRef.attach(new ComponentPortal(TestComponent));
     const spy = jasmine.createSpy('overlay mouse click event spy');
     overlayRef.outsidePointerEvents().subscribe(spy);
 
@@ -186,6 +190,40 @@ describe('OverlayOutsideClickDispatcher', () => {
 
     overlayRef.dispose();
   });
+
+  it(
+    'should not throw an error when when closing out related components via the' +
+      ' outsidePointerEvents emitter on background click',
+    fakeAsync(() => {
+      const firstOverlayRef = overlay.create();
+      firstOverlayRef.attach(new ComponentPortal(TestComponent));
+      const secondOverlayRef = overlay.create();
+      secondOverlayRef.attach(new ComponentPortal(TestComponent));
+      const thirdOverlayRef = overlay.create();
+      thirdOverlayRef.attach(new ComponentPortal(TestComponent));
+
+      const spy = jasmine.createSpy('background click handler spy').and.callFake(() => {
+        // we close out both overlays from a single outside click event
+        firstOverlayRef.detach();
+        thirdOverlayRef.detach();
+      });
+      firstOverlayRef.outsidePointerEvents().subscribe(spy);
+      secondOverlayRef.outsidePointerEvents().subscribe(spy);
+      thirdOverlayRef.outsidePointerEvents().subscribe(spy);
+
+      const backgroundElement = document.createElement('div');
+      document.body.appendChild(backgroundElement);
+
+      expect(() => backgroundElement.click()).not.toThrowError();
+
+      expect(spy).toHaveBeenCalled();
+
+      backgroundElement.parentNode!.removeChild(backgroundElement);
+      firstOverlayRef.dispose();
+      secondOverlayRef.dispose();
+      thirdOverlayRef.dispose();
+    }
+  ));
 });
 
 
