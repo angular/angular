@@ -62,6 +62,8 @@ Angular executes hook methods in the following sequence. You can use them to per
 
       Called before `ngOnInit()` and whenever one or more data-bound input properties change.
 
+      Note that if your component has no inputs or you use it without providing any inputs, the framework will not call `ngOnChanges()`.
+
     </td>
   </tr>
   <tr style='vertical-align:top'>
