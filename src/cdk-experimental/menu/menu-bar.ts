@@ -29,18 +29,6 @@ import {MenuStack, MenuStackItem, FocusNext} from './menu-stack';
 import {getItemPointerEntries} from './item-pointer-entries';
 
 /**
- * Whether the element is a menu bar or a popup menu.
- * @param target the element to check.
- * @return true if the given element is part of the menu module.
- */
-function isMenuElement(target: Element) {
-  return (
-    target.classList.contains('cdk-menu-bar') ||
-    (target.classList.contains('cdk-menu') && !target.classList.contains('cdk-menu-inline'))
-  );
-}
-
-/**
  * Directive applied to an element which configures it as a MenuBar by setting the appropriate
  * role, aria attributes, and accessible keyboard and mouse handling logic. The component that
  * this directive is applied to should contain components marked with CdkMenuItem.
@@ -257,27 +245,6 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
    */
   private _isHorizontal() {
     return this.orientation === 'horizontal';
-  }
-
-  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
-  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
-  // can move this back into `host`.
-  // tslint:disable:no-host-decorator-in-concrete
-  @HostListener('document:mousedown', ['$event'])
-  /** Close any open submenu if there was a click event which occurred outside the menu stack. */
-  _closeOnBackgroundClick(event: MouseEvent) {
-    if (this._hasOpenSubmenu()) {
-      // get target from composed path to account for shadow dom
-      let target = event.composedPath ? event.composedPath()[0] : event.target;
-      while (target instanceof Element) {
-        if (isMenuElement(target)) {
-          return;
-        }
-        target = target.parentElement;
-      }
-
-      this._menuStack.closeAll();
-    }
   }
 
   /**

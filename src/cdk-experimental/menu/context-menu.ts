@@ -18,7 +18,6 @@ import {
   Injectable,
   InjectionToken,
 } from '@angular/core';
-import {DOCUMENT} from '@angular/common';
 import {Directionality} from '@angular/cdk/bidi';
 import {
   OverlayRef,
@@ -29,26 +28,12 @@ import {
 } from '@angular/cdk/overlay';
 import {TemplatePortal, Portal} from '@angular/cdk/portal';
 import {coerceBooleanProperty, BooleanInput} from '@angular/cdk/coercion';
-import {fromEvent, merge, Subject} from 'rxjs';
+import {Subject, merge} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {CdkMenuPanel} from './menu-panel';
 import {MenuStack, MenuStackItem} from './menu-stack';
 import {throwExistingMenuStackError} from './menu-errors';
-
-/**
- * Check if the given element is part of the cdk menu module or nested within a cdk menu element.
- * @param target the element to check.
- * @return true if the given element is part of the menu module or nested within a cdk menu element.
- */
-function isWithinMenuElement(target: Element | null) {
-  while (target instanceof Element) {
-    if (target.classList.contains('cdk-menu') && !target.classList.contains('cdk-menu-inline')) {
-      return true;
-    }
-    target = target.parentElement;
-  }
-  return false;
-}
+import {isClickInsideMenuOverlay} from './menu-item-trigger';
 
 /** Tracks the last open context menu trigger across the entire application. */
 @Injectable({providedIn: 'root'})
@@ -146,25 +131,19 @@ export class CdkContextMenuTrigger implements OnDestroy {
   /** Emits when the element is destroyed. */
   private readonly _destroyed: Subject<void> = new Subject();
 
-  /** Reference to the document. */
-  private readonly _document: Document;
-
-  /** Emits when the document listener should stop. */
-  private readonly _stopDocumentListener = merge(this.closed, this._destroyed);
-
   /** The menu stack for this trigger and its associated menus. */
   private readonly _menuStack = new MenuStack();
+
+  /** Emits when the outside pointer events listener on the overlay should be stopped. */
+  private readonly _stopOutsideClicksListener = merge(this.closed, this._destroyed);
 
   constructor(
     protected readonly _viewContainerRef: ViewContainerRef,
     private readonly _overlay: Overlay,
     private readonly _contextMenuTracker: ContextMenuTracker,
     @Inject(CDK_CONTEXT_MENU_DEFAULT_OPTIONS) private readonly _options: ContextMenuOptions,
-    @Inject(DOCUMENT) document: any,
     @Optional() private readonly _directionality?: Directionality
   ) {
-    this._document = document;
-
     this._setMenuStackListener();
   }
 
@@ -195,7 +174,7 @@ export class CdkContextMenuTrigger implements OnDestroy {
       }
 
       this._overlayRef.attach(this._getMenuContent());
-      this._setCloseListener();
+      this._subscribeToOutsideClicks();
     }
   }
 
@@ -290,32 +269,6 @@ export class CdkContextMenuTrigger implements OnDestroy {
     return this._panelContent;
   }
 
-  /**
-   * Subscribe to the document click and context menu events and close out the menu when emitted.
-   */
-  private _setCloseListener() {
-    merge(fromEvent(this._document, 'click'), fromEvent(this._document, 'contextmenu'))
-      .pipe(takeUntil(this._stopDocumentListener))
-      .subscribe(event => {
-        const target = event.composedPath ? event.composedPath()[0] : event.target;
-        // stop the default context menu from appearing if user right-clicked somewhere outside of
-        // any context menu directive or if a user right-clicked inside of the opened menu and just
-        // close it.
-        if (event.type === 'contextmenu') {
-          if (target instanceof Element && isWithinMenuElement(target)) {
-            // Prevent the native context menu from opening within any open context menu or submenu
-            event.preventDefault();
-          } else {
-            this.close();
-          }
-        } else {
-          if (target instanceof Element && !isWithinMenuElement(target)) {
-            this.close();
-          }
-        }
-      });
-  }
-
   /** Subscribe to the menu stack close events and close this menu when requested. */
   private _setMenuStackListener() {
     this._menuStack.closed.pipe(takeUntil(this._destroyed)).subscribe((item: MenuStackItem) => {
@@ -324,6 +277,23 @@ export class CdkContextMenuTrigger implements OnDestroy {
         this._overlayRef!.detach();
       }
     });
+  }
+
+  /**
+   * Subscribe to the overlays outside pointer events stream and handle closing out the stack if a
+   * click occurs outside the menus.
+   */
+  private _subscribeToOutsideClicks() {
+    if (this._overlayRef) {
+      this._overlayRef
+        .outsidePointerEvents()
+        .pipe(takeUntil(this._stopOutsideClicksListener))
+        .subscribe(event => {
+          if (!isClickInsideMenuOverlay(event.target as Element)) {
+            this._menuStack.closeAll();
+          }
+        });
+    }
   }
 
   ngOnDestroy() {

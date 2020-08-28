@@ -829,10 +829,8 @@ describe('MenuBar', () => {
       openMenu();
       expect(popoutMenus.length).toBe(1);
 
-      dispatchMouseEvent(
-        fixture.debugElement.query(By.css('#container')).nativeElement,
-        'mousedown'
-      );
+
+      fixture.debugElement.query(By.css('#container')).nativeElement.click();
       detectChanges();
 
       expect(popoutMenus.length).toBe(0);
@@ -854,16 +852,6 @@ describe('MenuBar', () => {
       expect(popoutMenus.length).toBe(1);
 
       fixture.debugElement.query(By.directive(CdkMenu)).nativeElement.click();
-      detectChanges();
-
-      expect(popoutMenus.length).toBe(1);
-    });
-
-    it('should not close open menus when clicking on a menu bar', () => {
-      openMenu();
-      expect(popoutMenus.length).toBe(1);
-
-      fixture.debugElement.query(By.directive(CdkMenuBar)).nativeElement.click();
       detectChanges();
 
       expect(popoutMenus.length).toBe(1);
@@ -894,7 +882,7 @@ describe('MenuBar', () => {
     it('should close the open menu when clicking on an inline menu item', () => {
       openMenu();
 
-      dispatchMouseEvent(nativeInlineMenuItem, 'mousedown');
+      nativeInlineMenuItem.click();
       detectChanges();
 
       expect(popoutMenus.length).toBe(0);

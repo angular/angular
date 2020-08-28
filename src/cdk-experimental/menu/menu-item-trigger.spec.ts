@@ -1,6 +1,8 @@
-import {Component, ViewChildren, QueryList, ElementRef, Type} from '@angular/core';
+import {Component, ViewChildren, QueryList, ElementRef, ViewChild, Type} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
+import {TAB, SPACE} from '@angular/cdk/keycodes';
 import {CdkMenuModule} from './menu-module';
 import {CdkMenuItem} from './menu-item';
 import {CdkMenu} from './menu';
@@ -329,6 +331,106 @@ describe('MenuItemTrigger', () => {
     //   );
     // });
   });
+
+  describe('standalone', () => {
+    let fixture: ComponentFixture<StandaloneTriggerWithInlineMenu>;
+
+    let nativeMenus: HTMLElement[];
+    let nativeTrigger: HTMLElement;
+    let submenuNativeItem: HTMLElement | undefined;
+
+    const grabElementsForTesting = () => {
+      nativeTrigger = fixture.componentInstance.nativeTrigger.nativeElement;
+      nativeMenus = fixture.componentInstance.nativeMenus.map(m => m.nativeElement);
+      submenuNativeItem = fixture.componentInstance.submenuItem?.nativeElement;
+    };
+
+    /** run change detection and, extract and set the rendered elements */
+    const detectChanges = () => {
+      fixture.detectChanges();
+      grabElementsForTesting();
+    };
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [StandaloneTriggerWithInlineMenu],
+      }).compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(StandaloneTriggerWithInlineMenu);
+      detectChanges();
+    });
+
+    it('should have its tabindex set to 0', () => {
+      expect(nativeTrigger.tabIndex).toBe(0);
+    });
+
+    it('should reset the tabindex to 0 when shift-tabbing out of standalone trigger', () => {
+      nativeTrigger.focus();
+
+      dispatchKeyboardEvent(nativeTrigger, 'keydown', TAB, undefined, {shift: true});
+      detectChanges();
+    });
+
+    it('should reset the tabindex to 0 when tabbing out of submenu', () => {
+      nativeTrigger.click();
+      detectChanges();
+
+      dispatchKeyboardEvent(submenuNativeItem!, 'keydown', TAB, undefined, {shift: true});
+      detectChanges();
+
+      expect(nativeTrigger.tabIndex).toBe(0);
+    });
+
+    it('should open the menu on trigger', () => {
+      nativeTrigger.click();
+      detectChanges();
+
+      expect(nativeMenus.length).toBe(2);
+    });
+
+    it('should toggle the menu on trigger', () => {
+      nativeTrigger.click();
+      detectChanges();
+      expect(nativeMenus.length).toBe(2);
+
+      nativeTrigger.click();
+      detectChanges();
+      expect(nativeMenus.length).toBe(1);
+    });
+
+    it('should toggle the menu on keyboard events', () => {
+      dispatchKeyboardEvent(nativeTrigger, 'keydown', SPACE);
+      detectChanges();
+      expect(nativeMenus.length).toBe(2);
+
+      dispatchKeyboardEvent(nativeTrigger, 'keydown', SPACE);
+      detectChanges();
+      expect(nativeMenus.length).toBe(1);
+    });
+
+    it('should close the open menu on background click', () => {
+      nativeTrigger.click();
+      detectChanges();
+
+      document.body.click();
+      detectChanges();
+
+      expect(nativeMenus.length).toBe(1);
+    });
+
+    it('should close the open menu when clicking on an inline menu item', () => {
+      nativeTrigger.click();
+      detectChanges();
+
+      fixture.componentInstance.nativeInlineItem.nativeElement.click();
+      detectChanges();
+
+      expect(nativeMenus.length).toBe(1);
+    });
+  });
 });
 
 @Component({
@@ -426,3 +528,24 @@ class TriggersWithSameMenuSameMenuBar {}
 //     this._changeDetector.detectChanges();
 //   }
 // }
+@Component({
+  template: `
+    <button cdkMenuItem [cdkMenuTriggerFor]="sub1">First</button>
+
+    <ng-template cdkMenuPanel #sub1="cdkMenuPanel">
+      <div cdkMenu [cdkMenuPanel]="sub1">
+        <button #submenu_item cdkMenuItem [cdkMenuTriggerFor]="sub2">Second</button>
+      </div>
+    </ng-template>
+
+    <div cdkMenu>
+      <button #inline_item cdkMenuItem></button>
+    </div>
+  `,
+})
+class StandaloneTriggerWithInlineMenu {
+  @ViewChild(CdkMenuItem, {read: ElementRef}) nativeTrigger: ElementRef<HTMLElement>;
+  @ViewChild('submenu_item', {read: ElementRef}) submenuItem?: ElementRef<HTMLElement>;
+  @ViewChild('inline_item', {read: ElementRef}) nativeInlineItem: ElementRef<HTMLElement>;
+  @ViewChildren(CdkMenu, {read: ElementRef}) nativeMenus: QueryList<ElementRef>;
+}

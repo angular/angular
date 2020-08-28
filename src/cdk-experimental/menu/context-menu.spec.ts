@@ -1,4 +1,4 @@
-import {Component, ViewChild, ElementRef, Type} from '@angular/core';
+import {Component, ViewChild, ElementRef, Type, ViewChildren, QueryList} from '@angular/core';
 import {CdkMenuModule} from './menu-module';
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 import {CdkMenu} from './menu';
@@ -84,7 +84,7 @@ describe('CdkContextMenuTrigger', () => {
       openContextMenu();
       openContextMenu();
 
-      const menus = fixture.debugElement.queryAll(By.directive(CdkMenu));
+      const menus = fixture.componentInstance.menus;
       expect(menus.length)
         .withContext('two context menu triggers should result in a single context menu')
         .toBe(1);
@@ -392,6 +392,8 @@ class SimpleContextMenu {
   @ViewChild(CdkContextMenuTrigger, {read: ElementRef}) trigger: ElementRef<HTMLElement>;
   @ViewChild(CdkMenu) menu?: CdkMenu;
   @ViewChild(CdkMenu, {read: ElementRef}) nativeMenu?: ElementRef<HTMLElement>;
+
+  @ViewChildren(CdkMenu) menus: QueryList<CdkMenu>;
 }
 
 @Component({
