@@ -244,7 +244,10 @@ jobs:
       - *yarn_install
       - *setup_bazel_binary
 
-      - run: bazel test src/... --build_tag_filters=e2e --test_tag_filters=e2e --build_tests_only
+      # Run e2e tests. Note that protractor test targets are flaky sometimes, so we run them
+      # with flaky test attempts. This means that Bazel will re-run a failed e2e test target
+      # a second time to ensure it's a real test failure. This improves CI stability.
+      - run: yarn e2e --flaky_test_attempts=2
       - *slack_notify_on_failure
 
   # ------------------------------------------------------------------------------------------

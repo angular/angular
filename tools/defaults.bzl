@@ -198,12 +198,8 @@ def karma_web_test_suite(name, **kwargs):
         **kwargs
     )
 
-# Protractor web test targets are flaky by default as the browser can sometimes
-# crash (e.g. due to too much concurrency). Passing the "flaky" flag ensures that
-# Bazel detects flaky tests and re-runs these a second time in case of a flake.
-def protractor_web_test_suite(flaky = True, **kwargs):
+def protractor_web_test_suite(**kwargs):
     _protractor_web_test_suite(
-        flaky = flaky,
         browsers = ["@npm_angular_dev_infra_private//browsers/chromium:chromium"],
         **kwargs
     )

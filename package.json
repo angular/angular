@@ -21,7 +21,7 @@
     "test-local": "yarn -s test --local",
     "test-firefox": "yarn -s test --firefox",
     "lint": "yarn -s tslint && yarn -s stylelint && yarn -s ownerslint && yarn -s ng-dev format changed --check",
-    "e2e": "bazel test //src/... --test_tag_filters=e2e",
+    "e2e": "bazel test //src/... --build_tag_filters=e2e --test_tag_filters=e2e --build_tests_only",
     "deploy-dev-app": "node ./scripts/deploy-dev-app.js",
     "breaking-changes": "ts-node --project scripts/tsconfig.json scripts/breaking-changes.ts",
     "gulp": "gulp",
