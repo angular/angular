@@ -1,3 +1,4 @@
+import {caretaker} from './caretaker';
 import {commitMessage} from './commit-message';
 import {format} from './format';
 import {github} from './github';
@@ -8,4 +9,5 @@ module.exports = {
   format,
   github,
   merge,
+  caretaker,
 };
