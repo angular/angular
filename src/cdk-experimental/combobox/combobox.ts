@@ -114,6 +114,10 @@ export class CdkCombobox<T = unknown> implements OnDestroy, AfterContentInit {
   }
 
   ngOnDestroy() {
+    if (this._overlayRef) {
+      this._overlayRef.dispose();
+    }
+
     this.opened.complete();
     this.closed.complete();
     this.panelValueChanged.complete();

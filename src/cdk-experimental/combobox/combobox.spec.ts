@@ -179,6 +179,18 @@ describe('Combobox', () => {
 
       expect(comboboxInstance.isOpen()).toBeFalse();
     });
+
+    it('should clean up the overlay on destroy', () => {
+      expect(document.querySelectorAll('.cdk-overlay-pane').length).toBe(0);
+
+      dispatchMouseEvent(comboboxElement, 'click');
+      fixture.detectChanges();
+      expect(document.querySelectorAll('.cdk-overlay-pane').length).toBe(1);
+
+      fixture.destroy();
+      expect(document.querySelectorAll('.cdk-overlay-pane').length).toBe(0);
+    });
+
   });
 
   describe('with a coerce open action property function', () => {
