@@ -9,13 +9,14 @@
 export {DragDrop} from './drag-drop';
 export {DragRef, DragRefConfig, Point} from './drag-ref';
 export {DropListRef} from './drop-list-ref';
+export {CDK_DRAG_PARENT} from './drag-parent';
 
 export * from './drag-events';
 export * from './drag-utils';
 export * from './drag-drop-module';
 export * from './drag-drop-registry';
 
-export {CdkDropList} from './directives/drop-list';
+export {CdkDropList, CDK_DROP_LIST} from './directives/drop-list';
 export * from './directives/config';
 export * from './directives/drop-list-group';
 export * from './directives/drag';

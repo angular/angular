@@ -2,9 +2,13 @@ export declare const CDK_DRAG_CONFIG: InjectionToken<DragDropConfig>;
 
 export declare const CDK_DRAG_HANDLE: InjectionToken<CdkDragHandle>;
 
+export declare const CDK_DRAG_PARENT: InjectionToken<{}>;
+
 export declare const CDK_DRAG_PLACEHOLDER: InjectionToken<CdkDragPlaceholder<any>>;
 
 export declare const CDK_DRAG_PREVIEW: InjectionToken<CdkDragPreview<any>>;
+
+export declare const CDK_DROP_LIST: InjectionToken<CdkDropList<any>>;
 
 export declare const CDK_DROP_LIST_GROUP: InjectionToken<CdkDropListGroup<unknown>>;
 
