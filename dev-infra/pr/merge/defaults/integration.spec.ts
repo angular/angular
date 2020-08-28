@@ -280,7 +280,21 @@ describe('default target labels', () => {
         .toBeRejectedWithError('Invalid version detected in following branch: 11.1.x.');
   });
 
-  it('should error if branch more recent than version in "next" branch is found', async () => {
+  it('should error if version-branch more recent than "next" is discovered', async () => {
+    interceptBranchVersionRequest('master', '11.2.0-next.0');
+    interceptBranchVersionRequest('11.3.x', '11.3.0-next.0');
+    interceptBranchVersionRequest('11.1.x', '11.1.5');
+    interceptBranchesListRequest(['11.1.x', '11.3.x']);
+
+    await expectAsync(getBranchesForLabel('target: lts', '10.2.x'))
+        .toBeRejectedWithError(
+            'Discovered unexpected version-branch "11.3.x" for a release-train that is ' +
+            'more recent than the release-train currently in the "master" branch. Please ' +
+            'either delete the branch if created by accident, or update the outdated version ' +
+            'in the next branch (master).');
+  });
+
+  it('should error if branch is matching with release-train in the "next" branch', async () => {
     interceptBranchVersionRequest('master', '11.2.0-next.0');
     interceptBranchVersionRequest('11.2.x', '11.2.0-next.0');
     interceptBranchVersionRequest('11.1.x', '11.1.5');
@@ -288,9 +302,9 @@ describe('default target labels', () => {
 
     await expectAsync(getBranchesForLabel('target: lts', '10.2.x'))
         .toBeRejectedWithError(
-            'Discovered unexpected version-branch that is representing a minor version more ' +
-            'recent than the one in the "master" branch. Consider deleting the branch, or check ' +
-            'if the version in "master" is outdated.');
+            'Discovered unexpected version-branch "11.2.x" for a release-train that is already ' +
+            'active in the "master" branch. Please either delete the branch if created by ' +
+            'accident, or update the version in the next branch (master).');
   });
 
   it('should allow merging PR only into patch branch with "target: patch"', async () => {

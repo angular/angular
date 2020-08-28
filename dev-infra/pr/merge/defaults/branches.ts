@@ -165,6 +165,11 @@ export async function findActiveVersionBranches(
   latestVersionBranch: string | null,
   releaseCandidateBranch: string | null,
 }> {
+  // Version representing the release-train currently in the next phase. Note that we ignore
+  // patch and pre-release segments in order to be able to compare the next release train to
+  // other release trains from version branches (which follow the `N.N.x` pattern).
+  const nextReleaseTrainVersion = semver.parse(`${nextVersion.major}.${nextVersion.minor}.0`)!;
+
   let latestVersionBranch: string|null = null;
   let releaseCandidateBranch: string|null = null;
 
@@ -177,15 +182,21 @@ export async function findActiveVersionBranches(
   // next version-branch as that one is supposed to be the latest active version-branch. If it
   // is not, then an error will be thrown due to two FF/RC branches existing at the same time.
   for (const {name, parsed} of branches) {
-    // It can happen that version branches that are more recent than the version in the next
-    // branch (i.e. `master`) have been created. We could ignore such branches silently, but
-    // it might actually be symptomatic for an outdated version in the `next` branch, or an
+    // It can happen that version branches have been accidentally created which are more recent
+    // than the release-train in the next branch (i.e. `master`). We could ignore such branches
+    // silently, but it might be symptomatic for an outdated version in the `next` branch, or an
     // accidentally created branch by the caretaker. In either way we want to raise awareness.
-    if (semver.gte(parsed, nextVersion)) {
+    if (semver.gt(parsed, nextReleaseTrainVersion)) {
       throw Error(
-          `Discovered unexpected version-branch that is representing a minor ` +
-          `version more recent than the one in the "${nextBranchName}" branch. Consider ` +
-          `deleting the branch, or check if the version in "${nextBranchName}" is outdated.`);
+          `Discovered unexpected version-branch "${name}" for a release-train that is ` +
+          `more recent than the release-train currently in the "${nextBranchName}" branch. ` +
+          `Please either delete the branch if created by accident, or update the outdated ` +
+          `version in the next branch (${nextBranchName}).`);
+    } else if (semver.eq(parsed, nextReleaseTrainVersion)) {
+      throw Error(
+          `Discovered unexpected version-branch "${name}" for a release-train that is already ` +
+          `active in the "${nextBranchName}" branch. Please either delete the branch if ` +
+          `created by accident, or update the version in the next branch (${nextBranchName}).`);
     }
 
     const version = await getVersionOfBranch(repo, name);
