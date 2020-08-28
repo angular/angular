@@ -22,22 +22,13 @@ const shelljs = require('shelljs');
 const chalk = require('chalk');
 const path = require('path');
 const args = process.argv.slice(2);
+const {guessPackageName, convertPathToPosix} = require('./util');
 
 // Path to the project directory.
 const projectDir = path.join(__dirname, '../');
 
 // Path to the directory that contains all packages.
 const packagesDir = path.join(projectDir, 'src/');
-
-// List of packages where the specified component could be defined in. The script uses the
-// first package that contains the component (if no package is specified explicitly).
-// e.g. "button" will become "material/button", and "overlay" becomes "cdk/overlay".
-const orderedGuessPackages = ['material', 'cdk', 'material-experimental', 'cdk-experimental'];
-
-/** Map of common typos in target names. The key is the typo, the value is the correct form. */
-const commonTypos = new Map([
-  ['snackbar', 'snack-bar'],
-]);
 
 // ShellJS should exit if any command fails.
 shelljs.set('-e');
@@ -95,7 +86,6 @@ if (!components.length) {
 
 const bazelAction = local ? 'run' : 'test';
 const testLabels = components
-    .map(t => correctTypos(t))
     .map(t => `${getBazelPackageOfComponentName(t)}:${getTargetName(t)}`);
 
 // Runs Bazel for the determined test labels.
@@ -113,17 +103,17 @@ function getBazelPackageOfComponentName(name) {
   if (targetName !== null) {
     return targetName;
   }
-  // If the name does not contain an explicit package name, we try guessing the
-  // package name by walking through an ordered list of possible packages and checking
-  // if a package contains a component with the given name. The first match will be used.
-  for (let guessPackage of orderedGuessPackages) {
-    const guessTargetName = convertPathToBazelLabel(path.join(packagesDir, guessPackage, name));
-    if (guessTargetName !== null) {
-      return guessTargetName;
-    }
+  // If the name does not contain an explicit package name, try to guess it.
+  const guess = guessPackageName(name, packagesDir);
+  const guessLabel =
+      guess.result ? convertPathToBazelLabel(path.join(packagesDir, guess.result)) : null;
+
+  if (guessLabel) {
+    return guessLabel;
   }
+
   console.error(chalk.red(`Could not find test target for specified component: ` +
-    `${chalk.yellow(name)}. Looked in packages: ${orderedGuessPackages.join(', ')}`));
+    `${chalk.yellow(name)}. Looked in packages: \n${guess.attempts.join('\n')}`));
   process.exit(1);
 }
 
@@ -133,21 +123,6 @@ function convertPathToBazelLabel(name) {
     return `//${convertPathToPosix(path.relative(projectDir, name))}`;
   }
   return null;
-}
-
-/** Correct common typos in a target name */
-function correctTypos(target) {
-  let correctedTarget = target;
-  for (const [typo, correction] of commonTypos) {
-    correctedTarget = correctedTarget.replace(typo, correction);
-  }
-
-  return correctedTarget;
-}
-
-/** Converts an arbitrary path to a Posix path. */
-function convertPathToPosix(pathName) {
-  return pathName.replace(/\\/g, '/');
 }
 
 /** Gets the name of the target that should be run. */
