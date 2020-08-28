@@ -14,10 +14,10 @@ export class CdkCustomStepperWithoutFormExample {}
   selector: 'example-custom-stepper',
   templateUrl: './example-custom-stepper.html',
   styleUrls: ['./example-custom-stepper.css'],
-  providers: [{ provide: CdkStepper, useExisting: CustomStepper }]
+  providers: [{provide: CdkStepper, useExisting: CustomStepper}]
 })
 export class CustomStepper extends CdkStepper {
-  onClick(index: number): void {
+  selectStepByIndex(index: number): void {
     this.selectedIndex = index;
   }
 }
