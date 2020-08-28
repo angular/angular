@@ -141,10 +141,10 @@ A typical Angular `Route` has two properties:
 This tells the router to match that URL to `path: 'heroes'`
 and display the `HeroesComponent` when the URL is something like `localhost:4200/heroes`.
 -->
-이 파일은 라우팅 규칙을 정의하는 부분도 변경되었습니다.
+새롭게 만든 파일에서는 라우팅 규칙을 정의하는 부분도 변경되었습니다.
 *라우팅 규칙*은  사용자가 링크를 클릭하거나 브라우저 주소표시줄에 URL을 직접 입력했을 때 라우터가 어떤 화면을 표시할지 정의한 것입니다.
 
-`HeroesComponent`는 이미 `AppRoutingModule`이 import 하고 있으므로, `routes` 배열에서 사용할 수 있습니다.
+이전 섹션에서 로드했던 `HeroesComponent`를 라우팅 규칙으로 등록하려면 `routes` 배열을 다음과 같이 작성하면 됩니다:
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts"
   region="heroes-route">
