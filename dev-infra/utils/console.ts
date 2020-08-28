@@ -7,7 +7,7 @@
  */
 
 import chalk from 'chalk';
-import {existsSync, readFileSync, writeFileSync} from 'fs-extra';
+import {writeFileSync} from 'fs-extra';
 import {createPromptModule, ListChoiceOptions, prompt} from 'inquirer';
 import * as inquirerAutocomplete from 'inquirer-autocomplete-prompt';
 import {join} from 'path';
@@ -163,10 +163,28 @@ function getLogLevel() {
 
 /** All text to write to the log file. */
 let LOGGED_TEXT = '';
+/** Whether file logging as been enabled. */
+let FILE_LOGGING_ENABLED = false;
+/**
+ * The number of columns used in the prepended log level information on each line of the logging
+ * output file.
+ */
+const LOG_LEVEL_COLUMNS = 7;
 
-/** Enable the writing to the log file, setting the initial lines from the command execution. */
+/**
+ * Enable writing the logged outputs to the log file on process exit, sets initial lines from the
+ * command execution, containing information about the timing and command parameters.
+ *
+ * This is expected to be called only once during a command run, and should be called by the
+ * middleware of yargs to enable the file logging before the rest of the command parsing and
+ * response is executed.
+ */
 export function enableFileLogging(argv: Arguments) {
-  /** The current date time when the file was initialized. */
+  if (FILE_LOGGING_ENABLED) {
+    debug('Skipping enabling of file logging as it is already enabled');
+    return;
+  }
+  /** The date time used for timestamping when the command was invoked. */
   const now = new Date();
   /** Header line to separate command runs in log files. */
   const headerLine = Array(100).fill('#').join('');
@@ -174,16 +192,11 @@ export function enableFileLogging(argv: Arguments) {
 
   // On process exit, write the logged output to the appropriate log files
   process.on('exit', (code: number) => {
+    LOGGED_TEXT += `Command ran in ${new Date().getTime() - now.getTime()}ms`;
     /** Path to the log file location. */
     const logFilePath = join(getRepoBaseDir(), '.ng-dev.log');
-    /** The current contents of the log file. */
-    const logContents = existsSync(logFilePath) ? readFileSync(logFilePath).toString() : '';
-    /**
-     * The new contents of the log file, the last 10,000 lines of the combined current and new
-     * logged lines.
-     */
-    const combinedLog = (logContents + LOGGED_TEXT).split('\n').slice(-10000).join('\n');
-    writeFileSync(logFilePath, combinedLog);
+
+    writeFileSync(logFilePath, LOGGED_TEXT);
 
     // For failure codes greater than 1, the new logged lines should be written to a specific log
     // file for the command run failure.
@@ -191,10 +204,13 @@ export function enableFileLogging(argv: Arguments) {
       writeFileSync(join(getRepoBaseDir(), `.ng-dev.err-${now.getTime()}.log`), LOGGED_TEXT);
     }
   });
+
+  // Mark file logging as enabled to prevent the function from executing multiple times.
+  FILE_LOGGING_ENABLED = true;
 }
 
 /** Write the provided text to the log file, prepending each line with the log level.  */
 function printToLogFile(logLevel: LOG_LEVELS, ...text: string[]) {
-  const logLevelText = `${LOG_LEVELS[logLevel]}:`.padEnd(7);
+  const logLevelText = `${LOG_LEVELS[logLevel]}:`.padEnd(LOG_LEVEL_COLUMNS);
   LOGGED_TEXT += text.join(' ').split('\n').map(l => `${logLevelText} ${l}\n`).join('');
 }
