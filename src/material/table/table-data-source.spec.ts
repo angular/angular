@@ -20,8 +20,8 @@ describe('MatTableDataSource', () => {
 
     beforeEach(() => {
       fixture = TestBed.createComponent(MatSortApp);
-      sort = fixture.componentInstance.sort;
       fixture.detectChanges();
+      sort = fixture.componentInstance.sort;
     });
 
     /** Test the data source's `sortData` function. */
@@ -58,5 +58,5 @@ describe('MatTableDataSource', () => {
   template: `<div matSort matSortDirection="asc"></div>`
 })
 class MatSortApp {
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort;
 }

@@ -635,7 +635,7 @@ class MatTableApp {
   columnsToRender = ['column_a', 'column_b', 'column_c'];
   isFourthRow = (i: number, _rowData: TestData) => i == 3;
 
-  @ViewChild(MatTable, {static: true}) table: MatTable<TestData>;
+  @ViewChild(MatTable) table: MatTable<TestData>;
 }
 
 @Component({
@@ -668,7 +668,7 @@ class NativeHtmlTableApp {
   dataSource: FakeDataSource | null = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
-  @ViewChild(MatTable, {static: true}) table: MatTable<TestData>;
+  @ViewChild(MatTable) table: MatTable<TestData>;
 }
 
 @Component({
@@ -736,7 +736,7 @@ class StickyTableApp {
   dataSource = new FakeDataSource();
   columnsToRender = ['column_a'];
 
-  @ViewChild(MatTable, {static: true}) table: MatTable<TestData>;
+  @ViewChild(MatTable) table: MatTable<TestData>;
 }
 
 
@@ -803,9 +803,9 @@ class ArrayDataSourceMatTableApp implements AfterViewInit {
   dataSource = new MatTableDataSource<TestData>();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
-  @ViewChild(MatTable, {static: true}) table: MatTable<TestData>;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild(MatTable) table: MatTable<TestData>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatSortHeader) sortHeader: MatSortHeader;
 
   constructor() {
@@ -856,8 +856,8 @@ class MatTableWithSortApp implements OnInit {
   dataSource = new MatTableDataSource<TestData>();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
-  @ViewChild(MatTable, {static: true}) table: MatTable<TestData>;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild(MatTable) table: MatTable<TestData>;
+  @ViewChild(MatSort) sort: MatSort;
 
   constructor() {
     this.underlyingDataSource.data = [];
@@ -907,8 +907,8 @@ class MatTableWithPaginatorApp implements OnInit {
   dataSource = new MatTableDataSource<TestData>();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
-  @ViewChild(MatTable, {static: true}) table: MatTable<TestData>;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatTable) table: MatTable<TestData>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor() {
     this.underlyingDataSource.data = [];

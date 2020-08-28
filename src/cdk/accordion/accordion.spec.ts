@@ -53,6 +53,7 @@ describe('CdkAccordion', () => {
 
   it('should not register nested items to the same accordion', () => {
     const fixture = TestBed.createComponent(NestedItems);
+    fixture.detectChanges();
     const innerItem = fixture.componentInstance.innerItem;
     const outerItem = fixture.componentInstance.outerItem;
 
@@ -77,6 +78,6 @@ class SetOfItems {
     </cdk-accordion-item>
   </cdk-accordion>`})
 class NestedItems {
-  @ViewChild('outerItem', {static: true}) outerItem: CdkAccordionItem;
-  @ViewChild('innerItem', {static: true}) innerItem: CdkAccordionItem;
+  @ViewChild('outerItem') outerItem: CdkAccordionItem;
+  @ViewChild('innerItem') innerItem: CdkAccordionItem;
 }

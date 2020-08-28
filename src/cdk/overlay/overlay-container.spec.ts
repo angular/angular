@@ -24,7 +24,7 @@ describe('OverlayContainer', () => {
 
   it('should remove the overlay container element from the DOM on destruction', () => {
     const fixture = TestBed.createComponent(TestComponentWithTemplatePortals);
-
+    fixture.detectChanges();
     const overlayRef = overlay.create();
     overlayRef.attach(fixture.componentInstance.templatePortal);
     fixture.detectChanges();
@@ -101,7 +101,7 @@ describe('OverlayContainer', () => {
   providers: [Overlay],
 })
 class TestComponentWithTemplatePortals {
-  @ViewChild(CdkPortal, {static: true}) templatePortal: CdkPortal;
+  @ViewChild(CdkPortal) templatePortal: CdkPortal;
 
   constructor(public viewContainerRef: ViewContainerRef) { }
 }

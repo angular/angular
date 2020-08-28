@@ -37,6 +37,7 @@ describe('Portals', () => {
 
     beforeEach(() => {
       fixture = TestBed.createComponent(PortalTestApp);
+      fixture.detectChanges();
 
       inject([ComponentFactoryResolver], (cfr: ComponentFactoryResolver) => {
         componentFactoryResolver = cfr;
@@ -348,6 +349,7 @@ describe('Portals', () => {
       fixture.destroy();
 
       const unboundFixture = TestBed.createComponent(UnboundPortalTestApp);
+      unboundFixture.detectChanges();
 
       // Note: calling `detectChanges` here will cause a false positive.
       // What we're testing is attaching before the first CD cycle.
@@ -717,10 +719,10 @@ class ArbitraryViewContainerRefComponent {
 })
 class PortalTestApp {
   @ViewChildren(CdkPortal) portals: QueryList<CdkPortal>;
-  @ViewChild(CdkPortalOutlet, {static: true}) portalOutlet: CdkPortalOutlet;
-  @ViewChild('templateRef', {read: TemplateRef, static: true}) templateRef: TemplateRef<any>;
-  @ViewChild('domPortalContent', {static: true}) domPortalContent: ElementRef<HTMLElement>;
-  @ViewChild('alternateContainer', {read: ViewContainerRef, static: true})
+  @ViewChild(CdkPortalOutlet) portalOutlet: CdkPortalOutlet;
+  @ViewChild('templateRef', {read: TemplateRef}) templateRef: TemplateRef<any>;
+  @ViewChild('domPortalContent') domPortalContent: ElementRef<HTMLElement>;
+  @ViewChild('alternateContainer', {read: ViewContainerRef})
   alternateContainer: ViewContainerRef;
 
   selectedPortal: Portal<any>|undefined;
@@ -757,7 +759,7 @@ class PortalTestApp {
   `,
 })
 class UnboundPortalTestApp {
-  @ViewChild(CdkPortalOutlet, {static: true}) portalOutlet: CdkPortalOutlet;
+  @ViewChild(CdkPortalOutlet) portalOutlet: CdkPortalOutlet;
 }
 
 // Create a real (non-test) NgModule as a workaround for

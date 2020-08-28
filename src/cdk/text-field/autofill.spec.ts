@@ -33,13 +33,12 @@ describe('AutofillMonitor', () => {
     autofillMonitor = afm;
     fixture = TestBed.createComponent(Inputs);
     testComponent = fixture.componentInstance;
+    fixture.detectChanges();
 
     for (const input of [testComponent.input1, testComponent.input2, testComponent.input3]) {
       spyOn(input.nativeElement, 'addEventListener');
       spyOn(input.nativeElement, 'removeEventListener');
     }
-
-    fixture.detectChanges();
   }));
 
   afterEach(() => {
@@ -217,9 +216,9 @@ describe('cdkAutofill', () => {
 })
 class Inputs {
   // Cast to `any` so we can stub out some methods in the tests.
-  @ViewChild('input1', {static: true}) input1: ElementRef<any>;
-  @ViewChild('input2', {static: true}) input2: ElementRef<any>;
-  @ViewChild('input3', {static: true}) input3: ElementRef<any>;
+  @ViewChild('input1') input1: ElementRef<any>;
+  @ViewChild('input2') input2: ElementRef<any>;
+  @ViewChild('input3') input3: ElementRef<any>;
 }
 
 @Component({

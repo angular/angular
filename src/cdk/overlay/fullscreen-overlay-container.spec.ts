@@ -70,6 +70,7 @@ describe('FullscreenOverlayContainer', () => {
 
   it('should open an overlay inside a fullscreen element and move it to the body', () => {
     const fixture = TestBed.createComponent(TestComponentWithTemplatePortals);
+    fixture.detectChanges();
     const overlayRef = overlay.create();
     const fullscreenElement = fakeDocument.fullscreenElement;
 
@@ -91,6 +92,7 @@ describe('FullscreenOverlayContainer', () => {
     fakeDocument.fullscreenElement = null;
 
     const fixture = TestBed.createComponent(TestComponentWithTemplatePortals);
+    fixture.detectChanges();
     const overlayRef = overlay.create();
 
     overlayRef.attach(fixture.componentInstance.templatePortal);
@@ -114,7 +116,7 @@ describe('FullscreenOverlayContainer', () => {
   providers: [Overlay],
 })
 class TestComponentWithTemplatePortals {
-  @ViewChild(CdkPortal, {static: true}) templatePortal: CdkPortal;
+  @ViewChild(CdkPortal) templatePortal: CdkPortal;
 
   constructor(public viewContainerRef: ViewContainerRef) { }
 }
