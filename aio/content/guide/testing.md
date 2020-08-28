@@ -217,7 +217,7 @@ script:
   - npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
-This does the same things as the Circle CI configuration, except that Travis doesn't come with Chrome, so we use Chromium instead.
+This does the same things as the CircleCI configuration, except that Travis doesn't come with Chrome, so use Chromium instead.
 
 Step 2: Commit your changes and push them to your repository.
 
