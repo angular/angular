@@ -11,12 +11,10 @@ import {getConfig, getRepoBaseDir} from '../../utils/config';
 import {error, green, info, promptConfirm, red, yellow} from '../../utils/console';
 import {GitClient} from '../../utils/git';
 import {GithubApiRequestError} from '../../utils/git/github';
+import {GITHUB_TOKEN_GENERATE_URL} from '../../utils/yargs';
 
-import {loadAndValidateConfig, MergeConfig, MergeConfigWithRemote} from './config';
+import {loadAndValidateConfig, MergeConfigWithRemote} from './config';
 import {MergeResult, MergeStatus, PullRequestMergeTask} from './task';
-
-/** URL to the Github page where personal access tokens can be generated. */
-export const GITHUB_TOKEN_GENERATE_URL = `https://github.com/settings/tokens`;
 
 
 /**
