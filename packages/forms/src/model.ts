@@ -1659,7 +1659,7 @@ export class FormGroup extends AbstractControl {
   _throwIfControlMissing(name: string): void {
     if (!Object.keys(this.controls).length) {
       throw new Error(`
-        There are no form controls registered with this group yet.  If you're using ngModel,
+        There are no form controls registered with this group yet. If you're using ngModel,
         you may want to check next tick (e.g. use setTimeout).
       `);
     }
@@ -2101,7 +2101,7 @@ export class FormArray extends AbstractControl {
   _throwIfControlMissing(index: number): void {
     if (!this.controls.length) {
       throw new Error(`
-        There are no form controls registered with this array yet.  If you're using ngModel,
+        There are no form controls registered with this array yet. If you're using ngModel,
         you may want to check next tick (e.g. use setTimeout).
       `);
     }
