@@ -10,8 +10,8 @@ import { Hero } from '../shared/hero.model';
   template: `
     <section>
       Our list of heroes:
-      <hero-profile *ngFor="let hero of heroes" [hero]="hero">
-      </hero-profile>
+      <toh-hero *ngFor="let hero of heroes" [hero]="hero">
+      </toh-hero>
       Total powers: {{totalPowers}}<br>
       Average power: {{totalPowers / heroes.length}}
     </section>
