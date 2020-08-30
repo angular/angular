@@ -236,7 +236,7 @@ For more information about services, see [Introduction to Services and Dependenc
 <!-- Accessing data with the HTTP client -->
 
 Servers often return data in the form of a stream.
-Streams are useful because they make it easy to transform the returned data and  make modifications to the way you request that data.
+Streams are useful because they make it easy to transform the returned data and make modifications to the way you request that data.
 The Angular HTTP client, `HttpClient`, is a built-in way to fetch data from external APIs and provide them to your app as a stream.
 
 This section shows you how to use the HTTP client to retrieve shipping prices from an external file.
