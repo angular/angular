@@ -435,7 +435,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           },
         });
       });
-      it('processes resource removed notifications when sent', done => {
+      it('processes unrecoverable notifications when sent', done => {
         update.unrecoverable.subscribe(event => {
           expect(event.reason).toEqual('Invalid Resource');
           expect(event.type).toEqual('UNRECOVERABLE_STATE');
