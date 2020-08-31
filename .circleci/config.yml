@@ -553,7 +553,8 @@ jobs:
       # Publish `zone.js` package.
       - run:
           name: Create artifacts for zone.js package
-          command: ./scripts/ci/create-package-archives.sh $CI_BRANCH $CI_COMMIT $ZONEJS_PACKAGES_DIR $ZONEJS_PACKAGES_ARCHIVES_DIR
+          # Need to remove the zone.js.tgz before archive
+          command: rm -rf $ZONEJS_PACKAGES_DIR/archive && ./scripts/ci/create-package-archives.sh $CI_BRANCH $CI_COMMIT $ZONEJS_PACKAGES_DIR $ZONEJS_PACKAGES_ARCHIVES_DIR
       - store_artifacts:
           path: *zonejs_packages_archives_dir
           destination: zone.js
