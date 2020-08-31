@@ -11,7 +11,7 @@
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
     "tslib": "file:../../node_modules/tslib",
-    "zone.js": "file:../../dist/zone.js-dist/zone.js"
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "devDependencies": {
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
