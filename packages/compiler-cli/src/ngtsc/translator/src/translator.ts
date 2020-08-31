@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, Type, TypeofExpr, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ParseSourceSpan, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, Type, TypeofExpr, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import {LocalizedString, UnaryOperator, UnaryOperatorExpr} from '@angular/compiler/src/output/output_ast';
 import * as ts from 'typescript';
 
@@ -212,7 +212,7 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
 
   visitReadVarExpr(ast: ReadVarExpr, context: Context): ts.Identifier {
     const identifier = ts.createIdentifier(ast.name!);
-    this.setSourceMapRange(identifier, ast);
+    this.setSourceMapRange(identifier, ast.sourceSpan);
     return identifier;
   }
 
@@ -244,7 +244,7 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     const call = ts.createCall(
         ast.name !== null ? ts.createPropertyAccess(target, ast.name) : target, undefined,
         ast.args.map(arg => arg.visitExpression(this, context)));
-    this.setSourceMapRange(call, ast);
+    this.setSourceMapRange(call, ast.sourceSpan);
     return call;
   }
 
@@ -255,7 +255,7 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     if (ast.pure) {
       ts.addSyntheticLeadingComment(expr, ts.SyntaxKind.MultiLineCommentTrivia, '@__PURE__', false);
     }
-    this.setSourceMapRange(expr, ast);
+    this.setSourceMapRange(expr, ast.sourceSpan);
     return expr;
   }
 
@@ -274,15 +274,15 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     } else {
       expr = ts.createLiteral(ast.value);
     }
-    this.setSourceMapRange(expr, ast);
+    this.setSourceMapRange(expr, ast.sourceSpan);
     return expr;
   }
 
   visitLocalizedString(ast: LocalizedString, context: Context): ts.Expression {
     const localizedString = this.scriptTarget >= ts.ScriptTarget.ES2015 ?
-        createLocalizedStringTaggedTemplate(ast, context, this) :
-        createLocalizedStringFunctionCall(ast, context, this, this.imports);
-    this.setSourceMapRange(localizedString, ast);
+        this.createLocalizedStringTaggedTemplate(ast, context) :
+        this.createLocalizedStringFunctionCall(ast, context);
+    this.setSourceMapRange(localizedString, ast.sourceSpan);
     return localizedString;
   }
 
@@ -395,7 +395,7 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   visitLiteralArrayExpr(ast: LiteralArrayExpr, context: Context): ts.ArrayLiteralExpression {
     const expr =
         ts.createArrayLiteral(ast.entries.map(expr => expr.visitExpression(this, context)));
-    this.setSourceMapRange(expr, ast);
+    this.setSourceMapRange(expr, ast.sourceSpan);
     return expr;
   }
 
@@ -405,7 +405,7 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
             entry.quoted ? ts.createLiteral(entry.key) : ts.createIdentifier(entry.key),
             entry.value.visitExpression(this, context)));
     const expr = ts.createObjectLiteral(entries);
-    this.setSourceMapRange(expr, ast);
+    this.setSourceMapRange(expr, ast.sourceSpan);
     return expr;
   }
 
@@ -424,9 +424,111 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     return ts.createTypeOf(ast.expr.visitExpression(this, context));
   }
 
-  private setSourceMapRange(expr: ts.Expression, ast: Expression) {
-    if (ast.sourceSpan) {
-      const {start, end} = ast.sourceSpan;
+  /**
+   * Translate the `LocalizedString` node into a `TaggedTemplateExpression` for ES2015 formatted
+   * output.
+   */
+  private createLocalizedStringTaggedTemplate(ast: LocalizedString, context: Context):
+      ts.TaggedTemplateExpression {
+    let template: ts.TemplateLiteral;
+    const length = ast.messageParts.length;
+    const metaBlock = ast.serializeI18nHead();
+    if (length === 1) {
+      template = ts.createNoSubstitutionTemplateLiteral(metaBlock.cooked, metaBlock.raw);
+      this.setSourceMapRange(template, ast.getMessagePartSourceSpan(0));
+    } else {
+      // Create the head part
+      const head = ts.createTemplateHead(metaBlock.cooked, metaBlock.raw);
+      this.setSourceMapRange(head, ast.getMessagePartSourceSpan(0));
+      const spans: ts.TemplateSpan[] = [];
+      // Create the middle parts
+      for (let i = 1; i < length - 1; i++) {
+        const resolvedExpression = ast.expressions[i - 1].visitExpression(this, context);
+        this.setSourceMapRange(resolvedExpression, ast.getPlaceholderSourceSpan(i - 1));
+        const templatePart = ast.serializeI18nTemplatePart(i);
+        const templateMiddle = createTemplateMiddle(templatePart.cooked, templatePart.raw);
+        this.setSourceMapRange(templateMiddle, ast.getMessagePartSourceSpan(i));
+        const templateSpan = ts.createTemplateSpan(resolvedExpression, templateMiddle);
+        spans.push(templateSpan);
+      }
+      // Create the tail part
+      const resolvedExpression = ast.expressions[length - 2].visitExpression(this, context);
+      this.setSourceMapRange(resolvedExpression, ast.getPlaceholderSourceSpan(length - 2));
+      const templatePart = ast.serializeI18nTemplatePart(length - 1);
+      const templateTail = createTemplateTail(templatePart.cooked, templatePart.raw);
+      this.setSourceMapRange(templateTail, ast.getMessagePartSourceSpan(length - 1));
+      spans.push(ts.createTemplateSpan(resolvedExpression, templateTail));
+      // Put it all together
+      template = ts.createTemplateExpression(head, spans);
+    }
+    const expression = ts.createTaggedTemplate(ts.createIdentifier('$localize'), template);
+    this.setSourceMapRange(expression, ast.sourceSpan);
+    return expression;
+  }
+
+  /**
+   * Translate the `LocalizedString` node into a `$localize` call using the imported
+   * `__makeTemplateObject` helper for ES5 formatted output.
+   */
+  private createLocalizedStringFunctionCall(ast: LocalizedString, context: Context) {
+    // A `$localize` message consists `messageParts` and `expressions`, which get interleaved
+    // together. The interleaved pieces look like:
+    // `[messagePart0, expression0, messagePart1, expression1, messagePart2]`
+    //
+    // Note that there is always a message part at the start and end, and so therefore
+    // `messageParts.length === expressions.length + 1`.
+    //
+    // Each message part may be prefixed with "metadata", which is wrapped in colons (:) delimiters.
+    // The metadata is attached to the first and subsequent message parts by calls to
+    // `serializeI18nHead()` and `serializeI18nTemplatePart()` respectively.
+
+    // The first message part (i.e. `ast.messageParts[0]`) is used to initialize `messageParts`
+    // array.
+    const messageParts = [ast.serializeI18nHead()];
+    const expressions: any[] = [];
+
+    // The rest of the `ast.messageParts` and each of the expressions are `ast.expressions` pushed
+    // into the arrays. Note that `ast.messagePart[i]` corresponds to `expressions[i-1]`
+    for (let i = 1; i < ast.messageParts.length; i++) {
+      expressions.push(ast.expressions[i - 1].visitExpression(this, context));
+      messageParts.push(ast.serializeI18nTemplatePart(i));
+    }
+
+    // The resulting downlevelled tagged template string uses a call to the `__makeTemplateObject()`
+    // helper, so we must ensure it has been imported.
+    const {moduleImport, symbol} =
+        this.imports.generateNamedImport('tslib', '__makeTemplateObject');
+    const __makeTemplateObjectHelper = (moduleImport === null) ?
+        ts.createIdentifier(symbol) :
+        ts.createPropertyAccess(ts.createIdentifier(moduleImport), ts.createIdentifier(symbol));
+
+    // Generate the call in the form:
+    // `$localize(__makeTemplateObject(cookedMessageParts, rawMessageParts), ...expressions);`
+    const cookedLiterals = messageParts.map(
+        (messagePart, i) =>
+            this.createLiteral(messagePart.cooked, ast.getMessagePartSourceSpan(i)));
+    const rawLiterals = messageParts.map(
+        (messagePart, i) => this.createLiteral(messagePart.raw, ast.getMessagePartSourceSpan(i)));
+    return ts.createCall(
+        /* expression */ ts.createIdentifier('$localize'),
+        /* typeArguments */ undefined,
+        /* argumentsArray */[
+          ts.createCall(
+              /* expression */ __makeTemplateObjectHelper,
+              /* typeArguments */ undefined,
+              /* argumentsArray */
+              [
+                ts.createArrayLiteral(cookedLiterals),
+                ts.createArrayLiteral(rawLiterals),
+              ]),
+          ...expressions,
+        ]);
+  }
+
+
+  private setSourceMapRange(expr: ts.Node, sourceSpan: ParseSourceSpan|null) {
+    if (sourceSpan) {
+      const {start, end} = sourceSpan;
       const {url, content} = start.file;
       if (url) {
         if (!this.externalSourceFiles.has(url)) {
@@ -436,6 +538,12 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
         ts.setSourceMapRange(expr, {pos: start.offset, end: end.offset, source});
       }
     }
+  }
+
+  private createLiteral(text: string, span: ParseSourceSpan|null) {
+    const literal = ts.createStringLiteral(text);
+    this.setSourceMapRange(literal, span);
+    return literal;
   }
 }
 
@@ -662,40 +770,6 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
   }
 }
 
-/**
- * Translate the `LocalizedString` node into a `TaggedTemplateExpression` for ES2015 formatted
- * output.
- */
-function createLocalizedStringTaggedTemplate(
-    ast: LocalizedString, context: Context, visitor: ExpressionVisitor) {
-  let template: ts.TemplateLiteral;
-  const length = ast.messageParts.length;
-  const metaBlock = ast.serializeI18nHead();
-  if (length === 1) {
-    template = ts.createNoSubstitutionTemplateLiteral(metaBlock.cooked, metaBlock.raw);
-  } else {
-    // Create the head part
-    const head = ts.createTemplateHead(metaBlock.cooked, metaBlock.raw);
-    const spans: ts.TemplateSpan[] = [];
-    // Create the middle parts
-    for (let i = 1; i < length - 1; i++) {
-      const resolvedExpression = ast.expressions[i - 1].visitExpression(visitor, context);
-      const templatePart = ast.serializeI18nTemplatePart(i);
-      const templateMiddle = createTemplateMiddle(templatePart.cooked, templatePart.raw);
-      spans.push(ts.createTemplateSpan(resolvedExpression, templateMiddle));
-    }
-    // Create the tail part
-    const resolvedExpression = ast.expressions[length - 2].visitExpression(visitor, context);
-    const templatePart = ast.serializeI18nTemplatePart(length - 1);
-    const templateTail = createTemplateTail(templatePart.cooked, templatePart.raw);
-    spans.push(ts.createTemplateSpan(resolvedExpression, templateTail));
-    // Put it all together
-    template = ts.createTemplateExpression(head, spans);
-  }
-  return ts.createTaggedTemplate(ts.createIdentifier('$localize'), template);
-}
-
-
 // HACK: Use this in place of `ts.createTemplateMiddle()`.
 // Revert once https://github.com/microsoft/TypeScript/issues/35374 is fixed
 function createTemplateMiddle(cooked: string, raw: string): ts.TemplateMiddle {
@@ -710,59 +784,4 @@ function createTemplateTail(cooked: string, raw: string): ts.TemplateTail {
   const node: ts.TemplateLiteralLikeNode = ts.createTemplateHead(cooked, raw);
   (node.kind as ts.SyntaxKind) = ts.SyntaxKind.TemplateTail;
   return node as ts.TemplateTail;
-}
-
-/**
- * Translate the `LocalizedString` node into a `$localize` call using the imported
- * `__makeTemplateObject` helper for ES5 formatted output.
- */
-function createLocalizedStringFunctionCall(
-    ast: LocalizedString, context: Context, visitor: ExpressionVisitor, imports: ImportManager) {
-  // A `$localize` message consists `messageParts` and `expressions`, which get interleaved
-  // together. The interleaved pieces look like:
-  // `[messagePart0, expression0, messagePart1, expression1, messagePart2]`
-  //
-  // Note that there is always a message part at the start and end, and so therefore
-  // `messageParts.length === expressions.length + 1`.
-  //
-  // Each message part may be prefixed with "metadata", which is wrapped in colons (:) delimiters.
-  // The metadata is attached to the first and subsequent message parts by calls to
-  // `serializeI18nHead()` and `serializeI18nTemplatePart()` respectively.
-
-  // The first message part (i.e. `ast.messageParts[0]`) is used to initialize `messageParts` array.
-  const messageParts = [ast.serializeI18nHead()];
-  const expressions: any[] = [];
-
-  // The rest of the `ast.messageParts` and each of the expressions are `ast.expressions` pushed
-  // into the arrays. Note that `ast.messagePart[i]` corresponds to `expressions[i-1]`
-  for (let i = 1; i < ast.messageParts.length; i++) {
-    expressions.push(ast.expressions[i - 1].visitExpression(visitor, context));
-    messageParts.push(ast.serializeI18nTemplatePart(i));
-  }
-
-  // The resulting downlevelled tagged template string uses a call to the `__makeTemplateObject()`
-  // helper, so we must ensure it has been imported.
-  const {moduleImport, symbol} = imports.generateNamedImport('tslib', '__makeTemplateObject');
-  const __makeTemplateObjectHelper = (moduleImport === null) ?
-      ts.createIdentifier(symbol) :
-      ts.createPropertyAccess(ts.createIdentifier(moduleImport), ts.createIdentifier(symbol));
-
-  // Generate the call in the form:
-  // `$localize(__makeTemplateObject(cookedMessageParts, rawMessageParts), ...expressions);`
-  return ts.createCall(
-      /* expression */ ts.createIdentifier('$localize'),
-      /* typeArguments */ undefined,
-      /* argumentsArray */[
-        ts.createCall(
-            /* expression */ __makeTemplateObjectHelper,
-            /* typeArguments */ undefined,
-            /* argumentsArray */
-            [
-              ts.createArrayLiteral(
-                  messageParts.map(messagePart => ts.createStringLiteral(messagePart.cooked))),
-              ts.createArrayLiteral(
-                  messageParts.map(messagePart => ts.createStringLiteral(messagePart.raw))),
-            ]),
-        ...expressions,
-      ]);
 }
