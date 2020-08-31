@@ -14,7 +14,10 @@ import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe,
 import {EOF, isIdentifier, isQuote, Lexer, Token, TokenType} from './lexer';
 
 export class SplitInterpolation {
-  constructor(public strings: string[], public expressions: string[], public offsets: number[]) {}
+  constructor(
+      public strings: string[], public stringSpans: {start: number, end: number}[],
+      public expressions: string[], public expressionsSpans: {start: number, end: number}[],
+      public offsets: number[]) {}
 }
 
 export class TemplateBindingParseResult {
@@ -194,18 +197,24 @@ export class Parser {
     const strings: string[] = [];
     const expressions: string[] = [];
     const offsets: number[] = [];
+    const stringSpans: {start: number, end: number}[] = [];
+    const expressionSpans: {start: number, end: number}[] = [];
     let offset = 0;
     for (let i = 0; i < parts.length; i++) {
       const part: string = parts[i];
       if (i % 2 === 0) {
         // fixed string
         strings.push(part);
+        const start = offset;
         offset += part.length;
+        stringSpans.push({start, end: offset});
       } else if (part.trim().length > 0) {
+        const start = offset;
         offset += interpolationConfig.start.length;
         expressions.push(part);
         offsets.push(offset);
         offset += part.length + interpolationConfig.end.length;
+        expressionSpans.push({start, end: offset});
       } else {
         this._reportError(
             'Blank expressions are not allowed in interpolated strings', input,
@@ -213,9 +222,10 @@ export class Parser {
             location);
         expressions.push('$implicit');
         offsets.push(offset);
+        expressionSpans.push({start: offset, end: offset});
       }
     }
-    return new SplitInterpolation(strings, expressions, offsets);
+    return new SplitInterpolation(strings, stringSpans, expressions, expressionSpans, offsets);
   }
 
   wrapLiteralPrimitive(input: string|null, location: any, absoluteOffset: number): ASTWithSource {
