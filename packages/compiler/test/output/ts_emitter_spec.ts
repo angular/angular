@@ -254,9 +254,12 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
     });
 
     it('should support localized strings', () => {
-      expect(emitStmt(new o.ExpressionStatement(o.localizedString(
-                 {}, ['ab\\:c', 'd"e\'f'], ['ph1'],
-                 [o.literal(7, o.NUMBER_TYPE).plus(o.literal(8, o.NUMBER_TYPE))]))))
+      const messageParts =
+          [new o.LiteralPiece('ab\\:c', {} as any), new o.LiteralPiece('d"e\'f', {} as any)];
+      const placeholders = [new o.PlaceholderPiece('ph1', {} as any)];
+      const expressions = [o.literal(7, o.NUMBER_TYPE).plus(o.literal(8, o.NUMBER_TYPE))];
+      const localizedString = o.localizedString({}, messageParts, placeholders, expressions);
+      expect(emitStmt(new o.ExpressionStatement(localizedString)))
           .toEqual('$localize `ab\\\\:c${(7 + 8)}:ph1:d"e\'f`;');
     });
 
