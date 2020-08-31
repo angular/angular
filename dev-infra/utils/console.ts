@@ -179,10 +179,9 @@ const LOG_LEVEL_COLUMNS = 7;
  * middleware of yargs to enable the file logging before the rest of the command parsing and
  * response is executed.
  */
-export function enableFileLogging(argv: Arguments) {
+export function captureLogOutputForCommand(argv: Arguments) {
   if (FILE_LOGGING_ENABLED) {
-    debug('Skipping enabling of file logging as it is already enabled');
-    return;
+    throw Error('`captureLogOutputForCommand` cannot be called multiple times');
   }
   /** The date time used for timestamping when the command was invoked. */
   const now = new Date();

@@ -13,10 +13,10 @@ import {buildCommitMessageParser} from './commit-message/cli';
 import {buildFormatParser} from './format/cli';
 import {buildReleaseParser} from './release/cli';
 import {buildPrParser} from './pr/cli';
-import {enableFileLogging} from './utils/console';
+import {captureLogOutputForCommand} from './utils/console';
 
 yargs.scriptName('ng-dev')
-    .middleware(enableFileLogging)
+    .middleware(captureLogOutputForCommand)
     .demandCommand()
     .recommendCommands()
     .command('commit-message <command>', '', buildCommitMessageParser)
