@@ -24,7 +24,7 @@ runInEachFileSystem((os) => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({sourceMap: true, target: 'ES2015', enableI18nLegacyMessageIdFormat: false});
+      env.tsconfig({sourceMap: true, target: 'es2015', enableI18nLegacyMessageIdFormat: false});
     });
 
     describe('Inline templates', () => {

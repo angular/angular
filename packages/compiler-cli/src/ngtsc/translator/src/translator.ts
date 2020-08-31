@@ -447,11 +447,8 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
         this.setSourceMapRange(resolvedExpression, ast.getPlaceholderSourceSpan(i - 1));
         const templatePart = ast.serializeI18nTemplatePart(i);
         const templateMiddle = createTemplateMiddle(templatePart.cooked, templatePart.raw);
-
-        // this.setSourceMapRange(resolvedExpression, ast.getMessagePartSourceSpan(i));
         this.setSourceMapRange(templateMiddle, ast.getMessagePartSourceSpan(i));
         const templateSpan = ts.createTemplateSpan(resolvedExpression, templateMiddle);
-        // this.setSourceMapRange(templateSpan, ast.getMessagePartSourceSpan(i));
         spans.push(templateSpan);
       }
       // Create the tail part
