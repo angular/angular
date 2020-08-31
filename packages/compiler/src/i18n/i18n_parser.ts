@@ -93,7 +93,8 @@ class _I18nVisitor implements html.Visitor {
     }
 
     const node = new i18n.TagPlaceholder(
-        el.name, attrs, startPhName, closePhName, children, isVoid, el.sourceSpan);
+        el.name, attrs, startPhName, closePhName, children, isVoid, el.startSourceSpan,
+        el.endSourceSpan);
     return context.visitNodeFn(el, node);
   }
 
@@ -167,20 +168,30 @@ class _I18nVisitor implements html.Visitor {
 
       if (splitInterpolation.strings[i].length) {
         // No need to add empty strings
-        nodes.push(new i18n.Text(splitInterpolation.strings[i], sourceSpan));
+        const stringSpan = getOffsetSourceSpan(sourceSpan, splitInterpolation.stringSpans[i]);
+        nodes.push(new i18n.Text(splitInterpolation.strings[i], stringSpan));
       }
 
-      nodes.push(new i18n.Placeholder(expression, phName, sourceSpan));
+      const expressionSpan =
+          getOffsetSourceSpan(sourceSpan, splitInterpolation.expressionsSpans[i]);
+      nodes.push(new i18n.Placeholder(expression, phName, expressionSpan));
       context.placeholderToContent[phName] = sDelimiter + expression + eDelimiter;
     }
 
     // The last index contains no expression
     const lastStringIdx = splitInterpolation.strings.length - 1;
     if (splitInterpolation.strings[lastStringIdx].length) {
-      nodes.push(new i18n.Text(splitInterpolation.strings[lastStringIdx], sourceSpan));
+      const stringSpan =
+          getOffsetSourceSpan(sourceSpan, splitInterpolation.stringSpans[lastStringIdx]);
+      nodes.push(new i18n.Text(splitInterpolation.strings[lastStringIdx], stringSpan));
     }
     return container;
   }
+}
+
+function getOffsetSourceSpan(
+    sourceSpan: ParseSourceSpan, {start, end}: {start: number, end: number}): ParseSourceSpan {
+  return new ParseSourceSpan(sourceSpan.start.moveBy(start), sourceSpan.start.moveBy(end));
 }
 
 const _CUSTOM_PH_EXP =
