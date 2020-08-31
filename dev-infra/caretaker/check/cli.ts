@@ -8,13 +8,13 @@
 
 import {Arguments, Argv, CommandModule} from 'yargs';
 
-import {error} from '../../utils/console';
+import {addGithubTokenFlag} from '../../utils/yargs';
 
 import {checkServiceStatuses} from './check';
 
 
 export interface CaretakerCheckOptions {
-  'github-token'?: string;
+  githubToken: string;
 }
 
 /** URL to the Github page where personal access tokens can be generated. */
@@ -22,22 +22,11 @@ export const GITHUB_TOKEN_GENERATE_URL = `https://github.com/settings/tokens`;
 
 /** Builds the command. */
 function builder(yargs: Argv) {
-  return yargs.option('github-token', {
-    type: 'string',
-    description: 'Github token. If not set, token is retrieved from the environment variables.'
-  });
+  return addGithubTokenFlag(yargs);
 }
 
 /** Handles the command. */
-async function handler({'github-token': token}: Arguments<CaretakerCheckOptions>) {
-  const githubToken = token || process.env.GITHUB_TOKEN || process.env.TOKEN;
-  if (!githubToken) {
-    error('No Github token set. Please set the `GITHUB_TOKEN` environment variable.');
-    error('Alternatively, pass the `--github-token` command line flag.');
-    error(`You can generate a token here: ${GITHUB_TOKEN_GENERATE_URL}`);
-    process.exitCode = 1;
-    return;
-  }
+async function handler({githubToken}: Arguments<CaretakerCheckOptions>) {
   await checkServiceStatuses(githubToken);
 }
 
