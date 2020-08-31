@@ -14,7 +14,7 @@ import {mergePullRequest} from './index';
 
 /** The options available to the merge command via CLI. */
 export interface MergeCommandOptions {
-  'github-token': string;
+  githubToken: string;
   'pr-number': number;
 }
 
@@ -26,6 +26,6 @@ export function buildMergeCommand(yargs: Argv): Argv<MergeCommandOptions> {
 
 /** Handles the merge command. i.e. performs the merge of a specified pull request. */
 export async function handleMergeCommand(
-    {'pr-number': pr, 'github-token': token}: Arguments<MergeCommandOptions>) {
-  await mergePullRequest(pr, token);
+    {'pr-number': pr, githubToken}: Arguments<MergeCommandOptions>) {
+  await mergePullRequest(pr, githubToken);
 }

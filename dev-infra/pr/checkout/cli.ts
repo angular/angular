@@ -13,11 +13,8 @@ import {checkOutPullRequestLocally} from '../common/checkout-pr';
 
 export interface CheckoutOptions {
   prNumber: number;
-  'github-token': string;
+  githubToken: string;
 }
-
-/** URL to the Github page where personal access tokens can be generated. */
-export const GITHUB_TOKEN_GENERATE_URL = `https://github.com/settings/tokens`;
 
 /** Builds the checkout pull request command. */
 function builder(yargs: Argv) {
@@ -25,9 +22,9 @@ function builder(yargs: Argv) {
 }
 
 /** Handles the checkout pull request command. */
-async function handler({prNumber, 'github-token': token}: Arguments<CheckoutOptions>) {
+async function handler({prNumber, githubToken}: Arguments<CheckoutOptions>) {
   const prCheckoutOptions = {allowIfMaintainerCannotModify: true, branchName: `pr-${prNumber}`};
-  await checkOutPullRequestLocally(prNumber, token, prCheckoutOptions);
+  await checkOutPullRequestLocally(prNumber, githubToken, prCheckoutOptions);
 }
 
 /** yargs command module for checking out a PR  */
