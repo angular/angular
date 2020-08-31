@@ -509,11 +509,6 @@
               "tooltip": "Building and serving Angular apps."
             }
           ]
-        },
-        {
-          "url": "guide/lightweight-injection-tokens",
-          "title": "Lightweight Injection Tokens for Libraries",
-          "tooltip": "Optimize client app size by designing library services with lightweight injection tokens."
         }
       ]
     },
