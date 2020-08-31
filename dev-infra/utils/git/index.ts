@@ -34,7 +34,7 @@ export class GitCommandError extends Error {
 /**
  * Common client for performing Git interactions.
  *
- * Takes in two optional arguements:
+ * Takes in two optional arguments:
  *   _githubToken: the token used for authentifation in github interactions, by default empty
  *     allowing readonly actions.
  *   _config: The dev-infra configuration containing GitClientConfig information, by default
