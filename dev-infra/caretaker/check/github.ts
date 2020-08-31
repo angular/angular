@@ -20,7 +20,7 @@ interface GithubInfoQuery {
 }
 
 /** Retrieve the number of matching issues for each github query. */
-export async function getGithubTasks(git: GitClient, config: CaretakerConfig) {
+export async function printGithubTasks(git: GitClient, config: CaretakerConfig) {
   if (!config.githubQueries?.length) {
     debug('No github queries defined in the configuration, skipping.');
     return {};
@@ -35,24 +35,22 @@ export async function getGithubTasks(git: GitClient, config: CaretakerConfig) {
 async function getGithubInfo(git: GitClient, {githubQueries: queries}: CaretakerConfig) {
   /** The query object for graphql. */
   const graphQlQuery: {[key: string]: {issueCount: number}} = {};
-  /** The repository substring for the github serach query. */
-  const repo = `repo:${git.remoteConfig.owner}/${git.remoteConfig.name}`;
+  /** The Github search filter for the configured repository. */
+  const repoFilter = `repo:${git.remoteConfig.owner}/${git.remoteConfig.name}`;
   queries.forEach(({name, query}) => {
     /** The name of the query, with spaces removed to match GraphQL requirements. */
-    const queryKey = alias(name.replace(/ /g, ''), 'search')
+    const queryKey = alias(name.replace(/ /g, ''), 'search');
     graphQlQuery[queryKey] = params(
         {
           type: 'ISSUE',
-          query: `"${repo} ${query.replace(/"/g, '\\"')}"`,
+          query: `"${repoFilter} ${query.replace(/"/g, '\\"')}"`,
         },
         {issueCount: types.number},
     );
   });
   /** The results of the generated github query. */
   const results = await git.github.graphql.query(graphQlQuery);
-  Object.entries(results).forEach(([title, result]) => {
-    // Update the title to be the original title, with spaces still included.
-    title = queries.find(query => query.name.replace(/ /g, '') === title)?.name || title;
-    info(`${title.padEnd(25)} ${result.issueCount}`);
+  Object.values(results).forEach((result, i) => {
+    info(`${queries[i].name.padEnd(25)} ${result.issueCount}`);
   });
 }

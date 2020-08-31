@@ -24,7 +24,7 @@ interface StatusCheckResult {
 }
 
 /** Retrieve and log stasuses for all of the services of concern. */
-export async function getServiceStatuses() {
+export async function printServiceStatuses() {
   info.group(bold(`Service Statuses (checked: ${new Date().toLocaleString()})`));
   logStatus('CircleCI', await getCircleCiStatus());
   logStatus('Github', await getGithubStatus());

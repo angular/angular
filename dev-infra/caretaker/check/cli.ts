@@ -13,7 +13,7 @@ import {error} from '../../utils/console';
 import {checkServiceStatuses} from './check';
 
 
-export interface CheckOptions {
+export interface CaretakerCheckOptions {
   'github-token'?: string;
 }
 
@@ -29,7 +29,7 @@ function builder(yargs: Argv) {
 }
 
 /** Handles the command. */
-async function handler({'github-token': token}: Arguments<CheckOptions>) {
+async function handler({'github-token': token}: Arguments<CaretakerCheckOptions>) {
   const githubToken = token || process.env.GITHUB_TOKEN || process.env.TOKEN;
   if (!githubToken) {
     error('No Github token set. Please set the `GITHUB_TOKEN` environment variable.');
@@ -42,7 +42,7 @@ async function handler({'github-token': token}: Arguments<CheckOptions>) {
 }
 
 /** yargs command module for checking status information for the repository  */
-export const CheckModule: CommandModule<{}, CheckOptions> = {
+export const CheckModule: CommandModule<{}, CaretakerCheckOptions> = {
   handler,
   builder,
   command: 'check',

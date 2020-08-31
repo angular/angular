@@ -9,9 +9,9 @@
 import {GitClient} from '../../utils/git';
 import {getCaretakerConfig} from '../config';
 
-import {getG3Comparison} from './g3';
-import {getGithubTasks} from './github';
-import {getServiceStatuses} from './services';
+import {printG3Comparison} from './g3';
+import {printGithubTasks} from './github';
+import {printServiceStatuses} from './services';
 
 
 /** Check the status of services which Angular caretakers need to monitor. */
@@ -21,7 +21,7 @@ export async function checkServiceStatuses(githubToken: string) {
   /** The GitClient for interacting with git and Github. */
   const git = new GitClient(githubToken, config);
 
-  await getServiceStatuses();
-  await getGithubTasks(git, config.caretaker);
-  await getG3Comparison(git);
+  await printServiceStatuses();
+  await printGithubTasks(git, config.caretaker);
+  await printG3Comparison(git);
 }
