@@ -16,6 +16,8 @@ let _defineProperty: any;
 let _getOwnPropertyDescriptor: any;
 let _create: any;
 let unconfigurablesKey: any;
+const registerElementsCallbacks =
+    ['createdCallback', 'attachedCallback', 'detachedCallback', 'attributeChangedCallback'];
 
 export function propertyPatch() {
   zoneSymbol = Zone.__symbol__;
@@ -102,6 +104,18 @@ function _tryDefineProperty(obj: any, prop: string, desc: any, originalConfigura
       try {
         return _defineProperty(obj, prop, desc);
       } catch (error) {
+        let swallowError = false;
+        if (typeof document !== 'undefined' && obj === document &&
+            registerElementsCallbacks.find(c => c === prop)) {
+          // We only swallow the error in registerElement patch
+          swallowError = true;
+        }
+        if (!swallowError) {
+          throw error;
+        }
+        // TODO: @JiaLiPassion, Some application such as `registerElement` patch
+        // still need to swallow the error, in the future after these applications
+        // are updated, the following logic can be removed.
         let descJson: string|null = null;
         try {
           descJson = JSON.stringify(desc);
