@@ -16,8 +16,6 @@ let _defineProperty: any;
 let _getOwnPropertyDescriptor: any;
 let _create: any;
 let unconfigurablesKey: any;
-const registerElementsCallbacks =
-    ['createdCallback', 'attachedCallback', 'detachedCallback', 'attributeChangedCallback'];
 
 export function propertyPatch() {
   zoneSymbol = Zone.__symbol__;
@@ -105,9 +103,11 @@ function _tryDefineProperty(obj: any, prop: string, desc: any, originalConfigura
         return _defineProperty(obj, prop, desc);
       } catch (error) {
         let swallowError = false;
-        if (typeof document !== 'undefined' && obj === document &&
-            registerElementsCallbacks.find(c => c === prop)) {
+        if (prop === 'createdCallback' || prop === 'attachedCallback' ||
+            prop === 'detachedCallback' || prop === 'attributeChangedCallback') {
           // We only swallow the error in registerElement patch
+          // this is the work around since some applications
+          // fail if we throw the error
           swallowError = true;
         }
         if (!swallowError) {
