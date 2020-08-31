@@ -653,8 +653,10 @@ jobs:
           name: Starting Saucelabs tunnel service
           command: ./tools/saucelabs/sauce-service.sh run
           background: true
-      - run: yarn tsc -p packages
-      - run: yarn tsc -p modules
+      # add module umd tsc compile option so the test can work
+      # properly in the legacy browsers
+      - run: yarn tsc -p packages --module UMD
+      - run: yarn tsc -p modules --module UMD
       - run: yarn bazel build //packages/zone.js:npm_package
       # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
       # specific tests which are reliant on such generated fixtures is not an option as SystemJS
