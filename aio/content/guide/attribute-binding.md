@@ -84,7 +84,7 @@ To create a binding to multiple classes, use a generic `[class]` binding without
 The expression can be a space-delimited string of class names, or you can format it as an object with class names as the keys and truthy/falsy expressions as the values.
 With object format, Angular will add a class only if its associated value is truthy.
 
-It's important to note that with any object-like expression (`object`, `Array`, `Map`, `Set`, etc), the identity of the object must change for the class list to be updated.
+It's important to note that with any object-like expression (`object`, `Array`, `Map`, `Set`, etc), the identity of the object must change for the style list to be updated.
 Updating the property without changing object identity will have no effect.
 
 If there are multiple bindings to the same class name, conflicts are resolved using [styling precedence](#styling-precedence).
@@ -172,7 +172,7 @@ If there are multiple styles you'd like to toggle, you can bind to the `[style]`
 The expression attached to the `[style]` binding is most often a string list of styles like `"width: 100px; height: 100px;"`.
 
 You can also format the expression as an object with style names as the keys and style values as the values, like `{width: '100px', height: '100px'}`.
-It's important to note that with any object-like expression (`object`, `Array`, `Map`, `Set`, etc), the identity of the object must change for the class list to be updated.
+It's important to note that with any object-like expression (`object`, `Array`, `Map`, `Set`, etc), the identity of the object must change for the style list to be updated.
 Updating the property without changing object identity will have no effect.
 
 If there are multiple bindings to the same style property, conflicts are resolved using [styling precedence rules](#styling-precedence).
