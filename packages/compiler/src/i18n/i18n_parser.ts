@@ -93,8 +93,8 @@ class _I18nVisitor implements html.Visitor {
     }
 
     const node = new i18n.TagPlaceholder(
-        el.name, attrs, startPhName, closePhName, children, isVoid, el.startSourceSpan,
-        el.endSourceSpan);
+        el.name, attrs, startPhName, closePhName, children, isVoid, el.sourceSpan,
+        el.startSourceSpan, el.endSourceSpan);
     return context.visitNodeFn(el, node);
   }
 
