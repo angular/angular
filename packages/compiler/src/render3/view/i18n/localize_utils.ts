@@ -48,10 +48,10 @@ class LocalizeSerializerVisitor implements i18n.Visitor {
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder, context: o.MessagePiece[]): any {
-    context.push(this.createPlaceholderPiece(ph.startName, ph.sourceSpan));
+    context.push(this.createPlaceholderPiece(ph.startName, ph.startSourceSpan ?? ph.sourceSpan));
     if (!ph.isVoid) {
       ph.children.forEach(child => child.visit(this, context));
-      context.push(this.createPlaceholderPiece(ph.closeName, ph.closeSourceSpan ?? ph.sourceSpan));
+      context.push(this.createPlaceholderPiece(ph.closeName, ph.endSourceSpan ?? ph.sourceSpan));
     }
   }
 
