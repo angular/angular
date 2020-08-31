@@ -8,10 +8,14 @@ ts_library(
     deps = [
         "//dev-infra/caretaker:config",
         "//dev-infra/utils",
+        "@npm//@types/fs-extra",
+        "@npm//@types/node",
         "@npm//@types/node-fetch",
         "@npm//@types/yargs",
+        "@npm//multimatch",
         "@npm//node-fetch",
         "@npm//typed-graphqlify",
+        "@npm//yaml",
         "@npm//yargs",
     ],
 )

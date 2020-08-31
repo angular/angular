@@ -23,7 +23,7 @@ interface GithubInfoQuery {
 export async function printGithubTasks(git: GitClient, config: CaretakerConfig) {
   if (!config.githubQueries?.length) {
     debug('No github queries defined in the configuration, skipping.');
-    return {};
+    return;
   }
   info.group(bold('Github Tasks'));
   await getGithubInfo(git, config);
@@ -32,7 +32,7 @@ export async function printGithubTasks(git: GitClient, config: CaretakerConfig) 
 }
 
 /** Retrieve query match counts and log discovered counts to the console. */
-async function getGithubInfo(git: GitClient, {githubQueries: queries}: CaretakerConfig) {
+async function getGithubInfo(git: GitClient, {githubQueries: queries = []}: CaretakerConfig) {
   /** The query object for graphql. */
   const graphQlQuery: {[key: string]: {issueCount: number}} = {};
   /** The Github search filter for the configured repository. */
@@ -51,6 +51,6 @@ async function getGithubInfo(git: GitClient, {githubQueries: queries}: Caretaker
   /** The results of the generated github query. */
   const results = await git.github.graphql.query(graphQlQuery);
   Object.values(results).forEach((result, i) => {
-    info(`${queries[i].name.padEnd(25)} ${result.issueCount}`);
+    info(`${queries[i]?.name.padEnd(25)} ${result.issueCount}`);
   });
 }
