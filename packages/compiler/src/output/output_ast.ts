@@ -9,7 +9,6 @@
 
 import {ParseSourceSpan} from '../parse_util';
 import {I18nMeta} from '../render3/view/i18n/meta';
-import {error} from '../util';
 
 //// Types
 export enum TypeModifier {
@@ -516,11 +515,16 @@ export class LiteralExpr extends Expression {
   }
 }
 
+export abstract class MessagePiece {
+  constructor(public text: string, public sourceSpan: ParseSourceSpan) {}
+}
+export class LiteralPiece extends MessagePiece {}
+export class PlaceholderPiece extends MessagePiece {}
 
 export class LocalizedString extends Expression {
   constructor(
-      readonly metaBlock: I18nMeta, readonly messageParts: string[],
-      readonly placeHolderNames: string[], readonly expressions: Expression[],
+      readonly metaBlock: I18nMeta, readonly messageParts: LiteralPiece[],
+      readonly placeHolderNames: PlaceholderPiece[], readonly expressions: Expression[],
       sourceSpan?: ParseSourceSpan|null) {
     super(STRING_TYPE, sourceSpan);
   }
@@ -563,7 +567,16 @@ export class LocalizedString extends Expression {
         metaBlock = `${metaBlock}${LEGACY_ID_INDICATOR}${legacyId}`;
       });
     }
-    return createCookedRawString(metaBlock, this.messageParts[0]);
+    return createCookedRawString(metaBlock, this.messageParts[0].text);
+  }
+
+  getMessagePartSourceSpan(i: number): ParseSourceSpan|null {
+    return this.messageParts[i]?.sourceSpan ?? this.sourceSpan;
+  }
+
+  getPlaceholderSourceSpan(i: number): ParseSourceSpan {
+    return this.placeHolderNames[i]?.sourceSpan ?? this.expressions[i]?.sourceSpan ??
+        this.sourceSpan;
   }
 
   /**
@@ -574,9 +587,9 @@ export class LocalizedString extends Expression {
    * @param messagePart The following message string after this placeholder
    */
   serializeI18nTemplatePart(partIndex: number): {cooked: string, raw: string} {
-    const placeholderName = this.placeHolderNames[partIndex - 1];
+    const placeholderName = this.placeHolderNames[partIndex - 1].text;
     const messagePart = this.messageParts[partIndex];
-    return createCookedRawString(placeholderName, messagePart);
+    return createCookedRawString(placeholderName, messagePart.text);
   }
 }
 
@@ -1799,7 +1812,7 @@ export function literal(
 }
 
 export function localizedString(
-    metaBlock: I18nMeta, messageParts: string[], placeholderNames: string[],
+    metaBlock: I18nMeta, messageParts: LiteralPiece[], placeholderNames: PlaceholderPiece[],
     expressions: Expression[], sourceSpan?: ParseSourceSpan|null): LocalizedString {
   return new LocalizedString(metaBlock, messageParts, placeholderNames, expressions, sourceSpan);
 }

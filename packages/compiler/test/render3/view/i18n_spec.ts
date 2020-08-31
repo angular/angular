@@ -10,6 +10,7 @@ import {Lexer} from '../../../src/expression_parser/lexer';
 import {Parser} from '../../../src/expression_parser/parser';
 import * as i18n from '../../../src/i18n/i18n_ast';
 import * as o from '../../../src/output/output_ast';
+import {ParseSourceSpan} from '../../../src/parse_util';
 import * as t from '../../../src/render3/r3_ast';
 import {I18nContext} from '../../../src/render3/view/i18n/context';
 import {serializeI18nMessageForGetMsg} from '../../../src/render3/view/i18n/get_msg_utils';
@@ -221,64 +222,75 @@ describe('Utils', () => {
     });
 
     it('serializeI18nHead()', () => {
-      expect(o.localizedString(meta(), [''], [], []).serializeI18nHead())
+      expect(o.localizedString(meta(), [literal('')], [], []).serializeI18nHead())
           .toEqual({cooked: '', raw: ''});
-      expect(o.localizedString(meta('', '', 'desc'), [''], [], []).serializeI18nHead())
+      expect(o.localizedString(meta('', '', 'desc'), [literal('')], [], []).serializeI18nHead())
           .toEqual({cooked: ':desc:', raw: ':desc:'});
-      expect(o.localizedString(meta('id', '', 'desc'), [''], [], []).serializeI18nHead())
+      expect(o.localizedString(meta('id', '', 'desc'), [literal('')], [], []).serializeI18nHead())
           .toEqual({cooked: ':desc@@id:', raw: ':desc@@id:'});
-      expect(o.localizedString(meta('', 'meaning', 'desc'), [''], [], []).serializeI18nHead())
+      expect(
+          o.localizedString(meta('', 'meaning', 'desc'), [literal('')], [], []).serializeI18nHead())
           .toEqual({cooked: ':meaning|desc:', raw: ':meaning|desc:'});
-      expect(o.localizedString(meta('id', 'meaning', 'desc'), [''], [], []).serializeI18nHead())
+      expect(o.localizedString(meta('id', 'meaning', 'desc'), [literal('')], [], [])
+                 .serializeI18nHead())
           .toEqual({cooked: ':meaning|desc@@id:', raw: ':meaning|desc@@id:'});
-      expect(o.localizedString(meta('id', '', ''), [''], [], []).serializeI18nHead())
+      expect(o.localizedString(meta('id', '', ''), [literal('')], [], []).serializeI18nHead())
           .toEqual({cooked: ':@@id:', raw: ':@@id:'});
 
       // Escaping colons (block markers)
-      expect(
-          o.localizedString(meta('id:sub_id', 'meaning', 'desc'), [''], [], []).serializeI18nHead())
+      expect(o.localizedString(meta('id:sub_id', 'meaning', 'desc'), [literal('')], [], [])
+                 .serializeI18nHead())
           .toEqual({cooked: ':meaning|desc@@id:sub_id:', raw: ':meaning|desc@@id\\:sub_id:'});
-      expect(o.localizedString(meta('id', 'meaning:sub_meaning', 'desc'), [''], [], [])
+      expect(o.localizedString(meta('id', 'meaning:sub_meaning', 'desc'), [literal('')], [], [])
                  .serializeI18nHead())
           .toEqual(
               {cooked: ':meaning:sub_meaning|desc@@id:', raw: ':meaning\\:sub_meaning|desc@@id:'});
-      expect(o.localizedString(meta('id', 'meaning', 'desc:sub_desc'), [''], [], [])
+      expect(o.localizedString(meta('id', 'meaning', 'desc:sub_desc'), [literal('')], [], [])
                  .serializeI18nHead())
           .toEqual({cooked: ':meaning|desc:sub_desc@@id:', raw: ':meaning|desc\\:sub_desc@@id:'});
-      expect(o.localizedString(meta('id', 'meaning', 'desc'), ['message source'], [], [])
+      expect(o.localizedString(meta('id', 'meaning', 'desc'), [literal('message source')], [], [])
                  .serializeI18nHead())
           .toEqual({
             cooked: ':meaning|desc@@id:message source',
             raw: ':meaning|desc@@id:message source'
           });
-      expect(o.localizedString(meta('id', 'meaning', 'desc'), [':message source'], [], [])
+      expect(o.localizedString(meta('id', 'meaning', 'desc'), [literal(':message source')], [], [])
                  .serializeI18nHead())
           .toEqual({
             cooked: ':meaning|desc@@id::message source',
             raw: ':meaning|desc@@id::message source'
           });
-      expect(o.localizedString(meta('', '', ''), ['message source'], [], []).serializeI18nHead())
+      expect(o.localizedString(meta('', '', ''), [literal('message source')], [], [])
+                 .serializeI18nHead())
           .toEqual({cooked: 'message source', raw: 'message source'});
-      expect(o.localizedString(meta('', '', ''), [':message source'], [], []).serializeI18nHead())
+      expect(o.localizedString(meta('', '', ''), [literal(':message source')], [], [])
+                 .serializeI18nHead())
           .toEqual({cooked: ':message source', raw: '\\:message source'});
     });
 
     it('serializeI18nPlaceholderBlock()', () => {
-      expect(o.localizedString(meta('', '', ''), ['', ''], [''], []).serializeI18nTemplatePart(1))
-          .toEqual({cooked: '', raw: ''});
-      expect(
-          o.localizedString(meta('', '', ''), ['', ''], ['abc'], []).serializeI18nTemplatePart(1))
-          .toEqual({cooked: ':abc:', raw: ':abc:'});
-      expect(o.localizedString(meta('', '', ''), ['', 'message'], [''], [])
+      expect(o.localizedString(meta('', '', ''), [literal(''), literal('')], [literal('')], [])
                  .serializeI18nTemplatePart(1))
+          .toEqual({cooked: '', raw: ''});
+      expect(o.localizedString(
+                  meta('', '', ''), [literal(''), literal('')],
+                  [new o.LiteralPiece('abc', {} as any)], [])
+                 .serializeI18nTemplatePart(1))
+          .toEqual({cooked: ':abc:', raw: ':abc:'});
+      expect(
+          o.localizedString(meta('', '', ''), [literal(''), literal('message')], [literal('')], [])
+              .serializeI18nTemplatePart(1))
           .toEqual({cooked: 'message', raw: 'message'});
-      expect(o.localizedString(meta('', '', ''), ['', 'message'], ['abc'], [])
+      expect(o.localizedString(
+                  meta('', '', ''), [literal(''), literal('message')], [literal('abc')], [])
                  .serializeI18nTemplatePart(1))
           .toEqual({cooked: ':abc:message', raw: ':abc:message'});
-      expect(o.localizedString(meta('', '', ''), ['', ':message'], [''], [])
-                 .serializeI18nTemplatePart(1))
+      expect(
+          o.localizedString(meta('', '', ''), [literal(''), literal(':message')], [literal('')], [])
+              .serializeI18nTemplatePart(1))
           .toEqual({cooked: ':message', raw: '\\:message'});
-      expect(o.localizedString(meta('', '', ''), ['', ':message'], ['abc'], [])
+      expect(o.localizedString(
+                  meta('', '', ''), [literal(''), literal(':message')], [literal('abc')], [])
                  .serializeI18nTemplatePart(1))
           .toEqual({cooked: ':abc::message', raw: ':abc::message'});
     });
@@ -349,55 +361,106 @@ describe('serializeI18nMessageForLocalize', () => {
   };
 
   it('should serialize plain text for `$localize()`', () => {
-    expect(serialize('Some text')).toEqual({messageParts: ['Some text'], placeHolders: []});
+    expect(serialize('Some text'))
+        .toEqual({messageParts: [literal('Some text')], placeHolders: []});
   });
 
   it('should serialize text with interpolation for `$localize()`', () => {
     expect(serialize('Some text {{ valueA }} and {{ valueB + valueC }} done')).toEqual({
-      messageParts: ['Some text ', ' and ', ' done'],
-      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1']
+      messageParts: [literal('Some text '), literal(' and '), literal(' done')],
+      placeHolders: [placeholder('INTERPOLATION'), placeholder('INTERPOLATION_1')],
     });
   });
 
+  it('should compute source-spans when serializing text with interpolation for `$localize()`',
+     () => {
+       const {messageParts, placeHolders} =
+           serialize('Some text {{ valueA }} and {{ valueB + valueC }} done');
+
+       expect(messageParts[0].text).toEqual('Some text ');
+       expect(messageParts[0].sourceSpan.toString()).toEqual('Some text ');
+       expect(messageParts[1].text).toEqual(' and ');
+       expect(messageParts[1].sourceSpan.toString()).toEqual(' and ');
+       expect(messageParts[2].text).toEqual(' done');
+       expect(messageParts[2].sourceSpan.toString()).toEqual(' done');
+
+       expect(placeHolders[0].text).toEqual('INTERPOLATION');
+       expect(placeHolders[0].sourceSpan.toString()).toEqual('{{ valueA }}');
+       expect(placeHolders[1].text).toEqual('INTERPOLATION_1');
+       expect(placeHolders[1].sourceSpan.toString()).toEqual('{{ valueB + valueC }}');
+     });
+
   it('should serialize text with interpolation at start for `$localize()`', () => {
     expect(serialize('{{ valueA }} and {{ valueB + valueC }} done')).toEqual({
-      messageParts: ['', ' and ', ' done'],
-      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1']
+      messageParts: [literal(''), literal(' and '), literal(' done')],
+      placeHolders: [placeholder('INTERPOLATION'), placeholder('INTERPOLATION_1')],
     });
   });
 
 
   it('should serialize text with interpolation at end for `$localize()`', () => {
     expect(serialize('Some text {{ valueA }} and {{ valueB + valueC }}')).toEqual({
-      messageParts: ['Some text ', ' and ', ''],
-      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1']
+      messageParts: [literal('Some text '), literal(' and '), literal('')],
+      placeHolders: [placeholder('INTERPOLATION'), placeholder('INTERPOLATION_1')],
     });
   });
 
 
   it('should serialize only interpolation for `$localize()`', () => {
-    expect(serialize('{{ valueB + valueC }}'))
-        .toEqual({messageParts: ['', ''], placeHolders: ['INTERPOLATION']});
+    expect(serialize('{{ valueB + valueC }}')).toEqual({
+      messageParts: [literal(''), literal('')],
+      placeHolders: [placeholder('INTERPOLATION')]
+    });
   });
 
 
   it('should serialize interpolation with named placeholder for `$localize()`', () => {
-    expect(serialize('{{ valueB + valueC // i18n(ph="PLACEHOLDER NAME") }}'))
-        .toEqual({messageParts: ['', ''], placeHolders: ['PLACEHOLDER_NAME']});
+    expect(serialize('{{ valueB + valueC // i18n(ph="PLACEHOLDER NAME") }}')).toEqual({
+      messageParts: [literal(''), literal('')],
+      placeHolders: [placeholder('PLACEHOLDER_NAME')]
+    });
   });
 
 
   it('should serialize content with HTML tags for `$localize()`', () => {
     expect(serialize('A <span>B<div>C</div></span> D')).toEqual({
-      messageParts: ['A ', 'B', 'C', '', ' D'],
-      placeHolders: ['START_TAG_SPAN', 'START_TAG_DIV', 'CLOSE_TAG_DIV', 'CLOSE_TAG_SPAN']
+      messageParts: [literal('A '), literal('B'), literal('C'), literal(''), literal(' D')],
+      placeHolders: [
+        placeholder('START_TAG_SPAN'), placeholder('START_TAG_DIV'), placeholder('CLOSE_TAG_DIV'),
+        placeholder('CLOSE_TAG_SPAN')
+      ]
     });
   });
 
 
+  it('should compute source-spans when serializing content with HTML tags for `$localize()`',
+     () => {
+       const {messageParts, placeHolders} = serialize('A <span>B<div>C</div></span> D');
+
+       expect(messageParts[0].text).toEqual('A ');
+       expect(messageParts[0].sourceSpan.toString()).toEqual('A ');
+       expect(messageParts[1].text).toEqual('B');
+       expect(messageParts[1].sourceSpan.toString()).toEqual('B');
+       expect(messageParts[2].text).toEqual('C');
+       expect(messageParts[2].sourceSpan.toString()).toEqual('C');
+       expect(messageParts[3].text).toEqual('');
+       expect(messageParts[3].sourceSpan.toString()).toEqual('');
+       expect(messageParts[4].text).toEqual(' D');
+       expect(messageParts[4].sourceSpan.toString()).toEqual(' D');
+
+       expect(placeHolders[0].text).toEqual('START_TAG_SPAN');
+       expect(placeHolders[0].sourceSpan.toString()).toEqual('<span>');
+       expect(placeHolders[1].text).toEqual('START_TAG_DIV');
+       expect(placeHolders[1].sourceSpan.toString()).toEqual('<div>');
+       expect(placeHolders[2].text).toEqual('CLOSE_TAG_DIV');
+       expect(placeHolders[2].sourceSpan.toString()).toEqual('</div>');
+       expect(placeHolders[3].text).toEqual('CLOSE_TAG_SPAN');
+       expect(placeHolders[3].sourceSpan.toString()).toEqual('</span>');
+     });
+
   it('should serialize simple ICU for `$localize()`', () => {
     expect(serialize('{age, plural, 10 {ten} other {other}}')).toEqual({
-      messageParts: ['{VAR_PLURAL, plural, 10 {ten} other {other}}'],
+      messageParts: [literal('{VAR_PLURAL, plural, 10 {ten} other {other}}')],
       placeHolders: []
     });
   });
@@ -408,7 +471,8 @@ describe('serializeI18nMessageForLocalize', () => {
                '{age, plural, 10 {ten {size, select, 1 {one} 2 {two} other {2+}}} other {other}}'))
         .toEqual({
           messageParts: [
-            '{VAR_PLURAL, plural, 10 {ten {VAR_SELECT, select, 1 {one} 2 {two} other {2+}}} other {other}}'
+            literal(
+                '{VAR_PLURAL, plural, 10 {ten {VAR_SELECT, select, 1 {one} 2 {two} other {2+}}} other {other}}')
           ],
           placeHolders: []
         });
@@ -418,7 +482,8 @@ describe('serializeI18nMessageForLocalize', () => {
   it('should serialize ICU with embedded HTML for `$localize()`', () => {
     expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}')).toEqual({
       messageParts: [
-        '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}'
+        literal(
+            '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}')
       ],
       placeHolders: []
     });
@@ -427,7 +492,8 @@ describe('serializeI18nMessageForLocalize', () => {
   it('should serialize ICU with embedded interpolation for `$localize()`', () => {
     expect(serialize('{age, plural, 10 {<b>ten</b>} other {{{age}} years old}}')).toEqual({
       messageParts: [
-        '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{INTERPOLATION} years old}}'
+        literal(
+            '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{INTERPOLATION} years old}}')
       ],
       placeHolders: []
     });
@@ -438,8 +504,11 @@ describe('serializeI18nMessageForLocalize', () => {
         serialize(
             '{gender, select, male {male} female {female} other {other}}<div>{gender, select, male {male} female {female} other {other}}</div>'))
         .toEqual({
-          messageParts: ['', '', '', '', ''],
-          placeHolders: ['ICU', 'START_TAG_DIV', 'ICU', 'CLOSE_TAG_DIV']
+          messageParts: [literal(''), literal(''), literal(''), literal(''), literal('')],
+          placeHolders: [
+            placeholder('ICU'), placeholder('START_TAG_DIV'), placeholder('ICU'),
+            placeholder('CLOSE_TAG_DIV')
+          ]
         });
   });
 
@@ -449,7 +518,8 @@ describe('serializeI18nMessageForLocalize', () => {
             '{age, plural, 10 {ten {size, select, 1 {{{ varOne }}} 2 {{{ varTwo }}} other {2+}}} other {other}}'))
         .toEqual({
           messageParts: [
-            '{VAR_PLURAL, plural, 10 {ten {VAR_SELECT, select, 1 {{INTERPOLATION}} 2 {{INTERPOLATION_1}} other {2+}}} other {other}}'
+            literal(
+                '{VAR_PLURAL, plural, 10 {ten {VAR_SELECT, select, 1 {{INTERPOLATION}} 2 {{INTERPOLATION_1}} other {2+}}} other {other}}')
           ],
           placeHolders: []
         });
@@ -486,3 +556,11 @@ describe('serializeIcuNode', () => {
         .toEqual('{VAR_SELECT, select, 10 {ten} other {{INTERPOLATION} years old}}');
   });
 });
+
+function literal(text: string, span: any = jasmine.any(ParseSourceSpan)): o.LiteralPiece {
+  return new o.LiteralPiece(text, span);
+}
+
+function placeholder(name: string, span: any = jasmine.any(ParseSourceSpan)): o.PlaceholderPiece {
+  return new o.PlaceholderPiece(name, span);
+}
