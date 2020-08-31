@@ -379,6 +379,11 @@ export class R3TestBedCompiler {
       const moduleScope = getScopeOfModule(moduleType);
       this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'directiveDefs');
       this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'pipeDefs');
+      // `tView` that is stored on component def contains information about directives and pipes
+      // that are in the scope of this component. Patching component scope will cause `tView` to be
+      // changed. Store original `tView` before patching scope, so the `tView` (including scope
+      // information) is restored back to its previous/original state before running next test.
+      this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'tView');
       patchComponentDefWithScope((componentType as any).ɵcmp, moduleScope);
     });
 
