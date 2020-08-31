@@ -7,8 +7,8 @@
  */
 
 import {Injector, NgModuleRef} from '@angular/core';
-import {defer, EmptyError, Observable, Observer, of} from 'rxjs';
-import {catchError, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {defer, EmptyError, from, Observable, Observer, of} from 'rxjs';
+import {catchError, combineAll, concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
 import {CanLoadFn} from './interfaces';
@@ -17,6 +17,7 @@ import {RouterConfigLoader} from './router_config_loader';
 import {defaultUrlMatcher, navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {forEach, waitForMap, wrapIntoObservable} from './utils/collection';
+import {getOutlet, groupRoutesByOutlet} from './utils/config';
 import {isCanLoad, isFunction, isUrlTree} from './utils/type_guards';
 
 class NoMatch {
@@ -148,46 +149,51 @@ class ApplyRedirects {
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[],
       segments: UrlSegment[], outlet: string,
       allowRedirects: boolean): Observable<UrlSegmentGroup> {
-    type MatchedSegment = {segment: UrlSegmentGroup, outlet: string};
-    // This logic takes each route and switches to a new observable that depends on the result of
-    // the previous route expansion. In this way, we compose a list of results where each one can
-    // depend on and look at the previous to determine how to proceed with expansion of the
-    // current route.
-    return routes
-        .reduce(
-            (accumulatedResults: Observable<Array<MatchedSegment>>, r: Route) => {
-              return accumulatedResults.pipe(switchMap(resultsThusFar => {
-                // If we already matched a previous `Route` with the same outlet as the current,
-                // we should not process the current one.
-                if (resultsThusFar.some(result => result && result.outlet === getOutlet(r))) {
-                  return of(resultsThusFar);
-                }
-                const expanded$ = this.expandSegmentAgainstRoute(
-                    ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
-                return expanded$.pipe(
-                    map((segment) => resultsThusFar.concat({segment, outlet: getOutlet(r)})),
-                    catchError((e: any) => {
-                      if (e instanceof NoMatch) {
-                        return of(resultsThusFar);
-                      }
-                      throw e;
-                    }));
-              }));
-            },
-            of([] as MatchedSegment[]))
-        .pipe(
-            // Find the matched segment whose outlet matches the one we're looking for.
-            map(results => results.find(s => s.outlet === outlet)?.segment),
-            first((s): s is UrlSegmentGroup => s !== undefined),
-            catchError((e: any, _: any) => {
-              if (e instanceof EmptyError || e.name === 'EmptyError') {
-                if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
-                  return of(new UrlSegmentGroup([], {}));
-                }
-                throw new NoMatch(segmentGroup);
+    // We need to expand each outlet group independently to ensure that we not only load modules
+    // for routes matching the given `outlet`, but also those which will be activated because
+    // their path is empty string. This can result in multiple outlets being activated at once.
+    const routesByOutlet: Map<string, Route[]> = groupRoutesByOutlet(routes);
+    if (!routesByOutlet.has(outlet)) {
+      routesByOutlet.set(outlet, []);
+    }
+
+    const expandRoutes = (routes: Route[]) => {
+      return from(routes).pipe(
+          concatMap((r: Route) => {
+            const expanded$ = this.expandSegmentAgainstRoute(
+                ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
+            return expanded$.pipe(catchError(e => {
+              if (e instanceof NoMatch) {
+                return of(null);
               }
               throw e;
-            }),
+            }));
+          }),
+          first((s: UrlSegmentGroup|null): s is UrlSegmentGroup => s !== null),
+          catchError(e => {
+            if (e instanceof EmptyError || e.name === 'EmptyError') {
+              if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
+                return of(new UrlSegmentGroup([], {}));
+              }
+              throw new NoMatch(segmentGroup);
+            }
+            throw e;
+          }),
+      );
+    };
+
+    const expansions = Array.from(routesByOutlet.entries()).map(([routeOutlet, routes]) => {
+      const expanded = expandRoutes(routes);
+      // Map all results from outlets we aren't activating to `null` so they can be ignored later
+      return routeOutlet === outlet ? expanded :
+                                      expanded.pipe(map(() => null), catchError(() => of(null)));
+    });
+    return from(expansions)
+        .pipe(
+            combineAll(),
+            first(),
+            // Return only the expansion for the route outlet we are trying to activate.
+            map(results => results.find(result => result !== null)!),
         );
   }
 
@@ -571,8 +577,4 @@ function isEmptyPathRedirect(
   }
 
   return r.path === '' && r.redirectTo !== undefined;
-}
-
-function getOutlet(route: Route): string {
-  return route.outlet || PRIMARY_OUTLET;
 }

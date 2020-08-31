@@ -504,11 +504,10 @@ describe('applyRedirects', () => {
              [{path: '', loadChildren: 'root'}, {path: '', loadChildren: 'aux', outlet: 'popup'}];
 
          applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).subscribe();
-         expect(loadCalls).toBe(1);
+         expect(loadCalls).toBe(2);
          tick(100);
          expect(loaded).toEqual(['root']);
-         tick(200);
-         expect(loadCalls).toBe(2);
+         tick(100);
          expect(loaded).toEqual(['root', 'aux']);
        }));
 
@@ -915,6 +914,18 @@ describe('applyRedirects', () => {
                 expect(e.message).toEqual(
                     'Only absolute redirects can have named outlets. redirectTo: \'b(aux:c)\'');
               });
+    });
+  });
+
+  // internal failure b/165719418
+  it('does not fail with large configs', () => {
+    const config: Routes = [];
+    for (let i = 0; i < 400; i++) {
+      config.push({path: 'no_match', component: ComponentB});
+    }
+    config.push({path: 'match', component: ComponentA});
+    applyRedirects(testModule.injector, null!, serializer, tree('match'), config).forEach(r => {
+      expectTreeToBe(r, 'match');
     });
   });
 });
