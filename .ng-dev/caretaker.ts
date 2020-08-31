@@ -5,11 +5,11 @@ export const caretaker: CaretakerConfig = {
   githubQueries: [
     {
       name: 'Merge Queue',
-      query: `is:pr is:open status:success label:"PR action: merge"`,
+      query: `is:pr is:open status:success label:"action: merge"`,
     },
     {
       name: 'Merge Assistance Queue',
-      query: `is:pr is:open status:success label:"PR action: merge-assistance"`,
+      query: `is:pr is:open status:success label:"action: merge-assistance"`,
     },
     {
       name: 'Primary Triage Queue',
