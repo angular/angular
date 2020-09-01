@@ -10,7 +10,7 @@ import * as Octokit from '@octokit/rest';
 import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
 
 import {getConfig, getRepoBaseDir, NgDevConfig} from '../config';
-import {info, yellow} from '../console';
+import {debug, info, yellow} from '../console';
 import {GithubClient} from './github';
 import {getRepositoryGitUrl, GITHUB_TOKEN_GENERATE_URL, GITHUB_TOKEN_SETTINGS_URL} from './github-urls';
 
@@ -47,12 +47,12 @@ export class GitClient {
   /** Octokit request parameters object for targeting the configured remote. */
   remoteParams = {owner: this.remoteConfig.owner, repo: this.remoteConfig.name};
   /** Git URL that resolves to the configured repository. */
-  repoGitUrl = getRepositoryGitUrl(this.remoteConfig, this._githubToken);
+  repoGitUrl = getRepositoryGitUrl(this.remoteConfig, this.githubToken);
   /** Instance of the authenticated Github octokit API. */
-  github = new GithubClient(this._githubToken);
+  github = new GithubClient(this.githubToken);
 
   /** The OAuth scopes available for the provided Github token. */
-  private _oauthScopes: Promise<string[]>|null = null;
+  private _cachedOauthScopes: Promise<string[]>|null = null;
   /**
    * Regular expression that matches the provided Github token. Used for
    * sanitizing the token from Git child process output.
@@ -60,13 +60,13 @@ export class GitClient {
   private _githubTokenRegex: RegExp|null = null;
 
   constructor(
-      private _githubToken?: string, private _config: Pick<NgDevConfig, 'github'> = getConfig(),
+      public githubToken?: string, private _config: Pick<NgDevConfig, 'github'> = getConfig(),
       private _projectRoot = getRepoBaseDir()) {
     // If a token has been specified (and is not empty), pass it to the Octokit API and
     // also create a regular expression that can be used for sanitizing Git command output
     // so that it does not print the token accidentally.
-    if (_githubToken != null) {
-      this._githubTokenRegex = new RegExp(_githubToken, 'g');
+    if (githubToken != null) {
+      this._githubTokenRegex = new RegExp(githubToken, 'g');
     }
   }
 
@@ -87,10 +87,12 @@ export class GitClient {
    * info failed commands.
    */
   runGraceful(args: string[], options: SpawnSyncOptions = {}): SpawnSyncReturns<string> {
-    // To improve the infoging experience in case something fails, we print all executed
-    // Git commands. Note that we do not want to print the token if is contained in the
-    // command. It's common to share errors with others if the tool failed.
-    info('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
+    // To improve the debugging experience in case something fails, we print all executed Git
+    // commands unless the `stdio` is explicitly to `ignore` (which is equivalent to silent).
+    // Note that we do not want to print the token if is contained in the command. It's common
+    // to share errors with others if the tool failed, and we do not want to leak tokens.
+    const printFn = options.stdio !== 'ignore' ? info : debug;
+    printFn('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
 
     const result = spawnSync('git', args, {
       cwd: this._projectRoot,
