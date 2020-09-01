@@ -38,7 +38,6 @@ v9 - v12
 | `@angular/bazel`              | [`Bazel builder and schematics`](#bazelbuilder)                               | v10 |
 | `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v11 |
 | `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11 |
-| `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v11 |
 | `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v11 |
 | `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v11 |
 | `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v11 |
@@ -89,7 +88,6 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
-| [`CollectionChangeRecord`](api/core/CollectionChangeRecord) | [`IterableChangeRecord`](api/core/IterableChangeRecord) | v4 | none |
 | [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | n/a | v4 | Not part of public API. |
 | [`ReflectiveInjector`](api/core/ReflectiveInjector) | [`Injector.create`](api/core/Injector#create)  | v5 | See [`ReflectiveInjector`](#reflectiveinjector) |
 | [`ReflectiveKey`](api/core/ReflectiveKey) | none | v5 | none |

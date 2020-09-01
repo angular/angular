@@ -85,10 +85,6 @@ export declare interface ClassSansProvider {
     useClass: Type<any>;
 }
 
-/** @deprecated */
-export declare interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {
-}
-
 export declare class Compiler {
     compileModuleAndAllComponentsAsync: <T>(moduleType: Type<T>) => Promise<ModuleWithComponentFactories<T>>;
     compileModuleAndAllComponentsSync: <T>(moduleType: Type<T>) => ModuleWithComponentFactories<T>;

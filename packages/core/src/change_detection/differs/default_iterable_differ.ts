@@ -593,7 +593,7 @@ export class IterableChangeRecord_<V> implements IterableChangeRecord<V> {
   constructor(public item: V, public trackById: any) {}
 }
 
-// A linked list of CollectionChangeRecords with the same IterableChangeRecord_.item
+// A linked list of IterableChangeRecords with the same IterableChangeRecord_.item
 class _DuplicateItemRecordList<V> {
   /** @internal */
   _head: IterableChangeRecord_<V>|null = null;
