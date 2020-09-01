@@ -28,12 +28,21 @@ const majorActiveTermSupportDuration = 12;
 
 /**
  * Asserts that the given branch corresponds to an active LTS version-branch that can receive
- * backported fixes. Throws an error if LTS expired or an invalid branch is selected.
- */
-export async function assertActiveLtsBranch(repo: GithubRepo, branchName: string) {
+ * backport fixes. Throws an error if LTS expired or an invalid branch is selected.
+ *
+ * @param repo Github repository for which the given branch exists.
+ * @param representativeNpmPackage NPM package representing the given repository. Angular
+ *   repositories usually contain multiple packages in a monorepo scheme, but packages commonly
+ *   are released with the same versions. This means that a single package can be used for querying
+ *   NPM about previously published versions (e.g. to determine active LTS versions). The package
+ *   name is used to check if the given branch is containing an active LTS version.
+ * @param branchName Branch that is checked to be an active LTS version-branch.
+ * */
+export async function assertActiveLtsBranch(
+    repo: GithubRepo, representativeNpmPackage: string, branchName: string) {
   const version = await getVersionOfBranch(repo, branchName);
   const {'dist-tags': distTags, time} =
-      await (await fetch(`https://registry.npmjs.org/${repo.npmPackageName}`)).json();
+      await (await fetch(`https://registry.npmjs.org/${representativeNpmPackage}`)).json();
 
   // LTS versions should be tagged in NPM in the following format: `v{major}-lts`.
   const ltsVersion = semver.parse(distTags[`v${version.major}-lts`]);

@@ -22,11 +22,10 @@ import {assertActiveLtsBranch} from './lts-branch';
  */
 export async function getDefaultTargetLabelConfiguration(
     api: GithubClient, github: GithubConfig, npmPackageName: string): Promise<TargetLabel[]> {
-  const repo: GithubRepo = {owner: github.owner, repo: github.name, api, npmPackageName};
+  const repo: GithubRepo = {owner: github.owner, repo: github.name, api};
   const nextVersion = await getVersionOfBranch(repo, nextBranchName);
   const hasNextMajorTrain = nextVersion.minor === 0;
-  const {latestVersionBranch, releaseCandidateBranch} =
-      await fetchActiveReleaseTrainBranches(repo, nextVersion);
+  const {latest, releaseCandidate} = await fetchActiveReleaseTrainBranches(repo, nextVersion);
 
   return [
     {
@@ -59,15 +58,15 @@ export async function getDefaultTargetLabelConfiguration(
         // and is also labeled with `target: patch`, then we merge it directly into the
         // branch without doing any cherry-picking. This is useful if a PR could not be
         // applied cleanly, and a separate PR for the patch branch has been created.
-        if (githubTargetBranch === latestVersionBranch) {
-          return [latestVersionBranch];
+        if (githubTargetBranch === latest.branchName) {
+          return [latest.branchName];
         }
         // Otherwise, patch changes are always merged into the next and patch branch.
-        const branches = [nextBranchName, latestVersionBranch];
+        const branches = [nextBranchName, latest.branchName];
         // Additionally, if there is a release-candidate/feature-freeze release-train
         // currently active, also merge the PR into that version-branch.
-        if (releaseCandidateBranch !== null) {
-          branches.push(releaseCandidateBranch);
+        if (releaseCandidate !== null) {
+          branches.push(releaseCandidate.branchName);
         }
         return branches;
       }
@@ -77,7 +76,7 @@ export async function getDefaultTargetLabelConfiguration(
       branches: githubTargetBranch => {
         // The `target: rc` label cannot be applied if there is no active feature-freeze
         // or release-candidate release train.
-        if (releaseCandidateBranch === null) {
+        if (releaseCandidate === null) {
           throw new InvalidTargetLabelError(
               `No active feature-freeze/release-candidate branch. ` +
               `Unable to merge pull request using "target: rc" label.`);
@@ -86,11 +85,11 @@ export async function getDefaultTargetLabelConfiguration(
         // directly through the Github UI and has the `target: rc` label applied, merge it
         // only into the release candidate branch. This is useful if a PR did not apply cleanly
         // into the release-candidate/feature-freeze branch, and a separate PR has been created.
-        if (githubTargetBranch === releaseCandidateBranch) {
-          return [releaseCandidateBranch];
+        if (githubTargetBranch === releaseCandidate.branchName) {
+          return [releaseCandidate.branchName];
         }
         // Otherwise, merge into the next and active release-candidate/feature-freeze branch.
-        return [nextBranchName, releaseCandidateBranch];
+        return [nextBranchName, releaseCandidate.branchName];
       },
     },
     {
@@ -105,18 +104,18 @@ export async function getDefaultTargetLabelConfiguration(
               `PR cannot be merged as it does not target a long-term support ` +
               `branch: "${githubTargetBranch}"`);
         }
-        if (githubTargetBranch === latestVersionBranch) {
+        if (githubTargetBranch === latest.branchName) {
           throw new InvalidTargetBranchError(
               `PR cannot be merged with "target: lts" into patch branch. ` +
               `Consider changing the label to "target: patch" if this is intentional.`);
         }
-        if (githubTargetBranch === releaseCandidateBranch && releaseCandidateBranch !== null) {
+        if (releaseCandidate !== null && githubTargetBranch === releaseCandidate.branchName) {
           throw new InvalidTargetBranchError(
               `PR cannot be merged with "target: lts" into feature-freeze/release-candidate ` +
               `branch. Consider changing the label to "target: rc" if this is intentional.`);
         }
         // Assert that the selected branch is an active LTS branch.
-        await assertActiveLtsBranch(repo, githubTargetBranch);
+        await assertActiveLtsBranch(repo, npmPackageName, githubTargetBranch);
         return [githubTargetBranch];
       },
     },
