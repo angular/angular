@@ -7,11 +7,13 @@
  */
 
 import {Argv} from 'yargs';
-import {error, red, yellow} from './console';
+import {error, red, yellow} from '../console';
+import {GITHUB_TOKEN_GENERATE_URL} from './github-urls';
 
 export type ArgvWithGithubToken = Argv<{githubToken: string}>;
 
-export function addGithubTokenFlag(yargs: Argv): ArgvWithGithubToken {
+/** Sets up the `github-token` command option for the given Yargs instance. */
+export function addGithubTokenOption(yargs: Argv): ArgvWithGithubToken {
   return yargs
       // 'github-token' is casted to 'githubToken' to properly set up typings to reflect the key in
       // the Argv object being camelCase rather than kebob case due to the `camel-case-expansion`
@@ -32,6 +34,3 @@ export function addGithubTokenFlag(yargs: Argv): ArgvWithGithubToken {
       })
       .default('github-token' as 'githubToken', '', '<LOCAL TOKEN>');
 }
-
-/** URL to the Github page where personal access tokens can be generated. */
-export const GITHUB_TOKEN_GENERATE_URL = 'https://github.com/settings/tokens/new';
