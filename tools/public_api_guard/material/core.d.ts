@@ -55,10 +55,6 @@ export declare class AnimationDurations {
     static EXITING: string;
 }
 
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
-
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
-
 export interface CanColor {
     color: ThemePalette;
     defaultColor: ThemePalette | undefined;
@@ -121,8 +117,6 @@ export declare abstract class DateAdapter<D> {
     abstract today(): D;
 }
 
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
-
 export declare const defaultRippleAnimationConfig: {
     enterDuration: number;
     exitDuration: number;
@@ -133,8 +127,6 @@ export declare class ErrorStateMatcher {
     static ɵfac: i0.ɵɵFactoryDef<ErrorStateMatcher, never>;
     static ɵprov: i0.ɵɵInjectableDef<ErrorStateMatcher>;
 }
-
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
 
 export declare type FloatLabelType = 'always' | 'never' | 'auto';
 
@@ -159,17 +151,9 @@ export interface HasTabIndex {
 
 export declare type HasTabIndexCtor = Constructor<HasTabIndex>;
 
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
-
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
-
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
-
 export interface LabelOptions {
     float?: FloatLabelType;
 }
-
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
 
 export declare const MAT_DATE_FORMATS: InjectionToken<MatDateFormats>;
 
@@ -305,8 +289,6 @@ export declare class MatRippleModule {
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatRippleModule, [typeof i1.MatRipple], [typeof i2.MatCommonModule, typeof i3.PlatformModule], [typeof i1.MatRipple, typeof i2.MatCommonModule]>;
 }
 
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
-
 export declare function mixinColor<T extends Constructor<HasElementRef>>(base: T, defaultColor?: ThemePalette): CanColorCtor & T;
 
 export declare function mixinDisabled<T extends Constructor<{}>>(base: T): CanDisableCtor & T;
@@ -353,10 +335,6 @@ export declare class NativeDateModule {
     static ɵinj: i0.ɵɵInjectorDef<NativeDateModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<NativeDateModule, never, [typeof i1.PlatformModule], never>;
 }
-
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
-
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
 
 export interface RippleAnimationConfig {
     enterDuration?: number;
@@ -413,8 +391,6 @@ export interface RippleTarget {
 }
 
 export declare type SanityChecks = boolean | GranularSanityChecks;
-
-export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
 
 export declare function setLines(lines: QueryList<unknown>, element: ElementRef<HTMLElement>, prefix?: string): void;
 
