@@ -192,6 +192,7 @@
     "multimatch": "^4.0.0",
     "mutation-observer": "^1.0.3",
     "nock": "^13.0.3",
+    "ora": "^5.0.0",
     "rewire": "2.5.2",
     "sauce-connect": "https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz",
     "semver": "^6.3.0",
