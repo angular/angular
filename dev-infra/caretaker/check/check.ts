@@ -9,6 +9,7 @@
 import {GitClient} from '../../utils/git';
 import {getCaretakerConfig} from '../config';
 
+import {printCiStatus} from './ci';
 import {printG3Comparison} from './g3';
 import {printGithubTasks} from './github';
 import {printServiceStatuses} from './services';
@@ -21,7 +22,9 @@ export async function checkServiceStatuses(githubToken: string) {
   /** The GitClient for interacting with git and Github. */
   const git = new GitClient(githubToken, config);
 
+  // TODO(josephperrott): Allow these checks to be loaded in parallel.
   await printServiceStatuses();
   await printGithubTasks(git, config.caretaker);
   await printG3Comparison(git);
+  await printCiStatus(git);
 }
