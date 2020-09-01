@@ -1211,6 +1211,69 @@ exports.MissingClass2 = MissingClass2;
       });
 
       describe('getConstructorParameters', () => {
+        it('should always specify LOCAL type value references for decorated constructor parameter types',
+           () => {
+             const files = [
+               {
+                 name: _('/node_modules/shared-lib/foo.d.ts'),
+                 contents: `
+          declare class Foo {}
+          export {Foo as Bar};
+        `,
+               },
+               {
+                 name: _('/node_modules/shared-lib/index.d.ts'),
+                 contents: `
+          export {Bar as Baz} from './foo';
+        `,
+               },
+               {
+                 name: _('/local.js'),
+                 contents: `
+          var Internal = (function() {
+            function Internal() {
+            }
+            return Internal;
+          }());
+          exports.External = Internal;
+           `
+               },
+               {
+                 name: _('/main.js'),
+                 contents: `
+          var shared = require('shared-lib');
+          var local = require('./local');
+          var SameFile = (function() {
+            function SameFile() {
+            }
+            return SameFile;
+          }());
+          exports.SameFile = SameFile;
+
+          var SomeClass = (function() {
+            function SomeClass(arg1, arg2, arg3) {}
+            return SomeClass;
+          }());
+          SomeClass.ctorParameters = function() { return [{ type: shared.Baz }, { type: local.External }, { type: SameFile }]; };
+          exports.SomeClass = SomeClass;
+        `,
+               },
+             ];
+
+             loadTestFiles(files);
+             const bundle = makeTestBundleProgram(_('/main.js'));
+             const host =
+                 createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
+             const classNode = getDeclaration(
+                 bundle.program, _('/main.js'), 'SomeClass', isNamedVariableDeclaration);
+
+             const parameters = host.getConstructorParameters(classNode)!;
+
+             expect(parameters.map(p => p.name)).toEqual(['arg1', 'arg2', 'arg3']);
+             expectTypeValueReferencesForParameters(
+                 parameters, ['shared.Baz', 'local.External', 'SameFile']);
+           });
+
         it('should find the decorated constructor parameters', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
           const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);

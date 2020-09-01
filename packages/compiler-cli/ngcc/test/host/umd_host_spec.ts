@@ -1332,6 +1332,78 @@ runInEachFileSystem(() => {
     });
 
     describe('getConstructorParameters', () => {
+      it('should always specify LOCAL type value references for decorated constructor parameter types',
+         () => {
+           const files = [
+             {
+               name: _('/node_modules/shared-lib/foo.d.ts'),
+               contents: `
+    declare class Foo {}
+    export {Foo as Bar};
+  `,
+             },
+             {
+               name: _('/node_modules/shared-lib/index.d.ts'),
+               contents: `
+    export {Bar as Baz} from './foo';
+  `,
+             },
+             {
+               name: _('/local.js'),
+               contents: `
+  (function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+    typeof define === 'function' && define.amd ? define('local', ['exports'], factory) :
+    (factory(global.local));
+  }(this, (function (exports) { 'use strict';
+    var Internal = (function() {
+      function Internal() {
+      }
+      return Internal;
+    }());
+    exports.External = Internal;
+  })));
+     `
+             },
+             {
+               name: _('/main.js'),
+               contents: `
+  (function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('shared-lib), require('./local')) :
+    typeof define === 'function' && define.amd ? define('main', ['exports', 'shared-lib', './local'], factory) :
+    (factory(global.main, global.shared, global.local));
+  }(this, (function (exports, shared, local) { 'use strict';
+    var SameFile = (function() {
+      function SameFile() {
+      }
+      return SameFile;
+    }());
+    exports.SameFile = SameFile;
+
+    var SomeClass = (function() {
+      function SomeClass(arg1, arg2, arg3) {}
+      return SomeClass;
+    }());
+    SomeClass.ctorParameters = function() { return [{ type: shared.Baz }, { type: local.External }, { type: SameFile }]; };
+    exports.SomeClass = SomeClass;
+  })));
+  `,
+             },
+           ];
+
+           loadTestFiles(files);
+           const bundle = makeTestBundleProgram(_('/main.js'));
+           const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
+           const classNode = getDeclaration(
+               bundle.program, _('/main.js'), 'SomeClass', isNamedVariableDeclaration);
+
+           const parameters = host.getConstructorParameters(classNode)!;
+
+           expect(parameters.map(p => p.name)).toEqual(['arg1', 'arg2', 'arg3']);
+           expectTypeValueReferencesForParameters(
+               parameters, ['shared.Baz', 'local.External', 'SameFile']);
+         });
+
       it('should find the decorated constructor parameters', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
@@ -1591,7 +1663,7 @@ runInEachFileSystem(() => {
             `;
             break;
           case 'inlined_with_suffix':
-            fileHeaderWithUmd = `            
+            fileHeaderWithUmd = `
               (function (global, factory) {
                 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports)) :
                 typeof define === 'function' && define.amd ? define('test', ['exports'], factory) :

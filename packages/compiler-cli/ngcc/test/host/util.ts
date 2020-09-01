@@ -13,26 +13,36 @@ import {CtorParameter, TypeValueReferenceKind} from '../../../src/ngtsc/reflecti
  * names.
  */
 export function expectTypeValueReferencesForParameters(
-    parameters: CtorParameter[], expectedParams: (string|null)[], fromModule: string|null = null) {
+    parameters: CtorParameter[], expectedParams: (string|null)[],
+    fromModule: (string|null)[] = []) {
   parameters!.forEach((param, idx) => {
     const expected = expectedParams[idx];
     if (expected !== null) {
       if (param.typeValueReference.kind === TypeValueReferenceKind.UNAVAILABLE) {
-        fail(`Incorrect typeValueReference generated, expected ${expected}`);
+        fail(`Incorrect typeValueReference generated for ${param.name}, expected "${
+            expected}" because "${param.typeValueReference.reason}"`);
       } else if (
-          param.typeValueReference.kind === TypeValueReferenceKind.LOCAL && fromModule !== null) {
-        fail(`Incorrect typeValueReference generated, expected non-local`);
+          param.typeValueReference.kind === TypeValueReferenceKind.LOCAL &&
+          fromModule[idx] != null) {
+        fail(`Incorrect typeValueReference generated for ${param.name}, expected non-LOCAL (from ${
+            fromModule[idx]}) but was marked LOCAL`);
       } else if (
-          param.typeValueReference.kind !== TypeValueReferenceKind.LOCAL && fromModule === null) {
-        fail(`Incorrect typeValueReference generated, expected local`);
+          param.typeValueReference.kind !== TypeValueReferenceKind.LOCAL &&
+          fromModule[idx] == null) {
+        fail(`Incorrect typeValueReference generated for ${
+            param.name}, expected LOCAL but was imported from ${
+            param.typeValueReference.moduleName}`);
       } else if (param.typeValueReference.kind === TypeValueReferenceKind.LOCAL) {
-        if (!ts.isIdentifier(param.typeValueReference.expression)) {
-          fail(`Incorrect typeValueReference generated, expected identifier`);
+        if (!ts.isIdentifier(param.typeValueReference.expression) &&
+            !ts.isPropertyAccessExpression(param.typeValueReference.expression)) {
+          fail(`Incorrect typeValueReference generated for ${
+              param.name}, expected an identifier but got "${
+              param.typeValueReference.expression.getText()}"`);
         } else {
-          expect(param.typeValueReference.expression.text).toEqual(expected);
+          expect(param.typeValueReference.expression.getText()).toEqual(expected);
         }
       } else if (param.typeValueReference.kind === TypeValueReferenceKind.IMPORTED) {
-        expect(param.typeValueReference.moduleName).toBe(fromModule!);
+        expect(param.typeValueReference.moduleName).toBe(fromModule[idx]!);
         expect(param.typeValueReference.importedName).toBe(expected);
       }
     }
