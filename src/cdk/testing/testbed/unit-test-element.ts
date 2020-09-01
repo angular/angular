@@ -64,13 +64,11 @@ export class UnitTestElement implements TestElement {
   constructor(readonly element: Element, private _stabilize: () => Promise<void>) {}
 
   async blur(): Promise<void> {
-    await this._stabilize();
     triggerBlur(this.element as HTMLElement);
     await this._stabilize();
   }
 
   async clear(): Promise<void> {
-    await this._stabilize();
     if (!isTextInput(this.element)) {
       throw Error('Attempting to clear an invalid element');
     }
@@ -93,12 +91,10 @@ export class UnitTestElement implements TestElement {
     this._dispatchPointerEventIfSupported('pointerup', clientX, clientY);
     dispatchMouseEvent(this.element, 'mouseup', clientX, clientY);
     dispatchMouseEvent(this.element, 'click', clientX, clientY);
-
     await this._stabilize();
   }
 
   async focus(): Promise<void> {
-    await this._stabilize();
     triggerFocus(this.element as HTMLElement);
     await this._stabilize();
   }
@@ -111,14 +107,12 @@ export class UnitTestElement implements TestElement {
   }
 
   async hover(): Promise<void> {
-    await this._stabilize();
     this._dispatchPointerEventIfSupported('pointerenter');
     dispatchMouseEvent(this.element, 'mouseenter');
     await this._stabilize();
   }
 
   async mouseAway(): Promise<void> {
-    await this._stabilize();
     this._dispatchPointerEventIfSupported('pointerleave');
     dispatchMouseEvent(this.element, 'mouseleave');
     await this._stabilize();
@@ -127,7 +121,6 @@ export class UnitTestElement implements TestElement {
   async sendKeys(...keys: (string | TestKey)[]): Promise<void>;
   async sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
   async sendKeys(...modifiersAndKeys: any[]): Promise<void> {
-    await this._stabilize();
     const args = modifiersAndKeys.map(k => typeof k === 'number' ? keyMap[k as TestKey] : k);
     typeInElement(this.element as HTMLElement, ...args);
     await this._stabilize();
@@ -162,8 +155,8 @@ export class UnitTestElement implements TestElement {
   }
 
   async setInputValue(value: string): Promise<void> {
-    await this._stabilize();
     (this.element as any).value = value;
+    await this._stabilize();
   }
 
   async matchesSelector(selector: string): Promise<boolean> {
