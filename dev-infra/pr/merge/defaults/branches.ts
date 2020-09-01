@@ -17,13 +17,6 @@ export interface GithubRepo {
   owner: string;
   /** Name of the repository. */
   repo: string;
-  /**
-   * NPM package representing this repository. Angular repositories usually contain
-   * multiple packages in a monorepo scheme, but packages commonly are released with
-   * the same versions. This means that a single package can be used for querying
-   * NPM about previously published versions (e.g. to determine active LTS versions).
-   * */
-  npmPackageName: string;
 }
 
 /** Type describing a version-branch. */
@@ -36,6 +29,14 @@ export interface VersionBranch {
    * that can be used for comparisons, sorting and other checks.
    */
   parsed: semver.SemVer;
+}
+
+/** Type describing a release-train. */
+export interface ReleaseTrain {
+  /** Name of the branch for this release-train. */
+  branchName: string;
+  /** Current latest version for this release train. */
+  version: semver.SemVer;
 }
 
 /** Branch name for the `next` branch. */
@@ -51,13 +52,10 @@ const releaseTrainBranchNameRegex = /(\d+)\.(\d+)\.x/;
  */
 export async function fetchActiveReleaseTrainBranches(
     repo: GithubRepo, nextVersion: semver.SemVer): Promise<{
-  /**
-   * Name of the currently active release-candidate branch. Null if no
-   * feature-freeze/release-candidate is currently active.
-   */
-  releaseCandidateBranch: string | null,
-  /** Name of the latest non-prerelease version branch (i.e. the patch branch). */
-  latestVersionBranch: string
+  /** Release-train currently in active release-candidate/feature-freeze phase. */
+  releaseCandidate: ReleaseTrain | null,
+  /** Latest non-prerelease release train (i.e. for the patch branch). */
+  latest: ReleaseTrain
 }> {
   const majorVersionsToConsider: number[] = [];
   let expectedReleaseCandidateMajor: number;
@@ -90,16 +88,16 @@ export async function fetchActiveReleaseTrainBranches(
   // Collect all version-branches that should be considered for the latest version-branch,
   // or the feature-freeze/release-candidate.
   const branches = (await getBranchesForMajorVersions(repo, majorVersionsToConsider));
-  const {latestVersionBranch, releaseCandidateBranch} =
-      await findActiveVersionBranches(repo, nextVersion, branches, expectedReleaseCandidateMajor);
+  const {latest, releaseCandidate} = await findActiveReleaseTrainsFromVersionBranches(
+      repo, nextVersion, branches, expectedReleaseCandidateMajor);
 
-  if (latestVersionBranch === null) {
+  if (latest === null) {
     throw Error(
         `Unable to determine the latest release-train. The following branches ` +
-        `have been considered: [${branches.join(', ')}]`);
+        `have been considered: [${branches.map(b => b.name).join(', ')}]`);
   }
 
-  return {releaseCandidateBranch, latestVersionBranch};
+  return {releaseCandidate, latest};
 }
 
 /** Gets the version of a given branch by reading the `package.json` upstream. */
@@ -159,19 +157,20 @@ export async function getBranchesForMajorVersions(
   return branches.sort((a, b) => semver.rcompare(a.parsed, b.parsed));
 }
 
-export async function findActiveVersionBranches(
+/** Finds the currently active release trains from the specified version branches. */
+export async function findActiveReleaseTrainsFromVersionBranches(
     repo: GithubRepo, nextVersion: semver.SemVer, branches: VersionBranch[],
     expectedReleaseCandidateMajor: number): Promise<{
-  latestVersionBranch: string | null,
-  releaseCandidateBranch: string | null,
+  latest: ReleaseTrain | null,
+  releaseCandidate: ReleaseTrain | null,
 }> {
   // Version representing the release-train currently in the next phase. Note that we ignore
   // patch and pre-release segments in order to be able to compare the next release train to
   // other release trains from version branches (which follow the `N.N.x` pattern).
   const nextReleaseTrainVersion = semver.parse(`${nextVersion.major}.${nextVersion.minor}.0`)!;
 
-  let latestVersionBranch: string|null = null;
-  let releaseCandidateBranch: string|null = null;
+  let latest: ReleaseTrain|null = null;
+  let releaseCandidate: ReleaseTrain|null = null;
 
   // Iterate through the captured branches and find the latest non-prerelease branch and a
   // potential release candidate branch. From the collected branches we iterate descending
@@ -200,24 +199,26 @@ export async function findActiveVersionBranches(
     }
 
     const version = await getVersionOfBranch(repo, name);
+    const releaseTrain: ReleaseTrain = {branchName: name, version};
     const isPrerelease = version.prerelease[0] === 'rc' || version.prerelease[0] === 'next';
+
     if (isPrerelease) {
-      if (releaseCandidateBranch !== null) {
+      if (releaseCandidate !== null) {
         throw Error(
             `Unable to determine latest release-train. Found two consecutive ` +
             `branches in feature-freeze/release-candidate phase. Did not expect both "${name}" ` +
-            `and "${releaseCandidateBranch}" to be in feature-freeze/release-candidate mode.`);
+            `and "${releaseCandidate.branchName}" to be in feature-freeze/release-candidate mode.`);
       } else if (version.major !== expectedReleaseCandidateMajor) {
         throw Error(
             `Discovered unexpected old feature-freeze/release-candidate branch. Expected no ` +
             `version-branch in feature-freeze/release-candidate mode for v${version.major}.`);
       }
-      releaseCandidateBranch = name;
+      releaseCandidate = releaseTrain;
     } else {
-      latestVersionBranch = name;
+      latest = releaseTrain;
       break;
     }
   }
 
-  return {releaseCandidateBranch, latestVersionBranch};
+  return {releaseCandidate, latest};
 }
