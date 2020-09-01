@@ -84,7 +84,6 @@ class GithubGraphqlClient {
     }
   }
 
-
   /** Perform a query using Github's GraphQL API. */
   async query<T extends GraphQLQueryObject>(queryObject: T, params: RequestParameters = {}) {
     const queryString = query(queryObject);

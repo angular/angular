@@ -7,10 +7,10 @@
  */
 
 import {types as graphQLTypes} from 'typed-graphqlify';
-import {URL} from 'url';
 
 import {info} from '../../utils/console';
 import {GitClient} from '../../utils/git';
+import {addTokenToGitHttpsUrl} from '../../utils/git/github-urls';
 import {getPr} from '../../utils/github';
 
 /* GraphQL schema for the response body for a pending PR. */
@@ -83,7 +83,7 @@ export async function checkOutPullRequestLocally(
   /** The full ref for the repository and branch the PR came from. */
   const fullHeadRef = `${pr.headRef.repository.nameWithOwner}:${headRefName}`;
   /** The full URL path of the repository the PR came from with github token as authentication. */
-  const headRefUrl = addAuthenticationToUrl(pr.headRef.repository.url, githubToken);
+  const headRefUrl = addTokenToGitHttpsUrl(pr.headRef.repository.url, githubToken);
   // Note: Since we use a detached head for rebasing the PR and therefore do not have
   // remote-tracking branches configured, we need to set our expected ref and SHA. This
   // allows us to use `--force-with-lease` for the detached head while ensuring that we
@@ -125,11 +125,4 @@ export async function checkOutPullRequestLocally(
       return git.checkout(previousBranchOrRevision, true);
     }
   };
-}
-
-/** Adds the provided token as username to the provided url. */
-function addAuthenticationToUrl(urlString: string, token: string) {
-  const url = new URL(urlString);
-  url.username = token;
-  return url.toString();
 }
