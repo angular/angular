@@ -12,6 +12,7 @@ import {URL} from 'url';
 import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info, promptConfirm} from '../../utils/console';
 import {GitClient} from '../../utils/git';
+import {addTokenToGitHttpsUrl} from '../../utils/git/github-urls';
 import {getPr} from '../../utils/github';
 
 /* GraphQL schema for the response body for each pending PR. */
@@ -61,8 +62,8 @@ export async function rebasePr(
   const baseRefName = pr.baseRef.name;
   const fullHeadRef = `${pr.headRef.repository.nameWithOwner}:${headRefName}`;
   const fullBaseRef = `${pr.baseRef.repository.nameWithOwner}:${baseRefName}`;
-  const headRefUrl = addAuthenticationToUrl(pr.headRef.repository.url, githubToken);
-  const baseRefUrl = addAuthenticationToUrl(pr.baseRef.repository.url, githubToken);
+  const headRefUrl = addTokenToGitHttpsUrl(pr.headRef.repository.url, githubToken);
+  const baseRefUrl = addTokenToGitHttpsUrl(pr.baseRef.repository.url, githubToken);
 
   // Note: Since we use a detached head for rebasing the PR and therefore do not have
   // remote-tracking branches configured, we need to set our expected ref and SHA. This
@@ -139,11 +140,4 @@ export async function rebasePr(
     // Checkout the original branch from before the run began.
     git.runGraceful(['checkout', previousBranchOrRevision], {stdio: 'ignore'});
   }
-}
-
-/** Adds the provided token as username to the provided url. */
-function addAuthenticationToUrl(urlString: string, token: string) {
-  const url = new URL(urlString);
-  url.username = token;
-  return url.toString();
 }

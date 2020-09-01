@@ -12,6 +12,7 @@ import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
 import {getConfig, getRepoBaseDir, NgDevConfig} from '../config';
 import {info, yellow} from '../console';
 import {GithubClient} from './github';
+import {getRepositoryGitUrl, GITHUB_TOKEN_GENERATE_URL, GITHUB_TOKEN_SETTINGS_URL} from './github-urls';
 
 /** Github response type extended to include the `x-oauth-scopes` headers presence. */
 type RateLimitResponseWithOAuthScopeHeader = Octokit.Response<Octokit.RateLimitGetResponse>&{
@@ -45,11 +46,8 @@ export class GitClient {
   remoteConfig = this._config.github;
   /** Octokit request parameters object for targeting the configured remote. */
   remoteParams = {owner: this.remoteConfig.owner, repo: this.remoteConfig.name};
-  /** URL that resolves to the configured repository. */
-  repoGitUrl = this.remoteConfig.useSsh ?
-      `git@github.com:${this.remoteConfig.owner}/${this.remoteConfig.name}.git` :
-      `https://${this._githubToken}@github.com/${this.remoteConfig.owner}/${
-          this.remoteConfig.name}.git`;
+  /** Git URL that resolves to the configured repository. */
+  repoGitUrl = getRepositoryGitUrl(this.remoteConfig, this._githubToken);
   /** Instance of the authenticated Github octokit API. */
   github = new GithubClient(this._githubToken);
 
@@ -191,8 +189,8 @@ export class GitClient {
         `The provided <TOKEN> does not have required permissions due to missing scope(s): ` +
         `${yellow(missingScopes.join(', '))}\n\n` +
         `Update the token in use at:\n` +
-        `  https://github.com/settings/tokens\n\n` +
-        `Alternatively, a new token can be created at: https://github.com/settings/tokens/new\n`;
+        `  ${GITHUB_TOKEN_SETTINGS_URL}\n\n` +
+        `Alternatively, a new token can be created at: ${GITHUB_TOKEN_GENERATE_URL}\n`;
 
     return {error};
   }
@@ -202,12 +200,12 @@ export class GitClient {
    **/
   private async getAuthScopesForToken() {
     // If the OAuth scopes have already been loaded, return the Promise containing them.
-    if (this._oauthScopes !== null) {
-      return this._oauthScopes;
+    if (this._cachedOauthScopes !== null) {
+      return this._cachedOauthScopes;
     }
     // OAuth scopes are loaded via the /rate_limit endpoint to prevent
     // usage of a request against that rate_limit for this lookup.
-    return this._oauthScopes = this.github.rateLimit.get().then(_response => {
+    return this._cachedOauthScopes = this.github.rateLimit.get().then(_response => {
       const response = _response as RateLimitResponseWithOAuthScopeHeader;
       const scopes: string = response.headers['x-oauth-scopes'] || '';
       return scopes.split(',').map(scope => scope.trim());
