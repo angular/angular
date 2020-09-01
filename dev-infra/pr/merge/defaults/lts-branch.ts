@@ -18,13 +18,16 @@ import {getVersionOfBranch, GithubRepoWithApi} from './branches';
  * Number of months a major version in Angular is actively supported. See:
  * https://angular.io/guide/releases#support-policy-and-schedule.
  */
-const majorActiveSupportDuration = 6;
+export const majorActiveSupportDuration = 6;
 
 /**
  * Number of months a major version has active long-term support. See:
  * https://angular.io/guide/releases#support-policy-and-schedule.
  */
-const majorActiveTermSupportDuration = 12;
+export const majorActiveTermSupportDuration = 12;
+
+/** Regular expression that matches LTS NPM dist tags. */
+export const ltsNpmDistTagRegex = /^v(\d+)-lts$/;
 
 /**
  * Asserts that the given branch corresponds to an active LTS version-branch that can receive
@@ -45,7 +48,8 @@ export async function assertActiveLtsBranch(
       await (await fetch(`https://registry.npmjs.org/${representativeNpmPackage}`)).json();
 
   // LTS versions should be tagged in NPM in the following format: `v{major}-lts`.
-  const ltsVersion = semver.parse(distTags[`v${version.major}-lts`]);
+  const ltsNpmTag = getLtsNpmDistTagOfMajor(version.major);
+  const ltsVersion = semver.parse(distTags[ltsNpmTag]);
 
   // Ensure that there is a LTS version tagged for the given version-branch major. e.g.
   // if the version branch is `9.2.x` then we want to make sure that there is a LTS
@@ -63,12 +67,8 @@ export async function assertActiveLtsBranch(
   }
 
   const today = new Date();
-  const releaseDate = new Date(time[`${version.major}.0.0`]);
-  const ltsEndDate = new Date(
-      releaseDate.getFullYear(),
-      releaseDate.getMonth() + majorActiveSupportDuration + majorActiveTermSupportDuration,
-      releaseDate.getDate(), releaseDate.getHours(), releaseDate.getMinutes(),
-      releaseDate.getSeconds(), releaseDate.getMilliseconds());
+  const majorReleaseDate = new Date(time[`${version.major}.0.0`]);
+  const ltsEndDate = computeLtsEndDateOfMajor(majorReleaseDate);
 
   // Check if LTS has already expired for the targeted major version. If so, we do not
   // allow the merge as per our LTS guarantees. Can be forcibly overridden if desired.
@@ -86,4 +86,22 @@ export async function assertActiveLtsBranch(
         `Long-term supported ended for v${version.major} on ${ltsEndDateText}. ` +
         `Pull request cannot be merged into the ${branchName} branch.`);
   }
+}
+
+/**
+ * Computes the date when long-term support ends for a major released at the
+ * specified date.
+ */
+export function computeLtsEndDateOfMajor(majorReleaseDate: Date): Date {
+  return new Date(
+      majorReleaseDate.getFullYear(),
+      majorReleaseDate.getMonth() + majorActiveSupportDuration + majorActiveTermSupportDuration,
+      majorReleaseDate.getDate(), majorReleaseDate.getHours(), majorReleaseDate.getMinutes(),
+      majorReleaseDate.getSeconds(), majorReleaseDate.getMilliseconds());
+}
+
+/** Gets the long-term support NPM dist tag for a given major version. */
+export function getLtsNpmDistTagOfMajor(major: number): string {
+  // LTS versions should be tagged in NPM in the following format: `v{major}-lts`.
+  return `v${major}-lts`;
 }
