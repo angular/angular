@@ -138,29 +138,18 @@ describe('HttpClient testing', () => {
 
   // #docregion network-error
   it('can test for network error', () => {
-    const emsg = 'simulated network error';
+    // Create mock ProgressEvent with type `error`, raised when something goes wrong
+    // at network level. e.g. Connection timeout, DNS error, offline, etc.
+    const mockError = new ProgressEvent('error');
 
     httpClient.get<Data[]>(testUrl).subscribe(
       data => fail('should have failed with the network error'),
       (error: HttpErrorResponse) => {
-        expect(error.error.message).toEqual(emsg, 'message');
+        expect(error.error).toBe(mockError);
       }
     );
 
     const req = httpTestingController.expectOne(testUrl);
-
-    // Create mock ErrorEvent, raised when something goes wrong at the network level.
-    // Connection timeout, DNS error, offline, etc
-    const mockError = new ErrorEvent('Network error', {
-      message: emsg,
-      // #enddocregion network-error
-      // The rest of this is optional and not used.
-      // Just showing that you could provide this too.
-      filename: 'HeroService.ts',
-      lineno: 42,
-      colno: 21
-    // #docregion network-error
-    });
 
     // Respond with mock error
     req.error(mockError);

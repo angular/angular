@@ -38,6 +38,7 @@ v9 - v12
 | `@angular/bazel`              | [`Bazel builder and schematics`](#bazelbuilder)                               | v10 |
 | `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v11 |
 | `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11 |
+| `@angular/common/http/testing`| [`TestRequest` accepting `ErrorEvent`](#testrequest-errorevent)               | <!--v10--> v12 |
 | `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v11 |
 | `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v11 |
 | `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v11 |
@@ -490,6 +491,29 @@ No replacement is planned for this deprecation.
 If you rely on the behavior that the same object instance should cause change detection, you have two options:
 - Clone the resulting value so that it has a new identity.
 - Explicitly call [`ChangeDetectorRef.detectChanges()`](api/core/ChangeDetectorRef#detectchanges) to force the update.
+
+
+{@a testrequest-errorevent}
+### `TestRequest` accepting `ErrorEvent`
+
+Angular provides utilities for testing `HttpClient`. The `TestRequest` class from
+`@angular/common/http/testing` mocks HTTP request objects for use with `HttpTestingController`.
+
+`TestRequest` provides an API for simulating an HTTP response with an error. In earlier versions
+of Angular, this API accepted objects of type `ErrorEvent`, which does not match the type of
+error event being returned by browsers natively. If you use `ErrorEvent` with `TestRequest`,
+you should switch to `ProgressEvent`. A future version of Angular will remove support for
+using `ErrorEvent` with `TestRequest`.
+
+Here is an example using a `ProgressEvent`:
+
+```ts
+const mockError = new ProgressEvent('error');
+const mockRequest = httpTestingController.expectOne(..);
+
+mockRequest.error(mockError);
+```
+
 
 {@a deprecated-cli-flags}
 ## Deprecated CLI APIs and Options

@@ -25,13 +25,8 @@ export declare class TestRequest {
     get cancelled(): boolean;
     request: HttpRequest<any>;
     constructor(request: HttpRequest<any>, observer: Observer<HttpEvent<any>>);
-    error(error: ErrorEvent, opts?: {
-        headers?: HttpHeaders | {
-            [name: string]: string | string[];
-        };
-        status?: number;
-        statusText?: string;
-    }): void;
+    /** @deprecated */ error(error: ErrorEvent, opts?: TestRequestErrorOptions): void;
+    error(error: ProgressEvent, opts?: TestRequestErrorOptions): void;
     event(event: HttpEvent<any>): void;
     flush(body: ArrayBuffer | Blob | string | number | Object | (string | number | Object | null)[] | null, opts?: {
         headers?: HttpHeaders | {

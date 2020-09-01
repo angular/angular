@@ -81,10 +81,13 @@ export class HeroService {
       // TODO: send the error to remote logging infrastructure
       console.error(error); // log to console instead
 
-      const message = (error.error instanceof ErrorEvent) ?
-        error.error.message :
-       `server returned code ${error.status} with body "${error.error}"`;
+      // If a native error is caught, do not transform it. We only want to
+      // transform response errors that are not wrapped in an `Error`.
+      if (error.error instanceof Event) {
+        throw error.error;
+      }
 
+      const message = `server returned code ${error.status} with body "${error.error}"`;
       // TODO: better job of transforming error for user consumption
       throw new Error(`${operation} failed: ${message}`);
     };
