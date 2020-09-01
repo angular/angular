@@ -11,7 +11,7 @@ import {
 } from '@angular/cdk/keycodes';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {Component, ViewChild} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatNativeDateModule} from '@angular/material/core';
 import {JAN} from '@angular/material/testing';
 import {By} from '@angular/platform-browser';
@@ -21,7 +21,7 @@ import {MatMultiYearView, yearsPerPage, yearsPerRow} from './multi-year-view';
 describe('MatMultiYearView', () => {
   let dir: {value: Direction};
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         MatNativeDateModule,

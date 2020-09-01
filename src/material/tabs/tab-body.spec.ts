@@ -2,7 +2,7 @@ import {Direction, Directionality} from '@angular/cdk/bidi';
 import {PortalModule, TemplatePortal} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {AfterContentInit, Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatRippleModule} from '@angular/material/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatTabBody, MatTabBodyPortal} from './tab-body';
@@ -13,7 +13,7 @@ describe('MatTabBody', () => {
   let dir: Direction = 'ltr';
   let dirChange: Subject<Direction> = new Subject<Direction>();
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     dir = 'ltr';
     TestBed.configureTestingModule({
       imports: [CommonModule, PortalModule, MatRippleModule, NoopAnimationsModule],

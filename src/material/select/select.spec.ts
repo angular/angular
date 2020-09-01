@@ -33,7 +33,7 @@ import {
   Provider,
 } from '@angular/core';
 import {
-  async,
+  waitForAsync,
   ComponentFixture,
   fakeAsync,
   flush,
@@ -123,7 +123,7 @@ describe('MatSelect', () => {
   });
 
   describe('core', () => {
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       configureMatSelectTestingModule([
         BasicSelect,
         MultiSelect,
@@ -2110,7 +2110,7 @@ describe('MatSelect', () => {
   });
 
   describe('when initialized without options', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([SelectInitWithoutOptions])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([SelectInitWithoutOptions])));
 
     it('should select the proper option when option list is initialized later', fakeAsync(() => {
       const fixture = TestBed.createComponent(SelectInitWithoutOptions);
@@ -2132,7 +2132,7 @@ describe('MatSelect', () => {
   });
 
   describe('with a selectionChange event handler', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([SelectWithChangeEvent])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([SelectWithChangeEvent])));
 
     let fixture: ComponentFixture<SelectWithChangeEvent>;
     let trigger: HTMLElement;
@@ -2176,7 +2176,7 @@ describe('MatSelect', () => {
   });
 
   describe('with ngModel', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([NgModelSelect])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([NgModelSelect])));
 
     it('should disable itself when control is disabled using the property', fakeAsync(() => {
       const fixture = TestBed.createComponent(NgModelSelect);
@@ -2219,7 +2219,7 @@ describe('MatSelect', () => {
   });
 
   describe('with ngIf', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([NgIfSelect])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([NgIfSelect])));
 
     it('should handle nesting in an ngIf', fakeAsync(() => {
       const fixture = TestBed.createComponent(NgIfSelect);
@@ -2250,7 +2250,7 @@ describe('MatSelect', () => {
   });
 
   describe('with multiple mat-select elements in one view', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([ManySelects])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([ManySelects])));
 
       let fixture: ComponentFixture<ManySelects>;
       let triggers: DebugElement[];
@@ -2295,7 +2295,7 @@ describe('MatSelect', () => {
   });
 
   describe('with floatLabel', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([FloatLabelSelect])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([FloatLabelSelect])));
 
     let fixture: ComponentFixture<FloatLabelSelect>;
     let formField: HTMLElement;
@@ -2363,7 +2363,7 @@ describe('MatSelect', () => {
   });
 
   describe('with a sibling component that throws an error', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([
       SelectWithErrorSibling,
       ThrowsErrorOnInit,
     ])));
@@ -2378,7 +2378,7 @@ describe('MatSelect', () => {
   });
 
   describe('with tabindex', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([SelectWithPlainTabindex])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([SelectWithPlainTabindex])));
 
     it('should be able to set the tabindex via the native attribute', fakeAsync(() => {
       const fixture = TestBed.createComponent(SelectWithPlainTabindex);
@@ -2390,7 +2390,7 @@ describe('MatSelect', () => {
   });
 
   describe('change events', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([SelectWithPlainTabindex])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([SelectWithPlainTabindex])));
 
     it('should complete the stateChanges stream on destroy', () => {
       const fixture = TestBed.createComponent(SelectWithPlainTabindex);
@@ -2409,7 +2409,7 @@ describe('MatSelect', () => {
   });
 
   describe('when initially hidden', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([BasicSelectInitiallyHidden])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([BasicSelectInitiallyHidden])));
 
     it('should set the width of the overlay if the element was hidden initially', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicSelectInitiallyHidden);
@@ -2430,7 +2430,7 @@ describe('MatSelect', () => {
   });
 
   describe('with no placeholder', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([BasicSelectNoPlaceholder])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([BasicSelectNoPlaceholder])));
 
     it('should set the width of the overlay if there is no placeholder', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicSelectNoPlaceholder);
@@ -2448,7 +2448,7 @@ describe('MatSelect', () => {
   });
 
   describe('with theming', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([BasicSelectWithTheming])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([BasicSelectWithTheming])));
 
     let fixture: ComponentFixture<BasicSelectWithTheming>;
 
@@ -2470,7 +2470,7 @@ describe('MatSelect', () => {
   });
 
   describe('when invalid inside a form', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([InvalidSelectInForm])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([InvalidSelectInForm])));
 
     it('should not throw SelectionModel errors in addition to ngModel errors', fakeAsync(() => {
       const fixture = TestBed.createComponent(InvalidSelectInForm);
@@ -2484,7 +2484,7 @@ describe('MatSelect', () => {
   });
 
   describe('with ngModel using compareWith', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([NgModelCompareWithSelect])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([NgModelCompareWithSelect])));
 
     let fixture: ComponentFixture<NgModelCompareWithSelect>;
     let instance: NgModelCompareWithSelect;
@@ -2549,7 +2549,7 @@ describe('MatSelect', () => {
   });
 
   describe(`when the select's value is accessed on initialization`, () => {
-    beforeEach(async(() => configureMatSelectTestingModule([SelectEarlyAccessSibling])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([SelectEarlyAccessSibling])));
 
     it('should not throw when trying to access the selected value on init', fakeAsync(() => {
       expect(() => {
@@ -2559,7 +2559,7 @@ describe('MatSelect', () => {
   });
 
   describe('with ngIf and mat-label', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([SelectWithNgIfAndLabel])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([SelectWithNgIfAndLabel])));
 
     it('should not throw when using ngIf on a select with an associated label', fakeAsync(() => {
       expect(() => {
@@ -2570,7 +2570,7 @@ describe('MatSelect', () => {
   });
 
   describe('inside of a form group', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([SelectInsideFormGroup])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([SelectInsideFormGroup])));
 
     let fixture: ComponentFixture<SelectInsideFormGroup>;
     let testComponent: SelectInsideFormGroup;
@@ -2691,7 +2691,7 @@ describe('MatSelect', () => {
   });
 
   describe('with custom error behavior', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([CustomErrorBehaviorSelect])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([CustomErrorBehaviorSelect])));
 
     it('should be able to override the error matching behavior via an @Input', fakeAsync(() => {
       const fixture = TestBed.createComponent(CustomErrorBehaviorSelect);
@@ -2712,7 +2712,7 @@ describe('MatSelect', () => {
   });
 
   describe('with preselected array values', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([
       SingleSelectWithPreselectedArrayValues,
     ])));
 
@@ -2730,7 +2730,7 @@ describe('MatSelect', () => {
   });
 
   describe('with custom value accessor', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([
       CompWithCustomSelect,
       CustomSelectAccessor,
     ])));
@@ -2747,7 +2747,7 @@ describe('MatSelect', () => {
   });
 
   describe('with a falsy value', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([FalsyValueSelect])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([FalsyValueSelect])));
 
     it('should be able to programmatically select a falsy option', fakeAsync(() => {
       const fixture = TestBed.createComponent(FalsyValueSelect);
@@ -2766,7 +2766,7 @@ describe('MatSelect', () => {
   });
 
   describe('with OnPush', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([
       BasicSelectOnPush,
       BasicSelectOnPushPreselected,
     ])));
@@ -2802,7 +2802,7 @@ describe('MatSelect', () => {
   });
 
   describe('with custom trigger', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([SelectWithCustomTrigger])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([SelectWithCustomTrigger])));
 
     it('should allow the user to customize the label', fakeAsync(() => {
       const fixture = TestBed.createComponent(SelectWithCustomTrigger);
@@ -2819,7 +2819,7 @@ describe('MatSelect', () => {
   });
 
   describe('when reseting the value by setting null or undefined', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([ResetValuesSelect])));
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([ResetValuesSelect])));
 
     let fixture: ComponentFixture<ResetValuesSelect>;
     let trigger: HTMLElement;
@@ -2952,7 +2952,7 @@ describe('MatSelect', () => {
   });
 
   describe('without Angular forms', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([
       BasicSelectWithoutForms,
       BasicSelectWithoutFormsPreselected,
       BasicSelectWithoutFormsMultiple,
@@ -3289,7 +3289,7 @@ describe('MatSelect', () => {
   });
 
   describe('with option centering disabled', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([
       SelectWithoutOptionCentering,
     ])));
 
@@ -3320,7 +3320,7 @@ describe('MatSelect', () => {
   });
 
   describe('positioning', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([
       BasicSelect,
       MultiSelect,
       SelectWithGroups,
@@ -4184,7 +4184,7 @@ describe('MatSelect', () => {
   });
 
   describe('with multiple selection', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([
+    beforeEach(waitForAsync(() => configureMatSelectTestingModule([
       MultiSelect,
       MultiSelectWithLotsOfOptions
     ])));

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {CdkMenuModule} from './menu-module';
 import {CdkMenuItemCheckbox} from './menu-item-checkbox';
@@ -11,7 +11,7 @@ describe('MenuItemCheckbox', () => {
   let checkbox: CdkMenuItemCheckbox;
   let checkboxElement: HTMLButtonElement;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [CdkMenuModule],
       declarations: [SingleCheckboxButton],

@@ -1,4 +1,11 @@
-import {async, fakeAsync, tick, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {
+  waitForAsync,
+  fakeAsync,
+  tick,
+  ComponentFixture,
+  inject,
+  TestBed,
+} from '@angular/core/testing';
 import {
   Component,
   NgModule,
@@ -42,7 +49,7 @@ describe('Overlay', () => {
   let zone: MockNgZone;
   let mockLocation: SpyLocation;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     dir = 'ltr';
     TestBed.configureTestingModule({
       imports: [OverlayModule, PortalModule, OverlayTestModule],

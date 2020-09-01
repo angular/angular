@@ -1,6 +1,6 @@
 import {
   fakeAsync,
-  async,
+  waitForAsync,
   tick,
   ComponentFixture,
   TestBed,
@@ -26,7 +26,7 @@ import {CommonModule} from '@angular/common';
 
 
 describe('MatDrawer', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule, CommonModule],
       declarations: [
@@ -645,7 +645,7 @@ describe('MatDrawer', () => {
 });
 
 describe('MatDrawerContainer', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule],
       declarations: [

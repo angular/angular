@@ -1,4 +1,4 @@
-import {inject, async, fakeAsync, tick, TestBed} from '@angular/core/testing';
+import {inject, waitForAsync, fakeAsync, tick, TestBed} from '@angular/core/testing';
 import {SafeResourceUrl, DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {
   HttpClientTestingModule,
@@ -46,7 +46,7 @@ describe('MatIcon', () => {
   let fakePath: string;
   let errorHandler: jasmine.SpyObj<ErrorHandler>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     // The $ prefix tells Karma not to try to process the
     // request so that we don't get warnings in our logs.
     fakePath = '/$fake-path';
@@ -1015,7 +1015,7 @@ describe('MatIcon without HttpClientModule', () => {
   let iconRegistry: MatIconRegistry;
   let sanitizer: DomSanitizer;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatIconModule],
       declarations: [IconFromSvgName],

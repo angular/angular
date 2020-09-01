@@ -1,5 +1,5 @@
 import {Component, Type} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {CdkMenuModule} from './menu-module';
 import {CdkMenuItem} from './menu-item';
@@ -12,7 +12,7 @@ describe('MenuItem', () => {
     let menuItem: CdkMenuItem;
     let nativeButton: HTMLButtonElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [SingleMenuItem],

@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {
-  async,
+  waitForAsync,
   ComponentFixture,
   fakeAsync,
   flushMicrotasks,
@@ -16,7 +16,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('MDC-based MatTable', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatTableModule, MatPaginatorModule, MatSortModule, NoopAnimationsModule],
       declarations: [

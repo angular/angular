@@ -1,4 +1,4 @@
-import {async, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {waitForAsync, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {Component, QueryList, ViewChildren} from '@angular/core';
 import {defaultRippleAnimationConfig} from '@angular/material/core';
 import {dispatchMouseEvent} from '@angular/cdk/testing/private';
@@ -9,7 +9,7 @@ describe('MDC-based MatList', () => {
   // Default ripple durations used for testing.
   const {enterDuration, exitDuration} = defaultRippleAnimationConfig;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatListModule],
       declarations: [

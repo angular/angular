@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -9,7 +9,7 @@ import {MatRadioButton, MatRadioChange, MatRadioGroup, MatRadioModule} from './i
 
 describe('MatRadio', () => {
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatRadioModule, FormsModule, ReactiveFormsModule],
       declarations: [
@@ -40,7 +40,7 @@ describe('MatRadio', () => {
     let radioInstances: MatRadioButton[];
     let testComponent: RadiosInsideRadioGroup;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(RadiosInsideRadioGroup);
       fixture.detectChanges();
 
@@ -808,7 +808,7 @@ describe('MatRadio', () => {
     let radioDebugElements: DebugElement[];
     let radioInstances: MatRadioButton[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(InterleavedRadioGroup);
       fixture.detectChanges();
 
@@ -826,7 +826,7 @@ describe('MatRadio', () => {
 
 describe('MatRadioDefaultOverrides', () => {
   describe('when MAT_RADIO_DEFAULT_OPTIONS overridden', () => {
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatRadioModule, FormsModule],
         declarations: [DefaultRadioButton, RadioButtonWithColorBinding],

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {async, TestBed} from '@angular/core/testing';
+import {waitForAsync, TestBed} from '@angular/core/testing';
 
 import {DEFAULT_OPTIONS} from '../google-map/google-map';
 import {GoogleMapsModule} from '../google-maps-module';
@@ -14,7 +14,7 @@ describe('MapTrafficLayer', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
   const trafficLayerOptions: google.maps.TrafficLayerOptions = {autoRefresh: false};
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [GoogleMapsModule],
       declarations: [TestApp],

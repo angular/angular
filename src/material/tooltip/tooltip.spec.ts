@@ -1,5 +1,5 @@
 import {
-  async,
+  waitForAsync,
   ComponentFixture,
   fakeAsync,
   flush,
@@ -51,7 +51,7 @@ describe('MatTooltip', () => {
   let platform: {IOS: boolean, isBrowser: boolean, ANDROID: boolean};
   let focusMonitor: FocusMonitor;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     // Set the default Platform override that can be updated before component creation.
     platform = {IOS: false, isBrowser: true, ANDROID: false};
 
@@ -290,7 +290,7 @@ describe('MatTooltip', () => {
       expect(tooltipDirective._isTooltipVisible()).toBe(false);
     }));
 
-    it('should not show if hide is called before delay finishes', async(() => {
+    it('should not show if hide is called before delay finishes', waitForAsync(() => {
       assertTooltipInstance(tooltipDirective, false);
 
       const tooltipDelay = 1000;

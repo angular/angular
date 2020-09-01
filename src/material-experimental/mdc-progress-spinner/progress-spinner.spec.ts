@@ -1,4 +1,4 @@
-import {async, TestBed} from '@angular/core/testing';
+import {waitForAsync, TestBed} from '@angular/core/testing';
 import {
   MatProgressSpinner,
   MatProgressSpinnerModule
@@ -9,7 +9,7 @@ import {MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS} from '@angular/material/progress-s
 import {Component, ElementRef, ViewChild, ViewEncapsulation} from '@angular/core';
 
 describe('MDC-based MatProgressSpinner', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatProgressSpinnerModule, CommonModule],
       declarations: [

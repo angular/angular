@@ -1,10 +1,17 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {
+  waitForAsync,
+  ComponentFixture,
+  fakeAsync,
+  inject,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import {ContentObserver, MutationObserverFactory, ObserversModule} from './observe-content';
 
 describe('Observe content directive', () => {
   describe('basic usage', () => {
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [ObserversModule],
         declarations: [ComponentWithTextContent, ComponentWithChildTextContent]
@@ -79,7 +86,7 @@ describe('Observe content directive', () => {
     let callbacks: Function[];
     let invokeCallbacks = (args?: any) => callbacks.forEach(callback => callback(args));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       callbacks = [];
 
       TestBed.configureTestingModule({

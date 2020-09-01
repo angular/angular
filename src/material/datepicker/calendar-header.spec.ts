@@ -1,6 +1,6 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {Component} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatNativeDateModule, DateAdapter} from '@angular/material/core';
 import {DEC, FEB, JAN} from '@angular/material/testing';
 import {By} from '@angular/platform-browser';
@@ -10,7 +10,7 @@ import {MatDatepickerModule} from './datepicker-module';
 import {yearsPerPage} from './multi-year-view';
 
 describe('MatCalendarHeader', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         MatNativeDateModule,

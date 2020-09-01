@@ -1,5 +1,5 @@
 import {Component, DebugElement} from '@angular/core';
-import {async, TestBed, ComponentFixture} from '@angular/core/testing';
+import {waitForAsync, TestBed, ComponentFixture} from '@angular/core/testing';
 import {MatChipEditInput, MatChipsModule} from './index';
 import {By} from '@angular/platform-browser';
 
@@ -11,7 +11,7 @@ describe('MDC-based MatChipEditInput', () => {
   let inputDebugElement: DebugElement;
   let inputInstance: MatChipEditInput;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatChipsModule],
       declarations: [

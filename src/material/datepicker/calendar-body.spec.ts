@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {MatCalendarBody, MatCalendarCell, MatCalendarUserEvent} from './calendar-body';
 import {By} from '@angular/platform-browser';
@@ -6,7 +6,7 @@ import {dispatchMouseEvent, dispatchFakeEvent} from '@angular/cdk/testing/privat
 
 
 describe('MatCalendarBody', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         MatCalendarBody,

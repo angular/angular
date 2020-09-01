@@ -1,7 +1,7 @@
 import {DataSource} from '@angular/cdk/collections';
 import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
 import {
-  async,
+  waitForAsync,
   ComponentFixture,
   fakeAsync,
   flushMicrotasks,
@@ -18,7 +18,7 @@ import {MatTableDataSource} from './table-data-source';
 
 
 describe('MatTable', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatTableModule, MatPaginatorModule, MatSortModule, NoopAnimationsModule],
       declarations: [

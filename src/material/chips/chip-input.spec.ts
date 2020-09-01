@@ -3,7 +3,7 @@ import {COMMA, ENTER, TAB} from '@angular/cdk/keycodes';
 import {PlatformModule} from '@angular/cdk/platform';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {Component, DebugElement, ViewChild} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -22,7 +22,7 @@ describe('MatChipInput', () => {
   let chipInputDirective: MatChipInput;
   let dir = 'ltr';
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [PlatformModule, MatChipsModule, MatFormFieldModule, NoopAnimationsModule],
       declarations: [TestChipInput],
@@ -39,7 +39,7 @@ describe('MatChipInput', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     fixture = TestBed.createComponent(TestChipInput);
     testChipInput = fixture.debugElement.componentInstance;
     fixture.detectChanges();

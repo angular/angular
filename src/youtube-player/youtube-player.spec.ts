@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {YouTubePlayerModule} from './youtube-module';
 import {YouTubePlayer, DEFAULT_PLAYER_WIDTH, DEFAULT_PLAYER_HEIGHT} from './youtube-player';
@@ -14,7 +14,7 @@ describe('YoutubePlayer', () => {
   let testComponent: TestApp;
   let events: Required<YT.Events>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     const fake = createFakeYtNamespace();
     playerCtorSpy = fake.playerCtorSpy;
     playerSpy = fake.playerSpy;

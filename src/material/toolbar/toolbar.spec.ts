@@ -1,12 +1,12 @@
 import {Component} from '@angular/core';
-import {TestBed, async, ComponentFixture, fakeAsync, flush} from '@angular/core/testing';
+import {TestBed, waitForAsync, ComponentFixture, fakeAsync, flush} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
 import {MatToolbarModule} from './index';
 
 describe('MatToolbar', () => {
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatToolbarModule, CommonModule],
       declarations: [

@@ -1,5 +1,5 @@
 import {Component, QueryList, ElementRef, ViewChildren, AfterViewInit} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {createMouseEvent, dispatchEvent} from '@angular/cdk/testing/private';
 import {Observable} from 'rxjs';
 import {FocusableElement, getItemPointerEntries} from './item-pointer-entries';
@@ -15,7 +15,7 @@ describe('FocusMouseManger', () => {
     mockElements = fixture.componentInstance._allItems.toArray();
   }
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [MultiElementWithConditionalComponent, MockWrapper],
     }).compileComponents();

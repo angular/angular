@@ -1,7 +1,7 @@
 import {Direction} from '@angular/cdk/bidi';
 import {CdkScrollable, ScrollingModule} from '@angular/cdk/scrolling';
 import {Component, ElementRef, Input, ViewChild} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 
 function expectOverlapping(el1: ElementRef<Element>, el2: ElementRef<Element>, expected = true) {
   const r1 = el1.nativeElement.getBoundingClientRect();
@@ -22,7 +22,7 @@ describe('CdkScrollable', () => {
   let testComponent: ScrollableViewport;
   let maxOffset = 0;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [ScrollingModule],
       declarations: [ScrollableViewport],

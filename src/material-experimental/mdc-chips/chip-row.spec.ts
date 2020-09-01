@@ -7,7 +7,7 @@ import {
   dispatchFakeEvent,
 } from '@angular/cdk/testing/private';
 import {Component, DebugElement, ElementRef, ViewChild} from '@angular/core';
-import {async, ComponentFixture, TestBed, flush, fakeAsync} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed, flush, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 import {
@@ -30,7 +30,7 @@ describe('MDC-based Row Chips', () => {
 
   let dir = 'ltr';
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatChipsModule],
       declarations: [SingleChip],

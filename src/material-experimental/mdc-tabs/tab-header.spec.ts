@@ -12,7 +12,7 @@ import {
 import {CommonModule} from '@angular/common';
 import {Component, ViewChild} from '@angular/core';
 import {
-  async,
+  waitForAsync,
   ComponentFixture,
   discardPeriodicTasks,
   fakeAsync,
@@ -33,7 +33,7 @@ describe('MDC-based MatTabHeader', () => {
   let fixture: ComponentFixture<SimpleTabHeaderApp>;
   let appComponent: SimpleTabHeaderApp;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     dir = 'ltr';
     TestBed.configureTestingModule({
       imports: [CommonModule, PortalModule, MatRippleModule, ScrollingModule, ObserversModule],

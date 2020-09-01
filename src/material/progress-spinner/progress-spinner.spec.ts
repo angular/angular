@@ -1,4 +1,4 @@
-import {TestBed, async, inject} from '@angular/core/testing';
+import {TestBed, waitForAsync, inject} from '@angular/core/testing';
 import {Component, ViewEncapsulation, ViewChild, ElementRef} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {Platform, _getShadowRoot, _supportsShadowDom} from '@angular/cdk/platform';
@@ -10,7 +10,7 @@ import {
 } from './index';
 
 describe('MatProgressSpinner', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatProgressSpinnerModule, CommonModule],
       declarations: [

@@ -1,5 +1,5 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import {ComponentFixture, async, TestBed} from '@angular/core/testing';
+import {ComponentFixture, waitForAsync, TestBed} from '@angular/core/testing';
 import {CdkMenuItem, CdkMenuModule, CdkMenu} from '@angular/cdk-experimental/menu';
 import {MatMenuBarItem} from './menubar-item';
 import {MatMenuBarModule} from './menubar-module';
@@ -9,7 +9,7 @@ describe('MatMenuBarItem', () => {
   let menubarItem: MatMenuBarItem;
   let nativeMenubarItem: HTMLElement;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatMenuBarModule, CdkMenuModule],
       declarations: [SimpleMenuBarItem],

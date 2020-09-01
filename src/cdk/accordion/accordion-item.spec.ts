@@ -1,11 +1,11 @@
-import {async, TestBed, ComponentFixture} from '@angular/core/testing';
+import {waitForAsync, TestBed, ComponentFixture} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CdkAccordionModule, CdkAccordionItem} from './public-api';
 
 describe('CdkAccordionItem', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,

@@ -7,7 +7,7 @@ import {
   wrappedErrorMessage,
 } from '@angular/cdk/testing/private';
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {Observable} from 'rxjs';
@@ -32,7 +32,7 @@ describe('MatSort', () => {
   let fixture: ComponentFixture<SimpleMatSortApp>;
   let component: SimpleMatSortApp;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
       declarations: [

@@ -1,6 +1,13 @@
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {ComponentFixture, TestBed, async, inject, fakeAsync, tick} from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  waitForAsync,
+  inject,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import {Directionality} from '@angular/cdk/bidi';
 import {
   dispatchKeyboardEvent,
@@ -169,7 +176,7 @@ describe('Overlay directives', () => {
     expect(event.defaultPrevented).toBe(false);
   });
 
-  it('should not depend on the order in which the `origin` and `open` are set', async(() => {
+  it('should not depend on the order in which the `origin` and `open` are set', waitForAsync(() => {
     fixture.destroy();
 
     const propOrderFixture = TestBed.createComponent(ConnectedOverlayPropertyInitOrder);

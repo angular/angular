@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {async, TestBed} from '@angular/core/testing';
+import {waitForAsync, TestBed} from '@angular/core/testing';
 
 import {DEFAULT_OPTIONS} from '../google-map/google-map';
 
@@ -15,7 +15,7 @@ import {DEFAULT_MARKER_OPTIONS, MapMarker} from './map-marker';
 describe('MapMarker', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [GoogleMapsModule],
       declarations: [TestApp],

@@ -1,6 +1,6 @@
 import {Component, ViewChild, ElementRef, Type, ViewChildren, QueryList} from '@angular/core';
 import {CdkMenuModule} from './menu-module';
-import {TestBed, async, ComponentFixture} from '@angular/core/testing';
+import {TestBed, waitForAsync, ComponentFixture} from '@angular/core/testing';
 import {CdkMenu} from './menu';
 import {CdkContextMenuTrigger} from './context-menu';
 import {dispatchMouseEvent} from '@angular/cdk/testing/private';
@@ -13,7 +13,7 @@ describe('CdkContextMenuTrigger', () => {
   describe('with simple context menu trigger', () => {
     let fixture: ComponentFixture<SimpleContextMenu>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [SimpleContextMenu],
@@ -108,7 +108,7 @@ describe('CdkContextMenuTrigger', () => {
   describe('nested context menu triggers', () => {
     let fixture: ComponentFixture<NestedContextMenu>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [NestedContextMenu],
@@ -222,7 +222,7 @@ describe('CdkContextMenuTrigger', () => {
     let fixture: ComponentFixture<ContextMenuWithSubmenu>;
     let instance: ContextMenuWithSubmenu;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [ContextMenuWithSubmenu],
@@ -253,7 +253,7 @@ describe('CdkContextMenuTrigger', () => {
     let nativeMenuBar: HTMLElement;
     let nativeMenuBarTrigger: HTMLElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [ContextMenuWithMenuBarAndInlineMenu],

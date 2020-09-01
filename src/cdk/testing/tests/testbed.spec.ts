@@ -3,7 +3,7 @@ import {
   HarnessLoader,
 } from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {querySelectorAll as piercingQuerySelectorAll} from 'kagekiri';
 import {crossEnvironmentSpecs} from './cross-environment.spec';
 import {FakeOverlayHarness} from './harnesses/fake-overlay-harness';
@@ -70,7 +70,7 @@ describe('TestbedHarnessEnvironment', () => {
       });
 
       it('should be able to wait for tasks outside of Angular within async test zone',
-          async (() => {
+          waitForAsync(() => {
         harness.getTaskStateResult().then(res => expect(res).toBe('result'));
       }));
 

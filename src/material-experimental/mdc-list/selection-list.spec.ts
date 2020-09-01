@@ -13,7 +13,14 @@ import {
   QueryList,
   ViewChildren,
 } from '@angular/core';
-import {async, ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
+import {
+  waitForAsync,
+  ComponentFixture,
+  fakeAsync,
+  flush,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {defaultRippleAnimationConfig, ThemePalette} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
@@ -26,7 +33,7 @@ describe('MDC-based MatSelectionList without forms', () => {
     let listOptions: DebugElement[];
     let selectionList: DebugElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [
@@ -43,7 +50,7 @@ describe('MDC-based MatSelectionList without forms', () => {
       TestBed.compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(SelectionListWithListOptions);
       fixture.detectChanges();
 
@@ -741,7 +748,7 @@ describe('MDC-based MatSelectionList without forms', () => {
     let listItemEl: DebugElement;
     let selectionList: DebugElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [SelectionListWithSelectedOption],
@@ -750,7 +757,7 @@ describe('MDC-based MatSelectionList without forms', () => {
       TestBed.compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(SelectionListWithSelectedOption);
       listItemEl = fixture.debugElement.query(By.directive(MatListOption))!;
       selectionList = fixture.debugElement.query(By.directive(MatSelectionList))!;
@@ -769,7 +776,7 @@ describe('MDC-based MatSelectionList without forms', () => {
     let listOptionEl: HTMLElement;
     let listOption: MatListOption;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [SelectionListWithDisabledOption]
@@ -778,7 +785,7 @@ describe('MDC-based MatSelectionList without forms', () => {
       TestBed.compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(SelectionListWithDisabledOption);
 
       const listOptionDebug = fixture.debugElement.query(By.directive(MatListOption))!;
@@ -815,7 +822,7 @@ describe('MDC-based MatSelectionList without forms', () => {
     let listOption: DebugElement[];
     let selectionList: DebugElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [
@@ -829,7 +836,7 @@ describe('MDC-based MatSelectionList without forms', () => {
       TestBed.compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(SelectionListWithListDisabled);
       listOption = fixture.debugElement.queryAll(By.directive(MatListOption));
       selectionList = fixture.debugElement.query(By.directive(MatSelectionList))!;
@@ -866,7 +873,7 @@ describe('MDC-based MatSelectionList without forms', () => {
   describe('with checkbox position after', () => {
     let fixture: ComponentFixture<SelectionListWithCheckboxPositionAfter>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [
@@ -880,7 +887,7 @@ describe('MDC-based MatSelectionList without forms', () => {
       TestBed.compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(SelectionListWithCheckboxPositionAfter);
       fixture.detectChanges();
     }));
@@ -894,7 +901,7 @@ describe('MDC-based MatSelectionList without forms', () => {
   });
 
   describe('with list item elements', () => {
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [
@@ -926,7 +933,7 @@ describe('MDC-based MatSelectionList without forms', () => {
     let listOptions: DebugElement[];
     let selectionList: DebugElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [
@@ -1046,7 +1053,7 @@ describe('MDC-based MatSelectionList without forms', () => {
 
 describe('MDC-based MatSelectionList with forms', () => {
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatListModule, FormsModule, ReactiveFormsModule],
       declarations: [

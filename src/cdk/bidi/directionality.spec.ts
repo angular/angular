@@ -1,4 +1,4 @@
-import {async, fakeAsync, TestBed} from '@angular/core/testing';
+import {waitForAsync, fakeAsync, TestBed} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {BidiModule, Directionality, Dir, Direction, DIR_DOCUMENT} from './index';
@@ -6,7 +6,7 @@ import {BidiModule, Directionality, Dir, Direction, DIR_DOCUMENT} from './index'
 describe('Directionality', () => {
   let fakeDocument: FakeDocument;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     fakeDocument = {body: {}, documentElement: {}};
 
     TestBed.configureTestingModule({

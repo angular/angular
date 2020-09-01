@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {TAB} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
@@ -15,7 +15,7 @@ describe('Menu', () => {
     let fixture: ComponentFixture<MenuCheckboxGroup>;
     let menuItems: CdkMenuItemCheckbox[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [MenuCheckboxGroup],
@@ -51,7 +51,7 @@ describe('Menu', () => {
     let fixture: ComponentFixture<MenuCheckboxGroup>;
     let menuItems: CdkMenuItemCheckbox[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [MenuCheckboxGroup],
@@ -85,7 +85,7 @@ describe('Menu', () => {
     let menuItems: CdkMenuItemCheckbox[];
     let menu: CdkMenu;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [MenuWithNestedGroup],
@@ -128,7 +128,7 @@ describe('Menu', () => {
         .map(element => element.injector.get(CdkMenuItemCheckbox));
     };
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [MenuWithConditionalGroup],
@@ -166,7 +166,7 @@ describe('Menu', () => {
     let nativeMenu: HTMLElement;
     let nativeMenuItems: HTMLElement[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [InlineMenu],

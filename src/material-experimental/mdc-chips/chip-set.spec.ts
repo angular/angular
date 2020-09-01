@@ -1,12 +1,12 @@
 import {Component, DebugElement, QueryList} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {CommonModule} from '@angular/common';
 import {By} from '@angular/platform-browser';
 import {MatChip, MatChipSet, MatChipsModule} from './index';
 
 
 describe('MDC-based MatChipSet', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatChipsModule, CommonModule],
       declarations: [BasicChipSet, IndirectDescendantsChipSet],

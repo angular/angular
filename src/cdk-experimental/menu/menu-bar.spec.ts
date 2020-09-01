@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync, fakeAsync, tick} from '@angular/core/testing';
 import {
   Component,
   ViewChild,
@@ -43,7 +43,7 @@ describe('MenuBar', () => {
     let fixture: ComponentFixture<MenuBarRadioGroup>;
     let menuItems: CdkMenuItemRadio[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [MenuBarRadioGroup],
@@ -72,7 +72,7 @@ describe('MenuBar', () => {
     let fixture: ComponentFixture<MenuBarRadioGroup>;
     let menuItems: CdkMenuItemRadio[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [MenuBarRadioGroup],
@@ -137,7 +137,7 @@ describe('MenuBar', () => {
         detectChanges();
       }
 
-      beforeEach(async(() => {
+      beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkMenuModule],
           declarations: [MultiMenuWithSubmenu],
@@ -562,7 +562,7 @@ describe('MenuBar', () => {
         detectChanges();
       }
 
-      beforeEach(async(() => {
+      beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkMenuModule],
           declarations: [MultiMenuWithSubmenu],
@@ -690,7 +690,7 @@ describe('MenuBar', () => {
         detectChanges();
       }
 
-      beforeEach(async(() => {
+      beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkMenuModule],
           declarations: [MenuWithCheckboxes],
@@ -757,7 +757,7 @@ describe('MenuBar', () => {
         detectChanges();
       }
 
-      beforeEach(async(() => {
+      beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkMenuModule],
           declarations: [MenuWithRadioButtons],
@@ -813,7 +813,7 @@ describe('MenuBar', () => {
       grabElementsForTesting();
     }
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [MenuBarWithMenusAndInlineMenu],
@@ -933,7 +933,7 @@ describe('MenuBar', () => {
       detectChanges();
     }
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [MultiMenuWithSubmenu],

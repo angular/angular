@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {
   getTableTextColumnMissingParentTableError,
@@ -15,7 +15,7 @@ describe('CdkTextColumn', () => {
   let component: BasicTextColumnApp;
   let tableElement: HTMLElement;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed
         .configureTestingModule({
           imports: [CdkTableModule],

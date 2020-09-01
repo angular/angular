@@ -6,7 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  async,
+  waitForAsync,
   ComponentFixture,
   fakeAsync,
   flush,
@@ -21,7 +21,7 @@ describe('CdkSelection', () => {
   let fixture: ComponentFixture<ListWithMultiSelection>;
   let component: ListWithMultiSelection;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed
         .configureTestingModule({
           imports: [CdkSelectionModule],
@@ -258,7 +258,7 @@ describe('CdkSelection with multiple = false', () => {
   let fixture: ComponentFixture<ListWithSingleSelection>;
   let component: ListWithSingleSelection;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed
         .configureTestingModule({
           imports: [CdkSelectionModule],
@@ -336,7 +336,7 @@ describe('cdkSelectionColumn', () => {
   let fixture: ComponentFixture<MultiSelectTableWithSelectionColumn>;
   let component: MultiSelectTableWithSelectionColumn;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed
         .configureTestingModule({
           imports: [
@@ -438,7 +438,7 @@ describe('cdkSelectionColumn with multiple = false', () => {
   let fixture: ComponentFixture<SingleSelectTableWithSelectionColumn>;
   let component: SingleSelectTableWithSelectionColumn;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed
         .configureTestingModule({
           imports: [

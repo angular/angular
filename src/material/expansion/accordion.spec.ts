@@ -1,4 +1,4 @@
-import {async, TestBed, inject} from '@angular/core/testing';
+import {waitForAsync, TestBed, inject} from '@angular/core/testing';
 import {Component, ViewChild, QueryList, ViewChildren} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -20,7 +20,7 @@ import {FocusMonitor} from '@angular/cdk/a11y';
 describe('MatAccordion', () => {
   let focusMonitor: FocusMonitor;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,

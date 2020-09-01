@@ -6,7 +6,7 @@ import {
 } from '@angular/cdk/testing/private';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {SPACE, ENTER, TAB} from '@angular/cdk/keycodes';
 import {MatChip, MatChipsModule} from './index';
 
@@ -16,7 +16,7 @@ describe('MDC-based Chip Remove', () => {
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatChipsModule],
       declarations: [
@@ -27,7 +27,7 @@ describe('MDC-based Chip Remove', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     fixture = TestBed.createComponent(TestChip);
     testChip = fixture.debugElement.componentInstance;
     fixture.detectChanges();

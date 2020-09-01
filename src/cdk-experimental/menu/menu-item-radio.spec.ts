@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {CdkMenuModule} from './menu-module';
@@ -13,7 +13,7 @@ describe('MenuItemRadio', () => {
   let radioElement: HTMLButtonElement;
   let selectionDispatcher: UniqueSelectionDispatcher;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     selectionDispatcher = new UniqueSelectionDispatcher();
     TestBed.configureTestingModule({
       imports: [CdkMenuModule],

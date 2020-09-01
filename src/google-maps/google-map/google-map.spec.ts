@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {async, TestBed} from '@angular/core/testing';
+import {waitForAsync, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {GoogleMapsModule} from '../google-maps-module';
@@ -24,7 +24,7 @@ describe('GoogleMap', () => {
   let mapConstructorSpy: jasmine.Spy;
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         GoogleMapsModule,

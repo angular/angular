@@ -1,6 +1,6 @@
 import {
   ComponentFixture,
-  async,
+  waitForAsync,
   TestBed, tick, fakeAsync,
 } from '@angular/core/testing';
 import {Component, DebugElement, ViewChild} from '@angular/core';
@@ -34,14 +34,14 @@ describe('CdkOption and CdkListbox', () => {
     let optionInstances: CdkOption[];
     let optionElements: HTMLElement[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkListboxModule],
         declarations: [ListboxWithOptions],
       }).compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(ListboxWithOptions);
       fixture.detectChanges();
 
@@ -369,14 +369,14 @@ describe('CdkOption and CdkListbox', () => {
     let optionInstances: CdkOption[];
     let optionElements: HTMLElement[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkListboxModule],
         declarations: [ListboxMultiselect],
       }).compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(ListboxMultiselect);
       fixture.detectChanges();
 
@@ -512,14 +512,14 @@ describe('CdkOption and CdkListbox', () => {
     let optionInstances: CdkOption[];
     let optionElements: HTMLElement[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkListboxModule],
         declarations: [ListboxActiveDescendant],
       }).compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(ListboxActiveDescendant);
       fixture.detectChanges();
 
@@ -597,7 +597,7 @@ describe('CdkOption and CdkListbox', () => {
     let optionInstances: CdkOption[];
     let optionElements: HTMLElement[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkListboxModule, FormsModule, ReactiveFormsModule],
         declarations: [ListboxControlValueAccessor],
@@ -786,7 +786,7 @@ describe('CdkOption and CdkListbox', () => {
     let optionInstances: CdkOption[];
     let optionElements: HTMLElement[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkListboxModule, CdkComboboxModule],
         declarations: [ListboxInsideCombobox],

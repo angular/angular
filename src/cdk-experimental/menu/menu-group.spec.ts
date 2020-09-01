@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {CdkMenuModule} from './menu-module';
 import {CdkMenuGroup} from './menu-group';
@@ -14,7 +14,7 @@ describe('MenuGroup', () => {
     let fixture: ComponentFixture<CheckboxMenu>;
     let menuItems: CdkMenuItemCheckbox[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [CheckboxMenu],
@@ -43,7 +43,7 @@ describe('MenuGroup', () => {
     let fixture: ComponentFixture<MenuWithMultipleRadioGroups>;
     let menuItems: CdkMenuItemRadio[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [MenuWithMultipleRadioGroups],
@@ -89,7 +89,7 @@ describe('MenuGroup', () => {
     let fixture: ComponentFixture<MenuWithMenuItemsAndRadioGroups>;
     let menuItems: CdkMenuItemRadio[];
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [MenuWithMenuItemsAndRadioGroups],

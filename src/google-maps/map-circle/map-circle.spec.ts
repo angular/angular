@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {async, TestBed} from '@angular/core/testing';
+import {waitForAsync, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {DEFAULT_OPTIONS} from '../google-map/google-map';
@@ -19,7 +19,7 @@ describe('MapCircle', () => {
   let circleRadius: number;
   let circleOptions: google.maps.CircleOptions;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     circleCenter = {lat: 30, lng: 15};
     circleRadius = 15;
     circleOptions = {

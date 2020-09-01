@@ -14,7 +14,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import {
-  async,
+  waitForAsync,
   ComponentFixture,
   fakeAsync,
   TestBed,
@@ -39,7 +39,7 @@ describe('MatSelectionList without forms', () => {
     let listOptions: DebugElement[];
     let selectionList: DebugElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [
@@ -57,7 +57,7 @@ describe('MatSelectionList without forms', () => {
     }));
 
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(SelectionListWithListOptions);
       fixture.detectChanges();
 
@@ -791,7 +791,7 @@ describe('MatSelectionList without forms', () => {
     let listItemEl: DebugElement;
     let selectionList: DebugElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [SelectionListWithSelectedOption],
@@ -800,7 +800,7 @@ describe('MatSelectionList without forms', () => {
       TestBed.compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(SelectionListWithSelectedOption);
       listItemEl = fixture.debugElement.query(By.directive(MatListOption))!;
       selectionList = fixture.debugElement.query(By.directive(MatSelectionList))!;
@@ -819,7 +819,7 @@ describe('MatSelectionList without forms', () => {
     let selectionList: MatSelectionList;
     let listOption: MatListOption;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [SelectionListWithChangingOptionValue],
@@ -852,7 +852,7 @@ describe('MatSelectionList without forms', () => {
     let listOptionEl: HTMLElement;
     let listOption: MatListOption;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [SelectionListWithDisabledOption]
@@ -861,7 +861,7 @@ describe('MatSelectionList without forms', () => {
       TestBed.compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(SelectionListWithDisabledOption);
 
       const listOptionDebug = fixture.debugElement.query(By.directive(MatListOption))!;
@@ -898,7 +898,7 @@ describe('MatSelectionList without forms', () => {
     let listOption: DebugElement[];
     let selectionList: DebugElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [
@@ -912,7 +912,7 @@ describe('MatSelectionList without forms', () => {
       TestBed.compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(SelectionListWithListDisabled);
       listOption = fixture.debugElement.queryAll(By.directive(MatListOption));
       selectionList = fixture.debugElement.query(By.directive(MatSelectionList))!;
@@ -954,7 +954,7 @@ describe('MatSelectionList without forms', () => {
   describe('with checkbox position after', () => {
     let fixture: ComponentFixture<SelectionListWithCheckboxPositionAfter>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [
@@ -968,7 +968,7 @@ describe('MatSelectionList without forms', () => {
       TestBed.compileComponents();
     }));
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(SelectionListWithCheckboxPositionAfter);
       fixture.detectChanges();
     }));
@@ -980,7 +980,7 @@ describe('MatSelectionList without forms', () => {
   });
 
   describe('with list item elements', () => {
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [
@@ -1012,7 +1012,7 @@ describe('MatSelectionList without forms', () => {
     let listOptions: DebugElement[];
     let selectionList: DebugElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [MatListModule],
         declarations: [
@@ -1132,7 +1132,7 @@ describe('MatSelectionList without forms', () => {
 
 describe('MatSelectionList with forms', () => {
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatListModule, FormsModule, ReactiveFormsModule],
       declarations: [

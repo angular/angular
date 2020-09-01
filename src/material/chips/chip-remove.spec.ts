@@ -1,6 +1,6 @@
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChip, MatChipsModule} from './index';
 
 describe('Chip Remove', () => {
@@ -9,7 +9,7 @@ describe('Chip Remove', () => {
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatChipsModule],
       declarations: [
@@ -20,7 +20,7 @@ describe('Chip Remove', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     fixture = TestBed.createComponent(TestChip);
     testChip = fixture.debugElement.componentInstance;
     fixture.detectChanges();

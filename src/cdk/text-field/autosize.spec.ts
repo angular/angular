@@ -1,6 +1,13 @@
 import {dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {Component, ViewChild} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
+import {
+  waitForAsync,
+  ComponentFixture,
+  fakeAsync,
+  flush,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -13,7 +20,7 @@ describe('CdkTextareaAutosize', () => {
   let textarea: HTMLTextAreaElement;
   let autosize: CdkTextareaAutosize;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,

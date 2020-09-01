@@ -11,7 +11,7 @@ import {
 } from '@angular/cdk/keycodes';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {Component, ViewChild} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatNativeDateModule} from '@angular/material/core';
 import {AUG, DEC, FEB, JAN, JUL, JUN, MAR, MAY, NOV, OCT, SEP} from '@angular/material/testing';
 import {By} from '@angular/platform-browser';
@@ -21,7 +21,7 @@ import {MatYearView} from './year-view';
 describe('MatYearView', () => {
   let dir: {value: Direction};
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         MatNativeDateModule,

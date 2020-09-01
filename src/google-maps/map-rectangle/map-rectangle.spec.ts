@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {async, TestBed} from '@angular/core/testing';
+import {waitForAsync, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {DEFAULT_OPTIONS} from '../google-map/google-map';
@@ -18,7 +18,7 @@ describe('MapRectangle', () => {
   let rectangleBounds: google.maps.LatLngBoundsLiteral;
   let rectangleOptions: google.maps.RectangleOptions;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     rectangleBounds = {east: 30, north: 15, west: 10, south: -5};
     rectangleOptions = {bounds: rectangleBounds, strokeColor: 'grey', strokeOpacity: 0.8};
     TestBed.configureTestingModule({

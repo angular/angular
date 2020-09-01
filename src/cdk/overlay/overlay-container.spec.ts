@@ -1,4 +1,4 @@
-import {async, inject, TestBed} from '@angular/core/testing';
+import {waitForAsync, inject, TestBed} from '@angular/core/testing';
 import {Component, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
 import {PortalModule, CdkPortal} from '@angular/cdk/portal';
 import {Overlay, OverlayContainer, OverlayModule} from './index';
@@ -7,7 +7,7 @@ describe('OverlayContainer', () => {
   let overlay: Overlay;
   let overlayContainer: OverlayContainer;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [OverlayTestModule]
     }).compileComponents();

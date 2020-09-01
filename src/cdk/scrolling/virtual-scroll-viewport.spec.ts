@@ -17,7 +17,7 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import {
-  async,
+  waitForAsync,
   ComponentFixture,
   fakeAsync,
   flush,
@@ -34,7 +34,7 @@ describe('CdkVirtualScrollViewport', () => {
     let testComponent: FixedSizeVirtualScroll;
     let viewport: CdkVirtualScrollViewport;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [ScrollingModule],
         declarations: [FixedSizeVirtualScroll],
@@ -866,7 +866,7 @@ describe('CdkVirtualScrollViewport', () => {
     let testComponent: VirtualScrollWithItemInjectingViewContainer;
     let viewport: CdkVirtualScrollViewport;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [ScrollingModule],
         declarations: [VirtualScrollWithItemInjectingViewContainer, InjectsViewContainer],

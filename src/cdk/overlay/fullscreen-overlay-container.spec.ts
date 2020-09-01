@@ -1,5 +1,5 @@
 import {DOCUMENT} from '@angular/common';
-import {async, inject, TestBed} from '@angular/core/testing';
+import {waitForAsync, inject, TestBed} from '@angular/core/testing';
 import {Component, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
 import {PortalModule, CdkPortal} from '@angular/cdk/portal';
 import {Overlay, OverlayContainer, OverlayModule, FullscreenOverlayContainer} from './index';
@@ -10,7 +10,7 @@ describe('FullscreenOverlayContainer', () => {
   let fullscreenListeners: Set<Function>;
   let fakeDocument: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     fullscreenListeners = new Set();
 
     TestBed.configureTestingModule({

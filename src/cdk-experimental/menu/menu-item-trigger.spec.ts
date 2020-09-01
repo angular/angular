@@ -1,5 +1,5 @@
 import {Component, ViewChildren, QueryList, ElementRef, ViewChild, Type} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {TAB, SPACE} from '@angular/cdk/keycodes';
@@ -15,7 +15,7 @@ describe('MenuItemTrigger', () => {
     let menuItem: CdkMenuItem;
     let menuItemElement: HTMLButtonElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [TriggerForEmptyMenu],
@@ -82,7 +82,7 @@ describe('MenuItemTrigger', () => {
 
     const setDocumentDirection = (dir: 'ltr' | 'rtl') => (document.dir = dir);
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [MenuBarWithNestedSubMenus],
@@ -351,7 +351,7 @@ describe('MenuItemTrigger', () => {
       grabElementsForTesting();
     };
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [StandaloneTriggerWithInlineMenu],

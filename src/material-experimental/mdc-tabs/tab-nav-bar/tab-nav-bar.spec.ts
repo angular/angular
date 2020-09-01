@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Component, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {MAT_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
@@ -16,7 +16,7 @@ describe('MDC-based MatTabNavBar', () => {
   let dirChange = new Subject();
   let globalRippleOptions: RippleGlobalOptions;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     globalRippleOptions = {};
 
     TestBed.configureTestingModule({

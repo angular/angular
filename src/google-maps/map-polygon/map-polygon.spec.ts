@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {async, TestBed} from '@angular/core/testing';
+import {waitForAsync, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {DEFAULT_OPTIONS} from '../google-map/google-map';
@@ -18,7 +18,7 @@ describe('MapPolygon', () => {
   let polygonPath: google.maps.LatLngLiteral[];
   let polygonOptions: google.maps.PolygonOptions;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     polygonPath = [{lat: 25, lng: 26}, {lat: 26, lng: 27}, {lat: 30, lng: 34}];
     polygonOptions = {paths: polygonPath, strokeColor: 'grey', strokeOpacity: 0.8};
     TestBed.configureTestingModule({

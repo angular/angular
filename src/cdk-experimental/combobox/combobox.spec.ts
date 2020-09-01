@@ -9,7 +9,7 @@ import {
   Optional,
   ViewChild
 } from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {CdkComboboxModule} from './combobox-module';
 import {CdkCombobox} from './combobox';
@@ -35,7 +35,7 @@ describe('Combobox', () => {
     let applyButton: DebugElement;
     let applyButtonElement: HTMLElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkComboboxModule],
         declarations: [ComboboxToggle, FakeDialogContent],
@@ -200,7 +200,7 @@ describe('Combobox', () => {
     let combobox: DebugElement;
     let comboboxInstance: CdkCombobox<unknown>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkComboboxModule],
         declarations: [ComboboxToggle, FakeDialogContent],
@@ -271,7 +271,7 @@ describe('Combobox', () => {
     let comboboxInstance: CdkCombobox<unknown>;
     let comboboxElement: HTMLElement;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [CdkComboboxModule],
         declarations: [ComboboxToggle, FakeDialogContent],

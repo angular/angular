@@ -1,7 +1,7 @@
 import {LEFT_ARROW} from '@angular/cdk/keycodes';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {CommonModule} from '@angular/common';
@@ -80,7 +80,7 @@ describe('MatTabGroup', () => {
     }));
 
     // Note: needs to be `async` in order to fail when we expect it to.
-    it('should set to correct tab on fast change', async(() => {
+    it('should set to correct tab on fast change', waitForAsync(() => {
       let component = fixture.componentInstance;
       component.selectedIndex = 0;
       fixture.detectChanges();

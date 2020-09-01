@@ -1,13 +1,13 @@
 import {Platform} from '@angular/cdk/platform';
 import {Component, ViewChild, TemplateRef, ViewContainerRef} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {PortalModule, CdkPortalOutlet, TemplatePortal} from '@angular/cdk/portal';
 import {A11yModule, FocusTrap, CdkTrapFocus} from '../index';
 
 
 describe('FocusTrap', () => {
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [A11yModule, PortalModule],
       declarations: [
@@ -170,7 +170,7 @@ describe('FocusTrap', () => {
   });
 
   describe('with autoCapture', () => {
-    it('should automatically capture and return focus on init / destroy', async(() => {
+    it('should automatically capture and return focus on init / destroy', waitForAsync(() => {
       const fixture = TestBed.createComponent(FocusTrapWithAutoCapture);
       fixture.detectChanges();
 
@@ -189,7 +189,7 @@ describe('FocusTrap', () => {
       });
     }));
 
-    it('should capture focus if auto capture is enabled later on', async(() => {
+    it('should capture focus if auto capture is enabled later on', waitForAsync(() => {
       const fixture = TestBed.createComponent(FocusTrapWithAutoCapture);
       fixture.componentInstance.autoCaptureEnabled = false;
       fixture.componentInstance.showTrappedRegion = true;

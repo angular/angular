@@ -7,7 +7,7 @@ import {
   MockNgZone,
 } from '@angular/cdk/testing/private';
 import {Component, NgZone} from '@angular/core';
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {DateAdapter, MatNativeDateModule} from '@angular/material/core';
 import {DEC, FEB, JAN, JUL, NOV} from '@angular/material/testing';
 import {By} from '@angular/platform-browser';
@@ -18,7 +18,7 @@ import {MatDatepickerModule} from './datepicker-module';
 describe('MatCalendar', () => {
   let zone: MockNgZone;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         MatNativeDateModule,
