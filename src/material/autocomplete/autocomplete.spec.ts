@@ -2119,6 +2119,39 @@ describe('MatAutocomplete', () => {
     }));
   });
 
+  describe('with panel classes in the default options', () => {
+    it('should apply them if provided as string', fakeAsync(() => {
+      const fixture = createComponent(SimpleAutocomplete, [
+        {provide: MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
+          useValue: {overlayPanelClass: 'default1'}}
+      ]);
+
+      fixture.detectChanges();
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const panelClassList =
+          overlayContainerElement.querySelector('.cdk-overlay-pane')!.classList;
+      expect(panelClassList).toContain('default1');
+    }));
+
+    it('should apply them if provided as array', fakeAsync(() => {
+      const fixture = createComponent(SimpleAutocomplete, [
+        {provide: MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
+          useValue: {overlayPanelClass: ['default1', 'default2']}}
+      ]);
+
+      fixture.detectChanges();
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const panelClassList =
+          overlayContainerElement.querySelector('.cdk-overlay-pane')!.classList;
+      expect(panelClassList).toContain('default1');
+      expect(panelClassList).toContain('default2');
+    }));
+  });
+
   describe('misc', () => {
 
     it('should allow basic use without any forms directives', () => {

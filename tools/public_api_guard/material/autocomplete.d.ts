@@ -57,7 +57,7 @@ export declare abstract class _MatAutocompleteTriggerBase implements ControlValu
     get panelClosingActions(): Observable<MatOptionSelectionChange | null>;
     get panelOpen(): boolean;
     position: 'auto' | 'above' | 'below';
-    constructor(_element: ElementRef<HTMLInputElement>, _overlay: Overlay, _viewContainerRef: ViewContainerRef, _zone: NgZone, _changeDetectorRef: ChangeDetectorRef, scrollStrategy: any, _dir: Directionality, _formField: MatFormField, _document: any, _viewportRuler: ViewportRuler);
+    constructor(_element: ElementRef<HTMLInputElement>, _overlay: Overlay, _viewContainerRef: ViewContainerRef, _zone: NgZone, _changeDetectorRef: ChangeDetectorRef, scrollStrategy: any, _dir: Directionality, _formField: MatFormField, _document: any, _viewportRuler: ViewportRuler, _defaults?: MatAutocompleteDefaultOptions | undefined);
     _handleFocus(): void;
     _handleInput(event: KeyboardEvent): void;
     _handleKeydown(event: KeyboardEvent): void;
@@ -73,7 +73,7 @@ export declare abstract class _MatAutocompleteTriggerBase implements ControlValu
     writeValue(value: any): void;
     static ngAcceptInputType_autocompleteDisabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatAutocompleteTriggerBase, never, never, { "autocomplete": "matAutocomplete"; "position": "matAutocompletePosition"; "connectedTo": "matAutocompleteConnectedTo"; "autocompleteAttribute": "autocomplete"; "autocompleteDisabled": "matAutocompleteDisabled"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<_MatAutocompleteTriggerBase, [null, null, null, null, null, null, { optional: true; }, { optional: true; host: true; }, { optional: true; }, null]>;
+    static ɵfac: i0.ɵɵFactoryDef<_MatAutocompleteTriggerBase, [null, null, null, null, null, null, { optional: true; }, { optional: true; host: true; }, { optional: true; }, null, { optional: true; }]>;
 }
 
 export declare const AUTOCOMPLETE_OPTION_HEIGHT = 48;
@@ -114,6 +114,7 @@ export interface MatAutocompleteActivatedEvent {
 
 export interface MatAutocompleteDefaultOptions {
     autoActiveFirstOption?: boolean;
+    overlayPanelClass?: string | string[];
 }
 
 export declare class MatAutocompleteModule {

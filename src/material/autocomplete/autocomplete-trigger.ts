@@ -49,7 +49,11 @@ import {MAT_FORM_FIELD, MatFormField} from '@angular/material/form-field';
 import {defer, fromEvent, merge, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {delay, filter, map, switchMap, take, tap} from 'rxjs/operators';
 
-import {_MatAutocompleteBase} from './autocomplete';
+import {
+  _MatAutocompleteBase,
+  MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
+  MatAutocompleteDefaultOptions
+} from './autocomplete';
 import {_MatAutocompleteOriginBase} from './autocomplete-origin';
 
 
@@ -208,7 +212,9 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
               @Optional() private _dir: Directionality,
               @Optional() @Inject(MAT_FORM_FIELD) @Host() private _formField: MatFormField,
               @Optional() @Inject(DOCUMENT) private _document: any,
-              private _viewportRuler: ViewportRuler) {
+              private _viewportRuler: ViewportRuler,
+              @Optional() @Inject(MAT_AUTOCOMPLETE_DEFAULT_OPTIONS)
+              private _defaults?: MatAutocompleteDefaultOptions) {
     this._scrollStrategy = scrollStrategy;
   }
 
@@ -638,7 +644,8 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
       positionStrategy: this._getOverlayPosition(),
       scrollStrategy: this._scrollStrategy(),
       width: this._getPanelWidth(),
-      direction: this._dir
+      direction: this._dir,
+      panelClass: this._defaults?.overlayPanelClass,
     });
   }
 
