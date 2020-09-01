@@ -7,8 +7,8 @@
  */
 
 import * as ts from 'typescript';
-import {absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
 
+import {absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
@@ -1593,35 +1593,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           constructorParamInfo[index] :
           {decorators: null, typeExpression: null};
       const nameNode = node.name;
-
-      let typeValueReference: TypeValueReference;
-      if (typeExpression !== null) {
-        // `typeExpression` is an expression in a "type" context. Resolve it to a declared value.
-        // Either it's a reference to an imported type, or a type declared locally. Distinguish the
-        // two cases with `getDeclarationOfExpression`.
-        const decl = this.getDeclarationOfExpression(typeExpression);
-        if (decl !== null && decl.node !== null && decl.viaModule !== null &&
-            isNamedDeclaration(decl.node)) {
-          typeValueReference = {
-            kind: TypeValueReferenceKind.IMPORTED,
-            valueDeclaration: decl.node,
-            moduleName: decl.viaModule,
-            importedName: decl.node.name.text,
-            nestedPath: null,
-          };
-        } else {
-          typeValueReference = {
-            kind: TypeValueReferenceKind.LOCAL,
-            expression: typeExpression,
-            defaultImportStatement: null,
-          };
-        }
-      } else {
-        typeValueReference = {
-          kind: TypeValueReferenceKind.UNAVAILABLE,
-          reason: {kind: ValueUnavailableKind.MISSING_TYPE},
-        };
-      }
+      const typeValueReference = this.typeToValue(typeExpression);
 
       return {
         name: getNameText(nameNode),
@@ -1631,6 +1603,29 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         decorators
       };
     });
+  }
+
+  /**
+   * Compute the `TypeValueReference` for the given `typeExpression`.
+   *
+   * In ngcc, all the `typeExpression` are guaranteed to be "values" because it is working in JS and
+   * not TS. This means that the TS compiler is not going to remove the "type" import and so we can
+   * always use a LOCAL `TypeValueReference` kind, rather than trying to force an additional import
+   * for non-local expressions.
+   */
+  private typeToValue(typeExpression: ts.Expression|null): TypeValueReference {
+    if (typeExpression === null) {
+      return {
+        kind: TypeValueReferenceKind.UNAVAILABLE,
+        reason: {kind: ValueUnavailableKind.MISSING_TYPE},
+      };
+    }
+
+    return {
+      kind: TypeValueReferenceKind.LOCAL,
+      expression: typeExpression,
+      defaultImportStatement: null,
+    };
   }
 
   /**
