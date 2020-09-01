@@ -7,16 +7,12 @@
  */
 
 import * as semver from 'semver';
-import {GithubClient} from '../../../utils/git/github';
+import {GithubClient, GithubRepo} from '../../../utils/git/github';
 
 /** Type describing a Github repository with corresponding API client. */
-export interface GithubRepo {
+export interface GithubRepoWithApi extends GithubRepo {
   /** API client that can access the repository. */
   api: GithubClient;
-  /** Owner login of the repository. */
-  owner: string;
-  /** Name of the repository. */
-  repo: string;
 }
 
 /** Type describing a version-branch. */
@@ -51,7 +47,7 @@ const releaseTrainBranchNameRegex = /(\d+)\.(\d+)\.x/;
  * a currently active feature-freeze/release-candidate release-train.
  */
 export async function fetchActiveReleaseTrainBranches(
-    repo: GithubRepo, nextVersion: semver.SemVer): Promise<{
+    repo: GithubRepoWithApi, nextVersion: semver.SemVer): Promise<{
   /** Release-train currently in active release-candidate/feature-freeze phase. */
   releaseCandidate: ReleaseTrain | null,
   /** Latest non-prerelease release train (i.e. for the patch branch). */
@@ -102,9 +98,9 @@ export async function fetchActiveReleaseTrainBranches(
 
 /** Gets the version of a given branch by reading the `package.json` upstream. */
 export async function getVersionOfBranch(
-    repo: GithubRepo, branchName: string): Promise<semver.SemVer> {
-  const {data} =
-      await repo.api.repos.getContents({...repo, path: '/package.json', ref: branchName});
+    repo: GithubRepoWithApi, branchName: string): Promise<semver.SemVer> {
+  const {data} = await repo.api.repos.getContents(
+      {owner: repo.owner, repo: repo.name, path: '/package.json', ref: branchName});
   const {version} = JSON.parse(Buffer.from(data.content, 'base64').toString());
   const parsedVersion = semver.parse(version);
   if (parsedVersion === null) {
@@ -136,8 +132,9 @@ export function getVersionForReleaseTrainBranch(branchName: string): semver.SemV
  * order. i.e. latest version branches first.
  */
 export async function getBranchesForMajorVersions(
-    repo: GithubRepo, majorVersions: number[]): Promise<VersionBranch[]> {
-  const {data: branchData} = await repo.api.repos.listBranches({...repo, protected: true});
+    repo: GithubRepoWithApi, majorVersions: number[]): Promise<VersionBranch[]> {
+  const {data: branchData} =
+      await repo.api.repos.listBranches({owner: repo.owner, repo: repo.name, protected: true});
   const branches: VersionBranch[] = [];
 
   for (const {name} of branchData) {
@@ -159,7 +156,7 @@ export async function getBranchesForMajorVersions(
 
 /** Finds the currently active release trains from the specified version branches. */
 export async function findActiveReleaseTrainsFromVersionBranches(
-    repo: GithubRepo, nextVersion: semver.SemVer, branches: VersionBranch[],
+    repo: GithubRepoWithApi, nextVersion: semver.SemVer, branches: VersionBranch[],
     expectedReleaseCandidateMajor: number): Promise<{
   latest: ReleaseTrain | null,
   releaseCandidate: ReleaseTrain | null,

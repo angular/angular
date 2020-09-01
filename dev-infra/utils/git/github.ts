@@ -11,6 +11,14 @@ import * as Octokit from '@octokit/rest';
 import {RequestParameters} from '@octokit/types';
 import {query, types} from 'typed-graphqlify';
 
+/** Interface describing a Github repository. */
+export interface GithubRepo {
+  /** Owner login of the repository. */
+  owner: string;
+  /** Name of the repository. */
+  name: string;
+}
+
 /** Error for failed Github API requests. */
 export class GithubApiRequestError extends Error {
   constructor(public status: number, message: string) {
