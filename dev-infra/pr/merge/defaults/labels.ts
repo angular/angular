@@ -11,7 +11,7 @@ import {GithubClient} from '../../../utils/git/github';
 import {TargetLabel} from '../config';
 import {InvalidTargetBranchError, InvalidTargetLabelError} from '../target-label';
 
-import {fetchActiveReleaseTrainBranches, getVersionOfBranch, GithubRepo, isReleaseTrainBranch, nextBranchName} from './branches';
+import {fetchActiveReleaseTrainBranches, getVersionOfBranch, GithubRepoWithApi, isReleaseTrainBranch, nextBranchName} from './branches';
 import {assertActiveLtsBranch} from './lts-branch';
 
 /**
@@ -22,7 +22,7 @@ import {assertActiveLtsBranch} from './lts-branch';
  */
 export async function getDefaultTargetLabelConfiguration(
     api: GithubClient, github: GithubConfig, npmPackageName: string): Promise<TargetLabel[]> {
-  const repo: GithubRepo = {owner: github.owner, repo: github.name, api};
+  const repo: GithubRepoWithApi = {owner: github.owner, name: github.name, api};
   const nextVersion = await getVersionOfBranch(repo, nextBranchName);
   const hasNextMajorTrain = nextVersion.minor === 0;
   const {latest, releaseCandidate} = await fetchActiveReleaseTrainBranches(repo, nextVersion);

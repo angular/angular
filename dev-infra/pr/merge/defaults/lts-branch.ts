@@ -12,7 +12,7 @@ import * as semver from 'semver';
 import {promptConfirm, red, warn, yellow} from '../../../utils/console';
 import {InvalidTargetBranchError} from '../target-label';
 
-import {getVersionOfBranch, GithubRepo} from './branches';
+import {getVersionOfBranch, GithubRepoWithApi} from './branches';
 
 /**
  * Number of months a major version in Angular is actively supported. See:
@@ -39,7 +39,7 @@ const majorActiveTermSupportDuration = 12;
  * @param branchName Branch that is checked to be an active LTS version-branch.
  * */
 export async function assertActiveLtsBranch(
-    repo: GithubRepo, representativeNpmPackage: string, branchName: string) {
+    repo: GithubRepoWithApi, representativeNpmPackage: string, branchName: string) {
   const version = await getVersionOfBranch(repo, branchName);
   const {'dist-tags': distTags, time} =
       await (await fetch(`https://registry.npmjs.org/${representativeNpmPackage}`)).json();
