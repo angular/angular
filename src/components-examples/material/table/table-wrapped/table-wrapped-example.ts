@@ -4,7 +4,7 @@ import {
   Component,
   ContentChildren,
   Input,
-  OnInit,
+  AfterViewInit,
   QueryList,
   ViewChild
 } from '@angular/core';
@@ -45,13 +45,13 @@ const ELEMENT_DATA: PeriodicElement[] = [
   styleUrls: ['table-wrapped-example.css'],
   templateUrl: 'table-wrapped-example.html',
 })
-export class TableWrappedExample implements OnInit {
+export class TableWrappedExample implements AfterViewInit {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
 
-  @ViewChild('sort', {static: true}) sort: MatSort;
+  @ViewChild('sort') sort: MatSort;
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.dataSource.sort = this.sort;
   }
 }

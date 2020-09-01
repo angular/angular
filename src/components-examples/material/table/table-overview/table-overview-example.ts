@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
@@ -28,12 +28,12 @@ const NAMES: string[] = [
   styleUrls: ['table-overview-example.css'],
   templateUrl: 'table-overview-example.html',
 })
-export class TableOverviewExample implements OnInit {
+export class TableOverviewExample implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'progress', 'color'];
   dataSource: MatTableDataSource<UserData>;
 
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
   constructor() {
     // Create 100 users
@@ -43,7 +43,7 @@ export class TableOverviewExample implements OnInit {
     this.dataSource = new MatTableDataSource(users);
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }

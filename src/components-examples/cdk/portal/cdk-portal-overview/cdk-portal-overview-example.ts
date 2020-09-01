@@ -18,7 +18,7 @@ import {
 })
 export class CdkPortalOverviewExample implements AfterViewInit {
   @ViewChild('templatePortalContent') templatePortalContent: TemplateRef<unknown>;
-  @ViewChild('domPortalContent', {static: true}) domPortalContent: ElementRef<HTMLElement>;
+  @ViewChild('domPortalContent') domPortalContent: ElementRef<HTMLElement>;
 
   selectedPortal: Portal<any>;
   componentPortal: ComponentPortal<ComponentPortalExample>;
