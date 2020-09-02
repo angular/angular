@@ -650,13 +650,14 @@ describe(
                   ].join('\n');
 
                   expectToFail('/some/file.xlf', XLIFF, /Invalid element found in message/, [
-                    `Invalid element found in message. ("`,
-                    `      <segment>`,
+                    `Error: Invalid element found in message.`,
+                    `At /some/file.xlf@6:16:`,
+                    `...`,
                     `        <source/>`,
                     `        <target>[ERROR ->]<b>msg should contain only ph and pc tags</b></target>`,
                     `      </segment>`,
-                    `    </unit>`,
-                    `"): /some/file.xlf@6:16`,
+                    `...`,
+                    ``,
                   ].join('\n'));
                 });
 
@@ -677,13 +678,14 @@ describe(
                      ].join('\n');
 
                      expectToFail('/some/file.xlf', XLIFF, /Missing required "equiv" attribute/, [
-                       `Missing required "equiv" attribute: ("`,
-                       `      <segment>`,
+                       `Error: Missing required "equiv" attribute:`,
+                       `At /some/file.xlf@6:16:`,
+                       `...`,
                        `        <source/>`,
                        `        <target>[ERROR ->]<ph/></target>`,
                        `      </segment>`,
-                       `    </unit>`,
-                       `"): /some/file.xlf@6:16`,
+                       `...`,
+                       ``,
                      ].join('\n'));
                    });
               });

@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Element, ParseErrorLevel, visitAll} from '@angular/compiler';
-import {ɵParsedTranslation} from '@angular/localize';
+import {Element, ParseError, ParseErrorLevel, visitAll} from '@angular/compiler';
+import {ɵParsedTranslation} from '@angular/localize/private';
 import {extname} from 'path';
 
 import {Diagnostics} from '../../../diagnostics';
@@ -103,19 +103,13 @@ class XtbVisitor extends BaseVisitor {
           return;
         }
 
-        try {
-          bundle.translations[id] = serializeTargetMessage(element);
-        } catch (error) {
-          if (typeof error === 'string') {
-            bundle.diagnostics.warn(
-                `Could not parse message with id "${
-                    id}" - perhaps it has an unrecognised ICU format?\n` +
-                error);
-          } else if (error.span && error.msg && error.level) {
-            addParseDiagnostic(bundle.diagnostics, error.span, error.msg, error.level);
-          } else {
-            throw error;
-          }
+        const serializer = new MessageSerializer(
+            new TargetMessageRenderer(),
+            {inlineElements: [], placeholder: {elementName: 'ph', nameAttribute: 'name'}});
+        const translation =
+            serializeTranslationMessage(id, element, serializer, bundle.diagnostics);
+        if (translation !== null) {
+          bundle.translations[id] = translation;
         }
         break;
 
@@ -127,9 +121,25 @@ class XtbVisitor extends BaseVisitor {
   }
 }
 
-function serializeTargetMessage(source: Element): ɵParsedTranslation {
-  const serializer = new MessageSerializer(
-      new TargetMessageRenderer(),
-      {inlineElements: [], placeholder: {elementName: 'ph', nameAttribute: 'name'}});
-  return serializer.serialize(parseInnerRange(source));
+/**
+ * Serialize the given `element` into a parsed translation using the given `serializer`.
+ */
+function serializeTranslationMessage(
+    id: string, element: Element, serializer: MessageSerializer<ɵParsedTranslation>,
+    diagnostics: Diagnostics): ɵParsedTranslation|null {
+  const {rootNodes, errors} = parseInnerRange(element);
+  if (errors.length) {
+    const msg = errors.map(e => e.toString()).join('\n');
+    diagnostics.warn(
+        `Could not parse message with id "${id}" - perhaps it has an unrecognised ICU format?\n` +
+        msg);
+    return null;
+  }
+
+  try {
+    return serializer.serialize(rootNodes);
+  } catch (e) {
+    addParseError(diagnostics, e);
+    return null;
+  }
 }

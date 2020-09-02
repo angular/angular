@@ -621,7 +621,7 @@ describe('Xliff1TranslationParser', () => {
       });
 
       describe('[structure errors]', () => {
-        it('should throw when a trans-unit has no translation', () => {
+        it('should fail when a trans-unit has no translation', () => {
           const XLIFF = [
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
@@ -646,7 +646,7 @@ describe('Xliff1TranslationParser', () => {
         });
 
 
-        it('should throw when a trans-unit has no id attribute', () => {
+        it('should fail when a trans-unit has no id attribute', () => {
           const XLIFF = [
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
@@ -671,7 +671,7 @@ describe('Xliff1TranslationParser', () => {
           ].join('\n'));
         });
 
-        it('should throw on duplicate trans-unit id', () => {
+        it('should fail on duplicate trans-unit id', () => {
           const XLIFF = [
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
@@ -703,7 +703,7 @@ describe('Xliff1TranslationParser', () => {
       });
 
       describe('[message errors]', () => {
-        it('should throw on unknown message tags', () => {
+        it('should fail on unknown message tags', () => {
           const XLIFF = [
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
@@ -719,17 +719,18 @@ describe('Xliff1TranslationParser', () => {
           ].join('\n');
 
           expectToFail('/some/file.xlf', XLIFF, /Invalid element found in message/, [
-            `Invalid element found in message. ("`,
-            `      <trans-unit id="deadbeef" datatype="html">`,
+            `Error: Invalid element found in message.`,
+            `At /some/file.xlf@6:16:`,
+            `...`,
             `        <source/>`,
             `        <target>[ERROR ->]<b>msg should contain only ph tags</b></target>`,
             `      </trans-unit>`,
-            `    </body>`,
-            `"): /some/file.xlf@6:16`,
+            `...`,
+            ``,
           ].join('\n'));
         });
 
-        it('should throw when a placeholder misses an id attribute', () => {
+        it('should fail when a placeholder misses an id attribute', () => {
           const XLIFF = [
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
@@ -745,13 +746,14 @@ describe('Xliff1TranslationParser', () => {
           ].join('\n');
 
           expectToFail('/some/file.xlf', XLIFF, /required "id" attribute/gi, [
-            `Missing required "id" attribute: ("`,
-            `      <trans-unit id="deadbeef" datatype="html">`,
+            `Error: Missing required "id" attribute:`,
+            `At /some/file.xlf@6:16:`,
+            `...`,
             `        <source/>`,
             `        <target>[ERROR ->]<x/></target>`,
             `      </trans-unit>`,
-            `    </body>`,
-            `"): /some/file.xlf@6:16`,
+            `...`,
+            ``,
           ].join('\n'));
         });
       });
