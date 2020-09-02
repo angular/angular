@@ -10,8 +10,12 @@
       "$default": {
         "$source": "projectName"
       }
+    },
+    "useAtRuntime": {
+      "type": "boolean",
+      "description": "If true then the dependency is included in the `dependencies` section of packge.json, rather than `devDependencies`.",
+      "x-prompt": "Will this project use $localize at runtime?"
     }
   },
-  "required": [
-  ]
+  "required": []
 }
