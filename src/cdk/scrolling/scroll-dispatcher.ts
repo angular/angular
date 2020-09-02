@@ -23,12 +23,11 @@ export const DEFAULT_SCROLL_TIME = 20;
 @Injectable({providedIn: 'root'})
 export class ScrollDispatcher implements OnDestroy {
   /** Used to reference correct document/window */
-  protected _document?: Document;
+  protected _document: Document;
 
   constructor(private _ngZone: NgZone,
               private _platform: Platform,
-              /** @breaking-change 11.0.0 make document required */
-              @Optional() @Inject(DOCUMENT) document?: any) {
+              @Optional() @Inject(DOCUMENT) document: any) {
     this._document = document;
   }
 
@@ -144,15 +143,9 @@ export class ScrollDispatcher implements OnDestroy {
     return scrollingContainers;
   }
 
-  /** Access injected document if available or fallback to global document reference */
-  private _getDocument(): Document {
-    return this._document || document;
-  }
-
   /** Use defaultView of injected document if available or fallback to global window reference */
   private _getWindow(): Window {
-    const doc = this._getDocument();
-    return doc.defaultView || window;
+    return this._document.defaultView || window;
   }
 
   /** Returns true if the element is contained within the provided Scrollable. */

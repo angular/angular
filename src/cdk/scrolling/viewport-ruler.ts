@@ -39,12 +39,11 @@ export class ViewportRuler implements OnDestroy {
   }
 
   /** Used to reference correct document/window */
-  protected _document?: Document;
+  protected _document: Document;
 
   constructor(private _platform: Platform,
               ngZone: NgZone,
-              /** @breaking-change 11.0.0 make document required */
-              @Optional() @Inject(DOCUMENT) document?: any) {
+              @Optional() @Inject(DOCUMENT) document: any) {
     this._document = document;
 
     ngZone.runOutsideAngular(() => {
@@ -127,7 +126,7 @@ export class ViewportRuler implements OnDestroy {
     // `scrollTop` and `scrollLeft` is inconsistent. However, using the bounding rect of
     // `document.documentElement` works consistently, where the `top` and `left` values will
     // equal negative the scroll position.
-    const document = this._getDocument();
+    const document = this._document;
     const window = this._getWindow();
     const documentElement = document.documentElement!;
     const documentRect = documentElement.getBoundingClientRect();
@@ -149,15 +148,9 @@ export class ViewportRuler implements OnDestroy {
     return throttleTime > 0 ? this._change.pipe(auditTime(throttleTime)) : this._change;
   }
 
-  /** Access injected document if available or fallback to global document reference */
-  private _getDocument(): Document {
-    return this._document || document;
-  }
-
   /** Use defaultView of injected document if available or fallback to global window reference */
   private _getWindow(): Window {
-    const doc = this._getDocument();
-    return doc.defaultView || window;
+    return this._document.defaultView || window;
   }
 
   /** Updates the cached viewport size. */

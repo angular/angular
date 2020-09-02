@@ -124,8 +124,7 @@ export declare class CdkVirtualScrollViewport extends CdkScrollable implements O
     set orientation(orientation: 'horizontal' | 'vertical');
     renderedRangeStream: Observable<ListRange>;
     scrolledIndexChange: Observable<number>;
-    constructor(elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, ngZone: NgZone, _scrollStrategy: VirtualScrollStrategy, dir: Directionality, scrollDispatcher: ScrollDispatcher,
-    viewportRuler?: ViewportRuler);
+    constructor(elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, ngZone: NgZone, _scrollStrategy: VirtualScrollStrategy, dir: Directionality, scrollDispatcher: ScrollDispatcher, viewportRuler: ViewportRuler);
     attach(forOf: CdkVirtualScrollRepeater<any>): void;
     checkViewportSize(): void;
     detach(): void;
@@ -167,11 +166,10 @@ export declare class FixedSizeVirtualScrollStrategy implements VirtualScrollStra
 }
 
 export declare class ScrollDispatcher implements OnDestroy {
-    protected _document?: Document;
+    protected _document: Document;
     _globalSubscription: Subscription | null;
     scrollContainers: Map<CdkScrollable, Subscription>;
-    constructor(_ngZone: NgZone, _platform: Platform,
-    document?: any);
+    constructor(_ngZone: NgZone, _platform: Platform, document: any);
     ancestorScrolled(elementRef: ElementRef, auditTimeInMs?: number): Observable<CdkScrollable | void>;
     deregister(scrollable: CdkScrollable): void;
     getAncestorScrollContainers(elementRef: ElementRef): CdkScrollable[];
@@ -188,9 +186,8 @@ export declare class ScrollingModule {
 }
 
 export declare class ViewportRuler implements OnDestroy {
-    protected _document?: Document;
-    constructor(_platform: Platform, ngZone: NgZone,
-    document?: any);
+    protected _document: Document;
+    constructor(_platform: Platform, ngZone: NgZone, document: any);
     change(throttleTime?: number): Observable<Event>;
     getViewportRect(): ClientRect;
     getViewportScrollPosition(): ViewportScrollPosition;

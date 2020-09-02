@@ -17,6 +17,12 @@ export type ConstructorChecksUpgradeData = string;
  * automatically through type checking.
  */
 export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
+  [TargetVersion.V11]: [
+    {
+      pr: 'https://github.com/angular/components/pull/20454',
+      changes: ['ScrollDispatcher', 'ViewportRuler', 'CdkVirtualScrollViewport']
+    }
+  ],
   [TargetVersion.V10]: [
     {
       pr: 'https://github.com/angular/components/pull/19347',

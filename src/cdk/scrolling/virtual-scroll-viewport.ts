@@ -159,23 +159,16 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
                   private _scrollStrategy: VirtualScrollStrategy,
               @Optional() dir: Directionality,
               scrollDispatcher: ScrollDispatcher,
-              /**
-               * @deprecated `viewportRuler` parameter to become required.
-               * @breaking-change 11.0.0
-               */
-              viewportRuler?: ViewportRuler) {
+              viewportRuler: ViewportRuler) {
     super(elementRef, scrollDispatcher, ngZone, dir);
 
     if (!_scrollStrategy && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Error: cdk-virtual-scroll-viewport requires the "itemSize" property to be set.');
     }
 
-    // @breaking-change 11.0.0 Remove null check for `viewportRuler`.
-    if (viewportRuler) {
-      this._viewportChanges = viewportRuler.change().subscribe(() => {
-        this.checkViewportSize();
-      });
-    }
+    this._viewportChanges = viewportRuler.change().subscribe(() => {
+      this.checkViewportSize();
+    });
   }
 
   ngOnInit() {

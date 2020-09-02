@@ -66,14 +66,14 @@ import {_MatAutocompleteOriginBase} from './autocomplete-origin';
 /**
  * The height of each autocomplete option.
  * @deprecated No longer being used. To be removed.
- * @breaking-change 11.0.0
+ * @breaking-change 12.0.0
  */
 export const AUTOCOMPLETE_OPTION_HEIGHT = 48;
 
 /**
  * The total height of the autocomplete panel.
  * @deprecated No longer being used. To be removed.
- * @breaking-change 11.0.0
+ * @breaking-change 12.0.0
  */
 export const AUTOCOMPLETE_PANEL_HEIGHT = 256;
 
