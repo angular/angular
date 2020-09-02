@@ -122,3 +122,7 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
 .mat-table-sticky {
   @include vendor-prefixes.position-sticky;
 }
+
+.mat-table-fixed-layout {
+  table-layout: fixed;
+}

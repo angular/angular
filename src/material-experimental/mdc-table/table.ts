@@ -17,6 +17,7 @@ import {_DisposeViewRepeaterStrategy, _VIEW_REPEATER_STRATEGY} from '@angular/cd
   styleUrls: ['table.css'],
   host: {
     'class': 'mat-mdc-table mdc-data-table__table',
+    '[class.mdc-table-fixed-layout]': 'fixedLayout',
   },
   providers: [
     {provide: CdkTable, useExisting: MatTable},

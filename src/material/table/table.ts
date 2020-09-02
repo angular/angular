@@ -25,6 +25,7 @@ import {_DisposeViewRepeaterStrategy, _VIEW_REPEATER_STRATEGY} from '@angular/cd
   styleUrls: ['table.css'],
   host: {
     'class': 'mat-table',
+    '[class.mat-table-fixed-layout]': 'fixedLayout',
   },
   providers: [
     // TODO(michaeljamesparsons) Abstract the view repeater strategy to a directive API so this code

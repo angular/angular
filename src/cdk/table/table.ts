@@ -20,6 +20,7 @@ import {
   _ViewRepeaterOperation,
 } from '@angular/cdk/collections';
 import {Platform} from '@angular/cdk/platform';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {DOCUMENT} from '@angular/common';
 import {
   AfterContentChecked,
@@ -187,8 +188,10 @@ export interface RenderRow<T> {
   selector: 'cdk-table, table[cdk-table]',
   exportAs: 'cdkTable',
   template: CDK_TABLE_TEMPLATE,
+  styleUrls: ['table.css'],
   host: {
     'class': 'cdk-table',
+    '[class.cdk-table-fixed-layout]': 'fixedLayout',
   },
   encapsulation: ViewEncapsulation.None,
   // The "OnPush" status for the `MatTable` component is effectively a noop, so we are removing it.
@@ -289,6 +292,19 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    * content is checked. Initialized as true so that the table renders the initial set of rows.
    */
   private _footerRowDefChanged = true;
+
+  /**
+   * Whether the sticky column styles need to be updated. Set to `true` when the visible columns
+   * change.
+   */
+  private _stickyColumnStylesNeedReset = true;
+
+  /**
+   * Whether the sticky styler should recalculate cell widths when applying sticky styles. If
+   * `false`, cached values will be used instead. This is only applicable to tables with
+   * {@link fixedLayout} enabled. For other tables, cell widths will always be recalculated.
+   */
+  private _forceRecalculateCellWidths = true;
 
   /**
    * Cache of the latest rendered `RenderRow` objects as a map for easy retrieval when constructing
@@ -401,6 +417,23 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   }
   _multiTemplateDataRows: boolean = false;
 
+  /**
+   * Whether to use a fixed table layout. Enabling this option will enforce consistent column widths
+   * and optimize rendering sticky styles for native tables. No-op for flex tables.
+   */
+  @Input()
+  get fixedLayout(): boolean {
+    return this._fixedLayout;
+  }
+  set fixedLayout(v: boolean) {
+    this._fixedLayout = coerceBooleanProperty(v);
+
+    // Toggling `fixedLayout` may change column widths. Sticky column styles should be recalculated.
+    this._forceRecalculateCellWidths = true;
+    this._stickyColumnStylesNeedReset = true;
+  }
+  private _fixedLayout: boolean = false;
+
   // TODO(andrewseguin): Remove max value as the end index
   //   and instead calculate the view on init and scroll.
   /**
@@ -450,7 +483,11 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       // Optional for backwards compatibility, but a view repeater strategy will always
       // be provided.
       @Optional() @Inject(_VIEW_REPEATER_STRATEGY)
-      protected readonly _viewRepeater: _ViewRepeater<T, RenderRow<T>, RowContext<T>>) {
+      protected readonly _viewRepeater: _ViewRepeater<T, RenderRow<T>, RowContext<T>>,
+      // Optional for backwards compatibility. The viewport ruler is provided in root. Therefore,
+      // this property will never be null.
+      // tslint:disable-next-line: lightweight-tokens
+      @Optional() private readonly _viewportRuler: ViewportRuler) {
     if (!role) {
       this._elementRef.nativeElement.setAttribute('role', 'grid');
     }
@@ -472,6 +509,12 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     this._dataDiffer = this._differs.find([]).create((_i: number, dataRow: RenderRow<T>) => {
       return this.trackBy ? this.trackBy(dataRow.dataIndex, dataRow.data) : dataRow;
     });
+
+    // Table cell dimensions may change after resizing the window. Signal the sticky styler to
+    // refresh its cache of cell widths the next time sticky styles are updated.
+    this._viewportRuler.change().pipe(takeUntil(this._onDestroy)).subscribe(() => {
+      this._forceRecalculateCellWidths = true;
+    });
   }
 
   ngAfterContentChecked() {
@@ -487,8 +530,10 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
     // Render updates if the list of columns have been changed for the header, row, or footer defs.
     const columnsChanged = this._renderUpdatedColumns();
-    const stickyColumnStyleUpdateNeeded =
-            columnsChanged || this._headerRowDefChanged || this._footerRowDefChanged;
+    const rowDefsChanged = columnsChanged || this._headerRowDefChanged || this._footerRowDefChanged;
+    // Ensure sticky column styles are reset if set to `true` elsewhere.
+    this._stickyColumnStylesNeedReset = this._stickyColumnStylesNeedReset || rowDefsChanged;
+    this._forceRecalculateCellWidths = rowDefsChanged;
 
     // If the header row definition has been changed, trigger a render to the header row.
     if (this._headerRowDefChanged) {
@@ -506,7 +551,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     // connection has already been made.
     if (this.dataSource && this._rowDefs.length > 0 && !this._renderChangeSubscription) {
       this._observeRenderChanges();
-    } else if (stickyColumnStyleUpdateNeeded) {
+    } else if (this._stickyColumnStylesNeedReset) {
       // In the above case, _observeRenderChanges will result in updateStickyColumnStyles being
       // called when it row data arrives. Otherwise, we need to call it proactively.
       this.updateStickyColumnStyles();
@@ -688,10 +733,18 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     const dataRows = this._getRenderedRows(this._rowOutlet);
     const footerRows = this._getRenderedRows(this._footerRowOutlet);
 
-    // Clear the left and right positioning from all columns in the table across all rows since
-    // sticky columns span across all table sections (header, data, footer)
-    this._stickyStyler.clearStickyPositioning(
-        [...headerRows, ...dataRows, ...footerRows], ['left', 'right']);
+    // For tables not using a fixed layout, the column widths may change when new rows are rendered.
+    // In a table using a fixed layout, row content won't affect column width, so sticky styles
+    // don't need to be cleared unless either the sticky column config changes or one of the row
+    // defs change.
+    if ((this._isNativeHtmlTable && !this._fixedLayout)
+        || this._stickyColumnStylesNeedReset) {
+      // Clear the left and right positioning from all columns in the table across all rows since
+      // sticky columns span across all table sections (header, data, footer)
+      this._stickyStyler.clearStickyPositioning(
+          [...headerRows, ...dataRows, ...footerRows], ['left', 'right']);
+      this._stickyColumnStylesNeedReset = false;
+    }
 
     // Update the sticky styles for each header row depending on the def's sticky state
     headerRows.forEach((headerRow, i) => {
@@ -936,7 +989,9 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     });
     const stickyStartStates = columnDefs.map(columnDef => columnDef.sticky);
     const stickyEndStates = columnDefs.map(columnDef => columnDef.stickyEnd);
-    this._stickyStyler.updateStickyColumns(rows, stickyStartStates, stickyEndStates);
+    this._stickyStyler.updateStickyColumns(
+        rows, stickyStartStates, stickyEndStates,
+        !this._fixedLayout || this._forceRecalculateCellWidths);
   }
 
   /** Gets the list of rows that have been rendered in the row outlet. */
@@ -1115,6 +1170,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     }
 
     if (Array.from(this._columnDefsByName.values()).reduce(stickyCheckReducer, false)) {
+      this._stickyColumnStylesNeedReset = true;
       this.updateStickyColumnStyles();
     }
   }
@@ -1156,6 +1212,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   }
 
   static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
+  static ngAcceptInputType_fixedLayout: BooleanInput;
 }
 
 /** Utility function that gets a merged list of the entries in an array and values of a Set. */
