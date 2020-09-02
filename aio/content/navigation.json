@@ -954,6 +954,11 @@
               "url": "guide/styleguide",
               "title": "Coding Style Guide",
               "tooltip": "Guidelines for writing Angular code."
+            },
+            {
+              "url": "guide/docs-style-guide",
+              "title": "Documentation Style Guide",
+              "tooltip": "Style guide for documentation authors."
             }
           ]
         }
