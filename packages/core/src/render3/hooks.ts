@@ -258,6 +258,8 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
       hook.call(directive);
     }
   } else {
-    hook.call(directive);
+    if (hook) {
+      hook.call(directive);
+    }
   }
 }
