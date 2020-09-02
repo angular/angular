@@ -33,11 +33,13 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
 
   beforeEach(() => {
     host = new UnitTestTree(new HostTree());
-    host.create('package.json', `{
-      "dependencies": {
-        "@angular/localize": "old-version"
+    host.create('package.json', JSON.stringify({
+      'devDependencies': {
+        // The default (according to `ng-add` in its package.json) is for `@angular/localize` to be
+        // saved to `devDependencies`.
+        '@angular/localize': '~0.0.0-PLACEHOLDER',
       }
-    }`);
+    }));
     host.create('src/polyfills.ts', polyfillsContent);
     host.create('src/another-polyfills.ts', polyfillsContent);
     host.create('src/unrelated-polyfills.ts', polyfillsContent);
@@ -176,7 +178,7 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const packageJsonText = host.readContent('/package.json');
     expect(JSON.parse(packageJsonText).devDependencies?.['@angular/localize'])
-        .toBe('^0.0.0-PLACEHOLDER');
+        .toBe('~0.0.0-PLACEHOLDER');
     expect(JSON.parse(packageJsonText).dependencies?.['@angular/localize']).toBeUndefined();
   });
 
@@ -186,7 +188,7 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
                .toPromise();
     const packageJsonText = host.readContent('/package.json');
     expect(JSON.parse(packageJsonText).dependencies?.['@angular/localize'])
-        .toBe('^0.0.0-PLACEHOLDER');
+        .toBe('~0.0.0-PLACEHOLDER');
     expect(JSON.parse(packageJsonText).devDependencies?.['@angular/localize']).toBeUndefined();
   });
 });
