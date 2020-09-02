@@ -10,6 +10,7 @@ import {AST, BindingPipe, BindingType, BoundTarget, DYNAMIC_TYPE, ImplicitReceiv
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
+import {ClassPropertyName} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
@@ -431,7 +432,7 @@ class TcbDirectiveCtorOp extends TcbOp {
     }
 
     // Add unset directive inputs for each of the remaining unset fields.
-    for (const fieldName of Object.keys(this.dir.inputs)) {
+    for (const [fieldName] of this.dir.inputs) {
       if (!genericInputs.has(fieldName)) {
         genericInputs.set(fieldName, {type: 'unset', field: fieldName});
       }
@@ -743,22 +744,14 @@ class TcbDirectiveOutputsOp extends TcbOp {
 
   execute(): null {
     let dirId: ts.Expression|null = null;
-
-
-    // `dir.outputs` is an object map of field names on the directive class to event names.
-    // This is backwards from what's needed to match event handlers - a map of event names to field
-    // names is desired. Invert `dir.outputs` into `fieldByEventName` to create this map.
-    const fieldByEventName = new Map<string, string>();
     const outputs = this.dir.outputs;
-    for (const key of Object.keys(outputs)) {
-      fieldByEventName.set(outputs[key], key);
-    }
 
     for (const output of this.node.outputs) {
-      if (output.type !== ParsedEventType.Regular || !fieldByEventName.has(output.name)) {
+      if (output.type !== ParsedEventType.Regular || !outputs.hasBindingPropertyName(output.name)) {
         continue;
       }
-      const field = fieldByEventName.get(output.name)!;
+      // TODO(alxhub): consider supporting multiple fields with the same property name for outputs.
+      const field = outputs.getByBindingPropertyName(output.name)![0].classPropertyName;
 
       if (this.tcb.env.config.checkTypeOfOutputEvents) {
         // For strict checking of directive events, generate a call to the `subscribe` method
@@ -1225,9 +1218,8 @@ class Scope {
     if (node instanceof TmplAstElement) {
       // Go through the directives and remove any inputs that it claims from `elementInputs`.
       for (const dir of directives) {
-        for (const fieldName of Object.keys(dir.inputs)) {
-          const value = dir.inputs[fieldName];
-          claimedInputs.add(Array.isArray(value) ? value[0] : value);
+        for (const propertyName of dir.inputs.propertyNames) {
+          claimedInputs.add(propertyName);
         }
       }
 
@@ -1264,8 +1256,8 @@ class Scope {
     if (node instanceof TmplAstElement) {
       // Go through the directives and register any outputs that it claims in `claimedOutputs`.
       for (const dir of directives) {
-        for (const outputField of Object.keys(dir.outputs)) {
-          claimedOutputs.add(dir.outputs[outputField]);
+        for (const outputProperty of dir.outputs.propertyNames) {
+          claimedOutputs.add(outputProperty);
         }
       }
 
@@ -1276,7 +1268,7 @@ class Scope {
 
 interface TcbBoundInput {
   attribute: TmplAstBoundAttribute|TmplAstTextAttribute;
-  fieldNames: string[];
+  fieldNames: ClassPropertyName[];
 }
 
 /**
@@ -1537,7 +1529,6 @@ function getBoundInputs(
     tcb: Context): TcbBoundInput[] {
   const boundInputs: TcbBoundInput[] = [];
 
-  const propertyToFieldNames = invertInputs(directive.inputs);
   const processAttribute = (attr: TmplAstBoundAttribute|TmplAstTextAttribute) => {
     // Skip non-property bindings.
     if (attr instanceof TmplAstBoundAttribute && attr.type !== BindingType.Property) {
@@ -1550,10 +1541,11 @@ function getBoundInputs(
     }
 
     // Skip the attribute if the directive does not have an input for it.
-    if (!propertyToFieldNames.has(attr.name)) {
+    const inputs = directive.inputs.getByBindingPropertyName(attr.name);
+    if (inputs === null) {
       return;
     }
-    const fieldNames = propertyToFieldNames.get(attr.name)!;
+    const fieldNames = inputs.map(input => input.classPropertyName);
     boundInputs.push({attribute: attr, fieldNames});
   };
 
@@ -1578,26 +1570,6 @@ function translateInput(
     // For regular attributes with a static string value, use the represented string literal.
     return ts.createStringLiteral(attr.value);
   }
-}
-
-/**
- * Inverts the input-mapping from field-to-property name into property-to-field name, to be able
- * to match a property in a template with the corresponding field on a directive.
- */
-function invertInputs(inputs: {[fieldName: string]: string|[string, string]}):
-    Map<string, string[]> {
-  const propertyToFieldNames = new Map<string, string[]>();
-  for (const fieldName of Object.keys(inputs)) {
-    const propertyNames = inputs[fieldName];
-    const propertyName = Array.isArray(propertyNames) ? propertyNames[0] : propertyNames;
-
-    if (propertyToFieldNames.has(propertyName)) {
-      propertyToFieldNames.get(propertyName)!.push(fieldName);
-    } else {
-      propertyToFieldNames.set(propertyName, [fieldName]);
-    }
-  }
-  return propertyToFieldNames;
 }
 
 /**

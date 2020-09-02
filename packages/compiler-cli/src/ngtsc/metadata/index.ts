@@ -10,3 +10,4 @@ export * from './src/api';
 export {DtsMetadataReader} from './src/dts';
 export {CompoundMetadataRegistry, LocalMetadataRegistry, InjectableClassRegistry} from './src/registry';
 export {extractDirectiveTypeCheckMeta, CompoundMetadataReader} from './src/util';
+export {BindingPropertyName, ClassPropertyMapping, ClassPropertyName, InputOrOutput} from './src/property_mapping';
