@@ -1,3 +1,26 @@
+# 10.2.0 "cloth-shirt" (2020-09-02)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **overlay:** ensure error isn't thrown when many overlay items are closed from handler ([#20377](https://github.com/angular/components/issues/20377)) ([8ed5ba7](https://github.com/angular/components/commit/8ed5ba7)) |
+| bug fix |  **testing:** fix change detection timing in testbed ([#20465](https://github.com/angular/components/issues/20465)) ([29468fa](https://github.com/angular/components/commit/29468fa)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **button:** don't use divs in button template ([#20376](https://github.com/angular/components/issues/20376)) ([ecde050](https://github.com/angular/components/commit/ecde050)) |
+| bug fix |  **drag-drop:** expose some missing injection tokens ([#20410](https://github.com/angular/components/issues/20410)) ([a97b050](https://github.com/angular/components/commit/a97b050)), closes [#20406](https://github.com/angular/components/issues/20406) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** double outline for FAB in high contrast mode ([#20391](https://github.com/angular/components/issues/20391)) ([80bc6cb](https://github.com/angular/components/commit/80bc6cb)) |
+
+
 # 10.2.0-rc.0 "cotton-cactus" (2020-08-26)
 
 ### cdk
