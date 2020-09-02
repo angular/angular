@@ -9,7 +9,7 @@
  */
 
 import {virtualFs, workspaces} from '@angular-devkit/core';
-import {chain, Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {chain, noop, Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {addPackageJsonDependency, NodeDependencyType, removePackageJsonDependency} from '@schematics/angular/utility/dependencies';
 import {getWorkspace} from '@schematics/angular/utility/workspace';
@@ -113,8 +113,6 @@ function moveToDependencies(host: Tree, context: SchematicContext) {
   }
 }
 
-function noop() {}
-
 export default function(options: Schema): Rule {
   return async (host: Tree) => {
     if (!options.name) {
@@ -139,7 +137,7 @@ ${localizePolyfill}
       prependToTargetFiles(project, Builders.Server, 'main', localizeStr),
       // If `$localize` will be used at runtime then must install `@angular/localize`
       // into `dependencies`, rather than the default of `devDependencies`.
-      options.useAtRuntime ? moveToDependencies : noop
+      options.useAtRuntime ? moveToDependencies : noop()
     ]);
   };
 }
