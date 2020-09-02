@@ -1,3 +1,28 @@
+<a name="11.0.0-next.0"></a>
+# 11.0.0-next.0 (2020-09-02)
+
+
+### Bug Fixes
+
+* **forms:** ensure to emit `statusChanges` on subsequent value update/validations ([#38354](https://github.com/angular/angular/issues/38354)) ([d9fea85](https://github.com/angular/angular/commit/d9fea85)), closes [#20424](https://github.com/angular/angular/issues/20424) [#14542](https://github.com/angular/angular/issues/14542)
+* **service-worker:** fix condition to check for a cache-busted request ([#36847](https://github.com/angular/angular/issues/36847)) ([5be4edf](https://github.com/angular/angular/commit/5be4edf))
+
+
+### Features
+
+* **service-worker:** add `UnrecoverableStateError` ([#36847](https://github.com/angular/angular/issues/36847)) ([036a2fa](https://github.com/angular/angular/commit/036a2fa)), closes [#36539](https://github.com/angular/angular/issues/36539)
+
+
+### BREAKING CHANGES
+
+* **forms:** Previously if FormControl, FormGroup and FormArray class instances had async validators
+defined at initialization time, the status change event was not emitted once async validator
+completed. After this change the status event is emitted into the `statusChanges` observable.
+If your code relies on the old behavior, you can filter/ignore this additional status change
+event.
+
+
+
 <a name="10.1.0"></a>
 # 10.1.0 (2020-09-02)
 
