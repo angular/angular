@@ -9,7 +9,9 @@
  */
 
 import {virtualFs, workspaces} from '@angular-devkit/core';
-import {chain, Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {chain, noop, Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
+import {addPackageJsonDependency, NodeDependencyType, removePackageJsonDependency} from '@schematics/angular/utility/dependencies';
 import {getWorkspace} from '@schematics/angular/utility/workspace';
 import {Builders} from '@schematics/angular/utility/workspace-models';
 
@@ -95,6 +97,22 @@ function prependToTargetFiles(
   };
 }
 
+function moveToDependencies(host: Tree, context: SchematicContext) {
+  if (host.exists('package.json')) {
+    // Remove the previous dependency and add in a new one under the desired type.
+    removePackageJsonDependency(host, '@angular/localize');
+    addPackageJsonDependency(host, {
+      name: '@angular/localize',
+      type: NodeDependencyType.Default,
+      version: `~0.0.0-PLACEHOLDER`
+    });
+
+    // Add a task to run the package manager. This is necessary because we updated
+    // "package.json" and we want lock files to reflect this.
+    context.addTask(new NodePackageInstallTask());
+  }
+}
+
 export default function(options: Schema): Rule {
   return async (host: Tree) => {
     if (!options.name) {
@@ -117,6 +135,9 @@ ${localizePolyfill}
     return chain([
       prependToTargetFiles(project, Builders.Browser, 'polyfills', localizeStr),
       prependToTargetFiles(project, Builders.Server, 'main', localizeStr),
+      // If `$localize` will be used at runtime then must install `@angular/localize`
+      // into `dependencies`, rather than the default of `devDependencies`.
+      options.useAtRuntime ? moveToDependencies : noop()
     ]);
   };
 }

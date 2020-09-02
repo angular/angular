@@ -16,6 +16,9 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
+  "ng-add": {
+    "save": "devDependencies"
+  },
   "sideEffects": [
     "**/init/index.js",
     "**/init.js",
