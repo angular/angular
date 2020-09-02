@@ -215,8 +215,10 @@ function createUnsuitableInjectionTokenError(
         makeRelatedInformation(
             reason.typeNode,
             'This type does not have a value, so it cannot be used as injection token.'),
-        makeRelatedInformation(reason.decl, 'The type is declared here.'),
       ];
+      if (reason.decl !== null) {
+        hints.push(makeRelatedInformation(reason.decl, 'The type is declared here.'));
+      }
       break;
     case ValueUnavailableKind.TYPE_ONLY_IMPORT:
       chainMessage =

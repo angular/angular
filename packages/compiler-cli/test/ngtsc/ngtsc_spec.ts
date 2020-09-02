@@ -2214,6 +2214,35 @@ runInEachFileSystem(os => {
           expect(diags[0].relatedInformation![1].messageText).toBe('The type is declared here.');
         });
 
+        it('should report an error when using a missing type as injection token', () => {
+          // This test replicates the situation where a symbol does not have any declarations at
+          // all, e.g. because it's imported from a missing module. This would result in a
+          // semantic TypeScript diagnostic which we ignore in this test to verify that ngtsc's
+          // analysis is able to operate in this situation.
+          env.tsconfig({strictInjectionParameters: true});
+          env.write(`test.ts`, `
+             import {Injectable} from '@angular/core';
+             // @ts-expect-error
+             import {Interface} from 'missing';
+
+             @Injectable()
+             export class MyService {
+               constructor(param: Interface) {}
+             }
+          `);
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
+              .toBe(
+                  `No suitable injection token for parameter 'param' of ` +
+                  `class 'MyService'.\n` +
+                  `  Consider using the @Inject decorator to specify an injection token.`);
+          expect(diags[0].relatedInformation!.length).toBe(1);
+          expect(diags[0].relatedInformation![0].messageText)
+              .toBe('This type does not have a value, so it cannot be used as injection token.');
+        });
+
         it('should report an error when no type is present', () => {
           env.tsconfig({strictInjectionParameters: true, noImplicitAny: false});
           env.write(`test.ts`, `
