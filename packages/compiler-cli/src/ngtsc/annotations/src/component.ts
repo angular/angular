@@ -15,7 +15,7 @@ import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
-import {DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
+import {ClassPropertyMapping, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -55,6 +55,9 @@ export interface ComponentAnalysisData {
   typeCheckMeta: DirectiveTypeCheckMeta;
   template: ParsedTemplateWithSource;
   metadataStmt: Statement|null;
+
+  inputs: ClassPropertyMapping;
+  outputs: ClassPropertyMapping;
 
   /**
    * Providers extracted from the `providers` field of the component annotation which will require
@@ -191,7 +194,7 @@ export class ComponentDecoratorHandler implements
     }
 
     // Next, read the `@Component`-specific fields.
-    const {decorator: component, metadata} = directiveResult;
+    const {decorator: component, metadata, inputs, outputs} = directiveResult;
 
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
@@ -328,6 +331,8 @@ export class ComponentDecoratorHandler implements
     const output: AnalysisOutput<ComponentAnalysisData> = {
       analysis: {
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
+        inputs,
+        outputs,
         meta: {
           ...metadata,
           template: {
@@ -345,7 +350,7 @@ export class ComponentDecoratorHandler implements
           i18nUseExternalIds: this.i18nUseExternalIds,
           relativeContextFilePath,
         },
-        typeCheckMeta: extractDirectiveTypeCheckMeta(node, metadata.inputs, this.reflector),
+        typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
@@ -370,8 +375,8 @@ export class ComponentDecoratorHandler implements
       name: node.name.text,
       selector: analysis.meta.selector,
       exportAs: analysis.meta.exportAs,
-      inputs: analysis.meta.inputs,
-      outputs: analysis.meta.outputs,
+      inputs: analysis.inputs,
+      outputs: analysis.outputs,
       queries: analysis.meta.queries.map(query => query.propertyName),
       isComponent: true,
       baseClass: analysis.baseClass,

@@ -278,7 +278,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     type BoundNode = BoundAttribute|BoundEvent|TextAttribute;
     const setAttributeBinding =
         (attribute: BoundNode, ioType: keyof Pick<DirectiveMeta, 'inputs'|'outputs'>) => {
-          const dir = directives.find(dir => dir[ioType].hasOwnProperty(attribute.name));
+          const dir = directives.find(dir => dir[ioType].hasBindingPropertyName(attribute.name));
           const binding = dir !== undefined ? dir : node;
           this.bindings.set(attribute, binding);
         };

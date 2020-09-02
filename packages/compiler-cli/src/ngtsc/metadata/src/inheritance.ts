@@ -7,8 +7,10 @@
  */
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, MetadataReader} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
+
+import {DirectiveMeta, MetadataReader} from './api';
+import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 /**
  * Given a reference to a directive, return a flattened version of its `DirectiveMeta` metadata
@@ -25,13 +27,13 @@ export function flattenInheritedDirectiveMetadata(
     throw new Error(`Metadata not found for directive: ${dir.debugName}`);
   }
 
-  let inputs: {[key: string]: string|[string, string]} = {};
-  let outputs: {[key: string]: string} = {};
-  const coercedInputFields = new Set<string>();
-  const undeclaredInputFields = new Set<string>();
-  const restrictedInputFields = new Set<string>();
-  const stringLiteralInputFields = new Set<string>();
+  const coercedInputFields = new Set<ClassPropertyName>();
+  const undeclaredInputFields = new Set<ClassPropertyName>();
+  const restrictedInputFields = new Set<ClassPropertyName>();
+  const stringLiteralInputFields = new Set<ClassPropertyName>();
   let isDynamic = false;
+  let inputs = ClassPropertyMapping.empty();
+  let outputs = ClassPropertyMapping.empty();
 
   const addMetadata = (meta: DirectiveMeta): void => {
     if (meta.baseClass === 'dynamic') {
@@ -45,8 +47,9 @@ export function flattenInheritedDirectiveMetadata(
         isDynamic = true;
       }
     }
-    inputs = {...inputs, ...meta.inputs};
-    outputs = {...outputs, ...meta.outputs};
+
+    inputs = ClassPropertyMapping.merge(inputs, meta.inputs);
+    outputs = ClassPropertyMapping.merge(outputs, meta.outputs);
 
     for (const coercedInputField of meta.coercedInputFields) {
       coercedInputFields.add(coercedInputField);

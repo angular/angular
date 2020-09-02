@@ -12,6 +12,7 @@ import {Reference} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
+import {ClassPropertyMapping} from './property_mapping';
 import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
 
 /**
@@ -76,7 +77,10 @@ export class DtsMetadataReader implements MetadataReader {
       return null;
     }
 
-    const inputs = readStringMapType(def.type.typeArguments[3]);
+    const inputs =
+        ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[3]));
+    const outputs =
+        ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[4]));
     return {
       ref,
       name: clazz.name.text,
@@ -84,7 +88,7 @@ export class DtsMetadataReader implements MetadataReader {
       selector: readStringType(def.type.typeArguments[1]),
       exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs,
-      outputs: readStringMapType(def.type.typeArguments[4]),
+      outputs,
       queries: readStringArrayType(def.type.typeArguments[5]),
       ...extractDirectiveTypeCheckMeta(clazz, inputs, this.reflector),
       baseClass: readBaseClass(clazz, this.checker, this.reflector),

@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
-import {DirectiveTypeCheckMeta} from '../../metadata';
+import {ClassPropertyMapping, DirectiveTypeCheckMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 
@@ -22,6 +22,8 @@ import {ClassDeclaration} from '../../reflection';
 export interface TypeCheckableDirectiveMeta extends DirectiveMeta, DirectiveTypeCheckMeta {
   ref: Reference<ClassDeclaration>;
   queries: string[];
+  inputs: ClassPropertyMapping;
+  outputs: ClassPropertyMapping;
 }
 
 export type TemplateId = string&{__brand: 'TemplateId'};

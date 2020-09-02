@@ -79,8 +79,8 @@ export class Environment {
         fnName,
         body: true,
         fields: {
-          inputs: Object.keys(dir.inputs),
-          outputs: Object.keys(dir.outputs),
+          inputs: dir.inputs.classPropertyNames,
+          outputs: dir.outputs.classPropertyNames,
           // TODO: support queries
           queries: dir.queries,
         },
