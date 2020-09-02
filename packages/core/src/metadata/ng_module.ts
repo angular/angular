@@ -337,6 +337,58 @@ export const NgModule: NgModuleDecorator = makeDecorator(
  *     appRef.bootstrap(AppComponent); // Or some other component
  *   }
  * }
+ *
+ * // A more advanced use case...
+ * // Bootstrap multiple elements on the same page.
+ * // Useful when partially replacing an existing frontend with Angular.
+ * // Found from ["Stackoverflow"](https://stackoverflow.com/a/49144150/5399323) and modified slightly.
+ * export class AppModule implements DoBootstrap {
+ *  constructor(private resolver: ComponentFactoryResolver) {}
+ *
+ *  ngDoBootstrap(appRef: ApplicationRef) {
+ *    entryComponents.forEach((component: any) => {
+ *      const factory = this.resolver.resolveComponentFactory(component);
+ *      let selectorName;
+ *      let elements;
+ *
+ *      // if selector is a class
+ *      if (factory.selector.startsWith('.')) {
+ *        selectorName = factory.selector.replace(/^\./, '');
+ *        elements = document.getElementsByClassName(selectorName);
+ *
+ *      // else assume selector is an element
+ *      } else {
+ *        selectorName = factory.selector;
+ *        elements = document.getElementsByTagName(selectorName);
+ *      }
+ *
+ *      // no elements found early return
+ *      if (elements.length === 0) {
+ *        return;
+ *      }
+ *
+ *      // more than one found, bootstrap unique instances
+ *      if (elements.length > 1) {
+ *        const originalSelector = factory.selector;
+ *
+ *        for (let i = 0; i < elements.length; i += 1) {
+ *          elements[i].id = selectorName + '_' + i;
+ *          // Setting the factory as any to allow assignment to the selector property
+ *          (factory as any).selector = '#' + elements[i].id;
+ *          appRef.bootstrap(factory);
+ *        }
+ *
+ *        // Setting the factory as any to allow assignment to the selector property
+ *        // and then setting the selector back to the original
+ *        (factory as any).selector = originalSelector;
+ *
+ *      // only single instance, bootstrap
+ *      } else {
+ *        appRef.bootstrap(factory);
+ *      }
+ *    });
+ *  }
+ * }
  * ```
  *
  * @publicApi
