@@ -56,7 +56,8 @@ class _TreeBuilder {
 
   build(): void {
     while (this._peek.type !== lex.TokenType.EOF) {
-      if (this._peek.type === lex.TokenType.TAG_OPEN_START) {
+      if (this._peek.type === lex.TokenType.TAG_OPEN_START ||
+          this._peek.type === lex.TokenType.INCOMPLETE_TAG_OPEN) {
         this._consumeStartTag(this._advance());
       } else if (this._peek.type === lex.TokenType.TAG_CLOSE) {
         this._consumeEndTag(this._advance());
@@ -233,8 +234,7 @@ class _TreeBuilder {
   }
 
   private _consumeStartTag(startTagToken: lex.Token) {
-    const prefix = startTagToken.parts[0];
-    const name = startTagToken.parts[1];
+    const [prefix, name] = startTagToken.parts;
     const attrs: html.Attribute[] = [];
     while (this._peek.type === lex.TokenType.ATTR_NAME) {
       attrs.push(this._consumeAttr(this._advance()));
@@ -267,6 +267,12 @@ class _TreeBuilder {
       // element start tag also represents the end tag.
       this._popElement(fullName, span);
     }
+    if (startTagToken.type === lex.TokenType.INCOMPLETE_TAG_OPEN) {
+      // We already know the opening tag is not complete, so it is unlikely it has a corresponding
+      // close tag. Let's optimistically parse it as a full element and emit an error.
+      this._popElement(fullName, null);
+      this.errors.push(TreeError.create(fullName, span, 'Opening tag not terminated.'));
+    }
   }
 
   private _pushElement(el: html.Element) {
@@ -295,7 +301,13 @@ class _TreeBuilder {
     }
   }
 
-  private _popElement(fullName: string, endSourceSpan: ParseSourceSpan): boolean {
+  /**
+   * Closes the nearest element with the tag name `fullName` in the parse tree.
+   * `endSourceSpan` is the span of the closing tag, or null if the element does
+   * not have a closing tag (for example, this happens when an incomplete
+   * opening tag is recovered).
+   */
+  private _popElement(fullName: string, endSourceSpan: ParseSourceSpan|null): boolean {
     for (let stackIndex = this._elementStack.length - 1; stackIndex >= 0; stackIndex--) {
       const el = this._elementStack[stackIndex];
       if (el.name == fullName) {
