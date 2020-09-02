@@ -6,16 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Element, ParseError, ParseErrorLevel, visitAll} from '@angular/compiler';
-import {ɵParsedTranslation} from '@angular/localize/private';
 import {extname} from 'path';
 
 import {Diagnostics} from '../../../diagnostics';
 import {BaseVisitor} from '../base_visitor';
-import {MessageSerializer} from '../message_serialization/message_serializer';
-import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
+import {serializeTranslationMessage} from './serialize_translation_message';
 import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {addParseDiagnostic, addParseError, canParseXml, getAttribute, parseInnerRange, XmlTranslationParserHint} from './translation_utils';
+import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAttribute, XmlTranslationParserHint} from './translation_utils';
 
 
 /**
@@ -103,14 +101,17 @@ class XtbVisitor extends BaseVisitor {
           return;
         }
 
-        const serializer = new MessageSerializer(
-            new TargetMessageRenderer(),
-            {inlineElements: [], placeholder: {elementName: 'ph', nameAttribute: 'name'}});
-        const translation =
-            serializeTranslationMessage(id, element, serializer, bundle.diagnostics);
-        if (translation !== null) {
+        const {translation, parseErrors, serializeErrors} = serializeTranslationMessage(
+            element, {inlineElements: [], placeholder: {elementName: 'ph', nameAttribute: 'name'}});
+        if (parseErrors.length) {
+          // We only want to warn (not error) if there were problems parsing the translation for
+          // XTB formatted files. See https://github.com/angular/angular/issues/14046.
+          bundle.diagnostics.warn(computeParseWarning(id, parseErrors));
+        } else if (translation !== null) {
+          // Only store the translation if there were no parse errors
           bundle.translations[id] = translation;
         }
+        addErrorsToBundle(bundle, serializeErrors);
         break;
 
       default:
@@ -121,25 +122,8 @@ class XtbVisitor extends BaseVisitor {
   }
 }
 
-/**
- * Serialize the given `element` into a parsed translation using the given `serializer`.
- */
-function serializeTranslationMessage(
-    id: string, element: Element, serializer: MessageSerializer<ɵParsedTranslation>,
-    diagnostics: Diagnostics): ɵParsedTranslation|null {
-  const {rootNodes, errors} = parseInnerRange(element);
-  if (errors.length) {
-    const msg = errors.map(e => e.toString()).join('\n');
-    diagnostics.warn(
-        `Could not parse message with id "${id}" - perhaps it has an unrecognised ICU format?\n` +
-        msg);
-    return null;
-  }
-
-  try {
-    return serializer.serialize(rootNodes);
-  } catch (e) {
-    addParseError(diagnostics, e);
-    return null;
-  }
+function computeParseWarning(id: string, errors: ParseError[]): string {
+  const msg = errors.map(e => e.toString()).join('\n');
+  return `Could not parse message with id "${id}" - perhaps it has an unrecognised ICU format?\n` +
+      msg;
 }

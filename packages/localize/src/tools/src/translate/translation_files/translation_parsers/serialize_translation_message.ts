@@ -8,22 +8,25 @@
 import {Element, ParseError} from '@angular/compiler';
 import {ɵParsedTranslation} from '@angular/localize';
 
-import {MessageSerializer} from '../message_serialization/message_serializer';
+import {MessageSerializer, MessageSerializerConfig} from '../message_serialization/message_serializer';
+import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
 import {parseInnerRange} from './translation_utils';
 
 /**
  * Serialize the given `element` into a parsed translation using the given `serializer`.
  */
-export function serializeTranslationMessage(
-    element: Element, serializer: MessageSerializer<ɵParsedTranslation>):
-    {translation: ɵParsedTranslation|null, errors: ParseError[]} {
-  const {rootNodes, errors} = parseInnerRange(element);
-  let translation: ɵParsedTranslation|null = null;
+export function serializeTranslationMessage(element: Element, config: MessageSerializerConfig): {
+  translation: ɵParsedTranslation|null,
+  parseErrors: ParseError[],
+  serializeErrors: ParseError[]
+} {
+  const {rootNodes, errors: parseErrors} = parseInnerRange(element);
   try {
-    translation = serializer.serialize(rootNodes);
+    const serializer = new MessageSerializer(new TargetMessageRenderer(), config);
+    const translation = serializer.serialize(rootNodes);
+    return {translation, parseErrors, serializeErrors: []};
   } catch (e) {
-    errors.push(e);
+    return {translation: null, parseErrors, serializeErrors: [e]};
   }
-  return {translation, errors};
 }

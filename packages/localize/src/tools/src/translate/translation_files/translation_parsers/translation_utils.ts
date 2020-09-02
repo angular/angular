@@ -10,7 +10,7 @@ import {Element, LexerRange, Node, ParseError, ParseErrorLevel, ParseSourceSpan,
 import {Diagnostics} from '../../../diagnostics';
 
 import {TranslationParseError} from './translation_parse_error';
-import {ParseAnalysis} from './translation_parser';
+import {ParseAnalysis, ParsedTranslationBundle} from './translation_parser';
 
 export function getAttrOrThrow(element: Element, attrName: string): string {
   const attrValue = getAttribute(element, attrName);
@@ -153,5 +153,14 @@ export function addParseError(diagnostics: Diagnostics, parseError: ParseError):
     diagnostics.error(parseError.toString());
   } else {
     diagnostics.warn(parseError.toString());
+  }
+}
+
+/**
+ * Add the provided `errors` to the `bundle` diagnostics.
+ */
+export function addErrorsToBundle(bundle: ParsedTranslationBundle, errors: ParseError[]): void {
+  for (const error of errors) {
+    addParseError(bundle.diagnostics, error);
   }
 }

@@ -13,7 +13,7 @@ import {getAttribute, getAttrOrThrow} from '../translation_parsers/translation_u
 
 import {MessageRenderer} from './message_renderer';
 
-interface MessageSerializerConfig {
+export interface MessageSerializerConfig {
   inlineElements: string[];
   placeholder?: {elementName: string; nameAttribute: string; bodyAttribute?: string;};
   placeholderContainer?: {elementName: string; startAttribute: string; endAttribute: string;};

@@ -9,12 +9,10 @@ import {Element, Node, ParseErrorLevel, visitAll} from '@angular/compiler';
 
 import {Diagnostics} from '../../../diagnostics';
 import {BaseVisitor} from '../base_visitor';
-import {MessageSerializer} from '../message_serialization/message_serializer';
-import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
 import {serializeTranslationMessage} from './serialize_translation_message';
 import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, XmlTranslationParserHint} from './translation_utils';
+import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, XmlTranslationParserHint} from './translation_utils';
 
 /**
  * A translation parser that can load translations from XLIFF 2 files.
@@ -141,19 +139,17 @@ class Xliff2TranslationVisitor extends BaseVisitor {
       return;
     }
 
-    const serializer = new MessageSerializer(new TargetMessageRenderer(), {
+    const {translation, parseErrors, serializeErrors} = serializeTranslationMessage(targetMessage, {
       inlineElements: ['cp', 'sc', 'ec', 'mrk', 'sm', 'em'],
       placeholder: {elementName: 'ph', nameAttribute: 'equiv', bodyAttribute: 'disp'},
       placeholderContainer:
           {elementName: 'pc', startAttribute: 'equivStart', endAttribute: 'equivEnd'}
     });
-    const {translation, errors} = serializeTranslationMessage(targetMessage, serializer);
     if (translation !== null) {
       bundle.translations[unit] = translation;
     }
-    for (const error of errors) {
-      addParseError(bundle.diagnostics, error);
-    }
+    addErrorsToBundle(bundle, parseErrors);
+    addErrorsToBundle(bundle, serializeErrors);
   }
 }
 
