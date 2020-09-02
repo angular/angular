@@ -7,7 +7,7 @@
  */
 
 import {Location, PopStateEvent} from '@angular/common';
-import {Compiler, Injectable, Injector, isDevMode, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
+import {Compiler, Injectable, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
 import {BehaviorSubject, EMPTY, Observable, of, Subject, SubscriptionLike} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';
 
@@ -1077,7 +1077,8 @@ export class Router {
       queryParamsHandling,
       preserveFragment
     } = navigationExtras;
-    if (isDevMode() && preserveQueryParams && <any>console && <any>console.warn) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && preserveQueryParams && <any>console &&
+        <any>console.warn) {
       console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
     }
     const a = relativeTo || this.routerState.root;
@@ -1131,7 +1132,8 @@ export class Router {
    */
   navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
-    if (isDevMode() && this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
+    if (typeof ngDevMode === 'undefined' ||
+        ngDevMode && this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
       this.console.warn(
           `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
     }
