@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, isDevMode, OnChanges, OnDestroy, Renderer2, SimpleChanges} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
 import {QueryParamsHandling} from '../config';
@@ -206,7 +206,7 @@ export class RouterLink implements OnChanges {
    */
   @Input()
   set preserveQueryParams(value: boolean) {
-    if (isDevMode() && <any>console && <any>console.warn) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && <any>console && <any>console.warn) {
       console.warn('preserveQueryParams is deprecated!, use queryParamsHandling instead.');
     }
     this.preserve = value;
@@ -342,7 +342,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
    */
   @Input()
   set preserveQueryParams(value: boolean) {
-    if (isDevMode() && <any>console && <any>console.warn) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && <any>console && <any>console.warn) {
       console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
     }
     this.preserve = value;
