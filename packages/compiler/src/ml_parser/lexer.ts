@@ -17,6 +17,7 @@ export enum TokenType {
   TAG_OPEN_END,
   TAG_OPEN_END_VOID,
   TAG_CLOSE,
+  INCOMPLETE_TAG_OPEN,
   TEXT,
   ESCAPABLE_RAW_TEXT,
   RAW_TEXT,
@@ -511,8 +512,6 @@ class _Tokenizer {
     let tagName: string;
     let prefix: string;
     let openTagToken: Token|undefined;
-    let tokensBeforeTagOpen = this.tokens.length;
-    const innerStart = this._cursor.clone();
     try {
       if (!chars.isAsciiLetter(this._cursor.peek())) {
         throw this._createError(
@@ -523,7 +522,8 @@ class _Tokenizer {
       prefix = openTagToken.parts[0];
       tagName = openTagToken.parts[1];
       this._attemptCharCodeUntilFn(isNotWhitespace);
-      while (this._cursor.peek() !== chars.$SLASH && this._cursor.peek() !== chars.$GT) {
+      while (this._cursor.peek() !== chars.$SLASH && this._cursor.peek() !== chars.$GT &&
+             this._cursor.peek() !== chars.$LT) {
         this._consumeAttributeName();
         this._attemptCharCodeUntilFn(isNotWhitespace);
         if (this._attemptCharCode(chars.$EQ)) {
@@ -535,14 +535,15 @@ class _Tokenizer {
       this._consumeTagOpenEnd();
     } catch (e) {
       if (e instanceof _ControlFlowError) {
-        // When the start tag is invalid (including invalid "attributes"), assume we want a "<"
-        this._cursor = innerStart;
         if (openTagToken) {
-          this.tokens.length = tokensBeforeTagOpen;
+          // We errored before we could close the opening tag, so it is incomplete.
+          openTagToken.type = TokenType.INCOMPLETE_TAG_OPEN;
+        } else {
+          // When the start tag is invalid, assume we want a "<" as text.
+          // Back to back text tokens are merged at the end.
+          this._beginToken(TokenType.TEXT, start);
+          this._endToken(['<']);
         }
-        // Back to back text tokens are merged at the end
-        this._beginToken(TokenType.TEXT, start);
-        this._endToken(['<']);
         return;
       }
 
@@ -772,8 +773,8 @@ function isNotWhitespace(code: number): boolean {
 }
 
 function isNameEnd(code: number): boolean {
-  return chars.isWhitespace(code) || code === chars.$GT || code === chars.$SLASH ||
-      code === chars.$SQ || code === chars.$DQ || code === chars.$EQ;
+  return chars.isWhitespace(code) || code === chars.$GT || code === chars.$LT ||
+      code === chars.$SLASH || code === chars.$SQ || code === chars.$DQ || code === chars.$EQ;
 }
 
 function isPrefixEnd(code: number): boolean {

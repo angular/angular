@@ -11,7 +11,7 @@ import {HtmlParser, ParseTreeResult, TreeError} from '../../src/ml_parser/html_p
 import {TokenType} from '../../src/ml_parser/lexer';
 import {ParseError} from '../../src/parse_util';
 
-import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spec_utils';
+import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} from './ast_spec_utils';
 
 {
   describe('HtmlParser', () => {
@@ -622,7 +622,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
               `{a, select, b {foo} % { bar {% bar}}`, 'TestComp', {tokenizeExpansionForms: true});
           expect(humanizeErrors(p.errors)).toEqual([
             [
-              6,
+              TokenType.RAW_TEXT,
               'Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ \'{\' }}") to escape it.)',
               '0:36'
             ],
@@ -840,14 +840,66 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
           ]]);
         });
 
-        it('should report subsequent open tags without proper close tag', () => {
-          const errors = parser.parse('<div</div>', 'TestComp').errors;
-          expect(errors.length).toEqual(1);
-          expect(humanizeErrors(errors)).toEqual([[
-            'div',
-            'Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
-            '0:4'
-          ]]);
+        describe('incomplete element tag', () => {
+          it('should parse and report incomplete tags after the tag name', () => {
+            const {errors, rootNodes} = parser.parse('<div<span><div  </span>', 'TestComp');
+
+            expect(humanizeNodes(rootNodes, true)).toEqual([
+              [html.Element, 'div', 0, '<div', '<div', null],
+              [html.Element, 'span', 0, '<span><div  </span>', '<span>', '</span>'],
+              [html.Element, 'div', 1, '<div  ', '<div  ', null],
+            ]);
+
+            expect(humanizeErrors(errors)).toEqual([
+              ['div', 'Opening tag "div" not terminated.', '0:0'],
+              ['div', 'Opening tag "div" not terminated.', '0:10'],
+            ]);
+          });
+
+          it('should parse and report incomplete tags after attribute', () => {
+            const {errors, rootNodes} =
+                parser.parse('<div class="hi" sty<span></span>', 'TestComp');
+
+            expect(humanizeNodes(rootNodes, true)).toEqual([
+              [html.Element, 'div', 0, '<div class="hi" sty', '<div class="hi" sty', null],
+              [html.Attribute, 'class', 'hi', 'class="hi"'],
+              [html.Attribute, 'sty', '', 'sty'],
+              [html.Element, 'span', 0, '<span></span>', '<span>', '</span>'],
+            ]);
+
+            expect(humanizeErrors(errors)).toEqual([
+              ['div', 'Opening tag "div" not terminated.', '0:0'],
+            ]);
+          });
+
+          it('should parse and report incomplete tags after quote', () => {
+            const {errors, rootNodes} = parser.parse('<div "<span></span>', 'TestComp');
+
+            expect(humanizeNodes(rootNodes, true)).toEqual([
+              [html.Element, 'div', 0, '<div ', '<div ', null],
+              [html.Text, '"', 0, '"'],
+              [html.Element, 'span', 0, '<span></span>', '<span>', '</span>'],
+            ]);
+
+            expect(humanizeErrors(errors)).toEqual([
+              ['div', 'Opening tag "div" not terminated.', '0:0'],
+            ]);
+          });
+
+          it('should report subsequent open tags without proper close tag', () => {
+            const errors = parser.parse('<div</div>', 'TestComp').errors;
+            expect(errors.length).toEqual(2);
+            expect(humanizeErrors(errors)).toEqual([
+              ['div', 'Opening tag "div" not terminated.', '0:0'],
+              // TODO(ayazhafiz): the following error is unnecessary and can be pruned if we keep
+              // track of the incomplete tag names.
+              [
+                'div',
+                'Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
+                '0:4'
+              ]
+            ]);
+          });
         });
 
         it('should report closing tag for void elements', () => {

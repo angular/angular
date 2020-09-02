@@ -56,7 +56,8 @@ class _TreeBuilder {
 
   build(): void {
     while (this._peek.type !== lex.TokenType.EOF) {
-      if (this._peek.type === lex.TokenType.TAG_OPEN_START) {
+      if (this._peek.type === lex.TokenType.TAG_OPEN_START ||
+          this._peek.type === lex.TokenType.INCOMPLETE_TAG_OPEN) {
         this._consumeStartTag(this._advance());
       } else if (this._peek.type === lex.TokenType.TAG_CLOSE) {
         this._consumeEndTag(this._advance());
@@ -233,8 +234,7 @@ class _TreeBuilder {
   }
 
   private _consumeStartTag(startTagToken: lex.Token) {
-    const prefix = startTagToken.parts[0];
-    const name = startTagToken.parts[1];
+    const [prefix, name] = startTagToken.parts;
     const attrs: html.Attribute[] = [];
     while (this._peek.type === lex.TokenType.ATTR_NAME) {
       attrs.push(this._consumeAttr(this._advance()));
@@ -266,6 +266,12 @@ class _TreeBuilder {
       // Elements that are self-closed have their `endSourceSpan` set to the full span, as the
       // element start tag also represents the end tag.
       this._popElement(fullName, span);
+    } else if (startTagToken.type === lex.TokenType.INCOMPLETE_TAG_OPEN) {
+      // We already know the opening tag is not complete, so it is unlikely it has a corresponding
+      // close tag. Let's optimistically parse it as a full element and emit an error.
+      this._popElement(fullName, null);
+      this.errors.push(
+          TreeError.create(fullName, span, `Opening tag "${fullName}" not terminated.`));
     }
   }
 
@@ -295,7 +301,13 @@ class _TreeBuilder {
     }
   }
 
-  private _popElement(fullName: string, endSourceSpan: ParseSourceSpan): boolean {
+  /**
+   * Closes the nearest element with the tag name `fullName` in the parse tree.
+   * `endSourceSpan` is the span of the closing tag, or null if the element does
+   * not have a closing tag (for example, this happens when an incomplete
+   * opening tag is recovered).
+   */
+  private _popElement(fullName: string, endSourceSpan: ParseSourceSpan|null): boolean {
     for (let stackIndex = this._elementStack.length - 1; stackIndex >= 0; stackIndex--) {
       const el = this._elementStack[stackIndex];
       if (el.name == fullName) {
@@ -303,7 +315,7 @@ class _TreeBuilder {
         // removed from the element stack at this point are closed implicitly, so they won't get
         // an end source span (as there is no explicit closing element).
         el.endSourceSpan = endSourceSpan;
-        el.sourceSpan.end = endSourceSpan.end || el.sourceSpan.end;
+        el.sourceSpan.end = endSourceSpan !== null ? endSourceSpan.end : el.sourceSpan.end;
 
         this._elementStack.splice(stackIndex, this._elementStack.length - stackIndex);
         return true;
