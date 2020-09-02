@@ -1,0 +1,2075 @@
+[
+  {
+    "name": "ALLOW_MULTIPLE_PLATFORMS"
+  },
+  {
+    "name": "ANALYZE_FOR_ENTRY_COMPONENTS"
+  },
+  {
+    "name": "APPLICATION_MODULE_PROVIDERS"
+  },
+  {
+    "name": "APP_BASE_HREF"
+  },
+  {
+    "name": "APP_BOOTSTRAP_LISTENER"
+  },
+  {
+    "name": "APP_ID"
+  },
+  {
+    "name": "APP_ID_RANDOM_PROVIDER"
+  },
+  {
+    "name": "APP_INITIALIZER"
+  },
+  {
+    "name": "AbsoluteRedirect"
+  },
+  {
+    "name": "ActivateRoutes"
+  },
+  {
+    "name": "ActivatedRoute"
+  },
+  {
+    "name": "ActivatedRouteSnapshot"
+  },
+  {
+    "name": "ActivationEnd"
+  },
+  {
+    "name": "ActivationStart"
+  },
+  {
+    "name": "AnonymousSubject"
+  },
+  {
+    "name": "ApplicationInitStatus"
+  },
+  {
+    "name": "ApplicationModule"
+  },
+  {
+    "name": "ApplicationRef"
+  },
+  {
+    "name": "ApplyRedirects"
+  },
+  {
+    "name": "ArgumentOutOfRangeError"
+  },
+  {
+    "name": "BROWSER_MODULE_PROVIDERS"
+  },
+  {
+    "name": "BehaviorSubject"
+  },
+  {
+    "name": "BrowserDomAdapter"
+  },
+  {
+    "name": "BrowserGetTestability"
+  },
+  {
+    "name": "BrowserModule"
+  },
+  {
+    "name": "BrowserPlatformLocation"
+  },
+  {
+    "name": "BrowserViewportScroller"
+  },
+  {
+    "name": "CIRCULAR"
+  },
+  {
+    "name": "CLEAN_PROMISE"
+  },
+  {
+    "name": "COMPONENT_REGEX"
+  },
+  {
+    "name": "CanActivate"
+  },
+  {
+    "name": "CanDeactivate"
+  },
+  {
+    "name": "CatchOperator"
+  },
+  {
+    "name": "CatchSubscriber"
+  },
+  {
+    "name": "ChangeDetectionStrategy"
+  },
+  {
+    "name": "ChangeDetectorRef"
+  },
+  {
+    "name": "ChildActivationEnd"
+  },
+  {
+    "name": "ChildActivationStart"
+  },
+  {
+    "name": "ChildrenOutletContexts"
+  },
+  {
+    "name": "CombineLatestOperator"
+  },
+  {
+    "name": "CombineLatestSubscriber"
+  },
+  {
+    "name": "CommonModule"
+  },
+  {
+    "name": "Compiler"
+  },
+  {
+    "name": "Compiler_compileModuleAndAllComponentsAsync"
+  },
+  {
+    "name": "Compiler_compileModuleAndAllComponentsSync"
+  },
+  {
+    "name": "Compiler_compileModuleAndAllComponentsSync__POST_R3__"
+  },
+  {
+    "name": "Compiler_compileModuleAsync"
+  },
+  {
+    "name": "Compiler_compileModuleSync"
+  },
+  {
+    "name": "Compiler_compileModuleSync__POST_R3__"
+  },
+  {
+    "name": "ComponentFactory"
+  },
+  {
+    "name": "ComponentFactory"
+  },
+  {
+    "name": "ComponentFactoryResolver"
+  },
+  {
+    "name": "ComponentFactoryResolver"
+  },
+  {
+    "name": "ComponentRef"
+  },
+  {
+    "name": "ConnectableObservable"
+  },
+  {
+    "name": "ConnectableSubscriber"
+  },
+  {
+    "name": "Console"
+  },
+  {
+    "name": "DATA_URL_PATTERN"
+  },
+  {
+    "name": "DEFAULT_CONFIG"
+  },
+  {
+    "name": "DEFAULT_CURRENCY_CODE"
+  },
+  {
+    "name": "DEFAULT_SERIALIZER"
+  },
+  {
+    "name": "DOCUMENT"
+  },
+  {
+    "name": "DOCUMENT"
+  },
+  {
+    "name": "DefaultDomRenderer2"
+  },
+  {
+    "name": "DefaultIfEmptyOperator"
+  },
+  {
+    "name": "DefaultIfEmptySubscriber"
+  },
+  {
+    "name": "DefaultIterableDiffer"
+  },
+  {
+    "name": "DefaultIterableDifferFactory"
+  },
+  {
+    "name": "DefaultKeyValueDiffer"
+  },
+  {
+    "name": "DefaultKeyValueDifferFactory"
+  },
+  {
+    "name": "DefaultRouteReuseStrategy"
+  },
+  {
+    "name": "DefaultUrlHandlingStrategy"
+  },
+  {
+    "name": "DefaultUrlSerializer"
+  },
+  {
+    "name": "DoOperator"
+  },
+  {
+    "name": "DomEventsPlugin"
+  },
+  {
+    "name": "DomRendererFactory2"
+  },
+  {
+    "name": "DomSharedStylesHost"
+  },
+  {
+    "name": "EMPTY"
+  },
+  {
+    "name": "EMPTY_ARRAY"
+  },
+  {
+    "name": "EMPTY_ARRAY"
+  },
+  {
+    "name": "EMPTY_OBJ"
+  },
+  {
+    "name": "EMPTY_PAYLOAD"
+  },
+  {
+    "name": "EVENT_MANAGER_PLUGINS"
+  },
+  {
+    "name": "ElementRef"
+  },
+  {
+    "name": "EmptyError"
+  },
+  {
+    "name": "EmulatedEncapsulationDomRenderer2"
+  },
+  {
+    "name": "ErrorHandler"
+  },
+  {
+    "name": "EventEmitter"
+  },
+  {
+    "name": "EventManager"
+  },
+  {
+    "name": "EventManagerPlugin"
+  },
+  {
+    "name": "FilterOperator"
+  },
+  {
+    "name": "FilterSubscriber"
+  },
+  {
+    "name": "FinallyOperator"
+  },
+  {
+    "name": "FinallySubscriber"
+  },
+  {
+    "name": "GuardsCheckEnd"
+  },
+  {
+    "name": "GuardsCheckStart"
+  },
+  {
+    "name": "HashLocationStrategy"
+  },
+  {
+    "name": "INITIAL_VALUE"
+  },
+  {
+    "name": "INJECTOR"
+  },
+  {
+    "name": "INJECTOR_IMPL"
+  },
+  {
+    "name": "INJECTOR_SCOPE"
+  },
+  {
+    "name": "Inject"
+  },
+  {
+    "name": "InjectFlags"
+  },
+  {
+    "name": "InjectionToken"
+  },
+  {
+    "name": "Injector"
+  },
+  {
+    "name": "InnerSubscriber"
+  },
+  {
+    "name": "ItemComponent"
+  },
+  {
+    "name": "IterableChangeRecord_"
+  },
+  {
+    "name": "IterableDiffers"
+  },
+  {
+    "name": "KeyEventsPlugin"
+  },
+  {
+    "name": "KeyValueChangeRecord_"
+  },
+  {
+    "name": "KeyValueDiffers"
+  },
+  {
+    "name": "LOCALE_DATA"
+  },
+  {
+    "name": "LOCALE_ID"
+  },
+  {
+    "name": "LOCALE_ID"
+  },
+  {
+    "name": "LOCATION_INITIALIZED"
+  },
+  {
+    "name": "LQueries_"
+  },
+  {
+    "name": "LQuery_"
+  },
+  {
+    "name": "LifecycleHooksFeature"
+  },
+  {
+    "name": "ListComponent"
+  },
+  {
+    "name": "LoadedRouterConfig"
+  },
+  {
+    "name": "LocaleDataIndex"
+  },
+  {
+    "name": "Location"
+  },
+  {
+    "name": "LocationStrategy"
+  },
+  {
+    "name": "MODIFIER_KEYS"
+  },
+  {
+    "name": "MODIFIER_KEY_GETTERS"
+  },
+  {
+    "name": "MapOperator"
+  },
+  {
+    "name": "MapSubscriber"
+  },
+  {
+    "name": "MergeMapOperator"
+  },
+  {
+    "name": "MergeMapSubscriber"
+  },
+  {
+    "name": "ModuleWithComponentFactories"
+  },
+  {
+    "name": "NAMESPACE_URIS"
+  },
+  {
+    "name": "NEW_LINE"
+  },
+  {
+    "name": "NG_COMP_DEF"
+  },
+  {
+    "name": "NG_DIR_DEF"
+  },
+  {
+    "name": "NG_ELEMENT_ID"
+  },
+  {
+    "name": "NG_FACTORY_DEF"
+  },
+  {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
+    "name": "NG_INJECTOR_DEF"
+  },
+  {
+    "name": "NG_INJ_DEF"
+  },
+  {
+    "name": "NG_LOC_ID_DEF"
+  },
+  {
+    "name": "NG_MOD_DEF"
+  },
+  {
+    "name": "NG_PIPE_DEF"
+  },
+  {
+    "name": "NG_PROV_DEF"
+  },
+  {
+    "name": "NG_PROV_DEF_FALLBACK"
+  },
+  {
+    "name": "NONE"
+  },
+  {
+    "name": "NOT_FOUND"
+  },
+  {
+    "name": "NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR"
+  },
+  {
+    "name": "NOT_YET"
+  },
+  {
+    "name": "NO_CHANGE"
+  },
+  {
+    "name": "NULL_INJECTOR"
+  },
+  {
+    "name": "Navigation"
+  },
+  {
+    "name": "NavigationCancel"
+  },
+  {
+    "name": "NavigationEnd"
+  },
+  {
+    "name": "NavigationError"
+  },
+  {
+    "name": "NavigationStart"
+  },
+  {
+    "name": "NgLocaleLocalization"
+  },
+  {
+    "name": "NgLocalization"
+  },
+  {
+    "name": "NgModuleFactory"
+  },
+  {
+    "name": "NgModuleFactory"
+  },
+  {
+    "name": "NgModuleFactoryLoader"
+  },
+  {
+    "name": "NgModuleRef"
+  },
+  {
+    "name": "NgModuleRef"
+  },
+  {
+    "name": "NgOnChangesFeatureImpl"
+  },
+  {
+    "name": "NgProbeToken"
+  },
+  {
+    "name": "NgZone"
+  },
+  {
+    "name": "NoMatch"
+  },
+  {
+    "name": "NoMatch"
+  },
+  {
+    "name": "NoPreloading"
+  },
+  {
+    "name": "NodeInjector"
+  },
+  {
+    "name": "NodeInjectorFactory"
+  },
+  {
+    "name": "NoopNgZone"
+  },
+  {
+    "name": "NullInjector"
+  },
+  {
+    "name": "ObjectUnsubscribedError"
+  },
+  {
+    "name": "Observable"
+  },
+  {
+    "name": "Optional"
+  },
+  {
+    "name": "OuterSubscriber"
+  },
+  {
+    "name": "OutletContext"
+  },
+  {
+    "name": "OutletInjector"
+  },
+  {
+    "name": "PLATFORM_ID"
+  },
+  {
+    "name": "PLATFORM_INITIALIZER"
+  },
+  {
+    "name": "ParamsAsMap"
+  },
+  {
+    "name": "PathLocationStrategy"
+  },
+  {
+    "name": "PlatformLocation"
+  },
+  {
+    "name": "PlatformRef"
+  },
+  {
+    "name": "Plural"
+  },
+  {
+    "name": "Position"
+  },
+  {
+    "name": "PreloadingStrategy"
+  },
+  {
+    "name": "QUERY_PARAM_RE"
+  },
+  {
+    "name": "QUERY_PARAM_VALUE_RE"
+  },
+  {
+    "name": "QueryList"
+  },
+  {
+    "name": "R3Injector"
+  },
+  {
+    "name": "ROUTER_CONFIGURATION"
+  },
+  {
+    "name": "ROUTER_FORROOT_GUARD"
+  },
+  {
+    "name": "ROUTER_INITIALIZER"
+  },
+  {
+    "name": "ROUTER_PROVIDERS"
+  },
+  {
+    "name": "ROUTES"
+  },
+  {
+    "name": "ROUTES"
+  },
+  {
+    "name": "Recognizer"
+  },
+  {
+    "name": "RefCountOperator"
+  },
+  {
+    "name": "RefCountSubscriber"
+  },
+  {
+    "name": "Renderer2"
+  },
+  {
+    "name": "RendererFactory2"
+  },
+  {
+    "name": "RendererStyleFlags2"
+  },
+  {
+    "name": "ResolveEnd"
+  },
+  {
+    "name": "ResolveStart"
+  },
+  {
+    "name": "RootComponent"
+  },
+  {
+    "name": "RootViewRef"
+  },
+  {
+    "name": "RouteConfigLoadEnd"
+  },
+  {
+    "name": "RouteConfigLoadStart"
+  },
+  {
+    "name": "RouteExampleModule"
+  },
+  {
+    "name": "Router"
+  },
+  {
+    "name": "RouterConfigLoader"
+  },
+  {
+    "name": "RouterEvent"
+  },
+  {
+    "name": "RouterInitializer"
+  },
+  {
+    "name": "RouterLink"
+  },
+  {
+    "name": "RouterLinkActive"
+  },
+  {
+    "name": "RouterLinkWithHref"
+  },
+  {
+    "name": "RouterModule"
+  },
+  {
+    "name": "RouterOutlet"
+  },
+  {
+    "name": "RouterPreloader"
+  },
+  {
+    "name": "RouterScroller"
+  },
+  {
+    "name": "RouterState"
+  },
+  {
+    "name": "RouterStateSnapshot"
+  },
+  {
+    "name": "RoutesRecognized"
+  },
+  {
+    "name": "SAFE_URL_PATTERN"
+  },
+  {
+    "name": "SCHEDULER"
+  },
+  {
+    "name": "SEGMENT_RE"
+  },
+  {
+    "name": "SERVER_TRANSITION_PROVIDERS"
+  },
+  {
+    "name": "SWITCH_CHANGE_DETECTOR_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_RENDERER2_FACTORY"
+  },
+  {
+    "name": "SWITCH_TEMPLATE_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
+  },
+  {
+    "name": "SafeSubscriber"
+  },
+  {
+    "name": "SafeValueImpl"
+  },
+  {
+    "name": "Sanitizer"
+  },
+  {
+    "name": "ScanOperator"
+  },
+  {
+    "name": "ScanSubscriber"
+  },
+  {
+    "name": "Scroll"
+  },
+  {
+    "name": "SecurityContext"
+  },
+  {
+    "name": "Self"
+  },
+  {
+    "name": "ShadowDomRenderer"
+  },
+  {
+    "name": "SharedStylesHost"
+  },
+  {
+    "name": "SimpleChange"
+  },
+  {
+    "name": "SkipSelf"
+  },
+  {
+    "name": "Subject"
+  },
+  {
+    "name": "SubjectSubscriber"
+  },
+  {
+    "name": "SubjectSubscription"
+  },
+  {
+    "name": "Subscriber"
+  },
+  {
+    "name": "Subscription"
+  },
+  {
+    "name": "SwitchMapOperator"
+  },
+  {
+    "name": "SwitchMapSubscriber"
+  },
+  {
+    "name": "SystemJsNgModuleLoader"
+  },
+  {
+    "name": "SystemJsNgModuleLoaderConfig"
+  },
+  {
+    "name": "THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "TQueries_"
+  },
+  {
+    "name": "TQueryMetadata_"
+  },
+  {
+    "name": "TQuery_"
+  },
+  {
+    "name": "TRANSITION_ID"
+  },
+  {
+    "name": "TakeLastOperator"
+  },
+  {
+    "name": "TakeLastSubscriber"
+  },
+  {
+    "name": "TakeOperator"
+  },
+  {
+    "name": "TakeSubscriber"
+  },
+  {
+    "name": "TapSubscriber"
+  },
+  {
+    "name": "TemplateRef"
+  },
+  {
+    "name": "Testability"
+  },
+  {
+    "name": "TestabilityRegistry"
+  },
+  {
+    "name": "ThrowIfEmptyOperator"
+  },
+  {
+    "name": "ThrowIfEmptySubscriber"
+  },
+  {
+    "name": "Tree"
+  },
+  {
+    "name": "TreeNode"
+  },
+  {
+    "name": "USE_VALUE"
+  },
+  {
+    "name": "UnsubscriptionError"
+  },
+  {
+    "name": "UrlParser"
+  },
+  {
+    "name": "UrlSegment"
+  },
+  {
+    "name": "UrlSegmentGroup"
+  },
+  {
+    "name": "UrlSerializer"
+  },
+  {
+    "name": "UrlTree"
+  },
+  {
+    "name": "VERSION"
+  },
+  {
+    "name": "Version"
+  },
+  {
+    "name": "ViewContainerRef"
+  },
+  {
+    "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewRef"
+  },
+  {
+    "name": "ViewportScroller"
+  },
+  {
+    "name": "_DOM"
+  },
+  {
+    "name": "_DuplicateItemRecordList"
+  },
+  {
+    "name": "_DuplicateMap"
+  },
+  {
+    "name": "_NoopGetTestability"
+  },
+  {
+    "name": "_NullComponentFactoryResolver"
+  },
+  {
+    "name": "__extends"
+  },
+  {
+    "name": "__forward_ref__"
+  },
+  {
+    "name": "__global"
+  },
+  {
+    "name": "__globalThis"
+  },
+  {
+    "name": "__self"
+  },
+  {
+    "name": "__window"
+  },
+  {
+    "name": "_chromeNumKeyPadMap"
+  },
+  {
+    "name": "_currentInjector"
+  },
+  {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
+    "name": "_global"
+  },
+  {
+    "name": "_keyMap"
+  },
+  {
+    "name": "_randomChar"
+  },
+  {
+    "name": "_renderCompCount"
+  },
+  {
+    "name": "_stripIndexHtml"
+  },
+  {
+    "name": "_symbolIterator"
+  },
+  {
+    "name": "_testabilityGetter"
+  },
+  {
+    "name": "absoluteRedirect"
+  },
+  {
+    "name": "addComponentLogic"
+  },
+  {
+    "name": "addHostBindingsToExpandoInstructions"
+  },
+  {
+    "name": "addRemoveViewFromContainer"
+  },
+  {
+    "name": "addToArray"
+  },
+  {
+    "name": "addToViewTree"
+  },
+  {
+    "name": "advanceActivatedRoute"
+  },
+  {
+    "name": "advanceActivatedRouteNodeAndItsChildren"
+  },
+  {
+    "name": "allocLFrame"
+  },
+  {
+    "name": "appendChild"
+  },
+  {
+    "name": "applyNodes"
+  },
+  {
+    "name": "applyProjectionRecursive"
+  },
+  {
+    "name": "applyToElementOrContainer"
+  },
+  {
+    "name": "applyView"
+  },
+  {
+    "name": "attachPatchData"
+  },
+  {
+    "name": "attrBoolValue"
+  },
+  {
+    "name": "autoRegisterModuleById"
+  },
+  {
+    "name": "baseElement"
+  },
+  {
+    "name": "baseResolveDirective"
+  },
+  {
+    "name": "bindingUpdated"
+  },
+  {
+    "name": "bloomHasToken"
+  },
+  {
+    "name": "callHook"
+  },
+  {
+    "name": "callHooks"
+  },
+  {
+    "name": "catchError"
+  },
+  {
+    "name": "checkNotEmpty"
+  },
+  {
+    "name": "checkStable"
+  },
+  {
+    "name": "classIndexOf"
+  },
+  {
+    "name": "cleanUpView"
+  },
+  {
+    "name": "compare"
+  },
+  {
+    "name": "computeStaticStyling"
+  },
+  {
+    "name": "concat"
+  },
+  {
+    "name": "concatAll"
+  },
+  {
+    "name": "concatMap"
+  },
+  {
+    "name": "concatStringsWithSpace"
+  },
+  {
+    "name": "config"
+  },
+  {
+    "name": "connectableObservableDescriptor"
+  },
+  {
+    "name": "containsTree"
+  },
+  {
+    "name": "convertToParamMap"
+  },
+  {
+    "name": "createBrowserPlatformLocation"
+  },
+  {
+    "name": "createContainerRef"
+  },
+  {
+    "name": "createElementRef"
+  },
+  {
+    "name": "createEmptyState"
+  },
+  {
+    "name": "createInjectorWithoutInjectorInstances"
+  },
+  {
+    "name": "createLFrame"
+  },
+  {
+    "name": "createLView"
+  },
+  {
+    "name": "createLocation"
+  },
+  {
+    "name": "createNewSegmentChildren"
+  },
+  {
+    "name": "createNewSegmentGroup"
+  },
+  {
+    "name": "createPlatformFactory"
+  },
+  {
+    "name": "createResultForNode"
+  },
+  {
+    "name": "createRouterScroller"
+  },
+  {
+    "name": "createTNode"
+  },
+  {
+    "name": "createTView"
+  },
+  {
+    "name": "createTemplateRef"
+  },
+  {
+    "name": "deactivateRouteAndItsChildren"
+  },
+  {
+    "name": "decode"
+  },
+  {
+    "name": "decodeQuery"
+  },
+  {
+    "name": "decoratePreventDefault"
+  },
+  {
+    "name": "deepForEach"
+  },
+  {
+    "name": "defaultErrorFactory"
+  },
+  {
+    "name": "defaultErrorHandler"
+  },
+  {
+    "name": "defaultErrorLogger"
+  },
+  {
+    "name": "defaultIfEmpty"
+  },
+  {
+    "name": "defaultIterableDiffers"
+  },
+  {
+    "name": "defaultKeyValueDiffers"
+  },
+  {
+    "name": "defaultMalformedUriErrorHandler"
+  },
+  {
+    "name": "defaultRouterHook"
+  },
+  {
+    "name": "defaultScheduler"
+  },
+  {
+    "name": "defaultUrlMatcher"
+  },
+  {
+    "name": "defer"
+  },
+  {
+    "name": "destroyLView"
+  },
+  {
+    "name": "detachMovedView"
+  },
+  {
+    "name": "detachView"
+  },
+  {
+    "name": "detectChangesInRootView"
+  },
+  {
+    "name": "detectChangesInternal"
+  },
+  {
+    "name": "diPublicInInjector"
+  },
+  {
+    "name": "domRendererFactory3"
+  },
+  {
+    "name": "elementCreate"
+  },
+  {
+    "name": "empty"
+  },
+  {
+    "name": "empty"
+  },
+  {
+    "name": "emptyPathMatch"
+  },
+  {
+    "name": "encodeUriQuery"
+  },
+  {
+    "name": "encodeUriSegment"
+  },
+  {
+    "name": "encodeUriString"
+  },
+  {
+    "name": "enterDI"
+  },
+  {
+    "name": "enterView"
+  },
+  {
+    "name": "equalArraysOrString"
+  },
+  {
+    "name": "equalParamsAndUrlSegments"
+  },
+  {
+    "name": "equalPath"
+  },
+  {
+    "name": "executeCheckHooks"
+  },
+  {
+    "name": "executeInitAndCheckHooks"
+  },
+  {
+    "name": "executeListenerWithErrorHandling"
+  },
+  {
+    "name": "executeTemplate"
+  },
+  {
+    "name": "executeViewQueryFn"
+  },
+  {
+    "name": "extendStatics"
+  },
+  {
+    "name": "extractDirectiveDef"
+  },
+  {
+    "name": "extractPipeDef"
+  },
+  {
+    "name": "filter"
+  },
+  {
+    "name": "findAttrIndexInNode"
+  },
+  {
+    "name": "findNode"
+  },
+  {
+    "name": "findPath"
+  },
+  {
+    "name": "fireActivationStart"
+  },
+  {
+    "name": "fireChildActivationStart"
+  },
+  {
+    "name": "first"
+  },
+  {
+    "name": "flatten"
+  },
+  {
+    "name": "flattenStyles"
+  },
+  {
+    "name": "flattenUnsubscriptionErrors"
+  },
+  {
+    "name": "forEach"
+  },
+  {
+    "name": "forwardRef"
+  },
+  {
+    "name": "from"
+  },
+  {
+    "name": "fromArray"
+  },
+  {
+    "name": "generateExpandoInstructionBlock"
+  },
+  {
+    "name": "generateInitialInputs"
+  },
+  {
+    "name": "generatePropertyAliases"
+  },
+  {
+    "name": "getAllRouteGuards"
+  },
+  {
+    "name": "getAppInitializer"
+  },
+  {
+    "name": "getBeforeNodeForView"
+  },
+  {
+    "name": "getBootstrapListener"
+  },
+  {
+    "name": "getCheckNoChangesMode"
+  },
+  {
+    "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getComponentDef"
+  },
+  {
+    "name": "getComponentLViewByIndex"
+  },
+  {
+    "name": "getConstant"
+  },
+  {
+    "name": "getContainerRenderParent"
+  },
+  {
+    "name": "getCurrentQueryIndex"
+  },
+  {
+    "name": "getDOM"
+  },
+  {
+    "name": "getData"
+  },
+  {
+    "name": "getDebugContext"
+  },
+  {
+    "name": "getFactoryDef"
+  },
+  {
+    "name": "getFirstLContainer"
+  },
+  {
+    "name": "getFullPath"
+  },
+  {
+    "name": "getIdxOfMatchingSelector"
+  },
+  {
+    "name": "getInjectableDef"
+  },
+  {
+    "name": "getInjectorDef"
+  },
+  {
+    "name": "getInjectorIndex"
+  },
+  {
+    "name": "getIsParent"
+  },
+  {
+    "name": "getLCleanup"
+  },
+  {
+    "name": "getLContainer"
+  },
+  {
+    "name": "getLView"
+  },
+  {
+    "name": "getLViewParent"
+  },
+  {
+    "name": "getLocaleData"
+  },
+  {
+    "name": "getNativeByTNode"
+  },
+  {
+    "name": "getNearestLContainer"
+  },
+  {
+    "name": "getNextLContainer"
+  },
+  {
+    "name": "getNgModuleDef"
+  },
+  {
+    "name": "getNodeInjectable"
+  },
+  {
+    "name": "getNullInjector"
+  },
+  {
+    "name": "getOrCreateInjectable"
+  },
+  {
+    "name": "getOrCreateNodeInjectorForNode"
+  },
+  {
+    "name": "getOrCreateTComponentView"
+  },
+  {
+    "name": "getOrCreateTNode"
+  },
+  {
+    "name": "getOriginalError"
+  },
+  {
+    "name": "getOutlet"
+  },
+  {
+    "name": "getOutlet"
+  },
+  {
+    "name": "getOwnDefinition"
+  },
+  {
+    "name": "getParentInjectorIndex"
+  },
+  {
+    "name": "getParentInjectorLocation"
+  },
+  {
+    "name": "getParentInjectorView"
+  },
+  {
+    "name": "getParentInjectorViewOffset"
+  },
+  {
+    "name": "getParentState"
+  },
+  {
+    "name": "getPath"
+  },
+  {
+    "name": "getPathIndexShift"
+  },
+  {
+    "name": "getPlatform"
+  },
+  {
+    "name": "getPreviousIndex"
+  },
+  {
+    "name": "getPreviousOrParentTNode"
+  },
+  {
+    "name": "getPromiseCtor"
+  },
+  {
+    "name": "getResolve"
+  },
+  {
+    "name": "getScrollRestorationProperty"
+  },
+  {
+    "name": "getSelectedIndex"
+  },
+  {
+    "name": "getSelectedTNode"
+  },
+  {
+    "name": "getSimpleChangesStore"
+  },
+  {
+    "name": "getSourceSegmentGroup"
+  },
+  {
+    "name": "getSymbolIterator"
+  },
+  {
+    "name": "getSymbolIterator"
+  },
+  {
+    "name": "getTNode"
+  },
+  {
+    "name": "getTQuery"
+  },
+  {
+    "name": "getTView"
+  },
+  {
+    "name": "getToken"
+  },
+  {
+    "name": "growHostVarsSpace"
+  },
+  {
+    "name": "handleError"
+  },
+  {
+    "name": "hasParentInjector"
+  },
+  {
+    "name": "hasTagAndTypeMatch"
+  },
+  {
+    "name": "hostReportError"
+  },
+  {
+    "name": "identity"
+  },
+  {
+    "name": "includeViewProviders"
+  },
+  {
+    "name": "incrementInitPhaseFlags"
+  },
+  {
+    "name": "inheritedParamsDataResolve"
+  },
+  {
+    "name": "initTNodeFlags"
+  },
+  {
+    "name": "injectArgs"
+  },
+  {
+    "name": "injectInjectorOnly"
+  },
+  {
+    "name": "injectRootLimpMode"
+  },
+  {
+    "name": "injectableDefOrInjectorDefFactory"
+  },
+  {
+    "name": "insertBloom"
+  },
+  {
+    "name": "instructionState"
+  },
+  {
+    "name": "invertObject"
+  },
+  {
+    "name": "invokeHostBindingsInCreationMode"
+  },
+  {
+    "name": "isAnimationProp"
+  },
+  {
+    "name": "isArray"
+  },
+  {
+    "name": "isArrayLike"
+  },
+  {
+    "name": "isComponentDef"
+  },
+  {
+    "name": "isComponentHost"
+  },
+  {
+    "name": "isContentQueryHost"
+  },
+  {
+    "name": "isCreationMode"
+  },
+  {
+    "name": "isCssClassMatching"
+  },
+  {
+    "name": "isDirectiveHost"
+  },
+  {
+    "name": "isEmptyPathRedirect"
+  },
+  {
+    "name": "isFunction"
+  },
+  {
+    "name": "isFunction"
+  },
+  {
+    "name": "isInlineTemplate"
+  },
+  {
+    "name": "isJsObject"
+  },
+  {
+    "name": "isLContainer"
+  },
+  {
+    "name": "isLView"
+  },
+  {
+    "name": "isListLikeIterable"
+  },
+  {
+    "name": "isMatrixParams"
+  },
+  {
+    "name": "isNameOnlyAttributeMarker"
+  },
+  {
+    "name": "isNodeMatchingSelector"
+  },
+  {
+    "name": "isNodeMatchingSelectorList"
+  },
+  {
+    "name": "isObject"
+  },
+  {
+    "name": "isPositive"
+  },
+  {
+    "name": "isProceduralRenderer"
+  },
+  {
+    "name": "isPromise"
+  },
+  {
+    "name": "isPromise"
+  },
+  {
+    "name": "isRootView"
+  },
+  {
+    "name": "isScheduler"
+  },
+  {
+    "name": "isTypeProvider"
+  },
+  {
+    "name": "isUrlTree"
+  },
+  {
+    "name": "isValueProvider"
+  },
+  {
+    "name": "iterator"
+  },
+  {
+    "name": "joinWithSlash"
+  },
+  {
+    "name": "keyValDiff"
+  },
+  {
+    "name": "last"
+  },
+  {
+    "name": "leaveDI"
+  },
+  {
+    "name": "leaveView"
+  },
+  {
+    "name": "leaveViewLight"
+  },
+  {
+    "name": "localeEn"
+  },
+  {
+    "name": "locateDirectiveOrProvider"
+  },
+  {
+    "name": "makeParamDecorator"
+  },
+  {
+    "name": "makeRecord"
+  },
+  {
+    "name": "map"
+  },
+  {
+    "name": "mapChildrenIntoArray"
+  },
+  {
+    "name": "markAsComponentHost"
+  },
+  {
+    "name": "markViewDirty"
+  },
+  {
+    "name": "match"
+  },
+  {
+    "name": "matchSegments"
+  },
+  {
+    "name": "materializeViewResults"
+  },
+  {
+    "name": "maybeUnwrapFn"
+  },
+  {
+    "name": "maybeWrapInNotSelector"
+  },
+  {
+    "name": "mergeAll"
+  },
+  {
+    "name": "mergeHostAttribute"
+  },
+  {
+    "name": "mergeHostAttrs"
+  },
+  {
+    "name": "mergeMap"
+  },
+  {
+    "name": "mergeTrivialChildren"
+  },
+  {
+    "name": "modules"
+  },
+  {
+    "name": "namedOutletsRedirect"
+  },
+  {
+    "name": "nativeAppendChild"
+  },
+  {
+    "name": "nativeAppendOrInsertBefore"
+  },
+  {
+    "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nativeParentNode"
+  },
+  {
+    "name": "navigationCancelingError"
+  },
+  {
+    "name": "nextBindingIndex"
+  },
+  {
+    "name": "nextNgElementId"
+  },
+  {
+    "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "noMatch"
+  },
+  {
+    "name": "noSideEffects"
+  },
+  {
+    "name": "nodeChildrenAsMap"
+  },
+  {
+    "name": "noop"
+  },
+  {
+    "name": "noop"
+  },
+  {
+    "name": "normalizeQueryParams"
+  },
+  {
+    "name": "observable"
+  },
+  {
+    "name": "of"
+  },
+  {
+    "name": "onEnter"
+  },
+  {
+    "name": "onLeave"
+  },
+  {
+    "name": "optionsReducer"
+  },
+  {
+    "name": "pipeFromArray"
+  },
+  {
+    "name": "platformBrowser"
+  },
+  {
+    "name": "platformCore"
+  },
+  {
+    "name": "prioritizedGuardValue"
+  },
+  {
+    "name": "promise"
+  },
+  {
+    "name": "provideForRootGuard"
+  },
+  {
+    "name": "provideLocationStrategy"
+  },
+  {
+    "name": "provideRoutes"
+  },
+  {
+    "name": "readPatchedLView"
+  },
+  {
+    "name": "refCount"
+  },
+  {
+    "name": "refreshComponent"
+  },
+  {
+    "name": "refreshContentQueries"
+  },
+  {
+    "name": "refreshView"
+  },
+  {
+    "name": "registerPostOrderHooks"
+  },
+  {
+    "name": "rememberChangeHistoryAndInvokeOnChangesHook"
+  },
+  {
+    "name": "remove"
+  },
+  {
+    "name": "removeFromArray"
+  },
+  {
+    "name": "renderComponent"
+  },
+  {
+    "name": "renderComponentOrTemplate"
+  },
+  {
+    "name": "renderStringify"
+  },
+  {
+    "name": "renderView"
+  },
+  {
+    "name": "resetPreOrderHookFlags"
+  },
+  {
+    "name": "resolveForwardRef"
+  },
+  {
+    "name": "routerNgProbeToken"
+  },
+  {
+    "name": "runCanActivate"
+  },
+  {
+    "name": "runCanActivateChild"
+  },
+  {
+    "name": "rxSubscriber"
+  },
+  {
+    "name": "saveNameToExportMap"
+  },
+  {
+    "name": "scheduleArray"
+  },
+  {
+    "name": "scheduleMicroTask"
+  },
+  {
+    "name": "searchTokensOnInjector"
+  },
+  {
+    "name": "serializeNode"
+  },
+  {
+    "name": "serializePath"
+  },
+  {
+    "name": "serializePaths"
+  },
+  {
+    "name": "setBindingRootForHostBindings"
+  },
+  {
+    "name": "setCheckNoChangesMode"
+  },
+  {
+    "name": "setCurrentDirectiveIndex"
+  },
+  {
+    "name": "setCurrentInjector"
+  },
+  {
+    "name": "setCurrentQueryIndex"
+  },
+  {
+    "name": "setDirectiveInputsWhichShadowsStyling"
+  },
+  {
+    "name": "setIncludeViewProviders"
+  },
+  {
+    "name": "setInjectImplementation"
+  },
+  {
+    "name": "setInputsForProperty"
+  },
+  {
+    "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setLocaleId"
+  },
+  {
+    "name": "setPreviousOrParentTNode"
+  },
+  {
+    "name": "setRouterState"
+  },
+  {
+    "name": "setSelectedIndex"
+  },
+  {
+    "name": "setUpAttributes"
+  },
+  {
+    "name": "shallowEqual"
+  },
+  {
+    "name": "shareSubjectFactory"
+  },
+  {
+    "name": "shouldSearchParent"
+  },
+  {
+    "name": "split"
+  },
+  {
+    "name": "standardizeConfig"
+  },
+  {
+    "name": "storeCleanupWithContext"
+  },
+  {
+    "name": "stringify"
+  },
+  {
+    "name": "stringify"
+  },
+  {
+    "name": "stringifyCSSSelector"
+  },
+  {
+    "name": "stringifyForError"
+  },
+  {
+    "name": "stripTrailingSlash"
+  },
+  {
+    "name": "subscribeTo"
+  },
+  {
+    "name": "subscribeToArray"
+  },
+  {
+    "name": "subscribeToResult"
+  },
+  {
+    "name": "supportsState"
+  },
+  {
+    "name": "switchMap"
+  },
+  {
+    "name": "switchTap"
+  },
+  {
+    "name": "symbolIterator"
+  },
+  {
+    "name": "take"
+  },
+  {
+    "name": "takeLast"
+  },
+  {
+    "name": "tap"
+  },
+  {
+    "name": "throwIfEmpty"
+  },
+  {
+    "name": "throwMixedMultiProviderError"
+  },
+  {
+    "name": "throwMultipleComponentError"
+  },
+  {
+    "name": "toRefArray"
+  },
+  {
+    "name": "trackByIdentity"
+  },
+  {
+    "name": "tree"
+  },
+  {
+    "name": "u"
+  },
+  {
+    "name": "unwrapRNode"
+  },
+  {
+    "name": "updateMicroTaskStatus"
+  },
+  {
+    "name": "updateSegmentGroup"
+  },
+  {
+    "name": "updateSegmentGroupChildren"
+  },
+  {
+    "name": "updateTransplantedViewCount"
+  },
+  {
+    "name": "validateConfig"
+  },
+  {
+    "name": "validateNode"
+  },
+  {
+    "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "wrapIntoObservable"
+  },
+  {
+    "name": "wrapListener"
+  },
+  {
+    "name": "writeDirectClass"
+  },
+  {
+    "name": "writeDirectStyle"
+  },
+  {
+    "name": "ɵEmptyOutletComponent"
+  },
+  {
+    "name": "ɵɵNgOnChangesFeature"
+  },
+  {
+    "name": "ɵɵattribute"
+  },
+  {
+    "name": "ɵɵcontentQuery"
+  },
+  {
+    "name": "ɵɵdefineComponent"
+  },
+  {
+    "name": "ɵɵdefineDirective"
+  },
+  {
+    "name": "ɵɵdefineInjectable"
+  },
+  {
+    "name": "ɵɵdefineInjector"
+  },
+  {
+    "name": "ɵɵdefineNgModule"
+  },
+  {
+    "name": "ɵɵdirectiveInject"
+  },
+  {
+    "name": "ɵɵelement"
+  },
+  {
+    "name": "ɵɵelementEnd"
+  },
+  {
+    "name": "ɵɵelementStart"
+  },
+  {
+    "name": "ɵɵhostProperty"
+  },
+  {
+    "name": "ɵɵinject"
+  },
+  {
+    "name": "ɵɵinjectAttribute"
+  },
+  {
+    "name": "ɵɵinvalidFactory"
+  },
+  {
+    "name": "ɵɵlistener"
+  },
+  {
+    "name": "ɵɵloadQuery"
+  },
+  {
+    "name": "ɵɵqueryRefresh"
+  },
+  {
+    "name": "ɵɵsanitizeUrl"
+  },
+  {
+    "name": "ɵɵtext"
+  },
+  {
+    "name": "ɵɵtextInterpolate1"
+  }
+]
