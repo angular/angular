@@ -188,7 +188,7 @@ export function provideLocationStrategy(
 }
 
 export function provideForRootGuard(router: Router): any {
-  if (router) {
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && router) {
     throw new Error(
         `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`);
   }

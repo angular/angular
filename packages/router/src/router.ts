@@ -1077,7 +1077,8 @@ export class Router {
       queryParamsHandling,
       preserveFragment
     } = navigationExtras;
-    if (isDevMode() && preserveQueryParams && <any>console && <any>console.warn) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && isDevMode() && preserveQueryParams &&
+        <any>console && <any>console.warn) {
       console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
     }
     const a = relativeTo || this.routerState.root;
@@ -1131,7 +1132,8 @@ export class Router {
    */
   navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
-    if (isDevMode() && this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && isDevMode() && this.isNgZoneEnabled &&
+        !NgZone.isInAngularZone()) {
       this.console.warn(
           `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
     }
