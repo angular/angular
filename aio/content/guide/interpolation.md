@@ -242,7 +242,7 @@ members of the expression context.
 <!--
 ## Expression guidelines
 -->
-## 표현식 가이드라인
+## 템플릿 표현식 작성 가이드라인
 
 <!--
 When using template expressions follow these guidelines:
