@@ -154,7 +154,7 @@
             },
             {
               "url": "guide/interpolation",
-              "title": "Interpolation",
+              "title": "Text interpolation",
               "tooltip": "An introduction to interpolation and expressions in HTML."
             },
             {
