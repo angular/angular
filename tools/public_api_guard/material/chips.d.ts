@@ -39,7 +39,7 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
     trailingIcon: MatChipTrailingIcon;
     get value(): any;
     set value(value: any);
-    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, animationMode?: string, _changeDetectorRef?: ChangeDetectorRef | undefined, tabIndex?: string, _document?: any);
+    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, _changeDetectorRef: ChangeDetectorRef, _document: any, animationMode?: string, tabIndex?: string);
     _addHostClassName(): void;
     _blur(): void;
     _handleClick(event: Event): void;
@@ -58,7 +58,7 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
     static ngAcceptInputType_selected: BooleanInput;
     static ngAcceptInputType_tabIndex: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatChip, "mat-basic-chip, [mat-basic-chip], mat-chip, [mat-chip]", ["matChip"], { "color": "color"; "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "selected": "selected"; "value": "value"; "selectable": "selectable"; "disabled": "disabled"; "removable": "removable"; }, { "selectionChange": "selectionChange"; "destroyed": "destroyed"; "removed": "removed"; }, ["avatar", "trailingIcon", "removeIcon"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatChip, [null, null, null, { optional: true; }, { optional: true; }, null, { attribute: "tabindex"; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatChip, [null, null, null, { optional: true; }, null, null, { optional: true; }, { attribute: "tabindex"; }]>;
 }
 
 export declare class MatChipAvatar {
@@ -193,7 +193,7 @@ export declare class MatChipListChange {
 
 export declare class MatChipRemove {
     protected _parentChip: MatChip;
-    constructor(_parentChip: MatChip, elementRef?: ElementRef<HTMLElement>);
+    constructor(_parentChip: MatChip, elementRef: ElementRef<HTMLElement>);
     _handleClick(event: Event): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatChipRemove, "[matChipRemove]", never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatChipRemove, never>;

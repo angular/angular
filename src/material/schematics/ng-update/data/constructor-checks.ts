@@ -14,6 +14,12 @@ import {ConstructorChecksUpgradeData, TargetVersion, VersionChanges} from '@angu
  * automatically through type checking.
  */
 export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
+  [TargetVersion.V11]: [
+    {
+      pr: 'https://github.com/angular/components/issues/20463',
+      changes: ['MatChip', 'MatChipRemove']
+    }
+  ],
   [TargetVersion.V10]: [
     {
       pr: 'https://github.com/angular/components/pull/19307',

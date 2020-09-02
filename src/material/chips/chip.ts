@@ -283,14 +283,11 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
               private _ngZone: NgZone,
               platform: Platform,
               @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
-              globalRippleOptions: RippleGlobalOptions | null,
-              // @breaking-change 8.0.0 `animationMode` parameter to become required.
+                  globalRippleOptions: RippleGlobalOptions | null,
+              private _changeDetectorRef: ChangeDetectorRef,
+              @Inject(DOCUMENT) _document: any,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
-              // @breaking-change 9.0.0 `_changeDetectorRef` parameter to become required.
-              private _changeDetectorRef?: ChangeDetectorRef,
-              @Attribute('tabindex') tabIndex?: string,
-              // @breaking-change 11.0.0 `_document` parameter to become required.
-              @Optional() @Inject(DOCUMENT) _document?: any) {
+              @Attribute('tabindex') tabIndex?: string) {
     super(_elementRef);
 
     this._addHostClassName();
@@ -298,7 +295,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     // Dynamically create the ripple target, append it within the chip, and use it as the
     // chip's ripple target. Adding the class '.mat-chip-ripple' ensures that it will have
     // the proper styles.
-    this._chipRippleTarget = (_document || document).createElement('div');
+    this._chipRippleTarget = _document.createElement('div');
     this._chipRippleTarget.classList.add('mat-chip-ripple');
     this._elementRef.nativeElement.appendChild(this._chipRippleTarget);
     this._chipRipple = new RippleRenderer(this, _ngZone, this._chipRippleTarget, platform);
@@ -332,7 +329,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     if (!this._selected) {
       this._selected = true;
       this._dispatchSelectionChange();
-      this._markForCheck();
+      this._changeDetectorRef.markForCheck();
     }
   }
 
@@ -341,7 +338,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     if (this._selected) {
       this._selected = false;
       this._dispatchSelectionChange();
-      this._markForCheck();
+      this._changeDetectorRef.markForCheck();
     }
   }
 
@@ -350,7 +347,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     if (!this._selected) {
       this._selected = true;
       this._dispatchSelectionChange(true);
-      this._markForCheck();
+      this._changeDetectorRef.markForCheck();
     }
   }
 
@@ -358,7 +355,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   toggleSelected(isUserInput: boolean = false): boolean {
     this._selected = !this.selected;
     this._dispatchSelectionChange(isUserInput);
-    this._markForCheck();
+    this._changeDetectorRef.markForCheck();
     return this.selected;
   }
 
@@ -441,13 +438,6 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     });
   }
 
-  private _markForCheck() {
-    // @breaking-change 9.0.0 Remove this method once the _changeDetectorRef is a required param.
-    if (this._changeDetectorRef) {
-      this._changeDetectorRef.markForCheck();
-    }
-  }
-
   static ngAcceptInputType_selected: BooleanInput;
   static ngAcceptInputType_selectable: BooleanInput;
   static ngAcceptInputType_removable: BooleanInput;
@@ -480,11 +470,8 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
 export class MatChipRemove {
   constructor(
     protected _parentChip: MatChip,
-    // @breaking-change 11.0.0 `elementRef` parameter to be made required.
-    elementRef?: ElementRef<HTMLElement>) {
-
-      // @breaking-change 11.0.0 Remove null check for `elementRef`.
-    if (elementRef && elementRef.nativeElement.nodeName === 'BUTTON') {
+    elementRef: ElementRef<HTMLElement>) {
+    if (elementRef.nativeElement.nodeName === 'BUTTON') {
       elementRef.nativeElement.setAttribute('type', 'button');
     }
    }

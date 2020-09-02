@@ -100,7 +100,6 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
     changeDetectorRef: ChangeDetectorRef,
     elementRef: ElementRef, ngZone: NgZone,
     @Optional() dir: Directionality,
-    // @breaking-change 8.0.0 `animationMode` parameter to become required.
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(changeDetectorRef, elementRef, ngZone, dir, animationMode);
   }

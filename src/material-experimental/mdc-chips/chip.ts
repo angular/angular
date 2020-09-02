@@ -355,7 +355,6 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
       public _changeDetectorRef: ChangeDetectorRef,
       readonly _elementRef: ElementRef, protected _ngZone: NgZone,
       @Optional() private _dir: Directionality,
-      // @breaking-change 8.0.0 `animationMode` parameter to become required.
       @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(_elementRef);
     this._chipFoundation = new MDCChipFoundation(this._chipAdapter);
