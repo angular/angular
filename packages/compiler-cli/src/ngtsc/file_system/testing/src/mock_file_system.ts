@@ -38,16 +38,16 @@ export abstract class MockFileSystem implements FileSystem {
     }
   }
 
-  readFileBuffer(path: AbsoluteFsPath): Buffer {
+  readFileBuffer(path: AbsoluteFsPath): Uint8Array {
     const {entity} = this.findFromPath(path);
     if (isFile(entity)) {
-      return Buffer.isBuffer(entity) ? entity : new Buffer(entity);
+      return entity instanceof Uint8Array ? entity : new Buffer(entity);
     } else {
       throw new MockFileSystemError('ENOENT', path, `File "${path}" does not exist.`);
     }
   }
 
-  writeFile(path: AbsoluteFsPath, data: string|Buffer, exclusive: boolean = false): void {
+  writeFile(path: AbsoluteFsPath, data: string|Uint8Array, exclusive: boolean = false): void {
     const [folderPath, basename] = this.splitIntoFolderAndFile(path);
     const {entity} = this.findFromPath(folderPath);
     if (entity === null || !isFolder(entity)) {
@@ -295,7 +295,7 @@ export type Entity = Folder|File|SymLink;
 export interface Folder {
   [pathSegments: string]: Entity;
 }
-export type File = string|Buffer;
+export type File = string|Uint8Array;
 export class SymLink {
   constructor(public path: AbsoluteFsPath) {}
 }
