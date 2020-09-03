@@ -7,7 +7,8 @@
  */
 import {writeFileSync} from 'fs';
 
-import {info} from '../utils/console';
+import {getUserConfig} from '../utils/config';
+import {debug, info} from '../utils/console';
 
 import {buildCommitMessage} from './builder';
 
@@ -25,7 +26,12 @@ const defaultCommitMessage = `<type>(<scope>): <summary>
 
 export async function runWizard(
     args: {filePath: string, source?: PrepareCommitMsgHookSource, commitSha?: string}) {
-  // TODO(josephperrott): Add support for skipping wizard with local untracked config file
+  if (getUserConfig().commitMessage?.disableWizard) {
+    debug('Skipping commit message wizard as commitMessage.disableWizard has truthy value in the');
+    debug(`user's local config.`);
+    process.exitCode = 0;
+    return;
+  }
 
   if (args.source !== undefined) {
     info(`Skipping commit message wizard due because the commit was created via '${
