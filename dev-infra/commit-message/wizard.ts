@@ -27,8 +27,8 @@ const defaultCommitMessage = `<type>(<scope>): <summary>
 export async function runWizard(
     args: {filePath: string, source?: PrepareCommitMsgHookSource, commitSha?: string}) {
   if (getUserConfig().commitMessage?.disableWizard) {
-    debug('Skipping commit message wizard as commitMessage.disableWizard has truthy value in the');
-    debug(`user's local config.`);
+    debug('Skipping commit message wizard due to enabled `commitMessage.disableWizard` option in');
+    debug('user config.');
     process.exitCode = 0;
     return;
   }
