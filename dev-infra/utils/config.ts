@@ -120,7 +120,7 @@ function readConfigFile(configPath: string, returnEmptyObjectOnError = false): o
       debug(e);
       return {};
     }
-    error(`Could not read configuration file at ${configPath}.'`);
+    error(`Could not read configuration file at ${configPath}.`);
     error(e);
     process.exit(1);
   }
@@ -158,7 +158,7 @@ export function getRepoBaseDir() {
  * defined.
  *
  * @returns The user configuration object, or an empty object if no user configuration file is
- * present.  The object is a untyped object as there are no required user configurations.
+ * present. The object is an untyped object as there are no required user configurations.
  */
 export function getUserConfig() {
   // If the global config is not defined, load it from the file system.
