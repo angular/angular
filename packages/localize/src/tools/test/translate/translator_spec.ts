@@ -109,13 +109,13 @@ runInEachFileSystem(() => {
     log: string[] = [];
     constructor(private _canTranslate: boolean = true) {}
 
-    canTranslate(relativePath: string, contents: Buffer) {
-      this.log.push(`canTranslate(${relativePath}, ${contents.toString('utf8')})`);
+    canTranslate(relativePath: string, contents: Uint8Array) {
+      this.log.push(`canTranslate(${relativePath}, ${contents})`);
       return this._canTranslate;
     }
 
     translate(
-        _diagnostics: Diagnostics, rootPath: string, relativePath: string, contents: Buffer,
+        _diagnostics: Diagnostics, rootPath: string, relativePath: string, contents: Uint8Array,
         _outputPathFn: OutputPathFn, _translations: TranslationBundle[], sourceLocale?: string) {
       this.log.push(
           `translate(${rootPath}, ${relativePath}, ${contents}, ...` +

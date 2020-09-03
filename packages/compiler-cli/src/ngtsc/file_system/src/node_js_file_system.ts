@@ -23,10 +23,10 @@ export class NodeJSFileSystem implements FileSystem {
   readFile(path: AbsoluteFsPath): string {
     return fs.readFileSync(path, 'utf8');
   }
-  readFileBuffer(path: AbsoluteFsPath): Buffer {
+  readFileBuffer(path: AbsoluteFsPath): Uint8Array {
     return fs.readFileSync(path);
   }
-  writeFile(path: AbsoluteFsPath, data: string|Buffer, exclusive: boolean = false): void {
+  writeFile(path: AbsoluteFsPath, data: string|Uint8Array, exclusive: boolean = false): void {
     fs.writeFileSync(path, data, exclusive ? {flag: 'wx'} : undefined);
   }
   removeFile(path: AbsoluteFsPath): void {

@@ -17,14 +17,14 @@ import {TranslationBundle, TranslationHandler} from '../translator';
 export class AssetTranslationHandler implements TranslationHandler {
   constructor(private fs: FileSystem) {}
 
-  canTranslate(_relativeFilePath: PathSegment|AbsoluteFsPath, _contents: Buffer): boolean {
+  canTranslate(_relativeFilePath: PathSegment|AbsoluteFsPath, _contents: Uint8Array): boolean {
     return true;
   }
 
   translate(
       diagnostics: Diagnostics, _sourceRoot: AbsoluteFsPath,
-      relativeFilePath: PathSegment|AbsoluteFsPath, contents: Buffer, outputPathFn: OutputPathFn,
-      translations: TranslationBundle[], sourceLocale?: string): void {
+      relativeFilePath: PathSegment|AbsoluteFsPath, contents: Uint8Array,
+      outputPathFn: OutputPathFn, translations: TranslationBundle[], sourceLocale?: string): void {
     for (const translation of translations) {
       this.writeAssetFile(
           diagnostics, outputPathFn, translation.locale, relativeFilePath, contents);
@@ -36,7 +36,7 @@ export class AssetTranslationHandler implements TranslationHandler {
 
   private writeAssetFile(
       diagnostics: Diagnostics, outputPathFn: OutputPathFn, locale: string,
-      relativeFilePath: PathSegment|AbsoluteFsPath, contents: Buffer): void {
+      relativeFilePath: PathSegment|AbsoluteFsPath, contents: Uint8Array): void {
     try {
       const outputPath = absoluteFrom(outputPathFn(locale, relativeFilePath));
       this.fs.ensureDir(this.fs.dirname(outputPath));
