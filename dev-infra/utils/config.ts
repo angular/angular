@@ -117,6 +117,7 @@ function readConfigFile(configPath: string, returnEmptyObjectOnError = false): o
   } catch (e) {
     if (returnEmptyObjectOnError) {
       debug(`Could not read configuration file at ${configPath}, returning empty object instead.`);
+      debug(e);
       return {};
     }
     error(`Could not read configuration file at ${configPath}.'`);
@@ -156,9 +157,8 @@ export function getRepoBaseDir() {
  * Get the local user configuration from the file system, returning the already loaded copy if it is
  * defined.
  *
- * @returns The user configuration object, or an empty object if not user configuration file is
- * defined.  The object is a generic key value object, with unknown types as there are no required
- * local user configurations.
+ * @returns The user configuration object, or an empty object if no user configuration file is
+ * present.  The object is a untyped object as there are no required user configurations.
  */
 export function getUserConfig() {
   // If the global config is not defined, load it from the file system.
