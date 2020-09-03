@@ -9,7 +9,7 @@
 import {existsSync} from 'fs';
 import {dirname, join} from 'path';
 
-import {error} from './console';
+import {debug, error} from './console';
 import {exec} from './shelljs';
 import {isTsNodeAvailable} from './ts-node';
 
@@ -116,9 +116,10 @@ function readConfigFile(configPath: string, returnEmptyObjectOnError = false): o
     return require(configPath);
   } catch (e) {
     if (returnEmptyObjectOnError) {
+      debug(`Could not read configuration file at ${configPath}, returning empty object instead.`);
       return {};
     }
-    error('Could not read configuration file.');
+    error(`Could not read configuration file at ${configPath}.'`);
     error(e);
     process.exit(1);
   }
@@ -151,7 +152,14 @@ export function getRepoBaseDir() {
   return baseRepoDir.trim();
 }
 
-
+/**
+ * Get the local user configuration from the file system, returning the already loaded copy if it is
+ * defined.
+ *
+ * @returns The user configuration object, or an empty object if not user configuration file is
+ * defined.  The object is a generic key value object, with unknown types as there are no required
+ * local user configurations.
+ */
 export function getUserConfig() {
   // If the global config is not defined, load it from the file system.
   if (USER_CONFIG === undefined) {
