@@ -1,7 +1,7 @@
 # Template statements
 
-A template **statement** responds to an **event** raised by a binding target
-such as an element, component, or directive.
+Template statements are methods or properties that you can use in your HTML to respond to user events.
+With template statements, your application can engage users through actions such as displaying dynamic content or submitting forms.
 
 <div class="alert is-helpful">
 
@@ -10,24 +10,30 @@ the syntax and code snippets in this guide.
 
 </div>
 
-The following template statement appears in quotes to the right of the `=`&nbsp;symbol as in `(event)="statement"`.
+In the following example, the template statement `deleteHero()` appears in quotes to the right of the `=`&nbsp;symbol as in `(event)="statement"`.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html"></code-example>
 
-A template statement *has a side effect*.
-That's the whole point of an event.
-It's how you update application state from user action.
+When the user clicks the **Delete hero** button, Angular calls the `deleteHero()` function in the component class.
 
-Responding to events is the other side of Angular's "unidirectional data flow".
-You're free to change anything, anywhere, during this turn of the event loop.
+You can use template statements with elements, components, or directives in response to events.
 
-Like template expressions, template *statements* use a language that looks like JavaScript.
-The template statement parser differs from the template expression parser and
-specifically supports both basic assignment (`=`) and chaining expressions with <code>;</code>.
+<div class="alert is-helpful">
 
-However, certain JavaScript and template expression syntax is not allowed:
+Responding to events is an aspect of Angular's [unidirectional data flow](guide/glossary#unidirectional-data-flow).
+You can change anything in your application during a single event loop.
 
-* <code>new</code>
+</div>
+
+## Syntax
+
+Like [template expressions](guide/interpolation), template statements use a language that looks like JavaScript.
+However, the parser for template statements differs from the parser for template expressions.
+In addition, the template statements parser specifically supports both basic assignment, `=`, and chaining expressions with semicolons, `;`.
+
+The following JavaScript and template expression syntax is not allowed:
+
+* `new`
 * increment and decrement operators, `++` and `--`
 * operator assignment, such as `+=` and `-=`
 * the bitwise operators, such as `|` and `&`
@@ -35,31 +41,32 @@ However, certain JavaScript and template expression syntax is not allowed:
 
 ## Statement context
 
-As with expressions, statements can refer only to what's in the statement context
-such as an event handling method of the component instance.
+Statements have a context&mdash;a particular part of the application to which the statement belongs.
 
-The *statement context* is typically the component instance.
-The *deleteHero* in `(click)="deleteHero()"` is a method of the data-bound component.
+Statements can refer only to what's in the statement context, which is typically the component instance.
+For example, `deleteHero()` of `(click)="deleteHero()"` is a method of the component in the following snippet.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html"></code-example>
 
 The statement context may also refer to properties of the template's own context.
-In the following examples, the template `$event` object,
-a [template input variable](guide/built-in-directives#template-input-variable) (`let hero`),
-and a [template reference variable](guide/template-reference-variables) (`#heroForm`)
-are passed to an event handling method of the component.
+In the following example, the component's event handling method, `onSave()` takes the template's own `$event` object as an argument.
+On the next two lines, the `deleteHero()` method takes a [template input variable](guide/built-in-directives#template-input-variable), `hero`, and `onSubmit()` takes a [template reference variable](guide/template-reference-variables), `#heroForm`.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" header="src/app/app.component.html"></code-example>
 
+In this example, the context of the `$event` object, `hero`, and `#heroForm` is the template.
+
 Template context names take precedence over component context names.
-In `deleteHero(hero)` above, the `hero` is the template input variable,
-not the component's `hero` property.
+In the preceding `deleteHero(hero)`, the `hero` is the template input variable, not the component's `hero` property.
 
-## Statement guidelines
+## Statement best practices
 
-Template statements cannot refer to anything in the global namespace. They
-can't refer to `window` or `document`.
-They can't call `console.log` or `Math.max`.
+* **Conciseness**
 
-As with expressions, avoid writing complex template statements.
-A method call or simple property assignment should be the norm.
+  Keep template statements minimal by using method calls or basic property assignments.
+
+* **Work within the context**
+
+  The context of a template statement can be the component class instance or the template.
+  Because of this, template statements cannot refer to anything in the global namespace such as `window` or `document`.
+  For example, template statements can't call `console.log()` or `Math.max()`.
