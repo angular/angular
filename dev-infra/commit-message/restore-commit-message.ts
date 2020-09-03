@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {info} from 'console';
 import {writeFileSync} from 'fs';
+
+import {debug, log} from '../utils/console';
 
 import {loadCommitMessageDraft} from './commit-message-draft';
 
@@ -20,19 +21,19 @@ import {loadCommitMessageDraft} from './commit-message-draft';
 export function restoreCommitMessage(
     filePath: string, source?: 'message'|'template'|'squash'|'commit') {
   if (!!source) {
-    info('Skipping commit message restoration attempt');
+    log('Skipping commit message restoration attempt');
     if (source === 'message') {
-      info('A commit message was already provided via the command with a -m or -F flag');
+      debug('A commit message was already provided via the command with a -m or -F flag');
     }
     if (source === 'template') {
-      info('A commit message was already provided via the -t flag or config.template setting');
+      debug('A commit message was already provided via the -t flag or config.template setting');
     }
     if (source === 'squash') {
-      info('A commit message was already provided as a merge action or via .git/MERGE_MSG');
+      debug('A commit message was already provided as a merge action or via .git/MERGE_MSG');
     }
     if (source === 'commit') {
-      info('A commit message was already provided through a revision specified via --fixup, -c,');
-      info('-C or --amend flag');
+      debug('A commit message was already provided through a revision specified via --fixup, -c,');
+      debug('-C or --amend flag');
     }
     process.exit(0);
   }
