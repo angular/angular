@@ -6,21 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, SchemaMetadata} from '../../core';
+import {Injector, SchemaMetadata, Type} from '../../core';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {KeyValueArray} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
+import {assertNodeInjector} from '../assert';
+import {getInjectorIndex} from '../di';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
-import {ComponentTemplate, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
+import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
+import {NO_PARENT_INJECTOR, PARENT_INJECTOR, TNODE} from '../interfaces/injector';
 import {AttributeMarker, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TNodeTypeAsString, TViewNode} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {LQueries, TQueries} from '../interfaces/query';
 import {RComment, RElement, Renderer3, RendererFactory3, RNode} from '../interfaces/renderer';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, ExpandoInstructions, FLAGS, HEADER_OFFSET, HookData, HOST, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, ExpandoInstructions, FLAGS, HEADER_OFFSET, HookData, HOST, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
+import {getParentInjectorIndex, getParentInjectorView} from '../util/injector_utils';
 import {unwrapRNode} from '../util/view_utils';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
@@ -152,6 +156,14 @@ export const TViewConstructor = class TView implements ITView {
     processTNodeChildren(this.firstChild, buf);
     return buf.join('');
   }
+
+  get type_(): string {
+    return TViewTypeAsString[this.type] || `TViewType.?${this.type}?`;
+  }
+
+  get i18nStartIndex(): number {
+    return HEADER_OFFSET + this._decls + this._vars;
+  }
 };
 
 class TNode implements ITNode {
@@ -189,23 +201,39 @@ class TNode implements ITNode {
       public styleBindings: TStylingRange,                                           //
   ) {}
 
-  get type_(): string {
-    switch (this.type) {
-      case TNodeType.Container:
-        return 'TNodeType.Container';
-      case TNodeType.Element:
-        return 'TNodeType.Element';
-      case TNodeType.ElementContainer:
-        return 'TNodeType.ElementContainer';
-      case TNodeType.IcuContainer:
-        return 'TNodeType.IcuContainer';
-      case TNodeType.Projection:
-        return 'TNodeType.Projection';
-      case TNodeType.View:
-        return 'TNodeType.View';
-      default:
-        return 'TNodeType.???';
+  /**
+   * Return a human debug version of the set of `NodeInjector`s which will be consulted when
+   * resolving tokens from this `TNode`.
+   *
+   * When debugging applications, it is often difficult to determine which `NodeInjector`s will be
+   * consulted. This method shows a list of `DebugNode`s representing the `TNode`s which will be
+   * consulted in order when resolving a token starting at this `TNode`.
+   *
+   * The original data is stored in `LView` and `TView` with a lot of offset indexes, and so it is
+   * difficult to reason about.
+   *
+   * @param lView The `LView` instance for this `TNode`.
+   */
+  debugNodeInjectorPath(lView: LView): DebugNode[] {
+    const path: DebugNode[] = [];
+    let injectorIndex = getInjectorIndex(this, lView);
+    ngDevMode && assertNodeInjector(lView, injectorIndex);
+    while (injectorIndex !== -1) {
+      const tNode = lView[TVIEW].data[injectorIndex + TNODE] as TNode;
+      path.push(buildDebugNode(tNode, lView));
+      const parentLocation = lView[injectorIndex + PARENT_INJECTOR];
+      if (parentLocation === NO_PARENT_INJECTOR) {
+        injectorIndex = -1;
+      } else {
+        injectorIndex = getParentInjectorIndex(parentLocation);
+        lView = getParentInjectorView(parentLocation, lView);
+      }
     }
+    return path;
+  }
+
+  get type_(): string {
+    return TNodeTypeAsString[this.type] || `TNodeType.?${this.type}?`;
   }
 
   get flags_(): string {
@@ -245,6 +273,14 @@ class TNode implements ITNode {
   }
   get classBindings_(): DebugStyleBindings {
     return toDebugStyleBinding(this, true);
+  }
+
+  get providerIndexStart_(): number {
+    return this.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
+  }
+  get providerIndexEnd_(): number {
+    return this.providerIndexStart_ +
+        (this.providerIndexes >>> TNodeProviderIndexes.CptViewProvidersCountShift);
   }
 }
 export const TNodeDebug = TNode;
@@ -462,21 +498,21 @@ export class LViewDebug implements ILViewDebug {
   }
 
   get decls(): LViewDebugRange {
-    const tView = this.tView as any as {_decls: number, _vars: number};
-    const start = HEADER_OFFSET;
-    return toLViewRange(this.tView, this._raw_lView, start, start + tView._decls);
+    return toLViewRange(this.tView, this._raw_lView, HEADER_OFFSET, this.tView.bindingStartIndex);
   }
 
   get vars(): LViewDebugRange {
-    const tView = this.tView as any as {_decls: number, _vars: number};
-    const start = HEADER_OFFSET + tView._decls;
-    return toLViewRange(this.tView, this._raw_lView, start, start + tView._vars);
+    const tView = this.tView;
+    return toLViewRange(
+        tView, this._raw_lView, tView.bindingStartIndex,
+        (tView as any as {i18nStartIndex: number}).i18nStartIndex);
   }
 
   get i18n(): LViewDebugRange {
-    const tView = this.tView as any as {_decls: number, _vars: number};
-    const start = HEADER_OFFSET + tView._decls + tView._vars;
-    return toLViewRange(this.tView, this._raw_lView, start, this.tView.expandoStartIndex);
+    const tView = this.tView;
+    return toLViewRange(
+        tView, this._raw_lView, (tView as any as {i18nStartIndex: number}).i18nStartIndex,
+        tView.expandoStartIndex);
   }
 
   get expando(): LViewDebugRange {
@@ -518,7 +554,7 @@ export function toDebugNodes(tNode: ITNode|null, lView: LView): DebugNode[] {
     const debugNodes: DebugNode[] = [];
     let tNodeCursor: ITNode|null = tNode;
     while (tNodeCursor) {
-      debugNodes.push(buildDebugNode(tNodeCursor, lView, tNodeCursor.index));
+      debugNodes.push(buildDebugNode(tNodeCursor, lView));
       tNodeCursor = tNodeCursor.next;
     }
     return debugNodes;
@@ -527,15 +563,73 @@ export function toDebugNodes(tNode: ITNode|null, lView: LView): DebugNode[] {
   }
 }
 
-export function buildDebugNode(tNode: ITNode, lView: LView, nodeIndex: number): DebugNode {
-  const rawValue = lView[nodeIndex];
+export function buildDebugNode(tNode: ITNode, lView: LView): DebugNode {
+  const rawValue = lView[tNode.index];
   const native = unwrapRNode(rawValue);
+  const factories: Type<any>[] = [];
+  const instances: any[] = [];
+  const tView = lView[TVIEW];
+  for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
+    const def = tView.data[i] as DirectiveDef<any>;
+    factories.push(def.type);
+    instances.push(lView[i]);
+  }
   return {
     html: toHtml(native),
     type: TNodeTypeAsString[tNode.type],
     native: native as any,
     children: toDebugNodes(tNode.child, lView),
+    factories,
+    instances,
+    injector: buildNodeInjectorDebug(tNode, tView, lView)
   };
+}
+
+function buildNodeInjectorDebug(tNode: ITNode, tView: ITView, lView: LView) {
+  const viewProviders: Type<any>[] = [];
+  for (let i = (tNode as TNode).providerIndexStart_; i < (tNode as TNode).providerIndexEnd_; i++) {
+    viewProviders.push(tView.data[i] as Type<any>);
+  }
+  const providers: Type<any>[] = [];
+  for (let i = (tNode as TNode).providerIndexEnd_; i < (tNode as TNode).directiveEnd; i++) {
+    providers.push(tView.data[i] as Type<any>);
+  }
+  const nodeInjectorDebug = {
+    bloom: toBloom(lView, tNode.injectorIndex),
+    cumulativeBloom: toBloom(tView.data, tNode.injectorIndex),
+    providers,
+    viewProviders,
+    parentInjectorIndex: lView[(tNode as TNode).providerIndexStart_ - 1],
+  };
+  return nodeInjectorDebug;
+}
+
+/**
+ * Convert a number at `idx` location in `array` into binary representation.
+ *
+ * @param array
+ * @param idx
+ */
+function binary(array: any[], idx: number): string {
+  const value = array[idx];
+  // If not a number we print 8 `?` to retain alignment but let user know that it was called on
+  // wrong type.
+  if (typeof value !== 'number') return '????????';
+  // We prefix 0s so that we have constant length number
+  const text = '00000000' + value.toString(2);
+  return text.substring(text.length - 8);
+}
+
+/**
+ * Convert a bloom filter at location `idx` in `array` into binary representation.
+ *
+ * @param array
+ * @param idx
+ */
+function toBloom(array: any[], idx: number): string {
+  return `${binary(array, idx + 7)}_${binary(array, idx + 6)}_${binary(array, idx + 5)}_${
+      binary(array, idx + 4)}_${binary(array, idx + 3)}_${binary(array, idx + 2)}_${
+      binary(array, idx + 1)}_${binary(array, idx + 0)}`;
 }
 
 export class LContainerDebug implements ILContainerDebug {
