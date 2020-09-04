@@ -9,6 +9,7 @@
 import {InjectionToken} from '../../di/injection_token';
 import {InjectFlags} from '../../di/interface/injector';
 import {Type} from '../../interface/type';
+import {assertDefined, assertEqual} from '../../util/assert';
 
 import {TDirectiveHostNode} from './node';
 import {LView, TData} from './view';
@@ -239,6 +240,8 @@ export class NodeInjectorFactory {
       isViewProvider: boolean,
       injectImplementation: null|
       (<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T)) {
+    ngDevMode && assertDefined(factory, 'Factory not specified');
+    ngDevMode && assertEqual(typeof factory, 'function', 'Expected factory function.');
     this.canSeeViewProviders = isViewProvider;
     this.injectImpl = injectImplementation;
   }

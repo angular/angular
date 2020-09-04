@@ -32,7 +32,7 @@ import {DirectiveDef} from '../interfaces/definition';
  *        ɵɵtextInterpolate(ctx.greeter.greet());
  *      }
  *    },
- *    features: [ProvidersFeature([GreeterDE])]
+ *    features: [ɵɵProvidersFeature([GreeterDE])]
  *  });
  * }
  * ```

@@ -389,7 +389,7 @@ export function getDebugNode(element: Element): DebugNode|null {
     // data. In this situation the TNode is not accessed at the same spot.
     const tNode = isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) :
                                           getTNode(lView[TVIEW], nodeIndex - HEADER_OFFSET);
-    debugNode = buildDebugNode(tNode, lView, nodeIndex);
+    debugNode = buildDebugNode(tNode, lView);
   }
 
   return debugNode;
