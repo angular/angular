@@ -315,7 +315,7 @@ class _TreeBuilder {
         // removed from the element stack at this point are closed implicitly, so they won't get
         // an end source span (as there is no explicit closing element).
         el.endSourceSpan = endSourceSpan;
-        el.sourceSpan.end = endSourceSpan.end || el.sourceSpan.end;
+        el.sourceSpan.end = endSourceSpan?.end ?? el.sourceSpan.end;
 
         this._elementStack.splice(stackIndex, this._elementStack.length - stackIndex);
         return true;
