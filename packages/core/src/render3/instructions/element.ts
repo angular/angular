@@ -33,7 +33,7 @@ function elementStartFirstCreatePass(
 
   const tViewConsts = tView.consts;
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
-  const tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs);
+  const tNode = getOrCreateTNode(tView, index, TNodeType.Element, name, attrs);
 
   const hasDirectives =
       resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));

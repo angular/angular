@@ -141,41 +141,41 @@ export function bloomAdd(
  * Creates (or gets an existing) injector for a given element or container.
  *
  * @param tNode for which an injector should be retrieved / created.
- * @param hostView View where the node is stored
+ * @param lView View where the node is stored
  * @returns Node injector
  */
 export function getOrCreateNodeInjectorForNode(
-    tNode: TElementNode|TContainerNode|TElementContainerNode, hostView: LView): number {
-  const existingInjectorIndex = getInjectorIndex(tNode, hostView);
+    tNode: TElementNode|TContainerNode|TElementContainerNode, lView: LView): number {
+  const existingInjectorIndex = getInjectorIndex(tNode, lView);
   if (existingInjectorIndex !== -1) {
     return existingInjectorIndex;
   }
 
-  const tView = hostView[TVIEW];
+  const tView = lView[TVIEW];
   if (tView.firstCreatePass) {
-    tNode.injectorIndex = hostView.length;
+    tNode.injectorIndex = lView.length;
     insertBloom(tView.data, tNode);  // foundation for node bloom
-    insertBloom(hostView, null);     // foundation for cumulative bloom
+    insertBloom(lView, null);        // foundation for cumulative bloom
     insertBloom(tView.blueprint, null);
   }
 
-  const parentLoc = getParentInjectorLocation(tNode, hostView);
+  const parentLoc = getParentInjectorLocation(tNode, lView);
   const injectorIndex = tNode.injectorIndex;
 
   // If a parent injector can't be found, its location is set to -1.
   // In that case, we don't need to set up a cumulative bloom
   if (hasParentInjector(parentLoc)) {
     const parentIndex = getParentInjectorIndex(parentLoc);
-    const parentLView = getParentInjectorView(parentLoc, hostView);
+    const parentLView = getParentInjectorView(parentLoc, lView);
     const parentData = parentLView[TVIEW].data as any;
     // Creates a cumulative bloom filter that merges the parent's bloom filter
     // and its own cumulative bloom (which contains tokens for all ancestors)
     for (let i = 0; i < 8; i++) {
-      hostView[injectorIndex + i] = parentLView[parentIndex + i] | parentData[parentIndex + i];
+      lView[injectorIndex + i] = parentLView[parentIndex + i] | parentData[parentIndex + i];
     }
   }
 
-  hostView[injectorIndex + PARENT_INJECTOR] = parentLoc;
+  lView[injectorIndex + PARENT_INJECTOR] = parentLoc;
   return injectorIndex;
 }
 
@@ -202,7 +202,7 @@ export function getInjectorIndex(tNode: TNode, hostView: LView): number {
  * Finds the index of the parent injector, with a view offset if applicable. Used to set the
  * parent injector initially.
  *
- * Returns a combination of number of `ViewData` we have to go up and index in that `Viewdata`
+ * Returns a combination of number of `LView` we have to go up and index in that `LView`
  */
 export function getParentInjectorLocation(tNode: TNode, view: LView): RelativeInjectorLocation {
   if (tNode.parent && tNode.parent.injectorIndex !== -1) {

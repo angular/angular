@@ -202,9 +202,6 @@ export function createLView<T>(
  * Create and stores the TNode, and hooks it up to the tree.
  *
  * @param tView The current `TView`.
- * @param tHostNode This is a hack and we should not have to pass this value in. It is only used to
- * determine if the parent belongs to a different tView. Instead we should not have parentTView
- * point to TView other the current one.
  * @param index The index at which the TNode should be saved (null if view, since they are not
  * saved).
  * @param type The type of TNode to create
@@ -213,35 +210,34 @@ export function createLView<T>(
  * @param attrs Any attrs for the native element, if applicable
  */
 export function getOrCreateTNode(
-    tView: TView, tHostNode: TNode|null, index: number, type: TNodeType.Element, name: string|null,
+    tView: TView, index: number, type: TNodeType.Element, name: string|null,
     attrs: TAttributes|null): TElementNode;
 export function getOrCreateTNode(
-    tView: TView, tHostNode: TNode|null, index: number, type: TNodeType.Container,
-    name: string|null, attrs: TAttributes|null): TContainerNode;
+    tView: TView, index: number, type: TNodeType.Container, name: string|null,
+    attrs: TAttributes|null): TContainerNode;
 export function getOrCreateTNode(
-    tView: TView, tHostNode: TNode|null, index: number, type: TNodeType.Projection, name: null,
+    tView: TView, index: number, type: TNodeType.Projection, name: null,
     attrs: TAttributes|null): TProjectionNode;
 export function getOrCreateTNode(
-    tView: TView, tHostNode: TNode|null, index: number, type: TNodeType.ElementContainer,
-    name: string|null, attrs: TAttributes|null): TElementContainerNode;
-export function getOrCreateTNode(
-    tView: TView, tHostNode: TNode|null, index: number, type: TNodeType.IcuContainer, name: null,
+    tView: TView, index: number, type: TNodeType.ElementContainer, name: string|null,
     attrs: TAttributes|null): TElementContainerNode;
 export function getOrCreateTNode(
-    tView: TView, tHostNode: TNode|null, index: number, type: TNodeType, name: string|null,
-    attrs: TAttributes|null): TElementNode&TContainerNode&TElementContainerNode&TProjectionNode&
-    TIcuContainerNode {
+    tView: TView, index: number, type: TNodeType.IcuContainer, name: null,
+    attrs: TAttributes|null): TElementContainerNode;
+export function getOrCreateTNode(
+    tView: TView, index: number, type: TNodeType, name: string|null, attrs: TAttributes|null):
+    TElementNode&TContainerNode&TElementContainerNode&TProjectionNode&TIcuContainerNode {
   // Keep this function short, so that the VM will inline it.
   const adjustedIndex = index + HEADER_OFFSET;
   const tNode = tView.data[adjustedIndex] as TNode ||
-      createTNodeAtIndex(tView, tHostNode, adjustedIndex, type, name, attrs);
+      createTNodeAtIndex(tView, adjustedIndex, type, name, attrs);
   setPreviousOrParentTNode(tNode, true);
   return tNode as TElementNode & TViewNode & TContainerNode & TElementContainerNode &
       TProjectionNode & TIcuContainerNode;
 }
 
 function createTNodeAtIndex(
-    tView: TView, tHostNode: TNode|null, adjustedIndex: number, type: TNodeType, name: string|null,
+    tView: TView, adjustedIndex: number, type: TNodeType, name: string|null,
     attrs: TAttributes|null) {
   const previousOrParentTNode = getPreviousOrParentTNode();
   const isParent = getIsParent();
@@ -249,7 +245,9 @@ function createTNodeAtIndex(
       isParent ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
   // Parents cannot cross component boundaries because components will be used in multiple places,
   // so it's only set if the view is the same.
-  const parentInSameView = parent && parent !== tHostNode;
+  // FIXME(misko): This check for `TNodeType.View` should not be needed. But removing it breaks DI,
+  // so more investigation is needed.
+  const parentInSameView = parent !== null && parent.type !== TNodeType.View;
   const tParentNode = parentInSameView ? parent as TElementNode | TContainerNode : null;
   const tNode = tView.data[adjustedIndex] =
       createTNode(tView, tParentNode, type, adjustedIndex, name, attrs);

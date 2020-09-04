@@ -463,7 +463,7 @@ function createDynamicNodeAtIndex(
   ngDevMode && assertIndexInRange(lView, index + HEADER_OFFSET);
   lView[index + HEADER_OFFSET] = native;
   // FIXME(misko): Why does this create A TNode??? I would not expect this to be here.
-  const tNode = getOrCreateTNode(tView, lView[T_HOST], index, type as any, name, null);
+  const tNode = getOrCreateTNode(tView, index, type as any, name, null);
 
   // We are creating a dynamic node, the previous tNode might not be pointing at this node.
   // We will link ourselves into the tree later with `appendI18nNode`.
