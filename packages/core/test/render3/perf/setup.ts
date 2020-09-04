@@ -50,7 +50,7 @@ export function setupTestHarness(
     directiveRegistry: DirectiveDefList|null = null): TestHarness {
   // Create a root view with a container
   const hostTView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, consts);
-  const tContainerNode = getOrCreateTNode(hostTView, null, 0, TNodeType.Container, null, null);
+  const tContainerNode = getOrCreateTNode(hostTView, 0, TNodeType.Container, null, null);
   const hostNode = renderer.createElement('div');
   const hostLView = createLView(
       null, hostTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, hostNode, null,

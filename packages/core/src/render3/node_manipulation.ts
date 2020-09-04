@@ -520,7 +520,7 @@ function getRenderParent(tView: TView, tNode: TNode, currentView: LView): REleme
   // can't be used as a render parent.
   let parentTNode = tNode.parent;
   while (parentTNode != null &&
-         (parentTNode.type === TNodeType.ElementContainer ||
+         (parentTNode.type === TNodeType.ElementContainer || parentTNode.type === TNodeType.View ||
           parentTNode.type === TNodeType.IcuContainer)) {
     tNode = parentTNode;
     parentTNode = tNode.parent;

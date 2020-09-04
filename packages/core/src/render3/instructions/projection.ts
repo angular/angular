@@ -125,7 +125,7 @@ export function ɵɵprojection(
   const lView = getLView();
   const tView = getTView();
   const tProjectionNode =
-      getOrCreateTNode(tView, lView[T_HOST], nodeIndex, TNodeType.Projection, null, attrs || null);
+      getOrCreateTNode(tView, nodeIndex, TNodeType.Projection, null, attrs || null);
 
   // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
   if (tProjectionNode.projection === null) tProjectionNode.projection = selectorIndex;

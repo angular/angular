@@ -278,7 +278,7 @@ export function renderTemplate<T>(
     def.pipeDefs = pipes || null;
 
     const componentTView = getOrCreateTComponentView(def);
-    const hostTNode = getOrCreateTNode(tView, hostLView[T_HOST], 0, TNodeType.Element, null, null);
+    const hostTNode = getOrCreateTNode(tView, 0, TNodeType.Element, null, null);
     hostLView[hostTNode.index] = hostNode;
     componentView = createLView(
         hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,

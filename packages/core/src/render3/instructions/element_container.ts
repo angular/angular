@@ -27,8 +27,7 @@ function elementContainerStartFirstCreatePass(
 
   const tViewConsts = tView.consts;
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
-  const tNode = getOrCreateTNode(
-      tView, lView[T_HOST], index, TNodeType.ElementContainer, 'ng-container', attrs);
+  const tNode = getOrCreateTNode(tView, index, TNodeType.ElementContainer, 'ng-container', attrs);
 
   // While ng-container doesn't necessarily support styling, we use the style context to identify
   // and execute directives on the ng-container.
