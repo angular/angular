@@ -846,7 +846,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
 
             expect(humanizeNodes(rootNodes, true)).toEqual([
               [html.Element, 'div', 0, '<div', '<div', null],
-              [html.Element, 'span', 0, '<span>', '<span>', '</span>'],
+              [html.Element, 'span', 0, '<span><div  </span>', '<span>', '</span>'],
               [html.Element, 'div', 1, '<div  ', '<div  ', null],
             ]);
 
@@ -864,7 +864,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
               [html.Element, 'div', 0, '<div class="hi" sty', '<div class="hi" sty', null],
               [html.Attribute, 'class', 'hi', 'class="hi"'],
               [html.Attribute, 'sty', '', 'sty'],
-              [html.Element, 'span', 0, '<span>', '<span>', '</span>'],
+              [html.Element, 'span', 0, '<span></span>', '<span>', '</span>'],
             ]);
 
             expect(humanizeErrors(errors)).toEqual([
@@ -878,7 +878,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
             expect(humanizeNodes(rootNodes, true)).toEqual([
               [html.Element, 'div', 0, '<div ', '<div ', null],
               [html.Text, '"', 0, '"'],
-              [html.Element, 'span', 0, '<span>', '<span>', '</span>'],
+              [html.Element, 'span', 0, '<span></span>', '<span>', '</span>'],
             ]);
 
             expect(humanizeErrors(errors)).toEqual([
