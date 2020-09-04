@@ -20,10 +20,15 @@ import {LView, TVIEW, TView} from './interfaces/view';
 
 
 export function assertTNodeForLView(tNode: TNode, lView: LView) {
+  assertTNodeForTView(tNode, lView[TVIEW]);
+}
+
+export function assertTNodeForTView(tNode: TNode, tView: TView) {
+  assertDefined(tNode, 'TNode must be defined');
   tNode.hasOwnProperty('tView_') &&
       assertEqual(
-          (tNode as any as {tView_: TView}).tView_, lView[TVIEW],
-          'This TNode does not belong to this LView.');
+          (tNode as any as {tView_: TView}).tView_, tView,
+          'This TNode does not belong to this TView.');
 }
 
 export function assertComponentType(

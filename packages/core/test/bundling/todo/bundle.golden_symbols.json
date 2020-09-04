@@ -396,6 +396,9 @@
     "name": "getNodeInjectable"
   },
   {
+    "name": "getNonViewFirstChild"
+  },
+  {
     "name": "getOrCreateInjectable"
   },
   {

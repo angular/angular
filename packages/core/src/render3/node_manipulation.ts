@@ -9,7 +9,7 @@
 import {Renderer2} from '../core';
 import {ViewEncapsulation} from '../metadata/view';
 import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertDomNode, assertEqual, assertString} from '../util/assert';
+import {assertDefined, assertDomNode, assertEqual, assertSame, assertString} from '../util/assert';
 
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
@@ -23,7 +23,7 @@ import {isLContainer, isLView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, unwrapRNode, updateTransplantedViewCount} from './util/view_utils';
+import {getNativeByTNode, getNonViewFirstChild, unwrapRNode, updateTransplantedViewCount} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -733,7 +733,7 @@ export function getBeforeNodeForView(viewIndexInContainer: number, lContainer: L
   const nextViewIndex = CONTAINER_HEADER_OFFSET + viewIndexInContainer + 1;
   if (nextViewIndex < lContainer.length) {
     const lView = lContainer[nextViewIndex] as LView;
-    const firstTNodeOfView = lView[TVIEW].firstChild;
+    const firstTNodeOfView = getNonViewFirstChild(lView[TVIEW]);
     if (firstTNodeOfView !== null) {
       return getFirstNativeNode(lView, firstTNodeOfView);
     }
@@ -824,7 +824,7 @@ function applyView(
     tView: TView, lView: LView, renderer: Renderer3, action: WalkTNodeTreeAction,
     renderParent: RElement|null, beforeNode: RNode|null) {
   ngDevMode && assertNodeType(tView.node!, TNodeType.View);
-  const viewRootTNode: TNode|null = tView.node!.child;
+  const viewRootTNode: TNode|null = getNonViewFirstChild(tView);
   applyNodes(renderer, action, viewRootTNode, lView, renderParent, beforeNode, false);
 }
 

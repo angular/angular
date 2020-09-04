@@ -7,7 +7,7 @@
  */
 
 import {assertDefined, assertEqual} from '../util/assert';
-import {assertLViewOrUndefined} from './assert';
+import {assertLViewOrUndefined, assertTNodeForTView} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TData, TVIEW, TView} from './interfaces/view';
@@ -54,6 +54,7 @@ interface LFrame {
    *
    * This is used in conjunction with `isParent`.
    */
+  // FIXME(misko): should be `TNode|null` (add comment explaining it.)
   previousOrParentTNode: TNode;
 
   /**
@@ -267,6 +268,7 @@ export function getPreviousOrParentTNode(): TNode {
 }
 
 export function setPreviousOrParentTNode(tNode: TNode, isParent: boolean) {
+  ngDevMode && assertTNodeForTView(tNode, instructionState.lFrame.tView);
   instructionState.lFrame.previousOrParentTNode = tNode;
   instructionState.lFrame.isParent = isParent;
 }
@@ -401,10 +403,9 @@ export function enterDI(newView: LView, tNode: TNode) {
  * exited the state has to be restored
  *
  * @param newView New lView to become active
- * @param tNode Element to which the View is a child of
  * @returns the previously active lView;
  */
-export function enterView(newView: LView, tNode: TNode|null): void {
+export function enterView(newView: LView): void {
   ngDevMode && assertLViewOrUndefined(newView);
   const newLFrame = allocLFrame();
   if (ngDevMode) {
@@ -420,7 +421,8 @@ export function enterView(newView: LView, tNode: TNode|null): void {
   }
   const tView = newView[TVIEW];
   instructionState.lFrame = newLFrame;
-  newLFrame.previousOrParentTNode = tNode!;
+  ngDevMode && tView.firstChild && assertTNodeForTView(tView.firstChild, tView);
+  newLFrame.previousOrParentTNode = tView.firstChild!;
   newLFrame.lView = newView;
   newLFrame.tView = tView;
   newLFrame.contextLView = newView!;
