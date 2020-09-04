@@ -19,7 +19,7 @@ import {CONTEXT, DECLARATION_COMPONENT_VIEW, FLAGS, HOST, LView, LViewFlags, T_H
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {getLViewParent} from './util/view_traversal_utils';
-import {unwrapRNode} from './util/view_utils';
+import {getNonViewFirstChild, unwrapRNode} from './util/view_utils';
 
 
 
@@ -340,7 +340,7 @@ function collectNativeNodes(
     if (isLContainer(lNode)) {
       for (let i = CONTAINER_HEADER_OFFSET; i < lNode.length; i++) {
         const lViewInAContainer = lNode[i];
-        const lViewFirstChildTNode = lViewInAContainer[TVIEW].firstChild;
+        const lViewFirstChildTNode = getNonViewFirstChild(lViewInAContainer[TVIEW]);
         if (lViewFirstChildTNode !== null) {
           collectNativeNodes(
               lViewInAContainer[TVIEW], lViewInAContainer, lViewFirstChildTNode, result);

@@ -459,7 +459,9 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes = getOpCodes(attrs, () => {
+        ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
+        ɵɵelementEnd();
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual(debugMatch([
@@ -473,7 +475,9 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes = getOpCodes(attrs, () => {
+        ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
+        ɵɵelementEnd();
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual(debugMatch([
@@ -487,7 +491,9 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes = getOpCodes(attrs, () => {
+        ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
+        ɵɵelementEnd();
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual(debugMatch([

@@ -337,7 +337,7 @@ export function allocExpando(tView: TView, lView: LView, numSlotsToAlloc: number
  */
 export function renderView<T>(tView: TView, lView: LView, context: T): void {
   ngDevMode && assertEqual(isCreationMode(lView), true, 'Should be run in creation mode');
-  enterView(lView, lView[T_HOST]);
+  enterView(lView);
   try {
     const viewQuery = tView.viewQuery;
     if (viewQuery !== null) {
@@ -407,7 +407,7 @@ export function refreshView<T>(
   ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
   const flags = lView[FLAGS];
   if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) return;
-  enterView(lView, lView[T_HOST]);
+  enterView(lView);
   const checkNoChangesMode = getCheckNoChangesMode();
   try {
     resetPreOrderHookFlags(lView);
@@ -623,7 +623,7 @@ export function getOrCreateTComponentView(def: ComponentDef<any>): TView {
   const tView = def.tView;
 
   // Create a TView if there isn't one, or recreate it if the first create pass didn't
-  // complete successfuly since we can't know for sure whether it's in a usable shape.
+  // complete successfully since we can't know for sure whether it's in a usable shape.
   if (tView === null || tView.incompleteFirstPass) {
     return def.tView = createTView(
                TViewType.Component, -1, def.template, def.decls, def.vars, def.directiveDefs,

@@ -17,7 +17,7 @@ import {KeyValueArray} from '@angular/core/src/util/array_utils';
 
 describe('lView_debug', () => {
   const mockFirstUpdatePassLView: LView = [null, {firstUpdatePass: true}] as any;
-  beforeEach(() => enterView(mockFirstUpdatePassLView, null));
+  beforeEach(() => enterView(mockFirstUpdatePassLView));
   afterEach(() => leaveView());
 
   describe('TNode', () => {

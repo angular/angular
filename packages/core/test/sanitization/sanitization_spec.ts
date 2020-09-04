@@ -20,7 +20,7 @@ function fakeLView(): LView {
 }
 
 describe('sanitization', () => {
-  beforeEach(() => enterView(fakeLView(), null));
+  beforeEach(() => enterView(fakeLView()));
   afterEach(() => leaveView());
   class Wrap {
     constructor(private value: string) {}

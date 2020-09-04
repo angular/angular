@@ -134,7 +134,7 @@ export function renderComponent<T>(
       null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, undefined,
       opts.injector || null);
 
-  enterView(rootView, null);
+  enterView(rootView);
   let component: T;
 
   try {
