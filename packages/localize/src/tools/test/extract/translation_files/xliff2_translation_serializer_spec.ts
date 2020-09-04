@@ -54,6 +54,13 @@ runInEachFileSystem(() => {
                 end: {line: 3, column: 2}
               }
             }),
+            mockMessage('location-only', ['a', '', 'c'], ['START_TAG_SPAN', 'CLOSE_TAG_SPAN'], {
+              location: {
+                file: absoluteFrom('/project/file.ts'),
+                start: {line: 2, column: 7},
+                end: {line: 3, column: 2}
+              }
+            }),
             mockMessage('13579', ['', 'b', ''], ['START_BOLD_TEXT', 'CLOSE_BOLD_TEXT'], {}),
             mockMessage('24680', ['a'], [], {meaning: 'meaning', description: 'and description'}),
             mockMessage('80808', ['multi\nlines'], [], {}),
@@ -96,6 +103,14 @@ runInEachFileSystem(() => {
             `      <notes>`,
             `        <note category="location">file.ts:3,4</note>`,
             `        <note category="description">some description</note>`,
+            `      </notes>`,
+            `      <segment>`,
+            `        <source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN"></pc>c</source>`,
+            `      </segment>`,
+            `    </unit>`,
+            `    <unit id="location-only">`,
+            `      <notes>`,
+            `        <note category="location">file.ts:3,4</note>`,
             `      </notes>`,
             `      <segment>`,
             `        <source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN"></pc>c</source>`,
