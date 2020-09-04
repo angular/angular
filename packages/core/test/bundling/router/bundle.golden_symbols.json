@@ -1356,6 +1356,9 @@
     "name": "getNodeInjectable"
   },
   {
+    "name": "getNonViewFirstChild"
+  },
+  {
     "name": "getNullInjector"
   },
   {

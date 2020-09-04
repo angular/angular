@@ -174,7 +174,7 @@ export function createRootComponentView(
   const tView = rootView[TVIEW];
   ngDevMode && assertIndexInRange(rootView, 0 + HEADER_OFFSET);
   rootView[0 + HEADER_OFFSET] = rNode;
-  const tNode: TElementNode = getOrCreateTNode(tView, null, 0, TNodeType.Element, null, null);
+  const tNode: TElementNode = getOrCreateTNode(tView, 0, TNodeType.Element, null, null);
   const mergedAttrs = tNode.mergedAttrs = def.hostAttrs;
   if (mergedAttrs !== null) {
     computeStaticStyling(tNode, mergedAttrs, true);

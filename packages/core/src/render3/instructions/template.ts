@@ -28,7 +28,7 @@ function templateFirstCreatePass(
   const tViewConsts = tView.consts;
   // TODO(pk): refactor getOrCreateTNode to have the "create" only version
   const tNode = getOrCreateTNode(
-      tView, lView[T_HOST], index, TNodeType.Container, tagName || null,
+      tView, index, TNodeType.Container, tagName || null,
       getConstant<TAttributes>(tViewConsts, attrsIndex));
 
   resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
