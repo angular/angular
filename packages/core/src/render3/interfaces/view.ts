@@ -1021,4 +1021,48 @@ export interface DebugNode {
    * Child nodes
    */
   children: DebugNode[];
+
+  /**
+   * A list of Component/Directive types which need to be instantiated an this location.
+   */
+  factories: Type<unknown>[];
+
+  /**
+   * A list of Component/Directive instances which were instantiated an this location.
+   */
+  instances: unknown[];
+
+  /**
+   * NodeInjector information.
+   */
+  injector: NodeInjectorDebug;
+}
+
+interface NodeInjectorDebug {
+  /**
+   * Instance bloom. Does the current injector have a provider with a given bloom mask.
+   */
+  bloom: string;
+
+
+  /**
+   * Cumulative bloom. Do any of the above injectors have a provider with a given bloom mask.
+   */
+  cumulativeBloom: string;
+
+  /**
+   * A list of providers associated with this injector.
+   */
+  providers: (Type<unknown>|DirectiveDef<unknown>|ComponentDef<unknown>)[];
+
+  /**
+   * A list of providers associated with this injector visible to the view of the component only.
+   */
+  viewProviders: Type<unknown>[];
+
+
+  /**
+   * Location of the parent `TNode`.
+   */
+  parentInjectorIndex: number;
 }
