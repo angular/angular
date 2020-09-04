@@ -16,7 +16,7 @@ import {newArray} from '@angular/core/src/util/array_utils';
 
 describe('TNode styling linked list', () => {
   const mockFirstUpdatePassLView: LView = [null, {firstUpdatePass: true}] as any;
-  beforeEach(() => enterView(mockFirstUpdatePassLView, null));
+  beforeEach(() => enterView(mockFirstUpdatePassLView));
   afterEach(() => leaveView());
   describe('insertTStylingBinding', () => {
     it('should append template only', () => {

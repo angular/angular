@@ -265,7 +265,7 @@ export function renderTemplate<T>(
     const hostLView = createLView(
         null, tView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
         providedRendererFactory, renderer);
-    enterView(hostLView, null);
+    enterView(hostLView);
 
     const def: ComponentDef<any> = ɵɵdefineComponent({
       type: Object,

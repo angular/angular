@@ -16,7 +16,7 @@ describe('static styling', () => {
   const mockFirstCreatePassLView: LView = [null, {firstCreatePass: true}] as any;
   let tNode!: TNode;
   beforeEach(() => {
-    enterView(mockFirstCreatePassLView, null);
+    enterView(mockFirstCreatePassLView);
     tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
   });
   it('should initialize when no attrs', () => {

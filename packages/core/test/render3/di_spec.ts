@@ -228,7 +228,7 @@ describe('di', () => {
       const contentView = createLView(
           null, createTView(TViewType.Component, -1, null, 1, 0, null, null, null, null, null), {},
           LViewFlags.CheckAlways, null, null, {} as any, {} as any);
-      enterView(contentView, null);
+      enterView(contentView);
       try {
         const parentTNode =
             getOrCreateTNode(contentView[TVIEW], null, 0, TNodeType.Element, null, null);

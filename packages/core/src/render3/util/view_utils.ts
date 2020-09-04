@@ -10,7 +10,7 @@ import {assertDefined, assertDomNode, assertGreaterThan, assertIndexInRange, ass
 import {assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
-import {TConstants, TNode} from '../interfaces/node';
+import {TConstants, TNode, TNodeType} from '../interfaces/node';
 import {isProceduralRenderer, RNode} from '../interfaces/renderer';
 import {isLContainer, isLView} from '../interfaces/type_checks';
 import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TView} from '../interfaces/view';
@@ -206,4 +206,17 @@ export function updateTransplantedViewCount(lContainer: LContainer, amount: 1|- 
     viewOrContainer = parent;
     parent = parent[PARENT];
   }
+}
+
+/**
+ * Retrieves the `TView.firstChild` and unwraps if it is `TNodeType.View`.
+ *
+ * We are inconsistent about the way we store root of Views. Embedded views have `TNodeType.View` in
+ * the root but component views do not. A lot of logic does not expect to see `TNodeType.View` and
+ * crashes on it, so we unwrap it.
+ */
+export function getNonViewFirstChild(tView: TView): TNode|null {
+  const firstChild = tView.firstChild;
+  return firstChild === null ? null :
+                               (firstChild.type === TNodeType.View ? firstChild.child : firstChild);
 }

@@ -412,7 +412,7 @@ export function i18nEndFirstPass(tView: TView, lView: LView) {
 
   // Remove deleted nodes
   let index = rootIndex + 1;
-  while (index <= lastCreatedNode.index - HEADER_OFFSET) {
+  while (lastCreatedNode !== null && index <= lastCreatedNode.index - HEADER_OFFSET) {
     if (visitedNodes.indexOf(index) === -1) {
       removeNode(tView, lView, index, /* markAsDetached */ true);
     }

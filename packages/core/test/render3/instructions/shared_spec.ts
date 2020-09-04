@@ -45,7 +45,7 @@ export function enterViewWithOneDiv() {
       null);
   lView[0 + HEADER_OFFSET] = div;
   tView.data[0 + HEADER_OFFSET] = tNode;
-  enterView(lView, tNode);
+  enterView(lView);
 }
 
 export function clearFirstUpdatePass() {
