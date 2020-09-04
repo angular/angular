@@ -49,6 +49,13 @@ runInEachFileSystem(() => {
             mockMessage(
                 '67890', ['a', '', 'c'], ['START_TAG_SPAN', 'CLOSE_TAG_SPAN'],
                 {description: 'some description'}),
+            mockMessage('38705', ['a', '', 'c'], ['START_TAG_SPAN', 'CLOSE_TAG_SPAN'], {
+              location: {
+                file: absoluteFrom('/project/file.ts'),
+                start: {line: 2, column: 7},
+                end: {line: 3, column: 2}
+              }
+            }),
             mockMessage('13579', ['', 'b', ''], ['START_BOLD_TEXT', 'CLOSE_BOLD_TEXT'], {}),
             mockMessage('24680', ['a'], [], {meaning: 'meaning', description: 'and description'}),
             mockMessage('80808', ['multi\nlines'], [], {}),
@@ -90,6 +97,13 @@ runInEachFileSystem(() => {
             `      <trans-unit id="67890" datatype="html">`,
             `        <source>a<x id="START_TAG_SPAN"/><x id="CLOSE_TAG_SPAN"/>c</source>`,
             `        <note priority="1" from="description">some description</note>`,
+            `      </trans-unit>`,
+            `      <trans-unit id="38705" datatype="html">`,
+            `        <source>a<x id="START_TAG_SPAN"/><x id="CLOSE_TAG_SPAN"/>c</source>`,
+            `        <context-group purpose="location">`,
+            `          <context context-type="sourcefile">file.ts</context>`,
+            `          <context context-type="linenumber">3,4</context>`,
+            `        </context-group>`,
             `      </trans-unit>`,
             `      <trans-unit id="13579" datatype="html">`,
             `        <source><x id="START_BOLD_TEXT"/>b<x id="CLOSE_BOLD_TEXT"/></source>`,

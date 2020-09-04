@@ -51,7 +51,7 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
       }
       ids.add(id);
       xml.startTag('unit', {id});
-      if (message.meaning || message.description) {
+      if (message.meaning || message.description || message.location) {
         xml.startTag('notes');
         if (message.location) {
           const {file, start, end} = message.location;
