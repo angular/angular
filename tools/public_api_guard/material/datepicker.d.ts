@@ -72,7 +72,7 @@ export declare class MatCalendar<D> implements AfterContentInit, AfterViewChecke
     multiYearView: MatMultiYearView<D>;
     get selected(): DateRange<D> | D | null;
     set selected(value: DateRange<D> | D | null);
-    readonly selectedChange: EventEmitter<D>;
+    readonly selectedChange: EventEmitter<D | null>;
     get startAt(): D | null;
     set startAt(value: D | null);
     startView: MatCalendarView;
@@ -195,8 +195,7 @@ export declare class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>
     comparisonEnd: D | null;
     comparisonStart: D | null;
     datepicker: MatDatepickerBase<any, S, D>;
-    constructor(elementRef: ElementRef,
-    _changeDetectorRef?: ChangeDetectorRef | undefined, _model?: MatDateSelectionModel<S, D> | undefined, _dateAdapter?: DateAdapter<D> | undefined, _rangeSelectionStrategy?: MatDateRangeSelectionStrategy<D> | undefined);
+    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _model: MatDateSelectionModel<S, D>, _dateAdapter: DateAdapter<D>, _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>);
     _getSelected(): D | DateRange<D> | null;
     _handleUserSelection(event: MatCalendarUserEvent<D | null>): void;
     _startExitAnimation(): void;
@@ -226,7 +225,6 @@ export declare class MatDatepickerInput<D> extends MatDatepickerInputBase<D | nu
     protected _getValueFromModel(modelValue: D | null): D | null;
     protected _openPopup(): void;
     getConnectedOverlayOrigin(): ElementRef;
-    getPopupConnectionElementRef(): ElementRef;
     getStartValue(): D | null;
     getThemePalette(): ThemePalette;
     static ngAcceptInputType_value: any;

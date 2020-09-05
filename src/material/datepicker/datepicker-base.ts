@@ -151,26 +151,18 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
 
   constructor(
     elementRef: ElementRef,
-    /**
-     * @deprecated `_changeDetectorRef`, `_model` and `_rangeSelectionStrategy`
-     * parameters to become required.
-     * @breaking-change 11.0.0
-     */
-    private _changeDetectorRef?: ChangeDetectorRef,
-    private _model?: MatDateSelectionModel<S, D>,
-    private _dateAdapter?: DateAdapter<D>,
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _model: MatDateSelectionModel<S, D>,
+    private _dateAdapter: DateAdapter<D>,
     @Optional() @Inject(MAT_DATE_RANGE_SELECTION_STRATEGY)
-        private _rangeSelectionStrategy?: MatDateRangeSelectionStrategy<D>) {
+        private _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>) {
     super(elementRef);
   }
 
   ngAfterViewInit() {
-    // @breaking-change 11.0.0 Remove null check for `_changeDetectorRef.
-    if (this._changeDetectorRef) {
-      this._subscriptions.add(this.datepicker._stateChanges.subscribe(() => {
-        this._changeDetectorRef!.markForCheck();
-      }));
-    }
+    this._subscriptions.add(this.datepicker._stateChanges.subscribe(() => {
+      this._changeDetectorRef.markForCheck();
+    }));
 
     this._calendar.focusActiveCell();
   }
@@ -181,26 +173,22 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
   }
 
   _handleUserSelection(event: MatCalendarUserEvent<D | null>) {
-    // @breaking-change 11.0.0 Remove null checks for _model,
-    // _rangeSelectionStrategy and _dateAdapter.
-    if (this._model && this._dateAdapter) {
-      const selection = this._model.selection;
-      const value = event.value;
-      const isRange = selection instanceof DateRange;
+    const selection = this._model.selection;
+    const value = event.value;
+    const isRange = selection instanceof DateRange;
 
-      // If we're selecting a range and we have a selection strategy, always pass the value through
-      // there. Otherwise don't assign null values to the model, unless we're selecting a range.
-      // A null value when picking a range means that the user cancelled the selection (e.g. by
-      // pressing escape), whereas when selecting a single value it means that the value didn't
-      // change. This isn't very intuitive, but it's here for backwards-compatibility.
-      if (isRange && this._rangeSelectionStrategy) {
-        const newSelection = this._rangeSelectionStrategy.selectionFinished(value,
-            selection as unknown as DateRange<D>, event.event);
-        this._model.updateSelection(newSelection as unknown as S, this);
-      } else if (value && (isRange ||
-                !this._dateAdapter.sameDate(value, selection as unknown as D))) {
-        this._model.add(value);
-      }
+    // If we're selecting a range and we have a selection strategy, always pass the value through
+    // there. Otherwise don't assign null values to the model, unless we're selecting a range.
+    // A null value when picking a range means that the user cancelled the selection (e.g. by
+    // pressing escape), whereas when selecting a single value it means that the value didn't
+    // change. This isn't very intuitive, but it's here for backwards-compatibility.
+    if (isRange && this._rangeSelectionStrategy) {
+      const newSelection = this._rangeSelectionStrategy.selectionFinished(value,
+          selection as unknown as DateRange<D>, event.event);
+      this._model.updateSelection(newSelection as unknown as S, this);
+    } else if (value && (isRange ||
+              !this._dateAdapter.sameDate(value, selection as unknown as D))) {
+      this._model.add(value);
     }
 
     if (!this._model || this._model.isComplete()) {
@@ -210,16 +198,11 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
 
   _startExitAnimation() {
     this._animationState = 'void';
-
-    // @breaking-change 11.0.0 Remove null check for `_changeDetectorRef`.
-    if (this._changeDetectorRef) {
-      this._changeDetectorRef.markForCheck();
-    }
+    this._changeDetectorRef.markForCheck();
   }
 
   _getSelected() {
-    // @breaking-change 11.0.0 Remove null check for `_model`.
-    return this._model ? this._model.selection as unknown as D | DateRange<D> | null : null;
+    return this._model.selection as unknown as D | DateRange<D> | null;
   }
 }
 

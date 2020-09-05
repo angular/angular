@@ -18,6 +18,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/issues/20463',
       changes: ['MatChip', 'MatChipRemove']
+    },
+    {
+      pr: 'https://github.com/angular/components/pull/20449',
+      changes: ['MatDatepickerContent']
     }
   ],
   [TargetVersion.V10]: [

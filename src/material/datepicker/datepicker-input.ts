@@ -148,14 +148,6 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
     return this.value;
   }
 
-  /**
-   * @deprecated
-   * @breaking-change 8.0.0 Use `getConnectedOverlayOrigin` instead
-   */
-  getPopupConnectionElementRef(): ElementRef {
-    return this.getConnectedOverlayOrigin();
-  }
-
   /** Opens the associated datepicker. */
   protected _openPopup(): void {
     if (this._datepicker) {

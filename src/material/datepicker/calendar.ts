@@ -253,11 +253,8 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   /** End of the comparison range. */
   @Input() comparisonEnd: D | null;
 
-  /**
-   * Emits when the currently selected date changes.
-   * @breaking-change 11.0.0 Emitted value to change to `D | null`.
-   */
-  @Output() readonly selectedChange: EventEmitter<D> = new EventEmitter<D>();
+  /** Emits when the currently selected date changes. */
+  @Output() readonly selectedChange: EventEmitter<D | null> = new EventEmitter<D | null>();
 
   /**
    * Emits the year chosen in multiyear view.
@@ -395,9 +392,7 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
 
     if (this.selected instanceof DateRange ||
         (date && !this._dateAdapter.sameDate(date, this.selected))) {
-      // @breaking-change 11.0.0 remove non-null assertion
-      // once the `selectedChange` is allowed to be null.
-      this.selectedChange.emit(date!);
+      this.selectedChange.emit(date);
     }
 
     this._userSelection.emit(event);
