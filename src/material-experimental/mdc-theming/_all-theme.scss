@@ -13,6 +13,7 @@
 @import '../mdc-tabs/tabs-theme';
 @import '../mdc-table/table-theme';
 @import '../mdc-progress-bar/progress-bar-theme';
+@import '../mdc-progress-spinner/progress-spinner-theme';
 @import '../mdc-input/input-theme';
 @import '../mdc-form-field/form-field-theme';
 @import '../../material/core/core';
@@ -32,6 +33,7 @@
     @include mat-mdc-list-theme($theme-or-color-config);
     @include mat-mdc-menu-theme($theme-or-color-config);
     @include mat-mdc-progress-bar-theme($theme-or-color-config);
+    @include mat-mdc-progress-spinner-theme($theme-or-color-config);
     @include mat-mdc-radio-theme($theme-or-color-config);
     @include mat-mdc-slide-toggle-theme($theme-or-color-config);
     @include mat-mdc-snack-bar-theme($theme-or-color-config);
