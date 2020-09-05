@@ -80,11 +80,6 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
       this._initInteractiveListItem();
     }
 
-    // Only interactive list items are commonly focusable, but in some situations,
-    // consumers provide a custom tabindex. We still would want to have strong focus
-    // indicator support in such scenarios.
-    this._hostElement.classList.add('mat-mdc-focus-indicator');
-
     // If no type attribute is specified for a host `<button>` element, set it to `button`. If a
     // type attribute is already specified, we do nothing. We do this for backwards compatibility.
     // TODO: Determine if we intend to continue doing this for the MDC-based list.
@@ -143,7 +138,7 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
 @Directive()
 /** @docs-private */
 export abstract class MatListBase {
-  @HostBinding('class.mdc-list--non-interactive')
+  @HostBinding('class.mat-mdc-list-non-interactive')
   _isNonInteractive: boolean = true;
 
   /** Whether ripples for all list items is disabled. */

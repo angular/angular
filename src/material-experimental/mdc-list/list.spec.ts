@@ -23,17 +23,14 @@ describe('MDC-based MatList', () => {
     TestBed.compileComponents();
   }));
 
-  it('should apply an additional class lists without lines', () => {
+  it('should apply an additional class to lists without lines', () => {
     const fixture = TestBed.createComponent(ListWithOneItem);
     const listItem = fixture.debugElement.query(By.css('mat-list-item'))!;
     fixture.detectChanges();
-    expect(listItem.nativeElement.classList.length).toBe(4);
+    expect(listItem.nativeElement.classList.length).toBe(3);
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item');
     expect(listItem.nativeElement.classList).toContain('mdc-list-item');
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item-single-line');
-
-    // This spec also ensures the focus indicator is present.
-    expect(listItem.nativeElement.classList).toContain('mat-mdc-focus-indicator');
   });
 
   it('should apply mat-mdc-2-line class to lists with two lines', () => {
@@ -63,6 +60,16 @@ describe('MDC-based MatList', () => {
     expect(listItems[1].nativeElement.className).toContain('mat-mdc-multi-line');
   });
 
+  it('should have a strong focus indicator configured for all list-items', () => {
+    const fixture = TestBed.createComponent(ListWithManyLines);
+    fixture.detectChanges();
+    const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'))
+      .map(debugEl => debugEl.nativeElement as HTMLElement);
+
+    expect(listItems.every(i => i.querySelector('.mat-mdc-focus-indicator') !== null))
+      .toBe(true, 'Expected all list items to have a strong focus indicator element.');
+  });
+
   it('should not clear custom classes provided by user', () => {
     const fixture = TestBed.createComponent(ListWithItemWithCssClass);
     fixture.detectChanges();
@@ -77,11 +84,10 @@ describe('MDC-based MatList', () => {
     fixture.detectChanges();
 
     const listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'))!;
-    expect(listItem.nativeElement.classList.length).toBe(4);
+    expect(listItem.nativeElement.classList.length).toBe(3);
     expect(listItem.nativeElement.classList).toContain('mat-mdc-2-line');
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item');
     expect(listItem.nativeElement.classList).toContain('mdc-list-item');
-    expect(listItem.nativeElement.classList).toContain('mat-mdc-focus-indicator');
 
     fixture.debugElement.componentInstance.showThirdLine = true;
     fixture.detectChanges();

@@ -73,8 +73,10 @@
   .mat-mdc-slide-toggle-focused .mat-mdc-focus-indicator::before,
   .mat-mdc-radio-button.cdk-focused .mat-mdc-focus-indicator::before,
 
-  // For buttons, render the focus indicator when the parent button is focused.
+  // For buttons and list items, render the focus indicator when the parent
+  // button or list item is focused.
   .mat-mdc-button-base:focus .mat-mdc-focus-indicator::before,
+  .mat-mdc-list-item:focus > .mat-mdc-focus-indicator::before,
 
   // For options, render the focus indicator when the class .mat-mdc-option-active is present.
   .mat-mdc-focus-indicator.mat-mdc-option-active::before,

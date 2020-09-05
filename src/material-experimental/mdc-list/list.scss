@@ -97,14 +97,24 @@
   }
 }
 
-// MDC's state styles are included with their ripple which we don't use. Instead we add
-// the focus and hover styles ourselves using this pseudo-element
+// MDC's hover and focus state styles are included with their ripple which we don't use.
+// Instead we add the focus, hover and selected styles ourselves using this pseudo-element
 .mat-mdc-list-item-interactive::before {
+  @include mat-fill();
   content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
   opacity: 0;
+}
+
+// MDC always sets the cursor to `pointer`. We do not want to show this for non-interactive
+// lists. See: https://github.com/material-components/material-components-web/issues/6443
+.mat-mdc-list-non-interactive .mdc-list-item {
+  cursor: default;
+}
+
+// The MDC-based list items already use the `::before` pseudo element for the standard
+// focus/selected/hover state. Hence, we need to have a separate list-item spanning
+// element that can be used for strong focus indicators.
+.mat-mdc-list-item > .mat-mdc-focus-indicator {
+  @include mat-fill();
+  pointer-events: none;
 }

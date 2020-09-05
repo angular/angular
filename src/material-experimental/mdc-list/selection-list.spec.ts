@@ -735,10 +735,11 @@ describe('MDC-based MatSelectionList without forms', () => {
     });
 
     it('should have a focus indicator', () => {
-      const optionNativeElements = listOptions.map(option => option.nativeElement);
+      const optionNativeElements = listOptions.map(option =>
+        option.nativeElement as HTMLElement);
 
       expect(optionNativeElements
-        .every(element => element.classList.contains('mat-mdc-focus-indicator'))).toBe(true);
+        .every(element => element.querySelector('.mat-mdc-focus-indicator') !== null)).toBe(true);
     });
 
   });
