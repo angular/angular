@@ -19,6 +19,7 @@ import {
   Output,
   AfterViewInit,
   OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -97,7 +98,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
 
     if (this._disabled !== newValue) {
       this._disabled = newValue;
-      this._stateChanges.next(undefined);
+      this.stateChanges.next(undefined);
     }
 
     // We need to null check the `blur` method, because it's undefined during SSR.
@@ -125,7 +126,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   _valueChange = new EventEmitter<D | null>();
 
   /** Emits when the internal state has changed */
-  _stateChanges = new Subject<void>();
+  stateChanges = new Subject<void>();
 
   _onTouched = () => {};
   _validatorOnChange = () => {};
@@ -270,15 +271,17 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
     this._isInitialized = true;
   }
 
-  ngOnChanges() {
-    this._stateChanges.next(undefined);
+  ngOnChanges(changes: SimpleChanges) {
+    if (dateInputsHaveChanged(changes, this._dateAdapter)) {
+      this.stateChanges.next(undefined);
+    }
   }
 
   ngOnDestroy() {
     this._valueChangesSubscription.unsubscribe();
     this._localeSubscription.unsubscribe();
     this._valueChange.complete();
-    this._stateChanges.complete();
+    this.stateChanges.complete();
   }
 
   /** @docs-private */
@@ -393,4 +396,28 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   // may accept different types.
   static ngAcceptInputType_value: any;
   static ngAcceptInputType_disabled: BooleanInput;
+}
+
+/**
+ * Checks whether the `SimpleChanges` object from an `ngOnChanges`
+ * callback has any changes, accounting for date objects.
+ */
+export function dateInputsHaveChanged(
+  changes: SimpleChanges,
+  adapter: DateAdapter<unknown>): boolean {
+  const keys = Object.keys(changes);
+
+  for (let key of keys) {
+    const {previousValue, currentValue} = changes[key];
+
+    if (adapter.isDateInstance(previousValue) && adapter.isDateInstance(currentValue)) {
+      if (!adapter.sameDate(previousValue, currentValue)) {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
+
+  return false;
 }

@@ -232,7 +232,7 @@ export interface MatDatepickerControl<D> {
   disabled: boolean;
   dateFilter: DateFilterFn<D>;
   getConnectedOverlayOrigin(): ElementRef;
-  _stateChanges: Observable<void>;
+  stateChanges: Observable<void>;
 }
 
 /** Base class for a datepicker. */
@@ -442,7 +442,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     this._inputStateChanges.unsubscribe();
     this._datepickerInput = input;
     this._inputStateChanges =
-        input._stateChanges.subscribe(() => this._stateChanges.next(undefined));
+        input.stateChanges.subscribe(() => this._stateChanges.next(undefined));
     return this._model;
   }
 

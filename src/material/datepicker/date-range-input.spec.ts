@@ -1,6 +1,13 @@
-import {Type, Component, ViewChild, ElementRef} from '@angular/core';
+import {Type, Component, ViewChild, ElementRef, Directive} from '@angular/core';
 import {ComponentFixture, TestBed, inject, fakeAsync, tick} from '@angular/core/testing';
-import {FormsModule, ReactiveFormsModule, FormGroup, FormControl} from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormGroup,
+  FormControl,
+  NG_VALIDATORS,
+  Validator,
+} from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {MatNativeDateModule} from '@angular/material/core';
@@ -15,7 +22,9 @@ import {MatDateRangePicker} from './date-range-picker';
 import {MatStartDate, MatEndDate} from './date-range-input-parts';
 
 describe('MatDateRangeInput', () => {
-  function createComponent<T>(component: Type<T>): ComponentFixture<T> {
+  function createComponent<T>(
+    component: Type<T>,
+    declarations: Type<any>[] = []): ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
@@ -26,7 +35,7 @@ describe('MatDateRangeInput', () => {
         ReactiveFormsModule,
         MatNativeDateModule,
       ],
-      declarations: [component],
+      declarations: [component, ...declarations],
     });
 
     return TestBed.createComponent(component);
@@ -626,6 +635,78 @@ describe('MatDateRangeInput', () => {
     endSubscription.unsubscribe();
   });
 
+  it('should not trigger validators if new date object for same date is set for `min`', () => {
+    const fixture = createComponent(RangePickerWithCustomValidator, [CustomValidator]);
+    fixture.detectChanges();
+    const minDate = new Date(2019, 0, 1);
+    const validator = fixture.componentInstance.validator;
+
+    validator.validate.calls.reset();
+    fixture.componentInstance.min = minDate;
+    fixture.detectChanges();
+    expect(validator.validate).toHaveBeenCalledTimes(1);
+
+    fixture.componentInstance.min = new Date(minDate);
+    fixture.detectChanges();
+
+    expect(validator.validate).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not trigger validators if new date object for same date is set for `max`', () => {
+    const fixture = createComponent(RangePickerWithCustomValidator, [CustomValidator]);
+    fixture.detectChanges();
+    const maxDate = new Date(2120, 0, 1);
+    const validator = fixture.componentInstance.validator;
+
+    validator.validate.calls.reset();
+    fixture.componentInstance.max = maxDate;
+    fixture.detectChanges();
+    expect(validator.validate).toHaveBeenCalledTimes(1);
+
+    fixture.componentInstance.max = new Date(maxDate);
+    fixture.detectChanges();
+
+    expect(validator.validate).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not emit to `stateChanges` if new date object for same date is set for `min`', () => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+
+    const minDate = new Date(2019, 0, 1);
+    const spy = jasmine.createSpy('stateChanges spy');
+    const subscription = fixture.componentInstance.rangeInput.stateChanges.subscribe(spy);
+
+    fixture.componentInstance.minDate = minDate;
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    fixture.componentInstance.minDate = new Date(minDate);
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    subscription.unsubscribe();
+  });
+
+  it('should not emit to `stateChanges` if new date object for same date is set for `max`', () => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+
+    const maxDate = new Date(2120, 0, 1);
+    const spy = jasmine.createSpy('stateChanges spy');
+    const subscription = fixture.componentInstance.rangeInput.stateChanges.subscribe(spy);
+
+    fixture.componentInstance.maxDate = maxDate;
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    fixture.componentInstance.maxDate = new Date(maxDate);
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    subscription.unsubscribe();
+  });
+
 });
 
 @Component({
@@ -735,4 +816,38 @@ class RangePickerNgModel {
 class RangePickerNoLabel {
   @ViewChild('start') start: ElementRef<HTMLInputElement>;
   @ViewChild('end') end: ElementRef<HTMLInputElement>;
+}
+
+
+@Directive({
+  selector: '[customValidator]',
+  providers: [{
+    provide: NG_VALIDATORS,
+    useExisting: CustomValidator,
+    multi: true
+  }]
+})
+class CustomValidator implements Validator {
+  validate = jasmine.createSpy('validate spy').and.returnValue(null);
+}
+
+
+@Component({
+  template: `
+    <mat-form-field>
+      <mat-date-range-input [rangePicker]="rangePicker" [min]="min" [max]="max">
+        <input matStartDate [(ngModel)]="start" customValidator/>
+        <input matEndDate [(ngModel)]="end" customValidator/>
+      </mat-date-range-input>
+
+      <mat-date-range-picker #rangePicker></mat-date-range-picker>
+    </mat-form-field>
+  `
+})
+class RangePickerWithCustomValidator {
+  @ViewChild(CustomValidator) validator: CustomValidator;
+  start: Date | null = null;
+  end: Date | null = null;
+  min: Date;
+  max: Date;
 }

@@ -20,6 +20,7 @@ import {
   ElementRef,
   Inject,
   OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import {MatFormFieldControl, MatFormField, MAT_FORM_FIELD} from '@angular/material/form-field';
 import {ThemePalette, DateAdapter} from '@angular/material/core';
@@ -34,7 +35,7 @@ import {
 } from './date-range-input-parts';
 import {MatDatepickerControl} from './datepicker-base';
 import {createMissingDateImplError} from './datepicker-errors';
-import {DateFilterFn} from './datepicker-input-base';
+import {DateFilterFn, dateInputsHaveChanged} from './datepicker-input-base';
 import {MatDateRangePicker, MatDateRangePickerInput} from './date-range-picker';
 import {DateRange, MatDateSelectionModel} from './date-selection-model';
 
@@ -71,9 +72,6 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   get value() {
     return this._model ? this._model.selection : null;
   }
-
-  /** Emits when the input's state has changed. */
-  stateChanges = new Subject<void>();
 
   /** Unique ID for the input. */
   id = `mat-date-range-input-${nextUniqueId++}`;
@@ -133,8 +131,12 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   @Input()
   get min(): D | null { return this._min; }
   set min(value: D | null) {
-    this._min = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
-    this._revalidate();
+    const validValue = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
+
+    if (!this._dateAdapter.sameDate(validValue, this._min)) {
+      this._min = validValue;
+      this._revalidate();
+    }
   }
   private _min: D | null;
 
@@ -142,8 +144,12 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   @Input()
   get max(): D | null { return this._max; }
   set max(value: D | null) {
-    this._max = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
-    this._revalidate();
+    const validValue = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
+
+    if (!this._dateAdapter.sameDate(validValue, this._max)) {
+      this._max = validValue;
+      this._revalidate();
+    }
   }
   private _max: D | null;
 
@@ -159,7 +165,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
 
     if (newValue !== this._groupDisabled) {
       this._groupDisabled = newValue;
-      this._stateChanges.next(undefined);
+      this.stateChanges.next(undefined);
     }
   }
   _groupDisabled = false;
@@ -205,8 +211,8 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
    */
   ngControl: NgControl | null;
 
-  /** Emits when the input's state changes. */
-  _stateChanges = new Subject<void>();
+  /** Emits when the input's state has changed. */
+  stateChanges = new Subject<void>();
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -263,17 +269,18 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
     // We don't need to unsubscribe from this, because we
     // know that the input streams will be completed on destroy.
     merge(this._startInput.stateChanges, this._endInput.stateChanges).subscribe(() => {
-      this._stateChanges.next(undefined);
+      this.stateChanges.next(undefined);
     });
   }
 
-  ngOnChanges() {
-    this._stateChanges.next(undefined);
+  ngOnChanges(changes: SimpleChanges) {
+    if (dateInputsHaveChanged(changes, this._dateAdapter)) {
+      this.stateChanges.next(undefined);
+    }
   }
 
   ngOnDestroy() {
     this.stateChanges.complete();
-    this._stateChanges.unsubscribe();
   }
 
   /** Gets the date at which the calendar should start. */

@@ -9,9 +9,16 @@ import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
 } from '@angular/cdk/testing/private';
-import {Component, Type, ViewChild, Provider} from '@angular/core';
+import {Component, Type, ViewChild, Provider, Directive} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
-import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {
+  FormControl,
+  FormsModule,
+  NgModel,
+  ReactiveFormsModule,
+  Validator,
+  NG_VALIDATORS,
+} from '@angular/forms';
 import {
   MAT_DATE_LOCALE,
   MatNativeDateModule,
@@ -40,11 +47,12 @@ describe('MatDatepicker', () => {
   const SUPPORTS_INTL = typeof Intl != 'undefined';
 
   // Creates a test component fixture.
-  function createComponent(
-    component: Type<any>,
+  function createComponent<T>(
+    component: Type<T>,
     imports: Type<any>[] = [],
     providers: Provider[] = [],
-    entryComponents: Type<any>[] = []): ComponentFixture<any> {
+    entryComponents: Type<any>[] = [],
+    declarations: Type<any>[] = []): ComponentFixture<T> {
 
     TestBed.configureTestingModule({
       imports: [
@@ -57,7 +65,7 @@ describe('MatDatepicker', () => {
         ...imports
       ],
       providers,
-      declarations: [component, ...entryComponents],
+      declarations: [component, ...declarations, ...entryComponents],
     });
 
     TestBed.overrideModule(BrowserDynamicTestingModule, {
@@ -1955,6 +1963,80 @@ describe('MatDatepicker', () => {
     expect(overlay.style.minWidth).toBeFalsy();
   });
 
+  it('should not trigger validators if new date object for same date is set for `min`', () => {
+    const fixture = createComponent(DatepickerInputWithCustomValidator,
+      [MatNativeDateModule], undefined, undefined, [CustomValidator]);
+    fixture.detectChanges();
+    const minDate = new Date(2019, 0, 1);
+    const validator = fixture.componentInstance.validator;
+
+    validator.validate.calls.reset();
+    fixture.componentInstance.min = minDate;
+    fixture.detectChanges();
+    expect(validator.validate).toHaveBeenCalledTimes(1);
+
+    fixture.componentInstance.min = new Date(minDate);
+    fixture.detectChanges();
+
+    expect(validator.validate).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not trigger validators if new date object for same date is set for `max`', () => {
+    const fixture = createComponent(DatepickerInputWithCustomValidator,
+      [MatNativeDateModule], undefined, undefined, [CustomValidator]);
+    fixture.detectChanges();
+    const maxDate = new Date(2120, 0, 1);
+    const validator = fixture.componentInstance.validator;
+
+    validator.validate.calls.reset();
+    fixture.componentInstance.max = maxDate;
+    fixture.detectChanges();
+    expect(validator.validate).toHaveBeenCalledTimes(1);
+
+    fixture.componentInstance.max = new Date(maxDate);
+    fixture.detectChanges();
+
+    expect(validator.validate).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not emit to `stateChanges` if new date object for same date is set for `min`', () => {
+    const fixture = createComponent(StandardDatepicker, [MatNativeDateModule]);
+    fixture.detectChanges();
+
+    const minDate = new Date(2019, 0, 1);
+    const spy = jasmine.createSpy('stateChanges spy');
+    const subscription = fixture.componentInstance.datepickerInput.stateChanges.subscribe(spy);
+
+    fixture.componentInstance.min = minDate;
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    fixture.componentInstance.min = new Date(minDate);
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    subscription.unsubscribe();
+  });
+
+  it('should not emit to `stateChanges` if new date object for same date is set for `max`', () => {
+    const fixture = createComponent(StandardDatepicker, [MatNativeDateModule]);
+    fixture.detectChanges();
+
+    const maxDate = new Date(2120, 0, 1);
+    const spy = jasmine.createSpy('stateChanges spy');
+    const subscription = fixture.componentInstance.datepickerInput.stateChanges.subscribe(spy);
+
+    fixture.componentInstance.max = maxDate;
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    fixture.componentInstance.max = new Date(maxDate);
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    subscription.unsubscribe();
+  });
+
 });
 
 /**
@@ -1975,7 +2057,7 @@ const inputFixedWidthStyles = `
 
 @Component({
   template: `
-    <input [matDatepicker]="d" [value]="date">
+    <input [matDatepicker]="d" [value]="date" [min]="min" [max]="max">
     <mat-datepicker
       #d
       [touchUi]="touch"
@@ -1991,6 +2073,8 @@ class StandardDatepicker {
   touch = false;
   disabled = false;
   date: Date | null = new Date(2020, JAN, 1);
+  min: Date;
+  max: Date;
   @ViewChild('d') datepicker: MatDatepicker<Date>;
   @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
   xPosition: DatepickerDropdownPositionX;
@@ -2289,3 +2373,30 @@ class DatepickerToggleWithNoDatepicker {}
   `,
 })
 class DatepickerInputWithNoDatepicker {}
+
+
+@Directive({
+  selector: '[customValidator]',
+  providers: [{
+    provide: NG_VALIDATORS,
+    useExisting: CustomValidator,
+    multi: true
+  }]
+})
+class CustomValidator implements Validator {
+  validate = jasmine.createSpy('validate spy').and.returnValue(null);
+}
+
+
+@Component({
+  template: `
+    <input [matDatepicker]="d" [(ngModel)]="value" [min]="min" [max]="max" customValidator>
+    <mat-datepicker #d></mat-datepicker>
+  `
+})
+class DatepickerInputWithCustomValidator {
+  @ViewChild(CustomValidator) validator: CustomValidator;
+  value: Date;
+  min: Date;
+  max: Date;
+}
