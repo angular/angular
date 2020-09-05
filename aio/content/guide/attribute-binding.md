@@ -248,3 +248,109 @@ The following table summarizes style binding syntax.
     <td><code>['width', '100px']</code></td>
   </tr>
 </table>
+
+The [NgStyle](guide/built-in-directives/#ngstyle) directive can be used as an alternative to direct `[style]` bindings.
+However, using the above style binding syntax without `NgStyle` is preferred because due to improvements in style binding in Angular, `NgStyle` no longer provides significant value, and might eventually be removed in the future.
+
+
+<hr/>
+
+{@a styling-precedence}
+
+## Styling Precedence
+
+A single HTML element can have its CSS class list and style values bound to multiple sources (for example, host bindings from multiple directives).
+
+When there are multiple bindings to the same class name or style property, Angular uses a set of precedence rules to resolve conflicts and determine which classes or styles are ultimately applied to the element.
+
+<div class="alert is-helpful">
+<h4>Styling precedence (highest to lowest)</h4>
+
+1. Template bindings
+    1. Property binding (for example, `<div [class.foo]="hasFoo">` or `<div [style.color]="color">`)
+    1. Map binding (for example, `<div [class]="classExpr">` or `<div [style]="styleExpr">`)
+    1. Static value (for example, `<div class="foo">` or `<div style="color: blue">`)
+1. Directive host bindings
+    1. Property binding (for example, `host: {'[class.foo]': 'hasFoo'}` or `host: {'[style.color]': 'color'}`)
+    1. Map binding (for example, `host: {'[class]': 'classExpr'}` or `host: {'[style]': 'styleExpr'}`)
+    1. Static value (for example, `host: {'class': 'foo'}` or `host: {'style': 'color: blue'}`)
+1. Component host bindings
+    1. Property binding (for example, `host: {'[class.foo]': 'hasFoo'}` or `host: {'[style.color]': 'color'}`)
+    1. Map binding (for example, `host: {'[class]': 'classExpr'}` or `host: {'[style]': 'styleExpr'}`)
+    1. Static value (for example, `host: {'class': 'foo'}` or `host: {'style': 'color: blue'}`)
+
+</div>
+
+The more specific a class or style binding is, the higher its precedence.
+
+A binding to a specific class (for example, `[class.foo]`) will take precedence over a generic `[class]` binding, and a binding to a specific style (for example, `[style.bar]`) will take precedence over a generic `[style]` binding.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="basic-specificity" header="src/app/app.component.html"></code-example>
+
+Specificity rules also apply when it comes to bindings that originate from different sources.
+It's possible for an element to have bindings in the template where it's declared, from host bindings on matched directives, and from host bindings on matched components.
+
+Template bindings are the most specific because they apply to the element directly and exclusively, so they have the highest precedence.
+
+Directive host bindings are considered less specific because directives can be used in multiple locations, so they have a lower precedence than template bindings.
+
+Directives often augment component behavior, so host bindings from components have the lowest precedence.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="source-specificity" header="src/app/app.component.html"></code-example>
+
+In addition, bindings take precedence over static attributes.
+
+In the following case, `class` and `[class]` have similar specificity, but the `[class]` binding will take precedence because it is dynamic.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="dynamic-priority" header="src/app/app.component.html"></code-example>
+
+{@a styling-delegation}
+### Delegating to styles with lower precedence
+
+It is possible for higher precedence styles to "delegate" to lower precedence styles using `undefined` values.
+Whereas setting a style property to `null` ensures the style is removed, setting it to `undefined` will cause Angular to fall back to the next-highest precedence binding to that style.
+
+For example, consider the following template:
+
+<code-example path="attribute-binding/src/app/app.component.html" region="style-delegation" header="src/app/app.component.html"></code-example>
+
+Imagine that the `dirWithHostBinding` directive and the `comp-with-host-binding` component both have a `[style.width]` host binding.
+In that case, if `dirWithHostBinding` sets its binding to `undefined`, the `width` property will fall back to the value of the `comp-with-host-binding` host binding.
+However, if `dirWithHostBinding` sets its binding to `null`, the `width` property will be removed entirely.
+
+
+<hr/>
+
+## Injecting attribute values
+
+There are cases where you need to differentiate the behavior of a [Component](api/core/Component) or [Directive](api/core/Directive) based on a static value set on the host element as an HTML attribute. For example, you might have a directive that needs to know the `type` of a `<button>` or `<input>` element.
+
+The [Attribute](api/core/Attribute) parameter decorator is great for passing the value of an HTML attribute to a component/directive constructor via [dependency injection](guide/dependency-injection).
+
+<div class="alert is-helpful">
+  The injected value captures the value of the specified HTML attribute at that moment.
+  Future updates to the attribute value are not reflected in the injected value.
+</div>
+
+<code-example 
+  path="attribute-binding/src/app/my-input-with-attribute-decorator.component.ts" 
+  header="src/app/my-input-with-attribute-decorator.component.ts">
+</code-example>
+
+<code-example
+  path="attribute-binding/src/app/app.component.html"
+  region="attribute-decorator"
+  header="src/app/app.component.html">
+</code-example>
+
+In the preceding example, the result of `app.component.html` is **The type of the input is: number**.
+
+Another example is the [RouterOutlet](api/router/RouterOutlet) directive, which makes use of the [Attribute](api/core/Attribute) decorator to retrieve the unique [name](api/router/RouterOutlet#description) on each outlet.
+
+<div class="callout is-helpful">
+
+  <header>@Attribute() vs @Input()</header>
+
+  Remember, use [@Input()](api/core/Input) when you want to keep track of the attribute value and update the associated property. Use [@Attribute()](api/core/Attribute) when you want to inject the value of an HTML attribute to a component or directive constructor.
+
+</div>
