@@ -555,66 +555,83 @@ function extractCommentsWithHash(input: string): string[] {
   return input.match(_commentWithHashRe) || [];
 }
 
-const _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
-const _curlyRe = /([{}])/g;
-const OPEN_CURLY = '{';
-const CLOSE_CURLY = '}';
 const BLOCK_PLACEHOLDER = '%BLOCK%';
+const QUOTE_PLACEHOLDER = '%QUOTED%';
+const _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
+const _quotedRe = /%QUOTED%/g;
+const CONTENT_PAIRS = new Map([['{', '}']]);
+const QUOTE_PAIRS = new Map([[`"`, `"`], [`'`, `'`]]);
 
 export class CssRule {
   constructor(public selector: string, public content: string) {}
 }
 
 export function processRules(input: string, ruleCallback: (rule: CssRule) => CssRule): string {
-  const inputWithEscapedBlocks = escapeBlocks(input);
+  const inputWithEscapedQuotes = escapeBlocks(input, QUOTE_PAIRS, QUOTE_PLACEHOLDER);
+  const inputWithEscapedBlocks =
+      escapeBlocks(inputWithEscapedQuotes.escapedString, CONTENT_PAIRS, BLOCK_PLACEHOLDER);
   let nextBlockIndex = 0;
-  return inputWithEscapedBlocks.escapedString.replace(_ruleRe, function(...m: string[]) {
-    const selector = m[2];
-    let content = '';
-    let suffix = m[4];
-    let contentPrefix = '';
-    if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
-      content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
-      suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
-      contentPrefix = '{';
-    }
-    const rule = ruleCallback(new CssRule(selector, content));
-    return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
-  });
+  let nextQuoteIndex = 0;
+  return inputWithEscapedBlocks.escapedString
+      .replace(
+          _ruleRe,
+          (...m: string[]) => {
+            const selector = m[2];
+            let content = '';
+            let suffix = m[4];
+            let contentPrefix = '';
+            if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
+              content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
+              suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
+              contentPrefix = '{';
+            }
+            const rule = ruleCallback(new CssRule(selector, content));
+            return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
+          })
+      .replace(_quotedRe, () => inputWithEscapedQuotes.blocks[nextQuoteIndex++]);
 }
 
 class StringWithEscapedBlocks {
   constructor(public escapedString: string, public blocks: string[]) {}
 }
 
-function escapeBlocks(input: string): StringWithEscapedBlocks {
-  const inputParts = input.split(_curlyRe);
+function escapeBlocks(
+    input: string, charPairs: Map<string, string>, placeholder: string): StringWithEscapedBlocks {
   const resultParts: string[] = [];
   const escapedBlocks: string[] = [];
-  let bracketCount = 0;
-  let currentBlockParts: string[] = [];
-  for (let partIndex = 0; partIndex < inputParts.length; partIndex++) {
-    const part = inputParts[partIndex];
-    if (part == CLOSE_CURLY) {
-      bracketCount--;
-    }
-    if (bracketCount > 0) {
-      currentBlockParts.push(part);
-    } else {
-      if (currentBlockParts.length > 0) {
-        escapedBlocks.push(currentBlockParts.join(''));
-        resultParts.push(BLOCK_PLACEHOLDER);
-        currentBlockParts = [];
+  let openCharCount = 0;
+  let nonBlockStartIndex = 0;
+  let blockStartIndex = -1;
+  let openChar: string|undefined;
+  let closeChar: string|undefined;
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    if (char === '\\') {
+      i++;
+    } else if (char === closeChar) {
+      openCharCount--;
+      if (openCharCount === 0) {
+        escapedBlocks.push(input.substring(blockStartIndex, i));
+        resultParts.push(placeholder);
+        nonBlockStartIndex = i;
+        blockStartIndex = -1;
+        openChar = closeChar = undefined;
       }
-      resultParts.push(part);
-    }
-    if (part == OPEN_CURLY) {
-      bracketCount++;
+    } else if (char === openChar) {
+      openCharCount++;
+    } else if (openCharCount === 0 && charPairs.has(char)) {
+      openChar = char;
+      closeChar = charPairs.get(char);
+      openCharCount = 1;
+      blockStartIndex = i + 1;
+      resultParts.push(input.substring(nonBlockStartIndex, blockStartIndex));
     }
   }
-  if (currentBlockParts.length > 0) {
-    escapedBlocks.push(currentBlockParts.join(''));
-    resultParts.push(BLOCK_PLACEHOLDER);
+  if (blockStartIndex !== -1) {
+    escapedBlocks.push(input.substring(blockStartIndex));
+    resultParts.push(placeholder);
+  } else {
+    resultParts.push(input.substring(nonBlockStartIndex));
   }
   return new StringWithEscapedBlocks(resultParts.join(''), escapedBlocks);
 }
