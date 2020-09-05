@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ElementRef} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
@@ -21,6 +21,8 @@ describe('MenuItemRadio', () => {
       providers: [
         {provide: UniqueSelectionDispatcher, useValue: selectionDispatcher},
         {provide: CDK_MENU, useClass: CdkMenu},
+        // View engine can't figure out the ElementRef to inject so we need to provide a fake
+        {provide: ElementRef, useValue: new ElementRef<null>(null)},
       ],
     }).compileComponents();
   }));

@@ -1,13 +1,13 @@
 <div class="example-menu-container">
   <h3>MenuBar Example</h3>
 
-  <div cdkMenuBar>
+  <div cdkTargetMenuAim cdkMenuBar>
     <button id="file_button" cdkMenuItem [cdkMenuTriggerFor]="file">File</button>
     <button id="edit_button" cdkMenuItem [cdkMenuTriggerFor]="edit">Edit</button>
   </div>
 
   <ng-template cdkMenuPanel #file="cdkMenuPanel">
-    <div cdkMenu class="example-menu" [cdkMenuPanel]="file" id="file_menu">
+    <div cdkMenu cdkTargetMenuAim class="example-menu" [cdkMenuPanel]="file" id="file_menu">
       <button id="share_button" cdkMenuItem [cdkMenuTriggerFor]="share">Share</button>
       <button id="open_button" cdkMenuItem>Open</button>
       <button id="rename_button" cdkMenuItem>Rename</button>

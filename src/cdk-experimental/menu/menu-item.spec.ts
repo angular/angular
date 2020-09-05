@@ -1,4 +1,4 @@
-import {Component, Type} from '@angular/core';
+import {Component, Type, ElementRef} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {CdkMenuModule} from './menu-module';
@@ -16,7 +16,11 @@ describe('MenuItem', () => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [SingleMenuItem],
-        providers: [{provide: CDK_MENU, useClass: CdkMenu}],
+        providers: [
+          {provide: CDK_MENU, useClass: CdkMenu},
+          // View engine can't figure out the ElementRef to inject so we need to provide a fake
+          {provide: ElementRef, useValue: new ElementRef<null>(null)},
+        ],
       }).compileComponents();
     }));
 
@@ -73,7 +77,11 @@ describe('MenuItem', () => {
       TestBed.configureTestingModule({
         imports: [CdkMenuModule],
         declarations: [componentClass, MatIcon],
-        providers: [{provide: CDK_MENU, useClass: CdkMenu}],
+        providers: [
+          {provide: CDK_MENU, useClass: CdkMenu},
+          // View engine can't figure out the ElementRef to inject so we need to provide a fake
+          {provide: ElementRef, useValue: new ElementRef<null>(null)},
+        ],
       }).compileComponents();
 
       fixture = TestBed.createComponent(componentClass);

@@ -17,6 +17,7 @@ import {CdkMenuItemRadio} from './menu-item-radio';
 import {CdkMenuItemCheckbox} from './menu-item-checkbox';
 import {CdkMenuItemTrigger} from './menu-item-trigger';
 import {CdkContextMenuTrigger} from './context-menu';
+import {CdkTargetMenuAim} from './menu-aim';
 
 const EXPORTED_DECLARATIONS = [
   CdkMenuBar,
@@ -28,6 +29,7 @@ const EXPORTED_DECLARATIONS = [
   CdkMenuItemTrigger,
   CdkMenuGroup,
   CdkContextMenuTrigger,
+  CdkTargetMenuAim,
 ];
 @NgModule({
   imports: [OverlayModule],

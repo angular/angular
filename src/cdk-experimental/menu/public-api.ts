@@ -19,3 +19,4 @@ export * from './context-menu';
 
 export {MenuStack, MenuStackItem} from './menu-stack';
 export {CDK_MENU} from './menu-interface';
+export {TargetMenuAim, MenuAim, MENU_AIM, CdkTargetMenuAim} from './menu-aim';

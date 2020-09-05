@@ -28,7 +28,8 @@ import {takeUntil, filter} from 'rxjs/operators';
 import {CdkMenuItemTrigger} from './menu-item-trigger';
 import {Menu, CDK_MENU} from './menu-interface';
 import {FocusNext} from './menu-stack';
-import {FocusableElement} from './item-pointer-entries';
+import {FocusableElement} from './pointer-focus-tracker';
+import {Toggler, MENU_AIM, MenuAim} from './menu-aim';
 
 // TODO refactor this to be configurable allowing for custom elements to be removed
 /** Removes all icons from within the given element. */
@@ -54,7 +55,7 @@ function removeIcons(element: Element) {
     '[attr.aria-disabled]': 'disabled || null',
   },
 })
-export class CdkMenuItem implements FocusableOption, FocusableElement, OnDestroy {
+export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, OnDestroy {
   /**  Whether the CdkMenuItem is disabled - defaults to false */
   @Input()
   get disabled(): boolean {
@@ -84,6 +85,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, OnDestroy
     readonly _elementRef: ElementRef<HTMLElement>,
     private readonly _ngZone: NgZone,
     @Optional() @Inject(CDK_MENU) private readonly _parentMenu?: Menu,
+    @Optional() @Inject(MENU_AIM) private readonly _menuAim?: MenuAim,
     @Optional() private readonly _dir?: Directionality,
     /** Reference to the CdkMenuItemTrigger directive if one is added to the same element */
     // `CdkMenuItem` is commonly used in combination with a `CdkMenuItemTrigger`.
@@ -235,6 +237,9 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, OnDestroy
    */
   private _setupMouseEnter() {
     if (!this._isStandaloneItem()) {
+      const closeOpenSiblings = () =>
+        this._ngZone.run(() => this._getMenuStack()?.closeSubMenuOf(this._parentMenu!));
+
       this._ngZone.runOutsideAngular(() =>
         fromEvent(this._elementRef.nativeElement, 'mouseenter')
           .pipe(
@@ -242,7 +247,11 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, OnDestroy
             takeUntil(this._destroyed)
           )
           .subscribe(() => {
-            this._ngZone.run(() => this._getMenuStack()?.closeSubMenuOf(this._parentMenu!));
+            if (this._menuAim) {
+              this._menuAim.toggle(closeOpenSiblings);
+            } else {
+              closeOpenSiblings();
+            }
           })
       );
     }

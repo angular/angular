@@ -2,16 +2,18 @@ import {Component, QueryList, ElementRef, ViewChildren, AfterViewInit} from '@an
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {createMouseEvent, dispatchEvent} from '@angular/cdk/testing/private';
 import {Observable} from 'rxjs';
-import {FocusableElement, getItemPointerEntries} from './item-pointer-entries';
+import {FocusableElement, PointerFocusTracker} from './pointer-focus-tracker';
 
 describe('FocusMouseManger', () => {
   let fixture: ComponentFixture<MultiElementWithConditionalComponent>;
-  let mouseFocusChanged: Observable<MockWrapper>;
+  let entered: Observable<MockWrapper>;
+  let exited: Observable<MockWrapper>;
   let mockElements: MockWrapper[];
 
   /** Get the components under test from the fixture. */
   function getComponentsForTesting() {
-    mouseFocusChanged = fixture.componentInstance.mouseFocusChanged;
+    entered = fixture.componentInstance.focusTracker.entered;
+    exited = fixture.componentInstance.focusTracker.exited;
     mockElements = fixture.componentInstance._allItems.toArray();
   }
 
@@ -30,7 +32,7 @@ describe('FocusMouseManger', () => {
 
   it('should emit on mouseEnter observable when mouse enters a tracked element', () => {
     const spy = jasmine.createSpy('mouse enter spy');
-    mouseFocusChanged.subscribe(spy);
+    entered.subscribe(spy);
 
     const event = createMouseEvent('mouseenter');
     dispatchEvent(mockElements[0]._elementRef.nativeElement, event);
@@ -40,9 +42,21 @@ describe('FocusMouseManger', () => {
     expect(spy).toHaveBeenCalledWith(mockElements[0]);
   });
 
+  it('should emit on mouseExit observable when mouse exits a tracked element', () => {
+    const spy = jasmine.createSpy('mouse exit spy');
+    exited.subscribe(spy);
+
+    dispatchEvent(mockElements[0]._elementRef.nativeElement, createMouseEvent('mouseenter'));
+    dispatchEvent(mockElements[0]._elementRef.nativeElement, createMouseEvent('mouseout'));
+    fixture.detectChanges();
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(mockElements[0]);
+  });
+
   it('should be aware of newly created/added components and track them', () => {
     const spy = jasmine.createSpy('mouse enter spy');
-    mouseFocusChanged.subscribe(spy);
+    entered.subscribe(spy);
 
     expect(mockElements.length).toBe(2);
     fixture.componentInstance.showThird = true;
@@ -58,7 +72,7 @@ describe('FocusMouseManger', () => {
 
   it('should toggle focused items when hovering from one to another', () => {
     const spy = jasmine.createSpy('focus toggle spy');
-    mouseFocusChanged.subscribe(spy);
+    entered.subscribe(spy);
 
     const mouseEnter = createMouseEvent('mouseenter');
     dispatchEvent(mockElements[0]._elementRef.nativeElement, mouseEnter);
@@ -67,6 +81,17 @@ describe('FocusMouseManger', () => {
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.calls.argsFor(0)[0]).toEqual(mockElements[0]);
     expect(spy.calls.argsFor(1)[0]).toEqual(mockElements[1]);
+  });
+
+  it('should toggle active and previous items when hovering from one to another', () => {
+    const mouseEnter = createMouseEvent('mouseenter');
+    const mouseOut = createMouseEvent('mouseout');
+    dispatchEvent(mockElements[0]._elementRef.nativeElement, mouseEnter);
+    dispatchEvent(mockElements[0]._elementRef.nativeElement, mouseOut);
+    dispatchEvent(mockElements[1]._elementRef.nativeElement, mouseEnter);
+
+    expect(fixture.componentInstance.focusTracker.activeElement).toEqual(mockElements[1]);
+    expect(fixture.componentInstance.focusTracker.previousElement).toEqual(mockElements[0]);
   });
 });
 
@@ -95,9 +120,9 @@ class MultiElementWithConditionalComponent implements AfterViewInit {
   @ViewChildren(MockWrapper) readonly _allItems: QueryList<MockWrapper>;
 
   /** Manages elements under mouse focus. */
-  mouseFocusChanged: Observable<MockWrapper>;
+  focusTracker: PointerFocusTracker<MockWrapper>;
 
   ngAfterViewInit() {
-    this.mouseFocusChanged = getItemPointerEntries(this._allItems);
+    this.focusTracker = new PointerFocusTracker(this._allItems);
   }
 }

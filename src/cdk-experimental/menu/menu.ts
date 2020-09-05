@@ -19,6 +19,9 @@ import {
   OnInit,
   NgZone,
   HostListener,
+  ElementRef,
+  Inject,
+  Self,
 } from '@angular/core';
 import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
 import {
@@ -31,14 +34,15 @@ import {
   hasModifierKey,
 } from '@angular/cdk/keycodes';
 import {Directionality} from '@angular/cdk/bidi';
+import {merge} from 'rxjs';
 import {take, takeUntil, startWith, mergeMap, mapTo, mergeAll, switchMap} from 'rxjs/operators';
-import {merge, Observable} from 'rxjs';
 import {CdkMenuGroup} from './menu-group';
 import {CdkMenuPanel} from './menu-panel';
 import {Menu, CDK_MENU} from './menu-interface';
 import {CdkMenuItem} from './menu-item';
 import {MenuStack, MenuStackItem, FocusNext, NoopMenuStack} from './menu-stack';
-import {getItemPointerEntries} from './item-pointer-entries';
+import {PointerFocusTracker} from './pointer-focus-tracker';
+import {MENU_AIM, MenuAim} from './menu-aim';
 
 /**
  * Directive which configures the element as a Menu which should contain child elements marked as
@@ -81,8 +85,8 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
   /** Handles keyboard events for the menu. */
   private _keyManager: FocusKeyManager<CdkMenuItem>;
 
-  /** Emits when a child MenuItem is moused over. */
-  private _mouseFocusChanged: Observable<CdkMenuItem>;
+  /** Manages items under mouse focus. */
+  private _pointerTracker?: PointerFocusTracker<CdkMenuItem>;
 
   /** List of nested CdkMenuGroup elements */
   @ContentChildren(CdkMenuGroup, {descendants: true})
@@ -106,6 +110,8 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
 
   constructor(
     private readonly _ngZone: NgZone,
+    readonly _elementRef: ElementRef<HTMLElement>,
+    @Self() @Optional() @Inject(MENU_AIM) private readonly _menuAim?: MenuAim,
     @Optional() private readonly _dir?: Directionality,
     // `CdkMenuPanel` is always used in combination with a `CdkMenu`.
     // tslint:disable-next-line: lightweight-tokens
@@ -126,6 +132,8 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
     this._subscribeToMenuOpen();
     this._subscribeToMenuStack();
     this._subscribeToMouseManager();
+
+    this._menuAim?.initialize(this, this._pointerTracker!);
   }
 
   // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
@@ -237,13 +245,13 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
   }
 
   /**
-   * Set the FocusMouseManager and ensure that when mouse focus changes the key manager is updated
+   * Set the PointerFocusTracker and ensure that when mouse focus changes the key manager is updated
    * with the latest menu item under mouse focus.
    */
   private _subscribeToMouseManager() {
     this._ngZone.runOutsideAngular(() => {
-      this._mouseFocusChanged = getItemPointerEntries(this._allItems);
-      this._mouseFocusChanged
+      this._pointerTracker = new PointerFocusTracker(this._allItems);
+      this._pointerTracker.entered
         .pipe(takeUntil(this.closed))
         .subscribe(item => this._keyManager.setActiveItem(item));
     });
@@ -269,8 +277,9 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
     const trigger = this._openItem;
     if (menu === trigger?.getMenuTrigger()?.getMenu()) {
       trigger.getMenuTrigger()?.closeMenu();
-      keyManager.setFocusOrigin('keyboard');
-      keyManager.setActiveItem(trigger);
+      // If the user has moused over a sibling item we want to focus the element under mouse focus
+      // not the trigger which previously opened the now closed menu.
+      keyManager.setActiveItem(this._pointerTracker?.activeElement || trigger);
     }
   }
 
@@ -339,6 +348,7 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
 
   ngOnDestroy() {
     this._emitClosedEvent();
+    this._pointerTracker?.destroy();
   }
 
   /** Emit and complete the closed event emitter */
