@@ -28,6 +28,6 @@ const EXPORTED_DECLARATIONS = [
 @NgModule({
   exports: EXPORTED_DECLARATIONS,
   declarations: EXPORTED_DECLARATIONS,
-  providers: [FocusMonitor, CdkTreeNodeDef]
+  providers: [FocusMonitor]
 })
 export class CdkTreeModule {}
