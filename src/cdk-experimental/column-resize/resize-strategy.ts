@@ -9,7 +9,7 @@
 import {Inject, Injectable, OnDestroy, Provider} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {coerceCssPixelValue} from '@angular/cdk/coercion';
-import {CdkTable, _CoalescedStyleScheduler} from '@angular/cdk/table';
+import {CdkTable, _CoalescedStyleScheduler, _COALESCED_STYLE_SCHEDULER} from '@angular/cdk/table';
 
 import {ColumnResize} from './column-resize';
 
@@ -76,7 +76,8 @@ export abstract class ResizeStrategy {
 export class TableLayoutFixedResizeStrategy extends ResizeStrategy {
   constructor(
       protected readonly columnResize: ColumnResize,
-      protected readonly styleScheduler: _CoalescedStyleScheduler,
+      @Inject(_COALESCED_STYLE_SCHEDULER)
+          protected readonly styleScheduler: _CoalescedStyleScheduler,
       protected readonly table: CdkTable<unknown>) {
     super();
   }
@@ -131,7 +132,8 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
 
   constructor(
       protected readonly columnResize: ColumnResize,
-      protected readonly styleScheduler: _CoalescedStyleScheduler,
+      @Inject(_COALESCED_STYLE_SCHEDULER)
+          protected readonly styleScheduler: _CoalescedStyleScheduler,
       protected readonly table: CdkTable<unknown>,
       @Inject(DOCUMENT) document: any) {
     super();

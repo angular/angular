@@ -8,7 +8,7 @@
 
 import {Inject, Injectable, Provider} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
-import {CdkTable, _CoalescedStyleScheduler} from '@angular/cdk/table';
+import {CdkTable, _CoalescedStyleScheduler, _COALESCED_STYLE_SCHEDULER} from '@angular/cdk/table';
 
 import {
   ColumnResize,
@@ -26,7 +26,7 @@ export {TABLE_LAYOUT_FIXED_RESIZE_STRATEGY_PROVIDER};
 export class MatFlexTableResizeStrategy extends CdkFlexTableResizeStrategy {
   constructor(
       columnResize: ColumnResize,
-      styleScheduler: _CoalescedStyleScheduler,
+      @Inject(_COALESCED_STYLE_SCHEDULER) styleScheduler: _CoalescedStyleScheduler,
       table: CdkTable<unknown>,
       @Inject(DOCUMENT) document: any) {
     super(columnResize, styleScheduler, table, document);

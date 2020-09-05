@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, NgZone, OnDestroy} from '@angular/core';
+import {Injectable, NgZone, OnDestroy, InjectionToken} from '@angular/core';
 import {from, Subject} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
 
@@ -17,6 +17,10 @@ export class _Schedule {
   tasks: (() => unknown)[] = [];
   endTasks: (() => unknown)[] = [];
 }
+
+/** Injection token used to provide a coalesced style scheduler. */
+export const _COALESCED_STYLE_SCHEDULER =
+    new InjectionToken<_CoalescedStyleScheduler>('_COALESCED_STYLE_SCHEDULER');
 
 /**
  * Allows grouping up CSSDom mutations after the current execution context.

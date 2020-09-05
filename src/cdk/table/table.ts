@@ -58,7 +58,7 @@ import {
 } from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {CdkColumnDef} from './cell';
-import {_CoalescedStyleScheduler} from './coalesced-style-scheduler';
+import {_CoalescedStyleScheduler, _COALESCED_STYLE_SCHEDULER} from './coalesced-style-scheduler';
 import {
   BaseRowDef,
   CdkCellOutlet,
@@ -202,7 +202,7 @@ export interface RenderRow<T> {
   providers: [
     {provide: CDK_TABLE, useExisting: CdkTable},
     {provide: _VIEW_REPEATER_STRATEGY, useClass: _DisposeViewRepeaterStrategy},
-    _CoalescedStyleScheduler,
+    {provide: _COALESCED_STYLE_SCHEDULER, useClass: _CoalescedStyleScheduler},
   ]
 })
 export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
@@ -476,18 +476,23 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   constructor(
       protected readonly _differs: IterableDiffers,
       protected readonly _changeDetectorRef: ChangeDetectorRef,
-      protected readonly _coalescedStyleScheduler: _CoalescedStyleScheduler,
       protected readonly _elementRef: ElementRef, @Attribute('role') role: string,
       @Optional() protected readonly _dir: Directionality, @Inject(DOCUMENT) _document: any,
       private _platform: Platform,
-      // Optional for backwards compatibility, but a view repeater strategy will always
-      // be provided.
+
+      /**
+       * @deprecated `_coalescedStyleScheduler`, `_viewRepeater` and `_viewportRuler`
+       *    parameters to become required.
+       * @breaking-change 11.0.0
+       */
       @Optional() @Inject(_VIEW_REPEATER_STRATEGY)
-      protected readonly _viewRepeater: _ViewRepeater<T, RenderRow<T>, RowContext<T>>,
+        protected readonly _viewRepeater?: _ViewRepeater<T, RenderRow<T>, RowContext<T>>,
+      @Optional() @Inject(_COALESCED_STYLE_SCHEDULER)
+        protected readonly _coalescedStyleScheduler?: _CoalescedStyleScheduler,
       // Optional for backwards compatibility. The viewport ruler is provided in root. Therefore,
       // this property will never be null.
       // tslint:disable-next-line: lightweight-tokens
-      @Optional() private readonly _viewportRuler: ViewportRuler) {
+      @Optional() private readonly _viewportRuler?: ViewportRuler) {
     if (!role) {
       this._elementRef.nativeElement.setAttribute('role', 'grid');
     }
@@ -512,9 +517,12 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
     // Table cell dimensions may change after resizing the window. Signal the sticky styler to
     // refresh its cache of cell widths the next time sticky styles are updated.
-    this._viewportRuler.change().pipe(takeUntil(this._onDestroy)).subscribe(() => {
-      this._forceRecalculateCellWidths = true;
-    });
+    // @breaking-change 11.0.0 Remove null check for _viewportRuler once it's a required parameter.
+    if (this._viewportRuler) {
+      this._viewportRuler.change().pipe(takeUntil(this._onDestroy)).subscribe(() => {
+        this._forceRecalculateCellWidths = true;
+      });
+    }
   }
 
   ngAfterContentChecked() {
@@ -594,11 +602,14 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       return;
     }
     const viewContainer = this._rowOutlet.viewContainer;
-    this._viewRepeater.applyChanges(
+
+    // @breaking-change 11.0.0 Remove null check for `_viewRepeater`
+    // once it's a required parameter in the constructor.
+    this._viewRepeater?.applyChanges(
         changes,
         viewContainer,
         (record: IterableChangeRecord<RenderRow<T>>,
-         adjustedPreviousIndex: number|null,
+         _adjustedPreviousIndex: number|null,
          currentIndex: number|null) => this._getEmbeddedViewArgs(record.item, currentIndex!),
         (record) => record.item.data,
         (change: _ViewRepeaterItemChange<RenderRow<T>, RowContext<T>>) => {

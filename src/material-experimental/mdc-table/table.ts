@@ -7,7 +7,12 @@
  */
 
 import {ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {CDK_TABLE_TEMPLATE, CdkTable, _CoalescedStyleScheduler} from '@angular/cdk/table';
+import {
+  CDK_TABLE_TEMPLATE,
+  CdkTable,
+  _CoalescedStyleScheduler,
+  _COALESCED_STYLE_SCHEDULER,
+} from '@angular/cdk/table';
 import {_DisposeViewRepeaterStrategy, _VIEW_REPEATER_STRATEGY} from '@angular/cdk/collections';
 
 @Component({
@@ -21,7 +26,7 @@ import {_DisposeViewRepeaterStrategy, _VIEW_REPEATER_STRATEGY} from '@angular/cd
   },
   providers: [
     {provide: CdkTable, useExisting: MatTable},
-    _CoalescedStyleScheduler,
+    {provide: _COALESCED_STYLE_SCHEDULER, useClass: _CoalescedStyleScheduler},
     // TODO(michaeljamesparsons) Abstract the view repeater strategy to a directive API so this code
     //  is only included in the build if used.
     {provide: _VIEW_REPEATER_STRATEGY, useClass: _DisposeViewRepeaterStrategy},
