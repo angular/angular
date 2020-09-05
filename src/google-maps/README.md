@@ -14,84 +14,6 @@ To install, run `npm install @angular/google-maps`.
 - Load the [Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/tutorial#Loading_the_Maps_API).
 - The Google Maps JavaScript API must be loaded before the `GoogleMap` component.
 
-## GoogleMap
-
-The `GoogleMap` component wraps the [`google.maps.Map` class](https://developers.google.com/maps/documentation/javascript/reference/map) from the Google Maps JavaScript API. You can configure the map via the component's inputs. The `options` input accepts a full [`google.maps.MapOptions` object](https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions), and the component additionally offers convenience inputs for setting the `center` and `zoom` of the map without needing an entire `google.maps.MapOptions` object. The `height` and `width` inputs accept a string to set the size of the Google map. [Events](https://developers.google.com/maps/documentation/javascript/reference/map#Map.bounds_changed) can be bound using the outputs of the `GoogleMap` component, although events have the same name as native mouse events (e.g. `mouseenter`) have been prefixed with "map" as to not collide with the native mouse events. Other members on the `google.maps.Map` object are available on the `GoogleMap` component and can be accessed using the [`ViewChild` decorator](https://angular.io/api/core/ViewChild).
-
-See the [example](#example) below or the [source](./google-map/google-map.ts) to read the API.
-
-## MapMarker
-
-The `MapMarker` component wraps the [`google.maps.Marker` class](https://developers.google.com/maps/documentation/javascript/reference/marker#Marker) from the Google Maps JavaScript API. The `MapMarker` component displays a marker on the map when it is a content child of a `GoogleMap` component. Like `GoogleMap`, this component offers an `options` input as well as convenience inputs for `position`, `title`, `label`, and `clickable`, and supports all `google.maps.Marker` events as outputs.
-
-See the [example](#example) below or the [source](./map-marker/map-marker.ts) to read the API.
-
-## MapInfoWindow
-
-The `MapInfoWindow` component wraps the [`google.maps.InfoWindow` class](https://developers.google.com/maps/documentation/javascript/reference/info-window#InfoWindow) from the Google Maps JavaScript API. The `MapInfoWindow` has a `options` input as well as a convenience `position` input. Content for the `MapInfoWindow` is the inner HTML of the component, and will keep the structure and css styling of any content that is put there when it is displayed as an info window on the map.
-
-To display the `MapInfoWindow`, it must be a child of a `GoogleMap` component, and it must have its `open` method called, so a reference to `MapInfoWindow` will need to be loaded using the [`ViewChild` decorator](https://angular.io/api/core/ViewChild). The `open` method accepts an `MapMarker` as an optional input, if you want to anchor the `MapInfoWindow` to a `MapMarker`.
-
-See the [example](#example) below or the [source](./map-info-window/map-info-window.ts) to read the API.
-
-## Example
-
-```typescript
-// example-module.ts
-
-import {CommonModule} from '@angular/common';
-import {NgModule} from '@angular/core';
-import {GoogleMapsModule} from '@angular/google-maps';
-
-import {GoogleMapDemo} from './google-map-demo';
-
-@NgModule({
-  imports: [
-    CommonModule,
-    GoogleMapsModule,
-  ],
-  declarations: [GoogleMapDemo],
-})
-export class GoogleMapDemoModule {
-}
-
-
-// example-app.ts
-import {Component, ViewChild} from '@angular/core';
-import {MapInfoWindow, MapMarker} from '@angular/google-maps';
-
-/** Demo Component for @angular/google-maps/map */
-@Component({
-  selector: 'google-map-demo',
-  templateUrl: 'google-map-demo.html',
-})
-export class GoogleMapDemo {
-  @ViewChild(MapInfoWindow) infoWindow: MapInfoWindow;
-
-  center = {lat: 24, lng: 12};
-  markerOptions = {draggable: false};
-  markerPositions: google.maps.LatLngLiteral[] = [];
-  zoom = 4;
-  display?: google.maps.LatLngLiteral;
-
-  addMarker(event: google.maps.MouseEvent) {
-    this.markerPositions.push(event.latLng.toJSON());
-  }
-
-  move(event: google.maps.MouseEvent) {
-    this.display = event.latLng.toJSON();
-  }
-
-  openInfoWindow(marker: MapMarker) {
-    this.infoWindow.open(marker);
-  }
-
-  removeLastMarker() {
-    this.markerPositions.pop();
-  }
-}
-```
-
 ```html
 <!-- index.html -->
 <!doctype html>
@@ -100,23 +22,111 @@ export class GoogleMapDemo {
   <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY">
   </script>
 </head>
-
-<!-- example-app.html -->
-<google-map height="400px"
-            width="750px"
-            [center]="center"
-            [zoom]="zoom"
-            (mapClick)="addMarker($event)"
-            (mapMousemove)="move($event)"
-            (mapRightclick)="removeLastMarker()">
-  <map-marker #marker="mapMarker"
-              *ngFor="let markerPosition of markerPositions"
-              [position]="markerPosition"
-              [options]="markerOptions"
-              (mapClick)="openInfoWindow(marker)"></map-marker>
-  <map-info-window>Info Window content</map-info-window>
-</google-map>
-
-<div>Latitude: {{display?.lat}}</div>
-<div>Longitude: {{display?.lng}}</div>
 ```
+
+## Lazy Loading the API
+
+The API can be loaded when the component is actually used by using the Angular HttpClient jsonp method to make sure that the component doesn't load until after the API has loaded.
+
+```typescript
+// google-maps-demo.module.ts
+
+import { NgModule } from '@angular/core';
+import { GoogleMapsModule } from '@angular/google-maps';
+import { CommonModule } from '@angular/common';
+import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
+
+import { GoogleMapsDemoComponent } from './google-maps-demo.component';
+
+@NgModule({
+  declarations: [
+    GoogleMapsDemoComponent,
+  ],
+  imports: [
+    CommonModule,
+    GoogleMapsModule,
+    HttpClientModule,
+    HttpClientJsonpModule,
+  ],
+  exports: [
+    GoogleMapsDemoComponent,
+  ],
+})
+export class GoogleMapsDemoModule {}
+
+
+// google-maps-demo.component.ts
+
+import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+@Component({
+  selector: 'google-maps-demo',
+  templateUrl: './google-maps-demo.component.html',
+})
+export class GoogleMapsDemoComponent {
+  apiLoaded: Observable<boolean>;
+
+  constructor(httpClient: HttpClient) {
+    this.apiLoaded = httpClient.jsonp('https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE', 'callback')
+        .pipe(
+          map(() => true),
+          catchError(() => of(false)),
+        );
+  }
+}
+```
+
+```html
+<!-- google-maps-demo.component.html -->
+
+<div *ngIf="apiLoaded | async">
+  <google-map></google-map>
+</div>
+```
+
+## Components
+
+- [`GoogleMap`](./google-map/README.md)
+- [`MapMarker`](./map-marker/README.md)
+- [`MapInfoWindow`](./map-info-window/README.md)
+- [`MapPolyline`](./map-polyline/README.md)
+- [`MapPolygon`](./map-polygon/README.md)
+- [`MapRectangle`](./map-rectangle/README.md)
+- [`MapCircle`](./map-circle/README.md)
+- [`MapGroundOverlay`](./map-ground-overlay/README.md)
+- [`MapKmlLayer`](./map-kml-layer/README.md)
+- [`MapTrafficLayer`](./map-traffic-layer/README.md)
+- [`MapTransitLayer`](./map-transit-layer/README.md)
+- [`MapBicyclingLayer`](./map-bicycling-layer/README.md)
+
+## The Options Input
+
+The Google Maps components implement all of the options for their respective objects from the Google Maps JavaScript API through an `options` input, but they also have specific inputs for some of the most common options. For example, the Google Maps component could have its options set either in with a google.maps.MapOptions object:
+
+```html
+<google-map [options]="options"></google-map>
+```
+
+```typescript
+options: google.maps.MapOptions = {
+  center: {lat: 40, lng: -20},
+  zoom: 4
+};
+```
+
+It can also have individual options set for some of the most common options:
+
+```html
+<google-map [center]="center"
+            [zoom]="zoom"></google-map>
+```
+
+```typescript
+center: google.maps.LatLngLiteral = {lat: 40, lng: -20};
+zoom = 4;
+```
+
+Not every option has its own input. See the API for each component to see if the option has a dedicated input or if it should be set in the options input.
