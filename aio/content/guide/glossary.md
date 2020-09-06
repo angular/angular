@@ -37,20 +37,6 @@ Un archivo especifica los archivos raíz y las opciones de compilación necesari
 
 {@a B}
 
-{@a library}
-
-## biblioteca
-
-En Angular, un [proyecto](#project) que proporciona funcionalidad que se puede incluir en otras aplicaciones de Angular.
-Una biblioteca no es una aplicación Angular completa y no puede ejecutarse de forma independiente.
-Para agregar funcionalidades reutilizables de Angular a aplicaciones web no construidas con Angular, puedes usar Angular [elementos personalizados](#angular-element).)
-
-- Los desarrolladores de bibliotecas pueden usar la [Angular CLI](#cli) para `generar` andamios para una nueva biblioteca en un [espacio de trabajo](#workspace) existente, y pueden publicar una biblioteca como un paquete `npm`.
-
-- Los desarrolladores de aplicaciones pueden usar la [Angular CLI](#cli) para `agregar` una biblioteca publicada para usar con una aplicación en el mismo [espacio de trabajo](#workspace).
-
-Ver también [esquema](#schematic).
-
 {@a bootstrap}
 
 ## bootstrap
@@ -395,17 +381,17 @@ Consulta también [carga de componentes dinámicos](#dynamic-components).
 
 ## esquema
 
-Una biblioteca de andamios que define cómo generar o transformar un proyecto de programación creando, modificando, refactorizando o moviendo archivos y códigos.
+Una librería de andamios que define cómo generar o transformar un proyecto de programación creando, modificando, refactorizando o moviendo archivos y códigos.
 Un esquema define [reglas](#rule) que operan en un sistema de archivos virtual llamado [árbol](#file-tree).
 
 La [Angular CLI](#cli) utiliza esquemas para generar y modificar [proyectos Angular](#project) y partes de proyectos.
 
-- Angular proporciona un conjunto de esquemas para usar con la CLI. Consulta la [Referencia de comando de Angular CLI](cli). El comando [`ng add`](cli/add) ejecuta esquemas como parte de agregar una biblioteca a su proyecto. El comando [`ng generate`](cli/generate) ejecuta esquemas para crear aplicaciones, bibliotecas y construcciones de código Angular.
+- Angular proporciona un conjunto de esquemas para usar con la CLI. Consulta la [Referencia de comando de Angular CLI](cli). El comando [`ng add`](cli/add) ejecuta esquemas como parte de agregar una librería a su proyecto. El comando [`ng generate`](cli/generate) ejecuta esquemas para crear aplicaciones, librerías y construcciones de código Angular.
 
-- Los desarrolladores de [Bibliotecas](#library) pueden crear esquemas que permitan a la Angular CLI agregar y actualizar sus bibliotecas publicadas y generar artefactos que la biblioteca defina.
-  Agregue estos esquemas al paquete npm que usa para publicar y compartir su biblioteca.
+- Los desarrolladores de [Librerías](#library) pueden crear esquemas que permitan a la Angular CLI agregar y actualizar sus blibrerías publicadas y generar artefactos que la librería defina.
+  Agregue estos esquemas al paquete npm que usa para publicar y compartir su librería.
 
-Obtén más información en [Esquemas](guide/schematics) e [Integración de bibliotecas con la CLI](guide/creating-libraries#integrating-with-the-cli).
+Obtén más información en [Esquemas](guide/schematics) e [Integración de librerías con la CLI](guide/creating-libraries#integrating-with-the-cli).
 
 {@a schematics-cli}
 
@@ -424,11 +410,11 @@ Esto instala el ejecutable `schematics`, que puede usar para crear un nuevo esqu
 
 ## espacio de trabajo
 
-Una colección de [proyectos](#project) Angular (es decir, aplicaciones y bibliotecas) con tecnología de [anglar CLI](#cli) que generalmente se ubican en un único repositorio de control de fuente (como [git](https://git-scm.com/)).
+Una colección de [proyectos](#project) Angular (es decir, aplicaciones y librerías) con tecnología de [anglar CLI](#cli) que generalmente se ubican en un único repositorio de control de fuente (como [git](https://git-scm.com/)).
 
 El [CLI](#cli) [`ng new` command](cli/new) crea un directorio del sistema de archivos (la "raíz del espacio de trabajo"). En la raíz del espacio de trabajo, también crea el espacio de trabajo [archivo de configuración](#configuration) (`angular.json`) y, por defecto, un proyecto de aplicación inicial con el mismo nombre.
 
-Los comandos que crean u operan en aplicaciones y bibliotecas (como `add` y `generate`) deben ejecutarse desde una carpeta de espacio de trabajo.
+Los comandos que crean u operan en aplicaciones y librerías (como `add` y `generate`) deben ejecutarse desde una carpeta de espacio de trabajo.
 
 Para obtener más información, consulta [Configuración del espacio de trabajo](guide/workspace-config).
 
@@ -604,8 +590,22 @@ La jerarquía de vistas no implica una jerarquía de componentes. Las vistas que
 
 ## lenguaje específico de dominio (DSL)
 
-Una biblioteca o API de propósito especial; consulte [Idioma específico del dominio](https://es.wikipedia.org/wiki/Lenguaje_espec%C3%ADfico_de_dominio).
+Una librería o API de propósito especial; consulte [Idioma específico del dominio](https://es.wikipedia.org/wiki/Lenguaje_espec%C3%ADfico_de_dominio).
 Angular extiende TypeScript con lenguajes específicos de dominio para varios dominios relevantes para aplicaciones Angular, definidas en NgModules como [animaciones](guide/animations), [formularios](guide/forms), y [enrutamiento y navegación](guide/router).
+
+{@a library}
+
+## Librerías
+
+En Angular, un [proyecto](#project) que proporciona funcionalidad que se puede incluir en otras aplicaciones de Angular.
+Una librería no es una aplicación Angular completa y no puede ejecutarse de forma independiente.
+Para agregar funcionalidades reutilizables de Angular a aplicaciones web no construidas con Angular, puedes usar Angular [elementos personalizados](#angular-element).)
+
+- Los desarrolladores de librerías pueden usar la [Angular CLI](#cli) para `generar` andamios para una nueva librería en un [espacio de trabajo](#workspace) existente, y pueden publicar una librería como un paquete `npm`.
+
+- Los desarrolladores de aplicaciones pueden usar la [Angular CLI](#cli) para `agregar` una librería publicada para usar con una aplicación en el mismo [espacio de trabajo](#workspace).
+
+Ver también [esquema](#schematic).
 
 {@a lifecycle-hook}
 
@@ -647,7 +647,7 @@ En general, un módulo recopila un bloque de código dedicado a un solo propósi
 
 En JavaScript (ECMAScript), cada archivo es un módulo y todos los objetos definidos en el archivo pertenecen a ese módulo. Los objetos se pueden exportar, haciéndolos públicos, y los objetos públicos se pueden importar para su uso por otros módulos.
 
-Angular se envía como una colección de módulos JavaScript (también llamados bibliotecas). Cada nombre de biblioteca Angular comienza con el prefijo `@angular`. Instala bibliotecas Angular con el [administrador de paquetes npm](https://docs.npmjs.com/getting-started/what-is-npm) e importa partes de ellas con las declaraciones de JavaScript `import`.
+Angular se envía como una colección de módulos JavaScript (también llamados librerías). Cada nombre de librería Angular comienza con el prefijo `@angular`. Instala librerías Angular con el [administrador de paquetes npm](https://docs.npmjs.com/getting-started/what-is-npm) e importa partes de ellas con las declaraciones de JavaScript `import`.
 
 Comparar con [NgModule](#ngmodule).
 
@@ -658,7 +658,7 @@ Comparar con [NgModule](#ngmodule).
 ## ngcc
 
 Compilador de compatibilidad Angular.
-Si se crea la aplicación usando [Ivy](#ivy), pero depende de las bibliotecas que no se han compilado con Ivy, la CLI usa `ngcc` para actualizar automáticamente las bibliotecas dependientes para usar Ivy.
+Si se crea la aplicación usando [Ivy](#ivy), pero depende de las librerías que no se han compilado con Ivy, la CLI usa `ngcc` para actualizar automáticamente las librerías dependientes para usar Ivy.
 
 {@a ngmodule}
 
@@ -685,7 +685,7 @@ Un productor de múltiples valores, que empuja a [suscriptores](#subscriber). Se
 
 Los observables pueden entregar valores únicos o múltiples de cualquier tipo a los suscriptores, ya sea sincrónicamente (como una función entrega un valor a la persona que llama) o en un horario. Un suscriptor recibe una notificación de los nuevos valores a medida que se producen y una notificación de finalización normal o finalización de error.
 
-Angular utiliza una biblioteca de terceros llamada [Extensiones reactivas (RxJS)](http://reactivex.io/rxjs/).
+Angular utiliza una librería de terceros llamada [Extensiones reactivas (RxJS)](http://reactivex.io/rxjs/).
 
 Obtén más información en [Observables](guide/observables).
 
@@ -701,7 +701,7 @@ Un objeto pasado al método `subscribe()` para un [observable](#observable). El 
 
 ## paquete npm
 
-El [administrador de paquetes npm](https://docs.npmjs.com/getting-started/what-is-npm) se usa para distribuir y cargar módulos y bibliotecas Angular.
+El [administrador de paquetes npm](https://docs.npmjs.com/getting-started/what-is-npm) se usa para distribuir y cargar módulos y librerías Angular.
 
 Obtén más información acerca de cómo Angular usa [Paquetes npm](guide/npm-packages).
 
@@ -763,7 +763,7 @@ Consulta [Soporte del navegador](guide/browser-support) para ver polyfills que a
 
 ## proyecto
 
-En la Angular CLI, una aplicación independiente o [biblioteca](#library) que se puede crear o modificar mediante un comando de la CLI.
+En la Angular CLI, una aplicación independiente o [librería](#library) que se puede crear o modificar mediante un comando de la CLI.
 
 Un proyecto, generado por [`ng new`](cli/new), contiene el conjunto de archivos de origen, recursos y archivos de configuración que necesita para desarrollar y probar la aplicación utilizando la CLI. Los proyectos también se pueden crear con los comandos `ng generate application` y `ng generate library`.
 
