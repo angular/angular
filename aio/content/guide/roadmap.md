@@ -1,93 +1,93 @@
-# Angular Roadmap
+# Hoja de ruta Angular
 
-Angular receives a large number of feature requests, both from inside Google and from the broader open-source community. At the same time, our list of projects contains plenty of maintenance tasks, code refactorings, potential performance improvements, and so on. We bring together representatives from developer relations, product management, and engineering to prioritize this list. As new projects come into the queue, we regularly position them based on relative priority to other projects. As work gets done, projects will move up in the queue.
+Angular recibe una gran cantidad de solicitudes de fucionalidades, tanto desde dentro de Google como desde la comunidad de código abierto en general. Al mismo tiempo, nuestra lista de proyectos contiene muchas tareas de mantenimiento, refactorizaciones de código, posibles mejoras de rendimiento, etc. Reunimos a representantes de relaciones con desarrolladores, gestión de productos e ingeniería para priorizar esta lista. A medida que nuevos proyectos entran en la cola, los posicionamos regularmente en función de la prioridad relativa a otros proyectos. A medida que se realiza el trabajo, los proyectos avanzarán en la cola.
 
-The projects below are not associated with a particular Angular version. We'll release them on completion, and they will be part of a specific version based on our release schedule, following semantic versioning. For example, features are released in the next minor after they are complete, or the next major if they include breaking changes.
+Los proyectos a continuación no están asociados con una versión de Angular en particular. Los publicaremos una vez finalizados, y serán parte de una versión específica basada en nuestro calendario de lanzamientos, siguiendo el control de versiones semántico. Por ejemplo, las funciones se publican en el siguiente menor después de que se completan, o el siguiente mayor si incluyen cambios importantes.
 
-## In Progress
+## En progreso
 
-### Operation Bye Bye Backlog (aka Operation Byelog)
+### Operación Bye Bye Backlog (también conocida como Operación Byelog)
 
-We are actively investing up to 50% of our engineering capacity on triaging issues and PRs until we have a clear understanding of broader community needs. After that, we'll commit up to 20% of our engineering capacity to keep up with new submissions promptly.
+Estamos invirtiendo activamente hasta el 50% de nuestra capacidad de ingeniería para clasificación de _issues_ y PRs hasta que tengamos una comprensión clara de las necesidades de la comunidad en general. Después de eso, comprometeremos hasta el 20% de nuestra capacidad de ingeniería para mantenernos al día con los nuevos envíos de _issues_ y PRs rápidamente.
 
-### Support TypeScript 4.0
+### Soporte a TypeScript 4.0
 
-We're working on adding support for TypeScript 4.0 ahead of its stable release. We always want Angular to stay up-to-date with the latest version of TypeScript so that developers get the best the language has to offer.
+Estamos trabajando para agregar soporte para TypeScript 4.0 antes de su versión estable. Siempre queremos que Angular se mantenga actualizado con la última versión de TypeScript para que los desarrolladores obtengan lo mejor que el lenguaje tiene para ofrecer.
 
-### Update our e2e testing strategy
+### Actualizar nuestra estrategia de pruebas e2e
 
-To ensure we provide a future-proof e2e testing strategy, we want to evaluate the state of Protractor, community innovations, e2e best practices, and explore novel opportunities.
+Para garantizar que proporcionamos una estrategia de prueba de e2e preparada para el futuro, queremos evaluar el estado de Protractor, las innovaciones de la comunidad, las mejores prácticas de e2e y explorar nuevas oportunidades.
 
-### Angular libraries use Ivy
+### Las librerías de Angular usan Ivy
 
-We are investing in the design and development of Ivy library distribution plan, which will include an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and [ngcc](guide/glossary#ngcc).
+Estamos invirtiendo en el diseño y desarrollo del plan de distribución de la librería Ivy, que incluirá una actualización del formato del paquete de la librería para usar la compilación de Ivy, desbloquear la obsolescencia del formato de la librería View Engine y [ngcc](guide/glossary#ngcc).
 
-### Evaluate future RxJS changes (v7 and beyond)
+### Evaluar los cambios futuros de RxJS (v7 y posteriores)
 
-We want to ensure Angular developers are taking advantage of the latest capabilities of RxJS and have a smooth transition to the next major releases of the framework. For this purpose, we will explore and document the scope of the changes in v7 and beyond of RxJS and plan an update strategy.
+Queremos asegurarnos de que los desarrolladores Angular aprovechen las últimas capacidades de RxJS y tengan una transición sin problemas a las próximas versiones principales del framework. Para este propósito, exploraremos y documentaremos el alcance de los cambios en la versión 7 y posteriores de RxJS y planificaremos una estrategia de actualización.
 
-### Angular language service uses Ivy
+### El servicio de lenguaje Angular usa Ivy
 
-Today the language service still uses the View Engine compiler and type checking, even for Ivy applications. We want to use the Ivy template parser and improved type checking for the Angular Language service to match application behavior. This migration will also be a step towards unblocking the removal of View Engine, which will simplify Angular, reduce the npm package size, and improve the framework's maintainability.
+Hoy en día, el servicio de lenguaje todavía utiliza el compilador de View Engine y la verificación de tipos, incluso para aplicaciones Ivy. Queremos utilizar el analizador de plantillas Ivy y la verificación de tipos mejorada para que el servicio Angular Language coincida con el comportamiento de la aplicación. Esta migración también será un paso hacia el desbloqueo de la eliminación de View Engine, que simplificará Angular, reducirá el tamaño del paquete npm y mejorará la capacidad de mantenimiento del marco.
 
-### Expand component harnesses best practices
+### Ampliar las buenas prácticas en componentes harnesses
 
-Angular CDK introduced the concept of [component test harnesses](https://material.angular.io/cdk/test-harnesses) to Angular in version 9. Test harnesses allow component authors to create supported APIs for testing component interactions. We're continuing to improve this harness infrastructure and clarifying the best practices around using harnesses. We're also working to drive more harness adoption inside of Google.
+Angular CDK introdujo el concepto de [component test harnesses](https://material.angular.io/cdk/test-harnesses) en Angular en la versión 9. Los harnesses de prueba permiten a los autores de componentes crear API compatibles para probar interacciones de componentes. Continuamos mejorando esta infraestructura de harness  y aclarando las mejores prácticas en torno al uso de harnesses. También estamos trabajando para impulsar una mayor adopción de harness dentro de Google.
 
-### Support native [Trusted Types](https://web.dev/trusted-types/) in Angular
+### Soporte nativo de [Trusted Types](https://web.dev/trusted-types/) en Angular
 
-In collaboration with Google's security team, we're adding support for the new Trusted Types API. This web platform API will help developers build more secure web applications.
+En colaboración con el equipo de seguridad de Google, estamos agregando soporte para la nueva API Trusted Types. Esta API de plataforma web ayudará a los desarrolladores a crear aplicaciones web más seguras.
 
-### Integrate [MDC Web](https://material.io/develop/web/) into Angular Material
+### Integrar [MDC Web](https://material.io/develop/web/) en Angular Material
 
-MDC Web is a library created by Google's Material Design team that provides reusable primitives for building Material Design components. The Angular team is incorporating these primitives into Angular Material. Using MDC Web will align Angular Material more closely with the Material Design specification, expand accessibility, overall improve component quality, and improve our team's velocity.
+MDC Web es una librería creada por el equipo de Material Design de Google que proporciona primitivas reutilizables para construir componentes de Material Design. El equipo de Angular está incorporando estas primitivas en Angular Material. El uso de MDC Web alineará Angular Material más estrechamente con la especificación de Material Design, expandirá la accesibilidad, mejorará en general la calidad de los componentes y mejorará la velocidad de nuestro equipo.
 
-### Offer Google engineers better integration with Angular and Google's internal server stack
+### Ofrecer a los ingenieros de Google una mejor integración con Angular y la pila de servidores internos de Google
 
-This is an internal project to add support for Angular front-ends to Google's internal integrated server stack.
+Este es un proyecto interno para agregar soporte para interfaces Angular a la pila de servidores integrados internos de Google.
 
-### Angular versioning & branching
+### Control de versiones y ramificación Angular
 
-We want to consolidate release management tooling between Angular's multiple GitHub repositories ([angular/angular](https://github.com/angular/angular), [angular/angular-cli](https://github.com/angular/angular-cli), and [angular/components](https://github.com/angular/components)). This effort will allow us to reuse infrastructure, unify and simplify processes, and improve our release process's reliability.
+Queremos consolidar las herramientas de administración de versiones entre los múltiples repositorios de GitHub de Angular ([angular/angular](https://github.com/angular/angular), [angular/angular-cli](https://github.com/angular/angular-cli), y [angular/components](https://github.com/angular/components)). Este esfuerzo nos permitirá reutilizar la infraestructura, unificar y simplificar procesos y mejorar la confiabilidad de nuestro proceso de lanzamiento.
 
-## Future
+## Futuro
 
-### Refresh introductory documentation
+### Actualizar la documentación introductoria
 
-We will redefine the user learning journeys and refresh the introductory documentation. We will clearly state the benefits of Angular, how to explore its capabilities, and provide guidance so developers can become proficient with the framework in as little time as possible.
+Redefiniremos las rutas de aprendizaje del usuario y actualizaremos la documentación introductoria. Expresaremos claramente los beneficios de Angular, cómo explorar sus capacidades y brindaremos orientación para que los desarrolladores puedan dominar el framework en el menor tiempo posible.
 
-### Strict typing for `@angular/forms`
+### Tipos de datos estrictos para `@angular/forms`
 
-We will work on implementing stricter type checking for reactive forms. This way, we will allow developers to catch more issues during development time, enable better text editor and IDE support, and improve the type checking for reactive forms.
+Trabajaremos en la implementación de una verificación de tipo más estricta para los formularios reactivos. De esta manera, permitiremos a los desarrolladores detectar más problemas durante el tiempo de desarrollo, habilitar un mejor editor de texto y soporte IDE, y mejorar la verificación de tipos para formularios reactivos.
 
-### webpack 5 in the Angular CLI
+### webpack 5 en Angular CLI
 
-Webpack 5 brings a lot of build speed and bundle size improvements. To make them available for Angular developers, we will invest in migrating Angular CLI from using deprecated and removed webpack APIs.
+Webpack 5 trae muchas mejoras en la velocidad de compilación y el tamaño del paquete. Para que estén disponibles para los desarrolladores de Angular, invertiremos en migrar la CLI de Angular del uso de API de paquetes web obsoletos y eliminados.
 
-### Commit message standardization
+### Estandarización del mensaje del commit
 
-We want to unify commit message requirements and conformance across Angular repositories ([angular/angular](https://github.com/angular/angular), [angular/components](https://github.com/angular/components), [angular/angular-cli](https://github.com/angular/angular-cli)) to bring consistency to our development process and reuse infrastructure tooling.
+Queremos unificar los requisitos y la conformidad de los commit messages en los repositorios Angular ([angular/angular](https://github.com/angular/angular), [angular/components](https://github.com/angular/components), [angular/angular-cli](https://github.com/angular/angular-cli)) ara brindar coherencia a nuestro proceso de desarrollo y reutilizar las herramientas de infraestructura.
 
-### Optional Zone.js
+### Zone.js opcional
 
-We are going to design and implement a plan to make Zone.js optional from Angular applications. This way, we will simplify the framework, improve debugging, and reduce application bundle size. Additionally, this will allow us to take advantage of native async/await syntax, which currently Zone.js does not support.
+Vamos a diseñar e implementar un plan para que Zone.js sea opcional desde las aplicaciones Angular. De esta forma, simplificaremos el framework, mejoraremos la depuración y reduciremos el tamaño del paquete de aplicaciones. Además, esto nos permitirá aprovechar la sintaxis nativa async/await, que actualmente Zone.js no admite.
 
-### Remove legacy [View Engine](guide/ivy)
+### Eliminar legacy [View Engine](guide/ivy)
 
-After the transition of all our internal tooling to Ivy has completed, we want to remove the legacy View Engine for smaller Angular conceptual overhead, smaller package size, lower maintenance cost, and lower complexity of the codebase.
+Una vez que se haya completado la transición de todas nuestras herramientas internas a Ivy, queremos eliminar el  legacy View Engine para una sobrecarga conceptual Angular más pequeña, un tamaño de paquete más pequeño, un costo de mantenimiento más bajo y una menor complejidad del código base.
 
-### Angular DevTools
+### Herramientas de desarrollo Angular
 
-We’ll be working on development tooling for Angular that will provide utilities for debugging and performance profiling. This project aims to help developers understand the component structure and the change detection in an Angular application.
+Trabajaremos en herramientas de desarrollo para Angular que proporcionarán utilidades para depuración y generación de perfiles de rendimiento. Este proyecto tiene como objetivo ayudar a los desarrolladores a comprender la estructura del componente y la detección de cambios en una aplicación Angular.
 
-### Optional NgModules
+### NgModules opcionales
 
-To simplify the Angular mental model and learning journey, we’ll be working on making NgModules optional. This work will allow developers to develop standalone components and implement an alternative API for declaring the component’s compilation scope.
+Para simplificar el modelo mental Angular y la ruta de aprendizaje, trabajaremos para hacer que NgModules sea opcional. Este trabajo permitirá a los desarrolladores desarrollar componentes independientes e implementar una API alternativa para declarar el alcance de compilación del componente.
 
-### Ergonomic component level code-splitting APIs
+### API de división de código a nivel de componente ergonómico
 
-A common problem of web applications is their slow initial load time. A way to improve it is to apply more granular code-splitting on a component level. To encourage this practice, we’ll be working on more ergonomic code-splitting APIs.
+Un problema común de las aplicaciones web es su lento tiempo de carga inicial. Una forma de mejorarlo es aplicar una división de código más granular a nivel de componente. Para fomentar esta práctica, trabajaremos en API de división de código más ergonómicas.
 
-### Migration to ESLint
+### Migración a ESLint
 
-With the deprecation of TSLint we will be moving to ESLint. As part of the process, we will work on ensuring backward compatibility with our current recommended TSLint configuration, implement a migration strategy for existing Angular applications and introduce new tooling to the Angular CLI toolchain.
+Con la deprecación de TSLint, nos trasladaremos a ESLint. Como parte del proceso, trabajaremos para garantizar la compatibilidad con versiones anteriores de nuestra configuración TSLint recomendada actual, implementaremos una estrategia de migración para las aplicaciones Angular existentes e introduciremos nuevas herramientas en la cadena de herramientas Angular CLI.
