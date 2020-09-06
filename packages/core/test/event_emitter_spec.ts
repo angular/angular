@@ -39,7 +39,6 @@ import {EventEmitter} from '../src/event_emitter';
     it('should call the throw callback',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          emitter.subscribe({
-           next: () => {},
            error: (error: any) => {
              expect(error).toEqual('Boom');
              async.done();
@@ -51,7 +50,6 @@ import {EventEmitter} from '../src/event_emitter';
     it('should work when no throw callback is provided',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          emitter.subscribe({
-           next: () => {},
            error: (_: any) => {
              async.done();
            }
@@ -62,8 +60,6 @@ import {EventEmitter} from '../src/event_emitter';
     it('should call the return callback',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          emitter.subscribe({
-           next: () => {},
-           error: (_: any) => {},
            complete: () => {
              async.done();
            }

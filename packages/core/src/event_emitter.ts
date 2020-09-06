@@ -110,26 +110,26 @@ class EventEmitter_ extends Subject<any> {
     let completeFn = (): any => null;
 
     if (generatorOrNext && typeof generatorOrNext === 'object') {
-      schedulerFn = this.createHanlder(value => generatorOrNext.next(value));
+      schedulerFn = this.createHandler(value => generatorOrNext.next(value));
 
       if (generatorOrNext.error) {
-        errorFn = this.createHanlder(err => generatorOrNext.error(err));
+        errorFn = this.createHandler(err => generatorOrNext.error(err));
       }
 
       if (generatorOrNext.complete) {
-        completeFn = this.createHanlder(() => generatorOrNext.complete());
+        completeFn = this.createHandler(() => generatorOrNext.complete());
       }
     } else {
       if (generatorOrNext) {
-        schedulerFn = this.createHanlder(value => generatorOrNext(value));
+        schedulerFn = this.createHandler(value => generatorOrNext(value));
       }
 
       if (error) {
-        errorFn = this.createHanlder(err => error(err));
+        errorFn = this.createHandler(err => error(err));
       }
 
       if (complete) {
-        completeFn = this.createHanlder(() => complete());
+        completeFn = this.createHandler(() => complete());
       }
     }
 
@@ -142,15 +142,13 @@ class EventEmitter_ extends Subject<any> {
     return sink;
   }
 
-  private createHanlder(callback: (...args: any) => void) {
+  private createHandler(callback: (...args: any) => void) {
     if (this.__isAsync) {
       return (...args: any) => {
         setTimeout(() => callback(...args));
       };
     }
-    return (...args: any) => {
-      callback(...args);
-    };
+    return callback;
   }
 }
 
