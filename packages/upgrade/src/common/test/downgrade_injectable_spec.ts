@@ -49,15 +49,15 @@ describe('downgradeInjectable', () => {
     expect(mockNg2Injector.get).toHaveBeenCalledWith('someToken');
   });
 
-  it('should throw an error if injector is undefined', () => {
-    const factory = downgradeInjectable('someToken', 'someModule');
-    expect(factory).toEqual(jasmine.any(Function));
-    expect((factory as any).$inject).toEqual([$INJECTOR]);
+  it('should mention the injectable\'s name in the error thrown when failing to retrieve injectable',
+     () => {
+       const factory = downgradeInjectable('someToken');
+       expect(factory).toEqual(jasmine.any(Function));
+       expect((factory as any).$inject).toEqual([$INJECTOR]);
 
-    const {mockNg1Injector} = setupMockInjectors('someModule');
-    const error =
-        'Trying to get the Angular injector before bootstrapping the corresponding Angular module. Injector name: someToken';
-    mockNg1Injector.get.and.throwError(error);
-    expect(() => factory(mockNg1Injector)).toThrowError(error);
-  });
+       const {mockNg1Injector, mockNg2Injector} = setupMockInjectors();
+       mockNg2Injector.get.and.throwError('Mock failure');
+       expect(() => factory(mockNg1Injector))
+           .toThrowError(/^Error while instantiating injectable 'someToken': Mock failure/);
+     });
 });
