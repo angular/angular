@@ -511,9 +511,9 @@ Each script tag has a `type="module"` or `nomodule` attribute. Browsers with nat
 
 To include differential loading in your application builds, you must configure the Browserslist and TypeScript configuration files in your application project.
 
-The following examples show a `browserlistrc` and `tsconfig.json` file for a newly created Angular application. In this configuration, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015.
+The following examples show a `.browserslistrc` and `tsconfig.json` file for a newly created Angular application. In this configuration, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015.
 
-<code-example language="none" header="browserslistrc">
+<code-example language="none" header=".browserslistrc">
 # This file is used by the build system to adjust CSS and JS output to support the specified browsers below.
 # For additional information regarding the format and rule options, please see:
 # https://github.com/browserslist/browserslist#queries
@@ -527,7 +527,7 @@ The following examples show a `browserlistrc` and `tsconfig.json` file for a new
 last 1 Chrome version
 last 1 Firefox version
 last 2 Edge major versions
-last 2 Safari major version
+last 2 Safari major versions
 last 2 iOS major versions
 Firefox ESR
 not IE 9-11 # For IE 9-11 support, remove 'not'.
