@@ -374,7 +374,7 @@
             },
             {
               "url": "guide/ngmodule-vs-jsmodule",
-              "title": "Modules JS vs NgModules",
+              "title": "Módulos JS vs NgModules",
               "tooltip": "Diferenciar entre módulos JavaScript y NgModules."
             },
             {
@@ -419,7 +419,7 @@
             },
             {
               "url": "guide/sharing-ngmodules",
-              "title": "Compartiendo NgModules",
+              "title": "Comparta NgModules para optimizar sus aplicaciones",
               "tooltip": "Share NgModules to streamline your apps."
             },
             {
@@ -723,30 +723,30 @@
     },
     {
       "title": "Extendiendo Angular",
-      "tooltip": "Trabajar con bibliotecas y ampliar la CLI.",
+      "tooltip": "Trabajar con librerías y ampliar la CLI.",
       "children": [
         {
-          "title": "Bibliotecas Angular ",
-          "tooltip": "Ampliación de Angular con bibliotecas compartidas.",
+          "title": "Librerías Angular ",
+          "tooltip": "Ampliación de Angular con librerías compartidas.",
           "children": [
             {
               "url": "guide/libraries",
-              "title": "Descripción general de las bibliotecas",
-              "tooltip": "Comprenda cómo y cuándo usar o crear bibliotecas."
+              "title": "Descripción general de las librerías",
+              "tooltip": "Comprenda cómo y cuándo usar o crear librerías."
             },
             {
               "url": "guide/using-libraries",
-              "title": "Usar bibliotecas publicadas",
-              "tooltip": "Integra bibliotecas publicadas en una aplicación."
+              "title": "Usar librerías publicadas",
+              "tooltip": "Integra librerías publicadas en una aplicación."
             },
             {
               "url": "guide/creating-libraries",
-              "title": "Creando Bibliotecas",
-              "tooltip": "Amplíe Angular creando, publicando y usando sus propias bibliotecas."
+              "title": "Creando Librerías",
+              "tooltip": "Amplíe Angular creando, publicando y usando sus propias librerías."
             },
             {
               "url": "guide/lightweight-injection-tokens",
-              "title": "Tokens de inyección ligeros para bibliotecas",
+              "title": "Tokens de inyección ligeros para librerías",
               "tooltip": "Optimice el tamaño de la aplicación cliente diseñando servicios de librería con tokens de inyección ligeros."
             }
           ]
@@ -767,7 +767,7 @@
             },
             {
               "url": "guide/schematics-for-libraries",
-              "title": "Esquemas para bibliotecas",
+              "title": "Esquemas para librerías",
               "tooltip": "Use esquemas para integrar su librería con el CLI Angular."
             }
           ]
@@ -813,7 +813,7 @@
         {
           "url": "guide/updating",
           "title": "Mantenerse al día",
-          "tooltip": "Información sobre cómo actualizar las aplicaciones y bibliotecas de Angular a la última versión."
+          "tooltip": "Información sobre cómo actualizar las aplicaciones y librerías de Angular a la última versión."
         },
         {
           "url": "guide/releases",
@@ -885,7 +885,7 @@
         {
           "url": "guide/ivy",
           "title": "Angular Ivy",
-          "tooltip": "Acerca de la canalización de compilación y renderizado de Angular Ivy."
+          "tooltip": "Acerca de la pipeline de compilación y renderizado de Angular Ivy."
         },
         {
           "title": "Actualización desde AngularJS",
