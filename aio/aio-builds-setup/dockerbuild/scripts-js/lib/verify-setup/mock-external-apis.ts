@@ -16,13 +16,6 @@ import {BuildNums, PrNums, SHA} from './constants';
 
 const logger = new Logger('mock-external-apis');
 
-const log = (...args: any[]) => {
-  // Filter out non-matching URL checks
-  if (!/^matching.+: false$/.test(args[0])) {
-    logger.log(...args);
-  }
-};
-
 const AIO_CIRCLE_CI_TOKEN = getEnvVar('AIO_CIRCLE_CI_TOKEN');
 const AIO_GITHUB_TOKEN = getEnvVar('AIO_GITHUB_TOKEN');
 
@@ -91,8 +84,8 @@ const createArchive = (buildNum: number, prNum: number, sha: string) => {
 };
 
 // Create request scopes
-const circleCiApi = nock(CIRCLE_CI_API_HOST).log(log).persist();
-const githubApi = nock(GITHUB_API_HOST).log(log).persist().matchHeader('Authorization', `token ${AIO_GITHUB_TOKEN}`);
+const circleCiApi = nock(CIRCLE_CI_API_HOST).persist();
+const githubApi = nock(GITHUB_API_HOST).persist().matchHeader('Authorization', `token ${AIO_GITHUB_TOKEN}`);
 
 //////////////////////////////
 
