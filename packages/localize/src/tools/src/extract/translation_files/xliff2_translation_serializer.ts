@@ -8,6 +8,7 @@
 import {AbsoluteFsPath, relative} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
+import {FormatOptions, validateOptions} from './format_options';
 import {extractIcuPlaceholders} from './icu_parsing';
 import {TranslationSerializer} from './translation_serializer';
 import {XmlFile} from './xml_file';
@@ -25,8 +26,10 @@ const MAX_LEGACY_XLIFF_2_MESSAGE_LENGTH = 20;
 export class Xliff2TranslationSerializer implements TranslationSerializer {
   private currentPlaceholderId = 0;
   constructor(
-      private sourceLocale: string, private basePath: AbsoluteFsPath,
-      private useLegacyIds: boolean) {}
+      private sourceLocale: string, private basePath: AbsoluteFsPath, private useLegacyIds: boolean,
+      private formatOptions: FormatOptions) {
+    validateOptions('Xliff1TranslationSerializer', [['xml:space', ['preserve']]], formatOptions);
+  }
 
   serialize(messages: ɵParsedMessage[]): string {
     const ids = new Set<string>();
@@ -41,8 +44,9 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
     // We could compute the file from the `message.location` property, but there could
     // be multiple values for this in the collection of `messages`. In that case we would probably
     // need to change the serializer to output a new `<file>` element for each collection of
-    // messages that come from a particular original file, and the translation file parsers may not
-    xml.startTag('file', {'id': 'ngi18n', 'original': 'ng.template'});
+    // messages that come from a particular original file, and the translation file parsers may
+    // not
+    xml.startTag('file', {'id': 'ngi18n', 'original': 'ng.template', ...this.formatOptions});
     for (const message of messages) {
       const id = this.getMessageId(message);
       if (ids.has(id)) {

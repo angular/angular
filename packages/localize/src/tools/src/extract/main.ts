@@ -21,6 +21,7 @@ import {SimpleJsonTranslationSerializer} from './translation_files/json_translat
 import {Xliff1TranslationSerializer} from './translation_files/xliff1_translation_serializer';
 import {Xliff2TranslationSerializer} from './translation_files/xliff2_translation_serializer';
 import {XmbTranslationSerializer} from './translation_files/xmb_translation_serializer';
+import {FormatOptions, parseFormatOptions} from './translation_files/format_options';
 
 if (require.main === module) {
   const args = process.argv.slice(2);
@@ -53,6 +54,13 @@ if (require.main === module) {
             choices: ['xmb', 'xlf', 'xlif', 'xliff', 'xlf2', 'xlif2', 'xliff2', 'json'],
             describe: 'The format of the translation file.',
             type: 'string',
+          })
+          .option('formatOptions', {
+            describe:
+                'Additional options to pass to the translation file serializer, in the form of JSON formatted key-value string pairs:\n' +
+                'For example: `--formatOptions {"xml:space":"preserve"}.\n' +
+                'The meaning of the options is specific to the format being serialized.',
+            type: 'string'
           })
           .option('o', {
             alias: 'outputPath',
@@ -97,6 +105,7 @@ if (require.main === module) {
   const logLevel = options.loglevel as (keyof typeof LogLevel) | undefined;
   const logger = new ConsoleLogger(logLevel ? LogLevel[logLevel] : LogLevel.warn);
   const duplicateMessageHandling = options.d as DiagnosticHandlingStrategy;
+  const formatOptions = parseFormatOptions(options.formatOptions);
 
 
   extractTranslations({
@@ -109,6 +118,7 @@ if (require.main === module) {
     useSourceMaps: options.useSourceMaps,
     useLegacyIds: options.useLegacyIds,
     duplicateMessageHandling,
+    formatOptions,
   });
 }
 
@@ -152,6 +162,10 @@ export interface ExtractTranslationsOptions {
    * How to handle messages with the same id but not the same text.
    */
   duplicateMessageHandling: DiagnosticHandlingStrategy;
+  /**
+   * A collection of formatting options to pass to the translation file serializer.
+   */
+  formatOptions?: FormatOptions;
 }
 
 export function extractTranslations({
@@ -164,6 +178,7 @@ export function extractTranslations({
   useSourceMaps,
   useLegacyIds,
   duplicateMessageHandling,
+  formatOptions = {},
 }: ExtractTranslationsOptions) {
   const fs = getFileSystem();
   const basePath = fs.resolve(rootPath);
@@ -180,7 +195,8 @@ export function extractTranslations({
   }
 
   const outputPath = fs.resolve(rootPath, output);
-  const serializer = getSerializer(format, sourceLocale, fs.dirname(outputPath), useLegacyIds);
+  const serializer =
+      getSerializer(format, sourceLocale, fs.dirname(outputPath), useLegacyIds, formatOptions);
   const translationFile = serializer.serialize(messages);
   fs.ensureDir(fs.dirname(outputPath));
   fs.writeFile(outputPath, translationFile);
@@ -191,17 +207,17 @@ export function extractTranslations({
 }
 
 export function getSerializer(
-    format: string, sourceLocale: string, rootPath: AbsoluteFsPath,
-    useLegacyIds: boolean): TranslationSerializer {
+    format: string, sourceLocale: string, rootPath: AbsoluteFsPath, useLegacyIds: boolean,
+    formatOptions: FormatOptions): TranslationSerializer {
   switch (format) {
     case 'xlf':
     case 'xlif':
     case 'xliff':
-      return new Xliff1TranslationSerializer(sourceLocale, rootPath, useLegacyIds);
+      return new Xliff1TranslationSerializer(sourceLocale, rootPath, useLegacyIds, formatOptions);
     case 'xlf2':
     case 'xlif2':
     case 'xliff2':
-      return new Xliff2TranslationSerializer(sourceLocale, rootPath, useLegacyIds);
+      return new Xliff2TranslationSerializer(sourceLocale, rootPath, useLegacyIds, formatOptions);
     case 'xmb':
       return new XmbTranslationSerializer(rootPath, useLegacyIds);
     case 'json':
