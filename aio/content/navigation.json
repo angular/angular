@@ -605,7 +605,7 @@
             {
               "url": "guide/testing-components-scenarios",
               "//title": "Component Testing Scenarios",
-              "title": "컴포넌트 테스트 시나리오,
+              "title": "컴포넌트 테스트 시나리오",
               "//tooltip": "Use cases for testing components.",
               "tooltip": "컴포넌트를 테스트하는 사례를 소개합니다."
             },
@@ -1114,148 +1114,203 @@
               ]
             },
             {
-              "title": "NgModules",
-              "tooltip": "NgModules.",
+              "//title": "NgModules",
+              "title": "NgModule",
+              "//tooltip": "NgModules.",
+              "tooltip": "NgModule",
               "children": [
                 {
                   "url": "guide/ngmodules",
-                  "title": "NgModules Introduction",
-                  "tooltip": "Use NgModules to make your apps efficient."
+                  "//title": "NgModules Introduction",
+                  "title": "NgModule 소개",
+                  "//tooltip": "Use NgModules to make your apps efficient.",
+                  "tooltip": "NgModule을 사용해서 앱을 효율적으로 구성해 보세요."
                 },
                 {
                   "url": "guide/ngmodule-vs-jsmodule",
-                  "title": "JS Modules vs NgModules",
-                  "tooltip": "Differentiate between JavaScript modules and NgModules."
+                  "//title": "JS Modules vs NgModules",
+                  "title": "JS 모듈 vs NgModule",
+                  "//tooltip": "Differentiate between JavaScript modules and NgModules.",
+                  "tooltip": "JavaScript 모듈과 NgModule의 차이에 대해 알아보세요."
                 },
                 {
                   "url": "guide/bootstrapping",
-                  "title": "Launching Apps with a Root Module",
-                  "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
+                  "//title": "Launching Apps with a Root Module",
+                  "title": "최상위 모듈부터 앱 실행하기",
+                  "//tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\".",
+                  "tooltip": "최상위 모듈 \"AppModule\"부터 앱이 시작되는 과정을 확인해 보세요."
                 },
                 {
                   "url": "guide/frequent-ngmodules",
-                  "title": "Frequently Used NgModules",
-                  "tooltip": "Introduction to the most frequently used NgModules."
+                  "//title": "Frequently Used NgModules",
+                  "title": "자주 사용하는 NgModule",
+                  "//tooltip": "Introduction to the most frequently used NgModules.",
+                  "tooltip": "자주 사용하는 NgModule에 대해 설명합니다."
                 },
                 {
                   "url": "guide/module-types",
-                  "title": "Types of Feature Modules",
-                  "tooltip": "Description of the different types of feature modules."
+                  "//title": "Types of Feature Modules",
+                  "title": "기능 모듈의 종류",
+                  "//tooltip": "Description of the different types of feature modules.",
+                  "tooltip": "기능 모듈을 어떻게 분류할 수 있는지 알아봅시다."
                 },
                 {
                   "url": "guide/entry-components",
-                  "title": "Entry Components",
-                  "tooltip": "All about entry components in Angular."
+                  "//title": "Entry Components",
+                  "title": "진입 컴포넌트",
+                  "//tooltip": "All about entry components in Angular.",
+                  "tooltip": "진입 컴포넌트에 대해 알아봅시다."
                 },
                 {
                   "url": "guide/feature-modules",
-                  "title": "Feature Modules",
-                  "tooltip": "Create feature modules to organize your code."
+                  "//title": "Feature Modules",
+                  "title": "기능 모듈",
+                  "//tooltip": "Create feature modules to organize your code.",
+                  "tooltip": "기능 모듈을 만들어서 코드를 효율적으로 구성해 봅시다."
                 },
                 {
                   "url": "guide/providers",
-                  "title": "Providing Dependencies",
-                  "tooltip": "Providing dependencies to NgModules."
+                  "//title": "Providing Dependencies",
+                  "title": "의존성 객체 등록하기",
+                  "//tooltip": "Providing dependencies to NgModules.",
+                  "tooltip": "NgModule에 의존성 객체를 등록하는 방법에 대해 알아봅시다."
                 },
                 {
                   "url": "guide/singleton-services",
-                  "title": "Singleton Services",
-                  "tooltip": "Creating singleton services."
+                  "//title": "Singleton Services",
+                  "title": "싱글턴 서비스",
+                  "//tooltip": "Creating singleton services.",
+                  "tooltip": "싱글턴 서비스를 만드는 방법에 대해 설명합니다."
                 },
                 {
                   "url": "guide/lazy-loading-ngmodules",
-                  "title": "Lazy Loading Feature Modules",
-                  "tooltip": "Lazy load modules to speed up your apps."
+                  "//title": "Lazy Loading Feature Modules",
+                  "title": "기능 모듈 지연로딩하기",
+                  "//tooltip": "Lazy load modules to speed up your apps.",
+                  "tooltip": "모듈을 지연로딩하면 앱 실행 속도를 향상시킬 수 있습니다."
                 },
                 {
                   "url": "guide/sharing-ngmodules",
-                  "title": "Sharing NgModules",
-                  "tooltip": "Share NgModules to streamline your apps."
+                  "//title": "Sharing NgModules",
+                  "title": "NgModule 공유하기",
+                  "//tooltip": "Share NgModules to streamline your apps.",
+                  "tooltip": "애플리케이션 곳곳에 공유할 수 있는 NgModule을 만들어 봅시다."
                 },
                 {
                   "url": "guide/ngmodule-api",
                   "title": "NgModule API",
-                  "tooltip": "Understand the details of NgModules."
+                  "//tooltip": "Understand the details of NgModules.",
+                  "tooltip": "NgModule에 대해 더 자세하게 알아봅시다."
                 },
                 {
                   "url": "guide/ngmodule-faq",
-                  "title": "NgModule FAQs",
-                  "tooltip": "Answers to frequently asked questions about NgModules."
+                  "//title": "NgModule FAQs",
+                  "title": "NgModule FAQ",
+                  "//tooltip": "Answers to frequently asked questions about NgModules.",
+                  "tooltip": "NgModule에 대해 자주 물어보는 질문은 어떤 것이 있는지 알아봅시다."
                 }
               ]
             },
             {
-              "title": "Observables & RxJS",
-              "tooltip": "Using observables for message passing in Angular.",
+              "//title": "Observables & RxJS",
+              "title": "옵저버블 & RxJS",
+              "//tooltip": "Using observables for message passing in Angular.",
+              "tooltip": "옵저버블을 사용해서 Angular 앱 안에서 메시지를 전달해 봅시다.",
               "children": [
                 {
                   "url": "guide/observables",
-                  "title": "Observables Overview",
-                  "tooltip": "Using observables to pass values synchronously or asynchronously."
+                  "//title": "Observables Overview",
+                  "title": "옵저버블 개요",
+                  "//tooltip": "Using observables to pass values synchronously or asynchronously.",
+                  "tooltip": "옵저버블로 데이터를 전달할 때 동기 방식, 비동기 방식을 활용할 수 있습니다."
                 },
                 {
                   "url": "guide/rx-library",
-                  "title": "The RxJS Library",
-                  "tooltip": "A library for reactive programming using observables to compose asynchronous or callback-based code."
+                  "//title": "The RxJS Library",
+                  "title": "RxJS 라이브러리",
+                  "//tooltip": "A library for reactive programming using observables to compose asynchronous or callback-based code.",
+                  "tooltip": "옵저버블을 사용해서 반응형 프로그래밍 패턴을 구현할 때 사용하는 라이브러리에 대해 소개합니다."
                 },
                 {
                   "url": "guide/observables-in-angular",
-                  "title": "Observables in Angular",
-                  "tooltip": "How Angular subsystems use and expect observables."
+                  "//title": "Observables in Angular",
+                  "title": "Angular에서 사용하는 옵저버블",
+                  "//tooltip": "How Angular subsystems use and expect observables.",
+                  "tooltip": "Angular 내부 시스템이 옵저버블을 어떻게 활용하는지 확인해 보세요."
                 },
                 {
                   "url": "guide/practical-observable-usage",
-                  "title": "Practical Usage",
-                  "tooltip": "Domains in which observables are particularly useful."
+                  "//title": "Practical Usage",
+                  "title": "실전 예제",
+                  "//tooltip": "Domains in which observables are particularly useful.",
+                  "tooltip": "옵저버블을 활용할 수 있는 사례를 확인해 봅시다."
                 },
                 {
                   "url": "guide/comparing-observables",
-                  "title": "Compare to Other Techniques",
-                  "tooltip": "How observables compare to promises and other message passing techniques."
+                  "//title": "Compare to Other Techniques",
+                  "title": "다른 방식과 비교",
+                  "//tooltip": "How observables compare to promises and other message passing techniques.",
+                  "tooltip": "프로미스와 같은 메시지 전달 테크닉이 옵저버블과 어떻게 다른지 확인해 보세요."
                 }
               ]
             }
           ]
         },
         {
-          "title": "CLI Command Reference",
-          "tooltip": "Angular CLI command reference.",
+          "//title": "CLI Command Reference",
+          "title": "CLI 명령 참고",
+          "//tooltip": "Angular CLI command reference.",
+          "tooltip": "Angular CLI 명령 참고",
           "children": [
             {
-              "title": "Overview",
-              "tooltip": "An introduction to the CLI tool, commands, and syntax.",
+              "//title": "Overview",
+              "title": "개요",
+              "//tooltip": "An introduction to the CLI tool, commands, and syntax.",
+              "tooltip": "Angular CLI 툴, 명령, 사용방법에 대해 알아보세요.",
               "url": "cli"
             },
             {
-              "title": "Usage Analytics",
-              "tooltip": "For administrators, guide to gathering usage analytics from your users.",
+              "//title": "Usage Analytics",
+              "title": "사용 통계 수집",
+              "//tooltip": "For administrators, guide to gathering usage analytics from your users.",
+              "tooltip": "관리자라면 사용자들이 Angular CLI를 어떻게 활용하는지 통계를 수집해 보세요.",
               "url": "cli/usage-analytics-gathering"
             }
           ]
         },
         {
-          "title": "API Reference",
-          "tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
+          "//title": "API Reference",
+          "title": "API 문서",
+          "//tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
+          "tooltip": "Angular 패키지, 클래스, 인터페이스 등에 대해 자세하게 확인해 보세요.",
           "url": "api"
         },
         {
           "url": "guide/glossary",
-          "title": "Angular Glossary",
-          "tooltip": "Brief definitions of the most important words in the Angular vocabulary."
+          "//title": "Angular Glossary",
+          "title": "용어 사전",
+          "//tooltip": "Brief definitions of the most important words in the Angular vocabulary.",
+          "tooltip": "Angular 생태계에서 자주 사용하는 단어를 빠르게 찾아보세요."
         },
         {
-          "title": "Angular Style and Usage",
-          "tooltip": "Summaries of Angular syntax, coding, and doc styles.",
+          "//title": "Angular Style and Usage",
+          "title": "Angular 스타일 가이드",
+          "//tooltip": "Summaries of Angular syntax, coding, and doc styles.",
+          "tooltip": "Angular 문법, 코딩 스타일, 문서 작성 스타일에 대해 확인해 보세요.",
           "children": [
             {
               "url": "guide/cheatsheet",
-              "title": "Quick Reference",
-              "tooltip": "A quick guide to common Angular coding techniques."
+              "//title": "Quick Reference",
+              "title": "찾아보기",
+              "//tooltip": "A quick guide to common Angular coding techniques.",
+              "tooltip": "Angular 코딩 문법에 대해 빠르게 확인해 보세요."
             },
             {
               "url": "guide/styleguide",
-              "title": "Coding Style Guide",
-              "tooltip": "Guidelines for writing Angular code."
+              "//title": "Coding Style Guide",
+              "title": "코딩 스타일 가이드",
+              "//tooltip": "Guidelines for writing Angular code.",
+              "tooltip": "Angular 코드를 작성할 때 참고할만한 권장사항에 대해 확인해 보세요."
             }
           ]
         }

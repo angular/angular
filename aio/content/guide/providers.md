@@ -87,6 +87,7 @@ The example above shows the preferred way to provide a service in a module. This
 <code-example path="providers/src/app/user.module.ts"  header="src/app/user.module.ts"></code-example>
 
 
+{@a limiting-provider-scope-by-lazy-loading-modules}
 <!--
 ## Limiting provider scope by lazy loading modules
 -->
